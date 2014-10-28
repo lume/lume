@@ -18,8 +18,8 @@ import GenericSync from 'famous/inputs/GenericSync';
         touch: TouchSync
     });
 
-import Molecule from 'javascripts/components/Molecule';
-import Plane from 'javascripts/components/Plane';
+import Molecule from './Molecule';
+import Plane from './Plane';
 
 import forLength from 'javascripts/utils/forLength';
 

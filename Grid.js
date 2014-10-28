@@ -9,7 +9,7 @@
 
 import Modifier from 'famous/core/Modifier';
 import Transform from 'famous/core/Transform';
-import Molecule from 'javascripts/components/Molecule';
+import Molecule from './Molecule';
 
 import forLength from 'javascripts/utils/forLength';
 

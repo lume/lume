@@ -8,7 +8,7 @@
  */
 
 import Surface from 'famous/core/Surface';
-import Molecule from 'javascripts/components/Molecule';
+import Molecule from './Molecule';
 
 export class Plane extends Molecule {
     constructor(initialOptions) {

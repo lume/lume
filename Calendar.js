@@ -10,9 +10,9 @@
 import Transform from 'famous/core/Transform';
 import Transitionable from 'famous/transitions/Transitionable';
 import Easing from 'famous/transitions/Easing';
-import Molecule from 'javascripts/components/Molecule';
-import Grid from 'javascripts/components/Grid';
-import DoubleSidedPlane from 'javascripts/components/DoubleSidedPlane';
+import Molecule from './Molecule';
+import Grid from './Grid';
+import DoubleSidedPlane from './DoubleSidedPlane';
 
 import forLength from 'javascripts/utils/forLength';
 

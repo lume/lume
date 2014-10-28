@@ -8,8 +8,8 @@
  */
 
 import Transform from 'famous/core/Transform';
-import Molecule from 'javascripts/components/Molecule';
-import Plane from 'javascripts/components/Plane';
+import Molecule from './Molecule';
+import Plane from './Plane';
 
 export class DoubleSidedPlane extends Molecule { // a basic building block.
     constructor(initialOptions) {
