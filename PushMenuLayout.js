@@ -7,7 +7,8 @@
  *
  */
 
-// Famo.us Modules
+import jss from 'jss';
+
 import Transform from 'famous/core/Transform';
 import Transitionable from 'famous/transitions/Transitionable';
 import Easing from 'famous/transitions/Easing';
@@ -43,7 +44,7 @@ export class PushMenuLayout extends Molecule {
         this.menuHintSize = 10; // the amount of the menu that is visible before opening the menu.
         this.pushAreaWidth = 20; // the area on the screen edge that the user can touch and drag to push out the menu.
         this.animationDuration = 1000;
-        this.fade = false; // when content recedes, it fades to dark.
+        this.fade = true; // when content recedes, it fades to dark.
         // TODO: ^ background color for whole layout will be the color the fade fades to.
 
         this.contentWidth = document.body.clientWidth - this.menuHintSize;
@@ -106,36 +107,40 @@ export class PushMenuLayout extends Molecule {
         if (this.fade) {
             var fadeStartColor = 'rgba(0,0,0,0.3)';
             var fadeEndColor = 'rgba(0,0,0,0.8)';
-            var fadeStyle = '<style>'+
-                '.infamous-fadeLeft {'+
-                    'background: '+fadeEndColor+';'+
-                    'background: -moz-linear-gradient(left, '+fadeEndColor+' 0%, '+fadeStartColor+' 100%);'+
-                    'background: -webkit-gradient(left top, right top, color-stop(0%, '+fadeEndColor+'), color-stop(100%, '+fadeStartColor+'));'+
-                    'background: -webkit-linear-gradient(left, '+fadeEndColor+' 0%, '+fadeStartColor+' 100%);'+
-                    'background: -o-linear-gradient(left, '+fadeEndColor+' 0%, '+fadeStartColor+' 100%);'+
-                    'background: -ms-linear-gradient(left, '+fadeEndColor+' 0%, '+fadeStartColor+' 100%);'+
-                    'background: linear-gradient(to right, '+fadeEndColor+' 0%, '+fadeStartColor+' 100%);'+
-                    'filter: progid:DXImageTransform.Microsoft.gradient( startColorstr=\'#cc000000\', endColorstr=\'#4d000000\', GradientType=1 );'+
-                '}'+
-                '.infamous-fadeRight {'+
-                    'background: '+fadeStartColor+';'+
-                    'background: -moz-linear-gradient(left, '+fadeStartColor+' 0%, '+fadeEndColor+' 100%);'+
-                    'background: -webkit-gradient(left top, right top, color-stop(0%, '+fadeStartColor+'), color-stop(100%, '+fadeEndColor+'));'+
-                    'background: -webkit-linear-gradient(left, '+fadeStartColor+' 0%, '+fadeEndColor+' 100%);'+
-                    'background: -o-linear-gradient(left, '+fadeStartColor+' 0%, '+fadeEndColor+' 100%);'+
-                    'background: -ms-linear-gradient(left, '+fadeStartColor+' 0%, '+fadeEndColor+' 100%);'+
-                    'background: linear-gradient(to right, '+fadeStartColor+' 0%, '+fadeEndColor+' 100%);'+
-                    'filter: progid:DXImageTransform.Microsoft.gradient( startColorstr=\'#4d000000\', endColorstr=\'#cc000000\', GradientType=1 );'+
-                '}'+
-            '</style>';
-            var div = document.createElement('div');
-            div.innerHTML = fadeStyle;
-            fadeStyle = div.firstChild;
-            document.head.appendChild(fadeStyle);
+
+            var fadeStyle = jss.createStylesheet({
+                '.infamous-fadeLeft': {
+                    background: [
+                        fadeEndColor,
+                        '-moz-linear-gradient(left, '+fadeEndColor+' 0%, '+fadeStartColor+' 100%)',
+                        '-webkit-gradient(left top, right top, color-stop(0%, '+fadeEndColor+'), color-stop(100%, '+fadeStartColor+'))',
+                        '-webkit-linear-gradient(left, '+fadeEndColor+' 0%, '+fadeStartColor+' 100%)',
+                        '-o-linear-gradient(left, '+fadeEndColor+' 0%, '+fadeStartColor+' 100%)',
+                        '-ms-linear-gradient(left, '+fadeEndColor+' 0%, '+fadeStartColor+' 100%)',
+                        'linear-gradient(to right, '+fadeEndColor+' 0%, '+fadeStartColor+' 100%)'
+                    ],
+                    filter: 'progid:DXImageTransform.Microsoft.gradient( startColorstr=\'#cc000000\', endColorstr=\'#4d000000\', GradientType=1 )'
+                },
+                '.infamous-fadeRight': {
+                    background: [
+                        fadeStartColor,
+                        '-moz-linear-gradient(left, '+fadeStartColor+' 0%, '+fadeEndColor+' 100%)',
+                        '-webkit-gradient(left top, right top, color-stop(0%, '+fadeStartColor+'), color-stop(100%, '+fadeEndColor+'))',
+                        '-webkit-linear-gradient(left, '+fadeStartColor+' 0%, '+fadeEndColor+' 100%)',
+                        '-o-linear-gradient(left, '+fadeStartColor+' 0%, '+fadeEndColor+' 100%)',
+                        '-ms-linear-gradient(left, '+fadeStartColor+' 0%, '+fadeEndColor+' 100%)',
+                        'linear-gradient(to right, '+fadeStartColor+' 0%, '+fadeEndColor+' 100%)'
+                    ],
+                    filter: 'progid:DXImageTransform.Microsoft.gradient( startColorstr=\'#4d000000\', endColorstr=\'#cc000000\', GradientType=1 )'
+                }
+            });
+
+            fadeStyle.attach();
 
             this.fadePlane = new Plane({
                 size: [undefined,undefined],
                 classes: [
+                    // TODO: switch to jss namespace.
                     (this.menuSide == 'left'? 'infamous-fadeRight': 'infamous-fadeLeft')
                 ],
                 properties: {
