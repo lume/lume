@@ -60,10 +60,16 @@ export class PushMenuLayout extends Molecule {
         this.isBeingDragged = false; // whether the user is dragging/pushing the menu or not.
         this.transitionCallback = undefined; // holds the callback to the current open or close menu animation.
 
+        this.createComponents();
+
+        this.initializeEvents();
+    }
+
+    createComponents() {
         this.touchSync = new GenericSync(['touch']);
 
         this.alignment = (this.menuSide == "left"? 0: 1);
-        this.opacityTransition = new Transitionable(0);
+        this.animationTransition = new Transitionable(0);
 
         this.mainMol = new Molecule();
 
@@ -101,44 +107,53 @@ export class PushMenuLayout extends Molecule {
             align: [this.alignment, 0.5]
         });
 
+        // align the menu and content areas
+        if (this.menuSide == 'left') {
+            this.contentMol.transform.setTranslateX(this.menuHintSize);
+            this.menuMol.transform.setTranslateX(-this.menuWidth+this.menuHintSize);
+        }
+        else {
+            this.contentMol.transform.setTranslateX(-this.menuHintSize);
+            this.menuMol.transform.setTranslateX(this.menuWidth-this.menuHintSize);
+        }
+
         /*
          * Styles for the fadePlane
          */
         // TODO: move this somewhereelse . it's specific for each animation
-        switch(this.animation) {
-            case "foldDown":
-                this.fadeStartColor = 'rgba(0,0,0,0.3)';
-                this.fadeEndColor = 'rgba(0,0,0,0.8)';
-                break;
-            case "moveBack":
-                this.fadeStartColor = 'rgba(0,0,0,0.5)';
-                this.fadeEndColor = 'rgba(0,0,0,0.5)';
-                break;
-        }
-        var self = this;
         this.updateStyles = function() {
+            switch(this.animation) {
+                case "foldDown":
+                    this.fadeStartColor = 'rgba(0,0,0,0.3)';
+                    this.fadeEndColor = 'rgba(0,0,0,0.8)';
+                    break;
+                case "moveBack":
+                    this.fadeStartColor = 'rgba(0,0,0,0.5)';
+                    this.fadeEndColor = 'rgba(0,0,0,0.5)';
+                    break;
+            }
             var styles = {
                 '.infamous-fadeLeft': {
                     background: [
-                        self.fadeEndColor,
-                        '-moz-linear-gradient(left, '+self.fadeEndColor+' 0%, '+self.fadeStartColor+' 100%)',
-                        '-webkit-gradient(left top, right top, color-stop(0%, '+self.fadeEndColor+'), color-stop(100%, '+self.fadeStartColor+'))',
-                        '-webkit-linear-gradient(left, '+self.fadeEndColor+' 0%, '+self.fadeStartColor+' 100%)',
-                        '-o-linear-gradient(left, '+self.fadeEndColor+' 0%, '+self.fadeStartColor+' 100%)',
-                        '-ms-linear-gradient(left, '+self.fadeEndColor+' 0%, '+self.fadeStartColor+' 100%)',
-                        'linear-gradient(to right, '+self.fadeEndColor+' 0%, '+self.fadeStartColor+' 100%)'
+                        this.fadeEndColor,
+                        '-moz-linear-gradient(left, '+this.fadeEndColor+' 0%, '+this.fadeStartColor+' 100%)',
+                        '-webkit-gradient(left top, right top, color-stop(0%, '+this.fadeEndColor+'), color-stop(100%, '+this.fadeStartColor+'))',
+                        '-webkit-linear-gradient(left, '+this.fadeEndColor+' 0%, '+this.fadeStartColor+' 100%)',
+                        '-o-linear-gradient(left, '+this.fadeEndColor+' 0%, '+this.fadeStartColor+' 100%)',
+                        '-ms-linear-gradient(left, '+this.fadeEndColor+' 0%, '+this.fadeStartColor+' 100%)',
+                        'linear-gradient(to right, '+this.fadeEndColor+' 0%, '+this.fadeStartColor+' 100%)'
                     ],
                     filter: 'progid:DXImageTransform.Microsoft.gradient( startColorstr=\'#cc000000\', endColorstr=\'#4d000000\', GradientType=1 )'
                 },
                 '.infamous-fadeRight': {
                     background: [
-                        self.fadeStartColor,
-                        '-moz-linear-gradient(left, '+self.fadeStartColor+' 0%, '+self.fadeEndColor+' 100%)',
-                        '-webkit-gradient(left top, right top, color-stop(0%, '+self.fadeStartColor+'), color-stop(100%, '+self.fadeEndColor+'))',
-                        '-webkit-linear-gradient(left, '+self.fadeStartColor+' 0%, '+self.fadeEndColor+' 100%)',
-                        '-o-linear-gradient(left, '+self.fadeStartColor+' 0%, '+self.fadeEndColor+' 100%)',
-                        '-ms-linear-gradient(left, '+self.fadeStartColor+' 0%, '+self.fadeEndColor+' 100%)',
-                        'linear-gradient(to right, '+self.fadeStartColor+' 0%, '+self.fadeEndColor+' 100%)'
+                        this.fadeStartColor,
+                        '-moz-linear-gradient(left, '+this.fadeStartColor+' 0%, '+this.fadeEndColor+' 100%)',
+                        '-webkit-gradient(left top, right top, color-stop(0%, '+this.fadeStartColor+'), color-stop(100%, '+this.fadeEndColor+'))',
+                        '-webkit-linear-gradient(left, '+this.fadeStartColor+' 0%, '+this.fadeEndColor+' 100%)',
+                        '-o-linear-gradient(left, '+this.fadeStartColor+' 0%, '+this.fadeEndColor+' 100%)',
+                        '-ms-linear-gradient(left, '+this.fadeStartColor+' 0%, '+this.fadeEndColor+' 100%)',
+                        'linear-gradient(to right, '+this.fadeStartColor+' 0%, '+this.fadeEndColor+' 100%)'
                     ],
                     filter: 'progid:DXImageTransform.Microsoft.gradient( startColorstr=\'#4d000000\', endColorstr=\'#cc000000\', GradientType=1 )'
                 }
@@ -172,29 +187,19 @@ export class PushMenuLayout extends Molecule {
                 align: [this.alignment, 0.5]
             });
             this.fadePlane.transform.setTranslateZ(-0.0001);
-            this.fadePlane.setOptions({opacity: this.opacityTransition});
+            this.fadePlane.setOptions({opacity: this.animationTransition});
 
             this.contentMol.add(this.fadePlane);
         }
 
         this.add(this.mainMol);
-
         this.mainMol.add(this.menuMol);
         this.mainMol.add(this.contentMol);
-
         this.menuMol.add(this.menuTouchPlane);
         // TODO: Also create and add a background plane for the menu area so it will catch events that might fall through the menu content.
+    }
 
-        // align the menu and content areas
-        if (this.menuSide == 'left') {
-            this.contentMol.transform.setTranslateX(this.menuHintSize);
-            this.menuMol.transform.setTranslateX(-this.menuWidth+this.menuHintSize);
-        }
-        else {
-            this.contentMol.transform.setTranslateX(-this.menuHintSize);
-            this.menuMol.transform.setTranslateX(this.menuWidth-this.menuHintSize);
-        }
-
+    initializeEvents() {
         // TODO: combine closeMenu/openMenu with this code by instead animating a transitionable between 0 and 1 for the animation state.
         this._.handler.on('update', function(event) { // update == drag
             this.isBeingDragged = true;
@@ -206,7 +211,7 @@ export class PushMenuLayout extends Molecule {
             if (this.menuMol.transform.isActive()) { this.menuMol.transform.halt(); }
 
             // user-specified
-            if (this.opacityTransition.isActive()) { this.opacityTransition.halt(); }
+            if (this.animationTransition.isActive()) { this.animationTransition.halt(); }
 
             var menuMolTranslate = Transform.getTranslate(this.menuMol.transform.get());
             var contentMolTranslate = Transform.getTranslate(this.contentMol.transform.get());
@@ -226,7 +231,7 @@ export class PushMenuLayout extends Molecule {
             this.contentMol.transform.setRotateY( (Math.PI/8) * (this.menuWidth + menuMolTranslate[0]) / this.menuWidth );
 
             // user-specified
-            this.opacityTransition.set((this.menuWidth + menuMolTranslate[0]) / this.menuWidth);
+            this.animationTransition.set((this.menuWidth + menuMolTranslate[0]) / this.menuWidth);
         }.bind(this));
 
         this._.handler.on('end', function(event) {
@@ -311,14 +316,14 @@ export class PushMenuLayout extends Molecule {
                     this.contentMol.transform.setTranslateX((this.menuSide == 'left'? 1: -1)*this.menuWidth, {duration: this.animationDuration, curve: Easing.outExpo}, _callback);
                     this.menuMol.transform.setTranslateX(0, {duration: this.animationDuration, curve: Easing.outExpo}, _callback);
                     this.contentMol.transform.setRotateY((this.menuSide == 'left'? 1: -1)*Math.PI/8, {duration: this.animationDuration, curve: Easing.outExpo}, _callback);
-                    this.opacityTransition.set(1, {duration: this.animationDuration, curve: Easing.outExpo}, _callback);
+                    this.animationTransition.set(1, {duration: this.animationDuration, curve: Easing.outExpo}, _callback);
                 }
                 else if (targetState == 'close') {
                     // XXX: this is depending on my modifications for TransitionableTransform.
                     this.contentMol.transform.setTranslateX((this.menuSide == 'left'? 1: -1)*this.menuHintSize, {duration: this.animationDuration, curve: Easing.outExpo}, _callback);
                     this.menuMol.transform.setTranslateX((this.menuSide == 'left'? -this.menuWidth+this.menuHintSize: +this.menuWidth-this.menuHintSize), {duration: this.animationDuration, curve: Easing.outExpo}, _callback);
                     this.contentMol.transform.setRotateY(0, {duration: this.animationDuration, curve: Easing.outExpo}, _callback);
-                    this.opacityTransition.set(0, {duration: this.animationDuration, curve: Easing.outExpo}, _callback);
+                    this.animationTransition.set(0, {duration: this.animationDuration, curve: Easing.outExpo}, _callback);
                 }
                 break;
             case 'moveBack':
@@ -328,13 +333,13 @@ export class PushMenuLayout extends Molecule {
                     // XXX: this is depending on my modifications for TransitionableTransform.
                     this.contentMol.transform.setTranslateZ(-depth, {duration: this.animationDuration, curve: Easing.outExpo}, _callback);
                     this.menuMol.transform.setTranslateX(0, {duration: this.animationDuration, curve: Easing.outExpo}, _callback);
-                    this.opacityTransition.set(1, {duration: this.animationDuration, curve: Easing.outExpo}, _callback);
+                    this.animationTransition.set(1, {duration: this.animationDuration, curve: Easing.outExpo}, _callback);
                 }
                 else if (targetState == 'close') {
                     // XXX: this is depending on my modifications for TransitionableTransform.
                     this.contentMol.transform.setTranslateZ(0, {duration: this.animationDuration, curve: Easing.outExpo}, _callback);
                     this.menuMol.transform.setTranslateX((this.menuSide == 'left'? -this.menuWidth+this.menuHintSize: +this.menuWidth-this.menuHintSize), {duration: this.animationDuration, curve: Easing.outExpo}, _callback);
-                    this.opacityTransition.set(0, {duration: this.animationDuration, curve: Easing.outExpo}, _callback);
+                    this.animationTransition.set(0, {duration: this.animationDuration, curve: Easing.outExpo}, _callback);
                 }
                 break;
         }
@@ -348,7 +353,7 @@ export class PushMenuLayout extends Molecule {
             this.transitionCallback = undefined;
             this.contentMol.transform.halt();
             this.menuMol.transform.halt();
-            this.opacityTransition.halt();
+            this.animationTransition.halt();
         }
     }
 }
