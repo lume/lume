@@ -44,7 +44,7 @@ export class PushMenuLayout extends Molecule {
         this.menuHintSize = 10; // the amount of the menu that is visible before opening the menu.
         this.pushAreaWidth = 20; // the area on the screen edge that the user can touch and drag to push out the menu.
         this.animationDuration = 1000;
-        this.animation = 'moveBack';
+        this.animationType = 'moveBack';
         this.fade = true; // when content recedes, it fades to dark.
         // TODO: ^ background color for whole layout will be the color the fade fades to.
 
@@ -61,24 +61,83 @@ export class PushMenuLayout extends Molecule {
         this.transitionCallback = undefined; // holds the callback to the current open or close menu animation.
 
         this.createComponents();
-
         this.initializeEvents();
     }
 
     createComponents() {
+        var layout = this;
+
         this.touchSync = new GenericSync(['touch']);
 
         this.alignment = (this.menuSide == "left"? 0: 1);
         this.animationTransition = new Transitionable(0);
+        window.animationTransition = this.animationTransition;
 
         this.mainMol = new Molecule();
 
         this.menuMol = new Molecule({
-            size: [this.menuWidth,undefined],
+            size: [this.menuWidth,undefined]
         });
+        this.menuMol.oldTransform = this.menuMol.transform;
+        this.menuMol.transform = function() { // override
+            var currentPosition = layout.animationTransition.get();
+            switch(layout.animationType) {
+                case "foldDown":
+                    // XXX: this is depending on my modifications for TransitionableTransform.
+                    this.oldTransform.setTranslateX(
+                        layout.menuSide == 'left'?
+                            currentPosition *  (layout.menuWidth-layout.menuHintSize)/*range*/ - (layout.menuWidth-layout.menuHintSize)/*offset*/:
+                            currentPosition * -(layout.menuWidth-layout.menuHintSize)/*range*/ + (layout.menuWidth-layout.menuHintSize)/*offset*/
+                    );
+                    break;
+                case "moveBack":
+                    // XXX: this is depending on my modifications for TransitionableTransform.
+                    this.oldTransform.setTranslateX(
+                        layout.menuSide == 'left'?
+                            currentPosition *  (layout.menuWidth-layout.menuHintSize)/*range*/ - (layout.menuWidth-layout.menuHintSize)/*offset*/:
+                            currentPosition * -(layout.menuWidth-layout.menuHintSize)/*range*/ + (layout.menuWidth-layout.menuHintSize)/*offset*/
+                    );
+                    break;
+            }
+            return this.oldTransform.get();
+        }.bind(this.menuMol);
+
         this.contentMol = new Molecule({
-            size: [this.contentWidth,undefined],
+            size: [this.contentWidth,undefined]
         });
+        this.contentMol.oldTransform = this.contentMol.transform;
+        this.contentMol.transform = function() { // override
+            var currentPosition = layout.animationTransition.get();
+            switch(layout.animationType) {
+                case "foldDown":
+                    // XXX: this is depending on my modifications for TransitionableTransform.
+                    this.oldTransform.setTranslateX(
+                        layout.menuSide == 'left'?
+                            currentPosition *  (layout.menuWidth - layout.menuHintSize)/*range*/ + layout.menuHintSize/*offset*/:
+                            currentPosition * -(layout.menuWidth - layout.menuHintSize)/*range*/ - layout.menuHintSize/*offset*/
+                    );
+                    // XXX: this is depending on my modifications for TransitionableTransform.
+                    this.oldTransform.setRotateY(
+                        layout.menuSide == 'left'?
+                            currentPosition *  Math.PI/8:
+                            currentPosition * -Math.PI/8
+                    );
+                    break;
+                case "moveBack":
+                    var depth = 100;
+                    // XXX: this is depending on my modifications for TransitionableTransform.
+                    this.oldTransform.setTranslateX(
+                        layout.menuSide == 'left'?
+                            layout.menuHintSize:
+                            -layout.menuHintSize
+                    );
+                    this.oldTransform.setTranslateZ(
+                        currentPosition * -depth
+                    );
+                    break;
+            }
+            return this.oldTransform.get();
+        }.bind(this.contentMol);
 
         this.menuTouchPlane = new Plane({
             size: [this.menuWidth + this.pushAreaWidth - this.menuHintSize, undefined],
@@ -108,21 +167,21 @@ export class PushMenuLayout extends Molecule {
         });
 
         // align the menu and content areas
-        if (this.menuSide == 'left') {
-            this.contentMol.transform.setTranslateX(this.menuHintSize);
-            this.menuMol.transform.setTranslateX(-this.menuWidth+this.menuHintSize);
-        }
-        else {
-            this.contentMol.transform.setTranslateX(-this.menuHintSize);
-            this.menuMol.transform.setTranslateX(this.menuWidth-this.menuHintSize);
-        }
+        //if (this.menuSide == 'left') {
+            //this.contentMol.transform.setTranslateX(this.menuHintSize);
+            //this.menuMol.transform.setTranslateX(-this.menuWidth+this.menuHintSize);
+        //}
+        //else {
+            //this.contentMol.transform.setTranslateX(-this.menuHintSize);
+            //this.menuMol.transform.setTranslateX(this.menuWidth-this.menuHintSize);
+        //}
 
         /*
          * Styles for the fadePlane
          */
         // TODO: move this somewhereelse . it's specific for each animation
         this.updateStyles = function() {
-            switch(this.animation) {
+            switch(this.animationType) {
                 case "foldDown":
                     this.fadeStartColor = 'rgba(0,0,0,0.3)';
                     this.fadeEndColor = 'rgba(0,0,0,0.8)';
@@ -200,46 +259,44 @@ export class PushMenuLayout extends Molecule {
     }
 
     initializeEvents() {
-        // TODO: combine closeMenu/openMenu with this code by instead animating a transitionable between 0 and 1 for the animation state.
+
+        // move the menu, following the user's drag. Don't let the user drag the menu past the menu width.
         this._.handler.on('update', function(event) { // update == drag
             this.isBeingDragged = true;
 
             // TODO: cancel callback if there is one.
 
-            // stop current transitions if any.
-            if (this.contentMol.transform.isActive()) { this.contentMol.transform.halt(); }
-            if (this.menuMol.transform.isActive()) { this.menuMol.transform.halt(); }
+            // stop current transitions if any, and don't cancel a callback if one exists (false).
+            this.haltAnimation(false);
 
-            // user-specified
-            if (this.animationTransition.isActive()) { this.animationTransition.halt(); }
+            var currentPosition = this.animationTransition.get();
 
-            var menuMolTranslate = Transform.getTranslate(this.menuMol.transform.get());
-            var contentMolTranslate = Transform.getTranslate(this.contentMol.transform.get());
-
-            // move the menu, following the user's drag. Don't let the user drag the menu past the menu width.
             // TODO: handle the right-side menu.
-            this.contentMol.transform.setTranslateX(contentMolTranslate[0] + event.delta[0]);
-            this.menuMol.transform.setTranslateX(menuMolTranslate[0] + event.delta[0]);
-            if (menuMolTranslate[0] > 0) {
-                this.menuMol.transform.setTranslateX(0);
-                this.contentMol.transform.setTranslateX(this.menuWidth);
+            switch(this.animationType) {
+                case "foldDown":
+                    this.animationTransition.set(currentPosition + event.delta[0] / (this.menuWidth - this.menuHintSize));
+                    break;
+                case "moveBack":
+                    this.animationTransition.set(currentPosition + event.delta[0] / (this.menuWidth - this.menuHintSize));
+                    break;
             }
-            else if (menuMolTranslate[0] < -this.menuWidth + this.menuHintSize) {
-                this.menuMol.transform.setTranslateX(-this.menuWidth + this.menuHintSize);
-                this.contentMol.transform.setTranslateX(0+this.menuHintSize);
-            }
-            this.contentMol.transform.setRotateY( (Math.PI/8) * (this.menuWidth + menuMolTranslate[0]) / this.menuWidth );
 
-            // user-specified
-            this.animationTransition.set((this.menuWidth + menuMolTranslate[0]) / this.menuWidth);
+            currentPosition = this.animationTransition.get();
+
+            if (currentPosition > 1) {
+                this.animationTransition.set(1);
+            }
+            else if (currentPosition < 0) {
+                this.animationTransition.set(0);
+            }
         }.bind(this));
 
         this._.handler.on('end', function(event) {
             this.isBeingDragged = false;
 
-            var menuMolTranslate = Transform.getTranslate(this.menuMol.transform.get());
+            var currentPosition = this.animationTransition.get();
 
-            if (menuMolTranslate[0] < (-this.menuWidth+this.menuHintSize)/2) {
+            if (currentPosition < 0.5) {
                 this.closeMenu();
             }
             else {
@@ -308,40 +365,12 @@ export class PushMenuLayout extends Molecule {
             }.bind(self));
         }
 
-        switch(this.animation) {
-            case 'foldDown':
-                setupCallback(4);
-                if (targetState == 'open') {
-                    // XXX: this is depending on my modifications for TransitionableTransform.
-                    this.contentMol.transform.setTranslateX((this.menuSide == 'left'? 1: -1)*this.menuWidth, {duration: this.animationDuration, curve: Easing.outExpo}, _callback);
-                    this.menuMol.transform.setTranslateX(0, {duration: this.animationDuration, curve: Easing.outExpo}, _callback);
-                    this.contentMol.transform.setRotateY((this.menuSide == 'left'? 1: -1)*Math.PI/8, {duration: this.animationDuration, curve: Easing.outExpo}, _callback);
-                    this.animationTransition.set(1, {duration: this.animationDuration, curve: Easing.outExpo}, _callback);
-                }
-                else if (targetState == 'close') {
-                    // XXX: this is depending on my modifications for TransitionableTransform.
-                    this.contentMol.transform.setTranslateX((this.menuSide == 'left'? 1: -1)*this.menuHintSize, {duration: this.animationDuration, curve: Easing.outExpo}, _callback);
-                    this.menuMol.transform.setTranslateX((this.menuSide == 'left'? -this.menuWidth+this.menuHintSize: +this.menuWidth-this.menuHintSize), {duration: this.animationDuration, curve: Easing.outExpo}, _callback);
-                    this.contentMol.transform.setRotateY(0, {duration: this.animationDuration, curve: Easing.outExpo}, _callback);
-                    this.animationTransition.set(0, {duration: this.animationDuration, curve: Easing.outExpo}, _callback);
-                }
-                break;
-            case 'moveBack':
-                setupCallback(3);
-                var depth = 100;
-                if (targetState == 'open') {
-                    // XXX: this is depending on my modifications for TransitionableTransform.
-                    this.contentMol.transform.setTranslateZ(-depth, {duration: this.animationDuration, curve: Easing.outExpo}, _callback);
-                    this.menuMol.transform.setTranslateX(0, {duration: this.animationDuration, curve: Easing.outExpo}, _callback);
-                    this.animationTransition.set(1, {duration: this.animationDuration, curve: Easing.outExpo}, _callback);
-                }
-                else if (targetState == 'close') {
-                    // XXX: this is depending on my modifications for TransitionableTransform.
-                    this.contentMol.transform.setTranslateZ(0, {duration: this.animationDuration, curve: Easing.outExpo}, _callback);
-                    this.menuMol.transform.setTranslateX((this.menuSide == 'left'? -this.menuWidth+this.menuHintSize: +this.menuWidth-this.menuHintSize), {duration: this.animationDuration, curve: Easing.outExpo}, _callback);
-                    this.animationTransition.set(0, {duration: this.animationDuration, curve: Easing.outExpo}, _callback);
-                }
-                break;
+        setupCallback(1);
+        if (targetState == 'open') {
+            this.animationTransition.set(1, {duration: this.animationDuration, curve: Easing.outExpo}, _callback);
+        }
+        else if (targetState == 'close') {
+            this.animationTransition.set(0, {duration: this.animationDuration, curve: Easing.outExpo}, _callback);
         }
     }
 
@@ -351,8 +380,6 @@ export class PushMenuLayout extends Molecule {
                 this.transitionCallback();
             }
             this.transitionCallback = undefined;
-            this.contentMol.transform.halt();
-            this.menuMol.transform.halt();
             this.animationTransition.halt();
         }
     }
