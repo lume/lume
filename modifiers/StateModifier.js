@@ -8,7 +8,6 @@
  */
 
 define(function(require, exports, module) {
-    var Modifier = require('../core/Modifier');
     var Transform = require('../core/Transform');
     var Transitionable = require('../transitions/Transitionable');
     var TransitionableTransform = require('../transitions/TransitionableTransform');
@@ -32,24 +31,25 @@ define(function(require, exports, module) {
      * @param {Array.Number} [options.size] size to apply to descendants
      * @param {Array.Number} [options.propportions] proportions to apply to descendants
      */
+
     function StateModifier(options) {
         this._transformState = new TransitionableTransform(Transform.identity);
         this._opacityState = new Transitionable(1);
-        this._originState = new Transitionable([0, 0]);
-        this._alignState = new Transitionable([0, 0]);
-        this._sizeState = new Transitionable([0, 0]);
-        this._proportionsState = new Transitionable([0, 0]);
+        this._originState = new Transitionable(null);
+        this._alignState = new Transitionable(null);
+        this._sizeState = new Transitionable(null);
+        this._proportionsState = new Transitionable(null);
 
-        this._modifier = new Modifier({
-            transform: this._transformState,
-            opacity: this._opacityState,
+        this._output = {
+            transform: this._transformState.get(),
+            opacity: this._opacityState.get(),
             origin: null,
             align: null,
             size: null,
-            proportions: null
-        });
+            proportions: null,
+            target : null
+        };
 
-        this._hasOrigin = false;
         this._hasAlign = false;
         this._hasSize = false;
         this._hasProportions = false;
@@ -114,17 +114,7 @@ define(function(require, exports, module) {
      * @return {StateModifier} this
      */
     StateModifier.prototype.setOrigin = function setOrigin(origin, transition, callback) {
-        if (origin === null) {
-            if (this._hasOrigin) {
-                this._modifier.originFrom(null);
-                this._hasOrigin = false;
-            }
-            return this;
-        }
-        else if (!this._hasOrigin) {
-            this._hasOrigin = true;
-            this._modifier.originFrom(this._originState);
-        }
+        if (origin === null) return this;
         this._originState.set(origin, transition, callback);
         return this;
     };
@@ -143,17 +133,7 @@ define(function(require, exports, module) {
      * @return {StateModifier} this
      */
     StateModifier.prototype.setAlign = function setOrigin(align, transition, callback) {
-        if (align === null) {
-            if (this._hasAlign) {
-                this._modifier.alignFrom(null);
-                this._hasAlign = false;
-            }
-            return this;
-        }
-        else if (!this._hasAlign) {
-            this._hasAlign = true;
-            this._modifier.alignFrom(this._alignState);
-        }
+        if (align === null) return this;
         this._alignState.set(align, transition, callback);
         return this;
     };
@@ -172,17 +152,7 @@ define(function(require, exports, module) {
      * @return {StateModifier} this
      */
     StateModifier.prototype.setSize = function setSize(size, transition, callback) {
-        if (size === null) {
-            if (this._hasSize) {
-                this._modifier.sizeFrom(null);
-                this._hasSize = false;
-            }
-            return this;
-        }
-        else if (!this._hasSize) {
-            this._hasSize = true;
-            this._modifier.sizeFrom(this._sizeState);
-        }
+        if (size === null) return this;
         this._sizeState.set(size, transition, callback);
         return this;
     };
@@ -199,17 +169,7 @@ define(function(require, exports, module) {
      * @return {StateModifier} this
      */
     StateModifier.prototype.setProportions = function setSize(proportions, transition, callback) {
-        if (proportions === null) {
-            if (this._hasProportions) {
-                this._modifier.proportionsFrom(null);
-                this._hasProportions = false;
-            }
-            return this;
-        }
-        else if (!this._hasProportions) {
-            this._hasProportions = true;
-            this._modifier.proportionsFrom(this._proportionsState);
-        }
+        if (proportions === null) return this;
         this._proportionsState.set(proportions, transition, callback);
         return this;
     };
@@ -265,7 +225,7 @@ define(function(require, exports, module) {
      * @return {Object} origin provider object
      */
     StateModifier.prototype.getOrigin = function getOrigin() {
-        return this._hasOrigin ? this._originState.get() : null;
+        return this._originState.get();
     };
 
     /**
@@ -275,7 +235,7 @@ define(function(require, exports, module) {
      * @return {Object} align provider object
      */
     StateModifier.prototype.getAlign = function getAlign() {
-        return this._hasAlign ? this._alignState.get() : null;
+        return this._alignState.get();
     };
 
     /**
@@ -285,7 +245,7 @@ define(function(require, exports, module) {
      * @return {Object} size provider object
      */
     StateModifier.prototype.getSize = function getSize() {
-        return this._hasSize ? this._sizeState.get() : null;
+        return this._sizeState.get();
     };
 
     /**
@@ -295,8 +255,20 @@ define(function(require, exports, module) {
      * @return {Object} size provider object
      */
     StateModifier.prototype.getProportions = function getProportions() {
-        return this._hasProportions ? this._proportionsState.get() : null;
+        return this._proportionsState.get();
     };
+
+    // call providers on tick to receive render spec elements to apply
+    function _update() {
+        this._output = {
+            transform: this._transformState.get(),
+            opacity: this._opacityState.get(),
+            origin: this._originState.get(),
+            align: this._alignState.get(),
+            size: this._sizeState.get(),
+            proportions: this._proportionsState.get()
+        };
+    }
 
     /**
      * Return render spec for this StateModifier, applying to the provided
@@ -311,7 +283,9 @@ define(function(require, exports, module) {
      *    provided target
      */
     StateModifier.prototype.modify = function modify(target) {
-        return this._modifier.modify(target);
+        _update();
+        if (target !== this._output.target) this._output.target = target;
+        return this._output;
     };
 
     module.exports = StateModifier;
