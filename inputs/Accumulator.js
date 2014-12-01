@@ -1,6 +1,6 @@
 define(function(require, exports, module) {
     var EventHandler = require('../core/EventHandler');
-    var Transitionable = require('../transitions/Transitionable');
+    var Transitionable = require('../core/Transitionable');
 
     /**
      * Accumulates differentials of event sources that emit a `delta`

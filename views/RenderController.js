@@ -11,7 +11,7 @@ define(function(require, exports, module) {
     var Modifier = require('../core/Modifier');
     var RenderNode = require('../core/RenderNode');
     var Transform = require('../core/Transform');
-    var Transitionable = require('../transitions/Transitionable');
+    var Transitionable = require('../core/Transitionable');
     var View = require('../core/View');
 
     /**

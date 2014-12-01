@@ -9,7 +9,7 @@
 
 define(function(require, exports, module) {
     var Transform = require('../core/Transform');
-    var Transitionable = require('../transitions/Transitionable');
+    var Transitionable = require('../core/Transitionable');
     var RenderNode = require('../core/RenderNode');
     var OptionsManager = require('../core/OptionsManager');
 

@@ -8,8 +8,8 @@
  */
 
 define(function(require, exports, module) {
-    var MultipleTransition = require('./MultipleTransition');
-    var TweenTransition = require('./TweenTransition');
+    var MultipleTransition = require('./../transitions/MultipleTransition');
+    var TweenTransition = require('./../transitions/TweenTransition');
 
     /**
      * A state maintainer for a smooth transition between

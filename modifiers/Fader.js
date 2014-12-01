@@ -1,5 +1,5 @@
 define(function(require, exports, module) {
-    var Transitionable = require('../transitions/Transitionable');
+    var Transitionable = require('../core/Transitionable');
     var OptionsManager = require('../core/OptionsManager');
 
     /**

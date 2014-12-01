@@ -4,7 +4,7 @@ define(function(require, exports, module) {
     var RenderNode = require('../core/RenderNode');
     var Utility = require('../utilities/Utility');
     var OptionsManager = require('../core/OptionsManager');
-    var Transitionable = require('../transitions/Transitionable');
+    var Transitionable = require('../core/Transitionable');
     var TransitionableTransform = require('../transitions/TransitionableTransform');
 
     /**

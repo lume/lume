@@ -12,7 +12,7 @@ define(function(require, exports, module) {
     var Transform = require('../core/Transform');
     var OptionsManager = require('../core/OptionsManager');
     var EventHandler = require('../core/EventHandler');
-    var Transitionable = require('../transitions/Transitionable');
+    var Transitionable = require('../core/Transitionable');
 
     /**
      * A layout which divides a context into sections based on a proportion

@@ -11,7 +11,7 @@ define(function(require, exports, module) {
     var RenderNode = require('../core/RenderNode');
     var Transform = require('../core/Transform');
     var OptionsManager = require('../core/OptionsManager');
-    var Transitionable = require('../transitions/Transitionable');
+    var Transitionable = require('../core/Transitionable');
     var EventHandler = require('../core/EventHandler');
 
     /**

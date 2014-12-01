@@ -8,7 +8,7 @@
  */
 
 define(function(require, exports, module) {
-    var Transitionable = require('./Transitionable');
+    var Transitionable = require('../core/Transitionable');
     var Transform = require('../core/Transform');
     var Utility = require('../utilities/Utility');
 
