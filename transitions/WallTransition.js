@@ -8,11 +8,11 @@
  */
 
 define(function(require, exports, module) {
-    var PE = require('../physics/PhysicsEngine');
-    var Particle = require('../physics/bodies/Particle');
-    var Spring = require('../physics/forces/Spring');
-    var Wall = require('../physics/constraints/Wall');
-    var Vector = require('../math/Vector');
+    var PE = require('famous/physics/PhysicsEngine');
+    var Particle = require('famous/physics/bodies/Particle');
+    var Spring = require('famous/physics/forces/Spring');
+    var Wall = require('famous/physics/constraints/Wall');
+    var Vector = require('famous/math/Vector');
 
     /**
      * WallTransition is a method of transitioning between two values (numbers,
@@ -36,10 +36,9 @@ define(function(require, exports, module) {
 
         this._restTolerance = 1e-10;
         this._dimensions = 1;
-        this._absRestTolerance = this._restTolerance;
         this._callback = undefined;
 
-        this.PE = new PE();
+        this.PE = new PE({sleepTolerance : this._restTolerance});
         this.particle = new Particle();
 
         this.PE.addBody(this.particle);
@@ -98,23 +97,12 @@ define(function(require, exports, module) {
         restitution : 0.5
     };
 
-    function _getEnergy() {
-        return this.particle.getEnergy() + this.spring.getEnergy([this.particle]);
-    }
-
     function _setAbsoluteRestTolerance() {
         var distance = this.endState.sub(this.initState).normSquared();
-        this._absRestTolerance = (distance === 0)
+        var absRestTolerance = (distance === 0)
             ? this._restTolerance
             : this._restTolerance * distance;
-    }
-
-    function _wake() {
-        this.PE.wake();
-    }
-
-    function _sleep() {
-        this.PE.sleep();
+        this.PE.setOptions({sleepTolerance : absRestTolerance});
     }
 
     function _setTarget(target) {
@@ -157,46 +145,35 @@ define(function(require, exports, module) {
     }
 
     function _update() {
-        if (this.PE.isSleeping()) {
+        if (!this.isActive()) {
             if (this._callback) {
                 var cb = this._callback;
                 this._callback = undefined;
                 cb();
             }
-            return;
-        }
-        var energy = _getEnergy.call(this);
-        if (energy < this._absRestTolerance) {
-            _sleep.call(this);
-            _setParticlePosition.call(this, this.endState);
-            _setParticleVelocity.call(this, [0,0,0]);
         }
     }
 
-    function _setupDefinition(def) {
+    function _setupDefinition(definition) {
         var defaults = WallTransition.DEFAULT_OPTIONS;
-        if (def.period === undefined) def.period = defaults.period;
-        if (def.dampingRatio === undefined) def.dampingRatio = defaults.dampingRatio;
-        if (def.velocity === undefined) def.velocity = defaults.velocity;
-        if (def.restitution === undefined) def.restitution = defaults.restitution;
-        if (def.drift === undefined) def.drift = Wall.DEFAULT_OPTIONS.drift;
-        if (def.slop === undefined) def.slop = Wall.DEFAULT_OPTIONS.slop;
+        if (definition.period === undefined) definition.period = defaults.period;
+        if (definition.dampingRatio === undefined) definition.dampingRatio = defaults.dampingRatio;
+        if (definition.velocity === undefined) definition.velocity = defaults.velocity;
+        if (definition.restitution === undefined) definition.restitution = defaults.restitution;
 
         //setup spring
         this.spring.setOptions({
-            period : def.period,
-            dampingRatio : def.dampingRatio
+            period : definition.period,
+            dampingRatio : definition.dampingRatio
         });
 
         //setup wall
         this.wall.setOptions({
-            restitution : def.restitution,
-            drift: def.drift,
-            slop: def.slop
+            restitution : definition.restitution
         });
 
         //setup particle
-        _setParticleVelocity.call(this, def.velocity);
+        _setParticleVelocity.call(this, definition.velocity);
     }
 
     /**
@@ -249,7 +226,7 @@ define(function(require, exports, module) {
      * @return {Boolean}
      */
     WallTransition.prototype.isActive = function isActive() {
-        return !this.PE.isSleeping();
+        return this.PE.isActive();
     };
 
     /**
@@ -293,7 +270,6 @@ define(function(require, exports, module) {
             ? state.length
             : 0;
 
-        _wake.call(this);
         _setupDefinition.call(this, definition);
         _setTarget.call(this, state);
         _setCallback.call(this, callback);

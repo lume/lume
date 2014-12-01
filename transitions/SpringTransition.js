@@ -10,10 +10,10 @@
 /*global console*/
 
 define(function(require, exports, module) {
-    var PE = require('../physics/PhysicsEngine');
-    var Particle = require('../physics/bodies/Particle');
-    var Spring = require('../physics/forces/Spring');
-    var Vector = require('../math/Vector');
+    var PE = require('famous/physics/PhysicsEngine');
+    var Particle = require('famous/physics/bodies/Particle');
+    var Spring = require('famous/physics/forces/Spring');
+    var Vector = require('famous/math/Vector');
 
     /**
      * SpringTransition is a method of transitioning between two values (numbers,
@@ -27,16 +27,15 @@ define(function(require, exports, module) {
      */
     function SpringTransition(state) {
         state = state || 0;
-        this.endState  = new Vector(state);
+        this.endState = new Vector(state);
         this.initState = new Vector();
 
-        this._dimensions       = undefined;
-        this._restTolerance    = 1e-10;
-        this._absRestTolerance = this._restTolerance;
-        this._callback         = undefined;
+        this._dimensions = undefined;
+        this._restTolerance = 1e-10;
+        this._callback = undefined;
 
-        this.PE       = new PE();
-        this.spring   = new Spring({anchor : this.endState});
+        this.PE = new PE({sleepTolerance : this._restTolerance});
+        this.spring = new Spring({anchor : this.endState});
         this.particle = new Particle();
 
         this.PE.addBody(this.particle);
@@ -86,16 +85,12 @@ define(function(require, exports, module) {
         velocity : 0
     };
 
-    function _getEnergy() {
-        return this.particle.getEnergy() + this.spring.getEnergy([this.particle]);
+    function _setParticlePosition(position) {
+        this.particle.setPosition(position);
     }
 
-    function _setParticlePosition(p) {
-        this.particle.setPosition(p);
-    }
-
-    function _setParticleVelocity(v) {
-        this.particle.setVelocity(v);
+    function _setParticleVelocity(velocity) {
+        this.particle.setVelocity(velocity);
     }
 
     function _getParticlePosition() {
@@ -114,43 +109,21 @@ define(function(require, exports, module) {
         this._callback = callback;
     }
 
-    function _wake() {
-        this.PE.wake();
-    }
-
-    function _sleep() {
-        this.PE.sleep();
-    }
-
     function _update() {
-        if (this.PE.isSleeping()) {
+        if (!this.isActive()) {
             if (this._callback) {
                 var cb = this._callback;
                 this._callback = undefined;
                 cb();
             }
-            return;
-        }
-
-        if (_getEnergy.call(this) < this._absRestTolerance) {
-            _setParticlePosition.call(this, this.endState);
-            _setParticleVelocity.call(this, [0,0,0]);
-            _sleep.call(this);
         }
     }
 
     function _setupDefinition(definition) {
-        // TODO fix no-console error
-        /* eslint no-console: 0 */
         var defaults = SpringTransition.DEFAULT_OPTIONS;
         if (definition.period === undefined)       definition.period       = defaults.period;
         if (definition.dampingRatio === undefined) definition.dampingRatio = defaults.dampingRatio;
         if (definition.velocity === undefined)     definition.velocity     = defaults.velocity;
-
-        if (definition.period < 150) {
-            definition.period = 150;
-            console.warn('The period of a SpringTransition is capped at 150 ms. Use a SnapTransition for faster transitions');
-        }
 
         //setup spring
         this.spring.setOptions({
@@ -164,9 +137,10 @@ define(function(require, exports, module) {
 
     function _setAbsoluteRestTolerance() {
         var distance = this.endState.sub(this.initState).normSquared();
-        this._absRestTolerance = (distance === 0)
+        var absRestTolerance = (distance === 0)
             ? this._restTolerance
             : this._restTolerance * distance;
+        this.PE.setOptions({sleepTolerance : absRestTolerance});
     }
 
     function _setTarget(target) {
@@ -224,7 +198,7 @@ define(function(require, exports, module) {
      * @return {Boolean}
      */
     SpringTransition.prototype.isActive = function isActive() {
-        return !this.PE.isSleeping();
+        return this.PE.isActive();
     };
 
     /**
@@ -240,7 +214,6 @@ define(function(require, exports, module) {
      * Get the current position of the transition
      *
      * @method get
-     *
      * @return {Number|Array} state
      */
     SpringTransition.prototype.get = function get() {
@@ -268,7 +241,6 @@ define(function(require, exports, module) {
             ? endState.length
             : 0;
 
-        _wake.call(this);
         _setupDefinition.call(this, definition);
         _setTarget.call(this, endState);
         _setCallback.call(this, callback);
