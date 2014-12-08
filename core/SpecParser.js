@@ -12,11 +12,14 @@ define(function(require, exports, module) {
 
     var SpecParser = {};
     var _zeroZero = [0, 0];
-    var result = {};
 
-    SpecParser.parse = function parse(spec, parentContext, sizeContext){
-        result = {};
+    SpecParser.parse = function parse(spec, parentContext){
+        var result = {};
+        var sizeContext = Transform.identity;
+        return _parse(spec, parentContext, sizeContext, result);
+    };
 
+    function _parse(spec, parentContext, sizeContext, result){
         var id;
         var target;
         var transform;
@@ -47,7 +50,7 @@ define(function(require, exports, module) {
         }
         else if (spec instanceof Array) {
             for (var i = 0; i < spec.length; i++) {
-                SpecParser.parse(spec[i], parentContext, sizeContext);
+                _parse(spec[i], parentContext, sizeContext, result);
             }
         }
         else {
@@ -94,18 +97,17 @@ define(function(require, exports, module) {
                 align = null;
             }
 
-            SpecParser.parse(target, {
+            _parse(target, {
                 transform: transform,
                 opacity: opacity,
                 origin: origin,
                 align: align,
                 size: size
-            }, nextSizeContext);
+            }, nextSizeContext, result);
         }
 
         return result;
-    };
-
+    }
 
     // Multiply matrix M by vector v
     function _vecInContext(v, m) {
