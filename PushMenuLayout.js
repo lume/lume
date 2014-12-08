@@ -18,21 +18,12 @@ import GenericSync from 'famous/inputs/GenericSync';
 import Plane from 'infamous/Plane';
 import Molecule from 'infamous/Molecule';
 
+import callAfter from 'javascripts/utils/callAfter';
+
 // Specify the types of input you want to use with Famo.us
 GenericSync.register({
     touch: TouchSync
 });
-
-function callAfter(times, callback) {
-    var count = 0;
-    return function() {
-        if (++count == times) {
-            if (typeof callback == 'function') {
-                callback();
-            }
-        }
-    };
-}
 
 export class PushMenuLayout extends Molecule {
     constructor(options) {
@@ -179,7 +170,7 @@ export class PushMenuLayout extends Molecule {
         /*
          * Styles for the fadePlane
          */
-        // TODO: move this somewhereelse . it's specific for each animation
+        // TODO: move this somewhere else . it's specific for each animation
         this.updateStyles = function() {
             switch(this.animationType) {
                 case "foldDown":
