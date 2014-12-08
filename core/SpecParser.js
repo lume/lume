@@ -10,85 +10,13 @@
 define(function(require, exports, module) {
     var Transform = require('./Transform');
 
-    /**
-     *
-     * This object translates the rendering instructions ("render specs")
-     *   that renderable components generate into document update
-     *   instructions ("update specs").  Private.
-     *
-     * @private
-     * @class SpecParser
-     * @constructor
-     */
-    function SpecParser() {
-        this.result = {};
-    }
-    SpecParser._instance = new SpecParser();
-
-    /**
-     * Convert a render spec coming from the context's render chain to an
-     *    update spec for the update chain. This is the only major entry point
-     *    for a consumer of this class.
-     *
-     * @method parse
-     * @static
-     * @private
-     *
-     * @param {renderSpec} spec input render spec
-     * @param {Object} context context to do the parse in
-     * @return {Object} the resulting update spec (if no callback
-     *   specified, else none)
-     */
-    SpecParser.parse = function parse(spec, context) {
-        return SpecParser._instance.parse(spec, context);
-    };
-
-    /**
-     * Convert a renderSpec coming from the context's render chain to an update
-     *    spec for the update chain. This is the only major entrypoint for a
-     *    consumer of this class.
-     *
-     * @method parse
-     *
-     * @private
-     * @param {renderSpec} spec input render spec
-     * @param {Context} context
-     * @return {updateSpec} the resulting update spec
-     */
-    SpecParser.prototype.parse = function parse(spec, context) {
-        this.reset();
-        this._parseSpec(spec, context, Transform.identity);
-        return this.result;
-    };
-
-    /**
-     * Prepare SpecParser for re-use (or first use) by setting internal state
-     *  to blank.
-     *
-     * @private
-     * @method reset
-     */
-    SpecParser.prototype.reset = function reset() {
-        this.result = {};
-    };
-
-    // Multiply matrix M by vector v
-    function _vecInContext(v, m) {
-        return [
-            v[0] * m[0] + v[1] * m[4] + v[2] * m[8],
-            v[0] * m[1] + v[1] * m[5] + v[2] * m[9],
-            v[0] * m[2] + v[1] * m[6] + v[2] * m[10]
-        ];
-    }
-
+    var SpecParser = {};
     var _zeroZero = [0, 0];
+    var result = {};
 
-    // From the provided renderSpec tree, recursively compose opacities,
-    //    origins, transforms, and sizes corresponding to each surface id from
-    //    the provided renderSpec tree structure. On completion, those
-    //    properties of 'this' object should be ready to use to build an
-    //    updateSpec.
-    SpecParser.prototype._parseSpec = function _parseSpec(spec, parentContext, sizeContext) {
+    SpecParser.parse = function parse(spec, parentContext, sizeContext){
+        result = {};
+
         var id;
         var target;
         var transform;
@@ -96,6 +24,7 @@ define(function(require, exports, module) {
         var origin;
         var align;
         var size;
+        var sizeContext = sizeContext || Transform.identity;
 
         if (typeof spec === 'number') {
             id = spec;
@@ -105,7 +34,7 @@ define(function(require, exports, module) {
                 var alignAdjust = [align[0] * parentContext.size[0], align[1] * parentContext.size[1], 0];
                 transform = Transform.thenMove(transform, _vecInContext(alignAdjust, sizeContext));
             }
-            this.result[id] = {
+            result[id] = {
                 transform: transform,
                 opacity: parentContext.opacity,
                 origin: parentContext.origin || _zeroZero,
@@ -113,12 +42,12 @@ define(function(require, exports, module) {
                 size: parentContext.size
             };
         }
-        else if (!spec) { // placed here so 0 will be cached earlier
+        else if (!spec) { // placed here so 0 will be caught earlier
             return;
         }
         else if (spec instanceof Array) {
             for (var i = 0; i < spec.length; i++) {
-                this._parseSpec(spec[i], parentContext, sizeContext);
+                SpecParser.parse(spec[i], parentContext, sizeContext);
             }
         }
         else {
@@ -131,11 +60,14 @@ define(function(require, exports, module) {
             var nextSizeContext = sizeContext;
 
             if (spec.opacity !== undefined) opacity = parentContext.opacity * spec.opacity;
+
             if (spec.transform) transform = Transform.multiply(parentContext.transform, spec.transform);
+
             if (spec.origin) {
                 origin = spec.origin;
                 nextSizeContext = parentContext.transform;
             }
+
             if (spec.align) align = spec.align;
 
             if (spec.size || spec.proportions) {
@@ -162,7 +94,7 @@ define(function(require, exports, module) {
                 align = null;
             }
 
-            this._parseSpec(target, {
+            SpecParser.parse(target, {
                 transform: transform,
                 opacity: opacity,
                 origin: origin,
@@ -170,7 +102,19 @@ define(function(require, exports, module) {
                 size: size
             }, nextSizeContext);
         }
+
+        return result;
     };
+
+
+    // Multiply matrix M by vector v
+    function _vecInContext(v, m) {
+        return [
+            v[0] * m[0] + v[1] * m[4] + v[2] * m[8],
+            v[0] * m[1] + v[1] * m[5] + v[2] * m[9],
+            v[0] * m[2] + v[1] * m[6] + v[2] * m[10]
+        ];
+    }
 
     module.exports = SpecParser;
 });
