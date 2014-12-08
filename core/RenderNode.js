@@ -30,8 +30,6 @@ define(function(require, exports, module) {
         this._resultCache = {};
         this._prevResults = {};
 
-        this._childResult = null;
-
         if (object) this.set(object);
     }
 
@@ -50,7 +48,6 @@ define(function(require, exports, module) {
         else if (this._child) {
             this._child = [this._child, childNode];
             this._hasMultipleChildren = true;
-            this._childResult = []; // to be used later
         }
         else this._child = childNode;
 
@@ -76,7 +73,6 @@ define(function(require, exports, module) {
      * @return {RenderNode} this render node, or child if it is a RenderNode
      */
     RenderNode.prototype.set = function set(child) {
-        this._childResult = null;
         this._hasMultipleChildren = false;
         this._isRenderable = child.render ? true : false;
         this._isModifier = child.modify ? true : false;
@@ -152,7 +148,7 @@ define(function(require, exports, module) {
 
         var result = null;
         if (this._hasMultipleChildren) {
-            result = this._childResult;
+            result = [];
             var children = this._child;
             for (var i = 0; i < children.length; i++) {
                 result[i] = children[i].render();
