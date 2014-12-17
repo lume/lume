@@ -1,31 +1,36 @@
 {
-    "name": "infamous",
-    "version": "0.0.4",
-    "description": "A UI library.",
-    "main": "infamous.js",
-    "scripts": {
-        "test": "echo 'Error: TODO: no test specified' && exit 1",
-        "build-global":"echo 'Error: TODO: Global build.' && exit 1",
-        "build-amd":"echo 'Error: TODO: AMD build.' && exit 1",
-        "build-commonjs":"echo 'Error: TODO: CommonJS build.' && exit 1"
-    },
-    "repository": {
-        "type": "git",
-        "url": "git@g.trusktr.io:trusktr/infamous.git"
-    },
-    "keywords": [
-        "user",
-        "interface",
-        "ui",
-        "widgets",
-        "widgets",
-        "components",
-        "gui",
-        "touch",
-        "mobile"
-    ],
-    "authors": [
-        "Joseph Orbegoso Pea <joe@trusktr.io>"
-    ],
-    "license": "MPL"
+  "name": "infamous",
+  "version": "0.0.4",
+  "description": "A UI library.",
+  "main": "infamous.js",
+  "scripts": {
+    "test": "echo 'Error: TODO: no test specified' && exit 1",
+    "build-global": "echo 'Error: TODO: Global build.' && exit 1",
+    "build-amd": "echo 'Error: TODO: AMD build.' && exit 1",
+    "build-commonjs": "echo 'Error: TODO: CommonJS build.' && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git@g.trusktr.io:trusktr/infamous.git"
+  },
+  "keywords": [
+    "user",
+    "interface",
+    "ui",
+    "widgets",
+    "widgets",
+    "components",
+    "gui",
+    "touch",
+    "mobile"
+  ],
+  "authors": [
+    "Joseph Orbegoso Pea <joe@trusktr.io>"
+  ],
+  "license": "MPL",
+  "dependencies": {
+    "army-knife": "0.0.2",
+    "famous": "git+https://github.com/trusktr/famous.git#trusktr",
+    "jss": "^0.8.1"
+  }
 }

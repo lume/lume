@@ -8,6 +8,7 @@
  */
 
 import Transform from 'famous/core/Transform';
+
 import Molecule from './Molecule';
 import Plane from './Plane';
 

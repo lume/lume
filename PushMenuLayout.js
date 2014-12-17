@@ -15,19 +15,19 @@ import Easing from 'famous/transitions/Easing';
 import TouchSync from 'famous/inputs/TouchSync';
 import GenericSync from 'famous/inputs/GenericSync';
 
-import Plane from 'infamous/Plane';
-import Molecule from 'infamous/Molecule';
+import Plane from './Plane';
+import Molecule from './Molecule';
 
-import callAfter from 'javascripts/utils/callAfter';
-
-// Specify the types of input you want to use with Famo.us
-GenericSync.register({
-    touch: TouchSync
-});
+import callAfter from 'army-knife/callAfter';
 
 export class PushMenuLayout extends Molecule {
     constructor(options) {
         super(options);
+
+        // Specify the types of input you want to use with Famo.us
+        GenericSync.register({
+            touch: TouchSync
+        });
 
         // TODO: Handle options
         this.menuSide = 'left'; // left or right
@@ -210,7 +210,7 @@ export class PushMenuLayout extends Molecule {
             };
 
             if (this.fadeStylesheet) { this.fadeStylesheet.detach(); }
-            this.fadeStylesheet = jss.createStylesheet(styles);
+            this.fadeStylesheet = jss.createStyleSheet(styles);
             this.fadeStylesheet.attach();
         };
 

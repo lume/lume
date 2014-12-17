@@ -10,11 +10,12 @@
 import Transform from 'famous/core/Transform';
 import Transitionable from 'famous/transitions/Transitionable';
 import Easing from 'famous/transitions/Easing';
+
 import Molecule from './Molecule';
 import Grid from './Grid';
 import DoubleSidedPlane from './DoubleSidedPlane';
 
-import forLength from 'javascripts/utils/forLength';
+import forLength from 'army-knife/forLength';
 
 export class Calendar extends Molecule {
     constructor(calendarSize, transition) {

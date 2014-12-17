@@ -12,7 +12,7 @@ import RenderNode from 'famous/core/RenderNode';
 import TransitionableTransform from 'famous/transitions/TransitionableTransform';
 import EventHandler from 'famous/core/EventHandler';
 
-import "javascripts/utils/Object.className";
+import "army-knife/Object.className";
 
 export class Molecule extends RenderNode {
     constructor(initialOptions) {

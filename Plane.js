@@ -8,6 +8,7 @@
  */
 
 import Surface from 'famous/core/Surface';
+
 import Molecule from './Molecule';
 
 export class Plane extends Molecule {

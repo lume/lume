@@ -13,19 +13,21 @@ import Transform from 'famous/core/Transform';
 import MouseSync from 'famous/inputs/MouseSync';
 import TouchSync from 'famous/inputs/TouchSync';
 import GenericSync from 'famous/inputs/GenericSync';
-    GenericSync.register({
-        mouse: MouseSync,
-        touch: TouchSync
-    });
 
 import Molecule from './Molecule';
 import Plane from './Plane';
 
-import forLength from 'javascripts/utils/forLength';
+import forLength from 'army-knife/forLength';
 
 export class Cube extends Molecule { // a scenegraph tree that lays things out in a cube. The leaf nodes are Modifiers (the sides of the cube). Put stuff in them.
     constructor(cubeWidth) {
         super({size: cubeWidth});
+
+        GenericSync.register({
+            mouse: MouseSync,
+            touch: TouchSync
+        });
+
         this.cubeWidth = cubeWidth;
 
         this.cubeSideNodes = [];
