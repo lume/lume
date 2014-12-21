@@ -96,7 +96,7 @@ define(function(require, exports, module) {
             deferQueue.shift().call(this);
         }
 
-        for (i = 0; i < contexts.length; i++) contexts[i].update();
+        for (i = 0; i < contexts.length; i++) contexts[i].commit();
 
         eventHandler.emit('postrender');
     };

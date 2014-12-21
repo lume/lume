@@ -13,6 +13,8 @@ define(function(require, exports, module) {
     var ElementAllocator = require('./ElementAllocator');
     var Transform = require('./Transform');
     var Transitionable = require('./Transitionable');
+    var Entity = require('./Entity');
+    var SpecParser = require('./SpecParser');
 
     var _zeroZero = [0, 0];
     var usePrefix = !('perspective' in document.documentElement.style);
@@ -39,17 +41,20 @@ define(function(require, exports, module) {
      */
     function Context(container) {
         this.container = container;
-        this._allocator = new ElementAllocator(container);
+        this.allocator = new ElementAllocator(container);
 
         this._node = new RenderNode();
         this._eventOutput = new EventHandler();
         this._size = _getElementSize(this.container);
 
+        this._prevResults = {};
+        this._resultCache = {};
+
         this._perspectiveState = new Transitionable(0);
         this._perspective = undefined;
 
         this._nodeContext = {
-            allocator: this._allocator,
+            allocator: this.allocator,
             transform: Transform.identity,
             opacity: 1,
             origin: _zeroZero,
@@ -65,7 +70,7 @@ define(function(require, exports, module) {
 
     // Note: Unused
     Context.prototype.getAllocator = function getAllocator() {
-        return this._allocator;
+        return this.allocator;
     };
 
     /**
@@ -90,7 +95,7 @@ define(function(require, exports, module) {
     Context.prototype.migrate = function migrate(container) {
         if (container === this.container) return;
         this.container = container;
-        this._allocator.migrate(container);
+        this.allocator.migrate(container);
     };
 
     /**
@@ -117,6 +122,23 @@ define(function(require, exports, module) {
         this._size[1] = size[1];
     };
 
+    function _applyCommit(spec, context, cacheStorage){
+        var result = SpecParser.parse(spec, context);
+
+        for (var id in result) {
+            var childNode = Entity.get(id);
+            var commitParams = result[id];
+            commitParams.allocator = this.allocator;
+            var commitResult = childNode.commit(commitParams);
+            if (commitResult) _applyCommit.call(this, commitResult, context, cacheStorage);
+            else cacheStorage[id] = commitParams;
+        }
+    }
+
+    Context.prototype.render = function render(){
+        this._node.render();
+    };
+
     /**
      * Commit this Context's content changes to the document.
      *
@@ -124,21 +146,29 @@ define(function(require, exports, module) {
      * @method update
      * @param {Object} contextParameters engine commit specification
      */
-    Context.prototype.update = function update(contextParameters) {
-        if (contextParameters) {
-            if (contextParameters.transform) this._nodeContext.transform = contextParameters.transform;
-            if (contextParameters.opacity) this._nodeContext.opacity = contextParameters.opacity;
-            if (contextParameters.origin) this._nodeContext.origin = contextParameters.origin;
-            if (contextParameters.align) this._nodeContext.align = contextParameters.align;
-            if (contextParameters.size) this._nodeContext.size = contextParameters.size;
-        }
+    Context.prototype.commit = function commit() {
         var perspective = this._perspectiveState.get();
+
         if (perspective !== this._perspective) {
             _setPerspective(this.container, perspective);
             this._perspective = perspective;
         }
 
-        this._node.commit(this._nodeContext);
+        // free up some divs from the last loop
+        var prevKeys = Object.keys(this._prevResults);
+        for (var i = 0; i < prevKeys.length; i++) {
+            var id = prevKeys[i];
+            if (this._resultCache[id] === undefined) {
+                var object = Entity.get(id);
+                if (object.cleanup) object.cleanup(this.allocator);
+            }
+        }
+
+        this._prevResults = this._resultCache;
+        this._resultCache = {};
+
+        var spec = this._node.render();
+        _applyCommit.call(this, spec, this._nodeContext, this._resultCache);
     };
 
     /**

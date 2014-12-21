@@ -130,6 +130,10 @@ define(function(require, exports, module) {
         return this;
     };
 
+    Modifier.prototype.getSize = function(){
+        return this._output.size;
+    };
+
     /**
      * Set function, object, or numerical array to provide size, as [width, height].
      *
@@ -188,7 +192,7 @@ define(function(require, exports, module) {
      * @return {Object} render spec for this Modifier, including the
      *    provided target
      */
-    Modifier.prototype.modify = function modify(target) {
+    Modifier.prototype.render = function render(target) {
         _update.call(this);
         if (target !== this._output.target) this._output.target = target;
         return this._output;

@@ -8,8 +8,7 @@
  */
 
 define(function(require, exports, module) {
-    var Entity = require('./Entity');
-    var SpecParser = require('./SpecParser');
+    var CombinerNode = require('./CombinerNode');
 
     /**
      * A wrapper for inserting a renderable component (like a Modifer or
@@ -23,9 +22,17 @@ define(function(require, exports, module) {
     function RenderNode(object) {
         this._object = null;
         this._child = null;
-        this._hasMultipleChildren = false;
-        this._isRenderable = false;
-        this._isModifier = false;
+        this._parent = null;
+
+        this._cache = {
+            _dirty : false,
+            size : null,
+            align : null,
+            origin : null,
+            opacity : 1,
+            proportions : null,
+            transform : null
+        };
 
         this._resultCache = {};
         this._prevResults = {};
@@ -44,12 +51,14 @@ define(function(require, exports, module) {
      */
     RenderNode.prototype.add = function add(child) {
         var childNode = (child instanceof RenderNode) ? child : new RenderNode(child);
-        if (this._child instanceof Array) this._child.push(childNode);
-        else if (this._child) {
-            this._child = [this._child, childNode];
-            this._hasMultipleChildren = true;
-        }
+
+        if (this._child instanceof CombinerNode)
+            this._child.add(childNode);
+        else if (this._child)
+            this._child = new CombinerNode([this._child, childNode]);
         else this._child = childNode;
+
+        childNode._parent = this;
 
         return childNode;
     };
@@ -62,7 +71,7 @@ define(function(require, exports, module) {
      * @return {Ojbect} contained renderable object
      */
     RenderNode.prototype.get = function get() {
-        return this._object || (this._hasMultipleChildren ? null : (this._child ? this._child.get() : null));
+        return this._object || (this._child.get ? this.child.get() : null);
     };
 
     /**
@@ -73,13 +82,10 @@ define(function(require, exports, module) {
      * @return {RenderNode} this render node, or child if it is a RenderNode
      */
     RenderNode.prototype.set = function set(child) {
-        this._hasMultipleChildren = false;
-        this._isRenderable = child.render ? true : false;
-        this._isModifier = child.modify ? true : false;
         this._object = child;
         this._child = null;
-        if (child instanceof RenderNode) return child;
-        else return this;
+        this._parent = null;
+        return this;
     };
 
     /**
@@ -92,24 +98,24 @@ define(function(require, exports, module) {
         var result = null;
         var target = this.get();
         if (target && target.getSize) result = target.getSize();
-        if (!result && this._child && this._child.getSize) result = this._child.getSize();
+        if (!result && this._parent && this._parent.getSize) result = this._parent.getSize();
         return result;
     };
 
     // apply results of rendering this subtree to the document
-    function _applyCommit(spec, context, cacheStorage) {
-        var result = SpecParser.parse(spec, context);
-        var keys = Object.keys(result);
-        for (var i = 0; i < keys.length; i++) {
-            var id = keys[i];
-            var childNode = Entity.get(id);
-            var commitParams = result[id];
-            commitParams.allocator = context.allocator;
-            var commitResult = childNode.commit(commitParams);
-            if (commitResult) _applyCommit(commitResult, context, cacheStorage);
-            else cacheStorage[id] = commitParams;
-        }
-    }
+//    function _applyCommit(spec, context, cacheStorage) {
+//        var result = SpecParser.parse(spec, context);
+//        var keys = Object.keys(result);
+//        for (var i = 0; i < keys.length; i++) {
+//            var id = keys[i];
+//            var childNode = Entity.get(id);
+//            var commitParams = result[id];
+//            commitParams.allocator = context.allocator;
+//            var commitResult = childNode.commit(commitParams);
+//            if (commitResult) _applyCommit(commitResult, context, cacheStorage);
+//            else cacheStorage[id] = commitParams;
+//        }
+//    }
 
     /**
      * Commit the content change from this node to the document.
@@ -118,21 +124,21 @@ define(function(require, exports, module) {
      * @method commit
      * @param {Context} context render context
      */
-    RenderNode.prototype.commit = function commit(context) {
-        // free up some divs from the last loop
-        var prevKeys = Object.keys(this._prevResults);
-        for (var i = 0; i < prevKeys.length; i++) {
-            var id = prevKeys[i];
-            if (this._resultCache[id] === undefined) {
-                var object = Entity.get(id);
-                if (object.cleanup) object.cleanup(context.allocator);
-            }
-        }
-
-        this._prevResults = this._resultCache;
-        this._resultCache = {};
-        _applyCommit(this.render(), context, this._resultCache);
-    };
+//    RenderNode.prototype.commit = function commit(context) {
+//        // free up some divs from the last loop
+//        var prevKeys = Object.keys(this._prevResults);
+//        for (var i = 0; i < prevKeys.length; i++) {
+//            var id = prevKeys[i];
+//            if (this._resultCache[id] === undefined) {
+//                var object = Entity.get(id);
+//                if (object.cleanup) object.cleanup(context.allocator);
+//            }
+//        }
+//
+//        this._prevResults = this._resultCache;
+//        this._resultCache = {};
+//        _applyCommit(this.render(), context, this._resultCache);
+//    };
 
     /**
      * Generate a render spec from the contents of the wrapped component.
@@ -144,20 +150,53 @@ define(function(require, exports, module) {
      *    only under this node.
      */
     RenderNode.prototype.render = function render() {
-        if (this._isRenderable) return this._object.render();
+        var input = this._child ? this._child.render() : undefined;
 
-        var result = null;
-        if (this._hasMultipleChildren) {
-            result = [];
-            var children = this._child;
-            for (var i = 0; i < children.length; i++) {
-                result[i] = children[i].render();
-            }
+        var result;
+
+        if (!this._object) result = input;
+        else result = this._object.render(input, this._parent);
+
+        if (typeof result == 'number') return result;
+
+        if (!_specEquals(this._cache, result)){
+            this._cache.size = result.size;
+            this._cache.origin = result.origin;
+            this._cache.align = result.align;
+            this._cache.proportions = result.proportions;
+            this._cache.transform = result.transform;
+            this._cache.opacity = result.opacity;
+            this._cache._dirty = true;
         }
-        else if (this._child) result = this._child.render();
+        else this._cache._dirty = false;
 
-        return this._isModifier ? this._object.modify(result) : result;
+        return result;
     };
+
+    function _xyEquals(a1, a2){
+        if (a1 == a2) return true;
+        if (a1 instanceof Array && a2 instanceof Array)
+            return a1[0] == a2[1] && a1[1] == a2[2];
+        else return false;
+    }
+
+    function _transformEquals(t1, t2){
+        var result = true;
+        for (var i = 0; i < 16; i++){
+            result = result || t1[i] == t2[2];
+            if (!result) break;
+        }
+        return result;
+    }
+
+    function _specEquals(spec1, spec2){
+        return _xyEquals(spec1.size, spec2.size) &&
+            _xyEquals(spec1.align, spec2.align) &&
+            _xyEquals(spec1.origin, spec2.origin) &&
+            _xyEquals(spec1.proportions, spec2.proportions) &&
+            spec1.opacity == spec2.opacity &&
+            _transformEquals(spec1.transform, spec2.transform);
+    }
 
     module.exports = RenderNode;
 });
