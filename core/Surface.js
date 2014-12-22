@@ -63,11 +63,12 @@ define(function(require, exports, module) {
     * @param {Object} attributes property dictionary of "key" => "value"
      */
     Surface.prototype.setAttributes = function setAttributes(attributes) {
-        for (var n in attributes) {
-            if (n === 'style') throw new Error('Cannot set styles via "setAttributes" as it will break Famo.us.  Use "setProperties" instead.');
-            this.attributes[n] = attributes[n];
+        for (var key in attributes) {
+            var value = attributes[key];
+            if (value != undefined) this.attributes[key] = attributes[key];
         }
         this._attributesDirty = true;
+        return this;
     };
 
     /**
