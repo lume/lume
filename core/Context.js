@@ -16,19 +16,6 @@ define(function(require, exports, module) {
     var Entity = require('./Entity');
     var SpecParser = require('./SpecParser');
 
-    var _zeroZero = [0, 0];
-    var usePrefix = !('perspective' in document.documentElement.style);
-
-    function _getElementSize(element) {
-        return [element.clientWidth, element.clientHeight];
-    }
-
-    var _setPerspective = usePrefix ? function(element, perspective) {
-        element.style.webkitPerspective = perspective ? perspective.toFixed() + 'px' : '';
-    } : function(element, perspective) {
-        element.style.perspective = perspective ? perspective.toFixed() + 'px' : '';
-    };
-
     /**
      * The top-level container for a Famous-renderable piece of the document.
      *   It is directly updated by the process-wide Engine object, and manages one
@@ -65,8 +52,22 @@ define(function(require, exports, module) {
         this._eventOutput.on('resize', function() {
             this.setSize(_getElementSize(this.container));
         }.bind(this));
-
     }
+
+    var _zeroZero = [0, 0];
+    var usePrefix = !('perspective' in document.documentElement.style);
+
+    function _getElementSize(element) {
+        return [element.clientWidth, element.clientHeight];
+    }
+
+    var _setPerspective = usePrefix
+        ? function(element, perspective) {
+            element.style.webkitPerspective = perspective ? perspective.toFixed() + 'px' : '';
+        }
+        : function(element, perspective) {
+            element.style.perspective = perspective ? perspective.toFixed() + 'px' : '';
+        };
 
     // Note: Unused
     Context.prototype.getAllocator = function getAllocator() {

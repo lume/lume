@@ -27,7 +27,6 @@ define(function(require, exports, module) {
         var origin;
         var align;
         var size;
-        var sizeContext = sizeContext || Transform.identity;
 
         if (typeof spec === 'number') {
             id = spec;
@@ -97,13 +96,18 @@ define(function(require, exports, module) {
                 align = null;
             }
 
-            _parse(target, {
-                transform: transform,
-                opacity: opacity,
-                origin: origin,
-                align: align,
-                size: size
-            }, nextSizeContext, result);
+            _parse(
+                target,
+                {
+                    transform: transform,
+                    opacity: opacity,
+                    origin: origin,
+                    align: align,
+                    size: size
+                },
+                nextSizeContext,
+                result
+            );
         }
 
         return result;
