@@ -95,24 +95,23 @@ define(function(require, exports, module) {
      *
      * @param {Object} context update spec passed in from above in the render tree.
      */
-    Group.prototype.commit = function commit(context) {
+    Group.prototype.commit = function commit(context, allocator) {
         var transform = context.transform;
         var origin = context.origin;
         var opacity = context.opacity;
         var size = context.size;
         var result = Surface.prototype.commit.call(this, {
-            allocator: context.allocator,
             transform: Transform.thenMove(transform, [-origin[0] * size[0], -origin[1] * size[1], 0]),
             opacity: opacity,
             origin: origin,
             size: Group.SIZE_ZERO
-        });
+        }, allocator);
         if (size[0] !== this._groupSize[0] || size[1] !== this._groupSize[1]) {
             this._groupSize[0] = size[0];
             this._groupSize[1] = size[1];
             this.context.setSize(size);
         }
-        this.context.update({
+        this.context.commit({
             transform: Transform.translate(-origin[0] * size[0], -origin[1] * size[1], 0),
             origin: origin,
             size: size

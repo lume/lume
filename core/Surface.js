@@ -314,12 +314,12 @@ define(function(require, exports, module) {
      *
      * @private
      * @method commit
-     * @param {Context} context commit context
+     * @param {Context} spec commit context
      */
-    Surface.prototype.commit = function commit(context) {
-        if (!this._currentTarget) this.setup(context.allocator);
+    Surface.prototype.commit = function commit(spec, allocator) {
+        if (!this._currentTarget) this.setup(allocator);
         var target = this._currentTarget;
-        var size = context.size;
+        var size = spec.size;
 
         if (this._classesDirty) {
             _cleanupClasses.call(this, target);
@@ -342,7 +342,7 @@ define(function(require, exports, module) {
         }
 
         if (this.size) {
-            var origSize = context.size;
+            var origSize = spec.size;
             size = [this.size[0], this.size[1]];
             if (size[0] === undefined) size[0] = origSize[0];
             if (size[1] === undefined) size[1] = origSize[1];
@@ -399,7 +399,7 @@ define(function(require, exports, module) {
             this._trueSizeCheck = true;
         }
 
-        ElementOutput.prototype.commit.call(this, context);
+        ElementOutput.prototype.commit.call(this, spec);
     };
 
     /**

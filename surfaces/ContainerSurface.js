@@ -100,14 +100,14 @@ define(function(require, exports, module) {
      * @param {Array.Number} size unused TODO
      * @return {undefined} TODO returns an undefined value
      */
-    ContainerSurface.prototype.commit = function commit(context, transform, opacity, origin, size) {
+    ContainerSurface.prototype.commit = function commit(context, allocator) {
         var previousSize = this._size ? [this._size[0], this._size[1]] : null;
         var result = Surface.prototype.commit.apply(this, arguments);
         if (this._shouldRecalculateSize || (previousSize && (this._size[0] !== previousSize[0] || this._size[1] !== previousSize[1]))) {
             this.context.setSize();
             this._shouldRecalculateSize = false;
         }
-        this.context.update();
+        this.context.commit();
         return result;
     };
 

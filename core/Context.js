@@ -44,8 +44,8 @@ define(function(require, exports, module) {
             allocator: this.allocator,
             transform: Transform.identity,
             opacity: 1,
-            origin: _zeroZero,
-            align: _zeroZero,
+            origin: null,
+            align: null,
             size: this._size
         };
 
@@ -54,7 +54,6 @@ define(function(require, exports, module) {
         }.bind(this));
     }
 
-    var _zeroZero = [0, 0];
     var usePrefix = !('perspective' in document.documentElement.style);
 
     function _getElementSize(element) {
@@ -123,16 +122,15 @@ define(function(require, exports, module) {
         this._size[1] = size[1];
     };
 
-    function _applyCommit(spec, context, cacheStorage){
+    function _applyCommit(spec, context){
         var result = SpecParser.parse(spec, context);
 
         for (var id in result) {
             var childNode = Entity.get(id);
             var commitParams = result[id];
-            commitParams.allocator = this.allocator;
-            var commitResult = childNode.commit(commitParams);
-            if (commitResult) _applyCommit.call(this, commitResult, context, cacheStorage);
-            else cacheStorage[id] = commitParams;
+            var commitResult = childNode.commit(commitParams, this.allocator);
+            if (commitResult) _applyCommit.call(this, commitResult, context);
+            else this._resultCache[id] = commitParams;
         }
     }
 
@@ -147,7 +145,9 @@ define(function(require, exports, module) {
      * @method update
      * @param {Object} contextParameters engine commit specification
      */
-    Context.prototype.commit = function commit() {
+    Context.prototype.commit = function commit(context) {
+        if (context == undefined) context = this._nodeContext;
+
         var perspective = this._perspectiveState.get();
 
         if (perspective !== this._perspective) {
@@ -169,7 +169,7 @@ define(function(require, exports, module) {
         this._resultCache = {};
 
         var spec = this._node.render();
-        _applyCommit.call(this, spec, this._nodeContext, this._resultCache);
+        _applyCommit.call(this, spec, context);
     };
 
     /**
