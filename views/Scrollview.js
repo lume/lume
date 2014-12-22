@@ -17,7 +17,7 @@ define(function(require, exports, module) {
     var OptionsManager = require('../core/OptionsManager');
     var ViewSequence = require('../core/ViewSequence');
     var Scroller = require('../views/Scroller');
-    var Utility = require('../utilities/Utility');
+    var Utility = require('../core/Utility');
 
     var GenericSync = require('../inputs/GenericSync');
     var ScrollSync = require('../inputs/ScrollSync');

@@ -8,7 +8,7 @@
  */
 
 define(function(require, exports, module) {
-    var Utility = require('../utilities/Utility');
+    var Utility = require('../core/Utility');
     var View = require('../core/View');
     var GridLayout = require('../views/GridLayout');
     var ToggleButton = require('./ToggleButton');

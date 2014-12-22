@@ -3,7 +3,7 @@ define(function(require, exports, module) {
     var Group = require('../core/Group');
     var OptionsManager = require('../core/OptionsManager');
     var Transform = require('../core/Transform');
-    var Utility = require('../utilities/Utility');
+    var Utility = require('../core/Utility');
     var ViewSequence = require('../core/ViewSequence');
     var EventHandler = require('../core/EventHandler');
 

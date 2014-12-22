@@ -11,7 +11,7 @@ define(function(require, exports, module) {
     var OptionsManager = require('../core/OptionsManager');
     var Transform = require('../core/Transform');
     var ViewSequence = require('../core/ViewSequence');
-    var Utility = require('../utilities/Utility');
+    var Utility = require('../core/Utility');
 
     /**
      * SequentialLayout will lay out a collection of renderables sequentially in the specified direction.

@@ -10,7 +10,7 @@
 define(function(require, exports, module) {
     var Transitionable = require('../core/Transitionable');
     var Transform = require('../core/Transform');
-    var Utility = require('../utilities/Utility');
+    var Utility = require('../core/Utility');
 
     /**
      * A class for transitioning the state of a Transform by transitioning

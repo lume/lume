@@ -11,7 +11,7 @@ define(function(require, exports, module) {
     var EventHandler = require('./EventHandler');
     var OptionsManager = require('./OptionsManager');
     var RenderNode = require('./RenderNode');
-    var Utility = require('../utilities/Utility');
+    var Utility = require('Utility');
 
     /**
      * Useful for quickly creating elements within applications

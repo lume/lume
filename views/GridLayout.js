@@ -205,7 +205,7 @@ define(function(require, exports, module) {
             }
             if (item) {
                 result.push(
-                    modifier.modify({
+                    modifier.render({
                         origin: origin,
                         target: item.render()
                     })

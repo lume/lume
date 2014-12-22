@@ -2,7 +2,7 @@ define(function(require, exports, module) {
     var Transform = require('../core/Transform');
     var Modifier = require('../core/Modifier');
     var RenderNode = require('../core/RenderNode');
-    var Utility = require('../utilities/Utility');
+    var Utility = require('../core/Utility');
     var OptionsManager = require('../core/OptionsManager');
     var Transitionable = require('../core/Transitionable');
     var TransitionableTransform = require('../transitions/TransitionableTransform');
