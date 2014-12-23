@@ -30,7 +30,7 @@
   ],
   "license": "MPL",
   "dependencies": {
-    "army-knife": "^0.0.2",
+    "army-knife": "~0.0.2",
     "famous": "git+https://github.com/trusktr/famous.git#trusktr",
     "jss": "^0.8.1"
   }
