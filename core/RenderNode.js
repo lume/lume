@@ -102,44 +102,6 @@ define(function(require, exports, module) {
         return result;
     };
 
-    // apply results of rendering this subtree to the document
-//    function _applyCommit(spec, context, cacheStorage) {
-//        var result = SpecParser.parse(spec, context);
-//        var keys = Object.keys(result);
-//        for (var i = 0; i < keys.length; i++) {
-//            var id = keys[i];
-//            var childNode = Entity.get(id);
-//            var commitParams = result[id];
-//            commitParams.allocator = context.allocator;
-//            var commitResult = childNode.commit(commitParams);
-//            if (commitResult) _applyCommit(commitResult, context, cacheStorage);
-//            else cacheStorage[id] = commitParams;
-//        }
-//    }
-
-    /**
-     * Commit the content change from this node to the document.
-     *
-     * @private
-     * @method commit
-     * @param {Context} context render context
-     */
-//    RenderNode.prototype.commit = function commit(context) {
-//        // free up some divs from the last loop
-//        var prevKeys = Object.keys(this._prevResults);
-//        for (var i = 0; i < prevKeys.length; i++) {
-//            var id = prevKeys[i];
-//            if (this._resultCache[id] === undefined) {
-//                var object = Entity.get(id);
-//                if (object.cleanup) object.cleanup(context.allocator);
-//            }
-//        }
-//
-//        this._prevResults = this._resultCache;
-//        this._resultCache = {};
-//        _applyCommit(this.render(), context, this._resultCache);
-//    };
-
     /**
      * Generate a render spec from the contents of the wrapped component.
      *
@@ -159,16 +121,16 @@ define(function(require, exports, module) {
 
         if (typeof result == 'number') return result;
 
-        if (!_specEquals(this._cache, result)){
-            this._cache.size = result.size;
-            this._cache.origin = result.origin;
-            this._cache.align = result.align;
-            this._cache.proportions = result.proportions;
-            this._cache.transform = result.transform;
-            this._cache.opacity = result.opacity;
-            this._cache._dirty = true;
-        }
-        else this._cache._dirty = false;
+//        if (!_specEquals(this._cache, result)){
+//            this._cache.size = result.size;
+//            this._cache.origin = result.origin;
+//            this._cache.align = result.align;
+//            this._cache.proportions = result.proportions;
+//            this._cache.transform = result.transform;
+//            this._cache.opacity = result.opacity;
+//            this._cache._dirty = true;
+//        }
+//        else this._cache._dirty = false;
 
         return result;
     };

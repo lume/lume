@@ -12,7 +12,7 @@ define(function(require, exports, module) {
     var RenderNode = require('../core/RenderNode');
     var Transform = require('../core/Transform');
     var Transitionable = require('../core/Transitionable');
-    var View = require('../core/View');
+    var View = require('View');
 
     /**
      * A dynamic view that can show or hide different renderables with transitions.

@@ -135,7 +135,7 @@ define(function(require, exports, module) {
     }
 
     Context.prototype.render = function render(){
-        this._node.render();
+        return this._node.render();
     };
 
     /**

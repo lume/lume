@@ -11,7 +11,7 @@ define(function(require, exports, module) {
     var Scene = require('../core/Scene');
     var Surface = require('../core/Surface');
     var Transform = require('../core/Transform');
-    var View = require('../core/View');
+    var View = require('../views/View');
 
     /**
      * A view for displaying the title of the current page

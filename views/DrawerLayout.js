@@ -46,7 +46,9 @@ define(function(require, exports, module) {
         this._direction = _getDirectionFromSide(this.options.side);
         this._orientation = _getOrientationFromSide(this.options.side);
         this._isOpen = false;
+
         this._cachedLength = 0;
+        this._cachedPosition = 0;
 
         this.drawer = new RenderNode();
         this.content = new RenderNode();
@@ -292,9 +294,14 @@ define(function(require, exports, module) {
             this.setPosition(position);
         }
 
+        if (position !== this._cachedPosition)
+            this._eventOutput.emit('update');
+
         var contentTransform = (this._direction === DIRECTION_X)
             ? Transform.translate(position, 0, 0)
             : Transform.translate(0, position, 0);
+
+        this._cachedPosition = position;
 
         return [
             {

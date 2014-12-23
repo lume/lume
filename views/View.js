@@ -8,9 +8,9 @@
  */
 
 define(function(require, exports, module) {
-    var EventHandler = require('./EventHandler');
-    var OptionsManager = require('./OptionsManager');
-    var RenderNode = require('./RenderNode');
+    var EventHandler = require('./../core/EventHandler');
+    var OptionsManager = require('./../core/OptionsManager');
+    var RenderNode = require('./../core/RenderNode');
     var Utility = require('Utility');
 
     /**
