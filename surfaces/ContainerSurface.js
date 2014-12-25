@@ -38,7 +38,7 @@ define(function(require, exports, module) {
         Surface.call(this, options);
         this._container = document.createElement('div');
         this._container.classList.add('famous-group');
-        this._container.classList.add('famous-container-group');
+        this._container.classList.add('famous-container');
         this._shouldRecalculateSize = false;
         this.context = new Context(this._container);
         this.setContent(this._container);

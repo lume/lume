@@ -18,7 +18,7 @@
     transform-style: preserve-3d;
 }
 
-.famous-container, .famous-group {
+.famous-context, .famous-group {
     position: absolute;
     top: 0px;
     left: 0px;
@@ -54,7 +54,7 @@
     pointer-events: auto;
 }
 
-.famous-container-group {
+.famous-container {
     position: relative;
     width: 100%;
     height: 100%;

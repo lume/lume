@@ -47,7 +47,7 @@ define(function(require, exports, module) {
 
     var options = {
         containerType: 'div',
-        containerClass: 'famous-container',
+        containerClass: 'famous-context',
         fpsCap: undefined,
         runLoop: true,
         appMode: true
