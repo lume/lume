@@ -198,7 +198,6 @@ define(function(require, exports, module) {
             transform : scrollTransform,
             target : this._entityId
         };
-
     };
 
     /**
@@ -229,7 +228,7 @@ define(function(require, exports, module) {
             }
         }
 
-        return this.group.render();
+        return this.group.commit(context, allocator);
     };
 
     function _innerRender() {
