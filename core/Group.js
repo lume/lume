@@ -100,6 +100,7 @@ define(function(require, exports, module) {
         var origin = context.origin;
         var opacity = context.opacity;
         var size = context.size;
+
         var result = Surface.prototype.commit.call(this, {
             transform: Transform.thenMove(transform, [-origin[0] * size[0], -origin[1] * size[1], 0]),
             opacity: opacity,

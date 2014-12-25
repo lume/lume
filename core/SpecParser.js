@@ -10,16 +10,29 @@
 define(function(require, exports, module) {
     var Transform = require('./Transform');
 
-    var SpecParser = {};
-    var _zeroZero = [0, 0];
-
-    SpecParser.parse = function parse(spec, parentContext){
-        var result = {};
-        var sizeContext = Transform.identity;
-        return _parse(spec, parentContext, sizeContext, result);
+    var SpecParser = function SpecParser(){
+        this.cache = {};
+        this.counter = 0;
     };
 
-    function _parse(spec, parentContext, sizeContext, result){
+    var _zeroZero = [0, 0];
+    var cachingEnabled = true;
+
+    SpecParser.prototype.reset = function reset(){
+        this.counter = 0;
+    };
+
+    SpecParser.prototype.parse = function parse(spec, parentContext){
+        var result = {};
+        var sizeContext = Transform.identity;
+        var dirty = false;
+        return _parse.call(this, spec, parentContext, sizeContext, result, dirty);
+    };
+
+    function _parse(spec, parentContext, transformContext, result, dirty){
+        this.counter++;
+        var counter = this.counter;
+
         var id;
         var target;
         var transform;
@@ -30,51 +43,74 @@ define(function(require, exports, module) {
 
         if (typeof spec === 'number') {
             id = spec;
+
             transform = parentContext.transform;
             align = parentContext.align || _zeroZero;
             if (parentContext.size && align && (align[0] || align[1])) {
                 var alignAdjust = [align[0] * parentContext.size[0], align[1] * parentContext.size[1], 0];
-                transform = Transform.thenMove(transform, _vecInContext(alignAdjust, sizeContext));
+                transform = Transform.thenMove(transform, _vecInContext(alignAdjust, transformContext));
             }
-            result[id] = {
+
+            this.cache[counter] = {
                 transform: transform,
                 opacity: parentContext.opacity,
                 origin: parentContext.origin || _zeroZero,
                 align: parentContext.align || _zeroZero,
                 size: parentContext.size
             };
+
+            result[id] = this.cache[counter];
         }
         else if (!spec) { // placed here so 0 will be caught earlier
             return;
         }
         else if (spec instanceof Array) {
             for (var i = 0; i < spec.length; i++) {
-                _parse(spec[i], parentContext, sizeContext, result);
+                _parse.call(this, spec[i], parentContext, transformContext, result, dirty);
             }
         }
-        else {
+        else { //spec.target defined
+
+            var isDirty = dirty || spec._dirty || (spec._dirty == undefined);
+
+            if (cachingEnabled) {
+                if (!isDirty) {
+                    _parse.call(
+                        this,
+                        spec.target,
+                        this.cache[counter],
+                        this.cache[counter].transformContext,
+                        result,
+                        spec._dirty
+                    );
+                    return result;
+                }
+            }
+
             target = spec.target;
-            transform = parentContext.transform;
-            opacity = parentContext.opacity;
-            origin = parentContext.origin;
-            align = parentContext.align;
-            size = parentContext.size;
-            var nextSizeContext = sizeContext;
+            var nextTransformContext = transformContext;
 
-            if (spec.opacity !== undefined) opacity = parentContext.opacity * spec.opacity;
+            opacity = (spec.opacity !== undefined)
+                ? parentContext.opacity * spec.opacity
+                : parentContext.opacity;
 
-            if (spec.transform) transform = Transform.multiply(parentContext.transform, spec.transform);
+            transform = (spec.transform)
+                ? Transform.multiply(parentContext.transform, spec.transform)
+                : parentContext.transform;
+
+            align = (spec.align)
+                ? spec.align
+                : parentContext.align;
 
             if (spec.origin) {
                 origin = spec.origin;
-                nextSizeContext = parentContext.transform;
+                nextTransformContext = parentContext.transform;
             }
-
-            if (spec.align) align = spec.align;
+            else origin = parentContext.origin;
 
             if (spec.size || spec.proportions) {
-                var parentSize = size;
-                size = [size[0], size[1]];
+                var parentSize = parentContext.size;
+                size = [parentSize[0], parentSize[1]];
 
                 if (spec.size) {
                     if (spec.size[0] !== undefined) size[0] = spec.size[0];
@@ -82,31 +118,38 @@ define(function(require, exports, module) {
                 }
 
                 if (spec.proportions) {
-                    if (spec.proportions[0] !== undefined) size[0] = size[0] * spec.proportions[0];
-                    if (spec.proportions[1] !== undefined) size[1] = size[1] * spec.proportions[1];
+                    if (spec.proportions[0] !== undefined) size[0] *= spec.proportions[0];
+                    if (spec.proportions[1] !== undefined) size[1] *= spec.proportions[1];
                 }
 
-                if (parentSize) {
-                    if (align && (align[0] || align[1])) transform = Transform.thenMove(transform, _vecInContext([align[0] * parentSize[0], align[1] * parentSize[1], 0], sizeContext));
-                    if (origin && (origin[0] || origin[1])) transform = Transform.moveThen([-origin[0] * size[0], -origin[1] * size[1], 0], transform);
-                }
+                if (align && (align[0] || align[1]))
+                    transform = Transform.thenMove(transform, _vecInContext([align[0] * parentSize[0], align[1] * parentSize[1], 0], transformContext));
 
-                nextSizeContext = parentContext.transform;
+                if (origin && (origin[0] || origin[1]))
+                    transform = Transform.moveThen([-origin[0] * size[0], -origin[1] * size[1], 0], transform);
+
+                nextTransformContext = parentContext.transform;
                 origin = null;
                 align = null;
             }
+            else size = parentContext.size;
 
-            _parse(
+            this.cache[counter] = {
+                transform: transform,
+                opacity: opacity,
+                origin: origin,
+                align: align,
+                size: size,
+                transformContext: nextTransformContext
+            };
+
+            _parse.call(
+                this,
                 target,
-                {
-                    transform: transform,
-                    opacity: opacity,
-                    origin: origin,
-                    align: align,
-                    size: size
-                },
-                nextSizeContext,
-                result
+                this.cache[counter],
+                this.cache[counter].transformContext,
+                result,
+                isDirty
             );
         }
 

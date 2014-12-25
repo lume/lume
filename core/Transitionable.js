@@ -98,17 +98,19 @@ define(function(require, exports, module) {
         }
 
         if (this._currentMethod !== method) {
-            if (!(endValue instanceof Object) || method.SUPPORTS_MULTIPLE === true || endValue.length <= method.SUPPORTS_MULTIPLE) {
-                this._engineInstance = new method();
-            }
-            else {
-                this._engineInstance = new MultipleTransition(method);
-            }
+            this._engineInstance = (!(endValue instanceof Object) || method.SUPPORTS_MULTIPLE === true || endValue.length <= method.SUPPORTS_MULTIPLE)
+                ? new method()
+                : new MultipleTransition(method);
             this._currentMethod = method;
         }
 
         this._engineInstance.reset(this.state, this.velocity);
-        if (this.velocity !== undefined) transition.velocity = this.velocity;
+
+        if (this.velocity !== undefined) {
+            this.velocity = this._engineInstance.getVelocity();
+            transition.velocity = this.velocity;
+        }
+
         this._engineInstance.set(endValue, transition, _loadNext.bind(this));
     }
 
@@ -190,11 +192,7 @@ define(function(require, exports, module) {
      *    interpolated to this point in time.
      */
     Transitionable.prototype.get = function get(timestamp) {
-        if (this._engineInstance) {
-            if (this._engineInstance.getVelocity)
-                this.velocity = this._engineInstance.getVelocity();
-            this.state = this._engineInstance.get(timestamp);
-        }
+        if (this._engineInstance) this.state = this._engineInstance.get(timestamp);
         return this.state;
     };
 

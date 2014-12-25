@@ -343,10 +343,11 @@ define(function(require, exports, module) {
         }
 
         if (this.size) {
-            var origSize = spec.size;
+            var parentSize = spec.size;
             size = [this.size[0], this.size[1]];
-            if (size[0] === undefined) size[0] = origSize[0];
-            if (size[1] === undefined) size[1] = origSize[1];
+            if (size[0] === undefined) size[0] = parentSize[0];
+            if (size[1] === undefined) size[1] = parentSize[1];
+
             if (size[0] === true || size[1] === true) {
                 if (size[0] === true){
                     if (this._trueSizeCheck || (this._size[0] === 0)) {

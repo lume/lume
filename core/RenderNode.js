@@ -25,11 +25,10 @@ define(function(require, exports, module) {
         this._parent = null;
 
         this._cache = {
-            _dirty : false,
             size : null,
             align : null,
             origin : null,
-            opacity : 1,
+            opacity : Number.NaN,
             proportions : null,
             transform : null
         };
@@ -119,18 +118,19 @@ define(function(require, exports, module) {
         if (!this._object) result = input;
         else result = this._object.render(input, this._parent);
 
-        if (typeof result == 'number') return result;
+        if (typeof result == 'number' || result instanceof Array)
+            return result;
 
-//        if (!_specEquals(this._cache, result)){
-//            this._cache.size = result.size;
-//            this._cache.origin = result.origin;
-//            this._cache.align = result.align;
-//            this._cache.proportions = result.proportions;
-//            this._cache.transform = result.transform;
-//            this._cache.opacity = result.opacity;
-//            this._cache._dirty = true;
-//        }
-//        else this._cache._dirty = false;
+        if (!_specEquals(this._cache, result)){
+            this._cache.size = result.size;
+            this._cache.origin = result.origin;
+            this._cache.align = result.align;
+            this._cache.proportions = result.proportions;
+            this._cache.transform = result.transform;
+            this._cache.opacity = result.opacity;
+            result._dirty = true;
+        }
+        else result._dirty = false;
 
         return result;
     };
@@ -143,9 +143,10 @@ define(function(require, exports, module) {
     }
 
     function _transformEquals(t1, t2){
+        if (t1 !== t2 && !t1 || !t2) return false;
         var result = true;
         for (var i = 0; i < 16; i++){
-            result = result || t1[i] == t2[2];
+            result = result && t1[i] == t2[i];
             if (!result) break;
         }
         return result;

@@ -191,7 +191,15 @@ define(function(require, exports, module) {
     Scroller.prototype.render = function render() {
         if (!this._node) return null;
         if (this._positionGetter) this._position = this._positionGetter.call(this);
-        return this._entityId;
+
+        var scrollTransform = this._masterOutputFunction(-this._position);
+
+        return {
+            transform : scrollTransform,
+            target : this._entityId
+        };
+
+//        return this._entityId;
     };
 
     /**
@@ -203,10 +211,7 @@ define(function(require, exports, module) {
      * @method commit
      * @param {Context} context commit context
      */
-    Scroller.prototype.commit = function commit(context) {
-        var transform = context.transform;
-        var opacity = context.opacity;
-        var origin = context.origin;
+    Scroller.prototype.commit = function commit(context, allocator) {
         var size = context.size;
 
         // reset edge detection on size change
@@ -225,15 +230,8 @@ define(function(require, exports, module) {
             }
         }
 
-        var scrollTransform = this._masterOutputFunction(-this._position);
+        return this.group.commit(context, allocator);
 
-        return {
-            transform: Transform.multiply(transform, scrollTransform),
-            size: size,
-            opacity: opacity,
-            origin: origin,
-            target: this.group.render()
-        };
     };
 
     function _innerRender() {

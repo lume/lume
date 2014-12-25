@@ -14,6 +14,7 @@ define(function(require, exports, module) {
 
     var usePrefix = !('transform' in document.documentElement.style);
     var devicePixelRatio = window.devicePixelRatio || 1;
+    var invDevicePixelRatio = 1 / devicePixelRatio;
 
     /**
      * A base class for viewable content and event
@@ -158,15 +159,13 @@ define(function(require, exports, module) {
      * @return {string} matrix3d CSS style representation of the transform
      */
     function _formatCSSTransform(m) {
-        m[12] = Math.round(m[12] * devicePixelRatio) / devicePixelRatio;
-        m[13] = Math.round(m[13] * devicePixelRatio) / devicePixelRatio;
+        m[12] = Math.round(m[12] * devicePixelRatio) * invDevicePixelRatio;
+        m[13] = Math.round(m[13] * devicePixelRatio) * invDevicePixelRatio;
 
         var result = 'matrix3d(';
-        for (var i = 0; i < 15; i++) {
-            result += (m[i] < 0.000001 && m[i] > -0.000001) ? '0,' : m[i] + ',';
-        }
-        result += m[15] + ')';
-        return result;
+        for (var i = 0; i < 15; i++) result += m[i] + ',';
+
+        return result + m[15] + ')';
     }
 
     /**

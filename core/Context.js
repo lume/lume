@@ -29,6 +29,7 @@ define(function(require, exports, module) {
     function Context(container) {
         this.container = container;
         this.allocator = new ElementAllocator(container);
+        this.specParser = new SpecParser();
 
         this._node = new RenderNode();
         this._eventOutput = new EventHandler();
@@ -41,7 +42,6 @@ define(function(require, exports, module) {
         this._perspective = undefined;
 
         this._nodeContext = {
-            allocator: this.allocator,
             transform: Transform.identity,
             opacity: 1,
             origin: null,
@@ -123,19 +123,23 @@ define(function(require, exports, module) {
     };
 
     function _applyCommit(spec, context){
-        var result = SpecParser.parse(spec, context);
+        var result = this.specParser.parse(spec, context);
 
         for (var id in result) {
             var childNode = Entity.get(id);
             var commitParams = result[id];
             var commitResult = childNode.commit(commitParams, this.allocator);
-            if (commitResult) _applyCommit.call(this, commitResult, context);
+            if (commitResult) {
+                _applyCommit.call(this, commitResult, context);
+            }
             else this._resultCache[id] = commitParams;
         }
+
+        this.specParser.reset();
     }
 
     Context.prototype.render = function render(){
-        return this._node.render();
+        this._node.render();
     };
 
     /**
