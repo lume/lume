@@ -107,16 +107,19 @@ define(function(require, exports, module) {
             origin: origin,
             size: Group.SIZE_ZERO
         }, allocator);
+
         if (size[0] !== this._groupSize[0] || size[1] !== this._groupSize[1]) {
             this._groupSize[0] = size[0];
             this._groupSize[1] = size[1];
             this.context.setSize(size);
         }
+
         this.context.commit({
             transform: Transform.translate(-origin[0] * size[0], -origin[1] * size[1], 0),
             origin: origin,
             size: size
         });
+
         return result;
     };
 

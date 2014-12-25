@@ -199,7 +199,6 @@ define(function(require, exports, module) {
             target : this._entityId
         };
 
-//        return this._entityId;
     };
 
     /**
@@ -230,8 +229,7 @@ define(function(require, exports, module) {
             }
         }
 
-        return this.group.commit(context, allocator);
-
+        return this.group.render();
     };
 
     function _innerRender() {

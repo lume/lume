@@ -16,7 +16,7 @@ define(function(require, exports, module) {
     };
 
     var _zeroZero = [0, 0];
-    var cachingEnabled = true;
+    var cachingEnabled = false;
 
     SpecParser.prototype.reset = function reset(){
         this.counter = 0;

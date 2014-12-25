@@ -70,7 +70,7 @@ define(function(require, exports, module) {
      * @return {Ojbect} contained renderable object
      */
     RenderNode.prototype.get = function get() {
-        return this._object || (this._child.get ? this.child.get() : null);
+        return this._object || (this._child.get ? this._child.get() : null);
     };
 
     /**

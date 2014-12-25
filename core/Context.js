@@ -129,9 +129,7 @@ define(function(require, exports, module) {
             var childNode = Entity.get(id);
             var commitParams = result[id];
             var commitResult = childNode.commit(commitParams, this.allocator);
-            if (commitResult) {
-                _applyCommit.call(this, commitResult, context);
-            }
+            if (commitResult !== undefined) _applyCommit.call(this, commitResult, context);
             else this._resultCache[id] = commitParams;
         }
 
@@ -139,7 +137,7 @@ define(function(require, exports, module) {
     }
 
     Context.prototype.render = function render(){
-        this._node.render();
+        return this._node.render();
     };
 
     /**
