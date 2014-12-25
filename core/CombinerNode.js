@@ -13,7 +13,7 @@ define(function(require, exports, module) {
             return null;
         },
         getSize : function(){
-            return this.nodes[0].getSize() || null;
+            return null;
         },
         render: function() {
             var result = [];

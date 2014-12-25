@@ -239,12 +239,14 @@ define(function(require, exports, module) {
         var offset = -this._positionOffset;
         var clipSize = _getClipSize.call(this);
         var currNode = this._node;
+
         while (currNode && offset - position < clipSize + this.options.margin) {
             offset += _output.call(this, currNode, offset, result);
             currNode = currNode.getNext ? currNode.getNext() : null;
         }
 
         var sizeNode = this._node;
+
         var nodesSize = _sizeForDir.call(this, sizeNode.getSize());
         if (offset < clipSize) {
             while (sizeNode && nodesSize < clipSize) {

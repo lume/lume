@@ -118,7 +118,7 @@ define(function(require, exports, module) {
             transform: Transform.translate(-origin[0] * size[0], -origin[1] * size[1], 0),
             origin: origin,
             size: size
-        });
+        }, allocator);
 
         return result;
     };
