@@ -114,12 +114,11 @@ define(function(require, exports, module) {
     RenderNode.prototype.render = function render() {
         var input = this._child ? this._child.render() : undefined;
 
-        var result;
+        var result = (!this._object)
+            ? input
+            : this._object.render(input, this._parent);
 
-        if (!this._object) result = input;
-        else result = this._object.render(input, this._parent);
-
-        if (typeof result == 'number' || result instanceof Array)
+        if (typeof result == 'number' || result instanceof Array || result == undefined)
             return result;
 
         if (!_specEquals(this._cache, result)){

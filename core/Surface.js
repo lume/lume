@@ -319,6 +319,7 @@ define(function(require, exports, module) {
      */
     Surface.prototype.commit = function commit(spec, allocator) {
         if (!this._currentTarget) this.setup(allocator);
+
         var target = this._currentTarget;
         var size = spec.size;
 
