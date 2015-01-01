@@ -12,7 +12,7 @@ import RenderNode from 'famous/core/RenderNode';
 import TransitionableTransform from 'famous/transitions/TransitionableTransform';
 import EventHandler from 'famous/core/EventHandler';
 
-import "army-knife/Object.className";
+import "army-knife/polyfill.Function.name";
 
 export class Molecule extends RenderNode {
     constructor(initialOptions) {
@@ -32,7 +32,7 @@ export class Molecule extends RenderNode {
 
         // set the user's initial options. This automatically creates this.modifier, and add it to this (RenderNode).
         // NOTE: this.options is a setter and initializer.
-        this.options = initialOptions.className == "Object"? initialOptions: {}; // make sure we have an object literal.
+        this.options = initialOptions.constructor.name == "Object"? initialOptions: {}; // make sure we have an object literal.
     }
 
     // EventHandler interface
@@ -64,7 +64,7 @@ export class Molecule extends RenderNode {
     setOptions(newOptions) {
         newOptions = typeof newOptions != "undefined"? newOptions: {};
 
-        if (newOptions.className != "Object") { return; }
+        if (newOptions.constructor.name != "Object") { return; }
 
         for (var prop in newOptions) {
             // Subject to change when Famo.us API changes.
