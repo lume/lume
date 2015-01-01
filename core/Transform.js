@@ -37,36 +37,6 @@ define(function(require, exports, module) {
     Transform.identity = [1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1];
 
     /**
-     * Multiply two or more Transform matrix types to return a Transform matrix.
-     *
-     * @method multiply4x4
-     * @static
-     * @param {Transform} a left Transform
-     * @param {Transform} b right Transform
-     * @return {Transform}
-     */
-    Transform.multiply4x4 = function multiply4x4(a, b) {
-        return [
-            a[0] * b[0] + a[4] * b[1] + a[8] * b[2] + a[12] * b[3],
-            a[1] * b[0] + a[5] * b[1] + a[9] * b[2] + a[13] * b[3],
-            a[2] * b[0] + a[6] * b[1] + a[10] * b[2] + a[14] * b[3],
-            a[3] * b[0] + a[7] * b[1] + a[11] * b[2] + a[15] * b[3],
-            a[0] * b[4] + a[4] * b[5] + a[8] * b[6] + a[12] * b[7],
-            a[1] * b[4] + a[5] * b[5] + a[9] * b[6] + a[13] * b[7],
-            a[2] * b[4] + a[6] * b[5] + a[10] * b[6] + a[14] * b[7],
-            a[3] * b[4] + a[7] * b[5] + a[11] * b[6] + a[15] * b[7],
-            a[0] * b[8] + a[4] * b[9] + a[8] * b[10] + a[12] * b[11],
-            a[1] * b[8] + a[5] * b[9] + a[9] * b[10] + a[13] * b[11],
-            a[2] * b[8] + a[6] * b[9] + a[10] * b[10] + a[14] * b[11],
-            a[3] * b[8] + a[7] * b[9] + a[11] * b[10] + a[15] * b[11],
-            a[0] * b[12] + a[4] * b[13] + a[8] * b[14] + a[12] * b[15],
-            a[1] * b[12] + a[5] * b[13] + a[9] * b[14] + a[13] * b[15],
-            a[2] * b[12] + a[6] * b[13] + a[10] * b[14] + a[14] * b[15],
-            a[3] * b[12] + a[7] * b[13] + a[11] * b[14] + a[15] * b[15]
-        ];
-    };
-
-    /**
      * Fast-multiply two or more Transform matrix types to return a
      *    Matrix, assuming bottom row on each is [0 0 0 1].
      *
@@ -77,6 +47,8 @@ define(function(require, exports, module) {
      * @return {Transform}
      */
     Transform.multiply = function multiply(a, b) {
+        if (a === Transform.identity) return b;
+        if (b === Transform.identity) return a;
         return [
             a[0] * b[0] + a[4] * b[1] + a[8] * b[2],
             a[1] * b[0] + a[5] * b[1] + a[9] * b[2],
@@ -452,7 +424,6 @@ define(function(require, exports, module) {
      *    .rotate, .scale, .skew
      */
     Transform.interpret = function interpret(M) {
-
         // QR decomposition via Householder reflections
         //FIRST ITERATION
 
@@ -661,7 +632,7 @@ define(function(require, exports, module) {
     };
 
     /**
-     * (Property) Array defining a translation forward in z by 1
+     * (Property) Array defining a translation forward in z
      *
      * @property {array} inFront
      * @static
@@ -670,7 +641,7 @@ define(function(require, exports, module) {
     Transform.inFront = [1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 1e-3, 1];
 
     /**
-     * (Property) Array defining a translation backwards in z by 1
+     * (Property) Array defining a translation backwards in z
      *
      * @property {array} behind
      * @static
