@@ -31,7 +31,7 @@ class Node {
      *   rotation: [3, 0, 0],
      *   scale: [1, 1, 1],
      *   size: {
-     *     modes: ['absolute', 'proportional'],
+     *     mode: ['absolute', 'proportional'],
      *     absolute: [300, null],
      *     proportional: [null, .5]
      *   },
@@ -62,7 +62,7 @@ class Node {
             align: [0,0,0],
             mountPoint: [0,0,0],
             size: {
-                modes: ['absolute', 'absolute', 'absolute'],
+                mode: ['absolute', 'absolute', 'absolute'],
                 absolute: [0,0,0],
                 proportional: [1,1,1]
             },
@@ -103,7 +103,8 @@ class Node {
 
     /**
      * @readonly
-     * XXX Should we let the element be set?
+     * XXX Should we let the element be set, so that it's possible to apply
+     * transforms to arbitrary elements?
      */
     get element() {
         return this._element
@@ -117,18 +118,18 @@ class Node {
      * @memberOf Node
      */
     _applySize () {
-        var modes = this._properties.size.modes;
+        var mode = this._properties.size.mode;
         var absolute = this._properties.size.absolute;
         var proportional = this._properties.size.proportional;
 
-        if (modes[0] === 'absolute')
+        if (mode[0] === 'absolute')
             this._applyStyle('width', `${absolute[0]}px`);
-        else if (modes[0] === 'proportional')
+        else if (mode[0] === 'proportional')
             this._applyStyle('width', `${proportional[0] * 100}%`);
 
-        if (modes[1] === 'absolute')
+        if (mode[1] === 'absolute')
             this._applyStyle('height', `${absolute[1]}px`);
-        else if (modes[1] === 'proportional')
+        else if (mode[1] === 'proportional')
             this._applyStyle('height', `${proportional[1] * 100}%`);
     }
 
@@ -150,14 +151,14 @@ class Node {
 
         let alignAdjustment = [0,0,0]
         if (this._parent) { // The root Scene doesn't have a parent, for example.
-            let parentSize = this._parent.getActualSize()
+            let parentSize = this._parent.actualSize
             alignAdjustment[0] = parentSize[0] * this._properties.align[0]
             alignAdjustment[1] = parentSize[1] * this._properties.align[1]
             alignAdjustment[2] = parentSize[2] * this._properties.align[2]
         }
 
         let mountPointAdjustment = [0,0,0]
-        let thisSize = this.getActualSize()
+        let thisSize = this.actualSize
         mountPointAdjustment[0] = thisSize[0] * this._properties.mountPoint[0]
         mountPointAdjustment[1] = thisSize[1] * this._properties.mountPoint[1]
         mountPointAdjustment[2] = thisSize[2] * this._properties.mountPoint[2]
@@ -199,7 +200,9 @@ class Node {
     _applyTransform () {
         var matrix = this._style.transform.domMatrix;
 
-        // XXX: is this in the right order?
+        // XXX: is this in the right order? UPDATE: It is.
+        // TODO: Apply DOMMatrix directly to the Element once browser APIs
+        // support it.
         var transform = `matrix3d(
             ${ matrix.m11 },
             ${ matrix.m12 },
@@ -278,10 +281,12 @@ class Node {
      * @chainable
      */
     setPosition (position) {
-        if (! _.isEqual(position, this._properties.position))
-            this._properties.position = position;
-
+        this.position = position
         return this
+    }
+    set position(position) {
+        if (! _.isEqual(position, this._properties.position))
+            this._properties.position = position
     }
 
     /**
@@ -290,7 +295,7 @@ class Node {
      * @return {Array.number} An array of 3 numbers, each one representing the X,
      * Y, and Z position of the Node (in that order).
      */
-    getPosition() {
+    get position() {
         return this._properties.position
     }
 
@@ -302,8 +307,11 @@ class Node {
      * particular axis.
      */
     setRotation (rotation) {
-        this._properties.rotation = rotation;
+        this.rotation = rotation
         return this
+    }
+    set rotation(rotation) {
+        this._properties.rotation = rotation
     }
 
     /**
@@ -312,91 +320,127 @@ class Node {
      * @return {Array.number} An array of 3 numbers, each number representing the X,
      * Y, and Z rotation of the Node (in that order) in degrees.
      */
-    getRotation() {
+    get rotation() {
         return this._properties.rotation
     }
 
     /**
-     * @param {Array.number} scale [description]
+     * @return {Array.number} An array of 3 numbers, each number representing
+     * the X, Y, and Z scale of the Node (in that order).
      */
     setScale (scale) {
-        this.scale.set(scale[0], scale[1], scale[2]);
+        this.scale = scale
         return this
+    }
+    set scale(scale) {
+        this._properties.scale = scale
+    }
+
+    /**
+     * @return {Array.number} An array of 3 numbers, each number representing the X,
+     * Y, and Z scale of the Node (in that order).
+     */
+    get scale() {
+        return this._properties.scale
     }
 
     /**
      * Set this Node's opacity.
      *
-     * @param {number} opacity A number between 0 and 1 (inclusive). 0 is fully transparent, 1 is fully opaque.
+     * @param {number} opacity A floating point number between 0 and 1
+     * (inclusive). 0 is fully transparent, 1 is fully opaque.
      */
     setOpacity (opacity) {
-        this._style.opacity = opacity;
+        this.opacity = opacity
         return this
+    }
+    set opacity(opacity) {
+        this._style.opacity = opacity;
     }
 
     /**
      * Get this Node's opacity.
      *
-     * @return {number} The opacity of the Node, a number between 0 and 1.
+     * @return {number} The opacity of the Node, a floating point number between 0 and 1.
      */
-    getOpacity() {
-        return this._properties.opacity
+    get opacity() {
+        return this._style.opacity
     }
 
     /**
-     * Set the size modes for each axis. Possible size modes are "absolute" and "proportional".
+     * Set the size mode for each axis. Possible size modes are "absolute" and "proportional".
      *
-     * @param {Array.string} size A three-item array of strings, each item corresponding to the x, y, and z axes respectively.
+     * @param {Array.string} mode A three-item array of strings, each item
+     * corresponding to the x, y, and z axes respectively.
      */
-    setSizeModes (modes) {
-        if (! _.isEqual(modes, this._properties.size.modes)) {
-            this._properties.size.modes = modes;
-            this._applySize();
-        }
-
+    setSizeMode (mode) {
+        this.sizeMode = mode
         return this
+    }
+    set sizeMode(mode) {
+        if (! _.isEqual(mode, this._properties.size.mode)) {
+            this._properties.size.mode = mode
+            this._applySize()
+        }
+    }
+
+    /**
+     * @return {Array.number} An array of 3 numbers, each number representing the X,
+     * Y, and Z scale of the Node (in that order).
+     */
+    get sizeMode() {
+        return this._properties.size.mode
     }
 
     /**
      * @param {Array} size [description]
      */
     setAbsoluteSize (size) {
+        this.absoluteSize = size
+        return this
+    }
+    set absoluteSize(size) {
         if (! _.isEqual(size, this._properties.size.absolute)) {
             this._properties.size.absolute = size;
 
-            if (this._properties.size.modes.indexOf('absolute') > -1)
+            if (this._properties.size.mode.indexOf('absolute') > -1)
                 this._applySize();
         }
-
-        return this
     }
 
     /**
      * Get an array containing the size of each axis of this node.
-     * @return {Array.number} A three-item array of numbers, each item corresponding to the x, y, and z axes respectively.
+     * @return {Array.number} A three-item array of numbers, each number
+     * representing the absolute size of the x, y, and z axes respectively.
+     * @readonly
      */
-    getAbsoluteSize() {
+    get absoluteSize() {
         return this._properties.size.absolute
     }
 
     /**
-     * Get the actual size of the Node. When size is proportional, the actual size
-     * depends on querying the DOM for the size of the Node's DOM element.
+     * Get the actual size of the Node. This can be useful when size is
+     * proportional, as the actual size of the Node depends on querying the DOM
+     * for the size of the Node's DOM element relative to it's parent.
+     *
+     * @return {Array.number} A three-item array of numbers, each number
+     * representing the computed size of the x, y, and z axes respectively.
+     * @readonly
      */
-    getActualSize() {
+    get actualSize() {
         let actualSize = []
 
-        if (this._properties.size.modes[0] === 'absolute') {
+        if (this._properties.size.mode[0] === 'absolute') {
             actualSize[0] = this._properties.size.absolute[0]
         }
-        else if (this._properties.size.modes[0] === 'proportional') {
+        else if (this._properties.size.mode[0] === 'proportional') {
             actualSize[0] = parseInt(getComputedStyle(this._element).getPropertyValue('width'))
         }
 
-        if (this._properties.size.modes[1] === 'absolute') {
+        if (this._properties.size.mode[1] === 'absolute') {
             actualSize[1] = this._properties.size.absolute[1]
         }
-        else if (this._properties.size.modes[1] === 'proportional') {
+        else if (this._properties.size.mode[1] === 'proportional') {
             actualSize[1] = parseInt(getComputedStyle(this._element).getPropertyValue('height'))
         }
 
@@ -408,39 +452,61 @@ class Node {
     /**
      * Set the size of a Node proportional to the size of it's parent Node.
      *
-     * @param {Array.number} size A three-item array of numbers, each item corresponding to the x, y, and z axes respectively.
+     * @param {Array.number} size A three-item array of numbers, each item
+     * representing the proprtional size of the x, y, and z axes respectively.
      */
     setProportionalSize (size) {
-        if (! _.isEqual(size, this._properties.size.proportional)) {
-            this._properties.size.proportional = size;
-
-            if (this._properties.size.modes.indexOf('proportional') > -1)
-                this._applySize();
-        }
-
+        this.proportionalSize = size
         return this
+    }
+    set proportionalSize(size) {
+        if (! _.isEqual(size, this._properties.size.proportional)) {
+            this._properties.size.proportional = size
+
+            if (this._properties.size.mode.indexOf('proportional') > -1)
+                this._applySize()
+        }
+    }
+
+    get proportionalSize() {
+        return this._properties.size.proportional
     }
 
     /**
-     * Set the alignment of the Node. This determines at which point in this Node's parent that this Node is mounted.
+     * Set the alignment of the Node. This determines at which point in this
+     * Node's parent that this Node is mounted.
      * @param {Array.number} alignment Array of three alignment values, one for each axis.
      */
     setAlign (alignment) {
+        this.align = alignment
+        return this
+    }
+    set align(alignment) {
         if (! _.isEqual(alignment, this._properties.align))
             this._properties.align = alignment;
+    }
 
-        return this
+    get align() {
+        return this._properties.align
     }
 
     /**
-     * Set the mount point of the Node. How do we put this into words?
-     * @param {Array.number} mountPoint Array of three mount point values, one for each axis.
+     * Set the mount point of the Node. TODO: put "mount point" into words.
+     *
+     * @param {Array.number} mountPoint Array of three mount point values, one
+     * for each axis.
      */
     setMountPoint (mountPoint) {
+        this.mountPoint = mountPoint
+        return this
+    }
+    set mountPoint(mountPoint) {
         if (! _.isEqual(mountPoint, this._properties.mountPoint))
             this._properties.mountPoint = mountPoint;
+    }
 
-        return this
+    get mountPoint() {
+        return this._properties.mountPoint
     }
 
     /**
@@ -448,7 +514,7 @@ class Node {
      * Node's _element.
      *
      * Note: updating class names with `el.classList.add()` won't thrash the
-     * layout. See: http://www.html5rocks.com/en/tutorials/speed/animations/
+     * layout. See: http://www.html5rocks.com/en/tutorials/speed/animations
      */
     setClasses (classes = []) {
         if (typeof classes !== 'array') classes = [classes]
@@ -468,7 +534,7 @@ class Node {
      *   rotation: [3, 0, 0],
      *   scale: [1, 1, 1],
      *   size: {
-     *     modes: ['absolute', 'proportional'],
+     *     mode: ['absolute', 'proportional'],
      *     absolute: [300, null],
      *     proportional: [null, .5]
      *   },
@@ -482,40 +548,40 @@ class Node {
 
         // Position
         if (properties.position && properties.position.length === 3)
-            this.setPosition(properties.position);
+            this.position = properties.position
 
         // Rotation
         if (properties.rotation && properties.rotation.length === 3)
-            this.setRotation(properties.rotation);
+            this.rotation = properties.rotation
 
         // Scale
         if (properties.scale && properties.scale.length === 3)
-            this.setScale(properties.scale);
+            this.scale = properties.scale
 
         // Align
         if (properties.align && properties.align.length === 3)
-            this.setAlign(properties.align);
+            this.align = properties.align
 
         // Size
         if (properties.size) {
 
             // Size Modes
-            if (properties.size.modes && properties.size.modes.length === 2)
-                this.setSizeModes(properties.size.modes);
+            if (properties.size.mode && properties.size.mode.length === 2)
+                this.sizeMode = properties.size.mode
 
             // Absolute Size
             if (properties.size.absolute && properties.size.absolute.length === 2)
-                this.setAbsoluteSize(properties.size.absolute);
+                this.absoluteSize = properties.size.absolute
 
             // Proportional Size
             if (properties.size.proportional && properties.size.proportional.length === 2)
-                this.setProportionalSize(properties.size.proportional);
+                this.proportionalSize = properties.size.proportional
 
         }
 
         // Opacity
         if (typeof properties.opacity != 'undefined')
-            this.setOpacity(properties.opacity);
+            this.opacity = properties.opacity
 
         // Apply Styles
         this._applyStyles();
