@@ -25,7 +25,8 @@ define(function(require, exports, module) {
      */
     function SequentialLayout(options) {
         this._items = null;
-        this._size = null;
+        this._size = [undefined, undefined];
+        this._cachedLength = 0;
         this._outputFunction = SequentialLayout.DEFAULT_OUTPUT_FUNCTION;
 
         this.options = Utility.clone(this.constructor.DEFAULT_OPTIONS || SequentialLayout.DEFAULT_OPTIONS);
@@ -40,7 +41,9 @@ define(function(require, exports, module) {
     };
 
     SequentialLayout.DEFAULT_OUTPUT_FUNCTION = function DEFAULT_OUTPUT_FUNCTION(input, offset, index) {
-        var transform = (this.options.direction === Utility.Direction.X) ? Transform.translate(offset, 0) : Transform.translate(0, offset);
+        var transform = (this.options.direction === Utility.Direction.X)
+            ? Transform.translate(offset, 0, 0)
+            : Transform.translate(0, offset, 0);
         return {
             transform: transform,
             target: input.render()
@@ -54,7 +57,6 @@ define(function(require, exports, module) {
      * @return {Array} A two value array of the SequentialLayout instance's current width and height (in that order).
      */
     SequentialLayout.prototype.getSize = function getSize() {
-        if (!this._size) this.render(); // hack size in
         return this._size;
     };
 
@@ -114,8 +116,6 @@ define(function(require, exports, module) {
         var result             = [];
         var i                  = 0;
 
-        this._size = [0, 0];
-
         while (currentNode) {
             item = currentNode.get();
             if (!item) break;
@@ -128,7 +128,6 @@ define(function(require, exports, module) {
             if (itemSize) {
                 if (itemSize[this.options.direction]) length += itemSize[this.options.direction];
                 if (itemSize[secondaryDirection] > this._size[secondaryDirection]) this._size[secondaryDirection] = itemSize[secondaryDirection];
-                if (itemSize[secondaryDirection] === 0) this._size[secondaryDirection] = undefined;
             }
 
             currentNode = currentNode.getNext();
@@ -136,7 +135,10 @@ define(function(require, exports, module) {
             if (this.options.itemSpacing && currentNode) length += this.options.itemSpacing;
         }
 
-        this._size[this.options.direction] = length;
+        if (length !== this._cachedLength) {
+            this._cachedLength = length;
+            this._size[this.options.direction] = length;
+        }
 
         return {
             size: this.getSize(),
