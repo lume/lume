@@ -34,7 +34,7 @@ define(function(require, exports, module) {
     }
 
     /** @const */
-    Group.SIZE_ZERO = [0, 0];
+    var SIZE_ZERO = [0, 0];
 
     Group.prototype = Object.create(Surface.prototype);
     Group.prototype.elementType = 'div';
@@ -101,24 +101,41 @@ define(function(require, exports, module) {
         var opacity = context.opacity;
         var size = context.size;
 
-        var result = Surface.prototype.commit.call(this, {
-            transform: Transform.thenMove(transform, [-origin[0] * size[0], -origin[1] * size[1], 0]),
-            opacity: opacity,
-            origin: origin,
-            size: Group.SIZE_ZERO
-        }, allocator);
-
         if (size[0] !== this._groupSize[0] || size[1] !== this._groupSize[1]) {
             this._groupSize[0] = size[0];
             this._groupSize[1] = size[1];
             this.context.setSize(size);
         }
 
+        // parent surface
+        var result = Surface.prototype.commit.call(this, {
+            transform: transform,
+            opacity: opacity,
+            origin: origin,
+            size: SIZE_ZERO
+        }, allocator);
+
+        // child group
         this.context.commit({
-            transform: Transform.translate(-origin[0] * size[0], -origin[1] * size[1], 0),
+            transform: Transform.identity,
             origin: origin,
             size: size
         }, allocator);
+
+//        // parent surface
+//        var result = Surface.prototype.commit.call(this, {
+//            transform: Transform.thenMove(transform, [-origin[0] * size[0], -origin[1] * size[1], 0]),
+//            opacity: opacity,
+//            origin: origin,
+//            size: SIZE_ZERO
+//        }, allocator);
+//
+//        // child group
+//        this.context.commit({
+//            transform: Transform.translate(-origin[0] * size[0], -origin[1] * size[1], 0),
+//            origin: origin,
+//            size: size
+//        }, allocator);
 
         return result;
     };
