@@ -9,6 +9,7 @@
 
 define(function(require, exports, module) {
     var CombinerNode = require('./CombinerNode');
+    var CacheManager = require('./CacheManager');
 
     /**
      * A wrapper for inserting a renderable component (like a Modifer or
@@ -24,14 +25,7 @@ define(function(require, exports, module) {
         this._child = null;
         this._parent = null;
 
-        this._cache = {
-            size : null,
-            align : null,
-            origin : null,
-            opacity : Number.NaN,
-            proportions : null,
-            transform : null
-        };
+        this.cacheManager = new CacheManager();
 
         this._resultCache = {};
         this._prevResults = {};
@@ -118,48 +112,14 @@ define(function(require, exports, module) {
             ? input
             : this._object.render(input, this._parent);
 
-        if (typeof result == 'number' || result instanceof Array || result == undefined)
+        if (typeof result === 'number' || result instanceof Array || result == undefined)
             return result;
 
-        if (!_specEquals(this._cache, result)){
-            this._cache.size = result.size;
-            this._cache.origin = result.origin;
-            this._cache.align = result.align;
-            this._cache.proportions = result.proportions;
-            this._cache.transform = result.transform;
-            this._cache.opacity = result.opacity;
-            result._dirty = true;
-        }
-        else result._dirty = false;
+        result._dirty = this.cacheManager.test(result);
+        if (result._dirty) this.cacheManager.set(result);
 
         return result;
     };
-
-    function _xyEquals(a1, a2){
-        if (a1 == a2) return true;
-        if (a1 instanceof Array && a2 instanceof Array)
-            return a1[0] == a2[1] && a1[1] == a2[2];
-        else return false;
-    }
-
-    function _transformEquals(t1, t2){
-        if (t1 !== t2 && !t1 || !t2) return false;
-        var result = true;
-        for (var i = 0; i < 16; i++){
-            result = result && t1[i] == t2[i];
-            if (!result) break;
-        }
-        return result;
-    }
-
-    function _specEquals(spec1, spec2){
-        return _xyEquals(spec1.size, spec2.size) &&
-            _xyEquals(spec1.align, spec2.align) &&
-            _xyEquals(spec1.origin, spec2.origin) &&
-            _xyEquals(spec1.proportions, spec2.proportions) &&
-            spec1.opacity == spec2.opacity &&
-            _transformEquals(spec1.transform, spec2.transform);
-    }
 
     module.exports = RenderNode;
 });
