@@ -29,7 +29,7 @@ define(function(require, exports, module) {
         return _parse.call(this, spec, parentContext, sizeContext, result, dirty);
     };
 
-    function _parse(spec, parentContext, transformContext, result, dirty){
+    function _parse(spec, parentContext, sizeContext, result, dirty){
         this.counter++;
         var counter = this.counter;
 
@@ -48,7 +48,8 @@ define(function(require, exports, module) {
             align = parentContext.align || _zeroZero;
             if (parentContext.size && align && (align[0] || align[1])) {
                 var alignAdjust = [align[0] * parentContext.size[0], align[1] * parentContext.size[1], 0];
-                transform = Transform.thenMove(transform, _vecInContext(alignAdjust, transformContext));
+                // transform is relative to origin defined by last size context's transform and its alignment
+                transform = Transform.thenMove(transform, _vecInContext(alignAdjust, sizeContext));
             }
 
             this.cache[counter] = {
@@ -66,7 +67,7 @@ define(function(require, exports, module) {
         }
         else if (spec instanceof Array) {
             for (var i = 0; i < spec.length; i++) {
-                _parse.call(this, spec[i], parentContext, transformContext, result, dirty);
+                _parse.call(this, spec[i], parentContext, sizeContext, result, dirty);
             }
         }
         else { //spec.target defined
@@ -88,7 +89,7 @@ define(function(require, exports, module) {
             }
 
             target = spec.target;
-            var nextTransformContext = transformContext;
+            var nextTransformContext = sizeContext;
 
             opacity = (spec.opacity !== undefined)
                 ? parentContext.opacity * spec.opacity
@@ -123,7 +124,7 @@ define(function(require, exports, module) {
                 }
 
                 if (align && (align[0] || align[1]))
-                    transform = Transform.thenMove(transform, _vecInContext([align[0] * parentSize[0], align[1] * parentSize[1], 0], transformContext));
+                    transform = Transform.thenMove(transform, _vecInContext([align[0] * parentSize[0], align[1] * parentSize[1], 0], sizeContext));
 
                 if (origin && (origin[0] || origin[1]))
                     transform = Transform.moveThen([-origin[0] * size[0], -origin[1] * size[1], 0], transform);
