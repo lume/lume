@@ -6,9 +6,9 @@
   "main": "infamous.js",
   "scripts": {
     "test": "echo 'Error: TODO: no test specified' && exit 1",
-    "build-global": "echo 'Error: TODO: Global build.' && exit 1",
-    "build-amd": "echo 'Error: TODO: AMD build.' && exit 1",
-    "build-commonjs": "echo 'Error: TODO: CommonJS build.' && exit 1"
+    "clean": "rm -rf dist",
+    "postinstall": "./node_modules/.bin/6to5 src --out-dir dist --modules umd",
+    "build-global": "echo 'Error: TODO: Global build.' && exit 1"
   },
   "repository": {
     "type": "git",
@@ -33,5 +33,8 @@
     "army-knife": "~0.0.2",
     "famous": "git+https://github.com/trusktr/famous.git#trusktr",
     "jss": "^0.8.1"
+  },
+  "devDependencies": {
+    "6to5": "^2.4.3"
   }
 }
