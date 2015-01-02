@@ -15,7 +15,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "git@github.com:trusktr/infamous.git"
+    "url": "git@github.com:infamous/infamous.git"
   },
   "keywords": [
     "user",
@@ -41,8 +41,8 @@
     "6to5": "^2.4.3"
   },
   "bugs": {
-    "url": "https://github.com/trusktr/infamous/issues"
+    "url": "https://github.com/infamous/infamous/issues"
   },
-  "homepage": "https://github.com/trusktr/infamous",
+  "homepage": "https://github.com/infamous/infamous",
   "author": ""
 }
