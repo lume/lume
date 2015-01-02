@@ -5,14 +5,17 @@
   "format": "es6",
   "main": "infamous.js",
   "scripts": {
-    "test": "echo 'Error: TODO: no test specified' && exit 1",
+    "test": "echo 'TODO: Test script' && exit 1",
     "clean": "rm -rf dist",
-    "postinstall": "./node_modules/.bin/6to5 src --out-dir dist --modules umd",
-    "build-global": "echo 'Error: TODO: Global build.' && exit 1"
+    "postinstall": "npm run build-umd",
+    "build-umd": "6to5 src --out-dir dist --modules umd",
+    "build-cjs": "6to5 src --out-dir dist --modules common",
+    "build-amd": "6to5 src --out-dir dist --modules amd",
+    "build-global": "echo 'TODO: Global build' && exit 1"
   },
   "repository": {
     "type": "git",
-    "url": "git@g.trusktr.io:trusktr/infamous.git"
+    "url": "git@github.com:trusktr/infamous.git"
   },
   "keywords": [
     "user",
@@ -36,5 +39,10 @@
   },
   "devDependencies": {
     "6to5": "^2.4.3"
-  }
+  },
+  "bugs": {
+    "url": "https://github.com/trusktr/infamous/issues"
+  },
+  "homepage": "https://github.com/trusktr/infamous",
+  "author": ""
 }
