@@ -80,7 +80,7 @@ define(function(require, exports, module) {
                         this,
                         spec.target,
                         this.cache[counter],
-                        this.cache[counter].transformContext,
+                        this.cache[counter].sizeContext,
                         result,
                         spec._dirty
                     );
@@ -89,7 +89,7 @@ define(function(require, exports, module) {
             }
 
             target = spec.target;
-            var nextTransformContext = sizeContext;
+            var nextsizeContext = sizeContext;
 
             opacity = (spec.opacity !== undefined)
                 ? parentContext.opacity * spec.opacity
@@ -105,7 +105,7 @@ define(function(require, exports, module) {
 
             if (spec.origin) {
                 origin = spec.origin;
-                nextTransformContext = parentContext.transform;
+                nextsizeContext = parentContext.transform;
             }
             else origin = parentContext.origin;
 
@@ -129,7 +129,7 @@ define(function(require, exports, module) {
                 if (origin && (origin[0] || origin[1]))
                     transform = Transform.moveThen([-origin[0] * size[0], -origin[1] * size[1], 0], transform);
 
-                nextTransformContext = parentContext.transform;
+                nextsizeContext = parentContext.transform;
                 origin = null;
                 align = null;
             }
@@ -141,14 +141,14 @@ define(function(require, exports, module) {
                 origin: origin,
                 align: align,
                 size: size,
-                transformContext: nextTransformContext
+                sizeContext: nextsizeContext
             };
 
             _parse.call(
                 this,
                 target,
                 this.cache[counter],
-                this.cache[counter].transformContext,
+                this.cache[counter].sizeContext,
                 result,
                 isDirty
             );
