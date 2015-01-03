@@ -13,7 +13,7 @@ define(function(require, exports, module) {
     /**
      * A base class for viewable content and event
      *   targets inside a Famo.us application, containing a renderable document
-     *   fragment. Like an HTML div, it can accept internal markup,
+     *   fragmen`t. Like an HTML div, it can accept internal markup,
      *   properties, classes, and handle events.
      *
      * @class Surface
@@ -28,8 +28,6 @@ define(function(require, exports, module) {
      */
     function Surface(options) {
         ElementOutput.call(this);
-
-        this.options = {};
 
         this.properties = {};
         this.attributes = {};
@@ -48,8 +46,6 @@ define(function(require, exports, module) {
         this._dirtyClasses = [];
 
         if (options) this.setOptions(options);
-
-        this._currentTarget = null;
     }
     Surface.prototype = Object.create(ElementOutput.prototype);
     Surface.prototype.constructor = Surface;
@@ -416,22 +412,25 @@ define(function(require, exports, module) {
      * @param {ElementAllocator} allocator
      */
     Surface.prototype.cleanup = function cleanup(allocator) {
-        var i = 0;
         var target = this._currentTarget;
-        this._eventOutput.emit('recall');
         this.recall(target);
+
         target.style.display = 'none';
         target.style.opacity = '';
         target.style.width = '';
         target.style.height = '';
+
         _cleanupStyles.call(this, target);
         _cleanupAttributes.call(this, target);
-        var classList = this.getClassList();
         _cleanupClasses.call(this, target);
-        for (i = 0; i < classList.length; i++) target.classList.remove(classList[i]);
+
+        var classList = this.getClassList();
+        for (var i = 0; i < classList.length; i++)
+            target.classList.remove(classList[i]);
+
         if (this.elementClass) {
             if (this.elementClass instanceof Array) {
-                for (i = 0; i < this.elementClass.length; i++) {
+                for (var i = 0; i < this.elementClass.length; i++) {
                     target.classList.remove(this.elementClass[i]);
                 }
             }
@@ -439,8 +438,8 @@ define(function(require, exports, module) {
                 target.classList.remove(this.elementClass);
             }
         }
+
         this.detach(target);
-        this._currentTarget = null;
         allocator.deallocate(target);
     };
 
@@ -468,6 +467,7 @@ define(function(require, exports, module) {
      * @method recall
      */
     Surface.prototype.recall = function recall(target) {
+        this._eventOutput.emit('recall');
         var df = document.createDocumentFragment();
         while (target.hasChildNodes()) df.appendChild(target.firstChild);
         this.setContent(df);

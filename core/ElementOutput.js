@@ -42,12 +42,12 @@ define(function(require, exports, module) {
         }.bind(this);
 
         this.id = Entity.register(this);
-        this._element = null;
-        this._sizeDirty = false;
-        this._originDirty = false;
-        this._transformDirty = false;
-
+        this._currentTarget = null;
+        this._sizeDirty = true;
+        this._originDirty = true;
+        this._transformDirty = true;
         this._invisible = false;
+
         if (element) this.attach(element);
     }
 
@@ -61,7 +61,7 @@ define(function(require, exports, module) {
      * @return {EventHandler} this
      */
     ElementOutput.prototype.on = function on(type, fn) {
-        if (this._element) this._element.addEventListener(type, this.eventForwarder);
+        if (this._currentTarget) this._currentTarget.addEventListener(type, this.eventForwarder);
         this._eventOutput.on(type, fn);
     };
 
@@ -234,7 +234,7 @@ define(function(require, exports, module) {
      * @param {Context} context commit context
      */
     ElementOutput.prototype.commit = function commit(context) {
-        var target = this._element;
+        var target = this._currentTarget;
         if (!target) return;
 
         var transform = context.transform;
@@ -254,7 +254,7 @@ define(function(require, exports, module) {
 
         if (this._invisible) {
             this._invisible = false;
-            this._element.style.display = '';
+            this._currentTarget.style.display = '';
         }
 
         if (this._opacity !== opacity) {
@@ -285,9 +285,9 @@ define(function(require, exports, module) {
     };
 
     ElementOutput.prototype.cleanup = function cleanup() {
-        if (this._element) {
+        if (this._currentTarget) {
             this._invisible = true;
-            this._element.style.display = 'none';
+            this._currentTarget.style.display = 'none';
         }
     };
 
@@ -299,7 +299,7 @@ define(function(require, exports, module) {
      * @param {Node} target document parent of this container
      */
     ElementOutput.prototype.attach = function attach(target) {
-        this._element = target;
+        this._currentTarget = target;
         _addEventListeners.call(this, target);
     };
 
@@ -311,15 +311,15 @@ define(function(require, exports, module) {
      * @method detach
      */
     ElementOutput.prototype.detach = function detach() {
-        var target = this._element;
+        var target = this._currentTarget;
         if (target) {
             _removeEventListeners.call(this, target);
             if (this._invisible) {
                 this._invisible = false;
-                this._element.style.display = '';
+                this._currentTarget.style.display = '';
             }
         }
-        this._element = null;
+        this._currentTarget = null;
         return target;
     };
 
