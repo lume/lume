@@ -32,7 +32,7 @@ define(function(require, exports, module) {
         this.properties = {};
         this.attributes = {};
         this.content = '';
-        this.classList = [];
+
         this.size = null;   // can take numeric, undefined or true values
         this._size = null;  // takes numeric values
 
@@ -43,6 +43,7 @@ define(function(require, exports, module) {
         this._contentDirty = true;
         this._trueSizeCheck = true;
 
+        this.classList = [];
         this._dirtyClasses = [];
 
         if (options) this.setOptions(options);
@@ -236,34 +237,37 @@ define(function(require, exports, module) {
 
     // Apply values of all Famous-managed styles to the document element.
     //  These will be deployed to the document on call to #setup().
+    function _applyClasses(target) {
+        for (var i = 0; i < this.classList.length; i++)
+            target.classList.add(this.classList[i]);
+    }
+
+    // Apply values of all Famous-managed styles to the document element.
+    //  These will be deployed to the document on call to #setup().
     function _applyStyles(target) {
-        for (var n in this.properties) {
-            target.style[n] = this.properties[n];
-        }
+        for (var key in this.properties)
+            target.style[key] = this.properties[key];
     }
 
     // Clear all Famous-managed styles from the document element.
     // These will be deployed to the document on call to #setup().
     function _cleanupStyles(target) {
-        for (var n in this.properties) {
-            target.style[n] = '';
-        }
+        for (var key in this.properties)
+            target.style[key] = '';
     }
 
     // Apply values of all Famous-managed attributes to the document element.
     //  These will be deployed to the document on call to #setup().
     function _applyAttributes(target) {
-        for (var n in this.attributes) {
-            target.setAttribute(n, this.attributes[n]);
-        }
+        for (var key in this.attributes)
+            target.setAttribute(key, this.attributes[key]);
     }
 
     // Clear all Famous-managed attributes from the document element.
     // These will be deployed to the document on call to #setup().
     function _cleanupAttributes(target) {
-        for (var n in this.attributes) {
-            target.removeAttribute(n);
-        }
+        for (var key in this.attributes)
+            target.removeAttribute(key);
     }
 
     function _xyNotEquals(a, b) {
@@ -320,8 +324,7 @@ define(function(require, exports, module) {
 
         if (this._classesDirty) {
             _cleanupClasses.call(this, target);
-            var classList = this.getClassList();
-            for (var i = 0; i < classList.length; i++) target.classList.add(classList[i]);
+            _applyClasses.call(this, target);
             this._classesDirty = false;
             this._trueSizeCheck = true;
         }
@@ -425,21 +428,6 @@ define(function(require, exports, module) {
         _cleanupStyles.call(this, target);
         _cleanupAttributes.call(this, target);
         _cleanupClasses.call(this, target);
-
-        var classList = this.getClassList();
-        for (var i = 0; i < classList.length; i++)
-            target.classList.remove(classList[i]);
-
-        if (this.elementClass) {
-            if (this.elementClass instanceof Array) {
-                for (var i = 0; i < this.elementClass.length; i++) {
-                    target.classList.remove(this.elementClass[i]);
-                }
-            }
-            else {
-                target.classList.remove(this.elementClass);
-            }
-        }
 
         this.detach(target);
         allocator.deallocate(target);
