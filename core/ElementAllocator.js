@@ -76,7 +76,7 @@ define(function(require, exports, module) {
     };
 
     /**
-     * De-allocate an element of specified type to the pool.
+     * De-allocate an element of specified type to the pool for recycling.
      *
      * @private
      * @method deallocate

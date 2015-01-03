@@ -290,10 +290,7 @@ define(function(require, exports, module) {
     };
 
     ElementOutput.prototype.cleanup = function cleanup() {
-        if (this._currentTarget) {
-            this._invisible = true;
-            this._currentTarget.style.display = 'none';
-        }
+        if (this._currentTarget) this._invisible = true;
     };
 
     /**
@@ -321,11 +318,10 @@ define(function(require, exports, module) {
             _removeEventListeners.call(this, target);
             if (this._invisible) {
                 this._invisible = false;
-                this._currentTarget.style.display = '';
+                target.style.display = '';
             }
         }
         this._currentTarget = null;
-        return target;
     };
 
     module.exports = ElementOutput;

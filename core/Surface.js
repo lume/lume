@@ -405,8 +405,7 @@ define(function(require, exports, module) {
 
     /**
      *  Remove all Famous-relevant attributes from a document element.
-     *    This is called by SurfaceManager's detach().
-     *    This is in some sense the reverse of .deploy().
+     *    This is called by the Context if the Surface is no longer rendered.
      *
      * @private
      * @method cleanup
@@ -429,7 +428,10 @@ define(function(require, exports, module) {
         _cleanupAttributes.call(this, target);
         _cleanupClasses.call(this, target);
 
-        this.detach(target);
+        // garbage collect current target and remove bound event listeners
+        this.detach();
+
+        // store allocated node in cache for recycling
         allocator.deallocate(target);
     };
 
