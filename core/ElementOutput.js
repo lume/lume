@@ -28,7 +28,7 @@ define(function(require, exports, module) {
      * @param {Node} element document parent of this container
      */
     function ElementOutput(element) {
-        this._matrix = null;
+        this._transform = null;
         this._opacity = 1;
         this._origin = null;
         this._size = null;
@@ -237,20 +237,20 @@ define(function(require, exports, module) {
         var target = this._element;
         if (!target) return;
 
-        var matrix = context.transform;
+        var transform = context.transform;
         var opacity = context.opacity;
         var origin = context.origin;
         var size = context.size;
 
-        if (!matrix && this._matrix) {
-            this._matrix = null;
+        if (!transform && this._transform) {
+            this._transform = null;
             this._opacity = 0;
             _setInvisible(target);
             return;
         }
 
         if (_xyNotEquals(this._origin, origin)) this._originDirty = true;
-        if (Transform.notEquals(this._matrix, matrix)) this._transformDirty = true;
+        if (Transform.notEquals(this._transform, transform)) this._transformDirty = true;
 
         if (this._invisible) {
             this._invisible = false;
@@ -276,9 +276,9 @@ define(function(require, exports, module) {
                 this._originDirty = false;
             }
 
-            if (!matrix) matrix = Transform.identity;
-            this._matrix = matrix;
-            var aaMatrix = this._size ? Transform.thenMove(matrix, [-this._size[0]*origin[0], -this._size[1]*origin[1], 0]) : matrix;
+            if (!transform) transform = Transform.identity;
+            this._transform = transform;
+            var aaMatrix = this._size ? Transform.thenMove(transform, [-this._size[0]*origin[0], -this._size[1]*origin[1], 0]) : transform;
             _setMatrix(target, aaMatrix);
             this._transformDirty = false;
         }
