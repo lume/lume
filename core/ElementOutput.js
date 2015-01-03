@@ -237,29 +237,16 @@ define(function(require, exports, module) {
      */
     ElementOutput.prototype.commit = function commit(context) {
         var target = this._currentTarget;
-        if (!target) return;
+        if (!target || this._invisible) return;
 
         var transform = context.transform;
         var opacity = context.opacity;
         var origin = context.origin;
         var size = context.size;
 
-        //TODO: check if this block is necessary
-        if (!transform && this._transform) {
-            this._transform = null;
-            this._opacity = 0;
-            _setInvisible(target);
-            return;
-        }
-
         if (_xyNotEquals(this._origin, origin)) this._originDirty = true;
         if (Transform.notEquals(this._transform, transform)) this._transformDirty = true;
         if (this._opacity !== opacity) this._opacityDirty = true;
-
-        if (this._invisible) {
-            this._invisible = false;
-            this._currentTarget.style.display = '';
-        }
 
         if (this._opacityDirty) {
             this._opacityDirty = false;
@@ -290,7 +277,7 @@ define(function(require, exports, module) {
     };
 
     ElementOutput.prototype.cleanup = function cleanup() {
-        if (this._currentTarget) this._invisible = true;
+        if (this._currentTarget) this.setInvisible();
     };
 
     /**
@@ -301,6 +288,7 @@ define(function(require, exports, module) {
      * @param {Node} target document parent of this container
      */
     ElementOutput.prototype.attach = function attach(target) {
+        this._invisible = false;
         this._currentTarget = target;
         _addEventListeners.call(this, target);
     };
@@ -316,13 +304,21 @@ define(function(require, exports, module) {
         var target = this._currentTarget;
         if (target) {
             _removeEventListeners.call(this, target);
-            if (this._invisible) {
-                this._invisible = false;
-                target.style.display = '';
-            }
+            this.setInvisible();
         }
         this._currentTarget = null;
     };
+
+    ElementOutput.prototype.setInvisible = function(){
+        this._invisible = true;
+        this._transform = null;
+        this._opacity = 0;
+        var target = this._currentTarget;
+        if (target){
+            target.style.display = '';
+            _setInvisible(target);
+        }
+    }
 
     module.exports = ElementOutput;
 });

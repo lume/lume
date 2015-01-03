@@ -284,8 +284,10 @@ define(function(require, exports, module) {
      * @param {ElementAllocator} allocator document element pool for this context
      */
     Surface.prototype.setup = function setup(allocator) {
+        // create element of specific type
         var target = allocator.allocate(this.elementType);
 
+        // add any element classes
         if (this.elementClass) {
             if (this.elementClass instanceof Array) {
                 for (var i = 0; i < this.elementClass.length; i++)
@@ -294,9 +296,10 @@ define(function(require, exports, module) {
             else this.addClass(this.elementClass);
         }
 
+        // set the currentTarget and any bound listeners
         this.attach(target);
 
-        this._invisible = true;
+        // set all dirty flags to true
         this._opacityDirty = true;
         this._stylesDirty = true;
         this._classesDirty = true;
