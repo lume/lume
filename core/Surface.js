@@ -35,7 +35,8 @@ define(function(require, exports, module) {
         this.attributes = {};
         this.content = '';
         this.classList = [];
-        this.size = null;
+        this.size = null;   // can take numeric, undefined or true values
+        this._size = null;  // takes numeric values
 
         this._classesDirty = true;
         this._stylesDirty = true;

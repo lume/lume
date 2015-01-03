@@ -155,24 +155,24 @@ define(function(require, exports, module) {
      *
      * @method _formatCSSTransform
      * @private
-     * @param {FamousMatrix} m matrix
+     * @param {Transform} matrix transform
      * @return {string} matrix3d CSS style representation of the transform
      */
-    function _formatCSSTransform(m) {
-        m[12] = Math.round(m[12] * devicePixelRatio) * invDevicePixelRatio;
-        m[13] = Math.round(m[13] * devicePixelRatio) * invDevicePixelRatio;
+    function _formatCSSTransform(matrix) {
+        matrix[12] = Math.round(matrix[12] * devicePixelRatio) * invDevicePixelRatio;
+        matrix[13] = Math.round(matrix[13] * devicePixelRatio) * invDevicePixelRatio;
 
         var result = 'matrix3d(';
-        for (var i = 0; i < 15; i++) result += m[i] + ',';
+        for (var i = 0; i < 15; i++) result += matrix[i] + ',';
 
-        return result + m[15] + ')';
+        return result + matrix[15] + ')';
     }
 
     /**
-     * Directly apply given FamousMatrix to the document element as the
+     * Directly apply given Transform to the document element as the
      *   appropriate webkit CSS style.
      *
-     * @method setMatrix
+     * @method setTransform
      *
      * @static
      * @private
@@ -180,20 +180,20 @@ define(function(require, exports, module) {
      * @param {FamousMatrix} matrix
      */
 
-    var _setMatrix;
+    var _setTransform;
     if (navigator.userAgent.toLowerCase().indexOf('firefox') > -1) {
-        _setMatrix = function(element, matrix) {
+        _setTransform = function(element, matrix) {
             element.style.zIndex = (matrix[14] * 1000000) | 0;    // fix for Firefox z-buffer issues
             element.style.transform = _formatCSSTransform(matrix);
         };
     }
     else if (usePrefix) {
-        _setMatrix = function(element, matrix) {
+        _setTransform = function(element, matrix) {
             element.style.webkitTransform = _formatCSSTransform(matrix);
         };
     }
     else {
-        _setMatrix = function(element, matrix) {
+        _setTransform = function(element, matrix) {
             element.style.transform = _formatCSSTransform(matrix);
         };
     }
@@ -278,8 +278,8 @@ define(function(require, exports, module) {
 
             if (!transform) transform = Transform.identity;
             this._transform = transform;
-            var aaMatrix = this._size ? Transform.thenMove(transform, [-this._size[0]*origin[0], -this._size[1]*origin[1], 0]) : transform;
-            _setMatrix(target, aaMatrix);
+            var aaTransform = this._size ? Transform.thenMove(transform, [-this._size[0]*origin[0], -this._size[1]*origin[1], 0]) : transform;
+            _setTransform(target, aaTransform);
             this._transformDirty = false;
         }
     };
