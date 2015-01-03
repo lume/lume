@@ -151,11 +151,9 @@ define(function(require, exports, module) {
      */
     Surface.prototype.toggleClass = function toggleClass(className) {
         var i = this.classList.indexOf(className);
-        if (i >= 0) {
-            this.removeClass(className);
-        } else {
-            this.addClass(className);
-        }
+        (i == -1)
+            ? this.addClass(className)
+            : this.removeClass(className);
         return this;
     };
 
@@ -273,7 +271,8 @@ define(function(require, exports, module) {
     }
 
     /**
-     * One-time setup for an element to be ready for commits to document.
+     * Allocates the element-type associated with the Surface, adds its given
+     * element classes, and prepares it for future committing.
      *
      * @private
      * @method setup
@@ -282,20 +281,19 @@ define(function(require, exports, module) {
      */
     Surface.prototype.setup = function setup(allocator) {
         var target = allocator.allocate(this.elementType);
+
         if (this.elementClass) {
             if (this.elementClass instanceof Array) {
-                for (var i = 0; i < this.elementClass.length; i++) {
-                    target.classList.add(this.elementClass[i]);
-                }
+                for (var i = 0; i < this.elementClass.length; i++)
+                    this.addClass(this.elementClass[i]);
             }
-            else {
-                target.classList.add(this.elementClass);
-            }
+            else this.addClass(this.elementClass);
         }
-        target.style.display = '';
+
         this.attach(target);
-        this._opacity = null;
-        this._currentTarget = target;
+
+        this._invisible = true;
+        this._opacityDirty = true;
         this._stylesDirty = true;
         this._classesDirty = true;
         this._attributesDirty = true;
@@ -413,13 +411,17 @@ define(function(require, exports, module) {
      */
     Surface.prototype.cleanup = function cleanup(allocator) {
         var target = this._currentTarget;
+
+        // cache the target's contents for later deployment
         this.recall(target);
 
+        // hide the element
         target.style.display = 'none';
         target.style.opacity = '';
         target.style.width = '';
         target.style.height = '';
 
+        // clear all styles, classes and attributes
         _cleanupStyles.call(this, target);
         _cleanupAttributes.call(this, target);
         _cleanupClasses.call(this, target);
@@ -444,7 +446,7 @@ define(function(require, exports, module) {
     };
 
     /**
-     * Place the document element that this component manages into the document.
+     * Insert the Surface's content into the currentTarget.
      *
      * @private
      * @method deploy
@@ -460,8 +462,7 @@ define(function(require, exports, module) {
     };
 
     /**
-     * Remove any contained document content associated with this surface
-     *   from the actual document.
+     * Cache the content of the surface in a document fragment for future deployment.
      *
      * @private
      * @method recall

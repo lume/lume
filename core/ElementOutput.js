@@ -43,6 +43,8 @@ define(function(require, exports, module) {
 
         this.id = Entity.register(this);
         this._currentTarget = null;
+
+        this._opacityDirty = true;
         this._sizeDirty = true;
         this._originDirty = true;
         this._transformDirty = true;
@@ -242,6 +244,7 @@ define(function(require, exports, module) {
         var origin = context.origin;
         var size = context.size;
 
+        //TODO: check if this block is necessary
         if (!transform && this._transform) {
             this._transform = null;
             this._opacity = 0;
@@ -251,13 +254,15 @@ define(function(require, exports, module) {
 
         if (_xyNotEquals(this._origin, origin)) this._originDirty = true;
         if (Transform.notEquals(this._transform, transform)) this._transformDirty = true;
+        if (this._opacity !== opacity) this._opacityDirty = true;
 
         if (this._invisible) {
             this._invisible = false;
             this._currentTarget.style.display = '';
         }
 
-        if (this._opacity !== opacity) {
+        if (this._opacityDirty) {
+            this._opacityDirty = false;
             this._opacity = opacity;
             target.style.opacity = (opacity >= 1) ? '0.999999' : opacity;
         }
@@ -292,7 +297,7 @@ define(function(require, exports, module) {
     };
 
     /**
-     * Place the document element that this component manages into the document.
+     * Assigns the currentTarget for committing and binds event listeners.
      *
      * @private
      * @method attach
