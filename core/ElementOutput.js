@@ -31,24 +31,23 @@ define(function(require, exports, module) {
         this._transform = null;
         this._opacity = 1;
         this._origin = null;
-        this._size = null;
+        this._size = [0,0];
 
         this._eventOutput = new EventHandler();
         this._eventOutput.bindThis(this);
 
-        /** @ignore */
         this.eventForwarder = function eventForwarder(event) {
             this._eventOutput.emit(event.type, event);
         }.bind(this);
 
-        this.id = Entity.register(this);
+        this._id = Entity.register(this);
         this._currentTarget = null;
+        this._invisible = false;
 
         this._opacityDirty = true;
         this._sizeDirty = true;
         this._originDirty = true;
         this._transformDirty = true;
-        this._invisible = false;
 
         if (element) this.attach(element);
     }
@@ -130,7 +129,7 @@ define(function(require, exports, module) {
      * @return {Object} render spec for this surface (spec id)
      */
     ElementOutput.prototype.render = function render() {
-        return this.id;
+        return this._id;
     };
 
     //  Attach Famous event handling to document events emanating from target
@@ -184,8 +183,9 @@ define(function(require, exports, module) {
 
     var _setTransform;
     if (navigator.userAgent.toLowerCase().indexOf('firefox') > -1) {
+        // fix for Firefox z-buffer issues
         _setTransform = function(element, matrix) {
-            element.style.zIndex = (matrix[14] * 1000000) | 0;    // fix for Firefox z-buffer issues
+            element.style.zIndex = (matrix[14] * 1000000) | 0;
             element.style.transform = _formatCSSTransform(matrix);
         };
     }
@@ -222,6 +222,11 @@ define(function(require, exports, module) {
         element.style.opacity = 0;
     };
 
+    function _setSize(element, size){
+        element.style.width = size[0] + 'px';
+        element.style.height = size[1] + 'px';
+    }
+
     function _xyNotEquals(a, b) {
         return (a && b) ? (a[0] !== b[0] || a[1] !== b[1]) : a !== b;
     }
@@ -244,35 +249,59 @@ define(function(require, exports, module) {
         var origin = spec.origin;
         var size = spec.size;
 
-        if (_xyNotEquals(this._origin, origin)) this._originDirty = true;
-        if (Transform.notEquals(this._transform, transform)) this._transformDirty = true;
-        if (this._opacity !== opacity) this._opacityDirty = true;
+        this._sizeDirty = (!this._trueSizeCheck && (this.size[0] === true || this.size[1] === true))
+            ? false
+            : _xyNotEquals(this._size, size);
+
+        this._originDirty = _xyNotEquals(this._origin, origin);
+        this._transformDirty = Transform.notEquals(this._transform, transform);
+        this._opacityDirty = (this._opacity !== opacity);
 
         if (this._opacityDirty) {
-            this._opacityDirty = false;
             this._opacity = opacity;
             target.style.opacity = (opacity >= 1) ? '0.999999' : opacity;
+            this._opacityDirty = false;
         }
 
-        if (this._transformDirty || this._originDirty || this._sizeDirty) {
-            if (this._sizeDirty) this._sizeDirty = false;
+        if (this._sizeDirty) {
+            if (!this.size) this.size = [undefined, undefined];
+            else this._size = [this.size[0], this.size[1]];
 
-            if (this._originDirty) {
-                if (origin) {
-                    if (!this._origin) this._origin = [0, 0];
-                    this._origin[0] = origin[0];
-                    this._origin[1] = origin[1];
-                }
-                else this._origin = null;
-                _setOrigin(target, this._origin);
-                this._originDirty = false;
+            if (this._trueSizeCheck) {
+                if (this.size[0] === true) this._size[0] = target.offsetWidth;
+                if (this.size[1] === true) this._size[1] = target.offsetHeight;
+                this._trueSizeCheck = false;
             }
+            else {
+                if (this.size[0] === undefined) this._size[0] = spec.size[0];
+                if (this.size[1] === undefined) this._size[1] = spec.size[1];
+                _setSize(target, this._size);
+            }
+            this._eventOutput.emit('resize');
+        }
 
-            if (!transform) transform = Transform.identity;
-            this._transform = transform;
-            var aaTransform = this._size ? Transform.thenMove(transform, [-this._size[0]*origin[0], -this._size[1]*origin[1], 0]) : transform;
+        if (this._originDirty) {
+            if (origin) {
+                if (!this._origin) this._origin = [0, 0];
+                this._origin[0] = origin[0];
+                this._origin[1] = origin[1];
+            }
+            else this._origin = null;
+            _setOrigin(target, this._origin);
+        }
+
+        if (this._transformDirty || this._originDirty || (this._sizeDirty && origin)) {
+            this._transform = transform || Transform.identity;
+
+            var aaTransform = (origin && !(origin[0] === 0 && origin[1] === 0))
+                ? Transform.thenMove(transform, [-this._size[0]*origin[0], -this._size[1]*origin[1], 0])
+                : transform;
+
             _setTransform(target, aaTransform);
+
+            this._originDirty = false;
             this._transformDirty = false;
+            this._sizeDirty = false;
         }
     };
 
@@ -311,14 +340,13 @@ define(function(require, exports, module) {
 
     ElementOutput.prototype.setInvisible = function(){
         this._invisible = true;
-        this._transform = null;
         this._opacity = 0;
         var target = this._currentTarget;
         if (target){
             target.style.display = '';
             _setInvisible(target);
         }
-    }
+    };
 
     module.exports = ElementOutput;
 });

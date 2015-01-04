@@ -34,7 +34,6 @@ define(function(require, exports, module) {
         this.content = '';
 
         this.size = null;   // can take numeric, undefined or true values
-        this._size = null;  // takes numeric values
 
         this._classesDirty = true;
         this._stylesDirty = true;
@@ -322,9 +321,13 @@ define(function(require, exports, module) {
     Surface.prototype.commit = function commit(spec, allocator) {
         if (!this._currentTarget) this.setup(allocator);
 
-        ElementOutput.prototype.commit.call(this, spec);
-
         var target = this._currentTarget;
+
+        if (this._contentDirty) {
+            this.deploy(target);
+            this._contentDirty = false;
+            this._trueSizeCheck = true;
+        }
 
         if (this._classesDirty) {
             _cleanupClasses.call(this, target);
@@ -344,72 +347,7 @@ define(function(require, exports, module) {
             this._attributesDirty = false;
         }
 
-        if (this._contentDirty) {
-            this.deploy(target);
-            this._contentDirty = false;
-            this._trueSizeCheck = true;
-        }
-
-        var size = spec.size;
-
-        // this block defines this._size
-        // rules:
-        // if this.size[i] is undefined, take on spec.size[i]
-        // if this.size[i] is true, get size from DOM
-        //
-
-        if (this.size) {
-            var parentSize = spec.size;
-            size = [this.size[0], this.size[1]];
-
-            if (size[0] === undefined) size[0] = parentSize[0];
-            if (size[1] === undefined) size[1] = parentSize[1];
-
-            if (size[0] === true || size[1] === true) {
-                if (size[0] === true){
-                    if (this._trueSizeCheck || (this._size[0] === 0)) {
-                        var width = target.offsetWidth;
-                        if (this._size && this._size[0] !== width) {
-                            this._size[0] = width;
-                            this._sizeDirty = true;
-                        }
-                        size[0] = width;
-                    } else {
-                        if (this._size) size[0] = this._size[0];
-                    }
-                }
-                if (size[1] === true){
-                    if (this._trueSizeCheck || (this._size[1] === 0)) {
-                        var height = target.offsetHeight;
-                        if (this._size && this._size[1] !== height) {
-                            this._size[1] = height;
-                            this._sizeDirty = true;
-                        }
-                        size[1] = height;
-                    } else {
-                        if (this._size) size[1] = this._size[1];
-                    }
-                }
-                this._trueSizeCheck = false;
-            }
-        }
-
-        if (_xyNotEquals(this._size, size)) {
-            if (!this._size) this._size = [0, 0];
-            this._size[0] = size[0];
-            this._size[1] = size[1];
-
-            this._sizeDirty = true;
-        }
-
-        if (this._sizeDirty) {
-            if (this._size) {
-                target.style.width = (this.size && this.size[0] === true) ? '' : this._size[0] + 'px';
-                target.style.height = (this.size && this.size[1] === true) ?  '' : this._size[1] + 'px';
-            }
-
-            this._eventOutput.emit('resize');
-        }
+        ElementOutput.prototype.commit.call(this, spec);
     };
 
     /**
