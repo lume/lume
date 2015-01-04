@@ -39,8 +39,6 @@
     "famousify": "^0.1.5",
     "6to5": "^2.4.3"
   },
-  "devDependencies": {
-  },
   "bugs": {
     "url": "https://github.com/infamous/infamous/issues"
   },
