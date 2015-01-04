@@ -8,9 +8,9 @@
     "test": "echo 'TODO: Test script' && exit 1",
     "clean": "rm -rf dist",
     "postinstall": "npm run build-umd",
-    "build-umd": "6to5 src --source-maps-inline --out-dir dist --modules umd",
-    "build-cjs": "6to5 src --source-maps-inline --out-dir dist --modules common",
-    "build-amd": "6to5 src --source-maps-inline --out-dir dist --modules amd",
+    "build-umd": "./node_modules/.bin/6to5 src --source-maps-inline --out-dir dist --modules umd",
+    "build-cjs": "./node_modules/.bin/6to5 src --source-maps-inline --out-dir dist --modules common",
+    "build-amd": "./node_modules/.bin/6to5 src --source-maps-inline --out-dir dist --modules amd",
     "build-global": "echo 'TODO: Global build' && exit 1"
   },
   "repository": {
