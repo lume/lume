@@ -12,7 +12,6 @@ define(function(require, exports, module) {
     var CanvasSurface = require('../surfaces/CanvasSurface');
     var Transform = require('../core/Transform');
     var EventHandler = require('../core/EventHandler');
-    var Utilities = require('../math/Utilities');
     var OptionsManager = require('../core/OptionsManager');
 
     var MouseSync = require('../inputs/MouseSync');
@@ -51,17 +50,20 @@ define(function(require, exports, module) {
             }
         );
 
-        this.indicator.pipe(this.sync);
+        this.label.pipe(this.sync);
 
         this.sync.on('update', function(data) {
             this.set(this.get() + data.delta);
+        }.bind(this));
+
+        this.label.on('click', function(event){
+            this.set(event.offsetX * scale);
         }.bind(this));
 
         this.value = this.options.value;
         this._drawPos = 0;
 
         _updateLabel.call(this, this.value);
-
     }
 
     Slider.DEFAULT_OPTIONS = {
@@ -82,9 +84,10 @@ define(function(require, exports, module) {
 
     function _createLabel(options){
         var labelProperties = {
-            pointerEvents : 'none',
             lineHeight : options.size[1] + 'px',
-            color : '#3cf'
+            cursor : 'pointer',
+            color : '#3cf',
+            zIndex : 1
         };
 
         for (var key in options.properties)
@@ -115,9 +118,13 @@ define(function(require, exports, module) {
         return this.value;
     };
 
+    function clamp(value, range) {
+        return Math.max(Math.min(value, range[1]), range[0]);
+    };
+
     Slider.prototype.set = function set(value) {
         if (value === this.value) return;
-        this.value = Utilities.clamp(value, this.options.range);
+        this.value = clamp(value, this.options.range);
         _updateLabel.call(this, this.value);
         this.eventOutput.emit('change', {value: this.value});
     };
@@ -148,17 +155,7 @@ define(function(require, exports, module) {
 
         return {
             size: this.options.size,
-            target: [
-                {
-                    transform: Transform.behind,
-                    origin: [0, 0],
-                    target: this.indicator.render()
-                },
-                {
-                    origin: [0, 0],
-                    target: this.label.render()
-                }
-            ]
+            target: [this.indicator.render(), this.label.render()]
         };
     };
 
