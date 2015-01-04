@@ -249,6 +249,8 @@ define(function(require, exports, module) {
         var origin = spec.origin;
         var size = spec.size;
 
+        // this will be false for a true-sized element after the first pass
+        // even though this._size != spec.size
         var dirtyTrueSize = this._trueSizeCheck && (this.size[0] == true || this.size[1] == true);
 
         if (_xyNotEquals(this._size, size) || dirtyTrueSize)
@@ -265,19 +267,24 @@ define(function(require, exports, module) {
         }
 
         if (this._sizeDirty) {
-            if (!this.size) this.size = [undefined, undefined];
-            else this._size = [this.size[0], this.size[1]];
+            // take on numeric size values if available
+            if (typeof this.size[0] === 'number') this._size[0] = this.size[0];
+            if (typeof this.size[1] === 'number') this._size[1] = this.size[1];
 
+            // take on parent size if size is undefined
             if (this.size[0] === undefined) this._size[0] = spec.size[0];
             if (this.size[1] === undefined) this._size[1] = spec.size[1];
 
+            // flag to ping the DOM for the current element size
             if (this._trueSizeCheck) {
                 if (this.size[0] === true) this._size[0] = target.offsetWidth;
                 if (this.size[1] === true) this._size[1] = target.offsetHeight;
                 this._trueSizeCheck = false;
             }
 
-            _setSize(target, this._size);
+            // commit pixel size unless dimension's size is true
+            if (this.size[0] !== true) target.style.width = this._size[0] + 'px';
+            if (this.size[1] !== true) target.style.height = this._size[1] + 'px';
 
             this._eventOutput.emit('resize');
         }
@@ -295,11 +302,10 @@ define(function(require, exports, module) {
         if (this._transformDirty || this._originDirty || (this._sizeDirty && origin)) {
             this._transform = transform || Transform.identity;
 
-            var aaTransform = (origin && !(origin[0] === 0 && origin[1] === 0))
-                ? Transform.thenMove(transform, [-this._size[0]*origin[0], -this._size[1]*origin[1], 0])
-                : transform;
-
-            _setTransform(target, aaTransform);
+            if (origin && !(origin[0] === 0 && origin[1] === 0))
+                _setTransform(target, Transform.thenMove(transform, [-this._size[0]*origin[0], -this._size[1]*origin[1], 0]));
+            else
+                _setTransform(target, transform)
 
             this._originDirty = false;
             this._transformDirty = false;

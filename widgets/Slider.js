@@ -24,29 +24,6 @@ define(function(require, exports, module) {
         touch : TouchSync
     });
 
-    function _createIndicator(options){
-        return new CanvasSurface({
-            size: options.size
-        });
-    }
-
-    function _createLabel(options){
-        var labelProperties = {
-            pointerEvents : 'none',
-            lineHeight : options.size[1] + 'px'
-        };
-
-        for (var key in options.properties)
-            labelProperties[key] = options.properties[key];
-
-        return new Surface({
-            size: options.size,
-            content: options.label,
-            properties : labelProperties
-        });
-    }
-
-    /** @constructor */
     function Slider(options) {
         this.options = Object.create(Slider.DEFAULT_OPTIONS);
         this.optionsManager = new OptionsManager(this.options);
@@ -88,14 +65,38 @@ define(function(require, exports, module) {
     }
 
     Slider.DEFAULT_OPTIONS = {
-        size: [200,30],
+        size: [200,25],
         range: [0, 1],
-        precision: 2,
+        precision: 1,
         value: 0,
-        fillColor: 'black',
-        backgroundColor: 'white',
+        fillColor: 'rgba(50,50,50,1)',
+        backgroundColor: 'rgba(0,0,0,0)',
         label: ''
     };
+
+    function _createIndicator(options){
+        return new CanvasSurface({
+            size: options.size
+        });
+    }
+
+    function _createLabel(options){
+        var labelProperties = {
+            pointerEvents : 'none',
+            lineHeight : options.size[1] + 'px',
+            color : '#3cf'
+        };
+
+        for (var key in options.properties)
+            labelProperties[key] = options.properties[key];
+
+        return new Surface({
+            size: options.size,
+            content: options.label,
+            properties : labelProperties,
+            classes : options.classes
+        });
+    }
 
     function _updateLabel(value) {
         this.label.setContent(
@@ -134,12 +135,14 @@ define(function(require, exports, module) {
         var ctx = this.indicator.getContext('2d');
 
         if (fillSize < this._drawPos) {
+            ctx.clearRect(fillSize, 0, size[0] - fillSize, size[1]);
             ctx.fillStyle = this.options.backgroundColor;
-            ctx.fillRect(fillSize, 0, size[0] - fillSize + 1, size[1]);
+            ctx.fillRect(fillSize, 0, size[0] - fillSize, size[1]);
         }
         else if (fillSize > this._drawPos) {
+            ctx.clearRect(this._drawPos, 0, fillSize - this._drawPos, size[1]);
             ctx.fillStyle = this.options.fillColor;
-            ctx.fillRect(this._drawPos-1, 0, fillSize - this._drawPos+1, size[1]);
+            ctx.fillRect(this._drawPos, 0, fillSize - this._drawPos, size[1]);
         }
         this._drawPos = fillSize;
 
@@ -147,11 +150,11 @@ define(function(require, exports, module) {
             size: this.options.size,
             target: [
                 {
+                    transform: Transform.behind,
                     origin: [0, 0],
                     target: this.indicator.render()
                 },
                 {
-                    transform: Transform.inFront,
                     origin: [0, 0],
                     target: this.label.render()
                 }
