@@ -38,11 +38,17 @@
     "jss": "^0.10.1"
   },
   "devDependencies": {
-    "6to5": "^2.4.3"
+    "6to5": "^2.4.3",
+    "famousify": "^0.1.5"
   },
   "bugs": {
     "url": "https://github.com/infamous/infamous/issues"
   },
   "homepage": "https://github.com/infamous/infamous",
-  "author": ""
+  "author": "",
+  "browserify": {
+    "transform": [
+      "famousify"
+    ]
+  }
 }
