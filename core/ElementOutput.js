@@ -233,16 +233,16 @@ define(function(require, exports, module) {
      *
      * @private
      * @method commit
-     * @param {Context} context commit context
+     * @param {Spec} spec commit context
      */
-    ElementOutput.prototype.commit = function commit(context) {
+    ElementOutput.prototype.commit = function commit(spec) {
         var target = this._currentTarget;
         if (!target || this._invisible) return;
 
-        var transform = context.transform;
-        var opacity = context.opacity;
-        var origin = context.origin;
-        var size = context.size;
+        var transform = spec.transform;
+        var opacity = spec.opacity;
+        var origin = spec.origin;
+        var size = spec.size;
 
         if (_xyNotEquals(this._origin, origin)) this._originDirty = true;
         if (Transform.notEquals(this._transform, transform)) this._transformDirty = true;

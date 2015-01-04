@@ -317,13 +317,14 @@ define(function(require, exports, module) {
      *
      * @private
      * @method commit
-     * @param {Context} spec commit context
+     * @param {Spec} spec commit context
      */
     Surface.prototype.commit = function commit(spec, allocator) {
         if (!this._currentTarget) this.setup(allocator);
 
+        ElementOutput.prototype.commit.call(this, spec);
+
         var target = this._currentTarget;
-        var size = spec.size;
 
         if (this._classesDirty) {
             _cleanupClasses.call(this, target);
@@ -341,12 +342,26 @@ define(function(require, exports, module) {
         if (this._attributesDirty) {
             _applyAttributes.call(this, target);
             this._attributesDirty = false;
+        }
+
+        if (this._contentDirty) {
+            this.deploy(target);
+            this._contentDirty = false;
             this._trueSizeCheck = true;
         }
+
+        var size = spec.size;
+
+        // this block defines this._size
+        // rules:
+        // if this.size[i] is undefined, take on spec.size[i]
+        // if this.size[i] is true, get size from DOM
+        //
 
         if (this.size) {
             var parentSize = spec.size;
             size = [this.size[0], this.size[1]];
+
             if (size[0] === undefined) size[0] = parentSize[0];
             if (size[1] === undefined) size[1] = parentSize[1];
 
@@ -395,15 +410,6 @@ define(function(require, exports, module) {
 
             this._eventOutput.emit('resize');
         }
-
-        if (this._contentDirty) {
-            this.deploy(target);
-            this._eventOutput.emit('deploy');
-            this._contentDirty = false;
-            this._trueSizeCheck = true;
-        }
-
-        ElementOutput.prototype.commit.call(this, spec);
     };
 
     /**
@@ -446,6 +452,7 @@ define(function(require, exports, module) {
      * @param {Node} target document parent of this container
      */
     Surface.prototype.deploy = function deploy(target) {
+        this._eventOutput.emit('deploy');
         var content = this.getContent();
         if (content instanceof Node) {
             while (target.hasChildNodes()) target.removeChild(target.firstChild);
