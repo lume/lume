@@ -20,7 +20,7 @@ import Molecule from './Molecule';
 
 import callAfter from 'army-knife/callAfter';
 
-export class PushMenuLayout extends Molecule {
+export default class PushMenuLayout extends Molecule {
     constructor(options) {
         super(options);
 
@@ -375,4 +375,3 @@ export class PushMenuLayout extends Molecule {
         }
     }
 }
-export default PushMenuLayout;

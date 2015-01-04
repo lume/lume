@@ -11,7 +11,7 @@ import Surface from 'famous/core/Surface';
 
 import Molecule from './Molecule';
 
-export class Plane extends Molecule {
+export default class Plane extends Molecule {
     constructor(initialOptions) {
         super(initialOptions);
 
@@ -30,4 +30,3 @@ export class Plane extends Molecule {
         return this.surface.setContent.apply(this.surface, args);
     }
 }
-export default Plane;

@@ -14,7 +14,7 @@ import EventHandler from 'famous/core/EventHandler';
 
 import "army-knife/polyfill.Function.name";
 
-export class Molecule extends RenderNode {
+export default class Molecule extends RenderNode {
     constructor(initialOptions) {
         initialOptions = typeof initialOptions != "undefined"? initialOptions: {};
 
@@ -90,4 +90,3 @@ export class Molecule extends RenderNode {
         return this.options.transform;
     }
 }
-export default Molecule;

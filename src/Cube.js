@@ -19,7 +19,7 @@ import Plane from './Plane';
 
 import forLength from 'army-knife/forLength';
 
-export class Cube extends Molecule { // a scenegraph tree that lays things out in a cube. The leaf nodes are Modifiers (the sides of the cube). Put stuff in them.
+export default class Cube extends Molecule { // a scenegraph tree that lays things out in a cube. The leaf nodes are Modifiers (the sides of the cube). Put stuff in them.
     constructor(cubeWidth) {
         super({size: cubeWidth});
 
@@ -75,4 +75,3 @@ export class Cube extends Molecule { // a scenegraph tree that lays things out i
         return this;
     }
 }
-export default Cube;
