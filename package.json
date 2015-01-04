@@ -35,11 +35,11 @@
   "dependencies": {
     "army-knife": "^0.0.4",
     "famous": "git+https://github.com/trusktr/famous.git#trusktr",
-    "jss": "^0.10.1"
+    "jss": "^0.10.1",
+    "famousify": "^0.1.5"
   },
   "devDependencies": {
-    "6to5": "^2.4.3",
-    "famousify": "^0.1.5"
+    "6to5": "^2.4.3"
   },
   "bugs": {
     "url": "https://github.com/infamous/infamous/issues"
