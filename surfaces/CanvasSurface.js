@@ -74,8 +74,6 @@ define(function(require, exports, module) {
      * @param {Node} target node to which the component was deployed
      */
     CanvasSurface.prototype.recall = function recall(target) {
-        var size = this.getSize();
-
         this._backBuffer.width = target.width;
         this._backBuffer.height = target.height;
 
@@ -102,11 +100,10 @@ define(function(require, exports, module) {
      *
      *  @method setSize
      *  @param {Array.number} size [width, height] of surface
-     *  @param {Array.number} canvasSize [width, height] of canvas surface
      */
-    CanvasSurface.prototype.setSize = function setSize(size, canvasSize) {
+    CanvasSurface.prototype.setSize = function setSize(size) {
         Surface.prototype.setSize.apply(this, arguments);
-        if (canvasSize) this._canvasSize = [canvasSize[0], canvasSize[1]];
+        this._canvasSize = size;
         if (this._currentTarget) {
             this._currentTarget.width = this._canvasSize[0];
             this._currentTarget.height = this._canvasSize[1];

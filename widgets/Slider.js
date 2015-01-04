@@ -24,30 +24,47 @@ define(function(require, exports, module) {
         touch : TouchSync
     });
 
+    function _createIndicator(options){
+        return new CanvasSurface({
+            size: options.size
+        });
+    }
+
+    function _createLabel(options){
+        var labelProperties = {
+            pointerEvents : 'none',
+            lineHeight : options.size[1] + 'px'
+        };
+
+        for (var key in options.properties)
+            labelProperties[key] = options.properties[key];
+
+        return new Surface({
+            size: options.size,
+            content: options.label,
+            properties : labelProperties
+        });
+    }
+
     /** @constructor */
     function Slider(options) {
         this.options = Object.create(Slider.DEFAULT_OPTIONS);
         this.optionsManager = new OptionsManager(this.options);
         if (options) this.setOptions(options);
 
-        this.indicator = new CanvasSurface({
-            size: this.options.indicatorSize,
-            classes : ['slider-back']
-        });
+        this.indicator = _createIndicator(this.options);
+        this.label = _createLabel(this.options);
 
-        this.label = new Surface({
-            size: this.options.labelSize,
-            content: this.options.label,
-            properties : {pointerEvents : 'none'},
-            classes: ['slider-label']
-        });
+        this.ctx = this.indicator.getContext('2d');
+        this.ctx.fillStyle = this.options.backgroundColor;
+        this.ctx.fillRect(0, 0, this.options.size[0], this.options.size[1]);
 
         this.eventOutput = new EventHandler();
         this.eventInput = new EventHandler();
         EventHandler.setInputHandler(this, this.eventInput);
         EventHandler.setOutputHandler(this, this.eventOutput);
 
-        var scale = (this.options.range[1] - this.options.range[0]) / this.options.indicatorSize[0];
+        var scale = (this.options.range[1] - this.options.range[0]) / this.options.size[0];
 
         this.sync = new GenericSync(
             ['mouse', 'touch'],
@@ -58,29 +75,35 @@ define(function(require, exports, module) {
         );
 
         this.indicator.pipe(this.sync);
-        this.sync.pipe(this);
 
-        this.eventInput.on('update', function(data) {
-            this.set(data.position);
+        this.sync.on('update', function(data) {
+            this.set(this.get() + data.delta);
         }.bind(this));
 
+        this.value = this.options.value;
         this._drawPos = 0;
-        _updateLabel.call(this);
+
+        _updateLabel.call(this, this.value);
+
     }
 
     Slider.DEFAULT_OPTIONS = {
-        size: [200, 60],
-        indicatorSize: [200, 30],
-        labelSize: [200, 30],
+        size: [200,30],
         range: [0, 1],
         precision: 2,
         value: 0,
-        label: '',
-        fillColor: 'rgba(170, 170, 170, 1)'
+        fillColor: 'black',
+        backgroundColor: 'white',
+        label: ''
     };
 
-    function _updateLabel() {
-        this.label.setContent(this.options.label + '<span style="float: right">' + this.get().toFixed(this.options.precision) + '</span>');
+    function _updateLabel(value) {
+        this.label.setContent(
+            this.options.label +
+            '<span style="float: right">' +
+                value.toFixed(this.options.precision) +
+            '</span>'
+        );
     }
 
     Slider.prototype.setOptions = function setOptions(options) {
@@ -88,14 +111,14 @@ define(function(require, exports, module) {
     };
 
     Slider.prototype.get = function get() {
-        return this.options.value;
+        return this.value;
     };
 
     Slider.prototype.set = function set(value) {
-        if (value === this.options.value) return;
-        this.options.value = Utilities.clamp(value, this.options.range);
-        _updateLabel.call(this);
-        this.eventOutput.emit('change', {value: value});
+        if (value === this.value) return;
+        this.value = Utilities.clamp(value, this.options.range);
+        _updateLabel.call(this, this.value);
+        this.eventOutput.emit('change', {value: this.value});
     };
 
     Slider.prototype.getSize = function getSize() {
@@ -104,15 +127,19 @@ define(function(require, exports, module) {
 
     Slider.prototype.render = function render() {
         var range = this.options.range;
-        var fillSize = Math.floor(((this.get() - range[0]) / (range[1] - range[0])) * this.options.indicatorSize[0]);
+        var size = this.options.size;
+
+        var fillSize = Math.floor(((this.get() - range[0]) / (range[1] - range[0])) * size[0]);
+
+        var ctx = this.indicator.getContext('2d');
 
         if (fillSize < this._drawPos) {
-            this.indicator.getContext('2d').clearRect(fillSize, 0, this._drawPos - fillSize + 1, this.options.indicatorSize[1]);
+            ctx.fillStyle = this.options.backgroundColor;
+            ctx.fillRect(fillSize, 0, size[0] - fillSize + 1, size[1]);
         }
         else if (fillSize > this._drawPos) {
-            var ctx = this.indicator.getContext('2d');
             ctx.fillStyle = this.options.fillColor;
-            ctx.fillRect(this._drawPos-1, 0, fillSize - this._drawPos+1, this.options.indicatorSize[1]);
+            ctx.fillRect(this._drawPos-1, 0, fillSize - this._drawPos+1, size[1]);
         }
         this._drawPos = fillSize;
 
@@ -124,7 +151,7 @@ define(function(require, exports, module) {
                     target: this.indicator.render()
                 },
                 {
-                    transform: Transform.translate(0, 0, 1),
+                    transform: Transform.inFront,
                     origin: [0, 0],
                     target: this.label.render()
                 }

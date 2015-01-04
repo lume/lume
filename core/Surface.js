@@ -40,7 +40,7 @@ define(function(require, exports, module) {
         this._attributesDirty = true;
         this._sizeDirty = true;
         this._contentDirty = true;
-        this._trueSizeCheck = true;
+        this._trueSizeCheck = false;
 
         this.classList = [];
         this._dirtyClasses = [];
@@ -419,7 +419,7 @@ define(function(require, exports, module) {
      * @return {Array.Number} [x,y] size of surface
      */
     Surface.prototype.getSize = function getSize() {
-        return this._size ? this._size : this.size;
+        return this._size;
     };
 
     /**
@@ -430,7 +430,9 @@ define(function(require, exports, module) {
      * @param {Array.Number} size as [width, height]
      */
     Surface.prototype.setSize = function setSize(size) {
-        this.size = size ? [size[0], size[1]] : null;
+        this.size = [size[0], size[1]];
+//        if (typeof size[0] === 'number') this._size[0] = size[0];
+//        if (typeof size[1] === 'number') this._size[1] = size[1];
         this._sizeDirty = true;
         return this;
     };

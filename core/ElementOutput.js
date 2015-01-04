@@ -249,9 +249,10 @@ define(function(require, exports, module) {
         var origin = spec.origin;
         var size = spec.size;
 
-        this._sizeDirty = (!this._trueSizeCheck && (this.size[0] === true || this.size[1] === true))
-            ? false
-            : _xyNotEquals(this._size, size);
+        var dirtyTrueSize = this._trueSizeCheck && (this.size[0] == true || this.size[1] == true);
+
+        if (_xyNotEquals(this._size, size) || dirtyTrueSize)
+            this._sizeDirty = true;
 
         this._originDirty = _xyNotEquals(this._origin, origin);
         this._transformDirty = Transform.notEquals(this._transform, transform);
@@ -267,16 +268,17 @@ define(function(require, exports, module) {
             if (!this.size) this.size = [undefined, undefined];
             else this._size = [this.size[0], this.size[1]];
 
+            if (this.size[0] === undefined) this._size[0] = spec.size[0];
+            if (this.size[1] === undefined) this._size[1] = spec.size[1];
+
             if (this._trueSizeCheck) {
                 if (this.size[0] === true) this._size[0] = target.offsetWidth;
                 if (this.size[1] === true) this._size[1] = target.offsetHeight;
                 this._trueSizeCheck = false;
             }
-            else {
-                if (this.size[0] === undefined) this._size[0] = spec.size[0];
-                if (this.size[1] === undefined) this._size[1] = spec.size[1];
-                _setSize(target, this._size);
-            }
+
+            _setSize(target, this._size);
+
             this._eventOutput.emit('resize');
         }
 
