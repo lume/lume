@@ -33,7 +33,7 @@ define(function(require, exports, module) {
      *    beginning state
      */
     function Transitionable(start) {
-        this.currentAction = null;
+        this._active = false;
         this.actionQueue = [];
         this.callbackQueue = [];
 
@@ -48,21 +48,9 @@ define(function(require, exports, module) {
 
     var transitionMethods = {};
 
-    Transitionable.register = function register(methods) {
-        var success = true;
-        for (var method in methods) {
-            if (!Transitionable.registerMethod(method, methods[method]))
-                success = false;
-        }
-        return success;
-    };
-
     Transitionable.registerMethod = function registerMethod(name, engineClass) {
-        if (!(name in transitionMethods)) {
+        if (!(name in transitionMethods))
             transitionMethods[name] = engineClass;
-            return true;
-        }
-        else return false;
     };
 
     Transitionable.unregisterMethod = function unregisterMethod(name) {
@@ -74,28 +62,29 @@ define(function(require, exports, module) {
     };
 
     function _loadNext() {
+        if (this.actionQueue.length <= 0) {
+            this.set(this.get()); // no update required
+            this._active = false;
+            return;
+        }
+
         if (this._callback) {
             var callback = this._callback;
             this._callback = undefined;
             callback();
         }
-        if (this.actionQueue.length <= 0) {
-            this.set(this.get()); // no update required
-            return;
-        }
-        this.currentAction = this.actionQueue.shift();
+
+        var currentAction = this.actionQueue.shift();
         this._callback = this.callbackQueue.shift();
 
         var method = null;
-        var endValue = this.currentAction[0];
-        var transition = this.currentAction[1];
+        var endValue = currentAction[0];
+        var transition = currentAction[1];
         if (transition instanceof Object && transition.method) {
             method = transition.method;
             if (typeof method === 'string') method = transitionMethods[method];
         }
-        else {
-            method = TweenTransition;
-        }
+        else method = TweenTransition;
 
         if (this._currentMethod !== method) {
             this._engineInstance = (!(endValue instanceof Object) || method.SUPPORTS_MULTIPLE === true || endValue.length <= method.SUPPORTS_MULTIPLE)
@@ -121,7 +110,7 @@ define(function(require, exports, module) {
      *
      * @method set
      *
-     * @param {number|FamousMatrix|Array.Number|Object.<number, number>} endState
+     * @param {number|Array.Number|Object.<number, number>} endState
      *    end state to which we interpolate
      * @param {transition=} transition object of type {duration: number, curve:
      *    f[0,1] -> [0,1] or name}. If transition is omitted, change will be
@@ -132,6 +121,7 @@ define(function(require, exports, module) {
     Transitionable.prototype.set = function set(endState, transition, callback) {
         if (!transition) {
             this.reset(endState);
+            this._active = false;
             if (callback) callback();
             return this;
         }
@@ -139,7 +129,10 @@ define(function(require, exports, module) {
         var action = [endState, transition];
         this.actionQueue.push(action);
         this.callbackQueue.push(callback);
-        if (!this.currentAction) _loadNext.call(this);
+        if (!this.isActive()) {
+            this._active = true;
+            _loadNext.call(this);
+        }
         return this;
     };
 
@@ -157,7 +150,6 @@ define(function(require, exports, module) {
         this._callback = undefined;
         this.state = startState;
         this.velocity = startVelocity;
-        this.currentAction = null;
         this.actionQueue = [];
         this.callbackQueue = [];
     };
@@ -172,12 +164,7 @@ define(function(require, exports, module) {
      *    completion (t=1)
      */
     Transitionable.prototype.delay = function delay(duration, callback) {
-        this.set(this.get(), {duration: duration,
-            curve: function() {
-                return 0;
-            }},
-            callback
-        );
+        this.set(this.get(), {duration: duration, curve: function(){return 0;}}, callback);
     };
 
     /**
@@ -192,6 +179,7 @@ define(function(require, exports, module) {
      *    interpolated to this point in time.
      */
     Transitionable.prototype.get = function get(timestamp) {
+        if (!this.isActive()) return this.state;
         if (this._engineInstance) this.state = this._engineInstance.get(timestamp);
         return this.state;
     };
@@ -204,7 +192,7 @@ define(function(require, exports, module) {
      * @return {boolean}
      */
     Transitionable.prototype.isActive = function isActive() {
-        return !!this.currentAction;
+        return this._active;
     };
 
     /**
@@ -213,7 +201,9 @@ define(function(require, exports, module) {
      * @method halt
      */
     Transitionable.prototype.halt = function halt() {
-        return this.set(this.get());
+        var value = this.set(this.get());
+        this._active = false;
+        return value;
     };
 
     module.exports = Transitionable;

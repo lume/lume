@@ -178,10 +178,9 @@ define(function(require, exports, module) {
      * @return {Transform}
      */
     TransitionableTransform.prototype.get = function get() {
-        if (this.isActive()) {
-            return _build.call(this);
-        }
-        else return this._final;
+        return (this.isActive())
+            ? _build.call(this)
+            : this._final;
     };
 
     /**
