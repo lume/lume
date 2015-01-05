@@ -222,11 +222,6 @@ define(function(require, exports, module) {
         element.style.opacity = 0;
     };
 
-    function _setSize(element, size){
-        element.style.width = size[0] + 'px';
-        element.style.height = size[1] + 'px';
-    }
-
     function _xyNotEquals(a, b) {
         return (a && b) ? (a[0] !== b[0] || a[1] !== b[1]) : a !== b;
     }
