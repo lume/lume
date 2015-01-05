@@ -3,6 +3,8 @@ Infamous
 
 A UI library.
 
+[![NPM](https://nodei.co/npm/infamous.png)](https://nodei.co/npm/infamous/)
+
 Install
 -------
 
