@@ -246,7 +246,7 @@ define(function(require, exports, module) {
 
         // this will be false for a true-sized element after the first pass
         // even though this._size != spec.size
-        var dirtyTrueSize = this._trueSizeCheck && (this.size[0] == true || this.size[1] == true);
+        var dirtyTrueSize = this._trueSizeCheck && this.size && (this.size[0] == true || this.size[1] == true);
 
         if (_xyNotEquals(this._size, size) || dirtyTrueSize)
             this._sizeDirty = true;
@@ -261,7 +261,8 @@ define(function(require, exports, module) {
             this._opacityDirty = false;
         }
 
-        if (this._sizeDirty) {
+        // size nullity check needed for Group and other renderables with no defined size
+        if (this.size && this._sizeDirty) {
             // take on numeric size values if available
             if (typeof this.size[0] === 'number') this._size[0] = this.size[0];
             if (typeof this.size[1] === 'number') this._size[1] = this.size[1];
