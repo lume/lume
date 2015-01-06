@@ -42,7 +42,6 @@ define(function(require, exports, module) {
 
         this._id = Entity.register(this);
         this._currentTarget = null;
-        this._invisible = false;
 
         this._opacityDirty = true;
         this._sizeDirty = true;
@@ -237,7 +236,7 @@ define(function(require, exports, module) {
      */
     ElementOutput.prototype.commit = function commit(spec) {
         var target = this._currentTarget;
-        if (!target || this._invisible) return;
+        if (!target) return;
 
         var transform = spec.transform;
         var opacity = spec.opacity;
@@ -301,7 +300,7 @@ define(function(require, exports, module) {
             if (origin && !(origin[0] === 0 && origin[1] === 0))
                 _setTransform(target, Transform.thenMove(transform, [-this._size[0]*origin[0], -this._size[1]*origin[1], 0]));
             else
-                _setTransform(target, transform)
+                _setTransform(target, transform);
 
             this._originDirty = false;
             this._transformDirty = false;
@@ -310,7 +309,9 @@ define(function(require, exports, module) {
     };
 
     ElementOutput.prototype.cleanup = function cleanup() {
-        if (this._currentTarget) this.setInvisible();
+        if (!this._currentTarget) return;
+        _setInvisible(this._currentTarget);
+        this._currentTarget.style.display = 'none';
     };
 
     /**
@@ -321,7 +322,6 @@ define(function(require, exports, module) {
      * @param {Node} target document parent of this container
      */
     ElementOutput.prototype.attach = function attach(target) {
-        this._invisible = false;
         this._currentTarget = target;
         _addEventListeners.call(this, target);
     };
@@ -337,19 +337,9 @@ define(function(require, exports, module) {
         var target = this._currentTarget;
         if (target) {
             _removeEventListeners.call(this, target);
-            this.setInvisible();
+            target.style.display = '';
         }
         this._currentTarget = null;
-    };
-
-    ElementOutput.prototype.setInvisible = function(){
-        this._invisible = true;
-        this._opacity = 0;
-        var target = this._currentTarget;
-        if (target){
-            target.style.display = '';
-            _setInvisible(target);
-        }
     };
 
     module.exports = ElementOutput;
