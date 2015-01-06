@@ -31,7 +31,7 @@ define(function(require, exports, module) {
         this._transform = null;
         this._opacity = 1;
         this._origin = null;
-        this._size = [0,0];
+        this._size = null;
 
         this._eventOutput = new EventHandler();
         this._eventOutput.bindThis(this);
@@ -262,6 +262,8 @@ define(function(require, exports, module) {
 
         // size nullity check needed for Group and other renderables with no defined size
         if (this.size && this._sizeDirty) {
+            if (!this._size) this._size = [0,0];
+
             // take on numeric size values if available
             if (typeof this.size[0] === 'number') this._size[0] = this.size[0];
             if (typeof this.size[1] === 'number') this._size[1] = this.size[1];
