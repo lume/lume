@@ -10,7 +10,8 @@ define(function(require, exports, module) {
     function PaginatedLayout(){
         this.scrollview = new Scrollview({
             direction : 0,
-            paginated : true
+            paginated : true,
+            margin: Infinity
         });
 
         this.dots = [];
@@ -49,6 +50,11 @@ define(function(require, exports, module) {
         EventHandler.setOutputHandler(this, this._eventOutput);
 
         this._eventInput.pipe(this.scrollview);
+        this.subscribe(this.scrollview);
+
+        this._eventInput.on('pageChange', function(data){
+            console.log(data)
+        });
     }
 
     PaginatedLayout.prototype = {
