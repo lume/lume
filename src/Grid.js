@@ -14,7 +14,7 @@ import Molecule from './Molecule';
 
 import forLength from 'army-knife/forLength';
 
-export default class Grid extends Molecule { // a scenegraph tree that lays things out in a grid. The leaf nodes are Modifiers (the cells of the grid). Put stuff in them.
+export class Grid extends Molecule { // a scenegraph tree that lays things out in a grid. The leaf nodes are Modifiers (the cells of the grid). Put stuff in them.
     constructor(columns, rows, size) {
         super({size: size});
 
@@ -62,3 +62,4 @@ export default class Grid extends Molecule { // a scenegraph tree that lays thin
         return this;
     }
 }
+export default Grid;

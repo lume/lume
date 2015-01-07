@@ -17,7 +17,7 @@ import DoubleSidedPlane from './DoubleSidedPlane';
 
 import forLength from 'army-knife/forLength';
 
-export default class Calendar extends Molecule {
+export class Calendar extends Molecule {
     constructor(calendarSize, transition) {
         super({size: calendarSize});
 
@@ -99,3 +99,4 @@ export default class Calendar extends Molecule {
         };
     }
 }
+export default Calendar;

@@ -12,7 +12,7 @@ import Transform from 'famous/core/Transform';
 import Molecule from './Molecule';
 import Plane from './Plane';
 
-export default class DoubleSidedPlane extends Molecule { // a basic building block.
+export class DoubleSidedPlane extends Molecule { // a basic building block.
     constructor(initialOptions) {
         super(initialOptions);
 
@@ -40,3 +40,4 @@ export default class DoubleSidedPlane extends Molecule { // a basic building blo
         this.plane2.setContent(content[1]);
     }
 }
+export default DoubleSidedPlane;
