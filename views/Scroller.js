@@ -214,7 +214,6 @@ define(function(require, exports, module) {
 
         // reset edge detection on size change
         if (!this.options.clipSize && (size[0] !== this._contextSize[0] || size[1] !== this._contextSize[1])) {
-            this._onEdge = 0;
             this._contextSize[0] = size[0];
             this._contextSize[1] = size[1];
 
@@ -260,7 +259,7 @@ define(function(require, exports, module) {
             }
         }
 
-        if (!currNode && offset - position < clipSize - EDGE_TOLERANCE) {
+        if (!currNode && offset - position < clipSize) {
             if (this._onEdge !== 1){
                 this._onEdge = 1;
                 this._eventOutput.emit('onEdge', {
@@ -268,7 +267,7 @@ define(function(require, exports, module) {
                 });
             }
         }
-        else if (!this._node.getPrevious() && position < -EDGE_TOLERANCE) {
+        else if (!this._node.getPrevious() && position < 0) {
             if (this._onEdge !== -1) {
                 this._onEdge = -1;
                 this._eventOutput.emit('onEdge', {

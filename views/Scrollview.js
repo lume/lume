@@ -180,7 +180,6 @@ define(function(require, exports, module) {
         this.setVelocity(0);
         this._touchVelocity = 0;
         this._earlyEnd = false;
-        this._delayPageChange = false;
     }
 
     function _handleMove(event) {
@@ -202,7 +201,9 @@ define(function(require, exports, module) {
                 _handleStart.call(this, event);
             }
         }
+
         if (this._earlyEnd) return;
+
         this._touchVelocity = velocity;
 
         if (event.scroll) {
@@ -217,8 +218,6 @@ define(function(require, exports, module) {
 
         this.setOffset(this.getOffset() + delta);
         this._displacement += delta;
-
-        if (this._springState === SpringStates.NONE) _normalizeState.call(this);
     }
 
     function _handleEnd(event) {
@@ -226,7 +225,6 @@ define(function(require, exports, module) {
         if (!this._touchCount) {
             this._dragging = false;
             this._touchCount = 0;
-            _normalizeState.call(this);
             _detachAgents.call(this);
             if (this._edgeState !== EdgeStates.NONE)
                 _setSpring.call(this, this._edgeSpringPosition, SpringStates.EDGE);
@@ -246,11 +244,13 @@ define(function(require, exports, module) {
     }
 
     function _handlePhysicsUpdate(data){
-        _normalizeState.call(this);
+        if (this._springState === SpringStates.NONE) _normalizeState.call(this);
         this._displacement = data.position.x - this._totalShift;
     }
 
     function _handlePhysicsEnd(data){
+        if (Math.abs(this.getOffset()) < 0.5 ) this.setOffset(0);
+        _normalizeState.call(this);
         _detachAgents.call(this);
         if (!this.options.paginated || (this.options.paginated && this._springState !== SpringStates.NONE))
             this._eventOutput.emit('settle', {index : this._cachedIndex});
@@ -365,8 +365,6 @@ define(function(require, exports, module) {
         else this._springState = springState;
     }
 
-    Scrollview.prototype.normalizeState = _normalizeState;
-
     function _normalizeState() {
         var offset = 0; // discrete node distance
         var position = this.getOffset(); // position of first partially visible node
@@ -387,7 +385,7 @@ define(function(require, exports, module) {
         var previousNode = this._node.getPrevious();
         var previousNodeSize;
 
-        while (offset + position <= 0 && previousNode) {
+        while (offset + position < 0 && previousNode) {
             previousNodeSize = _nodeSizeForDirection.call(this, previousNode);
             this._scroller.sequenceFrom(previousNode);
             this._node = previousNode;
@@ -666,6 +664,7 @@ define(function(require, exports, module) {
      * @return {number} Render spec for this component
      */
     Scrollview.prototype.render = function render() {
+//        console.log(this.getOffset())
         if (this.options.paginated && this._needsPaginationCheck) {
             _handlePagination.call(this);
             this._needsPaginationCheck = false;

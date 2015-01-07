@@ -54,7 +54,6 @@ define(function(require, exports, module) {
         this.subscribe(this.scrollview);
 
         this._eventInput.on('pageChange', function(data){
-            console.log(data)
         });
     }
 
