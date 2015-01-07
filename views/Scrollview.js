@@ -116,7 +116,7 @@ define(function(require, exports, module) {
         this._node = null;
         this._touchCount = 0;
         this._springState = SpringStates.NONE;
-        this._onEdge = EdgeStates.NONE;
+        this._edgeState = EdgeStates.NONE;
         this._pageSpringPosition = 0;
         this._edgeSpringPosition = 0;
         this._touchVelocity = 0;
@@ -125,19 +125,19 @@ define(function(require, exports, module) {
         this._displacement = 0;
         this._totalShift = 0;
         this._cachedIndex = 0;
+        this._dragging = false;
 
         // subcomponent logic
-        this._scroller.positionFrom(this.getPosition.bind(this));
+        this._scroller.positionFrom(this.getOffset.bind(this));
 
         // eventing
         this._eventInput = new EventHandler();
         this._eventOutput = new EventHandler();
-
-        this._eventInput.pipe(this.sync);
-        this.sync.pipe(this._eventInput);
-
         EventHandler.setInputHandler(this, this._eventInput);
         EventHandler.setOutputHandler(this, this._eventOutput);
+
+        this._eventInput.pipe(this.sync);
+        this.sync.pipe(this);
 
         _bindEvents.call(this);
 
@@ -164,7 +164,14 @@ define(function(require, exports, module) {
         syncScale: 1
     };
 
+    function _cap(value, limit){
+        if (value > limit) value = limit;
+        if (value < -limit) value = -limit;
+        return value;
+    }
+
     function _handleStart(event) {
+        this._dragging = !event.scroll;
         this._touchCount = event.count;
         if (event.count === undefined) this._touchCount = 1;
 
@@ -173,39 +180,42 @@ define(function(require, exports, module) {
         this.setVelocity(0);
         this._touchVelocity = 0;
         this._earlyEnd = false;
+        this._delayPageChange = false;
     }
 
     function _handleMove(event) {
         var velocity = -event.velocity;
         var delta = -event.delta;
 
-        if (this._onEdge !== EdgeStates.NONE && event.slip) {
-            if ((velocity < 0 && this._onEdge === EdgeStates.TOP) || (velocity > 0 && this._onEdge === EdgeStates.BOTTOM)) {
+        // called when passed edge while scrolling
+        if (this._edgeState !== EdgeStates.NONE && event.scroll) {
+            // ignore further input
+            if ((velocity < 0 && this._edgeState === EdgeStates.TOP) || (velocity > 0 && this._edgeState === EdgeStates.BOTTOM)) {
                 if (!this._earlyEnd) {
+                    event.velocity = 0;
                     _handleEnd.call(this, event);
                     this._earlyEnd = true;
                 }
             }
-            else if (this._earlyEnd && (Math.abs(velocity) > Math.abs(this.getVelocity()))) {
+            else if ((this._edgeState === EdgeStates.TOP && velocity > 0) || (this._edgeState === EdgeStates.BOTTOM && velocity < 0)) {
+                // called if past edge and scrolled opposite direction
                 _handleStart.call(this, event);
             }
         }
         if (this._earlyEnd) return;
         this._touchVelocity = velocity;
 
-        if (event.slip) {
+        if (event.scroll) {
+            // event from scrolling
             var speedLimit = this.options.speedLimit;
-            if (velocity < -speedLimit) velocity = -speedLimit;
-            else if (velocity > speedLimit) velocity = speedLimit;
-
+            velocity = _cap(velocity, speedLimit);
             this.setVelocity(velocity);
 
             var deltaLimit = speedLimit * 16;
-            if (delta > deltaLimit) delta = deltaLimit;
-            else if (delta < -deltaLimit) delta = -deltaLimit;
+            delta = _cap(delta, deltaLimit);
         }
 
-        this.setPosition(this.getPosition() + delta);
+        this.setOffset(this.getOffset() + delta);
         this._displacement += delta;
 
         if (this._springState === SpringStates.NONE) _normalizeState.call(this);
@@ -214,18 +224,36 @@ define(function(require, exports, module) {
     function _handleEnd(event) {
         this._touchCount = event.count || 0;
         if (!this._touchCount) {
+            this._dragging = false;
+            this._touchCount = 0;
+            _normalizeState.call(this);
             _detachAgents.call(this);
-            if (this._onEdge !== EdgeStates.NONE) _setSpring.call(this, this._edgeSpringPosition, SpringStates.EDGE);
+            if (this._edgeState !== EdgeStates.NONE)
+                _setSpring.call(this, this._edgeSpringPosition, SpringStates.EDGE);
             _attachAgents.call(this);
             var velocity = -event.velocity;
             var speedLimit = this.options.speedLimit;
-            if (event.slip) speedLimit *= this.options.edgeGrip;
-            if (velocity < -speedLimit) velocity = -speedLimit;
-            else if (velocity > speedLimit) velocity = speedLimit;
+            if (event.scroll) speedLimit *= this.options.edgeGrip;
+            velocity = _cap(velocity, speedLimit);
             this.setVelocity(velocity);
             this._touchVelocity = 0;
             this._needsPaginationCheck = true;
         }
+    }
+
+    function _handlePhysicsStart(data){
+        this._dragging = false;
+    }
+
+    function _handlePhysicsUpdate(data){
+        _normalizeState.call(this);
+        this._displacement = data.position.x - this._totalShift;
+    }
+
+    function _handlePhysicsEnd(data){
+        _detachAgents.call(this);
+        if (!this.options.paginated || (this.options.paginated && this._springState !== SpringStates.NONE))
+            this._eventOutput.emit('settle', {index : this._cachedIndex});
     }
 
     function _bindEvents() {
@@ -236,7 +264,7 @@ define(function(require, exports, module) {
 
         this._eventInput.on('resize', function() {
             this._node._.calculateSize();
-        }.bind(this));
+        });
 
         this._scroller.on('onEdge', function(data) {
             this._edgeSpringPosition = data.position;
@@ -246,23 +274,17 @@ define(function(require, exports, module) {
 
         this._scroller.on('offEdge', function() {
             this.sync.setOptions({scale: this.options.syncScale});
-            this._onEdge = this._scroller.onEdge();
+            this._edgeState = this._scroller.onEdge();
             this._eventOutput.emit('offEdge');
         }.bind(this));
 
-        this._particle.on('update', function(particle) {
-            if (this._springState === SpringStates.NONE) _normalizeState.call(this);
-            this._displacement = particle.position.x - this._totalShift;
-        }.bind(this));
-
-        this._particle.on('end', function() {
-            if (!this.options.paginated || (this.options.paginated && this._springState !== SpringStates.NONE))
-                this._eventOutput.emit('settle');
-        }.bind(this));
+        this._particle.on('start', _handlePhysicsStart.bind(this));
+        this._particle.on('update', _handlePhysicsUpdate.bind(this));
+        this._particle.on('end', _handlePhysicsEnd.bind(this));
     }
 
     function _attachAgents() {
-        if (this._springState) this._physicsEngine.attach([this.spring], this._particle);
+        if (this._springState !== SpringStates.NONE) this._physicsEngine.attach([this.spring], this._particle);
         else this._physicsEngine.attach([this.drag, this.friction], this._particle);
     }
 
@@ -273,22 +295,16 @@ define(function(require, exports, module) {
 
     function _nodeSizeForDirection(node) {
         var direction = this.options.direction;
-        var nodeSize = node.getSize();
-        return (!nodeSize) ? this._scroller.getSize()[direction] : nodeSize[direction];
+        var size = node.getSize() || this.getSize();
+        return size[direction];
     }
 
     function _handleEdge(edge) {
         this.sync.setOptions({scale: this.options.edgeGrip});
-        this._onEdge = edge;
+        this._edgeState = edge;
 
         if (!this._touchCount && this._springState !== SpringStates.EDGE) {
             _setSpring.call(this, this._edgeSpringPosition, SpringStates.EDGE);
-        }
-
-        if (this._springState && Math.abs(this.getVelocity()) < 0.001) {
-            // reset agents, detaching the spring
-            _detachAgents.call(this);
-            _attachAgents.call(this);
         }
     }
 
@@ -299,63 +315,65 @@ define(function(require, exports, module) {
         var velocity = this.getVelocity();
         if (Math.abs(velocity) >= this.options.pageStopSpeed) return;
 
-        var position = this.getPosition();
+        var position = this.getOffset();
         var velocitySwitch = Math.abs(velocity) > this.options.pageSwitchSpeed;
 
         // parameters to determine when to switch
         var nodeSize = _nodeSizeForDirection.call(this, this._node);
         var positionNext = position > 0.5 * nodeSize;
-        var positionPrev = position < 0.5 * nodeSize;
 
         var velocityNext = velocity > 0;
         var velocityPrev = velocity < 0;
 
-        this._needsPaginationCheck = false;
-
-        if ((positionNext && !velocitySwitch) || (velocitySwitch && velocityNext)) {
+        if ((positionNext && !velocitySwitch) || (velocitySwitch && velocityNext))
             this.goToNextPage();
-        }
-        else if (velocitySwitch && velocityPrev) {
+        else if (velocitySwitch && velocityPrev)
             this.goToPreviousPage();
-        }
         else _setSpring.call(this, 0, SpringStates.PAGE);
     }
 
     function _setSpring(position, springState) {
+        if (!springState) return;
+
         var springOptions;
-        if (springState === SpringStates.EDGE) {
-            this._edgeSpringPosition = position;
-            springOptions = {
-                anchor: [this._edgeSpringPosition, 0, 0],
-                period: this.options.edgePeriod,
-                dampingRatio: this.options.edgeDamp
-            };
-        }
-        else if (springState === SpringStates.PAGE) {
-            this._pageSpringPosition = position;
-            springOptions = {
-                anchor: [this._pageSpringPosition, 0, 0],
-                period: this.options.pagePeriod,
-                dampingRatio: this.options.pageDamp
-            };
+        switch (springState){
+            case SpringStates.EDGE:
+                this._edgeSpringPosition = position;
+                springOptions = {
+                    anchor: [this._edgeSpringPosition, 0, 0],
+                    period: this.options.edgePeriod,
+                    dampingRatio: this.options.edgeDamp
+                };
+                break;
+            case SpringStates.PAGE:
+                this._pageSpringPosition = position;
+                springOptions = {
+                    anchor: [this._pageSpringPosition, 0, 0],
+                    period: this.options.pagePeriod,
+                    dampingRatio: this.options.pageDamp
+                };
+                break;
         }
 
         this.spring.setOptions(springOptions);
-        if (springState && !this._springState) {
+
+        if (!this._springState) {
             _detachAgents.call(this);
             this._springState = springState;
             _attachAgents.call(this);
         }
-        this._springState = springState;
+        else this._springState = springState;
     }
 
-    function _normalizeState() {
-        var offset = 0;
+    Scrollview.prototype.normalizeState = _normalizeState;
 
-        var position = this.getPosition();
-        position += (position < 0 ? -0.5 : 0.5) >> 0;
+    function _normalizeState() {
+        var offset = 0; // discrete node distance
+        var position = this.getOffset(); // position of first partially visible node
 
         var nodeSize = _nodeSizeForDirection.call(this, this._node);
+        if (!nodeSize) return;
+
         var nextNode = this._node.getNext();
 
         while (offset + position >= nodeSize && nextNode) {
@@ -379,14 +397,24 @@ define(function(require, exports, module) {
 
         if (offset) _shiftOrigin.call(this, offset);
 
+        var tolerance = (this._dragging)
+            ? 1
+            : 0.5;
+
+        // when dragging, pageChange called when physics takes over
+        // dragging while touchStart and physics not enabled
+        // because scroll is still like dragging
         if (this._node) {
-            if (this._node.index !== this._cachedIndex) {
-                if (this.getPosition() < 0.5 * nodeSize) {
+            if (!this._dragging && this._node.index !== this._cachedIndex) {
+                // backwards
+                if (this._dragging) return;
+                if (this.getOffset() < tolerance * nodeSize) {
                     this._cachedIndex = this._node.index;
                     this._eventOutput.emit('pageChange', {direction: -1, index: this._cachedIndex});
                 }
             } else {
-                if (this.getPosition() > 0.5 * nodeSize) {
+                // forwards
+                if (this.getOffset() > tolerance * nodeSize) {
                     this._cachedIndex = this._node.index + 1;
                     this._eventOutput.emit('pageChange', {direction: 1, index: this._cachedIndex});
                 }
@@ -397,7 +425,7 @@ define(function(require, exports, module) {
     function _shiftOrigin(amount) {
         this._edgeSpringPosition += amount;
         this._pageSpringPosition += amount;
-        this.setPosition(this.getPosition() + amount);
+        this.setOffset(this.getOffset() + amount);
         this._totalShift += amount;
 
         if (this._springState === SpringStates.EDGE) {
@@ -425,12 +453,11 @@ define(function(require, exports, module) {
      * @return {ViewSequence} The previous node.
      */
     Scrollview.prototype.goToPreviousPage = function goToPreviousPage() {
-        if (!this._node || this._onEdge === EdgeStates.TOP) return null;
+        if (!this._node || this._edgeState === EdgeStates.TOP) return;
 
         // if moving back to the current node
-        if (this.getPosition() > 1 && this._springState === SpringStates.NONE) {
+        if (this.getOffset() > 0 && this._springState === SpringStates.NONE) {
             _setSpring.call(this, 0, SpringStates.PAGE);
-            return this._node;
         }
 
         // if moving to the previous node
@@ -442,7 +469,6 @@ define(function(require, exports, module) {
             _shiftOrigin.call(this, previousNodeSize);
             _setSpring.call(this, 0, SpringStates.PAGE);
         }
-        return previousNode;
     };
 
     /**
@@ -452,7 +478,7 @@ define(function(require, exports, module) {
      * @return {ViewSequence} The next node.
      */
     Scrollview.prototype.goToNextPage = function goToNextPage() {
-        if (!this._node || this._onEdge === EdgeStates.BOTTOM) return null;
+        if (!this._node || this._edgeState === EdgeStates.BOTTOM) return;
         var nextNode = this._node.getNext();
         if (nextNode) {
             var currentNodeSize = _nodeSizeForDirection.call(this, this._node);
@@ -461,7 +487,6 @@ define(function(require, exports, module) {
             _shiftOrigin.call(this, -currentNodeSize);
             _setSpring.call(this, 0, SpringStates.PAGE);
         }
-        return nextNode;
     };
 
     /**
@@ -471,28 +496,24 @@ define(function(require, exports, module) {
      */
     Scrollview.prototype.goToPage = function goToPage(index) {
         var currentIndex = this.getCurrentIndex();
-        var i;
-
         if (currentIndex > index) {
-            for (i = 0; i < currentIndex - index; i++)
+            while (currentIndex !== index) {
                 this.goToPreviousPage();
+                currentIndex--;
+            }
         }
-
-        if (currentIndex < index) {
-            for (i = 0; i < index - currentIndex; i++)
+        else if (currentIndex < index) {
+            while (currentIndex !== index) {
                 this.goToNextPage();
+                currentIndex++;
+            }
         }
-    };
-
-    Scrollview.prototype.outputFrom = function outputFrom() {
-        return this._scroller.outputFrom.apply(this._scroller, arguments);
     };
 
     /**
      * Returns the position associated with the Scrollview instance's current node
      *  (generally the node currently at the top).
      *
-     * @deprecated
      * @method getPosition
      * @param {number} [node] If specified, returns the position of the node at that index in the
      * Scrollview instance's currently managed collection.
@@ -500,7 +521,7 @@ define(function(require, exports, module) {
      * in pixels translated.
      */
     Scrollview.prototype.getPosition = function getPosition() {
-        return this._particle.getPosition1D();
+        return this._displacement;
     };
 
     /**
@@ -511,7 +532,7 @@ define(function(require, exports, module) {
      * in pixels translated.
      */
     Scrollview.prototype.getAbsolutePosition = function getAbsolutePosition() {
-        return this._scroller.getCumulativeSize(this.getCurrentIndex())[this.options.direction] + this.getPosition();
+        return this._scroller.getCumulativeSize(this.getCurrentIndex())[this.options.direction] + this.getOffset();
     };
 
     /**
@@ -524,17 +545,8 @@ define(function(require, exports, module) {
      * @return {number} The position of either the specified node, or the Scrollview's current Node,
      * in pixels translated.
      */
-    Scrollview.prototype.getOffset = Scrollview.prototype.getPosition;
-
-    /**
-     * Sets the position of the physics particle that controls Scrollview instance's "position"
-     *
-     * @deprecated
-     * @method setPosition
-     * @param {number} x The amount of pixels you want your scrollview to progress by.
-     */
-    Scrollview.prototype.setPosition = function setPosition(x) {
-        this._particle.setPosition1D(x);
+    Scrollview.prototype.getOffset = function(){
+        return this._particle.getPosition1D();
     };
 
     /**
@@ -543,7 +555,9 @@ define(function(require, exports, module) {
      * @method setPosition
      * @param {number} x The amount of pixels you want your scrollview to progress by.
      */
-    Scrollview.prototype.setOffset = Scrollview.prototype.setPosition;
+    Scrollview.prototype.setOffset = function setOffset(x) {
+        this._particle.setPosition1D(x);
+    };
 
     /**
      * Returns the Scrollview instance's velocity.
@@ -581,10 +595,9 @@ define(function(require, exports, module) {
         }
 
         if (options.groupScroll !== this.options.groupScroll) {
-            if (options.groupScroll)
-                this.subscribe(this._scroller);
-            else
-                this.unsubscribe(this._scroller);
+            (options.groupScroll)
+                ? this.subscribe(this._scroller)
+                : this.unsubscribe(this._scroller);
         }
 
         // patch custom options
@@ -638,7 +651,11 @@ define(function(require, exports, module) {
      * @return {Array} A two value array of the Scrollview instance's current width and height (in that order).
      */
     Scrollview.prototype.getSize = function getSize() {
-        return this._scroller.getSize.apply(this._scroller, arguments);
+        return Scroller.prototype.getSize.apply(this._scroller, arguments);
+    };
+
+    Scrollview.prototype.outputFrom = function outputFrom() {
+        return Scroller.prototype.outputFrom.apply(this._scroller, arguments);
     };
 
     /**
@@ -649,8 +666,10 @@ define(function(require, exports, module) {
      * @return {number} Render spec for this component
      */
     Scrollview.prototype.render = function render() {
-        if (this.options.paginated && this._needsPaginationCheck) _handlePagination.call(this);
-
+        if (this.options.paginated && this._needsPaginationCheck) {
+            _handlePagination.call(this);
+            this._needsPaginationCheck = false;
+        }
         return this._scroller.render();
     };
 

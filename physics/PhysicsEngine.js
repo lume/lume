@@ -34,7 +34,7 @@ define(function(require, exports, module) {
 
         this._buffer         = 0.0;
         this._prevTime       = now();
-        this._isSleeping     = false;
+        this._isSleeping     = true;
         this._eventHandler   = null;
         this._currAgentId    = 0;
         this._hasBodies      = false;

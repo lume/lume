@@ -13,6 +13,7 @@ define(function(require, exports, module) {
             paginated : true,
             margin: Infinity
         });
+        window.scrollview = this.scrollview;
 
         this.dots = [];
 
@@ -23,7 +24,7 @@ define(function(require, exports, module) {
             size : function(){return [this.dotsWidth, 10]}.bind(this),
             transform : Transform.inFront,
             origin : [.5,.5],
-            align : [.5,.8]
+            align : [.5,.9]
         });
 
         var currentDotModifier = new Modifier({
@@ -42,7 +43,7 @@ define(function(require, exports, module) {
             }
         });
 
-        this.dotsNode.add(currentDotModifier).add(this.currentDot)
+        this.dotsNode.add(currentDotModifier).add(this.currentDot);
 
         this._eventInput = new EventHandler();
         this._eventOutput = new EventHandler();

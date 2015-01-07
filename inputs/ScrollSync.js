@@ -17,7 +17,6 @@ define(function(require, exports, module) {
      *   delta: change since last position,
      *   position: accumulated deltas,
      *   velocity: speed of change in pixels per ms,
-     *   slip: true (unused).
      *
      *   Can be used as delegate of GenericSync.
      *
@@ -40,7 +39,7 @@ define(function(require, exports, module) {
             delta    : null,
             position : null,
             velocity : null,
-            slip     : true
+            scroll   : true
         };
 
         this._eventInput = new EventHandler();
@@ -86,7 +85,6 @@ define(function(require, exports, module) {
             var payload = this._payload;
             payload.position = this._position;
             payload.velocity = finalVel;
-            payload.slip = true;
 
             this._eventOutput.emit('end', payload);
         }
@@ -99,7 +97,6 @@ define(function(require, exports, module) {
             this._inProgress = true;
             this._position = (this.options.direction === undefined) ? [0,0] : 0;
             payload = this._payload;
-            payload.slip = true;
             payload.position = this._position;
             payload.clientX = event.clientX;
             payload.clientY = event.clientY;
@@ -158,7 +155,6 @@ define(function(require, exports, module) {
         payload.delta    = nextDelta;
         payload.velocity = nextVel;
         payload.position = this._position;
-        payload.slip     = true;
 
         this._eventOutput.emit('update', payload);
 
