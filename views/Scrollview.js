@@ -249,7 +249,6 @@ define(function(require, exports, module) {
     }
 
     function _handlePhysicsEnd(data){
-        if (Math.abs(this.getOffset()) < 0.5 ) this.setOffset(0);
         _normalizeState.call(this);
         _detachAgents.call(this);
         if (!this.options.paginated || (this.options.paginated && this._springState !== SpringStates.NONE))
@@ -385,7 +384,7 @@ define(function(require, exports, module) {
         var previousNode = this._node.getPrevious();
         var previousNodeSize;
 
-        while (offset + position < 0 && previousNode) {
+        while (offset + position <= 0 && previousNode) {
             previousNodeSize = _nodeSizeForDirection.call(this, previousNode);
             this._scroller.sequenceFrom(previousNode);
             this._node = previousNode;
@@ -664,7 +663,6 @@ define(function(require, exports, module) {
      * @return {number} Render spec for this component
      */
     Scrollview.prototype.render = function render() {
-//        console.log(this.getOffset())
         if (this.options.paginated && this._needsPaginationCheck) {
             _handlePagination.call(this);
             this._needsPaginationCheck = false;
