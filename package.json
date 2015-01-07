@@ -23,12 +23,12 @@
   ],
   "license": "MPL",
   "dependencies": {
-    "6to5": "^2.4.3",
-    "army-knife": "^0.0.4",
-    "core-js": "^0.3.3",
+    "6to5": "~2.7.1",
+    "army-knife": "~0.0.4",
+    "core-js": "~0.4.1",
     "famous": "git+https://github.com/trusktr/famous.git#trusktr",
-    "famousify": "^0.1.5",
-    "jss": "^0.10.1"
+    "famousify": "~0.1.5",
+    "jss": "~0.10.1"
   },
   "bugs": {
     "url": "https://github.com/infamous/infamous/issues"
