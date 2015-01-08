@@ -131,7 +131,6 @@ define(function(require, exports, module) {
      * @param position {Array|Vector}
      */
     Particle.prototype.setPosition = function setPosition(position) {
-        this.wake();
         this.position.set(position);
     };
 
@@ -142,7 +141,6 @@ define(function(require, exports, module) {
      * @param x {Number}
      */
     Particle.prototype.setPosition1D = function setPosition1D(x) {
-        this.wake();
         this.position.x = x;
     };
 

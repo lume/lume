@@ -62,7 +62,7 @@ define(function(require, exports, module) {
         minimumEndSpeed: 1e-1,
         rails: false,
         scale: 1,
-        stallTime: 100,
+        stallTime: 50,
         lineHeight: 40,
         preventDefault: true
     };
@@ -76,13 +76,9 @@ define(function(require, exports, module) {
 
     function _newFrame() {
         var dt = _now() - this._prevTime;
-        if (dt > this.options.stallTime) {
-
-            var payload = this._payload;
-            payload.position = this._position;
-            payload.velocity = 0;
-
-            this._eventOutput.emit('end', payload);
+        if (this._inProgress && dt > this.options.stallTime) {
+//            this._payload.velocity = 0;
+            this._eventOutput.emit('end', this._payload);
 
             this._inProgress = false;
             this._loopBound = false;

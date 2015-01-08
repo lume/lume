@@ -121,7 +121,6 @@ define(function(require, exports, module) {
         this._edgeSpringPosition = 0;
         this._touchVelocity = 0;
         this._earlyEnd = false;
-        this._needsPaginationCheck = false;
         this._displacement = 0;
         this._totalShift = 0;
         this._cachedIndex = 0;
@@ -177,7 +176,6 @@ define(function(require, exports, module) {
 
         _detachAgents.call(this);
 
-        this.setVelocity(0);
         this._touchVelocity = 0;
         this._earlyEnd = false;
     }
@@ -206,18 +204,11 @@ define(function(require, exports, module) {
 
         this._touchVelocity = velocity;
 
-        if (event.scroll) {
-            // event from scrolling
-            var speedLimit = this.options.speedLimit;
-            velocity = _cap(velocity, speedLimit);
-            this.setVelocity(velocity);
-
-            var deltaLimit = speedLimit * 16;
-            delta = _cap(delta, deltaLimit);
-        }
-
         this.setOffset(this.getOffset() + delta);
         this._displacement += delta;
+
+        if (this._springState === SpringStates.NONE)
+            _normalizeState.call(this);
     }
 
     function _handleEnd(event) {
@@ -229,13 +220,13 @@ define(function(require, exports, module) {
             if (this._edgeState !== EdgeStates.NONE)
                 _setSpring.call(this, this._edgeSpringPosition, SpringStates.EDGE);
             _attachAgents.call(this);
-            var velocity = -event.velocity;
+            var velocity = -event.velocity || -this._touchVelocity;
             var speedLimit = this.options.speedLimit;
             if (event.scroll) speedLimit *= this.options.edgeGrip;
             velocity = _cap(velocity, speedLimit);
             this.setVelocity(velocity);
             this._touchVelocity = 0;
-            this._needsPaginationCheck = true;
+            _handlePagination.call(this);
         }
     }
 
@@ -244,12 +235,13 @@ define(function(require, exports, module) {
     }
 
     function _handlePhysicsUpdate(data){
-        if (this._springState === SpringStates.NONE) _normalizeState.call(this);
+        if (this._springState === SpringStates.NONE)
+            _normalizeState.call(this);
         this._displacement = data.position.x - this._totalShift;
     }
 
     function _handlePhysicsEnd(data){
-        _normalizeState.call(this);
+//        _normalizeState.call(this);
         _detachAgents.call(this);
         if (!this.options.paginated || (this.options.paginated && this._springState !== SpringStates.NONE))
             this._eventOutput.emit('settle', {index : this._cachedIndex});
@@ -302,7 +294,7 @@ define(function(require, exports, module) {
         this.sync.setOptions({scale: this.options.edgeGrip});
         this._edgeState = edge;
 
-        if (!this._touchCount && this._springState !== SpringStates.EDGE) {
+        if (this._springState !== SpringStates.EDGE) {
             _setSpring.call(this, this._edgeSpringPosition, SpringStates.EDGE);
         }
     }
@@ -655,6 +647,12 @@ define(function(require, exports, module) {
         return Scroller.prototype.outputFrom.apply(this._scroller, arguments);
     };
 
+    Scrollview.prototype.getProgress = function(){
+        var length = _nodeSizeForDirection.call(this, this._node);
+        var offset = this.getOffset();
+        return offset / length;
+    };
+
     /**
      * Generate a render spec from the contents of this component.
      *
@@ -663,10 +661,6 @@ define(function(require, exports, module) {
      * @return {number} Render spec for this component
      */
     Scrollview.prototype.render = function render() {
-        if (this.options.paginated && this._needsPaginationCheck) {
-            _handlePagination.call(this);
-            this._needsPaginationCheck = false;
-        }
         return this._scroller.render();
     };
 
