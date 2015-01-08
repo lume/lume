@@ -154,8 +154,8 @@ define(function(require, exports, module) {
         edgeDamp: 1,
         margin: 1000,       // mostly safe
         paginated: false,
-        pagePeriod: 500,
-        pageDamp: 0.8,
+        pagePeriod: 400,
+        pageDamp: 0.7,
         pageStopSpeed: 10,
         pageSwitchSpeed: 0.5,
         speedLimit: 5,
@@ -220,7 +220,7 @@ define(function(require, exports, module) {
             if (this._edgeState !== EdgeStates.NONE)
                 _setSpring.call(this, this._edgeSpringPosition, SpringStates.EDGE);
             _attachAgents.call(this);
-            var velocity = -event.velocity || -this._touchVelocity;
+            var velocity = -event.velocity;
             var speedLimit = this.options.speedLimit;
             if (event.scroll) speedLimit *= this.options.edgeGrip;
             velocity = _cap(velocity, speedLimit);
@@ -241,7 +241,6 @@ define(function(require, exports, module) {
     }
 
     function _handlePhysicsEnd(data){
-//        _normalizeState.call(this);
         _detachAgents.call(this);
         if (!this.options.paginated || (this.options.paginated && this._springState !== SpringStates.NONE))
             this._eventOutput.emit('settle', {index : this._cachedIndex});
@@ -259,7 +258,7 @@ define(function(require, exports, module) {
 
         this._scroller.on('onEdge', function(data) {
             this._edgeSpringPosition = data.position;
-            _handleEdge.call(this, this._scroller.onEdge());
+            _handleEdge.call(this, data.edge);
             this._eventOutput.emit('onEdge');
         }.bind(this));
 
@@ -633,6 +632,14 @@ define(function(require, exports, module) {
         return this._scroller.sequenceFrom(node);
     };
 
+    Scrollview.prototype.setPosition = function(position){
+        this.setOffset(position - this._displacement);
+        this._displacement = position;
+        this._particle.wake();
+        _normalizeState.call(this);
+        _handlePagination.call(this);
+    };
+
     /**
      * Returns the width and the height of the Scrollview instance.
      *
@@ -647,8 +654,9 @@ define(function(require, exports, module) {
         return Scroller.prototype.outputFrom.apply(this._scroller, arguments);
     };
 
-    Scrollview.prototype.getProgress = function(){
+    Scrollview.prototype.getProgress = function getProgress() {
         var length = _nodeSizeForDirection.call(this, this._node);
+        if (!length) return 0;
         var offset = this.getOffset();
         return offset / length;
     };

@@ -62,7 +62,7 @@ define(function(require, exports, module) {
         minimumEndSpeed: 1e-1,
         rails: false,
         scale: 1,
-        stallTime: 50,
+        stallTime: 80,
         lineHeight: 40,
         preventDefault: true
     };
@@ -90,13 +90,11 @@ define(function(require, exports, module) {
         if (this.options.preventDefault) event.preventDefault();
 
         if (!this._inProgress) {
-
             if (!this._loopBound) {
                 Engine.on('prerender', this._boundNewFrame);
                 this._loopBound = true;
             }
 
-            this._inProgress = true;
             this._position = (this.options.direction === undefined) ? [0,0] : 0;
             payload = this._payload;
             payload.position = this._position;
@@ -106,9 +104,9 @@ define(function(require, exports, module) {
             payload.offsetY = event.offsetY;
 
             this._eventOutput.emit('start', payload);
-            return;
         }
 
+        this._inProgress = true;
         var currTime = _now();
         var prevTime = this._prevTime || currTime;
 
@@ -126,6 +124,7 @@ define(function(require, exports, module) {
         }
 
         var diffTime = Math.max(currTime - prevTime, MINIMUM_TICK_TIME); // minimum tick time
+        this._prevTime = currTime;
 
         var velX = diffX / diffTime;
         var velY = diffY / diffTime;
@@ -157,8 +156,6 @@ define(function(require, exports, module) {
         payload.position = this._position;
 
         this._eventOutput.emit('update', payload);
-
-        this._prevTime = currTime;
     }
 
     /**
