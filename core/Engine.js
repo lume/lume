@@ -86,7 +86,7 @@ define(function(require, exports, module) {
         eventHandler.emit('prerender');
 
         // empty the queue
-        if (nextTickQueue.length) {
+        if (nextTickQueue.length && nextTickQueue[0] instanceof Array) {
             for (i = 0; i < nextTickQueue[0].length; i++) nextTickQueue[0][i].call(this, currentFrame);
             nextTickQueue.splice(0, 1);
         }
