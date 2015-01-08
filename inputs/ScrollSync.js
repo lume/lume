@@ -50,7 +50,7 @@ define(function(require, exports, module) {
 
         this._position = (this.options.direction === undefined) ? [0,0] : 0;
         this._prevTime = undefined;
-        this._prevVel = undefined;
+        this._boundNewFrame = _newFrame.bind(this);
         this._eventInput.on('mousewheel', _handleMove.bind(this));
         this._eventInput.on('wheel', _handleMove.bind(this));
         this._inProgress = false;
@@ -59,10 +59,10 @@ define(function(require, exports, module) {
 
     ScrollSync.DEFAULT_OPTIONS = {
         direction: undefined,
-        minimumEndSpeed: Infinity,
+        minimumEndSpeed: 1e-1,
         rails: false,
         scale: 1,
-        stallTime: 50,
+        stallTime: 100,
         lineHeight: 40,
         preventDefault: true
     };
@@ -75,18 +75,18 @@ define(function(require, exports, module) {
     var _now = Date.now;
 
     function _newFrame() {
-        if (this._inProgress && (_now() - this._prevTime) > this.options.stallTime) {
-            this._inProgress = false;
-
-            var finalVel = (Math.abs(this._prevVel) >= this.options.minimumEndSpeed)
-                ? this._prevVel
-                : 0;
+        var dt = _now() - this._prevTime;
+        if (dt > this.options.stallTime) {
 
             var payload = this._payload;
             payload.position = this._position;
-            payload.velocity = finalVel;
+            payload.velocity = 0;
 
             this._eventOutput.emit('end', payload);
+
+            this._inProgress = false;
+            this._loopBound = false;
+            Engine.removeListener('prerender', this._boundNewFrame);
         }
     }
 
@@ -94,6 +94,12 @@ define(function(require, exports, module) {
         if (this.options.preventDefault) event.preventDefault();
 
         if (!this._inProgress) {
+
+            if (!this._loopBound) {
+                Engine.on('prerender', this._boundNewFrame);
+                this._loopBound = true;
+            }
+
             this._inProgress = true;
             this._position = (this.options.direction === undefined) ? [0,0] : 0;
             payload = this._payload;
@@ -102,11 +108,9 @@ define(function(require, exports, module) {
             payload.clientY = event.clientY;
             payload.offsetX = event.offsetX;
             payload.offsetY = event.offsetY;
+
             this._eventOutput.emit('start', payload);
-            if (!this._loopBound) {
-                Engine.on('prerender', _newFrame.bind(this));
-                this._loopBound = true;
-            }
+            return;
         }
 
         var currTime = _now();
@@ -159,7 +163,6 @@ define(function(require, exports, module) {
         this._eventOutput.emit('update', payload);
 
         this._prevTime = currTime;
-        this._prevVel = nextVel;
     }
 
     /**
