@@ -131,6 +131,7 @@ define(function(require, exports, module) {
      * @param position {Array|Vector}
      */
     Particle.prototype.setPosition = function setPosition(position) {
+        this.wake();
         this.position.set(position);
     };
 
@@ -141,6 +142,7 @@ define(function(require, exports, module) {
      * @param x {Number}
      */
     Particle.prototype.setPosition1D = function setPosition1D(x) {
+        this.wake();
         this.position.x = x;
     };
 
@@ -151,7 +153,7 @@ define(function(require, exports, module) {
      * @return position {Array}
      */
     Particle.prototype.getPosition = function getPosition() {
-        this._engine.step();
+        if (!this._isSleeping) this._engine.step();
         return this.position.get();
     };
 
@@ -162,7 +164,7 @@ define(function(require, exports, module) {
      * @return value {Number}
      */
     Particle.prototype.getPosition1D = function getPosition1D() {
-        this._engine.step();
+        if (!this._isSleeping) this._engine.step();
         return this.position.x;
     };
 
