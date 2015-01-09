@@ -42,12 +42,12 @@
     ]
   },
   "jspm": {
+    "registry": "github",
     "dependencies": {
-      "army-knife": "~0.0.4",
+      "army-knife": "github:trusktr/army-knife@~0.0.4",
       "famous": "github:trusktr/famous@jspm",
-      "jss": "~0.10.1"
+      "jss": "github:jsstyles/jss@^0.10.1"
     },
-    "registry": "jspm",
     "directories": {
       "lib": "src"
     }
