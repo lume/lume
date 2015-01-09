@@ -46,7 +46,7 @@
     "dependencies": {
       "army-knife": "github:trusktr/army-knife@~0.0.4",
       "famous": "github:trusktr/famous@jspm",
-      "jss": "github:jsstyles/jss@^0.10.1"
+      "jss": "github:jsstyles/jss@^0.10.0"
     },
     "directories": {
       "lib": "src"
