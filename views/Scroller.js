@@ -259,13 +259,12 @@ define(function(require, exports, module) {
             }
         }
 
-        //TODO: fix 0 bug on bottom edge on fast flick
         if (!currNode && offset - position < clipSize) {
             if (this._onEdge !== 1){
                 this._onEdge = 1;
 
                 this._eventOutput.emit('onEdge', {
-                    position: (offset - clipSize) || -clipSize,
+                    position: (offset - clipSize),
                     edge: this._onEdge
                 });
             }

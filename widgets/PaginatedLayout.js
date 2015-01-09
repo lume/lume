@@ -16,8 +16,10 @@ define(function(require, exports, module) {
         window.scrollview = this.scrollview;
 
         this.dots = [];
+        this.index = 0;
 
         this.currentDotPosition = new Transitionable(0);
+        this.currentDotOpacity = new Transitionable(1);
         this.dotsWidth = 0;
 
         var dotsModifier = new Modifier({
@@ -28,8 +30,9 @@ define(function(require, exports, module) {
         });
 
         var currentDotModifier = new Modifier({
+            opacity : this.currentDotOpacity,
             transform : function(){
-                Transform.translate(0, this.currentDotPosition.get(), 0)
+                return Transform.translate(this.currentDotPosition.get(), 0, 0)
             }.bind(this)
         });
 
@@ -53,8 +56,23 @@ define(function(require, exports, module) {
         this._eventInput.pipe(this.scrollview);
         this.subscribe(this.scrollview);
 
-        this._eventInput.on('pageChange', function(data){
-        });
+//        this._eventInput.on('pageChange', function(data){
+//            var index = data.index;
+//            var position = index * 14;
+//            this.currentDotOpacity.set(0);
+//            this.currentDotOpacity.set(1, {duration : 500});
+//            this.currentDotPosition.set(position)
+//        }.bind(this));
+
+//        this._eventInput.on('settle', function(){
+//            var index = this.scrollview.getCurrentIndex();
+//            if (index == this.index) return;
+//            var position = index * 14;
+//            this.currentDotOpacity.set(0);
+//            this.currentDotOpacity.set(1, {duration : 50});
+//            this.currentDotPosition.set(position);
+//            this.index = index;
+//        }.bind(this));
     }
 
     PaginatedLayout.prototype = {
@@ -79,6 +97,11 @@ define(function(require, exports, module) {
             this.dotsNode.add(dotModifier).add(dot);
         },
         render : function(){
+            var progress = Scrollview.prototype.getProgress.call(this.scrollview);
+            var index = this.scrollview.getCurrentIndex();
+
+            this.currentDotPosition.set((index + progress) * 14);
+
             return [
                 this.scrollview.render(),
                 this.dotsNode.render()

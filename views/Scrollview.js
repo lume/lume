@@ -184,14 +184,13 @@ define(function(require, exports, module) {
         var velocity = -event.velocity;
         var delta = -event.delta;
 
-        // called when passed edge while scrolling
         if (this._edgeState !== EdgeStates.NONE && event.scroll) {
             // ignore further input
             if ((velocity < 0 && this._edgeState === EdgeStates.TOP) || (velocity > 0 && this._edgeState === EdgeStates.BOTTOM)) {
                 if (!this._earlyEnd) {
                     event.velocity = 0;
-                    _handleEnd.call(this, event);
                     this._earlyEnd = true;
+                    _handleEnd.call(this, event);
                 }
             }
             else if ((this._edgeState === EdgeStates.TOP && velocity > 0) || (this._edgeState === EdgeStates.BOTTOM && velocity < 0)) {
@@ -211,9 +210,11 @@ define(function(require, exports, module) {
             _normalizeState.call(this);
     }
 
+    //TODO: fix particle wake. Necessary on early end when physics is sleeping
     function _handleEnd(event) {
         this._touchCount = event.count || 0;
         if (!this._touchCount) {
+            this._particle.wake();
             this._dragging = false;
             this._touchCount = 0;
             _detachAgents.call(this);
