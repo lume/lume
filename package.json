@@ -3,8 +3,9 @@
   "version": "0.0.19",
   "description": "A UI library.",
   "format": "es6",
-  "main": "infamous.js",
+  "main": false,
   "browser": "infamous.js",
+  "global": "infamous.js",
   "scripts": {
     "test": "echo 'TODO: Test script' && exit 1",
     "clean": "rm -rf dist",
@@ -41,6 +42,12 @@
     ]
   },
   "jspm": {
+    "dependencies": {
+      "army-knife": "~0.0.4",
+      "famous": "github:trusktr/famous@jspm",
+      "jss": "~0.10.1"
+    },
+    "registry": "jspm",
     "directories": {
       "lib": "src"
     }
