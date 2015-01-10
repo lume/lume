@@ -378,7 +378,6 @@ define(function(require, exports, module) {
 
     function _updatePositions(body, dt) {
         body.integratePosition(dt);
-        body.emit(_events.update, body);
     }
 
     function _integrate(dt) {
@@ -460,7 +459,7 @@ define(function(require, exports, module) {
 //        _integrate.call(this, this._buffer);
 //        this._buffer = 0.0;
 
-        _integrate.call(this, TIMESTEP);
+        _integrate.call(this, dtFrame);
 
         this.emit(_events.update, this);
 
