@@ -10,6 +10,7 @@
 define(function(require, exports, module) {
     var Utility = require('../core/Utility');
     var TweenTransition = require('./../transitions/TweenTransition');
+    var EventHandler = require('famous/core/EventHandler');
 
     /**
      * A state maintainer for a smooth transition between
@@ -43,6 +44,8 @@ define(function(require, exports, module) {
         this._engineInstance = null;
         this._currentMethod = null;
 
+        this._eventOutput = null;
+
         this.set(start);
     }
 
@@ -65,6 +68,10 @@ define(function(require, exports, module) {
         if (this.actionQueue.length <= 0) {
             this.set(this.get()); // no update required
             this._active = false;
+            if (this._eventOutput) this._eventOutput.emit('end', {
+                value : this.state,
+                velocity : this.velocity
+            });
             return;
         }
 
@@ -152,6 +159,8 @@ define(function(require, exports, module) {
         this.velocity = startVelocity;
         this.actionQueue = [];
         this.callbackQueue = [];
+        if (this._eventOutput)
+            this._eventOutput.emit('start', {value : startState});
     };
 
     /**
@@ -180,7 +189,27 @@ define(function(require, exports, module) {
      */
     Transitionable.prototype.get = function get(timestamp) {
         if (!this.isActive()) return this.state;
-        if (this._engineInstance) this.state = this._engineInstance.get(timestamp);
+        if (this._engineInstance) {
+            var state = this._engineInstance.get(timestamp);
+
+            if (this._eventOutput){
+                //TODO: put this somewhere else
+                var delta;
+                if (state instanceof Array){
+                    delta = [];
+                    for (var i = 0; i < state.length; i++)
+                        delta[i] = state[i] - this.state[i];
+                }
+                else delta = state - this.state;
+
+                this._eventOutput.emit('update', {
+                    delta : delta,
+                    value : state
+                });
+            }
+
+            this.state = state;
+        }
         return this.state;
     };
 
@@ -204,6 +233,32 @@ define(function(require, exports, module) {
         var value = this.set(this.get());
         this._active = false;
         return value;
+    };
+
+    function _createEventOutput() {
+        this._eventOutput = new EventHandler();
+        this._eventOutput.bindThis(this);
+        EventHandler.setOutputHandler(this, this._eventOutput);
+    }
+
+    Transitionable.prototype.on = function on() {
+        _createEventOutput.call(this);
+        return this.on.apply(this, arguments);
+    };
+
+    Transitionable.prototype.removeListener = function removeListener() {
+        _createEventOutput.call(this);
+        return this.removeListener.apply(this, arguments);
+    };
+
+    Transitionable.prototype.pipe = function pipe() {
+        _createEventOutput.call(this);
+        return this.pipe.apply(this, arguments);
+    };
+
+    Transitionable.prototype.unpipe = function unpipe() {
+        _createEventOutput.call(this);
+        return this.unpipe.apply(this, arguments);
     };
 
     /**
