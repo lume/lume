@@ -40,7 +40,7 @@ define(function(require, exports, module) {
 
         // state variables
         this._engine = null;
-        this._isSleeping = false;
+        this._isSleeping = true;
         this._eventOutput = null;
 
         // set scalars
