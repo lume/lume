@@ -19,6 +19,9 @@ define(function(require, exports, module) {
     var Scroller = require('../views/Scroller');
     var Utility = require('../core/Utility');
 
+    var Transitionable = require('../core/Transitionable');
+    var Accumulator = require('../inputs/Accumulator');
+
     var GenericSync = require('../inputs/GenericSync');
     var ScrollSync = require('../inputs/ScrollSync');
     var TouchSync = require('../inputs/TouchSync');
@@ -86,7 +89,7 @@ define(function(require, exports, module) {
             ['scroll', 'touch'],
             {
                 direction : this.options.direction,
-                scale : this.options.syncScale,
+                scale : -this.options.syncScale,
                 rails: this.options.rails,
                 preventDefault: this.options.preventDefault !== undefined
                     ? this.options.preventDefault
@@ -126,6 +129,10 @@ define(function(require, exports, module) {
         this._cachedIndex = 0;
         this._dragging = false;
 
+        this._offset = new Accumulator(0);
+        this._position = new Transitionable(0);
+
+
         // subcomponent logic
         this._scroller.positionFrom(this.getOffset.bind(this));
 
@@ -135,8 +142,16 @@ define(function(require, exports, module) {
         EventHandler.setInputHandler(this, this._eventInput);
         EventHandler.setOutputHandler(this, this._eventOutput);
 
+        // touch input goes to the sync
         this._eventInput.pipe(this.sync);
-        this.sync.pipe(this);
+
+        // sync, particle and transitionable accumulate in offset
+        this._offset.addSource(this.sync);
+        this._offset.addSource(this._position);
+        this._offset.addSource(this._particle);
+
+        // create universal update event
+        this._offset.pipe(this);
 
         _bindEvents.call(this);
 
@@ -158,63 +173,76 @@ define(function(require, exports, module) {
         pageDamp: 0.7,
         pageStopSpeed: 10,
         pageSwitchSpeed: 0.5,
-        speedLimit: 5,
+        speedLimit:.5,
         groupScroll: false,
         syncScale: 1
     };
 
     function _cap(value, limit){
-        if (value > limit) value = limit;
-        if (value < -limit) value = -limit;
-        return value;
+        if (value > limit) return limit;
+        else if (value < -limit) return -limit;
+        else return value;
     }
 
-    function _handleStart(event) {
-        this._dragging = !event.scroll;
-        this._touchCount = event.count;
-        if (event.count === undefined) this._touchCount = 1;
-
-        _detachAgents.call(this);
-
-        this._touchVelocity = 0;
-        this._earlyEnd = false;
+    function _handleStart(event){
     }
 
-    function _handleMove(event) {
-        var velocity = -event.velocity;
-        var delta = -event.delta;
+    function _handleUpdate(event){
+    }
 
-        if (this._edgeState !== EdgeStates.NONE && event.scroll) {
-            // ignore further input
-            if ((velocity < 0 && this._edgeState === EdgeStates.TOP) || (velocity > 0 && this._edgeState === EdgeStates.BOTTOM)) {
-                if (!this._earlyEnd) {
-                    event.velocity = 0;
-                    this._earlyEnd = true;
-                    _handleEnd.call(this, event);
-                }
-            }
-            else if ((this._edgeState === EdgeStates.TOP && velocity > 0) || (this._edgeState === EdgeStates.BOTTOM && velocity < 0)) {
-                // called if past edge and scrolled opposite direction
-                _handleStart.call(this, event);
-            }
-        }
+    function _handleEnd(event){
+    }
 
-        if (this._earlyEnd) return;
+    function _handlePositionStart(){
+    }
 
-        this._touchVelocity = velocity;
+    function _handlePositionUpdate(){
+    }
 
-        this.setOffset(this.getOffset() + delta);
-        this._displacement += delta;
+    function _handlePositionEnd(){
+    }
 
+    function _handleOffsetUpdate(event){
         if (this._springState === SpringStates.NONE)
             _normalizeState.call(this);
     }
 
+    function _handleSyncStart(event) {
+        if (this._position.isActive()) this._position.halt();
+
+        this._dragging = !event.scroll;
+        this._touchCount = event.count || 1;
+        this._touchVelocity = 0;
+        this._earlyEnd = false;
+    }
+
+    function _handleSyncUpdate(event) {
+        var velocity = -event.velocity;
+
+        //TODO: updates still accumulate in _offset!
+        if (this._edgeState !== EdgeStates.NONE && event.scroll) {
+            // ignore further input
+            if ((velocity < 0 && this._edgeState === EdgeStates.TOP) || (velocity > 0 && this._edgeState === EdgeStates.BOTTOM)) {
+                if (!this._earlyEnd) {
+//                    this._offset.unsubscribe(this.sync);
+                    this._earlyEnd = true;
+                    _handleSyncEnd.call(this, event);
+                }
+            }
+            else if ((this._edgeState === EdgeStates.TOP && velocity > 0) || (this._edgeState === EdgeStates.BOTTOM && velocity < 0)) {
+                // called if past edge and scrolled opposite direction
+                _handleSyncStart.call(this, event);
+            }
+        }
+
+        if (this._earlyEnd) return;
+        this._touchVelocity = velocity;
+    }
+
     //TODO: fix particle wake. Necessary on early end when physics is sleeping
-    function _handleEnd(event) {
+    function _handleSyncEnd(event) {
         this._touchCount = event.count || 0;
         if (!this._touchCount) {
-            this._particle.wake();
             this._dragging = false;
             this._touchCount = 0;
             _detachAgents.call(this);
@@ -223,7 +251,7 @@ define(function(require, exports, module) {
             _attachAgents.call(this);
             var velocity = -event.velocity;
             var speedLimit = this.options.speedLimit;
-            if (event.scroll) speedLimit *= this.options.edgeGrip;
+            if (event.scroll) velocity *= this.options.edgeGrip;
             velocity = _cap(velocity, speedLimit);
             this.setVelocity(velocity);
             this._touchVelocity = 0;
@@ -231,28 +259,22 @@ define(function(require, exports, module) {
         }
     }
 
-    function _handlePhysicsStart(data){
+    function _handlePhysicsStart(particle){
+        if (this._position.isActive()) this._position.halt();
+        particle.set(-this.getOffset());
         this._dragging = false;
     }
 
     function _handlePhysicsUpdate(data){
-        if (this._springState === SpringStates.NONE)
-            _normalizeState.call(this);
-        this._displacement = data.position.x - this._totalShift;
     }
 
-    function _handlePhysicsEnd(data){
+    function _handlePhysicsEnd(particle){
         _detachAgents.call(this);
         if (!this.options.paginated || (this.options.paginated && this._springState !== SpringStates.NONE))
             this._eventOutput.emit('settle', {index : this._cachedIndex});
     }
 
     function _bindEvents() {
-        this._eventInput.bindThis(this);
-        this._eventInput.on('start', _handleStart);
-        this._eventInput.on('update', _handleMove);
-        this._eventInput.on('end', _handleEnd);
-
         this._eventInput.on('resize', function() {
             this._node._.calculateSize();
         });
@@ -269,14 +291,33 @@ define(function(require, exports, module) {
             this._eventOutput.emit('offEdge');
         }.bind(this));
 
+        this.sync.on('start', _handleSyncStart.bind(this));
+        this.sync.on('update', _handleSyncUpdate.bind(this));
+        this.sync.on('end', _handleSyncEnd.bind(this));
+
+        this._position.on('start', _handlePositionStart.bind(this));
+        this._position.on('update', _handlePositionUpdate.bind(this));
+        this._position.on('end', _handlePositionEnd.bind(this));
+
         this._particle.on('start', _handlePhysicsStart.bind(this));
         this._particle.on('update', _handlePhysicsUpdate.bind(this));
         this._particle.on('end', _handlePhysicsEnd.bind(this));
+
+        this._eventInput.on('start', _handleStart.bind(this));
+        this._eventInput.on('update', _handleUpdate.bind(this));
+        this._eventInput.on('end', _handleEnd.bind(this));
+
+        this._offset.on('update', _handleOffsetUpdate.bind(this));
     }
 
     function _attachAgents() {
-        if (this._springState !== SpringStates.NONE) this._physicsEngine.attach([this.spring], this._particle);
-        else this._physicsEngine.attach([this.drag, this.friction], this._particle);
+        if (this._springState !== SpringStates.NONE)
+            this.springID = this._physicsEngine.attach([this.spring], this._particle);
+        else{
+            this.dragID = this._physicsEngine.attach(this.drag, this._particle);
+            this.frictionId = this._physicsEngine.attach(this.drag, this._particle);
+        }
+
     }
 
     function _detachAgents() {
@@ -412,17 +453,11 @@ define(function(require, exports, module) {
     }
 
     function _shiftOrigin(amount) {
-        this._edgeSpringPosition += amount;
-        this._pageSpringPosition += amount;
-        this.setOffset(this.getOffset() + amount);
+        console.log('shift', amount);
+        var newOffset = this.getOffset() + amount;
+        this.setOffset(newOffset);
+        this._particle.set(-newOffset);
         this._totalShift += amount;
-
-        if (this._springState === SpringStates.EDGE) {
-            this.spring.setOptions({anchor: [this._edgeSpringPosition, 0, 0]});
-        }
-        else if (this._springState === SpringStates.PAGE) {
-            this.spring.setOptions({anchor: [this._pageSpringPosition, 0, 0]});
-        }
     }
 
     /**
@@ -535,7 +570,7 @@ define(function(require, exports, module) {
      * in pixels translated.
      */
     Scrollview.prototype.getOffset = function(){
-        return this._particle.getPosition1D();
+        return this._offset.get();
     };
 
     /**
@@ -545,7 +580,7 @@ define(function(require, exports, module) {
      * @param {number} x The amount of pixels you want your scrollview to progress by.
      */
     Scrollview.prototype.setOffset = function setOffset(x) {
-        this._particle.setPosition1D(x);
+        this._offset.set(x);
     };
 
     /**
