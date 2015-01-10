@@ -59,8 +59,10 @@ define(function(require, exports, module) {
     SymplecticEuler.integratePosition = function integratePosition(body, dt) {
         var p = body.position;
         var v = body.velocity;
+        var dp = body.delta;
 
-        p.add(v.mult(dt)).put(p);
+        v.mult(dt).put(dp);
+        p.add(dp).put(p);
     };
 
     /*

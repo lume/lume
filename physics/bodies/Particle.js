@@ -36,10 +36,11 @@ define(function(require, exports, module) {
         this.position = new Vector();
         this.velocity = new Vector();
         this.force = new Vector();
+        this.delta = new Vector();
 
         // state variables
         this._engine = null;
-        this._isSleeping = true;
+        this._isSleeping = false;
         this._eventOutput = null;
 
         // set scalars
@@ -165,6 +166,10 @@ define(function(require, exports, module) {
         if (!this._isSleeping) this._engine.step();
         return this.position.x;
     };
+
+    Particle.prototype.get = Particle.prototype.getPosition;
+
+    Particle.prototype.set = Particle.prototype.setPosition;
 
     /**
      * Basic setter function for velocity Vector
@@ -295,6 +300,7 @@ define(function(require, exports, module) {
      */
     Particle.prototype.integratePosition = function integratePosition(dt) {
         Integrator.integratePosition(this, dt);
+        this.emit(_events.update, this);
     };
 
     /**
