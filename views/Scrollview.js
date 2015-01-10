@@ -277,7 +277,7 @@ define(function(require, exports, module) {
     function _bindEvents() {
         this._eventInput.on('resize', function() {
             this._node._.calculateSize();
-        });
+        }.bind(this));
 
         this._scroller.on('onEdge', function(data) {
             this._edgeSpringPosition = data.position;
@@ -311,18 +311,32 @@ define(function(require, exports, module) {
     }
 
     function _attachAgents() {
-        if (this._springState !== SpringStates.NONE)
-            this.springID = this._physicsEngine.attach([this.spring], this._particle);
-        else{
-            this.dragID = this._physicsEngine.attach(this.drag, this._particle);
-            this.frictionId = this._physicsEngine.attach(this.drag, this._particle);
-        }
+        if (this._springState !== SpringStates.NONE) _attachSpring.call(this);
+        else _attachDrag.call(this);
+    }
 
+    function _attachDrag(){
+        this.dragID = this._physicsEngine.attach(this.drag, this._particle);
+        this.frictionID = this._physicsEngine.attach(this.friction, this._particle);
+    }
+
+    function _attachSpring(){
+        this.springID = this._physicsEngine.attach(this.spring, this._particle);
+    }
+
+    function _detachDrag(){
+        if (this.dragID) this._physicsEngine.detach(this.dragID);
+        if (this.frictionID) this._physicsEngine.detach(this.frictionID);
+    }
+
+    function _detachSpring(){
+        if (this.springID) this._physicsEngine.detach(this.springID);
     }
 
     function _detachAgents() {
         this._springState = SpringStates.NONE;
-        this._physicsEngine.detachAll();
+        _detachDrag.call(this);
+        _detachSpring.call(this);
     }
 
     function _nodeSizeForDirection(node) {
