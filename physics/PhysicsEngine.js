@@ -211,6 +211,8 @@ define(function(require, exports, module) {
     PhysicsEngine.prototype.detach = function detach(id) {
         // detach from forces/constraints array
         var agent = this.getAgent(id);
+        if (!agent) return;
+
         var agentArray = _mapAgentArray.call(this, agent);
         var index = agentArray.indexOf(id);
         agentArray.splice(index,1);
@@ -260,7 +262,8 @@ define(function(require, exports, module) {
      * @param id {AgentId}
      */
     PhysicsEngine.prototype.getAgent = function getAgent(id) {
-        return _getAgentData.call(this, id).agent;
+        var agentData = _getAgentData.call(this, id);
+        if (agentData) return agentData.agent;
     };
 
     /**
