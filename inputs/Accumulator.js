@@ -14,6 +14,7 @@ define(function(require, exports, module) {
     function Accumulator(state) {
         this._state = state || 0;
         this.sources = [];
+        this.counter = 0;
 
         this._eventInput = new EventHandler();
         this._eventOutput = new EventHandler();
@@ -23,24 +24,30 @@ define(function(require, exports, module) {
         this._eventInput.on('update', _handleUpdate.bind(this));
     }
 
+    //TODO: scale
     function _handleUpdate(data) {
+        this.counter++;
+
         var delta = data.delta;
         var state = this._state;
 
         // TODO: fix hack for physics
         if (delta.constructor.name === 'Vector'){
-            if (typeof state === 'number'){
-                delta = delta.get1D();
-            }
-            else delta = delta.get();
+            delta = (typeof state === 'number')
+                ? delta.get1D()
+                : delta.get();
         }
 
         if (delta.constructor === state.constructor){
             var newState = (delta instanceof Array)
                 ? [state[0] + delta[0], state[1] + delta[1]]
-                : state + delta;
+                : state - delta;
             this.set(newState);
-            this._eventOutput.emit('update', {value : newState});
+
+            if (this.counter == this.sources.length){
+                this.counter = 0;
+                this._eventOutput.emit('update', {value : newState});
+            }
         }
     }
 
@@ -50,7 +57,7 @@ define(function(require, exports, module) {
     };
 
     Accumulator.prototype.removeSource = function(source){
-        var index = this.source.indexOf(source);
+        var index = this.sources.indexOf(source);
         this.sources.splice(index, 1);
         this.unsubscribe(source);
     };
