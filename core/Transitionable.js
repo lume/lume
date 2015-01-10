@@ -43,6 +43,7 @@ define(function(require, exports, module) {
         this._callback = undefined;
         this._engineInstance = null;
         this._currentMethod = null;
+        this._dirty = true;
 
         this._eventOutput = null;
 
@@ -101,6 +102,7 @@ define(function(require, exports, module) {
         }
 
         this._engineInstance.reset(this.state, this.velocity);
+        if (this._eventOutput) this._eventOutput.emit('start', {value : this.state});
 
         if (this.velocity !== undefined) {
             this.velocity = this._engineInstance.getVelocity();
@@ -152,6 +154,10 @@ define(function(require, exports, module) {
      *    stable state to set to
      */
     Transitionable.prototype.reset = function reset(startState, startVelocity) {
+        if (this.state == startState && this.velocity == startVelocity) {
+            this._dirty = false;
+            return;
+        };
         this._currentMethod = null;
         this._engineInstance = null;
         this._callback = undefined;
@@ -159,8 +165,7 @@ define(function(require, exports, module) {
         this.velocity = startVelocity;
         this.actionQueue = [];
         this.callbackQueue = [];
-        if (this._eventOutput)
-            this._eventOutput.emit('start', {value : startState});
+        this._dirty = true;
     };
 
     /**
@@ -182,15 +187,19 @@ define(function(require, exports, module) {
      *
      * @method get
      *
-     * @param {number=} timestamp Evaluate the curve at a normalized version of this
-     *    time. If omitted, use current time. (Unix epoch time)
      * @return {number|Object.<number|string, number>} beginning state
      *    interpolated to this point in time.
      */
-    Transitionable.prototype.get = function get(timestamp) {
+    Transitionable.prototype.get = function get() {
         if (!this.isActive()) return this.state;
+
         if (this._engineInstance) {
-            var state = this._engineInstance.get(timestamp);
+            var state = this._engineInstance.get();
+
+            if (this.state == state) {
+                this._dirty = false;
+                return state;
+            }
 
             if (this._eventOutput){
                 //TODO: put this somewhere else
@@ -202,13 +211,17 @@ define(function(require, exports, module) {
                 }
                 else delta = state - this.state;
 
-                this._eventOutput.emit('update', {
-                    delta : delta,
-                    value : state
-                });
-            }
+                this.state = state;
+                this._dirty = true;
 
-            this.state = state;
+                if (this._dirty){
+                    this._eventOutput.emit('update', {
+                        delta : delta,
+                        value : state
+                    });
+                }
+
+            }
         }
         return this.state;
     };
