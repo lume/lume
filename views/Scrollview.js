@@ -11,7 +11,7 @@ define(function(require, exports, module) {
     var PhysicsEngine = require('../physics/PhysicsEngine');
     var Particle = require('../physics/bodies/Particle');
     var Drag = require('../physics/forces/Drag');
-    var Spring = require('../physics/forces/Spring');
+    var Spring = require('../physics/constraints/Snap');
 
     var EventHandler = require('../core/EventHandler');
     var OptionsManager = require('../core/OptionsManager');
@@ -91,9 +91,7 @@ define(function(require, exports, module) {
                 direction : this.options.direction,
                 scale : -this.options.syncScale,
                 rails: this.options.rails,
-                preventDefault: this.options.preventDefault !== undefined
-                    ? this.options.preventDefault
-                    : this.options.direction !== Utility.Direction.Y
+                preventDefault: this.options.preventDefault
             }
         );
 
@@ -122,7 +120,6 @@ define(function(require, exports, module) {
         this._edgeState = EdgeStates.NONE;
         this._pageSpringPosition = 0;
         this._edgeSpringPosition = 0;
-        this._touchVelocity = 0;
         this._earlyEnd = false;
         this._displacement = 0;
         this._totalShift = 0;
@@ -132,7 +129,6 @@ define(function(require, exports, module) {
         this._offset = new Accumulator(0);
         this._position = new Transitionable(0);
 
-
         // subcomponent logic
         this._scroller.positionFrom(this.getOffset.bind(this));
 
@@ -141,17 +137,6 @@ define(function(require, exports, module) {
         this._eventOutput = new EventHandler();
         EventHandler.setInputHandler(this, this._eventInput);
         EventHandler.setOutputHandler(this, this._eventOutput);
-
-        // touch input goes to the sync
-        this._eventInput.pipe(this.sync);
-
-        // sync, particle and transitionable accumulate in offset
-        this._offset.addSource(this.sync);
-        this._offset.addSource(this._position);
-        this._offset.addSource(this._particle);
-
-        // create universal update event
-        this._offset.pipe(this);
 
         _bindEvents.call(this);
 
@@ -164,18 +149,19 @@ define(function(require, exports, module) {
         rails: true,
         friction: 0.005,
         drag: 0.0001,
-        edgeGrip: 0.2,
+        edgeGrip: 0.3,
         edgePeriod: 300,
         edgeDamp: 1,
-        margin: 1000,       // mostly safe
+        margin: Math.max(1000, window.innerWidth, window.innerHeight),
         paginated: false,
-        pagePeriod: 400,
+        pagePeriod: 200,
         pageDamp: 0.7,
-        pageStopSpeed: 10,
+        pageStopSpeed: 1,
         pageSwitchSpeed: 0.5,
-        speedLimit:.5,
+        speedLimit: 0.5,
         groupScroll: false,
-        syncScale: 1
+        syncScale: 1,
+        preventDefault: true
     };
 
     function _cap(value, limit){
@@ -202,66 +188,85 @@ define(function(require, exports, module) {
     function _handlePositionEnd(){
     }
 
+    //TODO: fix when _normalize is called. Should work if never called
     function _handleOffsetUpdate(event){
-        if (this._springState === SpringStates.NONE)
+        if (this._springState === SpringStates.NONE && this._edgeState === EdgeStates.NONE)
             _normalizeState.call(this);
     }
 
     function _handleSyncStart(event) {
         if (this._position.isActive()) this._position.halt();
 
+        if (this._removedSync && this._endFired){
+            this._offset.addSource(this.sync);
+            this._removedSync = false;
+        }
+
+        this._endFired = false;
+        this._earlyEnd = false;
         this._dragging = !event.scroll;
         this._touchCount = event.count || 1;
-        this._touchVelocity = 0;
-        this._earlyEnd = false;
     }
 
     function _handleSyncUpdate(event) {
-        var velocity = -event.velocity;
+        var velocity = event.velocity;
 
-        //TODO: updates still accumulate in _offset!
-        if (this._edgeState !== EdgeStates.NONE && event.scroll) {
-            // ignore further input
-            if ((velocity < 0 && this._edgeState === EdgeStates.TOP) || (velocity > 0 && this._edgeState === EdgeStates.BOTTOM)) {
-                if (!this._earlyEnd) {
-//                    this._offset.unsubscribe(this.sync);
-                    this._earlyEnd = true;
-                    _handleSyncEnd.call(this, event);
-                }
-            }
-            else if ((this._edgeState === EdgeStates.TOP && velocity > 0) || (this._edgeState === EdgeStates.BOTTOM && velocity < 0)) {
-                // called if past edge and scrolled opposite direction
-                _handleSyncStart.call(this, event);
+        // if touching, return
+        if (event.count) return;
+
+        // reactivate sync if move in opposite direction from edge
+        var callStart = this._removedSync &&
+            (this._edgeState == EdgeStates.TOP && velocity > 0) ||
+            (this._edgeState == EdgeStates.BOTTOM && velocity < 0);
+
+        if (callStart){
+            this._endFired = true;
+            _handleSyncStart.call(this, event);
+        }
+        else {
+            var callEnd = !this._earlyEnd &&
+                this._edgeState === EdgeStates.TOP && velocity < 0 ||
+                this._edgeState === EdgeStates.BOTTOM && velocity > 0;
+
+            // if past the end, call end prematurely
+            if (callEnd){
+                event.velocity *= this.options.edgeGrip;
+                this._offset.removeSource(this.sync);
+                this._particle.set(this.getOffset());
+                this._earlyEnd = true;
+                this._removedSync = true;
+                _handleSyncEnd.call(this, event);
             }
         }
-
-        if (this._earlyEnd) return;
-        this._touchVelocity = velocity;
     }
 
     //TODO: fix particle wake. Necessary on early end when physics is sleeping
     function _handleSyncEnd(event) {
-        this._touchCount = event.count || 0;
+        this._endFired = true;
+        this._touchCount = event.count;
         if (!this._touchCount) {
             this._dragging = false;
-            this._touchCount = 0;
-            _detachAgents.call(this);
-            if (this._edgeState !== EdgeStates.NONE)
-                _setSpring.call(this, this._edgeSpringPosition, SpringStates.EDGE);
-            _attachAgents.call(this);
-            var velocity = -event.velocity;
-            var speedLimit = this.options.speedLimit;
-            if (event.scroll) velocity *= this.options.edgeGrip;
-            velocity = _cap(velocity, speedLimit);
-            this.setVelocity(velocity);
-            this._touchVelocity = 0;
-            _handlePagination.call(this);
+
+            if (this._touchCount == 0 && this._edgeState !== EdgeStates.NONE){
+                this._particle.set(this.getOffset());
+                _handleEdge.call(this, this._edgeState);
+            }
+            else if (this.options.paginated)
+                _handlePagination.call(this);
+            else if (!event.scroll){
+                _detachSpring.call(this);
+                _attachDrag.call(this);
+            }
+
+            if (!event.scroll){
+                this.setVelocity(-event.velocity);
+            }
         }
     }
 
     function _handlePhysicsStart(particle){
         if (this._position.isActive()) this._position.halt();
-        particle.set(-this.getOffset());
+        particle.set(this.getOffset());
         this._dragging = false;
     }
 
@@ -275,18 +280,15 @@ define(function(require, exports, module) {
     }
 
     function _bindEvents() {
-        this._eventInput.on('resize', function() {
-            this._node._.calculateSize();
-        }.bind(this));
-
         this._scroller.on('onEdge', function(data) {
+            this.sync.setOptions({scale: this.options.edgeGrip});
             this._edgeSpringPosition = data.position;
             _handleEdge.call(this, data.edge);
             this._eventOutput.emit('onEdge');
         }.bind(this));
 
         this._scroller.on('offEdge', function() {
-            this.sync.setOptions({scale: this.options.syncScale});
+            this.sync.setOptions({scale: -this.options.syncScale});
             this._edgeState = this._scroller.onEdge();
             this._eventOutput.emit('offEdge');
         }.bind(this));
@@ -308,33 +310,51 @@ define(function(require, exports, module) {
         this._eventInput.on('end', _handleEnd.bind(this));
 
         this._offset.on('update', _handleOffsetUpdate.bind(this));
-    }
 
-    function _attachAgents() {
-        if (this._springState !== SpringStates.NONE) _attachSpring.call(this);
-        else _attachDrag.call(this);
+        // touch input goes to the sync
+        this._eventInput.pipe(this.sync);
+
+        // sync, particle and transitionable accumulate in offset
+        this._offset.addSource(this._position);
+        this._offset.addSource(this._particle);
+        this._offset.addSource(this.sync);
+
+        // create universal update event
+        this._offset.pipe(this);
     }
 
     function _attachDrag(){
-        this.dragID = this._physicsEngine.attach(this.drag, this._particle);
-        this.frictionID = this._physicsEngine.attach(this.friction, this._particle);
+        if (this.dragID === undefined)
+            this.dragID = this._physicsEngine.attach(this.drag, this._particle);
+        if (this.frictionID == undefined)
+            this.frictionID = this._physicsEngine.attach(this.friction, this._particle);
     }
 
     function _attachSpring(){
-        this.springID = this._physicsEngine.attach(this.spring, this._particle);
+        if (this.springID === undefined)
+            this.springID = this._physicsEngine.attach(this.spring, this._particle);
     }
 
     function _detachDrag(){
-        if (this.dragID) this._physicsEngine.detach(this.dragID);
-        if (this.frictionID) this._physicsEngine.detach(this.frictionID);
+        if (this.dragID !== undefined) {
+            this._physicsEngine.detach(this.dragID);
+            this.dragID = undefined;
+        }
+        if (this.frictionID !== undefined) {
+            this._physicsEngine.detach(this.frictionID);
+            this.frictionID = undefined;
+        }
     }
 
     function _detachSpring(){
-        if (this.springID) this._physicsEngine.detach(this.springID);
+        if (this.springID !== undefined) {
+            this._physicsEngine.detach(this.springID);
+            this._springState = SpringStates.NONE;
+            this.springID = undefined;
+        }
     }
 
     function _detachAgents() {
-        this._springState = SpringStates.NONE;
         _detachDrag.call(this);
         _detachSpring.call(this);
     }
@@ -345,13 +365,13 @@ define(function(require, exports, module) {
         return size[direction];
     }
 
+    // TODO: only handle edge once. physics should be asleep at first
     function _handleEdge(edge) {
-        this.sync.setOptions({scale: this.options.edgeGrip});
+        this.sync.setOptions({scale: -this.options.edgeGrip});
         this._edgeState = edge;
-
-        if (this._springState !== SpringStates.EDGE) {
-            _setSpring.call(this, this._edgeSpringPosition, SpringStates.EDGE);
-        }
+        _detachDrag.call(this);
+        _setSpring.call(this, this._edgeSpringPosition, SpringStates.EDGE);
+        _attachSpring.call(this);
     }
 
     function _handlePagination() {
@@ -364,7 +384,7 @@ define(function(require, exports, module) {
         var position = this.getOffset();
         var velocitySwitch = Math.abs(velocity) > this.options.pageSwitchSpeed;
 
-        // parameters to determine when to switch
+        // parameters to determine when to switch pages
         var nodeSize = _nodeSizeForDirection.call(this, this._node);
         var positionNext = position > 0.5 * nodeSize;
 
@@ -375,12 +395,13 @@ define(function(require, exports, module) {
             this.goToNextPage();
         else if (velocitySwitch && velocityPrev)
             this.goToPreviousPage();
-        else _setSpring.call(this, 0, SpringStates.PAGE);
+        else {
+            _setSpring.call(this, 0, SpringStates.PAGE);
+            _attachSpring.call(this);
+        }
     }
 
     function _setSpring(position, springState) {
-        if (!springState) return;
-
         var springOptions;
         switch (springState){
             case SpringStates.EDGE:
@@ -402,13 +423,7 @@ define(function(require, exports, module) {
         }
 
         this.spring.setOptions(springOptions);
-
-        if (!this._springState) {
-            _detachAgents.call(this);
-            this._springState = springState;
-            _attachAgents.call(this);
-        }
-        else this._springState = springState;
+        this._springState = springState;
     }
 
     function _normalizeState() {
@@ -439,6 +454,7 @@ define(function(require, exports, module) {
             previousNode = this._node.getPrevious();
         }
 
+
         if (offset) _shiftOrigin.call(this, offset);
 
         var tolerance = (this._dragging)
@@ -467,10 +483,9 @@ define(function(require, exports, module) {
     }
 
     function _shiftOrigin(amount) {
-        console.log('shift', amount);
         var newOffset = this.getOffset() + amount;
         this.setOffset(newOffset);
-        this._particle.set(-newOffset);
+        this._particle.set(newOffset);
         this._totalShift += amount;
     }
 
@@ -495,7 +510,10 @@ define(function(require, exports, module) {
 
         // if moving back to the current node
         if (this.getOffset() > 0 && this._springState === SpringStates.NONE) {
+            _detachDrag.call(this);
             _setSpring.call(this, 0, SpringStates.PAGE);
+            _attachSpring.call(this);
+            return;
         }
 
         // if moving to the previous node
@@ -505,7 +523,10 @@ define(function(require, exports, module) {
             this._scroller.sequenceFrom(previousNode);
             this._node = previousNode;
             _shiftOrigin.call(this, previousNodeSize);
+            _detachDrag.call(this);
             _setSpring.call(this, 0, SpringStates.PAGE);
+            _attachSpring.call(this);
+            return;
         }
     };
 
@@ -523,7 +544,9 @@ define(function(require, exports, module) {
             this._scroller.sequenceFrom(nextNode);
             this._node = nextNode;
             _shiftOrigin.call(this, -currentNodeSize);
+            _detachDrag.call(this);
             _setSpring.call(this, 0, SpringStates.PAGE);
+            _attachSpring.call(this);
         }
     };
 
@@ -553,24 +576,10 @@ define(function(require, exports, module) {
      *  (generally the node currently at the top).
      *
      * @method getPosition
-     * @param {number} [node] If specified, returns the position of the node at that index in the
-     * Scrollview instance's currently managed collection.
-     * @return {number} The position of either the specified node, or the Scrollview's current Node,
-     * in pixels translated.
+     * @return {number} The Scrollview's total pixels translated.
      */
     Scrollview.prototype.getPosition = function getPosition() {
-        return this._displacement;
-    };
-
-    /**
-     * Returns the absolute position associated with the Scrollview instance
-     *
-     * @method getAbsolutePosition
-     * @return {number} The position of the Scrollview's current Node,
-     * in pixels translated.
-     */
-    Scrollview.prototype.getAbsolutePosition = function getAbsolutePosition() {
-        return this._scroller.getCumulativeSize(this.getCurrentIndex())[this.options.direction] + this.getOffset();
+        return this.getOffset() - this._totalShift;
     };
 
     /**
@@ -605,7 +614,7 @@ define(function(require, exports, module) {
      */
 
     Scrollview.prototype.getVelocity = function getVelocity() {
-        return this._touchCount ? this._touchVelocity : this._particle.getVelocity1D();
+        return this._particle.getVelocity1D();
     };
 
     /**
@@ -615,8 +624,9 @@ define(function(require, exports, module) {
      * @method setVelocity
      * @param {number} v The magnitude of the velocity.
      */
-    Scrollview.prototype.setVelocity = function setVelocity(v) {
-        this._particle.setVelocity1D(v);
+    Scrollview.prototype.setVelocity = function setVelocity(velocity) {
+        var velocity = _cap(velocity, this.options.speedLimit);
+        this._particle.setVelocity1D(velocity);
     };
 
     /**
@@ -661,7 +671,7 @@ define(function(require, exports, module) {
             this.sync.setOptions({
                 rails: this.options.rails,
                 direction: (this.options.direction === Utility.Direction.X) ? GenericSync.DIRECTION_X : GenericSync.DIRECTION_Y,
-                scale: this.options.syncScale,
+                scale: -this.options.syncScale,
                 preventDefault: this.options.preventDefault
             });
         }
@@ -683,11 +693,7 @@ define(function(require, exports, module) {
     };
 
     Scrollview.prototype.setPosition = function(position){
-        this.setOffset(position - this._displacement);
-        this._displacement = position;
-        this._particle.wake();
-        _normalizeState.call(this);
-        _handlePagination.call(this);
+
     };
 
     /**
