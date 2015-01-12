@@ -155,7 +155,8 @@ define(function(require, exports, module) {
         if (targets === undefined) targets = this.getParticlesAndBodies();
         if (!(targets instanceof Array)) targets = [targets];
 
-        agent.on('change', this.wake.bind(this));
+        targets.forEach(function(target){ target.wake() });
+        if (source) source.wake();
 
         this._agentData[this._currAgentId] = {
             agent   : agent,
