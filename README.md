@@ -1,4 +1,4 @@
-Infamous
+infamous
 ========
 
 A UI library.
@@ -7,17 +7,17 @@ A UI library.
 
 [![Gitter](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/infamous/infamous?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge)
 
-Install
--------
+Getting Started
+---------------
 
-The following example workflows show possible way to install infamous and these examples will refer to the snippets at the end of the README.
+The following sample workflows show possible ways to install and start using infamous. These examples will refer to the [snippets](#snippets) at the end of the README.
 
 ### browserify workflow
 
-If you don't already have a package.json in your project, create one.
+Install [nodejs](http://nodejs.org), then create `package.json` for your project.
 
 ```
-npm init
+npm init # creates package.json
 ```
 
 Install [`browserify`](http://browserify.org) globally.
@@ -63,13 +63,13 @@ Alternatively, use [watchify](https://github.com/substack/watchify) to watch the
 watchify src/app.js -o public/app.js
 ```
 
-Install `serve`.
+Install `serve` globally.
 
 ```
 npm install -g serve
 ```
 
-Quickly serve the contents of the public folder.
+Serve the contents of the public folder.
 
 ```
 serve public
@@ -79,10 +79,10 @@ Visit `localhost:3000` in your browser.
 
 ### webpack workflow
 
-If you don't already have a package.json in your project, create one.
+Install [nodejs](http://nodejs.org), then create `package.json` for your project.
 
 ```
-npm init
+npm init # creates package.json
 ```
 
 Install [`webpack`](http://webpack.github.io) globally.
@@ -138,7 +138,7 @@ Install `serve` globally.
 npm install -g serve
 ```
 
-Quickly serve the contents of the public folder.
+Serve the contents of the public folder.
 
 ```
 serve public
@@ -146,10 +146,51 @@ serve public
 
 Visit `localhost:3000` in your browser.
 
-Usage
------
+### jspm workflow
 
-Come back later.
+Install [nodejs](http://nodejs.org), then create `package.json` for your project.
+
+```
+npm init # creates package.json
+```
+
+Install [`jspm`](http://jspm.io) globally.
+
+```
+npm install -g jspm
+```
+
+Set `jspm.directories.baseURL` in your package.json to `"src"`, looking something like the following.
+
+```json
+{
+  "jspm": {
+    "directories": {
+      "baseURL": "src"
+    }
+  }
+}
+```
+
+Install infamous along with famous and css into your project.
+
+```
+jspm install -y infamous famous css
+```
+
+Suppose you have `src/app.js` containing Snippet 3 and `src/index.html` containing Snippet 4. Install `serve` globally.
+
+```
+npm install -g serve
+```
+
+Serve the contents of the `src` folder.
+
+```
+serve src
+```
+
+Visit `localhost:3000` in your browser.
 
 Snippets
 --------
@@ -188,6 +229,48 @@ square.transform.setRotate([0,2*Math.PI,0], {duration: 5000, curve: 'easeInOut'}
     </head>
     <body>
         <script type="text/javascript" charset="utf-8" src="app.js"></script>
+    </body>
+</html>
+```
+
+### Snippet 3
+
+```js
+import 'famous/core/famous.css!'
+
+import Plane from 'infamous/Plane'
+import {contextWithPerspective} from 'infamous/utils'
+
+var ctx = contextWithPerspective(1000)
+var square = new Plane({
+    size: [200,200],
+    content: 'Hello.',
+    properties: {
+        backfaceVisibility: 'visible',
+        background: 'pink',
+        padding: '5px'
+    }
+})
+
+ctx.add(square)
+square.transform.setRotate([0,2*Math.PI,0], {duration: 5000, curve: 'easeInOut'})
+```
+
+### Snippet 4
+
+```html
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Project with Infamous</title>
+        <meta charset="utf-8" />
+    </head>
+    <body>
+        <script src='/jspm_packages/system.src.js'></script>
+        <script src='config.js'></script>
+        <script type="module">
+            System.import('js/app');
+        </script>
     </body>
 </html>
 ```
