@@ -113,11 +113,6 @@ define(function(require, exports, module) {
         var diffX = (event.wheelDeltaX !== undefined) ? event.wheelDeltaX : -event.deltaX;
         var diffY = (event.wheelDeltaY !== undefined) ? event.wheelDeltaY : -event.deltaY;
 
-        if (event.deltaMode === 1) { // units in lines, not pixels
-            diffX *= this.options.lineHeight;
-            diffY *= this.options.lineHeight;
-        }
-
         if (this.options.rails) {
             if (Math.abs(diffX) > Math.abs(diffY)) diffY = 0;
             else diffX = 0;
