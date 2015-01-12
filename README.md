@@ -160,7 +160,7 @@ Install [`jspm`](http://jspm.io) globally.
 npm install -g jspm
 ```
 
-Set `jspm.directories.baseURL` in your package.json to `"src"`, looking something like the following.
+Set `jspm.directories.baseURL` in your package.json to `"src"`, similar to the following.
 
 ```json
 {
@@ -266,10 +266,10 @@ square.transform.setRotate([0,2*Math.PI,0], {duration: 5000, curve: 'easeInOut'}
         <meta charset="utf-8" />
     </head>
     <body>
-        <script src='/jspm_packages/system.src.js'></script>
+        <script src='jspm_packages/system.src.js'></script>
         <script src='config.js'></script>
         <script type="module">
-            System.import('js/app');
+            System.import('app');
         </script>
     </body>
 </html>
