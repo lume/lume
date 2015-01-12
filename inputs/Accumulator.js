@@ -41,7 +41,7 @@ define(function(require, exports, module) {
         if (delta.constructor === state.constructor){
             var newState = (delta instanceof Array)
                 ? [state[0] + delta[0], state[1] + delta[1]]
-                : state - delta;
+                : state + delta;
             this.set(newState);
 
             if (this.counter == this.sources.length){
@@ -52,14 +52,19 @@ define(function(require, exports, module) {
     }
 
     Accumulator.prototype.addSource = function(source){
+        var index = this.sources.indexOf(source);
+        if (index !== -1) return;
         this.sources.push(source);
         this.subscribe(source);
+        if (this.counter) this.counter++;
     };
 
     Accumulator.prototype.removeSource = function(source){
         var index = this.sources.indexOf(source);
+        if (index == -1) return;
         this.sources.splice(index, 1);
         this.unsubscribe(source);
+        if (this.counter) this.counter--;
     };
 
     /**
