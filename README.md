@@ -51,7 +51,7 @@ Add the the famousify and cssify transforms to your package.json so it looks sim
 }
 ```
 
-Suppose you have `src/app.js` containing Snippet 1 and `public/index.html` containing Snippet 2. Compile a bundle for production.
+Suppose you have `src/app.js` containing [Snippet 1](#snippet-1) and `public/index.html` containing [Snippet 2](#snippet-2). Compile a bundle for production.
 
 ```
 browserify src/app.js -o public/app.js
@@ -120,7 +120,7 @@ module.exports = {
 }
 ```
 
-Suppose you have `src/app.js` containing Snippet 1 and `public/index.html` containing Snippet 2. Compile a bundle for production.
+Suppose you have `src/app.js` containing [Snippet 1](#snippet-1) and `public/index.html` containing [Snippet 2](#snippet-2). Compile a bundle for production.
 
 ```
 webpack
@@ -178,7 +178,7 @@ Install infamous along with famous and css into your project.
 jspm install -y infamous famous css
 ```
 
-Suppose you have `src/app.js` containing Snippet 3 and `src/index.html` containing Snippet 4. Install `serve` globally.
+Suppose you have `src/app.js` containing [Snippet 3](#snippet-3) and `src/index.html` containing [Snippet 4](#snippet-4). Install `serve` globally.
 
 ```
 npm install -g serve
@@ -224,7 +224,7 @@ square.transform.setRotate([0,2*Math.PI,0], {duration: 5000, curve: 'easeInOut'}
 <!DOCTYPE html>
 <html>
     <head>
-        <title>Project with Infamous</title>
+        <title>Project with infamous</title>
         <meta charset="utf-8" />
     </head>
     <body>
@@ -262,7 +262,7 @@ square.transform.setRotate([0,2*Math.PI,0], {duration: 5000, curve: 'easeInOut'}
 <!DOCTYPE html>
 <html>
     <head>
-        <title>Project with Infamous</title>
+        <title>Project with infamous</title>
         <meta charset="utf-8" />
     </head>
     <body>
