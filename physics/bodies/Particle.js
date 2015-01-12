@@ -179,7 +179,7 @@ define(function(require, exports, module) {
      */
     Particle.prototype.setVelocity = function setVelocity(velocity) {
         this.velocity.set(velocity);
-        if (!(velocity[0] === 0 && velocity[1] === 0 && velocity[2] === 0))
+        if (velocity[0] !== velocity[1] !== velocity[2] !== 0)
             this.wake();
     };
 
