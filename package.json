@@ -34,7 +34,6 @@
     "url": "https://github.com/infamous/infamous/issues"
   },
   "homepage": "https://github.com/infamous/infamous",
-  "author": "",
   "browserify": {
     "transform": [
       "famousify"
