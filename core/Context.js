@@ -31,7 +31,7 @@ define(function(require, exports, module) {
         this.allocator = new ElementAllocator(container);
         this.specParser = new SpecParser();
 
-        this._node = new RenderNode();
+        this._node = new RenderNode(this);
         this._eventOutput = new EventHandler();
         this._size = _getElementSize(this.container);
 
