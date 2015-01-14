@@ -17,7 +17,6 @@ define(function(require, exports, module) {
     var OptionsManager = require('../core/OptionsManager');
     var ViewSequence = require('../core/ViewSequence');
     var Scroller = require('../views/Scroller');
-    var Utility = require('../core/Utility');
 
     var Transitionable = require('../core/Transitionable');
     var Accumulator = require('../inputs/Accumulator');
@@ -144,8 +143,13 @@ define(function(require, exports, module) {
         if (options) this.setOptions(options);
     }
 
+    Scrollview.Direction = {
+        X : 0,
+        Y : 1
+    };
+
     Scrollview.DEFAULT_OPTIONS = {
-        direction: Utility.Direction.Y,
+        direction: Scrollview.Direction.Y,
         rails: true,
         friction: 0.005,
         drag: 0.0001,
@@ -156,10 +160,11 @@ define(function(require, exports, module) {
         paginated: false,
         pagePeriod: 200,
         pageDamp: 0.7,
-        pageStopSpeed: 1,
-        pageSwitchSpeed: 0.5,
-        speedLimit: 0.5,
-        groupScroll: false,
+        clipSize: undefined,
+        pageStopSpeed: 1,       // speed threshold to stop a pagination from firing
+        pageSwitchSpeed: 0.5,   // speed threshold to flick forward or back
+        speedLimit: 0.5,        // maximum speed the scrollview can scroll without user input
+        groupScroll: false,     // pipes mouse and touch events automatically to the scrollview
         syncScale: 1,
         preventDefault: true
     };
@@ -638,8 +643,8 @@ define(function(require, exports, module) {
     Scrollview.prototype.setOptions = function setOptions(options) {
         // preprocess custom options
         if (options.direction !== undefined) {
-            if (options.direction === 'x') options.direction = Utility.Direction.X;
-            else if (options.direction === 'y') options.direction = Utility.Direction.Y;
+            if (options.direction === 'x') options.direction = Scrollview.Direction.X;
+            else if (options.direction === 'y') options.direction = Scrollview.Direction.Y;
         }
 
         if (options.groupScroll !== this.options.groupScroll) {
@@ -670,7 +675,7 @@ define(function(require, exports, module) {
         if (options.rails || options.direction !== undefined || options.syncScale !== undefined || options.preventDefault) {
             this.sync.setOptions({
                 rails: this.options.rails,
-                direction: (this.options.direction === Utility.Direction.X) ? GenericSync.DIRECTION_X : GenericSync.DIRECTION_Y,
+                direction: this.options.direction,
                 scale: -this.options.syncScale,
                 preventDefault: this.options.preventDefault
             });
