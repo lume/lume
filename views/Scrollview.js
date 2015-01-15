@@ -140,6 +140,13 @@ define(function(require, exports, module) {
 
         _bindEvents.call(this);
 
+        this._payload = {
+            index: 0,
+            position: 0,
+            offset: 0,
+            progress : 0
+        };
+
         // override default options with passed-in custom options
         if (options) this.setOptions(options);
     }
@@ -170,28 +177,32 @@ define(function(require, exports, module) {
         else return value;
     }
 
+    function _updatePayload(){
+        this._payload.index = this.getCurrentIndex();
+        this._payload.position = this.getCurrentIndex();
+        this._payload.offset = this.getOffset();
+        this._payload.progress = this.getProgress();
+    }
+
     function _handleStart(event){
+        _updatePayload.call(this);
+        this._eventOutput.emit('start', this._payload);
     }
 
     function _handleUpdate(event){
+        _updatePayload.call(this);
+        this._eventOutput.emit('update', this._payload);
     }
 
     function _handleEnd(event){
+        _updatePayload.call(this);
+        this._eventOutput.emit('end', this._payload);
     }
 
-    function _handlePositionStart(){
-    }
-
-    function _handlePositionUpdate(){
-    }
-
-    function _handlePositionEnd(){
-    }
-
-    //TODO: fix when _normalize is called. Should work if never called
     function _handleOffsetUpdate(event){
         if (this._springState === SpringStates.NONE && this._edgeState === EdgeStates.NONE)
             _normalizeState.call(this);
+        _handleUpdate.call(this);
     }
 
     function _handleSyncStart(event) {
@@ -206,10 +217,13 @@ define(function(require, exports, module) {
         this._earlyEnd = false;
         this._dragging = !event.scroll;
         this._touchCount = event.count || 1;
+
+        _handleStart.call(this, event);
     }
 
     function _handleSyncUpdate(event) {
         var velocity = event.velocity;
+        _handleUpdate.call(this, event);
 
         // if touching, return
         if (event.count) return;
@@ -232,7 +246,7 @@ define(function(require, exports, module) {
             if (callEnd){
                 event.velocity *= this.options.edgeGrip;
                 this._offset.removeSource(this.sync);
-                this._particle.set(this.getOffset());
+//                this._particle.set(this.getOffset());
                 this._earlyEnd = true;
                 this._removedSync = true;
                 _handleSyncEnd.call(this, event);
@@ -262,6 +276,8 @@ define(function(require, exports, module) {
                 this.setVelocity(-event.velocity);
             }
         }
+
+        _handleEnd.call(this, event);
     }
 
     function _handlePhysicsStart(particle){
@@ -270,13 +286,9 @@ define(function(require, exports, module) {
         this._dragging = false;
     }
 
-    function _handlePhysicsUpdate(data){
-    }
-
-    function _handlePhysicsEnd(particle){
+    function _handlePhysicsEnd(){
         _detachAgents.call(this);
-        if (!this.options.paginated || (this.options.paginated && this._springState !== SpringStates.NONE))
-            this._eventOutput.emit('settle', {index : this._cachedIndex});
+        _handleEnd.call(this);
     }
 
     function _bindEvents() {
@@ -297,17 +309,8 @@ define(function(require, exports, module) {
         this.sync.on('update', _handleSyncUpdate.bind(this));
         this.sync.on('end', _handleSyncEnd.bind(this));
 
-        this._position.on('start', _handlePositionStart.bind(this));
-        this._position.on('update', _handlePositionUpdate.bind(this));
-        this._position.on('end', _handlePositionEnd.bind(this));
-
         this._particle.on('start', _handlePhysicsStart.bind(this));
-        this._particle.on('update', _handlePhysicsUpdate.bind(this));
         this._particle.on('end', _handlePhysicsEnd.bind(this));
-
-        this._eventInput.on('start', _handleStart.bind(this));
-        this._eventInput.on('update', _handleUpdate.bind(this));
-        this._eventInput.on('end', _handleEnd.bind(this));
 
         this._offset.on('update', _handleOffsetUpdate.bind(this));
 
@@ -386,19 +389,13 @@ define(function(require, exports, module) {
 
         // parameters to determine when to switch pages
         var nodeSize = _nodeSizeForDirection.call(this, this._node);
+
         var positionNext = position > 0.5 * nodeSize;
-
         var velocityNext = velocity > 0;
-        var velocityPrev = velocity < 0;
 
-        if ((positionNext && !velocitySwitch) || (velocitySwitch && velocityNext))
-            this.goToNextPage();
-        else if (velocitySwitch && velocityPrev)
-            this.goToPreviousPage();
-        else {
-            _setSpring.call(this, 0, SpringStates.PAGE);
-            _attachSpring.call(this);
-        }
+        (positionNext && !velocitySwitch) || (velocitySwitch && velocityNext)
+            ? this.goToNextPage()
+            : this.goToPreviousPage();
     }
 
     function _setSpring(position, springState) {
@@ -507,6 +504,7 @@ define(function(require, exports, module) {
      */
     Scrollview.prototype.goToPreviousPage = function goToPreviousPage() {
         if (!this._node || this._edgeState === EdgeStates.TOP) return;
+
 
         // if moving back to the current node
         if (this.getOffset() > 0 && this._springState === SpringStates.NONE) {
