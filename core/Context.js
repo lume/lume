@@ -32,6 +32,7 @@ define(function(require, exports, module) {
         this.specParser = new SpecParser();
 
         this._node = new RenderNode(this);
+
         this._eventOutput = new EventHandler();
         this._size = _getElementSize(this.container);
 
@@ -82,7 +83,7 @@ define(function(require, exports, module) {
      * @return {RenderNode} RenderNode wrapping this object, if not already a RenderNode
      */
     Context.prototype.add = function add(obj) {
-        return this._node.add(obj);
+        return RenderNode.prototype.add.call(this._node, obj);
     };
 
     /**
@@ -136,8 +137,8 @@ define(function(require, exports, module) {
         this.specParser.reset();
     }
 
-    Context.prototype.render = function render(){
-        return this._node.render();
+    Context.prototype.render = function render(input){
+        return (input) ? input : this._node.render();
     };
 
     /**
