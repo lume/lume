@@ -301,13 +301,11 @@ define(function(require, exports, module) {
      * @method get
      *
      *
-     * @param {number=} timestamp Evaluate the curve at a normalized version of this
-     *    time. If omitted, use current time. (Unix epoch time)
      * @return {number|Object.<number|string, number>} beginning state
      *    _interpolated to this point in time.
      */
-    TweenTransition.prototype.get = function get(timestamp) {
-        this.update(timestamp);
+    TweenTransition.prototype.get = function get() {
+        this.update();
         return this.state;
     };
 
@@ -354,7 +352,7 @@ define(function(require, exports, module) {
      * @param {number=} timestamp Evaluate the curve at a normalized version of this
      *    time. If omitted, use current time. (Unix epoch time)
      */
-    TweenTransition.prototype.update = function update(timestamp) {
+    TweenTransition.prototype.update = function update() {
         if (!this._active) {
             if (this._callback) {
                 var callback = this._callback;
@@ -364,7 +362,7 @@ define(function(require, exports, module) {
             return;
         }
 
-        if (!timestamp) timestamp = Date.now();
+        var timestamp = Date.now();
         if (this._updateTime >= timestamp) return;
         this._updateTime = timestamp;
 

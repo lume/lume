@@ -77,12 +77,6 @@ define(function(require, exports, module) {
     };
 
     /**
-     * Alias for add
-     * @method _add
-     */
-    View.prototype._add = View.prototype.add;
-
-    /**
      * Generate a render spec from the contents of this component.
      *
      * @private
