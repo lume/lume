@@ -313,6 +313,9 @@ define(function(require, exports, module) {
 
         this._offset.on('update', _handleOffsetUpdate.bind(this));
 
+        this._position.on('start', _handleStart.bind(this));
+        this._position.on('end', _handleEnd.bind(this));
+
         // touch input goes to the sync
         this._eventInput.pipe(this.sync);
 
@@ -367,7 +370,7 @@ define(function(require, exports, module) {
         return size[direction];
     }
 
-    // TODO: only handle edge once. physics should be asleep at first
+    // TODO: fix for overshoot and position is size of node
     function _handleEdge(edge) {
         this.sync.setOptions({scale: -this.options.edgeGrip});
         this._edgeState = edge;
@@ -596,7 +599,7 @@ define(function(require, exports, module) {
     /**
      * Sets the offset of the physics particle that controls Scrollview instance's "position"
      *
-     * @method setPosition
+     * @method setOffset
      * @param {number} x The amount of pixels you want your scrollview to progress by.
      */
     Scrollview.prototype.setOffset = function setOffset(x) {
@@ -689,8 +692,9 @@ define(function(require, exports, module) {
         return this._scroller.sequenceFrom(node);
     };
 
-    Scrollview.prototype.setPosition = function(position){
-
+    Scrollview.prototype.setPosition = function(position, transition, callback){
+        if (this._position.isActive()) this._position.halt();
+        this._position.set(position, transition, callback);
     };
 
     /**
