@@ -59,6 +59,7 @@ define(function(require, exports, module) {
     EventHandler.setOutputHandler = function setOutputHandler(object, handler) {
         if (handler instanceof EventHandler) handler.bindThis(object);
         object.pipe = handler.pipe.bind(handler);
+        object.emit = handler.emit.bind(handler);
         object.unpipe = handler.unpipe.bind(handler);
         object.on = handler.on.bind(handler);
         object.addListener = object.on;
