@@ -201,6 +201,8 @@ define(function(require, exports, module) {
                 return state;
             }
 
+            this.state = state;
+
             if (this._eventOutput){
                 //TODO: put this somewhere else
                 var delta;
@@ -211,7 +213,6 @@ define(function(require, exports, module) {
                 }
                 else delta = state - this.state;
 
-                this.state = state;
                 this._dirty = true;
 
                 if (this._dirty){
@@ -220,8 +221,8 @@ define(function(require, exports, module) {
                         value : state
                     });
                 }
-
             }
+            else this.state = state;
         }
         return this.state;
     };
@@ -243,9 +244,8 @@ define(function(require, exports, module) {
      * @method halt
      */
     Transitionable.prototype.halt = function halt() {
-        var value = this.set(this.get());
+        this.set(this.get());
         this._active = false;
-        return value;
     };
 
     function _createEventOutput() {
