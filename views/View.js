@@ -75,7 +75,7 @@ define(function(require, exports, module) {
      * @protected
      */
     View.prototype.add = function add() {
-        return RenderNode.prototoype.add.apply(this._node, arguments);
+        return RenderNode.prototype.add.apply(this._node, arguments);
     };
 
     /**
@@ -86,7 +86,7 @@ define(function(require, exports, module) {
      * @return {number} Render spec for this component
      */
     View.prototype.render = function render() {
-        return RenderNode.prototype.apply(this._node, arguments);
+        return RenderNode.prototype.render.apply(this._node, arguments);
     };
 
     /**
@@ -101,6 +101,14 @@ define(function(require, exports, module) {
             : this.options.size;
     };
 
+    View.prototype.getEventInput = function getEventInput(){
+        return this._eventInput;
+    };
+
+    View.prototype.getEventOutput = function getEventInput(){
+        return this._eventOutput;
+    };
+
     function _viewTemplate(options){
         View.apply(this, options);
         if (this.initialize) this.initialize(options);
@@ -109,13 +117,14 @@ define(function(require, exports, module) {
     var _viewTemplateString = _viewTemplate.toString();
 
     var RESERVED_KEYS = {
-        defaults : 'defaults',
-        events   : 'events'
+        DEFAULTS : 'defaults',
+        EVENTS   : 'events',
+        NAME     : 'name'
     };
 
-    View.extend = function(obj){
+    View.extend = function(obj, constants){
         if (obj.name)
-            _viewTemplateString = _viewTemplateString.replace('_template', obj.name);
+            _viewTemplateString = _viewTemplateString.replace('_viewTemplate', obj.name);
 
         var constructor;
         eval('constructor = ' + _viewTemplateString);
@@ -126,16 +135,21 @@ define(function(require, exports, module) {
         for (var key in obj){
             var value = obj[key];
             switch (key) {
-                case RESERVED_KEYS.defaults:
+                case RESERVED_KEYS.DEFAULTS:
                     constructor.DEFAULT_OPTIONS = value;
                     break;
-                case RESERVED_KEYS.events:
+                case RESERVED_KEYS.EVENTS:
                     constructor.EVENTS = value;
+                    break;
+                case RESERVED_KEYS.NAME:
                     break;
                 default:
                     constructor.prototype[key] = value;
             }
         }
+
+        for (var key in constants)
+            constructor[key] = constants[key];
 
         return constructor;
     };
