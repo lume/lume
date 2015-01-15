@@ -32,12 +32,11 @@ define(function(require, exports, module) {
         this._eventOutput = new EventHandler();
         EventHandler.setInputHandler(this, this._eventInput);
         EventHandler.setOutputHandler(this, this._eventOutput);
+        EventHandler.setInputEvents(this, this.constructor.EVENTS || View.EVENTS, this._eventInput);
+        this._eventInput.bindThis(this);
 
-        EventHandler.setEvents(this.constructor.EVENTS || View.EVENTS, this._eventInput, this._eventOutput);
         this.options = Utility.clone(this.constructor.DEFAULT_OPTIONS || View.DEFAULT_OPTIONS);
-
         this._optionsManager = new OptionsManager(this.options);
-
         if (options) this.setOptions(options);
     }
 
@@ -52,7 +51,7 @@ define(function(require, exports, module) {
      * @return {Object} associated object
      */
     View.prototype.getOptions = function getOptions(key) {
-        return this._optionsManager.getOptions(key);
+        return OptionsManager.prototype.getOptions(this._optionsManager, arguments);
     };
 
     /*
@@ -62,8 +61,8 @@ define(function(require, exports, module) {
      *  @method setOptions
      *  @param {Object} options
      */
-    View.prototype.setOptions = function setOptions(options) {
-        this._optionsManager.patch(options);
+    View.prototype.setOptions = function setOptions() {
+        OptionsManager.prototype.apply(this._optionsManager, arguments);
     };
 
     /**
@@ -76,7 +75,7 @@ define(function(require, exports, module) {
      * @protected
      */
     View.prototype.add = function add() {
-        return this._node.add.apply(this._node, arguments);
+        return RenderNode.prototoype.add.apply(this._node, arguments);
     };
 
     /**
@@ -87,7 +86,7 @@ define(function(require, exports, module) {
      * @return {number} Render spec for this component
      */
     View.prototype.render = function render() {
-        return this._node.render();
+        return RenderNode.prototype.apply(this._node, arguments);
     };
 
     /**
@@ -97,50 +96,44 @@ define(function(require, exports, module) {
      * @return {Array.Number} [width, height]
      */
     View.prototype.getSize = function getSize() {
-        if (this._node && this._node.getSize) {
-            return this._node.getSize.apply(this._node, arguments) || this.options.size;
-        }
-        else return this.options.size;
+        return (this._node && this._node.getSize)
+            ? RenderNode.prototype.getSize.apply(this._node, arguments)
+            : this.options.size;
+    };
+
+    function _viewTemplate(options){
+        View.apply(this, options);
+        if (this.initialize) this.initialize(options);
+    }
+
+    var _viewTemplateString = _viewTemplate.toString();
+
+    var RESERVED_KEYS = {
+        defaults : 'defaults',
+        events   : 'events'
     };
 
     View.extend = function(obj){
+        if (obj.name)
+            _viewTemplateString = _viewTemplateString.replace('_template', obj.name);
 
-//        var MyView = View.extend({
-//            name : '',
-//            initialize : function(),
-//            customFunction : function(),
-//            events : {}
-//        });
-//        MyView.DEFAULT_OPTIONS = obj.defaults;
+        var constructor;
+        eval('constructor = ' + _viewTemplateString);
 
-//        var myView = new MyView(options);
-        // myView.on/off/emit/trigger/pipe/unpipe
-        // getOptions/setOptions
-        // add
-        // setSize, getSize?
-        // customFunction
-
-        var constructor = function(options){
-            View.apply(this, options);
-            if (options) this.setOptions(options);
-
-            if (obj.initialize) obj.initialize();
-        };
         constructor.prototype = Object.create(View.prototype);
         constructor.prototype.constructor = constructor;
 
         for (var key in obj){
             var value = obj[key];
             switch (key) {
-                case 'name':
-                    constructor.name = value;
-                    break;
-                case 'defaults':
+                case RESERVED_KEYS.defaults:
                     constructor.DEFAULT_OPTIONS = value;
                     break;
-                case 'events':
+                case RESERVED_KEYS.events:
                     constructor.EVENTS = value;
                     break;
+                default:
+                    constructor.prototype[key] = value;
             }
         }
 

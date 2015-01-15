@@ -66,13 +66,13 @@ define(function(require, exports, module) {
         object.removeListener = handler.removeListener.bind(handler);
     };
 
-    EventHandler.setEvents = function setEvents(events, handlerIn, handlerOut){
+    EventHandler.setInputEvents = function setInputEvents(object, events, handlerIn){
         for (var key in events) {
-            var fn = events[key];
-            if (!(fn instanceof Function)){
-                fn = handlerOut.emit.bind(handlerOut, events[key]);
+            var handlerName = events[key];
+            var handler = object[handlerName];
+            if (object[handlerName] instanceof Function){
+                handlerIn.on(key, handler.bind(this));
             }
-            handlerIn.on(key, fn);
         }
     };
 
