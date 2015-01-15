@@ -33,13 +33,16 @@ define(function(require, exports, module) {
         EventHandler.setInputHandler(this, this._eventInput);
         EventHandler.setOutputHandler(this, this._eventOutput);
 
+        EventHandler.setEvents(this.constructor.EVENTS || View.EVENTS, this._eventInput, this._eventOutput);
         this.options = Utility.clone(this.constructor.DEFAULT_OPTIONS || View.DEFAULT_OPTIONS);
+
         this._optionsManager = new OptionsManager(this.options);
 
         if (options) this.setOptions(options);
     }
 
-    View.DEFAULT_OPTIONS = {}; // no defaults
+    View.DEFAULT_OPTIONS = {};
+    View.EVENTS = {};
 
     /**
      * Look up options value by key
@@ -98,6 +101,50 @@ define(function(require, exports, module) {
             return this._node.getSize.apply(this._node, arguments) || this.options.size;
         }
         else return this.options.size;
+    };
+
+    View.extend = function(obj){
+
+//        var MyView = View.extend({
+//            name : '',
+//            initialize : function(),
+//            customFunction : function(),
+//            events : {}
+//        });
+//        MyView.DEFAULT_OPTIONS = obj.defaults;
+
+//        var myView = new MyView(options);
+        // myView.on/off/emit/trigger/pipe/unpipe
+        // getOptions/setOptions
+        // add
+        // setSize, getSize?
+        // customFunction
+
+        var constructor = function(options){
+            View.apply(this, options);
+            if (options) this.setOptions(options);
+
+            if (obj.initialize) obj.initialize();
+        };
+        constructor.prototype = Object.create(View.prototype);
+        constructor.prototype.constructor = constructor;
+
+        for (var key in obj){
+            var value = obj[key];
+            switch (key) {
+                case 'name':
+                    constructor.name = value;
+                    break;
+                case 'defaults':
+                    constructor.DEFAULT_OPTIONS = value;
+                    break;
+                case 'events':
+                    constructor.EVENTS = value;
+                    break;
+            }
+        }
+
+        return constructor;
     };
 
     module.exports = View;

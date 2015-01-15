@@ -66,6 +66,16 @@ define(function(require, exports, module) {
         object.removeListener = handler.removeListener.bind(handler);
     };
 
+    EventHandler.setEvents = function setEvents(events, handlerIn, handlerOut){
+        for (var key in events) {
+            var fn = events[key];
+            if (!(fn instanceof Function)){
+                fn = handlerOut.emit.bind(handlerOut, events[key]);
+            }
+            handlerIn.on(key, fn);
+        }
+    };
+
     /**
      * Trigger an event, sending to all downstream handlers
      *   listening for provided 'type' key.
