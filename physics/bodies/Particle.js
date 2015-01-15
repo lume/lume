@@ -108,8 +108,8 @@ define(function(require, exports, module) {
      */
     Particle.prototype.sleep = function sleep() {
         if (this._isSleeping) return;
-        this.emit(_events.end, this);
         this._isSleeping = true;
+        this.emit(_events.end, this);
     };
 
     /**
@@ -119,10 +119,10 @@ define(function(require, exports, module) {
      */
     Particle.prototype.wake = function wake() {
         if (!this._isSleeping) return;
-        this.emit(_events.start, this);
         this._isSleeping = false;
         this._prevTime = now();
         if (this._engine) this._engine.wake();
+        this.emit(_events.start, this);
     };
 
     /**
