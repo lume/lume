@@ -201,8 +201,6 @@ define(function(require, exports, module) {
                 return state;
             }
 
-            this.state = state;
-
             if (this._eventOutput){
                 //TODO: put this somewhere else
                 var delta;
@@ -214,6 +212,7 @@ define(function(require, exports, module) {
                 else delta = state - this.state;
 
                 this._dirty = true;
+                this.state = state;
 
                 if (this._dirty){
                     this._eventOutput.emit('update', {
