@@ -271,13 +271,12 @@ define(function(require, exports, module) {
                 _detachSpring.call(this);
                 _attachDrag.call(this);
             }
+            else _handleEnd.call(this, event);
 
             if (!event.scroll){
                 this.setVelocity(-event.velocity);
             }
         }
-
-        _handleEnd.call(this, event);
     }
 
     function _handlePhysicsStart(particle){
