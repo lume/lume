@@ -8,7 +8,6 @@
  */
 
 define(function(require, exports, module) {
-    var Entity = require('../core/Entity');
     var RenderNode = require('../core/RenderNode');
     var Transform = require('../core/Transform');
     var ViewSequence = require('../core/ViewSequence');
@@ -36,8 +35,6 @@ define(function(require, exports, module) {
         this.options = Object.create(GridLayout.DEFAULT_OPTIONS);
         this.optionsManager = new OptionsManager(this.options);
         if (options) this.setOptions(options);
-
-        this.id = Entity.register(this);
 
         this._modifiers = [];
         this._states = [];
@@ -136,8 +133,34 @@ define(function(require, exports, module) {
      * @method render
      * @return {Object} Render spec for this component
      */
-    GridLayout.prototype.render = function render() {
-        return this.id;
+    GridLayout.prototype.render = function render(sequence, context) {
+        var size = context.getSize();
+
+        var cols = this.options.dimensions[0];
+        var rows = this.options.dimensions[1];
+
+        if (size[0] !== this._contextSizeCache[0] || size[1] !== this._contextSizeCache[1] || cols !== this._dimensionsCache[0] || rows !== this._dimensionsCache[1]) {
+            _reflow.call(this, size, cols, rows);
+        }
+
+        var result = [];
+        var currIndex = 0;
+        while (sequence && (currIndex < this._modifiers.length)) {
+            var item = sequence.get();
+            var modifier = this._modifiers[currIndex];
+
+            if (currIndex >= this._activeCount && this._states[currIndex].opacity.isActive()) {
+                this._modifiers.splice(currIndex, 1);
+                this._states.splice(currIndex, 1);
+            }
+
+            if (item) result.push(modifier.render(item.render()));
+
+            sequence = sequence.getNext();
+            currIndex++;
+        }
+
+        return result;
     };
 
     /**
@@ -169,59 +192,6 @@ define(function(require, exports, module) {
      */
     GridLayout.prototype.getSize = function getSize() {
       return this._contextSizeCache;
-    };
-
-    /**
-     * Apply changes from this component to the corresponding document element.
-     * This includes changes to classes, styles, size, content, opacity, origin,
-     * and matrix transforms.
-     *
-     * @private
-     * @method commit
-     * @param {Context} context commit context
-     */
-    GridLayout.prototype.commit = function commit(context) {
-        var transform = context.transform;
-        var opacity = context.opacity;
-        var origin = context.origin;
-        var size = context.size;
-
-        var cols = this.options.dimensions[0];
-        var rows = this.options.dimensions[1];
-
-        if (size[0] !== this._contextSizeCache[0] || size[1] !== this._contextSizeCache[1] || cols !== this._dimensionsCache[0] || rows !== this._dimensionsCache[1]) {
-            _reflow.call(this, size, cols, rows);
-        }
-
-        var sequence = this.sequence;
-        var result = [];
-        var currIndex = 0;
-        while (sequence && (currIndex < this._modifiers.length)) {
-            var item = sequence.get();
-            var modifier = this._modifiers[currIndex];
-            if (currIndex >= this._activeCount && this._states[currIndex].opacity.isActive()) {
-                this._modifiers.splice(currIndex, 1);
-                this._states.splice(currIndex, 1);
-            }
-            if (item) {
-                result.push(
-                    modifier.render({
-                        origin: origin,
-                        target: item.render()
-                    })
-                );
-            }
-            sequence = sequence.getNext();
-            currIndex++;
-        }
-
-        if (size) transform = Transform.moveThen([-size[0]*origin[0], -size[1]*origin[1], 0], transform);
-        return {
-            transform: transform,
-            opacity: opacity,
-            size: size,
-            target: result
-        };
     };
 
     module.exports = GridLayout;
