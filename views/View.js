@@ -51,7 +51,7 @@ define(function(require, exports, module) {
      * @return {Object} associated object
      */
     View.prototype.getOptions = function getOptions(key) {
-        return OptionsManager.prototype.getOptions(this._optionsManager, arguments);
+        return OptionsManager.prototype.getOptions.apply(this._optionsManager, arguments);
     };
 
     /*
@@ -62,7 +62,7 @@ define(function(require, exports, module) {
      *  @param {Object} options
      */
     View.prototype.setOptions = function setOptions() {
-        OptionsManager.prototype.apply(this._optionsManager, arguments);
+        OptionsManager.prototype.setOptions.apply(this._optionsManager, arguments);
     };
 
     /**
@@ -110,7 +110,7 @@ define(function(require, exports, module) {
     };
 
     function _viewTemplate(options){
-        View.apply(this, options);
+        View.call(this, options);
         if (this.initialize) this.initialize(options);
     }
 
