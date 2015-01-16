@@ -12,7 +12,7 @@ define(function(require, exports, module) {
     }
 
     var CONSTANTS = {
-        TRANSITIONS : {
+        TRANSITION : {
             CONTINUOUS : 0,
             DISCRETE : 1
         }
@@ -24,7 +24,7 @@ define(function(require, exports, module) {
             dotRadius : 5,
             dotColor : 'white',
             dotSpacing : 4,
-            transition : CONSTANTS.TRANSITIONS.CONTINUOUS
+            transition : CONSTANTS.TRANSITION.CONTINUOUS
         },
         initialize : function(){
             this.initializeState();
@@ -124,7 +124,7 @@ define(function(require, exports, module) {
             this.subscribe(this.scrollview);
 
             switch (this.options.transition){
-                case CONSTANTS.TRANSITIONS.CONTINUOUS:
+                case CONSTANTS.TRANSITION.CONTINUOUS:
                     eventInput.on('update', function(data){
                         this.currentDotPosition.set(data.progress);
                         var index = data.index;
@@ -137,7 +137,7 @@ define(function(require, exports, module) {
                         this.currentDotPosition.set(position);
                     });
                     break;
-                case CONSTANTS.TRANSITIONS.DISCRETE:
+                case CONSTANTS.TRANSITION.DISCRETE:
                     eventInput.on('end', function(data){
                         this.index = data.index;
                         this.progress = data.progress;
