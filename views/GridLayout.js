@@ -81,9 +81,13 @@ define(function(require, exports, module) {
             var cols = this.options.dimensions[0];
             var rows = this.options.dimensions[1];
 
-            if (size[0] !== this._contextSizeCache[0] || size[1] !== this._contextSizeCache[1] || cols !== this._dimensionsCache[0] || rows !== this._dimensionsCache[1]) {
-                _reflow.call(this, size, cols, rows);
-            }
+            var callReflow =
+                size[0] !== this._contextSizeCache[0] ||
+                size[1] !== this._contextSizeCache[1] ||
+                cols    !== this._dimensionsCache[0]  ||
+                rows    !== this._dimensionsCache[1];
+
+            if (callReflow) _reflow.call(this, size, cols, rows);
 
             var result = [];
             var currIndex = 0;
