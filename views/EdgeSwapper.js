@@ -9,7 +9,6 @@
 
 define(function(require, exports, module) {
     var CachedMap = require('famous/transitions/CachedMap');
-    var Entity = require('famous/core/Entity');
     var EventHandler = require('famous/core/EventHandler');
     var Transform = require('famous/core/Transform');
     var RenderController = require('famous/views/RenderController');
@@ -33,7 +32,6 @@ define(function(require, exports, module) {
         this._eventInput = new EventHandler();
         EventHandler.setInputHandler(this, this._eventInput);
 
-        this._entityId = Entity.register(this);
         if (options) this.setOptions(options);
     }
 
@@ -70,36 +68,19 @@ define(function(require, exports, module) {
     };
 
     /**
-     * Generate a render spec from the contents of this component.
-     *
-     * @private
-     * @method render
-     * @return {number} Render spec for this component
-     */
-    EdgeSwapper.prototype.render = function render() {
-        return this._entityId;
-    };
-
-    /**
      * Apply changes from this component to the corresponding document element.
      * This includes changes to classes, styles, size, content, opacity, origin,
      * and matrix transforms.
      *
      * @private
-     * @method commit
+     * @method render
      * @param {Context} context commit context
      */
-    EdgeSwapper.prototype.commit = function commit(context) {
-        this._size[0] = context.size[0];
-        this._size[1] = context.size[1];
-
-        return {
-            transform: context.transform,
-            opacity: context.opacity,
-            origin: context.origin,
-            size: context.size,
-            target: this._controller.render()
-        };
+    EdgeSwapper.prototype.render = function commit(input, context) {
+        var size = context.getSize();
+        this._size[0] = size[0];
+        this._size[1] = size[1];
+        return this._controller.render();
     };
 
     module.exports = EdgeSwapper;
