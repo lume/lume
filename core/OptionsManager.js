@@ -78,7 +78,7 @@ define(function(require, exports, module) {
                 if ((k in myState) && (data[k] && data[k].constructor === Object) && (myState[k] && myState[k].constructor === Object)) {
                     if (!myState.hasOwnProperty(k)) myState[k] = Object.create(myState[k]);
                     this.key(k).patch(data[k]);
-                    if (this.eventOutput) this.eventOutput.emit('change', {id: k, value: this.key(k).value()});
+                    if (this.eventOutput) this.eventOutput.emit('change', {key: k, value: this.key(k).value()});
                 }
                 else this.set(k, data[k]);
             }
@@ -137,7 +137,7 @@ define(function(require, exports, module) {
     OptionsManager.prototype.set = function set(key, value) {
         var originalValue = this.get(key);
         this._value[key] = value;
-        if (this.eventOutput && value !== originalValue) this.eventOutput.emit('change', {id: key, value: value});
+        if (this.eventOutput && value !== originalValue) this.eventOutput.emit('change', {key: key, value: value});
         return this;
     };
 
