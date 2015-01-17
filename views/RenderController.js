@@ -2,7 +2,6 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  *
- * Owner: felix@famo.us
  * @license MPL 2.0
  * @copyright Famous Industries, Inc. 2014
  */
@@ -12,7 +11,7 @@ define(function(require, exports, module) {
     var RenderNode = require('../core/RenderNode');
     var Transform = require('../core/Transform');
     var Transitionable = require('../core/Transitionable');
-    var View = require('./View');
+    var OptionsManager = require('../core/OptionsManager');
 
     /**
      * A dynamic view that can show or hide different renderables with transitions.
@@ -27,7 +26,9 @@ define(function(require, exports, module) {
        or synchronously beforehand.
      */
     function RenderController(options) {
-        View.apply(this, arguments);
+        this.options = Object.create(RenderController.DEFAULT_OPTIONS);
+        this._optionsManager = new OptionsManager(this.options);
+        if (options) this.setOptions(options);
 
         this._showing = -1;
         this._outgoingRenderables = [];
@@ -49,8 +50,6 @@ define(function(require, exports, module) {
 
         this._output = [];
     }
-    RenderController.prototype = Object.create(View.prototype);
-    RenderController.prototype.constructor = RenderController;
 
     RenderController.DEFAULT_OPTIONS = {
         inTransition: true,
@@ -72,6 +71,10 @@ define(function(require, exports, module) {
     function _mappedState(map, state) {
         return map(state.get());
     }
+
+    RenderController.prototype.setOptions = function(options){
+        this._optionsManager.setOptions(options);
+    };
 
     /**
      * As your RenderController shows a new renderable, it executes a transition in. This transition in
