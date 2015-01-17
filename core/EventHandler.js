@@ -69,10 +69,10 @@ define(function(require, exports, module) {
     EventHandler.setInputEvents = function setInputEvents(object, events, handlerIn){
         for (var key in events) {
             var handlerName = events[key];
-            var handler = object[handlerName];
-            if (object[handlerName] instanceof Function){
-                handlerIn.on(key, handler.bind(this));
-            }
+            var handler = (typeof handlerName === 'string')
+                ? object[handlerName]
+                : handlerName;
+            if (handler) handlerIn.on(key, handler.bind(this));
         }
     };
 
