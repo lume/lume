@@ -72,7 +72,7 @@ define(function(require, exports, module) {
             var handler = (typeof handlerName === 'string')
                 ? object[handlerName]
                 : handlerName;
-            if (handler) handlerIn.on(key, handler.bind(this));
+            if (handler) handlerIn.on(key, handler.bind(object));
         }
     };
 
