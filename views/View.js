@@ -28,16 +28,18 @@ define(function(require, exports, module) {
     function View(options) {
         this._node = new RenderNode();
 
+        this.options = Utility.clone(this.constructor.DEFAULT_OPTIONS || View.DEFAULT_OPTIONS);
+        this._optionsManager = new OptionsManager(this.options);
+        if (options) this.setOptions(options);
+
         this._eventInput = new EventHandler();
         this._eventOutput = new EventHandler();
         EventHandler.setInputHandler(this, this._eventInput);
         EventHandler.setOutputHandler(this, this._eventOutput);
         EventHandler.setInputEvents(this, this.constructor.EVENTS || View.EVENTS, this._eventInput);
-        this._eventInput.bindThis(this);
 
-        this.options = Utility.clone(this.constructor.DEFAULT_OPTIONS || View.DEFAULT_OPTIONS);
-        this._optionsManager = new OptionsManager(this.options);
-        if (options) this.setOptions(options);
+        this._eventInput.bindThis(this);
+        this._eventInput.subscribe(this._optionsManager);
     }
 
     View.DEFAULT_OPTIONS = {};
