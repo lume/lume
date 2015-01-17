@@ -10,9 +10,8 @@
 define(function(require, exports, module) {
     var RenderNode = require('../core/RenderNode');
     var Transform = require('../core/Transform');
-    var OptionsManager = require('../core/OptionsManager');
     var Transitionable = require('../core/Transitionable');
-    var EventHandler = require('../core/EventHandler');
+    var View = require('./view');
 
     /**
      * A layout which will arrange two renderables: a featured content, and a
@@ -37,56 +36,200 @@ define(function(require, exports, module) {
      * @param [options.positionThreshold=0] {Number}            The position threshold to trigger a toggle
      * @param [options.transition=true] {Boolean|Object}        The toggle transition
      */
-    function DrawerLayout(options) {
-        this.options = Object.create(DrawerLayout.DEFAULT_OPTIONS);
-        this._optionsManager = new OptionsManager(this.options);
-        if (options) this.setOptions(options);
-
-        this._position = new Transitionable(0);
-        this._direction = _getDirectionFromSide(this.options.side);
-        this._orientation = _getOrientationFromSide(this.options.side);
-        this._isOpen = false;
-
-        this._cachedLength = 0;
-        this._cachedPosition = 0;
-
-        this.drawer = new RenderNode();
-        this.content = new RenderNode();
-
-        this._eventInput = new EventHandler();
-        this._eventOutput = new EventHandler();
-        EventHandler.setInputHandler(this, this._eventInput);
-        EventHandler.setOutputHandler(this, this._eventOutput);
-
-        this._eventInput.on('update', _handleUpdate.bind(this));
-        this._eventInput.on('end', _handleEnd.bind(this));
-    }
-
-    var DIRECTION_X = 0;
-    var DIRECTION_Y = 1;
-
-    DrawerLayout.SIDES = {
-        LEFT   : 0,
-        TOP    : 1,
-        RIGHT  : 2,
-        BOTTOM : 3
+    var CONSTANTS = {
+        DIRECTION : {
+            X : 0,
+            Y : 1
+        },
+        SIDE : {
+            LEFT   : 0,
+            TOP    : 1,
+            RIGHT  : 2,
+            BOTTOM : 3
+        }
     };
 
-    DrawerLayout.DEFAULT_OPTIONS = {
-        side: DrawerLayout.SIDES.LEFT,
-        drawerLength : 0,
-        velocityThreshold : 0,
-        positionThreshold : 0,
-        transition : true
-    };
+    module.exports = View.extend({
+        name : 'DrawerLayout',
+        defaults : {
+            side: CONSTANTS.SIDE.LEFT,
+            drawerLength : 0,
+            velocityThreshold : 0,
+            positionThreshold : 0,
+            transition : true
+        },
+        events : {
+            update : _handleUpdate,
+            end : _handleEnd,
+            change : _updateState
+        },
+        initialize : function initialize(options){
+            this.initializeState(options);
+            this.initializeSubviews();
+        },
+        initializeState : function initializeState(){
+            this._position = new Transitionable(0);
+            this._direction = _getDirectionFromSide(this.options.side);
+            this._orientation = _getOrientationFromSide(this.options.side);
+            this._isOpen = false;
+            this._cachedLength = 0;
+            this._cachedPosition = 0;
+        },
+        initializeSubviews : function initializeSubviews(){
+            this.drawer = new RenderNode();
+            this.content = new RenderNode();
+        },
+        /**
+         * Reveals the drawer with a transition
+         *   Emits an 'open' event when an opening transition has been committed to.
+         *
+         * @method open
+         * @param [transition] {Boolean|Object} transition definition
+         * @param [callback] {Function}         callback
+         */
+        open : function open(transition, callback){
+            if (transition instanceof Function) callback = transition;
+            if (transition === undefined) transition = this.options.transition;
+            this._cachedLength = _resolveNodeSize.call(this, this.drawer);
+            this.setPosition(this._cachedLength, transition, callback);
+            if (!this._isOpen) {
+                this._isOpen = true;
+                this.emit('open');
+            }
+        },
+        /**
+         * Conceals the drawer with a transition
+         *   Emits a 'close' event when an closing transition has been committed to.
+         *
+         * @method close
+         * @param [transition] {Boolean|Object} transition definition
+         * @param [callback] {Function}         callback
+         */
+        close : function close(transition, callback){
+            if (transition instanceof Function) callback = transition;
+            if (transition === undefined) transition = this.options.transition;
+            this.setPosition(0, transition, callback);
+            if (this._isOpen){
+                this._isOpen = false;
+                this.emit('close');
+            }
+        },
+        /**
+         * Toggles between open and closed states
+         *
+         * @method toggle
+         * @param [transition] {Boolean|Object} transition definition
+         */
+        toggle : function toggle(transition){
+            if (this._isOpen) this.close(transition);
+            else this.open(transition);
+        },
+        /**
+         * Sets the position in pixels for the content's displacement
+         *
+         * @method setPosition
+         * @param position {Number}             position
+         * @param [transition] {Boolean|Object} transition definition
+         * @param [callback] {Function}         callback
+         */
+        setPosition : function setPosition(position, transition, callback) {
+            if (this._position.isActive()) this._position.halt();
+            this._position.set(position, transition, callback);
+        },
+        /**
+         * Gets the position in pixels for the content's displacement
+         *
+         * @method getPosition
+         * @return position {Number} position
+         */
+        getPosition : function getPosition() {
+            return this._position.get();
+        },
+        /**
+         * Sets the progress (between 0 and 1) for the content's displacement
+         *
+         * @method setProgress
+         * @param progress {Number}             position
+         * @param [transition] {Boolean|Object} transition definition
+         * @param [callback] {Function}         callback
+         */
+        setProgress : function setProgress(progress, transition, callback) {
+            return this._position.set(progress * this._cachedLength, transition, callback);
+        },
+        /**
+         * Gets the progress (between 0 and 1) for the content's displacement
+         *
+         * @method getProgress
+         * @return position {Number} position
+         */
+        getProgress : function getProgress(){
+            return this._position.get() / this._cachedLength;
+        },
+        /**
+         * Resets to last state of being open or closed
+         *
+         * @method reset
+         * @param [transition] {Boolean|Object} transition definition
+         */
+        reset : function reset(transition) {
+            if (this._isOpen) this.open(transition);
+            else this.close(transition);
+        },
+        /*
+         * Returns if drawer is committed to being open or closed
+         *
+         * @method isOpen
+         * @return {Boolean}
+         */
+        isOpen : function isOpen(){
+            return this._isOpen;
+        },
+        /**
+         * Generates a Render Spec from the contents of this component
+         *
+         * @private
+         * @method render
+         * @return {Spec}
+         */
+        render : function render(){
+            var position = this.getPosition();
+
+            // clamp transition on close
+            if (!this._isOpen && (position < 0 && this._orientation === 1) || (position > 0 && this._orientation === -1)) {
+                position = 0;
+                this.setPosition(position);
+            }
+
+            if (position !== this._cachedPosition)
+                this.emit('update');
+
+            var contentTransform = (this._direction === CONSTANTS.DIRECTION.X)
+                ? Transform.translate(position, 0, 0)
+                : Transform.translate(0, position, 0);
+
+            this._cachedPosition = position;
+
+            return [
+                {
+                    transform : Transform.behind,
+                    target: this.drawer.render()
+                },
+                {
+                    transform: contentTransform,
+                    target: this.content.render()
+                }
+            ];
+        }
+    }, CONSTANTS);
 
     function _getDirectionFromSide(side) {
-        var SIDES = DrawerLayout.SIDES;
-        return (side === SIDES.LEFT || side === SIDES.RIGHT) ? DIRECTION_X : DIRECTION_Y;
+        var SIDES = CONSTANTS.SIDE;
+        var DIRECTION = CONSTANTS.DIRECTION;
+        return (side === SIDES.LEFT || side === SIDES.RIGHT) ? DIRECTION.X : DIRECTION.Y;
     }
 
     function _getOrientationFromSide(side) {
-        var SIDES = DrawerLayout.SIDES;
+        var SIDES = CONSTANTS.SIDE;
         return (side === SIDES.LEFT || side === SIDES.TOP) ? 1 : -1;
     }
 
@@ -150,170 +293,11 @@ define(function(require, exports, module) {
         else this.reset();
     }
 
-    /**
-     * Patches the DrawerLayout instance's options with the passed-in ones.
-     *
-     * @method setOptions
-     * @param options {Object} options
-     */
-    DrawerLayout.prototype.setOptions = function setOptions(options) {
-        this._optionsManager.setOptions(options);
-        if (options.side !== undefined) {
-            this._direction = _getDirectionFromSide(options.side);
-            this._orientation = _getOrientationFromSide(options.side);
+    function _updateState(data){
+        if (data.key !== 'side') {
+            this._direction = _getDirectionFromSide(data.value);
+            this._orientation = _getOrientationFromSide(data.value);
         }
-    };
+    }
 
-    /**
-     * Reveals the drawer with a transition
-     *   Emits an 'open' event when an opening transition has been committed to.
-     *
-     * @method open
-     * @param [transition] {Boolean|Object} transition definition
-     * @param [callback] {Function}         callback
-     */
-    DrawerLayout.prototype.open = function open(transition, callback) {
-        if (transition instanceof Function) callback = transition;
-        if (transition === undefined) transition = this.options.transition;
-        this._cachedLength = _resolveNodeSize.call(this, this.drawer);
-        this.setPosition(this._cachedLength, transition, callback);
-        if (!this._isOpen) {
-            this._isOpen = true;
-            this._eventOutput.emit('open');
-        }
-    };
-
-    /**
-     * Conceals the drawer with a transition
-     *   Emits a 'close' event when an closing transition has been committed to.
-     *
-     * @method close
-     * @param [transition] {Boolean|Object} transition definition
-     * @param [callback] {Function}         callback
-     */
-    DrawerLayout.prototype.close = function close(transition, callback) {
-        if (transition instanceof Function) callback = transition;
-        if (transition === undefined) transition = this.options.transition;
-        this.setPosition(0, transition, callback);
-        if (this._isOpen){
-            this._isOpen = false;
-            this._eventOutput.emit('close');
-        }
-    };
-
-    /**
-     * Sets the position in pixels for the content's displacement
-     *
-     * @method setPosition
-     * @param position {Number}             position
-     * @param [transition] {Boolean|Object} transition definition
-     * @param [callback] {Function}         callback
-     */
-    DrawerLayout.prototype.setPosition = function setPosition(position, transition, callback) {
-        if (this._position.isActive()) this._position.halt();
-        this._position.set(position, transition, callback);
-    };
-
-    /**
-     * Gets the position in pixels for the content's displacement
-     *
-     * @method getPosition
-     * @return position {Number} position
-     */
-    DrawerLayout.prototype.getPosition = function getPosition() {
-        return this._position.get();
-    };
-
-    /**
-     * Sets the progress (between 0 and 1) for the content's displacement
-     *
-     * @method setProgress
-     * @param progress {Number}             position
-     * @param [transition] {Boolean|Object} transition definition
-     * @param [callback] {Function}         callback
-     */
-    DrawerLayout.prototype.setProgress = function setProgress(progress, transition, callback) {
-        return this._position.set(progress * this._cachedLength, transition, callback);
-    };
-
-    /**
-     * Gets the progress (between 0 and 1) for the content's displacement
-     *
-     * @method getProgress
-     * @return position {Number} position
-     */
-    DrawerLayout.prototype.getProgress = function getProgress() {
-        return this._position.get() / this._cachedLength;
-    };
-
-    /**
-     * Toggles between open and closed states
-     *
-     * @method toggle
-     * @param [transition] {Boolean|Object} transition definition
-     */
-    DrawerLayout.prototype.toggle = function toggle(transition) {
-        if (this._isOpen) this.close(transition);
-        else this.open(transition);
-    };
-
-    /**
-     * Resets to last state of being open or closed
-     *
-     * @method reset
-     * @param [transition] {Boolean|Object} transition definition
-     */
-    DrawerLayout.prototype.reset = function reset(transition) {
-        if (this._isOpen) this.open(transition);
-        else this.close(transition);
-    };
-
-    /**
-     * Returns if drawer is committed to being open or closed
-     *
-     * @method isOpen
-     * @return {Boolean}
-     */
-    DrawerLayout.prototype.isOpen = function isOpen(transition) {
-        return this._isOpen;
-    };
-
-    /**
-     * Generates a Render Spec from the contents of this component
-     *
-     * @private
-     * @method render
-     * @return {Spec}
-     */
-    DrawerLayout.prototype.render = function render() {
-        var position = this.getPosition();
-
-        // clamp transition on close
-        if (!this._isOpen && (position < 0 && this._orientation === 1) || (position > 0 && this._orientation === -1)) {
-            position = 0;
-            this.setPosition(position);
-        }
-
-        if (position !== this._cachedPosition)
-            this._eventOutput.emit('update');
-
-        var contentTransform = (this._direction === DIRECTION_X)
-            ? Transform.translate(position, 0, 0)
-            : Transform.translate(0, position, 0);
-
-        this._cachedPosition = position;
-
-        return [
-            {
-                transform : Transform.behind,
-                target: this.drawer.render()
-            },
-            {
-                transform: contentTransform,
-                target: this.content.render()
-            }
-        ];
-    };
-
-    module.exports = DrawerLayout;
 });
