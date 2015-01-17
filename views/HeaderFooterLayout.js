@@ -8,7 +8,6 @@
  */
 
 define(function(require, exports, module) {
-    var Entity = require('../core/Entity');
     var RenderNode = require('../core/RenderNode');
     var Transform = require('../core/Transform');
     var OptionsManager = require('../core/OptionsManager');
@@ -31,8 +30,6 @@ define(function(require, exports, module) {
         this.options = Object.create(HeaderFooterLayout.DEFAULT_OPTIONS);
         this._optionsManager = new OptionsManager(this.options);
         if (options) this.setOptions(options);
-
-        this._entityId = Entity.register(this);
 
         this.header = new RenderNode();
         this.footer = new RenderNode();
@@ -70,17 +67,6 @@ define(function(require, exports, module) {
     };
 
     /**
-     * Generate a render spec from the contents of this component.
-     *
-     * @private
-     * @method render
-     * @return {Object} Render spec for this component
-     */
-    HeaderFooterLayout.prototype.render = function render() {
-        return this._entityId;
-    };
-
-    /**
      * Patches the HeaderFooterLayout instance's options with the passed-in ones.
      *
      * @method setOptions
@@ -114,19 +100,20 @@ define(function(require, exports, module) {
      * @method commit
      * @param {Context} context commit context
      */
-    HeaderFooterLayout.prototype.commit = function commit(context) {
-        var transform = context.transform;
-        var origin = context.origin;
-        var size = context.size;
-        var opacity = context.opacity;
+    HeaderFooterLayout.prototype.render = function commit(input, context) {
+        var size = context.getSize();
 
-        var headerSize = (this.options.headerSize !== undefined) ? this.options.headerSize : _resolveNodeSize.call(this, this.header, this.options.defaultHeaderSize);
-        var footerSize = (this.options.footerSize !== undefined) ? this.options.footerSize : _resolveNodeSize.call(this, this.footer, this.options.defaultFooterSize);
+        var headerSize = (this.options.headerSize !== undefined)
+            ? this.options.headerSize
+            : _resolveNodeSize.call(this, this.header, this.options.defaultHeaderSize);
+
+        var footerSize = (this.options.footerSize !== undefined)
+            ? this.options.footerSize
+            : _resolveNodeSize.call(this, this.footer, this.options.defaultFooterSize);
+
         var contentSize = size[this.options.direction] - headerSize - footerSize;
 
-        if (size) transform = Transform.moveThen([-size[0]*origin[0], -size[1]*origin[1], 0], transform);
-
-        var result = [
+        return [
             {
                 size: _finalSize.call(this, headerSize, size),
                 target: this.header.render()
@@ -142,13 +129,6 @@ define(function(require, exports, module) {
                 target: this.footer.render()
             }
         ];
-
-        return {
-            transform: transform,
-            opacity: opacity,
-            size: size,
-            target: result
-        };
     };
 
     module.exports = HeaderFooterLayout;
