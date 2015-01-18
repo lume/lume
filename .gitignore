@@ -1,6 +1,7 @@
 node_modules
 dist
 npm-debug.log
+docs
 
 *.js
 !infamous.js
