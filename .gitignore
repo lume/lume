@@ -1,3 +1,8 @@
 node_modules
 dist
 npm-debug.log
+
+*.js
+!infamous.js
+
+*.js.map
