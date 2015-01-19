@@ -34,7 +34,6 @@ define(function(require, exports, module) {
     };
 
     module.exports = View.extend({
-        name : 'HeaderFooterLayout',
         defaults : {
             direction: CONSTANTS.DIRECTION.Y,
             headerLength: undefined,

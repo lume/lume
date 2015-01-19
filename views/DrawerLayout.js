@@ -11,7 +11,7 @@ define(function(require, exports, module) {
     var RenderNode = require('../core/RenderNode');
     var Transform = require('../core/Transform');
     var Transitionable = require('../core/Transitionable');
-    var View = require('./view');
+    View = require('./view');
 
     /**
      * A layout which will arrange two renderables: a featured content, and a
@@ -50,7 +50,6 @@ define(function(require, exports, module) {
     };
 
     module.exports = View.extend({
-        name : 'DrawerLayout',
         defaults : {
             side: CONSTANTS.SIDE.LEFT,
             drawerLength : 0,

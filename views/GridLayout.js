@@ -24,7 +24,6 @@ define(function(require, exports, module) {
      */
 
     module.exports = View.extend({
-        name : 'GridLayout',
         defaults : {
             /**
              * @param {Array.Number} [dimensions=[1, 1]] A two value array which specifies the amount of columns

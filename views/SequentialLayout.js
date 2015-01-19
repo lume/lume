@@ -30,7 +30,6 @@ define(function(require, exports, module) {
     };
 
     module.exports = View.extend({
-        name : 'SequentialLayout',
         defaults : {
             direction : CONSTANTS.DIRECTION.Y,
             itemSpacing : 0
