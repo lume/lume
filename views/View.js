@@ -111,26 +111,21 @@ define(function(require, exports, module) {
         return this._eventOutput;
     };
 
-    function _viewTemplate(options){
-        View.call(this, options);
-        if (this.initialize) this.initialize(options);
-    }
-
-    var _viewTemplateString = _viewTemplate.toString();
-
     var RESERVED_KEYS = {
         DEFAULTS : 'defaults',
         EVENTS   : 'events',
         NAME     : 'name'
     };
 
-    View.extend = function(obj, constants){
-        if (obj.name)
-            _viewTemplateString = _viewTemplateString.replace('_viewTemplate', obj.name);
+    function extend(obj, constants){
+        var constructor = (function(){
+            return function (options){
+                View.call(this, options);
+                if (this.initialize) this.initialize(options);
+            }
+        })();
 
-        var constructor;
-        eval('constructor = ' + _viewTemplateString);
-
+        constructor.extend = extend;
         constructor.prototype = Object.create(View.prototype);
         constructor.prototype.constructor = constructor;
 
@@ -155,6 +150,8 @@ define(function(require, exports, module) {
 
         return constructor;
     };
+
+    View.extend = extend;
 
     module.exports = View;
 });
