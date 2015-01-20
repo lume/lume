@@ -200,7 +200,7 @@ define(function(require, exports, module) {
             }
 
             if (position !== this._cachedPosition)
-                this.emit('update');
+                this.emit('update', {progress : this.getProgress()});
 
             var contentTransform = (this._direction === CONSTANTS.DIRECTION.X)
                 ? Transform.translate(position, 0, 0)
