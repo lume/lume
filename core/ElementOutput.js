@@ -181,14 +181,7 @@ define(function(require, exports, module) {
      */
 
     var _setTransform;
-    if (navigator.userAgent.toLowerCase().indexOf('firefox') > -1) {
-        // fix for Firefox z-buffer issues
-        _setTransform = function(element, matrix) {
-            element.style.zIndex = (matrix[14] * 1000000) | 0;
-            element.style.transform = _formatCSSTransform(matrix);
-        };
-    }
-    else if (usePrefix) {
+    if (usePrefix) {
         _setTransform = function(element, matrix) {
             element.style.webkitTransform = _formatCSSTransform(matrix);
         };
