@@ -19,7 +19,7 @@ define(function(require, exports, module) {
      * @class Timer
      * @constructor
      */
-    var FamousEngine = require('../core/Engine');
+    var Engine = require('../core/Engine');
 
     var _event  = 'prerender';
 
@@ -41,7 +41,7 @@ define(function(require, exports, module) {
      * @return {function} function passed in as parameter
      */
     function addTimerFunction(fn) {
-        FamousEngine.on(_event, fn);
+        Engine.on(_event, fn);
         return fn;
     }
 
@@ -63,7 +63,7 @@ define(function(require, exports, module) {
             var t2 = getTime();
             if (t2 - t >= duration) {
                 fn.apply(this, arguments);
-                FamousEngine.off(_event, callback);
+                Engine.off(_event, callback);
             }
         };
         return addTimerFunction(callback);
@@ -148,7 +148,7 @@ define(function(require, exports, module) {
      * @param {function} fn event linstener
      */
     function clear(fn) {
-        FamousEngine.off(_event, fn);
+        Engine.off(_event, fn);
     }
 
     /**
