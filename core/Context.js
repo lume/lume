@@ -234,8 +234,8 @@ define(function(require, exports, module) {
      * @param {function} handler function object to remove
      * @return {EventHandler} internal event handler object (for chaining)
      */
-    Context.prototype.removeListener = function removeListener(type, handler) {
-        return this._eventOutput.removeListener(type, handler);
+    Context.prototype.off = function off(type, handler) {
+        return this._eventOutput.off(type, handler);
     };
 
     /**

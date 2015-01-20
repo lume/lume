@@ -63,7 +63,7 @@ define(function(require, exports, module) {
             var t2 = getTime();
             if (t2 - t >= duration) {
                 fn.apply(this, arguments);
-                FamousEngine.removeListener(_event, callback);
+                FamousEngine.off(_event, callback);
             }
         };
         return addTimerFunction(callback);
@@ -148,7 +148,7 @@ define(function(require, exports, module) {
      * @param {function} fn event linstener
      */
     function clear(fn) {
-        FamousEngine.removeListener(_event, fn);
+        FamousEngine.off(_event, fn);
     }
 
     /**

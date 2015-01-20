@@ -159,15 +159,15 @@ define(function(require, exports, module) {
      * Unbind an event by type and handler.
      *   This undoes the work of "on".
      *
-     * @method removeListener
+     * @method off
      *
      * @param {string} type event type key (for example, 'change')
      * @param {function} handler function object to remove
      * @return {EventHandler} internal event handler object (for chaining)
      */
-    OptionsManager.prototype.removeListener = function removeListener() {
+    OptionsManager.prototype.off = function off() {
         _createEventOutput.call(this);
-        return this.removeListener.apply(this, arguments);
+        return this.off.apply(this, arguments);
     };
 
     /**

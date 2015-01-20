@@ -53,7 +53,7 @@ define(function(require, exports, module) {
      * @method setOutputHandler
      * @static
      *
-     * @param {Object} object object to mix pipe, unpipe, on, addListener, and removeListener functions into
+     * @param {Object} object object to mix pipe, unpipe, on, and off functions into
      * @param {EventHandler} handler assigned event handler
      */
     EventHandler.setOutputHandler = function setOutputHandler(object, handler) {
@@ -62,8 +62,7 @@ define(function(require, exports, module) {
         object.emit = handler.emit.bind(handler);
         object.unpipe = handler.unpipe.bind(handler);
         object.on = handler.on.bind(handler);
-        object.addListener = object.on;
-        object.removeListener = handler.removeListener.bind(handler);
+        object.off = handler.off.bind(handler);
     };
 
     EventHandler.setInputEvents = function setInputEvents(object, events, handlerIn){
@@ -100,7 +99,7 @@ define(function(require, exports, module) {
 
     /**
      * Alias for emit
-     * @method addListener
+     * @method trigger
      */
     EventHandler.prototype.trigger = EventHandler.prototype.emit;
 
@@ -170,12 +169,6 @@ define(function(require, exports, module) {
     };
 
     /**
-     * Alias for "on"
-     * @method addListener
-     */
-    EventHandler.prototype.addListener = EventHandler.prototype.on;
-
-    /**
      * Listen for events from an upstream event handler.
      *
      * @method subscribe
@@ -207,7 +200,7 @@ define(function(require, exports, module) {
         if (index >= 0) {
             this.upstream.splice(index, 1);
             for (var type in this.upstreamListeners) {
-                source.removeListener(type, this.upstreamListeners[type]);
+                source.off(type, this.upstreamListeners[type]);
             }
         }
         return this;

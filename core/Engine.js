@@ -220,8 +220,8 @@ define(function(require, exports, module) {
      * @param {function} handler function object to remove
      * @return {EventHandler} internal event handler object (for chaining)
      */
-    Engine.removeListener = function removeListener(type, handler) {
-        return eventHandler.removeListener(type, handler);
+    Engine.off = function off(type, handler) {
+        return eventHandler.off(type, handler);
     };
 
     /**

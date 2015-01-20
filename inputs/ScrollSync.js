@@ -82,7 +82,7 @@ define(function(require, exports, module) {
 
             this._inProgress = false;
             this._loopBound = false;
-            Engine.removeListener('prerender', this._boundNewFrame);
+            Engine.off('prerender', this._boundNewFrame);
         }
     }
 

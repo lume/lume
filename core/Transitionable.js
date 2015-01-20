@@ -258,9 +258,9 @@ define(function(require, exports, module) {
         return this.on.apply(this, arguments);
     };
 
-    Transitionable.prototype.removeListener = function removeListener() {
+    Transitionable.prototype.off = function off() {
         _createEventOutput.call(this);
-        return this.removeListener.apply(this, arguments);
+        return this.off.apply(this, arguments);
     };
 
     Transitionable.prototype.pipe = function pipe() {

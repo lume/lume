@@ -73,8 +73,8 @@ define(function(require, exports, module) {
      * @param {string} type event type key (for example, 'click')
      * @param {function(string, Object)} fn handler
      */
-    ElementOutput.prototype.removeListener = function removeListener(type, fn) {
-        this._eventOutput.removeListener(type, fn);
+    ElementOutput.prototype.off = function off(type, fn) {
+        this._eventOutput.off(type, fn);
     };
 
     /**

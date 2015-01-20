@@ -374,9 +374,9 @@ define(function(require, exports, module) {
         return this.on.apply(this, arguments);
     };
 
-    Particle.prototype.removeListener = function removeListener() {
+    Particle.prototype.off = function off() {
         _createEventOutput.call(this);
-        return this.removeListener.apply(this, arguments);
+        return this.off.apply(this, arguments);
     };
 
     Particle.prototype.pipe = function pipe() {
