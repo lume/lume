@@ -8,7 +8,6 @@
  */
 
 define(function(require, exports, module) {
-    var Entity = require('../core/Entity');
     var Transform = require('../core/Transform');
     var OptionsManager = require('../core/OptionsManager');
     var EventHandler = require('../core/EventHandler');
@@ -29,8 +28,6 @@ define(function(require, exports, module) {
         this.options = Object.create(FlexibleLayout.DEFAULT_OPTIONS);
         this.optionsManager = new OptionsManager(this.options);
         if (options) this.setOptions(options);
-
-        this.id = Entity.register(this);
 
         this._ratios = new Transitionable(this.options.ratios);
         this._nodes = [];
@@ -70,6 +67,9 @@ define(function(require, exports, module) {
             ratio = ratios[i];
             node = this._nodes[i];
 
+            //TODO: getSize will be defined once Sequence refactor is done
+            if (!node.getSize()) continue;
+
             if (typeof ratio !== 'number')
                 flexLength -= node.getSize()[direction] || 0;
             else
@@ -79,6 +79,9 @@ define(function(require, exports, module) {
         for (i = 0; i < ratios.length; i++) {
             node = this._nodes[i];
             ratio = ratios[i];
+
+            //TODO: getSize will be defined once Sequence refactor is done
+            if (!node.getSize()) continue;
 
             length = (typeof ratio === 'number')
                 ? flexLength * ratio / ratioSum
@@ -105,17 +108,6 @@ define(function(require, exports, module) {
 
         return false;
     }
-
-    /**
-     * Generate a render spec from the contents of this component.
-     *
-     * @private
-     * @method render
-     * @return {Object} Render spec for this component
-     */
-    FlexibleLayout.prototype.render = function render() {
-        return this.id;
-    };
 
     /**
      * Patches the FlexibleLayouts instance's options with the passed-in ones.
@@ -179,11 +171,8 @@ define(function(require, exports, module) {
      * @method commit
      * @param {Context} context commit context
      */
-    FlexibleLayout.prototype.commit = function commit(context) {
-        var parentSize = context.size;
-        var parentTransform = context.transform;
-        var parentOrigin = context.origin;
-        var parentOpacity = context.opacity;
+    FlexibleLayout.prototype.render = function render(input, context) {
+        var parentSize = context.getSize();
 
         var ratios = this._ratios.get();
         var direction = this.options.direction;
@@ -214,15 +203,7 @@ define(function(require, exports, module) {
             });
         }
 
-        if (parentSize && (parentOrigin[0] !== 0 && parentOrigin[1] !== 0))
-            parentTransform = Transform.moveThen([-parentSize[0]*parentOrigin[0], -parentSize[1]*parentOrigin[1], 0], parentTransform);
-
-        return {
-            transform: parentTransform,
-            size: parentSize,
-            opacity: parentOpacity,
-            target: result
-        };
+        return result;
     };
 
     module.exports = FlexibleLayout;
