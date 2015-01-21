@@ -65,6 +65,7 @@ define(function(require, exports, module) {
         else return false;
     };
 
+    //TODO: Test flipper with multiple overwrites fired
     function _loadNext() {
         if (this.actionQueue.length <= 0) {
             this.set(this.get()); // no update required
@@ -73,13 +74,14 @@ define(function(require, exports, module) {
                 value : this.state,
                 velocity : this.velocity
             });
-            return;
-        }
 
-        if (this._callback) {
-            var callback = this._callback;
-            this._callback = undefined;
-            callback();
+            if (this._callback) {
+                var callback = this._callback;
+                this._callback = undefined;
+                callback();
+            }
+
+            return;
         }
 
         var currentAction = this.actionQueue.shift();

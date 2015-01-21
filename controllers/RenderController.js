@@ -261,7 +261,7 @@ define(function(require, exports, module) {
             });
 
             var node = new RenderNode();
-            node.add(modifier).add(renderable);
+            node.set(modifier).add(renderable);
 
             this._showing = this._nodes.length;
             this._nodes.push(node);

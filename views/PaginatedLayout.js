@@ -5,7 +5,7 @@ define(function(require, exports, module) {
     var Transitionable = require('famous/core/Transitionable');
     var Modifier = require('famous/core/Modifier');
     var ViewSequence = require('../core/ViewSequence');
-    var View = require('../views/View');
+    var View = require('View');
 
     function _calcPosition(index, progress){
         return (index + progress) * (2 * this.options.dotRadius + this.options.dotSpacing);
