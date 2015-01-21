@@ -8,6 +8,7 @@
  */
 
 define(function(require, exports, module) {
+    var Entity = require('./Entity');
     var Context = require('./Context');
     var Transform = require('./Transform');
     var Surface = require('./Surface');
@@ -31,12 +32,14 @@ define(function(require, exports, module) {
         this.context = new Context(this._container);
         this.setContent(this._container);
         this._groupSize = [undefined, undefined];
+        this._id = Entity.register(this);
     }
 
     /** @const */
     var SIZE_ZERO = [0, 0];
 
     Group.prototype = Object.create(Surface.prototype);
+    Group.prototype.constructor = Group;
     Group.prototype.elementType = 'div';
     Group.prototype.elementClass = 'famous-group';
 
@@ -49,7 +52,7 @@ define(function(require, exports, module) {
      * @return {RenderNode} Render wrapping provided object, if not already a RenderNode
      */
     Group.prototype.add = function add() {
-        return this.context.add.apply(this.context, arguments);
+        return Context.prototype.add.apply(this.context, arguments);
     };
 
     /**
@@ -59,8 +62,14 @@ define(function(require, exports, module) {
      * @method render
      * @return {Number} Render spec for this component
      */
-    Group.prototype.render = function render() {
-        return Surface.prototype.render.call(this);
+    Group.prototype.render = function render(input, context) {
+        var size = context.getSize();
+        if (size[0] !== this._groupSize[0] || size[1] !== this._groupSize[1]) {
+            this._groupSize[0] = size[0];
+            this._groupSize[1] = size[1];
+            this.context.setSize(size);
+        }
+        return this._id;
     };
 
     /**
@@ -99,16 +108,9 @@ define(function(require, exports, module) {
         var transform = context.transform;
         var origin = context.origin;
         var opacity = context.opacity;
-        var size = context.size;
-
-        if (size[0] !== this._groupSize[0] || size[1] !== this._groupSize[1]) {
-            this._groupSize[0] = size[0];
-            this._groupSize[1] = size[1];
-            this.context.setSize(size);
-        }
 
         // parent surface
-        var result = Surface.prototype.commit.call(this, {
+        Surface.prototype.commit.call(this, {
             transform: transform,
             opacity: opacity,
             origin: origin,
@@ -116,10 +118,10 @@ define(function(require, exports, module) {
         }, allocator);
 
         // child group
-        this.context.commit({
+        Context.prototype.commit.call(this.context, {
             transform: Transform.identity,
             origin: origin,
-            size: size
+            size: this._groupSize
         }, allocator);
 
 //        // parent surface
@@ -136,8 +138,6 @@ define(function(require, exports, module) {
 //            origin: origin,
 //            size: size
 //        }, allocator);
-
-        return result;
     };
 
     module.exports = Group;
