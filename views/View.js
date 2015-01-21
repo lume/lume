@@ -67,6 +67,10 @@ define(function(require, exports, module) {
         OptionsManager.prototype.setOptions.apply(this._optionsManager, arguments);
     };
 
+    View.prototype.set = function set() {
+        return RenderNode.prototype.set.apply(this._node, arguments);
+    };
+
     /**
      * Add a child renderable to the view.
      *   Note: This is meant to be used by an inheriting class
