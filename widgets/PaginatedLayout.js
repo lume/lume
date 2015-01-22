@@ -23,8 +23,7 @@ define(function(require, exports, module) {
 
         this.scrollview = new Scrollview({
             direction : 0,
-            paginated : true,
-            margin: Infinity
+            paginated : true
         });
 
         this.scrollview.sequenceFrom(this.pages);
