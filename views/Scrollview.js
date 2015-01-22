@@ -191,17 +191,17 @@ define(function(require, exports, module) {
 
     function _handleStart(event){
         _updatePayload.call(this);
-        this._eventOutput.emit('start', this._payload);
+        this.emit('start', this._payload);
     }
 
     function _handleUpdate(event){
         _updatePayload.call(this);
-        this._eventOutput.emit('update', this._payload);
+        this.emit('update', this._payload);
     }
 
     function _handleEnd(event){
         _updatePayload.call(this);
-        this._eventOutput.emit('end', this._payload);
+        this.emit('end', this._payload);
     }
 
     function _handleOffsetUpdate(event){
@@ -300,13 +300,13 @@ define(function(require, exports, module) {
             this.sync.setOptions({scale: this.options.edgeGrip});
             this._edgeSpringPosition = data.position;
             _handleEdge.call(this, data.edge);
-            this._eventOutput.emit('onEdge');
+            this.emit('onEdge');
         }.bind(this));
 
         this._scroller.on('offEdge', function() {
             this.sync.setOptions({scale: -this.options.syncScale});
             this._edgeState = this._scroller.onEdge();
-            this._eventOutput.emit('offEdge');
+            this.emit('offEdge');
         }.bind(this));
 
         this.sync.on('start', _handleSyncStart.bind(this));
@@ -474,13 +474,13 @@ define(function(require, exports, module) {
                 if (this._dragging) return;
                 if (this.getOffset() < tolerance * nodeSize) {
                     this._cachedIndex = this._node.index;
-                    this._eventOutput.emit('pageChange', {direction: -1, index: this._cachedIndex});
+                    this.emit('pageChange', {direction: -1, index: this._cachedIndex});
                 }
             } else {
                 // forwards
                 if (this.getOffset() > tolerance * nodeSize) {
                     this._cachedIndex = this._node.index + 1;
-                    this._eventOutput.emit('pageChange', {direction: 1, index: this._cachedIndex});
+                    this.emit('pageChange', {direction: 1, index: this._cachedIndex});
                 }
             }
         }
