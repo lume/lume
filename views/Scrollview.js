@@ -26,9 +26,6 @@ define(function(require, exports, module) {
     var TouchSync = require('../inputs/TouchSync');
     GenericSync.register({scroll : ScrollSync, touch : TouchSync});
 
-    /** @const */
-    var TOLERANCE = 0.5;
-
     /** @enum */
     var SpringStates = {
         NONE: 0,
@@ -37,11 +34,7 @@ define(function(require, exports, module) {
     };
 
     /** @enum */
-    var EdgeStates = {
-        TOP:   -1,
-        NONE:   0,
-        BOTTOM: 1
-    };
+    var EdgeStates = Scroller.EDGE_STATES;
 
     /**
      * Scrollview will lay out a collection of renderables sequentially in the specified direction, and will
@@ -163,7 +156,7 @@ define(function(require, exports, module) {
         edgeGrip: 0.3,
         edgePeriod: 300,
         edgeDamp: 1,
-        margin: Math.max(1000, window.innerWidth, window.innerHeight),
+        margin: 2*Math.max(1000, window.innerWidth, window.innerHeight),
         paginated: false,
         pagePeriod: 200,
         pageDamp: 0.7,
@@ -267,7 +260,6 @@ define(function(require, exports, module) {
             this._dragging = false;
 
             if (this._touchCount == 0 && this._edgeState !== EdgeStates.NONE){
-                this._particle.set(this.getOffset());
                 _handleEdge.call(this, this._edgeState);
             }
             else if (this.options.paginated)
@@ -298,14 +290,14 @@ define(function(require, exports, module) {
     function _bindEvents() {
         this._scroller.on('onEdge', function(data) {
             this.sync.setOptions({scale: this.options.edgeGrip});
-            this._edgeSpringPosition = data.position;
+            this._edgeSpringPosition = data.offset;
             _handleEdge.call(this, data.edge);
             this.emit('onEdge');
         }.bind(this));
 
         this._scroller.on('offEdge', function() {
             this.sync.setOptions({scale: -this.options.syncScale});
-            this._edgeState = this._scroller.onEdge();
+            this._edgeState = EdgeStates.NONE;
             this.emit('offEdge');
         }.bind(this));
 
@@ -457,7 +449,6 @@ define(function(require, exports, module) {
             offset += previousNodeSize;
             previousNode = this._node.getPrevious();
         }
-
 
         if (offset) _shiftOrigin.call(this, offset);
 
