@@ -109,6 +109,7 @@ define(function(require, exports, module) {
     Particle.prototype.sleep = function sleep() {
         if (this._isSleeping) return;
         this._isSleeping = true;
+        this.velocity.setXYZ(0,0,0);
         this.emit(_events.end, this);
     };
 
