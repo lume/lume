@@ -71,10 +71,8 @@ define(function(require, exports, module) {
     }
 
     function _output(node, offset, target) {
-        var size = node.getSize ? node.getSize() : this._contextSize;
         var transform = this._outputFunction(offset);
         target.push({transform: transform, target: node.render()});
-        return _sizeForDir.call(this, size);
     }
 
     function _getClipSize() {
@@ -225,36 +223,41 @@ define(function(require, exports, module) {
 
         // forwards
         var currNode = this._node;
-        var nodeOffset = 0;
-        while (currNode && nodeOffset - offset < clipSize + this.options.margin) {
-            nodeOffset += _output.call(this, currNode, nodeOffset, result);
-            currNode = currNode.getNext ? currNode.getNext() : null;
+        var nodeOffset = -offset; //distance from first node
+
+        while (currNode && nodeOffset < clipSize + this.options.margin) {
+            _output.call(this, currNode, nodeOffset + offset, result);
+            nodeOffset += _sizeForDir.call(this, currNode.getSize());
+            currNode = currNode.getNext();
         }
 
         //offset : distance of first node from beginning of viewport
-        //nodeOffset : distance from first node
-        //nodeOffset - offset : offset of node from beginning of viewport
+        //nodeOffset : node's distance from beginning of viewport
+        //nodeOffset + offset : node's distance from first node
 
-        if (!currNode && nodeOffset - offset < clipSize) {
+        if (!currNode && nodeOffset < clipSize) {
             onEdge = true;
             if (this._onEdge !== Scroller.EDGE_STATES.BOTTOM){
                 this._onEdge = Scroller.EDGE_STATES.BOTTOM;
                 this.emit('onEdge', {
-                    offset: (nodeOffset - clipSize),
+                    offset: (nodeOffset + offset - clipSize),
                     edge: this._onEdge
                 });
             }
         }
 
         // backwards
-        currNode = this._node.getPrevious();
-        nodeOffset = currNode ? -_sizeForDir.call(this, currNode.getSize()) : 0;
-        while (currNode && nodeOffset - offset > -this.options.margin) {
-            nodeOffset -= _output.call(this, currNode, nodeOffset, result);
+        currNode = this._node;
+        nodeOffset = -offset;
+
+        while (currNode && nodeOffset > -this.options.margin - clipSize) {
             currNode = currNode.getPrevious();
+            if (!currNode) break;
+            nodeOffset -= _sizeForDir.call(this, currNode.getSize());
+            _output.call(this, currNode, nodeOffset + offset, result);
         }
 
-        if (!this._node.getPrevious() && nodeOffset - offset > 0) {
+        if (!currNode && nodeOffset > 0) {
             onEdge = true;
             if (this._onEdge !== Scroller.EDGE_STATES.TOP) {
                 this._onEdge = Scroller.EDGE_STATES.TOP;

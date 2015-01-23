@@ -116,7 +116,6 @@ define(function(require, exports, module) {
         this._displacement = 0;
         this._totalShift = 0;
         this._cachedIndex = 0;
-        this._dragging = false;
 
         this._offset = new Accumulator(0);
         this._position = new Transitionable(0);
@@ -188,6 +187,8 @@ define(function(require, exports, module) {
     }
 
     function _handleUpdate(event){
+        if (this._springState === SpringStates.NONE && this._edgeState === EdgeStates.NONE)
+            _normalizeState.call(this);
         _updatePayload.call(this);
         this.emit('update', this._payload);
     }
@@ -198,12 +199,12 @@ define(function(require, exports, module) {
     }
 
     function _handleOffsetUpdate(event){
-        if (this._springState === SpringStates.NONE && this._edgeState === EdgeStates.NONE)
-            _normalizeState.call(this);
         _handleUpdate.call(this);
     }
 
     function _handleSyncStart(event) {
+        this._particle.sleep();
+
         if (this._position.isActive()) this._position.halt();
 
         if (this._removedSync && this._endFired){
@@ -213,7 +214,6 @@ define(function(require, exports, module) {
 
         this._endFired = false;
         this._earlyEnd = false;
-        this._dragging = !event.scroll;
         this._touchCount = event.count || 1;
 
         _handleStart.call(this, event);
@@ -244,7 +244,6 @@ define(function(require, exports, module) {
             if (callEnd){
                 event.velocity *= this.options.edgeGrip;
                 this._offset.removeSource(this.sync);
-//                this._particle.set(this.getOffset());
                 this._earlyEnd = true;
                 this._removedSync = true;
                 _handleSyncEnd.call(this, event);
@@ -257,8 +256,6 @@ define(function(require, exports, module) {
         this._endFired = true;
         this._touchCount = event.count;
         if (!this._touchCount) {
-            this._dragging = false;
-
             if (this._touchCount == 0 && this._edgeState !== EdgeStates.NONE){
                 _handleEdge.call(this, this._edgeState);
             }
@@ -278,8 +275,10 @@ define(function(require, exports, module) {
 
     function _handlePhysicsStart(particle){
         if (this._position.isActive()) this._position.halt();
-        particle.set(this.getOffset());
-        this._dragging = false;
+        particle.setPosition1D(this.getOffset());
+    }
+
+    function _handlePhysicsUpdate(){
     }
 
     function _handlePhysicsEnd(){
@@ -306,6 +305,7 @@ define(function(require, exports, module) {
         this.sync.on('end', _handleSyncEnd.bind(this));
 
         this._particle.on('start', _handlePhysicsStart.bind(this));
+        this._particle.on('update', _handlePhysicsUpdate.bind(this));
         this._particle.on('end', _handlePhysicsEnd.bind(this));
 
         this._offset.on('update', _handleOffsetUpdate.bind(this));
@@ -351,9 +351,9 @@ define(function(require, exports, module) {
     function _detachSpring(){
         if (this.springID !== undefined) {
             this._physicsEngine.detach(this.springID);
-            this._springState = SpringStates.NONE;
             this.springID = undefined;
         }
+        this._springState = SpringStates.NONE;
     }
 
     function _detachAgents() {
@@ -369,6 +369,7 @@ define(function(require, exports, module) {
 
     // TODO: fix for overshoot and position is size of node
     function _handleEdge(edge) {
+        console.log('edge')
         this.sync.setOptions({scale: -this.options.edgeGrip});
         this._edgeState = edge;
         _detachDrag.call(this);
@@ -423,65 +424,73 @@ define(function(require, exports, module) {
     }
 
     function _normalizeState() {
-        var offset = 0; // discrete node distance
-        var position = this.getOffset(); // position of first partially visible node
-
+        var offset = this.getOffset(); // position of first partially visible node
+        var currNode = this._node;
         var nodeSize = _nodeSizeForDirection.call(this, this._node);
-        if (!nodeSize) return;
 
-        var nextNode = this._node.getNext();
-
-        while (offset + position >= nodeSize && nextNode) {
+        // if you can fit more nodes within the current offset
+        // increment the current node and shift the offset by its size
+        while (nodeSize < offset) {
+            if (currNode.getNext()) currNode = currNode.getNext();
+            else break;
             offset -= nodeSize;
-            this._scroller.sequenceFrom(nextNode);
-            this._node = nextNode;
-            nextNode = this._node.getNext();
-            nodeSize = _nodeSizeForDirection.call(this, this._node);
+            nodeSize = _nodeSizeForDirection.call(this, currNode);
         }
 
-        var previousNode = this._node.getPrevious();
-        var previousNodeSize;
-
-        while (offset + position <= 0 && previousNode) {
-            previousNodeSize = _nodeSizeForDirection.call(this, previousNode);
-            this._scroller.sequenceFrom(previousNode);
-            this._node = previousNode;
-            offset += previousNodeSize;
-            previousNode = this._node.getPrevious();
+        // if you can fit more nodes behind the zero point, decrement
+        while (offset < 0) {
+            if (currNode.getPrevious()) currNode = currNode.getPrevious();
+            else break;
+            offset += nodeSize;
+            nodeSize = _nodeSizeForDirection.call(this, currNode);
         }
 
-        if (offset) _shiftOrigin.call(this, offset);
+        var shift = offset - this.getOffset();
+        if (shift) _shiftOrigin.call(this, shift);
 
-        var tolerance = (this._dragging)
-            ? 1
-            : 0.5;
+        this._node = currNode;
+        this._scroller.sequenceFrom(currNode);
+
+//        var tolerance = (this._dragging)
+//            ? 1
+//            : 0.5;
 
         // when dragging, pageChange called when physics takes over
         // dragging while touchStart and physics not enabled
         // because scroll is still like dragging
-        if (this._node) {
-            if (!this._dragging && this._node.index !== this._cachedIndex) {
-                // backwards
-                if (this._dragging) return;
-                if (this.getOffset() < tolerance * nodeSize) {
-                    this._cachedIndex = this._node.index;
-                    this.emit('pageChange', {direction: -1, index: this._cachedIndex});
-                }
-            } else {
-                // forwards
-                if (this.getOffset() > tolerance * nodeSize) {
-                    this._cachedIndex = this._node.index + 1;
-                    this.emit('pageChange', {direction: 1, index: this._cachedIndex});
-                }
-            }
-        }
+//        if (this._node) {
+//            if (!this._dragging && this._node.index !== this._cachedIndex) {
+//                // backwards
+//                if (this._dragging) return;
+//                if (this.getOffset() < tolerance * nodeSize) {
+//                    this._cachedIndex = this._node.index;
+//                    this.emit('pageChange', {direction: -1, index: this._cachedIndex});
+//                }
+//            } else {
+//                // forwards
+//                if (this.getOffset() > tolerance * nodeSize) {
+//                    this._cachedIndex = this._node.index + 1;
+//                    this.emit('pageChange', {direction: 1, index: this._cachedIndex});
+//                }
+//            }
+//        }
     }
 
     function _shiftOrigin(amount) {
         var newOffset = this.getOffset() + amount;
         this.setOffset(newOffset);
-        this._particle.set(newOffset);
         this._totalShift += amount;
+
+//        this._particle.setPosition1D(this._particle.getPosition1D() + amount);
+//        this._pageSpringPosition += amount;
+//        this._edgeSpringPosition += amount;
+//
+//        if (this._springState === SpringStates.EDGE) {
+//            this.spring.setOptions({anchor: [this._edgeSpringPosition, 0, 0]});
+//        }
+//        else if (this._springState === SpringStates.PAGE) {
+//            this.spring.setOptions({anchor: [this._pageSpringPosition, 0, 0]});
+//        }
     }
 
     /**
@@ -502,7 +511,6 @@ define(function(require, exports, module) {
      */
     Scrollview.prototype.goToPreviousPage = function goToPreviousPage() {
         if (!this._node || this._edgeState === EdgeStates.TOP) return;
-
 
         // if moving back to the current node
         if (this.getOffset() > 0 && this._springState === SpringStates.NONE) {
@@ -534,6 +542,7 @@ define(function(require, exports, module) {
      */
     Scrollview.prototype.goToNextPage = function goToNextPage() {
         if (!this._node || this._edgeState === EdgeStates.BOTTOM) return;
+
         var nextNode = this._node.getNext();
         if (nextNode) {
             var currentNodeSize = _nodeSizeForDirection.call(this, this._node);
