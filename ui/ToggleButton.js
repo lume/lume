@@ -10,7 +10,7 @@
 define(function(require, exports, module) {
     var Surface = require('../core/Surface');
     var EventHandler = require('../core/EventHandler');
-    var RenderController = require('../views/RenderController');
+    var RenderController = require('../controllers/RenderController');
 
     /**
      * A view for transitioning between two surfaces based

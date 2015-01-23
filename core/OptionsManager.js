@@ -78,7 +78,7 @@ define(function(require, exports, module) {
                 if ((k in myState) && (data[k] && data[k].constructor === Object) && (myState[k] && myState[k].constructor === Object)) {
                     if (!myState.hasOwnProperty(k)) myState[k] = Object.create(myState[k]);
                     this.key(k).patch(data[k]);
-                    if (this.eventOutput) this.eventOutput.emit('change', {id: k, value: this.key(k).value()});
+                    if (this.eventOutput) this.eventOutput.emit('change', {key: k, value: this.key(k).value()});
                 }
                 else this.set(k, data[k]);
             }
@@ -137,7 +137,7 @@ define(function(require, exports, module) {
     OptionsManager.prototype.set = function set(key, value) {
         var originalValue = this.get(key);
         this._value[key] = value;
-        if (this.eventOutput && value !== originalValue) this.eventOutput.emit('change', {id: key, value: value});
+        if (this.eventOutput && value !== originalValue) this.eventOutput.emit('change', {key: key, value: value});
         return this;
     };
 
@@ -159,15 +159,15 @@ define(function(require, exports, module) {
      * Unbind an event by type and handler.
      *   This undoes the work of "on".
      *
-     * @method removeListener
+     * @method off
      *
      * @param {string} type event type key (for example, 'change')
      * @param {function} handler function object to remove
      * @return {EventHandler} internal event handler object (for chaining)
      */
-    OptionsManager.prototype.removeListener = function removeListener() {
+    OptionsManager.prototype.off = function off() {
         _createEventOutput.call(this);
-        return this.removeListener.apply(this, arguments);
+        return this.off.apply(this, arguments);
     };
 
     /**

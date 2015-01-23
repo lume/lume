@@ -1,5 +1,4 @@
 define(function(require, exports, module) {
-    var Entity = require('../core/Entity');
     var Group = require('../core/Group');
     var OptionsManager = require('../core/OptionsManager');
     var Transform = require('../core/Transform');
@@ -40,7 +39,6 @@ define(function(require, exports, module) {
         this.group = new Group();
         this.group.add({render: _innerRender.bind(this)});
 
-        this._entityId = Entity.register(this);
         this._size = [undefined, undefined];
         this._contextSize = [undefined, undefined];
 
@@ -173,29 +171,8 @@ define(function(require, exports, module) {
      * @method render
      * @return {number} Render spec for this component
      */
-    Scroller.prototype.render = function render() {
-        if (!this._node) return null;
-        if (this._positionGetter) this._position = this._positionGetter.call(this);
-
-        var scrollTransform = this._masterOutputFunction(-this._position);
-
-        return {
-            transform : scrollTransform,
-            target : this._entityId
-        };
-    };
-
-    /**
-     * Apply changes from this component to the corresponding document element.
-     * This includes changes to classes, styles, size, content, opacity, origin,
-     * and matrix transforms.
-     *
-     * @private
-     * @method commit
-     * @param {Context} context commit context
-     */
-    Scroller.prototype.commit = function commit(context, allocator) {
-        var size = context.size;
+    Scroller.prototype.render = function render(input, context) {
+        var size = context.getSize();
 
         // reset edge detection on size change
         if (!this.options.clipSize && (size[0] !== this._contextSize[0] || size[1] !== this._contextSize[1])) {
@@ -212,7 +189,15 @@ define(function(require, exports, module) {
             }
         }
 
-        return this.group.commit(context, allocator);
+        if (!this._node) return null;
+        if (this._positionGetter) this._position = this._positionGetter.call(this);
+
+        var scrollTransform = this._masterOutputFunction(-this._position);
+
+        return {
+            transform : scrollTransform,
+            target : Group.prototype.render.apply(this.group, arguments)
+        };
     };
 
     function _innerRender() {

@@ -2,20 +2,16 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  *
- * Owner: felix@famo.us
  * @license MPL 2.0
  * @copyright Famous Industries, Inc. 2014
  */
 
 define(function(require, exports, module) {
-    var Entity = require('../core/Entity');
-    var RenderNode = require('../core/RenderNode');
-    var Transform = require('../core/Transform');
-    var ViewSequence = require('../core/ViewSequence');
-    var EventHandler = require('../core/EventHandler');
-    var Modifier = require('../core/Modifier');
-    var OptionsManager = require('../core/OptionsManager');
-    var Transitionable = require('../core/Transitionable');
+    var Transform               = require('../core/Transform');
+    var ViewSequence            = require('../core/ViewSequence');
+    var Modifier                = require('../core/Modifier');
+    var Transitionable          = require('../core/Transitionable');
+    var View                    = require('../views/View');
     var TransitionableTransform = require('../transitions/TransitionableTransform');
 
     /**
@@ -24,30 +20,96 @@ define(function(require, exports, module) {
      *   cells representing their own context, otherwise the cellSize property is used to compute
      *   dimensions so that items of cellSize will fit.
      * @class GridLayout
-     * @constructor
-     * @param {Options} [options] An object of configurable options.
-     * @param {Array.Number} [options.dimensions=[1, 1]] A two value array which specifies the amount of columns
-     * and rows in your Gridlayout instance.
-     * @param {Array.Number} [options.gutterSize=[0, 0]] A two-value array which specifies size of the
-     * horizontal and vertical gutters between items in the grid layout.
-     * @param {Transition} [options.transition=false] The transiton that controls the Gridlayout instance's reflow.
      */
-    function GridLayout(options) {
-        this.options = Object.create(GridLayout.DEFAULT_OPTIONS);
-        this.optionsManager = new OptionsManager(this.options);
-        if (options) this.setOptions(options);
 
-        this.id = Entity.register(this);
+    module.exports = View.extend({
+        defaults : {
+            /**
+             * @param {Array.Number} [dimensions=[1, 1]] A two value array which specifies the amount of columns
+             * and rows in your Gridlayout instance.
+             */
+            dimensions: [1, 1],
+            /**
+             * @param {Array.Number} [gutterSize=[0, 0]] A two-value array which specifies size of the
+             * horizontal and vertical gutters between items in the grid layout.
+             */
+            gutterSize: [0, 0],
+            /**
+             * @param {Transition} [transition=false] The transition that controls the GridLayout instance's reflow.
+             */
+            transition: false
+        },
+        initialize : function(){
+            this._modifiers = [];
+            this._states = [];
+            this._contextSizeCache = [0, 0];
+            this._dimensionsCache = [0, 0];
+            this._activeCount = 0;
+            this.sequence = null;
+        },
+        /**
+         * Sets the collection of renderables under the Gridlayout instance's control.
+         *
+         * @method sequenceFrom
+         * @param {Array|ViewSequence} sequence Either an array of renderables or a Famous viewSequence.
+         */
+        sequenceFrom : function(sequence){
+            if (sequence instanceof Array) sequence = new ViewSequence(sequence);
+            this.sequence = sequence;
+        },
+        /**
+         * Returns the size of the grid layout.
+         *
+         * @method getSize
+         * @return {Array} Total size of the grid layout.
+         */
+        getSize : function(){
+            return this._contextSizeCache;
+        },
+        /**
+         * Generate a render spec from the contents of this component.
+         *
+         * @private
+         * @method render
+         * @return {Object} Render spec for this component
+         */
+        render : function(input, context){
+            var size = context.getSize();
 
-        this._modifiers = [];
-        this._states = [];
-        this._contextSizeCache = [0, 0];
-        this._dimensionsCache = [0, 0];
-        this._activeCount = 0;
+            var cols = this.options.dimensions[0];
+            var rows = this.options.dimensions[1];
 
-        this._eventOutput = new EventHandler();
-        EventHandler.setOutputHandler(this, this._eventOutput);
-    }
+            var callReflow =
+                size[0] !== this._contextSizeCache[0] ||
+                size[1] !== this._contextSizeCache[1] ||
+                cols    !== this._dimensionsCache[0]  ||
+                rows    !== this._dimensionsCache[1];
+
+            if (callReflow) _reflow.call(this, size, cols, rows);
+
+            var result = [];
+            var currIndex = 0;
+            var sequence = this.sequence;
+            while (sequence && (currIndex < this._modifiers.length)) {
+                var item = sequence.get();
+                var modifier = this._modifiers[currIndex];
+
+                if (currIndex >= this._activeCount && this._states[currIndex].opacity.isActive()) {
+                    this._modifiers.splice(currIndex, 1);
+                    this._states.splice(currIndex, 1);
+                }
+
+                if (item) result.push(modifier.render(item.render()));
+
+                sequence = sequence.getNext();
+                currIndex++;
+            }
+
+            return result;
+        }
+    });
+
+    // PRIVATE FUNCTIONS
 
     function _reflow(size, cols, rows) {
         var usableSize = [size[0], size[1]];
@@ -84,7 +146,7 @@ define(function(require, exports, module) {
 
         for (i = this._activeCount ; i < this._modifiers.length; i++) _animateModifier.call(this, i, [Math.round(colSize), Math.round(rowSize)], [0, 0], 0);
 
-        this._eventOutput.emit('reflow');
+        this.emit('reflow');
     }
 
     function _createModifier(index, size, position, opacity) {
@@ -102,7 +164,6 @@ define(function(require, exports, module) {
 
         this._states[index] = transitionItem;
         this._modifiers[index] = modifier;
-
     }
 
     function _animateModifier(index, size, position, opacity) {
@@ -122,107 +183,4 @@ define(function(require, exports, module) {
         currSize.set(size, transition);
         currOpacity.set(opacity, transition);
     }
-
-    GridLayout.DEFAULT_OPTIONS = {
-        dimensions: [1, 1],
-        transition: false,
-        gutterSize: [0, 0]
-    };
-
-    /**
-     * Generate a render spec from the contents of this component.
-     *
-     * @private
-     * @method render
-     * @return {Object} Render spec for this component
-     */
-    GridLayout.prototype.render = function render() {
-        return this.id;
-    };
-
-    /**
-     * Patches the GridLayout instance's options with the passed-in ones.
-     *
-     * @method setOptions
-     * @param {Options} options An object of configurable options for the GridLayout instance.
-     */
-    GridLayout.prototype.setOptions = function setOptions(options) {
-        return this.optionsManager.setOptions(options);
-    };
-
-    /**
-     * Sets the collection of renderables under the Gridlayout instance's control.
-     *
-     * @method sequenceFrom
-     * @param {Array|ViewSequence} sequence Either an array of renderables or a Famous viewSequence.
-     */
-    GridLayout.prototype.sequenceFrom = function sequenceFrom(sequence) {
-        if (sequence instanceof Array) sequence = new ViewSequence(sequence);
-        this.sequence = sequence;
-    };
-
-    /**
-     * Returns the size of the grid layout.
-     *
-     * @method getSize
-     * @return {Array} Total size of the grid layout.
-     */
-    GridLayout.prototype.getSize = function getSize() {
-      return this._contextSizeCache;
-    };
-
-    /**
-     * Apply changes from this component to the corresponding document element.
-     * This includes changes to classes, styles, size, content, opacity, origin,
-     * and matrix transforms.
-     *
-     * @private
-     * @method commit
-     * @param {Context} context commit context
-     */
-    GridLayout.prototype.commit = function commit(context) {
-        var transform = context.transform;
-        var opacity = context.opacity;
-        var origin = context.origin;
-        var size = context.size;
-
-        var cols = this.options.dimensions[0];
-        var rows = this.options.dimensions[1];
-
-        if (size[0] !== this._contextSizeCache[0] || size[1] !== this._contextSizeCache[1] || cols !== this._dimensionsCache[0] || rows !== this._dimensionsCache[1]) {
-            _reflow.call(this, size, cols, rows);
-        }
-
-        var sequence = this.sequence;
-        var result = [];
-        var currIndex = 0;
-        while (sequence && (currIndex < this._modifiers.length)) {
-            var item = sequence.get();
-            var modifier = this._modifiers[currIndex];
-            if (currIndex >= this._activeCount && this._states[currIndex].opacity.isActive()) {
-                this._modifiers.splice(currIndex, 1);
-                this._states.splice(currIndex, 1);
-            }
-            if (item) {
-                result.push(
-                    modifier.render({
-                        origin: origin,
-                        target: item.render()
-                    })
-                );
-            }
-            sequence = sequence.getNext();
-            currIndex++;
-        }
-
-        if (size) transform = Transform.moveThen([-size[0]*origin[0], -size[1]*origin[1], 0], transform);
-        return {
-            transform: transform,
-            opacity: opacity,
-            size: size,
-            target: result
-        };
-    };
-
-    module.exports = GridLayout;
 });

@@ -2,7 +2,6 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  *
- * Owner: felix@famo.us
  * @license MPL 2.0
  * @copyright Famous Industries, Inc. 2014
  */
@@ -731,7 +730,7 @@ define(function(require, exports, module) {
      * @return {number} Render spec for this component
      */
     Scrollview.prototype.render = function render() {
-        return this._scroller.render();
+        return Scroller.prototype.render.apply(this._scroller, arguments);
     };
 
     module.exports = Scrollview;

@@ -55,23 +55,17 @@ define(function(require, exports, module) {
         return this;
     };
 
-    /**
-     * Alias for "on".
-     * @method addListener
-     */
-    EventEmitter.prototype.addListener = EventEmitter.prototype.on;
-
    /**
      * Unbind an event by type and handler.
      *   This undoes the work of "on".
      *
-     * @method removeListener
+     * @method off
      *
      * @param {string} type event type key (for example, 'click')
      * @param {function} handler function object to remove
      * @return {EventEmitter} this
      */
-    EventEmitter.prototype.removeListener = function removeListener(type, handler) {
+    EventEmitter.prototype.off = function off(type, handler) {
         var listener = this.listeners[type];
         if (listener !== undefined) {
             if (!handler) this.listeners[type] = []; // remove all listeners of given type

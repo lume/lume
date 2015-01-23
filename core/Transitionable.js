@@ -65,6 +65,7 @@ define(function(require, exports, module) {
         else return false;
     };
 
+    //TODO: Test flipper with multiple overwrites fired
     function _loadNext() {
         if (this.actionQueue.length <= 0) {
             this.set(this.get()); // no update required
@@ -73,13 +74,14 @@ define(function(require, exports, module) {
                 value : this.state,
                 velocity : this.velocity
             });
-            return;
-        }
 
-        if (this._callback) {
-            var callback = this._callback;
-            this._callback = undefined;
-            callback();
+            if (this._callback) {
+                var callback = this._callback;
+                this._callback = undefined;
+                callback();
+            }
+
+            return;
         }
 
         var currentAction = this.actionQueue.shift();
@@ -258,9 +260,9 @@ define(function(require, exports, module) {
         return this.on.apply(this, arguments);
     };
 
-    Transitionable.prototype.removeListener = function removeListener() {
+    Transitionable.prototype.off = function off() {
         _createEventOutput.call(this);
-        return this.removeListener.apply(this, arguments);
+        return this.off.apply(this, arguments);
     };
 
     Transitionable.prototype.pipe = function pipe() {
