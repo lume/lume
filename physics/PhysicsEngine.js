@@ -158,6 +158,12 @@ define(function(require, exports, module) {
         targets.forEach(function(target){ target.wake() });
         if (source) source.wake();
 
+        // on agent setOptions, wake engine
+        agent.on('change', function(){
+            targets.forEach(function(target){ target.wake() });
+            if (source) source.wake();
+        }.bind(this));
+
         this._agentData[this._currAgentId] = {
             agent   : agent,
             id      : this._currAgentId,
@@ -395,10 +401,8 @@ define(function(require, exports, module) {
 
     function _getParticlesEnergy() {
         var energy = 0.0;
-        var particleEnergy = 0.0;
         this.forEach(function(particle) {
-            particleEnergy = particle.getEnergy();
-            energy += particleEnergy;
+            energy += particle.getEnergy();
         });
         return energy;
     }
