@@ -186,8 +186,6 @@ define(function(require, exports, module) {
      * @return AgentId {Number}
      */
     PhysicsEngine.prototype.attach = function attach(agents, targets, source) {
-        this.wake();
-
         if (agents instanceof Array) {
             var agentIDs = [];
             for (var i = 0; i < agents.length; i++)
