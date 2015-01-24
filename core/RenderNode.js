@@ -108,12 +108,16 @@ define(function(require, exports, module) {
      * @return {Object} render specification for the component subtree
      *    only under this node.
      */
-    RenderNode.prototype.render = function render() {
-        var input = this._child ? this._child.render() : undefined;
+    RenderNode.prototype.render = function render(parentSize) {
+        parentSize = (this._object && this._object.getSize)
+            ? this._object.getSize() || parentSize
+            : parentSize;
+
+        var input = this._child ? this._child.render(parentSize) : undefined;
 
         var result = (!this._object)
             ? input
-            : this._object.render(input, this._parent);
+            : this._object.render(input, parentSize);
 
         if (typeof result === 'number' || result instanceof Array || result == undefined)
             return result;

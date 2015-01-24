@@ -15,10 +15,10 @@ define(function(require, exports, module) {
         getSize : function(){
             return null;
         },
-        render: function() {
+        render: function(size) {
             var result = [];
             for(var i = 0; i < this.nodes.length; i++)
-                result.push(this.nodes[i].render());
+                result.push(this.nodes[i].render(size));
             return result;
         }
     };

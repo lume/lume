@@ -155,16 +155,6 @@ define(function(require, exports, module) {
     };
 
     /**
-     * Returns the width and the height of the Scroller instance.
-     *
-     * @method getSize
-     * @return {Array} A two value array of the Scroller instance's current width and height (in that order).
-     */
-    Scroller.prototype.getSize = function getSize(actual) {
-        return actual ? this._contextSize : this._size;
-    };
-
-    /**
      * Generate a render spec from the contents of this component.
      *
      * @private
@@ -172,7 +162,7 @@ define(function(require, exports, module) {
      * @return {number} Render spec for this component
      */
     Scroller.prototype.render = function render(input, context) {
-        var size = context.getSize();
+        var size = context;
 
         // reset edge detection on size change
         if (!this.options.clipSize && (size[0] !== this._contextSize[0] || size[1] !== this._contextSize[1])) {

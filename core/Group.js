@@ -63,7 +63,7 @@ define(function(require, exports, module) {
      * @return {Number} Render spec for this component
      */
     Group.prototype.render = function render(input, context) {
-        var size = context.getSize();
+        var size = context;
         if (size[0] !== this._groupSize[0] || size[1] !== this._groupSize[1]) {
             this._groupSize[0] = size[0];
             this._groupSize[1] = size[1];
