@@ -5,7 +5,7 @@ define(function(require, exports, module) {
     var Transitionable = require('famous/core/Transitionable');
     var Modifier = require('famous/core/Modifier');
     var ViewSequence = require('../core/ViewSequence');
-    var View = require('View');
+    var View = require('./View');
 
     function _calcPosition(index, progress){
         return (index + progress) * (2 * this.options.dotRadius + this.options.dotSpacing);
@@ -19,7 +19,6 @@ define(function(require, exports, module) {
     };
 
     module.exports = View.extend({
-        name : 'PaginatedLayout',
         defaults : {
             dotRadius : 5,
             dotColor : 'white',
@@ -53,12 +52,6 @@ define(function(require, exports, module) {
             this.dotsWidth += 2*this.options.dotRadius + this.options.dotSpacing;
             this.dotsNode.add(dotModifier).add(dot);
         },
-        getSize : function(){
-            return (this.size) ? this.size : this.pages.getSize();
-        },
-        setSize : function(size){
-            this.size = size;
-        },
         getProgress : function(){
             return this.progress;
         },
@@ -79,7 +72,6 @@ define(function(require, exports, module) {
             this.pages = new ViewSequence([]);
             this.progress = 0;
             this.dotsWidth = 0;
-            this.size = null;
             this.currentDotPosition = new Transitionable(0);
             this.currentDotOpacity = new Transitionable(1);
         },

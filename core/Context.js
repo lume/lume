@@ -31,7 +31,7 @@ define(function(require, exports, module) {
         this.allocator = new ElementAllocator(container);
         this.specParser = new SpecParser();
 
-        this._node = new RenderNode(this);
+        this._node = new RenderNode();
 
         this._eventOutput = new EventHandler();
         this._size = _getElementSize(this.container);
@@ -137,10 +137,6 @@ define(function(require, exports, module) {
         this.specParser.reset();
     }
 
-    Context.prototype.render = function render(input){
-        return (input !== undefined) ? input : this._node.render();
-    };
-
     /**
      * Commit this Context's content changes to the document.
      *
@@ -171,7 +167,7 @@ define(function(require, exports, module) {
         this._prevResults = this._resultCache;
         this._resultCache = {};
 
-        var spec = this._node.render();
+        var spec = this._node.render(this._size);
         _applyCommit.call(this, spec, context);
     };
 

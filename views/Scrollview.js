@@ -701,16 +701,6 @@ define(function(require, exports, module) {
         this._position.set(position, transition, callback);
     };
 
-    /**
-     * Returns the width and the height of the Scrollview instance.
-     *
-     * @method getSize
-     * @return {Array} A two value array of the Scrollview instance's current width and height (in that order).
-     */
-    Scrollview.prototype.getSize = function getSize() {
-        return Scroller.prototype.getSize.apply(this._scroller, arguments);
-    };
-
     Scrollview.prototype.outputFrom = function outputFrom() {
         return Scroller.prototype.outputFrom.apply(this._scroller, arguments);
     };

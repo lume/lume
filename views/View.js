@@ -90,8 +90,8 @@ define(function(require, exports, module) {
      * @method render
      * @return {number} Render spec for this component
      */
-    View.prototype.render = function render() {
-        return RenderNode.prototype.render.apply(this._node, arguments);
+    View.prototype.render = function render(input, context) {
+        return this._node.render(context);
     };
 
     /**
@@ -102,7 +102,7 @@ define(function(require, exports, module) {
      */
     View.prototype.getSize = function getSize() {
         return (this._node && this._node.getSize)
-            ? RenderNode.prototype.getSize.apply(this._node, arguments)
+            ? this._node.getSize()
             : this.options.size;
     };
 
