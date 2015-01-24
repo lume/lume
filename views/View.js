@@ -41,7 +41,9 @@ define(function(require, exports, module) {
         this._eventInput.subscribe(this._optionsManager);
     }
 
-    View.DEFAULT_OPTIONS = {};
+    View.DEFAULT_OPTIONS = {
+        size : null
+    };
     View.EVENTS = {};
 
     /**
@@ -90,8 +92,8 @@ define(function(require, exports, module) {
      * @method render
      * @return {number} Render spec for this component
      */
-    View.prototype.render = function render(input, context) {
-        return this._node.render(context);
+    View.prototype.render = function render(input, parentSize) {
+        return this._node.render(parentSize);
     };
 
     /**

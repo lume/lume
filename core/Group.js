@@ -62,8 +62,7 @@ define(function(require, exports, module) {
      * @method render
      * @return {Number} Render spec for this component
      */
-    Group.prototype.render = function render(input, context) {
-        var size = context;
+    Group.prototype.render = function render(input, size) {
         if (size[0] !== this._groupSize[0] || size[1] !== this._groupSize[1]) {
             this._groupSize[0] = size[0];
             this._groupSize[1] = size[1];

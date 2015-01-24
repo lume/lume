@@ -368,7 +368,6 @@ define(function(require, exports, module) {
 
     // TODO: fix for overshoot and position is size of node
     function _handleEdge(edge) {
-        console.log('edge')
         this.sync.setOptions({scale: -this.options.edgeGrip});
         this._edgeState = edge;
         _detachDrag.call(this);

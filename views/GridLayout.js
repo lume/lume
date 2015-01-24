@@ -73,9 +73,7 @@ define(function(require, exports, module) {
          * @method render
          * @return {Object} Render spec for this component
          */
-        render : function(input, context){
-            var size = context.getSize();
-
+        render : function(input, size){
             var cols = this.options.dimensions[0];
             var rows = this.options.dimensions[1];
 

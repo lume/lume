@@ -74,7 +74,6 @@ define(function(require, exports, module) {
         },
         render : function render(){
             var length             = 0;
-            var secondaryDirection = this.options.direction ^ 1;
             var currentNode        = this._items;
             var item               = null;
             var itemSize           = [];
@@ -93,14 +92,10 @@ define(function(require, exports, module) {
 
                 if (itemSize) {
                     if (itemSize[this.options.direction])
-                        length += itemSize[this.options.direction];
-                    if (itemSize[secondaryDirection] > this._size[secondaryDirection])
-                        this._size[secondaryDirection] = itemSize[secondaryDirection];
+                        length += itemSize[this.options.direction] + this.options.itemSpacing;
                 }
 
                 currentNode = currentNode.getNext();
-
-                if (this.options.itemSpacing && currentNode) length += this.options.itemSpacing;
             }
 
             if (length !== this._cachedLength) {

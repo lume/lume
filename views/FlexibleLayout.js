@@ -69,9 +69,7 @@ define(function(require, exports, module) {
             currRatios.set(ratios, transition, callback);
             this._ratiosDirty = true;
         },
-        render : function render(input, context){
-            var parentSize = context.getSize();
-
+        render : function render(input, parentSize){
             var ratios = this._ratios.get();
             var direction = this.options.direction;
             var length = parentSize[direction];
