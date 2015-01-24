@@ -16,20 +16,20 @@ import "army-knife/polyfill.Function.name";
 
 /*
  * Molecules are the basic building blocks of all UI components. Molecules
- * extend [famous/core/RenderNode](http://famo.us/docs/core/RenderNode), so
- * they can be added to any RenderNode of a famo.us render tree, and by default
- * they will also accept anything that a normal Famo.us RenderNode can accept
- * via the `.add` method.  Classes that extend from Molecule might
- * override `RenderNode.add` in order to accept things like arrays of
- * renderables in stead of a single renderable.
+ * extend [famous/core/RenderNode](#famous/core/RenderNode), so they can be
+ * added to any RenderNode of a famo.us render tree, and by default they will
+ * also accept anything that a normal Famo.us RenderNode can accept via the
+ * `.add` method.  Classes that extend from Molecule might override
+ * `RenderNode.add` in order to accept things like arrays of renderables in
+ * stead of a single renderable.
  *
  * Molecules encapsulate the basic things you need for a component -- a
- * [famous/core/TransitionableTransform](http://famo.us/docs/core/TransitionableTransform)
+ * [famous/transitions/TransitionableTransform](#famous/transitions/TransitionableTransform)
  * for positioning things in space, and a
- * [famous/core/EventHandler](http://famo.us/docs/core/EventHandler) for
- * capturing user interaction -- exposing a single API for working with things
- * in unison. For now, famous/core/Modifiers are used as the interface for
- * applying transforms and sizing, but this will change in Mixed Mode Famo.us.
+ * [famous/core/EventHandler](#famous/core/EventHandler) for capturing user
+ * interaction -- exposing a single API for working with things in unison. For
+ * now, famous/core/Modifiers are used as the interface for applying transforms
+ * and sizing, but this will change in Mixed Mode Famo.us.
  *
  * All components extend Molecule, but at the same time they can also use any
  * number of Molecules internally to do nice things like create layouts and
@@ -42,9 +42,8 @@ export class Molecule extends RenderNode {
 
     /*
      * Creates a new Molecule and applies initialOptions to it's internal
-     * [famous/core/Molecule](http://famo.us/docs/core/Modifier). See
-     * [famous/core/Molecule](http://famo.us/docs/core/Modifier) for details on
-     * what options you can pass.
+     * famous/core/Modifier. See [famous/core/Modifier](#famous/core/Modifier)
+     * for details on what options you can pass.
      *
      * Note: Mixed Mode Famo.us does away with Modifiers, so this API will
      * change slightly, but the change will be in such a way that APIs of
@@ -88,17 +87,17 @@ export class Molecule extends RenderNode {
         //
         // NOTE: this.options is a setter property. This statement applies all
         // relevant properties to this.modifier.
-        this.options = initialOptions.constructor.name == "Object"? initialOptions: {}; // make sure we have an object literal.
+        this.options = initialOptions.constructor.name == "Object"? initialOptions: {};
     }
 
     /*
      * Forwards events from this Molecule's
-     * [famous/core/EventHandler](http://famo.us/docs/core/EventHandler) to the
-     * given target, which can be another EventHandler or Molecule for example.
+     * [famous/core/EventHandler](#famous/core/EventHandler) to the given
+     * target, which can be another EventHandler or Molecule for example.
      *
      * This method is equivalent to
-     * [famous/core/EventHandler.pipe](http://famo.us/docs/core/EventHandler#pipe),
-     * acting upon this.handler.
+     * [famous/core/EventHandler.pipe](#famous/core/EventHandler.pipe), acting
+     * upon this.handler.
      *
      * TODO: Let this method accept a Molecule.
      *
@@ -111,11 +110,11 @@ export class Molecule extends RenderNode {
 
     /*
      * Stops events from this Molecule's
-     * [famous/core/EventHandler](http://famo.us/docs/core/EventHandler) from
-     * being sent to the given target.
+     * [famous/core/EventHandler](#famous/core/EventHandler) from being sent to
+     * the given target.
      *
      * This method is equivalent to
-     * [famous/core/EventHandler.unpipe](http://famo.us/docs/core/EventHandler#unpipe),
+     * [famous/core/EventHandler.unpipe](#famous/core/EventHandler.unpipe),
      * acting upon this.handler.
      *
      * TODO: Let this method accept a Molecule.
@@ -128,7 +127,7 @@ export class Molecule extends RenderNode {
     }
 
     /*
-     * An adapter for [famous/core/EventHandler.on](http://famo.us/docs/core/EventHandler#on).
+     * An adapter for [famous/core/EventHandler.on](#famous/core/EventHandler.on).
      */
     on() {
         var args = Array.prototype.splice.call(arguments, 0);
@@ -136,7 +135,7 @@ export class Molecule extends RenderNode {
     }
 
     /*
-     * An adapter for [famous/core/EventHandler.off](http://famo.us/docs/core/EventHandler#off).
+     * An adapter for [famous/core/EventHandler.off](#famous/core/EventHandler.off).
      */
     off() {
         var args = Array.prototype.splice.call(arguments, 0);
@@ -192,21 +191,17 @@ export class Molecule extends RenderNode {
      * Sets all options back to their defaults.
      */
     resetOptions() {
-
-        // Easier to do than, but what happened to the old Modifier? Is it lost in the infamous Famo.us memory leak?
         this.modifier = new Modifier();
-
         this.set(this.modifier);
         this.setOptions(this._.defaultOptions);
     }
 
     /*
-     * @property {module: famous/core/TransitionableTransform} transform The
-     * transform of this Molecule. The default is a
-     * [famous/core/TransitionableTransform](http://famo.us/docs/core/TransitionableTransform).
+     * @property {module: famous/transitions/TransitionableTransform} transform
+     * The transform of this Molecule. The default is a
+     * [famous/transitions/TransitionableTransform](#famous/transitions/TransitionableTransform).
      * Setting this property automatically puts the new transform into effect.
-     * See
-     * [famous/core/Modifier.transformFrom](http://famo.us/docs/core/Modifier#transformFrom)
+     * See [famous/core/Modifier.transformFrom](#famous/core/Modifier.transformFrom).
      */
     set transform(newTransform) {
         this.setOptions({transform: newTransform});
