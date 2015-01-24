@@ -62,10 +62,10 @@ define(function(require, exports, module) {
         BOTTOM: 1
     };
 
-    function _sizeForDir(size) {
-        if (!size) size = this._contextSize;
-        var dimension = this.options.direction;
-        return (size[dimension] === undefined) ? this._contextSize[dimension] : size[dimension];
+    function _sizeForDir(size, direction) {
+        return (size[direction] === undefined)
+            ? this._contextSize[direction]
+            : size[direction];
     }
 
     function _output(node, offset, target) {
@@ -195,6 +195,7 @@ define(function(require, exports, module) {
         var onEdge = false;
         var clipSize = _getClipSize.call(this);
         var result = [];
+        var direction = this.options.direction;
 
         // forwards
         var currNode = this._node;
@@ -202,7 +203,7 @@ define(function(require, exports, module) {
 
         while (currNode && nodeOffset < clipSize + this.options.margin) {
             _output.call(this, currNode, nodeOffset + offset, result);
-            nodeOffset += _sizeForDir.call(this, currNode.getSize());
+            nodeOffset += _sizeForDir(currNode.getSize(), direction);
             currNode = currNode.getNext();
         }
 
@@ -228,7 +229,7 @@ define(function(require, exports, module) {
         while (currNode && nodeOffset > -this.options.margin - clipSize) {
             currNode = currNode.getPrevious();
             if (!currNode) break;
-            nodeOffset -= _sizeForDir.call(this, currNode.getSize());
+            nodeOffset -= _sizeForDir(currNode.getSize(), direction);
             _output.call(this, currNode, nodeOffset + offset, result);
         }
 
