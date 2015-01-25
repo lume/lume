@@ -63,14 +63,15 @@ define(function(require, exports, module) {
     };
 
     function _sizeForDir(size, direction) {
-        return (size[direction] === undefined)
+        if (!size) return this._contextSize[direction];
+        else return (size[direction] === undefined)
             ? this._contextSize[direction]
             : size[direction];
     }
 
     function _output(node, offset, target) {
         var transform = this._outputFunction(offset);
-        target.push({transform: transform, target: node.render()});
+        target.push({transform: transform, target: node.render(null, this._size)});
     }
 
     function _getClipSize() {
@@ -161,9 +162,7 @@ define(function(require, exports, module) {
      * @method render
      * @return {number} Render spec for this component
      */
-    Scroller.prototype.render = function render(input, context) {
-        var size = context;
-
+    Scroller.prototype.render = function render(input, size) {
         // reset edge detection on size change
         if (!this.options.clipSize && (size[0] !== this._contextSize[0] || size[1] !== this._contextSize[1])) {
             this._contextSize[0] = size[0];
@@ -203,7 +202,7 @@ define(function(require, exports, module) {
 
         while (currNode && nodeOffset < clipSize + this.options.margin) {
             _output.call(this, currNode, nodeOffset + offset, result);
-            nodeOffset += _sizeForDir(currNode.getSize(), direction);
+            nodeOffset += _sizeForDir.call(this, currNode.getSize(), direction);
             currNode = currNode.getNext();
         }
 
@@ -229,7 +228,7 @@ define(function(require, exports, module) {
         while (currNode && nodeOffset > -this.options.margin - clipSize) {
             currNode = currNode.getPrevious();
             if (!currNode) break;
-            nodeOffset -= _sizeForDir(currNode.getSize(), direction);
+            nodeOffset -= _sizeForDir.call(this, currNode.getSize(), direction);
             _output.call(this, currNode, nodeOffset + offset, result);
         }
 

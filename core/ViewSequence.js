@@ -330,6 +330,7 @@ define(function(require, exports, module) {
      */
     ViewSequence.prototype.render = function render() {
         if (this._.trackSize && this._.sizeDirty) this._.calculateSize();
+//        return this;
         var target = this.get();
         return target ? target.render.apply(target, arguments) : null;
     };

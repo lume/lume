@@ -64,7 +64,7 @@ define(function(require, exports, module) {
      * @return {Ojbect} contained renderable object
      */
     RenderNode.prototype.get = function get() {
-        return this._object || (this._child.get ? this._child.get() : null);
+        return this._object || (this._child ? this._child.get() : null);
     };
 
     /**
@@ -91,12 +91,12 @@ define(function(require, exports, module) {
         var result = null;
         var target = this.get();
         if (target && target.getSize) result = target.getSize();
-        if (!result && this._child && this._child.getSize) result = this._child.getSize();
+        if (!result && this._child) result = this._child.getSize();
         return result;
     };
 
     RenderNode.prototype.getParentSize = function(){
-        return (this._parent && this._parent.getSize) ? this._parent.getSize() : null;
+        return (this._parent) ? this._parent.getSize() : this._parent.getParentSize() || null;
     };
 
     /**
@@ -108,16 +108,10 @@ define(function(require, exports, module) {
      * @return {Object} render specification for the component subtree
      *    only under this node.
      */
-    RenderNode.prototype.render = function render(parentSize) {
-        parentSize = (this._object && this._object.getSize)
-            ? this._object.getSize() || parentSize
-            : parentSize;
+    RenderNode.prototype.render = function render(delayedInput) {
+        var input = this._child ? this._child.render(delayedInput) : delayedInput;
 
-        var input = this._child ? this._child.render(parentSize) : undefined;
-
-        var result = (!this._object)
-            ? input
-            : this._object.render(input, parentSize);
+        var result = (!this._object) ? input : this._object.render(input);
 
         if (typeof result === 'number' || result instanceof Array || result == undefined)
             return result;

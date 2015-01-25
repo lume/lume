@@ -92,8 +92,8 @@ define(function(require, exports, module) {
      * @method render
      * @return {number} Render spec for this component
      */
-    View.prototype.render = function render(input, parentSize) {
-        return this._node.render(parentSize);
+    View.prototype.render = function render(delayedInput) {
+        return this._node.render(delayedInput);
     };
 
     /**
@@ -103,7 +103,7 @@ define(function(require, exports, module) {
      * @return {Array.Number} [width, height]
      */
     View.prototype.getSize = function getSize() {
-        return (this._node && this._node.getSize)
+        return (this._node)
             ? this._node.getSize()
             : this.options.size;
     };

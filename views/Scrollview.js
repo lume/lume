@@ -362,8 +362,8 @@ define(function(require, exports, module) {
 
     function _nodeSizeForDirection(node) {
         var direction = this.options.direction;
-        var size = node.getSize() || this.getSize();
-        return size[direction];
+        var size = node.getSize();
+        return (size) ? size[direction] : null;
     }
 
     // TODO: fix for overshoot and position is size of node

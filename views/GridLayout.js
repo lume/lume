@@ -42,7 +42,7 @@ define(function(require, exports, module) {
         initialize : function(){
             this._modifiers = [];
             this._states = [];
-            this._contextSizeCache = [0, 0];
+            this._contextSizeCache = null;
             this._dimensionsCache = [0, 0];
             this._activeCount = 0;
             this.sequence = null;
@@ -77,7 +77,7 @@ define(function(require, exports, module) {
             var cols = this.options.dimensions[0];
             var rows = this.options.dimensions[1];
 
-            var callReflow =
+            var callReflow = !this._contextSizeCache  ||
                 size[0] !== this._contextSizeCache[0] ||
                 size[1] !== this._contextSizeCache[1] ||
                 cols    !== this._dimensionsCache[0]  ||
