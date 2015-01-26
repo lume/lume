@@ -7,8 +7,6 @@
  *
  */
 
-import Modifier from 'famous/core/Modifier';
-import Surface from 'famous/core/Surface';
 import Transform from 'famous/core/Transform';
 import MouseSync from 'famous/inputs/MouseSync';
 import TouchSync from 'famous/inputs/TouchSync';
@@ -19,7 +17,21 @@ import Plane from './Plane';
 
 import forLength from 'army-knife/forLength';
 
-export class Cube extends Molecule { // a scenegraph tree that lays things out in a cube. The leaf nodes are Modifiers (the sides of the cube). Put stuff in them.
+/*
+ * A scenegraph tree that lays things out in a cube form. The leaf nodes of
+ * the scenegraph (the cube sides) are Molecules. Add any components you
+ * want to the leaf nodes to lay them out.
+ *
+ * @class Cube
+ * @extends Molecule
+ */
+export class Cube extends Molecule {
+
+    /*
+     * Create a new Cube.
+     * @constructor
+     * @param {Number} cubeWidth The integer width of the cube.
+     */
     constructor(cubeWidth) {
         super({size: cubeWidth});
 
@@ -33,9 +45,19 @@ export class Cube extends Molecule { // a scenegraph tree that lays things out i
         this.cubeSideNodes = [];
         this.cubeSides = [];
 
+        // TODO: v0.1.0: Put this in a function.
         forLength(6, this._createCubeSide.bind(this));
     }
 
+    /*
+     * Create the 6 sides of the Cube (the leafnodes of this scenegraph).
+     *
+     * TODO v0.1.0: Rename to CubeLayout.
+     * TODO v0.1.0: Don't create Planes for each side, let the user specify their own content for each side this.setChildren.
+     *
+     * @private
+     * @param {Number} index The index (a integer between 0 and 5) that specifies which side to create.
+     */
     _createCubeSide(index) {
         var T = Transform;
         var sideMol = new Molecule();
@@ -67,6 +89,13 @@ export class Cube extends Molecule { // a scenegraph tree that lays things out i
         sideMol.add(side);
     }
 
+    /*
+     * Set the content for the sides of the cube.
+     *
+     * @param {Array} children An array containing anything that a
+     * famous/core/RenderNode would accept in it's `.add` method. Only the
+     * first 6 items are used, the rest are ignored.
+     */
     setChildren(children) {
         forLength(6, function(index) {
             //this.cubeSideNodes[index].set(null); // TODO: how do we erase previous children?

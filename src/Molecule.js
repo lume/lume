@@ -70,7 +70,7 @@ export class Molecule extends RenderNode {
         //
         // TODO: make all properties of this._ non-writeable, then create
         // getters and setters that can change the writable state with private
-        // methods?
+        // methods, so that these properties are inaccessible from the outside?
         this._ = {
             options: {}, // set and get with this.options
             handler: new EventHandler(),
@@ -98,7 +98,7 @@ export class Molecule extends RenderNode {
      * This method is equivalent to [famous/core/EventHandler.pipe](#famous/core/EventHandler.pipe),
      * acting upon this.handler.
      *
-     * TODO: Let this method accept a Molecule.
+     * TODO v0.1.0: Let this method accept a Molecule, then stop doing pipe(this._.handler) in other places
      */
     pipe() {
         var args = Array.prototype.splice.call(arguments, 0);
@@ -112,7 +112,7 @@ export class Molecule extends RenderNode {
      * This method is equivalent to [famous/core/EventHandler.unpipe](#famous/core/EventHandler.unpipe),
      * acting upon this.handler.
      *
-     * TODO: Let this method accept a Molecule.
+     * TODO v0.1.0: Let this method accept a Molecule, then stop doing unpipe(this._.handler) in other places
      */
     unpipe() {
         var args = Array.prototype.splice.call(arguments, 0);
@@ -143,6 +143,9 @@ export class Molecule extends RenderNode {
      * overrides existing options. To extend existing options with new options,
      * use `setOptions` instead.  Unspecified options will be set to default
      * values.
+     *
+     * Note: Anytime this.options is assigned a new value, this.modifier is set
+     * to a new [famous/core/Modifier](#famous/core/Molecule).
      */
     set options(newOptions) {
         this.resetOptions();
@@ -164,6 +167,8 @@ export class Molecule extends RenderNode {
      *   align: [0.2, 0.8]
      * })
      * ```
+     *
+     * @param {Object} newOptions An object containing the new options to apply to this Molecule.
      */
     setOptions(newOptions) {
         newOptions = typeof newOptions != "undefined"? newOptions: {};
@@ -184,6 +189,9 @@ export class Molecule extends RenderNode {
 
     /*
      * Sets all options back to their defaults.
+     *
+     * Note: Anytime this is called, this.modifier is set to a new
+     * [famous/core/Modifier](#famous/core/Modifier).
      */
     resetOptions() {
         this.modifier = new Modifier();
