@@ -17,7 +17,23 @@ import DoubleSidedPlane from './DoubleSidedPlane';
 
 import forLength from 'army-knife/forLength';
 
+/**
+ * A calendar widget for selecting a date (WIP).
+ *
+ * @class Calendar
+ * @extends Molecule
+ */
 export class Calendar extends Molecule {
+
+    /**
+     * Create a new `Calendar` with the given Famo.us-style size array and
+     * transition. The transition is the type of animation used when switching
+     * between months.
+     *
+     * @constructor
+     * @param {Array} calendarSize A Famo.us-style width/height size array.
+     * @param {String} transition The name of the animation transition to use when switching months.
+     */
     constructor(calendarSize, transition) {
         super({size: calendarSize});
 
@@ -26,8 +42,8 @@ export class Calendar extends Molecule {
         this.columnsRows = [7,6];
         this.planes = [];
 
-        this.initializeTransitions();
-        this.createGrid();
+        this._initializeTransitions();
+        this._createGrid();
 
         setTimeout( function() {
             this.transitions[this.transition]();
@@ -35,7 +51,12 @@ export class Calendar extends Molecule {
         }.bind(this) , 800);
     }
 
-    createGrid() {
+    /**
+     * Creates the grid used for the layout of the day cells.
+     *
+     * @private
+     */
+    _createGrid() {
         var grid = new Grid(this.columnsRows[0], this.columnsRows[1], this.options.size);
 
         forLength(this.columnsRows[0]*this.columnsRows[1], function(i) {
@@ -51,7 +72,13 @@ export class Calendar extends Molecule {
         this.add(grid);
     }
 
-    initializeTransitions() {
+    /**
+     * Set up `this.transitions`, containing the available month-to-month
+     * transitions.
+     *
+     * @private
+     */
+    _initializeTransitions() {
         this.transitions = {
             flipDiagonal: function() {
                 this.flipSide = +!this.flipSide;
