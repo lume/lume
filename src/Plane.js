@@ -16,7 +16,7 @@ import Molecule from './Molecule';
  * [famous/core/Surface](#famous/core/Surface) so that they ultimately render
  * onto the screen. A Surface's events are automatically piped to it's
  * [famous/core/EventHandler](#famous/core/EventHandler), inherited from
- * Molecule.
+ * `Molecule`.
  *
  * @class Plane
  * @extends Molecule
@@ -24,10 +24,10 @@ import Molecule from './Molecule';
 export class Plane extends Molecule {
 
     /**
-     * Creates a new Plane. Properties from the initialOptions parameter
+     * Creates a new `Plane`. Properties from the `initialOptions` parameter
      * are applied to this Plane's [famous/core/Surface](#famous/core/Surface) as well as to
      * to this Plane's [famous/core/Modifier](#famous/core/Modifier), hence the API of a Plane
-     * is currently the combination of the Famo.us Modifier and Surface APIs.
+     * is currently the combination of the Famo.us `Modifier` and `Surface` APIs.
      *
      * @constructor
      * @param {Object} initialOptions Options for the new Plane.

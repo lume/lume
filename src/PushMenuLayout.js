@@ -30,12 +30,13 @@ import callAfter from 'army-knife/callAfter';
  * that the menu is clipped when it is closed, otherwise the menu will be
  * visible beyond the boundary of it's container.
  *
- * Note: If you've called openMenu or closeMenu with a callback, the callback
+ * Note: If you've called `openMenu` or `closeMenu` with a callback, the callback
  * will be canceled if a drag or hover on the menu happens before the animation
  * has completed. Please open an issue on GitHub if you have any opinion
  * against this. :) Maybe we can add a boolean option for this behavior.
  *
  * TODO: Embed working example here.
+ * TODO v0.1.0: Make a method for adding things to the menu and content areas.
  *
  * @class PushMenuLayout
  * @extends Molecule
@@ -46,8 +47,8 @@ export class PushMenuLayout extends Molecule {
      * Creates a new PushMenuLayout.
      *
      * @constructor
-     * @param {Object} options The options to instantiate a PushMenuLayout with.
-     * TODO v0.1.0: Handle PushMenuLayout-specific user options. Currently they
+     * @param {Object} options The options to instantiate a `PushMenuLayout` with.
+     * TODO v0.1.0: Handle `PushMenuLayout`-specific user options. Currently they
      * just get passed into super() for the Molecule constructor to handle.
      */
     constructor(options) {
@@ -87,7 +88,7 @@ export class PushMenuLayout extends Molecule {
     }
 
     /**
-     * Creates the menu area, content area, fade effect Plane, etc.
+     * Creates the menu area, content area, `Plane` for the fade effect, etc.
      *
      * @private
      */

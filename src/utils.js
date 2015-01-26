@@ -12,10 +12,10 @@
 import Engine from 'famous/core/Engine';
 
 /**
- * Creates a context having the specified 3D perspective.
+ * Creates a [famous/core/Context](#famous/core/Context) having the specified 3D perspective.
  *
- * @param {integer} perspective The amount of perspective to give the context.
- * @returns {module: famous/core/Context} The context with the applied perspective.
+ * @param {Number} perspective The integer amount of perspective to apply to the `Context`.
+ * @returns {module: famous/core/Context} The `Context` with the applied perspective.
  */
 export function contextWithPerspective(perspective) {
     var context = Engine.createContext();

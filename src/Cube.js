@@ -18,9 +18,9 @@ import Plane from './Plane';
 import forLength from 'army-knife/forLength';
 
 /**
- * A scenegraph tree that lays things out in a cube form. The leaf nodes of
- * the scenegraph (the cube sides) are Molecules. Add any components you
- * want to the leaf nodes to lay them out.
+ * A scenegraph tree that lays things out in a cube form. The leaf nodes of the
+ * scenegraph (the cube sides) are Molecules. Add anything to the leaf nodes
+ * that a [famous/core/RenderNode](#famous/core/RenderNode) would normally accept.
  *
  * @class Cube
  * @extends Molecule
@@ -29,6 +29,7 @@ export class Cube extends Molecule {
 
     /**
      * Create a new Cube.
+     *
      * @constructor
      * @param {Number} cubeWidth The integer width of the cube.
      */
@@ -50,10 +51,10 @@ export class Cube extends Molecule {
     }
 
     /**
-     * Create the 6 sides of the Cube (the leafnodes of this scenegraph).
+     * Creates the 6 sides of the cube (the leafnodes of the scenegraph).
      *
      * TODO v0.1.0: Rename to CubeLayout.
-     * TODO v0.1.0: Don't create Planes for each side, let the user specify their own content for each side this.setChildren.
+     * TODO v0.1.0: Don't create Planes for each side, let the user specify their own content for each side using this.setChildren.
      *
      * @private
      * @param {Number} index The index (a integer between 0 and 5) that specifies which side to create.
@@ -93,7 +94,7 @@ export class Cube extends Molecule {
      * Set the content for the sides of the cube.
      *
      * @param {Array} children An array containing anything that a
-     * famous/core/RenderNode would accept in it's `.add` method. Only the
+     * [famous/core/RenderNode](#famous/core/RenderNode) would accept in it's `add` method. Only the
      * first 6 items are used, the rest are ignored.
      */
     setChildren(children) {
