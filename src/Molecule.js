@@ -25,11 +25,11 @@ import "army-knife/polyfill.Function.name";
  *
  * Molecules encapsulate the basic things you need for a component -- a
  * [famous/transitions/TransitionableTransform](#famous/transitions/TransitionableTransform)
- * for positioning things in space, and a
- * [famous/core/EventHandler](#famous/core/EventHandler) for capturing user
- * interaction -- exposing a single API for working with things in unison. For
- * now, famous/core/Modifiers are used as the interface for applying transforms
- * and sizing, but this will change in Mixed Mode Famo.us.
+ * for positioning things in space, and a [famous/core/EventHandler](#famous/core/EventHandler)
+ * for capturing user interaction -- exposing a single API for working with
+ * things in unison. For now, famous/core/Modifiers are used as the interface
+ * for applying transforms and sizing, but this will change in Mixed Mode
+ * Famo.us.
  *
  * All components extend Molecule, but at the same time they can also use any
  * number of Molecules internally to do nice things like create layouts and
@@ -95,13 +95,10 @@ export class Molecule extends RenderNode {
      * [famous/core/EventHandler](#famous/core/EventHandler) to the given
      * target, which can be another EventHandler or Molecule for example.
      *
-     * This method is equivalent to
-     * [famous/core/EventHandler.pipe](#famous/core/EventHandler.pipe), acting
-     * upon this.handler.
+     * This method is equivalent to [famous/core/EventHandler.pipe](#famous/core/EventHandler.pipe),
+     * acting upon this.handler.
      *
      * TODO: Let this method accept a Molecule.
-     *
-     * @override
      */
     pipe() {
         var args = Array.prototype.splice.call(arguments, 0);
@@ -109,17 +106,13 @@ export class Molecule extends RenderNode {
     }
 
     /*
-     * Stops events from this Molecule's
-     * [famous/core/EventHandler](#famous/core/EventHandler) from being sent to
-     * the given target.
+     * Stops events from this Molecule's [famous/core/EventHandler](#famous/core/EventHandler)
+     * from being sent to the given target.
      *
-     * This method is equivalent to
-     * [famous/core/EventHandler.unpipe](#famous/core/EventHandler.unpipe),
+     * This method is equivalent to [famous/core/EventHandler.unpipe](#famous/core/EventHandler.unpipe),
      * acting upon this.handler.
      *
      * TODO: Let this method accept a Molecule.
-     *
-     * @override
      */
     unpipe() {
         var args = Array.prototype.splice.call(arguments, 0);
@@ -127,7 +120,8 @@ export class Molecule extends RenderNode {
     }
 
     /*
-     * An adapter for [famous/core/EventHandler.on](#famous/core/EventHandler.on).
+     * Add an event handler for a specific event.
+     * See [famous/core/EventHandler.on](#famous/core/EventHandler.on).
      */
     on() {
         var args = Array.prototype.splice.call(arguments, 0);
@@ -135,7 +129,8 @@ export class Molecule extends RenderNode {
     }
 
     /*
-     * An adapter for [famous/core/EventHandler.off](#famous/core/EventHandler.off).
+     * Remove an event handler for a specific event.
+     * See [famous/core/EventHandler.off](#famous/core/EventHandler.off).
      */
     off() {
         var args = Array.prototype.splice.call(arguments, 0);
