@@ -9,7 +9,6 @@
 
 import jss from 'jss';
 
-import Transform from 'famous/core/Transform';
 import Transitionable from 'famous/transitions/Transitionable';
 import Easing from 'famous/transitions/Easing';
 import TouchSync from 'famous/inputs/TouchSync';
