@@ -19,7 +19,7 @@ import Molecule from './Molecule';
 
 import callAfter from 'army-knife/callAfter';
 
-/*
+/**
  * A scenegraph with two Molecule leafnodes: the menu area and the content
  * area. The menu area is hidden beyond the edge of the screen while the
  * content area is visible. Swiping in from the edge of the screen reveals the
@@ -42,7 +42,7 @@ import callAfter from 'army-knife/callAfter';
  */
 export class PushMenuLayout extends Molecule {
 
-    /*
+    /**
      * Creates a new PushMenuLayout.
      *
      * @constructor
@@ -86,7 +86,7 @@ export class PushMenuLayout extends Molecule {
         this._initializeEvents();
     }
 
-    /*
+    /**
      * Creates the menu area, content area, fade effect Plane, etc.
      *
      * @private
@@ -285,7 +285,7 @@ export class PushMenuLayout extends Molecule {
         // TODO: Also create and add a background plane for the menu area so it will catch events that might fall through the menu content.
     }
 
-    /*
+    /**
      * Sets up the events for the touch and mouse interaction that opens and
      * closes the menu.
      *
@@ -351,7 +351,7 @@ export class PushMenuLayout extends Molecule {
     // using initial velocity and drag to slow it down, and stop immediately
     // when it hits the fully-open or fully-closed positions.
 
-    /*
+    /**
      * Opens the menu.
      *
      * @param {Function} callback The function to be called when the animation finishes.
@@ -370,7 +370,7 @@ export class PushMenuLayout extends Molecule {
         this._animate('open', callback);
     }
 
-    /*
+    /**
      * Closes the menu.
      *
      * @param {Function} callback The function to be called when the animation finishes.
@@ -389,7 +389,7 @@ export class PushMenuLayout extends Molecule {
         this._animate('close', callback);
     }
 
-    /*
+    /**
      * Toggles the menu open or closed. If the menu is open or is opening, then it will now start
      * closing, and vice versa.
      *
@@ -409,7 +409,7 @@ export class PushMenuLayout extends Molecule {
         }
     }
 
-    /*
+    /**
      * Animates the menu to it's target state.
      *
      * @private
@@ -443,7 +443,7 @@ export class PushMenuLayout extends Molecule {
         }
     }
 
-    /*
+    /**
      * Halts the current animation, if any.
      *
      * @private

@@ -11,7 +11,7 @@
 
 import Engine from 'famous/core/Engine';
 
-/*
+/**
  * Creates a context having the specified 3D perspective.
  *
  * @param {integer} perspective The amount of perspective to give the context.

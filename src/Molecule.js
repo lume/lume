@@ -14,7 +14,7 @@ import EventHandler from 'famous/core/EventHandler';
 
 import "army-knife/polyfill.Function.name";
 
-/*
+/**
  * Molecules are the basic building blocks of all UI components. Molecules
  * extend [famous/core/RenderNode](#famous/core/RenderNode), so they can be
  * added to any RenderNode of a famo.us render tree, and by default they will
@@ -40,7 +40,7 @@ import "army-knife/polyfill.Function.name";
  */
 export class Molecule extends RenderNode {
 
-    /*
+    /**
      * Creates a new Molecule and applies initialOptions to it's internal
      * famous/core/Modifier. See [famous/core/Modifier](#famous/core/Modifier)
      * for details on what options you can pass.
@@ -90,7 +90,7 @@ export class Molecule extends RenderNode {
         this.options = initialOptions.constructor.name == "Object"? initialOptions: {};
     }
 
-    /*
+    /**
      * Forwards events from this Molecule's
      * [famous/core/EventHandler](#famous/core/EventHandler) to the given
      * target, which can be another EventHandler or Molecule for example.
@@ -105,7 +105,7 @@ export class Molecule extends RenderNode {
         return this._.handler.pipe.apply(this._.handler, args);
     }
 
-    /*
+    /**
      * Stops events from this Molecule's [famous/core/EventHandler](#famous/core/EventHandler)
      * from being sent to the given target.
      *
@@ -119,7 +119,7 @@ export class Molecule extends RenderNode {
         return this._.handler.unpipe.apply(this._.handler, args);
     }
 
-    /*
+    /**
      * Add an event handler for a specific event.
      * See [famous/core/EventHandler.on](#famous/core/EventHandler.on).
      */
@@ -128,7 +128,7 @@ export class Molecule extends RenderNode {
         return this._.handler.on.apply(this._.handler, args);
     }
 
-    /*
+    /**
      * Remove an event handler for a specific event.
      * See [famous/core/EventHandler.off](#famous/core/EventHandler.off).
      */
@@ -137,7 +137,7 @@ export class Molecule extends RenderNode {
         return this._.handler.on.apply(this._.handler, args);
     }
 
-    /*
+    /**
      * @property {Object} options The Molecule's options, which get applied to
      * this.modifier. This may change with Mixed Mode. Setting this property
      * overrides existing options. To extend existing options with new options,
@@ -155,7 +155,7 @@ export class Molecule extends RenderNode {
         return this._.options;
     }
 
-    /*
+    /**
      * Compounds newOptions into the existing options, similar to extending an
      * object and overriding only the desired properties. To override all
      * options with a set of new options, set this.options directly.
@@ -187,7 +187,7 @@ export class Molecule extends RenderNode {
         }
     }
 
-    /*
+    /**
      * Sets all options back to their defaults.
      *
      * Note: Anytime this is called, this.modifier is set to a new
@@ -199,7 +199,7 @@ export class Molecule extends RenderNode {
         this.setOptions(this._.defaultOptions);
     }
 
-    /*
+    /**
      * @property {module: famous/transitions/TransitionableTransform} transform
      * The transform of this Molecule. The default is a
      * [famous/transitions/TransitionableTransform](#famous/transitions/TransitionableTransform).

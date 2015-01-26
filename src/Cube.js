@@ -17,7 +17,7 @@ import Plane from './Plane';
 
 import forLength from 'army-knife/forLength';
 
-/*
+/**
  * A scenegraph tree that lays things out in a cube form. The leaf nodes of
  * the scenegraph (the cube sides) are Molecules. Add any components you
  * want to the leaf nodes to lay them out.
@@ -27,7 +27,7 @@ import forLength from 'army-knife/forLength';
  */
 export class Cube extends Molecule {
 
-    /*
+    /**
      * Create a new Cube.
      * @constructor
      * @param {Number} cubeWidth The integer width of the cube.
@@ -49,7 +49,7 @@ export class Cube extends Molecule {
         forLength(6, this._createCubeSide.bind(this));
     }
 
-    /*
+    /**
      * Create the 6 sides of the Cube (the leafnodes of this scenegraph).
      *
      * TODO v0.1.0: Rename to CubeLayout.
@@ -89,7 +89,7 @@ export class Cube extends Molecule {
         sideMol.add(side);
     }
 
-    /*
+    /**
      * Set the content for the sides of the cube.
      *
      * @param {Array} children An array containing anything that a
