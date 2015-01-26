@@ -12,7 +12,7 @@ Getting Started
 
 The following sample workflows show possible ways to install and start using infamous. These examples will refer to the [snippets](#snippets) at the end of the README.
 
-There's also docs. [Read'em.](http://infamous.github.io/infamous)
+Also read the [docs](http://infamous.github.io/infamous).
 
 ### browserify workflow
 
