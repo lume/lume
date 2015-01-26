@@ -19,7 +19,37 @@ import Molecule from './Molecule';
 
 import callAfter from 'army-knife/callAfter';
 
+/*
+ * A scenegraph with two Molecule leafnodes: the menu area and the content
+ * area. The menu area is hidden beyond the edge of the screen while the
+ * content area is visible. Swiping in from the edge of the screen reveals the
+ * menu, putting the content area out of focus. A mouse can also be used, and
+ * hovering near the edge of the screen also reveals the menu.
+ *
+ * Note: This layout is mostly useful if it exists at the root of a context so
+ * that the menu is clipped when it is closed, otherwise the menu will be
+ * visible beyond the boundary of it's container.
+ *
+ * Note: If you've called openMenu or closeMenu with a callback, the callback
+ * will be canceled if a drag or hover on the menu happens before the animation
+ * has completed. Please open an issue on GitHub if you have any opinion
+ * against this. :) Maybe we can add a boolean option for this behavior.
+ *
+ * TODO: Embed working example here.
+ *
+ * @class PushMenuLayout
+ * @extends Molecule
+ */
 export class PushMenuLayout extends Molecule {
+
+    /*
+     * Creates a new PushMenuLayout.
+     *
+     * @constructor
+     * @param {Object} options The options to instantiate a PushMenuLayout with.
+     * TODO v0.1.0: Handle PushMenuLayout-specific user options. Currently they
+     * just get passed into super() for the Molecule constructor to handle.
+     */
     constructor(options) {
         super(options);
 
@@ -28,7 +58,6 @@ export class PushMenuLayout extends Molecule {
             touch: TouchSync
         });
 
-        // TODO: Handle options
         this.menuSide = 'left'; // left or right
         this.menuWidth = 200;
         this.menuHintSize = 10; // the amount of the menu that is visible before opening the menu.
@@ -36,13 +65,16 @@ export class PushMenuLayout extends Molecule {
         this.animationDuration = 1000;
         this.animationType = 'moveBack';
         this.fade = true; // when content recedes, it fades to dark.
-        // TODO: ^ background color for whole layout will be the color the fade fades to.
+        // TODO: ^ background color for the whole layout should be the color that the fade fades to.
 
         this.contentWidth = document.body.clientWidth - this.menuHintSize;
-        // TODO: ^ contentWidth should be the width of whatever is containing the layout,
-        // but we're just using it as a whole-page app for now. Get size from a
-        // commit?
+        // TODO: ^ contentWidth should be the width of whatever is containing
+        // the layout, but we're just using it as a whole-page app for now. Get
+        // size from a commit? UPDATE: See the new famous/views/SizeAwareView
 
+        // Changing these values outside of an instance of PushMenuLayout might
+        // cause the layout to break. They are designed to be modified
+        // internally only.
         this.isOpen = false;
         this.isOpening = false;
         this.isClosing = false;
@@ -50,11 +82,16 @@ export class PushMenuLayout extends Molecule {
         this.isBeingDragged = false; // whether the user is dragging/pushing the menu or not.
         this.transitionCallback = undefined; // holds the callback to the current open or close menu animation.
 
-        this.createComponents();
-        this.initializeEvents();
+        this._createComponents();
+        this._initializeEvents();
     }
 
-    createComponents() {
+    /*
+     * Creates the menu area, content area, fade effect Plane, etc.
+     *
+     * @private
+     */
+    _createComponents() {
         var layout = this;
 
         this.touchSync = new GenericSync(['touch']);
@@ -248,16 +285,20 @@ export class PushMenuLayout extends Molecule {
         // TODO: Also create and add a background plane for the menu area so it will catch events that might fall through the menu content.
     }
 
-    initializeEvents() {
+    /*
+     * Sets up the events for the touch and mouse interaction that opens and
+     * closes the menu.
+     *
+     * @private
+     */
+    _initializeEvents() {
 
         // move the menu, following the user's drag. Don't let the user drag the menu past the menu width.
         this._.handler.on('update', function(event) { // update == drag
             this.isBeingDragged = true;
 
-            // TODO: cancel callback if there is one.
-
-            // stop current transitions if any, and don't cancel a callback if one exists (false).
-            this.haltAnimation(false);
+            // stop the current transitions if any, along with the current callback if any.
+            this._haltAnimation(true);
 
             var currentPosition = this.animationTransition.get();
 
@@ -308,27 +349,58 @@ export class PushMenuLayout extends Molecule {
 
     // TODO: replace menu easing with physics so the user can throw the menu,
     // using initial velocity and drag to slow it down, and stop immediately
-    // when it hit the limit.
+    // when it hits the fully-open or fully-closed positions.
 
-    openMenu(callback, cancelPreviousCallback) { // public
-        this.haltAnimation(cancelPreviousCallback);
+    /*
+     * Opens the menu.
+     *
+     * @param {Function} callback The function to be called when the animation finishes.
+     * @param {boolean} [cancelPreviousCallback=false] This is optional. If
+     * true, then the callback of a previous open or close animation will be
+     * canceled if that animation was still inprogress when this method is
+     * called, otherwise the callback of the previous open or close animation
+     * will be fired immediately before the animation for this animation begins.
+     */
+    openMenu(callback, cancelPreviousCallback) {
+        this._haltAnimation(cancelPreviousCallback);
 
         this.isClosing = false;
         this.isOpening = true;
 
-        this.animate('open', callback);
+        this._animate('open', callback);
     }
 
-    closeMenu(callback, cancelPreviousCallback) { // public
-        this.haltAnimation(cancelPreviousCallback);
+    /*
+     * Closes the menu.
+     *
+     * @param {Function} callback The function to be called when the animation finishes.
+     * @param {boolean} [cancelPreviousCallback=false] This is optional. If
+     * true, then the callback of a previous open or close animation will be
+     * canceled if that animation was still inprogress when this method is
+     * called, otherwise the callback of the previous open or close animation
+     * will be fired immediately before the animation for this animation begins.
+     */
+    closeMenu(callback, cancelPreviousCallback) {
+        this._haltAnimation(cancelPreviousCallback);
 
         this.isClosing = true;
         this.isOpening = false;
 
-        this.animate('close', callback);
+        this._animate('close', callback);
     }
 
-    toggleMenu(callback, cancelPreviousCallback) { // public
+    /*
+     * Toggles the menu open or closed. If the menu is open or is opening, then it will now start
+     * closing, and vice versa.
+     *
+     * @param {Function} callback The function to be called when the animation finishes.
+     * @param {boolean} [cancelPreviousCallback=false] This is optional. If
+     * true, then the callback of a previous open or close animation will be
+     * canceled if that animation was still inprogress when this method is
+     * called, otherwise the callback of the previous open or close animation
+     * will be fired immediately before the animation for this animation begins.
+     */
+    toggleMenu(callback, cancelPreviousCallback) {
         if (this.isOpen || this.isOpening) {
             this.closeMenu(callback, cancelPreviousCallback);
         }
@@ -337,7 +409,14 @@ export class PushMenuLayout extends Molecule {
         }
     }
 
-    animate(targetState, callback) {
+    /*
+     * Animates the menu to it's target state.
+     *
+     * @private
+     * @param {String} targetState The name of the state to animate to.
+     * @param {Function} callback The function to call after the animation completes.
+     */
+    _animate(targetState, callback) {
         this.isAnimating = true;
         this.transitionCallback = callback;
         var _callback;
@@ -364,9 +443,16 @@ export class PushMenuLayout extends Molecule {
         }
     }
 
-    haltAnimation(cancelPreviousCallback) {
+    /*
+     * Halts the current animation, if any.
+     *
+     * @private
+     * @param {boolean} [cancelCallback=false] Defaults to false. If true, the
+     * halted animation's callback won't fire, otherwise it will be fired.
+     */
+    _haltAnimation(cancelCallback) {
         if (this.isAnimating) {
-            if (!cancelPreviousCallback && typeof this.transitionCallback == 'function') {
+            if (!cancelCallback && typeof this.transitionCallback == 'function') {
                 this.transitionCallback();
             }
             this.transitionCallback = undefined;
