@@ -47,7 +47,8 @@ define(function(require, exports, module) {
             opacity: 1,
             origin: null,
             align: null,
-            size: this._size
+            size: this._size,
+            nextsizeContext : Transform.identity
         };
 
         this._eventOutput.on('resize', function() {
@@ -167,8 +168,12 @@ define(function(require, exports, module) {
         this._prevResults = this._resultCache;
         this._resultCache = {};
 
-        var spec = this._node.render(this._size);
-        _applyCommit.call(this, spec, context);
+        this._node.render(this._nodeContext);
+        Entity.forEach(function(item, index){
+            var commitParams = Entity.getCommitParams(index);
+            item.commit(commitParams, this.allocator);
+        }.bind(this));
+        Entity.clear();
     };
 
     /**

@@ -18,6 +18,7 @@ define(function(require, exports, module) {
      */
 
     var entities = [];
+    var commits = [];
 
     /**
      * Get entity from global index.
@@ -29,6 +30,10 @@ define(function(require, exports, module) {
      */
     function get(id) {
         return entities[id];
+    }
+
+    function getCommitParams(id){
+        return commits[id];
     }
 
     /**
@@ -43,6 +48,15 @@ define(function(require, exports, module) {
         entities[id] = entity;
     }
 
+    function setCommitParams(id, commitParams){
+        commits[id] = commitParams;
+    }
+
+    function clear(){
+        entities = [];
+        commits = [];
+    }
+
     /**
      * Add entity to global index
      *
@@ -51,9 +65,10 @@ define(function(require, exports, module) {
      * @param {Surface} entity to add to global index
      * @return {Number} new id
      */
-    function register(entity) {
+    function register(entity, commitParams) {
         var id = entities.length;
         set(id, entity);
+        setCommitParams(id, commitParams);
         return id;
     }
 
@@ -68,10 +83,17 @@ define(function(require, exports, module) {
         set(id, null);
     }
 
+    function forEach(fn){
+        entities.forEach(fn);
+    }
+
     module.exports = {
         register: register,
         unregister: unregister,
         get: get,
-        set: set
+        getCommitParams : getCommitParams,
+        set: set,
+        clear: clear,
+        forEach: forEach
     };
 });

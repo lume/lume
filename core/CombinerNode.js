@@ -15,11 +15,9 @@ define(function(require, exports, module) {
         getSize : function(){
             return null;
         },
-        render: function(size) {
-            var result = [];
+        render: function(context) {
             for(var i = 0; i < this.nodes.length; i++)
-                result.push(this.nodes[i].render(size));
-            return result;
+                this.nodes[i].render(context);
         }
     };
 

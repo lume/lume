@@ -192,9 +192,8 @@ define(function(require, exports, module) {
      * @return {Object} render spec for this Modifier, including the
      *    provided target
      */
-    Modifier.prototype.render = function render(target) {
+    Modifier.prototype.render = function render() {
         _update.call(this);
-        if (target !== this._output.target) this._output.target = target;
         return this._output;
     };
 

@@ -40,7 +40,7 @@ define(function(require, exports, module) {
             this._eventOutput.emit(event.type, event);
         }.bind(this);
 
-        this._id = Entity.register(this);
+//        this._id = Entity.register(this);
         this._currentTarget = null;
 
         this._opacityDirty = true;
@@ -128,7 +128,7 @@ define(function(require, exports, module) {
      * @return {Object} render spec for this surface (spec id)
      */
     ElementOutput.prototype.render = function render() {
-        return this._id;
+        return undefined;
     };
 
     //  Attach Famous event handling to document events emanating from target
