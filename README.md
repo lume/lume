@@ -1,7 +1,7 @@
 infamous
 ========
 
-A UI library.
+A famo.us UI library.
 
 [![NPM](https://nodei.co/npm/infamous.png)](https://nodei.co/npm/infamous/)
 
