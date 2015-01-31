@@ -42,9 +42,9 @@
   "jspm": {
     "registry": "npm",
     "dependencies": {
-      "army-knife": "^0.1.0",
+      "army-knife": "npm:army-knife@^0.1.0",
       "famous": "github:trusktr/famous@jspm",
-      "jss": "^0.10.1"
+      "jss": "npm:jss@^0.10.1"
     },
     "directories": {
       "lib": "src"
