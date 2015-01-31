@@ -25,7 +25,7 @@
   "license": "MPL",
   "dependencies": {
     "6to5": "^3.0.0",
-    "army-knife": "^0.0.6",
+    "army-knife": "^0.1.0",
     "famous": "git+https://github.com/trusktr/famous.git#jspm",
     "famousify": "^0.1.5",
     "jss": "^0.10.1"
@@ -42,9 +42,9 @@
   "jspm": {
     "registry": "jspm",
     "dependencies": {
-      "army-knife": "npm:army-knife@^0.0.6",
+      "army-knife": "^0.1.0",
       "famous": "github:trusktr/famous@jspm",
-      "jss": "npm:jss@^0.10.1"
+      "jss": "^0.10.1"
     },
     "directories": {
       "lib": "src"
