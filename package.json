@@ -40,7 +40,7 @@
     ]
   },
   "jspm": {
-    "registry": "jspm",
+    "registry": "npm",
     "dependencies": {
       "army-knife": "^0.1.0",
       "famous": "github:trusktr/famous@jspm",
