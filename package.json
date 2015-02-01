@@ -10,9 +10,9 @@
     "test": "echo 'TODO: Test script' && exit 1",
     "clean": "rm -rf ./*.js ./*.js.map",
     "prepublish": "npm run build-cjs",
-    "build-umd": "6to5 src --source-maps --out-dir . --modules umd",
-    "build-cjs": "6to5 src --source-maps --out-dir . --modules common",
-    "build-amd": "6to5 src --source-maps --out-dir . --modules amd",
+    "build-umd": "./node_modules/.bin/6to5 src --source-maps --out-dir . --modules umd",
+    "build-cjs": "./node_modules/.bin/6to5 src --source-maps --out-dir . --modules common",
+    "build-amd": "./node_modules/.bin/6to5 src --source-maps --out-dir . --modules amd",
     "build-global": "echo 'TODO: Global build' && exit 1"
   },
   "repository": {
@@ -23,21 +23,16 @@
     "Joseph Orbegoso Pea <joe@trusktr.io>"
   ],
   "license": "MPL",
+  "bugs": {
+    "url": "https://github.com/infamous/infamous/issues"
+  },
+  "homepage": "https://github.com/infamous/infamous",
   "dependencies": {
     "6to5": "^3.0.0",
     "army-knife": "^0.1.0",
     "famous": "git+https://github.com/trusktr/famous.git#jspm",
     "famousify": "^0.1.5",
     "jss": "^0.10.1"
-  },
-  "bugs": {
-    "url": "https://github.com/infamous/infamous/issues"
-  },
-  "homepage": "https://github.com/infamous/infamous",
-  "browserify": {
-    "transform": [
-      "famousify"
-    ]
   },
   "jspm": {
     "registry": "jspm",
@@ -49,6 +44,11 @@
     "directories": {
       "lib": "src"
     }
+  },
+  "browserify": {
+    "transform": [
+      "famousify"
+    ]
   },
   "keywords": [
     "gui",
