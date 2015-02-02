@@ -3,7 +3,6 @@ dist
 npm-debug.log
 docs
 
-./*.js
-!./infamous.js
-
-./*.js.map
+/*.js
+/*.js.map
+!/infamous.js
