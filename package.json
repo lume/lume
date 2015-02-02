@@ -9,12 +9,11 @@
   "scripts": {
     "test": "echo 'TODO: Test script' && exit 1",
     "clean": "rm -rf ./*.js ./*.js.map",
-    "build": "npm run build-cjs",
+    "prepublish": "npm run build-cjs",
     "build-umd": "6to5 src --source-maps --out-dir . --modules umd",
     "build-cjs": "6to5 src --source-maps --out-dir . --modules common",
     "build-amd": "6to5 src --source-maps --out-dir . --modules amd",
-    "build-global": "echo 'TODO: Global build' && exit 1",
-    "publish": "npm run build && npm publish"
+    "build-global": "echo 'TODO: Global build' && exit 1"
   },
   "repository": {
     "type": "git",
