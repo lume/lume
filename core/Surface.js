@@ -9,6 +9,7 @@
 
 define(function(require, exports, module) {
     var ElementOutput = require('./ElementOutput');
+    var Entity = require('./Entity');
 
     /**
      * A base class for viewable content and event
@@ -34,6 +35,8 @@ define(function(require, exports, module) {
         this.content = '';
 
         this.size = null;   // can take numeric, undefined or true values
+
+        this._id = Entity.register(this);
 
         this._classesDirty = true;
         this._stylesDirty = true;
@@ -310,7 +313,7 @@ define(function(require, exports, module) {
     };
 
     Surface.prototype.render = function(){
-        return null;
+        return this._id;
     };
 
     /**

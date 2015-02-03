@@ -73,7 +73,8 @@ define(function(require, exports, module) {
          * @method render
          * @return {Object} Render spec for this component
          */
-        render : function(input, size){
+        render : function(context){
+            var size = context.size;
             var cols = this.options.dimensions[0];
             var rows = this.options.dimensions[1];
 
@@ -97,7 +98,11 @@ define(function(require, exports, module) {
                     this._states.splice(currIndex, 1);
                 }
 
-                if (item) result.push(modifier.render(item.render()));
+                if (item) {
+                    var obj = modifier.render();
+                    obj.target = item.render();
+                    result.push(obj);
+                }
 
                 sequence = sequence.getNext();
                 currIndex++;

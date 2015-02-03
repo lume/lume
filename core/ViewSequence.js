@@ -323,7 +323,7 @@ define(function(require, exports, module) {
 
     /**
      * Generate a render spec from the contents of this component.
-     * Specifically, this will render the value at the current index.
+     * SpecViewifically, this will render the value at the current index.
      * @private
      * @method render
      * @return {number} Render spec for this component

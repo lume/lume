@@ -92,8 +92,8 @@ define(function(require, exports, module) {
      * @method render
      * @return {number} Render spec for this component
      */
-    View.prototype.render = function render(delayedInput) {
-        return this._node.render(delayedInput);
+    View.prototype.render = function render() {
+        return this._node.render.apply(this._node, arguments);
     };
 
     /**

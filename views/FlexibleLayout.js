@@ -69,10 +69,10 @@ define(function(require, exports, module) {
             currRatios.set(ratios, transition, callback);
             this._ratiosDirty = true;
         },
-        render : function render(input, parentSize){
+        render : function render(parentSpec){
             var ratios = this._ratios.get();
             var direction = this.options.direction;
-            var length = parentSize[direction];
+            var length = parentSpec.size[direction];
             var size;
 
             if (length !== this._cachedLength || this._ratiosDirty || this._ratios.isActive() || direction !== this._cachedDirection || _trueSizedDirty.call(this, ratios, direction)) {

@@ -10,7 +10,8 @@ define(function(require, exports, module) {
     var RenderNode = require('../core/RenderNode');
     var Transform = require('../core/Transform');
     var Transitionable = require('../core/Transitionable');
-    View = require('./view');
+    var View = require('./view');
+    var Modifier = require('../core/Modifier')
 
     /**
      * A layout which will arrange two renderables: a featured content, and a
@@ -75,7 +76,9 @@ define(function(require, exports, module) {
         },
         initializeSubviews : function initializeSubviews(){
             this.drawer = new RenderNode();
-            this.content = new RenderNode();
+            this.content = new RenderNode(new Modifier({
+                transform : Transform.translate(100,0,0)
+            }));
         },
         /**
          * Reveals the drawer with a transition
@@ -207,6 +210,7 @@ define(function(require, exports, module) {
 
             this._cachedPosition = position;
 
+            debugger
             return [
                 {
                     transform : Transform.behind,

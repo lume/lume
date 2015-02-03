@@ -14,7 +14,6 @@ define(function(require, exports, module) {
     var Transform = require('./Transform');
     var Transitionable = require('./Transitionable');
     var Entity = require('./Entity');
-    var SpecParser = require('./SpecParser');
 
     /**
      * The top-level container for a Famous-renderable piece of the document.
@@ -29,7 +28,6 @@ define(function(require, exports, module) {
     function Context(container) {
         this.container = container;
         this.allocator = new ElementAllocator(container);
-        this.specParser = new SpecParser();
 
         this._node = new RenderNode();
 
@@ -37,7 +35,7 @@ define(function(require, exports, module) {
         this._size = _getElementSize(this.container);
 
         this._prevResults = {};
-        this._resultCache = {};
+        this._commitData = {};
 
         this._perspectiveState = new Transitionable(0);
         this._perspective = undefined;
@@ -87,6 +85,10 @@ define(function(require, exports, module) {
         return RenderNode.prototype.add.call(this._node, obj);
     };
 
+    Context.prototype.registerCommit = function(entityId, commitData){
+        this._commitData[entityId] = commitData;
+    };
+
     /**
      * Move this Context to another containing document element.
      *
@@ -124,20 +126,6 @@ define(function(require, exports, module) {
         this._size[1] = size[1];
     };
 
-    function _applyCommit(spec, context){
-        var result = this.specParser.parse(spec, context);
-
-        for (var id in result) {
-            var childNode = Entity.get(id);
-            var commitParams = result[id];
-            var commitResult = childNode.commit(commitParams, this.allocator);
-            if (commitResult !== undefined) _applyCommit.call(this, commitResult, context);
-            else this._resultCache[id] = commitParams;
-        }
-
-        this.specParser.reset();
-    }
-
     /**
      * Commit this Context's content changes to the document.
      *
@@ -145,35 +133,36 @@ define(function(require, exports, module) {
      * @method update
      * @param {Object} contextParameters engine commit specification
      */
-    Context.prototype.commit = function commit(context) {
-        if (context == undefined) context = this._nodeContext;
 
-        var perspective = this._perspectiveState.get();
+    Context.prototype.commit = function commit(context, allocator){
+        context = context || this._nodeContext;
+        allocator = allocator || this.allocator;
 
-        if (perspective !== this._perspective) {
+        var results = [];
+        var ids = {};
+
+        this._node.render(context, results);
+
+        var perspective = this.getPerspective();
+        if (perspective !== this._perspective)
             _setPerspective(this.container, perspective);
-            this._perspective = perspective;
+
+        for (var i = 0; i < results.length; i++){
+            var data = results[i];
+            var id = data.target;
+            var entity = Entity.get(id);
+            entity.commit(data, allocator);
+            ids[id] = true;
         }
 
-        // free up some divs from the last loop
-        var prevKeys = Object.keys(this._prevResults);
-        for (var i = 0; i < prevKeys.length; i++) {
-            var id = prevKeys[i];
-            if (this._resultCache[id] === undefined) {
+        for (var id in this._prevResults){
+            if (ids[id] !== true){
                 var object = Entity.get(id);
-                if (object.cleanup) object.cleanup(this.allocator);
+                if (object.cleanup) object.cleanup(allocator);
             }
         }
 
-        this._prevResults = this._resultCache;
-        this._resultCache = {};
-
-        this._node.render(this._nodeContext);
-        Entity.forEach(function(item, index){
-            var commitParams = Entity.getCommitParams(index);
-            item.commit(commitParams, this.allocator);
-        }.bind(this));
-        Entity.clear();
+        this._prevResults = ids;
     };
 
     /**
@@ -195,7 +184,7 @@ define(function(require, exports, module) {
      * @param {function(Object)} callback function called on completion of transition
      */
     Context.prototype.setPerspective = function setPerspective(perspective, transition, callback) {
-        return this._perspectiveState.set(perspective, transition, callback);
+        this._perspectiveState.set(perspective, transition, callback);
     };
 
     /**

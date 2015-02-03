@@ -41,8 +41,7 @@ define(function(require, exports, module) {
             origin: null,
             align: null,
             size: null,
-            proportions: null,
-            target: null
+            proportions: null
         };
 
         if (options) {
@@ -192,9 +191,10 @@ define(function(require, exports, module) {
      * @return {Object} render spec for this Modifier, including the
      *    provided target
      */
+    //TODO: fix object.create
     Modifier.prototype.render = function render() {
         _update.call(this);
-        return this._output;
+        return Object.create(this._output);
     };
 
     module.exports = Modifier;
