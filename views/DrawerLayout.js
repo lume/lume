@@ -210,7 +210,6 @@ define(function(require, exports, module) {
 
             this._cachedPosition = position;
 
-            debugger
             return [
                 {
                     transform : Transform.behind,

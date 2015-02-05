@@ -73,8 +73,8 @@ define(function(require, exports, module) {
          * @method render
          * @return {Object} Render spec for this component
          */
-        render : function(context){
-            var size = context.size;
+        render : function(parentSpec){
+            var size = parentSpec.size;
             var cols = this.options.dimensions[0];
             var rows = this.options.dimensions[1];
 

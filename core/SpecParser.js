@@ -107,10 +107,6 @@ define(function(require, exports, module) {
         return results;
     };
 
-    SpecParser.merge = function(flatSpec1, flatSpec2){
-
-    }
-
     function _vecInContext(v, m) {
         return [
             v[0] * m[0] + v[1] * m[4] + v[2] * m[8],

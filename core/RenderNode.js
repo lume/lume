@@ -101,9 +101,9 @@ define(function(require, exports, module) {
     var defaultSpec = {
         transform: Transform.identity,
         opacity: 1,
-        origin: [0,0],
-        align: [0,0],
-        size: [0,0],
+        origin: null,
+        align: null,
+        size: null,
         nextsizeContext : Transform.identity
     };
 

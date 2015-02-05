@@ -154,7 +154,7 @@ define(function(require, exports, module) {
             constructor[key] = constants[key];
 
         return constructor;
-    };
+    }
 
     View.extend = extend;
 

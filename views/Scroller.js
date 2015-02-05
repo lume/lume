@@ -162,7 +162,8 @@ define(function(require, exports, module) {
      * @method render
      * @return {number} Render spec for this component
      */
-    Scroller.prototype.render = function render(input, size) {
+    Scroller.prototype.render = function render(parentSpec) {
+        var size = parentSpec.size;
         // reset edge detection on size change
         if (!this.options.clipSize && (size[0] !== this._contextSize[0] || size[1] !== this._contextSize[1])) {
             this._contextSize[0] = size[0];

@@ -46,8 +46,9 @@ define(function(require, exports, module) {
             this.footer = new RenderNode();
             this.content = new RenderNode();
         },
-        render : function render(input, size){
+        render : function render(parentSpec){
             var options = this.options;
+            var size = parentSpec.size;
 
             var headerLength = (options.headerLength !== undefined)
                 ? this.options.headerLength

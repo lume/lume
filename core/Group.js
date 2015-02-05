@@ -123,21 +123,6 @@ define(function(require, exports, module) {
             origin: origin,
             size: this._groupSize
         }, this.context.allocator);
-
-//        // parent surface
-//        var result = Surface.prototype.commit.call(this, {
-//            transform: Transform.thenMove(transform, [-origin[0] * size[0], -origin[1] * size[1], 0]),
-//            opacity: opacity,
-//            origin: origin,
-//            size: SIZE_ZERO
-//        }, allocator);
-//
-//        // child group
-//        this.context.commit({
-//            transform: Transform.translate(-origin[0] * size[0], -origin[1] * size[1], 0),
-//            origin: origin,
-//            size: size
-//        }, allocator);
     };
 
     module.exports = Group;
