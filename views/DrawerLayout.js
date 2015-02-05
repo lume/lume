@@ -11,7 +11,7 @@ define(function(require, exports, module) {
     var Transform = require('../core/Transform');
     var Transitionable = require('../core/Transitionable');
     var View = require('./view');
-    var Modifier = require('../core/Modifier')
+    var Modifier = require('../core/Modifier');
 
     /**
      * A layout which will arrange two renderables: a featured content, and a
