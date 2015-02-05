@@ -62,7 +62,8 @@ define(function(require, exports, module) {
      * @method render
      * @return {Number} Render spec for this component
      */
-    Group.prototype.render = function render(input, size) {
+    Group.prototype.render = function render(context) {
+        var size = context.size;
         if (size[0] !== this._groupSize[0] || size[1] !== this._groupSize[1]) {
             this._groupSize[0] = size[0];
             this._groupSize[1] = size[1];
@@ -121,7 +122,7 @@ define(function(require, exports, module) {
             transform: Transform.identity,
             origin: origin,
             size: this._groupSize
-        }, allocator);
+        }, this.context.allocator);
 
 //        // parent surface
 //        var result = Surface.prototype.commit.call(this, {
