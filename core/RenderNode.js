@@ -104,23 +104,19 @@ define(function(require, exports, module) {
         origin: null,
         align: null,
         size: null,
-        nextsizeContext : Transform.identity
+        nextsizeContext: Transform.identity
     };
 
     RenderNode.prototype.render = function render(parentSpec, results) {
         if (parentSpec === undefined) parentSpec = defaultSpec;
         if (results === undefined) results = [];
 
-        var spec;
-        if (this._object) {
-            spec = this._object.render(parentSpec);
-            SpecParser.flatten(spec, parentSpec, results);
-        }
-        else spec = parentSpec;
+        var flattenedSpec = (this._object)
+            ? SpecParser.flatten(this._object.render(parentSpec), parentSpec, results)
+            : parentSpec;
 
-        if (this._child) {
-            this._child.render(spec, results);
-        }
+        if (this._child)
+            this._child.render(flattenedSpec, results);
 
         return results;
     };

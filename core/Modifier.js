@@ -194,7 +194,7 @@ define(function(require, exports, module) {
     //TODO: fix object.create
     Modifier.prototype.render = function render() {
         _update.call(this);
-        return Object.create(this._output);
+        return this._output;
     };
 
     module.exports = Modifier;

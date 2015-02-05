@@ -13,6 +13,8 @@ define(function(require, exports, module) {
     var _zeroZero = [0,0];
 
     SpecParser.flatten = function flatten(spec, parentSpec, results){
+        var flattenedSpec;
+
         if (typeof spec === 'number'){
             if (!parentSpec) return {
                 transform : Transform.identity,
@@ -31,17 +33,20 @@ define(function(require, exports, module) {
                 transform = Transform.thenMove(transform, shift);
             }
 
-            results.push({
+            flattenedSpec = {
                 transform : transform,
                 opacity : parentSpec.opacity,
                 origin : parentSpec.origin || _zeroZero,
                 size : parentSpec.size,
                 target : spec
-            });
+            };
+
+            results.push(flattenedSpec);
         }
         else if (spec instanceof Array){
+            flattenedSpec = [];
             for (var i = 0; i < spec.length; i++)
-                SpecParser.flatten(spec[i], parentSpec, results);
+                flattenedSpec[i] = SpecParser.flatten(spec[i], parentSpec, results);
         }
         else if (spec instanceof Object){
             var opacity = (spec.opacity !== undefined)
@@ -86,25 +91,27 @@ define(function(require, exports, module) {
                     transform = Transform.moveThen([-origin[0] * size[0], -origin[1] * size[1], 0], transform);
 
                 nextSizeTransform = parentSpec.transform;
-//                origin = null;
-//                align = null;
+                origin = null;
+                align = null;
             }
             else size = parentSpec.size;
 
-            spec.transform = transform;
-            spec.opacity = opacity;
-            spec.origin = origin;
-            spec.align = align;
-            spec.size = size;
-            spec.nextSizeTransform = nextSizeTransform;
+            flattenedSpec = {
+                transform : transform,
+                opacity : opacity,
+                origin : origin,
+                align : align,
+                size : size,
+                nextSizeTransform : nextSizeTransform
+            };
 
             // iterate if spec is nested
             if (spec.target !== undefined)
-                SpecParser.flatten(spec.target, spec, results)
+                SpecParser.flatten(spec.target, flattenedSpec, results)
 
         }
 
-        return results;
+        return flattenedSpec;
     };
 
     function _vecInContext(v, m) {
