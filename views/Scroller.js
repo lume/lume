@@ -27,9 +27,9 @@ define(function(require, exports, module) {
         if (options) this._optionsManager.setOptions(options);
 
         this._node = null;
-        this._position = 0;
+        this._offset = 0;
 
-        this._positionGetter = null;
+        this._offsetGetter = null;
         this._outputFunction = null;
         this._masterOutputFunction = null;
         this.outputFrom();
@@ -130,17 +130,17 @@ define(function(require, exports, module) {
      * The Scroller instance's method for reading from an external position. Scroller uses
      * the external position to actually scroll through it's renderables.
      * @method positionFrom
-     * @param {Getter} position Can be either a function that returns a position,
+     * @param {Getter} offset Can be either a function that returns a position,
      * or an object with a get method that returns a position.
      */
-    Scroller.prototype.positionFrom = function positionFrom(position) {
-        if (position instanceof Function) this._positionGetter = position;
-        else if (position && position.get) this._positionGetter = position.get.bind(position);
+    Scroller.prototype.offsetFrom = function offsetFrom(offset) {
+        if (offset instanceof Function) this._offsetGetter = offset;
+        else if (offset && offset.get) this._offsetGetter = offset.get.bind(offset);
         else {
-            this._positionGetter = null;
-            this._position = position;
+            this._offsetGetter = null;
+            this._offset = offset;
         }
-        if (this._positionGetter) this._position = this._positionGetter.call(this);
+        if (this._offsetGetter) this._offset = this._offsetGetter.call(this);
     };
 
     /**
@@ -180,9 +180,9 @@ define(function(require, exports, module) {
         }
 
         if (!this._node) return null;
-        if (this._positionGetter) this._position = this._positionGetter.call(this);
+        if (this._offsetGetter) this._offset = this._offsetGetter.call(this);
 
-        var scrollTransform = this._masterOutputFunction(-this._position);
+        var scrollTransform = this._masterOutputFunction(-this._offset);
 
         return {
             transform : scrollTransform,
@@ -191,7 +191,7 @@ define(function(require, exports, module) {
     };
 
     function _innerRender() {
-        var offset = this._position;
+        var offset = this._offset;
         var onEdge = false;
         var clipSize = _getClipSize.call(this);
         var result = [];
