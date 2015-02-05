@@ -119,7 +119,7 @@ define(function(require, exports, module) {
         this._position = new Transitionable(0);
 
         // subcomponent logic
-        this._scroller.positionFrom(this.getOffset.bind(this));
+        this._scroller.offsetFrom(this.getOffset.bind(this));
 
         // eventing
         this._eventInput = new EventHandler();
@@ -186,7 +186,7 @@ define(function(require, exports, module) {
 
     function _handleUpdate(event){
         if (this._springState === SpringStates.NONE && this._edgeState === EdgeStates.NONE)
-            _normalizeState.call(this);
+            _normalizeCurrentIndex.call(this);
         _updatePayload.call(this);
         this.emit('update', this._payload);
     }
@@ -420,7 +420,7 @@ define(function(require, exports, module) {
         this._springState = springState;
     }
 
-    function _normalizeState() {
+    function _normalizeCurrentIndex() {
         var previousOffset = this.getOffset();
         var offset = previousOffset; // position of first partially visible node
         var currNode = this._node;
