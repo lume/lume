@@ -194,15 +194,10 @@ export class PushMenuLayout extends Molecule {
             align: [this.alignment, 0.5]
         });
 
-        // align the menu and content areas
-        //if (this.menuSide == 'left') {
-            //this.contentMol.transform.setTranslateX(this.menuHintSize);
-            //this.menuMol.transform.setTranslateX(-this.menuWidth+this.menuHintSize);
-        //}
-        //else {
-            //this.contentMol.transform.setTranslateX(-this.menuHintSize);
-            //this.menuMol.transform.setTranslateX(this.menuWidth-this.menuHintSize);
-        //}
+        // Bring the touch plane forward so it's just above the content and
+        // content's fade plane, so touch and mouse interaction works. HTML,
+        // the bad parts. ;)
+        this.menuTouchPlane.transform.setTranslateZ(2);
 
         /*
          * Styles for the fadePlane
@@ -351,8 +346,19 @@ export class PushMenuLayout extends Molecule {
 
         /*
          * Wire up events
+         * TODO: consolidate dup code here and in setMenu
          */
         this.menuTouchPlane.pipe(this.touchSync);
+        this.menuTouchPlane.on('mouseenter', function() {
+            if (!this.isOpening) {
+                this.openMenu();
+            }
+        }.bind(this))
+        this.menuTouchPlane.on('mouseleave', function() {
+            if (!this.isClosing) {
+                this.closeMenu();
+            }
+        }.bind(this))
         this.touchSync.pipe(this._.handler);
     }
 
