@@ -8,7 +8,6 @@
 
 define(function(require, exports, module) {
     var CombinerNode = require('./CombinerNode');
-    var CacheManager = require('./CacheManager');
     var Transform = require('./Transform');
     var SpecParser = require('./SpecParser');
 

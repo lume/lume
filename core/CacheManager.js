@@ -14,14 +14,16 @@ define(function(require, exports, module) {
 
     CacheManager.prototype.set = function(spec){
         if (spec instanceof Object){
-            this.cache.size = spec.size;
-            this.cache.origin = spec.origin;
-            this.cache.align = spec.align;
-            this.cache.proportions = spec.proportions;
-            this.cache.transform = spec.transform;
-            this.cache.opacity = spec.opacity;
+            this.cache = {
+                size : spec.size,
+                origin : spec.origin,
+                align : spec.align,
+                proportions : spec.proportions,
+                transform : spec.transform,
+                opacity : spec.opacity
+            };
         }
-        if (spec instanceof Array){
+        else if (spec instanceof Array){
             this.cache = spec.splice();
         }
     };
@@ -54,18 +56,25 @@ define(function(require, exports, module) {
     }
 
     function _specEquals(spec1, spec2){
+        var equality = true;
+
+        if (spec1.target !== undefined && spec2.target !== undefined)
+            equality &=_specEquals(spec1.target, spec2.target);
+
         if (spec1 instanceof Object && spec2 instanceof Object){
-            return spec1.opacity === spec2.opacity &&
+            equality = spec1.opacity === spec2.opacity &&
                 _xyEquals(spec1.size, spec2.size) &&
                 _xyEquals(spec1.align, spec2.align) &&
                 _xyEquals(spec1.origin, spec2.origin) &&
                 _xyEquals(spec1.proportions, spec2.proportions) &&
                 _transformEquals(spec1.transform, spec2.transform);
         }
-        else if (spec1 instanceof Array && spec2 instanceof Array){
-            return _arrayEquals(spec1, spec2);
-        }
-        else return false;
+        else if (spec1 instanceof Array && spec2 instanceof Array)
+            equality = _arrayEquals(spec1, spec2);
+        else
+            equality = false;
+
+        return equality;
     }
 
     module.exports = CacheManager;
