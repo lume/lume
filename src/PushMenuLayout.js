@@ -63,7 +63,7 @@ export class PushMenuLayout extends Molecule {
         this.menuSide = 'left'; // left or right
         this.menuWidth = 200;
         this.menuHintSize = 10; // the amount of the menu that is visible before opening the menu.
-        this.pushAreaWidth = 20; // the area on the screen edge that the user can touch and drag to push out the menu.
+        this.pushAreaWidth = 40; // the area on the screen edge that the user can touch and drag to push out the menu.
         this.animationDuration = 1000;
         this.animationType = 'moveBack'; // options: foldDown moveBack
         this.fade = true; // when content recedes, it fades to dark.
