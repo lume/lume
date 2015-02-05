@@ -289,7 +289,7 @@ define(function(require, exports, module) {
             _setOrigin(target, this._origin);
         }
 
-        if (this._transformDirty || this._originDirty || (this._sizeDirty && origin)) {
+        if (this._transformDirty || this._originDirty || (this.size && this._sizeDirty && origin)) {
             this._transform = transform || Transform.identity;
 
             if (origin && !(origin[0] === 0 && origin[1] === 0))
