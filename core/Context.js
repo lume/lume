@@ -34,8 +34,7 @@ define(function(require, exports, module) {
         this._eventOutput = new EventHandler();
         this._size = _getElementSize(this.container);
 
-        this._prevResults = {};
-        this._commitData = {};
+        this._prevEntityIds = {};
 
         this._perspectiveState = new Transitionable(0);
         this._perspective = undefined;
@@ -83,10 +82,6 @@ define(function(require, exports, module) {
      */
     Context.prototype.add = function add(obj) {
         return RenderNode.prototype.add.call(this._node, obj);
-    };
-
-    Context.prototype.registerCommit = function(entityId, commitData){
-        this._commitData[entityId] = commitData;
     };
 
     /**
@@ -138,31 +133,31 @@ define(function(require, exports, module) {
         context = context || this._nodeContext;
         allocator = allocator || this.allocator;
 
-        var results = [];
-        var ids = {};
-
-        this._node.render(context, results);
-
         var perspective = this.getPerspective();
         if (perspective !== this._perspective)
             _setPerspective(this.container, perspective);
+
+        var results = [];
+        var entityIds = {};
+
+        this._node.render(context, results);
 
         for (var i = 0; i < results.length; i++){
             var data = results[i];
             var id = data.target;
             var entity = Entity.get(id);
             entity.commit(data, allocator);
-            ids[id] = true;
+            entityIds[id] = true;
         }
 
-        for (var id in this._prevResults){
-            if (ids[id] !== true){
+        for (var id in this._prevEntityIds){
+            if (entityIds[id] !== true){
                 var object = Entity.get(id);
                 if (object.cleanup) object.cleanup(allocator);
             }
         }
 
-        this._prevResults = ids;
+        this._prevEntityIds = entityIds;
     };
 
     /**
