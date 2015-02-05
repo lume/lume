@@ -114,7 +114,6 @@ define(function(require, exports, module) {
         this._earlyEnd = false;
         this._displacement = 0;
         this._totalShift = 0;
-        this._cachedIndex = 0;
 
         this._offset = new Accumulator(0);
         this._position = new Transitionable(0);
@@ -236,7 +235,7 @@ define(function(require, exports, module) {
         }
         else {
             var callEnd = !this._earlyEnd &&
-                this._edgeState === EdgeStates.TOP && velocity < 0 ||
+                this._edgeState === EdgeStates.TOP    && velocity < 0 ||
                 this._edgeState === EdgeStates.BOTTOM && velocity > 0;
 
             // if past the end, call end prematurely
@@ -422,7 +421,8 @@ define(function(require, exports, module) {
     }
 
     function _normalizeState() {
-        var offset = this.getOffset(); // position of first partially visible node
+        var previousOffset = this.getOffset();
+        var offset = previousOffset; // position of first partially visible node
         var currNode = this._node;
         var nodeSize = _nodeSizeForDirection.call(this, this._node);
 
@@ -443,52 +443,15 @@ define(function(require, exports, module) {
             nodeSize = _nodeSizeForDirection.call(this, currNode);
         }
 
-        var shift = offset - this.getOffset();
-        if (shift) _shiftOrigin.call(this, shift);
+        _shiftOrigin.call(this, offset - previousOffset);
 
         this._node = currNode;
         this._scroller.sequenceFrom(currNode);
-
-//        var tolerance = (this._dragging)
-//            ? 1
-//            : 0.5;
-
-        // when dragging, pageChange called when physics takes over
-        // dragging while touchStart and physics not enabled
-        // because scroll is still like dragging
-//        if (this._node) {
-//            if (!this._dragging && this._node.index !== this._cachedIndex) {
-//                // backwards
-//                if (this._dragging) return;
-//                if (this.getOffset() < tolerance * nodeSize) {
-//                    this._cachedIndex = this._node.index;
-//                    this.emit('pageChange', {direction: -1, index: this._cachedIndex});
-//                }
-//            } else {
-//                // forwards
-//                if (this.getOffset() > tolerance * nodeSize) {
-//                    this._cachedIndex = this._node.index + 1;
-//                    this.emit('pageChange', {direction: 1, index: this._cachedIndex});
-//                }
-//            }
-//        }
     }
 
-    function _shiftOrigin(amount) {
-        var newOffset = this.getOffset() + amount;
-        this.setOffset(newOffset);
+    function _shiftOrigin(amount){
+        this.setOffset(this.getOffset() + amount);
         this._totalShift += amount;
-
-//        this._particle.setPosition1D(this._particle.getPosition1D() + amount);
-//        this._pageSpringPosition += amount;
-//        this._edgeSpringPosition += amount;
-//
-//        if (this._springState === SpringStates.EDGE) {
-//            this.spring.setOptions({anchor: [this._edgeSpringPosition, 0, 0]});
-//        }
-//        else if (this._springState === SpringStates.PAGE) {
-//            this.spring.setOptions({anchor: [this._pageSpringPosition, 0, 0]});
-//        }
     }
 
     /**
@@ -528,6 +491,10 @@ define(function(require, exports, module) {
             _detachDrag.call(this);
             _setSpring.call(this, 0, SpringStates.PAGE);
             _attachSpring.call(this);
+
+            if (this.getOffset() > 0.5 * previousNodeSize)
+                this.emit('pageChange', {direction: -1, index: this.getCurrentIndex()});
+
             return;
         }
     };
@@ -550,6 +517,9 @@ define(function(require, exports, module) {
             _detachDrag.call(this);
             _setSpring.call(this, 0, SpringStates.PAGE);
             _attachSpring.call(this);
+
+            if (this.getOffset() < 0.5 * currentNodeSize)
+                this.emit('pageChange', {direction: 1, index: this.getCurrentIndex()});
         }
     };
 
@@ -625,7 +595,7 @@ define(function(require, exports, module) {
      *  the Scrollview instance will scroll at the passed-in velocity.
      *
      * @method setVelocity
-     * @param {number} v The magnitude of the velocity.
+     * @param {number} velocity The magnitude of the velocity.
      */
     Scrollview.prototype.setVelocity = function setVelocity(velocity) {
         var velocity = _cap(velocity, this.options.speedLimit);
