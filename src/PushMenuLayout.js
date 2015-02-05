@@ -27,8 +27,9 @@ import callAfter from 'army-knife/callAfter';
  * hovering near the edge of the screen also reveals the menu.
  *
  * Note: This layout is mostly useful if it exists at the root of a context so
- * that the menu is clipped when it is closed, otherwise the menu will be
- * visible beyond the boundary of it's container.
+ * that the menu is clipped when it is closed (off to the side), otherwise the
+ * menu will be visible beyond the boundary of the container that contains the
+ * PushMenuLayout.
  *
  * Note: If you've called `openMenu` or `closeMenu` with a callback, the callback
  * will be canceled if a drag or hover on the menu happens before the animation
@@ -64,7 +65,7 @@ export class PushMenuLayout extends Molecule {
         this.menuHintSize = 10; // the amount of the menu that is visible before opening the menu.
         this.pushAreaWidth = 20; // the area on the screen edge that the user can touch and drag to push out the menu.
         this.animationDuration = 1000;
-        this.animationType = 'moveBack';
+        this.animationType = 'moveBack'; // options: foldDown moveBack
         this.fade = true; // when content recedes, it fades to dark.
         // TODO: ^ background color for the whole layout should be the color that the fade fades to.
 
@@ -99,7 +100,6 @@ export class PushMenuLayout extends Molecule {
 
         this.alignment = (this.menuSide == "left"? 0: 1);
         this.animationTransition = new Transitionable(0);
-        window.animationTransition = this.animationTransition;
 
         this.mainMol = new Molecule();
 
@@ -273,7 +273,13 @@ export class PushMenuLayout extends Molecule {
                 origin: [this.alignment, 0.5],
                 align: [this.alignment, 0.5]
             });
-            this.fadePlane.transform.setTranslateZ(-0.0001);
+
+            // move the fadePlane forward by 1px so it doesn't glitch out.
+            // Chrome will make the fadePlane and the surface in the content
+            // area (if any) blink randomly when the two surfaces are in the
+            // same exact position together.
+            this.fadePlane.transform.setTranslateZ(1);
+
             this.fadePlane.setOptions({opacity: this.animationTransition});
 
             this.contentMol.add(this.fadePlane);
@@ -336,8 +342,10 @@ export class PushMenuLayout extends Molecule {
             }
         }.bind(this));
 
+        // TODO: Use a SizeAwareView instead of relying on the body, since we
+        // might not be directly in the body.
         window.addEventListener('resize', function(event) {
-            this.contentWidth = document.body.clientWidth - this.menuHintSize; // TODO: use case where the layout isn't specifically in the body.
+            this.contentWidth = document.body.clientWidth - this.menuHintSize;
             this.contentMol.setOptions({size: [this.contentWidth, undefined]});
         }.bind(this));
 
@@ -346,6 +354,48 @@ export class PushMenuLayout extends Molecule {
          */
         this.menuTouchPlane.pipe(this.touchSync);
         this.touchSync.pipe(this._.handler);
+    }
+
+    /**
+     * Add a scenegraph to the content area of the PushMenuLayout. You can put
+     * anything you want into the content area (magical 3D things for example),
+     * just be careful not to let them cover the menu or you'll block the user
+     * from interacting with the menu.
+     *
+     * @param {module: famous/core/RenderNode} node A scenegraph, i.e. a
+     * RenderNode with stuff in it.
+     */
+    setContent(node) {
+        this.contentMol.add(node)
+    }
+
+    /**
+     * Add a scenegraph to the menu area of the PushMenuLayout. If the object
+     * that you pass into setMenu is an infamous component, or a famo.us
+     * Surface, then it's events will be piped to this PushMenuLayout's input
+     * sync so that the user can open and close the menu with touch or mouse.
+     * General advice here would be to keep whatever you put into the menu
+     * contained within the boundaries of the menu or you might have touch and
+     * mouse interaction outside of the menu.
+     *
+     * @param {module: famous/core/RenderNode} node A scenegraph, i.e. a
+     * RenderNode with stuff in it.
+     */
+    setMenu(node) {
+        this.menuMol.add(node)
+        if (node instanceof Molecule) {
+            node.pipe(this.touchSync)
+            node.on('mouseenter', function() {
+                if (!this.isOpening) {
+                    this.openMenu();
+                }
+            }.bind(this))
+            node.on('mouseleave', function() {
+                if (!this.isClosing) {
+                    this.closeMenu();
+                }
+            }.bind(this))
+        }
     }
 
     // TODO: replace menu easing with physics so the user can throw the menu,
