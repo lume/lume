@@ -12,14 +12,13 @@ define(function(require, exports, module) {
     var Drag = require('../physics/forces/Drag');
     var Spring = require('../physics/constraints/Snap');
 
-    var EventHandler = require('../core/EventHandler');
-    var OptionsManager = require('../core/OptionsManager');
     var ViewSequence = require('../core/ViewSequence');
+    var Transitionable = require('../core/Transitionable');
+
+    var View = require('../views/View');
     var Scroller = require('../views/Scroller');
 
-    var Transitionable = require('../core/Transitionable');
     var Accumulator = require('../inputs/Accumulator');
-
     var GenericSync = require('../inputs/GenericSync');
     var ScrollSync = require('../inputs/ScrollSync');
     var TouchSync = require('../inputs/TouchSync');
@@ -35,136 +34,352 @@ define(function(require, exports, module) {
     /** @enum */
     var EdgeStates = Scroller.EDGE_STATES;
 
+    var CONSTANTS = {
+        DIRECTION : {
+            X : 0,
+            Y : 1
+        }
+    };
+
     /**
      * Scrollview will lay out a collection of renderables sequentially in the specified direction, and will
      * allow you to scroll through them with mousewheel or touch events.
      * @class Scrollview
-     * @constructor
-     * @param {Options} [options] An object of configurable options.
-     * @param {Number} [options.direction=Utility.Direction.Y] Using the direction helper found in the famous Utility
-     * module, this option will lay out the Scrollview instance's renderables either horizontally
-     * (x) or vertically (y). Utility's direction is essentially either zero (X) or one (Y), so feel free
-     * to just use integers as well.
-     * @param {Boolean} [options.rails=true] When true, Scrollview's genericSync will only process input in it's primary access.
-     * @param {Number} [clipSize=undefined] The size of the area (in pixels) that Scrollview will display content in.
-     * @param {Number} [margin=undefined] The size of the area (in pixels) that Scrollview will process renderables' associated calculations in.
-     * @param {Number} [friction=0.001] Input resistance proportional to the velocity of the input.
-     * Controls the feel of the Scrollview instance at low velocities.
-     * @param {Number} [drag=0.0001] Input resistance proportional to the square of the velocity of the input.
-     * Affects Scrollview instance more prominently at high velocities.
-     * @param {Number} [edgeGrip=0.5] A coefficient for resistance against after-touch momentum.
-     * @param {Number} [egePeriod=300] Sets the period on the spring that handles the physics associated
-     * with hitting the end of a scrollview.
-     * @param {Number} [edgeDamp=1] Sets the damping on the spring that handles the physics associated
-     * with hitting the end of a scrollview.
-     * @param {Boolean} [paginated=false] A paginated scrollview will scroll through items discretely
-     * rather than continously.
-     * @param {Number} [pagePeriod=500] Sets the period on the spring that handles the physics associated
-     * with pagination.
-     * @param {Number} [pageDamp=0.8] Sets the damping on the spring that handles the physics associated
-     * with pagination.
-     * @param {Number} [pageStopSpeed=Infinity] The threshold for determining the amount of velocity
-     * required to trigger pagination. The lower the threshold, the easier it is to scroll continuosly.
-     * @param {Number} [pageSwitchSpeed=1] The threshold for momentum-based velocity pagination.
-     * @param {Number} [speedLimit=10] The highest scrolling speed you can reach.
      */
-    function Scrollview(options) {
-        // patch options with defaults
-        this.options = Object.create(Scrollview.DEFAULT_OPTIONS);
-        this._optionsManager = new OptionsManager(this.options);
 
-        // create sub-components
-        this._scroller = new Scroller(this.options);
+    module.exports = View.extend({
+        defaults : {
+            direction: CONSTANTS.DIRECTION.Y,
+            rails: true,
+            friction: 0.005,
+            drag: 0.0001,
+            edgeGrip: 0.3,
+            edgePeriod: 300,
+            edgeDamp: 1,
+            margin: 2*Math.max(1000, window.innerWidth, window.innerHeight),
+            paginated: false,
+            pagePeriod: 200,
+            pageDamp: 0.7,
+            clipSize: undefined,
+            pageStopSpeed: 1,       // speed threshold to stop a pagination from firing
+            pageSwitchSpeed: 0.5,   // speed threshold to flick forward or back
+            speedLimit: 0.5,        // maximum speed the scrollview can scroll without user input
+            groupScroll: false,     // pipes mouse and touch events automatically to the scrollview
+            syncScale: 1,
+            preventDefault: true
+        },
+        events : {
+            change : _updateOptions
+        },
+        initialize : function(options){
+            this.initializeState(options);
+            this.initializeSubviews(options);
+            this.initializeEvents(options);
+        },
+        initializeSubviews : function(options){
+            this._scroller = new Scroller(options);
+            this._scroller.offsetFrom(this.getOffset.bind(this));
+        },
+        initializeState : function(options){
+            // physics
+            this._physicsEngine = new PhysicsEngine();
+            this._particle = new Particle();
+            this._physicsEngine.addBody(this._particle);
 
-        this.sync = new GenericSync(
-            ['scroll', 'touch'],
-            {
-                direction : this.options.direction,
-                scale : -this.options.syncScale,
-                rails: this.options.rails,
-                preventDefault: this.options.preventDefault
+            this.spring = new Spring({
+                anchor: [0, 0, 0],
+                period: options.edgePeriod,
+                dampingRatio: options.edgeDamp
+            });
+            this.drag = new Drag({
+                forceFunction: Drag.FORCE_FUNCTIONS.QUADRATIC,
+                strength: options.drag
+            });
+            this.friction = new Drag({
+                forceFunction: Drag.FORCE_FUNCTIONS.LINEAR,
+                strength: options.friction
+            });
+
+            // state
+            this._node = null;
+            this._touchCount = 0;
+            this._springState = SpringStates.NONE;
+            this._edgeState = EdgeStates.NONE;
+            this._pageSpringPosition = 0;
+            this._edgeSpringPosition = 0;
+            this._earlyEnd = false;
+            this._displacement = 0;
+            this._totalShift = 0;
+
+            this._offset = new Accumulator(0);
+            this._position = new Transitionable(0);
+
+            this._payload = {
+                index: 0,
+                position: 0,
+                offset: 0,
+                progress : 0
+            };
+        },
+        initializeEvents : function(options){
+            this.sync = new GenericSync(
+                ['scroll', 'touch'],
+                {
+                    direction :     options.direction,
+                    scale :         -options.syncScale,
+                    rails:          options.rails,
+                    preventDefault: options.preventDefault
+                }
+            );
+
+            this.on('onEdge', function(data) {
+                this.sync.setOptions({scale: options.edgeGrip});
+                this._edgeSpringPosition = data.offset;
+                _handleEdge.call(this, data.edge);
+            }.bind(this));
+
+            this.on('offEdge', function() {
+                this.sync.setOptions({scale: -options.syncScale});
+                this._edgeState = EdgeStates.NONE;
+            }.bind(this));
+
+            this.sync.on('start', _handleSyncStart.bind(this));
+            this.sync.on('update', _handleSyncUpdate.bind(this));
+            this.sync.on('end', _handleSyncEnd.bind(this));
+
+            this._particle.on('start', _handlePhysicsStart.bind(this));
+            this._particle.on('update', _handlePhysicsUpdate.bind(this));
+            this._particle.on('end', _handlePhysicsEnd.bind(this));
+
+            this._offset.on('update', _handleOffsetUpdate.bind(this));
+
+            this._position.on('start', _handleStart.bind(this));
+            this._position.on('end', _handleEnd.bind(this));
+
+            // sync, particle and transitionable accumulate in offset
+            this._offset.addSource(this._position);
+            this._offset.addSource(this._particle);
+            this._offset.addSource(this.sync);
+
+            // touch input goes to the sync
+            this.sync.subscribe(this._eventInput);
+
+            this.subscribe(this._offset);
+            this.subscribe(this._scroller);
+        },
+        /**
+         * Returns the index of the first visible renderable
+         *
+         * @method getCurrentIndex
+         * @return {Number} The current index of the ViewSequence
+         */
+        getCurrentIndex : function(){
+            return this._node.index;
+        },
+        /**
+         * goToPreviousPage paginates your Scrollview instance backwards by one item.
+         *
+         * @method goToPreviousPage
+         */
+        goToPreviousPage : function(){
+            if (!this._node || this._edgeState === EdgeStates.TOP) return;
+
+            // if moving back to the current node
+            if (this.getOffset() > 0 && this._springState === SpringStates.NONE) {
+                _detachDrag.call(this);
+                _setSpring.call(this, 0, SpringStates.PAGE);
+                _attachSpring.call(this);
+                return;
             }
-        );
 
-        this._physicsEngine = new PhysicsEngine();
-        this._particle = new Particle();
-        this._physicsEngine.addBody(this._particle);
+            // if moving to the previous node
+            var previousNode = this._node.getPrevious();
+            if (previousNode) {
+                var previousNodeSize = _nodeSizeForDirection.call(this, previousNode);
+                this._scroller.sequenceFrom(previousNode);
+                this._node = previousNode;
+                _shiftOrigin.call(this, previousNodeSize);
+                _detachDrag.call(this);
+                _setSpring.call(this, 0, SpringStates.PAGE);
+                _attachSpring.call(this);
 
-        this.spring = new Spring({
-            anchor: [0, 0, 0],
-            period: this.options.edgePeriod,
-            dampingRatio: this.options.edgeDamp
-        });
-        this.drag = new Drag({
-            forceFunction: Drag.FORCE_FUNCTIONS.QUADRATIC,
-            strength: this.options.drag
-        });
-        this.friction = new Drag({
-            forceFunction: Drag.FORCE_FUNCTIONS.LINEAR,
-            strength: this.options.friction
-        });
+                if (this.getOffset() > 0.5 * previousNodeSize)
+                    this.emit('pageChange', {direction: -1, index: this.getCurrentIndex()});
 
-        // state
-        this._node = null;
-        this._touchCount = 0;
-        this._springState = SpringStates.NONE;
-        this._edgeState = EdgeStates.NONE;
-        this._pageSpringPosition = 0;
-        this._edgeSpringPosition = 0;
-        this._earlyEnd = false;
-        this._displacement = 0;
-        this._totalShift = 0;
+                return;
+            }
+        },
+        /**
+         * goToNextPage paginates your Scrollview instance forwards by one item.
+         *
+         * @method goToNextPage
+         */
+        goToNextPage : function(){
+            if (!this._node || this._edgeState === EdgeStates.BOTTOM) return;
 
-        this._offset = new Accumulator(0);
-        this._position = new Transitionable(0);
+            var nextNode = this._node.getNext();
+            if (nextNode) {
+                var currentNodeSize = _nodeSizeForDirection.call(this, this._node);
+                this._scroller.sequenceFrom(nextNode);
+                this._node = nextNode;
+                _shiftOrigin.call(this, -currentNodeSize);
+                _detachDrag.call(this);
+                _setSpring.call(this, 0, SpringStates.PAGE);
+                _attachSpring.call(this);
 
-        // subcomponent logic
-        this._scroller.offsetFrom(this.getOffset.bind(this));
+                if (this.getOffset() < 0.5 * currentNodeSize)
+                    this.emit('pageChange', {direction: 1, index: this.getCurrentIndex()});
+            }
+        },
+        /**
+         * Paginates the Scrollview to an absolute page index.
+         *
+         * @method goToPage
+         */
+        goToPage : function(index){
+            var currentIndex = this.getCurrentIndex();
+            if (currentIndex > index) {
+                while (currentIndex !== index) {
+                    this.goToPreviousPage();
+                    currentIndex--;
+                }
+            }
+            else if (currentIndex < index) {
+                while (currentIndex !== index) {
+                    this.goToNextPage();
+                    currentIndex++;
+                }
+            }
+        },
+        /**
+         * Returns the position associated with the Scrollview instance's current node
+         *  (generally the node currently at the top).
+         *
+         * @method getPosition
+         * @return {number} The Scrollview's total pixels translated.
+         */
+        getPosition : function(){
+            return this.getOffset() - this._totalShift;
+        },
+        setPosition : function(position, transition, callback){
+            if (this._position.isActive()) this._position.halt();
+            this._position.set(position, transition, callback);
+        },
+        /**
+         * Returns the offset associated with the Scrollview instance's current node
+         *  (generally the node currently at the top).
+         *
+         * @method getOffset
+         * @param {number} [node] If specified, returns the position of the node at that index in the
+         * Scrollview instance's currently managed collection.
+         * @return {number} The position of either the specified node, or the Scrollview's current Node,
+         * in pixels translated.
+         */
+        getOffset : function(){
+            return this._offset.get();
+        },
+        /**
+         * Sets the offset of the physics particle that controls Scrollview instance's "position"
+         *
+         * @method setOffset
+         * @param {number} offset The amount of pixels you want your scrollview to progress by.
+         */
+        setOffset : function(offset){
+            this._offset.set(offset);
+        },
+        getProgress : function getProgress() {
+            var length = _nodeSizeForDirection.call(this, this._node);
+            if (!length) return 0;
+            var offset = this.getOffset();
+            return offset / length;
+        },
+        /**
+         * Returns the Scrollview instance's velocity.
+         *
+         * @method getVelocity
+         * @return {Number} The velocity.
+         */
+        getVelocity : function(){
+            return this._particle.getVelocity1D();
+        },
+        /**
+         * Sets the Scrollview instance's velocity. Until affected by input or another call of setVelocity
+         *  the Scrollview instance will scroll at the passed-in velocity.
+         *
+         * @method setVelocity
+         * @param {number} velocity The magnitude of the velocity.
+         */
+        setVelocity : function(velocity){
+            var velocity = _cap(velocity, this.options.speedLimit);
+            this._particle.setVelocity1D(velocity);
+        },
+        /**
+         * Sets the collection of renderables under the Scrollview instance's control, by
+         *  setting its current node to the passed in ViewSequence. If you
+         *  pass in an array, the Scrollview instance will set its node as a ViewSequence instantiated with
+         *  the passed-in array.
+         *
+         * @method sequenceFrom
+         * @param {Array|ViewSequence} node Either an array of renderables or a Famous viewSequence.
+         */
+        sequenceFrom : function sequenceFrom(node) {
+            if (node instanceof Array) node = new ViewSequence({array: node, trackSize: true});
+            this._node = node;
+            return this._scroller.sequenceFrom(node);
+        },
+        render : function(){
+            return Scroller.prototype.render.apply(this._scroller, arguments);
+        }
+    }, CONSTANTS);
 
-        // eventing
-        this._eventInput = new EventHandler();
-        this._eventOutput = new EventHandler();
-        EventHandler.setInputHandler(this, this._eventInput);
-        EventHandler.setOutputHandler(this, this._eventOutput);
+    /**
+     * Patches the Scrollview instance's options with the passed-in ones.
+     *
+     * @method setOptions
+     * @param {Options} options An object of configurable options for the Scrollview instance.
+     */
+    function _updateOptions(options){
+        var key = options.key;
+        var value = options.value;
+        switch (key){
+            case 'direction':
+                this.options.direction = (value === 'x' || value === CONSTANTS.DIRECTION.X)
+                    ? CONSTANTS.DIRECTION.X
+                    : CONSTANTS.DIRECTION.Y;
+                this.sync.setOptions({direction: this.options.direction});
+                break;
+            case 'groupScroll':
+                (value)
+                    ? this.subscribe(this._scroller)
+                    : this.unsubscribe(this._scroller);
+                break;
+            case 'drag':
+                this.drag.setOptions({strength: value});
+                break;
+            case 'friction':
+                this.friction.setOptions({strength: value});
+                break;
+            case 'edgePeriod':
+                this.spring.setOptions({period: value});
+                break;
+            case 'edgeDamp':
+                this.spring.setOptions({dampingRatio: value});
+                break;
+            case 'rails':
+            case 'scale':
+            case 'rails':
+            case 'preventDefault':
+                this.sync.setOptions({
+                    rails: this.options.rails,
+                    direction: this.options.direction,
+                    scale: -this.options.syncScale,
+                    preventDefault: this.options.preventDefault
+                });
+                break;
+        }
 
-        _bindEvents.call(this);
-
-        this._payload = {
-            index: 0,
-            position: 0,
-            offset: 0,
-            progress : 0
-        };
-
-        // override default options with passed-in custom options
-        if (options) this.setOptions(options);
+        this._scroller.setOptions(options);
     }
-
-    Scrollview.Direction = {
-        X : 0,
-        Y : 1
-    };
-
-    Scrollview.DEFAULT_OPTIONS = {
-        direction: Scrollview.Direction.Y,
-        rails: true,
-        friction: 0.005,
-        drag: 0.0001,
-        edgeGrip: 0.3,
-        edgePeriod: 300,
-        edgeDamp: 1,
-        margin: 2*Math.max(1000, window.innerWidth, window.innerHeight),
-        paginated: false,
-        pagePeriod: 200,
-        pageDamp: 0.7,
-        clipSize: undefined,
-        pageStopSpeed: 1,       // speed threshold to stop a pagination from firing
-        pageSwitchSpeed: 0.5,   // speed threshold to flick forward or back
-        speedLimit: 0.5,        // maximum speed the scrollview can scroll without user input
-        groupScroll: false,     // pipes mouse and touch events automatically to the scrollview
-        syncScale: 1,
-        preventDefault: true
-    };
 
     function _cap(value, limit){
         if (value > limit) return limit;
@@ -284,44 +499,6 @@ define(function(require, exports, module) {
         _handleEnd.call(this);
     }
 
-    function _bindEvents() {
-        this._scroller.on('onEdge', function(data) {
-            this.sync.setOptions({scale: this.options.edgeGrip});
-            this._edgeSpringPosition = data.offset;
-            _handleEdge.call(this, data.edge);
-            this.emit('onEdge');
-        }.bind(this));
-
-        this._scroller.on('offEdge', function() {
-            this.sync.setOptions({scale: -this.options.syncScale});
-            this._edgeState = EdgeStates.NONE;
-            this.emit('offEdge');
-        }.bind(this));
-
-        this.sync.on('start', _handleSyncStart.bind(this));
-        this.sync.on('update', _handleSyncUpdate.bind(this));
-        this.sync.on('end', _handleSyncEnd.bind(this));
-
-        this._particle.on('start', _handlePhysicsStart.bind(this));
-        this._particle.on('update', _handlePhysicsUpdate.bind(this));
-        this._particle.on('end', _handlePhysicsEnd.bind(this));
-
-        this._offset.on('update', _handleOffsetUpdate.bind(this));
-
-        this._position.on('start', _handleStart.bind(this));
-        this._position.on('end', _handleEnd.bind(this));
-
-        // touch input goes to the sync
-        this._eventInput.pipe(this.sync);
-
-        // sync, particle and transitionable accumulate in offset
-        this._offset.addSource(this._position);
-        this._offset.addSource(this._particle);
-        this._offset.addSource(this.sync);
-
-        // create universal update event
-        this._offset.pipe(this);
-    }
 
     function _attachDrag(){
         if (this.dragID === undefined)
@@ -453,244 +630,4 @@ define(function(require, exports, module) {
         this.setOffset(this.getOffset() + amount);
         this._totalShift += amount;
     }
-
-    /**
-     * Returns the index of the first visible renderable
-     *
-     * @method getCurrentIndex
-     * @return {Number} The current index of the ViewSequence
-     */
-    Scrollview.prototype.getCurrentIndex = function getCurrentIndex() {
-        return this._node.index;
-    };
-
-    /**
-     * goToPreviousPage paginates your Scrollview instance backwards by one item.
-     *
-     * @method goToPreviousPage
-     * @return {ViewSequence} The previous node.
-     */
-    Scrollview.prototype.goToPreviousPage = function goToPreviousPage() {
-        if (!this._node || this._edgeState === EdgeStates.TOP) return;
-
-        // if moving back to the current node
-        if (this.getOffset() > 0 && this._springState === SpringStates.NONE) {
-            _detachDrag.call(this);
-            _setSpring.call(this, 0, SpringStates.PAGE);
-            _attachSpring.call(this);
-            return;
-        }
-
-        // if moving to the previous node
-        var previousNode = this._node.getPrevious();
-        if (previousNode) {
-            var previousNodeSize = _nodeSizeForDirection.call(this, previousNode);
-            this._scroller.sequenceFrom(previousNode);
-            this._node = previousNode;
-            _shiftOrigin.call(this, previousNodeSize);
-            _detachDrag.call(this);
-            _setSpring.call(this, 0, SpringStates.PAGE);
-            _attachSpring.call(this);
-
-            if (this.getOffset() > 0.5 * previousNodeSize)
-                this.emit('pageChange', {direction: -1, index: this.getCurrentIndex()});
-
-            return;
-        }
-    };
-
-    /**
-     * goToNextPage paginates your Scrollview instance forwards by one item.
-     *
-     * @method goToNextPage
-     * @return {ViewSequence} The next node.
-     */
-    Scrollview.prototype.goToNextPage = function goToNextPage() {
-        if (!this._node || this._edgeState === EdgeStates.BOTTOM) return;
-
-        var nextNode = this._node.getNext();
-        if (nextNode) {
-            var currentNodeSize = _nodeSizeForDirection.call(this, this._node);
-            this._scroller.sequenceFrom(nextNode);
-            this._node = nextNode;
-            _shiftOrigin.call(this, -currentNodeSize);
-            _detachDrag.call(this);
-            _setSpring.call(this, 0, SpringStates.PAGE);
-            _attachSpring.call(this);
-
-            if (this.getOffset() < 0.5 * currentNodeSize)
-                this.emit('pageChange', {direction: 1, index: this.getCurrentIndex()});
-        }
-    };
-
-    /**
-     * Paginates the Scrollview to an absolute page index.
-     *
-     * @method goToPage
-     */
-    Scrollview.prototype.goToPage = function goToPage(index) {
-        var currentIndex = this.getCurrentIndex();
-        if (currentIndex > index) {
-            while (currentIndex !== index) {
-                this.goToPreviousPage();
-                currentIndex--;
-            }
-        }
-        else if (currentIndex < index) {
-            while (currentIndex !== index) {
-                this.goToNextPage();
-                currentIndex++;
-            }
-        }
-    };
-
-    /**
-     * Returns the position associated with the Scrollview instance's current node
-     *  (generally the node currently at the top).
-     *
-     * @method getPosition
-     * @return {number} The Scrollview's total pixels translated.
-     */
-    Scrollview.prototype.getPosition = function getPosition() {
-        return this.getOffset() - this._totalShift;
-    };
-
-    /**
-     * Returns the offset associated with the Scrollview instance's current node
-     *  (generally the node currently at the top).
-     *
-     * @method getOffset
-     * @param {number} [node] If specified, returns the position of the node at that index in the
-     * Scrollview instance's currently managed collection.
-     * @return {number} The position of either the specified node, or the Scrollview's current Node,
-     * in pixels translated.
-     */
-    Scrollview.prototype.getOffset = function(){
-        return this._offset.get();
-    };
-
-    /**
-     * Sets the offset of the physics particle that controls Scrollview instance's "position"
-     *
-     * @method setOffset
-     * @param {number} x The amount of pixels you want your scrollview to progress by.
-     */
-    Scrollview.prototype.setOffset = function setOffset(x) {
-        this._offset.set(x);
-    };
-
-    /**
-     * Returns the Scrollview instance's velocity.
-     *
-     * @method getVelocity
-     * @return {Number} The velocity.
-     */
-
-    Scrollview.prototype.getVelocity = function getVelocity() {
-        return this._particle.getVelocity1D();
-    };
-
-    /**
-     * Sets the Scrollview instance's velocity. Until affected by input or another call of setVelocity
-     *  the Scrollview instance will scroll at the passed-in velocity.
-     *
-     * @method setVelocity
-     * @param {number} velocity The magnitude of the velocity.
-     */
-    Scrollview.prototype.setVelocity = function setVelocity(velocity) {
-        var velocity = _cap(velocity, this.options.speedLimit);
-        this._particle.setVelocity1D(velocity);
-    };
-
-    /**
-     * Patches the Scrollview instance's options with the passed-in ones.
-     *
-     * @method setOptions
-     * @param {Options} options An object of configurable options for the Scrollview instance.
-     */
-    Scrollview.prototype.setOptions = function setOptions(options) {
-        // preprocess custom options
-        if (options.direction !== undefined) {
-            if (options.direction === 'x') options.direction = Scrollview.Direction.X;
-            else if (options.direction === 'y') options.direction = Scrollview.Direction.Y;
-        }
-
-        if (options.groupScroll !== this.options.groupScroll) {
-            (options.groupScroll)
-                ? this.subscribe(this._scroller)
-                : this.unsubscribe(this._scroller);
-        }
-
-        // patch custom options
-        this._optionsManager.setOptions(options);
-
-        // propagate options to sub-components
-
-        // scroller sub-component
-        this._scroller.setOptions(options);
-
-        // physics sub-components
-        if (options.drag !== undefined) this.drag.setOptions({strength: this.options.drag});
-        if (options.friction !== undefined) this.friction.setOptions({strength: this.options.friction});
-        if (options.edgePeriod !== undefined || options.edgeDamp !== undefined) {
-            this.spring.setOptions({
-                period: this.options.edgePeriod,
-                dampingRatio: this.options.edgeDamp
-            });
-        }
-
-        // sync sub-component
-        if (options.rails || options.direction !== undefined || options.syncScale !== undefined || options.preventDefault) {
-            this.sync.setOptions({
-                rails: this.options.rails,
-                direction: this.options.direction,
-                scale: -this.options.syncScale,
-                preventDefault: this.options.preventDefault
-            });
-        }
-    };
-
-    /**
-     * Sets the collection of renderables under the Scrollview instance's control, by
-     *  setting its current node to the passed in ViewSequence. If you
-     *  pass in an array, the Scrollview instance will set its node as a ViewSequence instantiated with
-     *  the passed-in array.
-     *
-     * @method sequenceFrom
-     * @param {Array|ViewSequence} node Either an array of renderables or a Famous viewSequence.
-     */
-    Scrollview.prototype.sequenceFrom = function sequenceFrom(node) {
-        if (node instanceof Array) node = new ViewSequence({array: node, trackSize: true});
-        this._node = node;
-        return this._scroller.sequenceFrom(node);
-    };
-
-    Scrollview.prototype.setPosition = function(position, transition, callback){
-        if (this._position.isActive()) this._position.halt();
-        this._position.set(position, transition, callback);
-    };
-
-    Scrollview.prototype.outputFrom = function outputFrom() {
-        return Scroller.prototype.outputFrom.apply(this._scroller, arguments);
-    };
-
-    Scrollview.prototype.getProgress = function getProgress() {
-        var length = _nodeSizeForDirection.call(this, this._node);
-        if (!length) return 0;
-        var offset = this.getOffset();
-        return offset / length;
-    };
-
-    /**
-     * Generate a render spec from the contents of this component.
-     *
-     * @private
-     * @method render
-     * @return {number} Render spec for this component
-     */
-    Scrollview.prototype.render = function render() {
-        return Scroller.prototype.render.apply(this._scroller, arguments);
-    };
-
-    module.exports = Scrollview;
 });
