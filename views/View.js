@@ -126,7 +126,7 @@ define(function(require, exports, module) {
         var constructor = (function(){
             return function (options){
                 View.call(this, options);
-                if (this.initialize) this.initialize(options);
+                if (this.initialize) this.initialize(this.options);
             }
         })();
 
