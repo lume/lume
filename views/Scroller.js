@@ -62,11 +62,10 @@ define(function(require, exports, module) {
         BOTTOM: 1
     };
 
-    function _sizeForDir(size, direction) {
-        if (!size) return this._contextSize[direction];
-        else return (size[direction] === undefined)
-            ? this._contextSize[direction]
-            : size[direction];
+    function _nodeSizeForDirection(node) {
+        var direction = this.options.direction;
+        var size = node.getSize();
+        return (size) ? size[direction] : null;
     }
 
     function _output(node, offset, target) {
@@ -87,10 +86,9 @@ define(function(require, exports, module) {
      */
     Scroller.prototype.setOptions = function setOptions(options) {
         if (options.groupScroll !== this.options.groupScroll) {
-            if (options.groupScroll)
-                this.group.pipe(this._eventOutput);
-            else
-                this.group.unpipe(this._eventOutput);
+            (options.groupScroll)
+                ? this._eventOutput.subscribe(this.group)
+                : this._eventOutput.unsubscribe(this.group);
         }
         this._optionsManager.setOptions(options);
     };
@@ -195,7 +193,6 @@ define(function(require, exports, module) {
         var onEdge = false;
         var clipSize = _getClipSize.call(this);
         var result = [];
-        var direction = this.options.direction;
 
         // forwards
         var currNode = this._node;
@@ -203,7 +200,7 @@ define(function(require, exports, module) {
 
         while (currNode && nodeOffset < clipSize + this.options.margin) {
             _output.call(this, currNode, nodeOffset + offset, result);
-            nodeOffset += _sizeForDir.call(this, currNode.getSize(), direction);
+            nodeOffset += _nodeSizeForDirection.call(this, currNode);
             currNode = currNode.getNext();
         }
 
@@ -229,7 +226,7 @@ define(function(require, exports, module) {
         while (currNode && nodeOffset > -this.options.margin - clipSize) {
             currNode = currNode.getPrevious();
             if (!currNode) break;
-            nodeOffset -= _sizeForDir.call(this, currNode.getSize(), direction);
+            nodeOffset -= _nodeSizeForDirection.call(this, currNode);
             _output.call(this, currNode, nodeOffset + offset, result);
         }
 
