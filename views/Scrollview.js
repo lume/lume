@@ -132,13 +132,13 @@ define(function(require, exports, module) {
                 }
             );
 
-            this.on('onEdge', function(data) {
+            this._scroller.on('onEdge', function(data) {
                 this.sync.setOptions({scale: options.edgeGrip});
                 this._edgeSpringPosition = data.offset;
                 _handleEdge.call(this, data.edge);
             }.bind(this));
 
-            this.on('offEdge', function() {
+            this._scroller.on('offEdge', function() {
                 this.sync.setOptions({scale: -options.syncScale});
                 this._edgeState = EdgeStates.NONE;
             }.bind(this));
@@ -165,7 +165,6 @@ define(function(require, exports, module) {
             this.sync.subscribe(this._eventInput);
 
             this.subscribe(this._offset);
-            this.subscribe(this._scroller);
         },
         /**
          * Returns the index of the first visible renderable
