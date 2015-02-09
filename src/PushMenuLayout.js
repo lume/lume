@@ -16,6 +16,7 @@ import GenericSync from 'famous/inputs/GenericSync';
 
 import Plane from './Plane';
 import Molecule from './Molecule';
+import {simpleExtend} from './utils'
 
 import callAfter from 'army-knife/callAfter';
 
@@ -37,7 +38,6 @@ import callAfter from 'army-knife/callAfter';
  * against this. :) Maybe we can add a boolean option for this behavior.
  *
  * TODO: Embed working example here.
- * TODO v0.1.0: Make a method for adding things to the menu and content areas.
  *
  * @class PushMenuLayout
  * @extends Molecule
@@ -49,43 +49,71 @@ export class PushMenuLayout extends Molecule {
      *
      * @constructor
      * @param {Object} options The options to instantiate a `PushMenuLayout` with.
+     *
      * TODO v0.1.0: Handle `PushMenuLayout`-specific user options. Currently they
      * just get passed into super() for the Molecule constructor to handle.
      */
-    constructor(options) {
-        super(options);
+    constructor(initialOptions) {
+        super(initialOptions);
 
-        // Specify the types of input you want to use with Famo.us
+        // Add default values for this PushMenuLayout
+        // TODO: Make default options static for the class.
+        simpleExtend(this._.defaultOptions, {
+            menuSide: 'left', // left or right
+            menuWidth: 200,
+            menuHintSize: 10, // the amount of the menu that is visible before opening the menu.
+            pushAreaWidth: 40, // the area on the screen edge that the user can touch and drag to push out the menu.
+            animationDuration: 1000,
+            animationType: 'foldDown', // options: foldDown moveBack
+
+            // TODO: Background color for the whole layout should be the color that the fade fades to.
+            fade: true // when content recedes, it fades into the fog.
+        })
+
+        // TODO: performance hit, this setter is invoked in the Molecule constructor, then here again.
+        this.options = initialOptions
+
+        // TODO v0.1.0: Mark these as private.
+            // TODO v0.1.0: this.contentWidth should be the width of whatever is containing
+            // the layout, but we're just using it as a whole-page app for now. Get
+            // size from a commit? UPDATE: See the new famous/views/SizeAwareView
+            this.contentWidth = document.body.clientWidth - this.options.menuHintSize;
+
+            // Changing these values outside of an instance of PushMenuLayout might
+            // cause the layout to break. They are designed to be modified
+            // internally only.
+            this.isOpen = false;
+            this.isOpening = false;
+            this.isClosing = false;
+            this.isAnimating = false; // keep track of whether the menu is opening or closing.
+            this.isBeingDragged = false; // whether the user is dragging/pushing the menu or not.
+            this.transitionCallback = undefined; // holds the callback to the current open or close menu animation.
+
+        // Set the touch sync for pulling/pushing the menu open/closed.
         GenericSync.register({
             touch: TouchSync
         });
 
-        this.menuSide = 'left'; // left or right
-        this.menuWidth = 200;
-        this.menuHintSize = 10; // the amount of the menu that is visible before opening the menu.
-        this.pushAreaWidth = 40; // the area on the screen edge that the user can touch and drag to push out the menu.
-        this.animationDuration = 1000;
-        this.animationType = 'moveBack'; // options: foldDown moveBack
-        this.fade = true; // when content recedes, it fades to dark.
-        // TODO: ^ background color for the whole layout should be the color that the fade fades to.
-
-        this.contentWidth = document.body.clientWidth - this.menuHintSize;
-        // TODO: ^ contentWidth should be the width of whatever is containing
-        // the layout, but we're just using it as a whole-page app for now. Get
-        // size from a commit? UPDATE: See the new famous/views/SizeAwareView
-
-        // Changing these values outside of an instance of PushMenuLayout might
-        // cause the layout to break. They are designed to be modified
-        // internally only.
-        this.isOpen = false;
-        this.isOpening = false;
-        this.isClosing = false;
-        this.isAnimating = false; // keep track of whether the menu is opening or closing.
-        this.isBeingDragged = false; // whether the user is dragging/pushing the menu or not.
-        this.transitionCallback = undefined; // holds the callback to the current open or close menu animation.
-
         this._createComponents();
         this._initializeEvents();
+    }
+
+    /**
+     * See Molecule.setOptions
+     *
+     * @override
+     */
+    setOptions(newOptions) {
+        super.setOptions(newOptions)
+    }
+
+    /**
+     * See Molecule.resetOptions
+     *
+     * @override
+     */
+    resetOptions() {
+        super.resetOptions()
     }
 
     /**
@@ -98,32 +126,32 @@ export class PushMenuLayout extends Molecule {
 
         this.touchSync = new GenericSync(['touch']);
 
-        this.alignment = (this.menuSide == "left"? 0: 1);
+        this.alignment = (this.options.menuSide == "left"? 0: 1);
         this.animationTransition = new Transitionable(0);
 
         this.mainMol = new Molecule();
 
         this.menuMol = new Molecule({
-            size: [this.menuWidth,undefined]
+            size: [this.options.menuWidth,undefined]
         });
         this.menuMol.oldTransform = this.menuMol.transform;
         this.menuMol.transform = function() { // override
             var currentPosition = layout.animationTransition.get();
-            switch(layout.animationType) {
+            switch(layout.options.animationType) {
                 case "foldDown":
                     // XXX: this is depending on my modifications for TransitionableTransform.
                     this.oldTransform.setTranslateX(
-                        layout.menuSide == 'left'?
-                            currentPosition *  (layout.menuWidth-layout.menuHintSize)/*range*/ - (layout.menuWidth-layout.menuHintSize)/*offset*/:
-                            currentPosition * -(layout.menuWidth-layout.menuHintSize)/*range*/ + (layout.menuWidth-layout.menuHintSize)/*offset*/
+                        layout.options.menuSide == 'left'?
+                            currentPosition *  (layout.options.menuWidth-layout.options.menuHintSize)/*range*/ - (layout.options.menuWidth-layout.options.menuHintSize)/*offset*/:
+                            currentPosition * -(layout.options.menuWidth-layout.options.menuHintSize)/*range*/ + (layout.options.menuWidth-layout.options.menuHintSize)/*offset*/
                     );
                     break;
                 case "moveBack":
                     // XXX: this is depending on my modifications for TransitionableTransform.
                     this.oldTransform.setTranslateX(
-                        layout.menuSide == 'left'?
-                            currentPosition *  (layout.menuWidth-layout.menuHintSize)/*range*/ - (layout.menuWidth-layout.menuHintSize)/*offset*/:
-                            currentPosition * -(layout.menuWidth-layout.menuHintSize)/*range*/ + (layout.menuWidth-layout.menuHintSize)/*offset*/
+                        layout.options.menuSide == 'left'?
+                            currentPosition *  (layout.options.menuWidth-layout.options.menuHintSize)/*range*/ - (layout.options.menuWidth-layout.options.menuHintSize)/*offset*/:
+                            currentPosition * -(layout.options.menuWidth-layout.options.menuHintSize)/*range*/ + (layout.options.menuWidth-layout.options.menuHintSize)/*offset*/
                     );
                     break;
             }
@@ -136,17 +164,17 @@ export class PushMenuLayout extends Molecule {
         this.contentMol.oldTransform = this.contentMol.transform;
         this.contentMol.transform = function() { // override
             var currentPosition = layout.animationTransition.get();
-            switch(layout.animationType) {
+            switch(layout.options.animationType) {
                 case "foldDown":
                     // XXX: this is depending on my modifications for TransitionableTransform.
                     this.oldTransform.setTranslateX(
-                        layout.menuSide == 'left'?
-                            currentPosition *  (layout.menuWidth - layout.menuHintSize)/*range*/ + layout.menuHintSize/*offset*/:
-                            currentPosition * -(layout.menuWidth - layout.menuHintSize)/*range*/ - layout.menuHintSize/*offset*/
+                        layout.options.menuSide == 'left'?
+                            currentPosition *  (layout.options.menuWidth - layout.options.menuHintSize)/*range*/ + layout.options.menuHintSize/*offset*/:
+                            currentPosition * -(layout.options.menuWidth - layout.options.menuHintSize)/*range*/ - layout.options.menuHintSize/*offset*/
                     );
                     // XXX: this is depending on my modifications for TransitionableTransform.
                     this.oldTransform.setRotateY(
-                        layout.menuSide == 'left'?
+                        layout.options.menuSide == 'left'?
                             currentPosition *  Math.PI/8:
                             currentPosition * -Math.PI/8
                     );
@@ -155,9 +183,9 @@ export class PushMenuLayout extends Molecule {
                     var depth = 100;
                     // XXX: this is depending on my modifications for TransitionableTransform.
                     this.oldTransform.setTranslateX(
-                        layout.menuSide == 'left'?
-                            layout.menuHintSize:
-                            -layout.menuHintSize
+                        layout.options.menuSide == 'left'?
+                            layout.options.menuHintSize:
+                            -layout.options.menuHintSize
                     );
                     this.oldTransform.setTranslateZ(
                         currentPosition * -depth
@@ -168,7 +196,7 @@ export class PushMenuLayout extends Molecule {
         }.bind(this.contentMol);
 
         this.menuTouchPlane = new Plane({
-            size: [this.menuWidth + this.pushAreaWidth - this.menuHintSize, undefined],
+            size: [this.options.menuWidth + this.options.pushAreaWidth - this.options.menuHintSize, undefined],
             properties: {
                 zIndex: '-1000' // below everything
             }
@@ -204,7 +232,7 @@ export class PushMenuLayout extends Molecule {
          */
         // TODO: move this somewhere else . it's specific for each animation
         this.updateStyles = function() {
-            switch(this.animationType) {
+            switch(this.options.animationType) {
                 case "foldDown":
                     this.fadeStartColor = 'rgba(0,0,0,0.3)';
                     this.fadeEndColor = 'rgba(0,0,0,0.8)';
@@ -246,7 +274,7 @@ export class PushMenuLayout extends Molecule {
             this.fadeStylesheet.attach();
         };
 
-        if (this.fade) {
+        if (this.options.fade) {
 
             this.updateStyles();
 
@@ -254,7 +282,7 @@ export class PushMenuLayout extends Molecule {
                 size: [undefined,undefined],
                 classes: [
                     // TODO: switch to jss namespace.
-                    (this.menuSide == 'left'? 'infamous-fadeRight': 'infamous-fadeLeft')
+                    (this.options.menuSide == 'left'? 'infamous-fadeRight': 'infamous-fadeLeft')
                 ],
                 properties: {
                     zIndex: '1000',
@@ -296,7 +324,7 @@ export class PushMenuLayout extends Molecule {
     _initializeEvents() {
 
         // move the menu, following the user's drag. Don't let the user drag the menu past the menu width.
-        this._.handler.on('update', function(event) { // update == drag
+        this.options.handler.on('update', function(event) { // update == drag
             this.isBeingDragged = true;
 
             // stop the current transitions if any, along with the current callback if any.
@@ -305,12 +333,12 @@ export class PushMenuLayout extends Molecule {
             var currentPosition = this.animationTransition.get();
 
             // TODO: handle the right-side menu.
-            switch(this.animationType) {
+            switch(this.options.animationType) {
                 case "foldDown":
-                    this.animationTransition.set(currentPosition + event.delta[0] / (this.menuWidth - this.menuHintSize));
+                    this.animationTransition.set(currentPosition + event.delta[0] / (this.options.menuWidth - this.options.menuHintSize));
                     break;
                 case "moveBack":
-                    this.animationTransition.set(currentPosition + event.delta[0] / (this.menuWidth - this.menuHintSize));
+                    this.animationTransition.set(currentPosition + event.delta[0] / (this.options.menuWidth - this.options.menuHintSize));
                     break;
             }
 
@@ -324,7 +352,7 @@ export class PushMenuLayout extends Molecule {
             }
         }.bind(this));
 
-        this._.handler.on('end', function(event) {
+        this.options.handler.on('end', function(event) {
             this.isBeingDragged = false;
 
             var currentPosition = this.animationTransition.get();
@@ -337,10 +365,10 @@ export class PushMenuLayout extends Molecule {
             }
         }.bind(this));
 
-        // TODO: Use a SizeAwareView instead of relying on the body, since we
+        // TODO v0.1.0: Use a SizeAwareView instead of relying on the body, since we
         // might not be directly in the body.
         window.addEventListener('resize', function(event) {
-            this.contentWidth = document.body.clientWidth - this.menuHintSize;
+            this.contentWidth = document.body.clientWidth - this.options.menuHintSize;
             this.contentMol.setOptions({size: [this.contentWidth, undefined]});
         }.bind(this));
 
@@ -359,7 +387,7 @@ export class PushMenuLayout extends Molecule {
                 this.closeMenu();
             }
         }.bind(this))
-        this.touchSync.pipe(this._.handler);
+        this.touchSync.pipe(this.options.handler);
     }
 
     /**
@@ -493,10 +521,10 @@ export class PushMenuLayout extends Molecule {
 
         setupCallback(1);
         if (targetState == 'open') {
-            this.animationTransition.set(1, {duration: this.animationDuration, curve: Easing.outExpo}, _callback);
+            this.animationTransition.set(1, {duration: this.options.animationDuration, curve: Easing.outExpo}, _callback);
         }
         else if (targetState == 'close') {
-            this.animationTransition.set(0, {duration: this.animationDuration, curve: Easing.outExpo}, _callback);
+            this.animationTransition.set(0, {duration: this.options.animationDuration, curve: Easing.outExpo}, _callback);
         }
     }
 

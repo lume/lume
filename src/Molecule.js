@@ -12,6 +12,8 @@ import RenderNode from 'famous/core/RenderNode';
 import TransitionableTransform from 'famous/transitions/TransitionableTransform';
 import EventHandler from 'famous/core/EventHandler';
 
+import {simpleExtend} from './utils'
+
 import "army-knife/polyfill.Function.name";
 
 /**
@@ -61,26 +63,26 @@ export class Molecule extends RenderNode {
      * @param {Object} initialOptions The options to initialize this Molecule's `Modifier` with.
      */
     constructor(initialOptions) {
-        initialOptions = typeof initialOptions != "undefined"? initialOptions: {};
 
         // "private" stuff. Not really, but regard it like so. For example, if
-        // you see something like obj._.someVariable means then you're
-        // accessing internal stuff that wasn't designed to be accessed
-        // directly, and any problem you enounter with that is your own
-        // problem. :)
+        // you see something like obj._.someVariable then you're accessing
+        // internal stuff that wasn't designed to be accessed directly, and any
+        // problem you enounter with that is your own problem. :)
         //
-        // TODO: make all properties of this._ non-writeable, then create
-        // getters and setters that can change the writable state with private
-        // methods, so that these properties are inaccessible from the outside?
+        // TODO: Use a WeakMap to store these at some point.
         this._ = {
             options: {}, // set and get with this.options
-            handler: new EventHandler(),
-            defaultOptions: {
-                align: [0.5,0.5],
-                origin: [0.5,0.5],
-                transform: new TransitionableTransform()
-            }
-        };
+            defaultOptions: {}
+        }
+
+        // Add default values for this Molecule
+        // TODO: Make default options static for the class.
+        simpleExtend(this._.defaultOptions, {
+            align: [0.5,0.5],
+            origin: [0.5,0.5],
+            transform: new TransitionableTransform,
+            handler: new EventHandler
+        })
 
         // set the user's initial options. This automatically creates
         // this.modifier, and adds it to this (don't forget, *this* is a
@@ -88,53 +90,7 @@ export class Molecule extends RenderNode {
         //
         // NOTE: this.options is a setter property. This statement applies all
         // relevant properties to this.modifier.
-        this.options = initialOptions.constructor.name == "Object"? initialOptions: {};
-    }
-
-    /**
-     * Forwards events from this Molecule's [famous/core/EventHandler](#famous/core/EventHandler) to the given
-     * target, which can be another `EventHandler` or `Molecule`.
-     *
-     * This method is equivalent to [famous/core/EventHandler.pipe](#famous/core/EventHandler.pipe),
-     * acting upon `this.handler`.
-     *
-     * TODO v0.1.0: Let this method accept a `Molecule`, then stop doing `pipe(this._.handler)` in other places
-     */
-    pipe() {
-        var args = Array.prototype.splice.call(arguments, 0);
-        return this._.handler.pipe.apply(this._.handler, args);
-    }
-
-    /**
-     * Stops events from this Molecule's [famous/core/EventHandler](#famous/core/EventHandler)
-     * from being sent to the given target.
-     *
-     * This method is equivalent to [famous/core/EventHandler.unpipe](#famous/core/EventHandler.unpipe),
-     * acting upon `this.handler`.
-     *
-     * TODO v0.1.0: Let this method accept a `Molecule`, then stop doing `pipe(this._.handler)` in other places
-     */
-    unpipe() {
-        var args = Array.prototype.splice.call(arguments, 0);
-        return this._.handler.unpipe.apply(this._.handler, args);
-    }
-
-    /**
-     * Register an event handler for the specified event.
-     * See [famous/core/EventHandler.on](#famous/core/EventHandler.on).
-     */
-    on() {
-        var args = Array.prototype.splice.call(arguments, 0);
-        return this._.handler.on.apply(this._.handler, args);
-    }
-
-    /**
-     * Unregister an event handler for the specified event.
-     * See [famous/core/EventHandler.off](#famous/core/EventHandler.off).
-     */
-    off() {
-        var args = Array.prototype.splice.call(arguments, 0);
-        return this._.handler.on.apply(this._.handler, args);
+        this.options = initialOptions;
     }
 
     /**
@@ -156,6 +112,20 @@ export class Molecule extends RenderNode {
     }
 
     /**
+     * @property {module: famous/transitions/TransitionableTransform} transform
+     * The transform of this `Molecule`. The default is a
+     * [famous/transitions/TransitionableTransform](#famous/transitions/TransitionableTransform).
+     * Setting this property automatically puts the new transform into effect.
+     * See [famous/core/Modifier.transformFrom](#famous/core/Modifier.transformFrom).
+     */
+    set transform(newTransform) {
+        this.setOptions({transform: newTransform});
+    }
+    get transform() {
+        return this.options.transform;
+    }
+
+    /**
      * Compounds `newOptions` into the existing options, similar to extending an
      * object and overriding only the desired properties. To override all
      * options with a set of new options, set `this.options` directly.
@@ -172,9 +142,8 @@ export class Molecule extends RenderNode {
      * @param {Object} newOptions An object containing the new options to apply to this `Molecule`.
      */
     setOptions(newOptions) {
-        newOptions = typeof newOptions != "undefined"? newOptions: {};
-
-        if (newOptions.constructor.name != "Object") { return; }
+        if (typeof newOptions == 'undefined' || newOptions.constructor.name != "Object")
+            newOptions = {}
 
         for (var prop in newOptions) {
             // Subject to change when Famo.us API changes.
@@ -182,9 +151,7 @@ export class Molecule extends RenderNode {
                 this.modifier[''+prop+'From'](newOptions[prop]);
             }
 
-            // TODO: delete the non-writeable transform property before setting it.
             this._.options[prop] = newOptions[prop];
-            // TODO: set the transform property as a non-writeable property after setting it.
         }
     }
 
@@ -192,7 +159,8 @@ export class Molecule extends RenderNode {
      * Sets all options back to their defaults.
      *
      * Note: Anytime this is called, `this.modifier` is set to a new
-     * [famous/core/Modifier](#famous/core/Modifier).
+     * [famous/core/Modifier](#famous/core/Modifier) having the default
+     * options.
      */
     resetOptions() {
         this.modifier = new Modifier();
@@ -201,18 +169,49 @@ export class Molecule extends RenderNode {
     }
 
     /**
-     * @property {module: famous/transitions/TransitionableTransform} transform
-     * The transform of this `Molecule`. The default is a
-     * [famous/transitions/TransitionableTransform](#famous/transitions/TransitionableTransform).
-     * Setting this property automatically puts the new transform into effect.
-     * See [famous/core/Modifier.transformFrom](#famous/core/Modifier.transformFrom).
+     * Forwards events from this Molecule's [famous/core/EventHandler](#famous/core/EventHandler) to the given
+     * target, which can be another `EventHandler` or `Molecule`.
+     *
+     * This method is equivalent to [famous/core/EventHandler.pipe](#famous/core/EventHandler.pipe),
+     * acting upon `this.handler`.
+     *
+     * TODO v0.1.0: Let this method accept a `Molecule`, then stop doing `pipe(this._.handler)` in other places
      */
-    set transform(newTransform) {
-        this.setOptions({transform: newTransform});
-    }
-    get transform() {
-        return this.options.transform;
+    pipe() {
+        var args = Array.prototype.splice.call(arguments, 0);
+        return this.options.handler.pipe.apply(this.options.handler, args);
     }
 
+    /**
+     * Stops events from this Molecule's [famous/core/EventHandler](#famous/core/EventHandler)
+     * from being sent to the given target.
+     *
+     * This method is equivalent to [famous/core/EventHandler.unpipe](#famous/core/EventHandler.unpipe),
+     * acting upon `this.handler`.
+     *
+     * TODO v0.1.0: Let this method accept a `Molecule`, then stop doing `pipe(this.options.handler)` in other places
+     */
+    unpipe() {
+        var args = Array.prototype.splice.call(arguments, 0);
+        return this.options.handler.unpipe.apply(this.options.handler, args);
+    }
+
+    /**
+     * Register an event handler for the specified event.
+     * See [famous/core/EventHandler.on](#famous/core/EventHandler.on).
+     */
+    on() {
+        var args = Array.prototype.splice.call(arguments, 0);
+        return this.options.handler.on.apply(this.options.handler, args);
+    }
+
+    /**
+     * Unregister an event handler for the specified event.
+     * See [famous/core/EventHandler.off](#famous/core/EventHandler.off).
+     */
+    off() {
+        var args = Array.prototype.splice.call(arguments, 0);
+        return this.options.handler.on.apply(this.options.handler, args);
+    }
 }
 export default Molecule;

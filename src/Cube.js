@@ -74,7 +74,7 @@ export class Cube extends Molecule {
         this.cubeSides.push(side);
 
         side.pipe(sync);
-        sync.pipe(this._.handler);
+        sync.pipe(this.options.handler);
 
         // rotate and place each side.
         if (index < 4) { // sides

@@ -22,3 +22,11 @@ export function contextWithPerspective(perspective) {
     context.setPerspective(perspective);
     return context;
 }
+
+export function simpleExtend(object, ...others) {
+    others.forEach(function(other) {
+        for (var prop in other) {
+            object[prop] = other[prop]
+        }
+    })
+}

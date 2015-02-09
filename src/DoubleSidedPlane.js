@@ -45,8 +45,8 @@ export class DoubleSidedPlane extends Molecule {
         this.children.push(this.plane2);
         this.add(this.plane2)
         this.add(this.plane1);
-        this.plane1.pipe(this._.handler);
-        this.plane2.pipe(this._.handler);
+        this.plane1.pipe(this.options.handler);
+        this.plane2.pipe(this.options.handler);
 
     }
 
