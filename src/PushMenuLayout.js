@@ -9,6 +9,7 @@
 
 import jss from 'jss';
 
+import Surface from 'famous/core/Surface';
 import Transitionable from 'famous/transitions/Transitionable';
 import Easing from 'famous/transitions/Easing';
 import TouchSync from 'famous/inputs/TouchSync';
@@ -67,7 +68,13 @@ export class PushMenuLayout extends Molecule {
             animationType: 'foldDown', // options: foldDown moveBack
 
             // TODO: Background color for the whole layout should be the color that the fade fades to.
-            fade: true // when content recedes, it fades into the fog.
+            // TODO: Replace fade star/end colors with a fog color value and intensity.
+            fade: true, // when content recedes, it fades into the fog.
+            fadeStartColor: 'rgba(255,255,255,0)',
+            fadeEndColor: 'rgba(255,255,255,1)',
+
+            blur: false, // XXX: WIP, so false by default.
+            blurRadius: 5
         })
 
         // TODO: performance hit, this setter is invoked in the Molecule constructor, then here again.
@@ -232,38 +239,41 @@ export class PushMenuLayout extends Molecule {
          */
         // TODO: move this somewhere else . it's specific for each animation
         this.updateStyles = function() {
+            var startColor
+            var endColor
+
             switch(this.options.animationType) {
                 case "foldDown":
-                    this.fadeStartColor = 'rgba(0,0,0,0.3)';
-                    this.fadeEndColor = 'rgba(0,0,0,0.8)';
+                    startColor = this.options.fadeStartColor
+                    endColor = this.options.fadeEndColor
                     break;
                 case "moveBack":
-                    this.fadeStartColor = 'rgba(0,0,0,0.5)';
-                    this.fadeEndColor = 'rgba(0,0,0,0.5)';
+                    startColor = endColor = this.options.fadeEndColor
                     break;
             }
+
             var styles = {
                 '.infamous-fadeLeft': {
                     background: [
-                        this.fadeEndColor,
-                        '-moz-linear-gradient(left, '+this.fadeEndColor+' 0%, '+this.fadeStartColor+' 100%)',
-                        '-webkit-gradient(left top, right top, color-stop(0%, '+this.fadeEndColor+'), color-stop(100%, '+this.fadeStartColor+'))',
-                        '-webkit-linear-gradient(left, '+this.fadeEndColor+' 0%, '+this.fadeStartColor+' 100%)',
-                        '-o-linear-gradient(left, '+this.fadeEndColor+' 0%, '+this.fadeStartColor+' 100%)',
-                        '-ms-linear-gradient(left, '+this.fadeEndColor+' 0%, '+this.fadeStartColor+' 100%)',
-                        'linear-gradient(to right, '+this.fadeEndColor+' 0%, '+this.fadeStartColor+' 100%)'
+                        endColor,
+                        '-moz-linear-gradient(left, '+endColor+' 0%, '+startColor+' 100%)',
+                        '-webkit-gradient(left top, right top, color-stop(0%, '+endColor+'), color-stop(100%, '+startColor+'))',
+                        '-webkit-linear-gradient(left, '+endColor+' 0%, '+startColor+' 100%)',
+                        '-o-linear-gradient(left, '+endColor+' 0%, '+startColor+' 100%)',
+                        '-ms-linear-gradient(left, '+endColor+' 0%, '+startColor+' 100%)',
+                        'linear-gradient(to right, '+endColor+' 0%, '+startColor+' 100%)'
                     ],
                     filter: 'progid:DXImageTransform.Microsoft.gradient( startColorstr=\'#cc000000\', endColorstr=\'#4d000000\', GradientType=1 )'
                 },
                 '.infamous-fadeRight': {
                     background: [
-                        this.fadeStartColor,
-                        '-moz-linear-gradient(left, '+this.fadeStartColor+' 0%, '+this.fadeEndColor+' 100%)',
-                        '-webkit-gradient(left top, right top, color-stop(0%, '+this.fadeStartColor+'), color-stop(100%, '+this.fadeEndColor+'))',
-                        '-webkit-linear-gradient(left, '+this.fadeStartColor+' 0%, '+this.fadeEndColor+' 100%)',
-                        '-o-linear-gradient(left, '+this.fadeStartColor+' 0%, '+this.fadeEndColor+' 100%)',
-                        '-ms-linear-gradient(left, '+this.fadeStartColor+' 0%, '+this.fadeEndColor+' 100%)',
-                        'linear-gradient(to right, '+this.fadeStartColor+' 0%, '+this.fadeEndColor+' 100%)'
+                        startColor,
+                        '-moz-linear-gradient(left, '+startColor+' 0%, '+endColor+' 100%)',
+                        '-webkit-gradient(left top, right top, color-stop(0%, '+startColor+'), color-stop(100%, '+endColor+'))',
+                        '-webkit-linear-gradient(left, '+startColor+' 0%, '+endColor+' 100%)',
+                        '-o-linear-gradient(left, '+startColor+' 0%, '+endColor+' 100%)',
+                        '-ms-linear-gradient(left, '+startColor+' 0%, '+endColor+' 100%)',
+                        'linear-gradient(to right, '+startColor+' 0%, '+endColor+' 100%)'
                     ],
                     filter: 'progid:DXImageTransform.Microsoft.gradient( startColorstr=\'#4d000000\', endColorstr=\'#cc000000\', GradientType=1 )'
                 }
@@ -275,7 +285,6 @@ export class PushMenuLayout extends Molecule {
         };
 
         if (this.options.fade) {
-
             this.updateStyles();
 
             this.fadePlane = new Plane({
@@ -303,8 +312,13 @@ export class PushMenuLayout extends Molecule {
             // same exact position together.
             this.fadePlane.transform.setTranslateZ(1);
 
-            this.fadePlane.setOptions({opacity: this.animationTransition});
+            this.fadePlane.setOptions({
+                opacity: this.animationTransition
+            });
 
+            // TODO: Make fadePlane a sibling to menuMol and contentMol so that
+            // contentMol contains only the user;s content. This will affect
+            // the code in this.render().
             this.contentMol.add(this.fadePlane);
         }
 
@@ -398,6 +412,11 @@ export class PushMenuLayout extends Molecule {
      *
      * @param {module: famous/core/RenderNode} node A scenegraph, i.e. a
      * RenderNode with stuff in it.
+     *
+     * TODO: Accept plain renderables, f.e. Surfaces, etc. This change requires
+     * also modifying the code in this.render() to account for renderables.
+     *
+     * TODO: Make a sibling method to reset the content area.
      */
     setContent(node) {
         this.contentMol.add(node)
@@ -414,6 +433,10 @@ export class PushMenuLayout extends Molecule {
      *
      * @param {module: famous/core/RenderNode} node A scenegraph, i.e. a
      * RenderNode with stuff in it.
+     *
+     * TODO: Accept plain renderables, f.e. Surfaces, etc.
+     *
+     * TODO: Make a sibling method to reset the menu area.
      */
     setMenu(node) {
         this.menuMol.add(node)
@@ -543,6 +566,40 @@ export class PushMenuLayout extends Molecule {
             this.transitionCallback = undefined;
             this.animationTransition.halt();
         }
+    }
+
+    /**
+     * @override
+     */
+    render() {
+
+        // Blur the content if this.options.blur is true, and the animation is moveBack.
+        //
+        // TODO: Make the item to to be blur specifiable, perhaps with a method on
+        // this.
+        if (this.options.blur && this.options.fade && this.options.animationType == 'moveBack') {
+            let momentaryBlur = (this.animationTransition.get() * this.options.blurRadius)
+            let filter = {
+                "-webkit-filter": 'blur('+momentaryBlur+'px)',
+                "-moz-filter":    'blur('+momentaryBlur+'px)',
+                "-ms-filter":     'blur('+momentaryBlur+'px)',
+                "-o-filter":      'blur('+momentaryBlur+'px)',
+                filter:           'blur('+momentaryBlur+'px)'
+            }
+
+            // TODO TODO TODO v0.1.0: Make fadePlane a sibling with menu and
+            // content molecules or the following breaks if fade is false.
+            // Then remove the check for this.options.fade in the previous if
+            // statement above.
+            if (this.contentMol._child[1].get() instanceof Surface) {
+                this.contentMol.get().setProperties(filter)
+            }
+            else if (this.contentMol._child[1] instanceof Plane) {
+                this.contentMol._child[1].surface.setProperties(filter)
+            }
+        }
+
+        return super.render()
     }
 }
 export default PushMenuLayout;
