@@ -8,7 +8,6 @@
 
 define(function(require, exports, module) {
     var ElementOutput = require('./ElementOutput');
-    var Entity = require('./Entity');
 
     /**
      * A base class for viewable content and event
@@ -34,8 +33,6 @@ define(function(require, exports, module) {
         this.content = '';
 
         this.size = null;   // can take numeric, undefined or true values
-
-        this._id = Entity.register(this);
 
         this._classesDirty = true;
         this._stylesDirty = true;
@@ -223,6 +220,7 @@ define(function(require, exports, module) {
      */
     Surface.prototype.setOptions = function setOptions(options) {
         if (options.size) this.setSize(options.size);
+        if (options.origin) this.setOrigin(options.origin);
         if (options.classes) this.setClasses(options.classes);
         if (options.properties) this.setProperties(options.properties);
         if (options.attributes) this.setAttributes(options.attributes);
@@ -312,7 +310,7 @@ define(function(require, exports, module) {
     };
 
     Surface.prototype.render = function(){
-        return this._id;
+        return ElementOutput.prototype.render.apply(this, arguments);
     };
 
     /**
@@ -437,10 +435,16 @@ define(function(require, exports, module) {
      */
     Surface.prototype.setSize = function setSize(size) {
         this.size = [size[0], size[1]];
-//        if (typeof size[0] === 'number') this._size[0] = size[0];
-//        if (typeof size[1] === 'number') this._size[1] = size[1];
         this._sizeDirty = true;
-        return this;
+    };
+
+    Surface.prototype.getOrigin = function getOrigin(){
+        return this._origin;
+    };
+
+    Surface.prototype.setOrigin = function setOrigin(origin){
+        this._origin = origin;
+        this._originDirty = true;
     };
 
     module.exports = Surface;

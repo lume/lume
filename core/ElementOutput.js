@@ -39,7 +39,7 @@ define(function(require, exports, module) {
             this._eventOutput.emit(event.type, event);
         }.bind(this);
 
-//        this._id = Entity.register(this);
+        this._id = Entity.register(this);
         this._currentTarget = null;
 
         this._opacityDirty = true;
@@ -127,7 +127,7 @@ define(function(require, exports, module) {
      * @return {Object} render spec for this surface (spec id)
      */
     ElementOutput.prototype.render = function render() {
-        return undefined;
+        return this._id;
     };
 
     //  Attach Famous event handling to document events emanating from target
@@ -237,9 +237,9 @@ define(function(require, exports, module) {
 
         // this will be false for a true-sized element after the first pass
         // even though this._size != spec.size
-        var dirtyTrueSize = this._trueSizeCheck && this.size && (this.size[0] == true || this.size[1] == true);
+        var dirtyTrueSize = this._trueSizeCheck && this.size && (this.size[0] === true || this.size[1] === true);
 
-        if (_xyNotEquals(this._size, size) || dirtyTrueSize)
+        if (this._trueSizeCheck && _xyNotEquals(this._size, size) || dirtyTrueSize)
             this._sizeDirty = true;
 
         this._originDirty = _xyNotEquals(this._origin, origin);
@@ -253,46 +253,51 @@ define(function(require, exports, module) {
         }
 
         // size nullity check needed for Group and other renderables with no defined size
-        if (this.size && this._sizeDirty) {
-            if (!this._size) this._size = [0,0];
+        if (this._sizeDirty) {
+            if (this._size === null) this._size = [0,0];
+            if (this.size === null) this._size = [size[0], size[1]];
+            else {
+                // take on numeric size values if available
+                if (typeof this.size[0] === 'number') this._size[0] = this.size[0];
+                if (typeof this.size[1] === 'number') this._size[1] = this.size[1];
 
-            // take on numeric size values if available
-            if (typeof this.size[0] === 'number') this._size[0] = this.size[0];
-            if (typeof this.size[1] === 'number') this._size[1] = this.size[1];
+                // take on parent size if size is undefined
+                if (this.size[0] === undefined) this._size[0] = spec.size[0];
+                if (this.size[1] === undefined) this._size[1] = spec.size[1];
 
-            // take on parent size if size is undefined
-            if (this.size[0] === undefined) this._size[0] = spec.size[0];
-            if (this.size[1] === undefined) this._size[1] = spec.size[1];
+                // flag to ping the DOM for the current element size
+                if (this._trueSizeCheck) {
+                    if (this.size[0] === true) this._size[0] = target.offsetWidth;
+                    if (this.size[1] === true) this._size[1] = target.offsetHeight;
+                    this._trueSizeCheck = false;
+                }
 
-            // flag to ping the DOM for the current element size
-            if (this._trueSizeCheck) {
-                if (this.size[0] === true) this._size[0] = target.offsetWidth;
-                if (this.size[1] === true) this._size[1] = target.offsetHeight;
-                this._trueSizeCheck = false;
+                // commit pixel size unless dimension's size is true
+                if (this.size[0] !== true) target.style.width = this._size[0] + 'px';
+                if (this.size[1] !== true) target.style.height = this._size[1] + 'px';
+
+                this._eventOutput.emit('resize');
             }
 
-            // commit pixel size unless dimension's size is true
-            if (this.size[0] !== true) target.style.width = this._size[0] + 'px';
-            if (this.size[1] !== true) target.style.height = this._size[1] + 'px';
-
-            this._eventOutput.emit('resize');
         }
 
         if (this._originDirty) {
-            if (origin) {
-                if (!this._origin) this._origin = [0, 0];
-                this._origin[0] = origin[0];
-                this._origin[1] = origin[1];
+            if (origin){
+                if (!this._origin)
+                    this._origin = [origin[0], origin[1]];
+                else {
+                    this._origin[0] = origin[0];
+                    this._origin[1] = origin[1];
+                }
             }
-            else this._origin = null;
             _setOrigin(target, this._origin);
         }
 
-        if (this._transformDirty || this._originDirty || (this.size && this._sizeDirty && origin)) {
+        if (this._transformDirty || this._originDirty || (this._sizeDirty && this._origin)) {
             this._transform = transform || Transform.identity;
 
-            if (origin && !(origin[0] === 0 && origin[1] === 0))
-                _setTransform(target, Transform.thenMove(transform, [-this._size[0]*origin[0], -this._size[1]*origin[1], 0]));
+            if (this._origin && !(this._origin[0] === 0 && this._origin[1] === 0))
+                _setTransform(target, Transform.thenMove(transform, [-this._size[0]*this._origin[0], -this._size[1]*this._origin[1], 0]));
             else
                 _setTransform(target, transform);
 
