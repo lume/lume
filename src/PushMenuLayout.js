@@ -165,6 +165,9 @@ export class PushMenuLayout extends Molecule {
             return this.oldTransform.get();
         }.bind(this.menuMol);
 
+        // contains the user's menu content.
+        this.menuContentMol = new Molecule();
+
         this.contentMol = new Molecule({
             size: [this.contentWidth,undefined]
         });
@@ -229,9 +232,10 @@ export class PushMenuLayout extends Molecule {
             align: [this.alignment, 0.5]
         });
 
-        // Bring the touch plane forward so it's just above the content and
-        // content's fade plane, so touch and mouse interaction works. HTML,
-        // the bad parts. ;)
+        // Bring the menu content molecule and touch plane forward just
+        // slightly so they're just above the content and content's fade plane,
+        // so touch and mouse interaction works. HTML, the bad parts. ;)
+        this.menuContentMol.transform.setTranslateZ(2);
         this.menuTouchPlane.transform.setTranslateZ(2);
 
         /*
@@ -325,6 +329,7 @@ export class PushMenuLayout extends Molecule {
         this.add(this.mainMol);
         this.mainMol.add(this.contentMol);
         this.menuMol.add(this.menuTouchPlane);
+        this.menuMol.add(this.menuContentMol);
         this.mainMol.add(this.menuMol);
         // TODO: Also create and add a background plane for the menu area so it will catch events that might fall through the menu content.
     }
@@ -436,10 +441,10 @@ export class PushMenuLayout extends Molecule {
      *
      * TODO: Accept plain renderables, f.e. Surfaces, etc.
      *
-     * TODO: Make a sibling method to reset the menu area.
+     * TODO: Remove old content before adding new content.
      */
     setMenu(node) {
-        this.menuMol.add(node)
+        this.menuContentMol.add(node)
         if (node instanceof Molecule) {
             node.pipe(this.touchSync)
             node.on('mouseenter', function() {
