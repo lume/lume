@@ -323,9 +323,9 @@ export class PushMenuLayout extends Molecule {
         }
 
         this.add(this.mainMol);
-        this.mainMol.add(this.menuMol);
         this.mainMol.add(this.contentMol);
         this.menuMol.add(this.menuTouchPlane);
+        this.mainMol.add(this.menuMol);
         // TODO: Also create and add a background plane for the menu area so it will catch events that might fall through the menu content.
     }
 
