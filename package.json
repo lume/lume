@@ -29,7 +29,7 @@
   "homepage": "https://github.com/infamous/infamous",
   "dependencies": {
     "army-knife": "^0.2.1",
-    "famous": "git+https://github.com/trusktr/famous.git#jspm",
+    "famous": "git+https://github.com/trusktr/famous.git#trusktr",
     "famousify": "^0.1.5",
     "jss": "^0.10.1"
   },
