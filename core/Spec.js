@@ -6,6 +6,16 @@ define(function(require, exports, module) {
         this._dirty = false;
     }
 
+    Spec.prototype.getTarget = function(){
+        if (this.state && this.state.target) return this.state.target;
+        else {
+            var spec = new Spec();
+            if (!this.state) this.state = {};
+            this.state.target = spec;
+            return spec;
+        }
+    };
+
     Spec.prototype.getChild = function(index){
         if (!this.state) this.state = [];
         if (index >= this.state.length){
@@ -98,7 +108,7 @@ define(function(require, exports, module) {
             if (!this._dirty)
                 result = this._cache;
             else {
-                result = this.state;
+                result = Object.create(this.state);
                 if (this.state.target && this.state.target.render)
                     result.target = this.state.target.render(parentSpec);
                 this._cache = result;
