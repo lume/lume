@@ -35,7 +35,6 @@ define(function(require, exports, module) {
                 target : spec
             };
 
-//            results[spec] = flattenedSpec;
             results.push(flattenedSpec);
         }
         else if (spec instanceof Array){
