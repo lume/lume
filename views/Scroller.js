@@ -127,12 +127,11 @@ define(function(require, exports, module) {
             if (!this._node) return null;
             if (this._offsetGetter) this._offset = this._offsetGetter.call(this);
 
-            var scrollTransform = this._masterOutputFunction(-this._offset);
+            this.spec
+                .setTransform(this._masterOutputFunction(-this._offset))
+                .setTarget(this.group);
 
-            return {
-                transform : scrollTransform,
-                target : Group.prototype.render.apply(this.group, arguments)
-            };
+            return this.spec.render(parentSpec);
         }
 
     }, CONSTANTS);
