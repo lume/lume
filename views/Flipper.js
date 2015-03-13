@@ -9,7 +9,6 @@
 define(function(require, exports, module) {
     var Transform = require('../core/Transform');
     var Transitionable = require('../core/Transitionable');
-    var RenderNode = require('../core/RenderNode');
     var Transform = require('../core/Transform');
     var Modifier = require('../core/Modifier');
     var View = require('./View');
@@ -61,14 +60,14 @@ define(function(require, exports, module) {
                 origin : [0.5, 0.5]
             });
 
-            this.frontNode = this.add(frontModifier).add(new RenderNode());
-            this.backNode = this.add(backModifier).add(new RenderNode());
+            this.frontNode = this.add(frontModifier);
+            this.backNode = this.add(backModifier);
         },
         setFront : function setFront(front){
-            this.frontNode.set(front);
+            this.frontNode.add(front);
         },
         setBack : function setFront(back){
-            this.backNode.set(back);
+            this.backNode.add(back);
         },
         setAngle : function setAngle(angle, transition, callback){
             if (transition === undefined) transition = this.options.transition;
