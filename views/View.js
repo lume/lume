@@ -11,6 +11,7 @@ define(function(require, exports, module) {
     var OptionsManager = require('./../core/OptionsManager');
     var RenderNode = require('./../core/RenderNode');
     var Utility = require('./../core/Utility');
+    var Transform = require('./../core/Transform');
 
     /**
      * Useful for quickly creating elements within applications
@@ -42,8 +43,10 @@ define(function(require, exports, module) {
     }
 
     View.DEFAULT_OPTIONS = {
-        size : null
+        size : null,
+        origin : null
     };
+
     View.EVENTS = {};
 
     /**
@@ -92,8 +95,9 @@ define(function(require, exports, module) {
      * @method render
      * @return {number} Render spec for this component
      */
-    View.prototype.render = function render() {
-        return this._node.render.apply(this._node, arguments);
+
+    View.prototype.render = function render(){
+        return RenderNode.prototype.render.call(this._node);
     };
 
     /**
@@ -103,9 +107,15 @@ define(function(require, exports, module) {
      * @return {Array.Number} [width, height]
      */
     View.prototype.getSize = function getSize() {
-        return (this._node)
+        return (this._node && this._node.getSize)
             ? this._node.getSize()
             : this.options.size;
+    };
+
+    View.prototype.getOrigin = function getSize() {
+        return (this._node && this._node.getOrigin)
+            ? this._node.getOrigin()
+            : this.options.origin;
     };
 
     View.prototype.getEventInput = function getEventInput(){

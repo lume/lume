@@ -33,7 +33,7 @@ define(function(require, exports, module) {
         this._eventOutput = new EventHandler();
         this._size = _getElementSize(this.container);
 
-        this._prevEntityIds = {};
+        this._prevEntities = {};
 
         this._perspectiveState = new Transitionable(0);
         this._perspective = undefined;
@@ -44,7 +44,7 @@ define(function(require, exports, module) {
             origin: null,
             align: null,
             size: this._size,
-            nextsizeContext : Transform.identity
+            nextSizeTransform : Transform.identity
         };
 
         this._eventOutput.on('resize', function() {
@@ -128,35 +128,33 @@ define(function(require, exports, module) {
      * @param {Object} contextParameters engine commit specification
      */
 
-    Context.prototype.commit = function commit(context, allocator){
-        context = context || this._nodeContext;
+    Context.prototype.commit = function commit(spec, allocator){
+        spec = spec || this._nodeContext;
         allocator = allocator || this.allocator;
 
         var perspective = this.getPerspective();
         if (perspective !== this._perspective)
             _setPerspective(this.container, perspective);
 
+        var currEntities = {};
         var results = [];
-        var entityIds = {};
 
-        this._node.render(context, results);
+        this._node.render(spec, results);
 
         for (var i = 0; i < results.length; i++){
-            var data = results[i];
-            var id = data.target;
+            var id = results[i].target;
             var entity = Entity.get(id);
-            entity.commit(data, allocator);
-            entityIds[id] = true;
+            entity.commit(results[i], allocator);
+            currEntities[id] = entity;
         }
 
-        for (var id in this._prevEntityIds){
-            if (entityIds[id] !== true){
-                var object = Entity.get(id);
-                if (object.cleanup) object.cleanup(allocator);
-            }
+        for (var id in this._prevEntities){
+            var object = currEntities[id];
+            if (object === undefined && object.cleanup)
+                object.cleanup(allocator);
         }
 
-        this._prevEntityIds = entityIds;
+        this._prevEntities = currEntities;
     };
 
     /**

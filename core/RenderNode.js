@@ -102,7 +102,7 @@ define(function(require, exports, module) {
         origin: null,
         align: null,
         size: null,
-        nextsizeContext: Transform.identity
+        nextSizeTransform: Transform.identity
     };
 
     RenderNode.prototype.render = function render(parentSpec, results) {

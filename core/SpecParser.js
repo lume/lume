@@ -16,17 +16,10 @@ define(function(require, exports, module) {
         var flattenedSpec;
 
         if (typeof spec === 'number'){
-            if (!parentSpec) return {
-                transform : Transform.identity,
-                opacity : 1,
-                origin : _zeroZero,
-                size : null
-            };
-
             var transform = parentSpec.transform || Transform.identity;
             var align = parentSpec.align || _zeroZero;
 
-            if (parentSpec.size && align && (align[0] || align[1])) {
+            if (align && (align[0] || align[1])) {
                 var alignAdjust = [align[0] * parentSpec.size[0], align[1] * parentSpec.size[1], 0];
                 // transform is relative to origin defined by last size context's transform and its alignment
                 var shift = (parentSpec.nextSizeTransform) ? _vecInContext(alignAdjust, parentSpec.nextSizeTransform) : alignAdjust;
@@ -36,38 +29,45 @@ define(function(require, exports, module) {
             flattenedSpec = {
                 transform : transform,
                 opacity : parentSpec.opacity,
-                origin : parentSpec.origin || _zeroZero,
+                origin : parentSpec.origin,
+                align : parentSpec.align,
                 size : parentSpec.size,
                 target : spec
             };
 
+//            results[spec] = flattenedSpec;
             results.push(flattenedSpec);
         }
         else if (spec instanceof Array){
             flattenedSpec = [];
-            for (var i = 0; i < spec.length; i++)
-                flattenedSpec[i] = SpecParser.flatten(spec[i], parentSpec, results);
+            for (var i = 0; i < spec.length; i++) {
+                flattenedSpec[i] = flatten(spec[i], parentSpec, results);
+            }
         }
-        else if (spec instanceof Object){
+        else if (spec instanceof Object) {
             var opacity = (spec.opacity !== undefined)
                 ? parentSpec.opacity * spec.opacity
                 : parentSpec.opacity;
 
             var transform = (spec.transform)
-                ? Transform.multiply(parentSpec.transform, spec.transform)
-                : parentSpec.transform;
-
-            var align = (spec.align)
-                ? spec.align
-                : parentSpec.align;
-
-            var origin = (spec.origin)
-                ? spec.origin
-                : parentSpec.origin;
+                ? Transform.multiply(parentSpec.transform || Transform.identity, spec.transform)
+                : parentSpec.transform || Transform.identity;
 
             var nextSizeTransform = (spec.origin)
                 ? parentSpec.transform
                 : parentSpec.nextSizeTransform;
+
+            var origin = spec.origin;
+
+            var align = spec.align;
+            if (align){
+                var parentSize = parentSpec.size;
+                if (parentSize && align[0] || align[1]) {
+                    var shift = _vecInContext([align[0] * parentSize[0], align[1] * parentSize[1], 0], parentSpec.nextSizeTransform);
+                    transform = Transform.thenMove(transform, shift);
+                    align = null;
+                }
+            }
 
             var size;
             if (spec.size || spec.proportions) {
@@ -84,15 +84,11 @@ define(function(require, exports, module) {
                     if (spec.proportions[1] !== undefined) size[1] *= spec.proportions[1];
                 }
 
-                if (align && (align[0] || align[1]))
-                    transform = Transform.thenMove(transform, _vecInContext([align[0] * parentSize[0], align[1] * parentSize[1], 0], parentSpec.transform));
-
-                if (origin && (origin[0] || origin[1]))
+                if (origin && origin[0] && origin[1])
                     transform = Transform.moveThen([-origin[0] * size[0], -origin[1] * size[1], 0], transform);
 
-                nextSizeTransform = parentSpec.transform;
                 origin = null;
-                align = null;
+                nextSizeTransform = parentSpec.transform;
             }
             else size = parentSpec.size;
 
@@ -105,10 +101,9 @@ define(function(require, exports, module) {
                 nextSizeTransform : nextSizeTransform
             };
 
-            // iterate if spec is nested
+            // iterate
             if (spec.target !== undefined)
-                SpecParser.flatten(spec.target, flattenedSpec, results)
-
+                flattenedSpec = flatten(spec.target, flattenedSpec, results);
         }
 
         return flattenedSpec;
