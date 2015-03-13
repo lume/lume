@@ -29,7 +29,7 @@ define(function(require, exports, module) {
     function ElementOutput(element) {
         this._transform = null;
         this._opacity = 1;
-        this._origin = null;
+        this._origin = [0,0];
         this._size = null;
 
         this._eventOutput = new EventHandler();
@@ -239,12 +239,24 @@ define(function(require, exports, module) {
         // even though this._size != spec.size
         var dirtyTrueSize = this._trueSizeCheck && this.size && (this.size[0] === true || this.size[1] === true);
 
-        if (this._trueSizeCheck && _xyNotEquals(this._size, size) || dirtyTrueSize)
+        if (_xyNotEquals(this._size, size) || dirtyTrueSize)
             this._sizeDirty = true;
 
-        this._originDirty = _xyNotEquals(this._origin, origin);
         this._transformDirty = Transform.notEquals(this._transform, transform);
         this._opacityDirty = (this._opacity !== opacity);
+
+        if (this._origin === null){
+            if (origin){
+                this._origin = [origin[0], origin[1]];
+            }
+            else this._origin = [0,0];
+            this._originDirty = true;
+        }
+        else if (origin && _xyNotEquals(this._origin, origin)){
+            this._origin[0] = origin[0];
+            this._origin[1] = origin[1];
+            this._originDirty = true;
+        }
 
         if (this._opacityDirty) {
             this._opacity = opacity;
@@ -281,22 +293,13 @@ define(function(require, exports, module) {
 
         }
 
-        if (this._originDirty) {
-            if (origin){
-                if (!this._origin)
-                    this._origin = [origin[0], origin[1]];
-                else {
-                    this._origin[0] = origin[0];
-                    this._origin[1] = origin[1];
-                }
-            }
+        if (this._originDirty)
             _setOrigin(target, this._origin);
-        }
 
         if (this._transformDirty || this._originDirty || (this._sizeDirty && this._origin)) {
             this._transform = transform || Transform.identity;
 
-            if (this._origin && !(this._origin[0] === 0 && this._origin[1] === 0))
+            if (!(this._origin[0] === 0 && this._origin[1] === 0))
                 _setTransform(target, Transform.thenMove(transform, [-this._size[0]*this._origin[0], -this._size[1]*this._origin[1], 0]));
             else
                 _setTransform(target, transform);
