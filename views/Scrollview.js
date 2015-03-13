@@ -312,6 +312,9 @@ define(function(require, exports, module) {
             var velocity = _cap(velocity, this.options.speedLimit);
             this._particle.setVelocity1D(velocity);
         },
+        outputFrom : function(){
+            return Scroller.prototype.outputFrom.apply(this._scroller, arguments);
+        },
         /**
          * Sets the collection of renderables under the Scrollview instance's control, by
          *  setting its current node to the passed in ViewSequence. If you
