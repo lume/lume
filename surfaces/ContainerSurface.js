@@ -38,9 +38,12 @@ define(function(require, exports, module) {
         this._container = document.createElement('div');
         this._container.classList.add('famous-group');
         this._container.classList.add('famous-container');
-        this._shouldRecalculateSize = false;
         this.context = new Context(this._container);
         this.setContent(this._container);
+
+        this.on('resize', function(){
+            this.context.setSize(this.getSize());
+        }.bind(this));
     }
 
     ContainerSurface.prototype = Object.create(Surface.prototype);
@@ -57,7 +60,7 @@ define(function(require, exports, module) {
      * @return {RenderNode} RenderNode wrapping this object, if not already a RenderNode
      */
     ContainerSurface.prototype.add = function add() {
-        return this.context.add.apply(this.context, arguments);
+        return Context.prototype.add.apply(this.context, arguments);
     };
 
     /**
@@ -69,7 +72,6 @@ define(function(require, exports, module) {
      * @return {Object} render spec for this surface (spec id)
      */
     ContainerSurface.prototype.render = function render() {
-        if (this._sizeDirty) this._shouldRecalculateSize = true;
         return Surface.prototype.render.apply(this, arguments);
     };
 
@@ -81,7 +83,6 @@ define(function(require, exports, module) {
      * @param {Node} target document parent of this container
      */
     ContainerSurface.prototype.deploy = function deploy() {
-        this._shouldRecalculateSize = true;
         return Surface.prototype.deploy.apply(this, arguments);
     };
 
@@ -92,22 +93,11 @@ define(function(require, exports, module) {
      *
      * @private
      * @method commit
-     * @param {Context} context commit context
-     * @param {Transform} transform unused TODO
-     * @param {Number} opacity  unused TODO
-     * @param {Array.Number} origin unused TODO
-     * @param {Array.Number} size unused TODO
-     * @return {undefined} TODO returns an undefined value
+     * @param {Spec} spec commit context
      */
-    ContainerSurface.prototype.commit = function commit(context, allocator) {
-        var previousSize = this._size ? [this._size[0], this._size[1]] : null;
-        var result = Surface.prototype.commit.apply(this, arguments);
-        if (this._shouldRecalculateSize || (previousSize && (this._size[0] !== previousSize[0] || this._size[1] !== previousSize[1]))) {
-            this.context.setSize();
-            this._shouldRecalculateSize = false;
-        }
-        this.context.commit();
-        return result;
+    ContainerSurface.prototype.commit = function commit(spec, allocator) {
+        Surface.prototype.commit.apply(this, arguments);
+        Context.prototype.commit.apply(this.context);
     };
 
     module.exports = ContainerSurface;
