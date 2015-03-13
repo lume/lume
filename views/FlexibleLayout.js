@@ -81,19 +81,17 @@ define(function(require, exports, module) {
                 if (this._ratiosDirty) this._ratiosDirty = false;
             }
 
-            var result = [];
             for (var i = 0; i < ratios.length; i++) {
                 size = [undefined, undefined];
                 length = this._cachedLengths[i];
                 size[direction] = length;
-                result.push({
-                    transform : this._cachedTransforms[i],
-                    size: size,
-                    target : this._nodes[i].render()
-                });
+                this.spec.getChild(i)
+                    .setTransform(this._cachedTransforms[i])
+                    .setSize(size)
+                    .setTarget(this._nodes[i])
             }
 
-            return result;
+            return this.spec.render();
         }
     }, CONSTANTS);
 
