@@ -14,12 +14,6 @@ define(function(require, exports, module) {
     /**
      * SequentialLayout will lay out a collection of renderables sequentially in the specified direction.
      * @class SequentialLayout
-     * @constructor
-     * @param {Options} [options] An object of configurable options.
-     * @param {Number} [options.direction=Utility.Direction.Y] Using the direction helper found in the famous Utility
-     * module, this option will lay out the SequentialLayout instance's renderables either horizontally
-     * (x) or vertically (y). Utility's direction is essentially either zero (X) or one (Y), so feel free
-     * to just use integers as well.
      */
 
     var CONSTANTS = {
@@ -80,19 +74,16 @@ define(function(require, exports, module) {
             while (currentNode) {
                 var item = currentNode.get();
                 if (!item) break;
-
                 if (item.getSize) var itemSize = item.getSize();
 
-                var output = this._outputFunction.call(this, item, length, i);
+                var transform = this._outputFunction.call(this, length, i);
 
                 this.spec.getTarget().getChild(i)
-                    .setTransform(output.transform)
-                    .setTarget(output.target);
+                    .setTransform(transform)
+                    .setTarget(item);
 
-                if (itemSize) {
-                    if (itemSize[this.options.direction])
-                        length += itemSize[this.options.direction] + this.options.itemSpacing;
-                }
+                if (itemSize && itemSize[this.options.direction])
+                    length += itemSize[this.options.direction] + this.options.itemSpacing;
 
                 currentNode = currentNode.getNext();
                 i++;
@@ -109,13 +100,9 @@ define(function(require, exports, module) {
         }
     }, CONSTANTS);
 
-    function _defaultOutputFunction(input, offset, index) {
-        var transform = (this.options.direction === CONSTANTS.DIRECTION.X)
+    function _defaultOutputFunction(offset, index) {
+        return (this.options.direction === CONSTANTS.DIRECTION.X)
             ? Transform.translate(offset, 0, 0)
             : Transform.translate(0, offset, 0);
-        return {
-            transform: transform,
-            target: input.render()
-        };
     };
 });
