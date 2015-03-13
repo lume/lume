@@ -46,8 +46,8 @@ define(function(require, exports, module) {
      * @return {Transform}
      */
     Transform.multiply = function multiply(a, b) {
-        if (a === Transform.identity) return b;
-        if (b === Transform.identity) return a;
+        if (a === Transform.identity) return b.slice();
+        if (b === Transform.identity) return a.slice();
         return [
             a[0] * b[0] + a[4] * b[1] + a[8] * b[2],
             a[1] * b[0] + a[5] * b[1] + a[9] * b[2],
