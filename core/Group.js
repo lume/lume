@@ -101,12 +101,12 @@ define(function(require, exports, module) {
      * @private
      * @method commit
      *
-     * @param {Object} context update spec passed in from above in the render tree.
+     * @param {Object} spec update spec passed in from above in the render tree.
      */
-    Group.prototype.commit = function commit(context, allocator) {
-        var transform = context.transform;
-        var origin = context.origin;
-        var opacity = context.opacity;
+    Group.prototype.commit = function commit(spec, allocator) {
+        var transform = spec.transform;
+        var origin = spec.origin;
+        var opacity = spec.opacity;
 
         // parent surface
         Surface.prototype.commit.call(this, {
@@ -121,7 +121,7 @@ define(function(require, exports, module) {
             transform: Transform.identity,
             origin: origin,
             size: this._groupSize
-        }, this.context.allocator);
+        });
     };
 
     module.exports = Group;
