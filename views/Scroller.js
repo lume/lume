@@ -143,8 +143,8 @@ define(function(require, exports, module) {
         return (size) ? size[direction] : null;
     }
 
-    function _output(node, offset, target) {
-        var transform = this._outputFunction(offset);
+    function _output(node, nodeOffset, target) {
+        var transform = this._outputFunction(nodeOffset);
         target.push({transform: transform, target: node.render(null, this._size)});
     }
 
