@@ -66,19 +66,17 @@ define(function(require, exports, module) {
             this.initializeState(options);
             this.initializeSubviews();
         },
-        initializeState : function initializeState(){
+        initializeState : function initializeState(options){
             this._position = new Transitionable(0);
-            this._direction = _getDirectionFromSide(this.options.side);
-            this._orientation = _getOrientationFromSide(this.options.side);
+            this._direction = _getDirectionFromSide(options.side);
+            this._orientation = _getOrientationFromSide(options.side);
             this._isOpen = false;
             this._cachedLength = 0;
             this._cachedPosition = 0;
         },
         initializeSubviews : function initializeSubviews(){
             this.drawer = new RenderNode();
-            this.content = new RenderNode(new Modifier({
-                transform : Transform.translate(100,0,0)
-            }));
+            this.content = new RenderNode();
         },
         /**
          * Reveals the drawer with a transition
@@ -185,13 +183,6 @@ define(function(require, exports, module) {
         isOpen : function isOpen(){
             return this._isOpen;
         },
-        /**
-         * Generates a Render Spec from the contents of this component
-         *
-         * @private
-         * @method render
-         * @return {Spec}
-         */
         render : function render(){
             var position = this.getPosition();
 
@@ -212,7 +203,7 @@ define(function(require, exports, module) {
 
             return [
                 {
-                    transform : Transform.behind,
+                    transform: Transform.behind,
                     target: this.drawer.render()
                 },
                 {
