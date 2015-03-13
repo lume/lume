@@ -13,17 +13,8 @@ define(function(require, exports, module) {
 
     /**
      * A layout which will arrange three renderables into a header and footer area of defined size,
-      and a content area of flexible size.
+     *   and a content area of flexible size.
      * @class HeaderFooterLayout
-     * @constructor
-     * @param {Options} [options] An object of configurable options.
-     * @param {Number} [options.direction=HeaderFooterLayout.DIRECTION_Y] A direction of HeaderFooterLayout.DIRECTION_X
-     * lays your HeaderFooterLayout instance horizontally, and a direction of HeaderFooterLayout.DIRECTION_Y
-     * lays it out vertically.
-     * @param {Number} [options.headerLength=undefined]  The amount of pixels allocated to the header node
-     * in the HeaderFooterLayout instance's direction.
-     * @param {Number} [options.footerLength=undefined] The amount of pixels allocated to the footer node
-     * in the HeaderFooterLayout instance's direction.
      */
 
     var CONSTANTS = {
@@ -51,7 +42,7 @@ define(function(require, exports, module) {
             var size = parentSpec.size;
 
             var headerLength = (options.headerLength !== undefined)
-                ? this.options.headerLength
+                ? options.headerLength
                 : _resolveNodeLength.call(this, this.header, options.defaultHeaderLength);
 
             var footerLength = (options.footerLength !== undefined)
@@ -60,22 +51,21 @@ define(function(require, exports, module) {
 
             var contentLength = size[options.direction] - headerLength - footerLength;
 
-            return [
-                {
-                    size: _finalSize.call(this, headerLength, size),
-                    target: this.header.render()
-                },
-                {
-                    transform: _outputTransform.call(this, headerLength),
-                    size: _finalSize.call(this, contentLength, size),
-                    target: this.content.render()
-                },
-                {
-                    transform: _outputTransform.call(this, headerLength + contentLength),
-                    size: _finalSize.call(this, footerLength, size),
-                    target: this.footer.render()
-                }
-            ];
+            this.spec.getChild(0)
+                .setSize(_finalSize.call(this, headerLength, size))
+                .setTarget(this.header);
+
+            this.spec.getChild(1)
+                .setTransform(_outputTransform.call(this, headerLength))
+                .setSize(_finalSize.call(this, contentLength, size))
+                .setTarget(this.content);
+
+            this.spec.getChild(2)
+                .setTransform(_outputTransform.call(this, headerLength + contentLength))
+                .setSize(_finalSize.call(this, footerLength, size))
+                .setTarget(this.footer);
+
+            return this.spec.render();
         }
     }, CONSTANTS);
 
