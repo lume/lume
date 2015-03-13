@@ -190,7 +190,6 @@ define(function(require, exports, module) {
      * @return {Object} render spec for this Modifier, including the
      *    provided target
      */
-    //TODO: fix object.create
     Modifier.prototype.render = function render() {
         _update.call(this);
         return this._output;
