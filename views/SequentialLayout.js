@@ -73,22 +73,21 @@ define(function(require, exports, module) {
             return this;
         },
         render : function render(){
-            var length             = 0;
-            var currentNode        = this._items;
-            var item               = null;
-            var itemSize           = [];
-            var output             = {};
-            var result             = [];
-            var i                  = 0;
+            var currentNode = this._items;
+            var i = 0;
+            var length = 0;
 
             while (currentNode) {
-                item = currentNode.get();
+                var item = currentNode.get();
                 if (!item) break;
 
-                if (item.getSize) itemSize = item.getSize();
+                if (item.getSize) var itemSize = item.getSize();
 
-                output = this._outputFunction.call(this, item, length, i++);
-                result.push(output);
+                var output = this._outputFunction.call(this, item, length, i);
+
+                this.spec.getTarget().getChild(i)
+                    .setTransform(output.transform)
+                    .setTarget(output.target);
 
                 if (itemSize) {
                     if (itemSize[this.options.direction])
@@ -96,6 +95,7 @@ define(function(require, exports, module) {
                 }
 
                 currentNode = currentNode.getNext();
+                i++;
             }
 
             if (length !== this._cachedLength) {
@@ -103,10 +103,9 @@ define(function(require, exports, module) {
                 this._size[this.options.direction] = length;
             }
 
-            return {
-                size: this.getSize(),
-                target: result
-            };
+            this.spec.setSize(this.getSize());
+
+            return this.spec.render();
         }
     }, CONSTANTS);
 
