@@ -20,7 +20,6 @@ define(function(require, exports, module) {
      * @class Controller
      * @uses EventHandler
      * @uses OptionsManager
-     * @uses RenderNode
      * @constructor
      */
     function Controller(options) {
