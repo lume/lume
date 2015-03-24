@@ -14,12 +14,6 @@ define(function(require, exports, module) {
     /**
      * SequentialLayout will lay out a collection of renderables sequentially in the specified direction.
      * @class SequentialLayout
-     * @constructor
-     * @param {Options} [options] An object of configurable options.
-     * @param {Number} [options.direction=Utility.Direction.Y] Using the direction helper found in the famous Utility
-     * module, this option will lay out the SequentialLayout instance's renderables either horizontally
-     * (x) or vertically (y). Utility's direction is essentially either zero (X) or one (Y), so feel free
-     * to just use integers as well.
      */
 
     var CONSTANTS = {
@@ -73,29 +67,26 @@ define(function(require, exports, module) {
             return this;
         },
         render : function render(){
-            var length             = 0;
-            var currentNode        = this._items;
-            var item               = null;
-            var itemSize           = [];
-            var output             = {};
-            var result             = [];
-            var i                  = 0;
+            var currentNode = this._items;
+            var i = 0;
+            var length = 0;
 
             while (currentNode) {
-                item = currentNode.get();
+                var item = currentNode.get();
                 if (!item) break;
+                if (item.getSize) var itemSize = item.getSize();
 
-                if (item.getSize) itemSize = item.getSize();
+                var transform = this._outputFunction.call(this, length, i);
 
-                output = this._outputFunction.call(this, item, length, i++);
-                result.push(output);
+                this.spec.getTarget().getChild(i)
+                    .setTransform(transform)
+                    .setTarget(item);
 
-                if (itemSize) {
-                    if (itemSize[this.options.direction])
-                        length += itemSize[this.options.direction] + this.options.itemSpacing;
-                }
+                if (itemSize && itemSize[this.options.direction])
+                    length += itemSize[this.options.direction] + this.options.itemSpacing;
 
                 currentNode = currentNode.getNext();
+                i++;
             }
 
             if (length !== this._cachedLength) {
@@ -103,20 +94,15 @@ define(function(require, exports, module) {
                 this._size[this.options.direction] = length;
             }
 
-            return {
-                size: this.getSize(),
-                target: result
-            };
+            this.spec.setSize(this.getSize());
+
+            return this.spec.render();
         }
     }, CONSTANTS);
 
-    function _defaultOutputFunction(input, offset, index) {
-        var transform = (this.options.direction === CONSTANTS.DIRECTION.X)
+    function _defaultOutputFunction(offset, index) {
+        return (this.options.direction === CONSTANTS.DIRECTION.X)
             ? Transform.translate(offset, 0, 0)
             : Transform.translate(0, offset, 0);
-        return {
-            transform: transform,
-            target: input.render()
-        };
     };
 });

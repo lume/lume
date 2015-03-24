@@ -18,7 +18,7 @@ define(function(require, exports, module) {
      *   concealed drawer. The drawer can be revealed from any side of the
      *   content (left, top, right, bottom) by dragging the content.
      *
-     *   A @link{Sync} must be piped in to recieve user input.
+     *   A @link{Sync} must be piped in to receive user input.
      *
      *   Events:
      *     broadcasts: 'open', 'close'
@@ -201,16 +201,12 @@ define(function(require, exports, module) {
 
             this._cachedPosition = position;
 
-            return [
-                {
-                    transform: Transform.behind,
-                    target: this.drawer.render()
-                },
-                {
-                    transform: contentTransform,
-                    target: this.content.render()
-                }
-            ];
+            this.spec.getChild(0).setTransform(Transform.behind);
+            this.spec.getChild(0).setTarget(this.drawer);
+            this.spec.getChild(1).setTransform(contentTransform);
+            this.spec.getChild(1).setTarget(this.content);
+
+            return this.spec.render();
         }
     }, CONSTANTS);
 

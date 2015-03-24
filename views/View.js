@@ -12,6 +12,7 @@ define(function(require, exports, module) {
     var RenderNode = require('./../core/RenderNode');
     var Utility = require('./../core/Utility');
     var Transform = require('./../core/Transform');
+    var Spec = require('./../core/Spec');
 
     /**
      * Useful for quickly creating elements within applications
@@ -27,6 +28,7 @@ define(function(require, exports, module) {
      */
     function View(options) {
         this._node = new RenderNode();
+        this.spec  = new Spec();
 
         this.options = Utility.clone(this.constructor.DEFAULT_OPTIONS || View.DEFAULT_OPTIONS);
         this._optionsManager = new OptionsManager(this.options);

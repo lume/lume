@@ -9,27 +9,20 @@ define(function(require, exports, module) {
      * @param {Object} [options] options configuration object.
      * @param {Boolean} [options.cull=false] Stops returning affected renderables up the tree when they're fully faded when true.
      * @param {Transition} [options.transition=true] The main transition for showing and hiding.
-     * @param {Transition} [options.pulseInTransition=true] Controls the transition to a pulsed state when the Fader instance's pulse
-     * method is called.
-     * @param {Transition} [options.pulseOutTransition=true]Controls the transition back from a pulsed state when the Fader instance's pulse
      * method is called.
      *
      */
-    function Fader(options, startState) {
+    function Fader(options) {
         this.options = Object.create(Fader.DEFAULT_OPTIONS);
         this._optionsManager = new OptionsManager(this.options);
-
         if (options) this.setOptions(options);
 
-        if (!startState) startState = 0;
-        this.transitionHelper = new Transitionable(startState);
+        this.opacityState = new Transitionable(options.value || 1);
     }
 
     Fader.DEFAULT_OPTIONS = {
         cull: false,
-        transition: true,
-        pulseInTransition: true,
-        pulseOutTransition: true
+        transition: true
     };
 
     /**
@@ -78,7 +71,7 @@ define(function(require, exports, module) {
      */
     Fader.prototype.set = function set(state, transition, callback) {
         this.halt();
-        this.transitionHelper.set(state, transition, callback);
+        this.opacityState.set(state, transition, callback);
     };
 
     /**
@@ -87,7 +80,7 @@ define(function(require, exports, module) {
      * @method halt
      */
     Fader.prototype.halt = function halt() {
-        this.transitionHelper.halt();
+        this.opacityState.halt();
     };
 
     /**
@@ -97,7 +90,7 @@ define(function(require, exports, module) {
      * @return {Boolean} Whether or not your Fader instance is visible.
      */
     Fader.prototype.isVisible = function isVisible() {
-        return (this.transitionHelper.get() > 0);
+        return (this.opacityState.get() > 0);
     };
 
     /**
@@ -105,17 +98,13 @@ define(function(require, exports, module) {
      *    target component.  This is similar to render() for Surfaces.
      *
      * @private
-     * @method modify
+     * @method render
      *
-     * @param {Object} target (already rendered) render spec to
-     *    which to apply the transform.
-     * @return {Object} render spec for this Modifier, including the
-     *    provided target
      */
-    Fader.prototype.modify = function modify(target) {
-        var currOpacity = this.transitionHelper.get();
-        if (this.options.cull && !currOpacity) return undefined;
-        else return {opacity: currOpacity, target: target};
+    Fader.prototype.render = function render() {
+        var opacity = this.opacityState.get();
+        if (!this.options.cull && opacity > 0);
+            return {opacity : opacity};
     };
 
     module.exports = Fader;
