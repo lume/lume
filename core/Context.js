@@ -149,9 +149,9 @@ define(function(require, exports, module) {
         }
 
         for (var id in this._prevEntities){
-            var object = currEntities[id];
-            if (object === undefined && object.cleanup)
-                object.cleanup(allocator);
+            var object = this._prevEntities[id];
+            var wasDestroyed = (currEntities[id] === undefined);
+            if (wasDestroyed && object.cleanup) object.cleanup(allocator);
         }
 
         this._prevEntities = currEntities;
