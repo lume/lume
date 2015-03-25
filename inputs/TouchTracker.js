@@ -30,13 +30,11 @@ define(function(require, exports, module) {
             var touch = event.changedTouches[i];
             var data = _timestampTouch(touch, event, null);
             this.eventOutput.emit('trackstart', data);
-            if (!this.selective && !this.touchHistory[touch.identifier]) this.track(data);
+            if (!this.touchHistory[touch.identifier]) this.track(data);
         }
     }
 
     function _handleMove(event) {
-        if (event.touches.length > this.touchLimit) return;
-
         for (var i = 0; i < event.changedTouches.length; i++) {
             var touch = event.changedTouches[i];
             var history = this.touchHistory[touch.identifier];
@@ -89,9 +87,6 @@ define(function(require, exports, module) {
      * @param [options.touchLimit] {Number} touchLimit upper bound for emitting events based on number of touches
      */
     function TouchTracker(options) {
-        this.selective = options.selective;
-        this.touchLimit = options.touchLimit || 1;
-
         this.touchHistory = {};
 
         this.eventInput = new EventHandler();

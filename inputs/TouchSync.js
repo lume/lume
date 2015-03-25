@@ -36,7 +36,6 @@ define(function(require, exports, module) {
      * @param [options.rails] {Boolean}      read from axis with greatest differential
      * @param [options.velocitySampleLength] {Number}  Number of previous frames to check velocity against.
      * @param [options.scale] {Number}       constant factor to scale velocity output
-     * @param [options.touchLimit] {Number}  touchLimit upper bound for emitting events based on number of touches
      */
     function TouchSync(options) {
         this.options =  Object.create(TouchSync.DEFAULT_OPTIONS);
@@ -44,9 +43,7 @@ define(function(require, exports, module) {
         if (options) this.setOptions(options);
 
         this._eventOutput = new EventHandler();
-        this._touchTracker = new TouchTracker({
-            touchLimit: this.options.touchLimit
-        });
+        this._touchTracker = new TouchTracker();
 
         EventHandler.setOutputHandler(this, this._eventOutput);
         EventHandler.setInputHandler(this, this._touchTracker);
@@ -71,7 +68,6 @@ define(function(require, exports, module) {
     TouchSync.DEFAULT_OPTIONS = {
         direction: undefined,
         rails: false,
-        touchLimit: 1,
         velocitySampleLength: 10,
         scale: 1
     };
