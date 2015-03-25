@@ -27,9 +27,6 @@ define(function(require, exports, module) {
     EventProcesser.prototype = Object.create(EventHandler.prototype);
     EventProcesser.prototype.constructor = EventProcesser;
 
-    EventProcesser.prototype.subscribe = null;
-    EventProcesser.prototype.unsubscribe = null;
-
     /**
      * Trigger an event, sending to all mapped downstream handlers
      *   listening for provided 'type' key.
