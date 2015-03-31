@@ -16,20 +16,41 @@ define(function(require, exports, module) {
         }
     };
 
+    Spec.prototype.getChildren = function(){
+        var children;
+        if (this.state instanceof Array)
+            children = this.state;
+        else if (this.state.target instanceof Array)
+            children = this.state.target;
+        else if (this.state.target instanceof Spec)
+            children = this.state.target.getChildren();
+        return children;
+    };
+
     Spec.prototype.getChild = function(index){
         if (!this.state) this.state = [];
-        if (index >= this.state.length){
-            var spec = new Spec();
-            this.state[index] = spec;
+        var children = this.getChildren();
+
+        if (index >= children.length){
+            var child = new Spec();
+            children[index] = child;
             this._dirty = true;
-            return spec;
+            return child;
         }
-        else return this.state[index];
+        else return children[index];
     };
 
     Spec.prototype.removeChild = function(index){
         this.state.splice(index, 1);
     };
+
+    function _firstSet(){
+        if (!this.state) this.state = {};
+        else if (this.state instanceof Array){
+            var target = new Spec(this.state.slice());
+            this.state = {target : target};
+        }
+    }
 
     Spec.prototype.set = function(spec){
         this.state  = spec.state  || null;
@@ -38,7 +59,7 @@ define(function(require, exports, module) {
     };
 
     Spec.prototype.setTransform = function(transform){
-        if (!this.state) this.state = {};
+        _firstSet.call(this);
         if (!this.state.transform) this.state.transform = [];
         for (var i = 0; i < transform.length; i++){
             if (this.state.transform[i] === transform[i]) continue;
@@ -49,7 +70,7 @@ define(function(require, exports, module) {
     };
 
     Spec.prototype.setOpacity = function(opacity){
-        if (!this.state) this.state = {};
+        _firstSet.call(this);
         if (this.state.opacity === opacity) return this;
         this.state.opacity = opacity;
         this._dirty = true;
@@ -57,7 +78,7 @@ define(function(require, exports, module) {
     };
 
     Spec.prototype.setSize = function(size){
-        if (!this.state) this.state = {};
+        _firstSet.call(this);
         if (!this.state.size) this.state.size = [];
         if (this.state.size[0] === size[0] && this.state.size[1] === size[1]) return this;
         this.state.size[0] = size[0];
@@ -67,7 +88,7 @@ define(function(require, exports, module) {
     };
 
     Spec.prototype.setOrigin = function(origin){
-        if (!this.state) this.state = {};
+        _firstSet.call(this);
         if (!this.state.origin) this.state.origin = [];
         if (this.state.origin[0] === origin[0] && this.state.origin[1] === origin[1]) return this;
         this.state.origin[0] = origin[0];
@@ -77,9 +98,9 @@ define(function(require, exports, module) {
     };
 
     Spec.prototype.setAlign = function(align){
-        if (!this.state) this.state = {};
+        _firstSet.call(this);
         if (!this.state.align) this.state.align = [];
-        if (this.state.align[0] === align[0] && this.state.origin[1] === align[1]) return this;
+        if (this.state.align[0] === align[0] && this.state.align[1] === align[1]) return this;
         this.state.align[0] = align[0];
         this.state.align[1] = align[1];
         this._dirty = true;
@@ -87,7 +108,7 @@ define(function(require, exports, module) {
     };
 
     Spec.prototype.setTarget = function(target){
-        if (!this.state) this.state = {};
+        _firstSet.call(this);
         this.state.target = target;
         return this;
     };
@@ -96,6 +117,7 @@ define(function(require, exports, module) {
         return this._dirty;
     };
 
+    //TODO: flattening of nested specs. send corrected parentSpec
     Spec.prototype.render = function(parentSpec){
         var result;
         if (this.state instanceof Array){
