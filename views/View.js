@@ -98,8 +98,11 @@ define(function(require, exports, module) {
      * @return {number} Render spec for this component
      */
 
-    View.prototype.render = function render(){
-        return RenderNode.prototype.render.call(this._node);
+    View.prototype.render = function render(parentSpec){
+        return RenderNode.prototype.render.call(this._node, {
+            size : parentSpec.size,
+            origin : parentSpec.origin
+        });
     };
 
     /**
