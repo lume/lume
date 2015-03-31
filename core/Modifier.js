@@ -32,7 +32,8 @@ define(function(require, exports, module) {
         this._originGetter = null;
         this._alignGetter = null;
         this._sizeGetter = null;
-        this._proportionGetter = null;
+        this._proportionsGetter = null;
+        this._marginsGetter = null;
 
         this._output = {
             transform: Transform.identity,
@@ -40,6 +41,7 @@ define(function(require, exports, module) {
             origin: null,
             align: null,
             size: null,
+            margins: null,
             proportions: null
         };
 
@@ -49,6 +51,7 @@ define(function(require, exports, module) {
             if (options.origin) this.originFrom(options.origin);
             if (options.align) this.alignFrom(options.align);
             if (options.size) this.sizeFrom(options.size);
+            if (options.margins) this.marginsFrom(options.margins);
             if (options.proportions) this.proportionsFrom(options.proportions);
         }
     }
@@ -150,6 +153,16 @@ define(function(require, exports, module) {
         return this;
     };
 
+    Modifier.prototype.marginsFrom = function marginsFrom(margins) {
+        if (margins instanceof Function) this._marginsGetter = margins;
+        else if (margins instanceof Object && margins.get) this._marginsGetter = margins.get.bind(margins);
+        else {
+            this._marginsGetter = null;
+            this._output.margins = margins;
+        }
+        return this;
+    };
+
     /**
      * Set function, object, or numerical array to provide proportions, as [percent of width, percent of height].
      *
@@ -159,10 +172,10 @@ define(function(require, exports, module) {
      * @return {Modifier} this
      */
     Modifier.prototype.proportionsFrom = function proportionsFrom(proportions) {
-        if (proportions instanceof Function) this._proportionGetter = proportions;
-        else if (proportions instanceof Object && proportions.get) this._proportionGetter = proportions.get.bind(proportions);
+        if (proportions instanceof Function) this._proportionsGetter = proportions;
+        else if (proportions instanceof Object && proportions.get) this._proportionsGetter = proportions.get.bind(proportions);
         else {
-            this._proportionGetter = null;
+            this._proportionsGetter = null;
             this._output.proportions = proportions;
         }
         return this;
@@ -175,7 +188,8 @@ define(function(require, exports, module) {
         if (this._originGetter) this._output.origin = this._originGetter();
         if (this._alignGetter) this._output.align = this._alignGetter();
         if (this._sizeGetter) this._output.size = this._sizeGetter();
-        if (this._proportionGetter) this._output.proportions = this._proportionGetter();
+        if (this._marginsGetter) this._output.margins = this._marginsGetter();
+        if (this._proportionsGetter) this._output.proportions = this._proportionsGetter();
     }
 
     /**
@@ -190,7 +204,7 @@ define(function(require, exports, module) {
      * @return {Object} render spec for this Modifier, including the
      *    provided target
      */
-    Modifier.prototype.render = function render() {
+    Modifier.prototype.render = function render(parentSpec) {
         _update.call(this);
         return this._output;
     };

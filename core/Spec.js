@@ -1,4 +1,5 @@
 define(function(require, exports, module) {
+    var SpecParser = require('famous/core/SpecParser');
 
     function Spec(state){
         this.state = state || null;
@@ -117,7 +118,6 @@ define(function(require, exports, module) {
         return this._dirty;
     };
 
-    //TODO: flattening of nested specs. send corrected parentSpec
     Spec.prototype.render = function(parentSpec){
         var result;
         if (this.state instanceof Array){
@@ -131,8 +131,11 @@ define(function(require, exports, module) {
                 result = this._cache;
             else {
                 result = Object.create(this.state);
+                var flattenedSpec = (parentSpec)
+                    ? SpecParser.flatten(result, parentSpec)
+                    : result;
                 if (this.state.target && this.state.target.render)
-                    result.target = this.state.target.render(parentSpec);
+                    result.target = this.state.target.render(flattenedSpec);
                 this._cache = result;
             }
         }

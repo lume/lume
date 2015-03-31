@@ -44,6 +44,11 @@ define(function(require, exports, module) {
             }
         }
         else if (spec instanceof Object) {
+            var parentSize = parentSpec.size;
+            var origin = spec.origin;
+            var align = spec.align;
+            var size = spec.size || [parentSize[0], parentSize[1]];
+
             var opacity = (spec.opacity !== undefined)
                 ? parentSpec.opacity * spec.opacity
                 : parentSpec.opacity;
@@ -56,40 +61,35 @@ define(function(require, exports, module) {
                 ? parentSpec.transform
                 : parentSpec.nextSizeTransform;
 
-            var origin = spec.origin;
+            if (spec.size) {
+                if (spec.size[0] === undefined) size[0] = parentSize[0];
+                if (spec.size[1] === undefined) size[1] = parentSize[1];
+                nextSizeTransform = parentSpec.transform;
+            }
 
-            var align = spec.align;
+            if (spec.proportions) {
+                if (spec.proportions[0] !== undefined) size[0] *= spec.proportions[0];
+                if (spec.proportions[1] !== undefined) size[1] *= spec.proportions[1];
+            }
+
+            if (spec.margins){
+                size[0] = parentSize[0] - ((spec.margins[1] || 0) + (spec.margins[3] || 0));
+                size[1] = parentSize[1] - (spec.margins[0] + (spec.margins[2] || 0));
+                transform = Transform.moveThen([spec.margins[3] || 0, spec.margins[0], 0], transform);
+            }
+
+            if (origin && origin[0] && origin[1]){
+                transform = Transform.moveThen([-origin[0] * size[0], -origin[1] * size[1], 0], transform);
+                origin = null;
+            }
+
             if (align){
-                var parentSize = parentSpec.size;
                 if (parentSize && align[0] || align[1]) {
                     var shift = _vecInContext([align[0] * parentSize[0], align[1] * parentSize[1], 0], parentSpec.nextSizeTransform);
                     transform = Transform.thenMove(transform, shift);
                     align = null;
                 }
             }
-
-            var size;
-            if (spec.size || spec.proportions) {
-                var parentSize = parentSpec.size;
-                size = [parentSize[0], parentSize[1]];
-
-                if (spec.size) {
-                    if (spec.size[0] !== undefined) size[0] = spec.size[0];
-                    if (spec.size[1] !== undefined) size[1] = spec.size[1];
-                }
-
-                if (spec.proportions) {
-                    if (spec.proportions[0] !== undefined) size[0] *= spec.proportions[0];
-                    if (spec.proportions[1] !== undefined) size[1] *= spec.proportions[1];
-                }
-
-                if (origin && origin[0] && origin[1])
-                    transform = Transform.moveThen([-origin[0] * size[0], -origin[1] * size[1], 0], transform);
-
-                origin = null;
-                nextSizeTransform = parentSpec.transform;
-            }
-            else size = parentSpec.size;
 
             flattenedSpec = {
                 transform : transform,
