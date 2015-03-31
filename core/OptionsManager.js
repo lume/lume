@@ -34,7 +34,7 @@ define(function(require, exports, module) {
      */
     function OptionsManager(value) {
         this._value = value;
-        this.eventOutput = null;
+        this._eventHandler = null;
     }
 
     /**
@@ -53,10 +53,8 @@ define(function(require, exports, module) {
         return source;
     };
 
-    function _createEventOutput() {
-        this.eventOutput = new EventHandler();
-        this.eventOutput.bindThis(this);
-        EventHandler.setOutputHandler(this, this.eventOutput);
+    function _createEventHandler() {
+        if (!this._eventHandler) this._eventHandler = new EventHandler();
     }
 
     /**
@@ -77,7 +75,7 @@ define(function(require, exports, module) {
                 if ((k in myState) && (data[k] && data[k].constructor === Object) && (myState[k] && myState[k].constructor === Object)) {
                     if (!myState.hasOwnProperty(k)) myState[k] = Object.create(myState[k]);
                     this.key(k).patch(data[k]);
-                    if (this.eventOutput) this.eventOutput.emit('change', {key: k, value: this.key(k).value()});
+                    if (this._eventHandler) this._eventHandler.emit('change', {key: k, value: this.key(k).value()});
                 }
                 else this.set(k, data[k]);
             }
@@ -136,7 +134,7 @@ define(function(require, exports, module) {
     OptionsManager.prototype.set = function set(key, value) {
         var originalValue = this.get(key);
         this._value[key] = value;
-        if (this.eventOutput && value !== originalValue) this.eventOutput.emit('change', {key: key, value: value});
+        if (this._eventHandler && value !== originalValue) this._eventHandler.emit('change', {key: key, value: value});
         return this;
     };
 
@@ -147,11 +145,11 @@ define(function(require, exports, module) {
      *
      * @param {string} type event type key (for example, 'change')
      * @param {function(string, Object)} handler callback
-     * @return {EventHandler} this
+     * @return {_eventHandler} this
      */
     OptionsManager.prototype.on = function on() {
-        _createEventOutput.call(this);
-        return this.on.apply(this, arguments);
+        _createEventHandler.call(this);
+        return this._eventHandler.on.apply(this._eventHandler, arguments);
     };
 
     /**
@@ -162,11 +160,11 @@ define(function(require, exports, module) {
      *
      * @param {string} type event type key (for example, 'change')
      * @param {function} handler function object to remove
-     * @return {EventHandler} internal event handler object (for chaining)
+     * @return {_eventHandler} internal event handler object (for chaining)
      */
     OptionsManager.prototype.off = function off() {
-        _createEventOutput.call(this);
-        return this.off.apply(this, arguments);
+        _createEventHandler.call(this);
+        return this._eventHandler.off.apply(this._eventHandler, arguments);
     };
 
     /**
@@ -174,12 +172,12 @@ define(function(require, exports, module) {
      *
      * @method pipe
      *
-     * @param {EventHandler} target event handler target object
-     * @return {EventHandler} passed event handler
+     * @param {_eventHandler} target event handler target object
+     * @return {_eventHandler} passed event handler
      */
     OptionsManager.prototype.pipe = function pipe() {
-        _createEventOutput.call(this);
-        return this.pipe.apply(this, arguments);
+        _createEventHandler.call(this);
+        return this._eventHandler.pipe.apply(this._eventHandler, arguments);
     };
 
     /**
@@ -188,12 +186,12 @@ define(function(require, exports, module) {
      *
      * @method unpipe
      *
-     * @param {EventHandler} target target handler object
-     * @return {EventHandler} provided target
+     * @param {_eventHandler} target target handler object
+     * @return {_eventHandler} provided target
      */
     OptionsManager.prototype.unpipe = function unpipe() {
-        _createEventOutput.call(this);
-        return this.unpipe.apply(this, arguments);
+        _createEventHandler.call(this);
+        return this._eventHandler.unpipe.apply(this._eventHandler, arguments);
     };
 
     module.exports = OptionsManager;
