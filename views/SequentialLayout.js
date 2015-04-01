@@ -19,7 +19,7 @@ define(function(require, exports, module) {
     var CONSTANTS = {
         DIRECTION : {
             X : 0,
-            Y : 0
+            Y : 1
         }
     };
 
@@ -78,7 +78,7 @@ define(function(require, exports, module) {
 
                 var transform = this._outputFunction.call(this, length, i);
 
-                this.spec.getTarget().getChild(i)
+                this.spec.getChild(i)
                     .setTransform(transform)
                     .setTarget(item);
 
