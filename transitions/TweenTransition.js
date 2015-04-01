@@ -346,10 +346,6 @@ define(function(require, exports, module) {
      *    callback and begin a new action.
      *
      * @method update
-     *
-     *
-     * @param {number=} timestamp Evaluate the curve at a normalized version of this
-     *    time. If omitted, use current time. (Unix epoch time)
      */
     TweenTransition.prototype.update = function update() {
         if (!this._active) {

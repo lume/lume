@@ -199,12 +199,10 @@ define(function(require, exports, module) {
      * @private
      * @method modify
      *
-     * @param {Object} target (already rendered) render spec to
-     *    which to apply the transform.
      * @return {Object} render spec for this Modifier, including the
      *    provided target
      */
-    Modifier.prototype.render = function render(parentSpec) {
+    Modifier.prototype.render = function render() {
         _update.call(this);
         return this._output;
     };

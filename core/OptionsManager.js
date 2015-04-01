@@ -47,7 +47,7 @@ define(function(require, exports, module) {
      * @param {...Object} data argument additions and overwrites
      * @return {Object} source object
      */
-    OptionsManager.patch = function patchObject(source, data) {
+    OptionsManager.patch = function patch(source, data) {
         var manager = new OptionsManager(source);
         for (var i = 1; i < arguments.length; i++) manager.patch(arguments[i]);
         return source;
@@ -64,21 +64,18 @@ define(function(require, exports, module) {
      *
      * @method patch
      *
-     * @param {...Object} arguments list of patch objects
+     * @param {Object} data list of patch objects
      * @return {OptionsManager} this
      */
-    OptionsManager.prototype.patch = function patch() {
+    OptionsManager.prototype.patch = function patch(data) {
         var myState = this._value;
-        for (var i = 0; i < arguments.length; i++) {
-            var data = arguments[i];
-            for (var k in data) {
-                if ((k in myState) && (data[k] && data[k].constructor === Object) && (myState[k] && myState[k].constructor === Object)) {
-                    if (!myState.hasOwnProperty(k)) myState[k] = Object.create(myState[k]);
-                    this.key(k).patch(data[k]);
-                    if (this._eventHandler) this._eventHandler.emit('change', {key: k, value: this.key(k).value()});
-                }
-                else this.set(k, data[k]);
+        for (var k in data) {
+            if ((k in myState) && (data[k] && data[k].constructor === Object) && (myState[k] && myState[k].constructor === Object)) {
+                if (!myState.hasOwnProperty(k)) myState[k] = Object.create(myState[k]);
+                this.key(k).patch(data[k]);
+                if (this._eventHandler) this._eventHandler.emit('change', {key: k, value: this.key(k).value()});
             }
+            else this.set(k, data[k]);
         }
         return this;
     };
@@ -145,9 +142,9 @@ define(function(require, exports, module) {
      *
      * @param {string} type event type key (for example, 'change')
      * @param {function(string, Object)} handler callback
-     * @return {_eventHandler} this
+     * @return {EventHandler} this
      */
-    OptionsManager.prototype.on = function on() {
+    OptionsManager.prototype.on = function on(type, handler) {
         _createEventHandler.call(this);
         return this._eventHandler.on.apply(this._eventHandler, arguments);
     };
@@ -160,9 +157,9 @@ define(function(require, exports, module) {
      *
      * @param {string} type event type key (for example, 'change')
      * @param {function} handler function object to remove
-     * @return {_eventHandler} internal event handler object (for chaining)
+     * @return {EventHandler} internal event handler object (for chaining)
      */
-    OptionsManager.prototype.off = function off() {
+    OptionsManager.prototype.off = function off(type, handler) {
         _createEventHandler.call(this);
         return this._eventHandler.off.apply(this._eventHandler, arguments);
     };
@@ -172,10 +169,10 @@ define(function(require, exports, module) {
      *
      * @method pipe
      *
-     * @param {_eventHandler} target event handler target object
-     * @return {_eventHandler} passed event handler
+     * @param {EventHandler} handler event handler target object
+     * @return {EventHandler} passed event handler
      */
-    OptionsManager.prototype.pipe = function pipe() {
+    OptionsManager.prototype.pipe = function pipe(handler) {
         _createEventHandler.call(this);
         return this._eventHandler.pipe.apply(this._eventHandler, arguments);
     };
@@ -186,10 +183,10 @@ define(function(require, exports, module) {
      *
      * @method unpipe
      *
-     * @param {_eventHandler} target target handler object
-     * @return {_eventHandler} provided target
+     * @param {EventHandler} handler target handler object
+     * @return {EventHandler} provided target
      */
-    OptionsManager.prototype.unpipe = function unpipe() {
+    OptionsManager.prototype.unpipe = function unpipe(handler) {
         _createEventHandler.call(this);
         return this._eventHandler.unpipe.apply(this._eventHandler, arguments);
     };

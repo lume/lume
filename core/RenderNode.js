@@ -105,6 +105,7 @@ define(function(require, exports, module) {
         nextSizeTransform: Transform.identity
     };
 
+    //TODO: auto render specs. simply return the spec
     RenderNode.prototype.render = function render(parentSpec, results) {
         if (parentSpec === undefined) parentSpec = defaultSpec;
         if (results === undefined) results = [];

@@ -190,7 +190,7 @@ define(function(require, exports, module) {
      *
      * @method setContent
      * @chainable
-     * @param {string|Document Fragment} content HTML content
+     * @param {string|DocumentFragment} content HTML content
      */
     Surface.prototype.setContent = function setContent(content) {
         if (this.content !== content) {

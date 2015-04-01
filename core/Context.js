@@ -125,7 +125,8 @@ define(function(require, exports, module) {
      *
      * @private
      * @method update
-     * @param {Object} contextParameters engine commit specification
+     * @param {Object} spec
+     * @param {Object} allocator
      */
 
     Context.prototype.commit = function commit(spec, allocator){
@@ -172,8 +173,8 @@ define(function(require, exports, module) {
      *
      * @method setPerspective
      * @param {Number} perspective in pixels
-     * @param {Object} [transition] Transitionable object for applying the change
-     * @param {function(Object)} callback function called on completion of transition
+     * @param {Object} transition object for applying the change
+     * @param {Function} callback function called on completion of transition
      */
     Context.prototype.setPerspective = function setPerspective(perspective, transition, callback) {
         this._perspectiveState.set(perspective, transition, callback);
