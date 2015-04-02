@@ -66,7 +66,7 @@ define(function(require, exports, module) {
             this._items = items;
             return this;
         },
-        render : function render(){
+        render : function render(parentSpec){
             var currentNode = this._items;
             var i = 0;
             var length = 0;
@@ -96,7 +96,7 @@ define(function(require, exports, module) {
 
             this.spec.setSize(this.getSize());
 
-            return this.spec.render();
+            return this.spec.render(parentSpec);
         }
     }, CONSTANTS);
 

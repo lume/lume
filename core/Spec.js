@@ -3,34 +3,24 @@ define(function(require, exports, module) {
 
     function Spec(state){
         this.state = state || null;
+        this.target = null;
+
         this._cache = null;
-        this._dirty = false;
+        this._dirty = true;
     }
 
     Spec.prototype.getTarget = function(){
-        if (this.state && this.state.target) return this.state.target;
+        if (this.target) return this.target;
         else {
             var spec = new Spec();
-            if (!this.state) this.state = {};
-            this.state.target = spec;
+            this.target = spec;
             return spec;
         }
     };
 
-    Spec.prototype.getChildren = function(){
-        var children;
-        if (this.state instanceof Array)
-            children = this.state;
-        else if (this.state.target instanceof Array)
-            children = this.state.target;
-        else if (this.state.target instanceof Spec)
-            children = this.state.target.getChildren();
-        return children;
-    };
-
     Spec.prototype.getChild = function(index){
-        if (!this.state) this.state = [];
-        var children = this.getChildren();
+        if (!this.target) this.target = [];
+        var children = this.target;
 
         if (index >= children.length){
             var child = new Spec();
@@ -42,15 +32,11 @@ define(function(require, exports, module) {
     };
 
     Spec.prototype.removeChild = function(index){
-        this.state.splice(index, 1);
+        this.target.splice(index, 1);
     };
 
     function _firstSet(){
         if (!this.state) this.state = {};
-        else if (this.state instanceof Array){
-            var target = new Spec(this.state.slice());
-            this.state = {target : target};
-        }
     }
 
     Spec.prototype.set = function(spec){
@@ -109,8 +95,7 @@ define(function(require, exports, module) {
     };
 
     Spec.prototype.setTarget = function(target){
-        _firstSet.call(this);
-        this.state.target = target;
+        this.target = target;
         return this;
     };
 
@@ -119,26 +104,27 @@ define(function(require, exports, module) {
     };
 
     Spec.prototype.render = function(parentSpec){
+        if (!this._dirty) return this._cache;
+
         var result;
-        if (this.state instanceof Array){
+        if (this.target instanceof Array){
+            var flattenedSpec = (this.state && parentSpec)
+                ? SpecParser.flatten(this.state, parentSpec)
+                : parentSpec;
             result = [];
-            for (var i = 0; i < this.state.length; i++){
-                result[i] = this.state[i].render(parentSpec);
-            }
+            for (var i = 0; i < this.target.length; i++)
+                result[i] = this.target[i].render(flattenedSpec);
         }
-        else if (this.state instanceof Object){
-            if (!this._dirty)
-                result = this._cache;
-            else {
-                result = Object.create(this.state);
-                var flattenedSpec = (parentSpec)
-                    ? SpecParser.flatten(result, parentSpec)
-                    : result;
-                if (this.state.target && this.state.target.render)
-                    result.target = this.state.target.render(flattenedSpec);
-                this._cache = result;
-            }
+        else if (this.target instanceof Object){
+            result = Object.create(this.state);
+            var flattenedSpec = (this.state && parentSpec)
+                ? SpecParser.flatten(this.state, parentSpec)
+                : parentSpec;
+            if (this.target && this.target.render)
+                result.target = this.target.render(flattenedSpec);
         }
+
+        this._cache = result;
         return result;
     };
 
