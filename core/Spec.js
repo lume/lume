@@ -100,11 +100,25 @@ define(function(require, exports, module) {
     };
 
     Spec.prototype.isDirty = function(){
-        return this._dirty;
+        var isDirty = this._dirty;
+        if (!isDirty){
+            if (this.target instanceof Array){
+                for (var i = 0; i < this.target.length; i++){
+                    isDirty &= this.target[0].isDirty();
+                    if (isDirty) break;
+                }
+            }
+            else if (this.target instanceof Spec){
+                isDirty &= this.target.isDirty();
+            }
+        }
+
+        return isDirty;
     };
 
+    //TODO: fix dirty checking
     Spec.prototype.render = function(parentSpec){
-        if (!this._dirty) return this._cache;
+//        if (!this.isDirty()) return this._cache;
 
         var result;
         if (this.target instanceof Array){
@@ -112,19 +126,26 @@ define(function(require, exports, module) {
                 ? SpecParser.flatten(this.state, parentSpec)
                 : parentSpec;
             result = [];
-            for (var i = 0; i < this.target.length; i++)
+            for (var i = 0; i < this.target.length; i++){
                 result[i] = this.target[i].render(flattenedSpec);
+                if (this.target[i] instanceof Spec) this.target[i]._dirty = false;
+            }
+
         }
         else if (this.target instanceof Object){
             result = Object.create(this.state);
             var flattenedSpec = (this.state && parentSpec)
                 ? SpecParser.flatten(this.state, parentSpec)
                 : parentSpec;
-            if (this.target && this.target.render)
+            if (this.target && this.target.render){
                 result.target = this.target.render(flattenedSpec);
+                if (this.target instanceof Spec) this.target._dirty = false;
+            }
         }
 
         this._cache = result;
+        this._dirty = false;
+
         return result;
     };
 
