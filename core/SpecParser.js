@@ -45,17 +45,20 @@ define(function(require, exports, module) {
         }
         else if (spec instanceof Object) {
             var parentSize = parentSpec.size;
+            var parentOpacity = parentSpec.opacity || 1;
+            var parentTransform = parentSpec.transform || Transform.identity;
+
             var origin = spec.origin;
             var align = spec.align;
             var size = spec.size || [parentSize[0], parentSize[1]];
 
             var opacity = (spec.opacity !== undefined)
-                ? parentSpec.opacity * spec.opacity
-                : parentSpec.opacity;
+                ? parentOpacity * spec.opacity
+                : parentOpacity;
 
             var transform = (spec.transform)
-                ? Transform.multiply(parentSpec.transform || Transform.identity, spec.transform)
-                : parentSpec.transform || Transform.identity;
+                ? Transform.multiply(parentTransform, spec.transform)
+                : parentTransform;
 
             var nextSizeTransform = (spec.origin)
                 ? parentSpec.transform
