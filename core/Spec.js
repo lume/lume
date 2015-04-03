@@ -39,12 +39,6 @@ define(function(require, exports, module) {
         if (!this.state) this.state = {};
     }
 
-    Spec.prototype.set = function(spec){
-        this.state  = spec.state  || null;
-        this._cache = spec._cache || null;
-        this._dirty = spec._dirty || false;
-    };
-
     Spec.prototype.setTransform = function(transform){
         _firstSet.call(this);
         if (!this.state.transform) this.state.transform = [];
