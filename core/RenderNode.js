@@ -10,6 +10,7 @@ define(function(require, exports, module) {
     var CombinerNode = require('./CombinerNode');
     var Transform = require('./Transform');
     var SpecParser = require('./SpecParser');
+    var Modifier = require('./Modifier');
 
     /**
      * A wrapper for inserting a renderable component (like a Modifer or
@@ -38,6 +39,9 @@ define(function(require, exports, module) {
      * @return {RenderNode} new render node wrapping child
      */
     RenderNode.prototype.add = function add(child) {
+        // Sugar for adding modifiers
+        if (!child.render) child = new Modifier(child);
+
         var childNode = (child instanceof RenderNode) ? child : new RenderNode(child);
 
         if (this._child instanceof CombinerNode)
