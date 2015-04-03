@@ -81,13 +81,13 @@ define(function(require, exports, module) {
                 transform = Transform.moveThen([spec.margins[3] || 0, spec.margins[0], 0], transform);
             }
 
-            if (origin && origin[0] && origin[1]){
+            if (origin && (origin[0] || origin[1])){
                 transform = Transform.moveThen([-origin[0] * size[0], -origin[1] * size[1], 0], transform);
                 origin = null;
             }
 
             if (align){
-                if (parentSize && align[0] || align[1]) {
+                if (parentSize && (align[0] || align[1])) {
                     var shift = _vecInContext([align[0] * parentSize[0], align[1] * parentSize[1], 0], parentSpec.nextSizeTransform);
                     transform = Transform.thenMove(transform, shift);
                     align = null;
