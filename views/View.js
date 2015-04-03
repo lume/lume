@@ -100,8 +100,8 @@ define(function(require, exports, module) {
 
     View.prototype.render = function render(parentSpec){
         return RenderNode.prototype.render.call(this._node, {
-            size : parentSpec.size || null,
-            origin : parentSpec.origin || null
+            size : parentSpec && parentSpec.size ? parentSpec.size : [undefined, undefined],
+            origin : parentSpec && parentSpec.origin ? parentSpec.origin : null
         });
     };
 
