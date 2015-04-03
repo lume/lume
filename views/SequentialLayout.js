@@ -23,7 +23,7 @@ define(function(require, exports, module) {
         }
     };
 
-    module.exports = View.extend({
+    var SequentialLayout = module.exports = View.extend({
         defaults : {
             direction : CONSTANTS.DIRECTION.Y,
             itemSpacing : 0
@@ -31,7 +31,7 @@ define(function(require, exports, module) {
         initialize : function initialize(){
             this._items = null;
             this._size = [undefined, undefined];
-            this._cachedLength = 0;
+            this._cachedLength = Number.NaN;
             this._outputFunction = _defaultOutputFunction;
         },
         /**
@@ -67,14 +67,22 @@ define(function(require, exports, module) {
             return this;
         },
         render : function render(parentSpec){
+            var direction = this.options.direction;
+            var antiDirection = 1 - direction;
+
             var currentNode = this._items;
             var i = 0;
             var length = 0;
+            var width = 0;
+            var itemSize;
 
             while (currentNode) {
                 var item = currentNode.get();
+
                 if (!item) break;
-                if (item.getSize) var itemSize = item.getSize();
+
+                if (item.getSize)
+                    itemSize = item.getSize();
 
                 var transform = this._outputFunction.call(this, length, i);
 
@@ -82,21 +90,26 @@ define(function(require, exports, module) {
                     .setTransform(transform)
                     .setTarget(item);
 
-                if (itemSize && itemSize[this.options.direction])
-                    length += itemSize[this.options.direction] + this.options.itemSpacing;
+                if (itemSize && itemSize[direction])
+                    length += itemSize[direction] + this.options.itemSpacing;
+
+                if (itemSize && itemSize[antiDirection] > width)
+                    width = itemSize[antiDirection];
 
                 currentNode = currentNode.getNext();
                 i++;
             }
 
+            this._size[antiDirection] = width;
+
             if (length !== this._cachedLength) {
                 this._cachedLength = length;
-                this._size[this.options.direction] = length;
+                this._size[direction] = length;
             }
 
             this.spec.setSize(this.getSize());
 
-            return this.spec.render(parentSpec);
+            return this.spec.render();
         }
     }, CONSTANTS);
 
