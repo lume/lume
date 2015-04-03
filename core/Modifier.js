@@ -132,7 +132,9 @@ define(function(require, exports, module) {
     };
 
     Modifier.prototype.getSize = function(){
-        return this._output.size;
+        return (this._output._sizeGetter)
+            ? this._output._sizeGetter()
+            : this._output.size;
     };
 
     /**
