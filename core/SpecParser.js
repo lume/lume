@@ -22,7 +22,7 @@ define(function(require, exports, module) {
             if (align && (align[0] || align[1])) {
                 var alignAdjust = [align[0] * parentSpec.size[0], align[1] * parentSpec.size[1], 0];
                 // transform is relative to origin defined by last size context's transform and its alignment
-                var shift = (parentSpec.nextSizeTransform) ? _vecInContext(alignAdjust, parentSpec.nextSizeTransform) : alignAdjust;
+                var shift = (nextSizeTransform) ? _vecInContext(alignAdjust, nextSizeTransform) : alignAdjust;
                 transform = Transform.thenMove(transform, shift);
             }
 
@@ -61,8 +61,8 @@ define(function(require, exports, module) {
                 : parentTransform;
 
             var nextSizeTransform = (spec.origin)
-                ? parentSpec.transform
-                : parentSpec.nextSizeTransform;
+                ? parentTransform
+                : parentSpec.nextSizeTransform || Transform.identity;
 
             if (spec.size) {
                 if (spec.size[0] === undefined) size[0] = parentSize[0];
@@ -88,7 +88,7 @@ define(function(require, exports, module) {
 
             if (align){
                 if (parentSize && (align[0] || align[1])) {
-                    var shift = _vecInContext([align[0] * parentSize[0], align[1] * parentSize[1], 0], parentSpec.nextSizeTransform);
+                    var shift = _vecInContext([align[0] * parentSize[0], align[1] * parentSize[1], 0], nextSizeTransform);
                     transform = Transform.thenMove(transform, shift);
                     align = null;
                 }
