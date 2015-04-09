@@ -19,10 +19,6 @@ define(function(require, exports, module) {
      *  automatically handled.
      *
      * @class Flipper
-     * @constructor
-     * @param {Options} [options] An object of options.
-     * @param {Transition} [options.transition=true] The transition executed when flipping your Flipper instance.
-     * @param {Direction} [options.direction=Flipper.DIRECTION_X] Direction specifies the axis of rotation.
      */
 
     var CONSTANTS = {
@@ -41,6 +37,9 @@ define(function(require, exports, module) {
             this.angle = new Transitionable(0);
 
             var frontModifier = new Modifier({
+                size : function(){
+                    return this.frontNode.getSize();
+                }.bind(this),
                 transform : function() {
                     var angle = this.angle.get();
                     return (this.options.direction === CONSTANTS.DIRECTION.X)
@@ -51,6 +50,9 @@ define(function(require, exports, module) {
             });
 
             var backModifier = new Modifier({
+                size : function(){
+                    return this.backNode.getSize();
+                }.bind(this),
                 transform : function() {
                     var angle = this.angle.get() + Math.PI;
                     return (this.options.direction === CONSTANTS.DIRECTION.X)
