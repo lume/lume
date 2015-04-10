@@ -37,7 +37,6 @@ define(function(require, exports, module) {
 
         this._startTime = 0;
         this._startValue = 0;
-        this._updateTime = 0;
         this._endValue = 0;
         this._curve = undefined;
         this._duration = 0;
@@ -168,6 +167,20 @@ define(function(require, exports, module) {
         return ((1 - t) * a) + (t * b);
     }
 
+    function _speed2Duration(start, end, speed){
+        var duration;
+        var startValue = this._startValue;
+        if (startValue instanceof Array) {
+            var variance = 0;
+            for (var i in startValue)
+                variance += (end[i] - start[i]) * (end[i] - start[i]);
+            duration = Math.sqrt(variance) / speed;
+        }
+        else
+            duration = Math.abs(end - start) / speed;
+        return duration;
+    }
+
     function _clone(obj) {
         if (obj instanceof Object) {
             if (obj instanceof Array) return obj.slice(0);
@@ -179,7 +192,7 @@ define(function(require, exports, module) {
     // Fill in missing properties in "transition" with those in defaultTransition, and
     //   convert internal named curve to function object, returning as new
     //   object.
-    function _normalize(transition, defaultTransition) {
+    function _normalize(transition, endValue, defaultTransition) {
         var result = {curve: defaultTransition.curve};
         if (defaultTransition.duration) result.duration = defaultTransition.duration;
         if (defaultTransition.speed) result.speed = defaultTransition.speed;
@@ -189,6 +202,7 @@ define(function(require, exports, module) {
             if (transition.speed) result.speed = transition.speed;
         }
         if (typeof result.curve === 'string') result.curve = TweenTransition.getCurve(result.curve);
+        if (transition.speed) result.duration = _speed2Duration(endValue, this._startValue, transition.speed);
         return result;
     }
 
@@ -233,18 +247,7 @@ define(function(require, exports, module) {
         }
 
         this._startValue = _clone(this.get());
-        transition = _normalize(transition, this.options);
-        if (transition.speed) {
-            var startValue = this._startValue;
-            if (startValue instanceof Object) {
-                var variance = 0;
-                for (var i in startValue) variance += (endValue[i] - startValue[i]) * (endValue[i] - startValue[i]);
-                transition.duration = Math.sqrt(variance) / transition.speed;
-            }
-            else {
-                transition.duration = Math.abs(endValue - startValue) / transition.speed;
-            }
-        }
+        transition = _normalize(transition, endValue, this.options);
 
         this._startTime = Date.now();
         this._endValue = _clone(endValue);
@@ -271,11 +274,11 @@ define(function(require, exports, module) {
             this._callback = undefined;
             callback();
         }
+
         this.state = _clone(startValue);
         this.velocity = _clone(startVelocity);
         this._startTime = 0;
         this._duration = 0;
-        this._updateTime = 0;
         this._startValue = this.state;
         this._startVelocity = this.velocity;
         this._endValue = this.state;
@@ -358,10 +361,9 @@ define(function(require, exports, module) {
         }
 
         var timestamp = Date.now();
-        if (this._updateTime >= timestamp) return;
-        this._updateTime = timestamp;
 
         var timeSinceStart = timestamp - this._startTime;
+
         if (timeSinceStart >= this._duration) {
             this.state = this._endValue;
             this.velocity = _calculateVelocity(this.state, this._startValue, this._curve, this._duration, 1);
@@ -376,6 +378,7 @@ define(function(require, exports, module) {
             this.state = _calculateState(this._startValue, this._endValue, this._curve(t));
             this.velocity = _calculateVelocity(this.state, this._startValue, this._curve, this._duration, t);
         }
+
     };
 
     /**
