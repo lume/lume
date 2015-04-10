@@ -99,9 +99,12 @@ define(function(require, exports, module) {
      */
 
     View.prototype.render = function render(parentSpec){
+        var size = this.options.size || parentSpec && parentSpec.size ? parentSpec.size : null;
+        var origin = this.options.origin || parentSpec && parentSpec.origin ? parentSpec.origin : null;
+
         return RenderNode.prototype.render.call(this._node, {
-            size : parentSpec && parentSpec.size ? parentSpec.size : [undefined, undefined],
-            origin : parentSpec && parentSpec.origin ? parentSpec.origin : null
+            size : size,
+            origin : origin
         });
     };
 
@@ -112,15 +115,19 @@ define(function(require, exports, module) {
      * @return {Array.Number} [width, height]
      */
     View.prototype.getSize = function getSize() {
-        return (this._node && this._node.getSize)
-            ? this._node.getSize()
-            : this.options.size;
+        return (this.options.size)
+            ? this.options.size
+            : (this._node.getSize) ? this._node.getSize() : null;
+    };
+
+    View.prototype.setOrigin = function setOrigin(origin){
+        this.options.origin = origin;
     };
 
     View.prototype.getOrigin = function getSize() {
-        return (this._node && this._node.getOrigin)
-            ? this._node.getOrigin()
-            : this.options.origin;
+        return (this.options.origin)
+            ? this.options.origin
+            : (this._node.getOrigin) ? this._node.getOrigin() : null;
     };
 
     View.prototype.getEventInput = function getEventInput(){
