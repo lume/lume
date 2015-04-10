@@ -76,7 +76,7 @@ define(function(require, exports, module) {
         }
     };
 
-    TweenTransition.SUPPORTS_MULTIPLE = true;
+    TweenTransition.SUPPORTS_MULTIPLE = Infinity;
     TweenTransition.DEFAULT_OPTIONS = {
         curve: TweenTransition.Curves.linear,
         duration: 500,
