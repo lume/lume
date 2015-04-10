@@ -83,12 +83,13 @@ define(function(require, exports, module) {
         var transition = this.transitionQueue.shift();
         this._callback = this.callbackQueue.shift();
 
-        var method = (transition instanceof Object && transitionMethods[transition.curve])
-            ? transitionMethods[transition.curve]
+        var curve = transition.curve;
+        var method = (transition instanceof Object && curve && transitionMethods[curve])
+            ? transitionMethods[curve]
             : TweenTransition;
 
         if (this._currentMethod !== method) {
-            this._engineInstance = (endValue instanceof Array && endValue.length <= method.SUPPORTS_MULTIPLE)
+            this._engineInstance = (typeof endValue === 'number' || endValue.length <= method.SUPPORTS_MULTIPLE)
                 ? new method()
                 : new MultipleTransition(method);
             this._currentMethod = method;
