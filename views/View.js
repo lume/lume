@@ -93,14 +93,14 @@ define(function(require, exports, module) {
     /**
      * Generate a render spec from the contents of this component.
      *
-     * @private
+
      * @method render
      * @return {number} Render spec for this component
      */
 
     View.prototype.render = function render(parentSpec){
-        var size = this.options.size || parentSpec && parentSpec.size ? parentSpec.size : null;
-        var origin = this.options.origin || parentSpec && parentSpec.origin ? parentSpec.origin : null;
+        var size = this.options.size || (parentSpec && parentSpec.size ? parentSpec.size : null);
+        var origin = this.options.origin || (parentSpec && parentSpec.origin ? parentSpec.origin : null);
 
         return RenderNode.prototype.render.call(this._node, {
             size : size,
