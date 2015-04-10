@@ -79,19 +79,16 @@ define(function(require, exports, module) {
             return;
         }
 
-        var method = null;
         var endValue = this.endStateQueue.shift();
         var transition = this.transitionQueue.shift();
         this._callback = this.callbackQueue.shift();
 
-        if (transition instanceof Object && transition.method) {
-            method = transition.method;
-            if (typeof method === 'string') method = transitionMethods[method];
-        }
-        else method = TweenTransition;
+        var method = (transition instanceof Object && transitionMethods[transition.curve])
+            ? transitionMethods[transition.curve]
+            : TweenTransition;
 
         if (this._currentMethod !== method) {
-            this._engineInstance = (!(endValue instanceof Object) || method.SUPPORTS_MULTIPLE === true || endValue.length <= method.SUPPORTS_MULTIPLE)
+            this._engineInstance = (endValue instanceof Array && endValue.length <= method.SUPPORTS_MULTIPLE)
                 ? new method()
                 : new MultipleTransition(method);
             this._currentMethod = method;
