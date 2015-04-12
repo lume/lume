@@ -30,13 +30,9 @@ define(function(require, exports, module) {
     var Engine = {};
 
     var contexts = [];
-
-    var nextTickQueue = [];
     var currentFrame = 0;
     var nextTickFrame = 0;
-
-    var deferQueue = [];
-
+    var nextTickQueue = [];
     var lastTime = Date.now();
     var frameTime;
     var frameTimeLimit;
@@ -77,25 +73,15 @@ define(function(require, exports, module) {
         // skip frame if we're over our framerate cap
         if (frameTimeLimit && currentTime - lastTime < frameTimeLimit) return;
 
-        var i = 0;
-
         frameTime = currentTime - lastTime;
         lastTime = currentTime;
 
         eventHandler.emit('prerender');
 
         // empty the queue
-        if (nextTickQueue.length && nextTickQueue[0] instanceof Array) {
-            for (i = 0; i < nextTickQueue[0].length; i++) nextTickQueue[0][i].call(this, currentFrame);
-            nextTickQueue.splice(0, 1);
-        }
+        while (nextTickQueue.length) (nextTickQueue.shift())();
 
-        // limit total execution time for deferrable functions
-        while (deferQueue.length && (Date.now() - currentTime) < MAX_DEFER_FRAME_TIME) {
-            deferQueue.shift().call(this);
-        }
-
-        for (i = 0; i < contexts.length; i++) contexts[i].commit();
+        for (var i = 0; i < contexts.length; i++) contexts[i].commit();
 
         eventHandler.emit('postrender');
     };
@@ -357,35 +343,13 @@ define(function(require, exports, module) {
      * @param {function(Object)} fn function accepting window object
      */
     Engine.nextTick = function nextTick(fn) {
-        var frameIndex = nextTickFrame - currentFrame;
-        if (!nextTickQueue[frameIndex]) nextTickQueue[frameIndex] = [];
-
-        function frameChecker(frame) {
-            var nextFrame = frame + 1;
-            if (nextTickFrame !== nextFrame) nextTickFrame = nextFrame;
-            fn();
-        }
-
-        nextTickQueue[frameIndex].push(frameChecker);
-
-    };
-
-    /**
-     * Queue a function to be executed sometime soon, at a time that is
-     *    unlikely to affect frame rate.
-     *
-     * @static
-     * @method defer
-     *
-     * @param {Function} fn
-     */
-    Engine.defer = function defer(fn) {
-        deferQueue.push(fn);
+        nextTickQueue.push(fn);
     };
 
     optionsManager.on('change', function(data) {
-        if (data.id === 'fpsCap') Engine.setFPSCap(data.value);
-        else if (data.id === 'runLoop') {
+        var key = data.key;
+        if (key === 'fpsCap') Engine.setFPSCap(data.value);
+        else if (key === 'runLoop') {
             // kick off the loop only if it was stopped
             if (!loopEnabled && data.value) {
                 loopEnabled = true;
