@@ -50,9 +50,6 @@ define(function(require, exports, module) {
     };
     var optionsManager = new OptionsManager(options);
 
-    /** @const */
-    var MAX_DEFER_FRAME_TIME = 10;
-
     /**
      * Inside requestAnimationFrame loop, step() is called, which:
      *   calculates current FPS (throttling loop if it is over limit set in setFPSCap),
