@@ -22,13 +22,9 @@ define(function(require, exports, module) {
 
     var _event  = 'prerender';
 
-    var getTime = (window.performance && window.performance.now) ?
-        function() {
-            return window.performance.now();
-        }
-        : function() {
-            return Date.now();
-        };
+    var getTime = (window.performance)
+        ? function() { return window.performance.now(); }
+        : Date.now;
 
     /**
      * Add a function to be run on every prerender
@@ -163,30 +159,17 @@ define(function(require, exports, module) {
      */
     function debounce(func, wait) {
         var timeout;
-        var ctx;
-        var timestamp;
-        var result;
-        var args;
         return function() {
-            ctx = this;
-            args = arguments;
-            timestamp = getTime();
+            var args = arguments;
+            var timestamp = getTime();
 
             var fn = function() {
-                var last = getTime - timestamp;
-
-                if (last < wait) {
-                    timeout = setTimeout(fn, wait - last);
-                } else {
-                    timeout = null;
-                    result = func.apply(ctx, args);
-                }
-            };
+                timeout = null;
+                func.apply(this, args);
+            }.bind(this);
 
             clear(timeout);
             timeout = setTimeout(fn, wait);
-
-            return result;
         };
     }
 
