@@ -96,7 +96,7 @@ define(function(require, exports, module) {
             numTicks--;
             if (numTicks <= 0) { //in case numTicks is fraction or negative
                 fn.apply(this, arguments);
-                clear(callback);
+                Timer.clear(callback);
             }
         };
         return _addTimerFunction(callback);
@@ -159,7 +159,7 @@ define(function(require, exports, module) {
                 func.apply(this, args);
             }.bind(this);
 
-            clear(timeout);
+            Timer.clear(timeout);
             timeout = setTimeout(fn, wait);
         };
     };
