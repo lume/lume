@@ -26,14 +26,15 @@ define(function(require, exports, module) {
     var Context = require('./Context');
     var EventHandler = require('./EventHandler');
     var OptionsManager = require('./OptionsManager');
+    var nextTickQueue = require('./nextTickQueue');
 
     var Engine = {};
 
+    var now = Date.now;
     var contexts = [];
     var currentFrame = 0;
     var nextTickFrame = 0;
-    var nextTickQueue = [];
-    var lastTime = Date.now();
+    var lastTime = now();
     var frameTime;
     var frameTimeLimit;
     var loopEnabled = true;
@@ -68,7 +69,7 @@ define(function(require, exports, module) {
         currentFrame++;
         nextTickFrame = currentFrame;
 
-        var currentTime = Date.now();
+        var currentTime = now();
 
         // skip frame if we're over our framerate cap
         if (frameTimeLimit && currentTime - lastTime < frameTimeLimit) return;
@@ -103,9 +104,9 @@ define(function(require, exports, module) {
     // @param {Object=} event document event
     //
     function handleResize(event) {
-        for (var i = 0; i < contexts.length; i++) {
+        for (var i = 0; i < contexts.length; i++)
             contexts[i].emit('resize');
-        }
+
         eventHandler.emit('resize');
     }
     window.addEventListener('resize', handleResize, false);
@@ -172,7 +173,7 @@ define(function(require, exports, module) {
                 document.body.addEventListener(type, eventForwarders[type]);
             }
             else {
-                Engine.nextTick(function(type, forwarder) {
+                nextTickQueue.push(function(type, forwarder) {
                     document.body.addEventListener(type, forwarder);
                 }.bind(this, type, eventForwarders[type]));
             }
@@ -275,7 +276,7 @@ define(function(require, exports, module) {
      * @return {Context} new Context within el
      */
     Engine.createContext = function createContext(el) {
-        if (!initialized && options.appMode) Engine.nextTick(initialize);
+        if (!initialized && options.appMode) nextTickQueue.push(initialize);
 
         var needMountContainer = false;
         if (!el) {
@@ -286,7 +287,7 @@ define(function(require, exports, module) {
         var context = new Context(el);
         Engine.registerContext(context);
         if (needMountContainer) {
-            Engine.nextTick(function(context, el) {
+            nextTickQueue.push(function(context, el) {
                 document.body.appendChild(el);
                 context.emit('resize');
             }.bind(this, context, el));
@@ -331,19 +332,6 @@ define(function(require, exports, module) {
     Engine.deregisterContext = function deregisterContext(context) {
         var i = contexts.indexOf(context);
         if (i >= 0) contexts.splice(i, 1);
-    };
-
-    /**
-     * Queue a function to be executed on the next tick of the
-     *    Engine.
-     *
-     * @static
-     * @method nextTick
-     *
-     * @param {function(Object)} fn function accepting window object
-     */
-    Engine.nextTick = function nextTick(fn) {
-        nextTickQueue.push(fn);
     };
 
     optionsManager.on('change', function(data) {
