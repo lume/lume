@@ -5,8 +5,6 @@
  * @license MPL 2.0
  * @copyright Famous Industries, Inc. 2014
  */
-// TODO fix func-style
-/*eslint func-style: [0, "declaration"] */
 
 define(function(require, exports, module) {
     /**
@@ -20,25 +18,18 @@ define(function(require, exports, module) {
      */
     var Engine = require('../core/Engine');
 
-    var _event  = 'prerender';
+    var _event = 'prerender';
 
     var getTime = (window.performance)
         ? function() { return window.performance.now(); }
         : Date.now;
 
-    /**
-     * Add a function to be run on every prerender
-     *
-     * @method addTimerFunction
-     *
-     * @param {function} fn function to be run every prerender
-     *
-     * @return {function} function passed in as parameter
-     */
-    function addTimerFunction(fn) {
+    function _addTimerFunction(fn) {
         Engine.on(_event, fn);
         return fn;
     }
+
+    var Timer = {};
 
     /**
      * Wraps a function to be invoked after a certain amount of time.
@@ -52,7 +43,7 @@ define(function(require, exports, module) {
      *
      * @return {function} function passed in as parameter
      */
-    function setTimeout(fn, duration) {
+    Timer.setTimeout = function setTimeout(fn, duration) {
         var t = getTime();
         var callback = function() {
             var t2 = getTime();
@@ -61,8 +52,8 @@ define(function(require, exports, module) {
                 Engine.off(_event, callback);
             }
         };
-        return addTimerFunction(callback);
-    }
+        return _addTimerFunction(callback);
+    };
 
     /**
      * Wraps a function to be invoked after a certain amount of time.
@@ -76,7 +67,7 @@ define(function(require, exports, module) {
      *
      * @return {function} function passed in as parameter
      */
-    function setInterval(fn, duration) {
+    Timer.setInterval = function setInterval(fn, duration) {
         var t = getTime();
         var callback = function() {
             var t2 = getTime();
@@ -85,8 +76,8 @@ define(function(require, exports, module) {
                 t = getTime();
             }
         };
-        return addTimerFunction(callback);
-    }
+        return _addTimerFunction(callback);
+    };
 
     /**
      * Wraps a function to be invoked after a certain amount of prerender ticks.
@@ -99,7 +90,7 @@ define(function(require, exports, module) {
      *
      * @return {function} function passed in as parameter
      */
-    function after(fn, numTicks) {
+    Timer.after = function after(fn, numTicks) {
         if (numTicks === undefined) return undefined;
         var callback = function() {
             numTicks--;
@@ -108,8 +99,8 @@ define(function(require, exports, module) {
                 clear(callback);
             }
         };
-        return addTimerFunction(callback);
-    }
+        return _addTimerFunction(callback);
+    };
 
     /**
      * Wraps a function to be continually invoked after a certain amount of prerender ticks.
@@ -122,7 +113,7 @@ define(function(require, exports, module) {
      *
      * @return {function} function passed in as parameter
      */
-    function every(fn, numTicks) {
+    Timer.every = function every(fn, numTicks) {
         numTicks = numTicks || 1;
         var initial = numTicks;
         var callback = function() {
@@ -132,8 +123,8 @@ define(function(require, exports, module) {
                 numTicks = initial;
             }
         };
-        return addTimerFunction(callback);
-    }
+        return _addTimerFunction(callback);
+    };
 
     /**
      * Remove a function that gets called every prerender
@@ -142,9 +133,9 @@ define(function(require, exports, module) {
      *
      * @param {function} fn event linstener
      */
-    function clear(fn) {
+    Timer.clear = function clear(fn) {
         Engine.off(_event, fn);
-    }
+    };
 
     /**
      * Executes a function after a certain amount of time. Makes sure
@@ -157,7 +148,7 @@ define(function(require, exports, module) {
      *
      * @return {function} function that is not able to debounce
      */
-    function debounce(func, wait) {
+    Timer.debounce = function debounce(func, wait) {
         var timeout;
         return function() {
             var args = arguments;
@@ -171,15 +162,7 @@ define(function(require, exports, module) {
             clear(timeout);
             timeout = setTimeout(fn, wait);
         };
-    }
-
-    module.exports = {
-        setTimeout : setTimeout,
-        setInterval : setInterval,
-        debounce : debounce,
-        after : after,
-        every : every,
-        clear : clear
     };
 
+    module.exports = Timer;
 });
