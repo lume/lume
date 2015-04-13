@@ -269,12 +269,6 @@ define(function(require, exports, module) {
      *    starting velocity
      */
     TweenTransition.prototype.reset = function reset(startValue, startVelocity) {
-        if (this._callback) {
-            var callback = this._callback;
-            this._callback = undefined;
-            callback();
-        }
-
         this.state = _clone(startValue);
         this.velocity = _clone(startVelocity);
         this._startTime = 0;
@@ -378,7 +372,6 @@ define(function(require, exports, module) {
             this.state = _calculateState(this._startValue, this._endValue, this._curve(t));
             this.velocity = _calculateVelocity(this.state, this._startValue, this._curve, this._duration, t);
         }
-
     };
 
     /**
