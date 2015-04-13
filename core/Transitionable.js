@@ -63,8 +63,6 @@ define(function(require, exports, module) {
 
     function _loadNext() {
         if (this.endStateQueue.length === 0) {
-            this.halt();
-
             if (this._eventOutput)
                 this._eventOutput.emit('end', {
                     value : this.state,
@@ -76,7 +74,6 @@ define(function(require, exports, module) {
                 this._callback = undefined;
                 callback();
             }
-
             return;
         }
 
@@ -106,6 +103,7 @@ define(function(require, exports, module) {
             transition.velocity = this.velocity;
         }
 
+        this._active = true;
         this._engineInstance.set(endValue, transition, _loadNext.bind(this));
     }
 
@@ -127,7 +125,6 @@ define(function(require, exports, module) {
     Transitionable.prototype.set = function set(endState, transition, callback) {
         if (!transition) {
             this.reset(endState, undefined);
-            this._active = false;
             if (callback) callback();
             return this;
         }
@@ -136,48 +133,9 @@ define(function(require, exports, module) {
         this.transitionQueue.push(transition);
         this.callbackQueue.push(callback);
 
-        if (!this.isActive()) {
-            this._active = true;
-            _loadNext.call(this);
-        }
+        if (!this.isActive()) _loadNext.call(this);
 
         return this;
-    };
-
-    /**
-     * Cancel all transitions and reset to a stable state
-     *
-     * @method reset
-     *
-     * @param {number|Array.Number|Object.<number, number>} startState
-     *    stable state to set to
-     */
-    Transitionable.prototype.reset = function reset(startState, startVelocity) {
-        this._currentMethod = null;
-        this._engineInstance = null;
-        this.state = startState;
-        this.velocity = startVelocity;
-        this.endStateQueue = [];
-        this.transitionQueue = [];
-        this.callbackQueue = [];
-        this._active = false;
-    };
-
-    /**
-     * Add delay action to the pending action queue queue.
-     *
-     * @method delay
-     *
-     * @param {number} duration delay time (ms)
-     * @param {function} callback Zero-argument function to call on observed
-     *    completion (t=1)
-     */
-    Transitionable.prototype.delay = function delay(duration, callback) {
-        this.set(this.get(), {
-            duration: duration,
-            curve: function(){return 0;}},
-            callback
-        );
     };
 
     /**
@@ -204,16 +162,54 @@ define(function(require, exports, module) {
                 }
                 else delta = state - this.state;
 
-                this.state = state;
-
                 this._eventOutput.emit('update', {
                     delta : delta,
                     value : state
                 });
             }
-            else this.state = state;
+
+            this.state = state;
         }
         return this.state;
+    };
+
+    /**
+     * Cancel all transitions and reset to a stable state
+     *
+     * @method reset
+     *
+     * @param {number|Array.Number|Object.<number, number>} startState
+     *    stable state to set to
+     */
+    Transitionable.prototype.reset = function reset(startState, startVelocity) {
+        if (this._engineInstance)
+            this._engineInstance.set(startState);
+
+        this._currentMethod = null;
+        this._engineInstance = null;
+        this.state = startState;
+        this.velocity = startVelocity;
+        this.endStateQueue = [];
+        this.transitionQueue = [];
+        this.callbackQueue = [];
+        this._active = false;
+    };
+
+    /**
+     * Add delay action to the pending action queue queue.
+     *
+     * @method delay
+     *
+     * @param {number} duration delay time (ms)
+     * @param {function} callback Zero-argument function to call on observed
+     *    completion (t=1)
+     */
+    Transitionable.prototype.delay = function delay(duration, callback) {
+        this.set(this.get(), {
+                duration: duration,
+                curve: function(){return 0;}},
+            callback
+        );
     };
 
     /**
@@ -234,7 +230,6 @@ define(function(require, exports, module) {
      */
     Transitionable.prototype.halt = function halt() {
         this.set(this.get());
-        this._active = false;
     };
 
     function _createEventOutput() {
