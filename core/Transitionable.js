@@ -63,6 +63,8 @@ define(function(require, exports, module) {
 
     function _loadNext() {
         if (this.endStateQueue.length === 0) {
+            this.halt();
+
             if (this._eventOutput)
                 this._eventOutput.emit('end', {
                     value : this.state,
