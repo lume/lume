@@ -26,18 +26,15 @@ define(function(require, exports, module) {
     var Context = require('./Context');
     var EventHandler = require('./EventHandler');
     var OptionsManager = require('./OptionsManager');
+    var nextTickQueue = require('./nextTickQueue');
 
     var Engine = {};
 
+    var now = Date.now;
     var contexts = [];
-
-    var nextTickQueue = [];
     var currentFrame = 0;
     var nextTickFrame = 0;
-
-    var deferQueue = [];
-
-    var lastTime = Date.now();
+    var lastTime = now();
     var frameTime;
     var frameTimeLimit;
     var loopEnabled = true;
@@ -72,12 +69,10 @@ define(function(require, exports, module) {
         currentFrame++;
         nextTickFrame = currentFrame;
 
-        var currentTime = Date.now();
+        var currentTime = now();
 
         // skip frame if we're over our framerate cap
         if (frameTimeLimit && currentTime - lastTime < frameTimeLimit) return;
-
-        var i = 0;
 
         frameTime = currentTime - lastTime;
         lastTime = currentTime;
@@ -85,17 +80,9 @@ define(function(require, exports, module) {
         eventHandler.emit('prerender');
 
         // empty the queue
-        if (nextTickQueue.length && nextTickQueue[0] instanceof Array) {
-            for (i = 0; i < nextTickQueue[0].length; i++) nextTickQueue[0][i].call(this, currentFrame);
-            nextTickQueue.splice(0, 1);
-        }
+        while (nextTickQueue.length) (nextTickQueue.shift())();
 
-        // limit total execution time for deferrable functions
-        while (deferQueue.length && (Date.now() - currentTime) < MAX_DEFER_FRAME_TIME) {
-            deferQueue.shift().call(this);
-        }
-
-        for (i = 0; i < contexts.length; i++) contexts[i].commit();
+        for (var i = 0; i < contexts.length; i++) contexts[i].commit();
 
         eventHandler.emit('postrender');
     };
@@ -117,9 +104,9 @@ define(function(require, exports, module) {
     // @param {Object=} event document event
     //
     function handleResize(event) {
-        for (var i = 0; i < contexts.length; i++) {
+        for (var i = 0; i < contexts.length; i++)
             contexts[i].emit('resize');
-        }
+
         eventHandler.emit('resize');
     }
     window.addEventListener('resize', handleResize, false);
@@ -186,7 +173,7 @@ define(function(require, exports, module) {
                 document.body.addEventListener(type, eventForwarders[type]);
             }
             else {
-                Engine.nextTick(function(type, forwarder) {
+                nextTickQueue.push(function(type, forwarder) {
                     document.body.addEventListener(type, forwarder);
                 }.bind(this, type, eventForwarders[type]));
             }
@@ -289,7 +276,7 @@ define(function(require, exports, module) {
      * @return {Context} new Context within el
      */
     Engine.createContext = function createContext(el) {
-        if (!initialized && options.appMode) Engine.nextTick(initialize);
+        if (!initialized && options.appMode) nextTickQueue.push(initialize);
 
         var needMountContainer = false;
         if (!el) {
@@ -300,7 +287,7 @@ define(function(require, exports, module) {
         var context = new Context(el);
         Engine.registerContext(context);
         if (needMountContainer) {
-            Engine.nextTick(function(context, el) {
+            nextTickQueue.push(function(context, el) {
                 document.body.appendChild(el);
                 context.emit('resize');
             }.bind(this, context, el));
@@ -347,45 +334,10 @@ define(function(require, exports, module) {
         if (i >= 0) contexts.splice(i, 1);
     };
 
-    /**
-     * Queue a function to be executed on the next tick of the
-     *    Engine.
-     *
-     * @static
-     * @method nextTick
-     *
-     * @param {function(Object)} fn function accepting window object
-     */
-    Engine.nextTick = function nextTick(fn) {
-        var frameIndex = nextTickFrame - currentFrame;
-        if (!nextTickQueue[frameIndex]) nextTickQueue[frameIndex] = [];
-
-        function frameChecker(frame) {
-            var nextFrame = frame + 1;
-            if (nextTickFrame !== nextFrame) nextTickFrame = nextFrame;
-            fn();
-        }
-
-        nextTickQueue[frameIndex].push(frameChecker);
-
-    };
-
-    /**
-     * Queue a function to be executed sometime soon, at a time that is
-     *    unlikely to affect frame rate.
-     *
-     * @static
-     * @method defer
-     *
-     * @param {Function} fn
-     */
-    Engine.defer = function defer(fn) {
-        deferQueue.push(fn);
-    };
-
     optionsManager.on('change', function(data) {
-        if (data.id === 'fpsCap') Engine.setFPSCap(data.value);
-        else if (data.id === 'runLoop') {
+        var key = data.key;
+        if (key === 'fpsCap') Engine.setFPSCap(data.value);
+        else if (key === 'runLoop') {
             // kick off the loop only if it was stopped
             if (!loopEnabled && data.value) {
                 loopEnabled = true;
