@@ -132,6 +132,9 @@ define(function(require, exports, module) {
             return this;
         }
 
+        //TODO: make this check more efficient
+        if (this.isActive()) this.halt();
+
         this.endStateQueue.push(endState);
         this.transitionQueue.push(transition);
         this.callbackQueue.push(callback);
