@@ -198,19 +198,28 @@ define(function(require, exports, module) {
 
     // Directly apply given origin coordinates to the document element as the
     // appropriate webkit CSS style.
-    var _setOrigin = usePrefix ? function(element, origin) {
-        element.style.webkitTransformOrigin = _formatCSSOrigin(origin);
-    } : function(element, origin) {
-        element.style.transformOrigin = _formatCSSOrigin(origin);
-    };
+    var _setOrigin = usePrefix
+        ? function _setOrigin(element, origin) {
+            element.style.webkitTransformOrigin = _formatCSSOrigin(origin);
+        }
+        : function _setOrigin(element, origin) {
+            element.style.transformOrigin = _formatCSSOrigin(origin);
+        };
+
+    var MIN_OPACITY = 0.0001;
+    function _setOpacity(element, opacity){
+        if (opacity >= 1) opacity = 1;
+        else if (opacity < MIN_OPACITY) opacity = MIN_OPACITY;
+        element.style.opacity = opacity;
+    }
 
     // Shrink given document element until it is effectively invisible.
     var _setInvisible = usePrefix ? function(element) {
         element.style.webkitTransform = 'scale3d(0.0001,0.0001,0.0001)';
-        element.style.opacity = 0;
+        element.style.opacity = MIN_OPACITY;
     } : function(element) {
         element.style.transform = 'scale3d(0.0001,0.0001,0.0001)';
-        element.style.opacity = 0;
+        element.style.opacity = MIN_OPACITY;
     };
 
     function _xyNotEquals(a, b) {
@@ -260,7 +269,7 @@ define(function(require, exports, module) {
 
         if (this._opacityDirty) {
             this._opacity = opacity;
-            target.style.opacity = (opacity >= 1) ? '0.999999' : opacity;
+            _setOpacity(target, opacity);
             this._opacityDirty = false;
         }
 
