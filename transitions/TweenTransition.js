@@ -301,23 +301,21 @@ define(function(require, exports, module) {
      *    _interpolated to this point in time.
      */
     TweenTransition.prototype.get = function get() {
-        this.update();
+        if (this.isActive()) this.update();
         return this.state;
     };
 
+    var eps = 1e-7;
     function _calculateVelocity(current, start, curve, duration, t) {
         var velocity;
-        var eps = 1e-7;
         var speed = (curve(t) - curve(t - eps)) / eps;
         if (current instanceof Array) {
             velocity = [];
             for (var i = 0; i < current.length; i++){
-                if (typeof current[i] === 'number')
-                    velocity[i] = speed * (current[i] - start[i]) / duration;
-                else
-                    velocity[i] = 0;
+                velocity[i] = (typeof current[i] === 'number')
+                    ? speed * (current[i] - start[i]) / duration
+                    : 0;
             }
-
         }
         else velocity = speed * (current - start) / duration;
         return velocity;
@@ -345,15 +343,6 @@ define(function(require, exports, module) {
      * @method update
      */
     TweenTransition.prototype.update = function update() {
-        if (!this._active) {
-            if (this._callback) {
-                var callback = this._callback;
-                this._callback = undefined;
-                callback();
-            }
-            return;
-        }
-
         var timestamp = Date.now();
 
         var timeSinceStart = timestamp - this._startTime;
@@ -362,6 +351,12 @@ define(function(require, exports, module) {
             this.state = this._endValue;
             this.velocity = _calculateVelocity(this.state, this._startValue, this._curve, this._duration, 1);
             this._active = false;
+            if (this._callback) {
+                var callback = this._callback;
+                this._callback = undefined;
+                callback();
+            }
+            return;
         }
         else if (timeSinceStart < 0) {
             this.state = this._startValue;
@@ -405,8 +400,8 @@ define(function(require, exports, module) {
     TweenTransition.register('spring', TweenTransition.Curves.spring);
 
     TweenTransition.customCurve = function customCurve(v1, v2) {
-        if (v1 === undefined) v1 = 0;
-        if (v2 === undefined) v2 = 0;
+        if (v1 === undefined) v1 = 0; // slope at t = 0
+        if (v2 === undefined) v2 = 0; // slope at t = 1
         return function(t) {
             return v1*t + (-2*v1 - v2 + 3)*t*t + (v1 + v2 - 2)*t*t*t;
         };

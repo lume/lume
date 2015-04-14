@@ -63,7 +63,7 @@ define(function(require, exports, module) {
 
     function _loadNext() {
         if (this.endStateQueue.length === 0) {
-            this.halt();
+            this._active = false;
 
             if (this._eventOutput)
                 this._eventOutput.emit('end', {
@@ -76,6 +76,7 @@ define(function(require, exports, module) {
                 this._callback = undefined;
                 callback();
             }
+
             return;
         }
 
@@ -150,29 +151,31 @@ define(function(require, exports, module) {
      *    interpolated to this point in time.
      */
     Transitionable.prototype.get = function get() {
-        if (!this.isActive()) return this.state;
-
-        if (this._engineInstance) {
-            var state = this._engineInstance.get();
-
-            if (this._eventOutput){
-                var delta;
-                if (state instanceof Array){
-                    delta = [];
-                    for (var i = 0; i < state.length; i++)
-                        delta[i] = state[i] - this.state[i];
-                }
-                else delta = state - this.state;
-
-                this._eventOutput.emit('update', {
-                    delta : delta,
-                    value : state
-                });
-            }
-
-            this.state = state;
-        }
+        if (this.isActive()) this.update();
         return this.state;
+    };
+
+    Transitionable.prototype.update = function update(){
+        if (!this._engineInstance) return;
+
+        var state = this._engineInstance.get();
+
+        if (this._eventOutput){
+            var delta;
+            if (state instanceof Array){
+                delta = [];
+                for (var i = 0; i < state.length; i++)
+                    delta[i] = state[i] - this.state[i];
+            }
+            else delta = state - this.state;
+
+            this._eventOutput.emit('update', {
+                delta : delta,
+                value : state
+            });
+        }
+
+        this.state = state;
     };
 
     /**
