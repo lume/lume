@@ -219,12 +219,12 @@ define(function(require, exports, module) {
      * @param {Object} [options] overrides for default options.  See constructor.
      */
     Surface.prototype.setOptions = function setOptions(options) {
-        if (options.size) this.setSize(options.size);
-        if (options.origin) this.setOrigin(options.origin);
-        if (options.classes) this.setClasses(options.classes);
-        if (options.properties) this.setProperties(options.properties);
-        if (options.attributes) this.setAttributes(options.attributes);
-        if (options.content) this.setContent(options.content);
+        if (options.size !== undefined) this.setSize(options.size);
+        if (options.origin !== undefined) this.setOrigin(options.origin);
+        if (options.classes !== undefined) this.setClasses(options.classes);
+        if (options.properties !== undefined) this.setProperties(options.properties);
+        if (options.attributes !== undefined) this.setAttributes(options.attributes);
+        if (options.content !== undefined) this.setContent(options.content);
         return this;
     };
 
