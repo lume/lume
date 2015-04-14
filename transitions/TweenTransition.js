@@ -88,7 +88,7 @@ define(function(require, exports, module) {
     /**
      * Add "unit" curve to internal dictionary of registered curves.
      *
-     * @method registerCurve
+     * @method register
      *
      * @static
      *
@@ -97,7 +97,7 @@ define(function(require, exports, module) {
      *    to range inside [0,1]
      * @return {boolean} false if key is taken, else true
      */
-    TweenTransition.registerCurve = function registerCurve(curveName, curve) {
+    TweenTransition.register = function register(curveName, curve) {
         if (!registeredCurves[curveName]) {
             registeredCurves[curveName] = curve;
             return true;
@@ -118,7 +118,7 @@ define(function(require, exports, module) {
      * @param {string} curveName dictionary key
      * @return {boolean} false if key has no dictionary value
      */
-    TweenTransition.unregisterCurve = function unregisterCurve(curveName) {
+    TweenTransition.unregister = function unregister(curveName) {
         if (registeredCurves[curveName]) {
             delete registeredCurves[curveName];
             return true;
@@ -397,15 +397,16 @@ define(function(require, exports, module) {
     };
 
     // Register all the default curves
-    TweenTransition.registerCurve('linear', TweenTransition.Curves.linear);
-    TweenTransition.registerCurve('easeIn', TweenTransition.Curves.easeIn);
-    TweenTransition.registerCurve('easeOut', TweenTransition.Curves.easeOut);
-    TweenTransition.registerCurve('easeInOut', TweenTransition.Curves.easeInOut);
-    TweenTransition.registerCurve('easeOutBounce', TweenTransition.Curves.easeOutBounce);
-    TweenTransition.registerCurve('spring', TweenTransition.Curves.spring);
+    TweenTransition.register('linear', TweenTransition.Curves.linear);
+    TweenTransition.register('easeIn', TweenTransition.Curves.easeIn);
+    TweenTransition.register('easeOut', TweenTransition.Curves.easeOut);
+    TweenTransition.register('easeInOut', TweenTransition.Curves.easeInOut);
+    TweenTransition.register('easeOutBounce', TweenTransition.Curves.easeOutBounce);
+    TweenTransition.register('spring', TweenTransition.Curves.spring);
 
     TweenTransition.customCurve = function customCurve(v1, v2) {
-        v1 = v1 || 0; v2 = v2 || 0;
+        if (v1 === undefined) v1 = 0;
+        if (v2 === undefined) v2 = 0;
         return function(t) {
             return v1*t + (-2*v1 - v2 + 3)*t*t + (v1 + v2 - 2)*t*t*t;
         };
