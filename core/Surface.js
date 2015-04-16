@@ -33,6 +33,7 @@ define(function(require, exports, module) {
         this.content = '';
 
         this.size = null;   // can take numeric, undefined or true values
+        this.proportions = null;
 
         this._classesDirty = true;
         this._stylesDirty = true;
@@ -225,6 +226,7 @@ define(function(require, exports, module) {
         if (options.properties !== undefined) this.setProperties(options.properties);
         if (options.attributes !== undefined) this.setAttributes(options.attributes);
         if (options.content !== undefined) this.setContent(options.content);
+        if (options.proportions !== undefined) this.setProportions(options.proportions);
         return this;
     };
 
@@ -435,6 +437,11 @@ define(function(require, exports, module) {
      */
     Surface.prototype.setSize = function setSize(size) {
         this.size = [size[0], size[1]];
+        this._sizeDirty = true;
+    };
+
+    Surface.prototype.setProportions = function setProportions(proportions) {
+        this.proportions = [proportions[0], proportions[1]];
         this._sizeDirty = true;
     };
 

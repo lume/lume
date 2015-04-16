@@ -30,7 +30,7 @@ define(function(require, exports, module) {
         this._transform = null;
         this._opacity = 1;
         this._origin = [0,0];
-        this._size = null;
+        this._size = null;  // always a numeric value. commited to clientWidth, clientHeight
 
         this._eventOutput = new EventHandler();
         this._eventOutput.bindThis(this);
@@ -291,6 +291,12 @@ define(function(require, exports, module) {
                     if (this.size[0] === true) this._size[0] = target.offsetWidth;
                     if (this.size[1] === true) this._size[1] = target.offsetHeight;
                     this._trueSizeCheck = false;
+                }
+
+                // if proportions defined, scale calculated size
+                if (this.proportions){
+                    if (typeof this.proportions[0] === 'number') this._size[0] *= this.proportions[0];
+                    if (typeof this.proportions[1] === 'number') this._size[1] *= this.proportions[1];
                 }
 
                 // commit pixel size unless dimension's size is true
