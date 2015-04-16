@@ -105,13 +105,11 @@ define(function(require, exports, module) {
 
         //TODO: Fix origin hack
         if (this.options.origin){
-            var transform = parentSpec.transform;
-            var innerSize = this.getSize();
-            var innerOrigin = this.getOrigin();
+            var innerSize = this.getSize() || size;
+            var innerOrigin = this.getOrigin() || origin;
             if (innerOrigin && (innerOrigin[0] || innerOrigin[1]))
-                transform = Transform.moveThen([-innerOrigin[0] * innerSize[0], -innerOrigin[1] * innerSize[1], 0], transform);
+                transform = Transform.translate(-innerOrigin[0] * innerSize[0], -innerOrigin[1] * innerSize[1], 0);
         }
-        else transform = null;
 
         return RenderNode.prototype.render.call(this._node, {
             size : size,
@@ -130,6 +128,12 @@ define(function(require, exports, module) {
         return (this.options.size)
             ? this.options.size
             : (this._node.getSize) ? this._node.getSize() : null;
+    };
+
+    View.prototype.setSize = function setSize(size) {
+        this.options.size = size;
+        //TODO: Fix hack for origin checking
+        this.spec.setSize(size);
     };
 
     View.prototype.setOrigin = function setOrigin(origin){
