@@ -30,6 +30,7 @@ define(function(require, exports, module) {
 
         this.properties = {};
         this.attributes = {};
+        this.template = null;
         this.content = '';
 
         this.size = null;   // can take numeric, undefined or true values
@@ -47,6 +48,7 @@ define(function(require, exports, module) {
 
         if (options) this.setOptions(options);
     }
+
     Surface.prototype = Object.create(ElementOutput.prototype);
     Surface.prototype.constructor = Surface;
     Surface.prototype.elementType = 'div';
@@ -185,6 +187,19 @@ define(function(require, exports, module) {
         return this.classList;
     };
 
+    Surface.prototype.setTemplate = function setTemplate(template){
+        this.template = template;
+    };
+
+    Surface.prototype.getTemplate = function getTemplate(){
+        return this.template;
+    };
+
+    Surface.prototype.compile = function compile(data){
+        if (!this.template) return;
+        this.setContent(this.template(data));
+    };
+
     /**
      * Set or overwrite inner (HTML) content of this surface. Note that this
      *    causes a re-rendering if the content has changed.
@@ -226,6 +241,7 @@ define(function(require, exports, module) {
         if (options.properties !== undefined) this.setProperties(options.properties);
         if (options.attributes !== undefined) this.setAttributes(options.attributes);
         if (options.content !== undefined) this.setContent(options.content);
+        if (options.template !== undefined) this.setTemplate(options.template);
         if (options.proportions !== undefined) this.setProportions(options.proportions);
         return this;
     };
