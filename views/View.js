@@ -101,10 +101,22 @@ define(function(require, exports, module) {
     View.prototype.render = function render(parentSpec){
         var size = this.options.size || (parentSpec && parentSpec.size ? parentSpec.size : null);
         var origin = this.options.origin || (parentSpec && parentSpec.origin ? parentSpec.origin : null);
+        var transform;
+
+        //TODO: Fix origin hack
+        if (this.options.origin){
+            var transform = parentSpec.transform;
+            var innerSize = this.getSize();
+            var innerOrigin = this.getOrigin();
+            if (innerOrigin && (innerOrigin[0] || innerOrigin[1]))
+                transform = Transform.moveThen([-innerOrigin[0] * innerSize[0], -innerOrigin[1] * innerSize[1], 0], transform);
+        }
+        else transform = null;
 
         return RenderNode.prototype.render.call(this._node, {
             size : size,
-            origin : origin
+            origin : origin,
+            transform : transform
         });
     };
 
@@ -122,6 +134,8 @@ define(function(require, exports, module) {
 
     View.prototype.setOrigin = function setOrigin(origin){
         this.options.origin = origin;
+        //TODO: Fix hack for origin checking
+        this.spec.setOrigin(origin);
     };
 
     View.prototype.getOrigin = function getSize() {

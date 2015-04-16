@@ -1,5 +1,6 @@
 define(function(require, exports, module) {
     var SpecParser = require('famous/core/SpecParser');
+    var Transform = require('famous/core/Transform');
 
     function Spec(state){
         this.state = state || null;
@@ -112,6 +113,14 @@ define(function(require, exports, module) {
 
     //TODO: fix dirty checking
     Spec.prototype.render = function(parentSpec){
+
+        //TODO: Fix hack for origin checking
+        if (this.state && this.state.origin && parentSpec.transform){
+            var size = this.state.size || parentSpec.size;
+            var origin = this.state.origin;
+            parentSpec.transform = Transform.moveThen([-size[0]*origin[0], -size[1]*origin[1], 0], parentSpec.transform);
+        }
+
 //        if (!this.isDirty()) return this._cache;
 
         var result;
