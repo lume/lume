@@ -25,7 +25,7 @@ define(function(require, exports, module) {
      *
      * @method addModifier
      *
-     * @param {...Modifier*} varargs args list of Modifiers
+     * @param {...Modifier} varargs args list of Modifiers
      */
     ModifierChain.prototype.addModifier = function addModifier(varargs) {
         Array.prototype.push.apply(this._chain, arguments);
