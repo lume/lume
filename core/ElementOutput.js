@@ -159,13 +159,13 @@ define(function(require, exports, module) {
      * @return {string} matrix3d CSS style representation of the transform
      */
     function _formatCSSTransform(matrix) {
-        matrix[12] = Math.round(matrix[12] * devicePixelRatio) * invDevicePixelRatio;
-        matrix[13] = Math.round(matrix[13] * devicePixelRatio) * invDevicePixelRatio;
-
         var result = 'matrix3d(';
-        for (var i = 0; i < 15; i++) result += matrix[i] + ',';
-
-        return result + matrix[15] + ')';
+        for (var i = 0; i < 15; i++) {
+            result += (i === 12 || i === 13)
+                ? Math.round(matrix[i] * devicePixelRatio) * invDevicePixelRatio + ','
+                : matrix[i] + ',';
+        }
+        return result + (matrix[15] + ')');
     }
 
     // format origin as CSS percentage string
@@ -195,6 +195,7 @@ define(function(require, exports, module) {
      * @param {FamousMatrix} matrix
      */
 
+    var counter = 0;
     var _setTransform;
     if (usePrefix) {
         _setTransform = function(element, matrix) {
@@ -309,12 +310,12 @@ define(function(require, exports, module) {
             _setOrigin(target, this._origin);
 
         if (this._transformDirty || this._originDirty || (this._sizeDirty && this._origin)) {
-            this._transform = transform || Transform.identity;
-
             if (!(this._origin[0] === 0 && this._origin[1] === 0))
-                _setTransform(target, Transform.thenMove(transform, [-this._size[0]*this._origin[0], -this._size[1]*this._origin[1], 0]));
-            else
-                _setTransform(target, transform);
+                transform = Transform.thenMove(transform, [-this._size[0]*this._origin[0], -this._size[1]*this._origin[1], 0]);
+
+            _setTransform(target, transform);
+
+            this._transform = transform;
         }
 
         this._originDirty = false;
