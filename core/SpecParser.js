@@ -70,15 +70,15 @@ define(function(require, exports, module) {
                 nextSizeTransform = parentSpec.transform;
             }
 
-            if (spec.proportions) {
-                if (spec.proportions[0] !== undefined) size[0] *= spec.proportions[0];
-                if (spec.proportions[1] !== undefined) size[1] *= spec.proportions[1];
-            }
-
             if (spec.margins){
                 size[0] = parentSize[0] - ((spec.margins[1] || 0) + (spec.margins[3] || 0));
                 size[1] = parentSize[1] - (spec.margins[0] + (spec.margins[2] || 0));
                 transform = Transform.moveThen([spec.margins[3] || 0, spec.margins[0], 0], transform);
+            }
+
+            if (spec.proportions) {
+                if (spec.proportions[0] !== undefined) size[0] *= spec.proportions[0];
+                if (spec.proportions[1] !== undefined) size[1] *= spec.proportions[1];
             }
 
             if (origin && (origin[0] || origin[1])){
