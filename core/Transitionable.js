@@ -203,6 +203,22 @@ define(function(require, exports, module) {
         this._active = false;
     };
 
+    Transitionable.prototype.iterate = function iterate(values, transitions, callback){
+        if (values.length === 0) {
+            if (callback) callback();
+            return;
+        }
+
+        // sugar for same transition across value changes
+        var transition = (transitions instanceof Array)
+            ? transitions.shift()
+            : transitions;
+
+        this.set(values.shift(), transition, function(){
+            this.iterate(values, transitions, callback);
+        }.bind(this));
+    };
+
     /**
      * Add delay action to the pending action queue queue.
      *
