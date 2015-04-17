@@ -24,7 +24,6 @@ define(function(require, exports, module) {
     function RenderNode(object) {
         this._object = null;
         this._child = null;
-        this._origin = null;
 
         if (object) this.set(object);
     }
