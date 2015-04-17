@@ -35,8 +35,7 @@ define(function(require, exports, module) {
 
         this._prevEntities = {};
 
-        this._perspectiveState = new Transitionable(0);
-        this._perspective = undefined;
+        this._perspective = new Transitionable(0);
 
         this._nodeContext = {
             transform: Transform.identity,
@@ -133,9 +132,8 @@ define(function(require, exports, module) {
         spec = spec || this._nodeContext;
         allocator = allocator || this.allocator;
 
-        var perspective = this.getPerspective();
-        if (perspective !== this._perspective)
-            _setPerspective(this.container, perspective);
+        if (this._perspective.isActive())
+            _setPerspective(this.container, this._perspective.get());
 
         var currEntities = {};
         var results = [];
@@ -165,7 +163,7 @@ define(function(require, exports, module) {
      * @return {Number} depth perspective in pixels
      */
     Context.prototype.getPerspective = function getPerspective() {
-        return this._perspectiveState.get();
+        return this._perspective.get();
     };
 
     /**
@@ -177,7 +175,8 @@ define(function(require, exports, module) {
      * @param {Function} callback function called on completion of transition
      */
     Context.prototype.setPerspective = function setPerspective(perspective, transition, callback) {
-        this._perspectiveState.set(perspective, transition, callback);
+        if (transition === undefined) _setPerspective(this.container, perspective);
+        this._perspective.set(perspective, transition, callback);
     };
 
     /**
