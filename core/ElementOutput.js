@@ -46,6 +46,7 @@ define(function(require, exports, module) {
         this._sizeDirty = true;
         this._originDirty = true;
         this._transformDirty = true;
+        this._cachedSpecSize = null;
 
         if (element) this.attach(element);
     }
@@ -167,6 +168,21 @@ define(function(require, exports, module) {
         return result + matrix[15] + ')';
     }
 
+    // format origin as CSS percentage string
+    function _formatCSSOrigin(origin) {
+        return (100 * origin[0]) + '% ' + (100 * origin[1]) + '%';
+    }
+
+    // Directly apply given origin coordinates to the document element as the
+    // appropriate webkit CSS style.
+    var _setOrigin = usePrefix
+        ? function _setOrigin(element, origin) {
+            element.style.webkitTransformOrigin = _formatCSSOrigin(origin);
+        }
+        : function _setOrigin(element, origin) {
+            element.style.transformOrigin = _formatCSSOrigin(origin);
+        };
+
     /**
      * Directly apply given Transform to the document element as the
      *   appropriate webkit CSS style.
@@ -191,24 +207,10 @@ define(function(require, exports, module) {
         };
     }
 
-    // format origin as CSS percentage string
-    function _formatCSSOrigin(origin) {
-        return (100 * origin[0]) + '% ' + (100 * origin[1]) + '%';
-    }
-
-    // Directly apply given origin coordinates to the document element as the
-    // appropriate webkit CSS style.
-    var _setOrigin = usePrefix
-        ? function _setOrigin(element, origin) {
-            element.style.webkitTransformOrigin = _formatCSSOrigin(origin);
-        }
-        : function _setOrigin(element, origin) {
-            element.style.transformOrigin = _formatCSSOrigin(origin);
-        };
-
     var MIN_OPACITY = 0.0001;
+    var MAX_OPACITY = 0.9999;
     function _setOpacity(element, opacity){
-        if (opacity >= 1) opacity = 1;
+        if (opacity >= MAX_OPACITY)     opacity = MAX_OPACITY;
         else if (opacity < MIN_OPACITY) opacity = MIN_OPACITY;
         element.style.opacity = opacity;
     }
@@ -244,24 +246,21 @@ define(function(require, exports, module) {
         var origin = spec.origin;
         var size = spec.size;
 
+        // check if passed in size is different from previous
+        if (this._cachedSpecSize && _xyNotEquals(this._cachedSpecSize, size)){
+            this._cachedSpecSize = size;
+            this._sizeDirty = true;
+        }
+
         // this will be false for a true-sized element after the first pass
         // even though this._size != spec.size
         var dirtyTrueSize = this._trueSizeCheck && this.size && (this.size[0] === true || this.size[1] === true);
-
-        if (_xyNotEquals(this._size, size) || dirtyTrueSize)
-            this._sizeDirty = true;
+        if (dirtyTrueSize) this._sizeDirty = true;
 
         this._transformDirty = Transform.notEquals(this._transform, transform);
         this._opacityDirty = (this._opacity !== opacity);
 
-        if (this._origin === null){
-            if (origin){
-                this._origin = [origin[0], origin[1]];
-            }
-            else this._origin = [0,0];
-            this._originDirty = true;
-        }
-        else if (origin && _xyNotEquals(this._origin, origin)){
+        if (origin && _xyNotEquals(this._origin, origin)){
             this._origin[0] = origin[0];
             this._origin[1] = origin[1];
             this._originDirty = true;
@@ -270,7 +269,6 @@ define(function(require, exports, module) {
         if (this._opacityDirty) {
             this._opacity = opacity;
             _setOpacity(target, opacity);
-            this._opacityDirty = false;
         }
 
         // size nullity check needed for Group and other renderables with no defined size
@@ -305,7 +303,6 @@ define(function(require, exports, module) {
 
                 this._eventOutput.emit('resize');
             }
-
         }
 
         if (this._originDirty)
@@ -318,11 +315,12 @@ define(function(require, exports, module) {
                 _setTransform(target, Transform.thenMove(transform, [-this._size[0]*this._origin[0], -this._size[1]*this._origin[1], 0]));
             else
                 _setTransform(target, transform);
-
-            this._originDirty = false;
-            this._transformDirty = false;
-            this._sizeDirty = false;
         }
+
+        this._originDirty = false;
+        this._transformDirty = false;
+        this._sizeDirty = false;
+        this._opacityDirty = false;
     };
 
     ElementOutput.prototype.cleanup = function cleanup() {
