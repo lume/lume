@@ -29,7 +29,9 @@ define(function(require, exports, module) {
             dotSpacing : 4,
             transition : CONSTANTS.TRANSITION.CONTINUOUS,
             direction : CONSTANTS.DIRECTION.X,
-            groupScroll : true
+            groupScroll : true,
+            margin : Infinity,
+            paginated : true
         },
         initialize : function(options){
             this.initializeState(options);
@@ -82,12 +84,7 @@ define(function(require, exports, module) {
             this.currentDotOpacity = new Transitionable(1);
         },
         initializeSubviews : function(options){
-            this.scrollview = new Scrollview({
-                direction : options.direction,
-                paginated : true,
-                groupScroll : options.groupScroll,
-                margin: Infinity
-            });
+            this.scrollview = new Scrollview(options);
 
             this.scrollview.sequenceFrom(this.pages);
 
