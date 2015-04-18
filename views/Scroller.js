@@ -29,7 +29,7 @@ define(function(require, exports, module) {
         EDGE_STATES : EDGE_STATES
     };
 
-    module.exports = View.extend({
+    var Scroller = module.exports = View.extend({
         defaults : {
             direction: DIRECTION.Y,
             margin: 0,
@@ -54,6 +54,9 @@ define(function(require, exports, module) {
             this._contextSize = [undefined, undefined];
 
             this.outputFrom();
+
+            if (options.groupScroll)
+                this._eventOutput.subscribe(this.group);
         },
         /**
          * Allows you to overwrite the way Scroller lays out it's renderables. Scroller will
@@ -158,8 +161,8 @@ define(function(require, exports, module) {
         var value = options.value;
         if (key === "groupScroll") {
             (value)
-                ? this.subscribe(this._scroller)
-                : this.unsubscribe(this._scroller);
+                ? this.subscribe(this.group)
+                : this.unsubscribe(this.group);
         }
     }
 

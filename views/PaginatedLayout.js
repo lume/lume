@@ -12,6 +12,10 @@ define(function(require, exports, module) {
     }
 
     var CONSTANTS = {
+        DIRECTION : {
+            X : 0,
+            Y : 1
+        },
         TRANSITION : {
             CONTINUOUS : 0,
             DISCRETE : 1
@@ -23,12 +27,14 @@ define(function(require, exports, module) {
             dotRadius : 5,
             dotColor : 'white',
             dotSpacing : 4,
-            transition : CONSTANTS.TRANSITION.CONTINUOUS
+            transition : CONSTANTS.TRANSITION.CONTINUOUS,
+            direction : CONSTANTS.DIRECTION.X,
+            groupScroll : true
         },
-        initialize : function(){
-            this.initializeState();
-            this.initializeSubviews();
-            this.initializeEvents();
+        initialize : function(options){
+            this.initializeState(options);
+            this.initializeSubviews(options);
+            this.initializeEvents(options);
         },
         pagesFrom : function(pages){
             for (var i = 0; i < pages.length; i++)
@@ -75,11 +81,11 @@ define(function(require, exports, module) {
             this.currentDotPosition = new Transitionable(0);
             this.currentDotOpacity = new Transitionable(1);
         },
-        initializeSubviews : function(){
+        initializeSubviews : function(options){
             this.scrollview = new Scrollview({
-                direction : 0,
+                direction : options.direction,
                 paginated : true,
-                groupScroll : true,
+                groupScroll : options.groupScroll,
                 margin: Infinity
             });
 
@@ -93,15 +99,15 @@ define(function(require, exports, module) {
             });
 
             var currentDot = new Surface({
-                size : [2*this.options.dotRadius, 2*this.options.dotRadius],
+                size : [2*options.dotRadius, 2*options.dotRadius],
                 properties : {
                     borderRadius : '50%',
-                    background : this.options.dotColor
+                    background : options.dotColor
                 }
             });
 
             var dotsModifier = new Modifier({
-                size : function(){return [this.dotsWidth, 2 * this.options.dotRadius]}.bind(this),
+                size : function(){return [this.dotsWidth, 2 * options.dotRadius]}.bind(this),
                 transform : Transform.inFront,
                 origin : [.5,.5],
                 align : [.5,.9]
@@ -111,12 +117,12 @@ define(function(require, exports, module) {
             this.dotsNode = this.add(dotsModifier);
             this.dotsNode.add(currentDotModifier).add(currentDot);
         },
-        initializeEvents : function(){
+        initializeEvents : function(options){
             var eventInput = this.getEventInput();
             this.scrollview.subscribe(eventInput);
             this.subscribe(this.scrollview);
 
-            switch (this.options.transition){
+            switch (options.transition){
                 case CONSTANTS.TRANSITION.CONTINUOUS:
                     eventInput.on('update', function(data){
                         this.currentDotPosition.set(data.progress);

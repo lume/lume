@@ -165,6 +165,9 @@ define(function(require, exports, module) {
             this.sync.subscribe(this._eventInput);
 
             this.subscribe(this._offset);
+
+            if (options.groupScroll)
+                this.subscribe(this._scroller)
         },
         /**
          * Returns the index of the first visible renderable
