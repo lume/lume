@@ -7,6 +7,8 @@
  * @copyright Famous Industries, Inc. 2014
  */
 
+/* Modified work copyright © 2015 David Valdman */
+
 define(function(require, exports, module) {
     var Surface = require('../core/Surface');
     var Context = require('../core/Context');

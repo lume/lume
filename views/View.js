@@ -6,6 +6,8 @@
  * @copyright Famous Industries, Inc. 2014
  */
 
+/* Modified work copyright © 2015 David Valdman */
+
 define(function(require, exports, module) {
     var RenderNode = require('./../core/RenderNode');
     var Transform = require('./../core/Transform');

@@ -6,6 +6,8 @@
  * @copyright Famous Industries, Inc. 2014
  */
 
+/* Modified work copyright © 2015 David Valdman */
+
 define(function(require, exports, module) {
     var PhysicsEngine = require('../physics/PhysicsEngine');
     var Particle = require('../physics/bodies/Particle');

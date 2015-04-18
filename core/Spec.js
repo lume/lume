@@ -1,3 +1,5 @@
+/* copyright © 2015 David Valdman */
+
 define(function(require, exports, module) {
     var SpecParser = require('famous/core/SpecParser');
     var Transform = require('famous/core/Transform');

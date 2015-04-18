@@ -1,3 +1,5 @@
+/* copyright © 2015 David Valdman */
+
 define(function(require, exports, module) {
     var Scrollview = require('famous/views/Scrollview');
     var Surface = require('famous/core/Surface');

@@ -6,7 +6,7 @@
  * @copyright Famous Industries, Inc. 2014
  */
 
-/*global console*/
+/* Modified work copyright © 2015 David Valdman */
 
 define(function(require, exports, module) {
     var PE = require('famous/physics/PhysicsEngine');

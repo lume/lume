@@ -6,6 +6,8 @@
  * @copyright Famous Industries, Inc. 2014
  */
 
+/* Modified work copyright © 2015 David Valdman */
+
 define(function(require, exports, module) {
     /**
      * This namespace holds standalone functionality.
