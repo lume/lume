@@ -47,7 +47,7 @@ define(function(require, exports, module) {
      * @class Scrollview
      */
 
-    module.exports = View.extend({
+    var Scrollview = module.exports = View.extend({
         defaults : {
             direction: CONSTANTS.DIRECTION.Y,
             rails: true,
