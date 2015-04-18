@@ -79,6 +79,7 @@ define(function(require, exports, module) {
             this.scrollview = new Scrollview({
                 direction : 0,
                 paginated : true,
+                groupScroll : true,
                 margin: Infinity
             });
 
@@ -112,7 +113,7 @@ define(function(require, exports, module) {
         },
         initializeEvents : function(){
             var eventInput = this.getEventInput();
-            eventInput.pipe(this.scrollview);
+            this.scrollview.subscribe(eventInput);
             this.subscribe(this.scrollview);
 
             switch (this.options.transition){
