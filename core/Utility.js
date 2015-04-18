@@ -89,31 +89,26 @@ define(function(require, exports, module) {
      *  @param b {Object} Object to clone
      *  @return a {Object} Cloned object.
      */
-    Utility.clone = function clone(b) {
-        var a;
-        if (typeof b === 'object') {
-            a = (b instanceof Array) ? [] : {};
-            for (var key in b) {
-                if (typeof b[key] === 'object' && b[key] !== null) {
-                    if (b[key] instanceof Array) {
-                        a[key] = new Array(b[key].length);
-                        for (var i = 0; i < b[key].length; i++) {
-                            a[key][i] = Utility.clone(b[key][i]);
-                        }
+    Utility.clone = function clone(obj) {
+        var copy;
+        if (typeof obj === 'object') {
+            copy = (obj instanceof Array) ? [] : {};
+            for (var key in obj) {
+                var value = obj[key];
+                if (typeof value === 'object' && value !== null) {
+                    if (value instanceof Array) {
+                        copy[key] = [];
+                        for (var i = 0; i < value.length; i++)
+                            copy[key][i] = clone(value[i]);
                     }
-                    else {
-                      a[key] = Utility.clone(b[key]);
-                    }
+                    else copy[key] = clone(value);
                 }
-                else {
-                    a[key] = b[key];
-                }
+                else copy[key] = value;
             }
         }
-        else {
-            a = b;
-        }
-        return a;
+        else copy = obj;
+
+        return copy;
     };
 
     module.exports = Utility;
