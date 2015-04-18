@@ -67,7 +67,7 @@ define(function(require, exports, module) {
             if (spec.size) {
                 if (spec.size[0] === undefined) size[0] = parentSize[0];
                 if (spec.size[1] === undefined) size[1] = parentSize[1];
-                nextSizeTransform = parentSpec.transform;
+                nextSizeTransform = parentSpec.transform || Transform.identity;
             }
 
             if (spec.margins){
