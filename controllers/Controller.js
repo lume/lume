@@ -1,7 +1,6 @@
 define(function(require, exports, module) {
     var EventHandler = require('./../core/EventHandler');
     var OptionsManager = require('./../core/OptionsManager');
-    var Utility = require('./../core/Utility');
 
     /**
      * Useful for quickly creating elements within applications
@@ -15,7 +14,7 @@ define(function(require, exports, module) {
      * @constructor
      */
     function Controller(options) {
-        this.options = Utility.clone(this.constructor.DEFAULT_OPTIONS || Controller.DEFAULT_OPTIONS);
+        this.options = _clone(this.constructor.DEFAULT_OPTIONS || Controller.DEFAULT_OPTIONS);
         this._optionsManager = new OptionsManager(this.options);
         if (options) this.setOptions(options);
 
@@ -31,6 +30,28 @@ define(function(require, exports, module) {
 
     Controller.DEFAULT_OPTIONS = {};
     Controller.EVENTS = {};
+
+    function _clone(obj) {
+        var copy;
+        if (typeof obj === 'object') {
+            copy = (obj instanceof Array) ? [] : {};
+            for (var key in obj) {
+                var value = obj[key];
+                if (typeof value === 'object' && value !== null) {
+                    if (value instanceof Array) {
+                        copy[key] = [];
+                        for (var i = 0; i < value.length; i++)
+                            copy[key][i] = _clone(value[i]);
+                    }
+                    else copy[key] = _clone(value);
+                }
+                else copy[key] = value;
+            }
+        }
+        else copy = obj;
+
+        return copy;
+    }
 
     /**
      * Look up options value by key
@@ -64,42 +85,38 @@ define(function(require, exports, module) {
 
     var RESERVED_KEYS = {
         DEFAULTS : 'defaults',
-        EVENTS   : 'events',
-        NAME     : 'name'
+        EVENTS   : 'events'
     };
 
-    function extend(obj, constants){
-        var constructor = (function(){
-            return function (options){
-                Controller.call(this, options);
-                if (this.initialize) this.initialize(this.options);
-            }
-        })();
+    function extend(protoObj, constants){
+        var parent = this;
 
-        constructor.extend = extend;
-        constructor.prototype = Object.create(Controller.prototype);
-        constructor.prototype.constructor = constructor;
+        var child = (protoObj.hasOwnProperty('constructor'))
+            ? function(){ protoObj.constructor.apply(this, arguments); }
+            : function(){ parent.apply(this, arguments); };
 
-        for (var key in obj){
-            var value = obj[key];
+        child.extend = extend;
+        child.prototype = Object.create(parent.prototype);
+        child.prototype.constructor = child;
+
+        for (var key in protoObj){
+            var value = protoObj[key];
             switch (key) {
                 case RESERVED_KEYS.DEFAULTS:
-                    constructor.DEFAULT_OPTIONS = value;
+                    child.DEFAULT_OPTIONS = value;
                     break;
                 case RESERVED_KEYS.EVENTS:
-                    constructor.EVENTS = value;
-                    break;
-                case RESERVED_KEYS.NAME:
+                    child.EVENTS = value;
                     break;
                 default:
-                    constructor.prototype[key] = value;
+                    child.prototype[key] = value;
             }
         }
 
         for (var key in constants)
-            constructor[key] = constants[key];
+            child[key] = constants[key];
 
-        return constructor;
+        return child;
     }
 
     Controller.extend = extend;
