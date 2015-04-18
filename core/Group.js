@@ -26,7 +26,6 @@ define(function(require, exports, module) {
      */
     function Group(options) {
         Surface.call(this, options);
-        this._shouldRecalculateSize = false;
         this._container = document.createDocumentFragment();
         this.context = new Context(this._container);
         this.setContent(this._container);
