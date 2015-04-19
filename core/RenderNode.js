@@ -13,6 +13,8 @@ define(function(require, exports, module) {
     var Transform = require('./Transform');
     var SpecParser = require('./SpecParser');
     var Modifier = require('./Modifier');
+    var Entity = require('./Entity');
+    var CommitData = require('./CommitData');
 
     /**
      * A wrapper for inserting a renderable component (like a Modifer or
@@ -26,6 +28,9 @@ define(function(require, exports, module) {
     function RenderNode(object) {
         this._object = null;
         this._child = null;
+        this._parent = null;
+
+        this._entityIds = [];
 
         if (object) this.set(object);
     }
@@ -43,7 +48,12 @@ define(function(require, exports, module) {
         // Sugar for adding modifiers
         if (!child.render) child = new Modifier(child);
 
+        if (child._id !== undefined && Entity.has(child._id))
+            this.pushEntityId(child._id);
+
         var childNode = (child instanceof RenderNode) ? child : new RenderNode(child);
+
+        childNode._parent = this;
 
         if (this._child instanceof CombinerNode)
             this._child.add(childNode);
@@ -52,6 +62,11 @@ define(function(require, exports, module) {
         else this._child = childNode;
 
         return childNode;
+    };
+
+    RenderNode.prototype.pushEntityId = function(id){
+        this._entityIds.push(id);
+        if (this._parent) this._parent.pushEntityId(id);
     };
 
     /**
@@ -74,7 +89,6 @@ define(function(require, exports, module) {
      */
     RenderNode.prototype.set = function set(child) {
         this._object = child;
-        this._child = null;
         return this;
     };
 
@@ -101,28 +115,33 @@ define(function(require, exports, module) {
      * @return {Object} render specification for the component subtree
      *    only under this node.
      */
-    var defaultSpec = {
-        transform: Transform.identity,
-        opacity: 1,
-        origin: null,
-        align: null,
-        size: null,
-        nextSizeTransform: Transform.identity
+
+    RenderNode.prototype.render = function render(parentSpec) {
+        var myTransform;
+        if (this._object){
+            var objectTransform = this._object.render(parentSpec);
+            myTransform = SpecParser.flatten(objectTransform, parentSpec)
+        }
+        else myTransform = parentSpec;
+
+        if (this._child) this._child.render(myTransform);
+
+        for (var i = 0; i < this._entityIds.length; i++){
+            var id = this._entityIds[i];
+            var data = CommitData.get(id);
+            var newData = SpecParser.flatten(myTransform, data);
+            CommitData.set(id, newData);
+        }
     };
 
-    //TODO: auto render specs. simply return the spec
-    RenderNode.prototype.render = function render(parentSpec, results) {
-        if (parentSpec === undefined) parentSpec = defaultSpec;
-        if (results === undefined) results = [];
-
-        var flattenedSpec = (this._object)
-            ? SpecParser.flatten(this._object.render(parentSpec), parentSpec, results)
-            : parentSpec;
-
-        if (this._child)
-            this._child.render(flattenedSpec, results);
-
-        return results;
+    RenderNode.prototype.commit = function(allocator){
+        for (var i = 0; i < this._entityIds.length; i++){
+            var id = this._entityIds[i];
+            var entity = Entity.get(id);
+            var data = CommitData.get(id);
+            entity.commit(data, allocator);
+            CommitData.reset(id);
+        }
     };
 
     module.exports = RenderNode;

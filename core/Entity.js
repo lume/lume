@@ -30,6 +30,10 @@ define(function(require, exports, module) {
         return entities[id];
     }
 
+    function has(id){
+        return (entities[id]) ? true : false;
+    }
+
     /**
      * Overwrite entity in the global index
      *
@@ -71,6 +75,7 @@ define(function(require, exports, module) {
         register: register,
         unregister: unregister,
         get: get,
-        set: set
+        set: set,
+        has: has
     };
 });

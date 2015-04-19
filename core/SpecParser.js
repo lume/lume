@@ -14,7 +14,7 @@ define(function(require, exports, module) {
     var SpecParser = {};
     var _zeroZero = [0,0];
 
-    SpecParser.flatten = function flatten(spec, parentSpec, results){
+    SpecParser.flatten = function flatten(spec, parentSpec){
         var flattenedSpec;
 
         if (typeof spec === 'number'){
@@ -37,12 +37,11 @@ define(function(require, exports, module) {
                 target : spec
             };
 
-            results.push(flattenedSpec);
         }
         else if (spec instanceof Array){
             flattenedSpec = [];
             for (var i = 0; i < spec.length; i++) {
-                flattenedSpec[i] = flatten(spec[i], parentSpec, results);
+                flattenedSpec[i] = flatten(spec[i], parentSpec);
             }
         }
         else if (spec instanceof Object) {
@@ -107,7 +106,7 @@ define(function(require, exports, module) {
 
             // iterate
             if (spec.target !== undefined)
-                flattenedSpec = flatten(spec.target, flattenedSpec, results);
+                flattenedSpec = flatten(spec.target, flattenedSpec);
         }
 
         return flattenedSpec;

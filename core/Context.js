@@ -15,6 +15,7 @@ define(function(require, exports, module) {
     var Transform = require('./Transform');
     var Transitionable = require('./Transitionable');
     var Entity = require('./Entity');
+    var CommitData = require('./CommitData');
 
     /**
      * The top-level container for a Famous-renderable piece of the document.
@@ -34,8 +35,6 @@ define(function(require, exports, module) {
 
         this._eventOutput = new EventHandler();
         this._size = _getElementSize(this.container);
-
-        this._prevEntities = {};
 
         this._perspective = new Transitionable(0);
 
@@ -137,25 +136,9 @@ define(function(require, exports, module) {
         if (this._perspective.isActive())
             _setPerspective(this.container, this._perspective.get());
 
-        var currEntities = {};
-        var results = [];
+        this._node.render(spec);
 
-        this._node.render(spec, results);
-
-        for (var i = 0; i < results.length; i++){
-            var id = results[i].target;
-            var entity = Entity.get(id);
-            entity.commit(results[i], allocator);
-            currEntities[id] = entity;
-        }
-
-        for (var id in this._prevEntities){
-            var object = this._prevEntities[id];
-            var wasDestroyed = (currEntities[id] === undefined);
-            if (wasDestroyed && object.cleanup) object.cleanup(allocator);
-        }
-
-        this._prevEntities = currEntities;
+        this._node.commit(allocator);
     };
 
     /**
