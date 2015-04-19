@@ -30,7 +30,7 @@ define(function(require, exports, module) {
         this._child = null;
         this._parent = null;
 
-        this._entityIds = [];
+        this._entityIds = {};
 
         if (object) this.set(object);
     }
@@ -48,9 +48,6 @@ define(function(require, exports, module) {
         // Sugar for adding modifiers
         if (!child.render) child = new Modifier(child);
 
-        if (child._id !== undefined && Entity.has(child._id))
-            this.pushEntityId(child._id);
-
         var childNode = (child instanceof RenderNode) ? child : new RenderNode(child);
 
         childNode._parent = this;
@@ -65,7 +62,7 @@ define(function(require, exports, module) {
     };
 
     RenderNode.prototype.pushEntityId = function(id){
-        this._entityIds.push(id);
+        this._entityIds[id] = true;
         if (this._parent) this._parent.pushEntityId(id);
     };
 
@@ -116,33 +113,27 @@ define(function(require, exports, module) {
      *    only under this node.
      */
 
-    RenderNode.prototype.render = function render(sizeSpec) {
-        var size;
+    RenderNode.prototype.render = function render(parentSpec) {
+        var mySpec;
         if (this._object){
-            var objectTransform = this._object.render(sizeSpec);
-            size = SpecManager.getSize(objectTransform, sizeSpec.size);
+            var objectTransform = this._object.render({size : parentSpec.size});
+            mySpec = SpecManager.merge(objectTransform, parentSpec);
         }
-        else size = sizeSpec.size;
+        else mySpec = parentSpec;
 
-        if (this._child) this._child.render({size : size});
+        if (this._child) this._child.render(mySpec);
+        else if (Entity.is(this._object)){
+            // leaf
+            var id = Entity.getId(this._object);
+            if (!this._entityIds[id]) this.pushEntityId(id);
 
-        if (objectTransform){
-
-            if (!objectTransform.size) objectTransform.size = size;
-
-            for (var i = 0; i < this._entityIds.length; i++){
-                var id = this._entityIds[i];
-                var data = CommitData.get(id);
-                var newData = SpecManager.merge(data, objectTransform);
-                CommitData.set(id, newData);
-            }
-
+            var data = CommitData.get(id);
+            CommitData.set(id, SpecManager.merge(data, mySpec));
         }
     };
 
     RenderNode.prototype.commit = function(allocator){
-        for (var i = 0; i < this._entityIds.length; i++){
-            var id = this._entityIds[i];
+        for (var id in this._entityIds){
             var entity = Entity.get(id);
             var data = CommitData.get(id);
             entity.commit(data, allocator);

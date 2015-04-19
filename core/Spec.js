@@ -132,7 +132,7 @@ define(function(require, exports, module) {
                 : parentSpec;
             result = [];
             for (var i = 0; i < this.target.length; i++){
-                result[i] = this.target[i].render(flattenedSpec);
+                result[i] = this.target[i].render(mergedSpec);
                 if (this.target[i] instanceof Spec) this.target[i]._dirty = false;
             }
 
@@ -143,7 +143,7 @@ define(function(require, exports, module) {
                 ? SpecParser.flatten(this.state, parentSpec)
                 : parentSpec;
             if (this.target && this.target.render){
-                result.target = this.target.render(flattenedSpec);
+                result.target = this.target.render(mergedSpec);
                 if (this.target instanceof Spec) this.target._dirty = false;
             }
         }

@@ -6,6 +6,8 @@
  * @copyright Famous Industries, Inc. 2014
  */
 
+/* Modified work copyright © 2015 David Valdman */
+
 define(function(require, exports, module) {
     /**
      * A singleton that maintains a global registry of Surfaces.
@@ -16,7 +18,8 @@ define(function(require, exports, module) {
      * @class Entity
      */
 
-    var entities = [];
+    var entities = {};
+    var entityCount = 0;
 
     /**
      * Get entity from global index.
@@ -46,6 +49,18 @@ define(function(require, exports, module) {
         entities[id] = entity;
     }
 
+    function is(entity){
+        return has(getId(entity));
+    }
+
+    function setId(id, entity){
+        entity._entityId = id;
+    }
+
+    function getId(entity){
+        return entity._entityId;
+    }
+
     /**
      * Add entity to global index
      *
@@ -55,8 +70,9 @@ define(function(require, exports, module) {
      * @return {Number} new id
      */
     function register(entity) {
-        var id = entities.length;
+        var id = entityCount++;
         set(id, entity);
+        setId(id, entity);
         return id;
     }
 
@@ -72,10 +88,12 @@ define(function(require, exports, module) {
     }
 
     module.exports = {
-        register: register,
-        unregister: unregister,
-        get: get,
-        set: set,
-        has: has
+        register : register,
+        unregister : unregister,
+        get : get,
+        set : set,
+        has : has,
+        is : is,
+        getId : getId
     };
 });
