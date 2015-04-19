@@ -11,7 +11,7 @@
 define(function(require, exports, module) {
     var CombinerNode = require('./CombinerNode');
     var Transform = require('./Transform');
-    var SpecParser = require('./SpecParser');
+    var SpecManager = require('./SpecManager');
     var Modifier = require('./Modifier');
     var Entity = require('./Entity');
     var CommitData = require('./CommitData');
@@ -116,21 +116,27 @@ define(function(require, exports, module) {
      *    only under this node.
      */
 
-    RenderNode.prototype.render = function render(parentSpec) {
-        var myTransform;
+    RenderNode.prototype.render = function render(sizeSpec) {
+        var size;
         if (this._object){
-            var objectTransform = this._object.render(parentSpec);
-            myTransform = SpecParser.flatten(objectTransform, parentSpec)
+            var objectTransform = this._object.render(sizeSpec);
+            size = SpecManager.getSize(objectTransform, sizeSpec.size);
         }
-        else myTransform = parentSpec;
+        else size = sizeSpec.size;
 
-        if (this._child) this._child.render(myTransform);
+        if (this._child) this._child.render({size : size});
 
-        for (var i = 0; i < this._entityIds.length; i++){
-            var id = this._entityIds[i];
-            var data = CommitData.get(id);
-            var newData = SpecParser.flatten(myTransform, data);
-            CommitData.set(id, newData);
+        if (objectTransform){
+
+            if (!objectTransform.size) objectTransform.size = size;
+
+            for (var i = 0; i < this._entityIds.length; i++){
+                var id = this._entityIds[i];
+                var data = CommitData.get(id);
+                var newData = SpecManager.merge(data, objectTransform);
+                CommitData.set(id, newData);
+            }
+
         }
     };
 

@@ -89,6 +89,7 @@ define(function(require, exports, module) {
 
             if (align){
                 if (parentSize && (align[0] || align[1])) {
+                    debugger
                     var shift = _vecInContext([align[0] * parentSize[0], align[1] * parentSize[1], 0], nextSizeTransform);
                     transform = Transform.thenMove(transform, shift);
                     align = null;
