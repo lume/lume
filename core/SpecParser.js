@@ -52,7 +52,7 @@ define(function(require, exports, module) {
 
             var origin = spec.origin;
             var align = spec.align;
-            var size = spec.size || [parentSize[0], parentSize[1]];
+            var size = (spec.size) ? [spec.size[0], spec.size[1]] : [parentSize[0], parentSize[1]];
 
             var opacity = (spec.opacity !== undefined)
                 ? parentOpacity * spec.opacity

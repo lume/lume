@@ -250,7 +250,7 @@ define(function(require, exports, module) {
         var size = spec.size;
 
         // check if passed in size is different from previous
-        if (this._cachedSpecSize && _xyNotEquals(this._cachedSpecSize, size)){
+        if (this._cachedSpecSize === null || _xyNotEquals(this._cachedSpecSize, size)){
             this._cachedSpecSize = size;
             this._sizeDirty = true;
         }
