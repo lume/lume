@@ -15,6 +15,7 @@ define(function(require, exports, module) {
     var Modifier = require('./Modifier');
     var Entity = require('./Entity');
     var CommitData = require('./CommitData');
+    var Spec = require('./Spec');
 
     /**
      * A wrapper for inserting a renderable component (like a Modifer or
@@ -46,7 +47,8 @@ define(function(require, exports, module) {
      */
     RenderNode.prototype.add = function add(child) {
         // Sugar for adding modifiers
-        if (!child.render) child = new Modifier(child);
+        if (!child.render && !(child instanceof Function))
+            child = new Modifier(child);
 
         var childNode = (child instanceof RenderNode) ? child : new RenderNode(child);
 
@@ -62,6 +64,7 @@ define(function(require, exports, module) {
     };
 
     RenderNode.prototype.pushEntityId = function(id){
+        if (this._entityIds[id]) return;
         this._entityIds[id] = true;
         if (this._parent) this._parent.pushEntityId(id);
     };
@@ -114,31 +117,36 @@ define(function(require, exports, module) {
      */
 
     RenderNode.prototype.render = function render(parentSpec) {
-        var mySpec;
+        var compoundSpec;
         if (this._object){
-            var objectTransform = this._object.render({size : parentSpec.size});
-            mySpec = SpecManager.merge(objectTransform, parentSpec);
-        }
-        else mySpec = parentSpec;
 
-        if (this._child) this._child.render(mySpec);
-        else if (Entity.is(this._object)){
-            // leaf
-            var id = Entity.getId(this._object);
-            if (!this._entityIds[id]) this.pushEntityId(id);
+            if (this._object instanceof Function){
+                var objectTransform = this._object({size : parentSpec.size});
+            }
+            else {
+                var objectTransform = this._object.render({size : parentSpec.size});
+            }
 
-            var data = CommitData.get(id);
-            CommitData.set(id, SpecManager.merge(data, mySpec));
+            if (objectTransform instanceof Spec){
+                objectTransform = objectTransform.render({size : parentSpec.size});
+            }
+
+//            var flatObjectTransform = SpecManager.flatten(objectTransform);
+
+            compoundSpec = SpecManager.merge(objectTransform, parentSpec, this._entityIds);
+
         }
+        else compoundSpec = parentSpec;
+
+        if (this._child) this._child.render(compoundSpec);
     };
 
     RenderNode.prototype.commit = function(allocator){
         for (var id in this._entityIds){
             var entity = Entity.get(id);
-            var data = CommitData.get(id);
-            entity.commit(data, allocator);
-            CommitData.reset(id);
+            entity.commit(this._entityIds[id], allocator);
         }
+        if (this._child) this._child.commit(allocator);
     };
 
     module.exports = RenderNode;

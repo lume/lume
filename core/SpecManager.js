@@ -4,18 +4,17 @@ define(function(require, exports, module) {
     var Transform = require('./Transform');
 
     var SpecManager = {};
-    var zeroZero = [0,0];
 
-    SpecManager.merge = function merge(spec, parentSpec){
+    SpecManager.merge = function merge(spec, parentSpec, entityData){
         var mergedSpec;
 
         if (typeof spec == 'number') {
 
             var transform = parentSpec.transform || Transform.identity;
-            var align = parentSpec.align || zeroZero;
-            var nextSizeTransform = parentSpec.nextSizeTransform || transform;
+            var align = parentSpec.align || null;
 
             if (align && (align[0] || align[1])) {
+                var nextSizeTransform = parentSpec.nextSizeTransform || transform;
                 var alignAdjust = [align[0] * parentSpec.size[0], align[1] * parentSpec.size[1], 0];
                 var shift = (nextSizeTransform) ? _vecInContext(alignAdjust, nextSizeTransform) : alignAdjust;
                 transform = Transform.thenMove(transform, shift);
@@ -23,27 +22,27 @@ define(function(require, exports, module) {
 
             mergedSpec = {
                 transform : transform,
-                opacity : parentSpec.opacity,
-                origin : parentSpec.origin,
-                size : parentSpec.size
+                opacity : parentSpec.opacity || null,
+                origin : parentSpec.origin || null,
+                size : parentSpec.size || null
             };
+
+            if (entityData) entityData[spec] = mergedSpec;
 
         } else if (spec instanceof Array){
 
             var mergedSpec = [];
             for (var i = 0; i < spec.length; i++)
-                mergedSpec[i] = merge(spec[i], parentSpec);
+                mergedSpec[i] = SpecManager.merge(spec[i], parentSpec, entityData);
 
-        } else {
-
-            var spec = SpecManager.flatten(spec);
-
+        }
+        else if (spec instanceof Object){
             var parentSize = parentSpec.size;
             var parentOpacity = parentSpec.opacity || 1;
             var parentTransform = parentSpec.transform || Transform.identity;
 
-            var origin = spec.origin;
-            var align = spec.align;
+            var origin = spec.origin || null;
+            var align = spec.align || null;
             var size = SpecManager.getSize(spec, parentSize);
 
             var opacity = (spec.opacity !== undefined)
@@ -79,24 +78,61 @@ define(function(require, exports, module) {
                 nextSizeTransform : nextSizeTransform
             };
 
+            if (spec.target !== undefined)
+                mergedSpec = SpecManager.merge(spec.target, mergedSpec, entityData);
+
         }
+        else spec = null;
 
         return mergedSpec;
     };
 
-    SpecManager.flatten = function flatten(spec){
+    // TODO: pass in this._entityIds here and append to them!
+    SpecManager.flatten = function flatten(spec, entityData){
         var flattenedSpec;
 
         if (spec instanceof Array){
             flattenedSpec = [];
             for (var i = 0; i < spec.length; i++)
-                flattenedSpec[i] = flatten(spec[i]);
+                flattenedSpec[i] = SpecManager.flatten(spec[i], entityData);
         }
-        else if (!spec.target) flattenedSpec = spec;
-        else flattenedSpec = merge(spec.target, spec);
+        else if (spec instanceof Object && spec.target instanceof Object)
+            flattenedSpec = SpecManager.merge(spec.target, spec, entityData);
+        else
+            flattenedSpec = spec;
 
         return flattenedSpec;
     };
+
+//    SpecManager.walk = function walk(spec, reduce, apply){
+//        if (spec instanceof Array){
+//            for (var i = 0; i < spec.length; i++)
+//                SpecManager.walk(spec[i], reduce, apply);
+//        }
+//        else if (spec instanceof Object && spec.target !== undefined){
+//            var reduced = reduce(spec.target, spec);
+//            SpecManager.walk(reduced);
+//        }
+//        else apply(spec);
+//    };
+
+//    SpecManager.flatten = function(spec){
+//        var results = [];
+//
+//        walk(spec, SpecManager.reduce, function(leaf){
+//            results.push(leaf);
+//        });
+//
+//        return results;
+//    };
+//
+//    SpecManager.getEntities = function(spec){
+//        var entities = {};
+//        walk(spec, SpecManager.reduce, function(leaf){
+//            if (typeof leaf == 'number')
+//                entities[leaf]
+//        })
+//    };
 
     SpecManager.getSize = function flatten(spec, parentSize){
         var size = spec.size || [parentSize[0], parentSize[1]];

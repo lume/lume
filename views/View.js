@@ -13,6 +13,8 @@ define(function(require, exports, module) {
     var Transform = require('./../core/Transform');
     var Spec = require('./../core/Spec');
     var Controller = require('./../controllers/Controller');
+    var Entity = require('./../core/Entity');
+    var CommitData = require('./../core/CommitData');
 
     /**
      * Useful for quickly creating elements within applications
@@ -34,6 +36,9 @@ define(function(require, exports, module) {
             this.spec = new Spec();
             this._node = new RenderNode();
 
+            var id = Entity.register(this);
+            CommitData.register(id);
+
             if (this.initialize)
                 this.initialize.call(this, this.options);
         },
@@ -48,7 +53,7 @@ define(function(require, exports, module) {
                 ? this.options.size
                 : (this._node.getSize) ? this._node.getSize() : null;
         },
-        setSize : function setSize(){
+        setSize : function setSize(size){
             this.options.size = size;
             //TODO: Fix hack for origin checking
             this.spec.setSize(size);
@@ -58,7 +63,7 @@ define(function(require, exports, module) {
                 ? this.options.origin
                 : (this._node.getOrigin) ? this._node.getOrigin() : null;
         },
-        setOrigin : function setOrigin(){
+        setOrigin : function setOrigin(origin){
             this.options.origin = origin;
             //TODO: Fix hack for origin checking
             this.spec.setOrigin(origin);
@@ -76,11 +81,16 @@ define(function(require, exports, module) {
                     transform = Transform.translate(-innerOrigin[0] * innerSize[0], -innerOrigin[1] * innerSize[1], 0);
             }
 
-            return RenderNode.prototype.render.call(this._node, {
+            return {
                 size : size,
                 origin : origin,
-                transform : transform
-            });
+                transform : transform,
+                target : this._entityId
+            };
+        },
+        commit : function commit(spec, allocator){
+            RenderNode.prototype.render.call(this._node, spec);
+            RenderNode.prototype.commit.call(this._node, allocator);
         }
     });
 });

@@ -51,7 +51,7 @@ define(function(require, exports, module) {
         }
     };
 
-    module.exports = View.extend({
+    var DrawerLayout = View.extend({
         defaults : {
             side: CONSTANTS.SIDE.LEFT,
             drawerLength : 0,
@@ -77,8 +77,8 @@ define(function(require, exports, module) {
             this._cachedPosition = 0;
         },
         initializeSubviews : function initializeSubviews(){
-            this.drawer = new RenderNode();
-            this.content = new RenderNode();
+            this.drawer = null;
+            this.content = null;
         },
         /**
          * Reveals the drawer with a transition
@@ -208,7 +208,7 @@ define(function(require, exports, module) {
             this.spec.getChild(1).setTransform(contentTransform);
             this.spec.getChild(1).setTarget(this.content);
 
-            return this.spec.render();
+            return this.spec;
         }
     }, CONSTANTS);
 
@@ -290,4 +290,5 @@ define(function(require, exports, module) {
         }
     }
 
+    module.exports = DrawerLayout;
 });

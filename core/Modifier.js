@@ -47,16 +47,18 @@ define(function(require, exports, module) {
             proportions: null
         };
 
-        if (options) {
-            if (options.transform) this.transformFrom(options.transform);
-            if (options.opacity !== undefined) this.opacityFrom(options.opacity);
-            if (options.origin) this.originFrom(options.origin);
-            if (options.align) this.alignFrom(options.align);
-            if (options.size) this.sizeFrom(options.size);
-            if (options.margins) this.marginsFrom(options.margins);
-            if (options.proportions) this.proportionsFrom(options.proportions);
-        }
+        if (options) this.set(options);
     }
+
+    Modifier.prototype.set = function set(options){
+        if (options.transform) this.transformFrom(options.transform);
+        if (options.opacity !== undefined) this.opacityFrom(options.opacity);
+        if (options.origin) this.originFrom(options.origin);
+        if (options.align) this.alignFrom(options.align);
+        if (options.size) this.sizeFrom(options.size);
+        if (options.margins) this.marginsFrom(options.margins);
+        if (options.proportions) this.proportionsFrom(options.proportions);
+    };
 
     /**
      * Function, object, or static transform matrix which provides the transform.
