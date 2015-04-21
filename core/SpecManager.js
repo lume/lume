@@ -12,6 +12,7 @@ define(function(require, exports, module) {
 
             var transform = parentSpec.transform || Transform.identity;
             var align = parentSpec.align || null;
+            var opacity = (parentSpec.opacity !== undefined) ? parentSpec.opacity : 1;
 
             if (align && (align[0] || align[1])) {
                 var nextSizeTransform = parentSpec.nextSizeTransform || transform;
@@ -22,7 +23,7 @@ define(function(require, exports, module) {
 
             mergedSpec = {
                 transform : transform,
-                opacity : parentSpec.opacity || 1,
+                opacity : opacity,
                 origin : parentSpec.origin || null,
                 size : parentSpec.size || null
             };
@@ -38,7 +39,7 @@ define(function(require, exports, module) {
         }
         else if (spec instanceof Object){
             var parentSize = parentSpec.size;
-            var parentOpacity = parentSpec.opacity || 1;
+            var parentOpacity = (parentSpec.opacity !== undefined) ? parentSpec.opacity : 1;
             var parentTransform = parentSpec.transform || Transform.identity;
 
             var origin = spec.origin || null;
