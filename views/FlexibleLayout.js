@@ -88,12 +88,12 @@ define(function(require, exports, module) {
                 length = this._cachedLengths[i];
                 size[direction] = length;
                 this.spec.getChild(i)
-                    .setTransform(this._cachedTransforms[i])
-                    .setSize(size)
+                    .transformFrom(this._cachedTransforms[i])
+                    .sizeFrom(size)
                     .setTarget(this._nodes[i])
             }
 
-            return this.spec.render();
+            return this.spec;
         }
     }, CONSTANTS);
 

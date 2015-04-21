@@ -9,17 +9,21 @@ define(function(require, exports, module) {
     function Spec(){
         this.state = null;
         this.target = null;
-
-        this._entityIds = {};
     }
 
-    Spec.prototype.set = function(options){
+    function _firstSet(){
         if (!this.state) this.state = new Modifier();
-        Modifier.prototype.set.apply(this.state, arguments);
+    }
+
+    Spec.prototype.from = function(options){
+        _firstSet.call(this);
+        Modifier.prototype.from.apply(this.state, arguments);
         return this;
     };
 
     Spec.prototype.getChild = function(index){
+        if (index == undefined) return this.getTarget();
+
         if (!this.target) this.target = [];
         var children = this.target;
 
@@ -44,9 +48,46 @@ define(function(require, exports, module) {
         }
     };
 
-    Spec.prototype.setTransform = function(transform){
-        if (!this.state) this.state = new Modifier();
-        this.state.transformFrom(transform);
+    Spec.prototype.transformFrom = function(transform){
+        _firstSet.call(this);
+        Modifier.prototype.transformFrom.apply(this.state, arguments);
+        return this;
+    };
+
+    Spec.prototype.opacityFrom = function(opacity){
+        _firstSet.call(this);
+        Modifier.prototype.opacityFrom.apply(this.state, arguments);
+        return this;
+    };
+
+    Spec.prototype.sizeFrom = function(size){
+        _firstSet.call(this);
+        Modifier.prototype.sizeFrom.apply(this.state, arguments);
+        return this;
+    };
+
+    Spec.prototype.originFrom = function(origin){
+        _firstSet.call(this);
+        Modifier.prototype.originFrom.apply(this.state, arguments);
+        return this;
+    };
+
+    Spec.prototype.alignFrom = function(align){
+        _firstSet.call(this);
+        Modifier.prototype.alignFrom.apply(this.state, arguments);
+        return this;
+    };
+
+    Spec.prototype.marginsFrom = function(margins){
+        _firstSet.call(this);
+        Modifier.prototype.marginsFrom.apply(this.state, arguments);
+        return this;
+    };
+
+    Spec.prototype.proportionsFrom = function(proportions){
+        _firstSet.call(this);
+        Modifier.prototype.proportionsFrom.apply(this.state, arguments);
+        return this;
     };
 
     Spec.prototype.setTarget = function(target){
@@ -54,12 +95,11 @@ define(function(require, exports, module) {
         return this;
     };
 
-    //TODO: fix dirty checking
     Spec.prototype.render = function(parentSpec){
         var result;
 
         var mergedSize = (this.state && parentSpec && parentSpec.size)
-            ? SpecManager.getSize(this.state, parentSpec.size)
+            ? SpecManager.getSize(this.state.render(), parentSpec.size)
             : parentSpec.size;
 
         if (this.target instanceof Array){
@@ -77,14 +117,7 @@ define(function(require, exports, module) {
         }
 
         return result;
-
     };
 
     module.exports = Spec;
 });
-
-//        if (this.state && this.state.origin && parentSpec.transform){
-//            var size = this.state.size || parentSpec.size;
-//            var origin = this.state.origin;
-//            parentSpec.transform = Transform.moveThen([-size[0]*origin[0], -size[1]*origin[1], 0], parentSpec.transform);
-//        }

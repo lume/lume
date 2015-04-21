@@ -116,8 +116,9 @@ define(function(require, exports, module) {
                 ? this._object({size : parentSpec.size})
                 : this._object.render({size : parentSpec.size});
 
-            if (objectTransform instanceof Spec)
-                objectTransform = objectTransform.render({size : parentSpec.size});
+            if (objectTransform instanceof Spec) {
+                objectTransform = objectTransform.render({size: parentSpec.size});
+            }
 
             compoundSpec = SpecManager.merge(objectTransform, parentSpec, this._entityIds);
         }

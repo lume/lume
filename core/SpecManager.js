@@ -104,17 +104,17 @@ define(function(require, exports, module) {
         return flattenedSpec;
     };
 
-//    SpecManager.walk = function walk(spec, reduce, apply){
-//        if (spec instanceof Array){
-//            for (var i = 0; i < spec.length; i++)
-//                SpecManager.walk(spec[i], reduce, apply);
-//        }
-//        else if (spec instanceof Object && spec.target !== undefined){
-//            var reduced = reduce(spec.target, spec);
-//            SpecManager.walk(reduced);
-//        }
-//        else apply(spec);
-//    };
+    SpecManager.walk = function walk(spec, reduce, apply){
+        if (spec instanceof Array){
+            for (var i = 0; i < spec.length; i++)
+                SpecManager.walk(spec[i], reduce, apply);
+        }
+        else if (spec instanceof Object && spec.target !== undefined){
+            var reduced = reduce(spec.target, spec);
+            SpecManager.walk(reduced);
+        }
+        else apply(spec);
+    };
 
 //    SpecManager.flatten = function(spec){
 //        var results = [];
