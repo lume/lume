@@ -47,10 +47,10 @@ define(function(require, exports, module) {
             proportions: null
         };
 
-        if (options) this.set(options);
+        if (options) this.from(options);
     }
 
-    Modifier.prototype.set = function set(options){
+    Modifier.prototype.from = function from(options){
         if (options.transform) this.transformFrom(options.transform);
         if (options.opacity !== undefined) this.opacityFrom(options.opacity);
         if (options.origin) this.originFrom(options.origin);
