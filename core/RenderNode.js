@@ -32,6 +32,10 @@ define(function(require, exports, module) {
 
         this._entityIds = {};
 
+        this._cachedSize = null;
+        this._cachedObjectTransform = null;
+        this._cachedCompoundSpec = null;
+
         if (object) this.set(object);
     }
 
@@ -111,16 +115,50 @@ define(function(require, exports, module) {
 
     RenderNode.prototype.render = function render(parentSpec) {
         var compoundSpec;
-        if (this._object){
-            var objectTransform = (this._object instanceof Function)
-                ? this._object({size : parentSpec.size})
-                : this._object.render({size : parentSpec.size});
 
-            if (objectTransform instanceof Spec) {
-                objectTransform = objectTransform.render({size: parentSpec.size});
+        if (this._object){
+
+            var parentSize = parentSpec.size;
+            var object = this._object;
+            var cachedSize = this._cachedSize;
+            var objectTransform;
+
+            if (object._isView && (!cachedSize || (cachedSize[0] !== parentSize[0] || cachedSize[1] !== parentSize[1]))){
+                object.setSizeDirty();
+                this._cachedSize = parentSize;
+            }
+            else cachedSize = parentSize;
+
+            if (object._isView){
+                if (object.isSizeDirty() || object.isStateDirty()){
+                    objectTransform = (object instanceof Function)
+                        ? object({size : cachedSize})
+                        : object.render({size : cachedSize});
+
+                    if (objectTransform instanceof Spec)
+                        objectTransform = objectTransform.render({size: cachedSize});
+
+                    this._cachedObjectTransform = objectTransform;
+                    object.setSizeClean();
+                }
+                else  {
+                    objectTransform = this._cachedObjectTransform;
+                }
+            }
+            else {
+                // apply caching here too
+                objectTransform = (object instanceof Function)
+                    ? object({size : cachedSize})
+                    : object.render({size : cachedSize});
+
+                if (objectTransform instanceof Spec)
+                    objectTransform = objectTransform.render({size: cachedSize});
             }
 
+
+            // cache this one too
             compoundSpec = SpecManager.merge(objectTransform, parentSpec, this._entityIds);
+
         }
         else compoundSpec = parentSpec;
 

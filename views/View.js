@@ -15,6 +15,7 @@ define(function(require, exports, module) {
     var Controller = require('./../controllers/Controller');
     var Entity = require('./../core/Entity');
     var CommitData = require('./../core/CommitData');
+    var StateManager = require('famous/core/StateManager');
 
     /**
      * Useful for quickly creating elements within applications
@@ -35,6 +36,9 @@ define(function(require, exports, module) {
             Controller.apply(this, arguments);
             this.spec = new Spec();
             this._node = new RenderNode();
+            this.state = new StateManager();
+            this._sizeDirty = true;
+            this._isView = true;
 
             var id = Entity.register(this);
             CommitData.register(id);
@@ -67,6 +71,18 @@ define(function(require, exports, module) {
             this.options.origin = origin;
             //TODO: Fix hack for origin checking
             this.spec.setOrigin(origin);
+        },
+        isStateDirty : function isDirty(){
+            return this.state.isDirty();
+        },
+        setSizeDirty : function setDirty(){
+            this._sizeDirty = true;
+        },
+        setSizeClean : function setDirty(){
+            this._sizeDirty = false;
+        },
+        isSizeDirty : function isSizeDirty(){
+            return this._sizeDirty;
         },
         render : function render(parentSpec){
             var size = this.options.size || (parentSpec && parentSpec.size ? parentSpec.size : null);

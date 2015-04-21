@@ -38,14 +38,49 @@ define(function(require, exports, module) {
             transition: false,
             ratios : []
         },
+        events : {
+            change : updateOptions
+        },
         initialize : function initialize(options){
-            this._ratios = new Transitionable(this.options.ratios);
+            this._ratios = new Transitionable(options.ratios);
             this._nodes = [];
             this._cachedDirection = null;
             this._cachedLengths = [];
             this._cachedLength = Number.NaN;
             this._cachedTransforms = null;
             this._ratiosDirty = false;
+
+            this.state.set({
+                ratios : new Transitionable(options.ratios),
+                nodes : [],
+                direction : undefined,
+                length : undefined,
+                lengths : [],
+                transforms : null,
+                dirty : false,
+                direction : options.direction
+            });
+
+            this.add(function(parentSpec){
+                var ratios = this.state.get('ratios');
+                var direction = this.state.get('direction');
+
+                var length = parentSpec.size[direction];
+
+                _reflow.call(this, ratios, length, direction);
+
+                for (var i = 0; i < ratios.length; i++) {
+                    var size = [undefined, undefined];
+                    length = this._cachedLengths[i];
+                    size[direction] = length;
+                    this.spec.getChild(i)
+                        .transformFrom(this._cachedTransforms[i])
+                        .sizeFrom(size)
+                        .setTarget(this._nodes[i])
+                }
+
+                return this.spec;
+            }.bind(this));
         },
         /**
          * Sets the collection of renderables under the FlexibleLayout instance's control.  Also sets
@@ -65,37 +100,16 @@ define(function(require, exports, module) {
          */
         setRatios : function setRatios(ratios, transition, callback){
             if (transition === undefined) transition = this.options.transition;
-            var currRatios = this._ratios;
-            if (currRatios.get().length === 0) transition = undefined;
-            if (currRatios.isActive()) currRatios.halt();
-            currRatios.set(ratios, transition, callback);
-            this._ratiosDirty = true;
-        },
-        render : function render(parentSpec){
-            var ratios = this._ratios.get();
-            var direction = this.options.direction;
-            var length = parentSpec.size[direction];
-            var size;
-
-            if (length !== this._cachedLength || this._ratiosDirty || this._ratios.isActive() || direction !== this._cachedDirection || _trueSizedDirty.call(this, ratios, direction)) {
-                _reflow.call(this, ratios, length, direction);
-                if (direction !== this._cachedDirection) this._cachedDirection = direction;
-                if (this._ratiosDirty) this._ratiosDirty = false;
-            }
-
-            for (var i = 0; i < ratios.length; i++) {
-                size = [undefined, undefined];
-                length = this._cachedLengths[i];
-                size[direction] = length;
-                this.spec.getChild(i)
-                    .transformFrom(this._cachedTransforms[i])
-                    .sizeFrom(size)
-                    .setTarget(this._nodes[i])
-            }
-
-            return this.spec;
+            this.state.setKey('ratios', ratios, transition, callback);
         }
     }, CONSTANTS);
+
+    function updateOptions(options){
+        var key = options.key;
+        var value = options.value;
+
+        if (key == 'direction') this.state.set(key, value)
+    }
 
     function _reflow(ratios, length, direction) {
         var currTransform;

@@ -31,7 +31,7 @@ define(function(require, exports, module) {
         this._eventInput.bindThis(this);
         this._eventInput.subscribe(this._optionsManager);
 
-        if (this.initialize) this.initialize(this.options);
+//        if (this.initialize) this.initialize(this.options);
     }
 
     Controller.DEFAULT_OPTIONS = {};
