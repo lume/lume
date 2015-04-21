@@ -122,6 +122,7 @@ define(function(require, exports, module) {
             var object = this._object;
             var cachedSize = this._cachedSize;
             var objectTransform;
+            var compoundSpec;
 
             if (object._isView && (!cachedSize || (cachedSize[0] !== parentSize[0] || cachedSize[1] !== parentSize[1]))){
                 object.setSizeDirty();
