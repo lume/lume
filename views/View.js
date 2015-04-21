@@ -14,7 +14,6 @@ define(function(require, exports, module) {
     var Spec = require('./../core/Spec');
     var Controller = require('./../controllers/Controller');
     var Entity = require('./../core/Entity');
-    var CommitData = require('./../core/CommitData');
     var StateManager = require('famous/core/StateManager');
 
     /**
@@ -40,8 +39,7 @@ define(function(require, exports, module) {
             this._sizeDirty = true;
             this._isView = true;
 
-            var id = Entity.register(this);
-            CommitData.register(id);
+            Entity.register(this);
 
             if (this.initialize)
                 this.initialize.call(this, this.options);

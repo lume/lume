@@ -14,7 +14,6 @@ define(function(require, exports, module) {
     var SpecManager = require('./SpecManager');
     var Modifier = require('./Modifier');
     var Entity = require('./Entity');
-    var CommitData = require('./CommitData');
     var Spec = require('./Spec');
 
     /**
@@ -35,6 +34,7 @@ define(function(require, exports, module) {
         this._cachedSize = null;
         this._cachedObjectTransform = null;
         this._cachedCompoundSpec = null;
+        this.passThrough = false;
 
         if (object) this.set(object);
     }
@@ -114,7 +114,7 @@ define(function(require, exports, module) {
      */
 
     RenderNode.prototype.render = function render(parentSpec) {
-        var compoundSpec;
+        this.passThrough = false;
 
         if (this._object){
 
@@ -142,7 +142,8 @@ define(function(require, exports, module) {
                     object.setSizeClean();
                 }
                 else  {
-                    objectTransform = this._cachedObjectTransform;
+                    // go immediately to rendering child
+                    this.passThrough = true;
                 }
             }
             else {
@@ -157,7 +158,13 @@ define(function(require, exports, module) {
 
 
             // cache this one too
-            compoundSpec = SpecManager.merge(objectTransform, parentSpec, this._entityIds);
+            if (!this.passThrough){
+                compoundSpec = SpecManager.merge(objectTransform, parentSpec, this._entityIds)
+                this._cachedCompoundSpec = compoundSpec;
+            }
+            else {
+                compoundSpec = this._cachedCompoundSpec;
+            }
 
         }
         else compoundSpec = parentSpec;
@@ -166,9 +173,11 @@ define(function(require, exports, module) {
     };
 
     RenderNode.prototype.commit = function(allocator){
-        for (var id in this._entityIds){
-            var entity = Entity.get(id);
-            entity.commit(this._entityIds[id], allocator);
+        if (!this.passThrough){
+            for (var id in this._entityIds){
+                var entity = Entity.get(id);
+                entity.commit(this._entityIds[id], allocator);
+            }
         }
         if (this._child) this._child.commit(allocator);
     };

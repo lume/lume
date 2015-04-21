@@ -15,7 +15,6 @@ define(function(require, exports, module) {
     var Transform = require('./Transform');
     var Transitionable = require('./Transitionable');
     var Entity = require('./Entity');
-    var CommitData = require('./CommitData');
 
     /**
      * The top-level container for a Famous-renderable piece of the document.

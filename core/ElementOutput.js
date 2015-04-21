@@ -12,7 +12,6 @@ define(function(require, exports, module) {
     var Entity = require('./Entity');
     var EventHandler = require('./EventHandler');
     var Transform = require('./Transform');
-    var CommitData = require('./CommitData');
 
     var usePrefix = !('transform' in document.documentElement.style);
     var devicePixelRatio = window.devicePixelRatio || 1;
@@ -43,7 +42,6 @@ define(function(require, exports, module) {
         }.bind(this);
 
         this._id = Entity.register(this);
-        CommitData.register(this._id);
 
         this._currentTarget = null;
 
