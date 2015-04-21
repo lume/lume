@@ -41,7 +41,7 @@ define(function(require, exports, module) {
     var frameTimeLimit;
     var loopEnabled = true;
     var eventForwarders = {};
-    var eventHandler = new EventHandler();
+    var eventHandler = null;
 
     var options = {
         containerType: 'div',
@@ -76,14 +76,14 @@ define(function(require, exports, module) {
         frameTime = currentTime - lastTime;
         lastTime = currentTime;
 
-        eventHandler.emit('prerender');
+        if (eventHandler) eventHandler.emit('prerender');
 
         // empty the queue
         while (nextTickQueue.length) (nextTickQueue.shift())();
 
         for (var i = 0; i < contexts.length; i++) contexts[i].commit();
 
-        eventHandler.emit('postrender');
+        if (eventHandler) eventHandler.emit('postrender');
     };
 
     // engage requestAnimationFrame
@@ -128,32 +128,28 @@ define(function(require, exports, module) {
     }
     var initialized = false;
 
-    /**
-     * Add event handler object to set of downstream handlers.
-     *
-     * @method pipe
-     *
-     * @param {EventHandler} target event handler target object
-     * @return {EventHandler} passed event handler
-     */
-    Engine.pipe = function pipe(target) {
-        if (target.subscribe instanceof Function) return target.subscribe(Engine);
-        else return eventHandler.pipe(target);
-    };
+    function _createEventHandler(){
+        if (eventHandler) return;
+        eventHandler = new EventHandler();
 
-    /**
-     * Remove handler object from set of downstream handlers.
-     *   Undoes work of "pipe".
-     *
-     * @method unpipe
-     *
-     * @param {EventHandler} target target handler object
-     * @return {EventHandler} provided target
-     */
-    Engine.unpipe = function unpipe(target) {
-        if (target.unsubscribe instanceof Function) return target.unsubscribe(Engine);
-        else return eventHandler.unpipe(target);
-    };
+        Engine.on = function(type, handler){
+            if (!(type in eventForwarders)) {
+                eventForwarders[type] = eventHandler.emit.bind(eventHandler, type);
+                if (document.body) {
+                    document.body.addEventListener(type, eventForwarders[type]);
+                }
+                else {
+                    nextTickQueue.push(function(type, forwarder) {
+                        document.body.addEventListener(type, forwarder);
+                    }.bind(this, type, eventForwarders[type]));
+                }
+            }
+            return eventHandler.on(type, handler);
+        };
+
+        Engine.off = eventHandler.off;
+        Engine.emit = eventHandler.emit;
+    }
 
     /**
      * Bind a callback function to an event type handled by this object.
@@ -165,49 +161,9 @@ define(function(require, exports, module) {
      * @param {function(string, Object)} handler callback
      * @return {EventHandler} this
      */
-    Engine.on = function on(type, handler) {
-        if (!(type in eventForwarders)) {
-            eventForwarders[type] = eventHandler.emit.bind(eventHandler, type);
-            if (document.body) {
-                document.body.addEventListener(type, eventForwarders[type]);
-            }
-            else {
-                nextTickQueue.push(function(type, forwarder) {
-                    document.body.addEventListener(type, forwarder);
-                }.bind(this, type, eventForwarders[type]));
-            }
-        }
-        return eventHandler.on(type, handler);
-    };
-
-    /**
-     * Trigger an event, sending to all downstream handlers
-     *   listening for provided 'type' key.
-     *
-     * @method emit
-     *
-     * @param {string} type event type key (for example, 'click')
-     * @param {Object} event event data
-     * @return {EventHandler} this
-     */
-    Engine.emit = function emit(type, event) {
-        return eventHandler.emit(type, event);
-    };
-
-    /**
-     * Unbind an event by type and handler.
-     *   This undoes the work of "on".
-     *
-     * @static
-     * @method removeListener
-     *
-     * @param {string} type event type key (for example, 'click')
-     * @param {function} handler function object to remove
-     * @return {EventHandler} internal event handler object (for chaining)
-     */
-    Engine.off = function off(type, handler) {
-        return eventHandler.off(type, handler);
-    };
+    Engine.on = _createEventHandler;
+    Engine.off = _createEventHandler;
+    Engine.emit = _createEventHandler;
 
     /**
      * Return the current calculated frames per second of the Engine.
@@ -335,10 +291,11 @@ define(function(require, exports, module) {
 
     optionsManager.on('change', function(data) {
         var key = data.key;
-        if (key === 'fpsCap') Engine.setFPSCap(data.value);
+        var value = data.value;
+        if (key === 'fpsCap') Engine.setFPSCap(value);
         else if (key === 'runLoop') {
             // kick off the loop only if it was stopped
-            if (!loopEnabled && data.value) {
+            if (!loopEnabled && value) {
                 loopEnabled = true;
                 window.requestAnimationFrame(loop);
             }
