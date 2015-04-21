@@ -70,7 +70,8 @@ define(function(require, exports, module) {
         else {
             if (this.state) {
                 result = this.state.render();
-                result.target = this.target.render({size : mergedSize});
+                if (this.target)
+                    result.target = this.target.render({size : mergedSize});
             }
             else result = this.target.render({size : mergedSize});
         }

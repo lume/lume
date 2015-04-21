@@ -29,7 +29,6 @@ define(function(require, exports, module) {
     function RenderNode(object) {
         this._object = null;
         this._child = null;
-        this._parent = null;
 
         this._entityIds = {};
 
@@ -61,12 +60,6 @@ define(function(require, exports, module) {
         else this._child = childNode;
 
         return childNode;
-    };
-
-    RenderNode.prototype.pushEntityId = function(id){
-        if (this._entityIds[id]) return;
-        this._entityIds[id] = true;
-        if (this._parent) this._parent.pushEntityId(id);
     };
 
     /**
@@ -119,22 +112,14 @@ define(function(require, exports, module) {
     RenderNode.prototype.render = function render(parentSpec) {
         var compoundSpec;
         if (this._object){
+            var objectTransform = (this._object instanceof Function)
+                ? this._object({size : parentSpec.size})
+                : this._object.render({size : parentSpec.size});
 
-            if (this._object instanceof Function){
-                var objectTransform = this._object({size : parentSpec.size});
-            }
-            else {
-                var objectTransform = this._object.render({size : parentSpec.size});
-            }
-
-            if (objectTransform instanceof Spec){
+            if (objectTransform instanceof Spec)
                 objectTransform = objectTransform.render({size : parentSpec.size});
-            }
-
-//            var flatObjectTransform = SpecManager.flatten(objectTransform);
 
             compoundSpec = SpecManager.merge(objectTransform, parentSpec, this._entityIds);
-
         }
         else compoundSpec = parentSpec;
 
