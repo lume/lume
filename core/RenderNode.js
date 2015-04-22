@@ -127,6 +127,7 @@ define(function(require, exports, module) {
             if (object._isView && (!cachedSize || (cachedSize[0] !== parentSize[0] || cachedSize[1] !== parentSize[1]))){
                 object.setSizeDirty();
                 this._cachedSize = parentSize;
+                cachedSize = parentSize;
             }
             else cachedSize = parentSize;
 
