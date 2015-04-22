@@ -48,9 +48,12 @@ define(function(require, exports, module) {
 
     StateManager.prototype.get = function get(key){
         var state = this.state[key];
-        return (state instanceof Transitionable || state instanceof TransitionableTransform)
-            ? state.get()
-            : state;
+        if (state instanceof Transitionable || state instanceof TransitionableTransform)
+            return state.get();
+        else if (state instanceof Function)
+            return state();
+        else
+            return state;
     };
 
     StateManager.prototype.isDirty = function(){
