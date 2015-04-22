@@ -204,6 +204,8 @@ define(function(require, exports, module) {
         return this.translate.isActive() || this.rotate.isActive() || this.scale.isActive() || this.skew.isActive();
     };
 
+    TransitionableTransform.prototype.isDirty = TransitionableTransform.prototype.isActive;
+
     /**
      * Halts the transition
      *

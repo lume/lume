@@ -37,6 +37,15 @@ define(function(require, exports, module) {
         this._proportionsGetter = null;
         this._marginsGetter = null;
 
+        this._transformDirty = null;
+        this._opacityDirty = null;
+        this._originDirty = null;
+        this._alignDirty = null;
+        this._sizeDirty = null;
+        this._proportionsDirty = null;
+        this._marginsDirty = null;
+
+
         this._output = {
             transform: Transform.identity,
             opacity: 1,
@@ -70,9 +79,16 @@ define(function(require, exports, module) {
      * @return {Modifier} this
      */
     Modifier.prototype.transformFrom = function transformFrom(transform) {
-        if (transform instanceof Function) this._transformGetter = transform;
-        else if (transform instanceof Object && transform.get) this._transformGetter = transform.get.bind(transform);
+        if (transform instanceof Function) {
+            this._transformDirty = true;
+            this._transformGetter = transform;
+        }
+        else if (transform instanceof Object && transform.get) {
+            this._transformDirty = transform.isDirty ? transform.isDirty.bind(this) : true;
+            this._transformGetter = transform.get.bind(transform);
+        }
         else {
+            this._transformDirty = false;
             this._transformGetter = null;
             this._output.transform = transform;
         }
@@ -88,9 +104,17 @@ define(function(require, exports, module) {
      * @return {Modifier} this
      */
     Modifier.prototype.opacityFrom = function opacityFrom(opacity) {
-        if (opacity instanceof Function) this._opacityGetter = opacity;
-        else if (opacity instanceof Object && opacity.get) this._opacityGetter = opacity.get.bind(opacity);
+        debugger
+        if (opacity instanceof Function) {
+            this._opacityDirty = true;
+            this._opacityGetter = opacity;
+        }
+        else if (opacity instanceof Object && opacity.get) {
+            this._opacityDirty = opacity.isDirty ? opacity.isDirty.bind(opacity) : true;
+            this._opacityGetter = opacity.get.bind(opacity);
+        }
         else {
+            this._opacityDirty = false;
             this._opacityGetter = null;
             this._output.opacity = opacity;
         }
@@ -107,9 +131,16 @@ define(function(require, exports, module) {
      * @return {Modifier} this
      */
     Modifier.prototype.originFrom = function originFrom(origin) {
-        if (origin instanceof Function) this._originGetter = origin;
-        else if (origin instanceof Object && origin.get) this._originGetter = origin.get.bind(origin);
+        if (origin instanceof Function) {
+            this._originDirty = true;
+            this._originGetter = origin;
+        }
+        else if (origin instanceof Object && origin.get) {
+            this._originDirty = origin.isDirty ? origin.isDirty.bind(origin) : true;
+            this._originGetter = origin.get.bind(origin);
+        }
         else {
+            this._originDirty = false;
             this._originGetter = null;
             this._output.origin = origin;
         }
@@ -126,9 +157,16 @@ define(function(require, exports, module) {
      * @return {Modifier} this
      */
     Modifier.prototype.alignFrom = function alignFrom(align) {
-        if (align instanceof Function) this._alignGetter = align;
-        else if (align instanceof Object && align.get) this._alignGetter = align.get.bind(align);
+        if (align instanceof Function) {
+            this._alignDirty = true;
+            this._alignGetter = align;
+        }
+        else if (align instanceof Object && align.get) {
+            this._alignDirty = align.isDirty ? align.isDirty.bind(align) : true;
+            this._alignGetter = align.get.bind(align);
+        }
         else {
+            this._alignDirty = false;
             this._alignGetter = null;
             this._output.align = align;
         }
@@ -150,9 +188,16 @@ define(function(require, exports, module) {
      * @return {Modifier} this
      */
     Modifier.prototype.sizeFrom = function sizeFrom(size) {
-        if (size instanceof Function) this._sizeGetter = size;
-        else if (size instanceof Object && size.get) this._sizeGetter = size.get.bind(size);
+        if (size instanceof Function) {
+            this._sizeDirty = true;
+            this._sizeGetter = size;
+        }
+        else if (size instanceof Object && size.get) {
+            this._sizeDirty = size.isDirty ? size.isDirty.bind(size) : true;
+            this._sizeGetter = size.get.bind(size);
+        }
         else {
+            this._sizeDirty = false;
             this._sizeGetter = null;
             this._output.size = size;
         }
@@ -160,9 +205,16 @@ define(function(require, exports, module) {
     };
 
     Modifier.prototype.marginsFrom = function marginsFrom(margins) {
-        if (margins instanceof Function) this._marginsGetter = margins;
-        else if (margins instanceof Object && margins.get) this._marginsGetter = margins.get.bind(margins);
+        if (margins instanceof Function) {
+            this._marginsDirty = true;
+            this._marginsGetter = margins;
+        }
+        else if (margins instanceof Object && margins.get) {
+            this._marginsDirty = margins.isDirty ? margins.isDirty.bind(margins) : true;
+            this._marginsGetter = margins.get.bind(margins);
+        }
         else {
+            this._marginsDirty = false;
             this._marginsGetter = null;
             this._output.margins = margins;
         }
@@ -178,9 +230,16 @@ define(function(require, exports, module) {
      * @return {Modifier} this
      */
     Modifier.prototype.proportionsFrom = function proportionsFrom(proportions) {
-        if (proportions instanceof Function) this._proportionsGetter = proportions;
-        else if (proportions instanceof Object && proportions.get) this._proportionsGetter = proportions.get.bind(proportions);
+        if (proportions instanceof Function) {
+            this._proportionsDirty = true;
+            this._proportionsGetter = proportions;
+        }
+        else if (proportions instanceof Object && proportions.get) {
+            this._proportionsDirty = proportions.isDirty ? proportions.isDirty.bind(proportions) : true;
+            this._proportionsGetter = proportions.get.bind(proportions);
+        }
         else {
+            this._proportionsDirty = false;
             this._proportionsGetter = null;
             this._output.proportions = proportions;
         }
@@ -198,6 +257,47 @@ define(function(require, exports, module) {
         if (this._proportionsGetter) this._output.proportions = this._proportionsGetter();
     }
 
+    Modifier.prototype.isDirty = function(){
+        var dirty = false;
+
+        if (this._transformDirty)
+            dirty = dirty || (this._transformDirty instanceof Function)
+                ? this._transformDirty()
+                : this._transformDirty;
+
+        if (this._opacityDirty)
+            dirty = dirty || (this._opacityDirty instanceof Function)
+                ? this._opacityDirty()
+                : this._opacityDirty;
+
+        if (this._originDirty)
+            dirty = dirty || (this._originDirty instanceof Function)
+                ? this._originDirty()
+                : this._originDirty;
+
+        if (this._alignDirty)
+            dirty = dirty || (this._alignDirty instanceof Function)
+                ? this._alignDirty()
+                : this._alignDirty;
+
+        if (this._sizeDirty)
+            dirty = dirty || (this._sizeDirty instanceof Function)
+                ? this._sizeDirty()
+                : this._sizeDirty;
+
+        if (this._marginsDirty)
+            dirty = dirty || (this._marginsDirty instanceof Function)
+                ? this._marginsDirty()
+                : this._marginsDirty;
+
+        if (this._proportionsDirty)
+            dirty = dirty || (this._proportionsDirty instanceof Function)
+                ? this._proportionsDirty()
+                : this._proportionsDirty;
+
+        return dirty;
+    };
+
     /**
      * Return render spec for this Modifier, applying to the provided
      *    target component.  This is similar to render() for Surfaces.
@@ -209,7 +309,7 @@ define(function(require, exports, module) {
      *    provided target
      */
     Modifier.prototype.render = function render() {
-        _update.call(this);
+        if (this.isDirty()) _update.call(this);
         return this._output;
     };
 

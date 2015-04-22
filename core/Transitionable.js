@@ -249,6 +249,8 @@ define(function(require, exports, module) {
         return this._active;
     };
 
+    Transitionable.prototype.isDirty = Transitionable.prototype.isActive;
+
     /**
      * Halt transition at current state and erase all pending actions.
      *
