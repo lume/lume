@@ -55,7 +55,7 @@ define(function(require, exports, module) {
     Surface.prototype.constructor = Surface;
     Surface.prototype.elementType = 'div';
     Surface.prototype.elementClass = 'famous-surface';
-
+    Surface.prototype.isDirty = function(){return false};
     /**
      * Set HTML attributes on this Surface. Note that this will cause
      *    dirtying and thus re-rendering, even if values do not change.
