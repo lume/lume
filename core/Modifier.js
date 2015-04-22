@@ -84,7 +84,7 @@ define(function(require, exports, module) {
             this._transformGetter = transform;
         }
         else if (transform instanceof Object && transform.get) {
-            this._transformDirty = transform.isDirty ? transform.isDirty.bind(this) : true;
+            this._transformDirty = transform.isDirty ? transform.isDirty.bind(transform) : true;
             this._transformGetter = transform.get.bind(transform);
         }
         else {
@@ -104,7 +104,6 @@ define(function(require, exports, module) {
      * @return {Modifier} this
      */
     Modifier.prototype.opacityFrom = function opacityFrom(opacity) {
-        debugger
         if (opacity instanceof Function) {
             this._opacityDirty = true;
             this._opacityGetter = opacity;
