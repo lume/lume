@@ -17,12 +17,19 @@ define(function(require, exports, module) {
             return null;
         },
         getSize : function(){
+            //TODO: aggregate sizes of children
             return null;
         },
         render: function() {
             for(var i = 0; i < this.nodes.length; i++){
                 var node = this.nodes[i];
                 node.render.apply(node, arguments);
+            }
+        },
+        commit: function() {
+            for(var i = 0; i < this.nodes.length; i++){
+                var node = this.nodes[i];
+                node.commit.apply(node, arguments);
             }
         }
     };
