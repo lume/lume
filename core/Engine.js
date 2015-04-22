@@ -106,7 +106,7 @@ define(function(require, exports, module) {
         for (var i = 0; i < contexts.length; i++)
             contexts[i].emit('resize');
 
-        eventHandler.emit('resize');
+        if (eventHandler) eventHandler.emit('resize');
     }
     window.addEventListener('resize', handleResize, false);
     handleResize();
@@ -131,22 +131,6 @@ define(function(require, exports, module) {
     function _createEventHandler(){
         if (eventHandler) return;
         eventHandler = new EventHandler();
-
-        Engine.on = function(type, handler){
-            if (!(type in eventForwarders)) {
-                eventForwarders[type] = eventHandler.emit.bind(eventHandler, type);
-                if (document.body) {
-                    document.body.addEventListener(type, eventForwarders[type]);
-                }
-                else {
-                    nextTickQueue.push(function(type, forwarder) {
-                        document.body.addEventListener(type, forwarder);
-                    }.bind(this, type, eventForwarders[type]));
-                }
-            }
-            return eventHandler.on(type, handler);
-        };
-
         Engine.off = eventHandler.off;
         Engine.emit = eventHandler.emit;
     }
@@ -161,7 +145,22 @@ define(function(require, exports, module) {
      * @param {function(string, Object)} handler callback
      * @return {EventHandler} this
      */
-    Engine.on = _createEventHandler;
+    Engine.on = function(type, handler){
+        _createEventHandler();
+        if (!(type in eventForwarders)) {
+            eventForwarders[type] = eventHandler.emit.bind(eventHandler, type);
+            if (document.body) {
+                document.body.addEventListener(type, eventForwarders[type]);
+            }
+            else {
+                nextTickQueue.push(function(type, forwarder) {
+                    document.body.addEventListener(type, forwarder);
+                }.bind(this, type, eventForwarders[type]));
+            }
+        }
+        return eventHandler.on(type, handler);
+    };
+
     Engine.off = _createEventHandler;
     Engine.emit = _createEventHandler;
 
