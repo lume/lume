@@ -83,28 +83,11 @@ define(function(require, exports, module) {
             return this._sizeDirty;
         },
         render : function render(parentSpec){
-            var size = this.options.size || (parentSpec && parentSpec.size ? parentSpec.size : null);
-            var origin = this.options.origin || (parentSpec && parentSpec.origin ? parentSpec.origin : null);
-            var transform;
-
-            //TODO: Fix origin hack
-            if (this.options.origin){
-                var innerSize = this.getSize() || size;
-                var innerOrigin = this.getOrigin() || origin;
-                if (innerOrigin && (innerOrigin[0] || innerOrigin[1]))
-                    transform = Transform.translate(-innerOrigin[0] * innerSize[0], -innerOrigin[1] * innerSize[1], 0);
-            }
-
-            return {
-                size : size,
-                origin : origin,
-                transform : transform,
-                target : this._entityId
-            };
+            this._node.render(parentSpec);
+            return this._entityId;
         },
         commit : function commit(spec, allocator){
-            RenderNode.prototype.render.call(this._node, spec);
-            RenderNode.prototype.commit.call(this._node, allocator);
+            return RenderNode.prototype.commit.call(this._node, allocator);
         }
     });
 });
