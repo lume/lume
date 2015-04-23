@@ -58,8 +58,6 @@ define(function(require, exports, module) {
             ? child
             : new RenderNode(child);
 
-        childNode._parent = this;
-
         if (this._child instanceof CombinerNode)
             this._child.add(childNode);
         else if (this._child)
