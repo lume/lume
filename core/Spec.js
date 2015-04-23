@@ -11,7 +11,7 @@ define(function(require, exports, module) {
         this.target = null;
 
         this._cachedTarget = null;
-        this._targetDirty = false;
+        this._targetDirty = true;
     }
 
     function _firstSet(){
@@ -27,7 +27,10 @@ define(function(require, exports, module) {
     Spec.prototype.getChild = function(index){
         if (index == undefined) return this.getTarget();
 
-        if (!this.target) this.target = [];
+        if (!this.target) {
+            this.target = [];
+            this._cachedTarget = [];
+        }
         var children = this.target;
 
         if (index >= children.length){
@@ -101,14 +104,11 @@ define(function(require, exports, module) {
     };
 
     Spec.prototype.isDirty = function(){
-        if (this.state && this.state.isDirty() || this._targetDirty)
-            return true;
+        return this.isStateDirty() || this._targetDirty;
+    };
 
-        if (this.target instanceof Array){
-            for (var i = 0; i < this.target.length; i++)
-                if (this.target[i].isDirty()) return true;
-        }
-        else return false;
+    Spec.prototype.isStateDirty = function(){
+        return this.state && this.state.isDirty();
     };
 
     Spec.prototype.setTargetClean = function(){
@@ -124,17 +124,36 @@ define(function(require, exports, module) {
 
         if (this.target instanceof Array){
             result = [];
-            for (var i = 0; i < this.target.length; i++)
-                result[i] = this.target[i].render({size : mergedSize});
+            for (var i = 0; i < this.target.length; i++){
+                var target = this.target[i];
+                if (target.isStateDirty()){
+                    result[i] = this.target[i].render({size : mergedSize});
+                    this._cachedTarget[i] = result[i];
+                }
+                else result[i] = this._cachedTarget[i];
+            }
         }
         else {
             if (this.state) {
                 result = this.state.render();
-                if (this.target)
-                    result.target = this.target.render({size : mergedSize});
+                if (this.target){
+                    if (this.target.isStateDirty()){
+                        result.target = this.target.render({size : mergedSize});
+                        this._cachedTarget = result.target;
+                    }
+                    else result.target = this._cachedTarget;
+                }
             }
-            else result = this.target.render({size : mergedSize});
+            else {
+                if (this.target.isStateDirty()) {
+                    result = this.target.render({size: mergedSize});
+                    this._cachedTarget = result;
+                }
+                else result = this._cachedTarget;
+            }
         }
+
+        this.setTargetClean();
 
         return result;
     };
