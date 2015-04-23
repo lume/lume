@@ -129,7 +129,7 @@ define(function(require, exports, module) {
             node = this._nodes[i];
 
             //TODO: getSize will be defined once Sequence refactor is done
-            if (!node.getSize()) continue;
+            if (!node || !node.getSize()) continue;
 
             (typeof ratio !== 'number')
                 ? flexLength -= node.getSize()[direction] || 0
@@ -141,7 +141,7 @@ define(function(require, exports, module) {
             ratio = ratios[i];
 
             //TODO: getSize will be defined once Sequence refactor is done
-            if (!node.getSize()) continue;
+            if (!node || !node.getSize()) continue;
 
             nodeLength = (typeof ratio === 'number')
                 ? flexLength * ratio / ratioSum
