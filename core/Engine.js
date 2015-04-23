@@ -149,14 +149,7 @@ define(function(require, exports, module) {
         _createEventHandler();
         if (!(type in eventForwarders)) {
             eventForwarders[type] = eventHandler.emit.bind(eventHandler, type);
-            if (document.body) {
-                document.body.addEventListener(type, eventForwarders[type]);
-            }
-            else {
-                nextTickQueue.push(function(type, forwarder) {
-                    document.body.addEventListener(type, forwarder);
-                }.bind(this, type, eventForwarders[type]));
-            }
+            document.addEventListener(type, eventForwarders[type]);
         }
         return eventHandler.on(type, handler);
     };
