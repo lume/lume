@@ -62,11 +62,11 @@ define(function(require, exports, module) {
             });
 
             this.add(function(parentSpec){
-                var ratios = this.state.get('ratios');
-                var direction = this.state.get('direction');
+                var ratios = this.state.getKey('ratios');
+                var direction = this.state.getKey('direction');
 
                 var length = parentSpec.size[direction];
-
+                
                 _reflow.call(this, ratios, length, direction);
 
                 for (var i = 0; i < ratios.length; i++) {

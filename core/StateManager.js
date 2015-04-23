@@ -28,6 +28,10 @@ define(function(require, exports, module) {
         this.dirtyState = ~this.dirtyMask; // initialize all to clean
     };
 
+    StateManager.prototype.get = function(key){
+        return this.state[key];
+    };
+
     StateManager.prototype.setKey = function set(key, value, transition, callback){
         var state = this.state[key];
         if (state === undefined) return;
@@ -46,7 +50,7 @@ define(function(require, exports, module) {
         }
     };
 
-    StateManager.prototype.get = function get(key){
+    StateManager.prototype.getKey = function get(key){
         var state = this.state[key];
         if (state instanceof Transitionable || state instanceof TransitionableTransform)
             return state.get();

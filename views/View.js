@@ -82,6 +82,9 @@ define(function(require, exports, module) {
         isSizeDirty : function isSizeDirty(){
             return this._sizeDirty;
         },
+        isDirty : function isDirty(){
+            return this.isSizeDirty() || this.isStateDirty();
+        },
         render : function render(parentSpec){
             this._node.render(parentSpec);
             return this._entityId;

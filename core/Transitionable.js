@@ -45,6 +45,7 @@ define(function(require, exports, module) {
         this._engineInstance = null;
         this._currentMethod = null;
         this._active = false;
+        this._dirty = true;
         this._eventOutput = null;
     }
 
@@ -128,6 +129,10 @@ define(function(require, exports, module) {
      *    completion (t=1)
      */
     Transitionable.prototype.set = function set(endState, transition, callback) {
+        if (endState === this.state) return;
+
+        this._dirty = true;
+
         if (!transition) {
             this.reset(endState, undefined);
             if (callback) callback();
@@ -156,6 +161,7 @@ define(function(require, exports, module) {
      *    interpolated to this point in time.
      */
     Transitionable.prototype.get = function get() {
+        this._dirty = false;
         if (this.isActive()) this.update();
         return this.state;
     };
@@ -249,7 +255,9 @@ define(function(require, exports, module) {
         return this._active;
     };
 
-    Transitionable.prototype.isDirty = Transitionable.prototype.isActive;
+    Transitionable.prototype.isDirty = function(){
+        return this._dirty || this._active;
+    };
 
     /**
      * Halt transition at current state and erase all pending actions.

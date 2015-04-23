@@ -9,6 +9,9 @@ define(function(require, exports, module) {
     function Spec(){
         this.state = null;
         this.target = null;
+
+        this._cachedTarget = null;
+        this._targetDirty = false;
     }
 
     function _firstSet(){
@@ -91,8 +94,25 @@ define(function(require, exports, module) {
     };
 
     Spec.prototype.setTarget = function(target){
+        if (target !== this._cachedTarget)
+            this._targetDirty = true;
         this.target = target;
         return this;
+    };
+
+    Spec.prototype.isDirty = function(){
+        if (this.state && this.state.isDirty() || this._targetDirty)
+            return true;
+
+        if (this.target instanceof Array){
+            for (var i = 0; i < this.target.length; i++)
+                if (this.target[i].isDirty()) return true;
+        }
+        else return false;
+    };
+
+    Spec.prototype.setTargetClean = function(){
+        this._targetDirty = false;
     };
 
     Spec.prototype.render = function(parentSpec){

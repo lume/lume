@@ -32,8 +32,9 @@ define(function(require, exports, module) {
         this._entityIds = {};
 
         this._cachedSize = null;
-        this._cachedObjectTransform = null;
+        this._cachedObjectSpec = null;
         this._cachedCompoundSpec = null;
+        this._cachedParentSpec = null;
         this.passThrough = false;
 
         if (object) this.set(object);
@@ -53,7 +54,9 @@ define(function(require, exports, module) {
         if (!child.render && !(child instanceof Function))
             child = new Modifier(child);
 
-        var childNode = (child instanceof RenderNode) ? child : new RenderNode(child);
+        var childNode = (child instanceof RenderNode)
+            ? child
+            : new RenderNode(child);
 
         childNode._parent = this;
 
@@ -120,56 +123,57 @@ define(function(require, exports, module) {
 
             var parentSize = parentSpec.size;
             var object = this._object;
-            var cachedSize = this._cachedSize;
-            var objectTransform;
+
+            var objectSpec;
             var compoundSpec;
+            var cachedSize;
 
-            if (object._isView && (!cachedSize || (cachedSize[0] !== parentSize[0] || cachedSize[1] !== parentSize[1]))){
-                object.setSizeDirty();
-                this._cachedSize = parentSize;
-                cachedSize = parentSize;
+            var sizeDirty = false;
+            var objectDirty = false;
+            var parentDirty = false;
+
+            // size computation
+            if ((this._cachedSize === null) || (this._cachedSize[0] !== parentSize[0] || this._cachedSize[1] !== parentSize[1])){
+                cachedSize = [parentSize[0], parentSize[1]];
+                sizeDirty = true;
+                this._cachedSize = cachedSize;
             }
-            else cachedSize = parentSize;
+            else cachedSize = this._cachedSize;
 
-            if (object._isView){
-                if (object.isSizeDirty() || object.isStateDirty()){
-                    objectTransform = (object instanceof Function)
-                        ? object({size : cachedSize})
-                        : object.render({size : cachedSize});
-
-                    if (objectTransform instanceof Spec)
-                        objectTransform = objectTransform.render({size: cachedSize});
-
-                    this._cachedObjectTransform = objectTransform;
-                    object.setSizeClean();
-                }
-                else  {
-                    // go immediately to rendering child
-                    this.passThrough = true;
-                }
-            }
-            else {
-                // apply caching here too
-                objectTransform = (object instanceof Function)
+            // objectTransform computation
+            if ((object.isDirty === undefined) || sizeDirty || object.isDirty()){
+                objectSpec = (object instanceof Function)
                     ? object({size : cachedSize})
                     : object.render({size : cachedSize});
 
-                if (objectTransform instanceof Spec)
-                    objectTransform = objectTransform.render({size: cachedSize});
+                if (objectSpec instanceof Spec){
+                    objectSpec = objectSpec.render({size: cachedSize});
+                }
+
+                this._cachedObjectSpec = objectSpec;
+                objectDirty = true;
+            }
+            else objectSpec = this._cachedObjectSpec;
+
+            // parent computation
+            if ((this._cachedParentSpec === null) || (this._cachedParentSpec !== parentSpec)){
+                parentDirty = true;
+                this._cachedParentSpec = parentSpec;
             }
 
-
-            // cache this one too
-            if (!this.passThrough){
-                compoundSpec = SpecManager.merge(objectTransform, parentSpec, this._entityIds)
+            // compound spec computation
+            if (parentDirty || objectDirty){
+                compoundSpec = SpecManager.merge(objectSpec, parentSpec, this._entityIds);
                 this._cachedCompoundSpec = compoundSpec;
             }
             else {
+                this.passThrough = true;
                 compoundSpec = this._cachedCompoundSpec;
             }
 
         }
-        else compoundSpec = parentSpec;
+        else
+            compoundSpec = parentSpec;
 
         if (this._child) this._child.render(compoundSpec);
     };

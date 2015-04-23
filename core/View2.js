@@ -106,6 +106,10 @@ define(function(require, exports, module) {
         return this._sizeDirty;
     };
 
+    View.prototype.isDirty = function isDirty(){
+        return this.isSizeDirty() || this.isStateDirty();
+    };
+
     var RESERVED_KEYS = {
         DEFAULTS : 'defaults',
         EVENTS   : 'events',

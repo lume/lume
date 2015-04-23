@@ -308,7 +308,10 @@ define(function(require, exports, module) {
      *    provided target
      */
     Modifier.prototype.render = function render() {
-        if (this.isDirty()) _update.call(this);
+        if (this.isDirty()) {
+            console.log('update')
+            _update.call(this);
+        }
         return this._output;
     };
 
