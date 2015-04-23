@@ -13,7 +13,7 @@ define(function(require, exports, module) {
 
         this.dirtyMask = 0;
         this.dirtyState = 0;
-        this.dirtyLock = [];
+        this.dirtyLock = 0;
     }
 
     StateManager.prototype.set = function(state){
@@ -39,10 +39,10 @@ define(function(require, exports, module) {
             state.set(value, transition, function() {
                 // flip flag's key from 1 to 0
                 this.dirtyState &= ~this.dirtyFlags[key];
-                this.dirtyLock.pop();
+                this.dirtyLock--;
                 if (callback) callback();
             }.bind(this));
-            this.dirtyLock.push(true);
+            this.dirtyLock++;
         }
         else{
             this.state[key] = value;
@@ -61,7 +61,7 @@ define(function(require, exports, module) {
     };
 
     StateManager.prototype.isDirty = function(){
-        if (this.dirtyLock.length) return true;
+        if (this.dirtyLock > 0) return true;
         else return (this.dirtyState === this.dirtyMask);
     };
 
