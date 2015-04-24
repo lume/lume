@@ -68,11 +68,12 @@ define(function(require, exports, module) {
         if (this.endStateQueue.length === 0) {
             this._active = false;
 
-            if (this._eventOutput)
+            if (this._eventOutput) {
                 this._eventOutput.emit('end', {
-                    value : this.state,
-                    velocity : this.velocity
+                    value: this.state,
+                    velocity: this.velocity
                 });
+            }
 
             if (this._callback) {
                 var callback = this._callback;
@@ -161,8 +162,8 @@ define(function(require, exports, module) {
      *    interpolated to this point in time.
      */
     Transitionable.prototype.get = function get() {
-        this._dirty = false;
         if (this.isActive()) this.update();
+        this._dirty = false;
         return this.state;
     };
 
@@ -256,6 +257,7 @@ define(function(require, exports, module) {
     };
 
     Transitionable.prototype.isDirty = function(){
+        if (this.dirty && !this._active) this._eventOutput.emit('end');
         return this._dirty || this._active;
     };
 
