@@ -38,8 +38,22 @@ define(function(require, exports, module) {
             this.state = new StateManager();
             this._sizeDirty = true;
             this._isView = true;
+            this._dirty = false;
 
             Entity.register(this);
+
+            this._eventInput.subscribe(this.spec);
+
+            this._eventInput.on('dirty', function(){
+                this._dirty = true;
+                this._eventOutput.emit('dirty');
+            });
+
+            this._eventInput.on('clean', function(){
+                debugger
+                this._dirty = false;
+                this._eventOutput.emit('clean');
+            });
 
             if (this.initialize)
                 this.initialize.call(this, this.options);
