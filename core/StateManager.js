@@ -5,6 +5,7 @@
 define(function(require, exports, module) {
     var Transitionable = require('famous/core/Transitionable');
     var TransitionableTransform = require('famous/transitions/TransitionableTransform');
+    var EventHandler = require('famous/core/EventHandler');
 
     //1 = dirty, 0 = clean
     function StateManager(state) {
@@ -14,6 +15,22 @@ define(function(require, exports, module) {
         this.dirtyMask = 0;
         this.dirtyState = 0;
         this.dirtyLock = 0;
+        this._dirty = true;
+
+        this._eventInput = new EventHandler();
+        this._eventOutput = new EventHandler();
+        EventHandler.setInputHandler(this, this._eventInput);
+        EventHandler.setOutputHandler(this, this._eventOutput);
+
+        this._eventInput.on('start', function(){
+            this._dirty = true;
+            this._eventOutput.emit('dirty');
+        }.bind(this));
+
+        this._eventInput.on('end', function(){
+            this._dirty = false;
+            this._eventOutput.emit('clean');
+        }.bind(this));
     }
 
     StateManager.prototype.set = function(state){
@@ -24,6 +41,9 @@ define(function(require, exports, module) {
             var dirtyFlag = Math.pow(2,i++);
             this.dirtyFlags[key] = dirtyFlag;
             this.dirtyMask |= dirtyFlag;
+
+            if (state[key] instanceof Transitionable)
+                this._eventInput.subscribe(state[key]);
         }
         this.dirtyState = ~this.dirtyMask; // initialize all to clean
     };
@@ -36,6 +56,8 @@ define(function(require, exports, module) {
         var state = this.state[key];
         if (state === undefined) return;
         if (state instanceof Transitionable || state instanceof TransitionableTransform) {
+            this._eventInput.subscribe(state);
+
             state.set(value, transition, function() {
                 // flip flag's key from 1 to 0
                 this.dirtyState &= ~this.dirtyFlags[key];
