@@ -10,6 +10,7 @@
 
 define(function(require, exports, module) {
     var Transform = require('./Transform');
+    var EventHandler = require('famous/core/EventHandler');
 
     /**
      *
@@ -44,6 +45,27 @@ define(function(require, exports, module) {
         this._sizeDirty = null;
         this._proportionsDirty = null;
         this._marginsDirty = null;
+
+        this._dirty = true;
+        this._dirtyLock = 0;
+
+        this._eventInput = new EventHandler();
+        this._eventOutput = new EventHandler();
+        EventHandler.setOutputHandler(this, this._eventOutput);
+        EventHandler.setInputHandler(this, this._eventInput);
+
+        this._eventInput.on('start', function(){
+            debugger
+            this._dirty = true;
+            this._dirtyLock++;
+            this._eventOutput.emit('dirty');
+        }.bind(this));
+
+        this._eventInput.on('end', function(){
+            debugger
+            this._dirtyLock--;
+            this._eventOutput.emit('clean');
+        }.bind(this));
 
 
         this._output = {
@@ -82,12 +104,15 @@ define(function(require, exports, module) {
         if (transform instanceof Function) {
             this._transformDirty = true;
             this._transformGetter = transform;
+//            this._eventOutput.emit('dirty');
         }
         else if (transform instanceof Object && transform.get) {
+//            this._eventInput.subscribe(transform);
             this._transformDirty = transform.isDirty ? transform.isDirty.bind(transform) : true;
             this._transformGetter = transform.get.bind(transform);
         }
         else {
+//            this._dirty = true;
             this._transformDirty = false;
             this._transformGetter = null;
             this._output.transform = transform;
@@ -105,14 +130,17 @@ define(function(require, exports, module) {
      */
     Modifier.prototype.opacityFrom = function opacityFrom(opacity) {
         if (opacity instanceof Function) {
+            this._eventOutput.emit('dirty');
             this._opacityDirty = true;
             this._opacityGetter = opacity;
         }
         else if (opacity instanceof Object && opacity.get) {
+            this._eventInput.subscribe(opacity);
             this._opacityDirty = opacity.isDirty ? opacity.isDirty.bind(opacity) : true;
             this._opacityGetter = opacity.get.bind(opacity);
         }
         else {
+            this._dirty = true;
             this._opacityDirty = false;
             this._opacityGetter = null;
             this._output.opacity = opacity;
@@ -256,47 +284,6 @@ define(function(require, exports, module) {
         if (this._proportionsGetter) this._output.proportions = this._proportionsGetter();
     }
 
-    Modifier.prototype.isDirty = function(){
-        var dirty = false;
-
-        if (this._transformDirty)
-            dirty = dirty || (this._transformDirty instanceof Function)
-                ? this._transformDirty()
-                : this._transformDirty;
-
-        if (this._opacityDirty)
-            dirty = dirty || (this._opacityDirty instanceof Function)
-                ? this._opacityDirty()
-                : this._opacityDirty;
-
-        if (this._originDirty)
-            dirty = dirty || (this._originDirty instanceof Function)
-                ? this._originDirty()
-                : this._originDirty;
-
-        if (this._alignDirty)
-            dirty = dirty || (this._alignDirty instanceof Function)
-                ? this._alignDirty()
-                : this._alignDirty;
-
-        if (this._sizeDirty)
-            dirty = dirty || (this._sizeDirty instanceof Function)
-                ? this._sizeDirty()
-                : this._sizeDirty;
-
-        if (this._marginsDirty)
-            dirty = dirty || (this._marginsDirty instanceof Function)
-                ? this._marginsDirty()
-                : this._marginsDirty;
-
-        if (this._proportionsDirty)
-            dirty = dirty || (this._proportionsDirty instanceof Function)
-                ? this._proportionsDirty()
-                : this._proportionsDirty;
-
-        return dirty;
-    };
-
     /**
      * Return render spec for this Modifier, applying to the provided
      *    target component.  This is similar to render() for Surfaces.
@@ -308,10 +295,12 @@ define(function(require, exports, module) {
      *    provided target
      */
     Modifier.prototype.render = function render() {
-        if (this.isDirty()) {
-            console.log('update')
+        if (this._dirty) {
             _update.call(this);
+            console.log('updated')
         }
+        if (!this._dirtyLock) this._dirty = false;
+
         return this._output;
     };
 
