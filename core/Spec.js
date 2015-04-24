@@ -5,17 +5,39 @@ define(function(require, exports, module) {
     var Transform = require('famous/core/Transform');
     var Entity = require('famous/core/Entity');
     var Modifier = require('famous/core/Modifier');
+    var EventHandler = require('famous/core/EventHandler');
 
     function Spec(){
         this.state = null;
         this.target = null;
 
-        this._cachedTarget = null;
-        this._targetDirty = true;
+        this._dirty = true;
+        this._dirtyLock = 0;
+
+        this._cachedSpec = null;
+
+        this._eventInput = new EventHandler();
+        this._eventOutput = new EventHandler();
+        EventHandler.setInputHandler(this, this._eventInput);
+        EventHandler.setOutputHandler(this, this._eventOutput);
+
+        this._eventInput.on('dirty', function(){
+            this._dirty = true;
+            this._dirtyLock++;
+            this._eventOutput.emit('dirty');
+        }.bind(this));
+
+        this._eventInput.on('clean', function(){
+            this._dirtyLock--;
+            this._eventOutput.emit('clean');
+        }.bind(this));
     }
 
     function _firstSet(){
-        if (!this.state) this.state = new Modifier();
+        if (!this.state) {
+            this.state = new Modifier();
+            this._eventInput.subscribe(this.state);
+        }
     }
 
     Spec.prototype.from = function(options){
@@ -29,7 +51,6 @@ define(function(require, exports, module) {
 
         if (!this.target) {
             this.target = [];
-            this._cachedTarget = [];
         }
         var children = this.target;
 
@@ -97,63 +118,38 @@ define(function(require, exports, module) {
     };
 
     Spec.prototype.setTarget = function(target){
-        if (target !== this._cachedTarget)
-            this._targetDirty = true;
         this.target = target;
+        if (target instanceof Spec)
+            this._eventInput.subscribe(target);
         return this;
     };
 
-    Spec.prototype.isDirty = function(){
-        return this.isStateDirty() || this._targetDirty;
-    };
-
-    Spec.prototype.isStateDirty = function(){
-        return this.state && this.state.isDirty();
-    };
-
-    Spec.prototype.setTargetClean = function(){
-        this._targetDirty = false;
-    };
-
     Spec.prototype.render = function(parentSpec){
-        var result;
+        if (!this._dirty) return this._cachedSpec;
 
+        var result;
         var mergedSize = (this.state && parentSpec && parentSpec.size)
             ? SpecManager.getSize(this.state.render(), parentSpec.size)
             : parentSpec.size;
 
         if (this.target instanceof Array){
             result = [];
-            for (var i = 0; i < this.target.length; i++){
-                var target = this.target[i];
-                if (target.isStateDirty()){
-                    result[i] = this.target[i].render({size : mergedSize});
-                    this._cachedTarget[i] = result[i];
-                }
-                else result[i] = this._cachedTarget[i];
-            }
+            for (var i = 0; i < this.target.length; i++)
+                result[i] = this.target[i].render({size : mergedSize});
         }
         else {
             if (this.state) {
                 result = this.state.render();
-                if (this.target){
-                    if (this.target.isStateDirty()){
-                        result.target = this.target.render({size : mergedSize});
-                        this._cachedTarget = result.target;
-                    }
-                    else result.target = this._cachedTarget;
-                }
+                if (this.target)
+                    result.target = this.target.render({size : mergedSize});
             }
-            else {
-                if (this.target.isStateDirty()) {
-                    result = this.target.render({size: mergedSize});
-                    this._cachedTarget = result;
-                }
-                else result = this._cachedTarget;
-            }
+            else result = this.target.render({size: mergedSize});
         }
 
-        this.setTargetClean();
+        this._cachedSpec = result;
+
+        if (this._dirtyLock == 0)
+            this._dirty = false;
 
         return result;
     };
