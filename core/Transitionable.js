@@ -270,6 +270,13 @@ define(function(require, exports, module) {
         this.set(this.get());
     };
 
+    Transitionable.prototype.map = function(map){
+        return function(){
+            if (this._dirty) return map(this.get());
+            else return map(this.state)
+        }.bind(this);
+    };
+
     function _createEventOutput() {
         this._eventOutput = new EventHandler();
         this._eventOutput.bindThis(this);
