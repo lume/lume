@@ -101,8 +101,9 @@ define(function(require, exports, module) {
 
         this._engineInstance.reset(this.state, this.velocity);
 
-        if (this._eventOutput)
+        if (!this.isActive() && this._eventOutput){
             this._eventOutput.emit('start', {value : this.state});
+        }
 
         if (this.velocity !== undefined) {
             this.velocity = this._engineInstance.getVelocity();
@@ -129,8 +130,6 @@ define(function(require, exports, module) {
      *    completion (t=1)
      */
     Transitionable.prototype.set = function set(endState, transition, callback) {
-        if (endState === this.state) return;
-
         if (!transition) {
             if (this._eventOutput) this.emit('start');
             this.reset(endState, undefined);
@@ -146,7 +145,7 @@ define(function(require, exports, module) {
         this.transitionQueue.push(transition);
         this.callbackQueue.push(callback);
 
-        if (!this.isActive()) _loadNext.call(this);
+        _loadNext.call(this);
 
         return this;
     };
@@ -260,7 +259,17 @@ define(function(require, exports, module) {
      * @method halt
      */
     Transitionable.prototype.halt = function halt() {
-        this.set(this.get());
+        var currentState = this.get();
+
+        if (this._engineInstance) this._engineInstance.reset(currentState);
+
+        this._currentMethod = null;
+        this._engineInstance = null;
+        this.state = currentState;
+        this.velocity = undefined;
+        this.endStateQueue = [];
+        this.transitionQueue = [];
+        this.callbackQueue = [];
     };
 
     Transitionable.prototype.map = function(map){
