@@ -45,7 +45,6 @@ define(function(require, exports, module) {
         this._engineInstance = null;
         this._currentMethod = null;
         this._active = false;
-        this._dirty = true;
         this._eventOutput = null;
     }
 
@@ -132,10 +131,10 @@ define(function(require, exports, module) {
     Transitionable.prototype.set = function set(endState, transition, callback) {
         if (endState === this.state) return;
 
-        this._dirty = true;
-
         if (!transition) {
+            if (this._eventOutput) this.emit('start');
             this.reset(endState, undefined);
+            if (this._eventOutput) this.emit('end');
             if (callback) callback();
             return this;
         }
@@ -163,7 +162,6 @@ define(function(require, exports, module) {
      */
     Transitionable.prototype.get = function get() {
         if (this.isActive()) this.update();
-        this._dirty = false;
         return this.state;
     };
 
@@ -181,7 +179,7 @@ define(function(require, exports, module) {
             }
             else delta = state - this.state;
 
-            this._eventOutput.emit('update', {
+            this.emit('update', {
                 delta : delta,
                 value : state
             });
@@ -256,11 +254,6 @@ define(function(require, exports, module) {
         return this._active;
     };
 
-    Transitionable.prototype.isDirty = function(){
-        if (this.dirty && !this._active) this._eventOutput.emit('end');
-        return this._dirty || this._active;
-    };
-
     /**
      * Halt transition at current state and erase all pending actions.
      *
@@ -272,8 +265,7 @@ define(function(require, exports, module) {
 
     Transitionable.prototype.map = function(map){
         return function(){
-            if (this._dirty) return map(this.get());
-            else return map(this.state)
+            return map(this.get());
         }.bind(this);
     };
 
