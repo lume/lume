@@ -1,20 +1,17 @@
 /* copyright © 2015 David Valdman */
 
 define(function(require, exports, module) {
-    var SpecManager = require('./SpecManager');
+    var SpecManager = require('famous/core/SpecManager');
     var Transform = require('famous/core/Transform');
-    var Entity = require('famous/core/Entity');
-    var Modifier = require('famous/core/Modifier');
     var EventHandler = require('famous/core/EventHandler');
 
-    function Spec(){
-        this.state = null;
+    function Spec(state){
+        this.state = state || null;
         this.target = null;
+        this.result = null;
 
+        this._cache = null;
         this._dirty = true;
-        this._dirtyLock = 0;
-
-        this._cachedSpec = null;
 
         this._eventInput = new EventHandler();
         this._eventOutput = new EventHandler();
@@ -23,40 +20,29 @@ define(function(require, exports, module) {
 
         this._eventInput.on('dirty', function(){
             this._dirty = true;
-            this._dirtyLock++;
             this._eventOutput.emit('dirty');
         }.bind(this));
-
-        this._eventInput.on('clean', function(){
-            this._dirtyLock--;
-            this._eventOutput.emit('clean');
-        }.bind(this));
     }
 
-    function _firstSet(){
-        if (!this.state) {
-            this.state = new Modifier();
-            this._eventInput.subscribe(this.state);
+    Spec.prototype.getTarget = function(){
+        if (this.target) return this.target;
+        else {
+            var target = new Spec();
+            this.target = target;
+            this._eventInput.subscribe(target);
+            return target;
         }
-    }
-
-    Spec.prototype.from = function(options){
-        _firstSet.call(this);
-        Modifier.prototype.from.apply(this.state, arguments);
-        return this;
     };
 
     Spec.prototype.getChild = function(index){
-        if (index == undefined) return this.getTarget();
-
-        if (!this.target) {
-            this.target = [];
-        }
+        if (!this.target) this.target = [];
         var children = this.target;
 
         if (index >= children.length){
             var child = new Spec();
+            this._eventInput.subscribe(child);
             children[index] = child;
+            this.trigger('dirty');
             return child;
         }
         else return children[index];
@@ -66,92 +52,125 @@ define(function(require, exports, module) {
         this.target.splice(index, 1);
     };
 
-    Spec.prototype.getTarget = function(){
-        if (this.target) return this.target;
-        else {
-            var spec = new Spec();
-            this.setTarget(spec);
-            return spec;
+    function _firstSet(){
+        if (!this.state) this.state = {};
+    }
+
+    Spec.prototype.setTransform = function(transform){
+        _firstSet.call(this);
+        if (!this.state.transform) this.state.transform = [];
+        for (var i = 0; i < transform.length; i++){
+            if (this.state.transform[i] === transform[i]) continue;
+            if (!this._dirty) this.trigger('dirty');
+            this.state.transform[i] = transform[i];
         }
-    };
-
-    Spec.prototype.transformFrom = function(transform){
-        _firstSet.call(this);
-        Modifier.prototype.transformFrom.apply(this.state, arguments);
         return this;
     };
 
-    Spec.prototype.opacityFrom = function(opacity){
+    Spec.prototype.setOpacity = function(opacity){
         _firstSet.call(this);
-        Modifier.prototype.opacityFrom.apply(this.state, arguments);
+        if (this.state.opacity === opacity) return this;
+        this.state.opacity = opacity;
+        if (!this._dirty) this.trigger('dirty');
         return this;
     };
 
-    Spec.prototype.sizeFrom = function(size){
+    Spec.prototype.setSize = function(size){
         _firstSet.call(this);
-        Modifier.prototype.sizeFrom.apply(this.state, arguments);
+        if (!this.state.size) this.state.size = [];
+        if (this.state.size[0] === size[0] && this.state.size[1] === size[1]) return this;
+        this.state.size[0] = size[0];
+        this.state.size[1] = size[1];
+        if (!this._dirty) this.trigger('dirty');
         return this;
     };
 
-    Spec.prototype.originFrom = function(origin){
+    Spec.prototype.setOrigin = function(origin){
         _firstSet.call(this);
-        Modifier.prototype.originFrom.apply(this.state, arguments);
+        if (!this.state.origin) this.state.origin = [];
+        if (this.state.origin[0] === origin[0] && this.state.origin[1] === origin[1]) return this;
+        this.state.origin[0] = origin[0];
+        this.state.origin[1] = origin[1];
+        if (!this._dirty) this.trigger('dirty');
         return this;
     };
 
-    Spec.prototype.alignFrom = function(align){
+    Spec.prototype.setAlign = function(align){
         _firstSet.call(this);
-        Modifier.prototype.alignFrom.apply(this.state, arguments);
+        if (!this.state.align) this.state.align = [];
+        if (this.state.align[0] === align[0] && this.state.align[1] === align[1]) return this;
+        this.state.align[0] = align[0];
+        this.state.align[1] = align[1];
+        if (!this._dirty) this.trigger('dirty');
         return this;
     };
 
-    Spec.prototype.marginsFrom = function(margins){
+    Spec.prototype.setMargins = function(margins){
         _firstSet.call(this);
-        Modifier.prototype.marginsFrom.apply(this.state, arguments);
+        if (!this.state.margins) this.state.margins = [];
+
+        if (this.state.margins[0] === margins[0] &&
+            this.state.margins[1] === margins[1] &&
+            this.state.margins[2] === margins[2] &&
+            this.state.margins[3] === margins[3])
+            return this;
+
+        this.state.align[0] = margins[0];
+        this.state.align[1] = margins[1];
+        this.state.margins[2] = margins[2];
+        this.state.margins[3] = margins[3];
+
+        if (!this._dirty) this.trigger('dirty');
+
         return this;
     };
 
-    Spec.prototype.proportionsFrom = function(proportions){
+    Spec.prototype.setProportions = function(proportions){
         _firstSet.call(this);
-        Modifier.prototype.proportionsFrom.apply(this.state, arguments);
+        if (!this.state.proportions) this.state.proportions = [];
+        if (this.state.proportions[0] === proportions[0] && this.state.proportions[1] === proportions[1]) return this;
+        this.state.proportions[0] = proportions[0];
+        this.state.proportions[1] = proportions[1];
+        if (!this._dirty) this.trigger('dirty');
         return this;
     };
 
     Spec.prototype.setTarget = function(target){
+        if (target !== this.target && !this._dirty)
+            this.trigger('dirty');
         this.target = target;
-        if (target instanceof Spec)
-            this._eventInput.subscribe(target);
         return this;
     };
 
     Spec.prototype.render = function(parentSpec){
-        if (!this._dirty) return this._cachedSpec;
 
-        var result;
-        var mergedSize = (this.state && parentSpec && parentSpec.size)
-            ? SpecManager.getSize(this.state.render(), parentSpec.size)
+        //TODO: Fix hack for origin checking
+//        if (this.state && this.state.origin && parentSpec.transform){
+//            var size = this.state.size || parentSpec.size;
+//            var origin = this.state.origin;
+//            parentSpec.transform = Transform.moveThen([-size[0]*origin[0], -size[1]*origin[1], 0], parentSpec.transform);
+//        }
+
+        if (!this._dirty) return this._cache;
+
+        var size = (this.state && parentSpec)
+            ? SpecManager.getSize(this.state, parentSpec.size)
             : parentSpec.size;
 
         if (this.target instanceof Array){
-            result = [];
+            this.result = [];
             for (var i = 0; i < this.target.length; i++)
-                result[i] = this.target[i].render({size : mergedSize});
+                this.result[i] = this.target[i].render({size : size});
         }
-        else {
-            if (this.state) {
-                result = this.state.render();
-                if (this.target)
-                    result.target = this.target.render({size : mergedSize});
-            }
-            else result = this.target.render({size: mergedSize});
+        else if (this.target instanceof Object){
+            this.result = Object.create(this.state);
+            this.result.target = this.target.render({size : size});
         }
 
-        this._cachedSpec = result;
+        this._cache = this.result;
+        this._dirty = false;
 
-        if (this._dirtyLock == 0)
-            this._dirty = false;
-
-        return result;
+        return this.result;
     };
 
     module.exports = Spec;
