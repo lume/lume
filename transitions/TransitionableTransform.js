@@ -7,9 +7,10 @@
  */
 
 define(function(require, exports, module) {
-    var Transitionable = require('../core/Transitionable');
-    var Transform = require('../core/Transform');
-    var Utility = require('../core/Utility');
+    var Transitionable = require('famous/core/Transitionable');
+    var Transform = require('famous/core/Transform');
+    var Utility = require('famous/core/Utility');
+    var EventHandler = require('famous/core/EventHandler');
 
     /**
      * A class for transitioning the state of a Transform by transitioning
@@ -27,7 +28,8 @@ define(function(require, exports, module) {
         this._finalRotate = [0, 0, 0];
         this._finalSkew = [0, 0, 0];
         this._finalScale = [1, 1, 1];
-        this._dirty = true;
+
+        this._dirtyLock = 0;
 
         this.translate = new Transitionable(this._finalTranslate);
         this.rotate = new Transitionable(this._finalRotate);
@@ -36,6 +38,26 @@ define(function(require, exports, module) {
 
         if (transform && transform !== Transform.identity)
             this.set(transform);
+
+        this._eventOutput = new EventHandler();
+        this._eventInput = new EventHandler();
+        EventHandler.setInputHandler(this, this._eventInput);
+        EventHandler.setOutputHandler(this, this._eventOutput);
+
+        this._eventInput.subscribe(this.translate);
+        this._eventInput.subscribe(this.rotate);
+        this._eventInput.subscribe(this.skew);
+        this._eventInput.subscribe(this.scale);
+
+        this._eventInput.on('start', function(){
+            if (this._dirtyLock == 0) this._eventOutput.emit('start');
+            this._dirtyLock++;
+        }.bind(this));
+
+        this._eventInput.on('end', function(){
+            this._dirtyLock--;
+            if (this._dirtyLock == 0) this._eventOutput.emit('end');
+        }.bind(this));
     }
 
     function _build() {
@@ -69,7 +91,6 @@ define(function(require, exports, module) {
      * @return {TransitionableTransform}
      */
     TransitionableTransform.prototype.set = function set(transform, transition, callback) {
-        this._dirty = true;
         var components = Transform.interpret(transform);
 
         this._finalTranslate = components.translate;
@@ -159,20 +180,6 @@ define(function(require, exports, module) {
     };
 
     /**
-     * Sets the default transition to use for transitioning betwen Transform states
-     *
-     * @method setDefaultTransition
-     *
-     * @param transition {Object} Transition definition
-     */
-    TransitionableTransform.prototype.setDefaultTransition = function setDefaultTransition(transition) {
-        this.translate.setDefault(transition);
-        this.rotate.setDefault(transition);
-        this.skew.setDefault(transition);
-        this.scale.setDefault(transition);
-    };
-
-    /**
      * Getter. Returns the current state of the Transform
      *
      * @method get
@@ -180,21 +187,7 @@ define(function(require, exports, module) {
      * @return {Transform}
      */
     TransitionableTransform.prototype.get = function get() {
-        this._dirty = false;
-        return (this.isActive())
-            ? _build.call(this)
-            : this._final;
-    };
-
-    /**
-     * Get the destination state of the Transform
-     *
-     * @method getFinal
-     *
-     * @return Transform {Transform}
-     */
-    TransitionableTransform.prototype.getFinal = function getFinal() {
-        return this._final;
+        return this.isActive() ? _build.call(this) : this._final;
     };
 
     /**
@@ -206,10 +199,6 @@ define(function(require, exports, module) {
      */
     TransitionableTransform.prototype.isActive = function isActive() {
         return this.translate.isActive() || this.rotate.isActive() || this.scale.isActive() || this.skew.isActive();
-    };
-
-    TransitionableTransform.prototype.isDirty = function isDirty() {
-        return this._dirty || this.isActive();
     };
 
     /**
