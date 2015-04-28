@@ -9,11 +9,11 @@
 /* Modified work copyright © 2015 David Valdman */
 
 define(function(require, exports, module) {
-    var RenderNode = require('../core/RenderNode');
-    var Transform = require('../core/Transform');
-    var Transitionable = require('../core/Transitionable');
-    var View = require('./view');
-    var Modifier = require('../core/Modifier');
+    var RenderNode = require('famous/core/RenderNode');
+    var Transform = require('famous/core/Transform');
+    var Transitionable = require('famous/core/Transitionable');
+    var View = require('famous/core/view');
+    var Modifier = require('famous/core/Modifier');
 
     /**
      * A layout which will arrange two renderables: a featured content, and a
@@ -67,6 +67,22 @@ define(function(require, exports, module) {
         initialize : function initialize(options){
             this.initializeState(options);
             this.initializeSubviews();
+
+            this.add({transform : Transform.behind}).add(this.drawer);
+            this.add({transform : function(){
+                var position = this.getPosition();
+
+                // clamp transition on close
+                if (!this._isOpen && (position < 0 && this._orientation === 1) || (position > 0 && this._orientation === -1)) {
+                    position = 0;
+                    this.setPosition(position);
+                }
+
+                return (this._direction === CONSTANTS.DIRECTION.X)
+                    ? Transform.translate(position, 0, 0)
+                    : Transform.translate(0, position, 0);
+
+            }.bind(this)}).add(this.content);
         },
         initializeState : function initializeState(options){
             this._position = new Transitionable(0);
@@ -74,11 +90,10 @@ define(function(require, exports, module) {
             this._orientation = _getOrientationFromSide(options.side);
             this._isOpen = false;
             this._cachedLength = 0;
-            this._cachedPosition = 0;
         },
         initializeSubviews : function initializeSubviews(){
-            this.drawer = null;
-            this.content = null;
+            this.drawer = new RenderNode();
+            this.content = new RenderNode();
         },
         /**
          * Reveals the drawer with a transition
@@ -134,7 +149,6 @@ define(function(require, exports, module) {
          * @param [callback] {Function}         callback
          */
         setPosition : function setPosition(position, transition, callback) {
-            if (this._position.isActive()) this._position.halt();
             this._position.set(position, transition, callback);
         },
         /**
@@ -163,8 +177,9 @@ define(function(require, exports, module) {
          * @method getProgress
          * @return position {Number} position
          */
-        getProgress : function getProgress(){
-            return this._position.get() / this._cachedLength;
+        getProgress : function getProgress(position){
+            if (position === undefined) position = this._position.get();
+            return position / this._cachedLength;
         },
         /**
          * Resets to last state of being open or closed
@@ -184,31 +199,6 @@ define(function(require, exports, module) {
          */
         isOpen : function isOpen(){
             return this._isOpen;
-        },
-        render : function render(){
-            var position = this.getPosition();
-
-            // clamp transition on close
-            if (!this._isOpen && (position < 0 && this._orientation === 1) || (position > 0 && this._orientation === -1)) {
-                position = 0;
-                this.setPosition(position);
-            }
-
-            if (position !== this._cachedPosition)
-                this.emit('update', {progress : this.getProgress()});
-
-            var contentTransform = (this._direction === CONSTANTS.DIRECTION.X)
-                ? Transform.translate(position, 0, 0)
-                : Transform.translate(0, position, 0);
-
-            this._cachedPosition = position;
-
-            this.spec.getChild(0).setTransform(Transform.behind);
-            this.spec.getChild(0).setTarget(this.drawer);
-            this.spec.getChild(1).setTransform(contentTransform);
-            this.spec.getChild(1).setTarget(this.content);
-
-            return this.spec;
         }
     }, CONSTANTS);
 
@@ -235,7 +225,8 @@ define(function(require, exports, module) {
     }
 
     function _handleUpdate(data) {
-        var newPosition = this.getPosition() + data.delta;
+        var oldPosition = this.getPosition();
+        var newPosition = oldPosition + data.delta;
 
         var MIN_LENGTH;
         var MAX_LENGTH;
@@ -254,6 +245,9 @@ define(function(require, exports, module) {
         else if (newPosition < MIN_LENGTH) newPosition = MIN_LENGTH;
 
         this.setPosition(newPosition);
+
+        if (newPosition !== oldPosition)
+            this.emit('update', {progress : this.getProgress(newPosition)});
     }
 
     function _handleEnd(data) {
