@@ -131,9 +131,12 @@ define(function(require, exports, module) {
      */
     Transitionable.prototype.set = function set(endState, transition, callback) {
         if (!transition) {
-            if (this._eventOutput) this.emit('start');
+            if (this._eventOutput){
+                if (this.isActive()) this.emit('end');
+                else this.emit('dirty');
+            }
+
             this.reset(endState, undefined);
-            if (this._eventOutput) this.emit('end');
             if (callback) callback();
             return this;
         }

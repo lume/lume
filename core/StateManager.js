@@ -5,8 +5,8 @@
 define(function(require, exports, module) {
     var EventHandler = require('famous/core/EventHandler');
 
-    function StateManager(state) {
-        this.state = state || {};
+    function StateManager(stateTypes) {
+        this.state = {};
 
         this._dirtyLock = 0;
         this._dirty = true;
@@ -15,27 +15,39 @@ define(function(require, exports, module) {
         this._eventOutput = new EventHandler();
         EventHandler.setInputHandler(this, this._eventInput);
         EventHandler.setOutputHandler(this, this._eventOutput);
+        this._eventInput.bindThis(this);
 
-        this._eventInput.on('start', function(data){
+        // on quick set
+        this._eventInput.on('dirty', function(){
+            this._dirty = true;
+            this._eventOutput.emit('dirty');
+        });
+
+        this._eventInput.on('start', function(){
             if (this._dirtyLock == 0){
                 this._dirty = true;
                 this._eventOutput.emit('dirty');
             }
             this._dirtyLock++;
-        }.bind(this));
+        });
 
-        this._eventInput.on('end', function(data){
+        this._eventInput.on('end', function(){
             this._dirtyLock--;
             if (this._dirtyLock === 0){
                 this._dirty = false;
                 this._eventOutput.emit('clean');
             }
-        }.bind(this));
+        });
+
+        if (stateTypes)
+            for (var type in stateTypes)
+                this.addState(type, new stateTypes[type]());
     }
 
     StateManager.prototype.addState = function addState(key, state){
-        if (state instanceof Object){
+        if (state.get){
             this._eventInput.subscribe(state);
+            this[key] = state;
         }
         else{
             Object.defineProperty(this, key, {
@@ -53,7 +65,7 @@ define(function(require, exports, module) {
         }
     };
 
-    StateManager.prototype.cleanStatic = function(){
+    StateManager.prototype.clean = function(){
         if (this._dirty && this._dirtyLock === 0) {
             this._dirty = false;
             this._eventOutput.emit('clean');

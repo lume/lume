@@ -46,6 +46,12 @@ define(function(require, exports, module) {
         EventHandler.setOutputHandler(this, this._eventOutput);
         EventHandler.setInputHandler(this, this._eventInput);
 
+        // on quick set
+        this._eventInput.on('dirty', function(){
+            this._dirty = true;
+            this._eventOutput.emit('dirty');
+        }.bind(this));
+
         this._eventInput.on('start', function(){
             if (this._dirtyLock === 0){
                 this._dirty = true;
