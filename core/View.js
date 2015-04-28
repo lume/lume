@@ -12,7 +12,7 @@ define(function(require, exports, module) {
     var EventHandler = require('famous/core/EventHandler');
     var OptionsManager = require('famous/core/OptionsManager');
     var RenderNode = require('famous/core/RenderNode');
-    var extend = require('famous/utilities/extend');
+    var StateManager = require('famous/core/StateManager');
 
     /**
      * Useful for quickly creating elements within applications
@@ -29,19 +29,27 @@ define(function(require, exports, module) {
     function View(options) {
         RenderNode.apply(this);
 
+        // setup options
         this.options = _clone(this.constructor.DEFAULT_OPTIONS || View.DEFAULT_OPTIONS);
         this._optionsManager = new OptionsManager(this.options);
         if (options) this.setOptions(options);
 
+        // setup state
+        this.state = new StateManager(this.constructor.STATE_TYPES || View.STATE_TYPES);
+        this._dirty = true;
+
+        // setup events
         this._eventInput = new EventHandler();
         this._eventOutput = new EventHandler();
         EventHandler.setInputHandler(this, this._eventInput);
         EventHandler.setOutputHandler(this, this._eventOutput);
         EventHandler.setInputEvents(this, this.constructor.EVENTS || View.EVENTS, this._eventInput);
-
         this._eventInput.bindThis(this);
-        this._eventInput.subscribe(this._optionsManager);
 
+        this._eventInput.subscribe(this._optionsManager);
+        this._eventInput.subscribe(this.state);
+
+        // initialize view
         if (this.initialize) this.initialize(this.options);
     }
 
@@ -53,7 +61,12 @@ define(function(require, exports, module) {
         origin : null
     };
 
-    View.EVENTS = {};
+    View.EVENTS = {
+        dirty : function(){this._dirty = true;},
+        clean : function(){this._dirty = false;}
+    };
+
+    View.STATE_TYPES = {};
 
     function _clone(obj) {
         var copy;
@@ -106,6 +119,52 @@ define(function(require, exports, module) {
     View.prototype.getEventOutput = function getEventInput(){
         return this._eventOutput;
     };
+
+    View.prototype.cleanState = function(){
+        this.state.clean();
+    };
+
+    var RESERVED_KEYS = {
+        DEFAULTS : 'defaults',
+        EVENTS   : 'events',
+        STATE_TYPES : 'state'
+    };
+
+    function extend(protoObj, constants){
+        var parent = this;
+
+        var child = (protoObj.hasOwnProperty('constructor'))
+            ? function(){ protoObj.constructor.apply(this, arguments); }
+            : function(){ parent.apply(this, arguments); };
+
+        child.extend = extend;
+        child.prototype = Object.create(parent.prototype);
+        child.prototype.constructor = child;
+
+        for (var key in protoObj){
+            var value = protoObj[key];
+            switch (key) {
+                case RESERVED_KEYS.DEFAULTS:
+                    child.DEFAULT_OPTIONS = value;
+                    break;
+                case RESERVED_KEYS.EVENTS:
+                    child.EVENTS = value;
+                    for (var key in View.EVENTS)
+                        child.EVENTS[key] = View.EVENTS[key];
+                    break;
+                case RESERVED_KEYS.STATE_TYPES:
+                    child.STATE_TYPES = value;
+                    break;
+                default:
+                    child.prototype[key] = value;
+            }
+        }
+
+        for (var key in constants)
+            child[key] = constants[key];
+
+        return child;
+    }
 
     View.extend = extend;
 
