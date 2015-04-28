@@ -139,15 +139,21 @@ define(function(require, exports, module) {
             else cachedSize = this._cachedSize;
 
             // objectTransform computation
-            if ((object.isDirty === undefined) || sizeDirty || object.isDirty()){
-                objectSpec = (object instanceof Function)
-                    ? object({size : cachedSize})
-                    : object.render({size : cachedSize});
+            if (object instanceof Function) {
+                objectSpec = object(cachedSize);
 
                 if (objectSpec instanceof Spec){
-                    objectSpec = objectSpec.render({size: cachedSize});
+                    if (objectSpec._dirty){
+                        objectSpec = objectSpec.render(cachedSize);
+                        this._cachedObjectSpec = objectSpec;
+                        objectDirty = true;
+                    }
+                    else objectSpec = this._cachedObjectSpec;
                 }
-
+                else objectDirty = true;
+            }
+            else if (object._dirty === true || object._dirty === undefined){
+                objectSpec = object.render(cachedSize);
                 this._cachedObjectSpec = objectSpec;
                 objectDirty = true;
             }
@@ -170,8 +176,7 @@ define(function(require, exports, module) {
             }
 
         }
-        else
-            compoundSpec = parentSpec;
+        else compoundSpec = parentSpec;
 
         if (this._child) this._child.render(compoundSpec);
     };
