@@ -242,8 +242,6 @@ define(function(require, exports, module) {
      * @param {Spec} spec commit context
      */
     ElementOutput.prototype.commit = function commit(spec) {
-        console.log('commit')
-
         var target = this._currentTarget;
         if (!target) return;
 
