@@ -43,21 +43,26 @@ define(function(require, exports, module) {
         this._eventInput = new EventHandler();
         EventHandler.setInputHandler(this, this._eventInput);
         EventHandler.setOutputHandler(this, this._eventOutput);
+        this._eventInput.bindThis(this);
 
         this._eventInput.subscribe(this.translate);
         this._eventInput.subscribe(this.rotate);
         this._eventInput.subscribe(this.skew);
         this._eventInput.subscribe(this.scale);
 
+        this._eventInput.on('dirty', function(){
+            if (this._dirtyLock == 0) this._eventOutput.emit('dirty');
+        });
+
         this._eventInput.on('start', function(){
             if (this._dirtyLock == 0) this._eventOutput.emit('start');
             this._dirtyLock++;
-        }.bind(this));
+        });
 
         this._eventInput.on('end', function(){
             this._dirtyLock--;
             if (this._dirtyLock == 0) this._eventOutput.emit('end');
-        }.bind(this));
+        });
     }
 
     function _build() {
