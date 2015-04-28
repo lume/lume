@@ -142,7 +142,7 @@ define(function(require, exports, module) {
         return this;
     };
 
-    Spec.prototype.render = function(parentSpec){
+    Spec.prototype.render = function(parentSize){
 
         //TODO: Fix hack for origin checking
 //        if (this.state && this.state.origin && parentSpec.transform){
@@ -153,19 +153,23 @@ define(function(require, exports, module) {
 
         if (!this._dirty) return this._cache;
 
-        var size = (this.state && parentSpec)
-            ? SpecManager.getSize(this.state, parentSpec.size)
-            : parentSpec.size;
+        var size = (this.state && parentSize)
+            ? SpecManager.getSize(this.state, parentSize)
+            : parentSize;
 
         if (this.target instanceof Array){
             this.result = [];
             for (var i = 0; i < this.target.length; i++)
-                this.result[i] = this.target[i].render({size : size});
+                this.result[i] = this.target[i].render(size);
         }
         else if (this.target instanceof Object){
-            this.result = Object.create(this.state);
-            this.result.target = this.target.render({size : size});
+            if (!this.state) this.result = this.target.render();
+            else {
+                this.result = Object.create(this.state);
+                this.result.target = this.target.render(size);
+            }
         }
+        else this.result = this.state;
 
         this._cache = this.result;
         this._dirty = false;
