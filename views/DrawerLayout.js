@@ -48,6 +48,10 @@ define(function(require, exports, module) {
             TOP    : 1,
             RIGHT  : 2,
             BOTTOM : 3
+        },
+        ORIENTATION : {
+            POSITIVE :  1,
+            NEGATIVE : -1
         }
     };
 
@@ -57,43 +61,52 @@ define(function(require, exports, module) {
             drawerLength : 0,
             velocityThreshold : 0,
             positionThreshold : 0,
-            transition : true
+            transitionOpen : true,
+            transitionClose : true
         },
         events : {
             update : _handleUpdate,
             end : _handleEnd,
             change : _updateState
         },
+        state : {
+            position : Transitionable,
+            direction : Number,
+            orientation : Number,
+            isOpen : Boolean,
+            drawerLength : Number
+        },
         initialize : function initialize(options){
             this.initializeState(options);
             this.initializeSubviews();
+            this.initializeEvents();
 
             this.add({transform : Transform.behind}).add(this.drawer);
             this.add({transform : function(){
                 var position = this.getPosition();
+                var direction = this.state.direction;
 
-                // clamp transition on close
-                if (!this._isOpen && (position < 0 && this._orientation === 1) || (position > 0 && this._orientation === -1)) {
-                    position = 0;
-                    this.setPosition(position);
-                }
-
-                return (this._direction === CONSTANTS.DIRECTION.X)
+                return (direction === CONSTANTS.DIRECTION.X)
                     ? Transform.translate(position, 0, 0)
                     : Transform.translate(0, position, 0);
 
             }.bind(this)}).add(this.content);
         },
         initializeState : function initializeState(options){
-            this._position = new Transitionable(0);
-            this._direction = _getDirectionFromSide(options.side);
-            this._orientation = _getOrientationFromSide(options.side);
-            this._isOpen = false;
-            this._cachedLength = 0;
+            this.state.position.set(0);
+            this.state.direction = _getDirectionFromSide(options.side);
+            this.state.orientation = _getOrientationFromSide(options.side);
+            this.state.isOpen = false;
+            this.state.drawerLength = 0;
         },
         initializeSubviews : function initializeSubviews(){
             this.drawer = new RenderNode();
             this.content = new RenderNode();
+        },
+        initializeEvents : function initializeEvents(){
+            this.state.position.on('update', function(data){
+                this.emit('update', {progress : this.getProgress(data.value)});
+            }.bind(this));
         },
         /**
          * Reveals the drawer with a transition
@@ -105,11 +118,11 @@ define(function(require, exports, module) {
          */
         open : function open(transition, callback){
             if (transition instanceof Function) callback = transition;
-            if (transition === undefined) transition = this.options.transition;
-            this._cachedLength = _resolveNodeSize.call(this, this.drawer);
-            this.setPosition(this._cachedLength, transition, callback);
-            if (!this._isOpen) {
-                this._isOpen = true;
+            if (transition === undefined) transition = this.options.transitionOpen;
+            this.state.drawerLength = _resolveNodeSize.call(this, this.drawer);
+            this.setPosition(this.state.drawerLength, transition, callback);
+            if (!this.state.isOpen) {
+                this.state.isOpen = true;
                 this.emit('open');
             }
         },
@@ -123,10 +136,10 @@ define(function(require, exports, module) {
          */
         close : function close(transition, callback){
             if (transition instanceof Function) callback = transition;
-            if (transition === undefined) transition = this.options.transition;
+            if (transition === undefined) transition = this.options.transitionClose;
             this.setPosition(0, transition, callback);
-            if (this._isOpen){
-                this._isOpen = false;
+            if (this.state.isOpen){
+                this.state.isOpen = false;
                 this.emit('close');
             }
         },
@@ -137,7 +150,7 @@ define(function(require, exports, module) {
          * @param [transition] {Boolean|Object} transition definition
          */
         toggle : function toggle(transition){
-            if (this._isOpen) this.close(transition);
+            if (this.state.isOpen) this.close(transition);
             else this.open(transition);
         },
         /**
@@ -149,7 +162,7 @@ define(function(require, exports, module) {
          * @param [callback] {Function}         callback
          */
         setPosition : function setPosition(position, transition, callback) {
-            this._position.set(position, transition, callback);
+            this.state.position.set(position, transition, callback);
         },
         /**
          * Gets the position in pixels for the content's displacement
@@ -158,7 +171,7 @@ define(function(require, exports, module) {
          * @return position {Number} position
          */
         getPosition : function getPosition() {
-            return this._position.get();
+            return this.state.position.get();
         },
         /**
          * Sets the progress (between 0 and 1) for the content's displacement
@@ -169,7 +182,7 @@ define(function(require, exports, module) {
          * @param [callback] {Function}         callback
          */
         setProgress : function setProgress(progress, transition, callback) {
-            return this._position.set(progress * this._cachedLength, transition, callback);
+            return this.setPosition(progress * this.state.drawerLength, transition, callback);
         },
         /**
          * Gets the progress (between 0 and 1) for the content's displacement
@@ -178,8 +191,8 @@ define(function(require, exports, module) {
          * @return position {Number} position
          */
         getProgress : function getProgress(position){
-            if (position === undefined) position = this._position.get();
-            return position / this._cachedLength;
+            if (position === undefined) position = this.getPosition();
+            return position / this.state.drawerLength;
         },
         /**
          * Resets to last state of being open or closed
@@ -188,7 +201,7 @@ define(function(require, exports, module) {
          * @param [transition] {Boolean|Object} transition definition
          */
         reset : function reset(transition) {
-            if (this._isOpen) this.open(transition);
+            if (this.state.isOpen) this.open(transition);
             else this.close(transition);
         },
         /*
@@ -198,19 +211,23 @@ define(function(require, exports, module) {
          * @return {Boolean}
          */
         isOpen : function isOpen(){
-            return this._isOpen;
+            return this.state.isOpen;
         }
     }, CONSTANTS);
 
     function _getDirectionFromSide(side) {
         var SIDES = CONSTANTS.SIDE;
         var DIRECTION = CONSTANTS.DIRECTION;
-        return (side === SIDES.LEFT || side === SIDES.RIGHT) ? DIRECTION.X : DIRECTION.Y;
+        return (side === SIDES.LEFT || side === SIDES.RIGHT)
+            ? DIRECTION.X
+            : DIRECTION.Y;
     }
 
     function _getOrientationFromSide(side) {
         var SIDES = CONSTANTS.SIDE;
-        return (side === SIDES.LEFT || side === SIDES.TOP) ? 1 : -1;
+        return (side === SIDES.LEFT || side === SIDES.TOP)
+            ? CONSTANTS.ORIENTATION.POSITIVE
+            : CONSTANTS.ORIENTATION.NEGATIVE;
     }
 
     function _resolveNodeSize(node) {
@@ -219,25 +236,28 @@ define(function(require, exports, module) {
         if (options.drawerLength) size = options.drawerLength;
         else {
             var nodeSize = node.getSize();
-            size = nodeSize ? nodeSize[this._direction] : options.drawerLength;
+            size = nodeSize ? nodeSize[this.state.direction] : options.drawerLength;
         }
-        return this._orientation * size;
+        return this.state.orientation * size;
     }
 
     function _handleUpdate(data) {
         var oldPosition = this.getPosition();
         var newPosition = oldPosition + data.delta;
 
+        if (oldPosition == newPosition) return;
+
         var MIN_LENGTH;
         var MAX_LENGTH;
-        this._cachedLength = _resolveNodeSize.call(this, this.drawer);
+        var length = _resolveNodeSize.call(this, this.drawer);
+        this.state.drawerLength = length;
 
-        if (this._orientation === 1){
+        if (this.state.orientation === 1){
             MIN_LENGTH = 0;
-            MAX_LENGTH = this._cachedLength;
+            MAX_LENGTH = length;
         }
         else {
-            MIN_LENGTH = this._cachedLength;
+            MIN_LENGTH = length;
             MAX_LENGTH = 0;
         }
 
@@ -245,17 +265,19 @@ define(function(require, exports, module) {
         else if (newPosition < MIN_LENGTH) newPosition = MIN_LENGTH;
 
         this.setPosition(newPosition);
-
-        if (newPosition !== oldPosition)
-            this.emit('update', {progress : this.getProgress(newPosition)});
+        this._eventOutput.emit('update', {progress : this.getProgress(newPosition)});
     }
 
     function _handleEnd(data) {
         var velocity = data.velocity;
-        var position = this._orientation * this.getPosition();
+        var orientation = this.state.orientation;
+        var length = this.state.drawerLength;
+        var isOpen = this.state.isOpen;
+
+        var position = orientation * this.getPosition();
         var options = this.options;
 
-        var MAX_LENGTH = this._orientation * this._cachedLength;
+        var MAX_LENGTH = orientation * length;
         var positionThreshold = options.positionThreshold || MAX_LENGTH / 2;
         var velocityThreshold = options.velocityThreshold;
 
@@ -263,24 +285,24 @@ define(function(require, exports, module) {
             options.transition.velocity = data.velocity;
 
         if (position === 0) {
-            this._isOpen = false;
+            this.state.isOpen = false;
             return;
         }
 
         if (position === MAX_LENGTH) {
-            this._isOpen = true;
+            this.state.isOpen = true;
             return;
         }
 
-        var shouldToggle = Math.abs(velocity) > velocityThreshold || (!this._isOpen && position > positionThreshold) || (this._isOpen && position < positionThreshold);
+        var shouldToggle = Math.abs(velocity) > velocityThreshold || (!isOpen && position > positionThreshold) || (isOpen && position < positionThreshold);
         if (shouldToggle) this.toggle();
         else this.reset();
     }
 
     function _updateState(data){
         if (data.key !== 'side') {
-            this._direction = _getDirectionFromSide(data.value);
-            this._orientation = _getOrientationFromSide(data.value);
+            this.state.direction = _getDirectionFromSide(data.value);
+            this.state.orientation = _getOrientationFromSide(data.value);
         }
     }
 
