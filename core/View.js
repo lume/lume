@@ -6,14 +6,13 @@
  * @copyright Famous Industries, Inc. 2014
  */
 
+/* Modified work copyright © 2015 David Valdman */
+
 define(function(require, exports, module) {
-    var EventHandler = require('./../core/EventHandler');
-    var OptionsManager = require('./../core/OptionsManager');
-    var RenderNode = require('./../core/RenderNode');
-    var Utility = require('./../core/Utility');
-    var Transform = require('./../core/Transform');
-    var Spec = require('./../core/Spec');
-    var StateManager = require('famous/core/StateManager');
+    var EventHandler = require('famous/core/EventHandler');
+    var OptionsManager = require('famous/core/OptionsManager');
+    var RenderNode = require('famous/core/RenderNode');
+    var extend = require('famous/utilities/extend');
 
     /**
      * Useful for quickly creating elements within applications
@@ -30,13 +29,7 @@ define(function(require, exports, module) {
     function View(options) {
         RenderNode.apply(this);
 
-        this.spec  = new Spec();
-        this.state = new StateManager();
-
-        this._sizeDirty = true;
-        this._isView = true;
-
-        this.options = Utility.clone(this.constructor.DEFAULT_OPTIONS || View.DEFAULT_OPTIONS);
+        this.options = _clone(this.constructor.DEFAULT_OPTIONS || View.DEFAULT_OPTIONS);
         this._optionsManager = new OptionsManager(this.options);
         if (options) this.setOptions(options);
 
@@ -48,6 +41,8 @@ define(function(require, exports, module) {
 
         this._eventInput.bindThis(this);
         this._eventInput.subscribe(this._optionsManager);
+
+        if (this.initialize) this.initialize(this.options);
     }
 
     View.prototype = Object.create(RenderNode.prototype);
@@ -59,6 +54,28 @@ define(function(require, exports, module) {
     };
 
     View.EVENTS = {};
+
+    function _clone(obj) {
+        var copy;
+        if (typeof obj === 'object') {
+            copy = (obj instanceof Array) ? [] : {};
+            for (var key in obj) {
+                var value = obj[key];
+                if (typeof value === 'object' && value !== null) {
+                    if (value instanceof Array) {
+                        copy[key] = [];
+                        for (var i = 0; i < value.length; i++)
+                            copy[key][i] = _clone(value[i]);
+                    }
+                    else copy[key] = _clone(value);
+                }
+                else copy[key] = value;
+            }
+        }
+        else copy = obj;
+
+        return copy;
+    }
 
     /**
      * Look up options value by key
@@ -89,66 +106,6 @@ define(function(require, exports, module) {
     View.prototype.getEventOutput = function getEventInput(){
         return this._eventOutput;
     };
-
-    View.prototype.isStateDirty = function(){
-        return this.state.isDirty();
-    };
-
-    View.prototype.setSizeDirty = function(){
-        return this._sizeDirty = true;
-    };
-
-    View.prototype.setSizeClean = function(){
-        return this._sizeDirty = false;
-    };
-
-    View.prototype.isSizeDirty = function(){
-        return this._sizeDirty;
-    };
-
-    View.prototype.isDirty = function isDirty(){
-        return this.isSizeDirty() || this.isStateDirty();
-    };
-
-    var RESERVED_KEYS = {
-        DEFAULTS : 'defaults',
-        EVENTS   : 'events',
-        NAME     : 'name'
-    };
-
-    function extend(obj, constants){
-        var constructor = (function(){
-            return function (options){
-                View.call(this, options);
-                if (this.initialize) this.initialize(this.options);
-            }
-        })();
-
-        constructor.extend = extend;
-        constructor.prototype = Object.create(View.prototype);
-        constructor.prototype.constructor = constructor;
-
-        for (var key in obj){
-            var value = obj[key];
-            switch (key) {
-                case RESERVED_KEYS.DEFAULTS:
-                    constructor.DEFAULT_OPTIONS = value;
-                    break;
-                case RESERVED_KEYS.EVENTS:
-                    constructor.EVENTS = value;
-                    break;
-                case RESERVED_KEYS.NAME:
-                    break;
-                default:
-                    constructor.prototype[key] = value;
-            }
-        }
-
-        for (var key in constants)
-            constructor[key] = constants[key];
-
-        return constructor;
-    }
 
     View.extend = extend;
 
