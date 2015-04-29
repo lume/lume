@@ -13,17 +13,16 @@ define(function(require, exports, module) {
         this._dirtyLock = 0;
         this._dirty = true;
 
+        // on quick set
         this._eventInput = new EventHandler();
         this._eventOutput = new EventHandler();
         EventHandler.setInputHandler(this, this._eventInput);
         EventHandler.setOutputHandler(this, this._eventOutput);
-        this._eventInput.bindThis(this);
 
-        // on quick set
         this._eventInput.on('dirty', function(){
             this._dirty = true;
             this._eventOutput.emit('dirty');
-        });
+        }.bind(this));
 
         this._eventInput.on('start', function(){
             if (this._dirtyLock == 0){
@@ -31,7 +30,7 @@ define(function(require, exports, module) {
                 this._eventOutput.emit('dirty');
             }
             this._dirtyLock++;
-        });
+        }.bind(this));
 
         this._eventInput.on('end', function(){
             this._dirtyLock--;
@@ -39,9 +38,9 @@ define(function(require, exports, module) {
                 this._dirty = false;
                 this._eventOutput.emit('clean');
             }
-        });
+        }.bind(this));
 
-        var simpleTypes = [Number, Boolean, String];
+        var simpleTypes = [Number, Boolean, String, undefined, null];
         if (stateTypes) {
             for (var type in stateTypes) {
                 var constructor = stateTypes[type];
@@ -59,6 +58,7 @@ define(function(require, exports, module) {
             this[key] = state;
         }
         else{
+            if (state.emit) this._eventInput.subscribe(state);
             Object.defineProperty(this, key, {
                 get : function(){
                     return state;
