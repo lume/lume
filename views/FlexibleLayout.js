@@ -9,9 +9,10 @@
 /* Modified work copyright © 2015 David Valdman */
 
 define(function(require, exports, module) {
-    var Transform = require('../core/Transform');
-    var Transitionable = require('../core/Transitionable');
-    var View = require('./View');
+    var Transform = require('famous/core/Transform');
+    var Transitionable = require('famous/core/Transitionable');
+    var View = require('famous/core/View');
+    var Spec = require('famous/core/Spec');
 
     /**
      * A layout which divides a context into sections based on a proportion
@@ -32,7 +33,7 @@ define(function(require, exports, module) {
         }
     };
 
-    module.exports = View.extend({
+    var FlexibleLayout = module.exports = View.extend({
         defaults : {
             direction: CONSTANTS.DIRECTION.X,
             transition: false,
@@ -41,45 +42,45 @@ define(function(require, exports, module) {
         events : {
             change : updateOptions
         },
+        state : {
+            ratios : Transitionable,
+            nodes : Array,
+            lengths : Array,
+            transforms : Array,
+            length : Number
+        },
         initialize : function initialize(options){
-            this._ratios = new Transitionable(options.ratios);
-            this._nodes = [];
-            this._cachedDirection = null;
-            this._cachedLengths = [];
-            this._cachedLength = Number.NaN;
-            this._cachedTransforms = null;
-            this._ratiosDirty = false;
+            this.state.ratios.set(options.ratios);
+            this.state.nodes = [];
+            this.state.direction = options.direction;
+            this.state.lengths = [];
+            this.state.length = Number.NaN;
+            this.state.transforms = [];
 
-            this.state.set({
-                ratios : new Transitionable(options.ratios),
-                nodes : [],
-                direction : undefined,
-                length : undefined,
-                lengths : [],
-                transforms : null,
-                dirty : false,
-                direction : options.direction
-            });
+            var spec = new Spec();
 
-            this.add(function(parentSpec){
-                var ratios = this.state.getKey('ratios');
-                var direction = this.state.getKey('direction');
+            this.add(function(parentSize){
+                var ratios = this.state.ratios.get();
+                var direction = this.state.direction;
 
-                var length = parentSpec.size[direction];
-                
-                _reflow.call(this, ratios, length, direction);
+                this.state.length = parentSize[direction];
+
+                if (this.state._dirty) _reflow.call(this);
 
                 for (var i = 0; i < ratios.length; i++) {
+                    var transform = this.state.transforms[i];
+                    var node = this.state.nodes[i];
+
                     var size = [undefined, undefined];
-                    length = this._cachedLengths[i];
-                    size[direction] = length;
-                    this.spec.getChild(i)
-                        .transformFrom(this._cachedTransforms[i])
-                        .sizeFrom(size)
-                        .setTarget(this._nodes[i])
+                    size[direction] = this.state.lengths[i];
+
+                    spec.getChild(i)
+                        .setTransform(transform)
+                        .setSize(size)
+                        .setTarget(node);
                 }
 
-                return this.spec;
+                return spec;
             }.bind(this));
         },
         /**
@@ -90,7 +91,7 @@ define(function(require, exports, module) {
          * @param {Array} sequence An array of renderables.
          */
         sequenceFrom : function sequenceFrom(sequence){
-            this._nodes = sequence;
+            this.state.nodes = sequence;
         },
         /**
          * Sets the associated ratio values for sizing the renderables.
@@ -100,7 +101,7 @@ define(function(require, exports, module) {
          */
         setRatios : function setRatios(ratios, transition, callback){
             if (transition === undefined) transition = this.options.transition;
-            this.state.setKey('ratios', ratios, transition, callback);
+            this.state.ratios.set(ratios, transition, callback);
         }
     }, CONSTANTS);
 
@@ -108,62 +109,50 @@ define(function(require, exports, module) {
         var key = options.key;
         var value = options.value;
 
-        if (key == 'direction') this.state.set(key, value)
+        if (key === 'direction') this.state[key] = value;
     }
 
-    function _reflow(ratios, length, direction) {
-        var currTransform;
-        var translation = 0;
+    function _reflow() {
+        var ratios = this.state.ratios.get();
+        var length = this.state.length;
+        var direction = this.state.direction;
+
+        this.state.lengths = [];
+        this.state.transforms = [];
+
         var flexLength = length;
         var ratioSum = 0;
-        var nodeLength;
-        var ratio;
-        var node;
-        var i;
+        for (var i = 0; i < ratios.length; i++){
+            var ratio = ratios[i];
+            var node = this.state.nodes[i];
 
-        this._cachedLengths = [];
-        this._cachedTransforms = [];
-
-        for (i = 0; i < ratios.length; i++){
-            ratio = ratios[i];
-            node = this._nodes[i];
-
-            //TODO: getSize will be defined once Sequence refactor is done
-            if (!node || !node.getSize()) continue;
+            if (!node || node.getSize === undefined) continue;
 
             (typeof ratio !== 'number')
                 ? flexLength -= node.getSize()[direction] || 0
                 : ratioSum += ratio;
         }
 
-        for (i = 0; i < ratios.length; i++) {
-            node = this._nodes[i];
+        var translation = 0;
+        for (var i = 0; i < ratios.length; i++) {
+            node = this.state.nodes[i];
             ratio = ratios[i];
 
-            //TODO: getSize will be defined once Sequence refactor is done
-            if (!node || !node.getSize()) continue;
+            if (!node || node.getSize === undefined) continue;
 
-            nodeLength = (typeof ratio === 'number')
+            var nodeLength = (typeof ratio === 'number')
                 ? flexLength * ratio / ratioSum
                 : node.getSize()[direction];
 
-            currTransform = (direction === CONSTANTS.DIRECTION.X)
+            var currTransform = (direction === CONSTANTS.DIRECTION.X)
                 ? Transform.translate(translation, 0, 0)
                 : Transform.translate(0, translation, 0);
 
-            this._cachedTransforms.push(currTransform);
-            this._cachedLengths.push(nodeLength);
+            this.state.lengths.push(nodeLength);
+            this.state.transforms.push(currTransform);
 
             translation += nodeLength;
         }
-        this._cachedLength = length;
     }
 
-    function _trueSizedDirty(ratios, direction) {
-        for (var i = 0; i < ratios.length; i++) {
-            if (typeof ratios[i] !== 'number' && this._nodes[i].getSize()[direction] !== this._cachedLengths[i])
-                return true;
-        }
-        return false;
-    }
 });
