@@ -153,7 +153,7 @@ define(function(require, exports, module) {
                 }
                 else objectDirty = true;
             }
-            else if (object._dirty === true || object._dirty === undefined){
+            else if (sizeDirty || object._dirty === true || object._dirty === undefined){
                 objectSpec = object.render(cachedSize);
                 this._cachedObjectSpec = objectSpec;
                 objectDirty = true;
