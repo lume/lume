@@ -73,7 +73,6 @@ define(function(require, exports, module) {
             position : Transitionable,
             direction : Number,
             orientation : Number,
-            isOpen : Boolean,
             drawerLength : Number
         },
         initialize : function initialize(options){
@@ -86,7 +85,7 @@ define(function(require, exports, module) {
                 var position = this.getPosition();
                 var direction = this.state.direction;
 
-                return (direction === CONSTANTS.DIRECTION.X)
+                return (direction == CONSTANTS.DIRECTION.X)
                     ? Transform.translate(position, 0, 0)
                     : Transform.translate(0, position, 0);
 
@@ -96,8 +95,8 @@ define(function(require, exports, module) {
             this.state.position.set(0);
             this.state.direction = _getDirectionFromSide(options.side);
             this.state.orientation = _getOrientationFromSide(options.side);
-            this.state.isOpen = false;
             this.state.drawerLength = 0;
+            this.isOpen = false;
         },
         initializeSubviews : function initializeSubviews(){
             this.drawer = new RenderNode();
@@ -121,8 +120,8 @@ define(function(require, exports, module) {
             if (transition === undefined) transition = this.options.transitionOpen;
             this.state.drawerLength = _resolveNodeSize.call(this, this.drawer);
             this.setPosition(this.state.drawerLength, transition, callback);
-            if (!this.state.isOpen) {
-                this.state.isOpen = true;
+            if (!this.isOpen) {
+                this.isOpen = true;
                 this.emit('open');
             }
         },
@@ -138,8 +137,8 @@ define(function(require, exports, module) {
             if (transition instanceof Function) callback = transition;
             if (transition === undefined) transition = this.options.transitionClose;
             this.setPosition(0, transition, callback);
-            if (this.state.isOpen){
-                this.state.isOpen = false;
+            if (this.isOpen){
+                this.isOpen = false;
                 this.emit('close');
             }
         },
@@ -150,7 +149,7 @@ define(function(require, exports, module) {
          * @param [transition] {Boolean|Object} transition definition
          */
         toggle : function toggle(transition){
-            if (this.state.isOpen) this.close(transition);
+            if (this.isOpen) this.close(transition);
             else this.open(transition);
         },
         /**
@@ -201,7 +200,7 @@ define(function(require, exports, module) {
          * @param [transition] {Boolean|Object} transition definition
          */
         reset : function reset(transition) {
-            if (this.state.isOpen) this.open(transition);
+            if (this.isOpen) this.open(transition);
             else this.close(transition);
         },
         /*
@@ -211,7 +210,7 @@ define(function(require, exports, module) {
          * @return {Boolean}
          */
         isOpen : function isOpen(){
-            return this.state.isOpen;
+            return this.isOpen;
         }
     }, CONSTANTS);
 
@@ -272,7 +271,7 @@ define(function(require, exports, module) {
         var velocity = data.velocity;
         var orientation = this.state.orientation;
         var length = this.state.drawerLength;
-        var isOpen = this.state.isOpen;
+        var isOpen = this.isOpen;
 
         var position = orientation * this.getPosition();
         var options = this.options;
@@ -285,12 +284,12 @@ define(function(require, exports, module) {
             options.transition.velocity = data.velocity;
 
         if (position === 0) {
-            this.state.isOpen = false;
+            this.isOpen = false;
             return;
         }
 
         if (position === MAX_LENGTH) {
-            this.state.isOpen = true;
+            this.isOpen = true;
             return;
         }
 
