@@ -191,7 +191,10 @@ define(function(require, exports, module) {
     };
 
     SpecManager.getSize = function flatten(spec, parentSize){
-        var size = spec.size || [parentSize[0], parentSize[1]];
+        //TODO: check if new memory needs to be allocated
+        var size = (spec.size)
+            ? [spec.size[0], spec.size[1]]
+            : [parentSize[0], parentSize[1]];
 
         if (spec.size) {
             if (spec.size[0] === undefined) size[0] = parentSize[0];
