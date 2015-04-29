@@ -28,6 +28,7 @@ define(function(require, exports, module) {
     function RenderNode(object) {
         this._object = null;
         this._child = null;
+        this._dirty = true;
 
         this._entityIds = {};
 
@@ -143,7 +144,7 @@ define(function(require, exports, module) {
                 objectSpec = object(cachedSize);
 
                 if (objectSpec instanceof Spec){
-                    if (objectSpec._dirty){
+                    if (objectSpec._dirty || sizeDirty){
                         objectSpec = objectSpec.render(cachedSize);
                         this._cachedObjectSpec = objectSpec;
                         objectDirty = true;
@@ -178,7 +179,15 @@ define(function(require, exports, module) {
         }
         else compoundSpec = parentSpec;
 
-        if (this._child) this._child.render(compoundSpec);
+        if (this._child) {
+            this._child.render(compoundSpec);
+        }
+
+        if (this.cleanState) this.cleanState();
+    };
+
+    RenderNode.prototype.clean = function(){
+        this._dirty = false;
     };
 
     RenderNode.prototype.commit = function(allocator){
