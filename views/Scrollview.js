@@ -9,21 +9,21 @@
 /* Modified work copyright © 2015 David Valdman */
 
 define(function(require, exports, module) {
-    var PhysicsEngine = require('../physics/PhysicsEngine');
-    var Particle = require('../physics/bodies/Particle');
-    var Drag = require('../physics/forces/Drag');
-    var Spring = require('../physics/constraints/Snap');
+    var PhysicsEngine = require('famous/physics/PhysicsEngine');
+    var Particle = require('famous/physics/bodies/Particle');
+    var Drag = require('famous/physics/forces/Drag');
+    var Spring = require('famous/physics/constraints/Snap');
 
-    var ViewSequence = require('../core/ViewSequence');
-    var Transitionable = require('../core/Transitionable');
+    var ViewSequence = require('famous/core/ViewSequence');
+    var Transitionable = require('famous/core/Transitionable');
 
-    var View = require('../views/View');
-    var Scroller = require('../views/Scroller');
+    var View = require('famous/core/View');
+    var Scroller = require('famous/views/Scroller');
 
-    var Accumulator = require('../inputs/Accumulator');
-    var GenericSync = require('../inputs/GenericSync');
-    var ScrollSync = require('../inputs/ScrollSync');
-    var TouchSync = require('../inputs/TouchSync');
+    var Accumulator = require('famous/inputs/Accumulator');
+    var GenericSync = require('famous/inputs/GenericSync');
+    var ScrollSync = require('famous/inputs/ScrollSync');
+    var TouchSync = require('famous/inputs/TouchSync');
     GenericSync.register({scroll : ScrollSync, touch : TouchSync});
 
     /** @enum */
@@ -77,6 +77,8 @@ define(function(require, exports, module) {
             this.initializeState(options);
             this.initializeSubviews(options);
             this.initializeEvents(options);
+
+            this.add(this._scroller);
         },
         initializeSubviews : function(options){
             this._scroller = new Scroller(options);
@@ -333,9 +335,6 @@ define(function(require, exports, module) {
             if (node instanceof Array) node = new ViewSequence({array: node, trackSize: true});
             this._node = node;
             return this._scroller.sequenceFrom(node);
-        },
-        render : function(){
-            return Scroller.prototype.render.apply(this._scroller, arguments);
         }
     }, CONSTANTS);
 

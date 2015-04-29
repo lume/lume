@@ -9,10 +9,11 @@
 /* Modified work copyright © 2015 David Valdman */
 
 define(function(require, exports, module) {
-    var Group = require('../core/Group');
-    var Transform = require('../core/Transform');
-    var ViewSequence = require('../core/ViewSequence');
-    var View = require('../views/View');
+    var Group = require('famous/core/Group');
+    var Transform = require('famous/core/Transform');
+    var ViewSequence = require('famous/core/ViewSequence');
+    var View = require('famous/core/View');
+    var Spec = require('famous/core/Spec');
 
     /**
      * Scroller lays out a collection of renderables, and will browse through them based on
@@ -46,25 +47,61 @@ define(function(require, exports, module) {
             clipSize: undefined,
             groupScroll: false
         },
+        state : {
+            offset : Number
+        },
         events : {
             change : _updateOptions
         },
         initialize : function(options){
+            this.initializeState(options);
+            this.initializeSubviews(options);
+            this.initializeEvents(options);
+
+            this.outputFrom();
+
+            var spec = new Spec();
+
+            //TODO: cleanup contextSize
+            this.add(function(size){
+                if (!this.options.clipSize && (size[0] !== this._contextSize[0] || size[1] !== this._contextSize[1])) {
+                    this._contextSize[0] = size[0];
+                    this._contextSize[1] = size[1];
+
+                    if (this.options.direction === DIRECTION.X) {
+                        this._size[0] = _getClipSize.call(this);
+                        this._size[1] = undefined;
+                    }
+                    else {
+                        this._size[0] = undefined;
+                        this._size[1] = _getClipSize.call(this);
+                    }
+                }
+
+                if (!this._node) return null;
+                if (this._offsetGetter) this.state.offset = this._offsetGetter.call(this);
+
+                spec.setTransform(this._masterOutputFunction(-this.state.offset))
+                    .setTarget(this.group);
+
+                return spec;
+            }.bind(this));
+        },
+        initializeState : function initializeState(options){
             this._node = null;
-            this._offset = 0;
+            this.state.offset = 0;
             this._offsetGetter = null;
             this._outputFunction = null;
             this._masterOutputFunction = null;
             this._edgeState = EDGE_STATES.NONE;
-
-            this.group = new Group();
-            this.group.add({render: _innerRender.bind(this)});
-
             this._size = [undefined, undefined];
             this._contextSize = [undefined, undefined];
-
-            this.outputFrom();
-
+        },
+        initializeSubviews : function initializeSubviews(){
+            this.group = new Group();
+            this.group.add(_innerRender.bind(this));
+        },
+        initializeEvents : function initializeEvents(options){
             if (options.groupScroll)
                 this._eventOutput.subscribe(this.group);
         },
@@ -105,9 +142,9 @@ define(function(require, exports, module) {
             else if (offset && offset.get) this._offsetGetter = offset.get.bind(offset);
             else {
                 this._offsetGetter = null;
-                this._offset = offset;
+                this.state.offset = offset;
             }
-            if (this._offsetGetter) this._offset = this._offsetGetter.call(this);
+            if (this._offsetGetter) this.state.offset = this._offsetGetter.call(this);
         },
         /**
          * Sets the collection of renderables under the Scroller instance's control.
@@ -116,35 +153,10 @@ define(function(require, exports, module) {
          * @param node {Array|ViewSequence} Either an array of renderables or a Famous viewSequence.
          * @chainable
          */
+        //TODO: add sequence to state
         sequenceFrom : function sequenceFrom(node) {
             if (node instanceof Array) node = new ViewSequence({array: node});
             this._node = node;
-        },
-        render : function render(parentSpec) {
-            var size = parentSpec.size;
-            // reset edge detection on size change
-            if (!this.options.clipSize && (size[0] !== this._contextSize[0] || size[1] !== this._contextSize[1])) {
-                this._contextSize[0] = size[0];
-                this._contextSize[1] = size[1];
-
-                if (this.options.direction === DIRECTION.X) {
-                    this._size[0] = _getClipSize.call(this);
-                    this._size[1] = undefined;
-                }
-                else {
-                    this._size[0] = undefined;
-                    this._size[1] = _getClipSize.call(this);
-                }
-            }
-
-            if (!this._node) return null;
-            if (this._offsetGetter) this._offset = this._offsetGetter.call(this);
-
-            this.spec
-                .setTransform(this._masterOutputFunction(-this._offset))
-                .setTarget(this.group);
-
-            return this.spec.render(parentSpec);
         }
 
     }, CONSTANTS);
@@ -177,7 +189,7 @@ define(function(require, exports, module) {
     }
 
     function _innerRender() {
-        var offset = this._offset;
+        var offset = this.state.offset;
         var onEdge = false;
         var clipSize = _getClipSize.call(this);
         var result = [];
