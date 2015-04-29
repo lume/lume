@@ -54,12 +54,14 @@ define(function(require, exports, module) {
                 get : function(){
                     return state;
                 },
-                set : function(val){
+                set : function(value){
+                    if (state == value) return;
+
                     if (!this._dirty){
                         this._dirty = true;
                         this._eventOutput.emit('dirty');
                     }
-                    state = val;
+                    state = value;
                 }
             });
         }
