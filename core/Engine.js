@@ -131,8 +131,8 @@ define(function(require, exports, module) {
     function _createEventHandler(){
         if (eventHandler) return;
         eventHandler = new EventHandler();
-        Engine.off = eventHandler.off;
-        Engine.emit = eventHandler.emit;
+        Engine.off = eventHandler.off.bind(eventHandler);
+        Engine.emit = eventHandler.emit.bind(eventHandler);
     }
 
     /**
