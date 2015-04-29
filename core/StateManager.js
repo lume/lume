@@ -39,9 +39,16 @@ define(function(require, exports, module) {
             }
         });
 
-        if (stateTypes)
-            for (var type in stateTypes)
-                this.addState(type, new stateTypes[type]());
+        var simpleTypes = [Number, Boolean, String];
+        if (stateTypes) {
+            for (var type in stateTypes) {
+                var constructor = stateTypes[type];
+                if (simpleTypes.indexOf(constructor) == -1)
+                    this.addState(type, new stateTypes[type]());
+                else
+                    this.addState(type, stateTypes[type]);
+            }
+        }
     }
 
     StateManager.prototype.addState = function addState(key, state){
