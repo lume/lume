@@ -64,6 +64,11 @@ define(function(require, exports, module) {
             if (spec.size)
                 nextSizeTransform = parentTransform;
 
+            if (origin && (origin[0] || origin[1])){
+                transform = Transform.moveThen([-origin[0] * size[0], -origin[1] * size[1], 0], transform);
+                origin = null;
+            }
+
             if (parentSize && align && (align[0] || align[1])) {
                 var shift = _vecInContext([align[0] * parentSize[0], align[1] * parentSize[1], 0], nextSizeTransform);
                 transform = Transform.thenMove(transform, shift);
@@ -115,6 +120,11 @@ define(function(require, exports, module) {
 
             if (spec.size)
                 nextSizeTransform = parentTransform;
+
+            if (origin && (origin[0] || origin[1])){
+                transform = Transform.moveThen([-origin[0] * size[0], -origin[1] * size[1], 0], transform);
+                origin = null;
+            }
 
             if (parentSize && align && (align[0] || align[1])) {
                 var shift = _vecInContext([align[0] * parentSize[0], align[1] * parentSize[1], 0], nextSizeTransform);
