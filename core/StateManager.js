@@ -4,6 +4,8 @@
 
 define(function(require, exports, module) {
     var EventHandler = require('famous/core/EventHandler');
+    var Transitionable = require('famous/core/Transitionable');
+    var TransitionableTransform = require('famous/transitions/TransitionableTransform');
 
     function StateManager(stateTypes) {
         this.state = {};
@@ -52,7 +54,7 @@ define(function(require, exports, module) {
     }
 
     StateManager.prototype.addState = function addState(key, state){
-        if (state.get){
+        if (state instanceof Transitionable || state instanceof TransitionableTransform){
             this._eventInput.subscribe(state);
             this[key] = state;
         }
