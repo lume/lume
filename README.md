@@ -99,7 +99,7 @@ Install infamous along with famous, webpack, css-loader, and style-loader into y
 npm install infamous webpack famous css-loader style-loader --save
 ```
 
-Create webpack.config.js to configure webpack.
+Create `webpack.config.js` to configure webpack.
 
 ```js
 var webpack = require('webpack')
@@ -116,6 +116,7 @@ module.exports = {
     },
     resolve: {
         alias: {
+            // add this alias only for famous <0.3.5
             famous: 'famous/src'
         }
     }
