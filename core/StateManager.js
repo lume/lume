@@ -4,8 +4,6 @@
 
 define(function(require, exports, module) {
     var EventHandler = require('famous/core/EventHandler');
-    var Transitionable = require('famous/core/Transitionable');
-    var TransitionableTransform = require('famous/transitions/TransitionableTransform');
 
     function StateManager(stateTypes) {
         this.state = {};
@@ -20,12 +18,21 @@ define(function(require, exports, module) {
         EventHandler.setOutputHandler(this, this._eventOutput);
 
         this._eventInput.on('dirty', function(){
-            this._dirty = true;
-            this._eventOutput.emit('dirty');
+            if (!this._dirty){
+                this._dirty = true;
+                this._eventOutput.emit('dirty');
+            }
+        }.bind(this));
+
+        this._eventInput.on('clean', function(){
+            if (this._dirty){
+                this._dirty = false;
+                this._eventOutput.emit('clean');
+            }
         }.bind(this));
 
         this._eventInput.on('start', function(){
-            if (this._dirtyLock == 0){
+            if (!this._dirty) {
                 this._dirty = true;
                 this._eventOutput.emit('dirty');
             }
@@ -34,7 +41,7 @@ define(function(require, exports, module) {
 
         this._eventInput.on('end', function(){
             this._dirtyLock--;
-            if (this._dirtyLock === 0){
+            if (this._dirty && this._dirtyLock == 0) {
                 this._dirty = false;
                 this._eventOutput.emit('clean');
             }
@@ -53,8 +60,8 @@ define(function(require, exports, module) {
     }
 
     StateManager.prototype.addState = function addState(key, state){
-        if (state instanceof Transitionable || state instanceof TransitionableTransform){
-            this._eventInput.subscribe(state);
+        if (state.set && state.get){
+            if (state.emit) this._eventInput.subscribe(state);
             this[key] = state;
         }
         else{
@@ -79,7 +86,6 @@ define(function(require, exports, module) {
     StateManager.prototype.clean = function(){
         if (this._dirty && this._dirtyLock === 0) {
             this._dirty = false;
-            this._eventOutput.emit('clean');
         }
     };
 
