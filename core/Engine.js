@@ -104,7 +104,7 @@ define(function(require, exports, module) {
     //
     function handleResize(event) {
         for (var i = 0; i < contexts.length; i++)
-            contexts[i].emit('resize');
+            contexts[i].trigger('resize');
 
         if (eventHandler) eventHandler.emit('resize');
     }
@@ -236,7 +236,7 @@ define(function(require, exports, module) {
         if (needMountContainer) {
             nextTickQueue.push(function(context, el) {
                 document.body.appendChild(el);
-                context.emit('resize');
+                context.trigger('resize');
             }.bind(this, context, el));
         }
         return context;
