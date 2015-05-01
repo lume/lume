@@ -9,164 +9,109 @@
 /* Modified work copyright © 2015 David Valdman */
 
 define(function(require, exports, module) {
-    var EventHandler = require('famous/core/EventHandler');
-    var OptionsManager = require('famous/core/OptionsManager');
     var RenderNode = require('famous/core/RenderNode');
     var StateManager = require('famous/core/StateManager');
+    var Entity = require('famous/core/Entity');
+    var SpecManager = require('famous/core/SpecManager');
+    var Controller = require('famous/core/Controller');
 
     /**
-     * Useful for quickly creating elements within applications
-     *   with large event systems.  Consists of a RenderNode paired with
-     *   an input EventHandler and an output EventHandler.
-     *   Meant to be extended by the developer.
-     *
      * @class View
-     * @uses EventHandler
-     * @uses OptionsManager
-     * @uses RenderNode
      * @constructor
      */
-    function View(options) {
-        RenderNode.apply(this);
 
-        // setup options
-        this.options = _clone(this.constructor.DEFAULT_OPTIONS || View.DEFAULT_OPTIONS);
-        this._optionsManager = new OptionsManager(this.options);
-        if (options) this.setOptions(options);
+    var View = module.exports = Controller.extend({
+        defaults : {
+            size : null,
+            origin : null
+        },
+        events : null,
+        constructor : function View(){
+            this._entityId = Entity.register(this);
+            this._node = new RenderNode();
+            this.state = new StateManager(this.constructor.STATE_TYPES || View.STATE_TYPES);
 
-        // setup state
-        this.state = new StateManager(this.constructor.STATE_TYPES || View.STATE_TYPES);
-        this._dirty = true;
+            this._dirty = true;
+            this._dirtyLock = 0;
+            this._cachedSpec = null;
+            this._cachedSize = [Number.NaN, Number.NaN];
 
-        // setup events
-        this._eventInput = new EventHandler();
-        this._eventOutput = new EventHandler();
-        EventHandler.setInputHandler(this, this._eventInput);
-        EventHandler.setOutputHandler(this, this._eventOutput);
-        EventHandler.setInputEvents(this, this.constructor.EVENTS || View.EVENTS, this._eventInput);
-        this._eventInput.bindThis(this);
+            Controller.apply(this, arguments);
 
-        this._eventInput.subscribe(this._optionsManager);
-        this._eventInput.subscribe(this.state);
+            this._eventInput.subscribe(this._optionsManager);
+            this._eventInput.subscribe(this.state);
+            this._eventInput.subscribe(this._node);
 
-        // initialize view
-        if (this.initialize) this.initialize(this.options);
-    }
-
-    View.prototype = Object.create(RenderNode.prototype);
-    View.prototype.constructor = View;
-
-    View.DEFAULT_OPTIONS = {
-        size : null,
-        origin : null
-    };
-
-    View.EVENTS = {
-        dirty : function(){this._dirty = true;},
-        clean : function(){this._dirty = false;}
-    };
-
-    View.STATE_TYPES = {};
-
-    function _clone(obj) {
-        var copy;
-        if (typeof obj === 'object') {
-            copy = (obj instanceof Array) ? [] : {};
-            for (var key in obj) {
-                var value = obj[key];
-                if (typeof value === 'object' && value !== null) {
-                    if (value instanceof Array) {
-                        copy[key] = [];
-                        for (var i = 0; i < value.length; i++)
-                            copy[key][i] = _clone(value[i]);
-                    }
-                    else copy[key] = _clone(value);
+            this._eventInput.on('dirty', function(){
+                if (!this._dirty) {
+                    this._dirty = true;
+                    this._eventOutput.emit('dirty')
                 }
-                else copy[key] = value;
+                this._dirtyLock++;
+            }.bind(this));
+
+            this._eventInput.on('clean', function(){
+                this._dirtyLock--;
+                if (this._dirty && this._dirtyLock == 0) {
+                    this._dirty = false;
+                    this._eventOutput.emit('clean')
+                }
+            }.bind(this));
+        },
+        set : function set(){
+            return RenderNode.prototype.set.apply(this._node, arguments);
+        },
+        add : function add(){
+            return RenderNode.prototype.add.apply(this._node, arguments);
+        },
+        getSize : function getSize(){
+            return (this.options.size)
+                ? this.options.size
+                : (this._node.getSize) ? this._node.getSize() : null;
+        },
+        setSize : function setSize(size){
+            if (this.options.size === size) return;
+            this.options.size = size;
+            this._dirty = true;
+            return this;
+        },
+        setOrigin : function setOrigin(origin){
+            if (this.options.origin === origin) return;
+            this.options.origin = origin;
+            this._dirty = true;
+            return this;
+        },
+        clean : function clean(){
+            if (this._dirty && this._dirtyLock === 0) {
+                this._dirty = false;
+                this.state.clean();
+            }
+        },
+        render : function render(parentSize){
+            if (this._cachedSize[0] !== parentSize[0] || this._cachedSize[1] !== parentSize[1]){
+                this._cachedSize[0] = parentSize[0];
+                this._cachedSize[1] = parentSize[1];
+                this._dirty = true;
+            }
+
+            return this._entityId;
+        },
+        commit : function commit(spec, allocator){
+            if (!this._cachedSpec || this._cachedSpec !== spec){
+                this._cachedSpec = spec;
+                this._dirty = true;
+            }
+
+            if (this._dirty){
+                var spec = SpecManager.merge({
+                    origin : this.options.origin,
+                    size : this.getSize() || spec.size
+                }, spec);
+
+                RenderNode.prototype.render.call(this._node, spec);
+                RenderNode.prototype.commit.call(this._node, allocator);
+                this.clean();
             }
         }
-        else copy = obj;
-
-        return copy;
-    }
-
-    /**
-     * Look up options value by key
-     * @method getOptions
-     *
-     * @param {string} key key
-     * @return {Object} associated object
-     */
-    View.prototype.getOptions = function getOptions(key) {
-        return OptionsManager.prototype.getOptions.apply(this._optionsManager, arguments);
-    };
-
-    /*
-     *  Set internal options.
-     *  No defaults options are set in View.
-     *
-     *  @method setOptions
-     *  @param {Object} options
-     */
-    View.prototype.setOptions = function setOptions() {
-        OptionsManager.prototype.setOptions.apply(this._optionsManager, arguments);
-    };
-
-    View.prototype.getEventInput = function getEventInput(){
-        return this._eventInput;
-    };
-
-    View.prototype.getEventOutput = function getEventInput(){
-        return this._eventOutput;
-    };
-
-    View.prototype.cleanState = function(){
-        this.state.clean();
-    };
-
-    var RESERVED_KEYS = {
-        DEFAULTS : 'defaults',
-        EVENTS   : 'events',
-        STATE_TYPES : 'state'
-    };
-
-    function extend(protoObj, constants){
-        var parent = this;
-
-        var child = (protoObj.hasOwnProperty('constructor'))
-            ? function(){ protoObj.constructor.apply(this, arguments); }
-            : function(){ parent.apply(this, arguments); };
-
-        child.extend = extend;
-        child.prototype = Object.create(parent.prototype);
-        child.prototype.constructor = child;
-
-        for (var key in protoObj){
-            var value = protoObj[key];
-            switch (key) {
-                case RESERVED_KEYS.DEFAULTS:
-                    child.DEFAULT_OPTIONS = value;
-                    break;
-                case RESERVED_KEYS.EVENTS:
-                    child.EVENTS = value;
-                    for (var key in View.EVENTS)
-                        child.EVENTS[key] = View.EVENTS[key];
-                    break;
-                case RESERVED_KEYS.STATE_TYPES:
-                    child.STATE_TYPES = value;
-                    break;
-                default:
-                    child.prototype[key] = value;
-            }
-        }
-
-        for (var key in constants)
-            child[key] = constants[key];
-
-        return child;
-    }
-
-    View.extend = extend;
-
-    module.exports = View;
+    }, {extend : Controller.extend});
 });
