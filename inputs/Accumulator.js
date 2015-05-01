@@ -30,6 +30,14 @@ define(function(require, exports, module) {
         EventHandler.setInputHandler(this, this._eventInput);
         EventHandler.setOutputHandler(this, this._eventOutput);
 
+        this._eventInput.on('start', function(){
+            this._eventOutput.emit('start');
+        }.bind(this));
+
+        this._eventInput.on('end', function(){
+            this._eventOutput.emit('end');
+        }.bind(this));
+
         this._eventInput.on('update', _handleUpdate.bind(this));
     }
 
@@ -49,7 +57,6 @@ define(function(require, exports, module) {
                 ? [state[0] + delta[0], state[1] + delta[1]]
                 : state + delta;
             this.set(newState);
-
             this._eventOutput.emit('update', {value : newState});
         }
     }
