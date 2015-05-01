@@ -54,6 +54,10 @@ define(function(require, exports, module) {
             if (this._dirtyLock == 0) this._eventOutput.emit('dirty');
         });
 
+        this._eventInput.on('clean', function(){
+            if (this._dirtyLock == 0) this._eventOutput.emit('clean');
+        });
+
         this._eventInput.on('start', function(){
             if (this._dirtyLock == 0) this._eventOutput.emit('start');
             this._dirtyLock++;
