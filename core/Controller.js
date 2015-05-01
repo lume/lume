@@ -113,9 +113,10 @@ define(function(require, exports, module) {
                     child.DEFAULT_OPTIONS = value;
                     break;
                 case RESERVED_KEYS.EVENTS:
-                    child.EVENTS = value;
-                    for (var key in View.EVENTS)
-                        child.EVENTS[key] = View.EVENTS[key];
+                    if (!child.EVENTS) child.EVENTS = value;
+                    else
+                        for (var key in value)
+                            child.EVENTS[key] = value[key];
                     break;
                 case RESERVED_KEYS.STATE_TYPES:
                     child.STATE_TYPES = value;
@@ -124,6 +125,7 @@ define(function(require, exports, module) {
                     child.prototype[key] = value;
             }
         }
+
 
         for (var key in constants)
             child[key] = constants[key];
