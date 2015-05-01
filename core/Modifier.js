@@ -48,12 +48,21 @@ define(function(require, exports, module) {
 
         // on quick set
         this._eventInput.on('dirty', function(){
-            this._dirty = true;
-            this._eventOutput.emit('dirty');
+            if (!this._dirty){
+                this._dirty = true;
+                this._eventOutput.emit('dirty');
+            }
+        }.bind(this));
+
+        this._eventInput.on('clean', function(){
+            if (this._dirty){
+                this._dirty = false;
+                this._eventOutput.emit('clean');
+            }
         }.bind(this));
 
         this._eventInput.on('start', function(){
-            if (this._dirtyLock === 0){
+            if (!this._dirty){
                 this._dirty = true;
                 this._eventOutput.emit('dirty');
             }
@@ -62,7 +71,7 @@ define(function(require, exports, module) {
 
         this._eventInput.on('end', function(){
             this._dirtyLock--;
-            if (this._dirtyLock === 0){
+            if (this._dirty && this._dirtyLock == 0) {
                 this._dirty = false;
                 this._eventOutput.emit('clean');
             }
