@@ -32,7 +32,9 @@ define(function(require, exports, module) {
 
         this._node = new RenderNode();
 
-        this._eventOutput = new EventHandler();
+        this._dirty = true;
+        this._dirtyLock = 0;
+
         this._size = _getElementSize(this.container);
 
         this._perspective = new Transitionable(0);
@@ -46,12 +48,57 @@ define(function(require, exports, module) {
             nextSizeTransform : Transform.identity
         };
 
-        this._eventOutput.on('resize', function() {
+        this._eventInput = new EventHandler();
+        this._eventOutput = new EventHandler();
+        EventHandler.setInputHandler(this, this._eventInput);
+        EventHandler.setOutputHandler(this, this._eventOutput);
+        this._eventInput.bindThis(this);
+
+        this._eventInput.subscribe(this._node);
+        this._eventInput.subscribe(this._perspective);
+
+        this._eventInput.on('resize', function() {
             this.setSize(_getElementSize(this.container));
         }.bind(this));
+
+        this._eventInput.on('dirty', _onDirty);
+        this._eventInput.on('clean', _onClean);
+        this._eventInput.on('start', _onStart);
+        this._eventInput.on('end', _onEnd);
     }
 
     var usePrefix = !('perspective' in document.documentElement.style);
+
+    function _onDirty(){
+        if (!this._dirty) {
+            this._dirty = true;
+            this._eventOutput.emit('dirty');
+        }
+    }
+
+    function _onClean(){
+        this._dirtyLock--;
+        if (this._dirty && this._dirtyLock == 0) {
+            this._dirty = false;
+            this._eventOutput.emit('clean');
+        }
+    }
+
+    function _onStart(){
+        if (!this._dirty){
+            this._dirty = true;
+            this._eventOutput.emit('dirty');
+        }
+        this._dirtyLock++;
+    }
+
+    function _onEnd(){
+        this._dirtyLock--;
+        if (this._dirty && this._dirtyLock == 0) {
+            this._dirty = false;
+            this._eventOutput.emit('clean');
+        }
+    }
 
     function _getElementSize(element) {
         return [element.clientWidth, element.clientHeight];
@@ -117,6 +164,7 @@ define(function(require, exports, module) {
         if (!size) size = _getElementSize(this.container);
         this._size[0] = size[0];
         this._size[1] = size[1];
+        this._dirty = true;
     };
 
     /**
@@ -136,8 +184,9 @@ define(function(require, exports, module) {
             _setPerspective(this.container, this._perspective.get());
 
         this._node.render(spec);
-
         this._node.commit(allocator);
+
+        if (this._dirty && this._dirtyLock == 0) this._dirty = false;
     };
 
     /**
@@ -161,72 +210,6 @@ define(function(require, exports, module) {
     Context.prototype.setPerspective = function setPerspective(perspective, transition, callback) {
         if (transition === undefined) _setPerspective(this.container, perspective);
         this._perspective.set(perspective, transition, callback);
-    };
-
-    /**
-     * Trigger an event, sending to all downstream handlers
-     *   listening for provided 'type' key.
-     *
-     * @method emit
-     *
-     * @param {string} type event type key (for example, 'click')
-     * @param {Object} event event data
-     * @return {EventHandler} this
-     */
-    Context.prototype.emit = function emit(type, event) {
-        return this._eventOutput.emit(type, event);
-    };
-
-    /**
-     * Bind a callback function to an event type handled by this object.
-     *
-     * @method "on"
-     *
-     * @param {string} type event type key (for example, 'click')
-     * @param {function(string, Object)} handler callback
-     * @return {EventHandler} this
-     */
-    Context.prototype.on = function on(type, handler) {
-        return this._eventOutput.on(type, handler);
-    };
-
-    /**
-     * Unbind an event by type and handler.
-     *   This undoes the work of "on".
-     *
-     * @method removeListener
-     *
-     * @param {string} type event type key (for example, 'click')
-     * @param {function} handler function object to remove
-     * @return {EventHandler} internal event handler object (for chaining)
-     */
-    Context.prototype.off = function off(type, handler) {
-        return this._eventOutput.off(type, handler);
-    };
-
-    /**
-     * Add event handler object to set of downstream handlers.
-     *
-     * @method pipe
-     *
-     * @param {EventHandler} target event handler target object
-     * @return {EventHandler} passed event handler
-     */
-    Context.prototype.pipe = function pipe(target) {
-        return this._eventOutput.pipe(target);
-    };
-
-    /**
-     * Remove handler object from set of downstream handlers.
-     *   Undoes work of "pipe".
-     *
-     * @method unpipe
-     *
-     * @param {EventHandler} target target handler object
-     * @return {EventHandler} provided target
-     */
-    Context.prototype.unpipe = function unpipe(target) {
-        return this._eventOutput.unpipe(target);
     };
 
     module.exports = Context;
