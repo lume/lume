@@ -39,20 +39,17 @@ define(function(require, exports, module) {
         initialize : function initialize(options){
             this.state.items = null;
             this.state.direction = options.direction;
-            this.state.length = Number.NaN;
+            this.state.length = 0;
 
-            this._size = [undefined, undefined];
             this._outputFunction = _defaultOutputFunction;
 
             var spec = new Spec();
             this.add(function(){
                 var direction = this.state.direction;
-                var antiDirection = 1 - direction;
 
                 var currentNode = this.state.items;
                 var i = 0;
                 var length = 0;
-                var width = 0;
                 var itemSize;
                 while (currentNode) {
                     var item = currentNode.get();
@@ -63,11 +60,11 @@ define(function(require, exports, module) {
 
                     var transform = this._outputFunction.call(this, length, i);
 
-                    if (itemSize && itemSize[direction])
-                        length += itemSize[direction] + this.options.itemSpacing;
-
-                    if (itemSize && itemSize[antiDirection] > width)
-                        width = itemSize[antiDirection];
+                    if (itemSize){
+                        var itemLength = itemSize[direction];
+                        if (itemLength)
+                            length += itemLength + this.options.itemSpacing;
+                    }
 
                     spec.getChild(i)
                         .setTransform(transform)
@@ -77,11 +74,8 @@ define(function(require, exports, module) {
                     i++;
                 }
 
-                this._size[antiDirection] = width;
                 this.state.length = length;
-                this._size[direction] = length;
 
-                spec.setSize(this._size);
                 return spec;
             }.bind(this));
         },
@@ -107,9 +101,6 @@ define(function(require, exports, module) {
             if (items instanceof Array) items = new ViewSequence(items);
             this.state.items = items;
             return items;
-        },
-        getSize : function getSize(){
-            return this._size;
         }
     }, CONSTANTS);
 

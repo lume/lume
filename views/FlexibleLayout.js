@@ -11,7 +11,7 @@
 define(function(require, exports, module) {
     var Transform = require('famous/core/Transform');
     var Transitionable = require('famous/core/Transitionable');
-    var View = require('famous/core/View');
+    var View = require('famous/core/View2');
     var Spec = require('famous/core/Spec');
 
     /**

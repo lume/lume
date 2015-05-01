@@ -78,7 +78,7 @@ define(function(require, exports, module) {
                     }
                 }
 
-                if (!this._node) return null;
+                if (!this._currentNode) return null;
                 if (this._offsetGetter) this.state.offset = this._offsetGetter.call(this);
 
                 spec.setTransform(this._masterOutputFunction(-this.state.offset))
@@ -88,7 +88,7 @@ define(function(require, exports, module) {
             }.bind(this));
         },
         initializeState : function initializeState(options){
-            this._node = null;
+            this._currentNode = null;
             this.state.offset = 0;
             this._offsetGetter = null;
             this._outputFunction = null;
@@ -156,7 +156,7 @@ define(function(require, exports, module) {
         //TODO: add sequence to state
         sequenceFrom : function sequenceFrom(node) {
             if (node instanceof Array) node = new ViewSequence({array: node});
-            this._node = node;
+            this._currentNode = node;
         }
 
     }, CONSTANTS);
@@ -195,7 +195,7 @@ define(function(require, exports, module) {
         var result = [];
 
         // forwards
-        var currNode = this._node;
+        var currNode = this._currentNode;
         var nodeOffset = -offset; //distance from first node
 
         while (currNode && nodeOffset < clipSize + this.options.margin) {
@@ -220,7 +220,7 @@ define(function(require, exports, module) {
         }
 
         // backwards
-        currNode = this._node;
+        currNode = this._currentNode;
         nodeOffset = -offset;
 
         while (currNode && nodeOffset > -this.options.margin - clipSize) {

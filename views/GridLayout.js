@@ -60,7 +60,6 @@ define(function(require, exports, module) {
                 var cols = options.dimensions[0];
                 var rows = options.dimensions[1];
 
-                //TODO: make sure only called when dirty
                 _reflow.call(this, size, cols, rows);
 
                 var index = 0;

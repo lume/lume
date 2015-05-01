@@ -13,7 +13,7 @@ define(function(require, exports, module) {
     var Transitionable = require('famous/core/Transitionable');
     var Transform = require('famous/core/Transform');
     var Modifier = require('famous/core/Modifier');
-    var View = require('famous/core/View');
+    var View = require('famous/core/View3');
 
     /**
      * Allows you to link two renderables as front and back sides that can be
