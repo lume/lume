@@ -15,6 +15,7 @@ define(function(require, exports, module) {
     var Modifier = require('./Modifier');
     var Entity = require('./Entity');
     var Spec = require('./Spec');
+    var EventHandler = require('famous/core/EventHandler');
 
     /**
      * A wrapper for inserting a renderable component (like a Modifer or
@@ -28,15 +29,39 @@ define(function(require, exports, module) {
     function RenderNode(object) {
         this._object = null;
         this._child = null;
+
         this._dirty = true;
+        this._dirtyLock = 0;
 
         this._entityIds = {};
 
-        this._cachedSize = null;
+        this._cachedSize = [Number.NaN,Number.NaN];
         this._cachedObjectSpec = null;
         this._cachedCompoundSpec = null;
         this._cachedParentSpec = null;
-        this.passThrough = false;
+        this._passThrough = false;
+
+        this._eventInput = new EventHandler();
+        this._eventOutput = new EventHandler();
+        EventHandler.setInputHandler(this, this._eventInput);
+        EventHandler.setOutputHandler(this, this._eventOutput);
+        this._eventInput.bindThis(this);
+
+        this._eventInput.on('dirty', function(){
+            if (!this._dirty) {
+                this._dirty = true;
+                this._eventOutput.emit('dirty');
+            }
+            this._dirtyLock++;
+        });
+
+        this._eventInput.on('clean', function(){
+            this._dirtyLock--;
+            if (this._dirty && this._dirtyLock == 0) {
+                this._dirty = false;
+                this._eventOutput.emit('clean');
+            }
+        });
 
         if (object) this.set(object);
     }
@@ -65,6 +90,8 @@ define(function(require, exports, module) {
             this._child = new CombinerNode([this._child, childNode]);
         else this._child = childNode;
 
+        this._eventInput.subscribe(childNode);
+
         return childNode;
     };
 
@@ -86,8 +113,9 @@ define(function(require, exports, module) {
      * @param {Object} child renderable object
      * @return {RenderNode} this render node, or child if it is a RenderNode
      */
-    RenderNode.prototype.set = function set(child) {
-        this._object = child;
+    RenderNode.prototype.set = function set(object) {
+        this._object = object;
+        if (object.emit) this._eventInput.subscribe(object);
         return this;
     };
 
@@ -111,87 +139,77 @@ define(function(require, exports, module) {
      * @private
      * @method render
      *
-     * @return {Object} render specification for the component subtree
-     *    only under this node.
      */
 
     RenderNode.prototype.render = function render(parentSpec) {
-        this.passThrough = false;
+
+        // parent computation
+        var parentSpecDirty;
+        if (this._cachedParentSpec !== parentSpec){
+            parentSpecDirty = true;
+            this._cachedParentSpec = parentSpec;
+        }
+        else parentSpecDirty = false;
+
+        // size computation
+        var parentSize = parentSpec.size;
+        var parentSizeDirty = false;
+        if (this._cachedSize[0] !== parentSize[0] || this._cachedSize[1] !== parentSize[1]) {
+            this._cachedSize[0] = parentSize[0];
+            this._cachedSize[1] = parentSize[1];
+            parentSizeDirty = true;
+        }
+
+        // pass through check
+        if (!this._dirty && !parentSpecDirty && !parentSizeDirty) {
+            this._passThrough = true;
+            return;
+        }
+        else this._passThrough = false;
 
         if (this._object){
-
-            var parentSize = parentSpec.size;
-            var object = this._object;
-
             var objectSpec;
             var compoundSpec;
-            var cachedSize;
-
-            var sizeDirty = false;
             var objectDirty = false;
-            var parentDirty = false;
 
-            // size computation
-            if ((this._cachedSize === null) || (this._cachedSize[0] !== parentSize[0] || this._cachedSize[1] !== parentSize[1])){
-                cachedSize = [parentSize[0], parentSize[1]];
-                sizeDirty = true;
-                this._cachedSize = cachedSize;
+            // objectSpec computation
+            if (this._object instanceof Function) {
+                objectSpec = this._object(parentSize);
+
+                if (objectSpec instanceof Spec)
+                    objectSpec = objectSpec.render(parentSize);
             }
-            else cachedSize = this._cachedSize;
-
-            // objectTransform computation
-            if (object instanceof Function) {
-                objectSpec = object(cachedSize);
-
-                if (objectSpec instanceof Spec){
-                    if (objectSpec._dirty || sizeDirty){
-                        objectSpec = objectSpec.render(cachedSize);
-                        this._cachedObjectSpec = objectSpec;
-                        objectDirty = true;
-                    }
-                    else objectSpec = this._cachedObjectSpec;
-                }
-                else objectDirty = true;
-            }
-            else if (sizeDirty || object._dirty === true || object._dirty === undefined){
-                objectSpec = object.render(cachedSize);
+            else if (this._object._dirty === true || parentSizeDirty){
+                objectSpec = this._object.render(parentSize);
                 this._cachedObjectSpec = objectSpec;
                 objectDirty = true;
             }
             else objectSpec = this._cachedObjectSpec;
 
-            // parent computation
-            if ((this._cachedParentSpec === null) || (this._cachedParentSpec !== parentSpec)){
-                parentDirty = true;
-                this._cachedParentSpec = parentSpec;
-            }
-
             // compound spec computation
-            if (parentDirty || objectDirty){
+            if (parentSpecDirty || objectDirty){
                 compoundSpec = SpecManager.merge(objectSpec, parentSpec, this._entityIds);
                 this._cachedCompoundSpec = compoundSpec;
             }
             else {
-                this.passThrough = true;
+                this._passThrough = true;
                 compoundSpec = this._cachedCompoundSpec;
             }
-
         }
         else compoundSpec = parentSpec;
 
-        if (this._child) {
-            this._child.render(compoundSpec);
-        }
+        if (this._child) this._child.render(compoundSpec);
 
-        if (this.cleanState) this.cleanState();
+        this.clean();
     };
 
     RenderNode.prototype.clean = function(){
-        this._dirty = false;
+        if (this._dirty && this._dirtyLock === 0)
+            this._dirty = false;
     };
 
     RenderNode.prototype.commit = function(allocator){
-        if (!this.passThrough){
+        if (!this._passThrough){
             for (var id in this._entityIds){
                 var entity = Entity.get(id);
                 entity.commit(this._entityIds[id], allocator);
