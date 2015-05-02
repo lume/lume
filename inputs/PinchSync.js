@@ -10,7 +10,7 @@ define(function(require, exports, module) {
     var OptionsManager = require('../core/OptionsManager');
 
     /**
-     * Handles piped in two-finger touch events to change position via pinching / expanding.
+     * Handles two-finger touch events to change position via pinching / expanding.
      *   Emits 'start', 'update' and 'end' events with
      *   position, velocity, touch ids, and distance between fingers.
      *

@@ -51,7 +51,7 @@ define(function(require, exports, module) {
             }
         );
 
-        this.label.pipe(this.sync);
+        this.sync.subscribe(this.label);
 
         this.sync.on('update', function(data) {
             this.set(this.get() + data.delta);

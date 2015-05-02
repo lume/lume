@@ -13,7 +13,7 @@ define(function(require, exports, module) {
     var OptionsManager = require('../core/OptionsManager');
 
     /**
-     * Handles piped in two-finger touch events to increase or decrease scale via pinching / expanding.
+     * Handles two-finger touch events to increase or decrease scale via pinching / expanding.
      *   Emits 'start', 'update' and 'end' events an object with position, velocity, touch ids, and angle.
      *   Useful for determining a rotation factor from initial two-finger touch.
      *

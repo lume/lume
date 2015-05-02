@@ -13,7 +13,7 @@ define(function(require, exports, module) {
 
     /**
      * EventHandler forwards received events to a set of provided callback functions.
-     * It allows events to be captured, processed, and optionally piped through to other event handlers.
+     * It allows events to be captured, processed, and optionally subscribed from to other event handlers.
      *
      * @class EventHandler
      * @extends EventEmitter
@@ -21,9 +21,6 @@ define(function(require, exports, module) {
      */
     function EventHandler() {
         EventEmitter.apply(this, arguments);
-
-        this.downstream = []; // downstream event handlers
-        this.downstreamFn = []; // downstream functions
 
         this.upstream = []; // upstream event handlers
         this.upstreamListeners = {}; // upstream listeners
@@ -54,14 +51,12 @@ define(function(require, exports, module) {
      * @method setOutputHandler
      * @static
      *
-     * @param {Object} object object to mix pipe, unpipe, on, and off functions into
+     * @param {Object} object object to mix on, and off functions into
      * @param {EventHandler} handler assigned event handler
      */
     EventHandler.setOutputHandler = function setOutputHandler(object, handler) {
         if (handler instanceof EventHandler) handler.bindThis(object);
-        object.pipe = handler.pipe.bind(handler);
         object.emit = handler.emit.bind(handler);
-        object.unpipe = handler.unpipe.bind(handler);
         object.on = handler.on.bind(handler);
         object.off = handler.off.bind(handler);
     };
@@ -88,13 +83,6 @@ define(function(require, exports, module) {
      */
     EventHandler.prototype.emit = function emit(type, event) {
         EventEmitter.prototype.emit.apply(this, arguments);
-        var i = 0;
-        for (i = 0; i < this.downstream.length; i++) {
-            if (this.downstream[i].trigger) this.downstream[i].trigger(type, event);
-        }
-        for (i = 0; i < this.downstreamFn.length; i++) {
-            this.downstreamFn[i](type, event);
-        }
         return this;
     };
 
@@ -103,50 +91,6 @@ define(function(require, exports, module) {
      * @method trigger
      */
     EventHandler.prototype.trigger = EventHandler.prototype.emit;
-
-    /**
-     * Add event handler object to set of downstream handlers.
-     *
-     * @method pipe
-     *
-     * @param {EventHandler} target event handler target object
-     * @return {EventHandler} passed event handler
-     */
-    EventHandler.prototype.pipe = function pipe(target) {
-        if (target.subscribe instanceof Function) return target.subscribe(this);
-
-        var downstreamCtx = (target instanceof Function) ? this.downstreamFn : this.downstream;
-        var index = downstreamCtx.indexOf(target);
-        if (index < 0) downstreamCtx.push(target);
-
-        if (target instanceof Function) target('pipe', null);
-        else if (target.trigger) target.trigger('pipe', null);
-
-        return target;
-    };
-
-    /**
-     * Remove handler object from set of downstream handlers.
-     *   Undoes work of "pipe".
-     *
-     * @method unpipe
-     *
-     * @param {EventHandler} target target handler object
-     * @return {EventHandler} provided target
-     */
-    EventHandler.prototype.unpipe = function unpipe(target) {
-        if (target.unsubscribe instanceof Function) return target.unsubscribe(this);
-
-        var downstreamCtx = (target instanceof Function) ? this.downstreamFn : this.downstream;
-        var index = downstreamCtx.indexOf(target);
-        if (index >= 0) {
-            downstreamCtx.splice(index, 1);
-            if (target instanceof Function) target('unpipe', null);
-            else if (target.trigger) target.trigger('unpipe', null);
-            return target;
-        }
-        else return false;
-    };
 
     /**
      * Bind a callback function to an event type handled by this object.

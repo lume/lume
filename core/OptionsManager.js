@@ -166,32 +166,5 @@ define(function(require, exports, module) {
         return this._eventHandler.off.apply(this._eventHandler, arguments);
     };
 
-    /**
-     * Add event handler object to set of downstream handlers.
-     *
-     * @method pipe
-     *
-     * @param {EventHandler} handler event handler target object
-     * @return {EventHandler} passed event handler
-     */
-    OptionsManager.prototype.pipe = function pipe(handler) {
-        _createEventHandler.call(this);
-        return this._eventHandler.pipe.apply(this._eventHandler, arguments);
-    };
-
-    /**
-     * Remove handler object from set of downstream handlers.
-     * Undoes work of "pipe"
-     *
-     * @method unpipe
-     *
-     * @param {EventHandler} handler target handler object
-     * @return {EventHandler} provided target
-     */
-    OptionsManager.prototype.unpipe = function unpipe(handler) {
-        _createEventHandler.call(this);
-        return this._eventHandler.unpipe.apply(this._eventHandler, arguments);
-    };
-
     module.exports = OptionsManager;
 });

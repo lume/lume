@@ -78,33 +78,33 @@ define(function(require, exports, module) {
     };
 
     /**
-     * Pipe events to a sync class
+     * Subscribe events from a sync class
      *
-     * @method pipeSync
+     * @method subscribeSync
      * @param key {String} identifier for sync class
      */
-    GenericSync.prototype.pipeSync = function pipeToSync(key) {
+    GenericSync.prototype.subscribeSync = function subscribeSync(key) {
         var sync = this._syncs[key];
-        this._eventInput.pipe(sync);
-        sync.pipe(this._eventOutput);
+        sync.subscribe(this._eventInput);
+        this._eventOutput.subscribe(sync);
     };
 
     /**
-     * Unpipe events from a sync class
+     * Unsunscribe events from a sync class
      *
-     * @method unpipeSync
+     * @method unsubscribeSync
      * @param key {String} identifier for sync class
      */
-    GenericSync.prototype.unpipeSync = function unpipeFromSync(key) {
+    GenericSync.prototype.unsubscribeSync = function unsubscribeSync(key) {
         var sync = this._syncs[key];
-        this._eventInput.unpipe(sync);
-        sync.unpipe(this._eventOutput);
+        sync.unsubscribe(this._eventInput);
+        this._eventOutput.unsubscribe(sync);
     };
 
     function _addSingleSync(key, options) {
         if (!registry[key]) return;
         this._syncs[key] = new (registry[key])(options);
-        this.pipeSync(key);
+        this.subscribeSync(key);
     }
 
     /**
