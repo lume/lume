@@ -10,6 +10,7 @@
 
 define(function(require, exports, module) {
     var Transform = require('./Transform');
+    var EventHandler = require('famous/core/EventHandler');
 
     /**
      *
@@ -37,6 +38,45 @@ define(function(require, exports, module) {
         this._proportionsGetter = null;
         this._marginsGetter = null;
 
+        this._dirty = true;
+        this._dirtyLock = 0;
+
+        this._eventInput = new EventHandler();
+        this._eventOutput = new EventHandler();
+        EventHandler.setOutputHandler(this, this._eventOutput);
+        EventHandler.setInputHandler(this, this._eventInput);
+
+        // on quick set
+        this._eventInput.on('dirty', function(){
+            if (!this._dirty){
+                this._dirty = true;
+                this._eventOutput.emit('dirty');
+            }
+        }.bind(this));
+
+        this._eventInput.on('clean', function(){
+            if (this._dirty){
+                this._dirty = false;
+                this._eventOutput.emit('clean');
+            }
+        }.bind(this));
+
+        this._eventInput.on('start', function(){
+            if (!this._dirty){
+                this._dirty = true;
+                this._eventOutput.emit('dirty');
+            }
+            this._dirtyLock++;
+        }.bind(this));
+
+        this._eventInput.on('end', function(){
+            this._dirtyLock--;
+            if (this._dirty && this._dirtyLock == 0) {
+                this._dirty = false;
+                this._eventOutput.emit('clean');
+            }
+        }.bind(this));
+
         this._output = {
             transform: Transform.identity,
             opacity: 1,
@@ -47,16 +87,18 @@ define(function(require, exports, module) {
             proportions: null
         };
 
-        if (options) {
-            if (options.transform) this.transformFrom(options.transform);
-            if (options.opacity !== undefined) this.opacityFrom(options.opacity);
-            if (options.origin) this.originFrom(options.origin);
-            if (options.align) this.alignFrom(options.align);
-            if (options.size) this.sizeFrom(options.size);
-            if (options.margins) this.marginsFrom(options.margins);
-            if (options.proportions) this.proportionsFrom(options.proportions);
-        }
+        if (options) this.from(options);
     }
+
+    Modifier.prototype.from = function from(options){
+        if (options.transform) this.transformFrom(options.transform);
+        if (options.opacity !== undefined) this.opacityFrom(options.opacity);
+        if (options.origin) this.originFrom(options.origin);
+        if (options.align) this.alignFrom(options.align);
+        if (options.size) this.sizeFrom(options.size);
+        if (options.margins) this.marginsFrom(options.margins);
+        if (options.proportions) this.proportionsFrom(options.proportions);
+    };
 
     /**
      * Function, object, or static transform matrix which provides the transform.
@@ -68,11 +110,18 @@ define(function(require, exports, module) {
      * @return {Modifier} this
      */
     Modifier.prototype.transformFrom = function transformFrom(transform) {
-        if (transform instanceof Function) this._transformGetter = transform;
-        else if (transform instanceof Object && transform.get) this._transformGetter = transform.get.bind(transform);
+        if (transform instanceof Function) {
+            this._transformGetter = transform;
+            this.trigger('start');
+        }
+        else if (transform instanceof Object && transform.get) {
+            this._eventInput.subscribe(transform);
+            this._transformGetter = transform.get.bind(transform);
+        }
         else {
             this._transformGetter = null;
             this._output.transform = transform;
+            this._dirty = true;
         }
         return this;
     };
@@ -86,11 +135,18 @@ define(function(require, exports, module) {
      * @return {Modifier} this
      */
     Modifier.prototype.opacityFrom = function opacityFrom(opacity) {
-        if (opacity instanceof Function) this._opacityGetter = opacity;
-        else if (opacity instanceof Object && opacity.get) this._opacityGetter = opacity.get.bind(opacity);
+        if (opacity instanceof Function) {
+            this._opacityGetter = opacity;
+            this.trigger('start');
+        }
+        else if (opacity instanceof Object && opacity.get) {
+            this._eventInput.subscribe(opacity);
+            this._opacityGetter = opacity.get.bind(opacity);
+        }
         else {
             this._opacityGetter = null;
             this._output.opacity = opacity;
+            this._dirty = true;
         }
         return this;
     };
@@ -105,11 +161,18 @@ define(function(require, exports, module) {
      * @return {Modifier} this
      */
     Modifier.prototype.originFrom = function originFrom(origin) {
-        if (origin instanceof Function) this._originGetter = origin;
-        else if (origin instanceof Object && origin.get) this._originGetter = origin.get.bind(origin);
+        if (origin instanceof Function) {
+            this._originGetter = origin;
+            this.trigger('start');
+        }
+        else if (origin instanceof Object && origin.get) {
+            this._eventInput.subscribe(origin);
+            this._originGetter = origin.get.bind(origin);
+        }
         else {
             this._originGetter = null;
             this._output.origin = origin;
+            this._dirty = true;
         }
         return this;
     };
@@ -124,11 +187,18 @@ define(function(require, exports, module) {
      * @return {Modifier} this
      */
     Modifier.prototype.alignFrom = function alignFrom(align) {
-        if (align instanceof Function) this._alignGetter = align;
-        else if (align instanceof Object && align.get) this._alignGetter = align.get.bind(align);
+        if (align instanceof Function) {
+            this.trigger('start');
+            this._alignGetter = align;
+        }
+        else if (align instanceof Object && align.get) {
+            this._eventInput.subscribe(align);
+            this._alignGetter = align.get.bind(align);
+        }
         else {
             this._alignGetter = null;
             this._output.align = align;
+            this._dirty = true;
         }
         return this;
     };
@@ -148,21 +218,35 @@ define(function(require, exports, module) {
      * @return {Modifier} this
      */
     Modifier.prototype.sizeFrom = function sizeFrom(size) {
-        if (size instanceof Function) this._sizeGetter = size;
-        else if (size instanceof Object && size.get) this._sizeGetter = size.get.bind(size);
+        if (size instanceof Function) {
+            this.trigger('start');
+            this._sizeGetter = size;
+        }
+        else if (size instanceof Object && size.get) {
+            this._eventInput.subscribe(size);
+            this._sizeGetter = size.get.bind(size);
+        }
         else {
             this._sizeGetter = null;
             this._output.size = size;
+            this._dirty = true;
         }
         return this;
     };
 
     Modifier.prototype.marginsFrom = function marginsFrom(margins) {
-        if (margins instanceof Function) this._marginsGetter = margins;
-        else if (margins instanceof Object && margins.get) this._marginsGetter = margins.get.bind(margins);
+        if (margins instanceof Function) {
+            this.trigger('start');
+            this._marginsGetter = margins;
+        }
+        else if (margins instanceof Object && margins.get) {
+            this._eventInput.subscribe(margins);
+            this._marginsGetter = margins.get.bind(margins);
+        }
         else {
             this._marginsGetter = null;
             this._output.margins = margins;
+            this._dirty = true;
         }
         return this;
     };
@@ -176,11 +260,18 @@ define(function(require, exports, module) {
      * @return {Modifier} this
      */
     Modifier.prototype.proportionsFrom = function proportionsFrom(proportions) {
-        if (proportions instanceof Function) this._proportionsGetter = proportions;
-        else if (proportions instanceof Object && proportions.get) this._proportionsGetter = proportions.get.bind(proportions);
+        if (proportions instanceof Function) {
+            this._proportionsGetter = proportions;
+            this.trigger('start');
+        }
+        else if (proportions instanceof Object && proportions.get) {
+            this._eventInput.subscribe(proportions);
+            this._proportionsGetter = proportions.get.bind(proportions);
+        }
         else {
             this._proportionsGetter = null;
             this._output.proportions = proportions;
+            this._dirty = true;
         }
         return this;
     };
@@ -207,7 +298,8 @@ define(function(require, exports, module) {
      *    provided target
      */
     Modifier.prototype.render = function render() {
-        _update.call(this);
+        if (this._dirty) _update.call(this);
+        if (this._dirtyLock === 0) this._dirty = false;
         return this._output;
     };
 

@@ -381,15 +381,5 @@ define(function(require, exports, module) {
         return this.off.apply(this, arguments);
     };
 
-    Particle.prototype.pipe = function pipe() {
-        _createEventOutput.call(this);
-        return this.pipe.apply(this, arguments);
-    };
-
-    Particle.prototype.unpipe = function unpipe() {
-        _createEventOutput.call(this);
-        return this.unpipe.apply(this, arguments);
-    };
-
     module.exports = Particle;
 });

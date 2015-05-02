@@ -9,9 +9,9 @@
 /* Modified work copyright © 2015 David Valdman */
 
 define(function(require, exports, module) {
-    var ContainerSurface = require('../surfaces/ContainerSurface');
-    var Scrollview = require('./Scrollview');
-    var View = require('./View');
+    var ContainerSurface = require('famous/surfaces/ContainerSurface');
+    var Scrollview = require('famous/views/Scrollview');
+    var View = require('famous/core/View');
 
     /**
      * A Container surface with a scrollview automatically added. The convenience of ScrollContainer lies in
@@ -29,11 +29,11 @@ define(function(require, exports, module) {
             scrollview : null
         },
         initialize : function(options){
-            this.container = new ContainerSurface(this.options.container);
-            this.scrollview = new Scrollview(this.options.scrollview);
+            this.container = new ContainerSurface(options.container);
+            this.scrollview = new Scrollview(options.scrollview);
 
-            this.container.add(this.scrollview);
             this.set(this.container);
+            this.container.add(this.scrollview);
 
             this.scrollview.subscribe(this.container);
             this._eventOutput.subscribe(this.scrollview);

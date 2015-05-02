@@ -6,8 +6,8 @@ define(function(require, exports, module) {
     var Transform = require('famous/core/Transform');
     var Transitionable = require('famous/core/Transitionable');
     var Modifier = require('famous/core/Modifier');
-    var ViewSequence = require('../core/ViewSequence');
-    var View = require('./View');
+    var ViewSequence = require('famous/core/ViewSequence');
+    var View = require('famous/core/View');
 
     function _calcPosition(index, progress){
         return (index + progress) * (2 * this.options.dotRadius + this.options.dotSpacing);
@@ -24,7 +24,7 @@ define(function(require, exports, module) {
         }
     };
 
-    module.exports = View.extend({
+    var PaginatedLayout = module.exports = View.extend({
         defaults : {
             dotRadius : 5,
             dotColor : 'white',
@@ -39,43 +39,6 @@ define(function(require, exports, module) {
             this.initializeState(options);
             this.initializeSubviews(options);
             this.initializeEvents(options);
-        },
-        pagesFrom : function(pages){
-            for (var i = 0; i < pages.length; i++)
-                this.addPage(pages[i]);
-        },
-        addPage : function(page){
-            this.pages.push(page);
-
-            var dotModifier = new Modifier({
-                transform : Transform.translate(this.dotsWidth, 0, 0)
-            });
-
-            var dot = new Surface({
-                size : [2*this.options.dotRadius, 2*this.options.dotRadius],
-                properties : {
-                    borderRadius : '50%',
-                    border : '1px solid ' + this.options.dotColor
-                }
-            });
-
-            this.dotsWidth += 2*this.options.dotRadius + this.options.dotSpacing;
-            this.dotsNode.add(dotModifier).add(dot);
-        },
-        getProgress : function(){
-            return this.progress;
-        },
-        getCurrentIndex : function(){
-            return this.index;
-        },
-        goToNextPage : function(){
-            Scrollview.prototype.goToNextPage.call(this.scrollview);
-        },
-        goToPreviousPage : function(){
-            Scrollview.prototype.goToPreviousPage.call(this.scrollview);
-        },
-        goToPage : function(index){
-            Scrollview.prototype.goToPage.call(this.scrollview, index);
         },
         initializeState : function(){
             this.index = 0;
@@ -146,6 +109,43 @@ define(function(require, exports, module) {
                     });
                     break;
             }
+        },
+        pagesFrom : function(pages){
+            for (var i = 0; i < pages.length; i++)
+                this.addPage(pages[i]);
+        },
+        addPage : function(page){
+            this.pages.push(page);
+
+            var dotModifier = new Modifier({
+                transform : Transform.translate(this.dotsWidth, 0, 0)
+            });
+
+            var dot = new Surface({
+                size : [2*this.options.dotRadius, 2*this.options.dotRadius],
+                properties : {
+                    borderRadius : '50%',
+                    border : '1px solid ' + this.options.dotColor
+                }
+            });
+
+            this.dotsWidth += 2*this.options.dotRadius + this.options.dotSpacing;
+            this.dotsNode.add(dotModifier).add(dot);
+        },
+        getProgress : function(){
+            return this.progress;
+        },
+        getCurrentIndex : function(){
+            return this.index;
+        },
+        goToNextPage : function(){
+            Scrollview.prototype.goToNextPage.call(this.scrollview);
+        },
+        goToPreviousPage : function(){
+            Scrollview.prototype.goToPreviousPage.call(this.scrollview);
+        },
+        goToPage : function(index){
+            Scrollview.prototype.goToPage.call(this.scrollview, index);
         }
     }, CONSTANTS);
 

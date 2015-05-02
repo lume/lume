@@ -9,11 +9,11 @@
 /* Modified work copyright © 2015 David Valdman */
 
 define(function(require, exports, module) {
-    var Transform = require('../core/Transform');
-    var Transitionable = require('../core/Transitionable');
-    var Transform = require('../core/Transform');
-    var Modifier = require('../core/Modifier');
-    var View = require('./View');
+    var Transform = require('famous/core/Transform');
+    var Transitionable = require('famous/core/Transitionable');
+    var Transform = require('famous/core/Transform');
+    var Modifier = require('famous/core/Modifier');
+    var View = require('famous/core/View3');
 
     /**
      * Allows you to link two renderables as front and back sides that can be
@@ -35,15 +35,18 @@ define(function(require, exports, module) {
             transition : true,
             direction : CONSTANTS.DIRECTION.X
         },
+        state : {
+            angle : Transitionable
+        },
         initialize : function(){
-            this.angle = new Transitionable(0);
+            this.state.angle.set(0);
 
             var frontModifier = new Modifier({
                 size : function(){
                     return this.frontNode.getSize();
                 }.bind(this),
                 transform : function() {
-                    var angle = this.angle.get();
+                    var angle = this.state.angle.get();
                     return (this.options.direction === CONSTANTS.DIRECTION.X)
                         ? Transform.rotateY(angle)
                         : Transform.rotateX(angle)
@@ -56,7 +59,7 @@ define(function(require, exports, module) {
                     return this.backNode.getSize();
                 }.bind(this),
                 transform : function() {
-                    var angle = this.angle.get() + Math.PI;
+                    var angle = this.state.angle.get() + Math.PI;
                     return (this.options.direction === CONSTANTS.DIRECTION.X)
                         ? Transform.rotateY(angle)
                         : Transform.rotateX(angle)
@@ -75,8 +78,7 @@ define(function(require, exports, module) {
         },
         setAngle : function setAngle(angle, transition, callback){
             if (transition === undefined) transition = this.options.transition;
-            if (this.angle.isActive()) this.angle.halt();
-            this.angle.set(angle, transition, callback);
+            this.state.angle.set(angle, transition, callback);
         }
     }, CONSTANTS);
 });

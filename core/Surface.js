@@ -44,6 +44,7 @@ define(function(require, exports, module) {
         this._sizeDirty = true;
         this._contentDirty = true;
         this._trueSizeCheck = false;
+        this._dirty = true;
 
         this.classList = [];
         this._dirtyClasses = [];
@@ -55,7 +56,6 @@ define(function(require, exports, module) {
     Surface.prototype.constructor = Surface;
     Surface.prototype.elementType = 'div';
     Surface.prototype.elementClass = 'famous-surface';
-
     /**
      * Set HTML attributes on this Surface. Note that this will cause
      *    dirtying and thus re-rendering, even if values do not change.
@@ -330,6 +330,7 @@ define(function(require, exports, module) {
     };
 
     Surface.prototype.render = function(){
+        this._dirty = false;
         return ElementOutput.prototype.render.apply(this, arguments);
     };
 

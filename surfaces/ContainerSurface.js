@@ -10,8 +10,9 @@
 /* Modified work copyright © 2015 David Valdman */
 
 define(function(require, exports, module) {
-    var Surface = require('../core/Surface');
-    var Context = require('../core/Context');
+    var Surface = require('famous/core/Surface');
+    var Context = require('famous/core/Context');
+    var EventHandler = require('famous/core/EventHandler');
 
     /**
      * ContainerSurface is an object designed to contain surfaces and
@@ -42,16 +43,42 @@ define(function(require, exports, module) {
         this._container.classList.add('famous-container');
         this.context = new Context(this._container);
         this.setContent(this._container);
+        this._dirty = true;
+
+        this._eventInput = new EventHandler();
+        this._eventOutput = new EventHandler();
+        EventHandler.setInputHandler(this, this._eventInput);
+        EventHandler.setOutputHandler(this, this._eventOutput);
+        this._eventInput.bindThis(this);
+
+        this._eventInput.subscribe(this.context);
 
         this.on('resize', function(){
             this.context.setSize(this.getSize());
-        }.bind(this));
+            this._dirty = true;
+        });
+
+        this._eventInput.on('dirty', function(){
+            if (this._dirty) return;
+            this._dirty = true;
+            this._eventOutput.emit('dirty');
+        });
+
+        this._eventInput.on('clean', function(){
+            if (!this._dirty) return;
+            this._dirty = false;
+            this._eventOutput.emit('clean');
+        });
     }
 
     ContainerSurface.prototype = Object.create(Surface.prototype);
     ContainerSurface.prototype.constructor = ContainerSurface;
     ContainerSurface.prototype.elementType = 'div';
     ContainerSurface.prototype.elementClass = 'famous-surface';
+
+    ContainerSurface.prototype.setPerspective = function setPerspective(){
+        Context.prototype.setPerspective.apply(this.context, arguments);
+    };
 
     /**
      * Add renderables to this object's render tree
@@ -100,6 +127,8 @@ define(function(require, exports, module) {
     ContainerSurface.prototype.commit = function commit(spec, allocator) {
         Surface.prototype.commit.apply(this, arguments);
         Context.prototype.commit.apply(this.context);
+
+        if (this._dirty) this._dirty = false;
     };
 
     module.exports = ContainerSurface;

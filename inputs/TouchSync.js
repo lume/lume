@@ -22,18 +22,6 @@ define(function(require, exports, module) {
      * @class TouchSync
      * @constructor
      *
-     * @example
-     *   var Surface = require('../core/Surface');
-     *   var TouchSync = require('../inputs/TouchSync');
-     *
-     *   var surface = new Surface({ size: [100, 100] });
-     *   var touchSync = new TouchSync();
-     *   surface.pipe(touchSync);
-     *
-     *   touchSync.on('start', function (e) { // react to start });
-     *   touchSync.on('update', function (e) { // react to update });
-     *   touchSync.on('end', function (e) { // react to end });*
-     *
      * @param [options] {Object}             default options overrides
      * @param [options.direction] {Number}   read from a particular axis
      * @param [options.rails] {Boolean}      read from axis with greatest differential

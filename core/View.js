@@ -1,0 +1,117 @@
+/* This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at http://mozilla.org/MPL/2.0/.
+ *
+ * @license MPL 2.0
+ * @copyright Famous Industries, Inc. 2014
+ */
+
+/* Modified work copyright © 2015 David Valdman */
+
+define(function(require, exports, module) {
+    var RenderNode = require('famous/core/RenderNode');
+    var StateManager = require('famous/core/StateManager');
+    var Entity = require('famous/core/Entity');
+    var SpecManager = require('famous/core/SpecManager');
+    var Controller = require('famous/core/Controller');
+
+    /**
+     * @class View
+     * @constructor
+     */
+
+    var View = module.exports = Controller.extend({
+        defaults : {
+            size : null,
+            origin : null
+        },
+        events : null,
+        constructor : function View(){
+            this._entityId = Entity.register(this);
+            this._node = new RenderNode();
+            this.state = new StateManager(this.constructor.STATE_TYPES || View.STATE_TYPES);
+
+            this._dirty = true;
+            this._dirtyLock = 0;
+            this._cachedSpec = null;
+            this._cachedSize = [Number.NaN, Number.NaN];
+
+            Controller.apply(this, arguments);
+
+            this._eventInput.subscribe(this._optionsManager);
+            this._eventInput.subscribe(this.state);
+            this._eventInput.subscribe(this._node);
+
+            this._eventInput.on('dirty', function(){
+                if (!this._dirty) {
+                    this._dirty = true;
+                    this._eventOutput.emit('dirty')
+                }
+                this._dirtyLock++;
+            }.bind(this));
+
+            this._eventInput.on('clean', function(){
+                this._dirtyLock--;
+                if (this._dirty && this._dirtyLock == 0) {
+                    this._dirty = false;
+                    this._eventOutput.emit('clean')
+                }
+            }.bind(this));
+        },
+        set : function set(){
+            return RenderNode.prototype.set.apply(this._node, arguments);
+        },
+        add : function add(){
+            return RenderNode.prototype.add.apply(this._node, arguments);
+        },
+        getSize : function getSize(){
+            return (this.options.size)
+                ? this.options.size
+                : (this._node.getSize) ? this._node.getSize() : null;
+        },
+        setSize : function setSize(size){
+            if (this.options.size === size) return;
+            this.options.size = size;
+            this._dirty = true;
+            return this;
+        },
+        setOrigin : function setOrigin(origin){
+            if (this.options.origin === origin) return;
+            this.options.origin = origin;
+            this._dirty = true;
+            return this;
+        },
+        clean : function clean(){
+            if (this._dirty && this._dirtyLock === 0) {
+                this._dirty = false;
+                this.state.clean();
+            }
+        },
+        render : function render(parentSize){
+            if (this._cachedSize[0] !== parentSize[0] || this._cachedSize[1] !== parentSize[1]){
+                this._cachedSize[0] = parentSize[0];
+                this._cachedSize[1] = parentSize[1];
+                this._dirty = true;
+            }
+
+            return this._entityId;
+        },
+        commit : function commit(spec, allocator){
+            if (!this._cachedSpec || this._cachedSpec !== spec){
+                this._cachedSpec = spec;
+                this._dirty = true;
+            }
+
+            if (this._dirty){
+                var spec = SpecManager.merge({
+                    origin : this.options.origin,
+                    size : this.getSize() || spec.size
+                }, spec);
+
+                RenderNode.prototype.render.call(this._node, spec);
+                RenderNode.prototype.commit.call(this._node, allocator);
+                this.clean();
+            }
+        }
+    }, {extend : Controller.extend});
+});

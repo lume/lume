@@ -44,8 +44,11 @@ define(function(require, exports, module) {
         this._callback = undefined;
         this._engineInstance = null;
         this._currentMethod = null;
+        this._eventOutput = new EventHandler();
+        EventHandler.setOutputHandler(this, this._eventOutput);
+        this._dirty = true;
         this._active = false;
-        this._eventOutput = null;
+        this._firstGet = true; //avoids emitting clean when never emit dirty
     }
 
     var transitionMethods = {};
@@ -67,11 +70,12 @@ define(function(require, exports, module) {
         if (this.endStateQueue.length === 0) {
             this._active = false;
 
-            if (this._eventOutput)
+            if (this._eventOutput) {
                 this._eventOutput.emit('end', {
-                    value : this.state,
-                    velocity : this.velocity
+                    value: this.state,
+                    velocity: this.velocity
                 });
+            }
 
             if (this._callback) {
                 var callback = this._callback;
@@ -100,8 +104,9 @@ define(function(require, exports, module) {
 
         this._engineInstance.reset(this.state, this.velocity);
 
-        if (this._eventOutput)
+        if (!this.isActive() && this._eventOutput){
             this._eventOutput.emit('start', {value : this.state});
+        }
 
         if (this.velocity !== undefined) {
             this.velocity = this._engineInstance.getVelocity();
@@ -129,6 +134,14 @@ define(function(require, exports, module) {
      */
     Transitionable.prototype.set = function set(endState, transition, callback) {
         if (!transition) {
+            if (this.isActive()) this.emit('end');
+            else {
+                if (!this._dirty){
+                    this._dirty = true;
+                    this.emit('dirty');
+                }
+            }
+
             this.reset(endState, undefined);
             if (callback) callback();
             return this;
@@ -141,7 +154,7 @@ define(function(require, exports, module) {
         this.transitionQueue.push(transition);
         this.callbackQueue.push(callback);
 
-        if (!this.isActive()) _loadNext.call(this);
+        _loadNext.call(this);
 
         return this;
     };
@@ -157,6 +170,12 @@ define(function(require, exports, module) {
      */
     Transitionable.prototype.get = function get() {
         if (this.isActive()) this.update();
+        else if (this._dirty){
+            this._dirty = false;
+            if (!this._firstGet) this.emit('clean');
+        }
+        this._firstGet = false;
+
         return this.state;
     };
 
@@ -174,7 +193,7 @@ define(function(require, exports, module) {
             }
             else delta = state - this.state;
 
-            this._eventOutput.emit('update', {
+            this.emit('update', {
                 delta : delta,
                 value : state
             });
@@ -255,33 +274,21 @@ define(function(require, exports, module) {
      * @method halt
      */
     Transitionable.prototype.halt = function halt() {
-        this.set(this.get());
+        var currentState = this.get();
+
+        if (this._engineInstance) this._engineInstance.reset(currentState);
+
+        this._currentMethod = null;
+        this._engineInstance = null;
+        this.state = currentState;
+        this.velocity = undefined;
+        this.endStateQueue = [];
+        this.transitionQueue = [];
+        this.callbackQueue = [];
     };
 
-    function _createEventOutput() {
-        this._eventOutput = new EventHandler();
-        this._eventOutput.bindThis(this);
-        EventHandler.setOutputHandler(this, this._eventOutput);
-    }
-
-    Transitionable.prototype.on = function on() {
-        _createEventOutput.call(this);
-        return this.on.apply(this, arguments);
-    };
-
-    Transitionable.prototype.off = function off() {
-        _createEventOutput.call(this);
-        return this.off.apply(this, arguments);
-    };
-
-    Transitionable.prototype.pipe = function pipe() {
-        _createEventOutput.call(this);
-        return this.pipe.apply(this, arguments);
-    };
-
-    Transitionable.prototype.unpipe = function unpipe() {
-        _createEventOutput.call(this);
-        return this.unpipe.apply(this, arguments);
+    Transitionable.prototype.clean = function(){
+        if (!this.isActive()) this._dirty = false;
     };
 
     module.exports = Transitionable;

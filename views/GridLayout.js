@@ -9,11 +9,12 @@
 /* Modified work copyright © 2015 David Valdman */
 
 define(function(require, exports, module) {
-    var Transform = require('../core/Transform');
-    var ViewSequence = require('../core/ViewSequence');
-    var Transitionable = require('../core/Transitionable');
-    var View = require('../views/View');
-    var TransitionableTransform = require('../transitions/TransitionableTransform');
+    var Transform = require('famous/core/Transform');
+    var ViewSequence = require('famous/core/ViewSequence');
+    var Transitionable = require('famous/core/Transitionable');
+    var View = require('famous/core/View');
+    var Spec = require('famous/core/Spec');
+    var TransitionableTransform = require('famous/transitions/TransitionableTransform');
 
     /**
      * A layout which divides a context into several evenly-sized grid cells.
@@ -23,7 +24,7 @@ define(function(require, exports, module) {
      * @class GridLayout
      */
 
-    module.exports = View.extend({
+    var GridLayout = module.exports = View.extend({
         defaults : {
             /**
              * @param {Array.Number} [dimensions=[1, 1]] A two value array which specifies the amount of columns
@@ -40,13 +41,49 @@ define(function(require, exports, module) {
              */
             transition: false
         },
-        initialize : function(){
-            this._transforms = [];
-            this._sizes = [];
-            this._contextSizeCache = null;
-            this._dimensionsCache = [0, 0];
-            this._activeCount = 0;
-            this._sequence = null;
+        state : {
+            transforms : Array,
+            sizes : Array,
+            dimensions : Array,
+            sequence : ViewSequence,
+            count : Number
+        },
+        initialize : function(options){
+            this.state.transforms = [];
+            this.state.sizes = [];
+            this.state.dimensions = [0, 0];
+            this.state.count = 0;
+            this.state.sequence = null;
+
+            var spec = new Spec();
+            this.add(function(size){
+                var cols = options.dimensions[0];
+                var rows = options.dimensions[1];
+
+                _reflow.call(this, size, cols, rows);
+
+                var index = 0;
+                var sequence = this.state.sequence;
+                while (sequence && (index < this.state.transforms.length)) {
+                    var item = sequence.get();
+
+                    if (index >= this.state.count)
+                        _removeState.call(this, index);
+
+                    if (item) {
+                        var transform = this.state.transforms[index].get();
+                        var size = this.state.sizes[index].get();
+                        spec.getChild(index)
+                            .setTransform(transform)
+                            .setSize(size)
+                            .setTarget(item);
+                    }
+
+                    sequence = sequence.getNext();
+                    index++;
+                }
+                return spec;
+            }.bind(this));
         },
         /**
          * Sets the collection of renderables under the Gridlayout instance's control.
@@ -56,59 +93,7 @@ define(function(require, exports, module) {
          */
         sequenceFrom : function(sequence){
             if (sequence instanceof Array) sequence = new ViewSequence(sequence);
-            this._sequence = sequence;
-        },
-        /**
-         * Returns the size of the grid layout.
-         *
-         * @method getSize
-         * @return {Array} Total size of the grid layout.
-         */
-        getSize : function(){
-            return this._contextSizeCache;
-        },
-        /**
-         * Generate a render spec from the contents of this component.
-         *
-         * @private
-         * @method render
-         * @return {Object} Render spec for this component
-         */
-        render : function(parentSpec){
-            var size = parentSpec.size;
-            var cols = this.options.dimensions[0];
-            var rows = this.options.dimensions[1];
-
-            var callReflow = !this._contextSizeCache  ||
-                size[0] !== this._contextSizeCache[0] ||
-                size[1] !== this._contextSizeCache[1] ||
-                cols    !== this._dimensionsCache[0]  ||
-                rows    !== this._dimensionsCache[1];
-
-            if (callReflow) _reflow.call(this, size, cols, rows);
-
-            var index = 0;
-            var _sequence = this._sequence;
-            while (_sequence && (index < this._transforms.length)) {
-                var item = _sequence.get();
-
-                if (index >= this._activeCount)
-                    _removeState.call(this, index);
-
-                if (item) {
-                    var transform = this._transforms[index].get();
-                    var size = this._sizes[index].get();
-                    this.spec.getChild(index)
-                        .setTransform(transform)
-                        .setSize(size)
-                        .setTarget(item);
-                }
-
-                _sequence = _sequence.getNext();
-                index++;
-            }
-
-            return this.spec.render();
+            this.state.sequence = sequence;
         }
     });
 
@@ -129,7 +114,7 @@ define(function(require, exports, module) {
         for (var i = 0; i < rows; i++) {
             var currX = 0;
             for (var j = 0; j < cols; j++) {
-                (this._transforms[currIndex] === undefined)
+                (this.state.transforms[currIndex] === undefined)
                     ? _addState.call(this, currIndex, [colSize, rowSize], [currX, currY, 0])
                     : _animateState.call(this, currIndex, [colSize, rowSize], [currX, currY, 0]);
 
@@ -140,34 +125,28 @@ define(function(require, exports, module) {
             currY += rowSize + options.gutterSize[1];
         }
 
-        this._dimensionsCache = [options.dimensions[0], options.dimensions[1]];
-        this._contextSizeCache = [size[0], size[1]];
+        this.state.count = rows * cols;
 
-        this._activeCount = rows * cols;
-
-        for (i = this._activeCount ; i < this._transforms.length; i++)
+        for (i = this._activeCount ; i < this.state.transforms.length; i++)
             _animateState.call(this, i, [Math.round(colSize), Math.round(rowSize)], [0, 0]);
 
         this.emit('reflow');
     }
 
     function _addState(index, size, position) {
-        this._transforms[index] = new TransitionableTransform(Transform.translate.apply(null, position));
-        this._sizes[index] = new Transitionable(size);
+        this.state.transforms[index] = new TransitionableTransform(Transform.translate.apply(null, position));
+        this.state.sizes[index] = new Transitionable(size);
     }
 
     function _removeState(index){
-        this._transforms.splice(index, 1);
-        this._sizes.splice(index, 1);
+        this.state.transforms.splice(index, 1);
+        this.state.sizes.splice(index, 1);
     }
 
     function _animateState(index, size, position) {
         var transition = this.options.transition;
-        var currTransform = this._transforms[index];
-        var currSize = this._sizes[index];
-
-        currTransform.halt();
-        currSize.halt();
+        var currTransform = this.state.transforms[index];
+        var currSize = this.state.sizes[index];
 
         currTransform.setTranslate(position, transition);
         currSize.set(size, transition);

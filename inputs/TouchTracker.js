@@ -65,19 +65,6 @@ define(function(require, exports, module) {
         this.isTouched = false;
     }
 
-    function _handleUnpipe() {
-        for (var i in this.touchHistory) {
-            var history = this.touchHistory[i];
-            this.eventOutput.emit('trackend', {
-                touch: history[history.length - 1].touch,
-                timestamp: Date.now(),
-                count: 0,
-                history: history
-            });
-            delete this.touchHistory[i];
-        }
-    }
-
     /**
      * Helper to TouchSync – tracks piped in touch events, organizes touch
      *   events by ID, and emits track events back to TouchSync.
@@ -102,7 +89,6 @@ define(function(require, exports, module) {
         this.eventInput.on('touchmove', _handleMove.bind(this));
         this.eventInput.on('touchend', _handleEnd.bind(this));
         this.eventInput.on('touchcancel', _handleEnd.bind(this));
-        this.eventInput.on('unpipe', _handleUnpipe.bind(this));
 
         this.isTouched = false;
     }

@@ -9,9 +9,10 @@
 /* Modified work copyright © 2015 David Valdman */
 
 define(function(require, exports, module) {
-    var RenderNode = require('../core/RenderNode');
-    var Transform = require('../core/Transform');
-    var View = require('./View');
+    var RenderNode = require('famous/core/RenderNode');
+    var Transform = require('famous/core/Transform');
+    var View = require('famous/core/View');
+    var Spec = require('famous/core/Spec');
 
     /**
      * A layout which will arrange three renderables into a header and footer area of defined size,
@@ -34,56 +35,64 @@ define(function(require, exports, module) {
             defaultHeaderLength: 0,
             defaultFooterLength: 0
         },
-        initialize : function initialize(options){
-            this.header = new RenderNode();
-            this.footer = new RenderNode();
-            this.content = new RenderNode();
+        state : {
+            headerLength : Number,
+            footerLength : Number,
+            direction : Number
         },
-        render : function render(parentSpec){
-            var options = this.options;
-            var size = parentSpec.size;
+        initialize : function initialize(options){
+            this.header = null;
+            this.footer = null;
+            this.content = null;
 
-            var headerLength = (options.headerLength !== undefined)
-                ? options.headerLength
-                : _resolveNodeLength.call(this, this.header, options.defaultHeaderLength);
+            this.state.headerLength = options.headerLength;
+            this.state.footerLength = options.footerLength;
+            this.state.direction = options.direction;
 
-            var footerLength = (options.footerLength !== undefined)
-                ? options.footerLength
-                : _resolveNodeLength.call(this, this.footer, options.defaultFooterLength);
+            var spec = new Spec();
+            this.add(function(size){
+                var headerLength = (this.state.headerLength !== undefined)
+                    ? this.state.headerLength
+                    : _resolveNodeLength.call(this, this.header, options.defaultHeaderLength);
 
-            var contentLength = size[options.direction] - headerLength - footerLength;
+                var footerLength = (this.state.footerLength !== undefined)
+                    ? this.state.footerLength
+                    : _resolveNodeLength.call(this, this.footer, options.defaultFooterLength);
 
-            this.spec.getChild(0)
-                .setSize(_finalSize.call(this, headerLength, size))
-                .setTarget(this.header);
+                var contentLength = size[this.state.direction] - headerLength - footerLength;
 
-            this.spec.getChild(1)
-                .setTransform(_outputTransform.call(this, headerLength))
-                .setSize(_finalSize.call(this, contentLength, size))
-                .setTarget(this.content);
+                spec.getChild(0)
+                    .setSize(_finalSize.call(this, headerLength, size))
+                    .setTarget(this.header);
 
-            this.spec.getChild(2)
-                .setTransform(_outputTransform.call(this, headerLength + contentLength))
-                .setSize(_finalSize.call(this, footerLength, size))
-                .setTarget(this.footer);
+                spec.getChild(1)
+                    .setTransform(_outputTransform.call(this, headerLength))
+                    .setSize(_finalSize.call(this, contentLength, size))
+                    .setTarget(this.content);
 
-            return this.spec.render();
+                spec.getChild(2)
+                    .setTransform(_outputTransform.call(this, headerLength + contentLength))
+                    .setSize(_finalSize.call(this, footerLength, size))
+                    .setTarget(this.footer);
+
+                return spec;
+            }.bind(this));
         }
     }, CONSTANTS);
 
     function _resolveNodeLength(node, defaultLength) {
         var nodeSize = node.getSize();
-        return nodeSize ? nodeSize[this.options.direction] : defaultLength;
+        return nodeSize ? nodeSize[this.state.direction] : defaultLength;
     }
 
     function _outputTransform(offset) {
-        return (this.options.direction === CONSTANTS.DIRECTION.X)
+        return (this.state.direction === CONSTANTS.DIRECTION.X)
             ? Transform.translate(offset, 0, 0)
             : Transform.translate(0, offset, 0);
     }
 
     function _finalSize(directionSize, size) {
-        return (this.options.direction === CONSTANTS.DIRECTION.X)
+        return (this.state.direction === CONSTANTS.DIRECTION.X)
             ? [directionSize, size[1]]
             : [size[0], directionSize];
     }

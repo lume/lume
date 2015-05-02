@@ -9,9 +9,10 @@
 /* Modified work copyright © 2015 David Valdman */
 
 define(function(require, exports, module) {
-    var Transform = require('../core/Transform');
-    var ViewSequence = require('../core/ViewSequence');
-    var View = require('./View');
+    var Transform = require('famous/core/Transform');
+    var ViewSequence = require('famous/core/ViewSequence');
+    var View = require('famous/core/View');
+    var Spec = require('famous/core/Spec');
 
     /**
      * SequentialLayout will lay out a collection of renderables sequentially in the specified direction.
@@ -30,11 +31,53 @@ define(function(require, exports, module) {
             direction : CONSTANTS.DIRECTION.Y,
             itemSpacing : 0
         },
-        initialize : function initialize(){
-            this._items = null;
-            this._size = [undefined, undefined];
-            this._cachedLength = Number.NaN;
+        state : {
+            items : ViewSequence,
+            length : Number,
+            direction : Number
+        },
+        initialize : function initialize(options){
+            this.state.items = null;
+            this.state.direction = options.direction;
+            this.state.length = 0;
+
             this._outputFunction = _defaultOutputFunction;
+
+            var spec = new Spec();
+            this.add(function(){
+                var direction = this.state.direction;
+
+                var currentNode = this.state.items;
+                var i = 0;
+                var length = 0;
+                var itemSize;
+                while (currentNode) {
+                    var item = currentNode.get();
+
+                    if (!item) break;
+
+                    if (item.getSize) itemSize = item.getSize();
+
+                    var transform = this._outputFunction.call(this, length, i);
+
+                    if (itemSize){
+                        var itemLength = itemSize[direction];
+                        if (itemLength)
+                            length += itemLength + this.options.itemSpacing;
+                    }
+
+                    spec.getChild(i)
+                        .setTransform(transform)
+                        .setTarget(item);
+
+                    currentNode = currentNode.getNext();
+                    i++;
+                }
+
+                this.state.length = length;
+
+                return spec;
+            }.bind(this));
         },
         /**
          * setOutputFunction is used to apply a user-defined output transform on each processed renderable.
@@ -48,15 +91,6 @@ define(function(require, exports, module) {
             this._outputFunction = outputFunction;
         },
         /**
-         * Returns the width and the height of the SequentialLayout instance.
-         *
-         * @method getSize
-         * @return {Array} A two value array of the SequentialLayout instance's current width and height (in that order).
-         */
-        getSize : function getSize(){
-            return this._size;
-        },
-        /**
          * Sets the collection of renderables under the SequentialLayout instance's control.
          *
          * @method sequenceFrom
@@ -65,59 +99,14 @@ define(function(require, exports, module) {
          */
         sequenceFrom : function sequenceFrom(items) {
             if (items instanceof Array) items = new ViewSequence(items);
-            this._items = items;
-            return this;
-        },
-        render : function render(parentSpec){
-            var direction = this.options.direction;
-            var antiDirection = 1 - direction;
-
-            var currentNode = this._items;
-            var i = 0;
-            var length = 0;
-            var width = 0;
-            var itemSize;
-
-            while (currentNode) {
-                var item = currentNode.get();
-
-                if (!item) break;
-
-                if (item.getSize)
-                    itemSize = item.getSize();
-
-                var transform = this._outputFunction.call(this, length, i);
-
-                this.spec.getChild(i)
-                    .setTransform(transform)
-                    .setTarget(item);
-
-                if (itemSize && itemSize[direction])
-                    length += itemSize[direction] + this.options.itemSpacing;
-
-                if (itemSize && itemSize[antiDirection] > width)
-                    width = itemSize[antiDirection];
-
-                currentNode = currentNode.getNext();
-                i++;
-            }
-
-            this._size[antiDirection] = width;
-
-            if (length !== this._cachedLength) {
-                this._cachedLength = length;
-                this._size[direction] = length;
-            }
-
-            this.spec.setSize(this.getSize());
-
-            return this.spec.render();
+            this.state.items = items;
+            return items;
         }
     }, CONSTANTS);
 
     function _defaultOutputFunction(offset, index) {
-        return (this.options.direction === CONSTANTS.DIRECTION.X)
+        return (this.state.direction === CONSTANTS.DIRECTION.X)
             ? Transform.translate(offset, 0, 0)
             : Transform.translate(0, offset, 0);
-    };
+    }
 });

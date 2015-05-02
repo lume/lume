@@ -42,6 +42,7 @@ define(function(require, exports, module) {
         }.bind(this);
 
         this._id = Entity.register(this);
+
         this._currentTarget = null;
 
         this._opacityDirty = true;
@@ -97,31 +98,6 @@ define(function(require, exports, module) {
     };
 
     /**
-     * Add event handler object to set of downstream handlers.
-     *
-     * @method pipe
-     *
-     * @param {EventHandler} target event handler target object
-     * @return {EventHandler} passed event handler
-     */
-    ElementOutput.prototype.pipe = function pipe(target) {
-        return this._eventOutput.pipe(target);
-    };
-
-    /**
-     * Remove handler object from set of downstream handlers.
-     *   Undoes work of "pipe"
-     *
-     * @method unpipe
-     *
-     * @param {EventHandler} target target handler object
-     * @return {EventHandler} provided target
-     */
-    ElementOutput.prototype.unpipe = function unpipe(target) {
-        return this._eventOutput.unpipe(target);
-    };
-
-    /**
      * Return spec for this surface. Note that for a base surface, this is
      *    simply an id.
      *
@@ -135,7 +111,6 @@ define(function(require, exports, module) {
 
     //  Attach Famous event handling to document events emanating from target
     //    document element.  This occurs just after attachment to the document.
-    //    Calling this enables methods like #on and #pipe.
     function _addEventListeners(target) {
         for (var i in this._eventOutput.listeners) {
             target.addEventListener(i, this.eventForwarder);
@@ -250,7 +225,7 @@ define(function(require, exports, module) {
         var size = spec.size;
 
         // check if passed in size is different from previous
-        if (this._cachedSpecSize === null || _xyNotEquals(this._cachedSpecSize, size)){
+        if (!this._cachedSpecSize || _xyNotEquals(this._cachedSpecSize, size)){
             this._cachedSpecSize = size;
             this._sizeDirty = true;
         }

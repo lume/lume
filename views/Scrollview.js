@@ -9,21 +9,21 @@
 /* Modified work copyright © 2015 David Valdman */
 
 define(function(require, exports, module) {
-    var PhysicsEngine = require('../physics/PhysicsEngine');
-    var Particle = require('../physics/bodies/Particle');
-    var Drag = require('../physics/forces/Drag');
-    var Spring = require('../physics/constraints/Snap');
+    var PhysicsEngine = require('famous/physics/PhysicsEngine');
+    var Particle = require('famous/physics/bodies/Particle');
+    var Drag = require('famous/physics/forces/Drag');
+    var Spring = require('famous/physics/constraints/Snap');
 
-    var ViewSequence = require('../core/ViewSequence');
-    var Transitionable = require('../core/Transitionable');
+    var ViewSequence = require('famous/core/ViewSequence');
+    var Transitionable = require('famous/core/Transitionable');
 
-    var View = require('../views/View');
-    var Scroller = require('../views/Scroller');
+    var View = require('famous/core/View');
+    var Scroller = require('famous/views/Scroller');
 
-    var Accumulator = require('../inputs/Accumulator');
-    var GenericSync = require('../inputs/GenericSync');
-    var ScrollSync = require('../inputs/ScrollSync');
-    var TouchSync = require('../inputs/TouchSync');
+    var Accumulator = require('famous/inputs/Accumulator');
+    var GenericSync = require('famous/inputs/GenericSync');
+    var ScrollSync = require('famous/inputs/ScrollSync');
+    var TouchSync = require('famous/inputs/TouchSync');
     GenericSync.register({scroll : ScrollSync, touch : TouchSync});
 
     /** @enum */
@@ -73,10 +73,15 @@ define(function(require, exports, module) {
         events : {
             change : _updateOptions
         },
+        state : {
+            offset : Accumulator
+        },
         initialize : function(options){
             this.initializeState(options);
             this.initializeSubviews(options);
             this.initializeEvents(options);
+
+            this.add(this._scroller);
         },
         initializeSubviews : function(options){
             this._scroller = new Scroller(options);
@@ -103,7 +108,7 @@ define(function(require, exports, module) {
             });
 
             // state
-            this._node = null;
+            this._currentNode = null;
             this._touchCount = 0;
             this._springState = SpringStates.NONE;
             this._edgeState = EdgeStates.NONE;
@@ -113,7 +118,7 @@ define(function(require, exports, module) {
             this._displacement = 0;
             this._totalShift = 0;
 
-            this._offset = new Accumulator(0);
+            this.state.offset.set(0);
             this._position = new Transitionable(0);
 
             this._payload = {
@@ -153,20 +158,20 @@ define(function(require, exports, module) {
             this._particle.on('update', _handlePhysicsUpdate.bind(this));
             this._particle.on('end', _handlePhysicsEnd.bind(this));
 
-            this._offset.on('update', _handleOffsetUpdate.bind(this));
+            this.state.offset.on('update', _handleOffsetUpdate.bind(this));
 
             this._position.on('start', _handleStart.bind(this));
             this._position.on('end', _handleEnd.bind(this));
 
             // sync, particle and transitionable accumulate in offset
-            this._offset.addSource(this._position);
-            this._offset.addSource(this._particle);
-            this._offset.addSource(this.sync);
+            this.state.offset.addSource(this._position);
+            this.state.offset.addSource(this._particle);
+            this.state.offset.addSource(this.sync);
 
             // touch input goes to the sync
             this.sync.subscribe(this._eventInput);
 
-            this.subscribe(this._offset);
+            this.subscribe(this.state.offset);
 
             if (options.groupScroll)
                 this.subscribe(this._scroller)
@@ -178,7 +183,7 @@ define(function(require, exports, module) {
          * @return {Number} The current index of the ViewSequence
          */
         getCurrentIndex : function(){
-            return this._node.index;
+            return this._currentNode.index;
         },
         /**
          * goToPreviousPage paginates your Scrollview instance backwards by one item.
@@ -186,7 +191,7 @@ define(function(require, exports, module) {
          * @method goToPreviousPage
          */
         goToPreviousPage : function(){
-            if (!this._node || this._edgeState === EdgeStates.TOP) return;
+            if (!this._currentNode || this._edgeState === EdgeStates.TOP) return;
 
             // if moving back to the current node
             if (this.getOffset() > 0 && this._springState === SpringStates.NONE) {
@@ -197,11 +202,11 @@ define(function(require, exports, module) {
             }
 
             // if moving to the previous node
-            var previousNode = this._node.getPrevious();
+            var previousNode = this._currentNode.getPrevious();
             if (previousNode) {
                 var previousNodeSize = _nodeSizeForDirection.call(this, previousNode);
                 this._scroller.sequenceFrom(previousNode);
-                this._node = previousNode;
+                this._currentNode = previousNode;
                 _shiftOrigin.call(this, previousNodeSize);
                 _detachDrag.call(this);
                 _setSpring.call(this, 0, SpringStates.PAGE);
@@ -219,13 +224,13 @@ define(function(require, exports, module) {
          * @method goToNextPage
          */
         goToNextPage : function(){
-            if (!this._node || this._edgeState === EdgeStates.BOTTOM) return;
+            if (!this._currentNode || this._edgeState === EdgeStates.BOTTOM) return;
 
-            var nextNode = this._node.getNext();
+            var nextNode = this._currentNode.getNext();
             if (nextNode) {
-                var currentNodeSize = _nodeSizeForDirection.call(this, this._node);
+                var currentNodeSize = _nodeSizeForDirection.call(this, this._currentNode);
                 this._scroller.sequenceFrom(nextNode);
-                this._node = nextNode;
+                this._currentNode = nextNode;
                 _shiftOrigin.call(this, -currentNodeSize);
                 _detachDrag.call(this);
                 _setSpring.call(this, 0, SpringStates.PAGE);
@@ -280,7 +285,7 @@ define(function(require, exports, module) {
          * in pixels translated.
          */
         getOffset : function(){
-            return this._offset.get();
+            return this.state.offset.get();
         },
         /**
          * Sets the offset of the physics particle that controls Scrollview instance's "position"
@@ -289,10 +294,10 @@ define(function(require, exports, module) {
          * @param {number} offset The amount of pixels you want your scrollview to progress by.
          */
         setOffset : function(offset){
-            this._offset.set(offset);
+            this.state.offset.set(offset);
         },
         getProgress : function getProgress() {
-            var length = _nodeSizeForDirection.call(this, this._node);
+            var length = _nodeSizeForDirection.call(this, this._currentNode);
             if (!length) return 0;
             var offset = this.getOffset();
             return offset / length;
@@ -331,11 +336,8 @@ define(function(require, exports, module) {
          */
         sequenceFrom : function sequenceFrom(node) {
             if (node instanceof Array) node = new ViewSequence({array: node, trackSize: true});
-            this._node = node;
+            this._currentNode = node;
             return this._scroller.sequenceFrom(node);
-        },
-        render : function(){
-            return Scroller.prototype.render.apply(this._scroller, arguments);
         }
     }, CONSTANTS);
 
@@ -428,7 +430,7 @@ define(function(require, exports, module) {
         if (this._position.isActive()) this._position.halt();
 
         if (this._removedSync && this._endFired){
-            this._offset.addSource(this.sync);
+            this.state.offset.addSource(this.sync);
             this._removedSync = false;
         }
 
@@ -463,7 +465,7 @@ define(function(require, exports, module) {
             // if past the end, call end prematurely
             if (callEnd){
                 event.velocity *= this.options.edgeGrip;
-                this._offset.removeSource(this.sync);
+                this.state.offset.removeSource(this.sync);
                 this._earlyEnd = true;
                 this._removedSync = true;
                 _handleSyncEnd.call(this, event);
@@ -569,7 +571,7 @@ define(function(require, exports, module) {
         var velocitySwitch = Math.abs(velocity) > this.options.pageSwitchSpeed;
 
         // parameters to determine when to switch pages
-        var nodeSize = _nodeSizeForDirection.call(this, this._node);
+        var nodeSize = _nodeSizeForDirection.call(this, this._currentNode);
 
         var positionNext = position > 0.5 * nodeSize;
         var velocityNext = velocity > 0;
@@ -607,8 +609,8 @@ define(function(require, exports, module) {
     function _normalizeCurrentIndex() {
         var previousOffset = this.getOffset();
         var offset = previousOffset; // position of first partially visible node
-        var currNode = this._node;
-        var nodeSize = _nodeSizeForDirection.call(this, this._node);
+        var currNode = this._currentNode;
+        var nodeSize = _nodeSizeForDirection.call(this, this._currentNode);
 
         // if you can fit more nodes within the current offset
         // increment the current node and shift the offset by its size
@@ -629,7 +631,7 @@ define(function(require, exports, module) {
 
         _shiftOrigin.call(this, offset - previousOffset);
 
-        this._node = currNode;
+        this._currentNode = currNode;
         this._scroller.sequenceFrom(currNode);
     }
 
