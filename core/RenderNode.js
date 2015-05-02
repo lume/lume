@@ -178,6 +178,8 @@ define(function(require, exports, module) {
 
                 if (objectSpec instanceof Spec)
                     objectSpec = objectSpec.render(parentSize);
+
+                objectDirty = true;
             }
             else if (this._object._dirty === true || parentSizeDirty){
                 objectSpec = this._object.render(parentSize);
