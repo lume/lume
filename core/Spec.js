@@ -19,8 +19,17 @@ define(function(require, exports, module) {
         EventHandler.setOutputHandler(this, this._eventOutput);
 
         this._eventInput.on('dirty', function(){
-            this._dirty = true;
-            this._eventOutput.emit('dirty');
+            if (!this._dirty){
+                this._dirty = true;
+                this._eventOutput.emit('dirty');
+            }
+        }.bind(this));
+
+        this._eventInput.on('clean', function(){
+            if (this._dirty){
+                this._dirty = false;
+                this._eventOutput.emit('clean');
+            }
         }.bind(this));
     }
 
@@ -136,8 +145,9 @@ define(function(require, exports, module) {
     };
 
     Spec.prototype.setTarget = function(target){
-        if (target !== this.target && !this._dirty)
-            this.trigger('dirty');
+        if (target === this.target) return;
+        this.trigger('dirty');
+        this._eventInput.subscribe(target);
         this.target = target;
         return this;
     };
