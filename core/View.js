@@ -34,7 +34,7 @@ define(function(require, exports, module) {
             this._dirty = true;
             this._dirtyLock = 0;
             this._cachedSpec = null;
-            this._cachedSize = [Number.NaN, Number.NaN];
+            this._cachedSize = null;
 
             Controller.apply(this, arguments);
 
@@ -65,9 +65,10 @@ define(function(require, exports, module) {
             return RenderNode.prototype.add.apply(this._node, arguments);
         },
         getSize : function getSize(){
+            //TODO: if given true size, then pass down to this._node.getSize
             return (this.options.size)
                 ? this.options.size
-                : (this._node.getSize) ? this._node.getSize() : null;
+                : this._cachedSize;
         },
         setSize : function setSize(size){
             if (this.options.size === size) return;
@@ -88,9 +89,12 @@ define(function(require, exports, module) {
             }
         },
         render : function render(parentSize){
-            if (this._cachedSize[0] !== parentSize[0] || this._cachedSize[1] !== parentSize[1]){
-                this._cachedSize[0] = parentSize[0];
-                this._cachedSize[1] = parentSize[1];
+            if (!this._cachedSize || (this._cachedSize[0] !== parentSize[0] || this._cachedSize[1] !== parentSize[1])){
+                if (!this._cachedSize) this._cachedSize = [parentSize[0], parentSize[1]];
+                else {
+                    this._cachedSize[0] = parentSize[0];
+                    this._cachedSize[1] = parentSize[1];
+                }
                 this._dirty = true;
             }
 
@@ -113,5 +117,5 @@ define(function(require, exports, module) {
                 this.clean();
             }
         }
-    }, {extend : Controller.extend});
+    });
 });
