@@ -45,12 +45,20 @@ define(function(require, exports, module) {
         this._contentDirty = true;
         this._trueSizeCheck = false;
         this._dirty = true;
+        this._freeze = true;
 
         this.classList = [];
         this._dirtyClasses = [];
 
+        this._eventInput.on('clean', function(){
+            if (this._dirty){
+                this._dirty = false;
+                this._eventOutput.emit('clean');
+            }
+        }.bind(this));
+
         this._eventInput.on('dirty', function(){
-            if (!this._dirty){
+            if (!this._freeze && !this._dirty){
                 this._dirty = true;
                 this._eventOutput.emit('dirty');
             }
@@ -339,7 +347,8 @@ define(function(require, exports, module) {
     };
 
     Surface.prototype.render = function(){
-        this._dirty = false;
+        if (!this._freeze) this.trigger('clean');
+        else this._dirty = false;
         return ElementOutput.prototype.render.apply(this, arguments);
     };
 
@@ -354,6 +363,7 @@ define(function(require, exports, module) {
      */
     Surface.prototype.commit = function commit(spec, allocator) {
         if (!this._currentTarget) this.setup(allocator);
+        this._freeze = false;
 
         var target = this._currentTarget;
 
