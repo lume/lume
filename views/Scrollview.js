@@ -81,6 +81,15 @@ define(function(require, exports, module) {
             this.initializeSubviews(options);
             this.initializeEvents(options);
 
+            this.state.offset.on('start', function(){
+                console.log('CLEEEEEAN')
+            })
+
+            this.state.offset.on('end', function(){
+                console.log('DIIIIRTY')
+            })
+
+
             this.add(this._scroller);
         },
         initializeSubviews : function(options){
@@ -120,6 +129,14 @@ define(function(require, exports, module) {
 
             this.state.offset.set(0);
             this._position = new Transitionable(0);
+
+            this.state.on('dirty', function(){
+                console.log('state dirty')
+            })
+
+            this.state.on('clean', function(){
+                console.log('state clean')
+            })
 
             this._payload = {
                 index: 0,
@@ -164,9 +181,9 @@ define(function(require, exports, module) {
             this._position.on('end', _handleEnd.bind(this));
 
             // sync, particle and transitionable accumulate in offset
-            this.state.offset.addSource(this._position);
-            this.state.offset.addSource(this._particle);
-            this.state.offset.addSource(this.sync);
+            this.state.offset.subscribe(this._position);
+            this.state.offset.subscribe(this._particle);
+            this.state.offset.subscribe(this.sync);
 
             // touch input goes to the sync
             this.sync.subscribe(this._eventInput);
@@ -430,7 +447,7 @@ define(function(require, exports, module) {
         if (this._position.isActive()) this._position.halt();
 
         if (this._removedSync && this._endFired){
-            this.state.offset.addSource(this.sync);
+            this.state.offset.subscribe(this.sync);
             this._removedSync = false;
         }
 
@@ -465,7 +482,7 @@ define(function(require, exports, module) {
             // if past the end, call end prematurely
             if (callEnd){
                 event.velocity *= this.options.edgeGrip;
-                this.state.offset.removeSource(this.sync);
+                this.state.offset.unsubscribe(this.sync);
                 this._earlyEnd = true;
                 this._removedSync = true;
                 _handleSyncEnd.call(this, event);

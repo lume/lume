@@ -24,18 +24,24 @@ define(function(require, exports, module) {
     function Accumulator(state) {
         this._state = state || 0;
         this.sources = [];
+        this._dirty = true;
 
         this._eventInput = new EventHandler();
         this._eventOutput = new EventHandler();
-        EventHandler.setInputHandler(this, this._eventInput);
         EventHandler.setOutputHandler(this, this._eventOutput);
 
         this._eventInput.on('start', function(){
-            this._eventOutput.emit('start');
+            if (!this._dirty){
+                this._dirty = true;
+                this._eventOutput.emit('start');
+            }
         }.bind(this));
 
         this._eventInput.on('end', function(){
-            this._eventOutput.emit('end');
+            if (this._dirty){
+                this._dirty = false;
+                this._eventOutput.emit('end');
+            }
         }.bind(this));
 
         this._eventInput.on('update', _handleUpdate.bind(this));
@@ -59,20 +65,22 @@ define(function(require, exports, module) {
             this.set(newState);
             this._eventOutput.emit('update', {value : newState});
         }
+
+        if (!this._dirty) this._dirty = true;
     }
 
-    Accumulator.prototype.addSource = function(source){
+    Accumulator.prototype.subscribe = function subscribe(source){
         var index = this.sources.indexOf(source);
         if (index !== -1) return;
         this.sources.push(source);
-        this.subscribe(source);
+        EventHandler.prototype.subscribe.apply(this._eventInput, arguments);
     };
 
-    Accumulator.prototype.removeSource = function(source){
+    Accumulator.prototype.unsubscribe = function unsubscribe(source){
         var index = this.sources.indexOf(source);
         if (index == -1) return;
         this.sources.splice(index, 1);
-        this.unsubscribe(source);
+        EventHandler.prototype.unsubscribe.apply(this._eventInput, arguments);
     };
 
     /**
@@ -82,6 +90,7 @@ define(function(require, exports, module) {
      * @return {Number|Array} current value
      */
     Accumulator.prototype.get = function get() {
+        this._dirty = false;
         for (var i = 0; i < this.sources.length; i++)
             if (this.sources[i].get) this.sources[i].get();
         return this._state;
@@ -94,6 +103,8 @@ define(function(require, exports, module) {
      * @param state {Number|Array} new value
      */
     Accumulator.prototype.set = function set(state) {
+        if (this._state === state) return;
+        this._dirty = true;
         this._state = state;
     };
 
