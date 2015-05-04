@@ -26,6 +26,15 @@ define(function(require, exports, module) {
         this._dirty = true;
         this._dirtyLock = 0;
 
+        this._translateGetter = null;
+        this._translateXGetter = null;
+        this._translateYGetter = null;
+        this._translateZGetter = null;
+        this._scaleGetter = null;
+        this._rotateGetter = null;
+        this._rotateZGetter = null;
+        this._skewGetter = null;
+
         this._eventOutput = new EventHandler();
         this._eventInput = new EventHandler();
         EventHandler.setInputHandler(this, this._eventInput);
@@ -47,6 +56,60 @@ define(function(require, exports, module) {
             }
         }.bind(this));
     }
+
+    TransitionableTransform.prototype.translateXFrom = function translateXFrom(translateX) {
+        if (translateX instanceof Function){
+            this._translateXGetter = translateX;
+            this._dirty = true;
+            this._dirtyLock++;
+        }
+        else if (translateX instanceof Object && translateX.get){
+            this._translateXGetter = translateX.get.bind(translateX);
+            this._eventInput.subscribe(translateX);
+        }
+        else {
+            this._translateXGetter = null;
+            this._components.translate[0] = translateX;
+            this._dirty = true;
+        }
+        return this;
+    };
+
+    TransitionableTransform.prototype.translateYFrom = function translateYFrom(translateY) {
+        if (translateY instanceof Function){
+            this._translateYGetter = translateY;
+            this._dirty = true;
+            this._dirtyLock++;
+        }
+        else if (translateY instanceof Object && translateY.get){
+            this._translateYGetter = translateY.get.bind(translateY);
+            this._eventInput.subscribe(translateY);
+        }
+        else {
+            this._translateYGetter = null;
+            this._components.translate[1] = translateY;
+            this._dirty = true;
+        }
+        return this;
+    };
+
+    TransitionableTransform.prototype.translateZFrom = function translateYFrom(translateZ) {
+        if (translateZ instanceof Function){
+            this._translateZGetter = translateZ;
+            this._dirty = true;
+            this._dirtyLock++;
+        }
+        else if (translateZ instanceof Object && translateZ.get){
+            this._translateZGetter = translateZ.get.bind(translateZ);
+            this._eventInput.subscribe(translateZ);
+        }
+        else {
+            this._translateZGetter = null;
+            this._components.translate[2] = translateZ;
+            this._dirty = true;
+        }
+        return this;
+    };
 
     TransitionableTransform.prototype.translateFrom = function translateFrom(translate) {
         if (translate instanceof Function){
@@ -102,6 +165,24 @@ define(function(require, exports, module) {
         return this;
     };
 
+    TransitionableTransform.prototype.rotateZFrom = function rotateZFrom(rotateZ) {
+        if (rotateZ instanceof Function){
+            this._rotateZGetter = rotateZ;
+            this._dirty = true;
+            this._dirtyLock++;
+        }
+        else if (rotateZ instanceof Object && rotateZ.get){
+            this._rotateZGetter = rotateZ.get.bind(rotateZ);
+            this._eventInput.subscribe(rotateZ);
+        }
+        else {
+            this._rotateZGetter = null;
+            this._components.rotate[2] = rotateZ;
+            this._dirty = true;
+        }
+        return this;
+    };
+
     TransitionableTransform.prototype.skewFrom = function skewFrom(skew) {
         if (skew instanceof Function){
             this._skewGetter = skew;
@@ -122,8 +203,12 @@ define(function(require, exports, module) {
 
     function _update(){
         if (this._translateGetter) this._components.translate = this._translateGetter();
+        if (this._translateXGetter) this._components.translate[0] = this._translateXGetter();
+        if (this._translateYGetter) this._components.translate[1] = this._translateYGetter();
+        if (this._translateZGetter) this._components.translate[2] = this._translateZGetter();
         if (this._scaleGetter) this._components.scale = this._scaleGetter();
         if (this._rotateGetter) this._components.rotate = this._rotateGetter();
+        if (this._rotateZGetter) this._components.rotate[2] = this._rotateZGetter();
         if (this._skewGetter) this._components.skew = this._skewGetter();
     }
     /**
