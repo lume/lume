@@ -46,21 +46,6 @@ define(function(require, exports, module) {
         EventHandler.setOutputHandler(this, this._eventOutput);
         EventHandler.setInputHandler(this, this._eventInput);
 
-        // on quick set
-        this._eventInput.on('dirty', function(){
-            if (!this._dirty){
-                this._dirty = true;
-                this._eventOutput.emit('dirty');
-            }
-        }.bind(this));
-
-        this._eventInput.on('clean', function(){
-            if (this._dirty){
-                this._dirty = false;
-                this._eventOutput.emit('clean');
-            }
-        }.bind(this));
-
         this._eventInput.on('start', function(){
             if (!this._dirty){
                 this._dirty = true;
@@ -112,7 +97,8 @@ define(function(require, exports, module) {
     Modifier.prototype.transformFrom = function transformFrom(transform) {
         if (transform instanceof Function) {
             this._transformGetter = transform;
-            this.trigger('start');
+            this._dirty = true;
+            this._dirtyLock++; // will always be dirty
         }
         else if (transform instanceof Object && transform.get) {
             this._eventInput.subscribe(transform);
@@ -137,7 +123,8 @@ define(function(require, exports, module) {
     Modifier.prototype.opacityFrom = function opacityFrom(opacity) {
         if (opacity instanceof Function) {
             this._opacityGetter = opacity;
-            this.trigger('start');
+            this._dirty = true;
+            this._dirtyLock++; // will always be dirty
         }
         else if (opacity instanceof Object && opacity.get) {
             this._eventInput.subscribe(opacity);
@@ -163,7 +150,8 @@ define(function(require, exports, module) {
     Modifier.prototype.originFrom = function originFrom(origin) {
         if (origin instanceof Function) {
             this._originGetter = origin;
-            this.trigger('start');
+            this._dirty = true;
+            this._dirtyLock++; // will always be dirty
         }
         else if (origin instanceof Object && origin.get) {
             this._eventInput.subscribe(origin);
@@ -188,8 +176,9 @@ define(function(require, exports, module) {
      */
     Modifier.prototype.alignFrom = function alignFrom(align) {
         if (align instanceof Function) {
-            this.trigger('start');
             this._alignGetter = align;
+            this._dirty = true;
+            this._dirtyLock++; // will always be dirty
         }
         else if (align instanceof Object && align.get) {
             this._eventInput.subscribe(align);
@@ -219,8 +208,9 @@ define(function(require, exports, module) {
      */
     Modifier.prototype.sizeFrom = function sizeFrom(size) {
         if (size instanceof Function) {
-            this.trigger('start');
             this._sizeGetter = size;
+            this._dirty = true;
+            this._dirtyLock++; // will always be dirty
         }
         else if (size instanceof Object && size.get) {
             this._eventInput.subscribe(size);
@@ -236,8 +226,9 @@ define(function(require, exports, module) {
 
     Modifier.prototype.marginsFrom = function marginsFrom(margins) {
         if (margins instanceof Function) {
-            this.trigger('start');
             this._marginsGetter = margins;
+            this._dirty = true;
+            this._dirtyLock++; // will always be dirty
         }
         else if (margins instanceof Object && margins.get) {
             this._eventInput.subscribe(margins);
@@ -262,7 +253,8 @@ define(function(require, exports, module) {
     Modifier.prototype.proportionsFrom = function proportionsFrom(proportions) {
         if (proportions instanceof Function) {
             this._proportionsGetter = proportions;
-            this.trigger('start');
+            this._dirty = true;
+            this._dirtyLock++; // will always be dirty
         }
         else if (proportions instanceof Object && proportions.get) {
             this._eventInput.subscribe(proportions);
@@ -298,8 +290,10 @@ define(function(require, exports, module) {
      *    provided target
      */
     Modifier.prototype.render = function render() {
-        if (this._dirty) _update.call(this);
-        if (this._dirtyLock === 0) this._dirty = false;
+        if (this._dirty) {
+            _update.call(this);
+            if (this._dirtyLock === 0) this._dirty = false;
+        }
         return this._output;
     };
 
