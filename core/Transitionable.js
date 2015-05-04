@@ -259,6 +259,13 @@ define(function(require, exports, module) {
         }.bind(this));
     };
 
+    Transitionable.prototype.loop = function(values, transitions){
+        var val = values.slice(0);
+        this.iterate(values, transitions, function(){
+            this.loop(val, transitions);
+        }.bind(this));
+    };
+
     /**
      * Add delay action to the pending action queue queue.
      *
