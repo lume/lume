@@ -47,6 +47,7 @@ define(function(require, exports, module) {
         this._eventOutput = new EventHandler();
         EventHandler.setOutputHandler(this, this._eventOutput);
         this._state = STATE.NONE;
+        this._freeze = true;
     }
 
     var transitionMethods = {};
@@ -72,19 +73,6 @@ define(function(require, exports, module) {
 
     function _loadNext() {
         if (this.endStateQueue.length === 0) {
-            this._state = STATE.END;
-
-            this._eventOutput.emit('end', {
-                value: this.state,
-                velocity: this.velocity
-            });
-
-            if (this._callback) {
-                var callback = this._callback;
-                this._callback = undefined;
-                callback();
-            }
-
             return;
         }
 
@@ -139,6 +127,10 @@ define(function(require, exports, module) {
         if (!transition) {
             switch (this._state){
                 case STATE.NONE:
+                    // from zero to hero
+                    this._state = STATE.START;
+                    if (!this._freeze) this.emit('start');
+                    break;
                 case STATE.END:
                     // from zero to hero
                     this._state = STATE.START;
@@ -147,7 +139,7 @@ define(function(require, exports, module) {
                 case STATE.UPDATE:
                     this._state = STATE.END;
                     // interrupt while active causes end event
-                    this.emit('end');
+                    this.emit('end', {value : endState});
                     break;
             }
 
@@ -185,10 +177,11 @@ define(function(require, exports, module) {
             case STATE.START:
                 // reset to none
                 this._state = STATE.NONE;
-                this.emit('end');
+                if (!this._freeze) this.emit('end', {value : this.state});
                 break;
 
         }
+        this._freeze = false;
         return this.state;
     };
 
@@ -197,22 +190,36 @@ define(function(require, exports, module) {
 
         var state = this._engineInstance.get();
 
-        if (this._state === STATE.UPDATE){
-            var delta;
-            if (state instanceof Array){
-                delta = [];
-                for (var i = 0; i < state.length; i++)
-                    delta[i] = state[i] - this.state[i];
-            }
-            else delta = state - this.state;
-
-            this.emit('update', {
-                delta : delta,
-                value : state
-            });
+        var delta;
+        if (state instanceof Array){
+            delta = [];
+            for (var i = 0; i < state.length; i++)
+                delta[i] = state[i] - this.state[i];
         }
+        else delta = state - this.state;
+
+        this.emit('update', {
+            delta : delta,
+            value : state
+        });
 
         this.state = state;
+
+        if (!this._engineInstance.isActive()){
+            this.state = state;
+            this._state = STATE.END;
+
+            this._eventOutput.emit('end', {
+                value: this.state,
+                velocity: this.velocity
+            });
+
+            if (this._callback) {
+                var callback = this._callback;
+                this._callback = undefined;
+                callback();
+            }
+        }
     };
 
     /**
