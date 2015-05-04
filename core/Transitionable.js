@@ -46,12 +46,16 @@ define(function(require, exports, module) {
         this._currentMethod = null;
         this._eventOutput = new EventHandler();
         EventHandler.setOutputHandler(this, this._eventOutput);
-        this._dirty = true;
-        this._active = false;
-        this._firstGet = true; //avoids emitting clean when never emit dirty
+        this._state = STATE.NONE;
     }
 
     var transitionMethods = {};
+    var STATE = {
+        NONE : -1,
+        START : 0,
+        UPDATE : 1,
+        END : 2
+    };
 
     Transitionable.register = function register(name, engineClass) {
         if (!(name in transitionMethods))
@@ -68,14 +72,12 @@ define(function(require, exports, module) {
 
     function _loadNext() {
         if (this.endStateQueue.length === 0) {
-            this._active = false;
+            this._state = STATE.END;
 
-            if (this._eventOutput) {
-                this._eventOutput.emit('end', {
-                    value: this.state,
-                    velocity: this.velocity
-                });
-            }
+            this._eventOutput.emit('end', {
+                value: this.state,
+                velocity: this.velocity
+            });
 
             if (this._callback) {
                 var callback = this._callback;
@@ -104,7 +106,8 @@ define(function(require, exports, module) {
 
         this._engineInstance.reset(this.state, this.velocity);
 
-        if (!this.isActive() && this._eventOutput){
+        if (!this.isActive()){
+            this._state = STATE.START;
             this._eventOutput.emit('start', {value : this.state});
         }
 
@@ -113,11 +116,11 @@ define(function(require, exports, module) {
             transition.velocity = this.velocity;
         }
 
-        this._active = true;
+        this._state = STATE.UPDATE;
         this._engineInstance.set(endValue, transition, _loadNext.bind(this));
     }
 
-    /**
+    /**Trans
      * Add transition to end state to the queue of pending transitions. Special
      *    Use: calling without a transition resets the object to that state with
      *    no pending actions
@@ -134,12 +137,18 @@ define(function(require, exports, module) {
      */
     Transitionable.prototype.set = function set(endState, transition, callback) {
         if (!transition) {
-            if (this.isActive()) this.emit('end');
-            else {
-                if (!this._dirty){
-                    this._dirty = true;
-                    this.emit('dirty');
-                }
+            switch (this._state){
+                case STATE.NONE:
+                case STATE.END:
+                    // from zero to hero
+                    this._state = STATE.START;
+                    this.emit('start');
+                    break;
+                case STATE.UPDATE:
+                    this._state = STATE.END;
+                    // interrupt while active causes end event
+                    this.emit('end');
+                    break;
             }
 
             this.reset(endState, undefined);
@@ -169,13 +178,17 @@ define(function(require, exports, module) {
      *    interpolated to this point in time.
      */
     Transitionable.prototype.get = function get() {
-        if (this.isActive()) this.update();
-        else if (this._dirty){
-            this._dirty = false;
-            if (!this._firstGet) this.emit('clean');
-        }
-        this._firstGet = false;
+        switch (this._state){
+            case STATE.UPDATE:
+                this.update();
+                break;
+            case STATE.START:
+                // reset to none
+                this._state = STATE.NONE;
+                this.emit('end');
+                break;
 
+        }
         return this.state;
     };
 
@@ -184,7 +197,7 @@ define(function(require, exports, module) {
 
         var state = this._engineInstance.get();
 
-        if (this._eventOutput){
+        if (this._state === STATE.UPDATE){
             var delta;
             if (state instanceof Array){
                 delta = [];
@@ -221,7 +234,6 @@ define(function(require, exports, module) {
         this.endStateQueue = [];
         this.transitionQueue = [];
         this.callbackQueue = [];
-        this._active = false;
     };
 
     Transitionable.prototype.iterate = function iterate(values, transitions, callback){
@@ -265,7 +277,7 @@ define(function(require, exports, module) {
      * @return {boolean}
      */
     Transitionable.prototype.isActive = function isActive() {
-        return this._active;
+        return this._state == STATE.UPDATE;
     };
 
     /**
@@ -285,10 +297,6 @@ define(function(require, exports, module) {
         this.endStateQueue = [];
         this.transitionQueue = [];
         this.callbackQueue = [];
-    };
-
-    Transitionable.prototype.clean = function(){
-        if (!this.isActive()) this._dirty = false;
     };
 
     module.exports = Transitionable;
