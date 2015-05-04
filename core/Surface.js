@@ -49,6 +49,13 @@ define(function(require, exports, module) {
         this.classList = [];
         this._dirtyClasses = [];
 
+        this._eventInput.on('dirty', function(){
+            if (!this._dirty){
+                this._dirty = true;
+                this._eventOutput.emit('dirty');
+            }
+        }.bind(this));
+
         if (options) this.setOptions(options);
     }
 
@@ -69,6 +76,7 @@ define(function(require, exports, module) {
             if (value != undefined) this.attributes[key] = attributes[key];
         }
         this._attributesDirty = true;
+        if (!this._dirty) this.trigger('dirty');
         return this;
     };
 
@@ -96,6 +104,7 @@ define(function(require, exports, module) {
             this.properties[n] = properties[n];
         }
         this._stylesDirty = true;
+        if (!this._dirty) this.trigger('dirty');
         return this;
     };
 
@@ -123,6 +132,7 @@ define(function(require, exports, module) {
         if (this.classList.indexOf(className) < 0) {
             this.classList.push(className);
             this._classesDirty = true;
+            if (!this._dirty) this.trigger('dirty');
         }
         return this;
     };
@@ -141,6 +151,7 @@ define(function(require, exports, module) {
         if (i >= 0) {
             this._dirtyClasses.push(this.classList.splice(i, 1)[0]);
             this._classesDirty = true;
+            if (!this._dirty) this.trigger('dirty');
         }
         return this;
     };
@@ -176,6 +187,7 @@ define(function(require, exports, module) {
         for (i = 0; i < removal.length; i++) this.removeClass(removal[i]);
         // duplicates are already checked by addClass()
         for (i = 0; i < classList.length; i++) this.addClass(classList[i]);
+        if (!this._dirty) this.trigger('dirty');
         return this;
     };
 
@@ -214,6 +226,7 @@ define(function(require, exports, module) {
         if (this.content !== content) {
             this.content = content;
             this._contentDirty = true;
+            if (!this._dirty) this.trigger('dirty');
         }
         return this;
     };
@@ -287,10 +300,6 @@ define(function(require, exports, module) {
     function _cleanupAttributes(target) {
         for (var key in this.attributes)
             target.removeAttribute(key);
-    }
-
-    function _xyNotEquals(a, b) {
-        return (a && b) ? (a[0] !== b[0] || a[1] !== b[1]) : a !== b;
     }
 
     /**

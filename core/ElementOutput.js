@@ -34,7 +34,10 @@ define(function(require, exports, module) {
         this._origin = [0,0];
         this._size = null;  // always a numeric value. commited to clientWidth, clientHeight
 
+        this._eventInput = new EventHandler();
         this._eventOutput = new EventHandler();
+        EventHandler.setInputHandler(this, this._eventInput);
+        EventHandler.setOutputHandler(this, this._eventOutput);
         this._eventOutput.bindThis(this);
 
         this.eventForwarder = function eventForwarder(event) {
