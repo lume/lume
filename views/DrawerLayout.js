@@ -14,6 +14,7 @@ define(function(require, exports, module) {
     var Transitionable = require('famous/core/Transitionable');
     var View = require('famous/core/view');
     var Modifier = require('famous/core/Modifier');
+    var TransitionableTransform = require('famous/transitions/TransitionableTransform');
 
     /**
      * A layout which will arrange two renderables: a featured content, and a
@@ -81,22 +82,19 @@ define(function(require, exports, module) {
             this.initializeEvents();
 
             this.add({transform : Transform.behind}).add(this.drawer);
-            this.add({transform : function(){
-                var position = this.getPosition();
-                var direction = this.state.direction;
-
-                return (direction == CONSTANTS.DIRECTION.X)
-                    ? Transform.translate(position, 0, 0)
-                    : Transform.translate(0, position, 0);
-
-            }.bind(this)}).add(this.content);
+            this.add({transform : this.transform}).add(this.content);
         },
         initializeState : function initializeState(options){
-            this.state.position.set(0);
             this.state.direction = _getDirectionFromSide(options.side);
             this.state.orientation = _getOrientationFromSide(options.side);
             this.state.drawerLength = 0;
             this.isOpen = false;
+            this.transform = new TransitionableTransform();
+            this.state.position.set(0);
+
+            (this.state.direction === CONSTANTS.DIRECTION.X)
+                ? this.transform.translateXFrom(this.state.position)
+                : this.transform.translateYFrom(this.state.position);
         },
         initializeSubviews : function initializeSubviews(){
             this.drawer = new RenderNode();
