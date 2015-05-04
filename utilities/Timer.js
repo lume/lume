@@ -18,7 +18,7 @@ define(function(require, exports, module) {
      * @class Timer
      * @constructor
      */
-    var Engine = require('../core/Engine');
+    var Engine = require('famous/core/Engine');
 
     var _event = 'prerender';
 
@@ -154,7 +154,6 @@ define(function(require, exports, module) {
         var timeout;
         return function() {
             var args = arguments;
-            var timestamp = getTime();
 
             var fn = function() {
                 timeout = null;
