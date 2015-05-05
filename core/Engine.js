@@ -228,11 +228,14 @@ define(function(require, exports, module) {
         var needMountContainer = false;
         if (!el) {
             el = document.createElement(options.containerType);
-            el.classList.add(options.containerClass);
             needMountContainer = true;
         }
+
+        el.classList.add(options.containerClass);
+
         var context = new Context(el);
         Engine.registerContext(context);
+        
         if (needMountContainer) {
             nextTickQueue.push(function(context, el) {
                 document.body.appendChild(el);
