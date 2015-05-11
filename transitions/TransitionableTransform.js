@@ -10,6 +10,7 @@ define(function(require, exports, module) {
     var Transitionable = require('famous/core/Transitionable');
     var Transform = require('famous/core/Transform');
     var EventHandler = require('famous/core/EventHandler');
+    var dirtyQueue = require('famous/core/dirtyQueue');
 
     /**
      * A class for transitioning the state of a Transform by transitioning
@@ -25,6 +26,7 @@ define(function(require, exports, module) {
 
         this._dirty = true;
         this._dirtyLock = 0;
+        this._getCalled = false;
 
         this._translateGetter = null;
         this._translateXGetter = null;
@@ -40,19 +42,19 @@ define(function(require, exports, module) {
         EventHandler.setInputHandler(this, this._eventInput);
         EventHandler.setOutputHandler(this, this._eventOutput);
 
-        this._eventInput.on('start', function(){
-            if (!this._dirty && this._dirtyLock == 0) {
+        this._eventInput.on('dirty', function(){
+            if (!this._dirty) {
                 this._dirty = true;
-                this._eventOutput.emit('start');
+                this._eventOutput.emit('dirty');
             }
             this._dirtyLock++;
         }.bind(this));
 
-        this._eventInput.on('end', function(){
-            this._dirtyLock--;
+        this._eventInput.on('clean', function(){
+            if (this._dirtyLock > 0) this._dirtyLock--;
             if (this._dirty && this._dirtyLock == 0) {
                 this._dirty = false;
-                this._eventOutput.emit('end');
+                this._eventOutput.emit('clean');
             }
         }.bind(this));
     }
@@ -70,7 +72,7 @@ define(function(require, exports, module) {
         else {
             this._translateXGetter = null;
             this._components.translate[0] = translateX;
-            this._dirty = true;
+            dirtyQueue.push(this);
         }
         return this;
     };
@@ -88,7 +90,7 @@ define(function(require, exports, module) {
         else {
             this._translateYGetter = null;
             this._components.translate[1] = translateY;
-            this._dirty = true;
+            dirtyQueue.push(this);
         }
         return this;
     };
@@ -106,7 +108,7 @@ define(function(require, exports, module) {
         else {
             this._translateZGetter = null;
             this._components.translate[2] = translateZ;
-            this._dirty = true;
+            dirtyQueue.push(this);
         }
         return this;
     };
@@ -124,7 +126,8 @@ define(function(require, exports, module) {
         else {
             this._translateGetter = null;
             this._components.translate = translate;
-            this._dirty = true;
+            if (!this._dirty) this.emit('dirty');
+            dirtyQueue.push(this);
         }
         return this;
     };
@@ -142,7 +145,7 @@ define(function(require, exports, module) {
         else {
             this._scaleGetter = null;
             this._components.scale = scale;
-            this._dirty = true;
+            dirtyQueue.push(this);
         }
         return this;
     };
@@ -160,7 +163,7 @@ define(function(require, exports, module) {
         else {
             this._rotateGetter = null;
             this._components.rotate = rotate;
-            this._dirty = true;
+            dirtyQueue.push(this);
         }
         return this;
     };
@@ -178,7 +181,7 @@ define(function(require, exports, module) {
         else {
             this._rotateZGetter = null;
             this._components.rotate[2] = rotateZ;
-            this._dirty = true;
+            dirtyQueue.push(this);
         }
         return this;
     };
@@ -196,7 +199,7 @@ define(function(require, exports, module) {
         else {
             this._skewGetter = null;
             this._components.rotate = skew;
-            this._dirty = true;
+            dirtyQueue.push(this);
         }
         return this;
     };
@@ -225,6 +228,13 @@ define(function(require, exports, module) {
             if (this._dirtyLock == 0) this._dirty = false;
         }
         return this._transform;
+    };
+
+    TransitionableTransform.prototype.clean = function(){
+        if (this._dirtyLock == 0) {
+            this._dirty = false;
+            this.emit('clean');
+        }
     };
 
     module.exports = TransitionableTransform;

@@ -32,7 +32,6 @@ define(function(require, exports, module) {
             this.state = new StateManager(this.constructor.STATE_TYPES || View.STATE_TYPES);
 
             this._dirty = true;
-            this._dirtyLock = 0;
             this._cachedSpec = null;
             this._cachedSize = null;
 
@@ -47,12 +46,10 @@ define(function(require, exports, module) {
                     this._dirty = true;
                     this._eventOutput.emit('dirty')
                 }
-                this._dirtyLock++;
             }.bind(this));
 
             this._eventInput.on('clean', function(){
-                this._dirtyLock--;
-                if (this._dirty && this._dirtyLock == 0) {
+                if (this._dirty) {
                     this._dirty = false;
                     this._eventOutput.emit('clean')
                 }
@@ -82,12 +79,6 @@ define(function(require, exports, module) {
             this._dirty = true;
             return this;
         },
-        clean : function clean(){
-            if (this._dirty && this._dirtyLock === 0) {
-                this._dirty = false;
-                this.state.clean();
-            }
-        },
         render : function render(parentSize){
             if (!this._cachedSize || (this._cachedSize[0] !== parentSize[0] || this._cachedSize[1] !== parentSize[1])){
                 if (!this._cachedSize) this._cachedSize = [parentSize[0], parentSize[1]];
@@ -114,7 +105,6 @@ define(function(require, exports, module) {
 
                 RenderNode.prototype.render.call(this._node, spec);
                 RenderNode.prototype.commit.call(this._node, allocator);
-                this.clean();
             }
         }
     });

@@ -9,7 +9,8 @@
 /* Modified work copyright © 2015 David Valdman */
 
 define(function(require, exports, module) {
-    var ElementOutput = require('./ElementOutput');
+    var ElementOutput = require('famous/core/ElementOutput');
+    var dirtyQueue = require('famous/core/dirtyQueue');
 
     /**
      * A base class for viewable content and event
@@ -44,8 +45,7 @@ define(function(require, exports, module) {
         this._sizeDirty = true;
         this._contentDirty = true;
         this._trueSizeCheck = false;
-        this._dirty = true;
-        this._freeze = true;
+        this._dirty = false;
 
         this.classList = [];
         this._dirtyClasses = [];
@@ -58,7 +58,7 @@ define(function(require, exports, module) {
         }.bind(this));
 
         this._eventInput.on('dirty', function(){
-            if (!this._freeze && !this._dirty){
+            if (!this._dirty){
                 this._dirty = true;
                 this._eventOutput.emit('dirty');
             }
@@ -112,7 +112,7 @@ define(function(require, exports, module) {
             this.properties[n] = properties[n];
         }
         this._stylesDirty = true;
-        if (!this._dirty) this.trigger('dirty');
+        if (!this._dirty) dirtyQueue.push(this);
         return this;
     };
 
@@ -347,8 +347,6 @@ define(function(require, exports, module) {
     };
 
     Surface.prototype.render = function(){
-        if (!this._freeze) this.trigger('clean');
-        else this._dirty = false;
         return ElementOutput.prototype.render.apply(this, arguments);
     };
 
@@ -363,7 +361,6 @@ define(function(require, exports, module) {
      */
     Surface.prototype.commit = function commit(spec, allocator) {
         if (!this._currentTarget) this.setup(allocator);
-        this._freeze = false;
 
         var target = this._currentTarget;
 
@@ -490,6 +487,13 @@ define(function(require, exports, module) {
     Surface.prototype.setOrigin = function setOrigin(origin){
         this._origin = origin;
         this._originDirty = true;
+    };
+
+    Surface.prototype.clean = function(){
+        if (this._dirty){
+            this._dirty = false;
+            this.emit('clean');
+        }
     };
 
     module.exports = Surface;

@@ -11,6 +11,7 @@
 define(function(require, exports, module) {
     var Transform = require('./Transform');
     var EventHandler = require('famous/core/EventHandler');
+    var dirtyQueue = require('famous/core/dirtyQueue');
 
     /**
      *
@@ -46,7 +47,7 @@ define(function(require, exports, module) {
         EventHandler.setOutputHandler(this, this._eventOutput);
         EventHandler.setInputHandler(this, this._eventInput);
 
-        this._eventInput.on('start', function(){
+        this._eventInput.on('dirty', function(){
             if (!this._dirty){
                 this._dirty = true;
                 this._eventOutput.emit('dirty');
@@ -54,8 +55,8 @@ define(function(require, exports, module) {
             this._dirtyLock++;
         }.bind(this));
 
-        this._eventInput.on('end', function(){
-            this._dirtyLock--;
+        this._eventInput.on('clean', function(){
+            if (this._dirtyLock > 0) this._dirtyLock--;
             if (this._dirty && this._dirtyLock == 0) {
                 this._dirty = false;
                 this._eventOutput.emit('clean');
@@ -95,19 +96,15 @@ define(function(require, exports, module) {
      * @return {Modifier} this
      */
     Modifier.prototype.transformFrom = function transformFrom(transform) {
-        if (transform instanceof Function) {
-            this._transformGetter = transform;
-            this._dirty = true;
-            this._dirtyLock++; // will always be dirty
-        }
-        else if (transform instanceof Object && transform.get) {
+        if (transform instanceof Object && transform.get) {
             this._eventInput.subscribe(transform);
             this._transformGetter = transform.get.bind(transform);
+            dirtyQueue.push(this);
         }
         else {
             this._transformGetter = null;
             this._output.transform = transform;
-            this._dirty = true;
+            dirtyQueue.push(this);
         }
         return this;
     };
@@ -121,19 +118,15 @@ define(function(require, exports, module) {
      * @return {Modifier} this
      */
     Modifier.prototype.opacityFrom = function opacityFrom(opacity) {
-        if (opacity instanceof Function) {
-            this._opacityGetter = opacity;
-            this._dirty = true;
-            this._dirtyLock++; // will always be dirty
-        }
-        else if (opacity instanceof Object && opacity.get) {
+        if (opacity instanceof Object && opacity.get) {
             this._eventInput.subscribe(opacity);
             this._opacityGetter = opacity.get.bind(opacity);
+            dirtyQueue.push(this);
         }
         else {
             this._opacityGetter = null;
             this._output.opacity = opacity;
-            this._dirty = true;
+            dirtyQueue.push(this);
         }
         return this;
     };
@@ -290,11 +283,15 @@ define(function(require, exports, module) {
      *    provided target
      */
     Modifier.prototype.render = function render() {
-        if (this._dirty) {
-            _update.call(this);
-            if (this._dirtyLock === 0) this._dirty = false;
-        }
+        if (this._dirty) _update.call(this);
         return this._output;
+    };
+
+    Modifier.prototype.clean = function(){
+        if (this._dirtyLock == 0) {
+            this._dirty = false;
+            this.emit('clean');
+        }
     };
 
     module.exports = Modifier;

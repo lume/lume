@@ -12,6 +12,7 @@ define(function(require, exports, module) {
     var MultipleTransition = require('../core/MultipleTransition');
     var TweenTransition = require('./../transitions/TweenTransition');
     var EventHandler = require('famous/core/EventHandler');
+    var dirtyQueue = require('famous/core/dirtyQueue');
 
     /**
      * A state maintainer for a smooth transition between
@@ -47,7 +48,9 @@ define(function(require, exports, module) {
         this._eventOutput = new EventHandler();
         EventHandler.setOutputHandler(this, this._eventOutput);
         this._state = STATE.NONE;
-        this._freeze = true;
+        this._dirty = false;
+
+        this.set(start || 0);
     }
 
     var transitionMethods = {};
@@ -72,9 +75,7 @@ define(function(require, exports, module) {
     };
 
     function _loadNext() {
-        if (this.endStateQueue.length === 0) {
-            return;
-        }
+        if (this.endStateQueue.length === 0) return;
 
         var endValue = this.endStateQueue.shift();
         var transition = this.transitionQueue.shift();
@@ -96,6 +97,11 @@ define(function(require, exports, module) {
 
         if (!this.isActive()){
             this._state = STATE.START;
+            if (!this._dirty) {
+                this._dirty = true;
+                this.emit('dirty');
+                dirtyQueue.push(this)
+            }
             this._eventOutput.emit('start', {value : this.state});
         }
 
@@ -125,22 +131,28 @@ define(function(require, exports, module) {
      */
     Transitionable.prototype.set = function set(endState, transition, callback) {
         if (!transition) {
+
             switch (this._state){
                 case STATE.NONE:
                     // from zero to hero
                     this._state = STATE.START;
-                    if (!this._freeze) this.emit('start');
                     break;
                 case STATE.END:
                     // from zero to hero
                     this._state = STATE.START;
-                    this.emit('start');
                     break;
                 case STATE.UPDATE:
-                    this._state = STATE.END;
                     // interrupt while active causes end event
+                    this._state = STATE.END;
+                    dirtyQueue.push(this);
                     this.emit('end', {value : endState});
                     break;
+            }
+
+            if (!this._dirty) {
+                this._dirty = true;
+                this.emit('dirty');
+                dirtyQueue.push(this);
             }
 
             this.reset(endState, undefined);
@@ -175,13 +187,10 @@ define(function(require, exports, module) {
                 this.update();
                 break;
             case STATE.START:
-                // reset to none
-                this._state = STATE.NONE;
-                if (!this._freeze) this.emit('end', {value : this.state});
+                this._state = STATE.END;
                 break;
 
         }
-        this._freeze = false;
         return this.state;
     };
 
@@ -208,6 +217,8 @@ define(function(require, exports, module) {
         if (!this._engineInstance.isActive()){
             this.state = state;
             this._state = STATE.END;
+
+            dirtyQueue.push(this);
 
             this._eventOutput.emit('end', {
                 value: this.state,
@@ -311,6 +322,13 @@ define(function(require, exports, module) {
         this.endStateQueue = [];
         this.transitionQueue = [];
         this.callbackQueue = [];
+    };
+
+    Transitionable.prototype.clean = function(){
+        if (this._state == STATE.END){
+            this._dirty = false;
+            this.emit('clean');
+        }
     };
 
     module.exports = Transitionable;

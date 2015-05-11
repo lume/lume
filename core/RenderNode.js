@@ -31,7 +31,6 @@ define(function(require, exports, module) {
         this._child = null;
 
         this._dirty = true;
-        this._dirtyLock = 0;
 
         this._entityIds = {};
 
@@ -52,12 +51,10 @@ define(function(require, exports, module) {
                 this._dirty = true;
                 this._eventOutput.emit('dirty');
             }
-            this._dirtyLock++;
         });
 
         this._eventInput.on('clean', function(){
-            this._dirtyLock--;
-            if (this._dirty && this._dirtyLock == 0) {
+            if (this._dirty) {
                 this._dirty = false;
                 this._eventOutput.emit('clean');
             }
@@ -142,8 +139,7 @@ define(function(require, exports, module) {
      */
 
     RenderNode.prototype.render = function render(parentSpec) {
-
-        // parent computation
+        // parent spec computation
         var parentSpecDirty;
         if (this._cachedParentSpec !== parentSpec){
             parentSpecDirty = true;
@@ -163,14 +159,15 @@ define(function(require, exports, module) {
         // pass through check
         if (!this._dirty && !parentSpecDirty && !parentSizeDirty) {
             this._passThrough = true;
+            if (this._child) this._child.render(this._cachedCompoundSpec);
             return;
         }
-        else this._passThrough = false;
+
+        this._passThrough = false;
 
         if (this._object){
             var objectSpec;
-            var compoundSpec;
-            var objectDirty = false;
+            var objectSpecDirty = false;
 
             // objectSpec computation
             if (this._object instanceof Function) {
@@ -179,20 +176,19 @@ define(function(require, exports, module) {
                 if (objectSpec instanceof Spec)
                     objectSpec = objectSpec.render(parentSize);
 
-                objectDirty = true;
+                objectSpecDirty = true;
             }
             else if (this._object._dirty === true || parentSizeDirty){
                 objectSpec = this._object.render(parentSize);
                 this._cachedObjectSpec = objectSpec;
-                objectDirty = true;
+                objectSpecDirty = true;
             }
             else objectSpec = this._cachedObjectSpec;
 
             // compound spec computation
-            if (parentSpecDirty || objectDirty){
+            var compoundSpec;
+            if (parentSpecDirty || objectSpecDirty)
                 compoundSpec = SpecManager.merge(objectSpec, parentSpec, this._entityIds);
-                this._cachedCompoundSpec = compoundSpec;
-            }
             else {
                 this._passThrough = true;
                 compoundSpec = this._cachedCompoundSpec;
@@ -200,14 +196,10 @@ define(function(require, exports, module) {
         }
         else compoundSpec = parentSpec;
 
-        if (this._child) this._child.render(compoundSpec);
-
-        this.clean();
-    };
-
-    RenderNode.prototype.clean = function(){
-        if (this._dirty && this._dirtyLock === 0)
-            this._dirty = false;
+        if (this._child) {
+            this._cachedCompoundSpec = compoundSpec;
+            this._child.render(compoundSpec);
+        }
     };
 
     RenderNode.prototype.commit = function(allocator){

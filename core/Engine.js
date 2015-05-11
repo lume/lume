@@ -29,6 +29,7 @@ define(function(require, exports, module) {
     var EventHandler = require('./EventHandler');
     var OptionsManager = require('./OptionsManager');
     var nextTickQueue = require('./nextTickQueue');
+    var dirtyQueue = require('./dirtyQueue');
 
     var Engine = {};
 
@@ -76,14 +77,17 @@ define(function(require, exports, module) {
         frameTime = currentTime - lastTime;
         lastTime = currentTime;
 
+//        dirtyQueue.flush();
+
         if (eventHandler) eventHandler.emit('prerender');
 
-        // empty the queue
         while (nextTickQueue.length) (nextTickQueue.shift())();
 
         for (var i = 0; i < contexts.length; i++) contexts[i].commit();
 
         if (eventHandler) eventHandler.emit('postrender');
+
+        dirtyQueue.flush();
     };
 
     // engage requestAnimationFrame

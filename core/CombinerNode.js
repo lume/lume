@@ -4,12 +4,12 @@
 
 define(function(require, exports, module) {
     var EventHandler = require('famous/core/EventHandler');
+    var dirtyQueue = require('famous/core/dirtyQueue');
 
     function CombinerNode(nodes) {
         this.nodes = nodes || [];
 
         this._dirty = true;
-        this._dirtyLock = 0;
 
         this._eventInput = new EventHandler();
         this._eventOutput = new EventHandler();
@@ -22,12 +22,10 @@ define(function(require, exports, module) {
                 this._dirty = true;
                 this._eventOutput.emit('dirty');
             }
-            this._dirtyLock++;
         });
 
         this._eventInput.on('clean', function(){
-            this._dirtyLock--;
-            if (this._dirty && this._dirtyLock == 0) {
+            if (this._dirty) {
                 this._dirty = false;
                 this._eventOutput.emit('clean');
             }
@@ -37,6 +35,8 @@ define(function(require, exports, module) {
     CombinerNode.prototype = {
         add: function(node) {
             this._eventInput.subscribe(node);
+            dirtyQueue.push(this);
+            this._dirty = true;
             this.nodes.push(node);
             return node;
         },
@@ -48,8 +48,9 @@ define(function(require, exports, module) {
             return null;
         },
         clean : function(){
-            if (this._dirty && this._dirtyLock == 0) {
+            if (this._dirty) {
                 this._dirty = false;
+                this.emit('clean');
             }
         },
         render: function() {
@@ -57,7 +58,6 @@ define(function(require, exports, module) {
                 var node = this.nodes[i];
                 node.render.apply(node, arguments);
             }
-            this.clean();
         },
         commit: function() {
             for(var i = 0; i < this.nodes.length; i++){
