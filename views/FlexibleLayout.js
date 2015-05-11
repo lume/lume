@@ -65,7 +65,7 @@ define(function(require, exports, module) {
 
                 this.state.length = parentSize[direction];
 
-                if (this.state._dirty) _reflow.call(this);
+                _reflow.call(this);
 
                 for (var i = 0; i < ratios.length; i++) {
                     var transform = this.state.transforms[i];
