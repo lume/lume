@@ -47,7 +47,7 @@ define(function(require, exports, module) {
     }
 
     StateManager.prototype.addState = function addState(key, state){
-        if (state.set && state.get){
+        if (state.get){
             if (state.emit) this._eventInput.subscribe(state);
             this[key] = state;
         }
