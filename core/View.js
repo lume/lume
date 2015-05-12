@@ -32,6 +32,8 @@ define(function(require, exports, module) {
             this.state = new StateManager(this.constructor.STATE_TYPES || View.STATE_TYPES);
 
             this._dirty = true;
+            this._dirtyLock = 0;
+
             this._cachedSpec = null;
             this._cachedSize = null;
 
@@ -42,18 +44,21 @@ define(function(require, exports, module) {
             this._eventInput.subscribe(this._node);
 
             this._eventInput.on('dirty', function(){
-                if (!this._dirty) {
+                if (!this._dirty){
                     this._dirty = true;
-                    this._eventOutput.emit('dirty')
+                    this._eventOutput.emit('dirty');
                 }
+                this._dirtyLock++;
             }.bind(this));
 
             this._eventInput.on('clean', function(){
-                if (this._dirty) {
+                if (this._dirtyLock > 0) this._dirtyLock--;
+                if (this._dirty && this._dirtyLock == 0) {
                     this._dirty = false;
-                    this._eventOutput.emit('clean')
+                    this._eventOutput.emit('clean');
                 }
             }.bind(this));
+
         },
         set : function set(){
             return RenderNode.prototype.set.apply(this._node, arguments);
