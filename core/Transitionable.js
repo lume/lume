@@ -96,12 +96,20 @@ define(function(require, exports, module) {
         this._engineInstance.reset(this.state, this.velocity);
 
         if (!this.isActive()){
-            this._state = STATE.START;
-            if (!this._dirty) {
-                this._dirty = true;
+            //TODO: fix this check: needed for case SET_START
+            if (this._state == STATE.START){
                 this.emit('dirty');
-                dirtyQueue.push(this)
+                dirtyQueue.push(this);
             }
+            else{
+                this._state = STATE.START;
+                if (!this._dirty) {
+                    this._dirty = true;
+                    this.emit('dirty');
+                    dirtyQueue.push(this);
+                }
+            }
+
             this._eventOutput.emit('start', {value : this.state});
         }
 
