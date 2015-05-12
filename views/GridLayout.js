@@ -57,7 +57,6 @@ define(function(require, exports, module) {
             this.state.sizes = [];
             this.state.dimensions = options.dimensions;
             this.state.count = 0;
-            this.state.sequence = null;
             this.state.gutterSize = options.gutterSize;
             this.transforms = [];
 
@@ -101,8 +100,7 @@ define(function(require, exports, module) {
          * @param {Array|ViewSequence} sequence Either an array of renderables or a Famous view_sequence.
          */
         sequenceFrom : function(sequence){
-            if (sequence instanceof Array) sequence = new ViewSequence(sequence);
-            this.state.sequence = sequence;
+            this.state.sequence.setBacking(sequence);
         },
         setDimensions : function(dimensions){
             this.state.dimensions = dimensions;
