@@ -7,6 +7,7 @@
  */
 
 define(function(require, exports, module) {
+    var EventHandler = require('famous/core/EventHandler');
 
     /**
      * Helper object used to iterate through items sequentially. Used in
@@ -33,6 +34,10 @@ define(function(require, exports, module) {
         if (options.array) this._ = new (this.constructor.Backing)(options.array);
         else if (options._) this._ = options._;
 
+        this._eventOutput = new EventHandler();
+        EventHandler.setOutputHandler(this, this._eventOutput);
+        this._eventOutput.subscribe(this._);
+
         if (this.index === this._.firstIndex) this._.firstNode = this;
         if (this.index === this._.firstIndex + this._.array.length - 1) this._.lastNode = this;
 
@@ -54,6 +59,12 @@ define(function(require, exports, module) {
         this.cumulativeSizes = [[0, 0]];
         this.sizeDirty = true;
         this.trackSize = false;
+
+        this._eventOutput = new EventHandler();
+        EventHandler.setOutputHandler(this, this._eventOutput);
+
+        for (var i = 0; i < array.length; i++)
+            this._eventOutput.subscribe(array[i]);
     };
 
     // Get value "i" slots away from the first index.
@@ -297,6 +308,15 @@ define(function(require, exports, module) {
         if (other.index === this._.firstIndex) this._.firstNode = other;
         else if (other.index === this._.firstIndex + this._.array.length - 1) this._.lastNode = other;
         if (this._.trackSize) this._.sizeDirty = true;
+    };
+
+    ViewSequence.prototype.setBacking = function setBacking(array){
+        for (var i = 0; i < this._.array.length; i++)
+            this._eventOutput.unsubscribe(this._.array[i]);
+
+        this._.array = array;
+        for (var i = 0; i < array.length; i++)
+            this._eventOutput.subscribe(array[i]);
     };
 
    /**
