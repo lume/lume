@@ -14,6 +14,7 @@ define(function(require, exports, module) {
     var Entity = require('famous/core/Entity');
     var SpecManager = require('famous/core/SpecManager');
     var Controller = require('famous/core/Controller');
+    var dirtyQueue = require('famous/core/dirtyQueue');
 
     /**
      * @class View
@@ -76,13 +77,20 @@ define(function(require, exports, module) {
             if (this.options.size === size) return;
             this.options.size = size;
             this._dirty = true;
+            dirtyQueue.push(this);
             return this;
         },
         setOrigin : function setOrigin(origin){
             if (this.options.origin === origin) return;
             this.options.origin = origin;
             this._dirty = true;
+            dirtyQueue.push(this);
             return this;
+        },
+        clean : function(){
+            if (this._dirty && this._dirtyLock == 0){
+                this._dirty = false;
+            }
         },
         render : function render(parentSize){
             if (!this._cachedSize || (this._cachedSize[0] !== parentSize[0] || this._cachedSize[1] !== parentSize[1])){
@@ -92,6 +100,7 @@ define(function(require, exports, module) {
                     this._cachedSize[1] = parentSize[1];
                 }
                 this._dirty = true;
+                dirtyQueue.push(this);
             }
 
             return this._entityId;
@@ -100,6 +109,7 @@ define(function(require, exports, module) {
             if (!this._cachedSpec || this._cachedSpec !== spec){
                 this._cachedSpec = spec;
                 this._dirty = true;
+                dirtyQueue.push(this);
             }
 
             if (this._dirty){
