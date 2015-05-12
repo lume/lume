@@ -41,37 +41,46 @@ define(function(require, exports, module) {
              */
             transition: false
         },
+        events : {
+            change : onChange
+        },
         state : {
-            transforms : Array,
+            positions : Array,
             sizes : Array,
             dimensions : Array,
             sequence : ViewSequence,
-            count : Number
+            count : Number,
+            gutterSize : Array
         },
         initialize : function(options){
-            this.state.transforms = [];
+            this.state.positions = [];
             this.state.sizes = [];
-            this.state.dimensions = [0, 0];
+            this.state.dimensions = options.dimensions;
             this.state.count = 0;
             this.state.sequence = null;
+            this.state.gutterSize = options.gutterSize;
+            this.transforms = [];
 
             var spec = new Spec();
             this.add(function(size){
-                var cols = options.dimensions[0];
-                var rows = options.dimensions[1];
+                var cols = this.state.dimensions[0];
+                var rows = this.state.dimensions[1];
 
                 _reflow.call(this, size, cols, rows);
 
                 var index = 0;
                 var sequence = this.state.sequence;
-                while (sequence && (index < this.state.transforms.length)) {
+                while (sequence && this.transforms.length) {
                     var item = sequence.get();
 
-                    if (index >= this.state.count)
+                    if (index >= this.state.count){
+                        sequence = sequence.getNext();
                         _removeState.call(this, index);
+                        continue;
+                    }
 
                     if (item) {
-                        var transform = this.state.transforms[index].get();
+                        var transform = this.transforms[index].get();
                         var size = this.state.sizes[index].get();
                         spec.getChild(index)
                             .setTransform(transform)
@@ -94,10 +103,21 @@ define(function(require, exports, module) {
         sequenceFrom : function(sequence){
             if (sequence instanceof Array) sequence = new ViewSequence(sequence);
             this.state.sequence = sequence;
+        },
+        setDimensions : function(dimensions){
+            this.state.dimensions = dimensions;
+            this.state.count = dimensions[0] * dimensions[1];
         }
     });
 
     // PRIVATE FUNCTIONS
+
+    function onChange(option){
+        var key = option.key;
+        var value = option.value;
+        if (key == 'dimensions') this.setDimensions(value);
+        if (key == 'gutterSize') this.state.gutterSize = value;
+    }
 
     function _reflow(size, cols, rows) {
         var options = this.options;
@@ -114,7 +134,7 @@ define(function(require, exports, module) {
         for (var i = 0; i < rows; i++) {
             var currX = 0;
             for (var j = 0; j < cols; j++) {
-                (this.state.transforms[currIndex] === undefined)
+                (this.transforms[currIndex] === undefined)
                     ? _addState.call(this, currIndex, [colSize, rowSize], [currX, currY, 0])
                     : _animateState.call(this, currIndex, [colSize, rowSize], [currX, currY, 0]);
 
@@ -127,28 +147,31 @@ define(function(require, exports, module) {
 
         this.state.count = rows * cols;
 
-        for (i = this._activeCount ; i < this.state.transforms.length; i++)
+        for (i = this.state.count; i < this.state.positions.length; i++)
             _animateState.call(this, i, [Math.round(colSize), Math.round(rowSize)], [0, 0]);
 
         this.emit('reflow');
     }
 
     function _addState(index, size, position) {
-        this.state.transforms[index] = new TransitionableTransform(Transform.translate.apply(null, position));
+        this.transforms[index] = new TransitionableTransform(Transform.translate.apply(null, position));
+        this.state.positions[index] = new Transitionable(position);
+        this.transforms[index].translateFrom(this.state.positions[index]);
         this.state.sizes[index] = new Transitionable(size);
     }
 
     function _removeState(index){
-        this.state.transforms.splice(index, 1);
+        this.transforms.splice(index, 1);
+        this.state.positions.splice(index, 1);
         this.state.sizes.splice(index, 1);
     }
 
     function _animateState(index, size, position) {
         var transition = this.options.transition;
-        var currTransform = this.state.transforms[index];
+        var currPosition = this.state.positions[index];
         var currSize = this.state.sizes[index];
 
-        currTransform.setTranslate(position, transition);
+        currPosition.set(position, transition);
         currSize.set(size, transition);
     }
 });
