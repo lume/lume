@@ -33,6 +33,8 @@ define(function(require, exports, module) {
         this._translateYGetter = null;
         this._translateZGetter = null;
         this._scaleGetter = null;
+        this._scaleXGetter = null;
+        this._scaleYGetter = null;
         this._rotateGetter = null;
         this._rotateZGetter = null;
         this._skewGetter = null;
@@ -150,6 +152,42 @@ define(function(require, exports, module) {
         return this;
     };
 
+    TransitionableTransform.prototype.scaleXFrom = function scaleXFrom(scale) {
+        if (scale instanceof Function){
+            this._scaleGetter = scale;
+            this._dirty = true;
+            this._dirtyLock++;
+        }
+        else if (scale instanceof Object && scale.get){
+            this._scaleXGetter = scale.get.bind(scale);
+            this._eventInput.subscribe(scale);
+        }
+        else {
+            this._scaleXGetter = null;
+            this._components.scale[0] = scale;
+            dirtyQueue.push(this);
+        }
+        return this;
+    };
+
+    TransitionableTransform.prototype.scaleYFrom = function scaleYFrom(scale) {
+        if (scale instanceof Function){
+            this._scaleGetter = scale;
+            this._dirty = true;
+            this._dirtyLock++;
+        }
+        else if (scale instanceof Object && scale.get){
+            this._scaleYGetter = scale.get.bind(scale);
+            this._eventInput.subscribe(scale);
+        }
+        else {
+            this._scaleYGetter = null;
+            this._components.scale[1] = scale;
+            dirtyQueue.push(this);
+        }
+        return this;
+    };
+
     TransitionableTransform.prototype.rotateFrom = function rotateFrom(rotate) {
         if (rotate instanceof Function){
             this._rotateGetter = rotate;
@@ -210,6 +248,8 @@ define(function(require, exports, module) {
         if (this._translateYGetter) this._components.translate[1] = this._translateYGetter();
         if (this._translateZGetter) this._components.translate[2] = this._translateZGetter();
         if (this._scaleGetter) this._components.scale = this._scaleGetter();
+        if (this._scaleXGetter) this._components.scale[0] = this._scaleXGetter();
+        if (this._scaleYGetter) this._components.scale[1] = this._scaleYGetter();
         if (this._rotateGetter) this._components.rotate = this._rotateGetter();
         if (this._rotateZGetter) this._components.rotate[2] = this._rotateZGetter();
         if (this._skewGetter) this._components.skew = this._skewGetter();
