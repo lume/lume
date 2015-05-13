@@ -77,8 +77,6 @@ define(function(require, exports, module) {
         frameTime = currentTime - lastTime;
         lastTime = currentTime;
 
-//        dirtyQueue.flush();
-
         if (eventHandler) eventHandler.emit('prerender');
 
         while (nextTickQueue.length) (nextTickQueue.shift())();
