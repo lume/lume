@@ -77,7 +77,7 @@ define(function(require, exports, module) {
         if (!child.render && !(child instanceof Function))
             child = new Modifier(child);
 
-        var childNode = (child instanceof RenderNode)
+        var childNode = (child instanceof RenderNode || child._isView)
             ? child
             : new RenderNode(child);
 
