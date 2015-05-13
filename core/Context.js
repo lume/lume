@@ -15,6 +15,7 @@ define(function(require, exports, module) {
     var Transform = require('./Transform');
     var Transitionable = require('./Transitionable');
     var Entity = require('./Entity');
+    var dirtyQueue = require('famous/core/dirtyQueue');
 
     /**
      * The top-level container for a Famous-renderable piece of the document.
@@ -63,8 +64,6 @@ define(function(require, exports, module) {
 
         this._eventInput.on('dirty', _onDirty);
         this._eventInput.on('clean', _onClean);
-        this._eventInput.on('start', _onStart);
-        this._eventInput.on('end', _onEnd);
     }
 
     var usePrefix = !('perspective' in document.documentElement.style);
@@ -77,23 +76,7 @@ define(function(require, exports, module) {
     }
 
     function _onClean(){
-        this._dirtyLock--;
-        if (this._dirty && this._dirtyLock == 0) {
-            this._dirty = false;
-            this._eventOutput.emit('clean');
-        }
-    }
-
-    function _onStart(){
-        if (!this._dirty){
-            this._dirty = true;
-            this._eventOutput.emit('dirty');
-        }
-        this._dirtyLock++;
-    }
-
-    function _onEnd(){
-        this._dirtyLock--;
+        if (this._dirtyLock > 0) this._dirtyLock--;
         if (this._dirty && this._dirtyLock == 0) {
             this._dirty = false;
             this._eventOutput.emit('clean');
@@ -165,6 +148,11 @@ define(function(require, exports, module) {
         this._size[0] = size[0];
         this._size[1] = size[1];
         this._dirty = true;
+        dirtyQueue.push(this);
+    };
+
+    Context.prototype.clean = function(){
+        if (this._dirty) this.dirty = false;
     };
 
     /**
@@ -183,10 +171,11 @@ define(function(require, exports, module) {
         if (this._perspective.isActive())
             _setPerspective(this.container, this._perspective.get());
 
-        this._node.render(spec);
-        this._node.commit(allocator);
 
-        if (this._dirty && this._dirtyLock == 0) this._dirty = false;
+        if (this._dirty){
+            this._node.render(spec);
+            this._node.commit(allocator);
+        }
     };
 
     /**
