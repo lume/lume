@@ -38,6 +38,8 @@ define(function(require, exports, module) {
             this._cachedSpec = null;
             this._cachedSize = null;
 
+            this._setup = false;
+
             Controller.apply(this, arguments);
 
             this._eventInput.subscribe(this._optionsManager);
@@ -101,6 +103,12 @@ define(function(require, exports, module) {
                 }
                 this._dirty = true;
                 dirtyQueue.push(this);
+                this.trigger('resize', parentSize);
+            }
+
+            if (!this._setup) {
+                this.setup();
+                this._setup = true;
             }
 
             return this._entityId;
