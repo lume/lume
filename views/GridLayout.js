@@ -42,7 +42,8 @@ define(function(require, exports, module) {
             transition: false
         },
         events : {
-            change : onChange
+            change : onChange,
+            resize : onResize
         },
         state : {
             positions : Array,
@@ -59,39 +60,21 @@ define(function(require, exports, module) {
             this.state.count = 0;
             this.state.gutterSize = options.gutterSize;
             this.transforms = [];
+        },
+        setup : function(){
+            var index = 0;
+            var sequence = this.state.sequence;
+            while (sequence){
+                var item = sequence.get();
 
-            var spec = new Spec();
-            this.add(function(size){
-                var cols = this.state.dimensions[0];
-                var rows = this.state.dimensions[1];
+                this.add({
+                    transform : this.transforms[index],
+                    size : this.state.sizes[index]
+                }).add(item);
 
-                _reflow.call(this, size, cols, rows);
-
-                var index = 0;
-                var sequence = this.state.sequence;
-                while (sequence && this.transforms.length) {
-                    var item = sequence.get();
-
-                    if (index >= this.state.count){
-                        sequence = sequence.getNext();
-                        _removeState.call(this, index);
-                        continue;
-                    }
-
-                    if (item) {
-                        var transform = this.transforms[index].get();
-                        var size = this.state.sizes[index].get();
-                        spec.getChild(index)
-                            .setTransform(transform)
-                            .setSize(size)
-                            .setTarget(item);
-                    }
-
-                    sequence = sequence.getNext();
-                    index++;
-                }
-                return spec;
-            }.bind(this));
+                sequence = sequence.getNext();
+                index++;
+            }
         },
         /**
          * Sets the collection of renderables under the Gridlayout instance's control.
@@ -117,8 +100,11 @@ define(function(require, exports, module) {
         if (key == 'gutterSize') this.state.gutterSize = value;
     }
 
-    function _reflow(size, cols, rows) {
+    function onResize(size) {
         var options = this.options;
+
+        var cols = this.state.dimensions[0];
+        var rows = this.state.dimensions[1];
 
         var usableSize = [size[0], size[1]];
         usableSize[0] -= options.gutterSize[0] * (cols - 1);
