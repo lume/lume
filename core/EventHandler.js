@@ -129,7 +129,7 @@ define(function(require, exports, module) {
                 source.on(type, this.upstreamListeners[type]);
             }
         }
-        return this;
+        return source;
     };
 
     //TODO: unsubscribe up the chain
@@ -149,7 +149,7 @@ define(function(require, exports, module) {
                 source.off(type, this.upstreamListeners[type]);
             }
         }
-        return this;
+        return source;
     };
 
     module.exports = EventHandler;
