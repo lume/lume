@@ -134,7 +134,7 @@ define(function(require, exports, module) {
         for (i = this.state.count; i < this.state.positions.length; i++)
             _animateState.call(this, i, [Math.round(colSize), Math.round(rowSize)], [0, 0]);
 
-        this.emit('reflow');
+        this.emit('resize');
     }
 
     function _addState(index, size, position) {
