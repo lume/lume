@@ -62,8 +62,8 @@ define(function(require, exports, module) {
                     if (!this._dirty){
                         this._dirty = true;
                         this.emit('dirty');
+                        dirtyQueue.push(this);
                     }
-                    dirtyQueue.push(this);
                     state = value;
                 }
             });
