@@ -1,33 +1,25 @@
-/* This Source Code Form is subject to the terms of the Mozilla Public
- * License, v. 2.0. If a copy of the MPL was not distributed with this
- * file, You can obtain one at http://mozilla.org/MPL/2.0/.
- *
- * @license MPL 2.0
- * @copyright Famous Industries, Inc. 2014
- */
+/* copyright © 2015 David Valdman */
 
 define(function(require, exports, module) {
-    var EventHandler = require('../core/EventHandler');
+    var EventHandler = require('famous/core/EventHandler');
 
     /**
-     * EventMapper routes events to various event destinations
-     *  based on custom logic.  The function signature is arbitrary.
+     * EventMapper modifies the data payload of an event based on
+     *  a given function provided on initialization.
      *
      * @class EventMapper
      * @constructor
      *
-     * @param {function} mappingFunction function to determine where
-     *  events are routed to.
+     * @param {function} mappingFunction function to modify the incoming
+     *  event data payload
      */
     function EventMapper(mappingFunction) {
         EventHandler.call(this);
         this._mappingFunction = mappingFunction;
     }
+
     EventMapper.prototype = Object.create(EventHandler.prototype);
     EventMapper.prototype.constructor = EventMapper;
-
-    EventMapper.prototype.subscribe = null;
-    EventMapper.prototype.unsubscribe = null;
 
     /**
      * Trigger an event, sending to all mapped downstream handlers
@@ -40,8 +32,8 @@ define(function(require, exports, module) {
      * @return {EventHandler} this
      */
     EventMapper.prototype.emit = function emit(type, data) {
-        var target = this._mappingFunction.apply(this, arguments);
-        if (target && (target.emit instanceof Function)) target.emit(type, data);
+        var data = this._mappingFunction(data.value);
+        EventHandler.prototype.emit.call(this, type, data);
     };
 
     /**
