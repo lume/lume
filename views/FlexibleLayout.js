@@ -11,8 +11,9 @@
 define(function(require, exports, module) {
     var Transform = require('famous/core/Transform');
     var Transitionable = require('famous/core/Transitionable');
+    var TransitionableTransform = require('famous/transitions/TransitionableTransform');
     var View = require('famous/core/View');
-    var Spec = require('famous/core/Spec');
+    var Stream = require('famous/core/Stream');
 
     /**
      * A layout which divides a context into sections based on a proportion
@@ -40,48 +41,46 @@ define(function(require, exports, module) {
             ratios : []
         },
         events : {
-            change : updateOptions
+            change : updateOptions,
+            resize : onResize
         },
         state : {
             ratios : Transitionable,
-            nodes : Array,
-            lengths : Array,
-            transforms : Array,
-            length : Number
+            length : Number,
+            nodes : Array
         },
         initialize : function initialize(options){
             this.state.ratios.set(options.ratios);
-            this.state.nodes = [];
-            this.state.direction = options.direction;
-            this.state.lengths = [];
             this.state.length = Number.NaN;
-            this.state.transforms = [];
+            this.state.nodes = [];
+        },
+        setup : function(){
+            var direction = this.options.direction;
 
-            var spec = new Spec();
+            this.sizesStream = _setupSizeStream.call(this);
+            this.displacementStream = _setupDisplacementStream.call(this);
 
-            this.add(function(parentSize){
-                var ratios = this.state.ratios.get();
-                var direction = this.state.direction;
+            // TODO: use observer for simple types to fix this
+            // subscribe from this.state.length, or better just this.length
 
-                this.state.length = parentSize[direction];
+            this.sizesStream.subscribe(this.state);
+            this.displacementStream.subscribe(this.state);
 
-                _reflow.call(this);
+            for (var i = 0; i < this.options.ratios.length; i++){
+                var transform = new TransitionableTransform();
 
-                for (var i = 0; i < ratios.length; i++) {
-                    var transform = this.state.transforms[i];
-                    var node = this.state.nodes[i];
+                var displacement = this.displacementStream.pluck(i);
+                (direction == CONSTANTS.DIRECTION.X)
+                    ? transform.translateXFrom(displacement)
+                    : transform.translateYFrom(displacement);
 
-                    var size = [undefined, undefined];
-                    size[direction] = this.state.lengths[i];
+                var node = this.state.nodes[i];
 
-                    spec.getChild(i)
-                        .setTransform(transform)
-                        .setSize(size)
-                        .setTarget(node);
-                }
-
-                return spec;
-            }.bind(this));
+                this.add({
+                    transform : transform,
+                    size : this.sizesStream.pluck(i)
+                }).add(node);
+            }
         },
         /**
          * Sets the collection of renderables under the FlexibleLayout instance's control.  Also sets
@@ -108,51 +107,100 @@ define(function(require, exports, module) {
     function updateOptions(options){
         var key = options.key;
         var value = options.value;
-
         if (key === 'direction') this.state[key] = value;
     }
 
-    function _reflow() {
-        var ratios = this.state.ratios.get();
-        var length = this.state.length;
-        var direction = this.state.direction;
+    function _setupDisplacementStream(){
+        var ratioStream = new Stream();
+        ratioStream.subscribe(this.state.ratios);
 
-        this.state.lengths = [];
-        this.state.transforms = [];
+        return ratioStream.map(function(ratios){
+            var length = this.state.length;
+            var direction = this.options.direction;
 
-        var flexLength = length;
-        var ratioSum = 0;
-        for (var i = 0; i < ratios.length; i++){
-            var ratio = ratios[i];
-            var node = this.state.nodes[i];
+            // calculate remaining size after true-sized nodes are accounted for
+            var flexLength = length;
+            var ratioSum = 0;
+            for (var i = 0; i < ratios.length; i++){
+                var ratio = ratios[i];
+                var node = this.state.nodes[i];
 
-            if (!node || node.getSize === undefined) continue;
+                if (!node || node.getSize === undefined) continue;
 
-            (typeof ratio !== 'number')
-                ? flexLength -= node.getSize()[direction] || 0
-                : ratioSum += ratio;
-        }
+                (typeof ratio !== 'number')
+                    ? flexLength -= node.getSize()[direction] || 0
+                    : ratioSum += ratio;
+            }
 
-        var translation = 0;
-        for (var i = 0; i < ratios.length; i++) {
-            node = this.state.nodes[i];
-            ratio = ratios[i];
+            // calculate sizes and displacements of nodes
+            var displacement = 0;
+            var displacements = [];
+            for (var i = 0; i < ratios.length; i++) {
+                node = this.state.nodes[i];
+                ratio = ratios[i];
 
-            if (!node || node.getSize === undefined) continue;
+                if (!node || node.getSize === undefined) continue;
 
-            var nodeLength = (typeof ratio === 'number')
-                ? flexLength * ratio / ratioSum
-                : node.getSize()[direction];
+                var nodeLength = (typeof ratio === 'number')
+                    ? flexLength * ratio / ratioSum
+                    : node.getSize()[direction];
 
-            var currTransform = (direction === CONSTANTS.DIRECTION.X)
-                ? Transform.translate(translation, 0, 0)
-                : Transform.translate(0, translation, 0);
+                displacements.push(displacement);
+                displacement += nodeLength;
+            }
 
-            this.state.lengths.push(nodeLength);
-            this.state.transforms.push(currTransform);
+            return displacements;
+        }.bind(this));
+    }
 
-            translation += nodeLength;
-        }
+    function _setupSizeStream(){
+        var ratioStream = new Stream();
+        ratioStream.subscribe(this.state.ratios);
+
+        return ratioStream.map(function(ratios){
+            var length = this.state.length;
+            var direction = this.options.direction;
+
+            // calculate remaining size after true-sized nodes are accounted for
+            var flexLength = length;
+            var ratioSum = 0;
+            for (var i = 0; i < ratios.length; i++){
+                var ratio = ratios[i];
+                var node = this.state.nodes[i];
+
+                if (!node || node.getSize === undefined) continue;
+
+                (typeof ratio !== 'number')
+                    ? flexLength -= node.getSize()[direction] || 0
+                    : ratioSum += ratio;
+            }
+
+            // calculate sizes and displacements of nodes
+            var sizes = [];
+            for (var i = 0; i < ratios.length; i++) {
+                node = this.state.nodes[i];
+                ratio = ratios[i];
+
+                if (!node || node.getSize === undefined) continue;
+
+                var nodeLength = (typeof ratio === 'number')
+                    ? flexLength * ratio / ratioSum
+                    : node.getSize()[direction];
+
+                var size = (direction == CONSTANTS.DIRECTION.X)
+                    ? [nodeLength, undefined]
+                    : [undefined, nodeLength];
+
+                sizes.push(size);
+            }
+
+            return sizes;
+        }.bind(this));
+    }
+
+    function onResize(size) {
+        this.state.length = size[this.options.direction];
+        this.emit('resize');
     }
 
 });
