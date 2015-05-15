@@ -98,8 +98,11 @@ define(function(require, exports, module) {
         render : function render(spec){
             if (!this._cachedSpec || this._cachedSpec !== spec){
                 this._cachedSpec = spec;
-                this._dirty = true;
-                dirtyQueue.push(this);
+
+                if (!this._dirty){
+                    this._dirty = true;
+                    dirtyQueue.push(this);
+                }
 
                 spec = SpecManager.merge({
                     origin : this.options.origin,
@@ -114,17 +117,24 @@ define(function(require, exports, module) {
                     this._cachedSize[0] = parentSize[0];
                     this._cachedSize[1] = parentSize[1];
                 }
-                this._dirty = true;
-                dirtyQueue.push(this);
+
                 this.trigger('resize', parentSize);
+
+                if (!this._dirty){
+                    this._dirty = true;
+                    dirtyQueue.push(this);
+                }
             }
 
-            if (!this._setup) {
+            if (!this._setup && this.setup) {
                 this.setup();
                 this._setup = true;
             }
 
-            RenderNode.prototype.render.call(this._node, spec);
+            if (this._dirty){
+                RenderNode.prototype.render.call(this._node, spec);
+            }
+
         },
         commit : function commit(allocator){
             if (!this._dirty) return;
