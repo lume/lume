@@ -13,7 +13,7 @@ define(function(require, exports, module) {
     var Transitionable = require('famous/core/Transitionable');
     var TransitionableTransform = require('famous/transitions/TransitionableTransform');
     var View = require('famous/core/View');
-    var Stream = require('famous/core/Stream');
+    var Getter = require('famous/core/GetHelper');
 
     /**
      * A layout which divides a context into sections based on a proportion
@@ -57,19 +57,19 @@ define(function(require, exports, module) {
         setup : function(){
             var direction = this.options.direction;
 
-            this.sizesStream = _setupSizeStream.call(this);
-            this.displacementStream = _setupDisplacementStream.call(this);
+            this.sizesGetter = _setupSizeGetter.call(this);
+            this.displacementGetter = _setupDisplacementGetter.call(this);
 
             // TODO: use observer for simple types to fix this
             // subscribe from this.state.length, or better just this.length
 
-            this.sizesStream.subscribe(this.state);
-            this.displacementStream.subscribe(this.state);
+            this.sizesGetter.subscribe(this.state);
+            this.displacementGetter.subscribe(this.state);
 
             for (var i = 0; i < this.options.ratios.length; i++){
                 var transform = new TransitionableTransform();
 
-                var displacement = this.displacementStream.pluck(i);
+                var displacement = this.displacementGetter.pluck(i);
                 (direction == CONSTANTS.DIRECTION.X)
                     ? transform.translateXFrom(displacement)
                     : transform.translateYFrom(displacement);
@@ -78,7 +78,7 @@ define(function(require, exports, module) {
 
                 this.add({
                     transform : transform,
-                    size : this.sizesStream.pluck(i)
+                    size : this.sizesGetter.pluck(i)
                 }).add(node);
             }
         },
@@ -110,9 +110,8 @@ define(function(require, exports, module) {
         if (key === 'direction') this.state[key] = value;
     }
 
-    function _setupDisplacementStream(){
-        var ratioStream = new Stream();
-        ratioStream.subscribe(this.state.ratios);
+    function _setupDisplacementGetter(){
+        var ratioStream = new Getter(this.state.ratios);
 
         return ratioStream.map(function(ratios){
             var length = this.state.length;
@@ -153,9 +152,8 @@ define(function(require, exports, module) {
         }.bind(this));
     }
 
-    function _setupSizeStream(){
-        var ratioStream = new Stream();
-        ratioStream.subscribe(this.state.ratios);
+    function _setupSizeGetter(){
+        var ratioStream = new Getter(this.state.ratios);
 
         return ratioStream.map(function(ratios){
             var length = this.state.length;
