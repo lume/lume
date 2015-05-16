@@ -11,7 +11,6 @@
 define(function(require, exports, module) {
     var RenderNode = require('famous/core/RenderNode');
     var StateManager = require('famous/core/StateManager');
-    var Entity = require('famous/core/Entity');
     var SpecManager = require('famous/core/SpecManager');
     var Controller = require('famous/core/Controller');
     var dirtyQueue = require('famous/core/dirtyQueue');
@@ -28,7 +27,6 @@ define(function(require, exports, module) {
         },
         events : null,
         constructor : function View(){
-            this._entityId = Entity.register(this);
             this._node = new RenderNode();
             this.state = new StateManager(this.constructor.STATE_TYPES || View.STATE_TYPES);
 
@@ -134,7 +132,6 @@ define(function(require, exports, module) {
             if (this._dirty){
                 RenderNode.prototype.render.call(this._node, spec);
             }
-
         },
         commit : function commit(allocator){
             if (!this._dirty) return;
