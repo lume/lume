@@ -31,6 +31,8 @@ define(function(require, exports, module) {
         this._child = null;
 
         this._dirty = true;
+        this._dirtyLock = 0;
+        this._passThrough = false;
 
         this._entityIds = {};
 
@@ -38,7 +40,6 @@ define(function(require, exports, module) {
         this._cachedObjectSpec = null;
         this._cachedCompoundSpec = null;
         this._cachedParentSpec = null;
-        this._passThrough = false;
 
         this._eventInput = new EventHandler();
         this._eventOutput = new EventHandler();
@@ -51,10 +52,12 @@ define(function(require, exports, module) {
                 this._dirty = true;
                 this._eventOutput.emit('dirty');
             }
+            this._dirtyLock++;
         });
 
         this._eventInput.on('clean', function(){
-            if (this._dirty) {
+            if (this._dirtyLock > 0) this._dirtyLock--;
+            if (this._dirty && this._dirtyLock == 0) {
                 this._dirty = false;
                 this._eventOutput.emit('clean');
             }
