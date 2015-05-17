@@ -39,6 +39,13 @@ define(function(require, exports, module) {
     };
 
     /**
+     * Alias for emit
+     * @method trigger
+     */
+    EventEmitter.prototype.trigger = EventEmitter.prototype.emit;
+
+
+    /**
      * Bind a callback function to an event type handled by this object.
      *
      * @method "on"
