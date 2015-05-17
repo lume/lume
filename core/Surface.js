@@ -479,11 +479,15 @@ define(function(require, exports, module) {
     Surface.prototype.setSize = function setSize(size) {
         this.size = [size[0], size[1]];
         this._sizeDirty = true;
+        _setDirty.call(this);
+        //TODO: `resize` event is duplicated in ElementOutput. Condiser refactor.
+        this._eventOutput.emit('resize', size);
     };
 
     Surface.prototype.setProportions = function setProportions(proportions) {
         this.proportions = [proportions[0], proportions[1]];
         this._sizeDirty = true;
+        _setDirty.call(this);
     };
 
     Surface.prototype.getOrigin = function getOrigin(){
@@ -493,6 +497,7 @@ define(function(require, exports, module) {
     Surface.prototype.setOrigin = function setOrigin(origin){
         this._origin = origin;
         this._originDirty = true;
+        _setDirty.call(this);
     };
 
     Surface.prototype.clean = function(){
