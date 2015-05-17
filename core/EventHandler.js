@@ -72,27 +72,6 @@ define(function(require, exports, module) {
     };
 
     /**
-     * Trigger an event, sending to all downstream handlers
-     *   listening for provided 'type' key.
-     *
-     * @method emit
-     *
-     * @param {string} type event type key (for example, 'click')
-     * @param {Object} event event data
-     * @return {EventHandler} this
-     */
-    EventHandler.prototype.emit = function emit(type, event) {
-        EventEmitter.prototype.emit.apply(this, arguments);
-        return this;
-    };
-
-    /**
-     * Alias for emit
-     * @method trigger
-     */
-    EventHandler.prototype.trigger = EventHandler.prototype.emit;
-
-    /**
      * Bind a callback function to an event type handled by this object.
      *
      * @method "on"
