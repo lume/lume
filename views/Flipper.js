@@ -11,9 +11,9 @@
 define(function(require, exports, module) {
     var Transform = require('famous/core/Transform');
     var Transitionable = require('famous/core/Transitionable');
-    var Transform = require('famous/core/Transform');
     var Modifier = require('famous/core/Modifier');
-    var View = require('famous/core/View3');
+    var View = require('famous/core/View');
+    var Getter = require('famous/core/GetHelper');
 
     /**
      * Allows you to link two renderables as front and back sides that can be
@@ -30,7 +30,7 @@ define(function(require, exports, module) {
         }
     };
 
-    module.exports = View.extend({
+    var Flipper = module.exports = View.extend({
         defaults : {
             transition : true,
             direction : CONSTANTS.DIRECTION.X
@@ -41,40 +41,47 @@ define(function(require, exports, module) {
         initialize : function(){
             this.state.angle.set(0);
 
-            var frontModifier = new Modifier({
-                size : function(){
-                    return this.frontNode.getSize();
-                }.bind(this),
-                transform : function() {
-                    var angle = this.state.angle.get();
-                    return (this.options.direction === CONSTANTS.DIRECTION.X)
-                        ? Transform.rotateY(angle)
-                        : Transform.rotateX(angle)
-                }.bind(this),
+            var angleGetter = new Getter(this.state.angle);
+
+            this.frontTransform = angleGetter.map(function(angle){
+                return (this.options.direction === CONSTANTS.DIRECTION.X)
+                    ? Transform.rotateY(angle)
+                    : Transform.rotateX(angle);
+            }.bind(this));
+
+            this.backTransform = angleGetter.map(function(angle){
+                return (this.options.direction === CONSTANTS.DIRECTION.X)
+                    ? Transform.rotateY(angle + Math.PI)
+                    : Transform.rotateX(angle + Math.PI);
+            }.bind(this));
+        },
+        setup : function(){
+            this.frontModifier = new Modifier({
+                size : this.frontNode.getSize(),
+                transform : this.frontTransform,
                 origin : [0.5, 0.5]
             });
 
-            var backModifier = new Modifier({
-                size : function(){
-                    return this.backNode.getSize();
-                }.bind(this),
-                transform : function() {
-                    var angle = this.state.angle.get() + Math.PI;
-                    return (this.options.direction === CONSTANTS.DIRECTION.X)
-                        ? Transform.rotateY(angle)
-                        : Transform.rotateX(angle)
-                }.bind(this),
+            this.backModifier = new Modifier({
+                size : this.backNode.getSize(),
+                transform : this.backTransform,
                 origin : [0.5, 0.5]
             });
 
-            this.frontNode = this.add(frontModifier);
-            this.backNode = this.add(backModifier);
+            this.add(this.frontModifier).add(this.frontNode);
+            this.add(this.backModifier).add(this.backNode);
         },
         setFront : function setFront(front){
-            this.frontNode.add(front);
+            this.frontNode = front;
+            front.on('resize', function(size){
+               this.frontModifier.sizeFrom(size);
+            }.bind(this));
         },
         setBack : function setFront(back){
-            this.backNode.add(back);
+            this.backNode = back;
+            back.on('resize', function(size){
+                this.backModifier.sizeFrom(size);
+            }.bind(this));
         },
         setAngle : function setAngle(angle, transition, callback){
             if (transition === undefined) transition = this.options.transition;
