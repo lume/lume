@@ -41,15 +41,17 @@ define(function(require, exports, module) {
     var lastTime = now();
     var frameTime;
     var frameTimeLimit;
-    var loopEnabled = true;
     var eventForwarders = {};
-    var eventHandler = null;
+    var eventHandler = new EventHandler();
+    var dirty = true;
+    var dirtyLock = 0;
+    var emitPrerender = false;
+    var emitPostrender = false;
 
     var options = {
         containerType: 'div',
         containerClass: 'famous-context',
         fpsCap: undefined,
-        runLoop: true,
         appMode: true
     };
     var optionsManager = new OptionsManager(options);
@@ -82,11 +84,11 @@ define(function(require, exports, module) {
 
         while (nextTickQueue.length) (nextTickQueue.shift())();
 
-        if (eventHandler) eventHandler.emit('prerender');
+        if (emitPrerender) eventHandler.emit('prerender');
 
         for (var i = 0; i < contexts.length; i++) contexts[i].commit();
 
-        if (eventHandler) eventHandler.emit('postrender');
+        if (emitPostrender) eventHandler.emit('postrender');
 
         dirtyQueue.flush();
 
@@ -95,25 +97,18 @@ define(function(require, exports, module) {
 
     // engage requestAnimationFrame
     function loop() {
-        if (options.runLoop) {
+        //TODO: this dirty check should be unecessary
+        if (dirty) {
             Engine.step();
-            window.requestAnimationFrame(loop);
+            rafId = window.requestAnimationFrame(loop);
         }
-        else loopEnabled = false;
     }
-    window.requestAnimationFrame(loop);
+    var rafId = window.requestAnimationFrame(loop);
 
-    //
-    // Upon main document window resize (unless on an "input" HTML element):
-    //   scroll to the top left corner of the window,
-    //   and for each managed Context: emit the 'resize' event and update its size.
-    // @param {Object=} event document event
-    //
     function handleResize(event) {
+        eventHandler.emit('resize');
         for (var i = 0; i < contexts.length; i++)
             contexts[i].trigger('resize');
-
-        if (eventHandler) eventHandler.emit('resize');
     }
     window.addEventListener('resize', handleResize, false);
     handleResize();
@@ -135,13 +130,6 @@ define(function(require, exports, module) {
     }
     var initialized = false;
 
-    function _createEventHandler(){
-        if (eventHandler) return;
-        eventHandler = new EventHandler();
-        Engine.off = eventHandler.off.bind(eventHandler);
-        Engine.emit = eventHandler.emit.bind(eventHandler);
-    }
-
     /**
      * Bind a callback function to an event type handled by this object.
      *
@@ -152,8 +140,11 @@ define(function(require, exports, module) {
      * @param {function(string, Object)} handler callback
      * @return {EventHandler} this
      */
+    EventHandler.setInputHandler(Engine, eventHandler);
+    EventHandler.setOutputHandler(Engine, eventHandler);
     Engine.on = function(type, handler){
-        _createEventHandler();
+        if (type == 'prerender') emitPrerender = true;
+        if (type == 'postrender') emitPostrender = true;
         if (!(type in eventForwarders)) {
             eventForwarders[type] = eventHandler.emit.bind(eventHandler, type);
             document.addEventListener(type, eventForwarders[type]);
@@ -161,8 +152,28 @@ define(function(require, exports, module) {
         return eventHandler.on(type, handler);
     };
 
-    Engine.off = _createEventHandler;
-    Engine.emit = _createEventHandler;
+    eventHandler.on('dirty', function(){
+        if (!dirty) {
+            dirty = true;
+            rafId = window.requestAnimationFrame(loop);
+        }
+        dirtyLock++;
+    });
+
+    eventHandler.on('clean', function(){
+        if (dirtyLock > 0) dirtyLock--;
+        if (dirty && dirtyLock === 0) {
+            dirty = false;
+            window.cancelAnimationFrame(rafId);
+        }
+    });
+
+    eventHandler.on('resize', function(){
+        if (!dirty) {
+            dirty = true;
+            rafId = window.requestAnimationFrame(loop);
+        }
+    });
 
     /**
      * Return the current calculated frames per second of the Engine.
@@ -263,6 +274,7 @@ define(function(require, exports, module) {
      */
     Engine.registerContext = function registerContext(context) {
         contexts.push(context);
+        Engine.subscribe(context);
         return context;
     };
 
@@ -288,6 +300,7 @@ define(function(require, exports, module) {
      */
     Engine.deregisterContext = function deregisterContext(context) {
         var i = contexts.indexOf(context);
+        Engine.unsubscribe(context);
         if (i >= 0) contexts.splice(i, 1);
     };
 
@@ -295,13 +308,6 @@ define(function(require, exports, module) {
         var key = data.key;
         var value = data.value;
         if (key === 'fpsCap') Engine.setFPSCap(value);
-        else if (key === 'runLoop') {
-            // kick off the loop only if it was stopped
-            if (!loopEnabled && value) {
-                loopEnabled = true;
-                window.requestAnimationFrame(loop);
-            }
-        }
     });
 
     module.exports = Engine;
