@@ -9,9 +9,10 @@
 /* Modified work copyright © 2015 David Valdman */
 
 define(function(require, exports, module) {
-    var Entity = require('./Entity');
-    var EventHandler = require('./EventHandler');
-    var Transform = require('./Transform');
+    var Entity = require('famous/core/Entity');
+    var EventHandler = require('famous/core/EventHandler');
+    var Transform = require('famous/core/Transform');
+    var nextTick = require('famous/core/nextTickQueue');
 
     var usePrefix = !('transform' in document.documentElement.style);
     var devicePixelRatio = window.devicePixelRatio || 1;
@@ -257,13 +258,15 @@ define(function(require, exports, module) {
             if (this._size === null) this._size = [0,0];
             if (this.size === null) this._size = [size[0], size[1]];
             else {
-                // take on numeric size values if available
-                if (typeof this.size[0] === 'number') this._size[0] = this.size[0];
-                if (typeof this.size[1] === 'number') this._size[1] = this.size[1];
-
                 // take on parent size if size is undefined
                 if (this.size[0] === undefined) this._size[0] = spec.size[0];
                 if (this.size[1] === undefined) this._size[1] = spec.size[1];
+
+                // if proportions defined, scale calculated size
+                if (this.proportions){
+                    if (typeof this.proportions[0] === 'number') this._size[0] *= this.proportions[0];
+                    if (typeof this.proportions[1] === 'number') this._size[1] *= this.proportions[1];
+                }
 
                 // flag to ping the DOM for the current element size
                 if (this._trueSizeCheck) {
@@ -272,17 +275,15 @@ define(function(require, exports, module) {
                     this._trueSizeCheck = false;
                 }
 
-                // if proportions defined, scale calculated size
-                if (this.proportions){
-                    if (typeof this.proportions[0] === 'number') this._size[0] *= this.proportions[0];
-                    if (typeof this.proportions[1] === 'number') this._size[1] *= this.proportions[1];
-                }
+                // take on numeric size values if available
+                if (typeof this.size[0] === 'number') this._size[0] = this.size[0];
+                if (typeof this.size[1] === 'number') this._size[1] = this.size[1];
 
                 // commit pixel size unless dimension's size is true
                 if (this.size[0] !== true) target.style.width = this._size[0] + 'px';
                 if (this.size[1] !== true) target.style.height = this._size[1] + 'px';
 
-                this._eventOutput.emit('resize');
+                this._eventOutput.emit('resize', this._size);
             }
         }
 
