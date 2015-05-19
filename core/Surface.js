@@ -11,6 +11,7 @@
 define(function(require, exports, module) {
     var ElementOutput = require('famous/core/ElementOutput');
     var dirtyQueue = require('famous/core/dirtyQueue');
+    var postTick = require('famous/core/postTickQueue');
 
     /**
      * A base class for viewable content and event
@@ -477,17 +478,28 @@ define(function(require, exports, module) {
      * @param {Array.Number} size as [width, height]
      */
     Surface.prototype.setSize = function setSize(size) {
+        //TODO: consider refactor - size as getter with resize event
+        if (size === this.size) return;
         this.size = [size[0], size[1]];
         this._sizeDirty = true;
-        _setDirty.call(this);
-        //TODO: `resize` event is duplicated in ElementOutput. Condiser refactor.
+        _setDirty.bind(this);
         this._eventOutput.emit('resize', size);
+
+        // force commit cycle so that getSize gives correct result
+        postTick.push(function(){
+            this._eventOutput.emit('resize', size);
+        }.bind(this));
     };
 
     Surface.prototype.setProportions = function setProportions(proportions) {
         this.proportions = [proportions[0], proportions[1]];
         this._sizeDirty = true;
         _setDirty.call(this);
+
+        // force commit cycle so that getSize gives correct result
+        postTick.push(function(){
+            this._eventOutput.emit('resize', this._size);
+        }.bind(this));
     };
 
     Surface.prototype.getOrigin = function getOrigin(){
