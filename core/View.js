@@ -34,7 +34,8 @@ define(function(require, exports, module) {
             this._dirtyLock = 0;
 
             this._cachedSpec = null;
-            this._cachedSize = null;
+            this._cachedParentSize = null;
+            this._cachedParentSpec = null;
 
             this._setup = false;
             this._isView = true;
@@ -93,45 +94,45 @@ define(function(require, exports, module) {
                 this._dirty = false;
             }
         },
-        render : function render(spec){
-            if (!this._cachedSpec || this._cachedSpec !== spec){
-                this._cachedSpec = spec;
+        render : function render(parentSpec){
+            var parentSize = parentSpec.size;
 
-                if (!this._dirty){
-                    this._dirty = true;
-                    dirtyQueue.push(this);
-                }
-
-                spec = SpecManager.merge({
-                    origin : this.options.origin,
-                    size : this.getSize() || spec.size
-                }, spec);
-            }
-
-            var parentSize = spec.size;
-            if (!this._cachedSize || (this._cachedSize[0] !== parentSize[0] || this._cachedSize[1] !== parentSize[1])){
-                if (!this._cachedSize) this._cachedSize = [parentSize[0], parentSize[1]];
+            if (!this._cachedParentSize || (this._cachedParentSize[0] !== parentSize[0] || this._cachedParentSize[1] !== parentSize[1])){
+                if (!this._cachedParentSize)
+                    this._cachedParentSize = [parentSize[0], parentSize[1]];
                 else {
-                    this._cachedSize[0] = parentSize[0];
-                    this._cachedSize[1] = parentSize[1];
+                    this._cachedParentSize[0] = parentSize[0];
+                    this._cachedParentSize[1] = parentSize[1];
                 }
 
                 this.trigger('resize', parentSize);
 
-                if (!this._dirty){
-                    this._dirty = true;
-                    dirtyQueue.push(this);
-                }
+                this._dirty = true;
             }
 
+            // setup may first need resize to be fired
             if (!this._setup && this.setup) {
                 this.setup();
                 this._setup = true;
             }
 
-            if (this._dirty){
-                RenderNode.prototype.render.call(this._node, spec);
+            // .getSize may first need setup to run
+            if (!this._cachedParentSpec || this._cachedParentSpec !== parentSpec){
+                this._cachedParentSpec = parentSpec;
+
+                parentSpec = SpecManager.merge({
+                    origin : this.options.origin,
+                    size : this.getSize() || parentSize
+                }, parentSpec);
+
+                this._cachedSpec = parentSpec;
+
+                this._dirty = true;
             }
+
+            if (!this._dirty) return;
+            RenderNode.prototype.render.call(this._node, this._cachedSpec);
+            dirtyQueue.push(this);
         },
         commit : function commit(allocator){
             if (!this._dirty) return;
