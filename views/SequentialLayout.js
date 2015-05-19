@@ -10,9 +10,8 @@
 
 define(function(require, exports, module) {
     var Transform = require('famous/core/Transform');
-    var ViewSequence = require('famous/core/ViewSequence');
     var View = require('famous/core/View');
-    var Spec = require('famous/core/Spec');
+    var LayoutGetter = require('famous/core/LayoutGetter');
 
     /**
      * SequentialLayout will lay out a collection of renderables sequentially in the specified direction.
@@ -31,53 +30,51 @@ define(function(require, exports, module) {
             direction : CONSTANTS.DIRECTION.Y,
             itemSpacing : 0
         },
-        state : {
-            items : ViewSequence,
-            length : Number,
-            direction : Number
+        events : {
+            resize : onResize
         },
-        initialize : function initialize(options){
-            this.state.items = null;
-            this.state.direction = options.direction;
-            this.state.length = 0;
-
+        state : {
+            items : Array
+        },
+        initialize : function initialize(){
             this._outputFunction = _defaultOutputFunction;
+            this.size = null;
+            this.length = undefined;
+        },
+        setup : function(){
+            var layout = new LayoutGetter(this.state.items);
 
-            var spec = new Spec();
-            this.add(function(){
-                var direction = this.state.direction;
-
-                var currentNode = this.state.items;
-                var i = 0;
+            var transforms = layout.map(function(surfaces){
+                var direction = this.options.direction;
+                var spacing = this.options.itemSpacing;
+                var transforms = [];
                 var length = 0;
-                var itemSize;
-                while (currentNode) {
-                    var item = currentNode.get();
-
-                    if (!item) break;
-
-                    if (item.getSize) itemSize = item.getSize();
-
-                    var transform = this._outputFunction.call(this, length, i);
-
-                    if (itemSize){
-                        var itemLength = itemSize[direction];
-                        if (itemLength)
-                            length += itemLength + this.options.itemSpacing;
-                    }
-
-                    spec.getChild(i)
-                        .setTransform(transform)
-                        .setTarget(item);
-
-                    currentNode = currentNode.getNext();
-                    i++;
+                for (var i = 0; i < surfaces.length; i++){
+                    var transform = this._outputFunction.call(this, length);
+                    transforms.push(transform);
+                    length += surfaces[i].getSize()[direction] + spacing;
                 }
-
-                this.state.length = length;
-
-                return spec;
+                this.length = length;
+                return transforms;
             }.bind(this));
+
+            for (var i = 0; i < this.state.items.length; i++){
+                var item = this.state.items[i];
+                this.add({transform : transforms.pluck(i)}).add(item);
+            }
+        },
+        getSize : function(){
+            if (this.length === undefined){
+                var direction = this.options.direction;
+                var spacing = this.options.itemSpacing;
+                var length = 0;
+                for (var i = 0; i < this.state.items.length; i++)
+                    length += this.state.items[i].getSize()[direction] + spacing;
+                this.length = length;
+            }
+
+            this.size[this.options.direction] = this.length;
+            return this.size;
         },
         /**
          * setOutputFunction is used to apply a user-defined output transform on each processed renderable.
@@ -98,14 +95,16 @@ define(function(require, exports, module) {
          * @chainable
          */
         sequenceFrom : function sequenceFrom(items) {
-            if (items instanceof Array) items = new ViewSequence(items);
             this.state.items = items;
-            return items;
         }
     }, CONSTANTS);
 
+    function onResize(size){
+        this.size = size;
+    }
+
     function _defaultOutputFunction(offset, index) {
-        return (this.state.direction === CONSTANTS.DIRECTION.X)
+        return (this.options.direction === CONSTANTS.DIRECTION.X)
             ? Transform.translate(offset, 0, 0)
             : Transform.translate(0, offset, 0);
     }
