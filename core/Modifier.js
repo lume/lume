@@ -76,6 +76,12 @@ define(function(require, exports, module) {
         if (options) this.from(options);
     }
 
+    function _fireDirty(){
+        if (this._dirty) return;
+        this.trigger('dirty');
+        dirtyQueue.push(this);
+    }
+
     Modifier.prototype.from = function from(options){
         if (options.transform) this.transformFrom(options.transform);
         if (options.opacity !== undefined) this.opacityFrom(options.opacity);
@@ -99,12 +105,11 @@ define(function(require, exports, module) {
         if (transform instanceof Object && transform.get) {
             this._eventInput.subscribe(transform);
             this._transformGetter = transform.get.bind(transform);
-            dirtyQueue.push(this);
         }
         else {
             this._transformGetter = null;
             this._output.transform = transform;
-            dirtyQueue.push(this);
+            _fireDirty.call(this);
         }
         return this;
     };
@@ -121,12 +126,11 @@ define(function(require, exports, module) {
         if (opacity instanceof Object && opacity.get) {
             this._eventInput.subscribe(opacity);
             this._opacityGetter = opacity.get.bind(opacity);
-            dirtyQueue.push(this);
         }
         else {
             this._opacityGetter = null;
             this._output.opacity = opacity;
-            dirtyQueue.push(this);
+            _fireDirty.call(this);
         }
         return this;
     };
@@ -141,19 +145,14 @@ define(function(require, exports, module) {
      * @return {Modifier} this
      */
     Modifier.prototype.originFrom = function originFrom(origin) {
-        if (origin instanceof Function) {
-            this._originGetter = origin;
-            this._dirty = true;
-            this._dirtyLock++; // will always be dirty
-        }
-        else if (origin instanceof Object && origin.get) {
+        if (origin instanceof Object && origin.get) {
             this._eventInput.subscribe(origin);
             this._originGetter = origin.get.bind(origin);
         }
         else {
             this._originGetter = null;
             this._output.origin = origin;
-            this._dirty = true;
+            _fireDirty.call(this);
         }
         return this;
     };
@@ -168,19 +167,14 @@ define(function(require, exports, module) {
      * @return {Modifier} this
      */
     Modifier.prototype.alignFrom = function alignFrom(align) {
-        if (align instanceof Function) {
-            this._alignGetter = align;
-            this._dirty = true;
-            this._dirtyLock++; // will always be dirty
-        }
-        else if (align instanceof Object && align.get) {
+        if (align instanceof Object && align.get) {
             this._eventInput.subscribe(align);
             this._alignGetter = align.get.bind(align);
         }
         else {
             this._alignGetter = null;
             this._output.align = align;
-            this._dirty = true;
+            _fireDirty.call(this);
         }
         return this;
     };
@@ -200,37 +194,27 @@ define(function(require, exports, module) {
      * @return {Modifier} this
      */
     Modifier.prototype.sizeFrom = function sizeFrom(size) {
-        if (size instanceof Function) {
-            this._sizeGetter = size;
-            this._dirty = true;
-            this._dirtyLock++; // will always be dirty
-        }
-        else if (size instanceof Object && size.get) {
+        if (size instanceof Object && size.get) {
             this._eventInput.subscribe(size);
             this._sizeGetter = size.get.bind(size);
         }
         else {
             this._sizeGetter = null;
             this._output.size = size;
-            this._dirty = true;
+            _fireDirty.call(this);
         }
         return this;
     };
 
     Modifier.prototype.marginsFrom = function marginsFrom(margins) {
-        if (margins instanceof Function) {
-            this._marginsGetter = margins;
-            this._dirty = true;
-            this._dirtyLock++; // will always be dirty
-        }
-        else if (margins instanceof Object && margins.get) {
+        if (margins instanceof Object && margins.get) {
             this._eventInput.subscribe(margins);
             this._marginsGetter = margins.get.bind(margins);
         }
         else {
             this._marginsGetter = null;
             this._output.margins = margins;
-            this._dirty = true;
+            _fireDirty.call(this);
         }
         return this;
     };
@@ -244,19 +228,14 @@ define(function(require, exports, module) {
      * @return {Modifier} this
      */
     Modifier.prototype.proportionsFrom = function proportionsFrom(proportions) {
-        if (proportions instanceof Function) {
-            this._proportionsGetter = proportions;
-            this._dirty = true;
-            this._dirtyLock++; // will always be dirty
-        }
-        else if (proportions instanceof Object && proportions.get) {
+        if (proportions instanceof Object && proportions.get) {
             this._eventInput.subscribe(proportions);
             this._proportionsGetter = proportions.get.bind(proportions);
         }
         else {
             this._proportionsGetter = null;
             this._output.proportions = proportions;
-            this._dirty = true;
+            _fireDirty.call(this);
         }
         return this;
     };
