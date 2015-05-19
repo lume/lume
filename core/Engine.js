@@ -30,6 +30,7 @@ define(function(require, exports, module) {
     var OptionsManager = require('./OptionsManager');
     var nextTickQueue = require('./nextTickQueue');
     var dirtyQueue = require('./dirtyQueue');
+    var postTickQueue = require('./postTickQueue');
 
     var Engine = {};
 
@@ -66,6 +67,8 @@ define(function(require, exports, module) {
      * @method step
      */
     Engine.step = function step() {
+        // browser events and their handlers happen before rendering begins
+
         currentFrame++;
         nextTickFrame = currentFrame;
 
@@ -77,15 +80,17 @@ define(function(require, exports, module) {
         frameTime = currentTime - lastTime;
         lastTime = currentTime;
 
-        if (eventHandler) eventHandler.emit('prerender');
-
         while (nextTickQueue.length) (nextTickQueue.shift())();
+
+        if (eventHandler) eventHandler.emit('prerender');
 
         for (var i = 0; i < contexts.length; i++) contexts[i].commit();
 
         if (eventHandler) eventHandler.emit('postrender');
 
         dirtyQueue.flush();
+
+        while (postTickQueue.length) (postTickQueue.shift())();
     };
 
     // engage requestAnimationFrame
