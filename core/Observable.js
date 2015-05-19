@@ -4,8 +4,12 @@ define(function(require, exports, module) {
 
     function Observable(value){
         this.value = value || undefined;
-        this._eventOutput = new EventHandler();
-        EventHandler.setOutputHandler(this, this._eventOutput);
+        this._eventHandler = new EventHandler();
+        EventHandler.setInputHandler(this, this._eventHandler);
+        EventHandler.setOutputHandler(this, this._eventHandler);
+
+        if (value instanceof Object && value.emit)
+            this._eventHandler.subscribe(value);
     }
 
     Observable.prototype.get = function(){
