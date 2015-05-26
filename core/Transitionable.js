@@ -12,6 +12,7 @@ define(function(require, exports, module) {
     var MultipleTransition = require('../core/MultipleTransition');
     var TweenTransition = require('./../transitions/TweenTransition');
     var EventHandler = require('famous/core/EventHandler');
+    var Clock = require('famous/core/Clock');
     var dirtyQueue = require('famous/core/dirtyQueue');
 
     /**
@@ -45,12 +46,13 @@ define(function(require, exports, module) {
         this._callback = undefined;
         this._engineInstance = null;
         this._currentMethod = null;
-        this._eventOutput = new EventHandler();
-        EventHandler.setOutputHandler(this, this._eventOutput);
         this._state = STATE.NONE;
         this._dirty = false;
 
-        this.set(start || 0);
+        this._eventOutput = new EventHandler();
+        EventHandler.setOutputHandler(this, this._eventOutput);
+
+        Clock.subscribe(this);
     }
 
     var transitionMethods = {};
@@ -138,6 +140,8 @@ define(function(require, exports, module) {
      *    completion (t=1)
      */
     Transitionable.prototype.set = function set(endState, transition, callback) {
+
+        console.log('tran set')
         if (!transition) {
 
             switch (this._state){
@@ -191,9 +195,6 @@ define(function(require, exports, module) {
      */
     Transitionable.prototype.get = function get() {
         switch (this._state){
-            case STATE.UPDATE:
-                this.update();
-                break;
             case STATE.START:
                 this._state = STATE.END;
                 break;

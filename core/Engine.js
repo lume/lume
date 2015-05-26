@@ -28,6 +28,7 @@ define(function(require, exports, module) {
     var Context = require('./Context');
     var EventHandler = require('./EventHandler');
     var OptionsManager = require('./OptionsManager');
+    var Clock = require('famous/core/Clock');
     var nextTickQueue = require('./nextTickQueue');
     var dirtyQueue = require('./dirtyQueue');
     var postTickQueue = require('./postTickQueue');
@@ -309,6 +310,8 @@ define(function(require, exports, module) {
         var value = data.value;
         if (key === 'fpsCap') Engine.setFPSCap(value);
     });
+
+    Clock.subscribeEngine(Engine);
 
     module.exports = Engine;
 });
