@@ -13,7 +13,8 @@ define(function(require, exports, module) {
     var Transform = require('famous/core/Transform');
     var ViewSequence = require('famous/core/ViewSequence');
     var View = require('famous/core/View');
-    var Spec = require('famous/core/Spec');
+    var Getter = require('famous/core/GetHelper');
+    var Observable = require('famous/core/Observable');
 
     /**
      * Scroller lays out a collection of renderables, and will browse through them based on
@@ -47,52 +48,39 @@ define(function(require, exports, module) {
             clipSize: undefined,
             groupScroll: false
         },
-        state : {
-            offset : Number
-        },
         events : {
+            resize : onResize,
             change : _updateOptions
+        },
+        setup : function(){
+            var offsetGetter = new Getter(this.offset);
+
+            var masterTransform = offsetGetter.map(function(offset){
+                return this._masterOutputFunction(-offset);
+            }.bind(this));
+
+            this.add({transform : masterTransform}).add(this.group);
         },
         initialize : function(options){
             this.initializeState(options);
             this.initializeSubviews(options);
             this.initializeEvents(options);
-
-            this.outputFrom();
-
-            var spec = new Spec();
-
-            //TODO: cleanup contextSize
-            this.add(function(size){
-                if (!this.options.clipSize && (size[0] !== this._contextSize[0] || size[1] !== this._contextSize[1])) {
-                    this._contextSize[0] = size[0];
-                    this._contextSize[1] = size[1];
-
-                    if (this.options.direction === DIRECTION.X) {
-                        this._size[0] = _getClipSize.call(this);
-                        this._size[1] = undefined;
-                    }
-                    else {
-                        this._size[0] = undefined;
-                        this._size[1] = _getClipSize.call(this);
-                    }
-                }
-
-                if (!this._currentNode) return null;
-                if (this._offsetGetter) this.state.offset = this._offsetGetter.call(this);
-
-                spec.setTransform(this._masterOutputFunction(-this.state.offset))
-                    .setTarget(this.group);
-
-                return spec;
-            }.bind(this));
         },
         initializeState : function initializeState(options){
             this._currentNode = null;
-            this.state.offset = 0;
-            this._offsetGetter = null;
-            this._outputFunction = null;
-            this._masterOutputFunction = null;
+
+            this._outputFunction = function(offset) {
+                return (options.direction === DIRECTION.X)
+                    ? Transform.translate(offset, 0)
+                    : Transform.translate(0, offset);
+            };
+
+            this._masterOutputFunction = function(offset) {
+                return (options.direction === DIRECTION.X)
+                    ? Transform.translate(-offset, 0)
+                    : Transform.translate(0, -offset);
+            };
+
             this._edgeState = EDGE_STATES.NONE;
             this._size = [undefined, undefined];
             this._contextSize = [undefined, undefined];
@@ -115,20 +103,19 @@ define(function(require, exports, module) {
          * @param {Function} [masterFn]
          */
         outputFrom : function outputFrom(fn, masterFn) {
-            if (!fn) {
-                fn = function(offset) {
+            this._outputFunction = (fn)
+                ? fn
+                : function(offset) {
                     return (this.options.direction === DIRECTION.X)
                         ? Transform.translate(offset, 0)
                         : Transform.translate(0, offset);
                 }.bind(this);
-                if (!masterFn) masterFn = fn;
-            }
-            this._outputFunction = fn;
+
             this._masterOutputFunction = (masterFn)
                 ? masterFn
                 : function(offset) {
-                    return Transform.inverse(fn(-offset));
-                };
+                    return Transform.inverse(this._outputFunction(-offset));
+                }.bind(this);
         },
         /**
          * The Scroller instance's method for reading from an external position. Scroller uses
@@ -138,13 +125,8 @@ define(function(require, exports, module) {
          * or an object with a get method that returns a position.
          */
         offsetFrom : function offsetFrom(offset) {
-            if (offset instanceof Function) this._offsetGetter = offset;
-            else if (offset && offset.get) this._offsetGetter = offset.get.bind(offset);
-            else {
-                this._offsetGetter = null;
-                this.state.offset = offset;
-            }
-            if (this._offsetGetter) this.state.offset = this._offsetGetter.call(this);
+            if (offset && offset.get) this.offset = offset;
+            else this.offset = new Observable(offset);
         },
         /**
          * Sets the collection of renderables under the Scroller instance's control.
@@ -161,6 +143,12 @@ define(function(require, exports, module) {
 
     }, CONSTANTS);
 
+    function onResize(size){
+        this._contextSize = size;
+        this._size[this.options.direction] = _getClipSize.call(this);
+        this._size[1 - this.options.direction] = undefined;
+    }
+
     function _nodeSizeForDirection(node) {
         var direction = this.options.direction;
         var size = node.getSize();
@@ -169,7 +157,7 @@ define(function(require, exports, module) {
 
     function _output(node, nodeOffset, target) {
         var transform = this._outputFunction(nodeOffset);
-        target.push({transform: transform, target: node.render(null, this._size)});
+        target.push({transform: transform, target: node.render()});
     }
 
     function _getClipSize() {
@@ -189,7 +177,7 @@ define(function(require, exports, module) {
     }
 
     function _innerRender() {
-        var offset = this.state.offset;
+        var offset = this.offset.get();
         var onEdge = false;
         var clipSize = _getClipSize.call(this);
         var result = [];

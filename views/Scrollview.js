@@ -26,6 +26,9 @@ define(function(require, exports, module) {
     var TouchSync = require('famous/inputs/TouchSync');
     GenericSync.register({scroll : ScrollSync, touch : TouchSync});
 
+    var Engine = require('famous/core/Engine');
+
+
     /** @enum */
     var SpringStates = {
         NONE: 0,
@@ -81,20 +84,13 @@ define(function(require, exports, module) {
             this.initializeSubviews(options);
             this.initializeEvents(options);
 
-            this.state.offset.on('start', function(){
-                console.log('CLEEEEEAN')
-            })
-
-            this.state.offset.on('end', function(){
-                console.log('DIIIIRTY')
-            })
-
-
             this.add(this._scroller);
+
+//            Engine.on('prerender', function(){console.log(this._particle.get())}.bind(this))
         },
         initializeSubviews : function(options){
             this._scroller = new Scroller(options);
-            this._scroller.offsetFrom(this.getOffset.bind(this));
+            this._scroller.offsetFrom(this.state.offset);
         },
         initializeState : function(options){
             // physics
@@ -130,14 +126,6 @@ define(function(require, exports, module) {
             this.state.offset.set(0);
             this._position = new Transitionable(0);
 
-            this.state.on('dirty', function(){
-                console.log('state dirty')
-            })
-
-            this.state.on('clean', function(){
-                console.log('state clean')
-            })
-
             this._payload = {
                 index: 0,
                 position: 0,
@@ -150,7 +138,7 @@ define(function(require, exports, module) {
                 ['scroll', 'touch'],
                 {
                     direction :     options.direction,
-                    scale :         -options.syncScale,
+                    scale :        -options.syncScale,
                     rails:          options.rails,
                     preventDefault: options.preventDefault
                 }
@@ -231,8 +219,6 @@ define(function(require, exports, module) {
 
                 if (this.getOffset() > 0.5 * previousNodeSize)
                     this.emit('pageChange', {direction: -1, index: this.getCurrentIndex()});
-
-                return;
             }
         },
         /**
@@ -336,6 +322,7 @@ define(function(require, exports, module) {
          * @param {number} velocity The magnitude of the velocity.
          */
         setVelocity : function(velocity){
+            console.log('set vel ', velocity)
             var velocity = _cap(velocity, this.options.speedLimit);
             this._particle.setVelocity1D(velocity);
         },
@@ -442,6 +429,7 @@ define(function(require, exports, module) {
     }
 
     function _handleSyncStart(event) {
+        console.log('sync start')
         this._particle.sleep();
 
         if (this._position.isActive()) this._position.halt();
@@ -459,6 +447,7 @@ define(function(require, exports, module) {
     }
 
     function _handleSyncUpdate(event) {
+        console.log('sync update')
         var velocity = event.velocity;
         _handleUpdate.call(this, event);
 
@@ -492,6 +481,7 @@ define(function(require, exports, module) {
 
     //TODO: fix particle wake. Necessary on early end when physics is sleeping
     function _handleSyncEnd(event) {
+        console.log('sync end')
         this._endFired = true;
         this._touchCount = event.count;
         if (!this._touchCount) {
@@ -513,14 +503,17 @@ define(function(require, exports, module) {
     }
 
     function _handlePhysicsStart(particle){
+        console.log('phys start')
         if (this._position.isActive()) this._position.halt();
         particle.setPosition1D(this.getOffset());
     }
 
     function _handlePhysicsUpdate(){
+        console.log('phys update')
     }
 
     function _handlePhysicsEnd(){
+        console.log('phys end')
         _detachAgents.call(this);
         _handleEnd.call(this);
     }

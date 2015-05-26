@@ -9,7 +9,8 @@
 /* Modified work copyright © 2015 David Valdman */
 
 define(function(require, exports, module) {
-    var EventHandler = require('../core/EventHandler');
+    var EventHandler = require('famous/core/EventHandler');
+    var dirtyQueue = require('famous/core/dirtyQueue');
 
     /**
      * Accumulates differentials of event sources that emit an `update`
@@ -25,22 +26,30 @@ define(function(require, exports, module) {
         this._state = state || 0;
         this.sources = [];
         this._dirty = true;
+        this._dirtyLock = 0;
 
         this._eventInput = new EventHandler();
         this._eventOutput = new EventHandler();
+        EventHandler.setInputHandler(this, this._eventInput);
         EventHandler.setOutputHandler(this, this._eventOutput);
 
         this._eventInput.on('start', function(){
+            console.log(this._dirtyLock)
             if (!this._dirty){
+                console.log('acc dirty')
                 this._dirty = true;
-                this._eventOutput.emit('start');
+                this._eventOutput.emit('dirty');
             }
+            this._dirtyLock++;
         }.bind(this));
 
         this._eventInput.on('end', function(){
-            if (this._dirty){
+            if (this._dirtyLock > 0) this._dirtyLock--;
+            console.log(this._dirtyLock)
+            if (this._dirty && this._dirtyLock == 0){
+                console.log('acc clean')
                 this._dirty = false;
-                this._eventOutput.emit('end');
+                this._eventOutput.emit('clean');
             }
         }.bind(this));
 
@@ -65,8 +74,6 @@ define(function(require, exports, module) {
             this.set(newState);
             this._eventOutput.emit('update', {value : newState});
         }
-
-        if (!this._dirty) this._dirty = true;
     }
 
     Accumulator.prototype.subscribe = function subscribe(source){
@@ -104,8 +111,17 @@ define(function(require, exports, module) {
      */
     Accumulator.prototype.set = function set(state) {
         if (this._state === state) return;
-        this._dirty = true;
         this._state = state;
+        this._dirty = true;
+        this._eventOutput.emit('dirty');
+        dirtyQueue.push(this);
+    };
+
+    Accumulator.prototype.clean = function clean(){
+        if (this._dirtyLock == 0) {
+            this._dirty = false;
+            this.emit('clean');
+        }
     };
 
     module.exports = Accumulator;
