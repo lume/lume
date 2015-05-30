@@ -72,7 +72,7 @@ define(function(require, exports, module) {
             start : function(data){
                 count++;
                 total++;
-                mergedData[data.stream] = data;
+                mergedData[data.streamId] = data;
 
                 nextTickQueue.push(function(){
                     if (count === total){
@@ -84,7 +84,7 @@ define(function(require, exports, module) {
             update : function(data){
                 count++;
 
-                mergedData[data.stream] = data;
+                mergedData[data.streamId] = data;
 
                 if (count === total){
                     count = 0;
@@ -94,7 +94,7 @@ define(function(require, exports, module) {
             end : function(data){
                 total--;
 
-                mergedData[data.stream] = data;
+                mergedData[data.streamId] = data;
 
                 if (count == total) count = 0;
 
@@ -103,8 +103,9 @@ define(function(require, exports, module) {
             }
         });
 
-        var mergedData = {};
-        var streams = {};
+        var mergedData = (streamObj instanceof Array) ? [] : {};
+        var streams = (streamObj instanceof Array) ? [] : {};
+
         for (var key in streamObj){
             var stream = streamObj[key];
             streams[key] = stream;
@@ -113,7 +114,7 @@ define(function(require, exports, module) {
             var mapped = (function(streamId){
                 return new EventMapper(function(data){
                     if (data === undefined) data = {};
-                    data.stream = streamId;
+                    data.streamId = streamId;
                     return data;
                 });
             })(key);
@@ -122,6 +123,18 @@ define(function(require, exports, module) {
         }
 
         return mergedStream;
+    };
+
+    Stream.lift = function(fn, streams){
+        var mergedStream = Stream.merge(streams);
+        var mappedStream = new EventMapper(function(data){
+            return fn.apply(null, data);
+        });
+
+        var liftedStream = new Stream();
+        liftedStream.subscribe(mappedStream).subscribe(mergedStream);
+
+        return liftedStream;
     };
 
     module.exports = Stream;
