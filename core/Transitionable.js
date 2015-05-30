@@ -14,6 +14,7 @@ define(function(require, exports, module) {
     var EventHandler = require('famous/core/EventHandler');
     var Clock = require('famous/core/Clock');
     var dirtyQueue = require('famous/core/dirtyQueue');
+    var postTickQueue = require('famous/core/postTickQueue');
 
     /**
      * A state maintainer for a smooth transition between
@@ -97,24 +98,6 @@ define(function(require, exports, module) {
 
         this._engineInstance.reset(this.state, this.velocity);
 
-        if (!this.isActive()){
-            //TODO: fix this check: needed for case SET_START
-            if (this._state == STATE.START){
-                this.emit('dirty');
-                dirtyQueue.push(this);
-            }
-            else{
-                this._state = STATE.START;
-                if (!this._dirty) {
-                    this._dirty = true;
-                    this.emit('dirty');
-                    dirtyQueue.push(this);
-                }
-            }
-
-            this._eventOutput.emit('start', {value : this.state});
-        }
-
         if (this.velocity !== undefined) {
             this.velocity = this._engineInstance.getVelocity();
             transition.velocity = this.velocity;
@@ -140,10 +123,7 @@ define(function(require, exports, module) {
      *    completion (t=1)
      */
     Transitionable.prototype.set = function set(endState, transition, callback) {
-
-        console.log('tran set')
         if (!transition) {
-
             switch (this._state){
                 case STATE.NONE:
                     // from zero to hero
@@ -157,13 +137,12 @@ define(function(require, exports, module) {
                     // interrupt while active causes end event
                     this._state = STATE.END;
                     dirtyQueue.push(this);
-                    this.emit('end', {value : endState});
                     break;
             }
 
             if (!this._dirty) {
                 this._dirty = true;
-                this.emit('dirty');
+                this.emit('start', {value : this.state});
                 dirtyQueue.push(this);
             }
 
@@ -172,8 +151,10 @@ define(function(require, exports, module) {
             return this;
         }
 
-        //TODO: make this check more efficient
         if (this.isActive()) this.halt();
+        else {
+            this._eventOutput.emit('start', {value : this.state});
+        }
 
         this.endStateQueue.push(endState);
         this.transitionQueue.push(transition);
@@ -194,51 +175,33 @@ define(function(require, exports, module) {
      *    interpolated to this point in time.
      */
     Transitionable.prototype.get = function get() {
-        switch (this._state){
-            case STATE.START:
-                this._state = STATE.END;
-                break;
-
-        }
         return this.state;
     };
 
     Transitionable.prototype.update = function update(){
-        if (!this._engineInstance) return;
+        if (this._state == STATE.START) return;
 
         var state = this._engineInstance.get();
 
-        var delta;
-        if (state instanceof Array){
-            delta = [];
-            for (var i = 0; i < state.length; i++)
-                delta[i] = state[i] - this.state[i];
-        }
-        else delta = state - this.state;
-
-        this.emit('update', {
-            delta : delta,
-            value : state
-        });
+        this.emit('update', {value : state});
 
         this.state = state;
 
         if (!this._engineInstance.isActive()){
-            this.state = state;
-            this._state = STATE.END;
+            postTickQueue.push(function(){
+                this._state = STATE.END;
 
-            dirtyQueue.push(this);
+                this._eventOutput.emit('end', {
+                    value: this.state,
+                    velocity: this.velocity
+                });
 
-            this._eventOutput.emit('end', {
-                value: this.state,
-                velocity: this.velocity
-            });
-
-            if (this._callback) {
-                var callback = this._callback;
-                this._callback = undefined;
-                callback();
-            }
+                if (this._callback) {
+                    var callback = this._callback;
+                    this._callback = undefined;
+                    callback();
+                }
+            }.bind(this));
         }
     };
 
@@ -297,8 +260,8 @@ define(function(require, exports, module) {
      */
     Transitionable.prototype.delay = function delay(duration, callback) {
         this.set(this.get(), {
-                duration: duration,
-                curve: function(){return 0;}},
+            duration: duration,
+            curve: function(){return 0;}},
             callback
         );
     };
@@ -334,9 +297,9 @@ define(function(require, exports, module) {
     };
 
     Transitionable.prototype.clean = function(){
-        if (this._state == STATE.END){
+        if (this._dirty){
             this._dirty = false;
-            this.emit('clean');
+            this.emit('end', {value : this.state});
         }
     };
 
