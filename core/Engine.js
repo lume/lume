@@ -85,23 +85,19 @@ define(function(require, exports, module) {
 
         while (nextTickQueue.length) (nextTickQueue.shift())();
 
-        if (emitPrerender) eventHandler.emit('prerender');
-
-        for (var i = 0; i < contexts.length; i++) contexts[i].commit();
-
-        if (emitPostrender) eventHandler.emit('postrender');
-
-        dirtyQueue.flush();
+        eventHandler.emit('tick');
 
         while (postTickQueue.length) (postTickQueue.shift())();
+
+        dirtyQueue.flush();
     };
 
     // engage requestAnimationFrame
     function loop() {
         //TODO: this dirty check should be unecessary
         if (dirty) {
-            Engine.step();
             rafId = window.requestAnimationFrame(loop);
+            Engine.step();
         }
     }
     var rafId = window.requestAnimationFrame(loop);

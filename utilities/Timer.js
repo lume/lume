@@ -20,7 +20,7 @@ define(function(require, exports, module) {
      */
     var Engine = require('famous/core/Engine');
 
-    var _event = 'prerender';
+    var _event = 'tick';
 
     var getTime = (window.performance)
         ? function() { return window.performance.now(); }
