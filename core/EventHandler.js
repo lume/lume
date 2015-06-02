@@ -100,12 +100,14 @@ define(function(require, exports, module) {
      * @param {EventEmitter} source source emitter object
      * @return {EventHandler} this
      */
-    EventHandler.prototype.subscribe = function subscribe(source) {
+    EventHandler.prototype.subscribe = function subscribe(source, restrictedTypes) {
+        //TODO: restrictedTypes must be applied after listeners created
         var index = this.upstream.indexOf(source);
         if (index < 0) {
             this.upstream.push(source);
             for (var type in this.upstreamListeners) {
-                source.on(type, this.upstreamListeners[type]);
+                if (!restrictedTypes || restrictedTypes.indexOf(type) !== -1)
+                    source.on(type, this.upstreamListeners[type]);
             }
         }
         return source;
