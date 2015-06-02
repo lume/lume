@@ -353,10 +353,6 @@ define(function(require, exports, module) {
         this._transformDirty = true;
     };
 
-    Surface.prototype.render = function(){
-        return ElementOutput.prototype.render.apply(this, arguments);
-    };
-
     /**
      * Apply changes from this component to the corresponding document element.
      * This includes changes to classes, styles, size, content, opacity, origin,
