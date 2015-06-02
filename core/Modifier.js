@@ -31,14 +31,6 @@ define(function(require, exports, module) {
      * @param {Array.Number} [options.size] size to apply to descendants
      */
     function Modifier(options) {
-        this._transformGetter = null;
-        this._opacityGetter = null;
-        this._originGetter = null;
-        this._alignGetter = null;
-        this._sizeGetter = null;
-        this._proportionsGetter = null;
-        this._marginsGetter = null;
-
         this._dirty = true;
         this._dirtyLock = 0;
 
@@ -47,19 +39,18 @@ define(function(require, exports, module) {
         EventHandler.setOutputHandler(this, this._eventOutput);
         EventHandler.setInputHandler(this, this._eventInput);
 
-        this._eventInput.on('dirty', function(){
-            if (!this._dirty){
-                this._dirty = true;
-                this._eventOutput.emit('dirty');
-            }
+        this._eventInput.on('start', function(){
             this._dirtyLock++;
+            if (this._dirty) return;
+            this._dirty = true;
+            this._eventOutput.emit('start', this._output);
         }.bind(this));
 
-        this._eventInput.on('clean', function(){
-            if (this._dirtyLock > 0) this._dirtyLock--;
-            if (this._dirty && this._dirtyLock == 0) {
+        this._eventInput.on('end', function(){
+            this._dirtyLock--;
+            if (this._dirtyLock == 0){
                 this._dirty = false;
-                this._eventOutput.emit('clean');
+                this._eventOutput.emit('end');
             }
         }.bind(this));
 
@@ -78,7 +69,7 @@ define(function(require, exports, module) {
 
     function _fireDirty(){
         if (this._dirty) return;
-        this.trigger('dirty');
+        this.trigger('start');
         dirtyQueue.push(this);
     }
 
@@ -104,10 +95,8 @@ define(function(require, exports, module) {
     Modifier.prototype.transformFrom = function transformFrom(transform) {
         if (transform instanceof Object && transform.get) {
             this._eventInput.subscribe(transform);
-            this._transformGetter = transform.get.bind(transform);
         }
         else {
-            this._transformGetter = null;
             this._output.transform = transform;
             _fireDirty.call(this);
         }
@@ -123,12 +112,24 @@ define(function(require, exports, module) {
      * @return {Modifier} this
      */
     Modifier.prototype.opacityFrom = function opacityFrom(opacity) {
-        if (opacity instanceof Object && opacity.get) {
-            this._eventInput.subscribe(opacity);
-            this._opacityGetter = opacity.get.bind(opacity);
+        if (opacity instanceof Object && opacity.emit) {
+            opacity.on('start', function(data){
+                this._output.opacity = data.value;
+                this.trigger('start');
+            }.bind(this));
+
+            opacity.on('update', function(data){
+                this._output.opacity = data.value;
+            }.bind(this));
+
+            opacity.on('end', function(data){
+                this._output.opacity = data.value;
+                this.trigger('end');
+            }.bind(this));
+
+            this._output.opacity = opacity.get();
         }
         else {
-            this._opacityGetter = null;
             this._output.opacity = opacity;
             _fireDirty.call(this);
         }
@@ -147,10 +148,8 @@ define(function(require, exports, module) {
     Modifier.prototype.originFrom = function originFrom(origin) {
         if (origin instanceof Object && origin.get) {
             this._eventInput.subscribe(origin);
-            this._originGetter = origin.get.bind(origin);
         }
         else {
-            this._originGetter = null;
             this._output.origin = origin;
             _fireDirty.call(this);
         }
@@ -169,10 +168,8 @@ define(function(require, exports, module) {
     Modifier.prototype.alignFrom = function alignFrom(align) {
         if (align instanceof Object && align.get) {
             this._eventInput.subscribe(align);
-            this._alignGetter = align.get.bind(align);
         }
         else {
-            this._alignGetter = null;
             this._output.align = align;
             _fireDirty.call(this);
         }
@@ -209,10 +206,8 @@ define(function(require, exports, module) {
     Modifier.prototype.marginsFrom = function marginsFrom(margins) {
         if (margins instanceof Object && margins.get) {
             this._eventInput.subscribe(margins);
-            this._marginsGetter = margins.get.bind(margins);
         }
         else {
-            this._marginsGetter = null;
             this._output.margins = margins;
             _fireDirty.call(this);
         }
@@ -230,46 +225,18 @@ define(function(require, exports, module) {
     Modifier.prototype.proportionsFrom = function proportionsFrom(proportions) {
         if (proportions instanceof Object && proportions.get) {
             this._eventInput.subscribe(proportions);
-            this._proportionsGetter = proportions.get.bind(proportions);
         }
         else {
-            this._proportionsGetter = null;
             this._output.proportions = proportions;
             _fireDirty.call(this);
         }
         return this;
     };
 
-    // call providers on tick to receive render spec elements to apply
-    function _update() {
-        if (this._transformGetter) this._output.transform = this._transformGetter();
-        if (this._opacityGetter) this._output.opacity = this._opacityGetter();
-        if (this._originGetter) this._output.origin = this._originGetter();
-        if (this._alignGetter) this._output.align = this._alignGetter();
-        if (this._sizeGetter) this._output.size = this._sizeGetter();
-        if (this._marginsGetter) this._output.margins = this._marginsGetter();
-        if (this._proportionsGetter) this._output.proportions = this._proportionsGetter();
-    }
-
-    /**
-     * Return render spec for this Modifier, applying to the provided
-     *    target component.  This is similar to render() for Surfaces.
-     *
-     * @private
-     * @method modify
-     *
-     * @return {Object} render spec for this Modifier, including the
-     *    provided target
-     */
-    Modifier.prototype.render = function render() {
-        if (this._dirty) _update.call(this);
-        return this._output;
-    };
-
     Modifier.prototype.clean = function(){
         if (this._dirtyLock == 0) {
             this._dirty = false;
-            this.emit('clean');
+            this.emit('end');
         }
     };
 

@@ -40,14 +40,13 @@ define(function(require, exports, module) {
     var currentFrame = 0;
     var nextTickFrame = 0;
     var lastTime = now();
+    var rafId;
     var frameTime;
     var frameTimeLimit;
     var eventForwarders = {};
     var eventHandler = new EventHandler();
     var dirty = true;
     var dirtyLock = 0;
-    var emitPrerender = false;
-    var emitPostrender = false;
 
     var options = {
         containerType: 'div',
@@ -69,6 +68,7 @@ define(function(require, exports, module) {
      * @private
      * @method step
      */
+    var firstFrame = true;
     Engine.step = function step() {
         // browser events and their handlers happen before rendering begins
 
@@ -89,6 +89,15 @@ define(function(require, exports, module) {
 
         while (postTickQueue.length) (postTickQueue.shift())();
 
+        if (firstFrame){
+            firstFrame = false;
+            for (var i = 0; i < contexts.length; i++)
+                contexts[i].trigger('start');
+        }
+
+        for (var i = 0; i < contexts.length; i++)
+            contexts[i].commit();
+
         dirtyQueue.flush();
     };
 
@@ -96,11 +105,10 @@ define(function(require, exports, module) {
     function loop() {
         //TODO: this dirty check should be unecessary
         if (dirty) {
-            rafId = window.requestAnimationFrame(loop);
             Engine.step();
+            rafId = window.requestAnimationFrame(loop);
         }
     }
-    var rafId = window.requestAnimationFrame(loop);
 
     function handleResize(event) {
         eventHandler.emit('resize');
@@ -140,14 +148,17 @@ define(function(require, exports, module) {
     EventHandler.setInputHandler(Engine, eventHandler);
     EventHandler.setOutputHandler(Engine, eventHandler);
     Engine.on = function(type, handler){
-        if (type == 'prerender') emitPrerender = true;
-        if (type == 'postrender') emitPostrender = true;
         if (!(type in eventForwarders)) {
             eventForwarders[type] = eventHandler.emit.bind(eventHandler, type);
             document.addEventListener(type, eventForwarders[type]);
         }
         return eventHandler.on(type, handler);
     };
+
+    eventHandler.on('start', function(){
+        rafId = window.requestAnimationFrame(loop);
+        dirty = true;
+    });
 
     eventHandler.on('dirty', function(){
         if (!dirty) {
@@ -308,6 +319,7 @@ define(function(require, exports, module) {
     });
 
     Clock.subscribeEngine(Engine);
+    Engine.subscribe(Clock);
 
     module.exports = Engine;
 });

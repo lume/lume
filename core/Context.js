@@ -14,7 +14,8 @@ define(function(require, exports, module) {
     var ElementAllocator = require('./ElementAllocator');
     var Transform = require('./Transform');
     var Transitionable = require('./Transitionable');
-    var Entity = require('./Entity');
+    var Commitables = require('./Commitables');
+    var Modifier = require('famous/core/Modifier');
     var dirtyQueue = require('famous/core/dirtyQueue');
 
     /**
@@ -32,6 +33,7 @@ define(function(require, exports, module) {
         this.allocator = new ElementAllocator(container);
 
         this._node = new RenderNode();
+        this._node.setRoot(this._node);
 
         this._dirty = true;
         this._dirtyLock = 0;
@@ -49,13 +51,16 @@ define(function(require, exports, module) {
             nextSizeTransform : Transform.identity
         };
 
+        this.commitables = new Commitables(this.allocator);
+
         this._eventInput = new EventHandler();
         this._eventOutput = new EventHandler();
         EventHandler.setInputHandler(this, this._eventInput);
         EventHandler.setOutputHandler(this, this._eventOutput);
         this._eventInput.bindThis(this);
 
-        this._eventInput.subscribe(this._node);
+        //TODO: to restrict types must put below event declarations
+//        this._eventInput.subscribe(this._node, ['dirty', 'clean']);
         this._eventInput.subscribe(this._perspective);
 
         this._eventInput.on('resize', function() {
@@ -64,6 +69,15 @@ define(function(require, exports, module) {
 
         this._eventInput.on('dirty', _onDirty);
         this._eventInput.on('clean', _onClean);
+
+        this._eventInput.on('start', function(){
+            this._node.trigger('start', this._nodeContext);
+        }.bind(this));
+
+        this._node.on('register', function(data){
+            debugger
+            this.commitables.register(data.committer, data.spec);
+        }.bind(this));
     }
 
     var usePrefix = !('perspective' in document.documentElement.style);
@@ -164,18 +178,13 @@ define(function(require, exports, module) {
      * @param {Object} allocator
      */
 
-    Context.prototype.commit = function commit(spec, allocator){
-        spec = spec || this._nodeContext;
+    Context.prototype.commit = function commit(allocator){
         allocator = allocator || this.allocator;
 
         if (this._perspective.isActive())
             _setPerspective(this.container, this._perspective.get());
 
-
-        if (this._dirty){
-            this._node.render(spec);
-            this._node.commit(allocator);
-        }
+        this.commitables.commit(allocator);
     };
 
     /**

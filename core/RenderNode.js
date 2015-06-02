@@ -13,9 +13,9 @@ define(function(require, exports, module) {
     var Transform = require('./Transform');
     var SpecManager = require('./SpecManager');
     var Modifier = require('./Modifier');
-    var Entity = require('./Entity');
-    var Spec = require('./Spec');
     var EventHandler = require('famous/core/EventHandler');
+    var EventMapper = require('famous/events/EventMapper');
+    var Stream = require('famous/streams/Stream');
 
     /**
      * A wrapper for inserting a renderable component (like a Modifer or
@@ -29,39 +29,32 @@ define(function(require, exports, module) {
     function RenderNode(object) {
         this._object = null;
         this._child = null;
+        this._root = null;
+        this.stream = null;
 
-        this._dirty = true;
-        this._dirtyLock = 0;
-        this._passThrough = false;
-
-        this._entityIds = {};
-
-        this._cachedSize = [Number.NaN,Number.NaN];
-        this._cachedObjectSpec = null;
-        this._cachedCompoundSpec = null;
-        this._cachedParentSpec = null;
+        this._objectSpec = null;
+        this._parentSpec = null;
 
         this._eventInput = new EventHandler();
         this._eventOutput = new EventHandler();
         EventHandler.setInputHandler(this, this._eventInput);
         EventHandler.setOutputHandler(this, this._eventOutput);
-        this._eventInput.bindThis(this);
 
-        this._eventInput.on('dirty', function(){
-            if (!this._dirty) {
-                this._dirty = true;
-                this._eventOutput.emit('dirty');
-            }
-            this._dirtyLock++;
-        });
+        var mapper = new EventMapper(function(parentSpec){
+            if (!this._objectSpec) return parentSpec;
+            else return SpecManager.merge(this._objectSpec, parentSpec);
+        }.bind(this));
 
-        this._eventInput.on('clean', function(){
-            if (this._dirtyLock > 0) this._dirtyLock--;
-            if (this._dirty && this._dirtyLock == 0) {
-                this._dirty = false;
-                this._eventOutput.emit('clean');
-            }
-        });
+        this._eventOutput.subscribe(mapper).subscribe(this._eventInput);
+
+        this._eventInput.on('start', function(parentSpec){
+           if (!this._child && this._object.commit){
+               this._root.emit('register', {
+                    committer : this._object,
+                    spec : parentSpec
+               });
+           }
+        }.bind(this));
 
         if (object) this.set(object);
     }
@@ -72,17 +65,12 @@ define(function(require, exports, module) {
      *   Note: Does not double-wrap if child is a RenderNode already.
      *
      * @method add
-     * @param {Object} child renderable object
+     * @param {Object} object renderable object
      * @return {RenderNode} new render node wrapping child
      */
-    RenderNode.prototype.add = function add(child) {
-        // Sugar for adding modifiers
-        if (!child.render && !(child instanceof Function))
-            child = new Modifier(child);
-
-        var childNode = (child instanceof RenderNode || child._isView)
-            ? child
-            : new RenderNode(child);
+    RenderNode.prototype.add = function add(object) {
+        var childNode = new RenderNode(object);
+        childNode.setRoot(this._root);
 
         if (this._child instanceof CombinerNode)
             this._child.add(childNode);
@@ -90,9 +78,13 @@ define(function(require, exports, module) {
             this._child = new CombinerNode([this._child, childNode]);
         else this._child = childNode;
 
-        this._eventInput.subscribe(childNode);
+        childNode.subscribe(this._eventOutput);
 
         return childNode;
+    };
+
+    RenderNode.prototype.setRoot = function(root){
+        this._root = root;
     };
 
     /**
@@ -115,8 +107,37 @@ define(function(require, exports, module) {
      */
     RenderNode.prototype.set = function set(object) {
         this._object = object;
-        if (object.emit) this._eventInput.subscribe(object);
-        return this;
+
+        object.on('start', function(data){
+           this._objectSpec = data;
+        }.bind(this));
+
+        object.on('update', function(data){
+            this._objectSpec = data;
+        }.bind(this));
+
+        object.on('end', function(data){
+            this._objectSpec = data;
+        }.bind(this));
+
+//        this.stream = Stream.lift(
+//            function(objectSpec, parentSpec){
+//                if (this._child == null && this._object.commit){
+//
+//                    this._root.emit('register', {
+//                        committer : this._object,
+//                        spec : parentSpec
+//                    });
+//                    return;
+//                }
+//
+//                return (parentSpec && objectSpec)
+//                    ? SpecManager.merge(objectSpec, parentSpec)
+//                    : objectSpec || parentSpec;
+//
+//            }.bind(this),
+//            [object, this._eventOutput]
+//        );
     };
 
     /**
@@ -131,88 +152,6 @@ define(function(require, exports, module) {
         if (target && target.getSize) result = target.getSize();
         if (!result && this._child) result = this._child.getSize();
         return result;
-    };
-
-    /**
-     * Generate a render spec from the contents of the wrapped component.
-     *
-     * @private
-     * @method render
-     *
-     */
-
-    RenderNode.prototype.render = function render(parentSpec) {
-        // parent spec computation
-        var parentSpecDirty;
-        if (this._cachedParentSpec !== parentSpec){
-            parentSpecDirty = true;
-            this._cachedParentSpec = parentSpec;
-        }
-        else parentSpecDirty = false;
-
-        // size computation
-        var parentSize = parentSpec.size;
-        var parentSizeDirty = false;
-        if (this._cachedSize[0] !== parentSize[0] || this._cachedSize[1] !== parentSize[1]) {
-            this._cachedSize[0] = parentSize[0];
-            this._cachedSize[1] = parentSize[1];
-            parentSizeDirty = true;
-        }
-
-        // pass through check
-        if (!this._dirty && !parentSpecDirty && !parentSizeDirty) {
-            this._passThrough = true;
-            if (this._child) this._child.render(this._cachedCompoundSpec);
-            return;
-        }
-
-        this._passThrough = false;
-
-        if (this._object){
-            var objectSpec;
-            var objectSpecDirty = false;
-
-            // objectSpec computation
-            if (this._object instanceof Function) {
-                objectSpec = this._object(parentSize);
-
-                if (objectSpec instanceof Spec)
-                    objectSpec = objectSpec.render(parentSize);
-
-                objectSpecDirty = true;
-            }
-            else if (this._object._dirty === true || parentSizeDirty){
-                objectSpec = this._object.render(parentSize);
-                this._cachedObjectSpec = objectSpec;
-                objectSpecDirty = true;
-            }
-            else objectSpec = this._cachedObjectSpec;
-
-            // compound spec computation
-            var compoundSpec;
-            if (parentSpecDirty || objectSpecDirty)
-                compoundSpec = SpecManager.merge(objectSpec, parentSpec, this._entityIds);
-            else {
-                this._passThrough = true;
-                compoundSpec = this._cachedCompoundSpec;
-            }
-        }
-        else compoundSpec = parentSpec;
-
-        if (this._child) {
-            this._cachedCompoundSpec = compoundSpec;
-            this._child.render(compoundSpec);
-        }
-    };
-
-    RenderNode.prototype.commit = function(allocator){
-        if (!this._passThrough){
-            for (var id in this._entityIds){
-                var entity = Entity.get(id);
-                entity.commit(this._entityIds[id], allocator);
-            }
-        }
-        if (this._child) this._child.commit(allocator);
     };
 
     module.exports = RenderNode;
