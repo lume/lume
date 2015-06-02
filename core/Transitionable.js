@@ -140,13 +140,14 @@ define(function(require, exports, module) {
                     break;
             }
 
+            this.reset(endState, undefined);
+
             if (!this._dirty) {
                 this._dirty = true;
                 this.emit('start', {value : this.state});
                 dirtyQueue.push(this);
             }
 
-            this.reset(endState, undefined);
             if (callback) callback();
             return this;
         }
