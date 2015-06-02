@@ -3,7 +3,7 @@ define(function(require, exports, module) {
     var EventMapper = require('famous/events/EventMapper');
     var EventFilter = require('famous/events/EventFilter');
     var EventSplitter = require('famous/events/EventSplitter');
-    var nextTickQueue = require('famous/core/nextTickQueue');
+    var postTickQueue = require('famous/core/postTickQueue');
 
     var EVENTS = {
         START : 'start',
@@ -74,7 +74,7 @@ define(function(require, exports, module) {
                 total++;
                 mergedData[data.streamId] = data;
 
-                nextTickQueue.push(function(){
+                postTickQueue.push(function(){
                     if (count === total){
                         count = 0;
                         mergedStream.emit(EVENTS.START, mergedData);
@@ -126,7 +126,11 @@ define(function(require, exports, module) {
     };
 
     Stream.lift = function(fn, streams){
-        var mergedStream = Stream.merge(streams);
+        //TODO: fix comma separated arguments
+        var mergedStream = (streams instanceof Array)
+            ? Stream.merge(streams)
+            : Stream.merge.apply(null, Array.prototype.splice.call(arguments, 1));
+
         var mappedStream = new EventMapper(function(data){
             return fn.apply(null, data);
         });
