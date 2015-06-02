@@ -9,6 +9,8 @@ define(function(require, exports, module) {
     var Clock = {};
 
     var eventInput = new EventHandler();
+    var eventOutput = new EventHandler();
+    EventHandler.setOutputHandler(Clock, eventOutput);
 
     eventInput.on('tick', function(){
         var i;
@@ -28,11 +30,13 @@ define(function(require, exports, module) {
     eventInput.on('start', function(data){
         var stream = data.stream;
         Clock.register(stream);
+        eventOutput.emit('dirty');
     }.bind(this));
 
     eventInput.on('end', function(data){
         var stream = data.stream;
         Clock.unregister(stream);
+        eventOutput.emit('clean');
     }.bind(this));
 
     Clock.register = function(stream){
@@ -44,7 +48,7 @@ define(function(require, exports, module) {
     };
 
     Clock.subscribeEngine = function(engine){
-        eventInput.subscribe(engine);
+        eventInput.subscribe(engine, ['tick']);
     };
 
     Clock.subscribe = function(stream){
