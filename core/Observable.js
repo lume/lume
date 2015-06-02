@@ -19,12 +19,12 @@ define(function(require, exports, module) {
     Observable.prototype.set = function(value){
         if (value == this.value) return;
         this.value = value;
-        this.emit('dirty');
+        this.emit('start');
         dirtyQueue.push(this);
     };
 
     Observable.prototype.clean = function(){
-        this.emit('clean');
+        this.emit('end');
     };
 
     module.exports = Observable;
