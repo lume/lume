@@ -31,7 +31,6 @@ define(function(require, exports, module) {
                 this.result[key] = value;
                 delete sources[key];
             }
-            else this.result[key] = value.get();
         }
 
         return Stream.merge(sources);
