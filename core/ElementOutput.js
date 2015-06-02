@@ -9,10 +9,8 @@
 /* Modified work copyright © 2015 David Valdman */
 
 define(function(require, exports, module) {
-    var Entity = require('famous/core/Entity');
     var EventHandler = require('famous/core/EventHandler');
     var Transform = require('famous/core/Transform');
-    var nextTick = require('famous/core/nextTickQueue');
 
     var usePrefix = !('transform' in document.documentElement.style);
     var devicePixelRatio = window.devicePixelRatio || 1;
@@ -44,8 +42,6 @@ define(function(require, exports, module) {
         this.eventForwarder = function eventForwarder(event) {
             this._eventOutput.emit(event.type, event);
         }.bind(this);
-
-        this._id = Entity.register(this);
 
         this._currentTarget = null;
 
@@ -176,7 +172,6 @@ define(function(require, exports, module) {
      * @param {FamousMatrix} matrix
      */
 
-    var counter = 0;
     var _setTransform;
     if (usePrefix) {
         _setTransform = function(element, matrix) {
@@ -223,8 +218,8 @@ define(function(require, exports, module) {
         var target = this._currentTarget;
         if (!target) return;
 
-        var transform = spec.transform;
-        var opacity = spec.opacity;
+        var transform = spec.transform || Transform.identity;
+        var opacity = spec.opacity || 1;
         var origin = spec.origin;
         var size = spec.size;
 
