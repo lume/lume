@@ -32,28 +32,21 @@ define(function(require, exports, module) {
         this._root = null;
         this.stream = null;
 
-        this._objectSpec = null;
-        this._parentSpec = null;
-
         this._eventInput = new EventHandler();
         this._eventOutput = new EventHandler();
         EventHandler.setInputHandler(this, this._eventInput);
         EventHandler.setOutputHandler(this, this._eventOutput);
 
-        var mapper = new EventMapper(function(parentSpec){
-            if (!this._objectSpec) return parentSpec;
-            else return SpecManager.merge(this._objectSpec, parentSpec);
+        this._eventInput.on('start', function(data){
+            this._eventOutput.emit('start', data)
         }.bind(this));
 
-        this._eventOutput.subscribe(mapper).subscribe(this._eventInput);
+        this._eventInput.on('update', function(data){
+            this._eventOutput.emit('update', data)
+        }.bind(this));
 
-        this._eventInput.on('start', function(parentSpec){
-           if (!this._child && this._object.commit){
-               this._root.emit('register', {
-                    committer : this._object,
-                    spec : parentSpec
-               });
-           }
+        this._eventInput.on('end', function(data){
+            this._eventOutput.emit('end', data)
         }.bind(this));
 
         if (object) this.set(object);
@@ -78,7 +71,11 @@ define(function(require, exports, module) {
             this._child = new CombinerNode([this._child, childNode]);
         else this._child = childNode;
 
-        childNode.subscribe(this._eventOutput);
+        if (this.stream){
+            childNode.subscribe(this.stream);
+        }
+        else
+            childNode.subscribe(this);
 
         return childNode;
     };
@@ -108,36 +105,44 @@ define(function(require, exports, module) {
     RenderNode.prototype.set = function set(object) {
         this._object = object;
 
-        object.on('start', function(data){
-           this._objectSpec = data;
-        }.bind(this));
+        this.stream = Stream.lift(
+            function(objectSpec, parentSpec){
+                return (parentSpec && objectSpec)
+                    ? SpecManager.merge(objectSpec, parentSpec)
+                    : parentSpec;
+            }.bind(this),
+            [object, this._eventOutput]
+        );
 
-        object.on('update', function(data){
-            this._objectSpec = data;
-        }.bind(this));
+        if (object.commit){
+            this.stream.on('start', function(parentSpec){
+                this._root.emit('register', {
+                    committer : object,
+                    spec : parentSpec
+                });
+            }.bind(this));
 
-        object.on('end', function(data){
-            this._objectSpec = data;
-        }.bind(this));
+            this.stream.on('update', function(parentSpec){
+                console.log(parentSpec);
+                this._root.emit('register', {
+                    committer : object,
+                    spec : parentSpec
+                });
+            }.bind(this));
 
-//        this.stream = Stream.lift(
-//            function(objectSpec, parentSpec){
-//                if (this._child == null && this._object.commit){
-//
-//                    this._root.emit('register', {
-//                        committer : this._object,
-//                        spec : parentSpec
-//                    });
-//                    return;
-//                }
-//
-//                return (parentSpec && objectSpec)
-//                    ? SpecManager.merge(objectSpec, parentSpec)
-//                    : objectSpec || parentSpec;
-//
-//            }.bind(this),
-//            [object, this._eventOutput]
-//        );
+            this.stream.on('end', function(parentSpec){
+                console.log(parentSpec);
+                this._root.emit('register', {
+                    committer : object,
+                    spec : parentSpec
+                });
+            }.bind(this));
+        }
+
+//        this.stream.on('start', function(data){
+//            //TODO: why does this fix all the things?
+//            debugger
+//        })
     };
 
     /**
