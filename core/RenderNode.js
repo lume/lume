@@ -9,7 +9,6 @@
 /* Modified work copyright © 2015 David Valdman */
 
 define(function(require, exports, module) {
-    var CombinerNode = require('./CombinerNode');
     var Transform = require('./Transform');
     var SpecManager = require('./SpecManager');
     var Modifier = require('./Modifier');
@@ -26,9 +25,8 @@ define(function(require, exports, module) {
      *
      * @param {Object} object Target renderable component
      */
+
     function RenderNode(object) {
-        this._object = null;
-        this._child = null;
         this._root = null;
         this.stream = null;
 
@@ -65,15 +63,8 @@ define(function(require, exports, module) {
         var childNode = new RenderNode(object);
         childNode.setRoot(this._root);
 
-        if (this._child instanceof CombinerNode)
-            this._child.add(childNode);
-        else if (this._child)
-            this._child = new CombinerNode([this._child, childNode]);
-        else this._child = childNode;
-
-        if (this.stream){
+        if (this.stream)
             childNode.subscribe(this.stream);
-        }
         else
             childNode.subscribe(this);
 
@@ -85,17 +76,6 @@ define(function(require, exports, module) {
     };
 
     /**
-     * Return the single wrapped object.  Returns null if this node has multiple child nodes.
-     *
-     * @method get
-     *
-     * @return {Ojbect} contained renderable object
-     */
-    RenderNode.prototype.get = function get() {
-        return this._object || (this._child ? this._child.get() : null);
-    };
-
-    /**
      * Overwrite the list of children to contain the single provided object
      *
      * @method set
@@ -103,8 +83,6 @@ define(function(require, exports, module) {
      * @return {RenderNode} this render node, or child if it is a RenderNode
      */
     RenderNode.prototype.set = function set(object) {
-        this._object = object;
-
         this.stream = Stream.lift(
             function(objectSpec, parentSpec){
                 return (parentSpec && objectSpec)
@@ -138,25 +116,6 @@ define(function(require, exports, module) {
                 });
             }.bind(this));
         }
-
-//        this.stream.on('start', function(data){
-//            //TODO: why does this fix all the things?
-//            debugger
-//        })
-    };
-
-    /**
-     * Get render size of contained object.
-     *
-     * @method getSize
-     * @return {Array.Number} size of this or size of single child.
-     */
-    RenderNode.prototype.getSize = function getSize() {
-        var result = null;
-        var target = this.get();
-        if (target && target.getSize) result = target.getSize();
-        if (!result && this._child) result = this._child.getSize();
-        return result;
     };
 
     module.exports = RenderNode;
