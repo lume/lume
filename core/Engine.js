@@ -32,6 +32,7 @@ define(function(require, exports, module) {
     var nextTickQueue = require('./nextTickQueue');
     var dirtyQueue = require('./dirtyQueue');
     var postTickQueue = require('./postTickQueue');
+    var renderQueue = require('famous/core/renderQueue');
 
     var Engine = {};
 
@@ -56,6 +57,16 @@ define(function(require, exports, module) {
     };
     var optionsManager = new OptionsManager(options);
 
+    postTickQueue.push(function(){
+        for (var i = 0; i < contexts.length; i++)
+            contexts[i].trigger('start');
+    });
+
+    dirtyQueue.push(function(){
+        for (var i = 0; i < contexts.length; i++)
+            contexts[i].trigger('end');
+    });
+
     /**
      * Inside requestAnimationFrame loop, step() is called, which:
      *   calculates current FPS (throttling loop if it is over limit set in setFPSCap),
@@ -68,6 +79,7 @@ define(function(require, exports, module) {
      * @private
      * @method step
      */
+
     var firstFrame = true;
     Engine.step = function step() {
         // browser events and their handlers happen before rendering begins
@@ -89,16 +101,10 @@ define(function(require, exports, module) {
 
         while (postTickQueue.length) (postTickQueue.shift())();
 
-        if (firstFrame){
-            firstFrame = false;
-            for (var i = 0; i < contexts.length; i++)
-                contexts[i].trigger('start');
-        }
-
         for (var i = 0; i < contexts.length; i++)
             contexts[i].commit();
 
-        dirtyQueue.flush();
+        while (dirtyQueue.length) (dirtyQueue.shift())();
     };
 
     // engage requestAnimationFrame
@@ -108,7 +114,9 @@ define(function(require, exports, module) {
             Engine.step();
             rafId = window.requestAnimationFrame(loop);
         }
+        else console.log('clean!')
     }
+    rafId = window.requestAnimationFrame(loop);
 
     function handleResize(event) {
         eventHandler.emit('resize');
@@ -154,11 +162,6 @@ define(function(require, exports, module) {
         }
         return eventHandler.on(type, handler);
     };
-
-    eventHandler.on('start', function(){
-        rafId = window.requestAnimationFrame(loop);
-        dirty = true;
-    });
 
     eventHandler.on('dirty', function(){
         if (!dirty) {
