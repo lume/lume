@@ -103,7 +103,6 @@ define(function(require, exports, module) {
             transition.velocity = this.velocity;
         }
 
-        this._state = STATE.UPDATE;
         this._engineInstance.set(endValue, transition, _loadNext.bind(this));
     }
 
@@ -144,8 +143,12 @@ define(function(require, exports, module) {
 
             if (!this._dirty) {
                 this._dirty = true;
+                this._state = STATE.START;
                 this.emit('start', {value : this.state});
-                dirtyQueue.push(this);
+                dirtyQueue.push(function(){
+                    this._state = STATE.END;
+                    this.emit('end', {value : this.state});
+                }.bind(this));
             }
 
             if (callback) callback();
@@ -154,6 +157,7 @@ define(function(require, exports, module) {
 
         if (this.isActive()) this.halt();
         else {
+            this._state = STATE.START;
             this._eventOutput.emit('start', {value : this.state});
         }
 
@@ -180,7 +184,10 @@ define(function(require, exports, module) {
     };
 
     Transitionable.prototype.update = function update(){
-        if (this._state == STATE.START) return;
+        if (this._state == STATE.START){
+            this._state = STATE.UPDATE;
+            return;
+        }
 
         var state = this._engineInstance.get();
 
