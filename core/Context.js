@@ -74,8 +74,11 @@ define(function(require, exports, module) {
             this._node.trigger('start', this._nodeContext);
         }.bind(this));
 
+        this._eventInput.on('end', function(){
+            this._node.trigger('end', this._nodeContext);
+        }.bind(this));
+
         this._node.on('register', function(data){
-            debugger
             this.commitables.register(data.committer, data.spec);
         }.bind(this));
     }
@@ -162,11 +165,9 @@ define(function(require, exports, module) {
         this._size[0] = size[0];
         this._size[1] = size[1];
         this._dirty = true;
-        dirtyQueue.push(this);
-    };
-
-    Context.prototype.clean = function(){
-        if (this._dirty) this.dirty = false;
+        dirtyQueue.push(function(){
+            this.dirty = false;
+        }.bind(this));
     };
 
     /**
