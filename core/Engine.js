@@ -32,7 +32,6 @@ define(function(require, exports, module) {
     var nextTickQueue = require('./nextTickQueue');
     var dirtyQueue = require('./dirtyQueue');
     var postTickQueue = require('./postTickQueue');
-    var renderQueue = require('famous/core/renderQueue');
 
     var Engine = {};
 
