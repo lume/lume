@@ -64,18 +64,23 @@ define(function(require, exports, module) {
         });
     };
 
-    Stream.merge = function(streamObj){
+    Stream.merge = function(streamObj, queue){
         var count = 0;
         var total = 0;
+        var update = false;
+
+        if (queue === undefined) queue = postTickQueue;
 
         var mergedStream = new Stream({
             start : function(data){
                 count++;
                 total++;
+                update = false;
+
                 mergedData[data.streamId] = data;
 
-                postTickQueue.push(function(){
-                    if (count === total){
+                queue.push(function(){
+                    if (!update && count === total){
                         count = 0;
                         mergedStream.emit(EVENTS.START, mergedData);
                     }
@@ -83,6 +88,7 @@ define(function(require, exports, module) {
             },
             update : function(data){
                 count++;
+                update = true;
 
                 mergedData[data.streamId] = data;
 
@@ -96,10 +102,10 @@ define(function(require, exports, module) {
 
                 mergedData[data.streamId] = data;
 
-                if (count == total) count = 0;
-
-                if (total === 0)
+                if (total === 0){
+                    count = 0;
                     mergedStream.emit(EVENTS.END, mergedData);
+                }
             }
         });
 
@@ -125,10 +131,10 @@ define(function(require, exports, module) {
         return mergedStream;
     };
 
-    Stream.lift = function(fn, streams){
+    Stream.lift = function(fn, streams, queue){
         //TODO: fix comma separated arguments
         var mergedStream = (streams instanceof Array)
-            ? Stream.merge(streams)
+            ? Stream.merge(streams, queue)
             : Stream.merge.apply(null, Array.prototype.splice.call(arguments, 1));
 
         var mappedStream = new EventMapper(function(data){
