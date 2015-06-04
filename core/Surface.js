@@ -76,7 +76,9 @@ define(function(require, exports, module) {
     function _setDirty(){
         if (this._dirty) return;
         this.trigger('dirty');
-        dirtyQueue.push(this);
+        dirtyQueue.push(function(){
+            this.emit('clean');
+        }.bind(this));
     }
     /**
      * Set HTML attributes on this Surface. Note that this will cause
@@ -506,13 +508,6 @@ define(function(require, exports, module) {
         this._origin = origin;
         this._originDirty = true;
         _setDirty.call(this);
-    };
-
-    Surface.prototype.clean = function(){
-        if (this._dirty){
-            this._dirty = false;
-            this.emit('clean');
-        }
     };
 
     module.exports = Surface;
