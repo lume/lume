@@ -33,7 +33,6 @@ define(function(require, exports, module) {
         this.allocator = new ElementAllocator(container);
 
         this._node = new RenderNode();
-        this._node.setRoot(this._node);
 
         this._dirty = true;
         this._dirtyLock = 0;
@@ -52,6 +51,8 @@ define(function(require, exports, module) {
         };
 
         this.commitables = new Commitables(this.allocator);
+
+        this._node.setCommitables(this.commitables);
 
         this._eventInput = new EventHandler();
         this._eventOutput = new EventHandler();
@@ -76,10 +77,6 @@ define(function(require, exports, module) {
 
         this._eventInput.on('end', function(){
             this._node.trigger('end', this._nodeContext);
-        }.bind(this));
-
-        this._node.on('register', function(data){
-            this.commitables.register(data.committer, data.spec);
         }.bind(this));
     }
 

@@ -27,8 +27,8 @@ define(function(require, exports, module) {
      */
 
     function RenderNode(object) {
-        this._root = null;
         this.stream = null;
+        this._commitables = null;
 
         this._eventInput = new EventHandler();
         this._eventOutput = new EventHandler();
@@ -61,7 +61,12 @@ define(function(require, exports, module) {
      */
     RenderNode.prototype.add = function add(object) {
         var childNode = new RenderNode(object);
-        childNode.setRoot(this._root);
+        childNode.setCommitables(this.getCommitables());
+
+        if (object.commit){
+            var id = this._commitables.register(object);
+            this._commitables.getSpec(id).subscribe(this.stream);
+        }
 
         if (this.stream)
             childNode.subscribe(this.stream);
@@ -71,8 +76,12 @@ define(function(require, exports, module) {
         return childNode;
     };
 
-    RenderNode.prototype.setRoot = function(root){
-        this._root = root;
+    RenderNode.prototype.setCommitables = function(commitables){
+        this._commitables = commitables;
+    };
+
+    RenderNode.prototype.getCommitables = function(){
+        return this._commitables;
     };
 
     /**
@@ -91,31 +100,6 @@ define(function(require, exports, module) {
             }.bind(this),
             [object, this._eventOutput]
         );
-
-        if (object.commit){
-            this.stream.on('start', function(parentSpec){
-                this._root.emit('register', {
-                    committer : object,
-                    spec : parentSpec
-                });
-            }.bind(this));
-
-            this.stream.on('update', function(parentSpec){
-                console.log(parentSpec);
-                this._root.emit('register', {
-                    committer : object,
-                    spec : parentSpec
-                });
-            }.bind(this));
-
-            this.stream.on('end', function(parentSpec){
-                console.log(parentSpec);
-                this._root.emit('register', {
-                    committer : object,
-                    spec : parentSpec
-                });
-            }.bind(this));
-        }
     };
 
     module.exports = RenderNode;
