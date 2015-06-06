@@ -53,7 +53,7 @@ define(function(require, exports, module) {
         this._eventOutput = new EventHandler();
         EventHandler.setOutputHandler(this, this._eventOutput);
 
-        Clock.subscribe(this);
+//        Clock.subscribe(this);
     }
 
     var transitionMethods = {};
@@ -144,10 +144,12 @@ define(function(require, exports, module) {
             if (!this._dirty) {
                 this._dirty = true;
                 this._state = STATE.START;
-                this.emit('start', {value : this.state});
+                Clock.register(this);
+                this.emit('start', this.state);
                 dirtyQueue.push(function(){
                     this._state = STATE.END;
-                    this.emit('end', {value : this.state});
+                    Clock.unregister(this);
+                    this.emit('end', this.state);
                 }.bind(this));
             }
 
@@ -158,7 +160,8 @@ define(function(require, exports, module) {
         if (this.isActive()) this.halt();
         else {
             this._state = STATE.START;
-            this._eventOutput.emit('start', {value : this.state});
+            Clock.register(this);
+            this._eventOutput.emit('start', this.state);
         }
 
         this.endStateQueue.push(endState);
@@ -191,7 +194,7 @@ define(function(require, exports, module) {
 
         var state = this._engineInstance.get();
 
-        this.emit('update', {value : state});
+        this.emit('update', state);
 
         this.state = state;
 
@@ -199,10 +202,8 @@ define(function(require, exports, module) {
             postTickQueue.push(function(){
                 this._state = STATE.END;
 
-                this._eventOutput.emit('end', {
-                    value: this.state,
-                    velocity: this.velocity
-                });
+                Clock.unregister(this);
+                this._eventOutput.emit('end', this.state);
 
                 if (this._callback) {
                     var callback = this._callback;
@@ -307,7 +308,8 @@ define(function(require, exports, module) {
     Transitionable.prototype.clean = function(){
         if (this._dirty){
             this._dirty = false;
-            this.emit('end', {value : this.state});
+            Clock.unregister(this);
+            this.emit('end', this.state);
         }
     };
 

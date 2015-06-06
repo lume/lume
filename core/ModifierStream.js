@@ -14,18 +14,7 @@ define(function(require, exports, module) {
 
         var stream = this.createStream(sources);
 
-        if (stream){
-            var mapper = new EventMapper(function(data){
-                for (var key in data){
-                    this.result[key] = data[key].value;
-                }
-                return this.result;
-            }.bind(this));
-
-            this._eventOutput
-                .subscribe(mapper)
-                .subscribe(stream);
-        }
+        if (stream) this._eventOutput.subscribe(stream);
     }
 
     Modifier.prototype.createStream = function (sources){

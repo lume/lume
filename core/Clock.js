@@ -58,7 +58,7 @@ define(function(require, exports, module) {
             return data;
         });
         mapper.subscribe(stream);
-        eventInput.subscribe(mapper)
+        eventInput.subscribe(mapper);
     };
 
     Clock.unsubscribe = function(stream){

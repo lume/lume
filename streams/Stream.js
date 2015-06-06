@@ -72,12 +72,10 @@ define(function(require, exports, module) {
         if (queue === undefined) queue = postTickQueue;
 
         var mergedStream = new Stream({
-            start : function(data){
+            start : function(){
                 count++;
                 total++;
                 update = false;
-
-                mergedData[data.streamId] = data;
 
                 queue.push(function(){
                     if (!update && count === total){
@@ -86,21 +84,17 @@ define(function(require, exports, module) {
                     }
                 });
             },
-            update : function(data){
+            update : function(){
                 count++;
                 update = true;
-
-                mergedData[data.streamId] = data;
 
                 if (count === total){
                     count = 0;
                     mergedStream.emit(EVENTS.UPDATE, mergedData);
                 }
             },
-            end : function(data){
+            end : function(){
                 total--;
-
-                mergedData[data.streamId] = data;
 
                 if (total === 0){
                     count = 0;
@@ -115,17 +109,15 @@ define(function(require, exports, module) {
         for (var key in streamObj){
             var stream = streamObj[key];
             streams[key] = stream;
-            mergedData[key] = null;
+            mergedData[key] = undefined;
 
-            var mapped = (function(streamId){
+            var mapper = (function(key){
                 return new EventMapper(function(data){
-                    if (data === undefined) data = {};
-                    data.streamId = streamId;
-                    return data;
+                    mergedData[key] = data;
                 });
             })(key);
 
-            mergedStream.subscribe(mapped).subscribe(stream);
+            mergedStream.subscribe(mapper).subscribe(stream);
         }
 
         return mergedStream;
