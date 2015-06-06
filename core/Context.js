@@ -32,7 +32,8 @@ define(function(require, exports, module) {
         this.container = container;
         this.allocator = new ElementAllocator(container);
 
-        this._node = new RenderNode();
+        this.commitables = new Commitables(this.allocator);
+        this._node = new RenderNode(null, this.commitables);
 
         this._dirty = true;
         this._dirtyLock = 0;
@@ -49,10 +50,6 @@ define(function(require, exports, module) {
             size: this._size,
             nextSizeTransform : Transform.identity
         };
-
-        this.commitables = new Commitables(this.allocator);
-
-        this._node.setCommitables(this.commitables);
 
         this._eventInput = new EventHandler();
         this._eventOutput = new EventHandler();
