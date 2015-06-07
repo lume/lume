@@ -14,6 +14,7 @@ define(function(require, exports, module) {
     var EventHandler = require('famous/core/EventHandler');
     var Clock = require('famous/core/Clock');
     var dirtyQueue = require('famous/core/dirtyQueue');
+    var nextTickQueue = require('famous/core/nextTickQueue');
     var postTickQueue = require('famous/core/postTickQueue');
     var Stream = require('famous/streams/Stream');
 
@@ -45,7 +46,7 @@ define(function(require, exports, module) {
         this.endStateQueue = [];
         this.callbackQueue = [];
 
-        this.state = start || 0;
+        this.state = undefined;
         this.velocity = undefined;
         this._callback = undefined;
         this._engineInstance = null;
@@ -60,6 +61,12 @@ define(function(require, exports, module) {
         this._eventOutput.on('end', function(){
             Clock.trigger('clean');
         });
+
+        if (start){
+            nextTickQueue.push(function(){
+                this.set(start);
+            }.bind(this))
+        }
     }
 
     Transitionable.prototype = Object.create(Stream.prototype);
