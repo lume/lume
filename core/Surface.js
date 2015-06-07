@@ -10,8 +10,9 @@
 
 define(function(require, exports, module) {
     var ElementOutput = require('famous/core/ElementOutput');
+    var dirtyObjects = require('famous/core/dirtyObjects');
     var dirtyQueue = require('famous/core/dirtyQueue');
-    var postTick = require('famous/core/postTickQueue');
+    var postTickQueue = require('famous/core/postTickQueue');
 
     /**
      * A base class for viewable content and event
@@ -51,20 +52,6 @@ define(function(require, exports, module) {
         this.classList = [];
         this._dirtyClasses = [];
 
-        this._eventInput.on('clean', function(){
-            if (this._dirty){
-                this._dirty = false;
-                this._eventOutput.emit('clean');
-            }
-        }.bind(this));
-
-        this._eventInput.on('dirty', function(){
-            if (!this._dirty){
-                this._dirty = true;
-                this._eventOutput.emit('dirty');
-            }
-        }.bind(this));
-
         if (options) this.setOptions(options);
     }
 
@@ -75,9 +62,15 @@ define(function(require, exports, module) {
 
     function _setDirty(){
         if (this._dirty) return;
-        this.trigger('dirty');
+
+        dirtyObjects.push();
+
+        this.emit('start');
+        this._dirty = true;
+
         dirtyQueue.push(function(){
-            this.emit('clean');
+            this.emit('end');
+            this._dirty = false;
         }.bind(this));
     }
     /**
@@ -484,7 +477,7 @@ define(function(require, exports, module) {
         this._eventOutput.emit('resize', size);
 
         // force commit cycle so that getSize gives correct result
-        postTick.push(function(){
+        postTickQueue.push(function(){
             this._eventOutput.emit('resize', size);
         }.bind(this));
     };
@@ -495,7 +488,7 @@ define(function(require, exports, module) {
         _setDirty.call(this);
 
         // force commit cycle so that getSize gives correct result
-        postTick.push(function(){
+        postTickQueue.push(function(){
             this._eventOutput.emit('resize', this._size);
         }.bind(this));
     };

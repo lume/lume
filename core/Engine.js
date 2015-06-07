@@ -29,6 +29,8 @@ define(function(require, exports, module) {
     var EventHandler = require('./EventHandler');
     var OptionsManager = require('./OptionsManager');
     var Clock = require('famous/core/Clock');
+
+    var dirtySetQueue = require('famous/core/dirtySetQueue');
     var nextTickQueue = require('./nextTickQueue');
     var dirtyQueue = require('./dirtyQueue');
     var postTickQueue = require('./postTickQueue');
@@ -113,7 +115,6 @@ define(function(require, exports, module) {
             Engine.step();
             rafId = window.requestAnimationFrame(loop);
         }
-        else console.log('clean!')
     }
     rafId = window.requestAnimationFrame(loop);
 
@@ -322,6 +323,7 @@ define(function(require, exports, module) {
 
     Clock.subscribeEngine(Engine);
     Engine.subscribe(Clock);
+    Engine.subscribe(dirtySetQueue);
 
     module.exports = Engine;
 });
