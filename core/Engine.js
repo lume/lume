@@ -30,7 +30,7 @@ define(function(require, exports, module) {
     var OptionsManager = require('./OptionsManager');
     var Clock = require('famous/core/Clock');
 
-    var dirtySetQueue = require('famous/core/dirtySetQueue');
+    var dirtyObjects = require('famous/core/dirtyObjects');
     var nextTickQueue = require('./nextTickQueue');
     var dirtyQueue = require('./dirtyQueue');
     var postTickQueue = require('./postTickQueue');
@@ -323,7 +323,7 @@ define(function(require, exports, module) {
 
     Clock.subscribeEngine(Engine);
     Engine.subscribe(Clock);
-    Engine.subscribe(dirtySetQueue);
+    Engine.subscribe(dirtyObjects);
 
     module.exports = Engine;
 });
