@@ -94,7 +94,8 @@ define(function(require, exports, module) {
                 }
             },
             end : function(){
-                total--;
+                //TODO: surface dirty bug hack
+                if (total > 0) total--;
 
                 if (total === 0){
                     count = 0;
