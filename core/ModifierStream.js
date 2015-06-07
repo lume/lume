@@ -5,8 +5,8 @@ define(function(require, exports, module) {
     var postTickQueue = require('famous/core/postTickQueue');
 
     function Modifier(sources) {
-        var stream = this.createStream(sources);
-        EventHandler.setOutputHandler(this, stream);
+        this.stream = this.createStream(sources);
+        EventHandler.setOutputHandler(this, this.stream);
     }
 
     Modifier.prototype.createStream = function (sources){
@@ -26,6 +26,21 @@ define(function(require, exports, module) {
         }
 
         return Stream.merge(sources);
+    };
+
+    Modifier.prototype.set = function(obj){
+        for (var key in obj){
+            var value = obj[key];
+            var source = new Observable();
+
+            (function(source, value){
+                postTickQueue.push(function(){
+                    source.set(value);
+                });
+            })(source, value);
+
+            this.stream.addStream(key, source)
+        }
     };
 
     module.exports = Modifier;
