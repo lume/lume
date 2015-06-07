@@ -1,12 +1,14 @@
 define(function(require, exports, module) {
-    var EventHandler = require('famous/core/EventHandler');
+    var Stream = require('famous/streams/Stream');
     var dirtyQueue = require('famous/core/dirtyQueue');
 
     function Observable(value){
+        Stream.call(this);
         this.value = value || undefined;
-        this._eventHandler = new EventHandler();
-        EventHandler.setOutputHandler(this, this._eventHandler);
     }
+
+    Observable.prototype = Object.create(Stream.prototype);
+    Observable.prototype.constructor = Observable;
 
     Observable.prototype.get = function(){
         return this.value;
