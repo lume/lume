@@ -104,13 +104,9 @@ define(function(require, exports, module) {
         });
 
         var mergedData = (streamObj instanceof Array) ? [] : {};
-        var streams = (streamObj instanceof Array) ? [] : {};
 
-        for (var key in streamObj){
-            var stream = streamObj[key];
-            streams[key] = stream;
+        mergedStream.addStream = function(key, stream){
             mergedData[key] = undefined;
-
             var mapper = (function(key){
                 return new EventMapper(function(data){
                     mergedData[key] = data;
@@ -118,6 +114,11 @@ define(function(require, exports, module) {
             })(key);
 
             mergedStream.subscribe(mapper).subscribe(stream);
+        };
+
+        for (var key in streamObj){
+            var stream = streamObj[key];
+            mergedStream.addStream(key, stream);
         }
 
         return mergedStream;
