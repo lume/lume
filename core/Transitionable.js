@@ -53,7 +53,13 @@ define(function(require, exports, module) {
         this._eventOutput = new EventHandler();
         EventHandler.setOutputHandler(this, this._eventOutput);
 
-//        Clock.subscribe(this);
+        this._eventOutput.on('start', function(){
+            Clock.trigger('dirty');
+        });
+
+        this._eventOutput.on('end', function(){
+            Clock.trigger('clean');
+        });
     }
 
     var transitionMethods = {};

@@ -11,6 +11,7 @@ define(function(require, exports, module) {
     var eventInput = new EventHandler();
     var eventOutput = new EventHandler();
     EventHandler.setOutputHandler(Clock, eventOutput);
+    EventHandler.setInputHandler(Clock, eventOutput);
 
     eventInput.on('tick', function(){
         var i;
