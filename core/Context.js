@@ -15,7 +15,6 @@ define(function(require, exports, module) {
     var Transform = require('./Transform');
     var Transitionable = require('./Transitionable');
     var Commitables = require('./Commitables');
-    var Modifier = require('famous/core/Modifier');
     var dirtyQueue = require('famous/core/dirtyQueue');
 
     /**
