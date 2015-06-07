@@ -15,6 +15,7 @@ define(function(require, exports, module) {
     var Clock = require('famous/core/Clock');
     var dirtyQueue = require('famous/core/dirtyQueue');
     var postTickQueue = require('famous/core/postTickQueue');
+    var Stream = require('famous/streams/Stream');
 
     /**
      * A state maintainer for a smooth transition between
@@ -38,6 +39,8 @@ define(function(require, exports, module) {
      *    beginning state
      */
     function Transitionable(start) {
+        Stream.call(this);
+
         this.transitionQueue = [];
         this.endStateQueue = [];
         this.callbackQueue = [];
@@ -50,9 +53,6 @@ define(function(require, exports, module) {
         this._state = STATE.NONE;
         this._dirty = false;
 
-        this._eventOutput = new EventHandler();
-        EventHandler.setOutputHandler(this, this._eventOutput);
-
         this._eventOutput.on('start', function(){
             Clock.trigger('dirty');
         });
@@ -61,6 +61,9 @@ define(function(require, exports, module) {
             Clock.trigger('clean');
         });
     }
+
+    Transitionable.prototype = Object.create(Stream.prototype);
+    Transitionable.prototype.constructor = Transitionable;
 
     var transitionMethods = {};
     var STATE = {
