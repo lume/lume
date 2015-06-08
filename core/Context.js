@@ -14,7 +14,6 @@ define(function(require, exports, module) {
     var ElementAllocator = require('./ElementAllocator');
     var Transform = require('./Transform');
     var Transitionable = require('./Transitionable');
-    var Commitables = require('./Commitables');
     var dirtyQueue = require('famous/core/dirtyQueue');
 
     /**
@@ -31,8 +30,7 @@ define(function(require, exports, module) {
         this.container = container;
         this.allocator = new ElementAllocator(container);
 
-        this.commitables = new Commitables(this.allocator);
-        this._node = new RenderNode(null, this.commitables);
+        this._node = new RenderNode();
 
         this._dirty = true;
         this._dirtyLock = 0;
@@ -178,7 +176,7 @@ define(function(require, exports, module) {
         if (this._perspective.isActive())
             _setPerspective(this.container, this._perspective.get());
 
-        this.commitables.commit(allocator);
+        this._node.commit(allocator);
     };
 
     /**
