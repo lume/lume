@@ -56,9 +56,12 @@ define(function(require, exports, module) {
     };
 
     OptionsManager.setOptions = function(instance, options, defaults){
-        instance.options = defaults || {};
-        instance.setOptions = OptionsManager.prototype.setOptions.bind(instance);
+        defaults = defaults || instance.constructor.DEFAULT_OPTIONS || {};
+        var optionsManager = new OptionsManager(defaults);
+        instance.setOptions = OptionsManager.prototype.setOptions.bind(optionsManager);
+        instance.getOptions = OptionsManager.prototype.getOptions.bind(optionsManager);
         if (options) instance.setOptions(options);
+        return optionsManager.get();
     };
 
     function _createEventHandler() {
