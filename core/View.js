@@ -10,10 +10,9 @@
 
 define(function(require, exports, module) {
     var RenderNode = require('famous/core/RenderNode');
-    var StateManager = require('famous/core/StateManager');
     var SpecManager = require('famous/core/SpecManager');
     var Controller = require('famous/core/Controller');
-    var dirtyQueue = require('famous/core/dirtyQueue');
+    var ModifierStream = require('famous/core/ModifierStream');
 
     /**
      * @class View
@@ -27,41 +26,15 @@ define(function(require, exports, module) {
         },
         events : null,
         constructor : function View(){
+            this._modifier = null;
             this._node = new RenderNode();
-            this.state = new StateManager(this.constructor.STATE_TYPES || View.STATE_TYPES);
 
-            this._dirty = true;
-            this._dirtyLock = 0;
-
-            this._cachedSpec = null;
-            this._cachedParentSize = null;
-            this._cachedParentSpec = null;
-
-            this._setup = false;
             this._isView = true;
 
             Controller.apply(this, arguments);
 
             this._eventInput.subscribe(this._optionsManager);
-            this._eventInput.subscribe(this.state);
-            this._eventInput.subscribe(this._node);
-
-            this._eventInput.on('dirty', function(){
-                if (!this._dirty){
-                    this._dirty = true;
-                    this._eventOutput.emit('dirty');
-                }
-                this._dirtyLock++;
-            }.bind(this));
-
-            this._eventInput.on('clean', function(){
-                if (this._dirtyLock > 0) this._dirtyLock--;
-                if (this._dirty && this._dirtyLock == 0) {
-                    this._dirty = false;
-                    this._eventOutput.emit('clean');
-                }
-            }.bind(this));
-
+            this._node.subscribe(this._eventInput);
         },
         set : function set(){
             return RenderNode.prototype.set.apply(this._node, arguments);
@@ -73,70 +46,29 @@ define(function(require, exports, module) {
             //TODO: if given true size, then pass down to this._node.getSize
             return (this.options.size)
                 ? this.options.size
-                : this._cachedSize;
+                : this._node.getSize();
         },
         setSize : function setSize(size){
             if (this.options.size === size) return;
-            this.options.size = size;
-            this._dirty = true;
-            dirtyQueue.push(this);
+            if (!this._modifier){
+                this._modifier = new ModifierStream({size : size});
+                this.set(this._modifier);
+            }
+            else this._modifier.addStream({size : size});
             return this;
         },
         setOrigin : function setOrigin(origin){
             if (this.options.origin === origin) return;
             this.options.origin = origin;
-            this._dirty = true;
-            dirtyQueue.push(this);
+            if (!this._modifier){
+                this._modifier = new ModifierStream({origin : origin});
+                this.set(this._modifier);
+            }
+            else this._modifier.addStream({origin : origin});
             return this;
         },
-        clean : function(){
-            if (this._dirty && this._dirtyLock == 0){
-                this._dirty = false;
-            }
-        },
-        render : function render(parentSpec){
-            var parentSize = parentSpec.size;
-
-            if (!this._cachedParentSize || (this._cachedParentSize[0] !== parentSize[0] || this._cachedParentSize[1] !== parentSize[1])){
-                if (!this._cachedParentSize)
-                    this._cachedParentSize = [parentSize[0], parentSize[1]];
-                else {
-                    this._cachedParentSize[0] = parentSize[0];
-                    this._cachedParentSize[1] = parentSize[1];
-                }
-
-                this.trigger('resize', parentSize);
-
-                this._dirty = true;
-            }
-
-            // setup may first need resize to be fired
-            if (!this._setup && this.setup) {
-                this.setup();
-                this._setup = true;
-            }
-
-            // .getSize may first need setup to run
-            if (!this._cachedParentSpec || this._cachedParentSpec !== parentSpec){
-                this._cachedParentSpec = parentSpec;
-
-                parentSpec = SpecManager.merge({
-                    origin : this.options.origin,
-                    size : this.getSize() || parentSize
-                }, parentSpec);
-
-                this._cachedSpec = parentSpec;
-
-                this._dirty = true;
-            }
-
-            if (!this._dirty) return;
-            RenderNode.prototype.render.call(this._node, this._cachedSpec);
-            dirtyQueue.push(this);
-        },
-        commit : function commit(allocator){
-            if (!this._dirty) return;
-            RenderNode.prototype.commit.call(this._node, allocator);
+        commit : function(allocator){
+            RenderNode.prototype.commit.apply(this._node, arguments);
         }
     });
 });
