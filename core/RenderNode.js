@@ -12,10 +12,13 @@ define(function(require, exports, module) {
     var SpecManager = require('./SpecManager');
     var EventHandler = require('famous/core/EventHandler');
     var Stream = require('famous/streams/Stream');
+    var Spec = require('famous/core/Spec');
 
-    function RenderNode(object, commitables) {
+    function RenderNode(object) {
         this.stream = null;
-        this._commitables = commitables || null;
+        this.child = null;
+        this.specs = [];
+        this.objects = [];
         this._cachedSize = null;
 
         this._eventInput = new EventHandler();
@@ -23,16 +26,16 @@ define(function(require, exports, module) {
         EventHandler.setInputHandler(this, this._eventInput);
         EventHandler.setOutputHandler(this, this._eventOutput);
 
-        this._eventInput.on('start', function(parentSize){
-            this._eventOutput.emit('start', parentSize)
+        this._eventInput.on('start', function(parentSpec){
+            this._eventOutput.emit('start', parentSpec)
         }.bind(this));
 
-        this._eventInput.on('update', function(data){
-            this._eventOutput.emit('update', data)
+        this._eventInput.on('update', function(parentSpec){
+            this._eventOutput.emit('update', parentSpec)
         }.bind(this));
 
-        this._eventInput.on('end', function(data){
-            this._eventOutput.emit('end', data)
+        this._eventInput.on('end', function(parentSpec){
+            this._eventOutput.emit('end', parentSpec)
         }.bind(this));
 
         if (object) this.set(object);
@@ -40,23 +43,32 @@ define(function(require, exports, module) {
 
     RenderNode.prototype.add = function add(object) {
         var childNode;
-        if (object._isView)
+        if (object._isView){
             childNode = object;
+        }
         else
-            childNode = new RenderNode(object, this._commitables);
+            childNode = new RenderNode(object);
 
         childNode.subscribe(this.stream || this);
+        if (!this.child) {
+            this.child = childNode;
+        }
+        else if (this.child instanceof Array){
+            this.child.push(childNode);
+        }
+        else this.child = [this.child, childNode];
+
         return childNode;
     };
 
     RenderNode.prototype.set = function set(object) {
         this.stream = Stream.lift(
             function(objectSpec, parentSpec){
-
                 if (object.trigger){
                     var size = parentSpec.size;
                     var cachedSize = this._cachedSize;
                     if (!cachedSize || cachedSize[0] !== size[0] || cachedSize[1] == size[1]){
+                        this._cachedSize = size;
                         object.trigger('resize', size);
                     }
                 }
@@ -69,8 +81,38 @@ define(function(require, exports, module) {
         );
 
         if (object.commit){
-            var id = this._commitables.register(object);
-            this._commitables.getSpec(id).subscribe(this.stream);
+            var spec = new Spec();
+            spec.subscribe(this.stream);
+
+            this.stream.on('start', function(spec){
+                this.specs.push(spec);
+                this.objects.push(object);
+            }.bind(this, spec));
+
+            this.stream.on('end', function(spec){
+                var index = this.specs.indexOf(spec);
+                this.specs.splice(index, 1);
+                this.objects.splice(index, 1);
+            }.bind(this, spec));
+        }
+    };
+
+    RenderNode.prototype.getSize = function(){
+        return this._cachedSize;
+    };
+
+    RenderNode.prototype.commit = function commit(allocator){
+        for (var i = 0; i < this.specs.length; i++){
+            var spec = this.specs[i].get();
+            var object = this.objects[i];
+            object.commit(spec, allocator);
+        }
+        if (this.child) {
+            if (this.child instanceof Array){
+                for (var i = 0; i < this.child.length; i++)
+                    this.child[i].commit(allocator);
+            }
+            else this.child.commit(allocator);
         }
     };
 
