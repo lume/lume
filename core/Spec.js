@@ -11,7 +11,6 @@ define(function(require, exports, module) {
 
         this._eventInput.on('start', function(spec){
             this.spec = spec;
-            this.emit('register');
         }.bind(this));
 
         this._eventInput.on('update', function(spec){
@@ -20,7 +19,6 @@ define(function(require, exports, module) {
 
         this._eventInput.on('end', function(spec){
             this.spec = spec;
-            this.emit('unregister');
         }.bind(this));
     }
 
