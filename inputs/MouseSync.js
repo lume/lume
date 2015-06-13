@@ -10,6 +10,9 @@
 
 define(function(require, exports, module) {
     var EventHandler = require('famous/core/EventHandler');
+    var OptionsManager = require('famous/core/OptionsManager');
+    var Stream = require('famous/streams/Stream');
+    var dirtyObjects = require('famous/core/dirtyObjects');
 
     /**
      * Handles piped in mouse drag events. Outputs an object with two
@@ -22,12 +25,10 @@ define(function(require, exports, module) {
      *
      * @param [options] {Object}             default options overrides
      * @param [options.direction] {Number}   read from a particular axis
-     * @param [options.rails] {Boolean}      read from axis with greatest differential
      * @param [options.propogate] {Boolean}  add listened to document on mouseleave
      */
     function MouseSync(options) {
-        this.options =  Object.create(MouseSync.DEFAULT_OPTIONS);
-        if (options) this.setOptions(options);
+        this.options = OptionsManager.setOptions(this, options);
 
         this._eventInput = new EventHandler();
         this._eventOutput = new EventHandler();
@@ -39,12 +40,20 @@ define(function(require, exports, module) {
         this._eventInput.on('mousemove', _handleMove.bind(this));
         this._eventInput.on('mouseup', _handleEnd.bind(this));
 
+        this._eventOutput.on('start', function(){
+            dirtyObjects.trigger('dirty');
+        });
+
+        this._eventOutput.on('end', function(){
+            dirtyObjects.trigger('clean');
+        });
+
         if (this.options.propogate) this._eventInput.on('mouseleave', _handleLeave.bind(this));
         else this._eventInput.on('mouseleave', _handleEnd.bind(this));
 
         this._payload = {
             delta    : null,
-            position : null,
+            value    : null,
             velocity : null,
             clientX  : 0,
             clientY  : 0,
@@ -56,12 +65,14 @@ define(function(require, exports, module) {
         this._prevCoord = undefined;
         this._prevTime = undefined;
         this._down = false;
-        this._moved = false;
+        this._move = false;
     }
+
+    MouseSync.prototype = Object.create(Stream.prototype);
+    MouseSync.prototype.constructor = MouseSync;
 
     MouseSync.DEFAULT_OPTIONS = {
         direction: undefined,
-        rails: false,
         scale: 1,
         propogate: true  // events piped to document on mouseleave
     };
@@ -99,7 +110,7 @@ define(function(require, exports, module) {
 
         var payload = this._payload;
         payload.delta = delta;
-        payload.position = this._position;
+        payload.value = this._position;
         payload.velocity = velocity;
         payload.clientX = x;
         payload.clientY = y;
@@ -122,11 +133,6 @@ define(function(require, exports, module) {
 
         var diffX = x - prevCoord[0];
         var diffY = y - prevCoord[1];
-
-        if (this.options.rails) {
-            if (Math.abs(diffX) > Math.abs(diffY)) diffY = 0;
-            else diffX = 0;
-        }
 
         var diffTime = Math.max(currTime - prevTime, MINIMUM_TICK_TIME); // minimum tick time
 
@@ -156,7 +162,7 @@ define(function(require, exports, module) {
 
         var payload = this._payload;
         payload.delta    = nextDelta;
-        payload.position = this._position;
+        payload.value = this._position;
         payload.velocity = nextVel;
         payload.clientX  = x;
         payload.clientY  = y;
@@ -193,33 +199,6 @@ define(function(require, exports, module) {
         document.addEventListener('mousemove', boundMove);
         document.addEventListener('mouseup', boundEnd);
     }
-
-    /**
-     * Return entire options dictionary, including defaults.
-     *
-     * @method getOptions
-     * @return {Object} configuration options
-     */
-    MouseSync.prototype.getOptions = function getOptions() {
-        return this.options;
-    };
-
-    /**
-     * Set internal options, overriding any default options
-     *
-     * @method setOptions
-     *
-     * @param [options] {Object}             default options overrides
-     * @param [options.direction] {Number}   read from a particular axis
-     * @param [options.rails] {Boolean}      read from axis with greatest differential
-     * @param [options.propogate] {Boolean}  add listened to document on mouseleave
-     */
-    MouseSync.prototype.setOptions = function setOptions(options) {
-        if (options.direction !== undefined) this.options.direction = options.direction;
-        if (options.rails !== undefined) this.options.rails = options.rails;
-        if (options.scale !== undefined) this.options.scale = options.scale;
-        if (options.propogate !== undefined) this.options.propogate = options.propogate;
-    };
 
     module.exports = MouseSync;
 });
