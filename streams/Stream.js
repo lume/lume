@@ -3,7 +3,10 @@ define(function(require, exports, module) {
     var EventMapper = require('famous/events/EventMapper');
     var EventFilter = require('famous/events/EventFilter');
     var EventSplitter = require('famous/events/EventSplitter');
+
+    var nextTickQueue = require('famous/core/nextTickQueue');
     var postTickQueue = require('famous/core/postTickQueue');
+    var dirtyQueue = require('famous/core/dirtyQueue');
 
     var EVENTS = {
         START : 'start',
@@ -12,36 +15,78 @@ define(function(require, exports, module) {
     };
 
     function Stream(options){
+        options = options || {};
+
+        this._eventInput = new EventHandler();
         this._eventOutput = new EventHandler();
+        EventHandler.setInputHandler(this, this._eventInput);
         EventHandler.setOutputHandler(this, this._eventOutput);
 
-        if (options){
-            var start = options.start || Stream.DEFAULT_OPTIONS.start;
-            var update = options.update || Stream.DEFAULT_OPTIONS.update;
-            var end = options.end || Stream.DEFAULT_OPTIONS.end;
+        var count = 0;
+        var total = 0;
 
-            this._eventInput = new EventHandler();
-            this._eventInput.bindThis(this);
-            EventHandler.setInputHandler(this, this._eventInput);
+        var hasStarted = false;
+        var hasEnded = false;
+        var hasUpdated = false;
 
-            this._eventInput.on(EVENTS.START, start);
-            this._eventInput.on(EVENTS.UPDATE, update);
-            this._eventInput.on(EVENTS.END, end);
+        if (options.start)
+            this._eventInput.on(EVENTS.START, options.start.bind(this));
+        else {
+            this._eventInput.on(EVENTS.START, function(data){
+                hasStarted = true;
+
+                count++;
+                total++;
+
+                nextTickQueue.push(function(){
+                    if (count == total && hasUpdated == false && hasEnded == false){
+                        this.emit(EVENTS.START, data);
+                        count = 0;
+                    }
+                }.bind(this));
+            }.bind(this));
         }
-        else EventHandler.setInputHandler(this, this._eventOutput);
+
+        if (options.update)
+            this._eventInput.on(EVENTS.UPDATE, options.update.bind(this));
+        else {
+            this._eventInput.on(EVENTS.UPDATE, function(data){
+                hasUpdated = true;
+                count++;
+
+                postTickQueue.push(function(){
+                    this.emit(EVENTS.UPDATE, data);
+                    count = 0;
+                }.bind(this));
+            }.bind(this));
+        }
+
+        if (options.end)
+            this._eventInput.on(EVENTS.END, options.end.bind(this));
+        else {
+            this._eventInput.on(EVENTS.END, function(data){
+                hasEnded = true;
+
+                total--;
+
+                dirtyQueue.push(function(){
+                    if (total === 0 && hasStarted == true){
+                        this.emit(EVENTS.END, data);
+                        count = 0;
+                        hasEnded = false;
+                        hasStarted = false;
+                        hasUpdated = false;
+                    }
+                }.bind(this))
+            }.bind(this));
+        }
     }
 
-    Stream.DEFAULT_OPTIONS = {
-        start : function(data){this.emit(EVENTS.START, data)},
-        update : function(data){this.emit(EVENTS.UPDATE, data)},
-        end : function(data){this.emit(EVENTS.END, data)}
-    };
-
     Stream.prototype.map = function(fn){
-        var mappedStream = new Stream();
+        var stream = new Stream();
         var mapper = new EventMapper(fn);
-        mappedStream.subscribe(mapper).subscribe(this);
-        return mappedStream;
+        stream.subscribe(mapper).subscribe(this);
+        return stream;
     };
 
     Stream.prototype.filter = function(fn){
@@ -64,42 +109,50 @@ define(function(require, exports, module) {
         });
     };
 
-    Stream.merge = function(streamObj, queue){
+    Stream.merge = function(streamObj){
         var count = 0;
         var total = 0;
-        var update = false;
-
-        if (queue === undefined) queue = postTickQueue;
+        var hasStarted = false;
+        var hasUpdated = false;
+        var hasEnded = false;
 
         var mergedStream = new Stream({
             start : function(){
+                hasStarted = true;
+
                 count++;
                 total++;
-                update = false;
 
-                queue.push(function(){
-                    if (!update && count === total){
+                nextTickQueue.push(function(){
+                    if (count == total && hasUpdated == false && hasEnded == false){
+                        this.emit(EVENTS.START, mergedData);
                         count = 0;
-                        mergedStream.emit(EVENTS.START, mergedData);
                     }
-                });
+                }.bind(mergedStream));
             },
             update : function(){
+                hasUpdated = true;
                 count++;
-                update = true;
 
-                if (count === total){
+                postTickQueue.push(function(){
+                    if (count == total) mergedStream.emit(EVENTS.UPDATE, mergedData);
                     count = 0;
-                    mergedStream.emit(EVENTS.UPDATE, mergedData);
-                }
+                }.bind(mergedStream));
             },
             end : function(){
+                hasEnded = true;
+
                 total--;
 
-                if (total === 0){
-                    count = 0;
-                    mergedStream.emit(EVENTS.END, mergedData);
-                }
+                dirtyQueue.push(function(){
+                    if (total === 0 && hasStarted == true){
+                        this.emit(EVENTS.END, mergedData);
+                        count = 0;
+                        hasEnded = false;
+                        hasStarted = false;
+                        hasUpdated = false;
+                    }
+                }.bind(mergedStream))
             }
         });
 
