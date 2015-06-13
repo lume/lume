@@ -32,9 +32,6 @@ define(function(require, exports, module) {
 
         this._node = new RenderNode();
 
-        this._dirty = true;
-        this._dirtyLock = 0;
-
         this._size = _getElementSize(this.container);
 
         this._perspective = new Transitionable(0);
@@ -52,44 +49,26 @@ define(function(require, exports, module) {
         this._eventOutput = new EventHandler();
         EventHandler.setInputHandler(this, this._eventInput);
         EventHandler.setOutputHandler(this, this._eventOutput);
-        this._eventInput.bindThis(this);
 
-        //TODO: to restrict types must put below event declarations
-//        this._eventInput.subscribe(this._node, ['dirty', 'clean']);
         this._eventInput.subscribe(this._perspective);
 
-        this._eventInput.on('resize', function() {
+        this._eventInput.on('resize', function(windowSize) {
             this.setSize(_getElementSize(this.container));
+            this._eventOutput.emit('resize', this.getSize())
         }.bind(this));
 
-        this._eventInput.on('dirty', _onDirty);
-        this._eventInput.on('clean', _onClean);
-
         this._eventInput.on('start', function(){
-            this._node.trigger('start', this._nodeContext);
+            this._eventOutput.emit('start', this._nodeContext);
         }.bind(this));
 
         this._eventInput.on('end', function(){
-            this._node.trigger('end', this._nodeContext);
-        }.bind(this));
+            this._eventOutput.emit('end', this._nodeContext);
+        }.bind(this))
+
+        this._node.subscribe(this);
     }
 
     var usePrefix = !('perspective' in document.documentElement.style);
-
-    function _onDirty(){
-        if (!this._dirty) {
-            this._dirty = true;
-            this._eventOutput.emit('dirty');
-        }
-    }
-
-    function _onClean(){
-        if (this._dirtyLock > 0) this._dirtyLock--;
-        if (this._dirty && this._dirtyLock == 0) {
-            this._dirty = false;
-            this._eventOutput.emit('clean');
-        }
-    }
 
     function _getElementSize(element) {
         return [element.clientWidth, element.clientHeight];
