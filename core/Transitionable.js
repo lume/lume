@@ -46,7 +46,7 @@ define(function(require, exports, module) {
         this.endStateQueue = [];
         this.callbackQueue = [];
 
-        this.state = undefined;
+        this.state = start || 0;
         this.velocity = undefined;
         this._callback = undefined;
         this._engineInstance = null;
@@ -54,18 +54,13 @@ define(function(require, exports, module) {
         this._state = STATE.NONE;
         this._dirty = false;
 
-        this._eventOutput.on('start', function(){
-            Clock.trigger('dirty');
-        });
-
-        this._eventOutput.on('end', function(){
-            Clock.trigger('clean');
-        });
-
-        if (start){
+        if (start !== undefined){
+            //TODO: postTick or nextTick (preTick)?
             nextTickQueue.push(function(){
-                this.set(start);
-            }.bind(this))
+                // make sure didn't set in same tick as defined
+                if (this._state == STATE.NONE || this._state == STATE.END)
+                    this.set(start);
+            }.bind(this));
         }
     }
 
@@ -141,17 +136,14 @@ define(function(require, exports, module) {
         if (!transition) {
             switch (this._state){
                 case STATE.NONE:
-                    // from zero to hero
                     this._state = STATE.START;
                     break;
                 case STATE.END:
-                    // from zero to hero
                     this._state = STATE.START;
                     break;
                 case STATE.UPDATE:
                     // interrupt while active causes end event
                     this._state = STATE.END;
-                    dirtyQueue.push(this);
                     break;
             }
 
@@ -163,6 +155,7 @@ define(function(require, exports, module) {
                 Clock.register(this);
                 this.emit('start', this.state);
                 dirtyQueue.push(function(){
+                    this._dirty = false;
                     this._state = STATE.END;
                     Clock.unregister(this);
                     this.emit('end', this.state);
@@ -177,7 +170,7 @@ define(function(require, exports, module) {
         else {
             this._state = STATE.START;
             Clock.register(this);
-            this._eventOutput.emit('start', this.state);
+            this.emit('start', this.state);
         }
 
         this.endStateQueue.push(endState);
@@ -203,10 +196,9 @@ define(function(require, exports, module) {
     };
 
     Transitionable.prototype.update = function update(){
-        if (this._state == STATE.START){
-            this._state = STATE.UPDATE;
-            return;
-        }
+        this._state = STATE.UPDATE;
+
+        if (!this._engineInstance) return;
 
         var state = this._engineInstance.get();
 
@@ -214,8 +206,8 @@ define(function(require, exports, module) {
 
         this.state = state;
 
-        if (!this._engineInstance.isActive()){
-            postTickQueue.push(function(){
+        if (this._engineInstance && !this._engineInstance.isActive()){
+            dirtyQueue.push(function(){
                 this._state = STATE.END;
 
                 Clock.unregister(this);
@@ -319,14 +311,6 @@ define(function(require, exports, module) {
         this.endStateQueue = [];
         this.transitionQueue = [];
         this.callbackQueue = [];
-    };
-
-    Transitionable.prototype.clean = function(){
-        if (this._dirty){
-            this._dirty = false;
-            Clock.unregister(this);
-            this.emit('end', this.state);
-        }
     };
 
     module.exports = Transitionable;
