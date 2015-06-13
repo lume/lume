@@ -21,6 +21,8 @@ define(function(require, exports, module) {
         }
     };
 
+    dirtyObjects.trigger = eventOutput.emit.bind(eventOutput);
+
     dirtyObjects.on = eventOutput.on.bind(eventOutput);
 
     module.exports = dirtyObjects;
