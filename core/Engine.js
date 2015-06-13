@@ -34,6 +34,7 @@ define(function(require, exports, module) {
     var nextTickQueue = require('./nextTickQueue');
     var dirtyQueue = require('./dirtyQueue');
     var postTickQueue = require('./postTickQueue');
+    var Stream = require('famous/streams/Stream');
 
     var Engine = {};
 
@@ -49,6 +50,7 @@ define(function(require, exports, module) {
     var eventHandler = new EventHandler();
     var dirty = true;
     var dirtyLock = 0;
+    var size = new EventHandler();
 
     var options = {
         containerType: 'div',
@@ -59,13 +61,11 @@ define(function(require, exports, module) {
     var optionsManager = new OptionsManager(options);
 
     postTickQueue.push(function(){
-        for (var i = 0; i < contexts.length; i++)
-            contexts[i].trigger('start');
+        Engine.trigger('dirty');
     });
 
     dirtyQueue.push(function(){
-        for (var i = 0; i < contexts.length; i++)
-            contexts[i].trigger('end');
+        Engine.trigger('clean');
     });
 
     /**
@@ -98,8 +98,10 @@ define(function(require, exports, module) {
 
         while (nextTickQueue.length) (nextTickQueue.shift())();
 
+        // tick signals base event flow coming in
         eventHandler.emit('tick');
 
+        // post tick is for resolving larger components from their incoming signals
         while (postTickQueue.length) (postTickQueue.shift())();
 
         for (var i = 0; i < contexts.length; i++)
@@ -118,10 +120,8 @@ define(function(require, exports, module) {
     }
     rafId = window.requestAnimationFrame(loop);
 
-    function handleResize(event) {
-        eventHandler.emit('resize');
-        for (var i = 0; i < contexts.length; i++)
-            contexts[i].trigger('resize');
+    function handleResize() {
+        eventHandler.emit('resize', [window.innerWidth, window.innerHeight]);
     }
     window.addEventListener('resize', handleResize, false);
     handleResize();
@@ -180,10 +180,14 @@ define(function(require, exports, module) {
     });
 
     eventHandler.on('resize', function(){
+        //TODO: debounce
         if (!dirty) {
             dirty = true;
             rafId = window.requestAnimationFrame(loop);
         }
+        dirtyQueue.push(function(){
+            dirty = false;
+        });
     });
 
     /**
@@ -284,8 +288,8 @@ define(function(require, exports, module) {
      * @return {FamousContext} provided context
      */
     Engine.registerContext = function registerContext(context) {
+        context.subscribe(size);
         contexts.push(context);
-        Engine.subscribe(context);
         return context;
     };
 
@@ -311,7 +315,7 @@ define(function(require, exports, module) {
      */
     Engine.deregisterContext = function deregisterContext(context) {
         var i = contexts.indexOf(context);
-        Engine.unsubscribe(context);
+        context.unsubscribe(size);
         if (i >= 0) contexts.splice(i, 1);
     };
 
@@ -324,6 +328,7 @@ define(function(require, exports, module) {
     Clock.subscribeEngine(Engine);
     Engine.subscribe(Clock);
     Engine.subscribe(dirtyObjects);
+    size.subscribe(eventHandler);
 
     module.exports = Engine;
 });
