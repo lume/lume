@@ -38,6 +38,10 @@ define(function(require, exports, module) {
             this._eventOutput.emit('end', parentSpec)
         }.bind(this));
 
+        this._eventInput.on('resize', function(size){
+            this._eventOutput.emit('resize', size);
+        }.bind(this));
+
         if (object) this.set(object);
     }
 
@@ -49,7 +53,12 @@ define(function(require, exports, module) {
         else
             childNode = new RenderNode(object);
 
-        childNode.subscribe(this.stream || this);
+        if (this.stream)
+            childNode.subscribe(this.stream);
+        else childNode.subscribe(this);
+
+//        if (this.sizeStream) childNode.subscribe(this.sizeStream);
+
         if (!this.child) {
             this.child = childNode;
         }
@@ -64,21 +73,22 @@ define(function(require, exports, module) {
     RenderNode.prototype.set = function set(object) {
         this.stream = Stream.lift(
             function(objectSpec, parentSpec){
-                if (object.trigger){
-                    var size = parentSpec.size;
-                    var cachedSize = this._cachedSize;
-                    if (!cachedSize || cachedSize[0] !== size[0] || cachedSize[1] == size[1]){
-                        this._cachedSize = size;
-                        object.trigger('resize', size);
-                    }
-                }
-
                 return (parentSpec && objectSpec)
                     ? SpecManager.merge(objectSpec, parentSpec)
                     : parentSpec;
-            }.bind(this),
+            },
             [object, this._eventOutput]
         );
+
+//        this.sizeStream listens to this.stream? property of object?
+//        this.sizeStream = Stream.lift(
+//            function(objectSpec, parentSize){
+//                return (parentSize && objectSpec)
+//                    ? SpecManager.getSize(objectSpec, parentSize)
+//                    : parentSize;
+//            },
+//            [object, this._eventOutput]
+//        );
 
         if (object.commit){
             var spec = new Spec();
@@ -94,6 +104,9 @@ define(function(require, exports, module) {
                 this.specs.splice(index, 1);
                 this.objects.splice(index, 1);
             }.bind(this, spec));
+
+//            this.stream.on('resize', function(size){
+//            }.bind(this))
         }
     };
 
