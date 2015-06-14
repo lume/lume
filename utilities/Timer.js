@@ -18,23 +18,24 @@ define(function(require, exports, module) {
      * @class Timer
      * @constructor
      */
-    var Engine = require('famous/core/Engine');
-
-    var _event = 'tick';
+    var tickQueue = require('famous/core/tickQueue');
+    var dirtyObjects = require('famous/core/dirtyObjects');
 
     var getTime = (window.performance)
         ? function() { return window.performance.now(); }
         : Date.now;
 
     function _addTimerFunction(fn) {
-        Engine.trigger('dirty');
-        Engine.on(_event, fn);
+        tickQueue.push(fn);
+        dirtyObjects.trigger('dirty');
         return fn;
     }
 
     function _clearTimerFunction(fn){
-        Engine.off(_event, fn);
-        Engine.trigger('clean');
+        var index = tickQueue.indexOf(fn);
+        if (index === -1) return;
+        tickQueue.splice(index, 1);
+        dirtyObjects.trigger('clean');
     }
 
     var Timer = {};
