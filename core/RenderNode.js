@@ -50,16 +50,15 @@ define(function(require, exports, module) {
 
     RenderNode.prototype.add = function add(object) {
         var childNode;
-        if (object._isView){
+        if (object._isView)
             childNode = object;
-            childNode.subscribe(this);
-        }
         else
             childNode = new RenderNode(object);
 
         if (this.stream)
             childNode.subscribe(this.stream);
-        else childNode.subscribe(this);
+        else
+            childNode.subscribe(this);
 
         if (!this.child) {
             this.child = childNode;
@@ -105,9 +104,6 @@ define(function(require, exports, module) {
             object.on('dirty', function(){
                 this.dirtyObjects.push(object);
             }.bind(this));
-
-//            this.stream.on('resize', function(size){
-//            }.bind(this))
         }
     };
 
