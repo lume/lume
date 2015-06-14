@@ -13,13 +13,16 @@ define(function(require, exports, module) {
     var EventHandler = require('famous/core/EventHandler');
     var Stream = require('famous/streams/Stream');
     var Spec = require('famous/core/Spec');
+    var EventMapper = require('famous/events/EventMapper');
 
     function RenderNode(object) {
         this.stream = null;
         this.child = null;
+        this._cachedSize = null;
+
         this.specs = [];
         this.objects = [];
-        this._cachedSize = null;
+        this.dirtyObjects = [];  // for discretely dirty objects
 
         this._eventInput = new EventHandler();
         this._eventOutput = new EventHandler();
@@ -49,6 +52,7 @@ define(function(require, exports, module) {
         var childNode;
         if (object._isView){
             childNode = object;
+            childNode.subscribe(this);
         }
         else
             childNode = new RenderNode(object);
@@ -56,8 +60,6 @@ define(function(require, exports, module) {
         if (this.stream)
             childNode.subscribe(this.stream);
         else childNode.subscribe(this);
-
-//        if (this.sizeStream) childNode.subscribe(this.sizeStream);
 
         if (!this.child) {
             this.child = childNode;
@@ -80,23 +82,13 @@ define(function(require, exports, module) {
             [object, this._eventOutput]
         );
 
-//        this.sizeStream listens to this.stream? property of object?
-//        this.sizeStream = Stream.lift(
-//            function(objectSpec, parentSize){
-//                return (parentSize && objectSpec)
-//                    ? SpecManager.getSize(objectSpec, parentSize)
-//                    : parentSize;
-//            },
-//            [object, this._eventOutput]
-//        );
-
         if (object.commit){
             var spec = new Spec();
             spec.subscribe(this.stream);
 
             this.stream.on('start', function(spec){
-                this.specs.push(spec);
                 this.objects.push(object);
+                this.specs.push(spec);
             }.bind(this, spec));
 
             this.stream.on('end', function(spec){
@@ -104,6 +96,15 @@ define(function(require, exports, module) {
                 this.specs.splice(index, 1);
                 this.objects.splice(index, 1);
             }.bind(this, spec));
+
+            object.on('clean', function(){
+                var index = this.dirtyObjects.indexOf(object);
+                this.dirtyObjects.splice(index, 1);
+            }.bind(this));
+
+            object.on('dirty', function(){
+                this.dirtyObjects.push(object);
+            }.bind(this));
 
 //            this.stream.on('resize', function(size){
 //            }.bind(this))
@@ -115,11 +116,19 @@ define(function(require, exports, module) {
     };
 
     RenderNode.prototype.commit = function commit(allocator){
-        for (var i = 0; i < this.specs.length; i++){
-            var spec = this.specs[i].get();
+        for (var i = 0; i < this.objects.length; i++){
             var object = this.objects[i];
+            var spec = this.specs[i].get();
             object.commit(spec, allocator);
+
+            var dirtyIndex = this.dirtyObjects.indexOf(object);
+            if (dirtyIndex !== -1) this.dirtyObjects.splice(dirtyIndex, 1);
         }
+
+        for (var i = 0; i < this.dirtyObjects.length; i++){
+            this.dirtyObjects[i].commit(null, allocator);
+        }
+
         if (this.child) {
             if (this.child instanceof Array){
                 for (var i = 0; i < this.child.length; i++)
