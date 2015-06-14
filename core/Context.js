@@ -50,9 +50,19 @@ define(function(require, exports, module) {
         EventHandler.setInputHandler(this, this._eventInput);
         EventHandler.setOutputHandler(this, this._eventOutput);
 
-        this._eventInput.on('resize', function(windowSize) {
+        this._eventInput.on('resize start', function(windowSize) {
             this.setSize(_getElementSize(this.container));
-            this._eventOutput.emit('resize', this.getSize())
+            this._eventOutput.emit('resize start', this.getSize())
+        }.bind(this));
+
+        this._eventInput.on('resize update', function(windowSize) {
+            this.setSize(_getElementSize(this.container));
+            this._eventOutput.emit('resize update', this.getSize())
+        }.bind(this));
+
+        this._eventInput.on('resize end', function(windowSize) {
+            this.setSize(_getElementSize(this.container));
+            this._eventOutput.emit('resize end', this.getSize())
         }.bind(this));
 
         this._eventInput.on('start', function(){
