@@ -60,6 +60,14 @@ define(function(require, exports, module) {
     };
     var optionsManager = new OptionsManager(options);
 
+    nextTickQueue.push(function(){
+        Engine.trigger('dirty');
+    });
+
+    dirtyQueue.push(function(){
+        Engine.trigger('clean');
+    });
+
     /**
      * Inside requestAnimationFrame loop, step() is called, which:
      *   calculates current FPS (throttling loop if it is over limit set in setFPSCap),
@@ -91,6 +99,7 @@ define(function(require, exports, module) {
         while (nextTickQueue.length) (nextTickQueue.shift())();
 
         // tick signals base event flow coming in
+        console.log('tick')
         eventHandler.emit('tick');
 
         // post tick is for resolving larger components from their incoming signals
@@ -116,7 +125,6 @@ define(function(require, exports, module) {
         eventHandler.emit('resize', [window.innerWidth, window.innerHeight]);
     }
     window.addEventListener('resize', handleResize, false);
-    handleResize();
 
     /**
      * Initialize famous for app mode
@@ -262,10 +270,16 @@ define(function(require, exports, module) {
         Engine.registerContext(context);
         
         if (needMountContainer) {
-            nextTickQueue.push(function(context, el) {
-                document.body.appendChild(el);
+            document.body.appendChild(el);
+            nextTickQueue.push(function(){
                 context.trigger('resize');
-            }.bind(this, context, el));
+                context.trigger('start')
+            });
+
+            dirtyQueue.push(function(){
+                context.trigger('end');
+                Engine.trigger('clean');
+            });
         }
         return context;
     };
