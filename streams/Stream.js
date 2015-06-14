@@ -135,8 +135,10 @@ define(function(require, exports, module) {
                 count++;
 
                 postTickQueue.push(function(){
-                    if (count == total) mergedStream.emit(EVENTS.UPDATE, mergedData);
-                    count = 0;
+                    if (count == total) {
+                        mergedStream.emit(EVENTS.UPDATE, mergedData);
+                        count = 0;
+                    }
                 }.bind(mergedStream));
             },
             end : function(){
