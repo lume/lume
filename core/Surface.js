@@ -13,6 +13,7 @@ define(function(require, exports, module) {
     var dirtyObjects = require('famous/core/dirtyObjects');
     var dirtyQueue = require('famous/core/dirtyQueue');
     var postTickQueue = require('famous/core/postTickQueue');
+    var nextTickQueue = require('famous/core/nextTickQueue');
 
     /**
      * A base class for viewable content and event
@@ -53,6 +54,11 @@ define(function(require, exports, module) {
         this._dirtyClasses = [];
 
         if (options) this.setOptions(options);
+
+        postTickQueue.push(function(){
+            this._dirty = false;
+            _setDirty.call(this)
+        }.bind(this))
     }
 
     Surface.prototype = Object.create(ElementOutput.prototype);
@@ -63,13 +69,14 @@ define(function(require, exports, module) {
     function _setDirty(){
         if (this._dirty) return;
 
-        dirtyObjects.push();
-
-        this.emit('start');
         this._dirty = true;
 
+        this.emit('dirty');
+        dirtyObjects.trigger('dirty');
+
         dirtyQueue.push(function(){
-            this.emit('end');
+            this.emit('clean');
+            dirtyObjects.trigger('clean');
             this._dirty = false;
         }.bind(this));
     }
@@ -386,7 +393,7 @@ define(function(require, exports, module) {
             this._attributesDirty = false;
         }
 
-        ElementOutput.prototype.commit.call(this, spec);
+        if (spec) ElementOutput.prototype.commit.call(this, spec);
     };
 
     /**
