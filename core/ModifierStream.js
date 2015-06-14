@@ -2,7 +2,7 @@ define(function(require, exports, module) {
     var EventHandler = require('famous/core/EventHandler');
     var Stream = require('famous/streams/Stream');
     var Observable = require('famous/core/Observable');
-    var postTickQueue = require('famous/core/postTickQueue');
+    var nextTickQueue = require('famous/core/nextTickQueue');
     var dirtyObjects = require('famous/core/dirtyObjects');
 
     function Modifier(sources) {
@@ -27,7 +27,7 @@ define(function(require, exports, module) {
                 sources[key] = source;
 
                 (function(source, value){
-                    postTickQueue.push(function(){
+                    nextTickQueue.push(function(){
                         source.set(value);
                     });
                 })(source, value);
@@ -43,7 +43,7 @@ define(function(require, exports, module) {
             var source = new Observable();
 
             (function(source, value){
-                postTickQueue.push(function(){
+                nextTickQueue.push(function(){
                     source.set(value);
                 });
             })(source, value);
