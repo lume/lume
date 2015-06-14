@@ -60,14 +60,6 @@ define(function(require, exports, module) {
     };
     var optionsManager = new OptionsManager(options);
 
-    postTickQueue.push(function(){
-        Engine.trigger('dirty');
-    });
-
-    dirtyQueue.push(function(){
-        Engine.trigger('clean');
-    });
-
     /**
      * Inside requestAnimationFrame loop, step() is called, which:
      *   calculates current FPS (throttling loop if it is over limit set in setFPSCap),
@@ -172,23 +164,23 @@ define(function(require, exports, module) {
     });
 
     eventHandler.on('clean', function(){
-        if (dirtyLock > 0) dirtyLock--;
+        dirtyLock--;
         if (dirty && dirtyLock === 0) {
             dirty = false;
             window.cancelAnimationFrame(rafId);
         }
     });
 
-    eventHandler.on('resize', function(){
-        //TODO: debounce
-        if (!dirty) {
-            dirty = true;
-            rafId = window.requestAnimationFrame(loop);
-        }
-        dirtyQueue.push(function(){
-            dirty = false;
-        });
-    });
+//    eventHandler.on('resize', function(){
+//        //TODO: debounce
+//        if (!dirty) {
+//            dirty = true;
+//            rafId = window.requestAnimationFrame(loop);
+//        }
+//        dirtyQueue.push(function(){
+//            dirty = false;
+//        });
+//    });
 
     /**
      * Return the current calculated frames per second of the Engine.
