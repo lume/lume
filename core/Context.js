@@ -50,8 +50,6 @@ define(function(require, exports, module) {
         EventHandler.setInputHandler(this, this._eventInput);
         EventHandler.setOutputHandler(this, this._eventOutput);
 
-        this._eventInput.subscribe(this._perspective);
-
         this._eventInput.on('resize', function(windowSize) {
             this.setSize(_getElementSize(this.container));
             this._eventOutput.emit('resize', this.getSize())
@@ -63,9 +61,9 @@ define(function(require, exports, module) {
 
         this._eventInput.on('end', function(){
             this._eventOutput.emit('end', this._nodeContext);
-        }.bind(this))
+        }.bind(this));
 
-        this._node.subscribe(this);
+        this._node.subscribe(this._eventOutput);
     }
 
     var usePrefix = !('perspective' in document.documentElement.style);
@@ -131,13 +129,8 @@ define(function(require, exports, module) {
      * @param {Array.Number} size [width, height].  If unspecified, use size of root document element.
      */
     Context.prototype.setSize = function setSize(size) {
-        if (!size) size = _getElementSize(this.container);
         this._size[0] = size[0];
         this._size[1] = size[1];
-        this._dirty = true;
-        dirtyQueue.push(function(){
-            this.dirty = false;
-        }.bind(this));
     };
 
     /**
