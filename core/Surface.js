@@ -48,17 +48,12 @@ define(function(require, exports, module) {
         this._sizeDirty = true;
         this._contentDirty = true;
         this._trueSizeCheck = false;
-        this._dirty = true;
+        this._dirty = false;
 
         this.classList = [];
         this._dirtyClasses = [];
 
         if (options) this.setOptions(options);
-
-        postTickQueue.push(function(){
-            this._dirty = false;
-            _setDirty.call(this)
-        }.bind(this))
     }
 
     Surface.prototype = Object.create(ElementOutput.prototype);
