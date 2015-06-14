@@ -54,6 +54,14 @@ define(function(require, exports, module) {
         this._state = STATE.NONE;
         this._dirty = false;
 
+        this._eventOutput.on('start', function(){
+            Clock.trigger('dirty');
+        });
+
+        this._eventOutput.on('end', function(){
+            Clock.trigger('clean');
+        });
+
         if (start !== undefined){
             //TODO: postTick or nextTick (preTick)?
             nextTickQueue.push(function(){
