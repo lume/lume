@@ -34,7 +34,9 @@ define(function(require, exports, module) {
     var nextTickQueue = require('./nextTickQueue');
     var dirtyQueue = require('./dirtyQueue');
     var postTickQueue = require('./postTickQueue');
+    var tickQueue = require('./tickQueue');
     var Stream = require('famous/streams/Stream');
+    var Timer = require('famous/utilities/Timer');
 
     var Engine = {};
 
@@ -50,7 +52,7 @@ define(function(require, exports, module) {
     var eventHandler = new EventHandler();
     var dirty = true;
     var dirtyLock = 0;
-    var size = new EventHandler();
+    var sizeStream = new EventHandler();
 
     var options = {
         containerType: 'div',
@@ -99,8 +101,10 @@ define(function(require, exports, module) {
         while (nextTickQueue.length) (nextTickQueue.shift())();
 
         // tick signals base event flow coming in
-        console.log('tick')
         eventHandler.emit('tick');
+        for (var i = 0; i < tickQueue.length; i++) tickQueue[i]();
+
+        while (nextTickQueue.length) (nextTickQueue.shift())();
 
         // post tick is for resolving larger components from their incoming signals
         while (postTickQueue.length) (postTickQueue.shift())();
@@ -121,8 +125,29 @@ define(function(require, exports, module) {
     }
     rafId = window.requestAnimationFrame(loop);
 
+    var debouncedResize = Timer.frameDebounce(function(size){
+        dirtyQueue.push(function(){
+            sizeStream.trigger('resize end', size);
+            Engine.trigger('clean');
+            resizeFired = false;
+        });
+    }.bind(this), 10);
+
+    var resizeFired = false;
     function handleResize() {
-        eventHandler.emit('resize', [window.innerWidth, window.innerHeight]);
+        var size = [window.innerWidth, window.innerHeight];
+
+        if (!resizeFired) {
+            sizeStream.trigger('resize start', size);
+            Engine.trigger('dirty');
+            resizeFired = true;
+        }
+        else {
+//            postTickQueue.push(function(){
+                sizeStream.trigger('resize update', size);
+                debouncedResize(size);
+//            });
+        }
     }
     window.addEventListener('resize', handleResize, false);
 
@@ -178,17 +203,6 @@ define(function(require, exports, module) {
             window.cancelAnimationFrame(rafId);
         }
     });
-
-//    eventHandler.on('resize', function(){
-//        //TODO: debounce
-//        if (!dirty) {
-//            dirty = true;
-//            rafId = window.requestAnimationFrame(loop);
-//        }
-//        dirtyQueue.push(function(){
-//            dirty = false;
-//        });
-//    });
 
     /**
      * Return the current calculated frames per second of the Engine.
@@ -272,11 +286,12 @@ define(function(require, exports, module) {
         if (needMountContainer) {
             document.body.appendChild(el);
             nextTickQueue.push(function(){
-                context.trigger('resize');
+                context.trigger('resize start');
                 context.trigger('start')
             });
 
             dirtyQueue.push(function(){
+                context.trigger('resize end');
                 context.trigger('end');
                 Engine.trigger('clean');
             });
@@ -294,20 +309,9 @@ define(function(require, exports, module) {
      * @return {FamousContext} provided context
      */
     Engine.registerContext = function registerContext(context) {
-        context.subscribe(size);
+        context.subscribe(sizeStream);
         contexts.push(context);
         return context;
-    };
-
-    /**
-     * Returns a list of all contexts.
-     *
-     * @static
-     * @method getContexts
-     * @return {Array} contexts that are updated on each tick
-     */
-    Engine.getContexts = function getContexts() {
-        return contexts;
     };
 
     /**
@@ -321,8 +325,19 @@ define(function(require, exports, module) {
      */
     Engine.deregisterContext = function deregisterContext(context) {
         var i = contexts.indexOf(context);
-        context.unsubscribe(size);
+        context.unsubscribe(sizeStream);
         if (i >= 0) contexts.splice(i, 1);
+    };
+
+    /**
+     * Returns a list of all contexts.
+     *
+     * @static
+     * @method getContexts
+     * @return {Array} contexts that are updated on each tick
+     */
+    Engine.getContexts = function getContexts() {
+        return contexts;
     };
 
     optionsManager.on('change', function(data) {
@@ -334,7 +349,7 @@ define(function(require, exports, module) {
     Clock.subscribeEngine(Engine);
     Engine.subscribe(Clock);
     Engine.subscribe(dirtyObjects);
-    size.subscribe(eventHandler);
+    sizeStream.subscribe(eventHandler);
 
     module.exports = Engine;
 });
