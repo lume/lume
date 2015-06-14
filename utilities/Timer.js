@@ -27,8 +27,14 @@ define(function(require, exports, module) {
         : Date.now;
 
     function _addTimerFunction(fn) {
+        Engine.trigger('dirty');
         Engine.on(_event, fn);
         return fn;
+    }
+
+    function _clearTimerFunction(fn){
+        Engine.off(_event, fn);
+        Engine.trigger('clean');
     }
 
     var Timer = {};
@@ -51,7 +57,7 @@ define(function(require, exports, module) {
             var t2 = getTime();
             if (t2 - t >= duration) {
                 fn.apply(this, arguments);
-                Engine.off(_event, callback);
+                Timer.clear(callback);
             }
         };
         return _addTimerFunction(callback);
@@ -136,7 +142,7 @@ define(function(require, exports, module) {
      * @param {function} fn event linstener
      */
     Timer.clear = function clear(fn) {
-        Engine.off(_event, fn);
+        _clearTimerFunction(fn);
     };
 
     /**
@@ -161,7 +167,22 @@ define(function(require, exports, module) {
             }.bind(this);
 
             Timer.clear(timeout);
-            timeout = setTimeout(fn, wait);
+            timeout = Timer.setTimeout(fn, wait);
+        };
+    };
+
+    Timer.frameDebounce = function frameDebounce(func, numFrames){
+        var timeout;
+        return function() {
+            var args = arguments;
+
+            var fn = function() {
+                timeout = null;
+                func.apply(this, args);
+            }.bind(this);
+
+            if (timeout) Timer.clear(timeout);
+            timeout = Timer.after(fn, numFrames);
         };
     };
 
