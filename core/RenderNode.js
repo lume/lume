@@ -29,29 +29,16 @@ define(function(require, exports, module) {
         EventHandler.setInputHandler(this, this._eventInput);
         EventHandler.setOutputHandler(this, this._eventOutput);
 
-        this._eventInput.on('start', function(parentSpec){
-            this._eventOutput.emit('start', parentSpec)
-        }.bind(this));
-
-        this._eventInput.on('update', function(parentSpec){
-            this._eventOutput.emit('update', parentSpec)
-        }.bind(this));
-
-        this._eventInput.on('end', function(parentSpec){
-            this._eventOutput.emit('end', parentSpec)
-        }.bind(this));
-
-        this._eventInput.on('resize', function(size){
-            this._eventOutput.emit('resize', size);
-        }.bind(this));
+        this._eventOutput.subscribe(this._eventInput);
 
         if (object) this.set(object);
     }
 
     RenderNode.prototype.add = function add(object) {
         var childNode;
-        if (object._isView)
+        if (object._isView){
             childNode = object;
+        }
         else
             childNode = new RenderNode(object);
 
