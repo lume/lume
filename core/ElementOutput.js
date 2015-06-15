@@ -174,8 +174,8 @@ define(function(require, exports, module) {
 
     var _setTransform;
     if (usePrefix) {
-        _setTransform = function(element, matrix) {
-            element.style.webkitTransform = _formatCSSTransform(matrix);
+        _setTransform = function(element, transform) {
+            element.style.webkitTransform = _formatCSSTransform(transform);
         };
     }
     else {
@@ -275,8 +275,11 @@ define(function(require, exports, module) {
                 if (typeof this.size[1] === 'number') this._size[1] = this.size[1];
 
                 // commit pixel size unless dimension's size is true
-                if (this.size[0] !== true) target.style.width = this._size[0] + 'px';
-                if (this.size[1] !== true) target.style.height = this._size[1] + 'px';
+                if (this.size[0] !== true)
+                    target.style.width = Math.round(this._size[0] * devicePixelRatio) * invDevicePixelRatio + 'px';
+
+                if (this.size[1] !== true)
+                    target.style.height = Math.round(this._size[1] * devicePixelRatio) * invDevicePixelRatio + 'px';
 
                 this._eventOutput.emit('resize', this._size);
             }
