@@ -11,9 +11,9 @@
 define(function(require, exports, module) {
     var Transform = require('famous/core/Transform');
     var Transitionable = require('famous/core/Transitionable');
-    var TransitionableTransform = require('famous/transitions/TransitionableTransform');
     var View = require('famous/core/View');
-    var Getter = require('famous/core/GetHelper');
+    var Stream = require('famous/streams/Stream');
+    var Modifier = require('famous/core/ModifierStream');
 
     /**
      * A layout which divides a context into sections based on a proportion
@@ -34,53 +34,69 @@ define(function(require, exports, module) {
         }
     };
 
-    var FlexibleLayout = module.exports = View.extend({
+    var FlexibleLayout = View.extend({
         defaults : {
-            direction: CONSTANTS.DIRECTION.X,
-            transition: false,
+            direction : CONSTANTS.DIRECTION.X,
+            transition : true,
             ratios : []
         },
-        events : {
-            change : updateOptions,
-            resize : onResize
-        },
-        state : {
-            ratios : Transitionable,
-            length : Number,
-            nodes : Array
-        },
-        initialize : function initialize(options){
-            this.state.ratios.set(options.ratios);
-            this.state.length = Number.NaN;
-            this.state.nodes = [];
-        },
-        setup : function(){
-            var direction = this.options.direction;
+        events : {},
+        initialize : function initialize(){
+            this.ratios = new Transitionable(this.options.ratios);
+            this.nodes = [];
 
-            this.sizesGetter = _setupSizeGetter.call(this);
-            this.displacementGetter = _setupDisplacementGetter.call(this);
+            var stateStream = Stream.lift(
+                function(ratios, parentSize){
+                    var direction = this.options.direction;
 
-            // TODO: use observer for simple types to fix this
-            // subscribe from this.state.length, or better just this.length
+                    // calculate remaining size after true-sized nodes are accounted for
+                    var flexLength = parentSize[direction];
+                    var ratioSum = 0;
+                    for (var i = 0; i < ratios.length; i++) {
+                        var ratio = ratios[i];
+                        var node = this.nodes[i];
 
-            this.sizesGetter.subscribe(this.state);
-            this.displacementGetter.subscribe(this.state);
+                        (typeof ratio !== 'number')
+                            ? flexLength -= node.getSize()[direction] || 0
+                            : ratioSum += ratio;
+                    }
 
-            for (var i = 0; i < this.options.ratios.length; i++){
-                var transform = new TransitionableTransform();
+                    // calculate sizes and displacements of nodes
+                    var displacement = 0;
+                    var transforms = [];
+                    var sizes = [];
+                    for (var i = 0; i < ratios.length; i++) {
+                        node = this.nodes[i];
+                        ratio = ratios[i];
 
-                var displacement = this.displacementGetter.pluck(i);
-                (direction == CONSTANTS.DIRECTION.X)
-                    ? transform.translateXFrom(displacement)
-                    : transform.translateYFrom(displacement);
+                        var nodeLength = (typeof ratio === 'number')
+                            ? flexLength * ratio / ratioSum
+                            : node.getSize()[direction];
 
-                var node = this.state.nodes[i];
+                        var transform = (direction == CONSTANTS.DIRECTION.X)
+                            ? Transform.translate(displacement, 0, 0)
+                            : Transform.translate(0, displacement, 0);
 
-                this.add({
-                    transform : transform,
-                    size : this.sizesGetter.pluck(i)
-                }).add(node);
-            }
+                        var size = (direction == CONSTANTS.DIRECTION.X)
+                            ? [nodeLength, undefined]
+                            : [undefined, nodeLength];
+
+                        sizes.push(size);
+                        transforms.push(transform);
+
+                        displacement += nodeLength;
+                    }
+
+                    return {
+                        transforms : transforms,
+                        sizes : sizes
+                    };
+                }.bind(this),
+                [this.ratios, this.size]
+            );
+
+            this.transforms = stateStream.pluck('transforms');
+            this.sizes = stateStream.pluck('sizes');
         },
         /**
          * Sets the collection of renderables under the FlexibleLayout instance's control.  Also sets
@@ -90,7 +106,16 @@ define(function(require, exports, module) {
          * @param {Array} sequence An array of renderables.
          */
         sequenceFrom : function sequenceFrom(sequence){
-            this.state.nodes = sequence;
+            this.nodes = sequence;
+
+            for (var i = 0; i < this.nodes.length; i++){
+                var node = this.nodes[i];
+                var modifier = new Modifier({
+                    transform : this.transforms.pluck(i),
+                    size : this.sizes.pluck(i)
+                });
+                this.add(modifier).add(node);
+            }
         },
         /**
          * Sets the associated ratio values for sizing the renderables.
@@ -100,105 +125,9 @@ define(function(require, exports, module) {
          */
         setRatios : function setRatios(ratios, transition, callback){
             if (transition === undefined) transition = this.options.transition;
-            this.state.ratios.set(ratios, transition, callback);
+            this.ratios.set(ratios, transition, callback);
         }
     }, CONSTANTS);
 
-    function updateOptions(options){
-        var key = options.key;
-        var value = options.value;
-        if (key === 'direction') this.state[key] = value;
-    }
-
-    function _setupDisplacementGetter(){
-        var ratioStream = new Getter(this.state.ratios);
-
-        return ratioStream.map(function(ratios){
-            var length = this.state.length;
-            var direction = this.options.direction;
-
-            // calculate remaining size after true-sized nodes are accounted for
-            var flexLength = length;
-            var ratioSum = 0;
-            for (var i = 0; i < ratios.length; i++){
-                var ratio = ratios[i];
-                var node = this.state.nodes[i];
-
-                if (!node || node.getSize === undefined) continue;
-
-                (typeof ratio !== 'number')
-                    ? flexLength -= node.getSize()[direction] || 0
-                    : ratioSum += ratio;
-            }
-
-            // calculate sizes and displacements of nodes
-            var displacement = 0;
-            var displacements = [];
-            for (var i = 0; i < ratios.length; i++) {
-                node = this.state.nodes[i];
-                ratio = ratios[i];
-
-                if (!node || node.getSize === undefined) continue;
-
-                var nodeLength = (typeof ratio === 'number')
-                    ? flexLength * ratio / ratioSum
-                    : node.getSize()[direction];
-
-                displacements.push(displacement);
-                displacement += nodeLength;
-            }
-
-            return displacements;
-        }.bind(this));
-    }
-
-    function _setupSizeGetter(){
-        var ratioStream = new Getter(this.state.ratios);
-
-        return ratioStream.map(function(ratios){
-            var length = this.state.length;
-            var direction = this.options.direction;
-
-            // calculate remaining size after true-sized nodes are accounted for
-            var flexLength = length;
-            var ratioSum = 0;
-            for (var i = 0; i < ratios.length; i++){
-                var ratio = ratios[i];
-                var node = this.state.nodes[i];
-
-                if (!node || node.getSize === undefined) continue;
-
-                (typeof ratio !== 'number')
-                    ? flexLength -= node.getSize()[direction] || 0
-                    : ratioSum += ratio;
-            }
-
-            // calculate sizes and displacements of nodes
-            var sizes = [];
-            for (var i = 0; i < ratios.length; i++) {
-                node = this.state.nodes[i];
-                ratio = ratios[i];
-
-                if (!node || node.getSize === undefined) continue;
-
-                var nodeLength = (typeof ratio === 'number')
-                    ? flexLength * ratio / ratioSum
-                    : node.getSize()[direction];
-
-                var size = (direction == CONSTANTS.DIRECTION.X)
-                    ? [nodeLength, undefined]
-                    : [undefined, nodeLength];
-
-                sizes.push(size);
-            }
-
-            return sizes;
-        }.bind(this));
-    }
-
-    function onResize(size) {
-        this.state.length = size[this.options.direction];
-        this.emit('resize');
-    }
-
+    module.exports = FlexibleLayout;
 });
