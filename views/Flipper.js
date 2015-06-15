@@ -11,9 +11,8 @@
 define(function(require, exports, module) {
     var Transform = require('famous/core/Transform');
     var Transitionable = require('famous/core/Transitionable');
-    var Modifier = require('famous/core/Modifier');
+    var Modifier = require('famous/core/ModifierStream');
     var View = require('famous/core/View');
-    var Getter = require('famous/core/GetHelper');
 
     /**
      * Allows you to link two renderables as front and back sides that can be
@@ -30,62 +29,52 @@ define(function(require, exports, module) {
         }
     };
 
-    var Flipper = module.exports = View.extend({
+    var Flipper = View.extend({
         defaults : {
+            angle : 0,
             transition : true,
             direction : CONSTANTS.DIRECTION.X
         },
-        state : {
-            angle : Transitionable
-        },
         initialize : function(){
-            this.state.angle.set(0);
+            this.angle = new Transitionable(this.options.angle);
+        },
+        setFront : function setFront(front){
+            var frontNode = front;
 
-            var angleGetter = new Getter(this.state.angle);
-
-            this.frontTransform = angleGetter.map(function(angle){
+            var frontTransform = this.angle.map(function(angle){
                 return (this.options.direction === CONSTANTS.DIRECTION.X)
                     ? Transform.rotateY(angle)
                     : Transform.rotateX(angle);
             }.bind(this));
 
-            this.backTransform = angleGetter.map(function(angle){
+            var frontModifier = new Modifier({
+                size : front.getSize(),
+                transform : frontTransform,
+                origin : [0.5, 0.5]
+            });
+
+            this.add(frontModifier).add(frontNode);
+        },
+        setBack : function setFront(back){
+            var backTransform = this.angle.map(function(angle){
                 return (this.options.direction === CONSTANTS.DIRECTION.X)
                     ? Transform.rotateY(angle + Math.PI)
                     : Transform.rotateX(angle + Math.PI);
             }.bind(this));
-        },
-        setup : function(){
-            this.frontModifier = new Modifier({
-                size : this.frontNode.getSize(),
-                transform : this.frontTransform,
+
+            var backModifier = new Modifier({
+                size : back.getSize(),
+                transform : backTransform,
                 origin : [0.5, 0.5]
             });
 
-            this.backModifier = new Modifier({
-                size : this.backNode.getSize(),
-                transform : this.backTransform,
-                origin : [0.5, 0.5]
-            });
-
-            this.add(this.frontModifier).add(this.frontNode);
-            this.add(this.backModifier).add(this.backNode);
-        },
-        setFront : function setFront(front){
-            this.frontNode = front;
-            front.on('resize', function(size){
-               this.frontModifier.sizeFrom(size);
-            }.bind(this));
-        },
-        setBack : function setFront(back){
-            this.backNode = back;
-            back.on('resize', function(size){
-                this.backModifier.sizeFrom(size);
-            }.bind(this));
+            this.add(backModifier).add(back);
         },
         setAngle : function setAngle(angle, transition, callback){
             if (transition === undefined) transition = this.options.transition;
-            this.state.angle.set(angle, transition, callback);
+            this.angle.set(angle, transition, callback);
         }
     }, CONSTANTS);
+
+    module.exports = Flipper;
 });
