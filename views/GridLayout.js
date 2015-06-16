@@ -10,11 +10,11 @@
 
 define(function(require, exports, module) {
     var Transform = require('famous/core/Transform');
-    var ViewSequence = require('famous/core/ViewSequence');
     var Transitionable = require('famous/core/Transitionable');
+    var Stream = require('famous/streams/Stream');
+    var Observable = require('famous/core/Observable');
     var View = require('famous/core/View');
-    var Spec = require('famous/core/Spec');
-    var TransitionableTransform = require('famous/transitions/TransitionableTransform');
+    var Modifier = require('famous/core/ModifierStream');
 
     /**
      * A layout which divides a context into several evenly-sized grid cells.
@@ -24,7 +24,7 @@ define(function(require, exports, module) {
      * @class GridLayout
      */
 
-    var GridLayout = module.exports = View.extend({
+    var GridLayout = View.extend({
         defaults : {
             /**
              * @param {Array.Number} [dimensions=[1, 1]] A two value array which specifies the amount of columns
@@ -39,42 +39,64 @@ define(function(require, exports, module) {
             /**
              * @param {Transition} [transition=false] The transition that controls the GridLayout instance's reflow.
              */
-            transition: false
+            transition: true
         },
         events : {
-            change : onChange,
-            resize : onResize
-        },
-        state : {
-            positions : Array,
-            sizes : Array,
-            dimensions : Array,
-            sequence : ViewSequence,
-            count : Number,
-            gutterSize : Array
+            change : onChange
         },
         initialize : function(options){
-            this.state.positions = [];
-            this.state.sizes = [];
-            this.state.dimensions = options.dimensions;
-            this.state.count = 0;
-            this.state.gutterSize = options.gutterSize;
-            this.transforms = [];
-        },
-        setup : function(){
-            var index = 0;
-            var sequence = this.state.sequence;
-            while (sequence){
-                var item = sequence.get();
+            this.nodes = [];
+            this.dimensions = new Observable(options.dimensions);
 
-                this.add({
-                    transform : this.transforms[index],
-                    size : this.state.sizes[index]
-                }).add(item);
+            //TODO: separate out positions to control them on dimension change
+            var stateStream = Stream.lift(function(dimensions, size){
+                if (!dimensions) dimensions = this.dimensions.get();
 
-                sequence = sequence.getNext();
-                index++;
-            }
+                var cols = dimensions[0];
+                var rows = dimensions[1];
+
+                var usableSize = [size[0], size[1]];
+                usableSize[0] -= options.gutterSize[0] * (cols - 1);
+                usableSize[1] -= options.gutterSize[1] * (rows - 1);
+
+                var rowSize = Math.round(usableSize[1] / rows);
+                var colSize = Math.round(usableSize[0] / cols);
+
+                var x = y = 0;
+                var index = 0;
+                var positions = [];
+                var sizes = [];
+
+                for (var row = 0; row < rows; row++) {
+                    x = 0;
+                    for (var col = 0; col < cols; col++) {
+                        positions[index] = [x, y];
+                        sizes[index] = [colSize, rowSize];
+
+                        index++;
+                        x += colSize + options.gutterSize[0];
+                    }
+                    y += rowSize + options.gutterSize[1];
+                }
+
+                return {
+                    positions : positions,
+                    sizes : sizes
+                };
+
+            }.bind(this), [this.dimensions, this.size]);
+
+            var positions = stateStream.pluck('positions');
+            this.sizes = stateStream.pluck('sizes');
+
+            this.transforms = positions.map(function(positions){
+                var transforms = [];
+                for (var i = 0; i < positions.length; i++){
+                    var position = positions[i];
+                    transforms.push(Transform.translate(position[0], position[1], 0));
+                }
+                return transforms;
+            });
         },
         /**
          * Sets the collection of renderables under the Gridlayout instance's control.
@@ -83,11 +105,18 @@ define(function(require, exports, module) {
          * @param {Array|ViewSequence} sequence Either an array of renderables or a Famous view_sequence.
          */
         sequenceFrom : function(sequence){
-            this.state.sequence.setBacking(sequence);
+            this.nodes = sequence;
+            for (var i = 0; i < sequence.length; i++){
+                var item = sequence[i];
+                var modifier = new Modifier({
+                    transform : this.transforms.pluck(i),
+                    size : this.sizes.pluck(i)
+                });
+                this.add(modifier).add(item);
+            }
         },
         setDimensions : function(dimensions){
-            this.state.dimensions = dimensions;
-            this.state.count = dimensions[0] * dimensions[1];
+            this.dimensions.set(dimensions);
         }
     });
 
@@ -97,65 +126,7 @@ define(function(require, exports, module) {
         var key = option.key;
         var value = option.value;
         if (key == 'dimensions') this.setDimensions(value);
-        if (key == 'gutterSize') this.state.gutterSize = value;
     }
 
-    function onResize(size) {
-        var options = this.options;
-
-        var cols = this.state.dimensions[0];
-        var rows = this.state.dimensions[1];
-
-        var usableSize = [size[0], size[1]];
-        usableSize[0] -= options.gutterSize[0] * (cols - 1);
-        usableSize[1] -= options.gutterSize[1] * (rows - 1);
-
-        var rowSize = Math.round(usableSize[1] / rows);
-        var colSize = Math.round(usableSize[0] / cols);
-
-        var currY = 0;
-        var currIndex = 0;
-        for (var i = 0; i < rows; i++) {
-            var currX = 0;
-            for (var j = 0; j < cols; j++) {
-                (this.transforms[currIndex] === undefined)
-                    ? _addState.call(this, currIndex, [colSize, rowSize], [currX, currY, 0])
-                    : _animateState.call(this, currIndex, [colSize, rowSize], [currX, currY, 0]);
-
-                currIndex++;
-                currX += colSize + options.gutterSize[0];
-            }
-
-            currY += rowSize + options.gutterSize[1];
-        }
-
-        this.state.count = rows * cols;
-
-        for (i = this.state.count; i < this.state.positions.length; i++)
-            _animateState.call(this, i, [Math.round(colSize), Math.round(rowSize)], [0, 0]);
-
-        this.emit('resize');
-    }
-
-    function _addState(index, size, position) {
-        this.transforms[index] = new TransitionableTransform(Transform.translate.apply(null, position));
-        this.state.positions[index] = new Transitionable(position);
-        this.transforms[index].translateFrom(this.state.positions[index]);
-        this.state.sizes[index] = new Transitionable(size);
-    }
-
-    function _removeState(index){
-        this.transforms.splice(index, 1);
-        this.state.positions.splice(index, 1);
-        this.state.sizes.splice(index, 1);
-    }
-
-    function _animateState(index, size, position) {
-        var transition = this.options.transition;
-        var currPosition = this.state.positions[index];
-        var currSize = this.state.sizes[index];
-
-        currPosition.set(position, transition);
-        currSize.set(size, transition);
-    }
+    module.exports = GridLayout;
 });
