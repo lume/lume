@@ -1,10 +1,17 @@
 define(function(require, exports, module) {
     var Stream = require('famous/streams/Stream');
+    var nextTickQueue = require('famous/core/nextTickQueue');
     var dirtyQueue = require('famous/core/dirtyQueue');
 
     function Observable(value){
         Stream.call(this);
         this.value = value || undefined;
+
+        if (value !== undefined){
+            nextTickQueue.push(function(){
+                this.set(value);
+            }.bind(this));
+        }
     }
 
     Observable.prototype = Object.create(Stream.prototype);
