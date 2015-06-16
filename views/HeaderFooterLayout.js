@@ -11,8 +11,9 @@
 define(function(require, exports, module) {
     var Transform = require('famous/core/Transform');
     var View = require('famous/core/View');
-    var Getter = require('famous/core/GetHelper');
     var Observable = require('famous/core/Observable');
+    var Modifier = require('famous/core/ModifierStream');
+    var Stream = require('famous/streams/Stream');
 
     /**
      * A layout which will arrange three renderables into a header and footer area of defined size,
@@ -27,78 +28,75 @@ define(function(require, exports, module) {
         }
     };
 
-    module.exports = View.extend({
+    var HeaderFooterLayout = View.extend({
         defaults : {
             direction: CONSTANTS.DIRECTION.Y,
             defaultHeaderLength: Number.NaN,
             defaultFooterLength: Number.NaN
         },
-        events : {
-            resize : onResize
-        },
-        state : {
-            headerLength : Observable,
-            footerLength : Observable,
-            totalLength : Observable
-        },
+        events : {},
         initialize : function initialize(options){
-            this.header = null;
-            this.footer = null;
-            this.content = null;
+            this.headerLength = null;
+            this.footerLength = null;
         },
-        setup : function(){
-            this.header.on('resize', function(size){
-                this.state.headerLength.set(size[this.options.direction])
+        //TODO: first header, then footer, then content
+        addHeader : function(header){
+            //TODO: create size stream within Surface
+            this.headerLength = header.__size.map(function(size){
+                return size[this.options.direction];
             }.bind(this));
 
-            this.footer.on('resize', function(size){
-                this.state.footerLength.set(size[this.options.direction])
+            var size = this.headerLength.map(function(length){
+                return _outputSize.call(this, length);
+            });
+
+            var modifier = new Modifier({size : size});
+
+            this.add(modifier).add(header);
+        },
+        addFooter : function(footer){
+            this.footerLength = footer.__size.map(function(size){
+                return size[this.options.direction];
             }.bind(this));
 
-            this.state.headerLength.set(_resolveNodeLength.call(this, this.header, this.options.defaultHeaderLength));
-            this.state.footerLength.set(_resolveNodeLength.call(this, this.footer, this.options.defaultFooterLength));
+            var size = this.headerLength.map(function(length){
+                return _outputSize.call(this, length);
+            });
 
-            var headerLength = new Getter(this.state.headerLength);
-            var footerLength = new Getter(this.state.footerLength);
-            var totalLength = new Getter(this.state.totalLength);
+            var transform = Stream.lift(function(size, footerLength){
+                var length = size[this.options.direction] - footerLength;
+                return _outputTransform.call(this, length);
 
-            var contentLength = totalLength.map(function(totalLength){
-                return totalLength - this.state.footerLength.get() - this.state.headerLength.get();
-            }.bind(this));
+            }, [this.size, this.footerLength]);
 
-            var contentDisplacement = headerLength;
+            var modifier = new Modifier({
+                size : size,
+                transform : transform
+            });
 
-            var footerDisplacement = totalLength.map(function(length){
-                return length - this.state.footerLength.get();
-            }.bind(this));
+            this.add(modifier).add(footer);
+        },
+        addContent : function(content){
+            var contentLength = Stream.lift(function(size, headerLength, footerLength){
+                return size[this.options.direction] - headerLength - footerLength;
+            }, [this.size, this.headerLength, this.footerLength]);
 
-            var headerSize = headerLength.map(_outputSize.bind(this));
-            var footerSize = footerLength.map(_outputSize.bind(this));
-            var contentSize = contentLength.map(_outputSize.bind(this));
+            var size = contentLength.map(function(length){
+                return _outputSize.call(this, length);
+            });
 
-            var contentTransform = contentDisplacement.map(_outputTransform.bind(this));
-            var footerTransform = footerDisplacement.map(_outputTransform.bind(this));
+            var transform = this.headerLength.map(function(length){
+                return _outputTransform.call(this, length);
+            });
 
-            this.add({size : headerSize})
-                .add(this.header);
+            var modifier = new Modifier({
+                size : size,
+                transform : transform
+            });
 
-            this.add({size : contentSize, transform : contentTransform})
-                .add(this.content);
-
-            this.add({size : footerSize, transform : footerTransform})
-                .add(this.footer);
+            this.add(modifier).add(content);
         }
     }, CONSTANTS);
-
-    function onResize(size){
-        this.state.totalLength.set(size[this.options.direction]);
-    }
-
-    function _resolveNodeLength(node, defaultLength) {
-        return (defaultLength)
-            ? defaultLength
-            : node.getSize()[this.options.direction];
-    }
 
     function _outputTransform(offset) {
         return (this.options.direction === CONSTANTS.DIRECTION.X)
@@ -112,4 +110,5 @@ define(function(require, exports, module) {
             : [undefined, length];
     }
 
+    module.exports = HeaderFooterLayout;
 });
