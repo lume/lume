@@ -112,6 +112,7 @@ define(function(require, exports, module) {
     Stream.merge = function(streamObj){
         var count = 0;
         var total = 0;
+
         var hasStarted = false;
         var hasUpdated = false;
         var hasEnded = false;
@@ -164,7 +165,7 @@ define(function(require, exports, module) {
             mergedData[key] = undefined;
             var mapper = (function(key){
                 return new EventMapper(function(data){
-                    mergedData[key] = data;
+                    return mergedData[key] = data;
                 });
             })(key);
 
