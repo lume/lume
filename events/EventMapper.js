@@ -32,8 +32,8 @@ define(function(require, exports, module) {
      * @return {EventHandler} this
      */
     EventMapper.prototype.emit = function emit(type, data) {
-        var data = this._mappingFunction(data);
-        EventHandler.prototype.emit.call(this, type, data);
+        var mappedData = this._mappingFunction(data);
+        EventHandler.prototype.emit.call(this, type, mappedData);
     };
 
     /**
