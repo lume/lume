@@ -56,6 +56,7 @@ define(function(require, exports, module) {
                         var ratio = ratios[i];
                         var node = this.nodes[i];
 
+                        if (!node || node.getSize === undefined) continue;
                         (typeof ratio !== 'number')
                             ? flexLength -= node.getSize()[direction] || 0
                             : ratioSum += ratio;
