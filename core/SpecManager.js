@@ -58,9 +58,6 @@ define(function(require, exports, module) {
                 ? parentTransform
                 : parentSpec.nextSizeTransform || parentTransform;
 
-            if (spec.margins)
-                transform = Transform.moveThen([spec.margins[3] || 0, spec.margins[0], 0], transform);
-
             if (spec.size)
                 nextSizeTransform = parentTransform;
 
@@ -212,8 +209,8 @@ define(function(require, exports, module) {
         }
 
         if (spec.margins){
-            size[0] = parentSize[0] - ((spec.margins[1] || 0) + (spec.margins[3] || 0));
-            size[1] = parentSize[1] - (spec.margins[0] + (spec.margins[2] || 0));
+            size[0] = parentSize[0] - (2 * spec.margins[0]);
+            size[1] = parentSize[1] - (2 * spec.margins[1]);
         }
 
         if (spec.proportions) {
