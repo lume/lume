@@ -25,17 +25,18 @@ define(function(require, exports, module) {
      * @method emit
      *
      * @param {string} type event type key (for example, 'click')
-     * @param {Object} event event data
-     * @return {EventHandler} this
+     * @param {Object} data event data
+     * @return {Boolean}
      */
-    EventEmitter.prototype.emit = function emit(type, event) {
+    EventEmitter.prototype.emit = function emit(type, data) {
         var handlers = this.listeners[type];
         if (handlers) {
             for (var i = 0; i < handlers.length; i++) {
-                handlers[i].call(this._owner, event);
+                handlers[i].call(this._owner, data);
             }
+            return true;
         }
-        return this;
+        else return false;
     };
 
     /**
@@ -58,7 +59,6 @@ define(function(require, exports, module) {
         if (!(type in this.listeners)) this.listeners[type] = [];
         var index = this.listeners[type].indexOf(handler);
         if (index < 0) this.listeners[type].push(handler);
-        return this;
     };
 
    /**
@@ -80,7 +80,6 @@ define(function(require, exports, module) {
                 if (index >= 0) listener.splice(index, 1);
             }
         }
-        return this;
     };
 
     /**

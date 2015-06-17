@@ -89,7 +89,6 @@ define(function(require, exports, module) {
                 this.upstream[i].on(type, upstreamListener);
             }
         }
-        return this;
     };
 
     /**
