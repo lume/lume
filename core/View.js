@@ -13,15 +13,16 @@ define(function(require, exports, module) {
     var SpecManager = require('famous/core/SpecManager');
     var Controller = require('famous/core/Controller');
     var ModifierStream = require('famous/core/ModifierStream');
-    var EventHandler = require('famous/core/EventHandler');
+    var Stream = require('famous/streams/Stream');
     var Timer = require('famous/utilities/Timer');
+    var SizeStream = require('famous/core/SizeStream');
 
     /**
      * @class View
      * @constructor
      */
 
-    var View = module.exports = Controller.extend({
+    var View = Controller.extend({
         defaults : {
             size : null,
             origin : null
@@ -32,26 +33,11 @@ define(function(require, exports, module) {
             this._node = new RenderNode();
 
             this._isView = true;
-            this.size = new EventHandler();
+            this.sizeStream = new SizeStream();
 
             Controller.apply(this, arguments);
 
             this._eventInput.subscribe(this._optionsManager);
-
-            this._eventInput.on('resize start', function(size){
-                this.size.emit('start', size);
-                this._eventOutput.emit('resize start');
-            }.bind(this));
-
-            this._eventInput.on('resize update', function(size){
-                this.size.emit('update', size);
-                this._eventOutput.emit('resize update');
-            }.bind(this));
-
-            this._eventInput.on('resize end', function(size){
-                this.size.emit('end', size);
-                this._eventOutput.emit('resize end');
-            }.bind(this));
 
             this._eventInput.on('start', function(parentSpec){
                 this._eventOutput.emit('start', parentSpec)
@@ -62,6 +48,7 @@ define(function(require, exports, module) {
             }.bind(this));
 
             this._node.subscribe(this._eventOutput);
+            this._node.sizeStream.subscribe(this.sizeStream);
         },
         set : function set(){
             return RenderNode.prototype.set.apply(this._node, arguments);
@@ -98,4 +85,6 @@ define(function(require, exports, module) {
             RenderNode.prototype.commit.apply(this._node, arguments);
         }
     });
+
+    module.exports = View;
 });
