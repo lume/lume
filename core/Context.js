@@ -37,11 +37,11 @@ define(function(require, exports, module) {
         this._perspective = new Transitionable(0);
 
         this._nodeContext = {
-            transform: Transform.identity,
-            opacity: 1,
-            origin: null,
-            align: null,
-            size: this._size,
+            transform : Transform.identity,
+            opacity : 1,
+            origin : null,
+            align : null,
+            size : this._size,
             nextSizeTransform : Transform.identity
         };
 
@@ -50,27 +50,17 @@ define(function(require, exports, module) {
         EventHandler.setInputHandler(this, this._eventInput);
         EventHandler.setOutputHandler(this, this._eventOutput);
 
-        this._eventInput.on('resize start', function(windowSize) {
-            this.setSize(_getElementSize(this.container));
-            this._eventOutput.emit('resize start', this.getSize())
-        }.bind(this));
-
-        this._eventInput.on('resize update', function(windowSize) {
-            this.setSize(_getElementSize(this.container));
-            this._eventOutput.emit('resize update', this.getSize())
-        }.bind(this));
-
-        this._eventInput.on('resize end', function(windowSize) {
-            this.setSize(_getElementSize(this.container));
-            this._eventOutput.emit('resize end', this.getSize())
-        }.bind(this));
-
         this._eventInput.on('start', function(){
             this._eventOutput.emit('start', this._nodeContext);
         }.bind(this));
 
         this._eventInput.on('end', function(){
             this._eventOutput.emit('end', this._nodeContext);
+        }.bind(this));
+
+        this._eventInput.on('resize', function(){
+            this.setSize(_getElementSize(this.container));
+            this._node.sizeStream.trigger('resize', this.getSize());
         }.bind(this));
 
         this._node.subscribe(this._eventOutput);

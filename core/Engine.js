@@ -29,6 +29,7 @@ define(function(require, exports, module) {
     var EventHandler = require('./EventHandler');
     var OptionsManager = require('./OptionsManager');
     var Clock = require('famous/core/Clock');
+    var SizeStream = require('famous/core/SizeStream');
 
     var dirtyObjects = require('famous/core/dirtyObjects');
     var nextTickQueue = require('./nextTickQueue');
@@ -52,7 +53,7 @@ define(function(require, exports, module) {
     var eventHandler = new EventHandler();
     var dirty = true;
     var dirtyLock = 0;
-    var sizeStream = new EventHandler();
+    var sizeStream = new SizeStream();
 
     var options = {
         containerType: 'div',
@@ -125,29 +126,9 @@ define(function(require, exports, module) {
     }
     rafId = window.requestAnimationFrame(loop);
 
-    var debouncedResize = Timer.frameDebounce(function(size){
-        dirtyQueue.push(function(){
-            sizeStream.trigger('resize end', size);
-            Engine.trigger('clean');
-            resizeFired = false;
-        });
-    }.bind(this), 10);
-
-    var resizeFired = false;
     function handleResize() {
         var size = [window.innerWidth, window.innerHeight];
-
-        if (!resizeFired) {
-            sizeStream.trigger('resize start', size);
-            Engine.trigger('dirty');
-            resizeFired = true;
-        }
-        else {
-//            postTickQueue.push(function(){
-                sizeStream.trigger('resize update', size);
-                debouncedResize(size);
-//            });
-        }
+        sizeStream.trigger('resize', size);
     }
     window.addEventListener('resize', handleResize, false);
 
@@ -286,14 +267,12 @@ define(function(require, exports, module) {
         if (needMountContainer) {
             document.body.appendChild(el);
             nextTickQueue.push(function(){
-                context.trigger('resize start');
-                context.trigger('start')
+                handleResize();
+                context.trigger('start');
             });
 
             dirtyQueue.push(function(){
-                context.trigger('resize end');
                 context.trigger('end');
-                Engine.trigger('clean');
             });
         }
         return context;
@@ -309,7 +288,7 @@ define(function(require, exports, module) {
      * @return {FamousContext} provided context
      */
     Engine.registerContext = function registerContext(context) {
-        context.subscribe(sizeStream);
+        context.subscribe(sizeStream, ['resize']);
         contexts.push(context);
         return context;
     };
