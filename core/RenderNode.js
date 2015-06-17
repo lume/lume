@@ -14,9 +14,12 @@ define(function(require, exports, module) {
     var Stream = require('famous/streams/Stream');
     var Spec = require('famous/core/Spec');
     var EventMapper = require('famous/events/EventMapper');
+    var SizeStream = require('famous/core/SizeStream');
 
     function RenderNode(object) {
         this.stream = null;
+        this.sizeStream = new SizeStream();
+
         this.child = null;
         this._cachedSize = null;
 
@@ -42,10 +45,15 @@ define(function(require, exports, module) {
         else
             childNode = new RenderNode(object);
 
-        if (this.stream)
+        if (this.stream){
             childNode.subscribe(this.stream);
-        else
+        }
+        else{
             childNode.subscribe(this);
+        }
+
+
+        childNode.sizeStream.subscribe(this.sizeStream);
 
         if (!this.child) {
             this.child = childNode;
@@ -61,12 +69,22 @@ define(function(require, exports, module) {
     RenderNode.prototype.set = function set(object) {
         this.stream = Stream.lift(
             function(objectSpec, parentSpec){
-                return (parentSpec && objectSpec)
+                return (objectSpec)
                     ? SpecManager.merge(objectSpec, parentSpec)
                     : parentSpec;
             },
             [object, this._eventOutput]
         );
+
+        //TODO: sizeNodes should emit resize events
+//        this.sizeStream = Stream.lift(
+//            function(objectSpec, parentSize){
+//                return (parentSize && objectSpec)
+//                    ? SpecManager.getSize(objectSpec, parentSize)
+//                    : parentSize;
+//            },
+//            [object, this.sizeStream]
+//        );
 
         if (object.commit){
             var spec = new Spec();
@@ -91,6 +109,10 @@ define(function(require, exports, module) {
             object.on('dirty', function(){
                 this.dirtyObjects.push(object);
             }.bind(this));
+
+            this.sizeStream.on('update', function(size){
+                console.log(size)
+            });
         }
     };
 
