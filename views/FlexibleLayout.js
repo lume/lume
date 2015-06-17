@@ -92,7 +92,7 @@ define(function(require, exports, module) {
                         sizes : sizes
                     };
                 }.bind(this),
-                [this.ratios, this.size]
+                [this.ratios, this.sizeStream]
             );
 
             this.transforms = stateStream.pluck('transforms');
