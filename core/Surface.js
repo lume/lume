@@ -476,23 +476,12 @@ define(function(require, exports, module) {
         this.size = [size[0], size[1]];
         this._sizeDirty = true;
         _setDirty.bind(this);
-        this._eventOutput.emit('resize', size);
-
-        // force commit cycle so that getSize gives correct result
-        postTickQueue.push(function(){
-            this._eventOutput.emit('resize', size);
-        }.bind(this));
     };
 
     Surface.prototype.setProportions = function setProportions(proportions) {
         this.proportions = [proportions[0], proportions[1]];
         this._sizeDirty = true;
         _setDirty.call(this);
-
-        // force commit cycle so that getSize gives correct result
-        postTickQueue.push(function(){
-            this._eventOutput.emit('resize', this._size);
-        }.bind(this));
     };
 
     Surface.prototype.getOrigin = function getOrigin(){
