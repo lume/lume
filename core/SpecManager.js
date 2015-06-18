@@ -5,7 +5,7 @@ define(function(require, exports, module) {
 
     var SpecManager = {};
 
-    SpecManager.merge = function merge(spec, parentSpec, entityData){
+    SpecManager.merge = function merge(spec, parentSpec, size){
         var mergedSpec;
 
         if (typeof spec == 'number') {
@@ -28,13 +28,11 @@ define(function(require, exports, module) {
                 size : parentSpec.size || null
             };
 
-            if (entityData) entityData[spec] = mergedSpec;
-
         } else if (spec instanceof Array){
 
             var mergedSpec = [];
             for (var i = 0; i < spec.length; i++)
-                mergedSpec[i] = SpecManager.merge(spec[i], parentSpec, entityData);
+                mergedSpec[i] = SpecManager.merge(spec[i], parentSpec);
 
         }
         else if (spec instanceof Object){
@@ -44,6 +42,8 @@ define(function(require, exports, module) {
 
             var origin = spec.origin || null;
             var align = spec.align || null;
+
+//            console.log(size, SpecManager.getSize(spec, parentSize));
             var size = SpecManager.getSize(spec, parentSize);
 
             var opacity = (spec.opacity !== undefined)
@@ -82,7 +82,7 @@ define(function(require, exports, module) {
             };
 
             if (spec.target !== undefined)
-                mergedSpec = SpecManager.merge(spec.target, mergedSpec, entityData);
+                mergedSpec = SpecManager.merge(spec.target, mergedSpec);
 
         }
         else spec = null;
