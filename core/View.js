@@ -33,7 +33,7 @@ define(function(require, exports, module) {
             this._node = new RenderNode();
 
             this._isView = true;
-            this.sizeStream = new SizeStream();
+            this.size = new SizeStream();
 
             Controller.apply(this, arguments);
 
@@ -48,7 +48,7 @@ define(function(require, exports, module) {
             }.bind(this));
 
             this._node.subscribe(this._eventOutput);
-            this._node.sizeStream.subscribe(this.sizeStream);
+            this._node.size.subscribe(this.size);
         },
         set : function set(){
             return RenderNode.prototype.set.apply(this._node, arguments);

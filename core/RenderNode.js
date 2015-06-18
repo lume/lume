@@ -18,7 +18,9 @@ define(function(require, exports, module) {
 
     function RenderNode(object) {
         this.stream = null;
-        this.sizeStream = new SizeStream();
+        this.sizeStream = null;
+
+        this.size = new SizeStream();
 
         this.child = null;
         this._cachedSize = null;
@@ -38,57 +40,51 @@ define(function(require, exports, module) {
     }
 
     RenderNode.prototype.add = function add(object) {
-        var childNode;
-        if (object._isView){
-            childNode = object;
-        }
-        else
-            childNode = new RenderNode(object);
+        var childNode = (object._isView)
+            ? object
+            : new RenderNode(object);
 
-        if (this.stream){
-            childNode.subscribe(this.stream);
-        }
-        else{
-            childNode.subscribe(this);
-        }
+        if (this.stream)childNode.subscribe(this.stream);
+        else childNode.subscribe(this);
 
+        if (this.sizeStream) childNode.size.subscribe(this.sizeStream);
+        else childNode.size.subscribe(this.size);
 
-        childNode.sizeStream.subscribe(this.sizeStream);
-
-        if (!this.child) {
+        if (!this.child)
             this.child = childNode;
-        }
-        else if (this.child instanceof Array){
+        else if (this.child instanceof Array)
             this.child.push(childNode);
-        }
-        else this.child = [this.child, childNode];
+        else
+            this.child = [this.child, childNode];
 
         return childNode;
     };
 
     RenderNode.prototype.set = function set(object) {
-        this.stream = Stream.lift(
-            function(objectSpec, parentSpec){
+        //TODO: define this only if object is sizeNode
+        this.sizeStream = Stream.lift(
+            function(objectSpec, parentSize){
                 return (objectSpec)
-                    ? SpecManager.merge(objectSpec, parentSpec)
-                    : parentSpec;
-            },
-            [object, this._eventOutput]
+                    ? SpecManager.getSize(objectSpec, parentSize)
+                    : parentSize;
+            }.bind(this),
+            [object, this.size]
         );
 
-        //TODO: sizeNodes should emit resize events
-//        this.sizeStream = Stream.lift(
-//            function(objectSpec, parentSize){
-//                return (parentSize && objectSpec)
-//                    ? SpecManager.getSize(objectSpec, parentSize)
-//                    : parentSize;
-//            },
-//            [object, this.sizeStream]
-//        );
+        this.stream = Stream.lift(
+            function(objectSpec, parentSpec, size){
+                return (objectSpec)
+                    ? SpecManager.merge(objectSpec, parentSpec, size)
+                    : parentSpec;
+            }.bind(this),
+            [object, this._eventOutput, this.sizeStream || this.size]
+        );
 
         if (object.commit){
             var spec = new Spec();
+
             spec.subscribe(this.stream);
+            spec.subscribe(this.sizeStream, ['resize']);
 
             this.stream.on('start', function(spec){
                 this.objects.push(object);
@@ -109,10 +105,6 @@ define(function(require, exports, module) {
             object.on('dirty', function(){
                 this.dirtyObjects.push(object);
             }.bind(this));
-
-            this.sizeStream.on('update', function(size){
-                console.log(size)
-            });
         }
     };
 

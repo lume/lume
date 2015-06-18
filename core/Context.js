@@ -60,7 +60,7 @@ define(function(require, exports, module) {
 
         this._eventInput.on('resize', function(){
             this.setSize(_getElementSize(this.container));
-            this._node.sizeStream.trigger('resize', this.getSize());
+            this._node.size.trigger('resize', this.getSize());
         }.bind(this));
 
         this._node.subscribe(this._eventOutput);
