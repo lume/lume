@@ -15,7 +15,7 @@ define(function(require, exports, module) {
     var ModifierStream = require('famous/core/ModifierStream');
     var Stream = require('famous/streams/Stream');
     var Timer = require('famous/utilities/Timer');
-    var SizeStream = require('famous/core/SizeStream');
+    var ResizeStream = require('famous/streams/ResizeStream');
 
     /**
      * @class View
@@ -33,7 +33,7 @@ define(function(require, exports, module) {
             this._node = new RenderNode();
 
             this._isView = true;
-            this.size = new SizeStream();
+            this.size = new ResizeStream();
 
             Controller.apply(this, arguments);
 
