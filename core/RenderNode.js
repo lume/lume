@@ -14,13 +14,14 @@ define(function(require, exports, module) {
     var Stream = require('famous/streams/Stream');
     var Spec = require('famous/core/Spec');
     var EventMapper = require('famous/events/EventMapper');
-    var SizeStream = require('famous/core/SizeStream');
+    var ResizeStream = require('famous/streams/ResizeStream');
+
+    var SizeNode = require('famous/core/SizeNode');
+    var ModifierStream = require('famous/core/ModifierStream');
 
     function RenderNode(object) {
         this.stream = null;
         this.sizeStream = null;
-
-        this.size = new SizeStream();
 
         this.child = null;
         this._cachedSize = null;
@@ -34,6 +35,7 @@ define(function(require, exports, module) {
         EventHandler.setInputHandler(this, this._eventInput);
         EventHandler.setOutputHandler(this, this._eventOutput);
 
+        this.size = new ResizeStream();
         this._eventOutput.subscribe(this._eventInput);
 
         if (object) this.set(object);
@@ -62,14 +64,17 @@ define(function(require, exports, module) {
 
     RenderNode.prototype.set = function set(object) {
         //TODO: define this only if object is sizeNode
-        this.sizeStream = Stream.lift(
-            function(objectSpec, parentSize){
-                return (objectSpec)
-                    ? SpecManager.getSize(objectSpec, parentSize)
-                    : parentSize;
-            }.bind(this),
-            [object, this.size]
-        );
+        if (object instanceof SizeNode){
+            this.sizeStream = ResizeStream.lift(
+                function(objectSpec, parentSize){
+                    console.log('size compose')
+                    return (objectSpec)
+                        ? SpecManager.getSize(objectSpec, parentSize)
+                        : parentSize;
+                }.bind(this),
+                [object, this.size]
+            );
+        }
 
         this.stream = Stream.lift(
             function(objectSpec, parentSpec, size){
@@ -84,7 +89,7 @@ define(function(require, exports, module) {
             var spec = new Spec();
 
             spec.subscribe(this.stream);
-            spec.subscribe(this.sizeStream, ['resize']);
+            spec.subscribe(this.size, ['resize']);
 
             this.stream.on('start', function(spec){
                 this.objects.push(object);

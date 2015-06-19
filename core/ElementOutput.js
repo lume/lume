@@ -249,13 +249,14 @@ define(function(require, exports, module) {
         }
 
         // size nullity check needed for Group and other renderables with no defined size
+        // TODO: make sure size is dirty from stream to commit fresh results
         if (this._sizeDirty) {
             if (this._size === null) this._size = [0,0];
             if (this.size === null) this._size = [size[0], size[1]];
             else {
                 // take on parent size if size is undefined
-                if (this.size[0] === undefined) this._size[0] = spec.size[0];
-                if (this.size[1] === undefined) this._size[1] = spec.size[1];
+                if (this.size[0] === undefined) this._size[0] = size[0];
+                if (this.size[1] === undefined) this._size[1] = size[1];
 
                 // if proportions defined, scale calculated size
                 if (this.proportions){

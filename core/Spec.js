@@ -20,6 +20,11 @@ define(function(require, exports, module) {
         this._eventInput.on('end', function(spec){
             this.spec = spec;
         }.bind(this));
+
+        this._eventInput.on('resize', function(size){
+            this.spec.size = size;
+        }.bind(this));
+
     }
 
     Spec.prototype.get = function(){

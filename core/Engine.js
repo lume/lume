@@ -29,7 +29,7 @@ define(function(require, exports, module) {
     var EventHandler = require('./EventHandler');
     var OptionsManager = require('./OptionsManager');
     var Clock = require('famous/core/Clock');
-    var SizeStream = require('famous/core/SizeStream');
+    var ResizeStream = require('famous/streams/ResizeStream');
 
     var dirtyObjects = require('famous/core/dirtyObjects');
     var nextTickQueue = require('./nextTickQueue');
@@ -53,7 +53,7 @@ define(function(require, exports, module) {
     var eventHandler = new EventHandler();
     var dirty = true;
     var dirtyLock = 0;
-    var sizeStream = new SizeStream();
+    var sizeStream = new ResizeStream();
 
     var options = {
         containerType: 'div',
