@@ -206,8 +206,12 @@ define(function(require, exports, module) {
         if (spec.size) {
             if (spec.size[0] === undefined) size[0] = parentSize[0];
             if (spec.size[1] === undefined) size[1] = parentSize[1];
+
+            if (spec.size[0] === true) size[0] = true;
+            if (spec.size[1] === true) size[1] = true;
         }
 
+        //TODO: what is parentSize isn't numeric? Compose margin/proportions?
         if (spec.margins){
             size[0] = parentSize[0] - (2 * spec.margins[0]);
             size[1] = parentSize[1] - (2 * spec.margins[1]);
