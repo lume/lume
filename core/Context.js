@@ -79,10 +79,6 @@ define(function(require, exports, module) {
             element.style.perspective = perspective ? perspective.toFixed() + 'px' : '';
         };
 
-    // Note: Unused
-    Context.prototype.getAllocator = function getAllocator() {
-        return this.allocator;
-    };
 
     /**
      * Add renderables to this Context's render tree.
