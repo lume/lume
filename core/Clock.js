@@ -1,6 +1,7 @@
 define(function(require, exports, module) {
     var EventHandler = require('famous/core/EventHandler');
     var EventMapper = require('famous/events/EventMapper');
+    var tickQueue = require('famous/core/queues/tickQueue');
 
     var streams = [];
     var add = [];
@@ -13,9 +14,7 @@ define(function(require, exports, module) {
     EventHandler.setOutputHandler(Clock, eventOutput);
     EventHandler.setInputHandler(Clock, eventOutput);
 
-    eventInput.on('tick', function(){
-        var i;
-
+    tickQueue.push(function(){
         while (add.length)
             streams.push(add.shift());
 
@@ -24,9 +23,9 @@ define(function(require, exports, module) {
             streams.splice(index, 1);
         }
 
-        for (i = 0; i < streams.length; i++)
+        for (var i = 0; i < streams.length; i++)
             streams[i].update();
-    }.bind(this));
+    });
 
     eventInput.on('start', function(data){
         var stream = data.stream;
@@ -46,10 +45,6 @@ define(function(require, exports, module) {
 
     Clock.unregister = function(stream){
         sub.push(stream);
-    };
-
-    Clock.subscribeEngine = function(engine){
-        eventInput.subscribe(engine, ['tick']);
     };
 
     Clock.subscribe = function(stream){

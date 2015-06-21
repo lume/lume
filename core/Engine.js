@@ -83,7 +83,6 @@ define(function(require, exports, module) {
      * @method step
      */
 
-    var firstFrame = true;
     Engine.step = function step() {
         // browser events and their handlers happen before rendering begins
 
@@ -324,7 +323,6 @@ define(function(require, exports, module) {
         if (key === 'fpsCap') Engine.setFPSCap(value);
     });
 
-    Clock.subscribeEngine(Engine);
     Engine.subscribe(Clock);
     Engine.subscribe(dirtyObjects);
     sizeStream.subscribe(eventHandler);
