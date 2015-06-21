@@ -8,7 +8,7 @@
 
 define(function(require, exports, module) {
     var Modifier = require('../core/Modifier');
-    var RenderNode = require('../core/RenderNode');
+    var RenderNode = require('../core/nodes/SceneGraphNode');
     var Transform = require('../core/Transform');
     var Transitionable = require('../core/Transitionable');
     var OptionsManager = require('../core/OptionsManager');
@@ -260,7 +260,7 @@ define(function(require, exports, module) {
                 align: this.inAlignMap ? _mappedState.bind(this, this.inAlignMap, state) : null
             });
 
-            var node = new RenderNode();
+            var node = new SceneGraphNode();
             node.set(modifier).add(renderable);
 
             this._showing = this._nodes.length;

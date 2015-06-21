@@ -1,3 +1,5 @@
+/* Copyright © 2015 David Valdman */
+
 define(function(require, exports, module) {
     var EventHandler = require('famous/core/EventHandler');
     var ResizeStream = require('famous/streams/ResizeStream');

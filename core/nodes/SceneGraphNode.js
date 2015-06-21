@@ -1,25 +1,17 @@
-/* This Source Code Form is subject to the terms of the Mozilla Public
- * License, v. 2.0. If a copy of the MPL was not distributed with this
- * file, You can obtain one at http://mozilla.org/MPL/2.0/.
- *
- * @license MPL 2.0
- * @copyright Famous Industries, Inc. 2014
- */
-
-/* Modified work copyright © 2015 David Valdman */
+/* Copyright © 2015 David Valdman */
 
 define(function(require, exports, module) {
-    var SpecManager = require('./SpecManager');
+    var SpecManager = require('./../SpecManager');
     var EventHandler = require('famous/core/EventHandler');
     var Stream = require('famous/streams/Stream');
     var Spec = require('famous/core/Spec');
     var EventMapper = require('famous/events/EventMapper');
     var ResizeStream = require('famous/streams/ResizeStream');
 
-    var SizeNode = require('famous/core/SizeNode');
-    var LayoutNode = require('famous/core/LayoutNode');
+    var SizeNode = require('famous/core/nodes/SizeNode');
+    var LayoutNode = require('famous/core/nodes/LayoutNode');
 
-    function RenderNode(object) {
+    function SceneGraphNode(object) {
         this.stream = null;
         this.sizeStream = null;
 
@@ -40,10 +32,10 @@ define(function(require, exports, module) {
         if (object) this.set(object);
     }
 
-    RenderNode.prototype.add = function add(object) {
+    SceneGraphNode.prototype.add = function add(object) {
         var childNode = (object._isView)
             ? object
-            : new RenderNode(object);
+            : new SceneGraphNode(object);
 
         if (this.stream)childNode.subscribe(this.stream);
         else childNode.subscribe(this);
@@ -61,7 +53,7 @@ define(function(require, exports, module) {
         return childNode;
     };
 
-    RenderNode.prototype.set = function set(object) {
+    SceneGraphNode.prototype.set = function set(object) {
         if (object instanceof SizeNode){
             this.sizeStream = ResizeStream.lift(
                 function(objectSpec, parentSize){
@@ -110,7 +102,7 @@ define(function(require, exports, module) {
         }
     };
 
-    RenderNode.prototype.commit = function commit(allocator){
+    SceneGraphNode.prototype.commit = function commit(allocator){
         for (var i = 0; i < this.objects.length; i++){
             var object = this.objects[i];
             var spec = this.specs[i].get();
@@ -133,5 +125,5 @@ define(function(require, exports, module) {
         }
     };
 
-    module.exports = RenderNode;
+    module.exports = SceneGraphNode;
 });
