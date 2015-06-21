@@ -24,7 +24,6 @@ define(function(require, exports, module) {
         this.sizeStream = null;
 
         this.child = null;
-        this._cachedSize = null;
 
         this.specs = [];
         this.objects = [];
@@ -63,11 +62,9 @@ define(function(require, exports, module) {
     };
 
     RenderNode.prototype.set = function set(object) {
-        //TODO: define this only if object is sizeNode
         if (object instanceof SizeNode){
             this.sizeStream = ResizeStream.lift(
                 function(objectSpec, parentSize){
-                    console.log('size compose')
                     return (objectSpec)
                         ? SpecManager.getSize(objectSpec, parentSize)
                         : parentSize;
@@ -111,10 +108,6 @@ define(function(require, exports, module) {
                 this.dirtyObjects.push(object);
             }.bind(this));
         }
-    };
-
-    RenderNode.prototype.getSize = function(){
-        return this._cachedSize;
     };
 
     RenderNode.prototype.commit = function commit(allocator){
