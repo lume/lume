@@ -60,7 +60,6 @@ define(function(require, exports, module) {
 
         this._eventInput.on('resize', function(){
             this.setSize(_getElementSize(this.container));
-            this._node.size.trigger('resize', this.getSize());
         }.bind(this));
 
         this._node.subscribe(this._eventOutput);
@@ -131,6 +130,7 @@ define(function(require, exports, module) {
     Context.prototype.setSize = function setSize(size) {
         this._size[0] = size[0];
         this._size[1] = size[1];
+        this._node.size.trigger('resize', size);
     };
 
     /**
