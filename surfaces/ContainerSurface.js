@@ -43,7 +43,6 @@ define(function(require, exports, module) {
         this._container.classList.add('famous-container');
         this.context = new Context(this._container);
         this.setContent(this._container);
-        this._dirty = true;
 
         this._eventInput = new EventHandler();
         this._eventOutput = new EventHandler();
@@ -56,18 +55,6 @@ define(function(require, exports, module) {
         this.on('resize', function(){
             this.context.setSize(this.getSize());
             this._dirty = true;
-        });
-
-        this._eventInput.on('dirty', function(){
-            if (this._dirty) return;
-            this._dirty = true;
-            this._eventOutput.emit('dirty');
-        });
-
-        this._eventInput.on('clean', function(){
-            if (!this._dirty) return;
-            this._dirty = false;
-            this._eventOutput.emit('clean');
         });
     }
 
@@ -93,18 +80,6 @@ define(function(require, exports, module) {
     };
 
     /**
-     * Return spec for this surface.  Note: Can result in a size recalculation.
-     *
-     * @private
-     * @method render
-     *
-     * @return {Object} render spec for this surface (spec id)
-     */
-    ContainerSurface.prototype.render = function render() {
-        return Surface.prototype.render.apply(this, arguments);
-    };
-
-    /**
      * Place the document element this component manages into the document.
      *
      * @private
@@ -127,8 +102,6 @@ define(function(require, exports, module) {
     ContainerSurface.prototype.commit = function commit(spec, allocator) {
         Surface.prototype.commit.apply(this, arguments);
         Context.prototype.commit.apply(this.context);
-
-        if (this._dirty) this._dirty = false;
     };
 
     module.exports = ContainerSurface;
