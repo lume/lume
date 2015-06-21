@@ -1,19 +1,24 @@
 /* copyright © 2015 David Valdman */
 
 define(function(require, exports, module) {
-    function compose(sizeSpec, parentSizeSpec){
-        var parentSize = parentSizeSpec.size;
-
-        var size = (sizeSpec.size)
-            ? [sizeSpec.size[0], sizeSpec.size[1]]
-            : [parentSize[0], parentSize[1]];
+    function compose(sizeSpec, parentSize){
+        var size = new Array(2);
 
         if (sizeSpec.size) {
-            if (sizeSpec.size[0] === undefined) size[0] = parentSize[0];
-            if (sizeSpec.size[1] === undefined) size[1] = parentSize[1];
+            // inheritance
+            if (sizeSpec.size[0] === false) size[0] = parentSize[0];
+            if (sizeSpec.size[1] === false) size[1] = parentSize[1];
+
+            // override
+            if (typeof sizeSpec.size[0] === 'number') size[0] = sizeSpec.size[0];
+            if (typeof sizeSpec.size[1] === 'number') size[1] = sizeSpec.size[1];
 
             if (sizeSpec.size[0] === true) size[0] = true;
             if (sizeSpec.size[1] === true) size[1] = true;
+        }
+        else {
+            size[0] = parentSize[0];
+            size[1] = parentSize[1];
         }
 
         //TODO: what is parentSize isn't numeric? Compose margin/proportions?
@@ -27,11 +32,7 @@ define(function(require, exports, module) {
             if (sizeSpec.proportions[1] !== undefined) size[1] *= sizeSpec.proportions[1];
         }
 
-        return {
-            size : size,
-            margins : null,
-            proportions : null
-        };
+        return size;
     }
 
     module.exports = compose;

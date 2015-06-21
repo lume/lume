@@ -3,10 +3,10 @@
 define(function(require, exports, module) {
     var Transform = require('./Transform');
 
-    function compose(spec, parentLayoutSpec, sizeSpec){
+    function compose(layoutSpec, parentLayoutSpec, sizeSpec){
         var mergedSpec;
 
-        if (typeof spec == 'number') {
+        if (typeof layoutSpec == 'number') {
 
             var transform = parentLayoutSpec.transform || Transform.identity;
             var align = parentLayoutSpec.align || null;
@@ -26,35 +26,35 @@ define(function(require, exports, module) {
                 size : parentLayoutSpec.size || null
             };
 
-        } else if (spec instanceof Array){
+        } else if (layoutSpec instanceof Array){
 
             var mergedSpec = [];
-            for (var i = 0; i < spec.length; i++)
-                mergedSpec[i] = compose.merge(spec[i], parentLayoutSpec);
+            for (var i = 0; i < layoutSpec.length; i++)
+                mergedSpec[i] = compose.merge(layoutSpec[i], parentLayoutSpec);
 
         }
-        else if (spec instanceof Object){
+        else if (layoutSpec instanceof Object){
             var size = sizeSpec.size;
             var parentSize = parentLayoutSpec.size;
             var parentOpacity = (parentLayoutSpec.opacity !== undefined) ? parentLayoutSpec.opacity : 1;
             var parentTransform = parentLayoutSpec.transform || Transform.identity;
 
-            var origin = spec.origin || null;
-            var align = spec.align || null;
+            var origin = layoutSpec.origin || null;
+            var align = layoutSpec.align || null;
 
-            var opacity = (spec.opacity !== undefined)
-                ? parentOpacity * spec.opacity
+            var opacity = (layoutSpec.opacity !== undefined)
+                ? parentOpacity * layoutSpec.opacity
                 : parentOpacity;
 
-            var transform = (spec.transform)
-                ? Transform.multiply(parentTransform, spec.transform)
+            var transform = (layoutSpec.transform)
+                ? Transform.multiply(parentTransform, layoutSpec.transform)
                 : parentTransform;
 
-            var nextSizeTransform = (spec.origin)
+            var nextSizeTransform = (layoutSpec.origin)
                 ? parentTransform
                 : parentLayoutSpec.nextSizeTransform || parentTransform;
 
-            if (spec.size)
+            if (layoutSpec.size)
                 nextSizeTransform = parentTransform;
 
             if (origin && (origin[0] || origin[1])){
@@ -77,11 +77,11 @@ define(function(require, exports, module) {
                 nextSizeTransform : nextSizeTransform
             };
 
-            if (spec.target !== undefined)
-                mergedSpec = compose(spec.target, mergedSpec);
+            if (layoutSpec.target !== undefined)
+                mergedSpec = compose(layoutSpec.target, mergedSpec);
 
         }
-        else spec = null;
+        else layoutSpec = null;
 
         return mergedSpec;
     }
