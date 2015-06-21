@@ -13,7 +13,8 @@ define(function(require, exports, module) {
     var Transitionable = require('famous/core/Transitionable');
     var View = require('famous/core/View');
     var Stream = require('famous/streams/Stream');
-    var Modifier = require('famous/core/ModifierStream');
+    var LayoutNode = require('famous/core/nodes/LayoutNode');
+    var SizeNode = require('famous/core/nodes/SizeNode');
 
     /**
      * A layout which divides a context into sections based on a proportion
@@ -47,6 +48,7 @@ define(function(require, exports, module) {
 
             var stateStream = Stream.lift(
                 function(ratios, parentSize){
+
                     var direction = this.options.direction;
 
                     // calculate remaining size after true-sized nodes are accounted for
@@ -91,6 +93,7 @@ define(function(require, exports, module) {
                         transforms : transforms,
                         sizes : sizes
                     };
+
                 }.bind(this),
                 [this.ratios, this.size]
             );
@@ -110,11 +113,15 @@ define(function(require, exports, module) {
 
             for (var i = 0; i < this.nodes.length; i++){
                 var node = this.nodes[i];
-                var modifier = new Modifier({
-                    transform : this.transforms.pluck(i),
+                var layout = new LayoutNode({
+                    transform : this.transforms.pluck(i)
+                });
+
+                var size = new SizeNode({
                     size : this.sizes.pluck(i)
                 });
-                this.add(modifier).add(node);
+
+                this.add(layout).add(size).add(node);
             }
         },
         /**
