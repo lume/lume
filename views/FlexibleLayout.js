@@ -56,7 +56,6 @@ define(function(require, exports, module) {
                         var ratio = ratios[i];
                         var node = this.nodes[i];
 
-                        if (!node || node.getSize === undefined) continue;
                         (typeof ratio !== 'number')
                             ? flexLength -= node.getSize()[direction] || 0
                             : ratioSum += ratio;
@@ -93,7 +92,7 @@ define(function(require, exports, module) {
                         sizes : sizes
                     };
                 }.bind(this),
-                [this.ratios, this.sizeStream]
+                [this.ratios, this.size]
             );
 
             this.transforms = stateStream.pluck('transforms');

@@ -13,8 +13,8 @@ define(function(require, exports, module) {
     var Transform = require('famous/core/Transform');
     var Transitionable = require('famous/core/Transitionable');
     var View = require('famous/core/view');
-    var Modifier = require('famous/core/Modifier');
-    var TransitionableTransform = require('famous/transitions/TransitionableTransform');
+    var Modifier = require('famous/core/ModifierStream');
+    var Stream = require('famous/streams/Stream');
 
     /**
      * A layout which will arrange two renderables: a featured content, and a
@@ -70,40 +70,35 @@ define(function(require, exports, module) {
             end : _handleEnd,
             change : _updateState
         },
-        state : {
-            position : Transitionable,
-            direction : Number,
-            orientation : Number,
-            drawerLength : Number
-        },
         initialize : function initialize(options){
             this.initializeState(options);
             this.initializeSubviews();
             this.initializeEvents();
-
-            this.add({transform : Transform.behind}).add(this.drawer);
-            this.add({transform : this.transform}).add(this.content);
         },
         initializeState : function initializeState(options){
-            this.state.direction = _getDirectionFromSide(options.side);
-            this.state.orientation = _getOrientationFromSide(options.side);
-            this.state.drawerLength = 0;
+            this.direction = _getDirectionFromSide(options.side);
+            this.orientation = _getOrientationFromSide(options.side);
+            this.drawerLength = 0;
             this.isOpen = false;
-            this.transform = new TransitionableTransform();
-            this.state.position.set(0);
-
-            (this.state.direction === CONSTANTS.DIRECTION.X)
-                ? this.transform.translateXFrom(this.state.position)
-                : this.transform.translateYFrom(this.state.position);
+            this.position = new Transitionable(0);
+            this.transform = this.position.map(function(position){
+                return (this.direction === CONSTANTS.DIRECTION.X)
+                    ? Transform.translate(position, 0, 0)
+                    : Transform.translate(0, position, 0)
+            });
         },
-        initializeSubviews : function initializeSubviews(){
-            this.drawer = new RenderNode();
-            this.content = new RenderNode();
-        },
-        initializeEvents : function initializeEvents(){
-            this.state.position.on('update', function(data){
-                this.emit('update', {progress : this.getProgress(data.value)});
+        addDrawer : function addDrawer(drawer){
+            this.drawer = drawer;
+            this.drawerLength = drawer.__size.map(function(size){
+                return size[this.options.direction];
             }.bind(this));
+
+            var modifier = new Modifier({transform : Transform.behind});
+            this.add(modifier).add(this.drawer);
+        },
+        addContent : function addContent(content){
+            var modifier = new Modifier({transform : this.transform});
+            this.add(modifier).add(content);
         },
         /**
          * Reveals the drawer with a transition
@@ -116,8 +111,8 @@ define(function(require, exports, module) {
         open : function open(transition, callback){
             if (transition instanceof Function) callback = transition;
             if (transition === undefined) transition = this.options.transitionOpen;
-            this.state.drawerLength = _resolveNodeSize.call(this, this.drawer);
-            this.setPosition(this.state.drawerLength, transition, callback);
+            this.drawerLength = _resolveNodeSize.call(this, this.drawer);
+            this.setPosition(this.drawerLength, transition, callback);
             if (!this.isOpen) {
                 this.isOpen = true;
                 this.emit('open');
@@ -159,7 +154,7 @@ define(function(require, exports, module) {
          * @param [callback] {Function}         callback
          */
         setPosition : function setPosition(position, transition, callback) {
-            this.state.position.set(position, transition, callback);
+            this.position.set(position, transition, callback);
         },
         /**
          * Gets the position in pixels for the content's displacement
@@ -168,7 +163,7 @@ define(function(require, exports, module) {
          * @return position {Number} position
          */
         getPosition : function getPosition() {
-            return this.state.position.get();
+            return this.position.get();
         },
         /**
          * Sets the progress (between 0 and 1) for the content's displacement
@@ -179,7 +174,7 @@ define(function(require, exports, module) {
          * @param [callback] {Function}         callback
          */
         setProgress : function setProgress(progress, transition, callback) {
-            return this.setPosition(progress * this.state.drawerLength, transition, callback);
+            return this.setPosition(progress * this.drawerLength.get(), transition, callback);
         },
         /**
          * Gets the progress (between 0 and 1) for the content's displacement
@@ -189,7 +184,7 @@ define(function(require, exports, module) {
          */
         getProgress : function getProgress(position){
             if (position === undefined) position = this.getPosition();
-            return position / this.state.drawerLength;
+            return position / this.drawerLength;
         },
         /**
          * Resets to last state of being open or closed
@@ -233,9 +228,9 @@ define(function(require, exports, module) {
         if (options.drawerLength) size = options.drawerLength;
         else {
             var nodeSize = node.getSize();
-            size = nodeSize ? nodeSize[this.state.direction] : options.drawerLength;
+            size = nodeSize ? nodeSize[this.direction] : options.drawerLength;
         }
-        return this.state.orientation * size;
+        return this.orientation * size;
     }
 
     function _handleUpdate(data) {
@@ -247,9 +242,9 @@ define(function(require, exports, module) {
         var MIN_LENGTH;
         var MAX_LENGTH;
         var length = _resolveNodeSize.call(this, this.drawer);
-        this.state.drawerLength = length;
+        this.drawerLength = length;
 
-        if (this.state.orientation === 1){
+        if (this.orientation === 1){
             MIN_LENGTH = 0;
             MAX_LENGTH = length;
         }
@@ -267,8 +262,8 @@ define(function(require, exports, module) {
 
     function _handleEnd(data) {
         var velocity = data.velocity;
-        var orientation = this.state.orientation;
-        var length = this.state.drawerLength;
+        var orientation = this.orientation;
+        var length = this.drawerLength;
         var isOpen = this.isOpen;
 
         var position = orientation * this.getPosition();
@@ -297,9 +292,11 @@ define(function(require, exports, module) {
     }
 
     function _updateState(data){
-        if (data.key !== 'side') {
-            this.state.direction = _getDirectionFromSide(data.value);
-            this.state.orientation = _getOrientationFromSide(data.value);
+        var key = data.key;
+        var value = data.value;
+        if (key !== 'side') {
+            this.direction = _getDirectionFromSide(value);
+            this.orientation = _getOrientationFromSide(value);
         }
     }
 

@@ -11,6 +11,7 @@
 define(function(require, exports, module) {
     var Transform = require('famous/core/Transform');
     var View = require('famous/core/View');
+    var Observable = require('famous/core/Observable');
     var LayoutGetter = require('famous/core/LayoutGetter');
 
     /**
@@ -30,19 +31,17 @@ define(function(require, exports, module) {
             direction : CONSTANTS.DIRECTION.Y,
             itemSpacing : 0
         },
-        events : {
-            resize : onResize
-        },
-        state : {
-            items : Array
-        },
+        events : {},
         initialize : function initialize(){
+            this.items = new Observable();
             this._outputFunction = _defaultOutputFunction;
             this.size = null;
             this.length = undefined;
         },
         setup : function(){
-            var layout = new LayoutGetter(this.state.items);
+            this.items.map(function(items){
+                var size = items.getSize();
+            });
 
             var transforms = layout.map(function(surfaces){
                 var direction = this.options.direction;
@@ -63,19 +62,6 @@ define(function(require, exports, module) {
                 this.add({transform : transforms.pluck(i)}).add(item);
             }
         },
-        getSize : function(){
-            if (this.length === undefined){
-                var direction = this.options.direction;
-                var spacing = this.options.itemSpacing;
-                var length = 0;
-                for (var i = 0; i < this.state.items.length; i++)
-                    length += this.state.items[i].getSize()[direction] + spacing;
-                this.length = length;
-            }
-
-            this.size[this.options.direction] = this.length;
-            return this.size;
-        },
         /**
          * setOutputFunction is used to apply a user-defined output transform on each processed renderable.
          *  For a good example, check out SequentialLayout's own DEFAULT_OUTPUT_FUNCTION in the code.
@@ -95,7 +81,8 @@ define(function(require, exports, module) {
          * @chainable
          */
         sequenceFrom : function sequenceFrom(items) {
-            this.state.items = items;
+            this.items.set(items);
+            this.setup();
         }
     }, CONSTANTS);
 
