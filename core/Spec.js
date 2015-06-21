@@ -2,7 +2,7 @@ define(function(require, exports, module) {
     var EventHandler = require('famous/core/EventHandler');
 
     function Spec(){
-        this.spec = null;
+        this.spec = {};
 
         this._eventInput = new EventHandler();
         this._eventOutput = new EventHandler();
