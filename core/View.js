@@ -12,7 +12,7 @@ define(function(require, exports, module) {
     var RenderNode = require('famous/core/RenderNode');
     var SpecManager = require('famous/core/SpecManager');
     var Controller = require('famous/core/Controller');
-    var ModifierStream = require('famous/core/ModifierStream');
+    var LayoutNode = require('famous/core/LayoutNode');
     var Stream = require('famous/streams/Stream');
     var Timer = require('famous/utilities/Timer');
     var ResizeStream = require('famous/streams/ResizeStream');
@@ -65,7 +65,7 @@ define(function(require, exports, module) {
         setSize : function setSize(size){
             if (this.options.size === size) return;
             if (!this._modifier){
-                this._modifier = new ModifierStream({size : size});
+                this._modifier = new LayoutNode({size : size});
                 this.set(this._modifier);
             }
             else this._modifier.addStream({size : size});
@@ -75,7 +75,7 @@ define(function(require, exports, module) {
             if (this.options.origin === origin) return;
             this.options.origin = origin;
             if (!this._modifier){
-                this._modifier = new ModifierStream({origin : origin});
+                this._modifier = new LayoutNode({origin : origin});
                 this.set(this._modifier);
             }
             else this._modifier.addStream({origin : origin});

@@ -17,7 +17,7 @@ define(function(require, exports, module) {
     var ResizeStream = require('famous/streams/ResizeStream');
 
     var SizeNode = require('famous/core/SizeNode');
-    var ModifierStream = require('famous/core/ModifierStream');
+    var LayoutNode = require('famous/core/LayoutNode');
 
     function RenderNode(object) {
         this.stream = null;

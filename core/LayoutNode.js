@@ -5,7 +5,7 @@ define(function(require, exports, module) {
     var nextTickQueue = require('famous/core/nextTickQueue');
     var dirtyObjects = require('famous/core/dirtyObjects');
 
-    function Modifier(sources) {
+    function LayoutNode(sources) {
         this.stream = this.createStream(sources);
         EventHandler.setOutputHandler(this, this.stream);
 
@@ -18,7 +18,7 @@ define(function(require, exports, module) {
         });
     }
 
-    Modifier.prototype.createStream = function (sources){
+    LayoutNode.prototype.createStream = function (sources){
         for (var key in sources){
             var value = sources[key];
             if (value instanceof Number || value instanceof Array){
@@ -37,7 +37,7 @@ define(function(require, exports, module) {
         return Stream.merge(sources);
     };
 
-    Modifier.prototype.set = function(obj){
+    LayoutNode.prototype.set = function(obj){
         for (var key in obj){
             var value = obj[key];
             var source = new Observable();
@@ -52,5 +52,5 @@ define(function(require, exports, module) {
         }
     };
 
-    module.exports = Modifier;
+    module.exports = LayoutNode;
 });
