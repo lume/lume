@@ -1,7 +1,7 @@
 define(function(require, exports, module) {
     var Stream = require('famous/streams/Stream');
-    var nextTickQueue = require('famous/core/nextTickQueue');
-    var dirtyQueue = require('famous/core/dirtyQueue');
+    var nextTickQueue = require('famous/core/queues/nextTickQueue');
+    var dirtyQueue = require('famous/core/queues/dirtyQueue');
 
     function Observable(value){
         Stream.call(this);

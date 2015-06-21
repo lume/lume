@@ -2,7 +2,7 @@
 
 define(function(require, exports, module) {
     var EventHandler = require('famous/core/EventHandler');
-    var dirtyQueue = require('famous/core/dirtyQueue');
+    var dirtyQueue = require('famous/core/queues/dirtyQueue');
 
     var eventOutput = new EventHandler();
 

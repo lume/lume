@@ -4,9 +4,9 @@ define(function(require, exports, module) {
     var EventFilter = require('famous/events/EventFilter');
     var EventSplitter = require('famous/events/EventSplitter');
 
-    var nextTickQueue = require('famous/core/nextTickQueue');
-    var postTickQueue = require('famous/core/postTickQueue');
-    var dirtyQueue = require('famous/core/dirtyQueue');
+    var nextTickQueue = require('famous/core/queues/nextTickQueue');
+    var postTickQueue = require('famous/core/queues/postTickQueue');
+    var dirtyQueue = require('famous/core/queues/dirtyQueue');
 
     var EVENTS = {
         START : 'start',

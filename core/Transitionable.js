@@ -13,9 +13,9 @@ define(function(require, exports, module) {
     var TweenTransition = require('./../transitions/TweenTransition');
     var EventHandler = require('famous/core/EventHandler');
     var Clock = require('famous/core/Clock');
-    var dirtyQueue = require('famous/core/dirtyQueue');
-    var nextTickQueue = require('famous/core/nextTickQueue');
-    var postTickQueue = require('famous/core/postTickQueue');
+    var dirtyQueue = require('famous/core/queues/dirtyQueue');
+    var nextTickQueue = require('famous/core/queues/nextTickQueue');
+    var postTickQueue = require('famous/core/queues/postTickQueue');
     var Stream = require('famous/streams/Stream');
 
     /**

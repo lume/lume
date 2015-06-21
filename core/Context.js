@@ -14,7 +14,7 @@ define(function(require, exports, module) {
     var ElementAllocator = require('./ElementAllocator');
     var Transform = require('./Transform');
     var Transitionable = require('./Transitionable');
-    var dirtyQueue = require('famous/core/dirtyQueue');
+    var dirtyQueue = require('famous/core/queues/dirtyQueue');
 
     /**
      * The top-level container for a Famous-renderable piece of the document.

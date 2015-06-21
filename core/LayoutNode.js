@@ -2,7 +2,7 @@ define(function(require, exports, module) {
     var EventHandler = require('famous/core/EventHandler');
     var Stream = require('famous/streams/Stream');
     var Observable = require('famous/core/Observable');
-    var nextTickQueue = require('famous/core/nextTickQueue');
+    var nextTickQueue = require('famous/core/queues/nextTickQueue');
     var dirtyObjects = require('famous/core/dirtyObjects');
 
     function LayoutNode(sources) {

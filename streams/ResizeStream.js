@@ -3,9 +3,9 @@ define(function(require, exports, module) {
     var EventMapper = require('famous/events/EventMapper');
     var EventHandler = require('famous/core/EventHandler');
 
-    var nextTickQueue = require('famous/core/nextTickQueue');
-    var postTickQueue = require('famous/core/postTickQueue');
-    var dirtyQueue = require('famous/core/dirtyQueue');
+    var nextTickQueue = require('famous/core/queues/nextTickQueue');
+    var postTickQueue = require('famous/core/queues/postTickQueue');
+    var dirtyQueue = require('famous/core/queues/dirtyQueue');
 
     var EVENTS = {
         START : 'start',

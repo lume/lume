@@ -32,12 +32,11 @@ define(function(require, exports, module) {
     var ResizeStream = require('famous/streams/ResizeStream');
 
     var dirtyObjects = require('famous/core/dirtyObjects');
-    var nextTickQueue = require('./nextTickQueue');
-    var dirtyQueue = require('./dirtyQueue');
-    var postTickQueue = require('./postTickQueue');
-    var tickQueue = require('./tickQueue');
+    var nextTickQueue = require('./queues/nextTickQueue');
+    var dirtyQueue = require('./queues/dirtyQueue');
+    var postTickQueue = require('./queues/postTickQueue');
+    var tickQueue = require('./queues/tickQueue');
     var Stream = require('famous/streams/Stream');
-    var Timer = require('famous/utilities/Timer');
 
     var Engine = {};
 

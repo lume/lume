@@ -1,6 +1,6 @@
 define(function(require, exports, module){
     var Stream = require('famous/streams/Stream');
-    var postTickQueue = require('famous/core/postTickQueue');
+    var postTickQueue = require('famous/core/queues/postTickQueue');
 
     function Accumulator(){
         this.sum = undefined;

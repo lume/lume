@@ -18,7 +18,7 @@ define(function(require, exports, module) {
      * @class Timer
      * @constructor
      */
-    var tickQueue = require('famous/core/tickQueue');
+    var tickQueue = require('famous/core/queues/tickQueue');
     var dirtyObjects = require('famous/core/dirtyObjects');
 
     var getTime = (window.performance)

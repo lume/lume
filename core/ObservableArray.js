@@ -1,7 +1,7 @@
 define(function(require, exports, module) {
     var Observable = require('famous/core/Observable');
     var EventHandler = require('famous/core/EventHandler');
-    var dirtyQueue = require('famous/core/dirtyQueue');
+    var dirtyQueue = require('famous/core/queues/dirtyQueue');
 
     function ObservableArray(array){
         this.observables = [];

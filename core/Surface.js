@@ -11,9 +11,9 @@
 define(function(require, exports, module) {
     var ElementOutput = require('famous/core/ElementOutput');
     var dirtyObjects = require('famous/core/dirtyObjects');
-    var dirtyQueue = require('famous/core/dirtyQueue');
-    var postTickQueue = require('famous/core/postTickQueue');
-    var nextTickQueue = require('famous/core/nextTickQueue');
+    var dirtyQueue = require('famous/core/queues/dirtyQueue');
+    var postTickQueue = require('famous/core/queues/postTickQueue');
+    var nextTickQueue = require('famous/core/queues/nextTickQueue');
 
     /**
      * A base class for viewable content and event
