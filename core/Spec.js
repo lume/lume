@@ -22,7 +22,7 @@ define(function(require, exports, module) {
         }.bind(this));
 
         this._eventInput.on('resize', function(size){
-            this.spec.size = size;
+//            this.spec.size = size;
         }.bind(this));
 
     }

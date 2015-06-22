@@ -116,15 +116,15 @@ define(function(require, exports, module) {
                 }.bind(mergedStream));
             },
             update : function(){
+                count++;
                 hasUpdated = true;
+                postTickQueue.push(function(){
+                    if (count == total) {
+                        mergedStream.emit(EVENTS.UPDATE, mergedData);
+                        count = 0;
+                    }
+                }.bind(mergedStream));
                 mergedStream.trigger(EVENTS.RESIZE, mergedData);
-
-//                postTickQueue.push(function(){
-//                    if (count == total) {
-//                        mergedStream.trigger(EVENTS.RESIZE, mergedData);
-//                        count = 0;
-//                    }
-//                }.bind(mergedStream));
             },
             end : function(){
                 hasEnded = true;
@@ -142,14 +142,7 @@ define(function(require, exports, module) {
                 }.bind(mergedStream))
             },
             resize : function(){
-//                this.emit('resize', mergedData);
-                count++;
-                postTickQueue.push(function(){
-                    if (count == total) {
-                        mergedStream.emit(EVENTS.RESIZE, mergedData);
-                        count = 0;
-                    }
-                }.bind(mergedStream));
+                mergedStream.emit(EVENTS.RESIZE, mergedData);
             }
         });
 

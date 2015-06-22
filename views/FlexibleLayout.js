@@ -13,6 +13,7 @@ define(function(require, exports, module) {
     var Transitionable = require('famous/core/Transitionable');
     var View = require('famous/core/View');
     var Stream = require('famous/streams/Stream');
+    var ResizeStream = require('famous/streams/ResizeStream');
     var LayoutNode = require('famous/core/nodes/LayoutNode');
     var SizeNode = require('famous/core/nodes/SizeNode');
 
@@ -46,9 +47,16 @@ define(function(require, exports, module) {
             this.ratios = new Transitionable(this.options.ratios);
             this.nodes = [];
 
+//            var sizeStream = ResizeStream.lift(function(parentSize){
+//                debugger
+//                return parentSize;
+//            }.bind(this), [this.size]);
+//
+//            this.size.on('resize', function(){debugger});
+//            sizeStream.on('resize', function(){debugger});
+
             var stateStream = Stream.lift(
                 function(ratios, parentSize){
-
                     var direction = this.options.direction;
 
                     // calculate remaining size after true-sized nodes are accounted for

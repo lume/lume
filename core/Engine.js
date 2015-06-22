@@ -30,6 +30,7 @@ define(function(require, exports, module) {
     var OptionsManager = require('./OptionsManager');
     var Clock = require('famous/core/Clock');
     var ResizeStream = require('famous/streams/ResizeStream');
+    var SizeStream = require('famous/streams/SizeStream');
 
     var dirtyObjects = require('famous/core/dirtyObjects');
     var nextTickQueue = require('./queues/nextTickQueue');
@@ -52,7 +53,7 @@ define(function(require, exports, module) {
     var eventHandler = new EventHandler();
     var dirty = true;
     var dirtyLock = 0;
-    var sizeStream = new ResizeStream();
+    var sizeStream = new SizeStream();
 
     var options = {
         containerType: 'div',
@@ -286,7 +287,7 @@ define(function(require, exports, module) {
      * @return {FamousContext} provided context
      */
     Engine.registerContext = function registerContext(context) {
-        context.subscribe(sizeStream, ['resize']);
+        context.subscribe(sizeStream);
         contexts.push(context);
         return context;
     };

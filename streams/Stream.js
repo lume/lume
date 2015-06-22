@@ -43,6 +43,7 @@ define(function(require, exports, module) {
                         this.emit(EVENTS.START, data);
                         count = 0;
                     }
+
                 }.bind(this));
             }.bind(this));
         }

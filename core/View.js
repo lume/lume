@@ -16,6 +16,8 @@ define(function(require, exports, module) {
     var Stream = require('famous/streams/Stream');
     var Timer = require('famous/utilities/Timer');
     var ResizeStream = require('famous/streams/ResizeStream');
+    var SizeStream = require('famous/streams/SizeStream');
+    var Transitionable = require('famous/core/Transitionable');
 
     /**
      * @class View
@@ -33,7 +35,7 @@ define(function(require, exports, module) {
             this._node = new RenderNode();
 
             this._isView = true;
-            this.size = new ResizeStream();
+            this.size = new SizeStream();
 
             Controller.apply(this, arguments);
 
