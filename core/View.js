@@ -40,19 +40,24 @@ define(function(require, exports, module) {
             Controller.apply(this, arguments);
 
             this._eventInput.subscribe(this._optionsManager);
+            this._eventInput.subscribe(this.size, ['resize']);
 
             this._eventInput.on('start', function(parentSpec){
-                this._eventOutput.emit('start', parentSpec)
+                this._node.trigger('start', parentSpec);
+                this._eventOutput.emit('start', parentSpec);
             }.bind(this));
 
             this._eventInput.on('end', function(parentSpec){
-                this._eventOutput.emit('end', parentSpec)
+                this._node.trigger('end', parentSpec);
+                this._eventOutput.emit('end', parentSpec);
             }.bind(this));
 
-            this._node.subscribe(this._eventOutput);
-            this._node.size.subscribe(this.size);
+            this._eventInput.on('resize', function(size){
+                this._node.size.trigger('resize', size);
+                this._eventOutput.emit('resize', size);
+            }.bind(this));
 
-            this._eventOutput.subscribe(this.size, ['resize']);
+            this._node.size.subscribe(this.size);
         },
         set : function set(){
             return RenderNode.prototype.set.apply(this._node, arguments);
