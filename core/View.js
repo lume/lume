@@ -51,6 +51,8 @@ define(function(require, exports, module) {
 
             this._node.subscribe(this._eventOutput);
             this._node.size.subscribe(this.size);
+
+            this._eventOutput.subscribe(this.size, ['resize']);
         },
         set : function set(){
             return RenderNode.prototype.set.apply(this._node, arguments);
