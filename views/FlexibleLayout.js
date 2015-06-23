@@ -47,14 +47,6 @@ define(function(require, exports, module) {
             this.ratios = new Transitionable(this.options.ratios);
             this.nodes = [];
 
-//            var sizeStream = ResizeStream.lift(function(parentSize){
-//                debugger
-//                return parentSize;
-//            }.bind(this), [this.size]);
-//
-//            this.size.on('resize', function(){debugger});
-//            sizeStream.on('resize', function(){debugger});
-
             var stateStream = Stream.lift(
                 function(ratios, parentSize){
                     var direction = this.options.direction;
@@ -121,15 +113,15 @@ define(function(require, exports, module) {
 
             for (var i = 0; i < this.nodes.length; i++){
                 var node = this.nodes[i];
-                var layout = new LayoutNode({
+                var layoutNode = new LayoutNode({
                     transform : this.transforms.pluck(i)
                 });
 
-                var size = new SizeNode({
+                var sizeNode = new LayoutNode({
                     size : this.sizes.pluck(i)
                 });
 
-                this.add(layout).add(size).add(node);
+                this.add(layoutNode).add(sizeNode).add(node);
             }
         },
         /**

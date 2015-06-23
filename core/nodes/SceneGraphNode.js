@@ -79,6 +79,8 @@ define(function(require, exports, module) {
             var spec = new Spec();
 
             spec.subscribe(this.stream);
+
+            //avoids listening to start/end
             spec.subscribe(this.size, ['resize']);
 
             this.stream.on('start', function(spec){
