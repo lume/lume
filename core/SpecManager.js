@@ -43,9 +43,6 @@ define(function(require, exports, module) {
             var origin = spec.origin || null;
             var align = spec.align || null;
 
-//            console.log(size, SpecManager.getSize(spec, parentSize));
-            var size = SpecManager.getSize(spec, parentSize);
-
             var opacity = (spec.opacity !== undefined)
                 ? parentOpacity * spec.opacity
                 : parentOpacity;
