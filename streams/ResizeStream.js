@@ -55,7 +55,8 @@ define(function(require, exports, module) {
                 count++;
 
                 postTickQueue.push(function(){
-                    this.emit(EVENTS.RESIZE, data);
+                    this.emit(EVENTS.UPDATE, data);
+//                    this.emit(EVENTS.RESIZE, data);
                     count = 0;
                 }.bind(this));
             }.bind(this));
@@ -81,13 +82,13 @@ define(function(require, exports, module) {
             }.bind(this));
         }
 
-        if (options.resize)
-            this._eventInput.on(EVENTS.RESIZE, options.resize.bind(this));
-        else {
-            this._eventInput.on(EVENTS.RESIZE, function(data){
-                this._eventOutput.emit(EVENTS.RESIZE, data);
-            }.bind(this));
-        }
+//        if (options.resize)
+//            this._eventInput.on(EVENTS.RESIZE, options.resize.bind(this));
+//        else {
+//            this._eventInput.on(EVENTS.RESIZE, function(data){
+//                this._eventOutput.emit(EVENTS.RESIZE, data);
+//            }.bind(this));
+//        }
     }
 
     ResizeStream.prototype = Object.create(Stream.prototype);
@@ -121,10 +122,10 @@ define(function(require, exports, module) {
                 postTickQueue.push(function(){
                     if (count == total) {
                         mergedStream.emit(EVENTS.UPDATE, mergedData);
+//                        mergedStream.trigger(EVENTS.RESIZE, mergedData);
                         count = 0;
                     }
                 }.bind(mergedStream));
-                mergedStream.trigger(EVENTS.RESIZE, mergedData);
             },
             end : function(){
                 hasEnded = true;
@@ -141,9 +142,9 @@ define(function(require, exports, module) {
                     }
                 }.bind(mergedStream))
             },
-            resize : function(){
-                mergedStream.emit(EVENTS.RESIZE, mergedData);
-            }
+//            resize : function(){
+//                mergedStream.emit(EVENTS.RESIZE, mergedData);
+//            }
         });
 
         var mergedData = (streamObj instanceof Array) ? [] : {};
