@@ -5,20 +5,22 @@ define(function(require, exports, module) {
     var EventHandler = require('famous/core/EventHandler');
     var Stream = require('famous/streams/Stream');
     var Spec = require('famous/core/Spec');
+    var SizeSpec = require('famous/core/SizeSpec');
     var EventMapper = require('famous/events/EventMapper');
     var SizeStream = require('famous/streams/SizeStream');
     var ResizeStream = require('famous/streams/ResizeStream');
-
     var SizeNode = require('famous/core/nodes/SizeNode');
     var LayoutNode = require('famous/core/nodes/LayoutNode');
 
     function SceneGraphNode(object) {
         this.stream = null;
         this.sizeStream = null;
+        this.size = new SizeStream();
 
         this.child = null;
 
         this.specs = [];
+        this.sizes = [];
         this.objects = [];
         this.dirtyObjects = [];  // for discretely dirty objects
 
@@ -27,8 +29,17 @@ define(function(require, exports, module) {
         EventHandler.setInputHandler(this, this._eventInput);
         EventHandler.setOutputHandler(this, this._eventOutput);
 
-        this.size = new ResizeStream();
-        this._eventOutput.subscribe(this._eventInput);
+        this._eventInput.on('start', function(spec){
+            this._eventOutput.trigger('start', spec);
+        }.bind(this));
+
+        this._eventInput.on('update', function(spec){
+            this._eventOutput.trigger('update', spec);
+        }.bind(this));
+
+        this._eventInput.on('end', function(spec){
+            this._eventOutput.trigger('end', spec);
+        }.bind(this));
 
         if (object) this.set(object);
     }
@@ -38,7 +49,7 @@ define(function(require, exports, module) {
             ? object
             : new SceneGraphNode(object);
 
-        if (this.stream)childNode.subscribe(this.stream);
+        if (this.stream) childNode.subscribe(this.stream);
         else childNode.subscribe(this);
 
         if (this.sizeStream) childNode.size.subscribe(this.sizeStream);
@@ -68,6 +79,7 @@ define(function(require, exports, module) {
 
         this.stream = Stream.lift(
             function(objectSpec, parentSpec, size){
+                if (!size) size = parentSpec.size;
                 return (objectSpec)
                     ? SpecManager.merge(objectSpec, parentSpec, size)
                     : parentSpec;
@@ -77,22 +89,30 @@ define(function(require, exports, module) {
 
         if (object.commit){
             var spec = new Spec();
+            var sizeSpec = new SizeSpec();
 
             spec.subscribe(this.stream);
+            sizeSpec.subscribe(this.size);
 
-            //avoids listening to start/end
-            spec.subscribe(this.size, ['resize']);
-
-            this.stream.on('start', function(spec){
+            spec.on('start', function(spec){
                 this.objects.push(object);
                 this.specs.push(spec);
-            }.bind(this, spec));
+            }.bind(this));
 
-            this.stream.on('end', function(spec){
+            spec.on('end', function(spec){
                 var index = this.specs.indexOf(spec);
                 this.specs.splice(index, 1);
                 this.objects.splice(index, 1);
-            }.bind(this, spec));
+            }.bind(this));
+
+            sizeSpec.on('start', function(size){
+                this.sizes.push(size);
+            }.bind(this));
+
+            sizeSpec.on('end', function(size){
+                var index = this.sizes.indexOf(size);
+                this.sizes.splice(index, 1);
+            }.bind(this));
 
             object.on('clean', function(){
                 var index = this.dirtyObjects.indexOf(object);
@@ -102,6 +122,10 @@ define(function(require, exports, module) {
             object.on('dirty', function(){
                 this.dirtyObjects.push(object);
             }.bind(this));
+
+            if (object.__size){
+                object.__size.subscribe(this.size);
+            }
         }
     };
 
@@ -109,6 +133,9 @@ define(function(require, exports, module) {
         for (var i = 0; i < this.objects.length; i++){
             var object = this.objects[i];
             var spec = this.specs[i].get();
+            var size = this.sizes[i].get();
+            console.log(spec.size, size);
+            spec.size = size;
             object.commit(spec, allocator);
 
             var dirtyIndex = this.dirtyObjects.indexOf(object);

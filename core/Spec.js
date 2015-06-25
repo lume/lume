@@ -11,20 +11,18 @@ define(function(require, exports, module) {
 
         this._eventInput.on('start', function(spec){
             this.spec = spec;
+            this.emit('start', this);
         }.bind(this));
 
         this._eventInput.on('update', function(spec){
             this.spec = spec;
+            this.emit('update', this);
         }.bind(this));
 
         this._eventInput.on('end', function(spec){
             this.spec = spec;
+            this.emit('end', this);
         }.bind(this));
-
-        this._eventInput.on('resize', function(size){
-//            this.spec.size = size;
-        }.bind(this));
-
     }
 
     Spec.prototype.get = function(){
