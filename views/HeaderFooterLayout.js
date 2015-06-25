@@ -12,7 +12,7 @@ define(function(require, exports, module) {
     var Transform = require('famous/core/Transform');
     var View = require('famous/core/View');
     var Observable = require('famous/core/Observable');
-    var Modifier = require('famous/core/ModifierStream');
+    var LayoutNode = require('famous/core/nodes/LayoutNode');
     var Stream = require('famous/streams/Stream');
 
     /**
@@ -48,11 +48,11 @@ define(function(require, exports, module) {
 
             var size = this.headerLength.map(function(length){
                 return _outputSize.call(this, length);
-            });
+            }.bind(this));
 
-            var modifier = new Modifier({size : size});
+            var layoutNode = new LayoutNode({size : size});
 
-            this.add(modifier).add(header);
+            this.add(layoutNode).add(header);
         },
         addFooter : function(footer){
             this.footerLength = footer.__size.map(function(size){
@@ -61,40 +61,39 @@ define(function(require, exports, module) {
 
             var size = this.headerLength.map(function(length){
                 return _outputSize.call(this, length);
-            });
+            }.bind(this));
 
             var transform = Stream.lift(function(size, footerLength){
                 var length = size[this.options.direction] - footerLength;
                 return _outputTransform.call(this, length);
+            }.bind(this), [this.size, this.footerLength]);
 
-            }, [this.size, this.footerLength]);
-
-            var modifier = new Modifier({
+            var layoutNode = new LayoutNode({
                 size : size,
                 transform : transform
             });
 
-            this.add(modifier).add(footer);
+            this.add(layoutNode).add(footer);
         },
         addContent : function(content){
             var contentLength = Stream.lift(function(size, headerLength, footerLength){
                 return size[this.options.direction] - headerLength - footerLength;
-            }, [this.size, this.headerLength, this.footerLength]);
+            }.bind(this), [this.size, this.headerLength, this.footerLength]);
 
             var size = contentLength.map(function(length){
                 return _outputSize.call(this, length);
-            });
+            }.bind(this));
 
             var transform = this.headerLength.map(function(length){
                 return _outputTransform.call(this, length);
-            });
+            }.bind(this));
 
-            var modifier = new Modifier({
+            var layoutNode = new LayoutNode({
                 size : size,
                 transform : transform
             });
 
-            this.add(modifier).add(content);
+            this.add(layoutNode).add(content);
         }
     }, CONSTANTS);
 
