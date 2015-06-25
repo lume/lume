@@ -15,6 +15,10 @@ define(function(require, exports, module) {
     var Transform = require('./Transform');
     var Transitionable = require('./Transitionable');
     var dirtyQueue = require('famous/core/queues/dirtyQueue');
+    var ResizeStream = require('famous/streams/ResizeStream');
+    var SizeStream = require('famous/streams/SizeStream');
+    var Stream = require('famous/streams/Stream');
+    var EventMapper = require('famous/events/EventMapper');
 
     /**
      * The top-level container for a Famous-renderable piece of the document.
@@ -33,6 +37,7 @@ define(function(require, exports, module) {
         this._node = new SceneGraphNode();
 
         this._size = _getElementSize(this.container);
+        this.size = new EventHandler();
 
         this._perspective = new Transitionable(0);
 
@@ -51,18 +56,16 @@ define(function(require, exports, module) {
         EventHandler.setOutputHandler(this, this._eventOutput);
 
         this._eventInput.on('start', function(){
-            this._eventOutput.emit('start', this._nodeContext);
+            this._node.trigger('start', this._nodeContext);
         }.bind(this));
 
         this._eventInput.on('end', function(){
-            this._eventOutput.emit('end', this._nodeContext);
+            this._node.trigger('end', this._nodeContext);
         }.bind(this));
 
-        this._eventInput.on('resize', function(){
+        this.size.on('resize', function(){
             this.setSize(_getElementSize(this.container));
         }.bind(this));
-
-        this._node.subscribe(this._eventOutput);
     }
 
     var usePrefix = !('perspective' in document.documentElement.style);
@@ -124,9 +127,12 @@ define(function(require, exports, module) {
      * @param {Array.Number} size [width, height].  If unspecified, use size of root document element.
      */
     Context.prototype.setSize = function setSize(size) {
+        if (this._size == size) return;
         this._size[0] = size[0];
         this._size[1] = size[1];
-        this._node.size.trigger('resize', size);
+
+        this._node.size._eventInput.trigger('resize', size);
+        this.emit('resize', size);
     };
 
     /**
