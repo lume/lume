@@ -53,7 +53,7 @@ define(function(require, exports, module) {
     var eventHandler = new EventHandler();
     var dirty = true;
     var dirtyLock = 0;
-    var sizeStream = new SizeStream();
+    var size = new EventHandler();
 
     var options = {
         containerType: 'div',
@@ -104,8 +104,6 @@ define(function(require, exports, module) {
         eventHandler.emit('tick');
         for (var i = 0; i < tickQueue.length; i++) tickQueue[i]();
 
-        while (nextTickQueue.length) (nextTickQueue.shift())();
-
         // post tick is for resolving larger components from their incoming signals
         while (postTickQueue.length) (postTickQueue.shift())();
 
@@ -126,8 +124,7 @@ define(function(require, exports, module) {
     rafId = window.requestAnimationFrame(loop);
 
     function handleResize() {
-        var size = [window.innerWidth, window.innerHeight];
-        sizeStream.trigger('resize', size);
+        size.trigger('resize', [window.innerWidth, window.innerHeight]);
     }
     window.addEventListener('resize', handleResize, false);
 
@@ -287,7 +284,7 @@ define(function(require, exports, module) {
      * @return {FamousContext} provided context
      */
     Engine.registerContext = function registerContext(context) {
-        context.subscribe(sizeStream);
+        context.size.subscribe(size);
         contexts.push(context);
         return context;
     };
@@ -303,7 +300,7 @@ define(function(require, exports, module) {
      */
     Engine.deregisterContext = function deregisterContext(context) {
         var i = contexts.indexOf(context);
-        context.unsubscribe(sizeStream);
+        context.size.unsubscribe(size);
         if (i >= 0) contexts.splice(i, 1);
     };
 
@@ -326,7 +323,6 @@ define(function(require, exports, module) {
 
     Engine.subscribe(Clock);
     Engine.subscribe(dirtyObjects);
-    sizeStream.subscribe(eventHandler);
 
     module.exports = Engine;
 });
