@@ -9,7 +9,7 @@
 /* Modified work copyright © 2015 David Valdman */
 
 define(function(require, exports, module) {
-    var RenderNode = require('famous/core/nodes/SceneGraphNode');
+    var SceneGraphNode = require('famous/core/nodes/SceneGraphNode');
     var SpecManager = require('famous/core/SpecManager');
     var Controller = require('famous/core/Controller');
     var LayoutNode = require('famous/core/nodes/LayoutNode');
@@ -18,6 +18,7 @@ define(function(require, exports, module) {
     var ResizeStream = require('famous/streams/ResizeStream');
     var SizeStream = require('famous/streams/SizeStream');
     var Transitionable = require('famous/core/Transitionable');
+    var EventHandler = require('famous/core/EventHandler');
 
     /**
      * @class View
@@ -32,7 +33,7 @@ define(function(require, exports, module) {
         events : null,
         constructor : function View(){
             this._modifier = null;
-            this._node = new RenderNode();
+            this._node = new SceneGraphNode();
 
             this._isView = true;
             this.size = new SizeStream();
@@ -40,7 +41,6 @@ define(function(require, exports, module) {
             Controller.apply(this, arguments);
 
             this._eventInput.subscribe(this._optionsManager);
-            this._eventInput.subscribe(this.size, ['resize']);
 
             this._eventInput.on('start', function(parentSpec){
                 this._node.trigger('start', parentSpec);
@@ -52,18 +52,13 @@ define(function(require, exports, module) {
                 this._eventOutput.emit('end', parentSpec);
             }.bind(this));
 
-            this._eventInput.on('resize', function(size){
-                this._node.size.trigger('resize', size);
-                this._eventOutput.emit('resize', size);
-            }.bind(this));
-
             this._node.size.subscribe(this.size);
         },
         set : function set(){
-            return RenderNode.prototype.set.apply(this._node, arguments);
+            return SceneGraphNode.prototype.set.apply(this._node, arguments);
         },
         add : function add(){
-            return RenderNode.prototype.add.apply(this._node, arguments);
+            return SceneGraphNode.prototype.add.apply(this._node, arguments);
         },
         getSize : function getSize(){
             //TODO: if given true size, then pass down to this._node.getSize
@@ -91,7 +86,7 @@ define(function(require, exports, module) {
             return this;
         },
         commit : function(allocator){
-            RenderNode.prototype.commit.apply(this._node, arguments);
+            SceneGraphNode.prototype.commit.apply(this._node, arguments);
         }
     });
 
