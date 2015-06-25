@@ -113,11 +113,12 @@ define(function(require, exports, module) {
 
             for (var i = 0; i < this.nodes.length; i++){
                 var node = this.nodes[i];
+
                 var layoutNode = new LayoutNode({
                     transform : this.transforms.pluck(i)
                 });
 
-                var sizeNode = new LayoutNode({
+                var sizeNode = new SizeNode({
                     size : this.sizes.pluck(i)
                 });
 
