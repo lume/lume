@@ -46,7 +46,7 @@ define(function(require, exports, module) {
         this.endStateQueue = [];
         this.callbackQueue = [];
 
-        this.state = start || 0;
+        this.state = undefined;
         this.velocity = undefined;
         this._callback = undefined;
         this._engineInstance = null;
@@ -55,15 +55,14 @@ define(function(require, exports, module) {
         this._dirty = false;
 
         this._eventOutput.on('start', function(){
-            Clock.trigger('dirty');
+            Clock.register(this);
         });
 
         this._eventOutput.on('end', function(){
-            Clock.trigger('clean');
+            Clock.unregister(this);
         });
 
         if (start !== undefined){
-            //TODO: postTick or nextTick (preTick)?
             nextTickQueue.push(function(){
                 // make sure didn't set in same tick as defined
                 if (this._state == STATE.NONE || this._state == STATE.END)
@@ -141,6 +140,7 @@ define(function(require, exports, module) {
      *    completion (t=1)
      */
     Transitionable.prototype.set = function set(endState, transition, callback) {
+        // TODO: short circuit check
         if (!transition) {
             switch (this._state){
                 case STATE.NONE:
@@ -160,12 +160,10 @@ define(function(require, exports, module) {
             if (!this._dirty) {
                 this._dirty = true;
                 this._state = STATE.START;
-                Clock.register(this);
                 this.emit('start', this.state);
                 dirtyQueue.push(function(){
                     this._dirty = false;
                     this._state = STATE.END;
-                    Clock.unregister(this);
                     this.emit('end', this.state);
                 }.bind(this));
             }
@@ -177,7 +175,6 @@ define(function(require, exports, module) {
         if (this.isActive()) this.halt();
         else {
             this._state = STATE.START;
-            Clock.register(this);
             this.emit('start', this.state);
         }
 
@@ -215,18 +212,19 @@ define(function(require, exports, module) {
         this.state = state;
 
         if (this._engineInstance && !this._engineInstance.isActive()){
-            dirtyQueue.push(function(){
-                this._state = STATE.END;
+//            nextTickQueue.push(function(){
+                dirtyQueue.push(function(){
+                    this._state = STATE.END;
 
-                Clock.unregister(this);
-                this._eventOutput.emit('end', this.state);
+                    this._eventOutput.emit('end', this.state);
 
-                if (this._callback) {
-                    var callback = this._callback;
-                    this._callback = undefined;
-                    callback();
-                }
-            }.bind(this));
+                    if (this._callback) {
+                        var callback = this._callback;
+                        this._callback = undefined;
+                        callback();
+                    }
+                }.bind(this));
+//            }.bind(this));
         }
     };
 

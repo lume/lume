@@ -30,21 +30,21 @@ define(function(require, exports, module) {
     eventInput.on('start', function(data){
         var stream = data.stream;
         Clock.register(stream);
-        eventOutput.emit('dirty');
     }.bind(this));
 
     eventInput.on('end', function(data){
         var stream = data.stream;
         Clock.unregister(stream);
-        eventOutput.emit('clean');
     }.bind(this));
 
     Clock.register = function(stream){
         add.push(stream);
+        eventOutput.emit('dirty');
     };
 
     Clock.unregister = function(stream){
         sub.push(stream);
+        eventOutput.emit('clean');
     };
 
     Clock.subscribe = function(stream){
