@@ -97,7 +97,7 @@ define(function(require, exports, module) {
                             }.bind(this));
                         }
                         else {
-                            tickQueue.push(function(){
+                            nextTickQueue.push(function(){
                                 this._eventInput.emit(EVENTS.UPDATE, data);
                             }.bind(this));
                         }
@@ -193,7 +193,7 @@ define(function(require, exports, module) {
                             }.bind(mergedStream));
                         }
                         else {
-                            tickQueue.push(function(){
+                            nextTickQueue.push(function(){
                                 this._eventInput.emit(EVENTS.UPDATE, mergedData);
                             }.bind(mergedStream));
                         }
