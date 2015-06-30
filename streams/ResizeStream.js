@@ -10,9 +10,12 @@ define(function(require, exports, module) {
     var EVENTS = {
         START : 'start',
         UPDATE : 'update',
-        END : 'end',
-        RESIZE : 'resize'
+        RESIZE : 'resize',
+        END : 'end'
     };
+
+    //only listens to resize
+    //emits SUE + resize
 
     function ResizeStream(options){
         options = options || {};
@@ -22,129 +25,46 @@ define(function(require, exports, module) {
         EventHandler.setInputHandler(this, this._eventInput);
         EventHandler.setOutputHandler(this, this._eventOutput);
 
-        var count = 0;
-        var total = 0;
+        //batch these?
 
-        var hasStarted = false;
-        var hasEnded = false;
-        var hasUpdated = false;
+        if (options.resize)
+            this._eventInput.on(EVENTS.RESIZE, options.resize.bind(this));
+        else this._eventInput.on(EVENTS.RESIZE, function(data){
+            this._eventOutput.emit(EVENTS.RESIZE, data)
+        }.bind(this));
 
-        if (options.start)
-            this._eventInput.on(EVENTS.START, options.start.bind(this));
-        else {
-            this._eventInput.on(EVENTS.START, function(data){
-                hasStarted = true;
+        this._eventInput.on(EVENTS.START, function(data){
+            this._eventOutput.emit(EVENTS.START, data);
+        }.bind(this));
 
-                count++;
-                total++;
+        this._eventInput.on(EVENTS.UPDATE, function(data){
+            this._eventOutput.emit(EVENTS.RESIZE, data);
+        }.bind(this));
 
-                nextTickQueue.push(function(){
-                    if (count == total && hasUpdated == false && hasEnded == false){
-                        this.emit(EVENTS.START, data);
-                        count = 0;
-                    }
-                }.bind(this));
-            }.bind(this));
-        }
-
-        if (options.update)
-            this._eventInput.on(EVENTS.UPDATE, options.update.bind(this));
-        else {
-            this._eventInput.on(EVENTS.UPDATE, function(data){
-                hasUpdated = true;
-                count++;
-
-                postTickQueue.push(function(){
-                    this.emit(EVENTS.UPDATE, data);
-//                    this.emit(EVENTS.RESIZE, data);
-                    count = 0;
-                }.bind(this));
-            }.bind(this));
-        }
-
-        if (options.end)
-            this._eventInput.on(EVENTS.END, options.end.bind(this));
-        else {
-            this._eventInput.on(EVENTS.END, function(data){
-                hasEnded = true;
-
-                total--;
-
-                dirtyQueue.push(function(){
-                    if (total === 0 && hasStarted == true){
-                        this.emit(EVENTS.END, data);
-                        count = 0;
-                        hasEnded = false;
-                        hasStarted = false;
-                        hasUpdated = false;
-                    }
-                }.bind(this))
-            }.bind(this));
-        }
-
-//        if (options.resize)
-//            this._eventInput.on(EVENTS.RESIZE, options.resize.bind(this));
-//        else {
-//            this._eventInput.on(EVENTS.RESIZE, function(data){
-//                this._eventOutput.emit(EVENTS.RESIZE, data);
-//            }.bind(this));
-//        }
+        this._eventInput.on(EVENTS.END, function(data){
+            this._eventOutput.emit(EVENTS.END, data);
+        }.bind(this));
     }
 
     ResizeStream.prototype = Object.create(Stream.prototype);
     ResizeStream.prototype.constructor = ResizeStream;
 
     ResizeStream.merge = function(streamObj){
-        var count = 0;
-        var total = 0;
-
-        var hasStarted = false;
-        var hasUpdated = false;
-        var hasEnded = false;
+        var hasResized = false;
 
         var mergedStream = new ResizeStream({
-            start : function(){
-                hasStarted = true;
-
-                count++;
-                total++;
-
+            resize : function(){
                 nextTickQueue.push(function(){
-                    if (count == total && hasUpdated == false && hasEnded == false){
-                        this.emit(EVENTS.START, mergedData);
-                        count = 0;
+                    if (!hasResized){
+                        this.emit(EVENTS.RESIZE, mergedData);
+                        hasResized = true;
                     }
                 }.bind(mergedStream));
-            },
-            update : function(){
-                count++;
-                hasUpdated = true;
-                postTickQueue.push(function(){
-                    if (count == total) {
-                        mergedStream.emit(EVENTS.UPDATE, mergedData);
-//                        mergedStream.trigger(EVENTS.RESIZE, mergedData);
-                        count = 0;
-                    }
-                }.bind(mergedStream));
-            },
-            end : function(){
-                hasEnded = true;
-
-                total--;
 
                 dirtyQueue.push(function(){
-                    if (total === 0 && hasStarted == true){
-                        this.emit(EVENTS.END, mergedData);
-                        count = 0;
-                        hasEnded = false;
-                        hasStarted = false;
-                        hasUpdated = false;
-                    }
-                }.bind(mergedStream))
-            },
-//            resize : function(){
-//                mergedStream.emit(EVENTS.RESIZE, mergedData);
-//            }
+                    hasResized = false;
+                });
+            }.bind(this)
         });
 
         var mergedData = (streamObj instanceof Array) ? [] : {};
@@ -153,7 +73,8 @@ define(function(require, exports, module) {
             mergedData[key] = undefined;
             var mapper = (function(key){
                 return new EventMapper(function(data){
-                    return mergedData[key] = data;
+                    mergedData[key] = data;
+                    return mergedData;
                 });
             })(key);
 

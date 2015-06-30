@@ -5,13 +5,15 @@ define(function(require, exports, module) {
     var EventSplitter = require('famous/events/EventSplitter');
 
     var nextTickQueue = require('famous/core/queues/nextTickQueue');
+    var tickQueue = require('famous/core/queues/tickQueue');
     var postTickQueue = require('famous/core/queues/postTickQueue');
     var dirtyQueue = require('famous/core/queues/dirtyQueue');
 
     var EVENTS = {
         START : 'start',
         UPDATE : 'update',
-        END : 'end'
+        END : 'end',
+        RESIZE : 'resize'
     };
 
     function Stream(options){
@@ -43,7 +45,6 @@ define(function(require, exports, module) {
                         this.emit(EVENTS.START, data);
                         count = 0;
                     }
-
                 }.bind(this));
             }.bind(this));
         }
@@ -80,6 +81,30 @@ define(function(require, exports, module) {
                     }
                 }.bind(this))
             }.bind(this));
+        }
+
+        if (options.resize){
+            this._eventInput.on(EVENTS.RESIZE, options.resize.bind(this));
+        }
+        else {
+            this._eventInput.on(EVENTS.RESIZE, function(data){
+//                nextTickQueue.push(function(data){
+//                    if (count == total) {
+                        if (hasStarted == false){
+                            this._eventInput.emit(EVENTS.START, data);
+                            dirtyQueue.push(function(){
+                                this._eventInput.emit(EVENTS.END, data);
+                            }.bind(this));
+                        }
+                        else {
+                            tickQueue.push(function(){
+                                this._eventInput.emit(EVENTS.UPDATE, data);
+                            }.bind(this));
+                        }
+//                        count = 0;
+//                    }
+//                }.bind(this));
+            }.bind(this))
         }
     }
 
@@ -138,7 +163,7 @@ define(function(require, exports, module) {
 
                 postTickQueue.push(function(){
                     if (count == total) {
-                        mergedStream.emit(EVENTS.UPDATE, mergedData);
+                        this.emit(EVENTS.UPDATE, mergedData);
                         count = 0;
                     }
                 }.bind(mergedStream));
@@ -157,6 +182,24 @@ define(function(require, exports, module) {
                         hasUpdated = false;
                     }
                 }.bind(mergedStream))
+            },
+            resize : function(){
+//                nextTickQueue.push(function(){
+//                    if (count == total) {
+                        if (hasStarted == false){
+                            mergedStream._eventInput.emit(EVENTS.START, mergedData);
+                            dirtyQueue.push(function(){
+                                this._eventInput.emit(EVENTS.END, mergedData);
+                            }.bind(mergedStream));
+                        }
+                        else {
+                            tickQueue.push(function(){
+                                this._eventInput.emit(EVENTS.UPDATE, mergedData);
+                            }.bind(mergedStream));
+                        }
+//                        count = 0;
+//                    }
+//                }.bind(mergedStream));
             }
         });
 
@@ -166,7 +209,8 @@ define(function(require, exports, module) {
             mergedData[key] = undefined;
             var mapper = (function(key){
                 return new EventMapper(function(data){
-                    return mergedData[key] = data;
+                    mergedData[key] = data;
+                    return mergedData;
                 });
             })(key);
 

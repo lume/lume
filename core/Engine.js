@@ -98,9 +98,11 @@ define(function(require, exports, module) {
         frameTime = currentTime - lastTime;
         lastTime = currentTime;
 
+//        console.log('next')
         while (nextTickQueue.length) (nextTickQueue.shift())();
 
         // tick signals base event flow coming in
+//        console.log('tick')
         eventHandler.emit('tick');
         for (var i = 0; i < tickQueue.length; i++) tickQueue[i]();
 
@@ -124,7 +126,14 @@ define(function(require, exports, module) {
     rafId = window.requestAnimationFrame(loop);
 
     function handleResize() {
-        size.trigger('resize', [window.innerWidth, window.innerHeight]);
+        var windowSize = [window.innerWidth, window.innerHeight];
+        size.trigger('resize', windowSize);
+        eventHandler.emit('resize', windowSize);
+
+        eventHandler.trigger('dirty');
+        dirtyQueue.push(function(){
+            eventHandler.trigger('clean');
+        });
     }
     window.addEventListener('resize', handleResize, false);
 
@@ -263,6 +272,7 @@ define(function(require, exports, module) {
         if (needMountContainer) {
             document.body.appendChild(el);
             nextTickQueue.push(function(){
+                // necessary?
                 handleResize();
                 context.trigger('start');
             });

@@ -23,6 +23,8 @@ define(function(require, exports, module) {
 
         //TODO: last resize should win if multiple are fired
         this._eventInput.on('resize', function(size){
+            this.emit('resize', size);
+
             if (!resizeFired) {
                 this.emit('start', size);
 
@@ -35,7 +37,19 @@ define(function(require, exports, module) {
             }
         }.bind(this));
 
-        this._eventOutput.subscribe(this._eventInput, ['start', 'update', 'end']);
+//        this._eventInput.on('start', function(size){
+//            this._eventInput.trigger('resize', size)
+//        }.bind(this));
+//
+//        this._eventInput.on('update', function(size){
+//            this._eventInput.trigger('resize', size)
+//        }.bind(this));
+//
+//        this._eventInput.on('end', function(size){
+//            this._eventInput.trigger('resize', size)
+//        }.bind(this));
+
+        this._eventOutput.subscribe(this._eventInput);
     }
 
     SizeStream.prototype = Object.create(Stream.prototype);

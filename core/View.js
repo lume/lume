@@ -26,6 +26,7 @@ define(function(require, exports, module) {
      */
 
     var View = Controller.extend({
+        _isView : true,
         defaults : {
             size : null,
             origin : null
@@ -35,23 +36,12 @@ define(function(require, exports, module) {
             this._modifier = null;
             this._node = new SceneGraphNode();
 
-            this._isView = true;
-            this.size = new SizeStream();
+            this.size = new EventHandler();
 
             Controller.apply(this, arguments);
 
             this._eventInput.subscribe(this._optionsManager);
-
-            this._eventInput.on('start', function(parentSpec){
-                this._node.trigger('start', parentSpec);
-                this._eventOutput.emit('start', parentSpec);
-            }.bind(this));
-
-            this._eventInput.on('end', function(parentSpec){
-                this._node.trigger('end', parentSpec);
-                this._eventOutput.emit('end', parentSpec);
-            }.bind(this));
-
+            this._node.subscribe(this._eventInput);
             this._node.size.subscribe(this.size);
         },
         set : function set(){

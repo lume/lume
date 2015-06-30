@@ -131,7 +131,7 @@ define(function(require, exports, module) {
         this._size[0] = size[0];
         this._size[1] = size[1];
 
-        this._node.size._eventInput.trigger('resize', size);
+        this._node.size.trigger('resize', size);
         this.emit('resize', size);
     };
 
