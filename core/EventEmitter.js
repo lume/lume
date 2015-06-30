@@ -58,7 +58,7 @@ define(function(require, exports, module) {
    EventEmitter.prototype.on = function on(type, handler) {
         if (!(type in this.listeners)) this.listeners[type] = [];
         var index = this.listeners[type].indexOf(handler);
-        if (index < 0) this.listeners[type].push(handler);
+        if (index < 0) this.listeners[type].unshift(handler);
     };
 
    /**
