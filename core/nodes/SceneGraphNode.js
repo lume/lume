@@ -120,6 +120,7 @@ define(function(require, exports, module) {
         for (var i = 0; i < this.objects.length; i++){
             var object = this.objects[i];
             var spec = this.specs[i].get();
+
             object.commit(spec, allocator);
 
             var dirtyIndex = this.dirtyObjects.indexOf(object);

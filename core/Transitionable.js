@@ -201,6 +201,9 @@ define(function(require, exports, module) {
     };
 
     Transitionable.prototype.update = function update(){
+        // hack for next tick ending
+        if (this._state === STATE.END) return;
+
         this._state = STATE.UPDATE;
 
         if (!this._engineInstance) return;
@@ -212,10 +215,10 @@ define(function(require, exports, module) {
         this.state = state;
 
         if (this._engineInstance && !this._engineInstance.isActive()){
-//            nextTickQueue.push(function(){
+            //TODO: end on same tick?
+            nextTickQueue.push(function(){
+                this._state = STATE.END;
                 dirtyQueue.push(function(){
-                    this._state = STATE.END;
-
                     this._eventOutput.emit('end', this.state);
 
                     if (this._callback) {
@@ -224,7 +227,7 @@ define(function(require, exports, module) {
                         callback();
                     }
                 }.bind(this));
-//            }.bind(this));
+            }.bind(this));
         }
     };
 

@@ -6,6 +6,7 @@ define(function(require, exports, module) {
     var nextTickQueue = require('famous/core/queues/nextTickQueue');
     var postTickQueue = require('famous/core/queues/postTickQueue');
     var dirtyQueue = require('famous/core/queues/dirtyQueue');
+    var State = require('famous/core/SUE');
 
     var EVENTS = {
         START : 'start',
@@ -18,32 +19,37 @@ define(function(require, exports, module) {
     //emits SUE + resize
 
     function ResizeStream(options){
-        options = options || {};
-
         this._eventInput = new EventHandler();
         this._eventOutput = new EventHandler();
         EventHandler.setInputHandler(this, this._eventInput);
         EventHandler.setOutputHandler(this, this._eventOutput);
 
-        //batch these?
+        //TODO: batch these?
 
-        if (options.resize)
+        if (!options){
+            this._eventOutput.subscribe(this._eventInput);
+        }
+        else {
             this._eventInput.on(EVENTS.RESIZE, options.resize.bind(this));
-        else this._eventInput.on(EVENTS.RESIZE, function(data){
-            this._eventOutput.emit(EVENTS.RESIZE, data)
-        }.bind(this));
 
-        this._eventInput.on(EVENTS.START, function(data){
-            this._eventOutput.emit(EVENTS.START, data);
-        }.bind(this));
+            this._eventInput.on(EVENTS.START, function(data){
+                nextTickQueue.push(function() {
+                    this._eventOutput.emit(EVENTS.START, data);
+                }.bind(this));
+            }.bind(this));
 
-        this._eventInput.on(EVENTS.UPDATE, function(data){
-            this._eventOutput.emit(EVENTS.RESIZE, data);
-        }.bind(this));
+            this._eventInput.on(EVENTS.UPDATE, function(data){
+                postTickQueue.push(function() {
+                    options.resize.call(this, data);
+                }.bind(this))
+            }.bind(this));
 
-        this._eventInput.on(EVENTS.END, function(data){
-            this._eventOutput.emit(EVENTS.END, data);
-        }.bind(this));
+            this._eventInput.on(EVENTS.END, function(data){
+                dirtyQueue.push(function(){
+                    this._eventOutput.emit(EVENTS.END, data);
+                }.bind(this));
+            }.bind(this));
+        }
     }
 
     ResizeStream.prototype = Object.create(Stream.prototype);
@@ -54,16 +60,21 @@ define(function(require, exports, module) {
 
         var mergedStream = new ResizeStream({
             resize : function(){
-                nextTickQueue.push(function(){
-                    if (!hasResized){
-                        this.emit(EVENTS.RESIZE, mergedData);
-                        hasResized = true;
-                    }
-                }.bind(mergedStream));
+                var state = State.get();
+                var queue;
+                if (state == State.STATES.START) queue = nextTickQueue;
+                if (state == State.STATES.UPDATE) queue = postTickQueue;
 
-                dirtyQueue.push(function(){
-                    hasResized = false;
-                });
+                queue.push(function(){
+//                    if (!hasResized){
+                        mergedStream.emit(EVENTS.RESIZE, mergedData);
+                        hasResized = true;
+//                    }
+
+//                    dirtyQueue.push(function(){
+//                        hasResized = false;
+//                    });
+                }.bind(mergedStream));
             }.bind(this)
         });
 

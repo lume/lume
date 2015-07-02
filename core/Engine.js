@@ -36,6 +36,7 @@ define(function(require, exports, module) {
     var nextTickQueue = require('./queues/nextTickQueue');
     var dirtyQueue = require('./queues/dirtyQueue');
     var postTickQueue = require('./queues/postTickQueue');
+    var State = require('famous/core/SUE');
     var tickQueue = require('./queues/tickQueue');
     var Stream = require('famous/streams/Stream');
 
@@ -53,6 +54,7 @@ define(function(require, exports, module) {
     var eventHandler = new EventHandler();
     var dirty = true;
     var dirtyLock = 0;
+    var listenOnTick = false;
     var size = new EventHandler();
 
     var options = {
@@ -98,21 +100,27 @@ define(function(require, exports, module) {
         frameTime = currentTime - lastTime;
         lastTime = currentTime;
 
-//        console.log('next')
+        State.set(State.STATES.START);
+
         while (nextTickQueue.length) (nextTickQueue.shift())();
 
         // tick signals base event flow coming in
-//        console.log('tick')
-        eventHandler.emit('tick');
+        State.set(State.STATES.UPDATE);
+
+        if (listenOnTick) eventHandler.emit('tick');
+        
         for (var i = 0; i < tickQueue.length; i++) tickQueue[i]();
 
         // post tick is for resolving larger components from their incoming signals
         while (postTickQueue.length) (postTickQueue.shift())();
 
-        for (var i = 0; i < contexts.length; i++)
-            contexts[i].commit();
+        State.set(State.STATES.END);
+
+        for (var i = 0; i < contexts.length; i++) contexts[i].commit();
 
         while (dirtyQueue.length) (dirtyQueue.shift())();
+
+        State.set(State.STATES.START);
     };
 
     // engage requestAnimationFrame
@@ -166,12 +174,22 @@ define(function(require, exports, module) {
      */
     EventHandler.setInputHandler(Engine, eventHandler);
     EventHandler.setOutputHandler(Engine, eventHandler);
+
     Engine.on = function(type, handler){
+        if (type === 'tick') listenOnTick = true;
         if (!(type in eventForwarders)) {
             eventForwarders[type] = eventHandler.emit.bind(eventHandler, type);
             document.addEventListener(type, eventForwarders[type]);
         }
         return eventHandler.on(type, handler);
+    };
+
+    Engine.off = function(type, handler){
+        if (type === 'tick') listenOnTick = false;
+        if (!(type in eventForwarders)) {
+            document.removeEventListener(type, eventForwarders[type]);
+        }
+        eventHandler.off(type, handler);
     };
 
     eventHandler.on('dirty', function(){
@@ -271,10 +289,11 @@ define(function(require, exports, module) {
         
         if (needMountContainer) {
             document.body.appendChild(el);
+
             nextTickQueue.push(function(){
-                // necessary?
                 handleResize();
                 context.trigger('start');
+
             });
 
             dirtyQueue.push(function(){
