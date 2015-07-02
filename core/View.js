@@ -10,13 +10,8 @@
 
 define(function(require, exports, module) {
     var SceneGraphNode = require('famous/core/nodes/SceneGraphNode');
-    var SpecManager = require('famous/core/SpecManager');
     var Controller = require('famous/core/Controller');
     var LayoutNode = require('famous/core/nodes/LayoutNode');
-    var Stream = require('famous/streams/Stream');
-    var Timer = require('famous/utilities/Timer');
-    var ResizeStream = require('famous/streams/ResizeStream');
-    var SizeStream = require('famous/streams/SizeStream');
     var Transitionable = require('famous/core/Transitionable');
     var EventHandler = require('famous/core/EventHandler');
 

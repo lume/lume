@@ -30,7 +30,6 @@ define(function(require, exports, module) {
     var OptionsManager = require('./OptionsManager');
     var Clock = require('famous/core/Clock');
     var ResizeStream = require('famous/streams/ResizeStream');
-    var SizeStream = require('famous/streams/SizeStream');
 
     var dirtyObjects = require('famous/core/dirtyObjects');
     var nextTickQueue = require('./queues/nextTickQueue');

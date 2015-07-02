@@ -6,7 +6,6 @@ define(function(require, exports, module) {
     var Stream = require('famous/streams/Stream');
     var Spec = require('famous/core/Spec');
     var EventMapper = require('famous/events/EventMapper');
-    var SizeStream = require('famous/streams/SizeStream');
     var ResizeStream = require('famous/streams/ResizeStream');
     var SizeNode = require('famous/core/nodes/SizeNode');
     var LayoutNode = require('famous/core/nodes/LayoutNode');

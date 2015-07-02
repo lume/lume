@@ -16,7 +16,6 @@ define(function(require, exports, module) {
     var Transitionable = require('./Transitionable');
     var dirtyQueue = require('famous/core/queues/dirtyQueue');
     var ResizeStream = require('famous/streams/ResizeStream');
-    var SizeStream = require('famous/streams/SizeStream');
     var Stream = require('famous/streams/Stream');
     var EventMapper = require('famous/events/EventMapper');
 
