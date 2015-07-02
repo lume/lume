@@ -19,17 +19,13 @@ define(function(require, exports, module) {
     //emits SUE + resize
 
     function ResizeStream(options){
-        this._eventInput = new EventHandler();
         this._eventOutput = new EventHandler();
-        EventHandler.setInputHandler(this, this._eventInput);
         EventHandler.setOutputHandler(this, this._eventOutput);
 
-        //TODO: batch these?
+        if (options){
+            this._eventInput = new EventHandler();
+            EventHandler.setInputHandler(this, this._eventInput);
 
-        if (!options){
-            this._eventOutput.subscribe(this._eventInput);
-        }
-        else {
             this._eventInput.on(EVENTS.RESIZE, options.resize.bind(this));
 
             this._eventInput.on(EVENTS.START, function(data){
@@ -50,30 +46,22 @@ define(function(require, exports, module) {
                 }.bind(this));
             }.bind(this));
         }
+        else EventHandler.setInputHandler(this, this._eventOutput);
     }
 
     ResizeStream.prototype = Object.create(Stream.prototype);
     ResizeStream.prototype.constructor = ResizeStream;
 
     ResizeStream.merge = function(streamObj){
-        var hasResized = false;
-
         var mergedStream = new ResizeStream({
             resize : function(){
                 var state = State.get();
                 var queue;
                 if (state == State.STATES.START) queue = nextTickQueue;
-                if (state == State.STATES.UPDATE) queue = postTickQueue;
+                else if (state == State.STATES.UPDATE) queue = postTickQueue;
 
                 queue.push(function(){
-//                    if (!hasResized){
-                        mergedStream.emit(EVENTS.RESIZE, mergedData);
-                        hasResized = true;
-//                    }
-
-//                    dirtyQueue.push(function(){
-//                        hasResized = false;
-//                    });
+                    mergedStream.emit(EVENTS.RESIZE, mergedData);
                 }.bind(mergedStream));
             }.bind(this)
         });
@@ -100,10 +88,10 @@ define(function(require, exports, module) {
         return mergedStream;
     };
 
-    ResizeStream.lift = function(fn, streams, queue){
+    ResizeStream.lift = function(fn, streams){
         //TODO: fix comma separated arguments
         var mergedStream = (streams instanceof Array)
-            ? ResizeStream.merge(streams, queue)
+            ? ResizeStream.merge(streams)
             : ResizeStream.merge.apply(null, Array.prototype.splice.call(arguments, 1));
 
         var mappedStream = new EventMapper(function(data){

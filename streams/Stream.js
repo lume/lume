@@ -5,7 +5,6 @@ define(function(require, exports, module) {
     var EventSplitter = require('famous/events/EventSplitter');
 
     var nextTickQueue = require('famous/core/queues/nextTickQueue');
-    var tickQueue = require('famous/core/queues/tickQueue');
     var postTickQueue = require('famous/core/queues/postTickQueue');
     var dirtyQueue = require('famous/core/queues/dirtyQueue');
     var State = require('famous/core/SUE');
@@ -84,15 +83,15 @@ define(function(require, exports, module) {
             }.bind(this));
         }
 
-        if (options.resize){
+        if (options.resize)
             this._eventInput.on(EVENTS.RESIZE, options.resize.bind(this));
-        }
         else {
             this._eventInput.on(EVENTS.RESIZE, function(data){
                 var state = State.get();
+
                 var queue;
                 if (state == State.STATES.START) queue = nextTickQueue;
-                if (state == State.STATES.UPDATE) queue = postTickQueue;
+                else if (state == State.STATES.UPDATE) queue = postTickQueue;
 
                 queue.push(function(){
                     if (hasStarted == false){
