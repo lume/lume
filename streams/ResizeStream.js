@@ -29,18 +29,18 @@ define(function(require, exports, module) {
             this._eventInput.on(EVENTS.RESIZE, options.resize.bind(this));
 
             this._eventInput.on(EVENTS.START, function(data){
-                nextTickQueue.push(function() {
+                nextTickQueue.push(function resizeStreamStart() {
                     this._eventOutput.emit(EVENTS.START, data);
                 }.bind(this));
             }.bind(this));
 
             this._eventInput.on(EVENTS.UPDATE, function(data){
-                postTickQueue.push(function() {
+                postTickQueue.push(function resizeStreamResize() {
                     options.resize.call(this, data);
                 }.bind(this))
             }.bind(this));
 
-            this._eventInput.on(EVENTS.END, function(data){
+            this._eventInput.on(EVENTS.END, function resizeStreamEnd(data){
                 dirtyQueue.push(function(){
                     this._eventOutput.emit(EVENTS.END, data);
                 }.bind(this));
@@ -60,7 +60,7 @@ define(function(require, exports, module) {
                 if (state == State.STATES.START) queue = nextTickQueue;
                 else if (state == State.STATES.UPDATE) queue = postTickQueue;
 
-                queue.push(function(){
+                queue.push(function mergedResizeStreamResize(){
                     mergedStream.emit(EVENTS.RESIZE, mergedData);
                 }.bind(mergedStream));
             }.bind(this)

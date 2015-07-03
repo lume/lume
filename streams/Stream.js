@@ -40,7 +40,7 @@ define(function(require, exports, module) {
                 count++;
                 total++;
 
-                nextTickQueue.push(function(){
+                nextTickQueue.push(function streamStart(){
                     if (count == total && hasUpdated == false && hasEnded == false){
                         this.emit(EVENTS.START, data);
                         count = 0;
@@ -56,7 +56,7 @@ define(function(require, exports, module) {
                 hasUpdated = true;
                 count++;
 
-                postTickQueue.push(function(){
+                postTickQueue.push(function streamUpdate(){
                     this.emit(EVENTS.UPDATE, data);
                     count = 0;
                 }.bind(this));
@@ -71,7 +71,7 @@ define(function(require, exports, module) {
 
                 total--;
 
-                dirtyQueue.push(function(){
+                dirtyQueue.push(function streamEnd(){
                     if (total === 0 && hasStarted == true){
                         this.emit(EVENTS.END, data);
                         count = 0;
@@ -93,15 +93,15 @@ define(function(require, exports, module) {
                 if (state == State.STATES.START) queue = nextTickQueue;
                 else if (state == State.STATES.UPDATE) queue = postTickQueue;
 
-                queue.push(function(){
+                queue.push(function streamResize(){
                     if (hasStarted == false){
                         this.trigger(EVENTS.START, data);
-                        dirtyQueue.push(function(){
+                        dirtyQueue.push(function streamResizeEnd(){
                             this.trigger(EVENTS.END, data);
                         }.bind(this));
                     }
                     else {
-                        nextTickQueue.push(function(){
+                        postTickQueue.push(function streamResizeUpdate(){
                             this.trigger(EVENTS.UPDATE, data);
                         }.bind(this));
                     }
@@ -153,7 +153,7 @@ define(function(require, exports, module) {
                 count++;
                 total++;
 
-                nextTickQueue.push(function(){
+                nextTickQueue.push(function mergedStreamStart(){
                     if (count == total && hasUpdated == false && hasEnded == false){
                         this.emit(EVENTS.START, mergedData);
                         count = 0;
@@ -164,7 +164,7 @@ define(function(require, exports, module) {
                 hasUpdated = true;
                 count++;
 
-                postTickQueue.push(function(){
+                postTickQueue.push(function mergedStreamUpdate(){
                     if (count == total) {
                         this.emit(EVENTS.UPDATE, mergedData);
                         count = 0;
@@ -176,7 +176,7 @@ define(function(require, exports, module) {
 
                 total--;
 
-                dirtyQueue.push(function(){
+                dirtyQueue.push(function mergedStreamEnd(){
                     if (total === 0 && hasStarted == true){
                         this.emit(EVENTS.END, mergedData);
                         count = 0;
@@ -192,15 +192,15 @@ define(function(require, exports, module) {
                 if (state == State.STATES.START) queue = nextTickQueue;
                 if (state == State.STATES.UPDATE) queue = postTickQueue;
 
-                queue.push(function(){
+                queue.push(function mergedStreamResize(){
                     if (hasStarted == false){
                         mergedStream.trigger(EVENTS.START, mergedData);
-                        dirtyQueue.push(function(){
+                        dirtyQueue.push(function mergedStreamResizeEnd(){
                             this.trigger(EVENTS.END, mergedData);
                         }.bind(mergedStream));
                     }
                     else {
-                        postTickQueue.push(function(){
+                        postTickQueue.push(function mergedStreamResizeUpdate(){
                             this.trigger(EVENTS.UPDATE, mergedData);
                         }.bind(mergedStream));
                     }
