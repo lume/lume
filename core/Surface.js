@@ -48,7 +48,6 @@ define(function(require, exports, module) {
         this._attributesDirty = true;
         this._sizeDirty = true;
         this._contentDirty = true;
-        this._trueSizeCheck = false;
         this._dirty = false;
 
         this.classList = [];
@@ -382,20 +381,20 @@ define(function(require, exports, module) {
         if (this._contentDirty) {
             this.deploy(target);
             this._contentDirty = false;
-            this._trueSizeCheck = true;
+            this._sizeDirty = true;
         }
 
         if (this._classesDirty) {
             _cleanupClasses.call(this, target);
             _applyClasses.call(this, target);
             this._classesDirty = false;
-            this._trueSizeCheck = true;
+            this._sizeDirty = true;
         }
 
         if (this._stylesDirty) {
             _applyStyles.call(this, target);
             this._stylesDirty = false;
-            this._trueSizeCheck = true;
+            this._sizeDirty = true;
         }
 
         if (this._attributesDirty) {

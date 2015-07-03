@@ -224,15 +224,10 @@ define(function(require, exports, module) {
         var size = spec.size;
 
         // check if passed in size is different from previous
-        if (!this._cachedSpecSize || _xyNotEquals(this._cachedSpecSize, size)){
+        if (!this._cachedSpecSize || _xyNotEquals(this._cachedSpecSize, size)) {
             this._cachedSpecSize = size;
             this._sizeDirty = true;
         }
-
-        // this will be false for a true-sized element after the first pass
-        // even though this._size != spec.size
-        var dirtyTrueSize = this._trueSizeCheck && this.size && (this.size[0] === true || this.size[1] === true);
-        if (dirtyTrueSize) this._sizeDirty = true;
 
         this._transformDirty = Transform.notEquals(this._transform, transform);
         this._opacityDirty = (this._opacity !== opacity);
@@ -265,11 +260,8 @@ define(function(require, exports, module) {
                 }
 
                 // flag to ping the DOM for the current element size
-                if (this._trueSizeCheck) {
-                    if (this.size[0] === true) this._size[0] = target.offsetWidth;
-                    if (this.size[1] === true) this._size[1] = target.offsetHeight;
-                    this._trueSizeCheck = false;
-                }
+                if (this.size[0] === true) this._size[0] = target.offsetWidth;
+                if (this.size[1] === true) this._size[1] = target.offsetHeight;
 
                 // take on numeric size values if available
                 if (typeof this.size[0] === 'number') this._size[0] = this.size[0];
@@ -290,8 +282,10 @@ define(function(require, exports, module) {
             _setOrigin(target, this._origin);
 
         if (this._transformDirty || this._originDirty || (this._sizeDirty && this._origin)) {
-            if (!(this._origin[0] === 0 && this._origin[1] === 0))
-                transform = Transform.thenMove(transform, [-this._size[0]*this._origin[0], -this._size[1]*this._origin[1], 0]);
+            if (!(this._origin[0] === 0 && this._origin[1] === 0)){
+                var originShift = [-this._size[0]*this._origin[0], -this._size[1]*this._origin[1], 0];
+                transform = Transform.thenMove(transform, originShift);
+            }
 
             _setTransform(target, transform);
 
