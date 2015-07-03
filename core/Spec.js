@@ -3,7 +3,6 @@ define(function(require, exports, module) {
 
     function Spec(){
         this.spec = {};
-        this.size = [];
 
         this._eventInput = new EventHandler();
         this._eventOutput = new EventHandler();
@@ -24,14 +23,9 @@ define(function(require, exports, module) {
             this.spec = spec;
             this.emit('end', this);
         }.bind(this));
-
-        this._eventInput.on('resize', function(size){
-            this.size = size;
-        }.bind(this));
     }
 
     Spec.prototype.get = function(){
-        this.spec.size = this.size;
         return this.spec;
     };
 

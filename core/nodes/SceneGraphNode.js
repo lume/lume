@@ -88,11 +88,8 @@ define(function(require, exports, module) {
             var spec = new Spec();
 
             spec.subscribe(this._eventInput);
-            spec.subscribe(this.size);
 
-//            if (object.__size){
-//                object.__size.subscribe(this.size);
-//            }
+            object.__size.subscribe(this.size);
 
             spec.on('start', function(spec){
                 this.objects.push(object);
