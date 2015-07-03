@@ -14,6 +14,7 @@ define(function(require, exports, module) {
     var dirtyQueue = require('famous/core/queues/dirtyQueue');
     var postTickQueue = require('famous/core/queues/postTickQueue');
     var nextTickQueue = require('famous/core/queues/nextTickQueue');
+    var ResizeStream = require('famous/streams/ResizeStream');
 
     /**
      * A base class for viewable content and event
@@ -52,6 +53,20 @@ define(function(require, exports, module) {
 
         this.classList = [];
         this._dirtyClasses = [];
+
+        var hasResized = false;
+        this.__size = new ResizeStream({
+            resize : function(size){
+                if (!hasResized){
+                    this.setSize(size);
+                    console.log(size);
+                }
+                hasResized = true;
+                dirtyQueue.push(function(){
+                    hasResized = false;
+                });
+            }.bind(this)
+        });
 
         if (options) this.setOptions(options);
     }
