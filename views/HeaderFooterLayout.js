@@ -46,7 +46,7 @@ define(function(require, exports, module) {
         //TODO: first header, then footer, then content
         addHeader : function(header){
             //TODO: create size stream within Surface
-            this.headerLength = header.__size.map(function(size){
+            this.headerLength = header.size.map(function(size){
                 return size[this.options.direction];
             }.bind(this));
 
@@ -59,7 +59,7 @@ define(function(require, exports, module) {
             this.add(sizeNode).add(header);
         },
         addFooter : function(footer){
-            this.footerLength = footer.__size.map(function(size){
+            this.footerLength = footer.size.map(function(size){
                 return size[this.options.direction];
             }.bind(this));
 
