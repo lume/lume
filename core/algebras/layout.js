@@ -1,20 +1,20 @@
 /* copyright © 2015 David Valdman */
 
 define(function(require, exports, module) {
-    var Transform = require('./Transform');
+    var Transform = require('famous/core/Transform');
 
-    function compose(layoutSpec, parentLayoutSpec, sizeSpec){
+    function compose(spec, parentSpec, size){
         var mergedSpec;
 
-        if (typeof layoutSpec == 'number') {
+        if (typeof spec == 'number') {
 
-            var transform = parentLayoutSpec.transform || Transform.identity;
-            var align = parentLayoutSpec.align || null;
-            var opacity = (parentLayoutSpec.opacity !== undefined) ? parentLayoutSpec.opacity : 1;
+            var transform = parentSpec.transform || Transform.identity;
+            var align = parentSpec.align || null;
+            var opacity = (parentSpec.opacity !== undefined) ? parentSpec.opacity : 1;
 
             if (align && (align[0] || align[1])) {
-                var nextSizeTransform = parentLayoutSpec.nextSizeTransform || transform;
-                var alignAdjust = [align[0] * parentLayoutSpec.size[0], align[1] * parentLayoutSpec.size[1], 0];
+                var nextSizeTransform = parentSpec.nextSizeTransform || transform;
+                var alignAdjust = [align[0] * parentSpec.size[0], align[1] * parentSpec.size[1], 0];
                 var shift = (nextSizeTransform) ? _vecInContext(alignAdjust, nextSizeTransform) : alignAdjust;
                 transform = Transform.thenMove(transform, shift);
             }
@@ -22,39 +22,38 @@ define(function(require, exports, module) {
             mergedSpec = {
                 transform : transform,
                 opacity : opacity,
-                origin : parentLayoutSpec.origin || null,
-                size : parentLayoutSpec.size || null
+                origin : parentSpec.origin || null,
+                size : parentSpec.size || null
             };
 
-        } else if (layoutSpec instanceof Array){
+        } else if (spec instanceof Array){
 
             var mergedSpec = [];
-            for (var i = 0; i < layoutSpec.length; i++)
-                mergedSpec[i] = compose.merge(layoutSpec[i], parentLayoutSpec);
+            for (var i = 0; i < spec.length; i++)
+                mergedSpec[i] = compose.merge(spec[i], parentSpec);
 
         }
-        else if (layoutSpec instanceof Object){
-            var size = sizeSpec.size;
-            var parentSize = parentLayoutSpec.size;
-            var parentOpacity = (parentLayoutSpec.opacity !== undefined) ? parentLayoutSpec.opacity : 1;
-            var parentTransform = parentLayoutSpec.transform || Transform.identity;
+        else if (spec instanceof Object){
+            var parentSize = parentSpec.size;
+            var parentOpacity = (parentSpec.opacity !== undefined) ? parentSpec.opacity : 1;
+            var parentTransform = parentSpec.transform || Transform.identity;
 
-            var origin = layoutSpec.origin || null;
-            var align = layoutSpec.align || null;
+            var origin = spec.origin || null;
+            var align = spec.align || null;
 
-            var opacity = (layoutSpec.opacity !== undefined)
-                ? parentOpacity * layoutSpec.opacity
+            var opacity = (spec.opacity !== undefined)
+                ? parentOpacity * spec.opacity
                 : parentOpacity;
 
-            var transform = (layoutSpec.transform)
-                ? Transform.multiply(parentTransform, layoutSpec.transform)
+            var transform = (spec.transform)
+                ? Transform.multiply(parentTransform, spec.transform)
                 : parentTransform;
 
-            var nextSizeTransform = (layoutSpec.origin)
+            var nextSizeTransform = (spec.origin)
                 ? parentTransform
-                : parentLayoutSpec.nextSizeTransform || parentTransform;
+                : parentSpec.nextSizeTransform || parentTransform;
 
-            if (layoutSpec.size)
+            if (spec.size)
                 nextSizeTransform = parentTransform;
 
             if (origin && (origin[0] || origin[1])){
@@ -77,11 +76,10 @@ define(function(require, exports, module) {
                 nextSizeTransform : nextSizeTransform
             };
 
-            if (layoutSpec.target !== undefined)
-                mergedSpec = compose(layoutSpec.target, mergedSpec);
+            if (spec.target !== undefined)
+                mergedSpec = compose(spec.target, mergedSpec);
 
         }
-        else layoutSpec = null;
 
         return mergedSpec;
     }

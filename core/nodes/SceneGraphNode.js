@@ -1,7 +1,6 @@
 /* Copyright © 2015 David Valdman */
 
 define(function(require, exports, module) {
-    var SpecManager = require('./../SpecManager');
     var EventHandler = require('famous/core/EventHandler');
     var Stream = require('famous/streams/Stream');
     var Spec = require('famous/core/Spec');
@@ -9,6 +8,8 @@ define(function(require, exports, module) {
     var ResizeStream = require('famous/streams/ResizeStream');
     var SizeNode = require('famous/core/nodes/SizeNode');
     var LayoutNode = require('famous/core/nodes/LayoutNode');
+    var layoutAlgebra = require('famous/core/algebras/layout');
+    var sizeAlgebra = require('famous/core/algebras/size');
 
     function SceneGraphNode(object) {
         this.stream = null;
@@ -64,7 +65,7 @@ define(function(require, exports, module) {
             this.sizeStream = ResizeStream.lift(
                 function(objectSpec, parentSize){
                     return (objectSpec)
-                        ? SpecManager.getSize(objectSpec, parentSize)
+                        ? sizeAlgebra(objectSpec, parentSize)
                         : parentSize;
                 }.bind(this),
                 [object, this.size]
@@ -76,7 +77,7 @@ define(function(require, exports, module) {
             this.stream = Stream.lift(
                 function(objectSpec, parentSpec, size){
                     return (objectSpec)
-                        ? SpecManager.merge(objectSpec, parentSpec, size)
+                        ? layoutAlgebra(objectSpec, parentSpec, size)
                         : parentSpec;
                 }.bind(this),
                 [object, this._eventOutput, this.size]
@@ -88,6 +89,10 @@ define(function(require, exports, module) {
 
             spec.subscribe(this._eventInput);
             spec.subscribe(this.size);
+
+//            if (object.__size){
+//                object.__size.subscribe(this.size);
+//            }
 
             spec.on('start', function(spec){
                 this.objects.push(object);
@@ -108,10 +113,6 @@ define(function(require, exports, module) {
             object.on('dirty', function(){
                 this.dirtyObjects.push(object);
             }.bind(this));
-
-//            if (object.__size){
-//                object.__size.subscribe(this.size);
-//            }
         }
     };
 
