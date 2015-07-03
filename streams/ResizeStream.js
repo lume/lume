@@ -61,7 +61,7 @@ define(function(require, exports, module) {
                 else if (state == State.STATES.UPDATE) queue = postTickQueue;
 
                 queue.push(function mergedResizeStreamResize(){
-                    mergedStream.emit(EVENTS.RESIZE, mergedData);
+                    this.emit(EVENTS.RESIZE, mergedData);
                 }.bind(mergedStream));
             }.bind(this)
         });
