@@ -11,6 +11,7 @@
 define(function(require, exports, module) {
     var EventHandler = require('famous/core/EventHandler');
     var Transform = require('famous/core/Transform');
+    var sizeAlgebra = require('famous/core/algebras/size');
 
     var usePrefix = !('transform' in document.documentElement.style);
     var devicePixelRatio = window.devicePixelRatio || 1;
@@ -49,7 +50,6 @@ define(function(require, exports, module) {
         this._sizeDirty = true;
         this._originDirty = true;
         this._transformDirty = true;
-        this._cachedSpecSize = null;
 
         if (element) this.attach(element);
     }
@@ -221,12 +221,14 @@ define(function(require, exports, module) {
         var transform = spec.transform || Transform.identity;
         var opacity = spec.opacity || 1;
         var origin = spec.origin;
-        var size = spec.size;
+        var parentSize = spec.size;
 
         // check if passed in size is different from previous
-        if (!this._cachedSpecSize || _xyNotEquals(this._cachedSpecSize, size)) {
-            this._cachedSpecSize = size;
-            this._sizeDirty = true;
+        if (!this._size) this._sizeDirty = true;
+        else if (this._sizeDirty == false){
+            var inheritWidth  = this.sizeSpec.size[0] == undefined && parentSize[0] !== this._size[0];
+            var inheritHeight = this.sizeSpec.size[1] == undefined && parentSize[1] !== this._size[1];
+            if (inheritWidth || inheritHeight) this._sizeDirty = true;
         }
 
         this._transformDirty = Transform.notEquals(this._transform, transform);
@@ -246,36 +248,22 @@ define(function(require, exports, module) {
         // size nullity check needed for Group and other renderables with no defined size
         // TODO: make sure size is dirty from stream to commit fresh results
         if (this._sizeDirty) {
-            if (this._size === null) this._size = [0,0];
-            if (this.size === null) this._size = [size[0], size[1]];
-            else {
-                // take on parent size if size is undefined
-                if (this.size[0] === undefined) this._size[0] = size[0];
-                if (this.size[1] === undefined) this._size[1] = size[1];
+            var size = sizeAlgebra(this.sizeSpec, parentSize);
+            if (!this._size) this._size = size;
 
-                // if proportions defined, scale calculated size
-                if (this.proportions){
-                    if (typeof this.proportions[0] === 'number') this._size[0] *= this.proportions[0];
-                    if (typeof this.proportions[1] === 'number') this._size[1] *= this.proportions[1];
-                }
-
-                // flag to ping the DOM for the current element size
-                if (this.size[0] === true) this._size[0] = target.offsetWidth;
-                if (this.size[1] === true) this._size[1] = target.offsetHeight;
-
-                // take on numeric size values if available
-                if (typeof this.size[0] === 'number') this._size[0] = this.size[0];
-                if (typeof this.size[1] === 'number') this._size[1] = this.size[1];
-
-                // commit pixel size unless dimension's size is true
-                if (this.size[0] !== true)
-                    target.style.width = Math.round(this._size[0] * devicePixelRatio) * invDevicePixelRatio + 'px';
-
-                if (this.size[1] !== true)
-                    target.style.height = Math.round(this._size[1] * devicePixelRatio) * invDevicePixelRatio + 'px';
-
-                this._eventOutput.emit('resize', this._size);
+            if (size[0] !== true) {
+                this._size[0] = size[0];
+                target.style.width = Math.round(size[0] * devicePixelRatio) * invDevicePixelRatio + 'px';
             }
+            else this._size[0] = target.offsetWidth;
+
+            if (size[1] !== true) {
+                this._size[1] = size[1];
+                target.style.height = Math.round(size[1] * devicePixelRatio) * invDevicePixelRatio + 'px';
+            }
+            else this._size[1] = target.offsetHeight;
+
+            this._eventOutput.emit('resize', this._size);
         }
 
         if (this._originDirty)

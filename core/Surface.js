@@ -40,8 +40,11 @@ define(function(require, exports, module) {
         this.template = null;
         this.content = '';
 
-        this.size = null;   // can take numeric, undefined or true values
-        this.proportions = null;
+        this.sizeSpec = {
+            size : null,
+            proportions : null,
+            margins : null
+        };
 
         this._classesDirty = true;
         this._stylesDirty = true;
@@ -284,7 +287,7 @@ define(function(require, exports, module) {
         if (options.content !== undefined) this.setContent(options.content);
         if (options.template !== undefined) this.setTemplate(options.template);
         if (options.proportions !== undefined) this.setProportions(options.proportions);
-        return this;
+        if (options.margins !== undefined) this.setMargins(options.margins);
     };
 
     //  Apply to document all changes from removeClass() since last setup().
@@ -474,7 +477,7 @@ define(function(require, exports, module) {
      * @return {Array.Number} [x,y] size of surface
      */
     Surface.prototype.getSize = function getSize() {
-        return this._size || this.size;
+        return this._size || this.sizeSpec.size;
     };
 
     /**
@@ -486,14 +489,20 @@ define(function(require, exports, module) {
      */
     Surface.prototype.setSize = function setSize(size) {
         //TODO: consider refactor - size as getter with resize event
-        if (size === this.size) return;
-        this.size = [size[0], size[1]];
+        if (size === this.sizeSpec.size) return;
+        this.sizeSpec.size = [size[0], size[1]];
         this._sizeDirty = true;
         _setDirty.bind(this);
     };
 
     Surface.prototype.setProportions = function setProportions(proportions) {
-        this.proportions = [proportions[0], proportions[1]];
+        this.sizeSpec.proportions = [proportions[0], proportions[1]];
+        this._sizeDirty = true;
+        _setDirty.call(this);
+    };
+
+    Surface.prototype.setMargins = function setMargins(margins) {
+        this.sizeSpec.margins = [margins[0], margins[1]];
         this._sizeDirty = true;
         _setDirty.call(this);
     };
