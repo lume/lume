@@ -15,7 +15,6 @@ define(function(require, exports, module) {
 
         this.stream.on('start', function(data){
             dirtyObjects.trigger('dirty');
-            data._queue = nextTickQueue;
             this._eventOutput.emit('resize', data);
         }.bind(this));
 
