@@ -269,7 +269,7 @@ define(function(require, exports, module) {
         if (this._originDirty)
             _setOrigin(target, this._origin);
 
-        if (this._transformDirty || this._originDirty || (this._sizeDirty && this._origin)) {
+        if (this._transformDirty || this._originDirty || this._sizeDirty) {
             if (!(this._origin[0] === 0 && this._origin[1] === 0)){
                 var originShift = [-this._size[0]*this._origin[0], -this._size[1]*this._origin[1], 0];
                 transform = Transform.thenMove(transform, originShift);
