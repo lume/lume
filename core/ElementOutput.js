@@ -11,6 +11,9 @@
 define(function(require, exports, module) {
     var EventHandler = require('famous/core/EventHandler');
     var Transform = require('famous/core/Transform');
+    var Stream = require('famous/streams/Stream');
+    var ResizeStream = require('famous/streams/ResizeStream');
+    var SizeNode = require('famous/core/nodes/SizeNode');
     var sizeAlgebra = require('famous/core/algebras/size');
 
     var usePrefix = !('transform' in document.documentElement.style);
@@ -43,6 +46,18 @@ define(function(require, exports, module) {
         this.eventForwarder = function eventForwarder(event) {
             this._eventOutput.emit(event.type, event);
         }.bind(this);
+
+        this.sizeNode = new SizeNode();
+        this.__size = new EventHandler();
+
+        this.size = ResizeStream.lift(function(sizeNode, parentSize){
+            return sizeAlgebra(sizeNode, parentSize);
+        }.bind(this), [this.sizeNode, this.__size]);
+
+        this.size.on('resize', function(size){
+            this._sizeDirty = true;
+            this._size = size;
+        }.bind(this));
 
         this._currentTarget = null;
 
@@ -125,16 +140,6 @@ define(function(require, exports, module) {
         }
     }
 
-    /**
-     * Return a Matrix's webkit css representation to be used with the
-     *    CSS3 -webkit-transform style.
-     *    Example: -webkit-transform: matrix3d(1,0,0,0,0,1,0,0,0,0,1,0,716,243,0,1)
-     *
-     * @method _formatCSSTransform
-     * @private
-     * @param {Transform} matrix transform
-     * @return {string} matrix3d CSS style representation of the transform
-     */
     function _formatCSSTransform(matrix) {
         var result = 'matrix3d(';
         for (var i = 0; i < 15; i++) {
@@ -142,7 +147,7 @@ define(function(require, exports, module) {
                 ? Math.round(matrix[i] * devicePixelRatio) * invDevicePixelRatio + ','
                 : matrix[i] + ',';
         }
-        return result + (matrix[15] + ')');
+        return result + matrix[15] + ')';
     }
 
     // format origin as CSS percentage string
@@ -221,15 +226,6 @@ define(function(require, exports, module) {
         var transform = spec.transform || Transform.identity;
         var opacity = spec.opacity || 1;
         var origin = spec.origin;
-        var parentSize = spec.size;
-
-        // check if passed in size is different from previous
-        if (!this._size) this._sizeDirty = true;
-        else if (this._sizeDirty == false){
-            var inheritWidth  = this.sizeSpec.size[0] == undefined && parentSize[0] !== this._size[0];
-            var inheritHeight = this.sizeSpec.size[1] == undefined && parentSize[1] !== this._size[1];
-            if (inheritWidth || inheritHeight) this._sizeDirty = true;
-        }
 
         this._transformDirty = Transform.notEquals(this._transform, transform);
         this._opacityDirty = (this._opacity !== opacity);
@@ -245,25 +241,14 @@ define(function(require, exports, module) {
             _setOpacity(target, opacity);
         }
 
-        // size nullity check needed for Group and other renderables with no defined size
-        // TODO: make sure size is dirty from stream to commit fresh results
         if (this._sizeDirty) {
-            var size = sizeAlgebra(this.sizeSpec, parentSize);
-            if (!this._size) this._size = size;
+            if (this._size[0] === true) this._size[0] = target.offsetWidth;
+            else target.style.width = Math.round(this._size[0] * devicePixelRatio) * invDevicePixelRatio + 'px';
 
-            if (size[0] !== true) {
-                this._size[0] = size[0];
-                target.style.width = Math.round(size[0] * devicePixelRatio) * invDevicePixelRatio + 'px';
-            }
-            else this._size[0] = target.offsetWidth;
+            if (this._size[1] === true) this._size[1] = target.offsetHeight;
+            else target.style.height = Math.round(this._size[1] * devicePixelRatio) * invDevicePixelRatio + 'px';
 
-            if (size[1] !== true) {
-                this._size[1] = size[1];
-                target.style.height = Math.round(size[1] * devicePixelRatio) * invDevicePixelRatio + 'px';
-            }
-            else this._size[1] = target.offsetHeight;
-
-            this._eventOutput.emit('resize', this._size);
+//            this._eventOutput.emit('resize', this._size);
         }
 
         if (this._originDirty)
@@ -274,9 +259,7 @@ define(function(require, exports, module) {
                 var originShift = [-this._size[0]*this._origin[0], -this._size[1]*this._origin[1], 0];
                 transform = Transform.thenMove(transform, originShift);
             }
-
             _setTransform(target, transform);
-
             this._transform = transform;
         }
 

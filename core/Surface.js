@@ -14,7 +14,6 @@ define(function(require, exports, module) {
     var dirtyQueue = require('famous/core/queues/dirtyQueue');
     var postTickQueue = require('famous/core/queues/postTickQueue');
     var nextTickQueue = require('famous/core/queues/nextTickQueue');
-    var ResizeStream = require('famous/streams/ResizeStream');
 
     /**
      * A base class for viewable content and event
@@ -40,35 +39,16 @@ define(function(require, exports, module) {
         this.template = null;
         this.content = '';
 
-        this.sizeSpec = {
-            size : null,
-            proportions : null,
-            margins : null
-        };
-
         this._classesDirty = true;
         this._stylesDirty = true;
         this._attributesDirty = true;
         this._sizeDirty = true;
         this._contentDirty = true;
         this._dirty = false;
+        this._cachedSize = null;
 
         this.classList = [];
         this._dirtyClasses = [];
-
-        var hasResized = false;
-        this.__size = new ResizeStream({
-            resize : function(size){
-                if (!hasResized){
-                    this.setSize(size);
-                    console.log(size);
-                }
-                hasResized = true;
-                dirtyQueue.push(function(){
-                    hasResized = false;
-                });
-            }.bind(this)
-        });
 
         if (options) this.setOptions(options);
     }
@@ -477,7 +457,8 @@ define(function(require, exports, module) {
      * @return {Array.Number} [x,y] size of surface
      */
     Surface.prototype.getSize = function getSize() {
-        return this._size || this.sizeSpec.size;
+        // TODO: remove cachedSize
+        return this._size || this._cachedSize;
     };
 
     /**
@@ -488,21 +469,21 @@ define(function(require, exports, module) {
      * @param {Array.Number} size as [width, height]
      */
     Surface.prototype.setSize = function setSize(size) {
-        //TODO: consider refactor - size as getter with resize event
-        if (size === this.sizeSpec.size) return;
-        this.sizeSpec.size = [size[0], size[1]];
+        // TODO: future version should only allow streams
+        this._cachedSize = size;
+        this.sizeNode.set({size : size});
         this._sizeDirty = true;
         _setDirty.bind(this);
     };
 
     Surface.prototype.setProportions = function setProportions(proportions) {
-        this.sizeSpec.proportions = [proportions[0], proportions[1]];
+        this.sizeNode.set({proportions : proportions});
         this._sizeDirty = true;
         _setDirty.call(this);
     };
 
     Surface.prototype.setMargins = function setMargins(margins) {
-        this.sizeSpec.margins = [margins[0], margins[1]];
+        this.sizeNode.set({margins : margins});
         this._sizeDirty = true;
         _setDirty.call(this);
     };
