@@ -13,7 +13,10 @@ define(function(require, exports, module) {
     var View = require('famous/core/View');
     var Observable = require('famous/core/Observable');
     var LayoutNode = require('famous/core/nodes/LayoutNode');
+    var SizeNode = require('famous/core/nodes/SizeNode');
     var Stream = require('famous/streams/Stream');
+    var ResizeStream = require('famous/streams/ResizeStream');
+    var State = require('famous/core/SUE');
 
     /**
      * A layout which will arrange three renderables into a header and footer area of defined size,
@@ -36,6 +39,7 @@ define(function(require, exports, module) {
         },
         events : {},
         initialize : function initialize(options){
+            this.state = State;
             this.headerLength = null;
             this.footerLength = null;
         },
@@ -50,9 +54,9 @@ define(function(require, exports, module) {
                 return _outputSize.call(this, length);
             }.bind(this));
 
-            var layoutNode = new LayoutNode({size : size});
+            var sizeNode = new SizeNode({size : size});
 
-            this.add(layoutNode).add(header);
+            this.add(sizeNode).add(header);
         },
         addFooter : function(footer){
             this.footerLength = footer.__size.map(function(size){
@@ -69,11 +73,14 @@ define(function(require, exports, module) {
             }.bind(this), [this.size, this.footerLength]);
 
             var layoutNode = new LayoutNode({
-                size : size,
                 transform : transform
             });
 
-            this.add(layoutNode).add(footer);
+            var sizeNode = new SizeNode({
+                size : size
+            });
+
+            this.add(layoutNode).add(sizeNode).add(footer);
         },
         addContent : function(content){
             var contentLength = Stream.lift(function(size, headerLength, footerLength){
@@ -89,11 +96,14 @@ define(function(require, exports, module) {
             }.bind(this));
 
             var layoutNode = new LayoutNode({
-                size : size,
                 transform : transform
             });
 
-            this.add(layoutNode).add(content);
+            var sizeNode = new SizeNode({
+                size : size
+            });
+
+            this.add(layoutNode).add(sizeNode).add(content);
         }
     }, CONSTANTS);
 
