@@ -62,6 +62,11 @@ define(function(require, exports, module) {
             this._node.trigger('end', this._nodeContext);
         }.bind(this));
 
+        this._eventInput.on('resize', function(size){
+            this._node.size.trigger('resize', size);
+            this.emit('resize', size);
+        }.bind(this));
+
         this.size.on('resize', function(){
             this.setSize(_getElementSize(this.container));
         }.bind(this));
@@ -130,8 +135,7 @@ define(function(require, exports, module) {
         this._size[0] = size[0];
         this._size[1] = size[1];
 
-        this._node.size.trigger('resize', size);
-        this.emit('resize', size);
+        this.trigger('resize', size);
     };
 
     /**
