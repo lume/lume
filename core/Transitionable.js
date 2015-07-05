@@ -39,8 +39,6 @@ define(function(require, exports, module) {
      *    beginning state
      */
     function Transitionable(start) {
-        Stream.call(this);
-
         this.transitionQueue = [];
         this.endStateQueue = [];
         this.callbackQueue = [];
@@ -52,6 +50,11 @@ define(function(require, exports, module) {
         this._currentMethod = null;
         this._state = STATE.NONE;
         this._dirty = false;
+
+        this._eventInput = new EventHandler();
+        this._eventOutput = new EventHandler();
+        EventHandler.setInputHandler(this, this._eventInput);
+        EventHandler.setOutputHandler(this, this._eventOutput);
 
         this._eventOutput.on('start', function(){
             Clock.register(this);
