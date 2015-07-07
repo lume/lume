@@ -15,7 +15,7 @@ define(function(require, exports, module) {
     var Clock = require('famous/core/Clock');
     var dirtyQueue = require('famous/core/queues/dirtyQueue');
     var nextTickQueue = require('famous/core/queues/nextTickQueue');
-    var Stream = require('famous/streams/Stream');
+    var SimpleStream = require('famous/streams/SimpleStream');
 
     /**
      * A state maintainer for a smooth transition between
@@ -73,7 +73,7 @@ define(function(require, exports, module) {
         }
     }
 
-    Transitionable.prototype = Object.create(Stream.prototype);
+    Transitionable.prototype = Object.create(SimpleStream.prototype);
     Transitionable.prototype.constructor = Transitionable;
 
     var transitionMethods = {};
