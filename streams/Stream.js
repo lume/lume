@@ -1,8 +1,7 @@
 define(function(require, exports, module) {
     var EventHandler = require('famous/core/EventHandler');
     var EventMapper = require('famous/events/EventMapper');
-    var EventFilter = require('famous/events/EventFilter');
-    var EventSplitter = require('famous/events/EventSplitter');
+    var SimpleStream = require('famous/streams/SimpleStream');
 
     var nextTickQueue = require('famous/core/queues/nextTickQueue');
     var postTickQueue = require('famous/core/queues/postTickQueue');
@@ -17,35 +16,33 @@ define(function(require, exports, module) {
     };
 
     function Stream(options){
-        options = options || {};
-
         this._eventInput = new EventHandler();
         this._eventOutput = new EventHandler();
         EventHandler.setInputHandler(this, this._eventInput);
         EventHandler.setOutputHandler(this, this._eventOutput);
 
+        options = options || {};
+
         var count = 0;
         var total = 0;
-
-        var hasStarted = false;
-        var hasEnded = false;
-        var hasUpdated = false;
 
         if (options.start)
             this._eventInput.on(EVENTS.START, options.start.bind(this));
         else {
             this._eventInput.on(EVENTS.START, function(data){
-                hasStarted = true;
-
                 count++;
                 total++;
 
-                nextTickQueue.push(function streamStart(){
-                    if (count == total && hasUpdated == false && hasEnded == false){
-                        this.emit(EVENTS.START, data);
-                        count = 0;
-                    }
-                }.bind(this));
+                (function(currentCount){
+//                    nextTickQueue.push(function streamStart(){
+                        console.log('stream start', currentCount, total)
+                        if (currentCount == total){
+                            this.emit(EVENTS.START, data);
+                            count = 0;
+                        }
+//                    }.bind(this));
+                }.bind(this))(count)
+
             }.bind(this));
         }
 
@@ -53,7 +50,6 @@ define(function(require, exports, module) {
             this._eventInput.on(EVENTS.UPDATE, options.update.bind(this));
         else {
             this._eventInput.on(EVENTS.UPDATE, function(data){
-                hasUpdated = true;
                 count++;
 
                 postTickQueue.push(function streamUpdate(){
@@ -67,17 +63,11 @@ define(function(require, exports, module) {
             this._eventInput.on(EVENTS.END, options.end.bind(this));
         else {
             this._eventInput.on(EVENTS.END, function(data){
-                hasEnded = true;
-
-                total--;
-
                 dirtyQueue.push(function streamEnd(){
-                    if (total === 0 && hasStarted == true){
+                    total--;
+                    if (total === 0){
                         this.emit(EVENTS.END, data);
                         count = 0;
-                        hasEnded = false;
-                        hasStarted = false;
-                        hasUpdated = false;
                     }
                 }.bind(this))
             }.bind(this));
@@ -89,122 +79,79 @@ define(function(require, exports, module) {
             this._eventInput.on(EVENTS.RESIZE, function(data){
                 var state = State.get();
 
-                var queue;
-                if (state == State.STATES.START) queue = nextTickQueue;
-                else if (state == State.STATES.UPDATE) queue = postTickQueue;
-
-                queue.push(function streamResize(){
-                    if (hasStarted == false){
+                if (state == State.STATES.START){
+//                    nextTickQueue.push(function(){
                         this.trigger(EVENTS.START, data);
-                        dirtyQueue.push(function streamResizeEnd(){
+                        dirtyQueue.push(function streamResize(){
                             this.trigger(EVENTS.END, data);
                         }.bind(this));
-                    }
-                    else {
-                        postTickQueue.push(function streamResizeUpdate(){
-                            this.trigger(EVENTS.UPDATE, data);
-                        }.bind(this));
-                    }
-                }.bind(this))
+//                    }.bind(this));
+                }
+                else {
+                    this.trigger(EVENTS.UPDATE, data);
+                }
 
             }.bind(this))
         }
     }
 
-    Stream.prototype.map = function(fn){
-        var stream = new Stream();
-        var mapper = new EventMapper(fn);
-        stream.subscribe(mapper).subscribe(this);
-        return stream;
-    };
+    Stream.prototype = Object.create(SimpleStream.prototype);
+    Stream.prototype.constructor = Stream;
 
-    Stream.prototype.filter = function(fn){
-        var filter = new EventFilter(fn);
-        var filteredStream = new Stream();
-        filteredStream.subscribe(filter).subscribe(this);
-        return filteredStream;
-    };
-
-    Stream.prototype.split = function(fn){
-        var splitter = new EventSplitter(fn);
-        var splitStream = new Stream();
-        splitStream.subscribe(splitter).subscribe(this);
-        return splitStream;
-    };
-
-    Stream.prototype.pluck = function(key){
-        return this.map(function(value){
-            return value[key];
-        });
-    };
+    Stream.lift = SimpleStream.lift;
 
     Stream.merge = function(streamObj){
         var count = 0;
         var total = 0;
 
-        var hasStarted = false;
-        var hasUpdated = false;
-        var hasEnded = false;
-
         var mergedStream = new Stream({
-            start : function(){
-                hasStarted = true;
-
+            start : function(mergedData){
                 count++;
                 total++;
 
-                nextTickQueue.push(function mergedStreamStart(){
-                    if (count == total && hasUpdated == false && hasEnded == false){
-                        this.emit(EVENTS.START, mergedData);
-                        count = 0;
-                    }
-                }.bind(mergedStream));
+                (function(currentCount){
+                    nextTickQueue.push(function streamStart(){
+                        console.log('stream start', currentCount, total)
+                        if (currentCount == total){
+                            this.emit(EVENTS.START, mergedData);
+                            count = 0;
+                        }
+                    }.bind(this));
+                }.bind(this))(count)
             },
-            update : function(){
-                hasUpdated = true;
+            update : function(mergedData){
                 count++;
 
                 postTickQueue.push(function mergedStreamUpdate(){
                     if (count == total) {
-                        this.emit(EVENTS.UPDATE, mergedData);
+                        this._eventOutput.emit(EVENTS.UPDATE, mergedData);
                         count = 0;
                     }
-                }.bind(mergedStream));
+                }.bind(this));
             },
-            end : function(){
-                hasEnded = true;
-
-                total--;
-
+            end : function(mergedData){
                 dirtyQueue.push(function mergedStreamEnd(){
-                    if (total === 0 && hasStarted == true){
-                        this.emit(EVENTS.END, mergedData);
+                    total--;
+                    if (total === 0){
+                        this._eventOutput.emit(EVENTS.END, mergedData);
                         count = 0;
-                        hasEnded = false;
-                        hasStarted = false;
-                        hasUpdated = false;
                     }
-                }.bind(mergedStream))
+                }.bind(this))
             },
-            resize : function(){
+            resize : function(mergedData){
                 var state = State.get();
-                var queue;
-                if (state == State.STATES.START) queue = nextTickQueue;
-                if (state == State.STATES.UPDATE) queue = postTickQueue;
 
-                queue.push(function mergedStreamResize(){
-                    if (hasStarted == false){
-                        mergedStream.trigger(EVENTS.START, mergedData);
+                if (state == State.STATES.START){
+//                    nextTickQueue.push(function(){
+                        this.trigger(EVENTS.START, mergedData);
                         dirtyQueue.push(function mergedStreamResizeEnd(){
                             this.trigger(EVENTS.END, mergedData);
-                        }.bind(mergedStream));
-                    }
-                    else {
-                        postTickQueue.push(function mergedStreamResizeUpdate(){
-                            this.trigger(EVENTS.UPDATE, mergedData);
-                        }.bind(mergedStream));
-                    }
-                }.bind(mergedStream));
+                        }.bind(this));
+//                    }.bind(this));
+                }
+                else {
+                    this.trigger(EVENTS.UPDATE, mergedData);
+                }
             }
         });
 
@@ -228,22 +175,6 @@ define(function(require, exports, module) {
         }
 
         return mergedStream;
-    };
-
-    Stream.lift = function(fn, streams, queue){
-        //TODO: fix comma separated arguments
-        var mergedStream = (streams instanceof Array)
-            ? Stream.merge(streams, queue)
-            : Stream.merge.apply(null, Array.prototype.splice.call(arguments, 1));
-
-        var mappedStream = new EventMapper(function(data){
-            return fn.apply(null, data);
-        });
-
-        var liftedStream = new Stream();
-        liftedStream.subscribe(mappedStream).subscribe(mergedStream);
-
-        return liftedStream;
     };
 
     module.exports = Stream;
