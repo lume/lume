@@ -13,6 +13,7 @@ define(function(require, exports, module) {
     var Surface = require('famous/core/Surface');
     var Context = require('famous/core/Context');
     var EventHandler = require('famous/core/EventHandler');
+    var dirtyQueue = require('famous/core/queues/dirtyQueue');
 
     /**
      * ContainerSurface is an object designed to contain surfaces and
@@ -38,24 +39,29 @@ define(function(require, exports, module) {
      */
     function ContainerSurface(options) {
         Surface.call(this, options);
+
         this._container = document.createElement('div');
         this._container.classList.add('famous-group');
         this._container.classList.add('famous-container');
+
         this.context = new Context(this._container);
         this.setContent(this._container);
 
-        this._eventInput = new EventHandler();
-        this._eventOutput = new EventHandler();
-        EventHandler.setInputHandler(this, this._eventInput);
-        EventHandler.setOutputHandler(this, this._eventOutput);
-        this._eventInput.bindThis(this);
-
         this._eventInput.subscribe(this.context);
 
-        this.on('resize', function(){
-            this.context.setSize(this.getSize());
-            this._dirty = true;
-        });
+        this._eventInput.on('resize', function(){
+            var size = this.getSize();
+            this.context.setSize(size);
+            this.emit('resize', size);
+        }.bind(this));
+
+        // TODO: put deploy in Context
+        this.on('deploy', function(){
+            this.context.trigger('start');
+            dirtyQueue.push(function(){
+                this.context.trigger('end');
+            }.bind(this));
+        }.bind(this));
     }
 
     ContainerSurface.prototype = Object.create(Surface.prototype);
