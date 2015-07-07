@@ -2,6 +2,7 @@
 
 define(function(require, exports, module) {
     var EventHandler = require('famous/core/EventHandler');
+    var SimpleStream = require('famous/streams/SimpleStream');
     var Stream = require('famous/streams/Stream');
     var Observable = require('famous/core/Observable');
     var nextTickQueue = require('famous/core/queues/nextTickQueue');
@@ -42,15 +43,18 @@ define(function(require, exports, module) {
     LayoutNode.prototype.set = function(obj){
         for (var key in obj){
             var value = obj[key];
-            var source = new Observable();
 
-            (function(source, value){
-                nextTickQueue.push(function(){
-                    source.set(value);
-                });
-            })(source, value);
+            if (value instanceof SimpleStream)
+                source = value;
+            else {
+                var source = new Observable();
 
-            this.stream.addStream(key, source)
+                (function(source, value){
+                    nextTickQueue.push(function(){
+                        source.set(value);
+                    });
+                })(source, value);
+            }
         }
     };
 

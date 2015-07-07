@@ -2,8 +2,8 @@
 
 define(function(require, exports, module) {
     var EventHandler = require('famous/core/EventHandler');
-    var ResizeStream = require('famous/streams/ResizeStream');
     var SimpleStream = require('famous/streams/SimpleStream');
+    var ResizeStream = require('famous/streams/ResizeStream');
     var Observable = require('famous/core/Observable');
     var nextTickQueue = require('famous/core/queues/nextTickQueue');
 
