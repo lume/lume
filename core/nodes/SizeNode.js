@@ -5,7 +5,6 @@ define(function(require, exports, module) {
     var ResizeStream = require('famous/streams/ResizeStream');
     var Observable = require('famous/core/Observable');
     var nextTickQueue = require('famous/core/queues/nextTickQueue');
-    var dirtyObjects = require('famous/core/dirtyObjects');
 
     function SizeNode(sources) {
         this.stream = this.createStream(sources);
@@ -13,17 +12,8 @@ define(function(require, exports, module) {
 
         EventHandler.setOutputHandler(this, this._eventOutput);
 
-        this.stream.on('start', function(data){
-            dirtyObjects.trigger('dirty');
-            this._eventOutput.emit('resize', data);
-        }.bind(this));
-
         this.stream.on('resize', function(data){
             this._eventOutput.emit('resize', data);
-        }.bind(this));
-
-        this.stream.on('end', function(data){
-            dirtyObjects.trigger('clean');
         }.bind(this));
     }
 
@@ -42,7 +32,6 @@ define(function(require, exports, module) {
                 })(source, value);
             }
         }
-
         return ResizeStream.merge(sources);
     };
 
