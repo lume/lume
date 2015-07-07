@@ -43,7 +43,7 @@ define(function(require, exports, module) {
         this.endStateQueue = [];
         this.callbackQueue = [];
 
-        this.state = undefined;
+        this.state = start || 0;
         this.velocity = undefined;
         this._callback = undefined;
         this._engineInstance = null;
@@ -65,7 +65,7 @@ define(function(require, exports, module) {
         });
 
         if (start !== undefined){
-            nextTickQueue.push(function(){
+            nextTickQueue.push(function transitionableSet(){
                 // make sure didn't set in same tick as defined
                 if (this._state == STATE.NONE || this._state == STATE.END)
                     this.set(start);
