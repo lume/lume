@@ -3,6 +3,7 @@
 define(function(require, exports, module) {
     var EventHandler = require('famous/core/EventHandler');
     var ResizeStream = require('famous/streams/ResizeStream');
+    var SimpleStream = require('famous/streams/SimpleStream');
     var Observable = require('famous/core/Observable');
     var nextTickQueue = require('famous/core/queues/nextTickQueue');
 
@@ -38,15 +39,20 @@ define(function(require, exports, module) {
     SizeNode.prototype.set = function(obj){
         for (var key in obj){
             var value = obj[key];
-            var source = new Observable();
 
-            (function(source, value){
-                nextTickQueue.push(function(){
-                    source.set(value);
-                });
-            })(source, value);
+            if (value instanceof SimpleStream)
+                source = value;
+            else {
+                var source = new Observable();
 
-            this.stream.addStream(key, source)
+                (function(source, value){
+                    nextTickQueue.push(function(){
+                        source.set(value);
+                    });
+                })(source, value);
+            }
+
+            this.stream.addStream(key, source);
         }
     };
 
