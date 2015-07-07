@@ -8,7 +8,7 @@ define(function(require, exports, module) {
         END : 2
     };
 
-    currentState = STATE.NONE;
+    currentState = STATE.START;
 
     function set(state){
         currentState = state;
