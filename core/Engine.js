@@ -64,11 +64,11 @@ define(function(require, exports, module) {
     };
     var optionsManager = new OptionsManager(options);
 
-    nextTickQueue.push(function(){
+    nextTickQueue.push(function engineStart(){
         Engine.trigger('dirty');
     });
 
-    dirtyQueue.push(function(){
+    dirtyQueue.push(function engineEnd(){
         Engine.trigger('clean');
     });
 
@@ -138,7 +138,7 @@ define(function(require, exports, module) {
         eventHandler.emit('resize', windowSize);
 
         eventHandler.trigger('dirty');
-        dirtyQueue.push(function(){
+        dirtyQueue.push(function engineResizeClean(){
             eventHandler.trigger('clean');
         });
     }
@@ -174,7 +174,7 @@ define(function(require, exports, module) {
     EventHandler.setInputHandler(Engine, eventHandler);
     EventHandler.setOutputHandler(Engine, eventHandler);
 
-    Engine.on = function(type, handler){
+    Engine.on = function engineOn(type, handler){
         if (type === 'tick') listenOnTick = true;
         if (!(type in eventForwarders)) {
             eventForwarders[type] = eventHandler.emit.bind(eventHandler, type);
@@ -183,7 +183,7 @@ define(function(require, exports, module) {
         return eventHandler.on(type, handler);
     };
 
-    Engine.off = function(type, handler){
+    Engine.off = function engineOff (type, handler){
         if (type === 'tick') listenOnTick = false;
         if (!(type in eventForwarders)) {
             document.removeEventListener(type, eventForwarders[type]);
@@ -191,7 +191,7 @@ define(function(require, exports, module) {
         eventHandler.off(type, handler);
     };
 
-    eventHandler.on('dirty', function(){
+    eventHandler.on('dirty', function engineDirty(){
         if (!dirty) {
             dirty = true;
             rafId = window.requestAnimationFrame(loop);
@@ -199,7 +199,7 @@ define(function(require, exports, module) {
         dirtyLock++;
     });
 
-    eventHandler.on('clean', function(){
+    eventHandler.on('clean', function engineClean(){
         dirtyLock--;
         if (dirty && dirtyLock === 0) {
             dirty = false;
@@ -289,13 +289,12 @@ define(function(require, exports, module) {
         if (needMountContainer) {
             document.body.appendChild(el);
 
-            nextTickQueue.push(function(){
+            nextTickQueue.push(function contextMount(){
                 handleResize();
                 context.trigger('start');
-
             });
 
-            dirtyQueue.push(function(){
+            dirtyQueue.push(function contextMountClean(){
                 context.trigger('end');
             });
         }
@@ -343,7 +342,7 @@ define(function(require, exports, module) {
         return contexts;
     };
 
-    optionsManager.on('change', function(data) {
+    optionsManager.on('change', function optionsChange(data) {
         var key = data.key;
         var value = data.value;
         if (key === 'fpsCap') Engine.setFPSCap(value);
