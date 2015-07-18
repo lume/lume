@@ -50,7 +50,7 @@ define(function(require, exports, module) {
         this.sizeNode = new SizeNode();
         this.__size = new EventHandler();
 
-        this.size = ResizeStream.lift(function(sizeNode, parentSize){
+        this.size = ResizeStream.lift(function elementSizeLift(sizeNode, parentSize){
             return sizeAlgebra(sizeNode, parentSize);
         }.bind(this), [this.sizeNode, this.__size]);
 
@@ -140,14 +140,14 @@ define(function(require, exports, module) {
         }
     }
 
-    function _formatCSSTransform(matrix) {
+    function _formatCSSTransform(transform) {
         var result = 'matrix3d(';
         for (var i = 0; i < 15; i++) {
             result += (i === 12 || i === 13)
-                ? Math.round(matrix[i] * devicePixelRatio) * invDevicePixelRatio + ','
-                : matrix[i] + ',';
+                ? Math.round(transform[i] * devicePixelRatio) * invDevicePixelRatio + ','
+                : transform[i] + ',';
         }
-        return result + matrix[15] + ')';
+        return result + transform[15] + ')';
     }
 
     // format origin as CSS percentage string
