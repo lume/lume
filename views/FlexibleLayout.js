@@ -76,8 +76,8 @@ define(function(require, exports, module) {
                             : node.getSize()[direction];
 
                         var transform = (direction == CONSTANTS.DIRECTION.X)
-                            ? Transform.translate(displacement, 0, 0)
-                            : Transform.translate(0, displacement, 0);
+                            ? Transform.translateX(displacement)
+                            : Transform.translateY(displacement);
 
                         var size = (direction == CONSTANTS.DIRECTION.X)
                             ? [nodeLength, undefined]
