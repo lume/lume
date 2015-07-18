@@ -15,16 +15,16 @@ define(function(require, exports, module) {
         EventHandler.setOutputHandler(this, this._eventOutput);
 
         //TODO: can eventOutput just be the stream
-        this.stream.on('start', function(data){
+        this.stream.on('start', function layoutStart(data){
             dirtyObjects.trigger('dirty');
             this._eventOutput.emit('start', data);
         }.bind(this));
 
-        this.stream.on('update', function(data){
+        this.stream.on('update', function layoutUpdate(data){
            this._eventOutput.emit('update', data)
         }.bind(this));
 
-        this.stream.on('end', function(data){
+        this.stream.on('end', function layoutEnd(data){
             this._eventOutput.emit('end', data);
             dirtyObjects.trigger('clean');
         }.bind(this));
@@ -39,7 +39,7 @@ define(function(require, exports, module) {
                 sources[key] = source;
 
                 (function(source, value){
-                    nextTickQueue.push(function(){
+                    nextTickQueue.push(function layoutSet(){
                         source.set(value);
                     });
                 })(source, value);
@@ -59,7 +59,7 @@ define(function(require, exports, module) {
                 var source = new Observable();
 
                 (function(source, value){
-                    nextTickQueue.push(function(){
+                    nextTickQueue.push(function layoutSet(){
                         source.set(value);
                     });
                 })(source, value);
