@@ -92,7 +92,7 @@ define(function(require, exports, module) {
      *    applied after a move. This is faster than the equivalent multiply.
      *    This is equivalent to the result of:
      *
-     *    Transform.multiply(m, Transform.translate(t[0], t[1], t[2])).
+     *    Transform.multiply(m, Transform.translate(t)).
      *
      * @method moveThen
      * @static
@@ -114,14 +114,25 @@ define(function(require, exports, module) {
      *
      * @method translate
      * @static
-     * @param {Number} x x translation
-     * @param {Number} y y translation
-     * @param {Number} z z translation
      * @return {Transform}
      */
-    Transform.translate = function translate(x, y, z) {
-        if (z === undefined) z = 0;
+    Transform.translate = function translate(v) {
+        var x = v[0] || 0;
+        var y = v[1] || 0;
+        var z = v[2] || 0;
         return [1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, x, y, z, 1];
+    };
+
+    Transform.translateX = function translate(x) {
+        return [1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, x, 0, 0, 1];
+    };
+
+    Transform.translateY = function translate(y) {
+        return [1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, y, 0, 1];
+    };
+
+    Transform.translateZ = function translate(z) {
+        return [1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, z, 1];
     };
 
     /**
