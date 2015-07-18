@@ -63,7 +63,7 @@ define(function(require, exports, module) {
     SceneGraphNode.prototype.set = function set(object) {
         if (object instanceof SizeNode){
             this.sizeStream = ResizeStream.lift(
-                function(objectSpec, parentSize){
+                function SGSizeAlgebra (objectSpec, parentSize){
                     return (objectSpec)
                         ? sizeAlgebra(objectSpec, parentSize)
                         : parentSize;
@@ -75,7 +75,7 @@ define(function(require, exports, module) {
         }
         else if (!object.commit){
             this.stream = Stream.lift(
-                function(objectSpec, parentSpec, size){
+                function SGLayoutAlgebra (objectSpec, parentSpec, size){
                     return (objectSpec)
                         ? layoutAlgebra(objectSpec, parentSpec, size)
                         : parentSpec;

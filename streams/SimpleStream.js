@@ -46,7 +46,7 @@ define(function(require, exports, module) {
             ? this.merge(streams)
             : this.merge.apply(null, Array.prototype.splice.call(arguments, 1));
 
-        var mappedStream = new EventMapper(function(data){
+        var mappedStream = new EventMapper(function liftMap(data){
             return fn.apply(null, data);
         });
 

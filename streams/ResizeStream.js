@@ -19,7 +19,7 @@ define(function(require, exports, module) {
     //emits SUE + resize
 
     function ResizeStream(){
-        var counter = 0;
+        var count = 0;
         var total = 0;
 
         this._eventInput = new EventHandler();
@@ -28,38 +28,38 @@ define(function(require, exports, module) {
         EventHandler.setOutputHandler(this, this._eventOutput);
 
         this._eventInput.on(EVENTS.RESIZE, function(data){
-            counter++;
+            count++;
             total++;
 
             var state = State.get();
 
             (function(currentCount) {
                 if (state === State.STATES.START) {
-                    nextTickQueue.push(function () {
+                    nextTickQueue.push(function ResizeStreamStart() {
                         if (currentCount == total) {
                             this.emit(EVENTS.RESIZE, data);
-                            counter = 0;
+                            count = 0;
                             total = 0;
                         }
                     }.bind(this));
                 }
                 else {
-                    postTickQueue.push(function () {
+                    postTickQueue.push(function ResizeStreamResize() {
                         if (currentCount == total) {
                             this.emit(EVENTS.RESIZE, data);
-                            counter = 0;
+                            count = 0;
                             total = 0;
                         }
                     }.bind(this));
                 }
-            }.bind(this))(counter);
+            }.bind(this))(count);
         }.bind(this));
 
-        this._eventInput.on(EVENTS.START, function(data){
+        this._eventInput.on(EVENTS.START, function ResizeStreamStart(data){
             this.trigger(EVENTS.RESIZE, data);
         }.bind(this));
 
-        this._eventInput.on(EVENTS.UPDATE, function(data){
+        this._eventInput.on(EVENTS.UPDATE, function ResizeStreamUpdate(data){
             this.trigger(EVENTS.RESIZE, data);
         }.bind(this));
     }

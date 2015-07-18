@@ -34,13 +34,12 @@ define(function(require, exports, module) {
                 total++;
 
                 (function(currentCount){
-//                    nextTickQueue.push(function streamStart(){
-                        console.log('stream start', currentCount, total)
+                    nextTickQueue.push(function streamStart(){
                         if (currentCount == total){
                             this.emit(EVENTS.START, data);
                             count = 0;
                         }
-//                    }.bind(this));
+                    }.bind(this));
                 }.bind(this))(count)
 
             }.bind(this));
@@ -80,12 +79,12 @@ define(function(require, exports, module) {
                 var state = State.get();
 
                 if (state == State.STATES.START){
-//                    nextTickQueue.push(function(){
+                    nextTickQueue.push(function(){
                         this.trigger(EVENTS.START, data);
                         dirtyQueue.push(function streamResize(){
                             this.trigger(EVENTS.END, data);
                         }.bind(this));
-//                    }.bind(this));
+                    }.bind(this));
                 }
                 else {
                     this.trigger(EVENTS.UPDATE, data);
@@ -110,14 +109,13 @@ define(function(require, exports, module) {
                 total++;
 
                 (function(currentCount){
-                    nextTickQueue.push(function streamStart(){
-                        console.log('stream start', currentCount, total)
+                    nextTickQueue.push(function mergedStreamStart(){
                         if (currentCount == total){
                             this.emit(EVENTS.START, mergedData);
                             count = 0;
                         }
                     }.bind(this));
-                }.bind(this))(count)
+                }.bind(this))(count);
             },
             update : function(mergedData){
                 count++;
@@ -142,12 +140,12 @@ define(function(require, exports, module) {
                 var state = State.get();
 
                 if (state == State.STATES.START){
-//                    nextTickQueue.push(function(){
+                    nextTickQueue.push(function mergedStreamResizeStart(){
                         this.trigger(EVENTS.START, mergedData);
                         dirtyQueue.push(function mergedStreamResizeEnd(){
                             this.trigger(EVENTS.END, mergedData);
                         }.bind(this));
-//                    }.bind(this));
+                    }.bind(this));
                 }
                 else {
                     this.trigger(EVENTS.UPDATE, mergedData);
