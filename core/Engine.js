@@ -41,14 +41,8 @@ define(function(require, exports, module) {
 
     var Engine = {};
 
-    var now = Date.now;
     var contexts = [];
-    var currentFrame = 0;
-    var nextTickFrame = 0;
-    var lastTime = now();
     var rafId;
-    var frameTime;
-    var frameTimeLimit;
     var eventForwarders = {};
     var eventHandler = new EventHandler();
     var dirty = true;
@@ -59,18 +53,9 @@ define(function(require, exports, module) {
     var options = {
         containerType: 'div',
         containerClass: 'famous-context',
-        fpsCap: undefined,
         appMode: true
     };
     var optionsManager = new OptionsManager(options);
-
-    nextTickQueue.push(function engineStart(){
-        Engine.trigger('dirty');
-    });
-
-    dirtyQueue.push(function engineEnd(){
-        Engine.trigger('clean');
-    });
 
     /**
      * Inside requestAnimationFrame loop, step() is called, which:
@@ -87,21 +72,9 @@ define(function(require, exports, module) {
 
     Engine.step = function step() {
         // browser events and their handlers happen before rendering begins
-
-        currentFrame++;
-        nextTickFrame = currentFrame;
-
-        var currentTime = now();
-
-        // skip frame if we're over our framerate cap
-        if (frameTimeLimit && currentTime - lastTime < frameTimeLimit) return;
-
-        frameTime = currentTime - lastTime;
-        lastTime = currentTime;
-
-        State.set(State.STATES.START);
-
-        while (nextTickQueue.length) (nextTickQueue.shift())();
+        while (nextTickQueue.length) {
+            (nextTickQueue.shift())();
+        }
 
         // tick signals base event flow coming in
         State.set(State.STATES.UPDATE);
@@ -122,6 +95,21 @@ define(function(require, exports, module) {
         State.set(State.STATES.START);
     };
 
+    function start(){
+        nextTickQueue.push(function start(){
+            handleResize();
+            for (var i = 0; i < contexts.length; i++){
+                contexts[i].trigger('start');
+
+                dirtyQueue.push(
+                    function contextMountClean(i){
+                        contexts[i].trigger('end');
+                    }.bind(null,i)
+                );
+            }
+        });
+    }
+
     // engage requestAnimationFrame
     function loop() {
         //TODO: this dirty check should be unecessary
@@ -130,11 +118,12 @@ define(function(require, exports, module) {
             rafId = window.requestAnimationFrame(loop);
         }
     }
+    window.requestAnimationFrame(start);
     rafId = window.requestAnimationFrame(loop);
 
     function handleResize() {
         var windowSize = [window.innerWidth, window.innerHeight];
-        size.trigger('resize', windowSize);
+        size.emit('resize', windowSize);
         eventHandler.emit('resize', windowSize);
 
         eventHandler.trigger('dirty');
@@ -143,23 +132,10 @@ define(function(require, exports, module) {
         });
     }
     window.addEventListener('resize', handleResize, false);
+    window.addEventListener('touchmove', function(event) { event.preventDefault(); }, true);
 
-    /**
-     * Initialize famous for app mode
-     *
-     * @static
-     * @private
-     * @method initialize
-     */
-    function initialize() {
-        // prevent scrolling via browser
-        window.addEventListener('touchmove', function(event) {
-            event.preventDefault();
-        }, true);
-        document.body.classList.add('famous-root');
-        document.documentElement.classList.add('famous-root');
-    }
-    var initialized = false;
+    //TODO: add this only for app-mode
+    document.body.classList.add('famous-root');
 
     /**
      * Bind a callback function to an event type handled by this object.
@@ -208,32 +184,6 @@ define(function(require, exports, module) {
     });
 
     /**
-     * Return the current calculated frames per second of the Engine.
-     *
-     * @static
-     * @method getFPS
-     *
-     * @return {Number} calculated fps
-     */
-    Engine.getFPS = function getFPS() {
-        return 1000 / frameTime;
-    };
-
-    /**
-     * Set the maximum fps at which the system should run. If internal render
-     *    loop is called at a greater frequency than this FPSCap, Engine will
-     *    throttle render and update until this rate is achieved.
-     *
-     * @static
-     * @method setFPSCap
-     *
-     * @param {Number} fps maximum frames per second
-     */
-    Engine.setFPSCap = function setFPSCap(fps) {
-        frameTimeLimit = Math.floor(1000 / fps);
-    };
-
-    /**
      * Return engine options.
      *
      * @static
@@ -273,31 +223,15 @@ define(function(require, exports, module) {
      * @return {Context} new Context within el
      */
     Engine.createContext = function createContext(el) {
-        if (!initialized && options.appMode) nextTickQueue.push(initialize);
-
-        var needMountContainer = false;
-        if (!el) {
-            el = document.createElement(options.containerType);
-            needMountContainer = true;
-        }
+        var needMountContainer = (el === undefined);
+        if (needMountContainer) el = document.createElement(options.containerType);
 
         el.classList.add(options.containerClass);
 
         var context = new Context(el);
         Engine.registerContext(context);
         
-        if (needMountContainer) {
-            document.body.appendChild(el);
-
-            nextTickQueue.push(function contextMount(){
-                handleResize();
-                context.trigger('start');
-            });
-
-            dirtyQueue.push(function contextMountClean(){
-                context.trigger('end');
-            });
-        }
+        if (needMountContainer) document.body.appendChild(el);
         return context;
     };
 
@@ -341,12 +275,6 @@ define(function(require, exports, module) {
     Engine.getContexts = function getContexts() {
         return contexts;
     };
-
-    optionsManager.on('change', function optionsChange(data) {
-        var key = data.key;
-        var value = data.value;
-        if (key === 'fpsCap') Engine.setFPSCap(value);
-    });
 
     Engine.subscribe(Clock);
     Engine.subscribe(dirtyObjects);
