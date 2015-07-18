@@ -10,15 +10,24 @@ define(function(require, exports, module) {
 
     function LayoutNode(sources) {
         this.stream = this.createStream(sources);
-        EventHandler.setOutputHandler(this, this.stream);
+        this._eventOutput = new EventHandler();
 
-        this.on('start', function(){
+        EventHandler.setOutputHandler(this, this._eventOutput);
+
+        //TODO: can eventOutput just be the stream
+        this.stream.on('start', function(data){
             dirtyObjects.trigger('dirty');
-        });
+            this._eventOutput.emit('start', data);
+        }.bind(this));
 
-        this.on('end', function(){
+        this.stream.on('update', function(data){
+           this._eventOutput.emit('update', data)
+        }.bind(this));
+
+        this.stream.on('end', function(data){
+            this._eventOutput.emit('end', data);
             dirtyObjects.trigger('clean');
-        });
+        }.bind(this));
     }
 
     LayoutNode.prototype.createStream = function (sources){
