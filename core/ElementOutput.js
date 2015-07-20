@@ -52,7 +52,7 @@ define(function(require, exports, module) {
 
         this.size = ResizeStream.lift(function elementSizeLift(sizeNode, parentSize){
             return sizeAlgebra(sizeNode, parentSize);
-        }.bind(this), [this.sizeNode, this.__size]);
+        }, [this.sizeNode, this.__size]);
 
         this.size.on('resize', function(size){
             this._sizeDirty = true;
