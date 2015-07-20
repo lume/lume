@@ -70,6 +70,17 @@ define(function(require, exports, module) {
         ];
     };
 
+    Transform.multiplyMany = function multiplyMany(){
+        if (arguments.length > 2){
+            var first = arguments[0];
+            var second = arguments[1];
+            Array.prototype.shift.call(arguments);
+            arguments[0] = Transform.multiply(first, second);
+            return Transform.multiplyMany.apply(null, arguments);
+        }
+        else return Transform.multiply.apply(null, arguments);
+    };
+
     /**
      * Return a Transform translated by additional amounts in each
      *    dimension. This is equivalent to the result of
