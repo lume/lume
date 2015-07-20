@@ -473,7 +473,7 @@ define(function(require, exports, module) {
         this._cachedSize = size;
         this.sizeNode.set({size : size});
         this._sizeDirty = true;
-        _setDirty.bind(this);
+        _setDirty.call(this);
     };
 
     Surface.prototype.setProportions = function setProportions(proportions) {
