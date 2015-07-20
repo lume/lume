@@ -67,7 +67,7 @@ define(function(require, exports, module) {
                     return (objectSpec)
                         ? sizeAlgebra(objectSpec, parentSize)
                         : parentSize;
-                }.bind(this),
+                },
                 [object, this.size]
             );
 
@@ -79,7 +79,7 @@ define(function(require, exports, module) {
                     return (objectSpec)
                         ? layoutAlgebra(objectSpec, parentSpec, size)
                         : parentSpec;
-                }.bind(this),
+                },
                 [object, this._eventOutput, this.size]
             );
         }
