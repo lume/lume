@@ -27,6 +27,8 @@ define(function(require, exports, module) {
         EventHandler.setInputHandler(this, this._eventInput);
         EventHandler.setOutputHandler(this, this._eventOutput);
 
+        var self = this;
+
         this._eventInput.on(EVENTS.RESIZE, function(data){
             count++;
             total++;
@@ -37,22 +39,22 @@ define(function(require, exports, module) {
                 if (state === State.STATES.START) {
                     nextTickQueue.push(function ResizeStreamStart() {
                         if (currentCount == total) {
-                            this.emit(EVENTS.RESIZE, data);
+                            self.emit(EVENTS.RESIZE, data);
                             count = 0;
                             total = 0;
                         }
-                    }.bind(this));
+                    });
                 }
                 else {
                     postTickQueue.push(function ResizeStreamResize() {
                         if (currentCount == total) {
-                            this.emit(EVENTS.RESIZE, data);
+                            self.emit(EVENTS.RESIZE, data);
                             count = 0;
                             total = 0;
                         }
-                    }.bind(this));
+                    });
                 }
-            }.bind(this))(count);
+            })(count);
         }.bind(this));
 
         this._eventInput.on(EVENTS.START, function ResizeStreamStart(data){
