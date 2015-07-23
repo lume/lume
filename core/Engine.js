@@ -45,7 +45,7 @@ define(function(require, exports, module) {
     var rafId;
     var eventForwarders = {};
     var eventHandler = new EventHandler();
-    var dirty = true;
+    var dirty = false;
     var dirtyLock = 0;
     var listenOnTick = false;
     var size = new EventHandler();
@@ -94,6 +94,14 @@ define(function(require, exports, module) {
 
         State.set(State.STATES.START);
     };
+
+    nextTickQueue.push(function(){
+        eventHandler.emit('dirty');
+    });
+
+    dirtyQueue.push(function(){
+        eventHandler.emit('clean');
+    });
 
     function start(){
         nextTickQueue.push(function start(){
