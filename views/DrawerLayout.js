@@ -14,30 +14,9 @@ define(function(require, exports, module) {
     var View = require('famous/core/view');
     var LayoutNode = require('famous/core/nodes/LayoutNode');
     var Stream = require('famous/streams/Stream');
+    var Differential = require('famous/streams/Differential');
+    var EventMapper = require('famous/events/EventMapper');
 
-    /**
-     * A layout which will arrange two renderables: a featured content, and a
-     *   concealed drawer. The drawer can be revealed from any side of the
-     *   content (left, top, right, bottom) by dragging the content.
-     *
-     *   A @link{Sync} must be piped in to receive user input.
-     *
-     *   Events:
-     *     broadcasts: 'open', 'close'
-     *     listens to: 'update', 'end'
-     *
-     * @class DrawerLayout
-     *
-     * @constructor
-     *
-     * @param [options] {Object}                                An object of configurable options
-     * @param [options.side=DrawerLayout.SIDES.LEFT] {Number}   The side of the content the drawer is placed.
-     *                                                          Choice of DrawerLayout.SIDES.LEFT/RIGHT/TOP/BOTTOM
-     * @param [options.drawerLength=0] {Number}                 The default length of the drawer
-     * @param [options.velocityThreshold=0] {Number}            The velocity threshold to trigger a toggle
-     * @param [options.positionThreshold=0] {Number}            The position threshold to trigger a toggle
-     * @param [options.transition=true] {Boolean|Object}        The toggle transition
-     */
     var CONSTANTS = {
         DIRECTION : {
             X : 0,
@@ -65,8 +44,6 @@ define(function(require, exports, module) {
             transitionClose : true
         },
         events : {
-            update : _handleUpdate,
-            end : _handleEnd,
             change : _updateState
         },
         initialize : function initialize(options){
@@ -74,7 +51,93 @@ define(function(require, exports, module) {
             this.orientation = _getOrientationFromSide(options.side);
             this.drawerLength = options.drawerLength;
             this.isOpen = false;
-            this.position = new Transitionable(0);
+
+            this._position = 0;
+
+            this.gestureStream = new Stream({
+                update : function(data){
+                    var newPosition = this._position + data.delta;
+
+                    var MIN_LENGTH = 0;
+                    var MAX_LENGTH = 0;
+
+                    if (this.orientation === CONSTANTS.ORIENTATION.POSITIVE)
+                        MAX_LENGTH = this.drawerLength;
+                    else
+                        MIN_LENGTH = this.drawerLength;
+
+                    if (newPosition < MAX_LENGTH && newPosition > MIN_LENGTH)
+                        this.gestureStream.emit('update', {delta : data.delta});
+                    else {
+                        if (newPosition > MAX_LENGTH && newPosition > MIN_LENGTH && this._position !== MAX_LENGTH){
+                            var delta = MAX_LENGTH - this._position;
+                            this.gestureStream.emit('update', {delta : delta});
+                        } else if (newPosition < MIN_LENGTH && this._position !== MIN_LENGTH){
+                            var delta = MIN_LENGTH - this._position;
+                            this.gestureStream.emit('update', {delta : delta});
+                        }
+                    }
+                }.bind(this)
+            });
+
+            this.gestureStream.on('end', function(data){
+                var velocity = data.velocity;
+                var orientation = this.orientation;
+                var length = this.drawerLength;
+                var isOpen = this.isOpen;
+
+                var options = this.options;
+
+                var MAX_LENGTH = orientation * length;
+                var positionThreshold = options.positionThreshold || MAX_LENGTH / 2;
+                var velocityThreshold = options.velocityThreshold;
+
+                if (options.transition instanceof Object)
+                    options.transition.velocity = data.velocity;
+
+                if (this._position === 0) {
+                    this.isOpen = false;
+                    return;
+                }
+
+                if (this._position === MAX_LENGTH) {
+                    this.isOpen = true;
+                    return;
+                }
+
+                var shouldToggle = Math.abs(velocity) > velocityThreshold || (!isOpen && this._position > positionThreshold) || (isOpen && this._position < positionThreshold);
+                (shouldToggle) ? this.toggle() : this.reset();
+            }.bind(this));
+
+            this.inertialStream = new Transitionable(0);
+
+            var differential = new Differential();
+            differential.subscribe(this.inertialStream);
+
+            this.position = new Stream({
+                start : function(){
+                    this.position.emit('start',this._position);
+                }.bind(this),
+                update : function(data){
+                    this._position += data.delta;
+                    this.position.emit('update', this._position);
+                }.bind(this),
+                end : function(){
+                    this.position.emit('end',this._position);
+                }.bind(this)
+            });
+
+            this.position.subscribe(this.gestureStream);
+            this.position.subscribe(differential);
+
+            var outputMapper = new EventMapper(function(position){
+                return {
+                    value : position,
+                    progress : position / this.drawerLength
+                }
+            }.bind(this));
+
+            this._eventOutput.subscribe(outputMapper).subscribe(this.position);
         },
         addDrawer : function addDrawer(drawer){
             this.drawer = drawer;
@@ -102,7 +165,6 @@ define(function(require, exports, module) {
         open : function open(transition, callback){
             if (transition instanceof Function) callback = transition;
             if (transition === undefined) transition = this.options.transitionOpen;
-            this.drawerLength = _resolveNodeSize.call(this, this.drawer);
             this.setPosition(this.drawerLength, transition, callback);
             if (!this.isOpen) {
                 this.isOpen = true;
@@ -145,37 +207,8 @@ define(function(require, exports, module) {
          * @param [callback] {Function}         callback
          */
         setPosition : function setPosition(position, transition, callback) {
-            this.position.set(position, transition, callback);
-        },
-        /**
-         * Gets the position in pixels for the content's displacement
-         *
-         * @method getPosition
-         * @return position {Number} position
-         */
-        getPosition : function getPosition() {
-            return this.position.get();
-        },
-        /**
-         * Sets the progress (between 0 and 1) for the content's displacement
-         *
-         * @method setProgress
-         * @param progress {Number}             position
-         * @param [transition] {Boolean|Object} transition definition
-         * @param [callback] {Function}         callback
-         */
-        setProgress : function setProgress(progress, transition, callback) {
-            return this.setPosition(progress * this.drawerLength.get(), transition, callback);
-        },
-        /**
-         * Gets the progress (between 0 and 1) for the content's displacement
-         *
-         * @method getProgress
-         * @return position {Number} position
-         */
-        getProgress : function getProgress(position){
-            if (position === undefined) position = this.getPosition();
-            return position / this.drawerLength;
+            this.inertialStream.set(this._position);
+            this.inertialStream.set(position, transition, callback);
         },
         /**
          * Resets to last state of being open or closed
@@ -211,75 +244,6 @@ define(function(require, exports, module) {
         return (side === SIDES.LEFT || side === SIDES.TOP)
             ? CONSTANTS.ORIENTATION.POSITIVE
             : CONSTANTS.ORIENTATION.NEGATIVE;
-    }
-
-    function _resolveNodeSize(node) {
-        var options = this.options;
-        var size;
-        if (options.drawerLength) size = options.drawerLength;
-        else {
-            var nodeSize = node.getSize();
-            size = nodeSize ? nodeSize[this.direction] : options.drawerLength;
-        }
-        return this.orientation * size;
-    }
-
-    function _handleUpdate(data) {
-        var oldPosition = this.getPosition();
-        var newPosition = oldPosition + data.delta;
-
-        if (oldPosition == newPosition) return;
-
-        var MIN_LENGTH;
-        var MAX_LENGTH;
-        var length = _resolveNodeSize.call(this, this.drawer);
-        this.drawerLength = length;
-
-        if (this.orientation === CONSTANTS.ORIENTATION.POSITIVE){
-            MIN_LENGTH = 0;
-            MAX_LENGTH = length;
-        }
-        else {
-            MIN_LENGTH = length;
-            MAX_LENGTH = 0;
-        }
-
-        if (newPosition > MAX_LENGTH) newPosition = MAX_LENGTH;
-        else if (newPosition < MIN_LENGTH) newPosition = MIN_LENGTH;
-
-        this.setPosition(newPosition);
-        this._eventOutput.emit('update', {progress : this.getProgress(newPosition)});
-    }
-
-    function _handleEnd(data) {
-        var velocity = data.velocity;
-        var orientation = this.orientation;
-        var length = this.drawerLength;
-        var isOpen = this.isOpen;
-
-        var position = orientation * this.getPosition();
-        var options = this.options;
-
-        var MAX_LENGTH = orientation * length;
-        var positionThreshold = options.positionThreshold || MAX_LENGTH / 2;
-        var velocityThreshold = options.velocityThreshold;
-
-        if (options.transition instanceof Object)
-            options.transition.velocity = data.velocity;
-
-        if (position === 0) {
-            this.isOpen = false;
-            return;
-        }
-
-        if (position === MAX_LENGTH) {
-            this.isOpen = true;
-            return;
-        }
-
-        var shouldToggle = Math.abs(velocity) > velocityThreshold || (!isOpen && position > positionThreshold) || (isOpen && position < positionThreshold);
-        if (shouldToggle) this.toggle();
-        else this.reset();
     }
 
     function _updateState(data){
