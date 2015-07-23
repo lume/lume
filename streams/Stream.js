@@ -25,6 +25,9 @@ define(function(require, exports, module) {
 
         var count = 0;
         var total = 0;
+        var hasUpdated = false;
+
+        //TODO: emit result of given function instead of data
 
         var self = this;
 
@@ -37,7 +40,7 @@ define(function(require, exports, module) {
 
                 (function(currentCount){
                     nextTickQueue.push(function streamStart(){
-                        if (currentCount == total){
+                        if (currentCount == total && !hasUpdated){
                             self.emit(EVENTS.START, data);
                             count = 0;
                         }
@@ -51,6 +54,7 @@ define(function(require, exports, module) {
             this._eventInput.on(EVENTS.UPDATE, options.update.bind(this));
         else {
             this._eventInput.on(EVENTS.UPDATE, function(data){
+                hasUpdated = true;
                 count++;
 
                 postTickQueue.push(function streamUpdate(){
@@ -69,6 +73,7 @@ define(function(require, exports, module) {
                     if (total === 0){
                         self.emit(EVENTS.END, data);
                         count = 0;
+                        hasUpdated = false;
                     }
                 })
             });
@@ -104,6 +109,7 @@ define(function(require, exports, module) {
     Stream.merge = function(streamObj){
         var count = 0;
         var total = 0;
+        var hasUpdated = false;
 
         var mergedStream = new Stream({
             start : function(mergedData){
@@ -112,7 +118,7 @@ define(function(require, exports, module) {
 
                 (function(currentCount){
                     nextTickQueue.push(function mergedStreamStart(){
-                        if (currentCount == total){
+                        if (currentCount == total && !hasUpdated){
                             mergedStream.emit(EVENTS.START, mergedData);
                             count = 0;
                         }
@@ -121,22 +127,26 @@ define(function(require, exports, module) {
             },
             update : function(mergedData){
                 count++;
-
-                postTickQueue.push(function mergedStreamUpdate(){
-                    if (count == total) {
-                        mergedStream.emit(EVENTS.UPDATE, mergedData);
-                        count = 0;
-                    }
-                });
+                hasUpdated = true;
+                (function(currentCount){
+                    postTickQueue.push(function mergedStreamUpdate(){
+                        if (currentCount == total) {
+                            mergedStream.emit(EVENTS.UPDATE, mergedData);
+                            count = 0;
+                        }
+                    });
+                })(count)
             },
             end : function(mergedData){
                 dirtyQueue.push(function mergedStreamEnd(){
                     total--;
+                    count--;
                     if (total === 0){
                         mergedStream.emit(EVENTS.END, mergedData);
                         count = 0;
+                        hasUpdated = false;
                     }
-                })
+                });
             },
             resize : function(mergedData){
                 var state = State.get();
