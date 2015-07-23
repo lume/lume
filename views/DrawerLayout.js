@@ -9,11 +9,10 @@
 /* Modified work copyright © 2015 David Valdman */
 
 define(function(require, exports, module) {
-    var RenderNode = require('famous/core/RenderNode');
     var Transform = require('famous/core/Transform');
     var Transitionable = require('famous/core/Transitionable');
     var View = require('famous/core/view');
-    var Modifier = require('famous/core/ModifierStream');
+    var LayoutNode = require('famous/core/nodes/LayoutNode');
     var Stream = require('famous/streams/Stream');
 
     /**
@@ -71,34 +70,26 @@ define(function(require, exports, module) {
             change : _updateState
         },
         initialize : function initialize(options){
-            this.initializeState(options);
-            this.initializeSubviews();
-            this.initializeEvents();
-        },
-        initializeState : function initializeState(options){
             this.direction = _getDirectionFromSide(options.side);
             this.orientation = _getOrientationFromSide(options.side);
-            this.drawerLength = 0;
+            this.drawerLength = options.drawerLength;
             this.isOpen = false;
             this.position = new Transitionable(0);
-            this.transform = this.position.map(function(position){
-                return (this.direction === CONSTANTS.DIRECTION.X)
-                    ? Transform.translate(position, 0, 0)
-                    : Transform.translate(0, position, 0)
-            });
         },
         addDrawer : function addDrawer(drawer){
             this.drawer = drawer;
-            this.drawerLength = drawer.__size.map(function(size){
-                return size[this.options.direction];
-            }.bind(this));
-
-            var modifier = new Modifier({transform : Transform.behind});
-            this.add(modifier).add(this.drawer);
+            var layout = new LayoutNode({transform : Transform.behind});
+            this.add(layout).add(this.drawer);
         },
         addContent : function addContent(content){
-            var modifier = new Modifier({transform : this.transform});
-            this.add(modifier).add(content);
+            var transform = this.position.map(function(position){
+                return (this.direction === CONSTANTS.DIRECTION.X)
+                    ? Transform.translateX(position)
+                    : Transform.translateY(position)
+            }.bind(this));
+
+            var layout = new LayoutNode({transform : transform});
+            this.add(layout).add(content);
         },
         /**
          * Reveals the drawer with a transition
@@ -208,9 +199,9 @@ define(function(require, exports, module) {
     }, CONSTANTS);
 
     function _getDirectionFromSide(side) {
-        var SIDES = CONSTANTS.SIDE;
+        var SIDE = CONSTANTS.SIDE;
         var DIRECTION = CONSTANTS.DIRECTION;
-        return (side === SIDES.LEFT || side === SIDES.RIGHT)
+        return (side === SIDE.LEFT || side === SIDE.RIGHT)
             ? DIRECTION.X
             : DIRECTION.Y;
     }
@@ -244,7 +235,7 @@ define(function(require, exports, module) {
         var length = _resolveNodeSize.call(this, this.drawer);
         this.drawerLength = length;
 
-        if (this.orientation === 1){
+        if (this.orientation === CONSTANTS.ORIENTATION.POSITIVE){
             MIN_LENGTH = 0;
             MAX_LENGTH = length;
         }
