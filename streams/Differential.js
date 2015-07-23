@@ -1,6 +1,5 @@
 define(function(require, exports, module){
     var Stream = require('famous/streams/Stream');
-    var OptionsManager = require('famous/core/OptionsManager');
 
     function Differential(options){
         var previous = undefined;
@@ -9,25 +8,26 @@ define(function(require, exports, module){
         var scale = options.scale || 1;
 
         Stream.call(this, {
-            start : function(data){
-                previous = data.value;
-                this.emit('start', data);
-            },
-            update : function(data){
-                var value = data.value;
+            start : function(value){
+                previous = value;
+                this.emit('start', {delta : 0});
+            }.bind(this),
+            update : function(value){
                 var delta;
 
                 if (previous instanceof Array){
                     delta = [];
-                    for (var i = 0; i < previous.length; i++){
+                    for (var i = 0; i < previous.length; i++)
                         delta[i] = scale * (value[i] - previous[i]);
-                    }
                 }
                 else delta = scale * (value - previous);
 
-                previous = data.value;
+                previous = value;
 
                 this.emit('update', {delta : delta});
+            }.bind(this),
+            end : function(){
+                this.emit('end');
             }.bind(this)
         });
     }
