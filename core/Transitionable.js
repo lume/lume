@@ -49,7 +49,6 @@ define(function(require, exports, module) {
         this._engineInstance = null;
         this._currentMethod = null;
         this._state = STATE.NONE;
-        this._dirty = false;
 
         this._eventInput = new EventHandler();
         this._eventOutput = new EventHandler();
@@ -144,29 +143,16 @@ define(function(require, exports, module) {
     Transitionable.prototype.set = function set(endState, transition, callback) {
         // TODO: short circuit check
         if (!transition) {
-            switch (this._state){
-                case STATE.NONE:
-                    this._state = STATE.START;
-                    break;
-                case STATE.END:
-                    this._state = STATE.START;
-                    break;
-                case STATE.UPDATE:
-                    // interrupt while active causes end event
-                    this._state = STATE.END;
-                    break;
-            }
-
             this.reset(endState, undefined);
 
-            if (!this._dirty) {
-                this._dirty = true;
+            if (this._state !== STATE.START){
                 this._state = STATE.START;
                 this.emit('start', this.state);
                 dirtyQueue.push(function(){
-                    this._dirty = false;
-                    this._state = STATE.END;
-                    this.emit('end', this.state);
+                    if (!this._engineInstance){
+                        this._state = STATE.END;
+                        this.emit('end', this.state);
+                    }
                 }.bind(this));
             }
 
@@ -176,8 +162,10 @@ define(function(require, exports, module) {
 
         if (this.isActive()) this.halt();
         else {
-            this._state = STATE.START;
-            this.emit('start', this.state);
+            if (this._state !== STATE.START){
+                this._state = STATE.START;
+                this.emit('start', this.state);
+            }
         }
 
         this.endStateQueue.push(endState);
@@ -204,11 +192,7 @@ define(function(require, exports, module) {
 
     Transitionable.prototype.update = function update(){
         // hack for next tick ending
-        if (this._state === STATE.END) return;
-
-        this._state = STATE.UPDATE;
-
-        if (!this._engineInstance) return;
+        if (this._state === STATE.END || !this._engineInstance) return;
 
         var state = this._engineInstance.get();
 
@@ -217,19 +201,20 @@ define(function(require, exports, module) {
         this.state = state;
 
         if (this._engineInstance && !this._engineInstance.isActive()){
+            var self = this;
             //TODO: end on same tick?
             nextTickQueue.push(function(){
-                this._state = STATE.END;
+                self._state = STATE.END;
                 dirtyQueue.push(function(){
-                    this._eventOutput.emit('end', this.state);
+                    self._eventOutput.emit('end', self.state);
 
-                    if (this._callback) {
-                        var callback = this._callback;
-                        this._callback = undefined;
+                    if (self._callback) {
+                        var callback = self._callback;
+                        self._callback = undefined;
                         callback();
                     }
-                }.bind(this));
-            }.bind(this));
+                });
+            });
         }
     };
 
