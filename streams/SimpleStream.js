@@ -5,10 +5,11 @@ define(function(require, exports, module) {
     var EventSplitter = require('famous/events/EventSplitter');
 
     function SimpleStream(){
-        this._eventIO = new EventHandler();
-        EventHandler.setInputHandler(this, this._eventIO);
-        EventHandler.setOutputHandler(this, this._eventIO);
+        EventHandler.apply(this, arguments);
     }
+
+    SimpleStream.prototype = Object.create(EventHandler.prototype);
+    SimpleStream.prototype.constructor = SimpleStream;
 
     SimpleStream.prototype.map = function(fn){
         var stream = new SimpleStream();
