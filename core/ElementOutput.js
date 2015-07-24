@@ -224,7 +224,7 @@ define(function(require, exports, module) {
         if (!target) return;
 
         var transform = spec.transform || Transform.identity;
-        var opacity = spec.opacity || 1;
+        var opacity = (spec.opacity === undefined) ? 1 : spec.opacity;
         var origin = spec.origin;
 
         this._transformDirty = Transform.notEquals(this._transform, transform);
