@@ -12,7 +12,6 @@ define(function(require, exports, module) {
     var EventHandler = require('famous/core/EventHandler');
     var OptionsManager = require('famous/core/OptionsManager');
     var Stream = require('famous/streams/Stream');
-    var dirtyObjects = require('famous/core/dirtyObjects');
 
     /**
      * Handles piped in mouse drag events. Outputs an object with two
@@ -27,6 +26,7 @@ define(function(require, exports, module) {
      * @param [options.direction] {Number}   read from a particular axis
      * @param [options.propogate] {Boolean}  add listened to document on mouseleave
      */
+    //TODO: DIRECTION.X
     function MouseSync(options) {
         this.options = OptionsManager.setOptions(this, options);
 
@@ -39,14 +39,6 @@ define(function(require, exports, module) {
         this._eventInput.on('mousedown', _handleStart.bind(this));
         this._eventInput.on('mousemove', _handleMove.bind(this));
         this._eventInput.on('mouseup', _handleEnd.bind(this));
-
-        this._eventOutput.on('start', function(){
-            dirtyObjects.trigger('dirty');
-        });
-
-        this._eventOutput.on('end', function(){
-            dirtyObjects.trigger('clean');
-        });
 
         if (this.options.propogate) this._eventInput.on('mouseleave', _handleLeave.bind(this));
         else this._eventInput.on('mouseleave', _handleEnd.bind(this));

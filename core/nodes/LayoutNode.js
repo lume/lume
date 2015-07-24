@@ -6,28 +6,12 @@ define(function(require, exports, module) {
     var Stream = require('famous/streams/Stream');
     var Observable = require('famous/core/Observable');
     var nextTickQueue = require('famous/core/queues/nextTickQueue');
-    var dirtyObjects = require('famous/core/dirtyObjects');
 
     function LayoutNode(sources) {
         this.stream = this.createStream(sources);
         this._eventOutput = new EventHandler();
 
-        EventHandler.setOutputHandler(this, this._eventOutput);
-
-        //TODO: can eventOutput just be the stream
-        this.stream.on('start', function layoutStart(data){
-            dirtyObjects.trigger('dirty');
-            this._eventOutput.emit('start', data);
-        }.bind(this));
-
-        this.stream.on('update', function layoutUpdate(data){
-           this._eventOutput.emit('update', data)
-        }.bind(this));
-
-        this.stream.on('end', function layoutEnd(data){
-            this._eventOutput.emit('end', data);
-            dirtyObjects.trigger('clean');
-        }.bind(this));
+        EventHandler.setOutputHandler(this, this.stream);
     }
 
     LayoutNode.prototype.createStream = function (sources){

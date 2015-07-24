@@ -2,11 +2,13 @@ define(function(require, exports, module) {
     var EventHandler = require('famous/core/EventHandler');
     var EventMapper = require('famous/events/EventMapper');
     var SimpleStream = require('famous/streams/SimpleStream');
+    var dirtyObjects = require('famous/core/dirtyObjects');
 
     var nextTickQueue = require('famous/core/queues/nextTickQueue');
     var postTickQueue = require('famous/core/queues/postTickQueue');
     var dirtyQueue = require('famous/core/queues/dirtyQueue');
     var State = require('famous/core/SUE');
+
 
     var EVENTS = {
         START : 'start',
@@ -31,13 +33,26 @@ define(function(require, exports, module) {
 
         var self = this;
 
+        var dirty = false;
+        this._eventInput.on('start', function(){
+            if (dirty) return;
+            dirtyObjects.trigger('dirty');
+            dirty = true;
+        });
+
+        this._eventInput.on('end', function(){
+            if (!dirty) return;
+            dirtyObjects.trigger('clean');
+            dirty = false;
+        });
+
         if (options.start)
             this._eventInput.on(EVENTS.START, options.start.bind(this));
         else {
             this._eventInput.on(EVENTS.START, function(data){
+
                 count++;
                 total++;
-
                 (function(currentCount){
                     nextTickQueue.push(function streamStart(){
                         if (currentCount == total && !hasUpdated){

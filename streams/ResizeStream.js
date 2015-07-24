@@ -29,6 +29,8 @@ define(function(require, exports, module) {
 
         var self = this;
 
+        //TODO: dirtyObject logic as in LayoutNode?
+
         this._eventInput.on(EVENTS.RESIZE, function(data){
             count++;
             total++;
