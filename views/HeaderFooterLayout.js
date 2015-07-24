@@ -15,7 +15,6 @@ define(function(require, exports, module) {
     var LayoutNode = require('famous/core/nodes/LayoutNode');
     var SizeNode = require('famous/core/nodes/SizeNode');
     var Stream = require('famous/streams/Stream');
-    var ResizeStream = require('famous/streams/ResizeStream');
     var State = require('famous/core/SUE');
 
     /**
