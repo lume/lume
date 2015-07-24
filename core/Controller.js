@@ -3,8 +3,9 @@
  */
 
 define(function(require, exports, module) {
-    var EventHandler = require('./../core/EventHandler');
-    var OptionsManager = require('./../core/OptionsManager');
+    var EventHandler = require('famous/core/EventHandler');
+    var SimpleStream = require('famous/streams/SimpleStream');
+    var OptionsManager = require('famous/core/OptionsManager');
 
     /**
      * Useful for quickly creating elements within applications
@@ -22,8 +23,8 @@ define(function(require, exports, module) {
         this._optionsManager = new OptionsManager(this.options);
         if (options) this.setOptions(options);
 
-        this._eventInput = new EventHandler();
-        this._eventOutput = new EventHandler();
+        this._eventInput = new SimpleStream();
+        this._eventOutput = new SimpleStream();
         EventHandler.setInputHandler(this, this._eventInput);
         EventHandler.setOutputHandler(this, this._eventOutput);
         EventHandler.setInputEvents(this, this.constructor.EVENTS || Controller.EVENTS, this._eventInput);
