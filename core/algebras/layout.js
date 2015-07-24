@@ -3,14 +3,22 @@
 define(function(require, exports, module) {
     var Transform = require('famous/core/Transform');
 
+    var DEFAULT = {
+        OPACITY : 1,
+        TRANSFORM : Transform.identity,
+        ORIGIN : null,
+        ALIGN : null,
+        SIZE : null
+    };
+
     function compose(spec, parentSpec, size){
         var mergedSpec;
 
         if (typeof spec == 'number') {
 
-            var transform = parentSpec.transform || Transform.identity;
-            var align = parentSpec.align || null;
-            var opacity = (parentSpec.opacity !== undefined) ? parentSpec.opacity : 1;
+            var transform = parentSpec.transform || DEFAULT.TRANSFORM;
+            var align = parentSpec.align || DEFAULT.ALIGN;
+            var opacity = (parentSpec.opacity !== undefined) ? parentSpec.opacity : DEFAULT.OPACITY;
 
             if (align && (align[0] || align[1])) {
                 var nextSizeTransform = parentSpec.nextSizeTransform || transform;
@@ -22,8 +30,8 @@ define(function(require, exports, module) {
             mergedSpec = {
                 transform : transform,
                 opacity : opacity,
-                origin : parentSpec.origin || null,
-                size : parentSpec.size || null
+                origin : parentSpec.origin || DEFAULT.ORIGIN,
+                size : parentSpec.size || DEFAULT.SIZE
             };
 
         } else if (spec instanceof Array){
@@ -35,11 +43,11 @@ define(function(require, exports, module) {
         }
         else if (spec instanceof Object){
             var parentSize = parentSpec.size;
-            var parentOpacity = (parentSpec.opacity !== undefined) ? parentSpec.opacity : 1;
-            var parentTransform = parentSpec.transform || Transform.identity;
+            var parentOpacity = (parentSpec.opacity !== undefined) ? parentSpec.opacity : DEFAULT.OPACITY;
+            var parentTransform = parentSpec.transform || DEFAULT.TRANSFORM;
 
-            var origin = spec.origin || null;
-            var align = spec.align || null;
+            var origin = spec.origin || DEFAULT.ORIGIN;
+            var align = spec.align || DEFAULT.ALIGN;
 
             var opacity = (spec.opacity !== undefined)
                 ? parentOpacity * spec.opacity
