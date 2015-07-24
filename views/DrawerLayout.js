@@ -54,9 +54,11 @@ define(function(require, exports, module) {
 
             this._position = 0;
 
+            this.input = new Stream();
+
             this.gestureStream = new Stream({
-                update : function(data){
-                    var newPosition = this._position + data.delta;
+                update : function(delta){
+                    var newPosition = this._position + delta;
 
                     var MIN_LENGTH = 0;
                     var MAX_LENGTH = 0;
@@ -67,18 +69,22 @@ define(function(require, exports, module) {
                         MIN_LENGTH = this.drawerLength;
 
                     if (newPosition < MAX_LENGTH && newPosition > MIN_LENGTH)
-                        this.gestureStream.emit('update', {delta : data.delta});
+                        this.gestureStream.emit('update', delta);
                     else {
                         if (newPosition > MAX_LENGTH && newPosition > MIN_LENGTH && this._position !== MAX_LENGTH){
-                            var delta = MAX_LENGTH - this._position;
-                            this.gestureStream.emit('update', {delta : delta});
+                            delta = MAX_LENGTH - this._position;
+                            this.gestureStream.emit('update', delta);
                         } else if (newPosition < MIN_LENGTH && this._position !== MIN_LENGTH){
-                            var delta = MIN_LENGTH - this._position;
-                            this.gestureStream.emit('update', {delta : delta});
+                            delta = MIN_LENGTH - this._position;
+                            this.gestureStream.emit('update', delta);
                         }
                     }
                 }.bind(this)
             });
+
+            this.gestureStream.on('start', function(){
+                this.inertialStream.halt();
+            }.bind(this));
 
             this.gestureStream.on('end', function(data){
                 var velocity = data.velocity;
@@ -105,7 +111,11 @@ define(function(require, exports, module) {
                     return;
                 }
 
-                var shouldToggle = Math.abs(velocity) > velocityThreshold || (!isOpen && this._position > positionThreshold) || (isOpen && this._position < positionThreshold);
+                var shouldToggle =
+                    Math.abs(velocity) > velocityThreshold          ||
+                    (!isOpen && this._position > positionThreshold) ||
+                    (isOpen && this._position < positionThreshold);
+
                 (shouldToggle) ? this.toggle() : this.reset();
             }.bind(this));
 
@@ -118,8 +128,8 @@ define(function(require, exports, module) {
                 start : function(){
                     this.position.emit('start',this._position);
                 }.bind(this),
-                update : function(data){
-                    this._position += data.delta;
+                update : function(delta){
+                    this._position += delta;
                     this.position.emit('update', this._position);
                 }.bind(this),
                 end : function(){
@@ -127,6 +137,7 @@ define(function(require, exports, module) {
                 }.bind(this)
             });
 
+            this.gestureStream.subscribe(this.input.pluck('delta'));
             this.position.subscribe(this.gestureStream);
             this.position.subscribe(differential);
 

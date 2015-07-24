@@ -10,7 +10,7 @@ define(function(require, exports, module){
         Stream.call(this, {
             start : function(value){
                 previous = value;
-                this.emit('start', {delta : 0});
+                this.emit('start', 0);
             }.bind(this),
             update : function(value){
                 var delta;
@@ -24,7 +24,7 @@ define(function(require, exports, module){
 
                 previous = value;
 
-                this.emit('update', {delta : delta});
+                this.emit('update', delta);
             }.bind(this),
             end : function(){
                 this.emit('end');
