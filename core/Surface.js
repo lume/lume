@@ -385,7 +385,7 @@ define(function(require, exports, module) {
             this._attributesDirty = false;
         }
 
-        if (spec) ElementOutput.prototype.commit.call(this, spec);
+        ElementOutput.prototype.commit.call(this, spec);
     };
 
     /**
