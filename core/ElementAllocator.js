@@ -24,7 +24,6 @@ define(function(require, exports, module) {
         if (!container) container = document.createDocumentFragment();
         this.container = container;
         this.detachedNodes = {};
-        this.nodeCount = 0;
     }
 
     /**
@@ -39,15 +38,12 @@ define(function(require, exports, module) {
         var oldContainer = this.container;
         if (container === oldContainer) return;
 
-        if (oldContainer instanceof DocumentFragment) {
+        if (oldContainer instanceof DocumentFragment)
             container.appendChild(oldContainer);
-        }
         else {
-            while (oldContainer.hasChildNodes()) {
+            while (oldContainer.hasChildNodes())
                 container.appendChild(oldContainer.firstChild);
-            }
         }
-
         this.container = container;
     };
 
@@ -65,14 +61,11 @@ define(function(require, exports, module) {
         if (!(type in this.detachedNodes)) this.detachedNodes[type] = [];
         var nodeStore = this.detachedNodes[type];
         var result;
-        if (nodeStore.length > 0) {
-            result = nodeStore.pop();
-        }
-        else {
+        if (nodeStore.length === 0){
             result = document.createElement(type);
             this.container.appendChild(result);
         }
-        this.nodeCount++;
+        else result = nodeStore.pop();
         return result;
     };
 
@@ -88,19 +81,6 @@ define(function(require, exports, module) {
         var nodeType = element.nodeName.toLowerCase();
         var nodeStore = this.detachedNodes[nodeType];
         nodeStore.push(element);
-        this.nodeCount--;
-    };
-
-    /**
-     * Get count of total allocated nodes in the document.
-     *
-     * @private
-     * @method getNodeCount
-     *
-     * @return {Number} total node count
-     */
-    ElementAllocator.prototype.getNodeCount = function getNodeCount() {
-        return this.nodeCount;
     };
 
     module.exports = ElementAllocator;
