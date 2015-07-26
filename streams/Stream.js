@@ -104,15 +104,23 @@ define(function(require, exports, module) {
                     nextTickQueue.push(function(){
                         self.trigger(EVENTS.START, data);
                         dirtyQueue.push(function streamResize(){
+                            if (hasUpdated) return;
                             self.trigger(EVENTS.END, data);
                         });
                     });
                 }
                 else {
                     this.trigger(EVENTS.UPDATE, data);
+                    nextTickQueue.push(function(){
+                        hasUpdated = false;
+                        dirtyQueue.push(function(){
+                            if (hasUpdated == false)
+                                self.trigger(EVENTS.END, data);
+                        })
+                    });
                 }
 
-            }.bind(this))
+            }.bind(this));
         }
     }
 
@@ -153,29 +161,48 @@ define(function(require, exports, module) {
                 })(count)
             },
             end : function(mergedData){
-                dirtyQueue.push(function mergedStreamEnd(){
-                    total--;
-                    count--;
-                    if (total === 0){
-                        mergedStream.emit(EVENTS.END, mergedData);
-                        count = 0;
-                        hasUpdated = false;
-                    }
-                });
+//                dirtyQueue.push(function mergedStreamEnd(){
+//                    total--;
+//                    count--;
+//                    if (total === 0){
+//                        mergedStream.emit(EVENTS.END, mergedData);
+//                        count = 0;
+//                        hasUpdated = false;
+//                    }
+//                });
+                total--;
+                count--;
+                (function(currentTotal){
+                    dirtyQueue.push(function mergedStreamEnd(){
+                        if (currentTotal === 0){
+                            mergedStream.emit(EVENTS.END, mergedData);
+                            count = 0;
+                            hasUpdated = false;
+                        }
+                    });
+                })(total);
             },
             resize : function(mergedData){
                 var state = State.get();
-
                 if (state == State.STATES.START){
                     nextTickQueue.push(function mergedStreamResizeStart(){
                         mergedStream.trigger(EVENTS.START, mergedData);
                         dirtyQueue.push(function mergedStreamResizeEnd(){
+                            if (hasUpdated) return;
                             mergedStream.trigger(EVENTS.END, mergedData);
                         });
                     });
                 }
                 else {
                     this.trigger(EVENTS.UPDATE, mergedData);
+                    nextTickQueue.push(function(){
+                        hasUpdated = false;
+                        dirtyQueue.push(function(){
+                            if (hasUpdated == false){
+                                mergedStream.trigger(EVENTS.END, mergedData);
+                            }
+                        })
+                    });
                 }
             }
         });
