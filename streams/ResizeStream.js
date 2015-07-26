@@ -2,6 +2,7 @@ define(function(require, exports, module) {
     var SimpleStream = require('famous/streams/SimpleStream');
     var EventMapper = require('famous/events/EventMapper');
     var EventHandler = require('famous/core/EventHandler');
+    var dirtyObjects = require('famous/core/dirtyObjects');
 
     var nextTickQueue = require('famous/core/queues/nextTickQueue');
     var postTickQueue = require('famous/core/queues/postTickQueue');
@@ -28,8 +29,6 @@ define(function(require, exports, module) {
         EventHandler.setOutputHandler(this, this._eventOutput);
 
         var self = this;
-
-        //TODO: dirtyObject logic as in LayoutNode?
 
         this._eventInput.on(EVENTS.RESIZE, function(data){
             count++;
@@ -59,12 +58,19 @@ define(function(require, exports, module) {
             })(count);
         }.bind(this));
 
+        var dirty = false;
         this._eventInput.on(EVENTS.START, function ResizeStreamStart(data){
             this.trigger(EVENTS.RESIZE, data);
+            if (dirty) return;
+            dirtyObjects.trigger('dirty');
+            dirty = true;
         }.bind(this));
 
         this._eventInput.on(EVENTS.UPDATE, function ResizeStreamUpdate(data){
             this.trigger(EVENTS.RESIZE, data);
+            if (!dirty) return;
+            dirtyObjects.trigger('clean');
+            dirty = false;
         }.bind(this));
     }
 
