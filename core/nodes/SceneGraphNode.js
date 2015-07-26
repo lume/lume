@@ -21,23 +21,11 @@ define(function(require, exports, module) {
         this.specs = [];
         this.objects = [];
         this.dirtyObjects = [];  // for discretely dirty objects
+        this.dirtySpecs = [];
 
-        this._eventInput = new EventHandler();
-        this._eventOutput = new EventHandler();
-        EventHandler.setInputHandler(this, this._eventInput);
-        EventHandler.setOutputHandler(this, this._eventOutput);
-
-        this._eventInput.on('start', function(spec){
-            this._eventOutput.emit('start', spec);
-        }.bind(this));
-
-        this._eventInput.on('update', function(spec){
-            this._eventOutput.emit('update', spec);
-        }.bind(this));
-
-        this._eventInput.on('end', function(spec){
-            this._eventOutput.emit('end', spec);
-        }.bind(this));
+        this._eventIO = new EventHandler();
+        EventHandler.setInputHandler(this, this._eventIO);
+        EventHandler.setOutputHandler(this, this._eventIO);
 
         if (object) this.set(object);
     }
@@ -71,7 +59,7 @@ define(function(require, exports, module) {
                 [object, this.size]
             );
 
-            this.stream = this._eventOutput;
+            this.stream = this._eventIO;
         }
         else if (!object.commit){
             this.stream = Stream.lift(
@@ -80,35 +68,43 @@ define(function(require, exports, module) {
                         ? layoutAlgebra(objectSpec, parentSpec, size)
                         : parentSpec;
                 },
-                [object, this._eventOutput, this.size]
+                [object, this._eventIO, this.size]
             );
         }
 
         if (object.commit){
-            var spec = new Spec();
-
-            spec.subscribe(this._eventInput);
-
             object.__size.subscribe(this.size);
 
-            spec.on('start', function(spec){
+            var commitStream = Stream.lift(function(layout, size){
+                if (size) layout.size = size;
+                return layout;
+            }, [this._eventIO, object.size]);
+
+            commitStream.on('start', function(spec){
                 this.objects.push(object);
                 this.specs.push(spec);
             }.bind(this));
 
-            spec.on('end', function(spec){
+            commitStream.on('update', function(spec){
+                var index = this.objects.indexOf(object);
+                this.specs[index] = spec;
+            }.bind(this));
+
+            commitStream.on('end', function(spec){
                 var index = this.specs.indexOf(spec);
                 this.specs.splice(index, 1);
                 this.objects.splice(index, 1);
             }.bind(this));
 
+            object.on('dirty', function(){
+                this.dirtySpecs.push(undefined);
+                this.dirtyObjects.push(object);
+            }.bind(this));
+
             object.on('clean', function(){
                 var index = this.dirtyObjects.indexOf(object);
                 this.dirtyObjects.splice(index, 1);
-            }.bind(this));
-
-            object.on('dirty', function(){
-                this.dirtyObjects.push(object);
+                this.dirtySpecs.splice(index, 1);
             }.bind(this));
         }
     };
@@ -116,7 +112,7 @@ define(function(require, exports, module) {
     SceneGraphNode.prototype.commit = function commit(allocator){
         for (var i = 0; i < this.objects.length; i++){
             var object = this.objects[i];
-            var spec = this.specs[i].get();
+            var spec = this.specs[i];
 
             object.commit(spec, allocator);
 
