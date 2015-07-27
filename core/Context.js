@@ -9,7 +9,7 @@
 /* Modified work copyright © 2015 David Valdman */
 
 define(function(require, exports, module) {
-    var SceneGraphNode = require('./nodes/SceneGraphNode');
+    var RootNode = require('./nodes/RootNode');
     var EventHandler = require('./EventHandler');
     var ElementAllocator = require('./ElementAllocator');
     var Transform = require('./Transform');
@@ -33,7 +33,7 @@ define(function(require, exports, module) {
         this.container = container;
         this.allocator = new ElementAllocator(container);
 
-        this._node = new SceneGraphNode();
+        this._node = new RootNode();
 
         this._size = _getElementSize(this.container);
         this._sizeDirty = false;
@@ -102,7 +102,7 @@ define(function(require, exports, module) {
      * @return {RenderNode} RenderNode wrapping this object, if not already a RenderNode
      */
     Context.prototype.add = function add() {
-        return SceneGraphNode.prototype.add.apply(this._node, arguments);
+        return RootNode.prototype.add.apply(this._node, arguments);
     };
 
     /**

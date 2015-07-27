@@ -18,9 +18,6 @@ define(function(require, exports, module) {
 
         this.root = null;
 
-        this.specs = {};
-        this.objects = {};
-
         this._eventIO = new EventHandler();
         EventHandler.setInputHandler(this, this._eventIO);
         EventHandler.setOutputHandler(this, this._eventIO);
@@ -38,7 +35,7 @@ define(function(require, exports, module) {
         var childNode;
 
         if (object._isView){
-            object._node.root = _getRootNode.call(this);;
+            object._node.root = _getRootNode.call(this);
             childNode = object;
         }
         else {
@@ -102,14 +99,6 @@ define(function(require, exports, module) {
                 delete root.specs[object._id];
             }.bind(this));
         }
-    };
-
-    SceneGraphNode.prototype.commit = function commit(allocator){
-        var objects = this.objects;
-        var specs = this.specs;
-
-        for (var key in objects)
-            objects[key].commit(specs[key], allocator);
     };
 
     module.exports = SceneGraphNode;
