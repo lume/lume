@@ -29,13 +29,16 @@ define(function(require, exports, module) {
         events : null,
         constructor : function View(){
             this._modifier = null;
+
             this._node = new SceneGraphNode();
+            this._node.tempRoot = this._node;
 
             this.size = new EventHandler();
 
             Controller.apply(this, arguments);
 
             this._eventInput.subscribe(this._optionsManager);
+
             this._node.subscribe(this._eventInput);
             this._node.size.subscribe(this.size);
         },
@@ -69,9 +72,6 @@ define(function(require, exports, module) {
             }
             else this._modifier.addStream({origin : origin});
             return this;
-        },
-        commit : function(allocator){
-            SceneGraphNode.prototype.commit.apply(this._node, arguments);
         }
     });
 
