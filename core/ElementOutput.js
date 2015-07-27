@@ -16,10 +16,6 @@ define(function(require, exports, module) {
     var SizeNode = require('famous/core/nodes/SizeNode');
     var sizeAlgebra = require('famous/core/algebras/size');
 
-    var usePrefix = !('transform' in document.documentElement.style);
-    var devicePixelRatio = window.devicePixelRatio || 1;
-    var invDevicePixelRatio = 1 / devicePixelRatio;
-
     /**
      * A base class for viewable content and event
      *   targets inside a Famo.us application, containing a renderable document
@@ -41,7 +37,6 @@ define(function(require, exports, module) {
         this._eventOutput = new EventHandler();
         EventHandler.setInputHandler(this, this._eventInput);
         EventHandler.setOutputHandler(this, this._eventOutput);
-        this._eventOutput.bindThis(this);
 
         this.eventForwarder = function eventForwarder(event) {
             this._eventOutput.emit(event.type, event);
@@ -79,7 +74,8 @@ define(function(require, exports, module) {
      * @return {EventHandler} this
      */
     ElementOutput.prototype.on = function on(type, fn) {
-        if (this._currentTarget) this._currentTarget.addEventListener(type, this.eventForwarder);
+        if (this._currentTarget)
+            this._currentTarget.addEventListener(type, this.eventForwarder);
         this._eventOutput.on(type, fn);
     };
 
@@ -106,38 +102,26 @@ define(function(require, exports, module) {
      * @return {EventHandler} this
      */
     ElementOutput.prototype.emit = function emit(type, event) {
-        if (event && !event.origin) event.origin = this;
         var handled = this._eventOutput.emit(type, event);
         if (handled && event && event.stopPropagation) event.stopPropagation();
         return handled;
     };
 
-    /**
-     * Return spec for this surface. Note that for a base surface, this is
-     *    simply an id.
-     *
-     * @method render
-     * @private
-     * @return {Object} render spec for this surface (spec id)
-     */
-    ElementOutput.prototype.render = function render() {
-        return this._id;
-    };
+    var usePrefix = !('transform' in document.documentElement.style);
+    var devicePixelRatio = window.devicePixelRatio || 1;
+    var invDevicePixelRatio = 1 / devicePixelRatio;
 
-    //  Attach Famous event handling to document events emanating from target
-    //    document element.  This occurs just after attachment to the document.
+    var MIN_OPACITY = 0.0001;
+    var MAX_OPACITY = 0.9999;
+
     function _addEventListeners(target) {
-        for (var i in this._eventOutput.listeners) {
+        for (var i in this._eventOutput.listeners)
             target.addEventListener(i, this.eventForwarder);
-        }
     }
 
-    //  Detach Famous event handling from document events emanating from target
-    //  document element.  This occurs just before detach from the document.
     function _removeEventListeners(target) {
-        for (var i in this._eventOutput.listeners) {
+        for (var i in this._eventOutput.listeners)
             target.removeEventListener(i, this.eventForwarder);
-        }
     }
 
     function _formatCSSTransform(transform) {
@@ -150,13 +134,20 @@ define(function(require, exports, module) {
         return result + transform[15] + ')';
     }
 
-    // format origin as CSS percentage string
     function _formatCSSOrigin(origin) {
         return (100 * origin[0]) + '% ' + (100 * origin[1]) + '%';
     }
 
-    // Directly apply given origin coordinates to the document element as the
-    // appropriate webkit CSS style.
+    function _xyNotEquals(a, b) {
+        return (a && b) ? (a[0] !== b[0] || a[1] !== b[1]) : a !== b;
+    }
+
+    var _setOpacity = function _setOpacity(element, opacity){
+        if (opacity >= MAX_OPACITY)     opacity = MAX_OPACITY;
+        else if (opacity < MIN_OPACITY) opacity = MIN_OPACITY;
+        element.style.opacity = opacity;
+    };
+
     var _setOrigin = usePrefix
         ? function _setOrigin(element, origin) {
             element.style.webkitTransformOrigin = _formatCSSOrigin(origin);
@@ -165,50 +156,23 @@ define(function(require, exports, module) {
             element.style.transformOrigin = _formatCSSOrigin(origin);
         };
 
-    /**
-     * Directly apply given Transform to the document element as the
-     *   appropriate webkit CSS style.
-     *
-     * @method setTransform
-     *
-     * @static
-     * @private
-     * @param {Element} element document element
-     * @param {FamousMatrix} matrix
-     */
-
-    var _setTransform;
-    if (usePrefix) {
-        _setTransform = function(element, transform) {
+    var _setTransform = (usePrefix)
+        ? function _setTransform(element, transform) {
             element.style.webkitTransform = _formatCSSTransform(transform);
-        };
-    }
-    else {
-        _setTransform = function(element, matrix) {
+        }
+        : function _setTransform(element, matrix) {
             element.style.transform = _formatCSSTransform(matrix);
         };
-    }
 
-    var MIN_OPACITY = 0.0001;
-    var MAX_OPACITY = 0.9999;
-    function _setOpacity(element, opacity){
-        if (opacity >= MAX_OPACITY)     opacity = MAX_OPACITY;
-        else if (opacity < MIN_OPACITY) opacity = MIN_OPACITY;
-        element.style.opacity = opacity;
-    }
-
-    // Shrink given document element until it is effectively invisible.
-    var _setInvisible = usePrefix ? function(element) {
-        element.style.webkitTransform = 'scale3d(0.0001,0.0001,0.0001)';
-        element.style.opacity = MIN_OPACITY;
-    } : function(element) {
-        element.style.transform = 'scale3d(0.0001,0.0001,0.0001)';
-        element.style.opacity = MIN_OPACITY;
-    };
-
-    function _xyNotEquals(a, b) {
-        return (a && b) ? (a[0] !== b[0] || a[1] !== b[1]) : a !== b;
-    }
+    var _setInvisible = usePrefix
+        ? function(element) {
+            element.style.webkitTransform = 'scale3d(0.0001,0.0001,0.0001)';
+            element.style.opacity = MIN_OPACITY;
+        }
+        : function(element) {
+            element.style.transform = 'scale3d(0.0001,0.0001,0.0001)';
+            element.style.opacity = MIN_OPACITY;
+        };
 
     /**
      * Apply changes from this component to the corresponding document element.
@@ -247,8 +211,6 @@ define(function(require, exports, module) {
 
             if (this._size[1] === true) this._size[1] = target.offsetHeight;
             else target.style.height = Math.round(this._size[1] * devicePixelRatio) * invDevicePixelRatio + 'px';
-
-//            this._eventOutput.emit('resize', this._size);
         }
 
         if (this._originDirty)
