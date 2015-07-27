@@ -16,12 +16,10 @@ define(function(require, exports, module) {
         this.sizeStream = null;
         this.size = new EventHandler();
 
-        this.child = null;
+        this.root = null;
 
-        this.specs = [];
-        this.objects = [];
-        this.dirtyObjects = [];  // for discretely dirty objects
-        this.dirtySpecs = [];
+        this.specs = {};
+        this.objects = {};
 
         this._eventIO = new EventHandler();
         EventHandler.setInputHandler(this, this._eventIO);
@@ -30,20 +28,27 @@ define(function(require, exports, module) {
         if (object) this.set(object);
     }
 
+    function _getRootNode(){
+        if (this.root) return this.root;
+        if (this.tempRoot) return _getRootNode.call(this.tempRoot);
+        return this;
+    }
+
     SceneGraphNode.prototype.add = function add(object) {
-        var childNode = (object._isView)
-            ? object
-            : new SceneGraphNode(object);
+        var childNode;
+
+        if (object._isView){
+            object._node.root = _getRootNode.call(this);;
+            childNode = object;
+        }
+        else {
+            childNode = new SceneGraphNode(object);
+            if (this.tempRoot) childNode.tempRoot = this.tempRoot;
+            else childNode.root = _getRootNode.call(this);
+        }
 
         childNode.subscribe(this.stream || this);
         childNode.size.subscribe(this.sizeStream || this.size);
-
-        if (!this.child)
-            this.child = childNode;
-        else if (this.child instanceof Array)
-            this.child.push(childNode);
-        else
-            this.child = [this.child, childNode];
 
         return childNode;
     };
@@ -61,7 +66,8 @@ define(function(require, exports, module) {
 
             this.stream = this._eventIO;
         }
-        else if (!object.commit){
+
+        if (!object.commit){
             this.stream = Stream.lift(
                 function SGLayoutAlgebra (objectSpec, parentSpec, size){
                     return (objectSpec)
@@ -71,65 +77,30 @@ define(function(require, exports, module) {
                 [object, this._eventIO, this.size]
             );
         }
-
-        if (object.commit){
+        else {
             object.__size.subscribe(this.size);
 
             var commitStream = Stream.lift(function(layout, size){
                 if (size) layout.size = size;
                 return layout;
-            }, [this._eventIO, object.size]);
+            }.bind(this), [this._eventIO, object.size]);
 
             commitStream.on('start', function(spec){
-                this.objects.push(object);
-                this.specs.push(spec);
+                var root = _getRootNode.call(this);
+                root.objects[object._id] = object;
+                root.specs[object._id] = spec;
             }.bind(this));
 
             commitStream.on('update', function(spec){
-                var index = this.objects.indexOf(object);
-                this.specs[index] = spec;
+                var root = _getRootNode.call(this);
+                root.specs[object._id] = spec;
             }.bind(this));
 
-            commitStream.on('end', function(spec){
-                var index = this.specs.indexOf(spec);
-                this.specs.splice(index, 1);
-                this.objects.splice(index, 1);
+            commitStream.on('end', function(){
+                var root = _getRootNode.call(this);
+                delete root.objects[object._id];
+                delete root.specs[object._id];
             }.bind(this));
-
-            object.on('dirty', function(){
-                this.dirtySpecs.push(undefined);
-                this.dirtyObjects.push(object);
-            }.bind(this));
-
-            object.on('clean', function(){
-                var index = this.dirtyObjects.indexOf(object);
-                this.dirtyObjects.splice(index, 1);
-                this.dirtySpecs.splice(index, 1);
-            }.bind(this));
-        }
-    };
-
-    SceneGraphNode.prototype.commit = function commit(allocator){
-        for (var i = 0; i < this.objects.length; i++){
-            var object = this.objects[i];
-            var spec = this.specs[i];
-
-            object.commit(spec, allocator);
-
-            var dirtyIndex = this.dirtyObjects.indexOf(object);
-            if (dirtyIndex !== -1) this.dirtyObjects.splice(dirtyIndex, 1);
-        }
-
-        for (var i = 0; i < this.dirtyObjects.length; i++){
-            this.dirtyObjects[i].commit(null, allocator);
-        }
-
-        if (this.child) {
-            if (this.child instanceof Array){
-                for (var i = 0; i < this.child.length; i++)
-                    this.child[i].commit(allocator);
-            }
-            else this.child.commit(allocator);
         }
     };
 
