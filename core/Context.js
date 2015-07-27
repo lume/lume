@@ -177,11 +177,7 @@ define(function(require, exports, module) {
         }
 
         //TODO put this in root node commit logic
-        var objects = this._node.objects;
-        var specs = this._node.specs;
-
-        for (var key in objects)
-            objects[key].commit(specs[key], this.allocator)
+        this._node.commit(this.allocator);
     };
 
     module.exports = Context;

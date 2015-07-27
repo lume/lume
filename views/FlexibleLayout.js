@@ -122,7 +122,7 @@ define(function(require, exports, module) {
                     size : this.sizes.pluck(i)
                 });
 
-                this.add(layoutNode).add(sizeNode).add(node);
+                this.add(sizeNode).add(layoutNode).add(node);
             }
         },
         /**

@@ -104,5 +104,13 @@ define(function(require, exports, module) {
         }
     };
 
+    SceneGraphNode.prototype.commit = function commit(allocator){
+        var objects = this.objects;
+        var specs = this.specs;
+
+        for (var key in objects)
+            objects[key].commit(specs[key], allocator);
+    };
+
     module.exports = SceneGraphNode;
 });
