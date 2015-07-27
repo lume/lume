@@ -36,6 +36,7 @@ define(function(require, exports, module) {
         this._node = new SceneGraphNode();
 
         this._size = _getElementSize(this.container);
+        this._sizeDirty = false;
         this.size = new EventHandler();
 
         this._perspective = new Transitionable(0);
@@ -72,20 +73,25 @@ define(function(require, exports, module) {
         }.bind(this));
     }
 
-    var usePrefix = !('perspective' in document.documentElement.style);
-
     function _getElementSize(element) {
         return [element.clientWidth, element.clientHeight];
     }
 
+    function _setElementSize(element, size) {
+        //TODO: round these by device pixel ratio
+        element.style.width = size[0] + 'px';
+        element.style.height = size[1] + 'px';
+    }
+
+    var usePrefix = !('perspective' in document.documentElement.style);
+
     var _setPerspective = usePrefix
-        ? function(element, perspective) {
+        ? function _setPerspective(element, perspective) {
             element.style.webkitPerspective = perspective ? perspective.toFixed() + 'px' : '';
         }
-        : function(element, perspective) {
+        : function _setPerspective(element, perspective) {
             element.style.perspective = perspective ? perspective.toFixed() + 'px' : '';
         };
-
 
     /**
      * Add renderables to this Context's render tree.
@@ -95,8 +101,8 @@ define(function(require, exports, module) {
      * @param {Object} obj renderable object
      * @return {RenderNode} RenderNode wrapping this object, if not already a RenderNode
      */
-    Context.prototype.add = function add(obj) {
-        return SceneGraphNode.prototype.add.call(this._node, obj);
+    Context.prototype.add = function add() {
+        return SceneGraphNode.prototype.add.apply(this._node, arguments);
     };
 
     /**
@@ -134,26 +140,9 @@ define(function(require, exports, module) {
         if (this._size == size) return;
         this._size[0] = size[0];
         this._size[1] = size[1];
+        this._sizeDirty = true;
 
         this.trigger('resize', size);
-    };
-
-    /**
-     * Commit this Context's content changes to the document.
-     *
-     * @private
-     * @method update
-     * @param {Object} spec
-     * @param {Object} allocator
-     */
-
-    Context.prototype.commit = function commit(allocator){
-        allocator = allocator || this.allocator;
-
-        if (this._perspective.isActive())
-            _setPerspective(this.container, this._perspective.get());
-
-        this._node.commit(allocator);
     };
 
     /**
@@ -175,8 +164,24 @@ define(function(require, exports, module) {
      * @param {Function} callback function called on completion of transition
      */
     Context.prototype.setPerspective = function setPerspective(perspective, transition, callback) {
-        if (transition === undefined) _setPerspective(this.container, perspective);
         this._perspective.set(perspective, transition, callback);
+    };
+
+    Context.prototype.commit = function(){
+        if (this._perspective.isActive())
+            _setPerspective(this.container, this.getPerspective());
+
+        if (this._sizeDirty){
+            _setElementSize(this.container, this.getSize());
+            this._sizeDirty = false;
+        }
+
+        //TODO put this in root node commit logic
+        var objects = this._node.objects;
+        var specs = this._node.specs;
+
+        for (var key in objects)
+            objects[key].commit(specs[key], this.allocator)
     };
 
     module.exports = Context;
