@@ -35,7 +35,10 @@ define(function(require, exports, module) {
         var childNode;
 
         if (object._isView){
-            object._node.root = _getRootNode.call(this);
+            if (this.root)
+                object._node.root = this.root;
+            else if (this.tempRoot)
+                object._node.tempRoot = this.tempRoot;
             childNode = object;
         }
         else {
