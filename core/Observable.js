@@ -7,11 +7,7 @@ define(function(require, exports, module) {
         Stream.call(this);
         this.value = value;
 
-        if (value !== undefined){
-            nextTickQueue.push(function(){
-                this.set(value);
-            }.bind(this));
-        }
+        if (value !== undefined) this.set(value);
     }
 
     Observable.prototype = Object.create(Stream.prototype);
@@ -22,12 +18,14 @@ define(function(require, exports, module) {
     };
 
     Observable.prototype.set = function(value){
-        this.value = value;
-        this.emit('start', value);
+        nextTickQueue.push(function(){
+            this.value = value;
+            this.emit('start', value);
 
-        dirtyQueue.push(function(){
-            this.emit('end', value);
-        }.bind(this));
+            dirtyQueue.push(function(){
+                this.emit('end', value);
+            }.bind(this));
+        }.bind(this))
     };
 
     module.exports = Observable;
