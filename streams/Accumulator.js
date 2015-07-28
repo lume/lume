@@ -3,33 +3,29 @@ define(function(require, exports, module){
     var postTickQueue = require('famous/core/queues/postTickQueue');
 
     function Accumulator(){
-        this.sum = undefined;
-        this.boundEmit = function(){
-            this.emit('update', {value : this.sum});
-        }.bind(this);
+        var sum = undefined;
 
         Stream.call(this, {
-            update : function(data){
-                var delta = data.delta;
-
-                if (this.sum === undefined) {
-                    if (delta instanceof Array){
-                        this.sum = [];
-                        for (var i = 0; i < delta.length; i++){
-                            this.sum[i] = 0;
-                        }
+            start : function(value){
+                value = value || 0;
+                if (sum === undefined) {
+                    if (value instanceof Array){
+                        sum = [];
+                        for (var i = 0; i < value.length; i++)
+                            sum[i] = 0;
                     }
-                    else this.sum = 0;
+                    else sum = value;
                 }
-
-                if (delta instanceof Array){
-                    for (var i = 0; i < delta.length; i++){
-                        this.sum[i] += delta[i];
-                    }
+                this.emit('start', sum);
+            }.bind(this),
+            update : function(value){
+                if (value instanceof Array){
+                    for (var i = 0; i < value.length; i++)
+                        sum[i] += value[i];
                 }
-                else this.sum += delta;
+                else sum += value;
 
-                postTickQueue.push(this.boundEmit);
+                this.emit('update', sum);
             }.bind(this)
         });
     }
@@ -38,14 +34,6 @@ define(function(require, exports, module){
 
     Accumulator.prototype = Object.create(Stream.prototype);
     Accumulator.prototype.constructor = Accumulator;
-
-    Accumulator.prototype.set = function(sum){
-        this.sum = sum;
-    };
-
-    Accumulator.prototype.get = function(){
-        return this.sum;
-    };
 
     module.exports = Accumulator;
 });
