@@ -5,7 +5,6 @@ define(function(require, exports, module) {
     var SimpleStream = require('famous/streams/SimpleStream');
     var Stream = require('famous/streams/Stream');
     var Observable = require('famous/core/Observable');
-    var nextTickQueue = require('famous/core/queues/nextTickQueue');
 
     function LayoutNode(sources) {
         this.stream = this.createStream(sources);
@@ -17,19 +16,11 @@ define(function(require, exports, module) {
     LayoutNode.prototype.createStream = function (sources){
         for (var key in sources){
             var value = sources[key];
-            if (value instanceof Number || value instanceof Array){
-                var source = new Observable();
-                var value = sources[key];
+            if (typeof value === 'number' || value instanceof Array){
+                var source = new Observable(value);
                 sources[key] = source;
-
-                (function(source, value){
-                    nextTickQueue.push(function layoutSet(){
-                        source.set(value);
-                    });
-                })(source, value);
             }
         }
-
         return Stream.merge(sources);
     };
 
@@ -37,17 +28,11 @@ define(function(require, exports, module) {
         for (var key in obj){
             var value = obj[key];
 
-            if (value instanceof SimpleStream)
-                source = value;
-            else {
-                var source = new Observable();
+            var source = (value instanceof SimpleStream)
+                ? value
+                : new Observable(value);
 
-                (function(source, value){
-                    nextTickQueue.push(function layoutSet(){
-                        source.set(value);
-                    });
-                })(source, value);
-            }
+            this.stream.addStream(key, source);
         }
     };
 
