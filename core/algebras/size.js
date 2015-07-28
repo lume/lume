@@ -28,8 +28,8 @@ define(function(require, exports, module) {
         }
 
         if (spec.proportions) {
-            if (spec.proportions[0] !== undefined) size[0] *= spec.proportions[0];
-            if (spec.proportions[1] !== undefined) size[1] *= spec.proportions[1];
+            if (spec.proportions[0] !== undefined) size[0] = spec.proportions[0] * parentSize[0];
+            if (spec.proportions[1] !== undefined) size[1] = spec.proportions[1] * parentSize[1];
         }
 
         return size;
