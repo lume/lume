@@ -5,7 +5,7 @@ define(function(require, exports, module) {
 
     function Observable(value){
         Stream.call(this);
-        this.value = value || undefined;
+        this.value = value;
 
         if (value !== undefined){
             nextTickQueue.push(function(){
@@ -22,7 +22,6 @@ define(function(require, exports, module) {
     };
 
     Observable.prototype.set = function(value){
-        if (value == this.value) return;
         this.value = value;
         this.emit('start', value);
 
