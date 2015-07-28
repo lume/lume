@@ -21,16 +21,9 @@ define(function(require, exports, module) {
     SizeNode.prototype.createStream = function (sources){
         for (var key in sources){
             var value = sources[key];
-            if (value instanceof Number || value instanceof Array){
-                var source = new Observable();
-                var value = sources[key];
+            if (typeof value == 'number' || value instanceof Array){
+                var source = new Observable(value);
                 sources[key] = source;
-
-                (function(source, value){
-                    nextTickQueue.push(function(){
-                        source.set(value);
-                    });
-                })(source, value);
             }
         }
         return ResizeStream.merge(sources);
@@ -40,17 +33,9 @@ define(function(require, exports, module) {
         for (var key in obj){
             var value = obj[key];
 
-            if (value instanceof SimpleStream)
-                source = value;
-            else {
-                var source = new Observable();
-
-                (function(source, value){
-                    nextTickQueue.push(function(){
-                        source.set(value);
-                    });
-                })(source, value);
-            }
+            var source = (value instanceof SimpleStream)
+                ? value
+                : new Observable(value);
 
             this.stream.addStream(key, source);
         }
