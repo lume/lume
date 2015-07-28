@@ -95,11 +95,11 @@ define(function(require, exports, module) {
     };
 
     nextTickQueue.push(function(){
-        eventHandler.emit('dirty');
+        dirtyObjects.emit('dirty');
     });
 
     dirtyQueue.push(function(){
-        eventHandler.emit('clean');
+        dirtyObjects.emit('clean');
     });
 
     function start(){
@@ -133,9 +133,9 @@ define(function(require, exports, module) {
         size.emit('resize', windowSize);
         eventHandler.emit('resize', windowSize);
 
-        eventHandler.trigger('dirty');
+        dirtyObjects.emit('dirty');
         dirtyQueue.push(function engineResizeClean(){
-            eventHandler.trigger('clean');
+            dirtyObjects.emit('clean');
         });
     }
     window.addEventListener('resize', handleResize, false);
@@ -174,7 +174,7 @@ define(function(require, exports, module) {
         eventHandler.off(type, handler);
     };
 
-    eventHandler.on('dirty', function engineDirty(){
+    dirtyObjects.on('dirty', function engineDirty(){
         if (!dirty) {
             dirty = true;
             rafId = window.requestAnimationFrame(loop);
@@ -182,7 +182,7 @@ define(function(require, exports, module) {
         dirtyLock++;
     });
 
-    eventHandler.on('clean', function engineClean(){
+    dirtyObjects.on('clean', function engineClean(){
         dirtyLock--;
         if (dirty && dirtyLock === 0) {
             dirty = false;
@@ -282,8 +282,6 @@ define(function(require, exports, module) {
     Engine.getContexts = function getContexts() {
         return contexts;
     };
-
-    Engine.subscribe(dirtyObjects);
 
     module.exports = Engine;
 });
