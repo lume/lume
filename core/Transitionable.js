@@ -12,9 +12,9 @@ define(function(require, exports, module) {
     var MultipleTransition = require('../core/MultipleTransition');
     var TweenTransition = require('./../transitions/TweenTransition');
     var EventHandler = require('famous/core/EventHandler');
-    var Clock = require('famous/core/Clock');
     var dirtyQueue = require('famous/core/queues/dirtyQueue');
     var nextTickQueue = require('famous/core/queues/nextTickQueue');
+    var tickQueue = require('famous/core/queues/tickQueue');
     var SimpleStream = require('famous/streams/SimpleStream');
 
     /**
@@ -55,12 +55,15 @@ define(function(require, exports, module) {
         EventHandler.setInputHandler(this, this._eventInput);
         EventHandler.setOutputHandler(this, this._eventOutput);
 
+        var boundUpdate = this.update.bind(this);
+
         this._eventOutput.on('start', function(){
-            Clock.register(this);
+            tickQueue.push(boundUpdate);
         });
 
         this._eventOutput.on('end', function(){
-            Clock.unregister(this);
+            var index = tickQueue.indexOf(boundUpdate);
+            tickQueue.splice(index,1);
         });
 
         if (start !== undefined){

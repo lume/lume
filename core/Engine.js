@@ -28,7 +28,6 @@ define(function(require, exports, module) {
     var Context = require('./Context');
     var EventHandler = require('./EventHandler');
     var OptionsManager = require('./OptionsManager');
-    var Clock = require('famous/core/Clock');
     var ResizeStream = require('famous/streams/ResizeStream');
 
     var dirtyObjects = require('famous/core/dirtyObjects');
@@ -284,7 +283,6 @@ define(function(require, exports, module) {
         return contexts;
     };
 
-    Engine.subscribe(Clock);
     Engine.subscribe(dirtyObjects);
 
     module.exports = Engine;
