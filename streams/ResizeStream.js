@@ -16,8 +16,8 @@ define(function(require, exports, module) {
         END : 'end'
     };
 
-    //only listens to resize
-    //emits SUE + resize
+    //listens to start/update/end/resize
+    //emits only resize
 
     function ResizeStream(){
         var count = 0;
@@ -67,6 +67,10 @@ define(function(require, exports, module) {
         }.bind(this));
 
         this._eventInput.on(EVENTS.UPDATE, function ResizeStreamUpdate(data){
+            this.trigger(EVENTS.RESIZE, data);
+        }.bind(this));
+
+        this._eventInput.on(EVENTS.END, function ResizeStreamEnd(data){
             this.trigger(EVENTS.RESIZE, data);
             if (!dirty) return;
             dirtyObjects.trigger('clean');
