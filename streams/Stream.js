@@ -104,7 +104,6 @@ define(function(require, exports, module) {
                     nextTickQueue.push(function(){
                         self.trigger(EVENTS.START, data);
                         dirtyQueue.push(function streamResize(){
-                            if (hasUpdated) return;
                             self.trigger(EVENTS.END, data);
                         });
                     });
@@ -114,9 +113,9 @@ define(function(require, exports, module) {
                     nextTickQueue.push(function(){
                         hasUpdated = false;
                         dirtyQueue.push(function(){
-                            if (hasUpdated == false)
+                            if (!hasUpdated)
                                 self.trigger(EVENTS.END, data);
-                        })
+                        });
                     });
                 }
 
@@ -188,7 +187,6 @@ define(function(require, exports, module) {
                     nextTickQueue.push(function mergedStreamResizeStart(){
                         mergedStream.trigger(EVENTS.START, mergedData);
                         dirtyQueue.push(function mergedStreamResizeEnd(){
-                            if (hasUpdated) return;
                             mergedStream.trigger(EVENTS.END, mergedData);
                         });
                     });
@@ -198,10 +196,9 @@ define(function(require, exports, module) {
                     nextTickQueue.push(function(){
                         hasUpdated = false;
                         dirtyQueue.push(function(){
-                            if (hasUpdated == false){
+                            if (!hasUpdated)
                                 mergedStream.trigger(EVENTS.END, mergedData);
-                            }
-                        })
+                        });
                     });
                 }
             }
