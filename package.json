@@ -6,13 +6,15 @@
   "main": false,
   "browser": "infamous.js",
   "global": "infamous.js",
+  "license": "MPL",
+  "homepage": "https://github.com/infamous/infamous",
   "scripts": {
     "test": "echo 'TODO: Test script' && exit 1",
     "clean": "mv infamous.js infamous.save && rm -rf ./*.js ./*.js.map && mv infamous.save infamous.js",
     "prepublish": "npm run build-cjs",
-    "build-umd": "6to5 src --source-maps --out-dir . --modules umd",
-    "build-cjs": "6to5 src --source-maps --out-dir . --modules common",
-    "build-amd": "6to5 src --source-maps --out-dir . --modules amd",
+    "build-umd": "babel src --source-maps --out-dir . --modules umd",
+    "build-cjs": "babel src --source-maps --out-dir . --modules common",
+    "build-amd": "babel src --source-maps --out-dir . --modules amd",
     "build-global": "echo 'TODO: Global build' && exit 1"
   },
   "repository": {
@@ -22,11 +24,9 @@
   "authors": [
     "Joseph Orbegoso Pea <joe@trusktr.io>"
   ],
-  "license": "MPL",
   "bugs": {
     "url": "https://github.com/infamous/infamous/issues"
   },
-  "homepage": "https://github.com/infamous/infamous",
   "dependencies": {
     "army-knife": "^0.2.1",
     "famous": "git+https://github.com/trusktr/famous.git#trusktr",
@@ -34,7 +34,7 @@
     "jss": "^0.10.1"
   },
   "devDependencies": {
-    "6to5": "^3.3.3"
+    "babel": "^5.6.6"
   },
   "jspm": {
     "registry": "jspm",
