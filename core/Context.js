@@ -40,6 +40,15 @@ define(function(require, exports, module) {
         this.size = new EventHandler();
 
         this._perspective = new Transitionable(0);
+        this._perspectiveDirty = false;
+
+        this._perspective.on('update', function(value){
+            this._perspectiveDirty = true;
+        }.bind(this));
+
+        this._perspective.on('end', function(value){
+            this._perspectiveDirty = true;
+        }.bind(this));
 
         this._nodeContext = {
             transform : Transform.identity,
@@ -168,15 +177,16 @@ define(function(require, exports, module) {
     };
 
     Context.prototype.commit = function(){
-        if (this._perspective.isActive())
-            _setPerspective(this.container, this.getPerspective());
+        if (this._perspectiveDirty){
+            _setPerspective.call(this, this.container, this.getPerspective());
+            this._perspectiveDirty = false;
+        }
 
         if (this._sizeDirty){
             _setElementSize(this.container, this.getSize());
             this._sizeDirty = false;
         }
 
-        //TODO put this in root node commit logic
         this._node.commit(this.allocator);
     };
 
