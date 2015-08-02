@@ -28,6 +28,7 @@ define(function(require, exports, module) {
         var count = 0;
         var total = 0;
         var hasUpdated = false;
+        var hasResizeUpdated = false;
 
         //TODO: emit result of given function instead of data
 
@@ -50,13 +51,13 @@ define(function(require, exports, module) {
             this._eventInput.on(EVENTS.START, options.start.bind(this));
         else {
             this._eventInput.on(EVENTS.START, function(data){
-
                 count++;
                 total++;
                 (function(currentCount){
                     nextTickQueue.push(function streamStart(){
-                        if (currentCount == total && !hasUpdated){
-                            self.emit(EVENTS.START, data);
+                        if (currentCount == total){
+                            if (!hasUpdated)
+                                self.emit(EVENTS.START, data);
                             count = 0;
                         }
                     });
@@ -69,9 +70,8 @@ define(function(require, exports, module) {
             this._eventInput.on(EVENTS.UPDATE, options.update.bind(this));
         else {
             this._eventInput.on(EVENTS.UPDATE, function(data){
-                hasUpdated = true;
                 count++;
-
+                hasUpdated = true;
                 postTickQueue.push(function streamUpdate(){
                     self.emit(EVENTS.UPDATE, data);
                     count = 0;
@@ -83,14 +83,18 @@ define(function(require, exports, module) {
             this._eventInput.on(EVENTS.END, options.end.bind(this));
         else {
             this._eventInput.on(EVENTS.END, function(data){
-                dirtyQueue.push(function streamEnd(){
-                    total--;
-                    if (total === 0){
-                        self.emit(EVENTS.END, data);
-                        count = 0;
-                        hasUpdated = false;
-                    }
-                })
+                total--;
+                count--;
+                (function(currentTotal){
+                    dirtyQueue.push(function streamEnd(){
+                        if (currentTotal === 0){
+                            self.emit(EVENTS.END, data);
+                            count = 0;
+                            total = 0;
+                            hasUpdated = false;
+                        }
+                    });
+                })(total);
             });
         }
 
@@ -99,26 +103,23 @@ define(function(require, exports, module) {
         else {
             this._eventInput.on(EVENTS.RESIZE, function(data){
                 var state = State.get();
-
                 if (state == State.STATES.START){
-                    nextTickQueue.push(function(){
-                        self.trigger(EVENTS.START, data);
-                        dirtyQueue.push(function streamResize(){
+                    self.trigger(EVENTS.START, data);
+                    dirtyQueue.push(function(){
+                        if (!hasResizeUpdated){
                             self.trigger(EVENTS.END, data);
-                        });
+                            hasResizeUpdated = false;
+                        }
                     });
                 }
-                else {
+                else if (state == State.STATES.UPDATE){
+                    hasResizeUpdated = true;
                     this.trigger(EVENTS.UPDATE, data);
-                    nextTickQueue.push(function(){
-                        hasUpdated = false;
-                        dirtyQueue.push(function(){
-                            if (!hasUpdated)
-                                self.trigger(EVENTS.END, data);
-                        });
-                    });
                 }
-
+                else if (state == State.STATES.END){
+                    hasResizeUpdated = false;
+                    self.trigger(EVENTS.END, data);
+                }
             }.bind(this));
         }
     }
@@ -132,16 +133,20 @@ define(function(require, exports, module) {
         var count = 0;
         var total = 0;
         var hasUpdated = false;
+        var hasResizeUpdated = false;
 
         var mergedStream = new Stream({
             start : function(mergedData){
                 count++;
                 total++;
 
+                console.log(total);
                 (function(currentCount){
                     nextTickQueue.push(function mergedStreamStart(){
-                        if (currentCount == total && !hasUpdated){
-                            mergedStream.emit(EVENTS.START, mergedData);
+                        console.log(currentCount, count, total)
+                        if (currentCount == total){
+                            if (!hasUpdated)
+                                mergedStream.emit(EVENTS.START, mergedData);
                             count = 0;
                         }
                     });
@@ -160,22 +165,16 @@ define(function(require, exports, module) {
                 })(count)
             },
             end : function(mergedData){
-//                dirtyQueue.push(function mergedStreamEnd(){
-//                    total--;
-//                    count--;
-//                    if (total === 0){
-//                        mergedStream.emit(EVENTS.END, mergedData);
-//                        count = 0;
-//                        hasUpdated = false;
-//                    }
-//                });
                 total--;
                 count--;
+
+                console.log(total);
                 (function(currentTotal){
                     dirtyQueue.push(function mergedStreamEnd(){
                         if (currentTotal === 0){
                             mergedStream.emit(EVENTS.END, mergedData);
                             count = 0;
+                            total = 0;
                             hasUpdated = false;
                         }
                     });
@@ -184,22 +183,18 @@ define(function(require, exports, module) {
             resize : function(mergedData){
                 var state = State.get();
                 if (state == State.STATES.START){
-                    nextTickQueue.push(function mergedStreamResizeStart(){
-                        mergedStream.trigger(EVENTS.START, mergedData);
-                        dirtyQueue.push(function mergedStreamResizeEnd(){
+                    mergedStream.trigger(EVENTS.START, mergedData);
+                    dirtyQueue.push(function(){
+                        if (!hasResizeUpdated){
                             mergedStream.trigger(EVENTS.END, mergedData);
-                        });
+                        }
                     });
                 }
-                else {
+                else if (state == State.STATES.UPDATE){
                     this.trigger(EVENTS.UPDATE, mergedData);
-                    nextTickQueue.push(function(){
-                        hasUpdated = false;
-                        dirtyQueue.push(function(){
-                            if (!hasUpdated)
-                                mergedStream.trigger(EVENTS.END, mergedData);
-                        });
-                    });
+                }
+                else if (state == State.STATES.END){
+                    mergedStream.trigger(EVENTS.END, mergedData);
                 }
             }
         });
