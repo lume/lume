@@ -28,8 +28,6 @@ define(function(require, exports, module) {
         var batchTotal = 0;
         var total = 0;
 
-        //TODO: emit result of given function instead of data
-
         var self = this;
 
         var dirty = false;
@@ -45,70 +43,66 @@ define(function(require, exports, module) {
             dirty = false;
         });
 
-        if (options.start)
-            this._eventInput.on(EVENTS.START, options.start.bind(this));
-        else {
-            this._eventInput.on(EVENTS.START, function(data){
-                batchCount++;
-                batchTotal++;
-                total++;
-                (function(currentCount){
-                    nextTickQueue.push(function streamStart(){
-                        if (currentCount == batchTotal){
-                            self.emit(EVENTS.START, data);
-                            batchCount = 0;
-                            batchTotal = 0;
-                        }
-                    });
-                })(batchCount)
+        this._eventInput.on(EVENTS.START, function(data){
+            batchCount++;
+            batchTotal++;
+            total++;
+            (function(currentCount){
+                nextTickQueue.push(function streamStart(){
+                    if (currentCount == batchTotal){
+                        var payload = options.start ? options.start(data) : data;
+                        if (payload !== false) self.emit(EVENTS.START, payload);
+                        batchCount = 0;
+                        batchTotal = 0;
+                    }
+                });
+            })(batchCount)
+        });
 
-            }.bind(this));
-        }
+        this._eventInput.on(EVENTS.UPDATE, function(data){
+            batchCount++;
+            batchTotal++;
+            (function(currentCount){
+                postTickQueue.push(function streamUpdate(){
+                    if (currentCount == batchTotal) {
+                        var payload = options.update ? options.update(data) : data;
+                        if (payload !== false) self.emit(EVENTS.UPDATE, payload);
+                        batchCount = 0;
+                        batchTotal = 0;
+                    }
+                });
+            })(batchCount);
+        });
 
-        if (options.update)
-            this._eventInput.on(EVENTS.UPDATE, options.update.bind(this));
-        else {
-            this._eventInput.on(EVENTS.UPDATE, function(data){
-                self.emit(EVENTS.UPDATE, data);
-            });
-        }
+        this._eventInput.on(EVENTS.END, function(data){
+            batchCount++;
+            batchTotal++;
+            total--;
+            (function(currentCount){
+                dirtyQueue.push(function streamEnd(){
+                    if (currentCount === batchTotal && total == 0){
+                        var payload = options.end ? options.end(data) : data;
+                        if (payload !== false) self.emit(EVENTS.END, payload);
+                        batchCount = 0;
+                        batchTotal = 0;
+                    }
+                });
+            })(batchCount);
+        });
 
-        if (options.end)
-            this._eventInput.on(EVENTS.END, options.end.bind(this));
-        else {
-            this._eventInput.on(EVENTS.END, function(data){
-                batchCount++;
-                batchTotal++;
-                total--;
-                (function(currentCount){
-                    dirtyQueue.push(function streamEnd(){
-                        if (currentCount === batchTotal && total == 0){
-                            self.emit(EVENTS.END, data);
-                            batchCount = 0;
-                            batchTotal = 0;
-                        }
-                    });
-                })(batchCount);
-            });
-        }
-
-        if (options.resize)
-            this._eventInput.on(EVENTS.RESIZE, options.resize.bind(this));
-        else {
-            this._eventInput.on(EVENTS.RESIZE, function(data){
-                switch (State.get()){
-                    case State.STATES.START:
-                        self.trigger(EVENTS.START, data);
-                        break;
-                    case State.STATES.UPDATE:
-                        self.trigger(EVENTS.UPDATE, data);
-                        break;
-                    case State.STATES.END:
-                        self.trigger(EVENTS.END, data);
-                        break;
-                }
-            });
-        }
+        this._eventInput.on(EVENTS.RESIZE, function(data){
+            switch (State.get()){
+                case State.STATES.START:
+                    self.trigger(EVENTS.START, data);
+                    break;
+                case State.STATES.UPDATE:
+                    self.trigger(EVENTS.UPDATE, data);
+                    break;
+                case State.STATES.END:
+                    self.trigger(EVENTS.END, data);
+                    break;
+            }
+        });
     }
 
     Stream.prototype = Object.create(SimpleStream.prototype);
@@ -117,69 +111,7 @@ define(function(require, exports, module) {
     Stream.lift = SimpleStream.lift;
 
     Stream.merge = function(streamObj){
-        var batchCount = 0;
-        var batchTotal = 0;
-        var total = 0;
-
-        var mergedStream = new Stream({
-            start : function(mergedData){
-                total++;
-                batchCount++;
-                batchTotal++;
-
-                (function(currentCount){
-                    nextTickQueue.push(function mergedStreamStart(){
-                        if (currentCount == batchTotal){
-                            mergedStream.emit(EVENTS.START, mergedData);
-                            batchCount = 0;
-                            batchTotal = 0;
-                        }
-                    });
-                })(batchCount);
-            },
-            update : function(mergedData){
-                batchCount++;
-                batchTotal++;
-                (function(currentCount){
-                    postTickQueue.push(function mergedStreamUpdate(){
-                        if (currentCount == batchTotal) {
-                            mergedStream.emit(EVENTS.UPDATE, mergedData);
-                            batchCount = 0;
-                            batchTotal = 0;
-                        }
-                    });
-                })(batchCount);
-            },
-            end : function(mergedData){
-                total--;
-                batchCount++;
-                batchTotal++;
-
-                (function(currentCount){
-                    dirtyQueue.push(function mergedStreamEnd(){
-                        if (currentCount == batchTotal && total === 0){
-                            mergedStream.emit(EVENTS.END, mergedData);
-                            batchCount = 0;
-                            batchTotal = 0;
-                        }
-                    });
-                })(batchCount);
-            },
-            resize : function(mergedData){
-                switch (State.get()){
-                    case State.STATES.START:
-//                        mergedStream.trigger(EVENTS.START, mergedData);
-                        break;
-                    case State.STATES.UPDATE:
-                        mergedStream.trigger(EVENTS.UPDATE, mergedData);
-                        break;
-                    case State.STATES.END:
-//                        mergedStream.trigger(EVENTS.END, mergedData);
-                        break;
-                }
-            }
-        });
-
+        var mergedStream = new Stream();
         var mergedData = (streamObj instanceof Array) ? [] : {};
 
         mergedStream.addStream = function(key, stream){
