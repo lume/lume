@@ -9,7 +9,6 @@ define(function(require, exports, module) {
     var dirtyQueue = require('famous/core/queues/dirtyQueue');
     var State = require('famous/core/SUE');
 
-
     var EVENTS = {
         START : 'start',
         UPDATE : 'update',
@@ -25,10 +24,9 @@ define(function(require, exports, module) {
 
         options = options || {};
 
-        var count = 0;
+        var batchCount = 0;
+        var batchTotal = 0;
         var total = 0;
-        var hasUpdated = false;
-        var hasResizeUpdated = false;
 
         //TODO: emit result of given function instead of data
 
@@ -51,17 +49,18 @@ define(function(require, exports, module) {
             this._eventInput.on(EVENTS.START, options.start.bind(this));
         else {
             this._eventInput.on(EVENTS.START, function(data){
-                count++;
+                batchCount++;
+                batchTotal++;
                 total++;
                 (function(currentCount){
                     nextTickQueue.push(function streamStart(){
-                        if (currentCount == total){
-                            if (!hasUpdated)
-                                self.emit(EVENTS.START, data);
-                            count = 0;
+                        if (currentCount == batchTotal){
+                            self.emit(EVENTS.START, data);
+                            batchCount = 0;
+                            batchTotal = 0;
                         }
                     });
-                })(count)
+                })(batchCount)
 
             }.bind(this));
         }
@@ -70,12 +69,7 @@ define(function(require, exports, module) {
             this._eventInput.on(EVENTS.UPDATE, options.update.bind(this));
         else {
             this._eventInput.on(EVENTS.UPDATE, function(data){
-                count++;
-                hasUpdated = true;
-                postTickQueue.push(function streamUpdate(){
-                    self.emit(EVENTS.UPDATE, data);
-                    count = 0;
-                });
+                self.emit(EVENTS.UPDATE, data);
             });
         }
 
@@ -83,18 +77,18 @@ define(function(require, exports, module) {
             this._eventInput.on(EVENTS.END, options.end.bind(this));
         else {
             this._eventInput.on(EVENTS.END, function(data){
+                batchCount++;
+                batchTotal++;
                 total--;
-                count--;
-                (function(currentTotal){
+                (function(currentCount){
                     dirtyQueue.push(function streamEnd(){
-                        if (currentTotal === 0){
+                        if (currentCount === batchTotal && total == 0){
                             self.emit(EVENTS.END, data);
-                            count = 0;
-                            total = 0;
-                            hasUpdated = false;
+                            batchCount = 0;
+                            batchTotal = 0;
                         }
                     });
-                })(total);
+                })(batchCount);
             });
         }
 
@@ -102,25 +96,18 @@ define(function(require, exports, module) {
             this._eventInput.on(EVENTS.RESIZE, options.resize.bind(this));
         else {
             this._eventInput.on(EVENTS.RESIZE, function(data){
-                var state = State.get();
-                if (state == State.STATES.START){
-                    self.trigger(EVENTS.START, data);
-                    dirtyQueue.push(function(){
-                        if (!hasResizeUpdated){
-                            self.trigger(EVENTS.END, data);
-                            hasResizeUpdated = false;
-                        }
-                    });
+                switch (State.get()){
+                    case State.STATES.START:
+                        self.trigger(EVENTS.START, data);
+                        break;
+                    case State.STATES.UPDATE:
+                        self.trigger(EVENTS.UPDATE, data);
+                        break;
+                    case State.STATES.END:
+                        self.trigger(EVENTS.END, data);
+                        break;
                 }
-                else if (state == State.STATES.UPDATE){
-                    hasResizeUpdated = true;
-                    this.trigger(EVENTS.UPDATE, data);
-                }
-                else if (state == State.STATES.END){
-                    hasResizeUpdated = false;
-                    self.trigger(EVENTS.END, data);
-                }
-            }.bind(this));
+            });
         }
     }
 
@@ -130,71 +117,65 @@ define(function(require, exports, module) {
     Stream.lift = SimpleStream.lift;
 
     Stream.merge = function(streamObj){
-        var count = 0;
+        var batchCount = 0;
+        var batchTotal = 0;
         var total = 0;
-        var hasUpdated = false;
-        var hasResizeUpdated = false;
 
         var mergedStream = new Stream({
             start : function(mergedData){
-                count++;
                 total++;
+                batchCount++;
+                batchTotal++;
 
-                console.log(total);
                 (function(currentCount){
                     nextTickQueue.push(function mergedStreamStart(){
-                        console.log(currentCount, count, total)
-                        if (currentCount == total){
-                            if (!hasUpdated)
-                                mergedStream.emit(EVENTS.START, mergedData);
-                            count = 0;
+                        if (currentCount == batchTotal){
+                            mergedStream.emit(EVENTS.START, mergedData);
+                            batchCount = 0;
+                            batchTotal = 0;
                         }
                     });
-                })(count);
+                })(batchCount);
             },
             update : function(mergedData){
-                count++;
-                hasUpdated = true;
+                batchCount++;
+                batchTotal++;
                 (function(currentCount){
                     postTickQueue.push(function mergedStreamUpdate(){
-                        if (currentCount == total) {
+                        if (currentCount == batchTotal) {
                             mergedStream.emit(EVENTS.UPDATE, mergedData);
-                            count = 0;
+                            batchCount = 0;
+                            batchTotal = 0;
                         }
                     });
-                })(count)
+                })(batchCount);
             },
             end : function(mergedData){
                 total--;
-                count--;
+                batchCount++;
+                batchTotal++;
 
-                console.log(total);
-                (function(currentTotal){
+                (function(currentCount){
                     dirtyQueue.push(function mergedStreamEnd(){
-                        if (currentTotal === 0){
+                        if (currentCount == batchTotal && total === 0){
                             mergedStream.emit(EVENTS.END, mergedData);
-                            count = 0;
-                            total = 0;
-                            hasUpdated = false;
+                            batchCount = 0;
+                            batchTotal = 0;
                         }
                     });
-                })(total);
+                })(batchCount);
             },
             resize : function(mergedData){
-                var state = State.get();
-                if (state == State.STATES.START){
-                    mergedStream.trigger(EVENTS.START, mergedData);
-                    dirtyQueue.push(function(){
-                        if (!hasResizeUpdated){
-                            mergedStream.trigger(EVENTS.END, mergedData);
-                        }
-                    });
-                }
-                else if (state == State.STATES.UPDATE){
-                    this.trigger(EVENTS.UPDATE, mergedData);
-                }
-                else if (state == State.STATES.END){
-                    mergedStream.trigger(EVENTS.END, mergedData);
+                switch (State.get()){
+                    case State.STATES.START:
+//                        mergedStream.trigger(EVENTS.START, mergedData);
+                        break;
+                    case State.STATES.UPDATE:
+                        mergedStream.trigger(EVENTS.UPDATE, mergedData);
+                        break;
+                    case State.STATES.END:
+//                        mergedStream.trigger(EVENTS.END, mergedData);
+                        break;
                 }
             }
         });
