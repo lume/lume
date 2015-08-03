@@ -9,7 +9,6 @@
 /* Modified work copyright © 2015 David Valdman */
 
 define(function(require, exports, module) {
-    var MultipleTransition = require('../core/MultipleTransition');
     var TweenTransition = require('./../transitions/TweenTransition');
     var EventHandler = require('famous/core/EventHandler');
     var dirtyQueue = require('famous/core/queues/dirtyQueue');
@@ -100,7 +99,22 @@ define(function(require, exports, module) {
     };
 
     function _loadNext() {
-        if (this.endStateQueue.length === 0) return;
+        if (this.endStateQueue.length === 0) {
+            if (this._callback) {
+                var callback = this._callback;
+                this._callback = undefined;
+                callback();
+            }
+
+            dirtyQueue.push(function(){
+                if (this._engineInstance && !this._engineInstance.isActive()){
+                    this._state = STATE.END;
+                    this.emit('end', this.state);
+                }
+            }.bind(this));
+
+            return;
+        }
 
         var endValue = this.endStateQueue.shift();
         var transition = this.transitionQueue.shift();
@@ -112,9 +126,7 @@ define(function(require, exports, module) {
             : TweenTransition;
 
         if (this._currentMethod !== method) {
-            this._engineInstance = (typeof endValue === 'number' || endValue.length <= method.SUPPORTS_MULTIPLE)
-                ? new method()
-                : new MultipleTransition(method);
+            this._engineInstance = new method();
             this._currentMethod = method;
         }
 
@@ -194,31 +206,9 @@ define(function(require, exports, module) {
     };
 
     Transitionable.prototype.update = function update(){
-        // hack for next tick ending
-        if (this._state === STATE.END || !this._engineInstance) return;
-
-        var state = this._engineInstance.get();
-
-        this.emit('update', state);
-
-        this.state = state;
-
-        if (this._engineInstance && !this._engineInstance.isActive()){
-            var self = this;
-            //TODO: end on same tick?
-            nextTickQueue.push(function(){
-                self._state = STATE.END;
-                dirtyQueue.push(function(){
-                    self._eventOutput.emit('end', self.state);
-
-                    if (self._callback) {
-                        var callback = self._callback;
-                        self._callback = undefined;
-                        callback();
-                    }
-                });
-            });
-        }
+        if (!this._engineInstance) return;
+        this.state = this._engineInstance.get();
+        this.emit('update', this.state);
     };
 
     /**
