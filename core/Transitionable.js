@@ -248,10 +248,11 @@ define(function(require, exports, module) {
         }.bind(this));
     };
 
-    Transitionable.prototype.loop = function(values, transitions){
+    Transitionable.prototype.loop = function(values, transitions, callback){
         var val = values.slice(0);
         this.iterate(values, transitions, function(){
-            this.loop(val, transitions);
+            if (callback) callback();
+            this.loop(val, transitions, callback);
         }.bind(this));
     };
 
