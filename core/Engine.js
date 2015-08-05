@@ -71,9 +71,7 @@ define(function(require, exports, module) {
 
     Engine.step = function step() {
         // browser events and their handlers happen before rendering begins
-        while (nextTickQueue.length) {
-            (nextTickQueue.shift())();
-        }
+        while (nextTickQueue.length) (nextTickQueue.shift())();
 
         // tick signals base event flow coming in
         State.set(State.STATES.UPDATE);
@@ -92,6 +90,8 @@ define(function(require, exports, module) {
         while (dirtyQueue.length) (dirtyQueue.shift())();
 
         State.set(State.STATES.START);
+
+        return dirtyLock;
     };
 
     nextTickQueue.push(function(){
@@ -105,25 +105,22 @@ define(function(require, exports, module) {
     function start(){
         nextTickQueue.push(function start(){
             handleResize();
-            for (var i = 0; i < contexts.length; i++){
+            for (var i = 0; i < contexts.length; i++)
                 contexts[i].trigger('start');
 
-                dirtyQueue.push(
-                    function contextMountClean(i){
-                        contexts[i].trigger('end');
-                    }.bind(null,i)
-                );
-            }
+            dirtyQueue.push(function(){
+                for (var i = 0; i < contexts.length; i++)
+                    contexts[i].trigger('end');
+            });
         });
     }
 
     // engage requestAnimationFrame
     function loop() {
-        //TODO: this dirty check should be unecessary
-        if (dirty) {
-            Engine.step();
+        var dirty = Engine.step();
+//        if (dirty)
+//        console.log(dirty)
             rafId = window.requestAnimationFrame(loop);
-        }
     }
     window.requestAnimationFrame(start);
     rafId = window.requestAnimationFrame(loop);
@@ -133,8 +130,11 @@ define(function(require, exports, module) {
         size.emit('resize', windowSize);
         eventHandler.emit('resize', windowSize);
 
+        //TODO: is this unnecessary? SizeNode will trigger dirty
         dirtyObjects.emit('dirty');
         dirtyQueue.push(function engineResizeClean(){
+            size.emit('resize', windowSize);
+            eventHandler.emit('resize', windowSize);
             dirtyObjects.emit('clean');
         });
     }
@@ -184,6 +184,7 @@ define(function(require, exports, module) {
 
     dirtyObjects.on('clean', function engineClean(){
         dirtyLock--;
+//        console.log(dirtyLock)
         if (dirty && dirtyLock === 0) {
             dirty = false;
             window.cancelAnimationFrame(rafId);
