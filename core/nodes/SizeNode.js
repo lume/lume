@@ -9,12 +9,7 @@ define(function(require, exports, module) {
     function SizeNode(sources) {
         this.stream = this.createStream(sources);
         this._eventOutput = new EventHandler();
-
-        EventHandler.setOutputHandler(this, this._eventOutput);
-
-        this.stream.on('resize', function(data){
-            this._eventOutput.emit('resize', data);
-        }.bind(this));
+        EventHandler.setOutputHandler(this, this.stream);
     }
 
     SizeNode.prototype.createStream = function (sources){
