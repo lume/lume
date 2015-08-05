@@ -1,39 +1,43 @@
 define(function(require, exports, module){
     var Stream = require('famous/streams/Stream');
-    var postTickQueue = require('famous/core/queues/postTickQueue');
 
     function Accumulator(){
-        var sum = undefined;
+        this.sum = undefined;
 
         Stream.call(this, {
-            start : function(value){
-                value = value || 0;
-                if (sum === undefined) {
-                    if (value instanceof Array){
-                        sum = [];
-                        for (var i = 0; i < value.length; i++)
-                            sum[i] = 0;
-                    }
-                    else sum = value;
-                }
-                this.emit('start', sum);
-            }.bind(this),
-            update : function(value){
-                if (value instanceof Array){
-                    for (var i = 0; i < value.length; i++)
-                        sum[i] += value[i];
-                }
-                else sum += value;
-
-                this.emit('update', sum);
-            }.bind(this)
+            update : function(){ return this.sum; }.bind(this)
         });
+
+        this._eventInput.on('start', function(value){
+            value = value || 0;
+            if (this.sum === undefined) {
+                if (value instanceof Array){
+                    this.sum = [];
+                    for (var i = 0; i < value.length; i++)
+                        this.sum[i] = value[i];
+                }
+                else this.sum = value;
+            }
+        }.bind(this));
+
+        this._eventInput.on('update', function(value){
+            if (value instanceof Array){
+                if (!this.sum) this.sum = [];
+                for (var i = 0; i < value.length; i++)
+                    this.sum[i] += value[i];
+            }
+            else this.sum += value;
+        }.bind(this));
     }
 
     Accumulator.DEFAULT_OPTIONS = {};
 
     Accumulator.prototype = Object.create(Stream.prototype);
     Accumulator.prototype.constructor = Accumulator;
+
+    Accumulator.prototype.get = function(){
+        return this.sum;
+    };
 
     module.exports = Accumulator;
 });
