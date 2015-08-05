@@ -15,7 +15,7 @@ define(function(require, exports, module) {
     var ResizeStream = require('famous/streams/ResizeStream');
     var SizeNode = require('famous/core/nodes/SizeNode');
     var sizeAlgebra = require('famous/core/algebras/size');
-    var register = require('famous/core/register')
+    var register = require('famous/core/register');
 
     /**
      * A base class for viewable content and event
