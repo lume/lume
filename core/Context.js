@@ -55,7 +55,6 @@ define(function(require, exports, module) {
             opacity : 1,
             origin : null,
             align : null,
-            size : this._size,
             nextSizeTransform : Transform.identity
         };
 
@@ -73,12 +72,12 @@ define(function(require, exports, module) {
         }.bind(this));
 
         this._eventInput.on('resize', function(size){
-            this._node.size.trigger('resize', size);
             this.emit('resize', size);
         }.bind(this));
 
-        this.size.on('resize', function(){
-            this.setSize(_getElementSize(this.container));
+        this.size.on('resize', function(size){
+            //TODO: allow for Context to have none fullscreen dimensions
+            this._node.size.emit('resize', size);
         }.bind(this));
     }
 
