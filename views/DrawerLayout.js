@@ -15,6 +15,7 @@ define(function(require, exports, module) {
     var LayoutNode = require('famous/core/nodes/LayoutNode');
     var Stream = require('famous/streams/Stream');
     var Differential = require('famous/streams/Differential');
+    var Accumulator = require('famous/streams/Accumulator');
     var EventMapper = require('famous/events/EventMapper');
 
     var CONSTANTS = {
@@ -36,7 +37,7 @@ define(function(require, exports, module) {
 
     var DrawerLayout = View.extend({
         defaults : {
-            side: CONSTANTS.SIDE.LEFT,
+            side : CONSTANTS.SIDE.LEFT,
             drawerLength : 0,
             velocityThreshold : 0,
             positionThreshold : 0,
@@ -52,45 +53,51 @@ define(function(require, exports, module) {
             this.drawerLength = options.drawerLength;
             this.isOpen = false;
 
-            this._position = 0;
-
             this.input = new Stream();
 
-            this.gestureStream = new Stream({
-                update : function(delta){
-                    var newPosition = this._position + delta;
+            var _delta = 0;
 
-                    var MIN_LENGTH = 0;
-                    var MAX_LENGTH = 0;
-
-                    if (this.orientation === CONSTANTS.ORIENTATION.POSITIVE)
-                        MAX_LENGTH = this.drawerLength;
-                    else
-                        MIN_LENGTH = this.drawerLength;
-
-                    if (newPosition < MAX_LENGTH && newPosition > MIN_LENGTH)
-                        this.gestureStream.emit('update', delta);
-                    else {
-                        if (newPosition > MAX_LENGTH && newPosition > MIN_LENGTH && this._position !== MAX_LENGTH){
-                            delta = MAX_LENGTH - this._position;
-                            this.gestureStream.emit('update', delta);
-                        } else if (newPosition < MIN_LENGTH && this._position !== MIN_LENGTH){
-                            delta = MIN_LENGTH - this._position;
-                            this.gestureStream.emit('update', delta);
-                        }
-                    }
+            var gestureStream = new Stream({
+                start : function(){return false},
+                update : function(){
+                    if (_delta) return _delta;
+                    else return false;
                 }.bind(this)
             });
 
-            this.gestureStream.on('start', function(){
-                this.inertialStream.halt();
+            gestureStream._eventInput.on('update', function(delta){
+                var currentPosition = this.position.get();
+                var newPosition = currentPosition + delta;
+
+                var MIN_LENGTH = 0;
+                var MAX_LENGTH = 0;
+
+                if (this.orientation === CONSTANTS.ORIENTATION.POSITIVE)
+                    MAX_LENGTH = this.drawerLength;
+                else
+                    MIN_LENGTH = this.drawerLength;
+
+                if (newPosition < MAX_LENGTH && newPosition > MIN_LENGTH)
+                    _delta = delta;
+                else {
+                    if (newPosition > MAX_LENGTH && newPosition > MIN_LENGTH && currentPosition !== MAX_LENGTH)
+                        _delta = MAX_LENGTH - currentPosition;
+                    else if (newPosition < MIN_LENGTH && currentPosition !== MIN_LENGTH)
+                        _delta = MIN_LENGTH - currentPosition;
+                    else _delta = 0;
+                }
             }.bind(this));
 
-            this.gestureStream.on('end', function(data){
+//            this.gestureStream.on('start', function(a){
+//                this.inertialStream.halt();
+//            }.bind(this));
+
+            gestureStream.on('end', function(data){
                 var velocity = data.velocity;
                 var orientation = this.orientation;
                 var length = this.drawerLength;
                 var isOpen = this.isOpen;
+                var currentPosition = this.position.get();
 
                 var options = this.options;
 
@@ -99,46 +106,34 @@ define(function(require, exports, module) {
                 var velocityThreshold = options.velocityThreshold;
 
                 if (options.transition instanceof Object)
-                    options.transition.velocity = data.velocity;
+                    options.transition.velocity = velocity;
 
-                if (this._position === 0) {
+                if (currentPosition === 0) {
                     this.isOpen = false;
                     return;
                 }
 
-                if (this._position === MAX_LENGTH) {
+                if (currentPosition === MAX_LENGTH) {
                     this.isOpen = true;
                     return;
                 }
 
                 var shouldToggle =
                     Math.abs(velocity) > velocityThreshold          ||
-                    (!isOpen && this._position > positionThreshold) ||
-                    (isOpen && this._position < positionThreshold);
+                    (!isOpen && currentPosition > positionThreshold) ||
+                    (isOpen && currentPosition < positionThreshold);
 
                 (shouldToggle) ? this.toggle() : this.reset();
             }.bind(this));
 
-            this.inertialStream = new Transitionable(0);
+            gestureStream.subscribe(this.input.pluck('delta'));
 
+            this.inertialStream = new Transitionable(0);
             var differential = new Differential();
             differential.subscribe(this.inertialStream);
 
-            this.position = new Stream({
-                start : function(){
-                    this.position.emit('start',this._position);
-                }.bind(this),
-                update : function(delta){
-                    this._position += delta;
-                    this.position.emit('update', this._position);
-                }.bind(this),
-                end : function(){
-                    this.position.emit('end',this._position);
-                }.bind(this)
-            });
-
-            this.gestureStream.subscribe(this.input.pluck('delta'));
-            this.position.subscribe(this.gestureStream);
+            this.position = new Accumulator();
+            this.position.subscribe(gestureStream);
             this.position.subscribe(differential);
 
             var outputMapper = new EventMapper(function(position){
@@ -163,6 +158,7 @@ define(function(require, exports, module) {
             }.bind(this));
 
             var layout = new LayoutNode({transform : transform});
+
             this.add(layout).add(content);
         },
         /**
@@ -218,7 +214,7 @@ define(function(require, exports, module) {
          * @param [callback] {Function}         callback
          */
         setPosition : function setPosition(position, transition, callback) {
-            this.inertialStream.set(this._position);
+            this.inertialStream.set(this.position.get());
             this.inertialStream.set(position, transition, callback);
         },
         /**
@@ -230,15 +226,6 @@ define(function(require, exports, module) {
         reset : function reset(transition) {
             if (this.isOpen) this.open(transition);
             else this.close(transition);
-        },
-        /*
-         * Returns if drawer is committed to being open or closed
-         *
-         * @method isOpen
-         * @return {Boolean}
-         */
-        isOpen : function isOpen(){
-            return this.isOpen;
         }
     }, CONSTANTS);
 
