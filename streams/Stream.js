@@ -27,6 +27,7 @@ define(function(require, exports, module) {
         var batchCount = 0;
         var batchTotal = 0;
         var total = 0;
+        var isUpdating = false;
 
         var self = this;
 
@@ -47,13 +48,15 @@ define(function(require, exports, module) {
             batchCount++;
             batchTotal++;
             total++;
+
             (function(currentCount){
                 nextTickQueue.push(function streamStart(){
                     if (currentCount == batchTotal){
-                        var payload = options.start ? options.start(data) : data;
-                        if (payload !== false) self.emit(EVENTS.START, payload);
                         batchCount = 0;
                         batchTotal = 0;
+                        if (isUpdating) return;
+                        var payload = options.start ? options.start(data) : data;
+                        if (payload !== false) self.emit(EVENTS.START, payload);
                     }
                 });
             })(batchCount)
@@ -62,6 +65,7 @@ define(function(require, exports, module) {
         this._eventInput.on(EVENTS.UPDATE, function(data){
             batchCount++;
             batchTotal++;
+            isUpdating = true;
             (function(currentCount){
                 postTickQueue.push(function streamUpdate(){
                     if (currentCount == batchTotal) {
@@ -75,19 +79,16 @@ define(function(require, exports, module) {
         });
 
         this._eventInput.on(EVENTS.END, function(data){
-            batchCount++;
-            batchTotal++;
             total--;
-            (function(currentCount){
+            (function(currentTotal){
                 dirtyQueue.push(function streamEnd(){
-                    if (currentCount === batchTotal && total == 0){
+                    if (currentTotal == 0){
+                        isUpdating = false;
                         var payload = options.end ? options.end(data) : data;
                         if (payload !== false) self.emit(EVENTS.END, payload);
-                        batchCount = 0;
-                        batchTotal = 0;
                     }
                 });
-            })(batchCount);
+            })(total);
         });
 
         this._eventInput.on(EVENTS.RESIZE, function(data){

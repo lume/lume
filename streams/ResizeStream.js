@@ -24,6 +24,8 @@ define(function(require, exports, module) {
         var batchCount = 0; // progress of firings in each round of start/update/end
         var batchTotal = 0; // total firings in each round of start/update/end
 
+        var isUpdating = false;
+
         this._eventInput = new EventHandler();
         this._eventOutput = new EventHandler();
         EventHandler.setInputHandler(this, this._eventInput);
@@ -45,18 +47,16 @@ define(function(require, exports, module) {
 
                 (function(currentCount) {
                     nextTickQueue.push(function ResizeStreamStart() {
-                        if (currentCount == batchTotal) {
+                        if (currentCount == batchTotal && !isUpdating) {
+                            self.emit(EVENTS.RESIZE, data);
                             batchCount = 0;
                             batchTotal = 0;
-                            self.emit(EVENTS.RESIZE, data);
-                            dirtyQueue.push(function () {
-                                self.trigger(EVENTS.END, data);
-                            });
                         }
                     });
                 })(batchCount);
             }
             else if (state === State.STATES.UPDATE){
+                isUpdating = true;
                 batchCount++;
                 batchTotal++;
                 (function(currentCount){
@@ -71,20 +71,19 @@ define(function(require, exports, module) {
             }
             else if (state === State.STATES.END){
                 total--;
-                batchCount++;
-                batchTotal++;
 
                 if (dirty) dirtyObjects.trigger('clean');
                 dirty = false;
 
-                (function(currentCount){
+                (function(currentTotal){
                     dirtyQueue.push(function ResizeStreamResize() {
-                        if (currentCount == batchTotal && total == 0) {
-                            batchCount = 0;
-                            batchTotal = 0;
+                        isUpdating = false;
+                        if (currentTotal == 0) {
+                            self.emit(EVENTS.RESIZE, data);
+                            total = 0;
                         }
                     });
-                })(batchCount);
+                })(total);
             }
         });
 
