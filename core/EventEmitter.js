@@ -61,6 +61,14 @@ define(function(require, exports, module) {
         if (index < 0) this.listeners[type].push(handler);
     };
 
+    EventEmitter.prototype.once = function once(type, handler){
+        var onceHandler = function(){
+            handler.apply(this, arguments);
+            EventEmitter.prototype.off.call(this, type, onceHandler);
+        }.bind(this);
+        this.on(type, onceHandler);
+    };
+
    /**
      * Unbind an event by type and handler.
      *   This undoes the work of "on".
