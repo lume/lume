@@ -1,16 +1,16 @@
 define(function(require, exports, module){
     var Stream = require('famous/streams/Stream');
 
-    function Accumulator(){
-        this.sum = undefined;
+    function Accumulator(sum){
+        this.sum = sum || undefined;
 
         Stream.call(this, {
             update : function(){ return this.sum; }.bind(this)
         });
 
         this._eventInput.on('start', function(value){
-            value = value || 0;
             if (this.sum === undefined) {
+                value = value || 0;
                 if (value instanceof Array){
                     this.sum = [];
                     for (var i = 0; i < value.length; i++)
