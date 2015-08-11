@@ -654,6 +654,8 @@ define(function(require, exports, module) {
         return result;
     };
 
+    //TODO: why do inFront/behind need to translate by >1 to overcome DOM order?
+
     /**
      * (Property) Array defining a translation forward in z
      *
@@ -661,7 +663,7 @@ define(function(require, exports, module) {
      * @static
      * @final
      */
-    Transform.inFront = [1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 1e-3, 1];
+    Transform.inFront = [1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 1.001, 1];
 
     /**
      * (Property) Array defining a translation backwards in z
@@ -670,7 +672,7 @@ define(function(require, exports, module) {
      * @static
      * @final
      */
-    Transform.behind = [1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, -1e-3, 1];
+    Transform.behind = [1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, -1.001, 1];
 
     module.exports = Transform;
 });
