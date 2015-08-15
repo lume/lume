@@ -49,7 +49,7 @@ define(function(require, exports, module) {
                 : parentOpacity;
 
             var transform = (spec.transform)
-                ? Transform.multiply(parentTransform, spec.transform)
+                ? Transform.compose(parentTransform, spec.transform)
                 : parentTransform;
 
             var nextSizeTransform = (spec.origin)

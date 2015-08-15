@@ -41,13 +41,13 @@ define(function(require, exports, module) {
      * Fast-multiply two or more Transform matrix types to return a
      *    Matrix, assuming bottom row on each is [0 0 0 1].
      *
-     * @method multiply
+     * @method compose
      * @static
      * @param {Transform} a left Transform
      * @param {Transform} b right Transform
      * @return {Transform}
      */
-    Transform.multiply = function multiply(a, b) {
+    Transform.compose = function multiply(a, b) {
         if (a === Transform.identity) return b.slice();
         if (b === Transform.identity) return a.slice();
         return [
@@ -70,22 +70,20 @@ define(function(require, exports, module) {
         ];
     };
 
-    Transform.multiplyMany = function multiplyMany(){
+    Transform.composeMany = function multiplyMany(){
         if (arguments.length > 2){
             var first = arguments[0];
             var second = arguments[1];
             Array.prototype.shift.call(arguments);
-            arguments[0] = Transform.multiply(first, second);
-            return Transform.multiplyMany.apply(null, arguments);
+            arguments[0] = Transform.compose(first, second);
+            return Transform.composeMany.apply(null, arguments);
         }
-        else return Transform.multiply.apply(null, arguments);
+        else return Transform.compose.apply(null, arguments);
     };
 
     /**
      * Return a Transform translated by additional amounts in each
      *    dimension. This is equivalent to the result of
-     *
-     *    Transform.multiply(Matrix.translate(t[0], t[1], t[2]), m).
      *
      * @method thenMove
      * @static
@@ -102,8 +100,6 @@ define(function(require, exports, module) {
      * Return a Transform matrix which represents the result of a transform matrix
      *    applied after a move. This is faster than the equivalent multiply.
      *    This is equivalent to the result of:
-     *
-     *    Transform.multiply(m, Transform.translate(t)).
      *
      * @method moveThen
      * @static
@@ -149,8 +145,6 @@ define(function(require, exports, module) {
     /**
      * Return a Transform scaled by a vector in each
      *    dimension. This is a more performant equivalent to the result of
-     *
-     *    Transform.multiply(Transform.scale(s[0], s[1], s[2]), m).
      *
      * @method thenScale
      * @static
@@ -481,7 +475,7 @@ define(function(require, exports, module) {
         Q1[9] = Q1[6];                      // 2,1 entry
 
         //reduce first column of M
-        var MQ1 = Transform.multiply(Q1, M);
+        var MQ1 = Transform.compose(Q1, M);
 
         //SECOND ITERATION on (1,1) minor
         var x2 = [MQ1[5], MQ1[6]];
@@ -502,13 +496,13 @@ define(function(require, exports, module) {
         Q2[9] = Q2[6];                      // 1,2 entry
 
         //calc QR decomposition. Q = Q1*Q2, R = Q'*M
-        var Q = Transform.multiply(Q2, Q1);      //note: really Q transpose
-        var R = Transform.multiply(Q, M);
+        var Q = Transform.compose(Q2, Q1);      //note: really Q transpose
+        var R = Transform.compose(Q, M);
 
         //remove negative scaling
         var remover = Transform.scale(R[0] < 0 ? -1 : 1, R[5] < 0 ? -1 : 1, R[10] < 0 ? -1 : 1);
-        R = Transform.multiply(R, remover);
-        Q = Transform.multiply(remover, Q);
+        R = Transform.compose(R, remover);
+        Q = Transform.compose(remover, Q);
 
         //decompose into rotate/scale/skew matrices
         var result = {};
@@ -582,7 +576,7 @@ define(function(require, exports, module) {
         var scaleMatrix = Transform.scale(spec.scale[0], spec.scale[1], spec.scale[2]);
         var skewMatrix = Transform.skew(spec.skew[0], spec.skew[1], spec.skew[2]);
         var rotateMatrix = Transform.rotate(spec.rotate[0], spec.rotate[1], spec.rotate[2]);
-        return Transform.thenMove(Transform.multiply(Transform.multiply(rotateMatrix, skewMatrix), scaleMatrix), spec.translate);
+        return Transform.thenMove(Transform.compose(Transform.compose(rotateMatrix, skewMatrix), scaleMatrix), spec.translate);
     };
 
     /**
