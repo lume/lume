@@ -2,6 +2,8 @@
 
 define(function(require, exports, module) {
     function compose(spec, parentSize){
+        if (!spec) return parentSize;
+
         var size = new Array(2);
 
         if (spec.size) {
