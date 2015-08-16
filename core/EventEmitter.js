@@ -26,17 +26,13 @@ define(function(require, exports, module) {
      *
      * @param {string} type event type key (for example, 'click')
      * @param {Object} data event data
-     * @return {Boolean}
      */
     EventEmitter.prototype.emit = function emit(type, data) {
         var handlers = this.listeners[type];
         if (handlers) {
-            for (var i = 0; i < handlers.length; i++) {
+            for (var i = 0; i < handlers.length; i++)
                 handlers[i].call(this._owner, data);
-            }
-            return true;
         }
-        else return false;
     };
 
     /**
@@ -57,8 +53,7 @@ define(function(require, exports, module) {
      */
    EventEmitter.prototype.on = function on(type, handler) {
         if (!(type in this.listeners)) this.listeners[type] = [];
-        var index = this.listeners[type].indexOf(handler);
-        if (index < 0) this.listeners[type].push(handler);
+        this.listeners[type].push(handler);
     };
 
     EventEmitter.prototype.once = function once(type, handler){
@@ -77,9 +72,13 @@ define(function(require, exports, module) {
      *
      * @param {string} type event type key (for example, 'click')
      * @param {function} handler function object to remove
-     * @return {EventEmitter} this
      */
     EventEmitter.prototype.off = function off(type, handler) {
+        if (!type) {
+            this.listeners = {};
+            return;
+        }
+
         var listener = this.listeners[type];
         if (listener !== undefined) {
             if (!handler) this.listeners[type] = []; // remove all listeners of given type
