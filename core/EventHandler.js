@@ -25,6 +25,7 @@ define(function(require, exports, module) {
         this.upstream = []; // upstream event handlers
         this.upstreamListeners = {}; // upstream listeners
     }
+
     EventHandler.prototype = Object.create(EventEmitter.prototype);
     EventHandler.prototype.constructor = EventHandler;
 
@@ -97,29 +98,23 @@ define(function(require, exports, module) {
      * @method subscribe
      *
      * @param {EventEmitter} source source emitter object
-     * @return {EventHandler} this
      */
-    EventHandler.prototype.subscribe = function subscribe(source, restrictedTypes) {
-        //TODO: restrictedTypes must be applied after listeners created
+    EventHandler.prototype.subscribe = function subscribe(source) {
         var index = this.upstream.indexOf(source);
         if (index < 0) {
             this.upstream.push(source);
             for (var type in this.upstreamListeners) {
-                if (!restrictedTypes || restrictedTypes.indexOf(type) !== -1)
-                    source.on(type, this.upstreamListeners[type]);
+                source.on(type, this.upstreamListeners[type]);
             }
         }
-        return source;
     };
 
-    //TODO: unsubscribe up the chain
     /**
      * Stop listening to events from an upstream event handler.
      *
      * @method unsubscribe
      *
      * @param {EventEmitter} source source emitter object
-     * @return {EventHandler} this
      */
     EventHandler.prototype.unsubscribe = function unsubscribe(source) {
         var index = this.upstream.indexOf(source);
@@ -129,7 +124,6 @@ define(function(require, exports, module) {
                 source.off(type, this.upstreamListeners[type]);
             }
         }
-        return source;
     };
 
     module.exports = EventHandler;
