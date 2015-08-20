@@ -1,4 +1,5 @@
-This is an independent fork of the src directory of https://github.com/Famous/famous since version 0.3.1.
+###Functional Reactive Programming for doing layout on the web
 
-I will be using this for my own independent projects and maintaining the fork in the process. Expect breaking
-changes and reckless disregard for backwards compatibility.
+Very beta. There will be examples and better documentation soon.
+
+Follow [@dmvaldman](https://twitter.com/dmvaldman) for up-to-date info. 
