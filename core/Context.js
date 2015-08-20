@@ -20,7 +20,7 @@ define(function(require, exports, module) {
     var EventMapper = require('famous/events/EventMapper');
 
     /**
-     * The top-level container for a Famous-renderable piece of the document.
+     * The top-level container for a renderable piece of the document.
      *   It is directly updated by the process-wide Engine object, and manages one
      *   render tree root, which can contain other renderables.
      *
