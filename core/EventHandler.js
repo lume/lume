@@ -107,6 +107,7 @@ define(function(require, exports, module) {
                 source.on(type, this.upstreamListeners[type]);
             }
         }
+        return source;
     };
 
     /**
@@ -124,6 +125,7 @@ define(function(require, exports, module) {
                 source.off(type, this.upstreamListeners[type]);
             }
         }
+        return source;
     };
 
     module.exports = EventHandler;
