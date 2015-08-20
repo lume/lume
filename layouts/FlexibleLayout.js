@@ -9,13 +9,13 @@
 /* Modified work copyright © 2015 David Valdman */
 
 define(function(require, exports, module) {
-    var Transform = require('famous/core/Transform');
-    var Transitionable = require('famous/core/Transitionable');
-    var View = require('famous/core/View');
-    var Stream = require('famous/streams/Stream');
-    var ResizeStream = require('famous/streams/ResizeStream');
-    var LayoutNode = require('famous/core/nodes/LayoutNode');
-    var SizeNode = require('famous/core/nodes/SizeNode');
+    var Transform = require('samsara/core/Transform');
+    var Transitionable = require('samsara/core/Transitionable');
+    var View = require('samsara/core/View');
+    var Stream = require('samsara/streams/Stream');
+    var ResizeStream = require('samsara/streams/ResizeStream');
+    var LayoutNode = require('samsara/core/nodes/LayoutNode');
+    var SizeNode = require('samsara/core/nodes/SizeNode');
 
     /**
      * A layout which divides a context into sections based on a proportion

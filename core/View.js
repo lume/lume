@@ -9,11 +9,11 @@
 /* Modified work copyright © 2015 David Valdman */
 
 define(function(require, exports, module) {
-    var SceneGraphNode = require('famous/core/nodes/SceneGraphNode');
-    var Controller = require('famous/core/Controller');
-    var LayoutNode = require('famous/core/nodes/LayoutNode');
-    var Transitionable = require('famous/core/Transitionable');
-    var EventHandler = require('famous/core/EventHandler');
+    var SceneGraphNode = require('samsara/core/nodes/SceneGraphNode');
+    var Controller = require('samsara/core/Controller');
+    var LayoutNode = require('samsara/core/nodes/LayoutNode');
+    var Transitionable = require('samsara/core/Transitionable');
+    var EventHandler = require('samsara/core/EventHandler');
 
     /**
      * @class View

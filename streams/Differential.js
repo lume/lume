@@ -1,6 +1,6 @@
 define(function(require, exports, module){
-    var Stream = require('famous/streams/Stream');
-    var OptionsManager = require('famous/core/OptionsManager');
+    var Stream = require('samsara/streams/Stream');
+    var OptionsManager = require('samsara/core/OptionsManager');
 
     function Differential(options){
         this.options = OptionsManager.setOptions(this, options);

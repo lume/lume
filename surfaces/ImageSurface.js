@@ -56,7 +56,7 @@ define(function(require, exports, module) {
     ImageSurface.prototype = Object.create(Surface.prototype);
     ImageSurface.prototype.constructor = ImageSurface;
     ImageSurface.prototype.elementType = 'img';
-    ImageSurface.prototype.elementClass = 'famous-surface';
+    ImageSurface.prototype.elementClass = 'samsara-surface';
 
     /**
      * Set content URL.  This will cause a re-rendering.

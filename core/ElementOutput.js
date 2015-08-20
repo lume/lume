@@ -9,13 +9,13 @@
 /* Modified work copyright © 2015 David Valdman */
 
 define(function(require, exports, module) {
-    var EventHandler = require('famous/core/EventHandler');
-    var Transform = require('famous/core/Transform');
-    var Stream = require('famous/streams/Stream');
-    var ResizeStream = require('famous/streams/ResizeStream');
-    var SizeNode = require('famous/core/nodes/SizeNode');
-    var sizeAlgebra = require('famous/core/algebras/size');
-    var register = require('famous/core/register');
+    var EventHandler = require('samsara/core/EventHandler');
+    var Transform = require('samsara/core/Transform');
+    var Stream = require('samsara/streams/Stream');
+    var ResizeStream = require('samsara/streams/ResizeStream');
+    var SizeNode = require('samsara/core/nodes/SizeNode');
+    var sizeAlgebra = require('samsara/core/algebras/size');
+    var register = require('samsara/core/register');
 
     /**
      * A base class for viewable content and event

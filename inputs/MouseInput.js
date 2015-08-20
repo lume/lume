@@ -9,9 +9,9 @@
 /* Modified work copyright © 2015 David Valdman */
 
 define(function(require, exports, module) {
-    var EventHandler = require('famous/core/EventHandler');
-    var OptionsManager = require('famous/core/OptionsManager');
-    var Stream = require('famous/streams/Stream');
+    var EventHandler = require('samsara/core/EventHandler');
+    var OptionsManager = require('samsara/core/OptionsManager');
+    var Stream = require('samsara/streams/Stream');
 
     /**
      * Handles piped in mouse drag events. Outputs an object with two

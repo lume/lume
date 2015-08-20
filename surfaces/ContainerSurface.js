@@ -10,11 +10,11 @@
 /* Modified work copyright © 2015 David Valdman */
 
 define(function(require, exports, module) {
-    var Surface = require('famous/core/Surface');
-    var Context = require('famous/core/Context');
-    var EventHandler = require('famous/core/EventHandler');
-    var dirtyQueue = require('famous/core/queues/dirtyQueue');
-    var preTickQueue = require('famous/core/queues/preTickQueue');
+    var Surface = require('samsara/core/Surface');
+    var Context = require('samsara/core/Context');
+    var EventHandler = require('samsara/core/EventHandler');
+    var dirtyQueue = require('samsara/core/queues/dirtyQueue');
+    var preTickQueue = require('samsara/core/queues/preTickQueue');
 
     /**
      * ContainerSurface is an object designed to contain surfaces and
@@ -42,8 +42,8 @@ define(function(require, exports, module) {
         Surface.call(this, options);
 
         this._container = document.createElement('div');
-        this._container.classList.add('famous-group');
-        this._container.classList.add('famous-container');
+        this._container.classList.add('samsara-group');
+        this._container.classList.add('samsara-container');
 
         this.context = new Context(this._container);
         this.setContent(this._container);
@@ -67,7 +67,7 @@ define(function(require, exports, module) {
     ContainerSurface.prototype = Object.create(Surface.prototype);
     ContainerSurface.prototype.constructor = ContainerSurface;
     ContainerSurface.prototype.elementType = 'div';
-    ContainerSurface.prototype.elementClass = 'famous-surface';
+    ContainerSurface.prototype.elementClass = 'samsara-surface';
 
     ContainerSurface.prototype.setPerspective = function setPerspective(){
         Context.prototype.setPerspective.apply(this.context, arguments);

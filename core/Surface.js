@@ -9,11 +9,11 @@
 /* Modified work copyright © 2015 David Valdman */
 
 define(function(require, exports, module) {
-    var ElementOutput = require('famous/core/ElementOutput');
-    var dirtyObjects = require('famous/core/dirtyObjects');
-    var dirtyQueue = require('famous/core/queues/dirtyQueue');
-    var postTickQueue = require('famous/core/queues/postTickQueue');
-    var preTickQueue = require('famous/core/queues/preTickQueue');
+    var ElementOutput = require('samsara/core/ElementOutput');
+    var dirtyObjects = require('samsara/core/dirtyObjects');
+    var dirtyQueue = require('samsara/core/queues/dirtyQueue');
+    var postTickQueue = require('samsara/core/queues/postTickQueue');
+    var preTickQueue = require('samsara/core/queues/preTickQueue');
 
     /**
      * A base class for viewable content and event
@@ -56,7 +56,7 @@ define(function(require, exports, module) {
     Surface.prototype = Object.create(ElementOutput.prototype);
     Surface.prototype.constructor = Surface;
     Surface.prototype.elementType = 'div';
-    Surface.prototype.elementClass = 'famous-surface';
+    Surface.prototype.elementClass = 'samsara-surface';
 
     function _setDirty(){
         if (this._dirty) return;

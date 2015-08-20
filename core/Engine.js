@@ -28,15 +28,15 @@ define(function(require, exports, module) {
     var Context = require('./Context');
     var EventHandler = require('./EventHandler');
     var OptionsManager = require('./OptionsManager');
-    var ResizeStream = require('famous/streams/ResizeStream');
+    var ResizeStream = require('samsara/streams/ResizeStream');
 
-    var dirtyObjects = require('famous/core/dirtyObjects');
+    var dirtyObjects = require('samsara/core/dirtyObjects');
     var preTickQueue = require('./queues/preTickQueue');
     var dirtyQueue = require('./queues/dirtyQueue');
     var postTickQueue = require('./queues/postTickQueue');
-    var State = require('famous/core/SUE');
+    var State = require('samsara/core/SUE');
     var tickQueue = require('./queues/tickQueue');
-    var Stream = require('famous/streams/Stream');
+    var Stream = require('samsara/streams/Stream');
 
     var Engine = {};
 
@@ -51,7 +51,7 @@ define(function(require, exports, module) {
 
     var options = {
         containerType: 'div',
-        containerClass: 'famous-context',
+        containerClass: 'samsara-context',
         appMode: true
     };
     var optionsManager = new OptionsManager(options);
@@ -145,7 +145,7 @@ define(function(require, exports, module) {
     window.addEventListener('touchmove', function(event) { event.preventDefault(); }, true);
 
     //TODO: add this only for app-mode
-    document.body.classList.add('famous-root');
+    document.body.classList.add('samsara-root');
 
     /**
      * Bind a callback function to an event type handled by this object.

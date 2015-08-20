@@ -14,10 +14,10 @@ define(function(require, exports, module) {
     var ElementAllocator = require('./ElementAllocator');
     var Transform = require('./Transform');
     var Transitionable = require('./Transitionable');
-    var dirtyQueue = require('famous/core/queues/dirtyQueue');
-    var ResizeStream = require('famous/streams/ResizeStream');
-    var Stream = require('famous/streams/Stream');
-    var EventMapper = require('famous/events/EventMapper');
+    var dirtyQueue = require('samsara/core/queues/dirtyQueue');
+    var ResizeStream = require('samsara/streams/ResizeStream');
+    var Stream = require('samsara/streams/Stream');
+    var EventMapper = require('samsara/events/EventMapper');
 
     /**
      * The top-level container for a renderable piece of the document.

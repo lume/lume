@@ -1,5 +1,5 @@
 define(function(require, exports, module){
-    var Stream = require('famous/streams/Stream');
+    var Stream = require('samsara/streams/Stream');
 
     function Accumulator(sum){
         this.sum = sum || undefined;

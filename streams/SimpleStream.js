@@ -1,8 +1,8 @@
 define(function(require, exports, module) {
-    var EventHandler = require('famous/core/EventHandler');
-    var EventMapper = require('famous/events/EventMapper');
-    var EventFilter = require('famous/events/EventFilter');
-    var EventSplitter = require('famous/events/EventSplitter');
+    var EventHandler = require('samsara/core/EventHandler');
+    var EventMapper = require('samsara/events/EventMapper');
+    var EventFilter = require('samsara/events/EventFilter');
+    var EventSplitter = require('samsara/events/EventSplitter');
 
     function SimpleStream(){
         EventHandler.apply(this, arguments);

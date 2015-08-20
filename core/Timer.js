@@ -18,8 +18,8 @@ define(function(require, exports, module) {
      * @class Timer
      * @constructor
      */
-    var tickQueue = require('famous/core/queues/tickQueue');
-    var dirtyObjects = require('famous/core/dirtyObjects');
+    var tickQueue = require('samsara/core/queues/tickQueue');
+    var dirtyObjects = require('samsara/core/dirtyObjects');
 
     var getTime = (window.performance)
         ? function() { return window.performance.now(); }

@@ -1,13 +1,13 @@
 define(function(require, exports, module) {
-    var SimpleStream = require('famous/streams/SimpleStream');
-    var EventMapper = require('famous/events/EventMapper');
-    var EventHandler = require('famous/core/EventHandler');
-    var dirtyObjects = require('famous/core/dirtyObjects');
+    var SimpleStream = require('samsara/streams/SimpleStream');
+    var EventMapper = require('samsara/events/EventMapper');
+    var EventHandler = require('samsara/core/EventHandler');
+    var dirtyObjects = require('samsara/core/dirtyObjects');
 
-    var preTickQueue = require('famous/core/queues/preTickQueue');
-    var postTickQueue = require('famous/core/queues/postTickQueue');
-    var dirtyQueue = require('famous/core/queues/dirtyQueue');
-    var State = require('famous/core/SUE');
+    var preTickQueue = require('samsara/core/queues/preTickQueue');
+    var postTickQueue = require('samsara/core/queues/postTickQueue');
+    var dirtyQueue = require('samsara/core/queues/dirtyQueue');
+    var State = require('samsara/core/SUE');
 
     var EVENTS = {
         START : 'start',

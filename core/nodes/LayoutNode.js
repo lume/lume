@@ -1,10 +1,10 @@
 /* Copyright © 2015 David Valdman */
 
 define(function(require, exports, module) {
-    var EventHandler = require('famous/core/EventHandler');
-    var SimpleStream = require('famous/streams/SimpleStream');
-    var Stream = require('famous/streams/Stream');
-    var Observable = require('famous/core/Observable');
+    var EventHandler = require('samsara/core/EventHandler');
+    var SimpleStream = require('samsara/streams/SimpleStream');
+    var Stream = require('samsara/streams/Stream');
+    var Observable = require('samsara/core/Observable');
 
     function LayoutNode(sources) {
         this.stream = this.createStream(sources);

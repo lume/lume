@@ -1,10 +1,10 @@
 /* Copyright © 2015 David Valdman */
 
 define(function(require, exports, module) {
-    var EventHandler = require('famous/core/EventHandler');
-    var SimpleStream = require('famous/streams/SimpleStream');
-    var ResizeStream = require('famous/streams/ResizeStream');
-    var Observable = require('famous/core/Observable');
+    var EventHandler = require('samsara/core/EventHandler');
+    var SimpleStream = require('samsara/streams/SimpleStream');
+    var ResizeStream = require('samsara/streams/ResizeStream');
+    var Observable = require('samsara/core/Observable');
 
     function SizeNode(sources) {
         this.stream = this.createStream(sources);

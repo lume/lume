@@ -1,7 +1,7 @@
 /* Copyright © 2015 David Valdman */
 
 define(function(require, exports, module) {
-    var SceneGraphNode = require('famous/core/nodes/SceneGraphNode');
+    var SceneGraphNode = require('samsara/core/nodes/SceneGraphNode');
 
     function RootNode() {
         SceneGraphNode.call(this);

@@ -1,14 +1,14 @@
 /* Copyright © 2015 David Valdman */
 
 define(function(require, exports, module) {
-    var EventHandler = require('famous/core/EventHandler');
-    var Stream = require('famous/streams/Stream');
-    var EventMapper = require('famous/events/EventMapper');
-    var ResizeStream = require('famous/streams/ResizeStream');
-    var SizeNode = require('famous/core/nodes/SizeNode');
-    var LayoutNode = require('famous/core/nodes/LayoutNode');
-    var layoutAlgebra = require('famous/core/algebras/layout');
-    var sizeAlgebra = require('famous/core/algebras/size');
+    var EventHandler = require('samsara/core/EventHandler');
+    var Stream = require('samsara/streams/Stream');
+    var EventMapper = require('samsara/events/EventMapper');
+    var ResizeStream = require('samsara/streams/ResizeStream');
+    var SizeNode = require('samsara/core/nodes/SizeNode');
+    var LayoutNode = require('samsara/core/nodes/LayoutNode');
+    var layoutAlgebra = require('samsara/core/algebras/layout');
+    var sizeAlgebra = require('samsara/core/algebras/size');
 
     function SceneGraphNode(object) {
         this.stream = null;

@@ -3,9 +3,9 @@
  */
 
 define(function(require, exports, module) {
-    var EventHandler = require('famous/core/EventHandler');
-    var SimpleStream = require('famous/streams/SimpleStream');
-    var OptionsManager = require('famous/core/OptionsManager');
+    var EventHandler = require('samsara/core/EventHandler');
+    var SimpleStream = require('samsara/streams/SimpleStream');
+    var OptionsManager = require('samsara/core/OptionsManager');
 
     /**
      * Useful for quickly creating elements within applications

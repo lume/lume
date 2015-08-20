@@ -10,11 +10,11 @@
 
 define(function(require, exports, module) {
     var TweenTransition = require('./../transitions/TweenTransition');
-    var EventHandler = require('famous/core/EventHandler');
-    var dirtyQueue = require('famous/core/queues/dirtyQueue');
-    var preTickQueue = require('famous/core/queues/preTickQueue');
-    var tickQueue = require('famous/core/queues/tickQueue');
-    var SimpleStream = require('famous/streams/SimpleStream');
+    var EventHandler = require('samsara/core/EventHandler');
+    var dirtyQueue = require('samsara/core/queues/dirtyQueue');
+    var preTickQueue = require('samsara/core/queues/preTickQueue');
+    var tickQueue = require('samsara/core/queues/tickQueue');
+    var SimpleStream = require('samsara/streams/SimpleStream');
 
     /**
      * A state maintainer for a smooth transition between

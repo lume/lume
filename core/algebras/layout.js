@@ -1,7 +1,7 @@
 /* copyright © 2015 David Valdman */
 
 define(function(require, exports, module) {
-    var Transform = require('famous/core/Transform');
+    var Transform = require('samsara/core/Transform');
 
     var DEFAULT = {
         OPACITY : 1,

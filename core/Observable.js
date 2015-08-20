@@ -1,7 +1,7 @@
 define(function(require, exports, module) {
-    var Stream = require('famous/streams/Stream');
-    var preTickQueue = require('famous/core/queues/preTickQueue');
-    var dirtyQueue = require('famous/core/queues/dirtyQueue');
+    var Stream = require('samsara/streams/Stream');
+    var preTickQueue = require('samsara/core/queues/preTickQueue');
+    var dirtyQueue = require('samsara/core/queues/dirtyQueue');
 
     function Observable(value){
         Stream.call(this);
