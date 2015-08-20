@@ -4,7 +4,7 @@ define(function(require, exports, module) {
     var SimpleStream = require('famous/streams/SimpleStream');
     var dirtyObjects = require('famous/core/dirtyObjects');
 
-    var nextTickQueue = require('famous/core/queues/nextTickQueue');
+    var preTickQueue = require('famous/core/queues/preTickQueue');
     var postTickQueue = require('famous/core/queues/postTickQueue');
     var dirtyQueue = require('famous/core/queues/dirtyQueue');
     var State = require('famous/core/SUE');
@@ -50,7 +50,7 @@ define(function(require, exports, module) {
             total++;
 
             (function(currentCount){
-                nextTickQueue.push(function streamStart(){
+                preTickQueue.push(function streamStart(){
                     if (currentCount == batchTotal){
                         batchCount = 0;
                         batchTotal = 0;

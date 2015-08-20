@@ -12,7 +12,7 @@ define(function(require, exports, module) {
     var TweenTransition = require('./../transitions/TweenTransition');
     var EventHandler = require('famous/core/EventHandler');
     var dirtyQueue = require('famous/core/queues/dirtyQueue');
-    var nextTickQueue = require('famous/core/queues/nextTickQueue');
+    var preTickQueue = require('famous/core/queues/preTickQueue');
     var tickQueue = require('famous/core/queues/tickQueue');
     var SimpleStream = require('famous/streams/SimpleStream');
 
@@ -66,7 +66,7 @@ define(function(require, exports, module) {
         });
 
         if (start !== undefined){
-            nextTickQueue.push(function transitionableSet(){
+            preTickQueue.push(function transitionableSet(){
                 // make sure didn't set in same tick as defined
                 if (this._state == STATE.NONE || this._state == STATE.END)
                     this.set(start);

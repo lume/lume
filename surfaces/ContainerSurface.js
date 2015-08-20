@@ -14,7 +14,7 @@ define(function(require, exports, module) {
     var Context = require('famous/core/Context');
     var EventHandler = require('famous/core/EventHandler');
     var dirtyQueue = require('famous/core/queues/dirtyQueue');
-    var nextTickQueue = require('famous/core/queues/nextTickQueue');
+    var preTickQueue = require('famous/core/queues/preTickQueue');
 
     /**
      * ContainerSurface is an object designed to contain surfaces and
@@ -56,7 +56,7 @@ define(function(require, exports, module) {
             this.emit('resize', size);
         }.bind(this));
 
-        nextTickQueue.push(function(){
+        preTickQueue.push(function(){
             this.context.trigger('start');
             dirtyQueue.push(function(){
                 this.context.trigger('end');

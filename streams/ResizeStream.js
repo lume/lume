@@ -4,7 +4,7 @@ define(function(require, exports, module) {
     var EventHandler = require('famous/core/EventHandler');
     var dirtyObjects = require('famous/core/dirtyObjects');
 
-    var nextTickQueue = require('famous/core/queues/nextTickQueue');
+    var preTickQueue = require('famous/core/queues/preTickQueue');
     var postTickQueue = require('famous/core/queues/postTickQueue');
     var dirtyQueue = require('famous/core/queues/dirtyQueue');
     var State = require('famous/core/SUE');
@@ -46,7 +46,7 @@ define(function(require, exports, module) {
                 dirty = true;
 
                 (function(currentCount) {
-                    nextTickQueue.push(function ResizeStreamStart() {
+                    preTickQueue.push(function ResizeStreamStart() {
                         if (currentCount == batchTotal && !isUpdating) {
                             self.emit(EVENTS.RESIZE, data);
                             batchCount = 0;

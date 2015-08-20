@@ -1,6 +1,6 @@
 define(function(require, exports, module) {
     var Stream = require('famous/streams/Stream');
-    var nextTickQueue = require('famous/core/queues/nextTickQueue');
+    var preTickQueue = require('famous/core/queues/preTickQueue');
     var dirtyQueue = require('famous/core/queues/dirtyQueue');
 
     function Observable(value){
@@ -18,7 +18,7 @@ define(function(require, exports, module) {
     };
 
     Observable.prototype.set = function(value){
-        nextTickQueue.push(function(){
+        preTickQueue.push(function(){
             this.value = value;
             this.emit('start', value);
 

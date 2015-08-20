@@ -31,7 +31,7 @@ define(function(require, exports, module) {
     var ResizeStream = require('famous/streams/ResizeStream');
 
     var dirtyObjects = require('famous/core/dirtyObjects');
-    var nextTickQueue = require('./queues/nextTickQueue');
+    var preTickQueue = require('./queues/preTickQueue');
     var dirtyQueue = require('./queues/dirtyQueue');
     var postTickQueue = require('./queues/postTickQueue');
     var State = require('famous/core/SUE');
@@ -71,7 +71,7 @@ define(function(require, exports, module) {
 
     Engine.step = function step() {
         // browser events and their handlers happen before rendering begins
-        while (nextTickQueue.length) (nextTickQueue.shift())();
+        while (preTickQueue.length) (preTickQueue.shift())();
 
         // tick signals base event flow coming in
         State.set(State.STATES.UPDATE);
@@ -94,7 +94,7 @@ define(function(require, exports, module) {
         return dirtyLock;
     };
 
-    nextTickQueue.push(function(){
+    preTickQueue.push(function(){
         dirtyObjects.emit('dirty');
     });
 
@@ -103,7 +103,7 @@ define(function(require, exports, module) {
     });
 
     function start(){
-        nextTickQueue.push(function start(){
+        preTickQueue.push(function start(){
             handleResize();
             for (var i = 0; i < contexts.length; i++)
                 contexts[i].trigger('start');

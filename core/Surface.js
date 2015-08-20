@@ -13,7 +13,7 @@ define(function(require, exports, module) {
     var dirtyObjects = require('famous/core/dirtyObjects');
     var dirtyQueue = require('famous/core/queues/dirtyQueue');
     var postTickQueue = require('famous/core/queues/postTickQueue');
-    var nextTickQueue = require('famous/core/queues/nextTickQueue');
+    var preTickQueue = require('famous/core/queues/preTickQueue');
 
     /**
      * A base class for viewable content and event
