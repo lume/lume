@@ -113,17 +113,20 @@ define(function(require, exports, module) {
                     contexts[i].trigger('end');
             });
         });
+
+        loop();
     }
 
     // engage requestAnimationFrame
     function loop() {
         var dirty = Engine.step();
 //        if (dirty)
-//        console.log(dirty)
             rafId = window.requestAnimationFrame(loop);
     }
-    window.requestAnimationFrame(start);
-    rafId = window.requestAnimationFrame(loop);
+
+    Engine.start = start;
+//    window.requestAnimationFrame(start);
+//    Engine.start = function(){};
 
     function handleResize() {
         var windowSize = [window.innerWidth, window.innerHeight];
@@ -184,7 +187,6 @@ define(function(require, exports, module) {
 
     dirtyObjects.on('clean', function engineClean(){
         dirtyLock--;
-//        console.log(dirtyLock)
         if (dirty && dirtyLock === 0) {
             dirty = false;
             window.cancelAnimationFrame(rafId);
@@ -238,8 +240,9 @@ define(function(require, exports, module) {
 
         var context = new Context(el);
         Engine.registerContext(context);
-        
+
         if (needMountContainer) document.body.appendChild(el);
+
         return context;
     };
 
