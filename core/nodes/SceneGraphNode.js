@@ -63,8 +63,6 @@ define(function(require, exports, module) {
                 },
                 [object, this.size]
             );
-
-            this.stream = this._eventIO;
         }
 
         if (!object.commit){
