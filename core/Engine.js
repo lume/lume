@@ -215,7 +215,7 @@ define(function(require, exports, module) {
      * @param {Number} [options.fpsCap]  maximum fps at which the system should run
      * @param {boolean} [options.runLoop=true] whether the run loop should continue
      * @param {string} [options.containerType="div"] type of container element.  Defaults to 'div'.
-     * @param {string} [options.containerClass="famous-container"] type of container element.  Defaults to 'famous-container'.
+     * @param {string} [options.containerClass="samsara-container"] type of container element.  Defaults to 'samsara-container'.
      */
     Engine.setOptions = function setOptions(options) {
         return optionsManager.setOptions.apply(optionsManager, arguments);
