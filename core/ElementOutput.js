@@ -47,7 +47,7 @@ define(function(require, exports, module) {
         this.__size = new EventHandler();
 
         this.size = ResizeStream.lift(function elementSizeLift(sizeNode, parentSize){
-            if (!parentSize) return; // occurs when surface is never added
+//            if (!parentSize) return; // occurs when surface is never added
             return sizeAlgebra(sizeNode, parentSize);
         }, [this.sizeNode, this.__size]);
 
