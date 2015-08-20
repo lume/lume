@@ -6,9 +6,20 @@
  * @copyright Famous Industries, Inc. 2014
  */
 
+/* Modified work copyright © 2015 David Valdman */
+
 define(function(require, exports, module) {
     /**
-     * EventEmitter represents a channel for events.
+     * EventEmitter represents an asynchronous channel for broadcasting and receiving events.
+     *
+     *  @example
+     *      var eventEmitter = new EventEmitter();
+     *      eventEmitter.on('send', function(payload){
+     *          console.log(payload) // {data : 0}
+     *      });
+     *
+     *      // sometime later...
+     *      eventEmitter.emit('send', {data : 0});
      *
      * @class EventEmitter
      * @constructor
@@ -19,13 +30,14 @@ define(function(require, exports, module) {
     }
 
     /**
-     * Trigger an event, sending to all downstream handlers
-     *   listening for provided 'type' key.
+     * Broadcast an event on the `type` channel with an optional payload. This will call the handlers
+     *  of all EventEmitters listening on the `type` channel with the (optional) data payload
+     *  as its argument.
      *
      * @method emit
      *
-     * @param {string} type event type key (for example, 'click')
-     * @param {Object} data event data
+     * @param type {string}     channel name
+     * @param data {Object}     payload
      */
     EventEmitter.prototype.emit = function emit(type, data) {
         var handlers = this.listeners[type];
@@ -36,26 +48,33 @@ define(function(require, exports, module) {
     };
 
     /**
-     * Alias for emit
+     * Alias for emit.
      * @method trigger
      */
     EventEmitter.prototype.trigger = EventEmitter.prototype.emit;
 
 
     /**
-     * Bind a callback function to an event type handled by this object.
+     * Adds a handler to the `type` channel which will be executed on `emit`.
      *
      * @method "on"
      *
-     * @param {string} type event type key (for example, 'click')
-     * @param {function(string, Object)} handler callback
-     * @return {EventHandler} this
+     * @param type {string}         channel name
+     * @param handler {function}    callback
      */
-   EventEmitter.prototype.on = function on(type, handler) {
+    EventEmitter.prototype.on = function on(type, handler) {
         if (!(type in this.listeners)) this.listeners[type] = [];
         this.listeners[type].push(handler);
     };
 
+    /**
+     * Behaves like `EventEmitter.prototype.on`, except the handler is only executed once.
+     *
+     * @method "on"
+     *
+     * @param type {string}         event type key (for example, 'click')
+     * @param handler {function}    callback
+     */
     EventEmitter.prototype.once = function once(type, handler){
         var onceHandler = function(){
             handler.apply(this, arguments);
@@ -65,13 +84,13 @@ define(function(require, exports, module) {
     };
 
    /**
-     * Unbind an event by type and handler.
+     * Removes the `handler` from the `type` channel.
      *   This undoes the work of "on".
      *
      * @method off
      *
-     * @param {string} type event type key (for example, 'click')
-     * @param {function} handler function object to remove
+     * @param type {string}         channel name
+     * @param handler {function}    callback
      */
     EventEmitter.prototype.off = function off(type, handler) {
         if (!type) {
@@ -90,11 +109,11 @@ define(function(require, exports, module) {
     };
 
     /**
-     * Call event handlers with this set to owner.
+     * A convenience method to bound the provided object to all added handlers.
      *
      * @method bindThis
      *
-     * @param {Object} owner object this EventEmitter belongs to
+     * @param owner {Object} Bound context
      */
     EventEmitter.prototype.bindThis = function bindThis(owner) {
         this._owner = owner;
