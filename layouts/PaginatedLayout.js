@@ -1,7 +1,7 @@
 /* copyright © 2015 David Valdman */
 
 define(function(require, exports, module) {
-    var Scrollview = require('famous/views/Scrollview');
+    var Scrollview = require('famous/layouts/Scrollview');
     var Surface = require('famous/core/Surface');
     var Transform = require('famous/core/Transform');
     var Transitionable = require('famous/core/Transitionable');
