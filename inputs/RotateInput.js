@@ -9,7 +9,7 @@
 /* Modified work copyright © 2015 David Valdman */
 
 define(function(require, exports, module) {
-    var TwoFingerSync = require('./TwoFingerSync');
+    var TwoFingerInput = require('./TwoFingerInput');
     var OptionsManager = require('../core/OptionsManager');
 
     /**
@@ -17,16 +17,16 @@ define(function(require, exports, module) {
      *   Emits 'start', 'update' and 'end' events an object with position, velocity, touch ids, and angle.
      *   Useful for determining a rotation factor from initial two-finger touch.
      *
-     * @class RotateSync
-     * @extends TwoFingerSync
+     * @class RotateInput
+     * @extends TwoFingerInput
      * @constructor
      * @param {Object} options default options overrides
      * @param {Number} [options.scale] scale velocity by this factor
      */
-    function RotateSync(options) {
-        TwoFingerSync.call(this);
+    function RotateInput(options) {
+        TwoFingerInput.call(this);
 
-        this.options = Object.create(RotateSync.DEFAULT_OPTIONS);
+        this.options = Object.create(RotateInput.DEFAULT_OPTIONS);
         this._optionsManager = new OptionsManager(this.options);
         if (options) this.setOptions(options);
 
@@ -34,17 +34,17 @@ define(function(require, exports, module) {
         this._previousAngle = 0;
     }
 
-    RotateSync.prototype = Object.create(TwoFingerSync.prototype);
-    RotateSync.prototype.constructor = RotateSync;
+    RotateInput.prototype = Object.create(TwoFingerInput.prototype);
+    RotateInput.prototype.constructor = RotateInput;
 
-    RotateSync.DEFAULT_OPTIONS = {
+    RotateInput.DEFAULT_OPTIONS = {
         scale : 1
     };
 
-    RotateSync.prototype._startUpdate = function _startUpdate(event) {
+    RotateInput.prototype._startUpdate = function _startUpdate(event) {
         this._angle = 0;
-        this._previousAngle = TwoFingerSync.calculateAngle(this.posA, this.posB);
-        var center = TwoFingerSync.calculateCenter(this.posA, this.posB);
+        this._previousAngle = TwoFingerInput.calculateAngle(this.posA, this.posB);
+        var center = TwoFingerInput.calculateCenter(this.posA, this.posB);
         this._eventOutput.emit('start', {
             count: event.touches.length,
             angle: this._angle,
@@ -53,11 +53,11 @@ define(function(require, exports, module) {
         });
     };
 
-    RotateSync.prototype._moveUpdate = function _moveUpdate(diffTime) {
+    RotateInput.prototype._moveUpdate = function _moveUpdate(diffTime) {
         var scale = this.options.scale;
 
-        var currAngle = TwoFingerSync.calculateAngle(this.posA, this.posB);
-        var center = TwoFingerSync.calculateCenter(this.posA, this.posB);
+        var currAngle = TwoFingerInput.calculateAngle(this.posA, this.posB);
+        var center = TwoFingerInput.calculateCenter(this.posA, this.posB);
 
         var diffTheta = scale * (currAngle - this._previousAngle);
         var velTheta = diffTheta / diffTime;
@@ -81,7 +81,7 @@ define(function(require, exports, module) {
      * @method getOptions
      * @return {Object} configuration options
      */
-    RotateSync.prototype.getOptions = function getOptions() {
+    RotateInput.prototype.getOptions = function getOptions() {
         return this.options;
     };
 
@@ -93,9 +93,9 @@ define(function(require, exports, module) {
      * @param {Object} [options] overrides of default options
      * @param {Number} [options.scale] scale velocity by this factor
      */
-    RotateSync.prototype.setOptions = function setOptions(options) {
+    RotateInput.prototype.setOptions = function setOptions(options) {
         return this._optionsManager.setOptions(options);
     };
 
-    module.exports = RotateSync;
+    module.exports = RotateInput;
 });

@@ -19,7 +19,7 @@ define(function(require, exports, module) {
      *   Emits 'start', 'update' and 'end' events with DOM event passthroughs,
      *   with position, velocity, and a delta key.
      *
-     * @class MouseSync
+     * @class MouseInput
      * @constructor
      *
      * @param [options] {Object}             default options overrides
@@ -27,7 +27,7 @@ define(function(require, exports, module) {
      * @param [options.propogate] {Boolean}  add listened to document on mouseleave
      */
     //TODO: DIRECTION.X
-    function MouseSync(options) {
+    function MouseInput(options) {
         this.options = OptionsManager.setOptions(this, options);
 
         this._eventInput = new EventHandler();
@@ -60,17 +60,17 @@ define(function(require, exports, module) {
         this._move = false;
     }
 
-    MouseSync.prototype = Object.create(Stream.prototype);
-    MouseSync.prototype.constructor = MouseSync;
+    MouseInput.prototype = Object.create(Stream.prototype);
+    MouseInput.prototype.constructor = MouseInput;
 
-    MouseSync.DEFAULT_OPTIONS = {
+    MouseInput.DEFAULT_OPTIONS = {
         direction: undefined,
         scale: 1,
         propogate: true  // events piped to document on mouseleave
     };
 
-    MouseSync.DIRECTION_X = 0;
-    MouseSync.DIRECTION_Y = 1;
+    MouseInput.DIRECTION_X = 0;
+    MouseInput.DIRECTION_Y = 1;
 
     var MINIMUM_TICK_TIME = 8;
 
@@ -135,12 +135,12 @@ define(function(require, exports, module) {
         var nextVel;
         var nextDelta;
 
-        if (this.options.direction === MouseSync.DIRECTION_X) {
+        if (this.options.direction === MouseInput.DIRECTION_X) {
             nextDelta = scale * diffX;
             nextVel = scale * velX;
             this._position += nextDelta;
         }
-        else if (this.options.direction === MouseSync.DIRECTION_Y) {
+        else if (this.options.direction === MouseInput.DIRECTION_Y) {
             nextDelta = scale * diffY;
             nextVel = scale * velY;
             this._position += nextDelta;
@@ -192,5 +192,5 @@ define(function(require, exports, module) {
         document.addEventListener('mouseup', boundEnd);
     }
 
-    module.exports = MouseSync;
+    module.exports = MouseInput;
 });

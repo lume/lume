@@ -9,7 +9,6 @@
 /* Modified work copyright © 2015 David Valdman */
 
 define(function(require, exports, module) {
-
     var EventHandler = require('../core/EventHandler');
 
     /**
@@ -22,13 +21,13 @@ define(function(require, exports, module) {
      *  Emits 'start', 'update' and 'end' events as a union of the sync class
      *  providers.
      *
-     * @class GenericSync
+     * @class GenericInput
      * @constructor
      * @param syncs {Object|Array} object with fields {sync key : sync options}
      *    or an array of registered sync keys
      * @param [options] {Object|Array} options object to set on all syncs
      */
-    function GenericSync(syncs, options) {
+    function GenericInput(syncs, options) {
         this._eventInput = new EventHandler();
         this._eventOutput = new EventHandler();
 
@@ -36,13 +35,13 @@ define(function(require, exports, module) {
         EventHandler.setOutputHandler(this, this._eventOutput);
 
         this._syncs = {};
-        if (syncs) this.addSync(syncs);
+        if (syncs) this.addInput(syncs);
         if (options) this.setOptions(options);
     }
 
-    GenericSync.DIRECTION_X = 0;
-    GenericSync.DIRECTION_Y = 1;
-    GenericSync.DIRECTION_Z = 2;
+    GenericInput.DIRECTION_X = 0;
+    GenericInput.DIRECTION_Y = 1;
+    GenericInput.DIRECTION_Z = 2;
 
     // Global registry of sync classes. Append only.
     var registry = {};
@@ -55,7 +54,7 @@ define(function(require, exports, module) {
      *
      * @param syncObject {Object} an object of {sync key : sync options} fields
      */
-    GenericSync.register = function register(syncObject) {
+    GenericInput.register = function register(syncObject) {
         for (var key in syncObject){
             if (registry[key]){
                 if (registry[key] === syncObject[key]) return; // redundant registration
@@ -71,7 +70,7 @@ define(function(require, exports, module) {
      * @method setOptions
      * @param options {Object} options object
      */
-    GenericSync.prototype.setOptions = function(options) {
+    GenericInput.prototype.setOptions = function(options) {
         for (var key in this._syncs){
             this._syncs[key].setOptions(options);
         }
@@ -80,10 +79,10 @@ define(function(require, exports, module) {
     /**
      * Subscribe events from a sync class
      *
-     * @method subscribeSync
+     * @method subscribeInput
      * @param key {String} identifier for sync class
      */
-    GenericSync.prototype.subscribeSync = function subscribeSync(key) {
+    GenericInput.prototype.subscribeInput = function subscribeSync(key) {
         var sync = this._syncs[key];
         sync.subscribe(this._eventInput);
         this._eventOutput.subscribe(sync);
@@ -92,36 +91,36 @@ define(function(require, exports, module) {
     /**
      * Unsunscribe events from a sync class
      *
-     * @method unsubscribeSync
+     * @method unsubscribeInput
      * @param key {String} identifier for sync class
      */
-    GenericSync.prototype.unsubscribeSync = function unsubscribeSync(key) {
+    GenericInput.prototype.unsubscribeInput = function unsubscribeSync(key) {
         var sync = this._syncs[key];
         sync.unsubscribe(this._eventInput);
         this._eventOutput.unsubscribe(sync);
     };
 
-    function _addSingleSync(key, options) {
+    function _addSingleInput(key, options) {
         if (!registry[key]) return;
         this._syncs[key] = new (registry[key])(options);
-        this.subscribeSync(key);
+        this.subscribeInput(key);
     }
 
     /**
      * Add a sync class to from the registered classes
      *
-     * @method addSync
+     * @method addInput
      * @param syncs {Object|Array.String} an array of registered sync keys
      *    or an object with fields {sync key : sync options}
      */
-    GenericSync.prototype.addSync = function addSync(syncs) {
+    GenericInput.prototype.addInput = function addSync(syncs) {
         if (syncs instanceof Array)
             for (var i = 0; i < syncs.length; i++)
-                _addSingleSync.call(this, syncs[i]);
+                _addSingleInput.call(this, syncs[i]);
         else if (syncs instanceof Object)
             for (var key in syncs)
-                _addSingleSync.call(this, key, syncs[key]);
+                _addSingleInput.call(this, key, syncs[key]);
     };
 
-    module.exports = GenericSync;
+    module.exports = GenericInput;
 });

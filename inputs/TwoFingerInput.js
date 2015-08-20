@@ -12,7 +12,7 @@ define(function(require, exports, module) {
     var EventHandler = require('../core/EventHandler');
 
     /**
-     * Helper to PinchSync, RotateSync, and ScaleSync.  Generalized handling of
+     * Helper to PinchInput, RotateInput, and ScaleInput.  Generalized handling of
      *   two-finger touch events.
      *   This class is meant to be overridden and not used directly.
      *

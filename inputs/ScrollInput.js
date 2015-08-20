@@ -20,20 +20,20 @@ define(function(require, exports, module) {
      *   position: accumulated deltas,
      *   velocity: speed of change in pixels per ms,
      *
-     *   Can be used as delegate of GenericSync.
+     *   Can be used as delegate of GenericInput.
      *
-     * @class ScrollSync
+     * @class ScrollInput
      * @constructor
      * @param {Object} [options] overrides of default options
-     * @param {Number} [options.direction] Pay attention to x changes (ScrollSync.DIRECTION_X),
-     *   y changes (ScrollSync.DIRECTION_Y) or both (undefined)
+     * @param {Number} [options.direction] Pay attention to x changes (ScrollInput.DIRECTION_X),
+     *   y changes (ScrollInput.DIRECTION_Y) or both (undefined)
      * @param {Number} [options.minimumEndSpeed] End speed calculation floors at this number, in pixels per ms
      * @param {boolean} [options.rails] whether to snap position calculations to nearest axis
      * @param {Number | Array.Number} [options.scale] scale outputs in by scalar or pair of scalars
      * @param {Number} [options.stallTime] reset time for velocity calculation in ms
      */
-    function ScrollSync(options) {
-        this.options = Object.create(ScrollSync.DEFAULT_OPTIONS);
+    function ScrollInput(options) {
+        this.options = Object.create(ScrollInput.DEFAULT_OPTIONS);
         this._optionsManager = new OptionsManager(this.options);
         if (options) this.setOptions(options);
 
@@ -59,7 +59,7 @@ define(function(require, exports, module) {
         this._loopBound = false;
     }
 
-    ScrollSync.DEFAULT_OPTIONS = {
+    ScrollInput.DEFAULT_OPTIONS = {
         direction: undefined,
         minimumEndSpeed: 1e-1,
         rails: false,
@@ -69,8 +69,8 @@ define(function(require, exports, module) {
         preventDefault: true
     };
 
-    ScrollSync.DIRECTION_X = 0;
-    ScrollSync.DIRECTION_Y = 1;
+    ScrollInput.DIRECTION_X = 0;
+    ScrollInput.DIRECTION_Y = 1;
 
     var MINIMUM_TICK_TIME = 8;
 
@@ -130,12 +130,12 @@ define(function(require, exports, module) {
         var nextVel;
         var nextDelta;
 
-        if (this.options.direction === ScrollSync.DIRECTION_X) {
+        if (this.options.direction === ScrollInput.DIRECTION_X) {
             nextDelta = scale * diffX;
             nextVel = scale * velX;
             this._position += nextDelta;
         }
-        else if (this.options.direction === ScrollSync.DIRECTION_Y) {
+        else if (this.options.direction === ScrollInput.DIRECTION_Y) {
             nextDelta = scale * diffY;
             nextVel = scale * velY;
             this._position += nextDelta;
@@ -161,7 +161,7 @@ define(function(require, exports, module) {
      * @method getOptions
      * @return {Object} configuration options
      */
-    ScrollSync.prototype.getOptions = function getOptions() {
+    ScrollInput.prototype.getOptions = function getOptions() {
         return this.options;
     };
 
@@ -174,13 +174,13 @@ define(function(require, exports, module) {
      * @param {Number} [options.minimimEndSpeed] If final velocity smaller than this, round down to 0.
      * @param {Number} [options.stallTime] ms of non-motion before 'end' emitted
      * @param {Number} [options.rails] whether to constrain to nearest axis.
-     * @param {Number} [options.direction] ScrollSync.DIRECTION_X, DIRECTION_Y -
+     * @param {Number} [options.direction] ScrollInput.DIRECTION_X, DIRECTION_Y -
      *    pay attention to one specific direction.
      * @param {Number} [options.scale] constant factor to scale velocity output
      */
-    ScrollSync.prototype.setOptions = function setOptions(options) {
+    ScrollInput.prototype.setOptions = function setOptions(options) {
         return this._optionsManager.setOptions(options);
     };
 
-    module.exports = ScrollSync;
+    module.exports = ScrollInput;
 });

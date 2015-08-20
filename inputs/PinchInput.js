@@ -6,7 +6,7 @@
  * @copyright Famous Industries, Inc. 2014
  */
 define(function(require, exports, module) {
-    var TwoFingerSync = require('./TwoFingerSync');
+    var TwoFingerInput = require('./TwoFingerInput');
     var OptionsManager = require('../core/OptionsManager');
 
     /**
@@ -14,16 +14,16 @@ define(function(require, exports, module) {
      *   Emits 'start', 'update' and 'end' events with
      *   position, velocity, touch ids, and distance between fingers.
      *
-     * @class PinchSync
-     * @extends TwoFingerSync
+     * @class PinchInput
+     * @extends TwoFingerInput
      * @constructor
      * @param {Object} options default options overrides
      * @param {Number} [options.scale] scale velocity by this factor
      */
-    function PinchSync(options) {
-        TwoFingerSync.call(this);
+    function PinchInput(options) {
+        TwoFingerInput.call(this);
 
-        this.options = Object.create(PinchSync.DEFAULT_OPTIONS);
+        this.options = Object.create(PinchInput.DEFAULT_OPTIONS);
         this._optionsManager = new OptionsManager(this.options);
         if (options) this.setOptions(options);
 
@@ -31,28 +31,28 @@ define(function(require, exports, module) {
         this._previousDistance = 0;
     }
 
-    PinchSync.prototype = Object.create(TwoFingerSync.prototype);
-    PinchSync.prototype.constructor = PinchSync;
+    PinchInput.prototype = Object.create(TwoFingerInput.prototype);
+    PinchInput.prototype.constructor = PinchInput;
 
-    PinchSync.DEFAULT_OPTIONS = {
+    PinchInput.DEFAULT_OPTIONS = {
         scale : 1
     };
 
-    PinchSync.prototype._startUpdate = function _startUpdate(event) {
-        this._previousDistance = TwoFingerSync.calculateDistance(this.posA, this.posB);
+    PinchInput.prototype._startUpdate = function _startUpdate(event) {
+        this._previousDistance = TwoFingerInput.calculateDistance(this.posA, this.posB);
         this._displacement = 0;
 
         this._eventOutput.emit('start', {
             count: event.touches.length,
             touches: [this.touchAId, this.touchBId],
             distance: this._previousDistance,
-            center: TwoFingerSync.calculateCenter(this.posA, this.posB)
+            center: TwoFingerInput.calculateCenter(this.posA, this.posB)
         });
     };
 
-    PinchSync.prototype._moveUpdate = function _moveUpdate(diffTime) {
-        var currDist = TwoFingerSync.calculateDistance(this.posA, this.posB);
-        var center = TwoFingerSync.calculateCenter(this.posA, this.posB);
+    PinchInput.prototype._moveUpdate = function _moveUpdate(diffTime) {
+        var currDist = TwoFingerInput.calculateDistance(this.posA, this.posB);
+        var center = TwoFingerInput.calculateCenter(this.posA, this.posB);
 
         var scale = this.options.scale;
         var delta = scale * (currDist - this._previousDistance);
@@ -77,7 +77,7 @@ define(function(require, exports, module) {
      * @method getOptions
      * @return {Object} configuration options
      */
-    PinchSync.prototype.getOptions = function getOptions() {
+    PinchInput.prototype.getOptions = function getOptions() {
         return this.options;
     };
 
@@ -89,9 +89,9 @@ define(function(require, exports, module) {
      * @param {Object} [options] overrides of default options
      * @param {Number} [options.scale] scale velocity by this factor
      */
-    PinchSync.prototype.setOptions = function setOptions(options) {
+    PinchInput.prototype.setOptions = function setOptions(options) {
         return this._optionsManager.setOptions(options);
     };
 
-    module.exports = PinchSync;
+    module.exports = PinchInput;
 });

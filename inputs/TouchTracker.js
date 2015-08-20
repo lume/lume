@@ -66,8 +66,8 @@ define(function(require, exports, module) {
     }
 
     /**
-     * Helper to TouchSync – tracks piped in touch events, organizes touch
-     *   events by ID, and emits track events back to TouchSync.
+     * Helper to TouchInput – tracks piped in touch events, organizes touch
+     *   events by ID, and emits track events back to TouchInput.
      *   Emits 'trackstart', 'trackmove', and 'trackend' events upstream.
      *
      * @class TouchTracker

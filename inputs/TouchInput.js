@@ -17,9 +17,9 @@ define(function(require, exports, module) {
      * Handles piped in touch events. Emits 'start', 'update', and 'events'
      *   events with delta, position, velocity, acceleration, clientX, clientY, count, and touch id.
      *   Useful for dealing with inputs on touch devices. Designed to be used either as standalone, or
-     *   included in a GenericSync.
+     *   included in a GenericInput.
      *
-     * @class TouchSync
+     * @class TouchInput
      * @constructor
      *
      * @param [options] {Object}             default options overrides
@@ -28,8 +28,8 @@ define(function(require, exports, module) {
      * @param [options.velocitySampleLength] {Number}  Number of previous frames to check velocity against.
      * @param [options.scale] {Number}       constant factor to scale velocity output
      */
-    function TouchSync(options) {
-        this.options =  Object.create(TouchSync.DEFAULT_OPTIONS);
+    function TouchInput(options) {
+        this.options =  Object.create(TouchInput.DEFAULT_OPTIONS);
         this._optionsManager = new OptionsManager(this.options);
         if (options) this.setOptions(options);
 
@@ -56,15 +56,15 @@ define(function(require, exports, module) {
         this._position = null; // to be deprecated
     }
 
-    TouchSync.DEFAULT_OPTIONS = {
+    TouchInput.DEFAULT_OPTIONS = {
         direction: undefined,
         rails: false,
         velocitySampleLength: 10,
         scale: 1
     };
 
-    TouchSync.DIRECTION_X = 0;
-    TouchSync.DIRECTION_Y = 1;
+    TouchInput.DIRECTION_X = 0;
+    TouchInput.DIRECTION_Y = 1;
 
     var MINIMUM_TICK_TIME = 8;
 
@@ -140,12 +140,12 @@ define(function(require, exports, module) {
         var nextVel;
         var nextDelta;
 
-        if (this.options.direction === TouchSync.DIRECTION_X) {
+        if (this.options.direction === TouchInput.DIRECTION_X) {
             nextDelta = scale * diffX;
             nextVel = scale * velX;
             this._position += nextDelta;
         }
-        else if (this.options.direction === TouchSync.DIRECTION_Y) {
+        else if (this.options.direction === TouchInput.DIRECTION_Y) {
             nextDelta = scale * diffY;
             nextVel = scale * velY;
             this._position += nextDelta;
@@ -189,7 +189,7 @@ define(function(require, exports, module) {
      * @param [options.rails] {Boolean}      read from axis with greatest differential
      * @param [options.scale] {Number}       constant factor to scale velocity output
      */
-    TouchSync.prototype.setOptions = function setOptions(options) {
+    TouchInput.prototype.setOptions = function setOptions(options) {
         return this._optionsManager.setOptions(options);
     };
 
@@ -199,9 +199,9 @@ define(function(require, exports, module) {
      * @method getOptions
      * @return {Object} configuration options
      */
-    TouchSync.prototype.getOptions = function getOptions() {
+    TouchInput.prototype.getOptions = function getOptions() {
         return this.options;
     };
 
-    module.exports = TouchSync;
+    module.exports = TouchInput;
 });

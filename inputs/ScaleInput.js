@@ -9,7 +9,7 @@
 /* Modified work copyright © 2015 David Valdman */
 
 define(function(require, exports, module) {
-    var TwoFingerSync = require('./TwoFingerSync');
+    var TwoFingerInput = require('./TwoFingerInput');
     var OptionsManager = require('../core/OptionsManager');
 
     /**
@@ -17,16 +17,16 @@ define(function(require, exports, module) {
      *   Emits 'start', 'update' and 'end' events an object with position, velocity, touch ids, distance, and scale factor.
      *   Useful for determining a scaling factor from initial two-finger touch.
      *
-     * @class ScaleSync
-     * @extends TwoFingerSync
+     * @class ScaleInput
+     * @extends TwoFingerInput
      * @constructor
      * @param {Object} options default options overrides
      * @param {Number} [options.scale] scale velocity by this factor
      */
-    function ScaleSync(options) {
-        TwoFingerSync.call(this);
+    function ScaleInput(options) {
+        TwoFingerInput.call(this);
 
-        this.options = Object.create(ScaleSync.DEFAULT_OPTIONS);
+        this.options = Object.create(ScaleInput.DEFAULT_OPTIONS);
         this._optionsManager = new OptionsManager(this.options);
         if (options) this.setOptions(options);
 
@@ -35,10 +35,10 @@ define(function(require, exports, module) {
         this._eventInput.on('pipe', _reset.bind(this));
     }
 
-    ScaleSync.prototype = Object.create(TwoFingerSync.prototype);
-    ScaleSync.prototype.constructor = ScaleSync;
+    ScaleInput.prototype = Object.create(TwoFingerInput.prototype);
+    ScaleInput.prototype.constructor = ScaleInput;
 
-    ScaleSync.DEFAULT_OPTIONS = {
+    ScaleInput.DEFAULT_OPTIONS = {
         scale : 1
     };
 
@@ -48,23 +48,23 @@ define(function(require, exports, module) {
     }
 
     // handles initial touch of two fingers
-    ScaleSync.prototype._startUpdate = function _startUpdate(event) {
+    ScaleInput.prototype._startUpdate = function _startUpdate(event) {
         this._scaleFactor = 1;
-        this._startDist = TwoFingerSync.calculateDistance(this.posA, this.posB);
+        this._startDist = TwoFingerInput.calculateDistance(this.posA, this.posB);
         this._eventOutput.emit('start', {
             count: event.touches.length,
             touches: [this.touchAId, this.touchBId],
             distance: this._startDist,
-            center: TwoFingerSync.calculateCenter(this.posA, this.posB)
+            center: TwoFingerInput.calculateCenter(this.posA, this.posB)
         });
     };
 
     // handles movement of two fingers
-    ScaleSync.prototype._moveUpdate = function _moveUpdate(diffTime) {
+    ScaleInput.prototype._moveUpdate = function _moveUpdate(diffTime) {
         var scale = this.options.scale;
 
-        var currDist = TwoFingerSync.calculateDistance(this.posA, this.posB);
-        var center = TwoFingerSync.calculateCenter(this.posA, this.posB);
+        var currDist = TwoFingerInput.calculateDistance(this.posA, this.posB);
+        var center = TwoFingerInput.calculateCenter(this.posA, this.posB);
 
         var delta = (currDist - this._startDist) / this._startDist;
         var newScaleFactor = Math.max(1 + scale * delta, 0);
@@ -88,7 +88,7 @@ define(function(require, exports, module) {
      * @method getOptions
      * @return {Object} configuration options
      */
-    ScaleSync.prototype.getOptions = function getOptions() {
+    ScaleInput.prototype.getOptions = function getOptions() {
         return this.options;
     };
 
@@ -100,9 +100,9 @@ define(function(require, exports, module) {
      * @param {Object} [options] overrides of default options
      * @param {Number} [options.scale] scale velocity by this factor
      */
-    ScaleSync.prototype.setOptions = function setOptions(options) {
+    ScaleInput.prototype.setOptions = function setOptions(options) {
         return this._optionsManager.setOptions(options);
     };
 
-    module.exports = ScaleSync;
+    module.exports = ScaleInput;
 });
