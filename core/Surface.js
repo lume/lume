@@ -55,7 +55,7 @@ define(function(require, exports, module) {
 
     Surface.prototype = Object.create(ElementOutput.prototype);
     Surface.prototype.constructor = Surface;
-    Surface.prototype.elementType = 'div';
+    Surface.prototype.elementType = 'div'; // default tagName, but can be overriden in options
     Surface.prototype.elementClass = 'samsara-surface';
 
     function _setDirty(){
@@ -259,6 +259,7 @@ define(function(require, exports, module) {
      * @param {Object} [options] overrides for default options.  See constructor.
      */
     Surface.prototype.setOptions = function setOptions(options) {
+        if (options.tagName !== undefined) this.elementType = options.tagName;
         if (options.size !== undefined) this.setSize(options.size);
         if (options.origin !== undefined) this.setOrigin(options.origin);
         if (options.classes !== undefined) this.setClasses(options.classes);
@@ -428,6 +429,7 @@ define(function(require, exports, module) {
      * @param {Node} target document parent of this container
      */
     Surface.prototype.deploy = function deploy(target) {
+        //TODO: make sure target.tagName is of correct type! Tag pools must be implemented.
         this._eventOutput.emit('deploy');
         var content = this.getContent();
         if (content instanceof Node) {
