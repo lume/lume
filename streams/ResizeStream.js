@@ -7,24 +7,16 @@ define(function(require, exports, module) {
     var preTickQueue = require('samsara/core/queues/preTickQueue');
     var postTickQueue = require('samsara/core/queues/postTickQueue');
     var dirtyQueue = require('samsara/core/queues/dirtyQueue');
-    var State = require('samsara/core/SUE');
 
     var EVENTS = {
         START : 'start',
-        UPDATE : 'update',
-        RESIZE : 'resize',
-        END : 'end'
+        END : 'end',
+        RESIZE : 'resize'
     };
 
-    //listens to start/update/end/resize
-    //emits only resize
-
     function ResizeStream(){
-        var total = 0;
         var batchCount = 0; // progress of firings in each round of start/update/end
         var batchTotal = 0; // total firings in each round of start/update/end
-
-        var isUpdating = false;
 
         this._eventInput = new EventHandler();
         this._eventOutput = new EventHandler();
@@ -32,72 +24,20 @@ define(function(require, exports, module) {
         EventHandler.setOutputHandler(this, this._eventOutput);
 
         var self = this;
-        var dirty = false;
 
         this._eventInput.on(EVENTS.RESIZE, function(data){
-            var state = State.get();
-
-            if (state === State.STATES.START) {
-                batchCount++;
-                batchTotal++;
-                total++;
-
-                if (!dirty) dirtyObjects.trigger('dirty');
-                dirty = true;
-
-                (function(currentCount) {
-                    preTickQueue.push(function ResizeStreamStart() {
-                        if (currentCount == batchTotal && !isUpdating) {
-                            self.emit(EVENTS.RESIZE, data);
-                            batchCount = 0;
-                            batchTotal = 0;
-                        }
-                    });
-                })(batchCount);
-            }
-            else if (state === State.STATES.UPDATE){
-                isUpdating = true;
-                batchCount++;
-                batchTotal++;
-                (function(currentCount){
-                    postTickQueue.push(function ResizeStreamResize() {
-                        if (currentCount == batchTotal) {
-                            self.emit(EVENTS.RESIZE, data);
-                            batchCount = 0;
-                            batchTotal = 0;
-                        }
-                    });
-                })(batchCount);
-            }
-            else if (state === State.STATES.END){
-                total--;
-
-                if (dirty) dirtyObjects.trigger('clean');
-                dirty = false;
-
-                (function(currentTotal){
-                    dirtyQueue.push(function ResizeStreamResize() {
-                        isUpdating = false;
-                        if (currentTotal == 0) {
-                            self.emit(EVENTS.RESIZE, data);
-                            total = 0;
-                        }
-                    });
-                })(total);
-            }
+            batchCount++;
+            batchTotal++;
+            (function(count){
+                postTickQueue.push(function(){
+                    if (count == batchTotal){
+                        self._eventOutput.emit(EVENTS.RESIZE, data);
+                        batchCount = 0;
+                        batchTotal = 0;
+                    }
+                });
+            })(batchCount)
         });
-
-        this._eventInput.on(EVENTS.START, function ResizeStreamStart(data){
-            this.trigger(EVENTS.RESIZE, data);
-        }.bind(this));
-
-        this._eventInput.on(EVENTS.UPDATE, function ResizeStreamUpdate(data){
-            this.trigger(EVENTS.RESIZE, data);
-        }.bind(this));
-
-        this._eventInput.on(EVENTS.END, function ResizeStreamEnd(data){
-            this.trigger(EVENTS.RESIZE, data);
-        }.bind(this));
     }
 
     ResizeStream.prototype = Object.create(SimpleStream.prototype);

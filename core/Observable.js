@@ -22,7 +22,11 @@ define(function(require, exports, module) {
             this.value = value;
             this.emit('start', value);
 
+            // if listening to resize
+            this.emit('resize', value);
+
             dirtyQueue.push(function(){
+//                this.emit('resize', value);
                 this.emit('end', value);
             }.bind(this));
         }.bind(this))
