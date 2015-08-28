@@ -8,8 +8,6 @@ define(function(require, exports, module) {
 
     function LayoutNode(sources) {
         this.stream = this.createStream(sources);
-        this._eventOutput = new EventHandler();
-
         EventHandler.setOutputHandler(this, this.stream);
     }
 
