@@ -190,6 +190,18 @@ define(function(require, exports, module) {
         var target = this._currentTarget;
         if (!target) return;
 
+        if (this._sizeDirty) {
+            if (this._size[0] === true) this._size[0] = target.offsetWidth;
+            else target.style.width = Math.round(this._size[0] * devicePixelRatio) * invDevicePixelRatio + 'px';
+
+            if (this._size[1] === true) this._size[1] = target.offsetHeight;
+            else target.style.height = Math.round(this._size[1] * devicePixelRatio) * invDevicePixelRatio + 'px';
+
+            this._sizeDirty = false;
+        }
+
+        if (!spec) return;
+
         var transform = spec.transform || Transform.identity;
         var opacity = (spec.opacity === undefined) ? 1 : spec.opacity;
         var origin = spec.origin;
@@ -208,14 +220,6 @@ define(function(require, exports, module) {
             _setOpacity(target, opacity);
         }
 
-        if (this._sizeDirty) {
-            if (this._size[0] === true) this._size[0] = target.offsetWidth;
-            else target.style.width = Math.round(this._size[0] * devicePixelRatio) * invDevicePixelRatio + 'px';
-
-            if (this._size[1] === true) this._size[1] = target.offsetHeight;
-            else target.style.height = Math.round(this._size[1] * devicePixelRatio) * invDevicePixelRatio + 'px';
-        }
-
         if (this._originDirty)
             _setOrigin(target, this._origin);
 
@@ -230,7 +234,6 @@ define(function(require, exports, module) {
 
         this._originDirty = false;
         this._transformDirty = false;
-        this._sizeDirty = false;
         this._opacityDirty = false;
     };
 

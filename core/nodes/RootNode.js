@@ -9,6 +9,8 @@ define(function(require, exports, module) {
         this.root = this;
         this.specs = {};
         this.objects = {};
+
+        this.dirtyObjects = [];
     }
 
     RootNode.prototype = Object.create(SceneGraphNode.prototype);
@@ -20,6 +22,9 @@ define(function(require, exports, module) {
 
         for (var key in objects)
             objects[key].commit(specs[key], allocator);
+
+        while (this.dirtyObjects.length)
+            this.dirtyObjects.pop().commit(null, allocator);
     };
 
     module.exports = RootNode;

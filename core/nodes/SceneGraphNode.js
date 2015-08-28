@@ -42,7 +42,8 @@ define(function(require, exports, module) {
         }
         else {
             childNode = new SceneGraphNode(object);
-            if (this.tempRoot) childNode.tempRoot = this.tempRoot;
+            if (this.tempRoot)
+                childNode.tempRoot = this.tempRoot;
             else childNode.root = _getRootNode.call(this);
         }
 
@@ -77,26 +78,26 @@ define(function(require, exports, module) {
         else {
             object.__size.subscribe(this.size);
 
-            var commitStream = Stream.lift(function(layout, size){
-                if (size) layout.size = size;
-                return layout;
-            }.bind(this), [this._eventIO, object.size]);
-
-            commitStream.on('start', function(spec){
+            this._eventIO.on('start', function(spec){
                 var root = _getRootNode.call(this);
                 root.objects[object._id] = object;
                 root.specs[object._id] = spec;
             }.bind(this));
 
-            commitStream.on('update', function(spec){
+            this._eventIO.on('update', function(spec){
                 var root = _getRootNode.call(this);
                 root.specs[object._id] = spec;
             }.bind(this));
 
-            commitStream.on('end', function(){
+            this._eventIO.on('end', function(){
                 var root = _getRootNode.call(this);
                 delete root.objects[object._id];
                 delete root.specs[object._id];
+            }.bind(this));
+
+            object.size.on('resize', function(size){
+                var root = _getRootNode.call(this);
+                root.dirtyObjects.push(object);
             }.bind(this));
         }
     };
