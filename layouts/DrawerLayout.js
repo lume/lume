@@ -58,7 +58,7 @@ define(function(require, exports, module) {
             var _delta = 0;
 
             var gestureStream = new Stream({
-                start : function(){return false},
+//                start : function(){return false},
                 update : function(){
                     if (_delta) return _delta;
                     else return false;
@@ -88,9 +88,10 @@ define(function(require, exports, module) {
                 }
             }.bind(this));
 
-//            this.gestureStream.on('start', function(a){
-//                this.inertialStream.halt();
-//            }.bind(this));
+            gestureStream.on('start', function(){
+                this.inertialStream.halt();
+                return 0;
+            }.bind(this));
 
             gestureStream.on('end', function(data){
                 var velocity = data.velocity;
