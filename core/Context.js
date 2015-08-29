@@ -72,7 +72,7 @@ define(function(require, exports, module) {
         }.bind(this));
 
         this._eventInput.on('resize', function(size){
-            this.emit('resize', size);
+            this._eventOutput.emit('resize', size);
         }.bind(this));
 
         this.size.on('resize', function(size){
@@ -151,6 +151,9 @@ define(function(require, exports, module) {
         this._sizeDirty = true;
 
         this.trigger('resize', size);
+        dirtyQueue.push(function(){
+            this._node.size.emit('resize', size);
+        }.bind(this));
     };
 
     /**
