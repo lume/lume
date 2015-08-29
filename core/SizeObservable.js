@@ -1,36 +1,31 @@
 define(function(require, exports, module) {
-    var Stream = require('samsara/streams/Stream');
+    var SimpleStream = require('samsara/streams/SimpleStream');
     var preTickQueue = require('samsara/core/queues/preTickQueue');
     var dirtyQueue = require('samsara/core/queues/dirtyQueue');
 
-    function Observable(value){
-        Stream.call(this);
+    function SizeObservable(value){
+        SimpleStream.call(this);
         this.value = value;
 
         if (value !== undefined) this.set(value);
     }
 
-    Observable.prototype = Object.create(Stream.prototype);
-    Observable.prototype.constructor = Observable;
+    SizeObservable.prototype = Object.create(SimpleStream.prototype);
+    SizeObservable.prototype.constructor = SizeObservable;
 
-    Observable.prototype.get = function(){
+    SizeObservable.prototype.get = function(){
         return this.value;
     };
 
-    Observable.prototype.set = function(value){
+    SizeObservable.prototype.set = function(value){
         preTickQueue.push(function(){
             this.value = value;
-            this.emit('start', value);
-
-            // if listening to resize
             this.emit('resize', value);
-
             dirtyQueue.push(function(){
-//                this.emit('resize', value);
-                this.emit('end', value);
+                this.emit('resize', value);
             }.bind(this));
         }.bind(this))
     };
 
-    module.exports = Observable;
+    module.exports = SizeObservable;
 });
