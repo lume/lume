@@ -9,9 +9,9 @@
 /* Modified work copyright © 2015 David Valdman */
 
 define(function(require, exports, module) {
+    var OptionsManager = require('samsara/core/OptionsManager');
 
     /**
-     *
      * A state maintainer for a smooth transition between
      *    numerically-specified states.  Example numeric states include floats or
      *    Transfornm objects.
@@ -29,13 +29,9 @@ define(function(require, exports, module) {
      *
      * @class TweenTransition
      * @constructor
-     *
-     * @param {Object} options TODO
-     *    beginning state
      */
     function TweenTransition(options) {
-        this.options = Object.create(TweenTransition.DEFAULT_OPTIONS);
-        if (options) this.setOptions(options);
+        this.options = OptionsManager.setOptions(this, options);
 
         this._startTime = 0;
         this._startValue = 0;
@@ -48,6 +44,9 @@ define(function(require, exports, module) {
         this.velocity = undefined;
     }
 
+    var registeredCurves = {};
+    var eps = 1e-7; // for calculating velocity using finite difference
+
     /**
      * Transition curves mapping independent variable t from domain [0,1] to a
      *    range within [0,1]. Includes functions 'linear', 'easeIn', 'easeOut',
@@ -56,7 +55,7 @@ define(function(require, exports, module) {
      * @property {object} Curve
      * @final
      */
-    TweenTransition.Curves = {
+    TweenTransition.CURVES = {
         linear: function(t) {
             return t;
         },
@@ -78,14 +77,11 @@ define(function(require, exports, module) {
         }
     };
 
-    TweenTransition.SUPPORTS_MULTIPLE = Infinity;
     TweenTransition.DEFAULT_OPTIONS = {
-        curve: TweenTransition.Curves.linear,
+        curve: TweenTransition.CURVES.linear,
         duration: 500,
-        speed: 0 /* considered only if positive */
+        speed: 0
     };
-
-    var registeredCurves = {};
 
     /**
      * Add "unit" curve to internal dictionary of registered curves.
@@ -104,9 +100,7 @@ define(function(require, exports, module) {
             registeredCurves[curveName] = curve;
             return true;
         }
-        else {
-            return false;
-        }
+        else return false;
     };
 
     /**
@@ -125,15 +119,13 @@ define(function(require, exports, module) {
             delete registeredCurves[curveName];
             return true;
         }
-        else {
-            return false;
-        }
+        else return false;
     };
 
     /**
      * Retrieve function with key "curveName" from internal dictionary of
      *    registered curves. Default curves are defined in the
-     *    TweenTransition.Curves array, where the values represent
+     *    TweenTransition.CURVES array, where the values represent
      *    unitCurve functions.
      *
      * @method getCurve
@@ -164,7 +156,6 @@ define(function(require, exports, module) {
         return registeredCurves;
     };
 
-     // Interpolate: If a linear function f(0) = a, f(1) = b, then return f(t)
     function _interpolate(a, b, t) {
         return ((1 - t) * a) + (t * b);
     }
@@ -178,8 +169,8 @@ define(function(require, exports, module) {
                 variance += (end[i] - start[i]) * (end[i] - start[i]);
             duration = Math.sqrt(variance) / speed;
         }
-        else
-            duration = Math.abs(end - start) / speed;
+        else duration = Math.abs(end - start) / speed;
+
         return duration;
     }
 
@@ -205,25 +196,9 @@ define(function(require, exports, module) {
         }
         if (typeof result.curve === 'string') result.curve = TweenTransition.getCurve(result.curve);
         if (transition.speed) result.duration = _speed2Duration(endValue, this._startValue, transition.speed);
+
         return result;
     }
-
-    /**
-     * Set internal options, overriding any default options.
-     *
-     * @method setOptions
-     *
-     *
-     * @param {Object} options options object
-     * @param {Object} [options.curve] function mapping [0,1] to [0,1] or identifier
-     * @param {Number} [options.duration] duration in ms
-     * @param {Number} [options.speed] speed in pixels per ms
-     */
-    TweenTransition.prototype.setOptions = function setOptions(options) {
-        if (options.curve !== undefined) this.options.curve = options.curve;
-        if (options.duration !== undefined) this.options.duration = options.duration;
-        if (options.speed !== undefined) this.options.speed = options.speed;
-    };
 
     /**
      * Add transition to end state to the queue of pending transitions. Special
@@ -233,7 +208,7 @@ define(function(require, exports, module) {
      * @method set
      *
      *
-     * @param {number|FamousMatrix|Array.Number|Object.<number, number>} endValue
+     * @param {number|Array.Number|Object.<number, number>} endValue
      *    end state to which we _interpolate
      * @param {transition=} transition object of type {duration: number, curve:
      *    f[0,1] -> [0,1] or name}. If transition is omitted, change will be
@@ -247,6 +222,10 @@ define(function(require, exports, module) {
             if (callback) callback();
             return;
         }
+
+        var curve = transition.curve;
+        if (!registeredCurves[curve] && TweenTransition.CURVES[curve])
+            TweenTransition.register(curve, TweenTransition.CURVES[curve]);
 
         this._startValue = _clone(this.get());
         transition = _normalize(transition, endValue, this.options);
@@ -307,7 +286,6 @@ define(function(require, exports, module) {
         return this.state;
     };
 
-    var eps = 1e-7;
     function _calculateVelocity(current, start, curve, duration, t) {
         var velocity;
         var speed = (curve(t) - curve(t - eps)) / eps;
@@ -376,7 +354,6 @@ define(function(require, exports, module) {
      *
      * @method isActive
      *
-     *
      * @return {boolean}
      */
     TweenTransition.prototype.isActive = function isActive() {
@@ -387,26 +364,9 @@ define(function(require, exports, module) {
      * Halt transition at current state and erase all pending actions.
      *
      * @method halt
-     *
      */
     TweenTransition.prototype.halt = function halt() {
         this.reset(this.get());
-    };
-
-    // Register all the default curves
-    TweenTransition.register('linear', TweenTransition.Curves.linear);
-    TweenTransition.register('easeIn', TweenTransition.Curves.easeIn);
-    TweenTransition.register('easeOut', TweenTransition.Curves.easeOut);
-    TweenTransition.register('easeInOut', TweenTransition.Curves.easeInOut);
-    TweenTransition.register('easeOutBounce', TweenTransition.Curves.easeOutBounce);
-    TweenTransition.register('spring', TweenTransition.Curves.spring);
-
-    TweenTransition.customCurve = function customCurve(v1, v2) {
-        if (v1 === undefined) v1 = 0; // slope at t = 0
-        if (v2 === undefined) v2 = 0; // slope at t = 1
-        return function(t) {
-            return v1*t + (-2*v1 - v2 + 3)*t*t + (v1 + v2 - 2)*t*t*t;
-        };
     };
 
     module.exports = TweenTransition;
