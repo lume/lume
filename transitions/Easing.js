@@ -16,7 +16,7 @@ define(function(require, exports, module) {
     var Easing = {
 
         /**
-         * @property inQuad
+         * @method inQuad
          * @static
          */
         inQuad: function(t) {
@@ -24,7 +24,7 @@ define(function(require, exports, module) {
         },
 
         /**
-         * @property outQuad
+         * @method outQuad
          * @static
          */
         outQuad: function(t) {
@@ -32,7 +32,7 @@ define(function(require, exports, module) {
         },
 
         /**
-         * @property inOutQuad
+         * @method inOutQuad
          * @static
          */
         inOutQuad: function(t) {
@@ -41,7 +41,7 @@ define(function(require, exports, module) {
         },
 
         /**
-         * @property inCubic
+         * @method inCubic
          * @static
          */
         inCubic: function(t) {
@@ -49,7 +49,7 @@ define(function(require, exports, module) {
         },
 
         /**
-         * @property outCubic
+         * @method outCubic
          * @static
          */
         outCubic: function(t) {
@@ -57,7 +57,7 @@ define(function(require, exports, module) {
         },
 
         /**
-         * @property inOutCubic
+         * @method inOutCubic
          * @static
          */
         inOutCubic: function(t) {
@@ -66,7 +66,7 @@ define(function(require, exports, module) {
         },
 
         /**
-         * @property inQuart
+         * @method inQuart
          * @static
          */
         inQuart: function(t) {
@@ -74,7 +74,7 @@ define(function(require, exports, module) {
         },
 
         /**
-         * @property outQuart
+         * @method outQuart
          * @static
          */
         outQuart: function(t) {
@@ -82,7 +82,7 @@ define(function(require, exports, module) {
         },
 
         /**
-         * @property inOutQuart
+         * @method inOutQuart
          * @static
          */
         inOutQuart: function(t) {
@@ -91,7 +91,7 @@ define(function(require, exports, module) {
         },
 
         /**
-         * @property inQuint
+         * @method inQuint
          * @static
          */
         inQuint: function(t) {
@@ -99,7 +99,7 @@ define(function(require, exports, module) {
         },
 
         /**
-         * @property outQuint
+         * @method outQuint
          * @static
          */
         outQuint: function(t) {
@@ -107,7 +107,7 @@ define(function(require, exports, module) {
         },
 
         /**
-         * @property inOutQuint
+         * @method inOutQuint
          * @static
          */
         inOutQuint: function(t) {
@@ -116,7 +116,7 @@ define(function(require, exports, module) {
         },
 
         /**
-         * @property inSine
+         * @method inSine
          * @static
          */
         inSine: function(t) {
@@ -124,7 +124,7 @@ define(function(require, exports, module) {
         },
 
         /**
-         * @property outSine
+         * @method outSine
          * @static
          */
         outSine: function(t) {
@@ -132,7 +132,7 @@ define(function(require, exports, module) {
         },
 
         /**
-         * @property inOutSine
+         * @method inOutSine
          * @static
          */
         inOutSine: function(t) {
@@ -140,7 +140,7 @@ define(function(require, exports, module) {
         },
 
         /**
-         * @property inExpo
+         * @method inExpo
          * @static
          */
         inExpo: function(t) {
@@ -148,7 +148,7 @@ define(function(require, exports, module) {
         },
 
         /**
-         * @property outExpo
+         * @method outExpo
          * @static
          */
         outExpo: function(t) {
@@ -156,7 +156,7 @@ define(function(require, exports, module) {
         },
 
         /**
-         * @property inOutExpo
+         * @method inOutExpo
          * @static
          */
         inOutExpo: function(t) {
@@ -167,7 +167,7 @@ define(function(require, exports, module) {
         },
 
         /**
-         * @property inCirc
+         * @method inCirc
          * @static
          */
         inCirc: function(t) {
@@ -175,7 +175,7 @@ define(function(require, exports, module) {
         },
 
         /**
-         * @property outCirc
+         * @method outCirc
          * @static
          */
         outCirc: function(t) {
@@ -183,7 +183,7 @@ define(function(require, exports, module) {
         },
 
         /**
-         * @property inOutCirc
+         * @method inOutCirc
          * @static
          */
         inOutCirc: function(t) {
@@ -203,7 +203,7 @@ define(function(require, exports, module) {
         },
 
         /**
-         * @property outElastic
+         * @method outElastic
          * @static
          */
         outElastic: function(t) {
@@ -214,7 +214,7 @@ define(function(require, exports, module) {
         },
 
         /**
-         * @property inOutElastic
+         * @method inOutElastic
          * @static
          */
         inOutElastic: function(t) {
@@ -226,7 +226,7 @@ define(function(require, exports, module) {
         },
 
         /**
-         * @property inBack
+         * @method inBack
          * @static
          */
         inBack: function(t, s) {
@@ -235,7 +235,7 @@ define(function(require, exports, module) {
         },
 
         /**
-         * @property outBack
+         * @method outBack
          * @static
          */
         outBack: function(t, s) {
@@ -244,7 +244,7 @@ define(function(require, exports, module) {
         },
 
         /**
-         * @property inOutBack
+         * @method inOutBack
          * @static
          */
         inOutBack: function(t, s) {
@@ -254,7 +254,7 @@ define(function(require, exports, module) {
         },
 
         /**
-         * @property inBounce
+         * @method inBounce
          * @static
          */
         inBounce: function(t) {
@@ -262,7 +262,7 @@ define(function(require, exports, module) {
         },
 
         /**
-         * @property outBounce
+         * @method outBounce
          * @static
          */
         outBounce: function(t) {
@@ -278,12 +278,24 @@ define(function(require, exports, module) {
         },
 
         /**
-         * @property inOutBounce
+         * @method inOutBounce
          * @static
          */
         inOutBounce: function(t) {
             if (t < .5) return Easing.inBounce(t*2) * .5;
             return Easing.outBounce(t*2-1.0) * .5 + .5;
+        },
+
+        /**
+         * @method createCustomCurve
+         * @static
+         */
+        createCustomCurve: function(slope0, slope1) {
+            if (slope0 === undefined) slope0 = 0; // slope at t = 0
+            if (slope1 === undefined) slope1 = 0; // slope at t = 1
+            return function(t) {
+                return slope0*t + (-2*slope0 - slope1 + 3)*t*t + (slope0 + slope1 - 2)*t*t*t;
+            };
         }
     };
 
