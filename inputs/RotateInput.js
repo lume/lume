@@ -9,8 +9,8 @@
 /* Modified work copyright © 2015 David Valdman */
 
 define(function(require, exports, module) {
-    var TwoFingerInput = require('./TwoFingerInput');
-    var OptionsManager = require('../core/OptionsManager');
+    var TwoFingerInput = require('samsara/inputs/TwoFingerInput');
+    var OptionsManager = require('samsara/core/OptionsManager');
 
     /**
      * Handles two-finger touch events to increase or decrease scale via pinching / expanding.
@@ -26,9 +26,7 @@ define(function(require, exports, module) {
     function RotateInput(options) {
         TwoFingerInput.call(this);
 
-        this.options = Object.create(RotateInput.DEFAULT_OPTIONS);
-        this._optionsManager = new OptionsManager(this.options);
-        if (options) this.setOptions(options);
+        this.options = OptionsManager.setOptions(this, options);
 
         this._angle = 0;
         this._previousAngle = 0;
@@ -42,12 +40,14 @@ define(function(require, exports, module) {
     };
 
     RotateInput.prototype._startUpdate = function _startUpdate(event) {
-        this._angle = 0;
         this._previousAngle = TwoFingerInput.calculateAngle(this.posA, this.posB);
         var center = TwoFingerInput.calculateCenter(this.posA, this.posB);
+
+        this._angle = 0;
+
         this._eventOutput.emit('start', {
             count: event.touches.length,
-            angle: this._angle,
+            value: this._angle,
             center: center,
             touches: [this.touchAId, this.touchBId]
         });
@@ -67,34 +67,12 @@ define(function(require, exports, module) {
         this._eventOutput.emit('update', {
             delta : diffTheta,
             velocity: velTheta,
-            angle: this._angle,
+            value: this._angle,
             center: center,
             touches: [this.touchAId, this.touchBId]
         });
 
         this._previousAngle = currAngle;
-    };
-
-    /**
-     * Return entire options dictionary, including defaults.
-     *
-     * @method getOptions
-     * @return {Object} configuration options
-     */
-    RotateInput.prototype.getOptions = function getOptions() {
-        return this.options;
-    };
-
-    /**
-     * Set internal options, overriding any default options
-     *
-     * @method setOptions
-     *
-     * @param {Object} [options] overrides of default options
-     * @param {Number} [options.scale] scale velocity by this factor
-     */
-    RotateInput.prototype.setOptions = function setOptions(options) {
-        return this._optionsManager.setOptions(options);
     };
 
     module.exports = RotateInput;

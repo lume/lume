@@ -9,7 +9,51 @@
 /* Modified work copyright © 2015 David Valdman */
 
 define(function(require, exports, module) {
-    var EventHandler = require('../core/EventHandler');
+    var OptionsManager = require('samsara/core/OptionsManager');
+    var EventHandler = require('samsara/core/EventHandler');
+
+    /**
+     * Helper to TouchInput – tracks piped in touch events, organizes touch
+     *   events by ID, and emits track events back to TouchInput.
+     *   Emits 'trackstart', 'trackmove', and 'trackend' events upstream.
+     *
+     * @class TouchTracker
+     * @constructor
+     */
+
+    //TODO: implement max sampling length (default to 2?) and payload caching
+
+    function TouchTracker(options) {
+        this.options = OptionsManager.setOptions(this, options);
+
+        this.touchHistory = {};
+        this._isTouched = false;
+
+        this._eventInput = new EventHandler();
+        this._eventOutput = new EventHandler();
+
+        EventHandler.setInputHandler(this, this._eventInput);
+        EventHandler.setOutputHandler(this, this._eventOutput);
+
+        this._eventInput.on('touchstart', _handleStart.bind(this));
+        this._eventInput.on('touchmove', _handleMove.bind(this));
+        this._eventInput.on('touchend', _handleEnd.bind(this));
+        this._eventInput.on('touchcancel', _handleEnd.bind(this));
+    }
+
+    TouchTracker.DEFAULT_OPTIONS = {
+        limit : 1 // number of simultaneous touches
+    };
+
+    /**
+     * Record touch data, if selective is false.
+     * @private
+     * @method track
+     * @param {Object} data touch data
+     */
+    TouchTracker.prototype.track = function track(data) {
+        this.touchHistory[data.identifier] = [data];
+    };
 
     var _now = Date.now;
 
@@ -26,13 +70,13 @@ define(function(require, exports, module) {
     }
 
     function _handleStart(event) {
-        if (event.touches.length > this.touchLimit) return;
-        this.isTouched = true;
+        if (event.touches.length > this.options.limit) return;
+        this._isTouched = true;
 
         for (var i = 0; i < event.changedTouches.length; i++) {
             var touch = event.changedTouches[i];
             var data = _timestampTouch(touch, event, null);
-            this.eventOutput.emit('trackstart', data);
+            this._eventOutput.emit('trackstart', data);
             if (!this.touchHistory[touch.identifier]) this.track(data);
         }
     }
@@ -44,64 +88,26 @@ define(function(require, exports, module) {
             if (history) {
                 var data = _timestampTouch(touch, event, history);
                 this.touchHistory[touch.identifier].push(data);
-                this.eventOutput.emit('trackmove', data);
+                this._eventOutput.emit('trackmove', data);
             }
         }
     }
 
     function _handleEnd(event) {
-        if (!this.isTouched) return;
+        if (!this._isTouched) return;
 
         for (var i = 0; i < event.changedTouches.length; i++) {
             var touch = event.changedTouches[i];
             var history = this.touchHistory[touch.identifier];
             if (history) {
                 var data = _timestampTouch(touch, event, history);
-                this.eventOutput.emit('trackend', data);
+                this._eventOutput.emit('trackend', data);
                 delete this.touchHistory[touch.identifier];
             }
         }
 
-        this.isTouched = false;
+        this._isTouched = false;
     }
-
-    /**
-     * Helper to TouchInput – tracks piped in touch events, organizes touch
-     *   events by ID, and emits track events back to TouchInput.
-     *   Emits 'trackstart', 'trackmove', and 'trackend' events upstream.
-     *
-     * @class TouchTracker
-     * @constructor
-     * @param {Object} options default options overrides
-     * @param [options.selective] {Boolean} selective if false, saves state for each touch
-     * @param [options.touchLimit] {Number} touchLimit upper bound for emitting events based on number of touches
-     */
-    function TouchTracker(options) {
-        this.touchHistory = {};
-
-        this.eventInput = new EventHandler();
-        this.eventOutput = new EventHandler();
-
-        EventHandler.setInputHandler(this, this.eventInput);
-        EventHandler.setOutputHandler(this, this.eventOutput);
-
-        this.eventInput.on('touchstart', _handleStart.bind(this));
-        this.eventInput.on('touchmove', _handleMove.bind(this));
-        this.eventInput.on('touchend', _handleEnd.bind(this));
-        this.eventInput.on('touchcancel', _handleEnd.bind(this));
-
-        this.isTouched = false;
-    }
-
-    /**
-     * Record touch data, if selective is false.
-     * @private
-     * @method track
-     * @param {Object} data touch data
-     */
-    TouchTracker.prototype.track = function track(data) {
-        this.touchHistory[data.identifier] = [data];
-    };
 
     module.exports = TouchTracker;
 });

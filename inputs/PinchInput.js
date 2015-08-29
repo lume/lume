@@ -6,8 +6,8 @@
  * @copyright Famous Industries, Inc. 2014
  */
 define(function(require, exports, module) {
-    var TwoFingerInput = require('./TwoFingerInput');
-    var OptionsManager = require('../core/OptionsManager');
+    var TwoFingerInput = require('samsara/inputs/TwoFingerInput');
+    var OptionsManager = require('samsara/core/OptionsManager');
 
     /**
      * Handles two-finger touch events to change position via pinching / expanding.
@@ -23,9 +23,7 @@ define(function(require, exports, module) {
     function PinchInput(options) {
         TwoFingerInput.call(this);
 
-        this.options = Object.create(PinchInput.DEFAULT_OPTIONS);
-        this._optionsManager = new OptionsManager(this.options);
-        if (options) this.setOptions(options);
+        this.options = OptionsManager.setOptions(this, options);
 
         this._displacement = 0;
         this._previousDistance = 0;
@@ -39,14 +37,16 @@ define(function(require, exports, module) {
     };
 
     PinchInput.prototype._startUpdate = function _startUpdate(event) {
+        var center = TwoFingerInput.calculateCenter(this.posA, this.posB);
         this._previousDistance = TwoFingerInput.calculateDistance(this.posA, this.posB);
+
         this._displacement = 0;
 
         this._eventOutput.emit('start', {
             count: event.touches.length,
             touches: [this.touchAId, this.touchBId],
-            distance: this._previousDistance,
-            center: TwoFingerInput.calculateCenter(this.posA, this.posB)
+            value: this._previousDistance,
+            center: center
         });
     };
 
@@ -58,39 +58,18 @@ define(function(require, exports, module) {
         var delta = scale * (currDist - this._previousDistance);
         var velocity = delta / diffTime;
 
-        this._previousDistance = currDist;
         this._displacement += delta;
 
         this._eventOutput.emit('update', {
             delta : delta,
             velocity: velocity,
-            distance: currDist,
+            value: currDist,
             displacement: this._displacement,
             center: center,
             touches: [this.touchAId, this.touchBId]
         });
-    };
 
-    /**
-     * Return entire options dictionary, including defaults.
-     *
-     * @method getOptions
-     * @return {Object} configuration options
-     */
-    PinchInput.prototype.getOptions = function getOptions() {
-        return this.options;
-    };
-
-    /**
-     * Set internal options, overriding any default options
-     *
-     * @method setOptions
-     *
-     * @param {Object} [options] overrides of default options
-     * @param {Number} [options.scale] scale velocity by this factor
-     */
-    PinchInput.prototype.setOptions = function setOptions(options) {
-        return this._optionsManager.setOptions(options);
+        this._previousDistance = currDist;
     };
 
     module.exports = PinchInput;

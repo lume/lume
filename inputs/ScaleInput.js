@@ -9,8 +9,8 @@
 /* Modified work copyright © 2015 David Valdman */
 
 define(function(require, exports, module) {
-    var TwoFingerInput = require('./TwoFingerInput');
-    var OptionsManager = require('../core/OptionsManager');
+    var TwoFingerInput = require('samsara/inputs/TwoFingerInput');
+    var OptionsManager = require('samsara/core/OptionsManager');
 
     /**
      * Handles two-finger touch events to increase or decrease scale via pinching / expanding.
@@ -26,13 +26,10 @@ define(function(require, exports, module) {
     function ScaleInput(options) {
         TwoFingerInput.call(this);
 
-        this.options = Object.create(ScaleInput.DEFAULT_OPTIONS);
-        this._optionsManager = new OptionsManager(this.options);
-        if (options) this.setOptions(options);
+        this.options = OptionsManager.setOptions(this, options);
 
-        this._scaleFactor = 1;
         this._startDist = 0;
-        this._eventInput.on('pipe', _reset.bind(this));
+        this._scaleFactor = 1;
     }
 
     ScaleInput.prototype = Object.create(TwoFingerInput.prototype);
@@ -49,13 +46,14 @@ define(function(require, exports, module) {
 
     // handles initial touch of two fingers
     ScaleInput.prototype._startUpdate = function _startUpdate(event) {
-        this._scaleFactor = 1;
         this._startDist = TwoFingerInput.calculateDistance(this.posA, this.posB);
+        var center = TwoFingerInput.calculateCenter(this.posA, this.posB);
+
         this._eventOutput.emit('start', {
             count: event.touches.length,
             touches: [this.touchAId, this.touchBId],
             distance: this._startDist,
-            center: TwoFingerInput.calculateCenter(this.posA, this.posB)
+            center: center
         });
     };
 
@@ -80,28 +78,6 @@ define(function(require, exports, module) {
         });
 
         this._scaleFactor = newScaleFactor;
-    };
-
-    /**
-     * Return entire options dictionary, including defaults.
-     *
-     * @method getOptions
-     * @return {Object} configuration options
-     */
-    ScaleInput.prototype.getOptions = function getOptions() {
-        return this.options;
-    };
-
-    /**
-     * Set internal options, overriding any default options
-     *
-     * @method setOptions
-     *
-     * @param {Object} [options] overrides of default options
-     * @param {Number} [options.scale] scale velocity by this factor
-     */
-    ScaleInput.prototype.setOptions = function setOptions(options) {
-        return this._optionsManager.setOptions(options);
     };
 
     module.exports = ScaleInput;
