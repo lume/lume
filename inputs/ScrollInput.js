@@ -13,6 +13,7 @@ define(function(require, exports, module) {
     var OptionsManager = require('samsara/core/OptionsManager');
     var dirtyQueue = require('samsara/core/queues/dirtyQueue');
     var postTickQueue = require('samsara/core/queues/postTickQueue');
+    var SimpleStream = require('samsara/streams/SimpleStream');
     var Timer = require('samsara/core/Timer');
 
     /**
@@ -55,6 +56,9 @@ define(function(require, exports, module) {
             });
         }, 100);
     }
+
+    ScrollInput.prototype = Object.create(SimpleStream.prototype);
+    ScrollInput.prototype.constructor = ScrollInput;
 
     ScrollInput.DEFAULT_OPTIONS = {
         direction: undefined,
