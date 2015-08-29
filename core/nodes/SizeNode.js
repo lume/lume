@@ -4,7 +4,7 @@ define(function(require, exports, module) {
     var EventHandler = require('samsara/core/EventHandler');
     var SimpleStream = require('samsara/streams/SimpleStream');
     var ResizeStream = require('samsara/streams/ResizeStream');
-    var Observable = require('samsara/core/Observable');
+    var SizeObservable = require('samsara/core/SizeObservable');
 
     function SizeNode(sources) {
         this.stream = this.createStream(sources);
@@ -30,7 +30,7 @@ define(function(require, exports, module) {
         for (var key in sources){
             var value = sources[key];
             if (typeof value == 'number' || value instanceof Array){
-                var source = new Observable(value);
+                var source = new SizeObservable(value);
                 sources[key] = source;
             }
         }
@@ -43,7 +43,7 @@ define(function(require, exports, module) {
 
             var source = (value instanceof SimpleStream)
                 ? value
-                : new Observable(value);
+                : new SizeObservable(value);
 
             this.stream.addStream(key, source);
         }
