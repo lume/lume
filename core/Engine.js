@@ -137,7 +137,6 @@ define(function(require, exports, module) {
         dirtyObjects.emit('dirty');
         dirtyQueue.push(function engineResizeClean(){
             size.emit('resize', windowSize);
-            eventHandler.emit('resize', windowSize);
             dirtyObjects.emit('clean');
         });
     }
