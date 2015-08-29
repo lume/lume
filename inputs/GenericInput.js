@@ -9,33 +9,33 @@
 /* Modified work copyright © 2015 David Valdman */
 
 define(function(require, exports, module) {
-    var EventHandler = require('../core/EventHandler');
+    var EventHandler = require('samsara/core/EventHandler');
 
     /**
-     * Combines multiple types of sync classes (e.g. mouse, touch,
+     * Combines multiple types of input classes (e.g. mouse, touch,
      *  scrolling) into one standardized interface for inclusion in widgets.
      *
      *  Sync classes are first registered with a key, and then can be accessed
      *  globally by key.
      *
-     *  Emits 'start', 'update' and 'end' events as a union of the sync class
+     *  Emits 'start', 'update' and 'end' events as a union of the input class
      *  providers.
      *
      * @class GenericInput
      * @constructor
-     * @param syncs {Object|Array} object with fields {sync key : sync options}
-     *    or an array of registered sync keys
-     * @param [options] {Object|Array} options object to set on all syncs
+     * @param inputs {Object|Array} object with fields {input key : input options}
+     *    or an array of registered input keys
+     * @param [options] {Object|Array} options object to set on all inputs
      */
-    function GenericInput(syncs, options) {
+    function GenericInput(inputs, options) {
         this._eventInput = new EventHandler();
         this._eventOutput = new EventHandler();
 
         EventHandler.setInputHandler(this, this._eventInput);
         EventHandler.setOutputHandler(this, this._eventOutput);
 
-        this._syncs = {};
-        if (syncs) this.addInput(syncs);
+        this._inputs = {};
+        if (inputs) this.addInput(inputs);
         if (options) this.setOptions(options);
     }
 
@@ -43,83 +43,83 @@ define(function(require, exports, module) {
     GenericInput.DIRECTION_Y = 1;
     GenericInput.DIRECTION_Z = 2;
 
-    // Global registry of sync classes. Append only.
+    // Global registry of input constructors. Append only.
     var registry = {};
 
     /**
-     * Register a global sync class with an identifying key
+     * Register a global input class with an identifying key
      *
      * @static
      * @method register
      *
-     * @param syncObject {Object} an object of {sync key : sync options} fields
+     * @param inputObject {Object} an object of {input key : input options} fields
      */
-    GenericInput.register = function register(syncObject) {
-        for (var key in syncObject){
+    GenericInput.register = function register(inputObject) {
+        for (var key in inputObject){
             if (registry[key]){
-                if (registry[key] === syncObject[key]) return; // redundant registration
-                else throw new Error('this key is registered to a different sync class');
+                if (registry[key] === inputObject[key]) return; // redundant registration
+                else throw new Error('this key is registered to a different input class');
             }
-            else registry[key] = syncObject[key];
+            else registry[key] = inputObject[key];
         }
     };
 
     /**
-     * Helper to set options on all sync instances
+     * Helper to set options on all input instances
      *
      * @method setOptions
      * @param options {Object} options object
      */
     GenericInput.prototype.setOptions = function(options) {
-        for (var key in this._syncs){
-            this._syncs[key].setOptions(options);
+        for (var key in this._inputs){
+            this._inputs[key].setOptions(options);
         }
     };
 
     /**
-     * Subscribe events from a sync class
+     * Subscribe events from an input class
      *
      * @method subscribeInput
-     * @param key {String} identifier for sync class
+     * @param key {String} identifier for input class
      */
-    GenericInput.prototype.subscribeInput = function subscribeSync(key) {
-        var sync = this._syncs[key];
-        sync.subscribe(this._eventInput);
-        this._eventOutput.subscribe(sync);
+    GenericInput.prototype.subscribeInput = function subscribeInput(key) {
+        var input = this._inputs[key];
+        input.subscribe(this._eventInput);
+        this._eventOutput.subscribe(input);
     };
 
     /**
-     * Unsunscribe events from a sync class
+     * Unsunscribe events from an input class
      *
      * @method unsubscribeInput
-     * @param key {String} identifier for sync class
+     * @param key {String} identifier for input class
      */
-    GenericInput.prototype.unsubscribeInput = function unsubscribeSync(key) {
-        var sync = this._syncs[key];
-        sync.unsubscribe(this._eventInput);
-        this._eventOutput.unsubscribe(sync);
+    GenericInput.prototype.unsubscribeInput = function unsubscribeInput(key) {
+        var input = this._inputs[key];
+        input.unsubscribe(this._eventInput);
+        this._eventOutput.unsubscribe(input);
     };
 
     function _addSingleInput(key, options) {
         if (!registry[key]) return;
-        this._syncs[key] = new (registry[key])(options);
+        this._inputs[key] = new (registry[key])(options);
         this.subscribeInput(key);
     }
 
     /**
-     * Add a sync class to from the registered classes
+     * Add an input class to from the registered classes
      *
      * @method addInput
-     * @param syncs {Object|Array.String} an array of registered sync keys
-     *    or an object with fields {sync key : sync options}
+     * @param inputs {Object|Array.String} an array of registered input keys
+     *    or an object with fields {input key : input options}
      */
-    GenericInput.prototype.addInput = function addSync(syncs) {
-        if (syncs instanceof Array)
-            for (var i = 0; i < syncs.length; i++)
-                _addSingleInput.call(this, syncs[i]);
-        else if (syncs instanceof Object)
-            for (var key in syncs)
-                _addSingleInput.call(this, key, syncs[key]);
+    GenericInput.prototype.addInput = function addSync(inputs) {
+        if (inputs instanceof Array)
+            for (var i = 0; i < inputs.length; i++)
+                _addSingleInput.call(this, inputs[i]);
+        else if (inputs instanceof Object)
+            for (var key in inputs)
+                _addSingleInput.call(this, key, inputs[key]);
     };
 
     module.exports = GenericInput;
