@@ -11,7 +11,7 @@
 define(function(require, exports, module) {
     var EventHandler = require('samsara/core/EventHandler');
     var OptionsManager = require('samsara/core/OptionsManager');
-    var Stream = require('samsara/streams/Stream');
+    var SimpleStream = require('samsara/streams/SimpleStream');
 
     /**
      * Handles piped in mouse drag events. Outputs an object with two
@@ -23,10 +23,10 @@ define(function(require, exports, module) {
      * @constructor
      *
      * @param [options] {Object}             default options overrides
-     * @param [options.direction] {Number}   read from a particular axis
+     * @param [options.] {Number}   read from a particular axis
      * @param [options.propogate] {Boolean}  add listened to document on mouseleave
      */
-    //TODO: DIRECTION.X
+
     function MouseInput(options) {
         this.options = OptionsManager.setOptions(this, options);
 
@@ -60,7 +60,7 @@ define(function(require, exports, module) {
         this._move = false;
     }
 
-    MouseInput.prototype = Object.create(Stream.prototype);
+    MouseInput.prototype = Object.create(SimpleStream.prototype);
     MouseInput.prototype.constructor = MouseInput;
 
     MouseInput.DEFAULT_OPTIONS = {
@@ -69,8 +69,10 @@ define(function(require, exports, module) {
         propogate: true  // events piped to document on mouseleave
     };
 
-    MouseInput.DIRECTION_X = 0;
-    MouseInput.DIRECTION_Y = 1;
+    MouseInput.DIRECTION = {
+        X : 0,
+        Y : 1
+    };
 
     var MINIMUM_TICK_TIME = 8;
 
@@ -79,6 +81,7 @@ define(function(require, exports, module) {
     function _handleStart(event) {
         var delta;
         var velocity;
+
         event.preventDefault(); // prevent drag
 
         var x = event.clientX;
@@ -135,12 +138,12 @@ define(function(require, exports, module) {
         var nextVel;
         var nextDelta;
 
-        if (this.options.direction === MouseInput.DIRECTION_X) {
+        if (this.options.direction === MouseInput.DIRECTION.X) {
             nextDelta = scale * diffX;
             nextVel = scale * velX;
             this._position += nextDelta;
         }
-        else if (this.options.direction === MouseInput.DIRECTION_Y) {
+        else if (this.options.direction === MouseInput.DIRECTION.Y) {
             nextDelta = scale * diffY;
             nextVel = scale * velY;
             this._position += nextDelta;
@@ -154,7 +157,7 @@ define(function(require, exports, module) {
 
         var payload = this._payload;
         payload.delta    = nextDelta;
-        payload.value = this._position;
+        payload.value    = this._position;
         payload.velocity = nextVel;
         payload.clientX  = x;
         payload.clientY  = y;
