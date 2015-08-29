@@ -9,7 +9,8 @@
 /* Modified work copyright © 2015 David Valdman */
 
 define(function(require, exports, module) {
-    var EventHandler = require('../core/EventHandler');
+    var EventHandler = require('samsara/core/EventHandler');
+    var SimpleStream = require('samsara/streams/SimpleStream');
 
     /**
      * Helper to PinchInput, RotateInput, and ScaleInput.  Generalized handling of
@@ -40,6 +41,9 @@ define(function(require, exports, module) {
         this._eventInput.on('touchend', this.handleEnd.bind(this));
         this._eventInput.on('touchcancel', this.handleEnd.bind(this));
     }
+
+    TwoFingerSync.prototype = Object.create(SimpleStream.prototype);
+    TwoFingerSync.prototype.constructor = TwoFingerSync;
 
     TwoFingerSync.calculateAngle = function(posA, posB) {
         var diffX = posB[0] - posA[0];
