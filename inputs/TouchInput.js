@@ -9,9 +9,10 @@
 /* Modified work copyright © 2015 David Valdman */
 
 define(function(require, exports, module) {
-    var TouchTracker = require('./TouchTracker');
-    var EventHandler = require('../core/EventHandler');
-    var OptionsManager = require('../core/OptionsManager');
+    var TouchTracker = require('samsara/inputs/TouchTracker');
+    var EventHandler = require('samsara/core/EventHandler');
+    var SimpleStream = require('samsara/streams/SimpleStream');
+    var OptionsManager = require('samsara/core/OptionsManager');
 
     /**
      * Handles piped in touch events. Emits 'start', 'update', and 'events'
@@ -24,14 +25,10 @@ define(function(require, exports, module) {
      *
      * @param [options] {Object}             default options overrides
      * @param [options.direction] {Number}   read from a particular axis
-     * @param [options.rails] {Boolean}      read from axis with greatest differential
-     * @param [options.velocitySampleLength] {Number}  Number of previous frames to check velocity against.
      * @param [options.scale] {Number}       constant factor to scale velocity output
      */
     function TouchInput(options) {
-        this.options =  Object.create(TouchInput.DEFAULT_OPTIONS);
-        this._optionsManager = new OptionsManager(this.options);
-        if (options) this.setOptions(options);
+        this.options = OptionsManager.setOptions(this, options);
 
         this._eventOutput = new EventHandler();
         this._touchTracker = new TouchTracker();
@@ -45,7 +42,7 @@ define(function(require, exports, module) {
 
         this._payload = {
             delta    : null,
-            position : null,
+            value    : null,
             velocity : null,
             clientX  : undefined,
             clientY  : undefined,
@@ -53,18 +50,21 @@ define(function(require, exports, module) {
             touch    : undefined
         };
 
-        this._position = null; // to be deprecated
+        this._position = null;
     }
+
+    TouchInput.prototype = Object.create(SimpleStream.prototype);
+    TouchInput.prototype.constructor = TouchInput;
 
     TouchInput.DEFAULT_OPTIONS = {
         direction: undefined,
-        rails: false,
-        velocitySampleLength: 10,
         scale: 1
     };
 
-    TouchInput.DIRECTION_X = 0;
-    TouchInput.DIRECTION_Y = 1;
+    TouchInput.DIRECTION = {
+        X : 0,
+        Y : 1
+    };
 
     var MINIMUM_TICK_TIME = 8;
 
@@ -89,7 +89,7 @@ define(function(require, exports, module) {
 
         var payload = this._payload;
         payload.delta = delta;
-        payload.position = this._position;
+        payload.value = this._position;
         payload.velocity = velocity;
         payload.clientX = data.x;
         payload.clientY = data.y;
@@ -110,42 +110,30 @@ define(function(require, exports, module) {
         var currHistory = history[history.length - 1];
         var prevHistory = history[history.length - 2];
 
-        var distantHistory = history[history.length - this.options.velocitySampleLength] ?
-          history[history.length - this.options.velocitySampleLength] :
-          history[history.length - 2];
-
-        var distantTime = distantHistory.timestamp;
+        var distantTime = prevHistory.timestamp;
         var currTime = currHistory.timestamp;
 
         var diffX = currHistory.x - prevHistory.x;
         var diffY = currHistory.y - prevHistory.y;
 
-        var velDiffX = currHistory.x - distantHistory.x;
-        var velDiffY = currHistory.y - distantHistory.y;
+        var velDiffX = currHistory.x - prevHistory.x;
+        var velDiffY = currHistory.y - prevHistory.y;
 
-        if (this.options.rails) {
-            if (Math.abs(diffX) > Math.abs(diffY)) diffY = 0;
-            else diffX = 0;
+        var invDeltaT = Math.max(currTime - distantTime, MINIMUM_TICK_TIME);
 
-            if (Math.abs(velDiffX) > Math.abs(velDiffY)) velDiffY = 0;
-            else velDiffX = 0;
-        }
-
-        var diffTime = Math.max(currTime - distantTime, MINIMUM_TICK_TIME);
-
-        var velX = velDiffX / diffTime;
-        var velY = velDiffY / diffTime;
+        var velX = velDiffX * invDeltaT;
+        var velY = velDiffY * invDeltaT;
 
         var scale = this.options.scale;
         var nextVel;
         var nextDelta;
 
-        if (this.options.direction === TouchInput.DIRECTION_X) {
+        if (this.options.direction === TouchInput.DIRECTION.X) {
             nextDelta = scale * diffX;
             nextVel = scale * velX;
             this._position += nextDelta;
         }
-        else if (this.options.direction === TouchInput.DIRECTION_Y) {
+        else if (this.options.direction === TouchInput.DIRECTION.Y) {
             nextDelta = scale * diffY;
             nextVel = scale * velY;
             this._position += nextDelta;
@@ -158,13 +146,13 @@ define(function(require, exports, module) {
         }
 
         var payload = this._payload;
-        payload.delta    = nextDelta;
-        payload.velocity = nextVel;
-        payload.position = this._position;
-        payload.clientX  = data.x;
-        payload.clientY  = data.y;
-        payload.count    = data.count;
-        payload.touch    = data.identifier;
+        payload.delta      = nextDelta;
+        payload.velocity   = nextVel;
+        payload.value      = this._position;
+        payload.clientX    = data.x;
+        payload.clientY    = data.y;
+        payload.count      = data.count;
+        payload.touch      = data.identifier;
 
         this._eventOutput.emit('update', payload);
     }
@@ -178,30 +166,6 @@ define(function(require, exports, module) {
         this._payload.count = data.count;
         this._eventOutput.emit('end', this._payload);
     }
-
-    /**
-     * Set internal options, overriding any default options
-     *
-     * @method setOptions
-     *
-     * @param [options] {Object}             default options overrides
-     * @param [options.direction] {Number}   read from a particular axis
-     * @param [options.rails] {Boolean}      read from axis with greatest differential
-     * @param [options.scale] {Number}       constant factor to scale velocity output
-     */
-    TouchInput.prototype.setOptions = function setOptions(options) {
-        return this._optionsManager.setOptions(options);
-    };
-
-    /**
-     * Return entire options dictionary, including defaults.
-     *
-     * @method getOptions
-     * @return {Object} configuration options
-     */
-    TouchInput.prototype.getOptions = function getOptions() {
-        return this.options;
-    };
 
     module.exports = TouchInput;
 });
