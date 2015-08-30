@@ -28,18 +28,17 @@ define(function(require, exports, module) {
         },
         events : null,
         constructor : function View(){
-            this._modifier = null;
-
             this._node = new SceneGraphNode();
             this._node.tempRoot = this._node;
 
             this.size = new EventHandler();
+            this.layout = new EventHandler();
 
             Controller.apply(this, arguments);
 
             this._eventInput.subscribe(this._optionsManager);
 
-            this._node.subscribe(this._eventInput);
+            this._node.layout.subscribe(this.layout);
             this._node.size.subscribe(this.size);
         },
         set : function set(){

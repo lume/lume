@@ -64,11 +64,11 @@ define(function(require, exports, module) {
         EventHandler.setOutputHandler(this, this._eventOutput);
 
         this._eventInput.on('start', function(){
-            this._node.trigger('start', this._nodeContext);
+            this._node.layout.trigger('start', this._nodeContext);
         }.bind(this));
 
         this._eventInput.on('end', function(){
-            this._node.trigger('end', this._nodeContext);
+            this._node.layout.trigger('end', this._nodeContext);
         }.bind(this));
 
         this._eventInput.on('resize', function(size){

@@ -3,7 +3,6 @@
 define(function(require, exports, module) {
     var EventHandler = require('samsara/core/EventHandler');
     var Stream = require('samsara/streams/Stream');
-    var EventMapper = require('samsara/events/EventMapper');
     var ResizeStream = require('samsara/streams/ResizeStream');
     var SizeNode = require('samsara/core/nodes/SizeNode');
     var LayoutNode = require('samsara/core/nodes/LayoutNode');
@@ -11,15 +10,13 @@ define(function(require, exports, module) {
     var sizeAlgebra = require('samsara/core/algebras/size');
 
     function SceneGraphNode(object) {
-        this.stream = null;
         this.sizeStream = null;
+        this.layoutStream = null;
+
+        this.layout = new EventHandler();
         this.size = new EventHandler();
 
         this.root = null;
-
-        this._eventIO = new EventHandler();
-        EventHandler.setInputHandler(this, this._eventIO);
-        EventHandler.setOutputHandler(this, this._eventIO);
 
         if (object) this.set(object);
     }
@@ -47,7 +44,7 @@ define(function(require, exports, module) {
             else childNode.root = _getRootNode.call(this);
         }
 
-        childNode.subscribe(this.stream || this);
+        childNode.layout.subscribe(this.layoutStream || this.layout);
         childNode.size.subscribe(this.sizeStream || this.size);
 
         return childNode;
@@ -66,30 +63,32 @@ define(function(require, exports, module) {
         }
 
         if (!object.commit){
-            this.stream = Stream.lift(
+            this.layoutStream = Stream.lift(
                 function SGLayoutAlgebra (objectSpec, parentSpec, size){
+                    // TODO: bug fix for when successive `start` events are fired downstream
+                    if (!parentSpec) return;
                     return (objectSpec)
                         ? layoutAlgebra(objectSpec, parentSpec, size)
                         : parentSpec;
                 },
-                [object, this._eventIO, this.size]
+                [object, this.layout, this.size]
             );
         }
         else {
             object.__size.subscribe(this.size);
 
-            this._eventIO.on('start', function(spec){
+            this.layout.on('start', function(spec){
                 var root = _getRootNode.call(this);
                 root.objects[object._id] = object;
                 root.specs[object._id] = spec;
             }.bind(this));
 
-            this._eventIO.on('update', function(spec){
+            this.layout.on('update', function(spec){
                 var root = _getRootNode.call(this);
                 root.specs[object._id] = spec;
             }.bind(this));
 
-            this._eventIO.on('end', function(){
+            this.layout.on('end', function(){
                 var root = _getRootNode.call(this);
                 delete root.objects[object._id];
                 delete root.specs[object._id];
