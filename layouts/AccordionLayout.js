@@ -130,7 +130,6 @@ define(function(require, exports, module) {
             }.bind(this));
 
             this.offset = 0;
-            this.startLength = 0;
             for (var i = 0; i < nodes.length; i++){
                 var angle = this.options.initialAngles[i];
                 var l = nodes[i].getSize()[this.options.direction];
@@ -138,18 +137,16 @@ define(function(require, exports, module) {
                 if (i < this.options.pivotIndex)
                     this.offset -= length;
 
-                this.startLength += length;
+                var transform = transforms.pluck('transforms').pluck(i);
 
                 var layout = new LayoutNode({
-                    transform : transforms.pluck('transforms').pluck(i)
+                    transform : transform
                 });
 
                 this.add(layout).add(nodes[i]);
 
                 this.maxLength += nodes[i].getSize()[this.options.direction];
             }
-
-            console.log(this.startLength)
 
             this._eventOutput.subscribe(transforms
                 .pluck('length')
