@@ -75,10 +75,11 @@ define(function(require, exports, module) {
                 var accordionOffset = this.offset;    // shift to ensure starting point is at 0
                 var y = originY - accordionOffset;
                 var z = originZ;
+                var length = 0;
 
                 // TODO: remove these offsets
-                var offsetX = 100;
-                var offsetY = 200;
+                var offsetX = 0;
+                var offsetY = 0;
 
                 var angle, transform, l;
                 for (i = startIndex - 1; i >= 0; i--) {
@@ -101,6 +102,8 @@ define(function(require, exports, module) {
                     transforms[i] = transform;
                 }
 
+                length += y;
+
                 y = originY - accordionOffset;
                 z = originZ;
 
@@ -122,6 +125,13 @@ define(function(require, exports, module) {
                     y += l * Math.cos(angle);
                     transforms.push(transform);
                 }
+
+                var x = nodes[0].getSize()[1 - direction];
+                length += y;
+
+                //TODO: make dynamic sizing more robust
+                if (this.options.size[0] === true && this.options.size[1] == true)
+                    this.setSize([x,length]);
 
                 return {
                     transforms : transforms,
