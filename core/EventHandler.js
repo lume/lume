@@ -40,10 +40,8 @@ define(function(require, exports, module) {
      */
     EventHandler.setInputHandler = function setInputHandler(object, handler) {
         object.trigger = handler.trigger.bind(handler);
-        if (handler.subscribe && handler.unsubscribe) {
-            object.subscribe = handler.subscribe.bind(handler);
-            object.unsubscribe = handler.unsubscribe.bind(handler);
-        }
+        object.subscribe = handler.subscribe.bind(handler);
+        object.unsubscribe = handler.unsubscribe.bind(handler);
     };
 
     /**
@@ -56,7 +54,7 @@ define(function(require, exports, module) {
      * @param {EventHandler} handler assigned event handler
      */
     EventHandler.setOutputHandler = function setOutputHandler(object, handler) {
-        if (handler instanceof EventHandler) handler.bindThis(object);
+        handler.bindThis(object);
         object.emit = handler.emit.bind(handler);
         object.on = handler.on.bind(handler);
         object.off = handler.off.bind(handler);
