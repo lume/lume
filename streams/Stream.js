@@ -22,8 +22,6 @@ define(function(require, exports, module) {
         EventHandler.setInputHandler(this, this._eventInput);
         EventHandler.setOutputHandler(this, this._eventOutput);
 
-        options = options || {};
-
         var batchCount = 0;
         var batchTotal = 0;
         var total = 0;
@@ -51,11 +49,11 @@ define(function(require, exports, module) {
 
             (function(currentCount){
                 preTickQueue.push(function streamStart(){
-                    if (currentCount == batchTotal){
+                    if (currentCount == batchCount){
                         batchCount = 0;
                         batchTotal = 0;
                         if (isUpdating) return;
-                        var payload = options.start ? options.start(data) : data;
+                        var payload = options && options.start ? options.start(data) : data;
                         if (payload !== false) self.emit(EVENTS.START, payload);
                     }
                 });
@@ -69,7 +67,7 @@ define(function(require, exports, module) {
             (function(currentCount){
                 postTickQueue.push(function streamUpdate(){
                     if (currentCount == batchTotal) {
-                        var payload = options.update ? options.update(data) : data;
+                        var payload = options && options.update ? options.update(data) : data;
                         if (payload !== false) self.emit(EVENTS.UPDATE, payload);
                         batchCount = 0;
                         batchTotal = 0;
@@ -84,7 +82,7 @@ define(function(require, exports, module) {
                 dirtyQueue.push(function streamEnd(){
                     if (currentTotal == 0){
                         isUpdating = false;
-                        var payload = options.end ? options.end(data) : data;
+                        var payload = options && options.end ? options.end(data) : data;
                         if (payload !== false) self.emit(EVENTS.END, payload);
                     }
                 });
@@ -116,7 +114,6 @@ define(function(require, exports, module) {
         var mergedData = (streamObj instanceof Array) ? [] : {};
 
         mergedStream.addStream = function(key, stream){
-            mergedData[key] = undefined;
             var mapper = (function(key){
                 return new EventMapper(function(data){
                     mergedData[key] = data;

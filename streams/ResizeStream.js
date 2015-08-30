@@ -3,10 +3,7 @@ define(function(require, exports, module) {
     var EventMapper = require('samsara/events/EventMapper');
     var EventHandler = require('samsara/core/EventHandler');
     var dirtyObjects = require('samsara/core/dirtyObjects');
-
-    var preTickQueue = require('samsara/core/queues/preTickQueue');
     var postTickQueue = require('samsara/core/queues/postTickQueue');
-    var dirtyQueue = require('samsara/core/queues/dirtyQueue');
 
     var EVENTS = {
         START : 'start',
@@ -47,11 +44,9 @@ define(function(require, exports, module) {
 
     ResizeStream.merge = function(streamObj){
         var mergedStream = new ResizeStream();
-
         var mergedData = (streamObj instanceof Array) ? [] : {};
 
         mergedStream.addStream = function(key, stream){
-            mergedData[key] = undefined;
             var mapper = (function(key){
                 return new EventMapper(function(data){
                     mergedData[key] = data;
