@@ -39,9 +39,11 @@ define(function(require, exports, module) {
         if (options) this.setOptions(options);
     }
 
-    GenericInput.DIRECTION_X = 0;
-    GenericInput.DIRECTION_Y = 1;
-    GenericInput.DIRECTION_Z = 2;
+    GenericInput.DIRECTION = {
+        X : 0,
+        Y : 1,
+        Z : 2
+    };
 
     // Global registry of input constructors. Append only.
     var registry = {};
