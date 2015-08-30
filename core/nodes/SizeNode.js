@@ -8,7 +8,6 @@ define(function(require, exports, module) {
 
     function SizeNode(sources) {
         this.stream = this.createStream(sources);
-        this._eventInput = new EventHandler();
 
         this.stream._eventInput.on('start', function(data){
             this.stream.trigger('resize', data);
