@@ -66,7 +66,7 @@ define(function(require, exports, module) {
             this.layoutStream = Stream.lift(
                 function SGLayoutAlgebra (objectSpec, parentSpec, size){
                     // TODO: bug fix for when successive `start` events are fired downstream
-                    if (!parentSpec) return;
+                    if (!parentSpec || !size) return;
                     return (objectSpec)
                         ? layoutAlgebra(objectSpec, parentSpec, size)
                         : parentSpec;
