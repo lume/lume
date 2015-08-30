@@ -171,7 +171,7 @@ define(function(require, exports, module) {
         this._move = true;
     }
 
-    function _handleEnd(event) {
+    function _handleEnd() {
         if (!this._down) return;
 
         this._eventOutput.emit('end', this._payload);
