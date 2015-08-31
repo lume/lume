@@ -40,6 +40,7 @@ define(function(require, exports, module) {
      * @param data {Object}     payload
      */
     EventEmitter.prototype.emit = function emit(type, data) {
+        if (data === false) return; // do not propagate
         var handlers = this.listeners[type];
         if (handlers) {
             for (var i = 0; i < handlers.length; i++)
