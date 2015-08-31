@@ -20,10 +20,11 @@ html {
     opacity: .999999; /* ios8 hotfix */
     overflow: hidden;
     -webkit-transform-style: preserve-3d;
+    -moz-transform-style: preserve-3d;
     transform-style: preserve-3d;
 }
 
-.samsara-context, .samsara-group {
+.samsara-context {
     position: absolute;
     top: 0px;
     left: 0px;
@@ -37,13 +38,6 @@ html {
     -moz-backface-visibility: visible;
     backface-visibility: visible;
     pointer-events: none;
-}
-
-.samsara-group {
-    width: 0px;
-    height: 0px;
-    margin: 0px;
-    padding: 0px;
 }
 
 .samsara-surface {
