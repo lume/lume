@@ -3,7 +3,11 @@ define(function(require, exports, module) {
     var EventMapper = require('samsara/events/EventMapper');
     var EventHandler = require('samsara/core/EventHandler');
     var dirtyObjects = require('samsara/core/dirtyObjects');
+
+    var preTickQueue = require('samsara/core/queues/preTickQueue');
     var postTickQueue = require('samsara/core/queues/postTickQueue');
+    var dirtyQueue = require('samsara/core/queues/dirtyQueue');
+    var State = require('samsara/core/SUE');
 
     var EVENTS = {
         START : 'start',
@@ -23,10 +27,23 @@ define(function(require, exports, module) {
         var self = this;
 
         this._eventInput.on(EVENTS.RESIZE, function(data){
+            var queue;
+            switch (State.get()){
+                case State.STATES.START:
+                    queue = preTickQueue;
+                    break;
+                case State.STATES.UPDATE:
+                    queue = postTickQueue;
+                    break;
+                case State.STATES.END:
+                    queue = dirtyQueue;
+                    break;
+            }
+
             batchCount++;
             batchTotal++;
             (function(count){
-                postTickQueue.push(function(){
+                queue.push(function(){
                     if (count == batchTotal){
                         self._eventOutput.emit(EVENTS.RESIZE, data);
                         batchCount = 0;

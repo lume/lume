@@ -42,7 +42,6 @@ define(function(require, exports, module) {
         Surface.call(this, options);
 
         this._container = document.createElement('div');
-        this._container.classList.add('samsara-group');
         this._container.classList.add('samsara-container');
 
         this.context = new Context(this._container);
