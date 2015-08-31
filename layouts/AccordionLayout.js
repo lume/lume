@@ -130,7 +130,7 @@ define(function(require, exports, module) {
                 length += y;
 
                 //TODO: make dynamic sizing more robust
-                if (this.options.size[0] === true && this.options.size[1] == true)
+                if (this.options.size && this.options.size[0] === true && this.options.size[1] == true)
                     this.setSize([x,length]);
 
                 return {
