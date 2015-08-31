@@ -18,13 +18,14 @@ define(function(require, exports, module) {
     };
 
     SizeObservable.prototype.set = function(value){
+        var self = this;
         preTickQueue.push(function(){
-            this.value = value;
-            this.emit('resize', value);
+            self.value = value;
+            self.emit('resize', value);
             dirtyQueue.push(function(){
-                this.emit('resize', value);
-            }.bind(this));
-        }.bind(this))
+                self.emit('resize', value);
+            });
+        });
     };
 
     module.exports = SizeObservable;
