@@ -35,19 +35,19 @@ define(function(require, exports, module) {
             origin : null
         },
         events : null,
-        constructor : function View(options){
+        constructor : function View(){
             this.size = new EventHandler();
             this.layout = new EventHandler();
-
-            this.sizeObserver = new SizeObservable(options.size);
 
             this._node = new SceneGraphNode();
             this._node.tempRoot = this._node;
 
             Controller.apply(this, arguments);
 
+            this.sizeObserver = new SizeObservable(this.options.size);
+
             var sizeMapper = ResizeStream.lift(
-                function SGSizeAlgebra (size, parentSize){
+                function ViewSizeAlgebra (size, parentSize){
                     return (size)
                         ? sizeAlgebra({size : size}, parentSize)
                         : parentSize;
@@ -57,7 +57,7 @@ define(function(require, exports, module) {
 
             this._node.size.subscribe(sizeMapper).subscribe(this.size);
 
-            if (options.origin){
+            if (this.options.origin){
                 var layoutMapper = Stream.lift(
                     function ViewLayoutAlgebra (parentSpec, size){
                         if (!parentSpec || !size) return;
