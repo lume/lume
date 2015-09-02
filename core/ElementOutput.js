@@ -47,7 +47,7 @@ define(function(require, exports, module) {
         this.__size = new EventHandler();
 
         this.size = ResizeStream.lift(function elementSizeLift(sizeNode, parentSize){
-            if (!parentSize) return; // occurs when surface is never added
+            //if (!parentSize) return; // occurs when surface is never added
             return sizeAlgebra(sizeNode, parentSize);
         }, [this.sizeNode, this.__size]);
 
@@ -116,6 +116,7 @@ define(function(require, exports, module) {
 
     var MIN_OPACITY = 0.0001;
     var MAX_OPACITY = 0.9999;
+    var EPSILON = 1e-5;
 
     function _addEventListeners(target) {
         for (var i in this._eventOutput.listeners)
@@ -130,6 +131,7 @@ define(function(require, exports, module) {
     function _formatCSSTransform(transform) {
         var result = 'matrix3d(';
         for (var i = 0; i < 15; i++) {
+            if (Math.abs(transform[i]) < EPSILON) transform[i] = 0;
             result += (i === 12 || i === 13)
                 ? Math.round(transform[i] * devicePixelRatio) * invDevicePixelRatio + ','
                 : transform[i] + ',';
