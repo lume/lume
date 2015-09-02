@@ -60,7 +60,10 @@ define(function(require, exports, module) {
                 nextSizeTransform = parentTransform;
 
             if (origin && (origin[0] || origin[1])){
-                transform = Transform.moveThen([-origin[0] * size[0], -origin[1] * size[1], 0], transform);
+                //TODO: allow origin to propogate when size is non-numeric
+                var tx =  (typeof size[0] === 'number') ? -origin[0] * size[0] : 0;
+                var ty =  (typeof size[1] === 'number') ? -origin[1] * size[1] : 0;
+                transform = Transform.moveThen([tx, ty, 0], transform);
                 origin = null;
             }
 
