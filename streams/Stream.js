@@ -17,91 +17,81 @@ define(function(require, exports, module) {
     };
 
     function Stream(options){
+        this.options = options || {};
+
         this._eventInput = new EventHandler();
         this._eventOutput = new EventHandler();
         EventHandler.setInputHandler(this, this._eventInput);
         EventHandler.setOutputHandler(this, this._eventOutput);
 
-        var batchCount = 0;
-        var batchTotal = 0;
-        var total = 0;
         var isUpdating = false;
+        var dirtyStart = false;
+        var dirtyUpdate = false;
+        var dirtyEnd = false;
 
-        var self = this;
+        //this._eventInput.on('start', function(){
+        //    if (dirty) return;
+        //    dirtyObjects.trigger('dirty');
+        //    dirty = true;
+        //});
+        //
+        //this._eventInput.on('end', function(){
+        //    if (!dirty) return;
+        //    dirtyObjects.trigger('dirty');
+        //    dirty = false;
+        //});
 
-        var dirty = false;
-        this._eventInput.on('start', function(){
-            if (dirty) return;
-            dirtyObjects.trigger('dirty');
-            dirty = true;
-        });
+        function start(data){
+            var payload = this.options.start ? this.options.start(data) : data;
+            if (payload !== false) this.emit(EVENTS.START, payload);
+            dirtyStart = false;
+        }
 
-        this._eventInput.on('end', function(){
-            if (!dirty) return;
-            dirtyObjects.trigger('clean');
-            dirty = false;
-        });
+        function update(data){
+            var payload = this.options.update ? this.options.update(data) : data;
+            if (payload !== false) this.emit(EVENTS.UPDATE, payload);
+            dirtyUpdate = false;
+        }
+
+        function end(data){
+            var payload = this.options.end ? this.options.end(data) : data;
+            if (payload !== false) this.emit(EVENTS.END, payload);
+            dirtyEnd = false;
+        }
 
         this._eventInput.on(EVENTS.START, function(data){
-            batchCount++;
-            batchTotal++;
-            total++;
-
-            (function(currentCount){
-                preTickQueue.push(function streamStart(){
-                    if (currentCount == batchCount){
-                        batchCount = 0;
-                        batchTotal = 0;
-                        if (isUpdating) return;
-                        var payload = options && options.start ? options.start(data) : data;
-                        if (payload !== false) self.emit(EVENTS.START, payload);
-                    }
-                });
-            })(batchCount)
-        });
+            if (dirtyStart || isUpdating) return;
+            dirtyStart = true;
+            preTickQueue.push(start.bind(this, data));
+        }.bind(this));
 
         this._eventInput.on(EVENTS.UPDATE, function(data){
-            batchCount++;
-            batchTotal++;
+            if (dirtyUpdate) return;
+            dirtyUpdate = true;
             isUpdating = true;
-            (function(currentCount){
-                postTickQueue.push(function streamUpdate(){
-                    if (currentCount == batchTotal) {
-                        var payload = options && options.update ? options.update(data) : data;
-                        if (payload !== false) self.emit(EVENTS.UPDATE, payload);
-                        batchCount = 0;
-                        batchTotal = 0;
-                    }
-                });
-            })(batchCount);
-        });
+            postTickQueue.push(update.bind(this, data));
+        }.bind(this));
 
         this._eventInput.on(EVENTS.END, function(data){
-            total--;
-            (function(currentTotal){
-                dirtyQueue.push(function streamEnd(){
-                    if (currentTotal == 0){
-                        isUpdating = false;
-                        var payload = options && options.end ? options.end(data) : data;
-                        if (payload !== false) self.emit(EVENTS.END, payload);
-                    }
-                });
-            })(total);
-        });
+            if (dirtyEnd) return;
+            dirtyEnd = true;
+            isUpdating = false;
+            dirtyQueue.push(end.bind(this, data));
+        }.bind(this));
 
         this._eventInput.on(EVENTS.RESIZE, function(data){
             switch (State.get()){
                 case State.STATES.START:
-                    self.trigger(EVENTS.START, data);
+                    this.trigger(EVENTS.START, data);
                     break;
                 case State.STATES.UPDATE:
-                    self.trigger(EVENTS.UPDATE, data);
+                    this.trigger(EVENTS.UPDATE, data);
                     break;
                 case State.STATES.END:
-                    self.trigger(EVENTS.END, data);
+                    this.trigger(EVENTS.END, data);
                     break;
             }
-        });
+        }.bind(this));
     }
 
     Stream.prototype = Object.create(SimpleStream.prototype);
