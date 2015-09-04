@@ -17,8 +17,6 @@ define(function(require, exports, module) {
     };
 
     function Stream(options){
-        this.options = options || {};
-
         this._eventInput = new EventHandler();
         this._eventOutput = new EventHandler();
         EventHandler.setInputHandler(this, this._eventInput);
@@ -28,33 +26,35 @@ define(function(require, exports, module) {
         var dirtyStart = false;
         var dirtyUpdate = false;
         var dirtyEnd = false;
+        var dirty = false;
 
-        //this._eventInput.on('start', function(){
-        //    if (dirty) return;
-        //    dirtyObjects.trigger('dirty');
-        //    dirty = true;
-        //});
-        //
-        //this._eventInput.on('end', function(){
-        //    if (!dirty) return;
-        //    dirtyObjects.trigger('dirty');
-        //    dirty = false;
-        //});
+        //TODO: is this dirty checking necessary?
+        this._eventInput.on('start', function(){
+            if (dirty) return;
+            dirtyObjects.trigger('dirty');
+            dirty = true;
+        });
+
+        this._eventInput.on('end', function(){
+            if (!dirty) return;
+            dirtyObjects.trigger('dirty');
+            dirty = false;
+        });
 
         function start(data){
-            var payload = this.options.start ? this.options.start(data) : data;
+            var payload = options && options.start ? options.start(data) : data;
             if (payload !== false) this.emit(EVENTS.START, payload);
             dirtyStart = false;
         }
 
         function update(data){
-            var payload = this.options.update ? this.options.update(data) : data;
+            var payload = options && options.update ? options.update(data) : data;
             if (payload !== false) this.emit(EVENTS.UPDATE, payload);
             dirtyUpdate = false;
         }
 
         function end(data){
-            var payload = this.options.end ? this.options.end(data) : data;
+            var payload = options && options.end ? options.end(data) : data;
             if (payload !== false) this.emit(EVENTS.END, payload);
             dirtyEnd = false;
         }
