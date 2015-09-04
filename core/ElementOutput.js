@@ -194,10 +194,10 @@ define(function(require, exports, module) {
 
         if (this._sizeDirty) {
             if (this._size[0] === true) this._size[0] = target.offsetWidth;
-            else target.style.width = Math.round(this._size[0] * devicePixelRatio) * invDevicePixelRatio + 'px';
+            else target.style.width = Math.ceil(this._size[0] * devicePixelRatio) * invDevicePixelRatio + 'px';
 
             if (this._size[1] === true) this._size[1] = target.offsetHeight;
-            else target.style.height = Math.round(this._size[1] * devicePixelRatio) * invDevicePixelRatio + 'px';
+            else target.style.height = Math.ceil(this._size[1] * devicePixelRatio) * invDevicePixelRatio + 'px';
 
             this._sizeDirty = false;
         }
