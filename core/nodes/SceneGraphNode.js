@@ -94,7 +94,12 @@ define(function(require, exports, module) {
                 delete root.specs[object._id];
             }.bind(this));
 
-            object.size.on('resize', function(size){
+            object.on('dirty', function(){
+                var root = _getRootNode.call(this);
+                root.dirtyObjects.push(object);
+            }.bind(this));
+
+            object.size.on('resize', function(){
                 var root = _getRootNode.call(this);
                 root.dirtyObjects.push(object);
             }.bind(this));
