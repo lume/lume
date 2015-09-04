@@ -55,79 +55,71 @@ define(function(require, exports, module) {
 
             this.input = new Stream();
 
-            var _delta = 0;
-
             var gestureStream = new Stream({
-//                start : function(){return false},
-                update : function(){
-                    if (_delta) return _delta;
-                    else return false;
+                start : function (){
+                    return 0;
+                },
+                update : function (data){
+                    var delta = data.delta;
+                    var newDelta = delta;
+
+                    var currentPosition = this.position.get();
+                    var newPosition = currentPosition + delta;
+
+                    var MIN_LENGTH = 0;
+                    var MAX_LENGTH = 0;
+
+                    if (this.orientation === CONSTANTS.ORIENTATION.POSITIVE)
+                        MAX_LENGTH = this.drawerLength;
+                    else
+                        MIN_LENGTH = this.drawerLength;
+
+                    if (newPosition >= MAX_LENGTH || newPosition <= MIN_LENGTH){
+                        if (newPosition > MAX_LENGTH && newPosition > MIN_LENGTH && currentPosition !== MAX_LENGTH)
+                            newDelta = MAX_LENGTH - currentPosition;
+                        else if (newPosition < MIN_LENGTH && currentPosition !== MIN_LENGTH)
+                            newDelta = MIN_LENGTH - currentPosition;
+                        else newDelta = 0;
+                    }
+
+                    return newDelta;
+                }.bind(this),
+                end : function (data){
+                    var velocity = data.velocity;
+                    var orientation = this.orientation;
+                    var length = this.drawerLength;
+                    var isOpen = this.isOpen;
+                    var currentPosition = this.position.get();
+
+                    var options = this.options;
+
+                    var MAX_LENGTH = orientation * length;
+                    var positionThreshold = options.positionThreshold || MAX_LENGTH / 2;
+                    var velocityThreshold = options.velocityThreshold;
+
+                    if (options.transition instanceof Object)
+                        options.transition.velocity = velocity;
+
+                    if (currentPosition === 0) {
+                        this.isOpen = false;
+                        return;
+                    }
+
+                    if (currentPosition === MAX_LENGTH) {
+                        this.isOpen = true;
+                        return;
+                    }
+
+                    var shouldToggle =
+                        Math.abs(velocity) > velocityThreshold          ||
+                        (!isOpen && currentPosition > positionThreshold) ||
+                        (isOpen && currentPosition < positionThreshold);
+
+                    (shouldToggle) ? this.toggle() : this.reset();
                 }.bind(this)
             });
 
-            gestureStream._eventInput.on('update', function(delta){
-                var currentPosition = this.position.get();
-                var newPosition = currentPosition + delta;
-
-                var MIN_LENGTH = 0;
-                var MAX_LENGTH = 0;
-
-                if (this.orientation === CONSTANTS.ORIENTATION.POSITIVE)
-                    MAX_LENGTH = this.drawerLength;
-                else
-                    MIN_LENGTH = this.drawerLength;
-
-                if (newPosition < MAX_LENGTH && newPosition > MIN_LENGTH)
-                    _delta = delta;
-                else {
-                    if (newPosition > MAX_LENGTH && newPosition > MIN_LENGTH && currentPosition !== MAX_LENGTH)
-                        _delta = MAX_LENGTH - currentPosition;
-                    else if (newPosition < MIN_LENGTH && currentPosition !== MIN_LENGTH)
-                        _delta = MIN_LENGTH - currentPosition;
-                    else _delta = 0;
-                }
-            }.bind(this));
-
-            gestureStream.on('start', function(){
-                this.inertialStream.halt();
-                return 0;
-            }.bind(this));
-
-            gestureStream.on('end', function(data){
-                var velocity = data.velocity;
-                var orientation = this.orientation;
-                var length = this.drawerLength;
-                var isOpen = this.isOpen;
-                var currentPosition = this.position.get();
-
-                var options = this.options;
-
-                var MAX_LENGTH = orientation * length;
-                var positionThreshold = options.positionThreshold || MAX_LENGTH / 2;
-                var velocityThreshold = options.velocityThreshold;
-
-                if (options.transition instanceof Object)
-                    options.transition.velocity = velocity;
-
-                if (currentPosition === 0) {
-                    this.isOpen = false;
-                    return;
-                }
-
-                if (currentPosition === MAX_LENGTH) {
-                    this.isOpen = true;
-                    return;
-                }
-
-                var shouldToggle =
-                    Math.abs(velocity) > velocityThreshold          ||
-                    (!isOpen && currentPosition > positionThreshold) ||
-                    (isOpen && currentPosition < positionThreshold);
-
-                (shouldToggle) ? this.toggle() : this.reset();
-            }.bind(this));
-
-            gestureStream.subscribe(this.input.pluck('delta'));
+            gestureStream.subscribe(this.input);
 
             this.inertialStream = new Transitionable(0);
             var differential = new Differential();
