@@ -32,45 +32,46 @@ define(function(require, exports, module) {
         _isView : true,
         defaults : {
             size : null,
-            origin : null
+            origin : null,
+            opacity : 1
         },
-        events : null,
-        constructor : function View(){
+        events : {
+            change : setOptions
+        },
+        constructor : function View(options){
             this.size = new EventHandler();
             this.layout = new EventHandler();
+
+            this.sizeNode = new SizeNode();
+            this.layoutNode = new LayoutNode();
 
             this._node = new SceneGraphNode();
             this._node.tempRoot = this._node;
 
             Controller.apply(this, arguments);
-
-            this.sizeObserver = new SizeObservable(this.options.size);
+            if (this.options) setOptions.call(this, this.options);
 
             var sizeMapper = ResizeStream.lift(
-                function ViewSizeAlgebra (size, parentSize){
-                    return (size)
-                        ? sizeAlgebra({size : size}, parentSize)
+                function ViewSizeAlgebra (sizeSpec, parentSize){
+                    return (sizeSpec)
+                        ? sizeAlgebra(sizeSpec, parentSize)
                         : parentSize;
                 },
-                [this.sizeObserver, this.size]
+                [this.sizeNode, this.size]
+            );
+
+            var layoutMapper = Stream.lift(
+                function ViewLayoutAlgebra (parentSpec, objectSpec, size){
+                    if (!parentSpec || !size) return;
+                    return (this.options.origin)
+                        ? layoutAlgebra(objectSpec, parentSpec, size)
+                        : parentSpec;
+                }.bind(this),
+                [this.layout, this.layoutNode, sizeMapper || this.size]
             );
 
             this._node.size.subscribe(sizeMapper).subscribe(this.size);
-
-            if (this.options.origin){
-                var layoutMapper = Stream.lift(
-                    function ViewLayoutAlgebra (parentSpec, size){
-                        if (!parentSpec || !size) return;
-                        return (this.options.origin)
-                            ? layoutAlgebra({origin : this.options.origin}, parentSpec, size)
-                            : parentSpec;
-                    }.bind(this),
-                    [this.layout, sizeMapper || this.size]
-                );
-
-                this._node.layout.subscribe(layoutMapper).subscribe(this.layout);
-            }
-            else this._node.layout.subscribe(this.layout);
+            this._node.layout.subscribe(layoutMapper).subscribe(this.layout);
 
             this._eventInput.subscribe(this._optionsManager);
         },
@@ -81,14 +82,32 @@ define(function(require, exports, module) {
             return SceneGraphNode.prototype.add.apply(this._node, arguments);
         },
         setSize : function setSize(size){
-            //TODO: make this dynamic
-            this.sizeObserver.set(size);
+            this.sizeNode.set({size : size});
         },
         setOrigin : function setOrigin(origin){
-            //TODO: make this dynamic
-            this.options.origin = origin;
+            this.layoutNode.set({origin : origin});
+        },
+        setOpacity : function setOpacity(opacity){
+            this.layoutNode.set({opacity : opacity});
         }
     });
+
+    function setOptions(options){
+        for (var key in options){
+            var value = options[key];
+            switch (key){
+                case 'size':
+                    this.setSize(value);
+                    break;
+                case 'origin':
+                    this.setOrigin(value);
+                    break;
+                case 'opacity':
+                    this.setOpacity(value);
+                    break;
+            }
+        }
+    }
 
     module.exports = View;
 });
