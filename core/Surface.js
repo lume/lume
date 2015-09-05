@@ -260,6 +260,7 @@ define(function(require, exports, module) {
      */
     Surface.prototype.setOptions = function setOptions(options) {
         if (options.tagName !== undefined) this.elementType = options.tagName;
+        if (options.opacity !== undefined) this.setOpacity(options.opacity);
         if (options.size !== undefined) this.setSize(options.size);
         if (options.origin !== undefined) this.setOrigin(options.origin);
         if (options.classes !== undefined) this.setClasses(options.classes);
@@ -490,13 +491,15 @@ define(function(require, exports, module) {
         _setDirty.call(this);
     };
 
-    Surface.prototype.getOrigin = function getOrigin(){
-        return this._origin;
+    Surface.prototype.setOrigin = function setOrigin(origin){
+        this.layoutNode.set({origin : origin});
+        this._originDirty = true;
+        _setDirty.call(this);
     };
 
-    Surface.prototype.setOrigin = function setOrigin(origin){
-        this._origin = origin;
-        this._originDirty = true;
+    Surface.prototype.setOpacity = function setOpacity(opacity){
+        this.layoutNode.set({opacity : opacity});
+        this._opacityDirty = true;
         _setDirty.call(this);
     };
 
