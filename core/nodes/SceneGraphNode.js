@@ -76,30 +76,31 @@ define(function(require, exports, module) {
         }
         else {
             object.__size.subscribe(this.size);
+            object.__layout.subscribe(this.layout);
 
-            this.layout.on('start', function(spec){
+            object.layout.on('start', function(spec){
                 var root = _getRootNode.call(this);
                 root.objects[object._id] = object;
                 root.specs[object._id] = spec;
             }.bind(this));
 
-            this.layout.on('update', function(spec){
+            object.layout.on('update', function(spec){
                 var root = _getRootNode.call(this);
                 root.specs[object._id] = spec;
             }.bind(this));
 
-            this.layout.on('end', function(){
+            object.layout.on('end', function(){
                 var root = _getRootNode.call(this);
                 delete root.objects[object._id];
                 delete root.specs[object._id];
             }.bind(this));
 
-            object.on('dirty', function(){
+            object.size.on('resize', function(){
                 var root = _getRootNode.call(this);
                 root.dirtyObjects.push(object);
             }.bind(this));
 
-            object.size.on('resize', function(){
+            object.on('dirty', function(){
                 var root = _getRootNode.call(this);
                 root.dirtyObjects.push(object);
             }.bind(this));

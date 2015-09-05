@@ -14,8 +14,11 @@ define(function(require, exports, module) {
     var Stream = require('samsara/streams/Stream');
     var ResizeStream = require('samsara/streams/ResizeStream');
     var SizeNode = require('samsara/core/nodes/SizeNode');
-    var sizeAlgebra = require('samsara/core/algebras/size');
+    var LayoutNode = require('samsara/core/nodes/LayoutNode');
     var register = require('samsara/core/register');
+
+    var sizeAlgebra = require('samsara/core/algebras/size');
+    var layoutAlgebra = require('samsara/core/algebras/layout');
 
     /**
      * A base class for viewable content and event
@@ -44,12 +47,22 @@ define(function(require, exports, module) {
         }.bind(this);
 
         this.sizeNode = new SizeNode();
+        this.layoutNode = new LayoutNode();
+
         this.__size = new EventHandler();
+        this.__layout = new EventHandler();
 
         this.size = ResizeStream.lift(function elementSizeLift(sizeNode, parentSize){
             if (!parentSize) return; // occurs when surface is never added
             return sizeAlgebra(sizeNode, parentSize);
         }, [this.sizeNode, this.__size]);
+
+        this.layout = Stream.lift(function(parentSpec, objectSpec, size){
+            if (!parentSpec || !size) return;
+            return (objectSpec)
+                ? layoutAlgebra(objectSpec, parentSpec, size)
+                : parentSpec;
+        }, [this.__layout, this.layoutNode, this.size]);
 
         this.size.on('resize', function(size){
             this._sizeDirty = true;
@@ -188,9 +201,10 @@ define(function(require, exports, module) {
      * @method commit
      * @param {Spec} spec commit context
      */
+    var _zeroZero = [0,0];
     ElementOutput.prototype.commit = function commit(spec) {
         var target = this._currentTarget;
-        if (!target) return;
+        if (!target || !spec) return;
 
         if (this._sizeDirty) {
             if (this._size[0] === true) this._size[0] = target.offsetWidth;
@@ -198,45 +212,35 @@ define(function(require, exports, module) {
 
             if (this._size[1] === true) this._size[1] = target.offsetHeight;
             else target.style.height = Math.ceil(this._size[1] * devicePixelRatio) * invDevicePixelRatio + 'px';
-
-            this._sizeDirty = false;
         }
-
-        if (!spec) return;
 
         var transform = spec.transform || Transform.identity;
         var opacity = (spec.opacity === undefined) ? 1 : spec.opacity;
-        var origin = spec.origin;
+        var origin = spec.origin || _zeroZero;
 
         this._transformDirty = Transform.notEquals(this._transform, transform);
-        this._opacityDirty = (this._opacity !== opacity);
-
-        if (origin && _xyNotEquals(this._origin, origin)){
-            this._origin[0] = origin[0];
-            this._origin[1] = origin[1];
-            this._originDirty = true;
-        }
+        this._opacityDirty = this._opacityDirty || (this._opacity !== opacity);
+        this._originDirty = this._originDirty || (origin && _xyNotEquals(this._origin, origin));
 
         if (this._opacityDirty) {
             this._opacity = opacity;
             _setOpacity(target, opacity);
         }
 
-        if (this._originDirty)
+        if (this._originDirty){
+            this._origin = origin;
             _setOrigin(target, this._origin);
+        }
 
-        if (this._transformDirty || this._originDirty || this._sizeDirty) {
-            if (!(this._origin[0] === 0 && this._origin[1] === 0)){
-                var originShift = [-this._size[0]*this._origin[0], -this._size[1]*this._origin[1], 0];
-                transform = Transform.thenMove(transform, originShift);
-            }
-            _setTransform(target, transform);
+        if (this._transformDirty) {
             this._transform = transform;
+            _setTransform(target, transform);
         }
 
         this._originDirty = false;
         this._transformDirty = false;
         this._opacityDirty = false;
+        this._sizeDirty = false;
     };
 
     ElementOutput.prototype.cleanup = function cleanup() {
