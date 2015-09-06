@@ -13,8 +13,8 @@ define(function(require, exports, module) {
         this.sizeStream = null;
         this.layoutStream = null;
 
-        this.layout = new EventHandler();
-        this.size = new EventHandler();
+        this._layout = new EventHandler();
+        this._size = new EventHandler();
 
         this.root = null;
 
@@ -44,8 +44,8 @@ define(function(require, exports, module) {
             else childNode.root = _getRootNode.call(this);
         }
 
-        childNode.layout.subscribe(this.layoutStream || this.layout);
-        childNode.size.subscribe(this.sizeStream || this.size);
+        childNode._layout.subscribe(this.layoutStream || this._layout);
+        childNode._size.subscribe(this.sizeStream || this._size);
 
         return childNode;
     };
@@ -58,7 +58,7 @@ define(function(require, exports, module) {
                         ? sizeAlgebra(objectSpec, parentSize)
                         : parentSize;
                 },
-                [object, this.size]
+                [object, this._size]
             );
         }
 
@@ -71,12 +71,12 @@ define(function(require, exports, module) {
                         ? layoutAlgebra(objectSpec, parentSpec, size)
                         : parentSpec;
                 },
-                [object, this.layout, this.size]
+                [object, this._layout, this._size]
             );
         }
         else {
-            object.__size.subscribe(this.size);
-            object.__layout.subscribe(this.layout);
+            object._size.subscribe(this._size);
+            object._layout.subscribe(this._layout);
 
             object.layout.on('start', function(spec){
                 var root = _getRootNode.call(this);

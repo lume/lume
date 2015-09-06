@@ -64,11 +64,11 @@ define(function(require, exports, module) {
         EventHandler.setOutputHandler(this, this._eventOutput);
 
         this._eventInput.on('start', function(){
-            this._node.layout.trigger('start', this._nodeContext);
+            this._node._layout.trigger('start', this._nodeContext);
         }.bind(this));
 
         this._eventInput.on('end', function(){
-            this._node.layout.trigger('end', this._nodeContext);
+            this._node._layout.trigger('end', this._nodeContext);
         }.bind(this));
 
         this._eventInput.on('resize', function(size){
@@ -77,7 +77,7 @@ define(function(require, exports, module) {
 
         this.size.on('resize', function(size){
             //TODO: allow for Context to have none fullscreen dimensions
-            this._node.size.emit('resize', size);
+            this._node._size.emit('resize', size);
         }.bind(this));
     }
 
@@ -152,7 +152,7 @@ define(function(require, exports, module) {
 
         this.trigger('resize', size);
         dirtyQueue.push(function(){
-            this._node.size.emit('resize', size);
+            this._node._size.emit('resize', size);
         }.bind(this));
     };
 

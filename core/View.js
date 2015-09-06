@@ -39,11 +39,11 @@ define(function(require, exports, module) {
             change : setOptions
         },
         constructor : function View(options){
-            this.size = new EventHandler();
-            this.layout = new EventHandler();
+            this._size = new EventHandler();
+            this._layout = new EventHandler();
 
-            this.sizeNode = new SizeNode();
-            this.layoutNode = new LayoutNode();
+            this._sizeNode = new SizeNode();
+            this._layoutNode = new LayoutNode();
 
             this._node = new SceneGraphNode();
             this._node.tempRoot = this._node;
@@ -51,27 +51,27 @@ define(function(require, exports, module) {
             Controller.apply(this, arguments);
             if (this.options) setOptions.call(this, this.options);
 
-            var sizeMapper = ResizeStream.lift(
+            this.size = ResizeStream.lift(
                 function ViewSizeAlgebra (sizeSpec, parentSize){
                     return (sizeSpec)
                         ? sizeAlgebra(sizeSpec, parentSize)
                         : parentSize;
                 },
-                [this.sizeNode, this.size]
+                [this._sizeNode, this._size]
             );
 
-            var layoutMapper = Stream.lift(
+            var layout = Stream.lift(
                 function ViewLayoutAlgebra (parentSpec, objectSpec, size){
                     if (!parentSpec || !size) return;
                     return (this.options.origin)
                         ? layoutAlgebra(objectSpec, parentSpec, size)
                         : parentSpec;
                 }.bind(this),
-                [this.layout, this.layoutNode, sizeMapper || this.size]
+                [this._layout, this._layoutNode, this.size || this._size]
             );
 
-            this._node.size.subscribe(sizeMapper).subscribe(this.size);
-            this._node.layout.subscribe(layoutMapper).subscribe(this.layout);
+            this._node._size.subscribe(this.size).subscribe(this._size);
+            this._node._layout.subscribe(layout).subscribe(this._layout);
 
             this._eventInput.subscribe(this._optionsManager);
         },
@@ -82,13 +82,16 @@ define(function(require, exports, module) {
             return SceneGraphNode.prototype.add.apply(this._node, arguments);
         },
         setSize : function setSize(size){
-            this.sizeNode.set({size : size});
+            this._sizeNode.set({size : size});
+        },
+        setProportions : function setProportions(proportions){
+            this._sizeNode.set({proportions : proportions});
         },
         setOrigin : function setOrigin(origin){
-            this.layoutNode.set({origin : origin});
+            this._layoutNode.set({origin : origin});
         },
         setOpacity : function setOpacity(opacity){
-            this.layoutNode.set({opacity : opacity});
+            this._layoutNode.set({opacity : opacity});
         }
     });
 
@@ -98,6 +101,9 @@ define(function(require, exports, module) {
             switch (key){
                 case 'size':
                     this.setSize(value);
+                    break;
+                case 'proportions':
+                    this.setProportions(value);
                     break;
                 case 'origin':
                     this.setOrigin(value);

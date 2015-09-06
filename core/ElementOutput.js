@@ -32,10 +32,12 @@ define(function(require, exports, module) {
      * @param {Node} element document parent of this container
      */
     function ElementOutput(element) {
-        this._transform = null;
-        this._opacity = 1;
-        this._origin = [0,0];
-        this._size = null;  // always a numeric value. commited to clientWidth, clientHeight
+        this._cachedSpec = {
+            transform : null,
+            opacity : 1,
+            origin : null,
+            size : null
+        };
 
         this._eventInput = new EventHandler();
         this._eventOutput = new EventHandler();
@@ -49,20 +51,20 @@ define(function(require, exports, module) {
         this.sizeNode = new SizeNode();
         this.layoutNode = new LayoutNode();
 
-        this.__size = new EventHandler();
-        this.__layout = new EventHandler();
+        this._size = new EventHandler();
+        this._layout = new EventHandler();
 
         this.size = ResizeStream.lift(function elementSizeLift(sizeNode, parentSize){
             if (!parentSize) return; // occurs when surface is never added
             return sizeAlgebra(sizeNode, parentSize);
-        }, [this.sizeNode, this.__size]);
+        }, [this.sizeNode, this._size]);
 
         this.layout = Stream.lift(function(parentSpec, objectSpec, size){
             if (!parentSpec || !size) return;
             return (objectSpec)
                 ? layoutAlgebra(objectSpec, parentSpec, size)
                 : parentSpec;
-        }, [this.__layout, this.layoutNode, this.size]);
+        }, [this._layout, this.layoutNode, this.size]);
 
         this.size.on('resize', function(size){
             this._sizeDirty = true;
@@ -217,23 +219,24 @@ define(function(require, exports, module) {
         var transform = spec.transform || Transform.identity;
         var opacity = (spec.opacity === undefined) ? 1 : spec.opacity;
         var origin = spec.origin || _zeroZero;
+        var cache = this._cachedSpec;
 
-        this._transformDirty = Transform.notEquals(this._transform, transform);
-        this._opacityDirty = this._opacityDirty || (this._opacity !== opacity);
-        this._originDirty = this._originDirty || (origin && _xyNotEquals(this._origin, origin));
+        this._transformDirty = Transform.notEquals(cache.transform, transform);
+        this._opacityDirty = this._opacityDirty || (cache.opacity !== opacity);
+        this._originDirty = this._originDirty || (origin && _xyNotEquals(cache.origin, origin));
 
         if (this._opacityDirty) {
-            this._opacity = opacity;
+            cache.opacity = opacity;
             _setOpacity(target, opacity);
         }
 
         if (this._originDirty){
-            this._origin = origin;
-            _setOrigin(target, this._origin);
+            cache.origin = origin;
+            _setOrigin(target, origin);
         }
 
         if (this._transformDirty) {
-            this._transform = transform;
+            cache.transform = transform;
             _setTransform(target, transform);
         }
 
