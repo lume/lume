@@ -48,4 +48,13 @@ describe('SinglyLinkedList', function() {
     expect(this.list.tail.data).toBe('B');
   });
 
+  it('should be gettable', function() {
+    this.list.push('A');
+    this.list.push('B');
+
+    expect(this.list.get(0)).toBe('A');
+    expect(this.list.get(1)).toBe('B');
+    expect(this.list.get(2)).toBe(null);
+  });
+
 });

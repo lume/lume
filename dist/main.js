@@ -9,13 +9,110 @@ var log = _interopRequire(require("./util/log"));
 
 var rafLoop = _interopRequire(require("./rafLoop"));
 
+var Node = _interopRequire(require("./Node"));
+
+//
+
+var SinglyLinkedList = _interopRequire(require("./util/SinglyLinkedList"));
+
+var trash = _interopRequire(require("./util/Trash"));
+
+var Vec3 = _interopRequire(require("./util/Vec3"));
+
 rafLoop.start();
 
-// global export? :)
-window.rafLoop = rafLoop;
-window.log = log;
+var famin = {
+  rafLoop: rafLoop,
+  log: log,
+  SinglyLinkedList: SinglyLinkedList,
+  trash: trash,
+  Vec3: Vec3,
+  Node: Node
+};
 
-},{"./rafLoop":2,"./util/log":4,"babelify/polyfill":10}],2:[function(require,module,exports){
+// global export? :)
+window.famin = famin;
+
+},{"./Node":2,"./rafLoop":3,"./util/SinglyLinkedList":4,"./util/Trash":5,"./util/Vec3":6,"./util/log":7,"babelify/polyfill":13}],2:[function(require,module,exports){
+"use strict";
+
+var _interopRequire = function (obj) { return obj && obj.__esModule ? obj["default"] : obj; };
+
+var SinglyLinkedList = _interopRequire(require("./util/SinglyLinkedList"));
+
+var Vec3 = _interopRequire(require("./util/Vec3"));
+
+// See SinglyLinkedList.js for more info on this pattern
+var nodePool = SinglyLinkedList();
+var Node = (function (_Node) {
+  var _NodeWrapper = function Node(_x) {
+    return _Node.apply(this, arguments);
+  };
+
+  _NodeWrapper.toString = function () {
+    return _Node.toString();
+  };
+
+  return _NodeWrapper;
+})(function (options) {
+  if (this instanceof Node) {
+    this.init(options);
+  } else {
+    var node = nodePool.shiftElement();
+    return node && node.init(options) || new Node(options);
+  }
+});
+
+Node.prototype.init = function (options) {
+  this._children = SinglyLinkedList();
+  this._size = Vec3(0, 0, 0);
+};
+
+Node.prototype.addChild = function (child) {
+  this._children.push(child);
+};
+
+/*
+ * Gets the child at the given index.  Computationally expensive, useful
+ * for testing but avoid common use.
+ */
+Node.prototype.getChild = function (index) {
+  return this._children.get(index);
+};
+
+/*
+ * Builds / returns an array of all children.  Computationally expensive, useful
+ * for testing but avoid common use.
+ */
+Node.prototype.getChildren = function (index) {
+  return this._children.toArray(index);
+};
+
+Node.prototype.eachChild = function (func) {
+  for (var current = this._children.head; current; current = current.next) {
+    func(current.data);
+  }
+};
+
+/*
+ * Call the given function with all descedents of the current node.
+ * It will run on the 1st child, and if function returns true and
+ * the 1st child has children of it's own, the function will then be
+ * run on the grandchildren recursively before iterating to the next
+ * sibling.
+ *
+ * @param {function} func - the function that will be called with
+ *                          each child as the only argument.
+ */
+Node.prototype.eachDescendant = function (func) {
+  for (var current = this._children.head; current; current = current.next) {
+    if (func(current.data) && current.data._children) current.data.eachDescendant(func);
+  }
+};
+
+module.exports = Node;
+
+},{"./util/SinglyLinkedList":4,"./util/Vec3":6}],3:[function(require,module,exports){
 "use strict";
 
 var _interopRequire = function (obj) { return obj && obj.__esModule ? obj["default"] : obj; };
@@ -149,42 +246,97 @@ var rafLoop = {
 
 module.exports = rafLoop;
 
-},{"./util/SinglyLinkedList":3,"./util/log":4,"./util/raf-polyfill":5}],3:[function(require,module,exports){
-// purposefully not an ES6 class to allow a prototype method without
-// a _classCallCheck.
+},{"./util/SinglyLinkedList":4,"./util/log":7,"./util/raf-polyfill":8}],4:[function(require,module,exports){
+/*
+ * SinglyLinkedList Pool
+ *
+ * Provides a SinglyLinkedList where both the list and it's elements
+ * can be very efficiently recycled (pooled and re-used).  The only
+ * garbage is your own stored data!  This is in sharp contrast to
+ * arrays, where most array operations - behind the scenes - create
+ * an entirely new array, discarding the old one which is ultimately
+ * garbage collected.
+ *
+ * Usage:
+ *
+ * var data;
+ * while (data = queue.getNext())
+ *   doSomethingWith(data);
+ *
+ * For super high traffic, you can manipulate the list directly:
+ *
+ * for (let current = rafLoop._queue.head; current; current = current.next)
+ *   doSomethingWith(current.data);
+ *
+ * Before dropping a reference to a list, you should call list.recycle().
+ * To recycle a partial list, call list.recycleUntil(listElement).
+ *
+ * NB: These are purpusefully not ES6 classes to allow prototype
+ * methods without a _classCallCheck.  We handle this ourselves to
+ * allow the method to be called without `new` and retrieve
+ * recycled lists and elements from the pool.
+ */
 
+// These will become SinglyLinkedList()'s after the class is defined.
 "use strict";
 
 var listPool = null;
 var elementPool = null;
 
-var ListElement = (function (_ListElement) {
-  var _ListElementWrapper = function ListElement(_x) {
-    return _ListElement.apply(this, arguments);
+/*
+ * Supply a clean SinglyLinkedListElement with the given data, from
+ * the pool if a recycled element is available or from a new instance.
+ * The object looks like this:
+ *
+ * - data {object} - the data to store
+ * - next {SinglyLinkedListElement} - optional reference to next element
+ *
+ * @param {object} data - the data to store in this element
+ * @returns {SinglyLinkedList}
+ *
+ */
+var SinglyLinkedListElement = (function (_SinglyLinkedListElement) {
+  var _SinglyLinkedListElementWrapper = function SinglyLinkedListElement(_x) {
+    return _SinglyLinkedListElement.apply(this, arguments);
   };
 
-  _ListElementWrapper.toString = function () {
-    return _ListElement.toString();
+  _SinglyLinkedListElementWrapper.toString = function () {
+    return _SinglyLinkedListElement.toString();
   };
 
-  return _ListElementWrapper;
+  return _SinglyLinkedListElementWrapper;
 })(function (data) {
-  if (!(this instanceof ListElement)) {
+  if (!(this instanceof SinglyLinkedListElement)) {
     var el = elementPool && elementPool.shiftElement();
-    return el && el.init(data) || new ListElement(data);
+    return el && el.init(data) || new SinglyLinkedListElement(data);
   }
 
   this.init(data);
 });
 
-ListElement.prototype.init = function (data) {
+/*
+ * Sets the initial state of an element, called on both new
+ * instantiations and recycled elements.  In the case of the
+ * latter, where actual garbage is created.
+ */
+SinglyLinkedListElement.prototype.init = function (data) {
   if (this.data) trash(this.data);
-  if (this.next) trash(this.next);
+
   this.data = data;
-  this.next = null;
+  this.next = null; // recycled
   return this;
 };
 
+/*
+ * Supplies a clean SinglyLinkedList, from the pool if a recycled list
+ * is available, else from a new instance.  The object looks like this:
+ *
+ * - head {SinglyLinkedListElement} - the head / beginning / 1st element
+ * - tail {SinglyLinkedListElement} - the tail / end / last element
+ * - current {SinglyLinkedListElement} - current index for getNext()
+ * 
+ * @returns {SinglyLinkedList}
+ */
 var SinglyLinkedList = (function (_SinglyLinkedList) {
   var _SinglyLinkedListWrapper = function SinglyLinkedList() {
     return _SinglyLinkedList.apply(this, arguments);
@@ -213,10 +365,19 @@ SinglyLinkedList.prototype.init = function () {
   return this;
 };
 
+/*
+ * Reset the "current" index of the list to the beginning / head,
+ * for use with getNext()
+ */
 SinglyLinkedList.prototype.reset = function () {
   this.current = this.head;
 };
 
+/*
+ * Returns the data of the next element in the list, or the first
+ * element if it has never been called before.  The index can be
+ * reset with the reset() method.
+ */
 SinglyLinkedList.prototype.getNext = function () {
   var tmp;
 
@@ -232,14 +393,24 @@ SinglyLinkedList.prototype.getNext = function () {
   return null;
 };
 
+/*
+ * Push data to the end / tail of the list
+ * @param {object} data - the data to store
+ */
 SinglyLinkedList.prototype.push = function (data) {
-  var el = ListElement(data);
+  var el = SinglyLinkedListElement(data);
 
   if (this.head === null) this.head = el;
   if (this.tail) this.tail.next = el;
   this.tail = el;
 };
 
+/*
+ * Returns and removes the first ELEMENT (not data) in the list.
+ * Use shift() to get the actaul data.
+ *
+ * @returns {SinglyLinkedListElement} - the first element / head of the list.
+ */
 SinglyLinkedList.prototype.shiftElement = function () {
   if (!this.head) return null;
 
@@ -248,6 +419,12 @@ SinglyLinkedList.prototype.shiftElement = function () {
   return el;
 };
 
+/*
+ * Removes the first element of the list and returns it's data.
+ * Use shiftElement() to get the actual element.
+ *
+ * @returns {object} - the data stored in the first element
+ */
 SinglyLinkedList.prototype.shift = function () {
   var el = this.shiftElement();
   return el && el.data;
@@ -268,6 +445,12 @@ SinglyLinkedList.prototype.recycle = function () {
   }
 };
 
+/*
+ * Instead of recycling the entire list, this will recycle all the
+ * elements from the head of a list up to and including the given element.
+ *
+ * @param {SinglyLinkedListElement} target - element to recycle up to (inclusive)
+ */
 SinglyLinkedList.prototype.recycleUntil = function (target) {
   var newList = SinglyLinkedList();
 
@@ -281,21 +464,105 @@ SinglyLinkedList.prototype.recycleUntil = function (target) {
 };
 
 /*
+ * Get the data from the given index.  Computationally expensive.  Useful
+ * for testing, but if you find yourself using this often, consider using
+ * a regular array.
+ *
+ * @param {number} index - the index to retrieve
+ * @returns {mixed} - the data at this index
+ */
+SinglyLinkedList.prototype.get = function (index) {
+  for (var i = 0, current = this.head; current; i++, current = current.next) if (i === index) return current.data;
+  return null;
+};
+
+/*
+ * Builds and returns an array version of the list.  Computationally
+ * expensive, useful for testing, but if you find yourself using this
+ * often, consider using a regular array.
+ */
+SinglyLinkedList.prototype.toArray = function (index) {
+  var arr = [];
+  for (var current = this.head; current; current = current.next) arr.push(current.data);
+  return arr;
+};
+
+/*
  * Oh look!  A data structure that maintains itself with itself ^_^
  */
 listPool = SinglyLinkedList();
 elementPool = SinglyLinkedList();
 
-var trashList = SinglyLinkedList();
-var trash = function trash(trash) {};
-
-window.SLL = SinglyLinkedList;
-window.SLLtrash = trashList;
+// to avoid a circular dependency, let's set this up later & optionally
+var trash = function trash() {};
+SinglyLinkedList.prototype.setTrashFunc = function (func) {
+  trash = func;
+};
 
 module.exports = SinglyLinkedList;
-/* trashList.push(trash); */
 
-},{}],4:[function(require,module,exports){
+},{}],5:[function(require,module,exports){
+"use strict";
+
+var _interopRequire = function (obj) { return obj && obj.__esModule ? obj["default"] : obj; };
+
+var SinglyLinkedList = _interopRequire(require("./SinglyLinkedList"));
+
+var trashList = new SinglyLinkedList();
+
+var trash = function trash(data) {
+  trashList.push(data);
+};
+
+module.exports = trash;
+
+},{"./SinglyLinkedList":4}],6:[function(require,module,exports){
+"use strict";
+
+var _interopRequire = function (obj) { return obj && obj.__esModule ? obj["default"] : obj; };
+
+/*
+ * Simple pool for 3-array vectors that only contain primitives.
+ */
+
+var SinglyLinkedList = _interopRequire(require("./SinglyLinkedList"));
+
+// See SinglyLinkedList.js for more info on this pattern
+var vec3pool = SinglyLinkedList();
+var Vec3 = (function (_Vec3) {
+  var _Vec3Wrapper = function Vec3(_x, _x2, _x3) {
+    return _Vec3.apply(this, arguments);
+  };
+
+  _Vec3Wrapper.toString = function () {
+    return _Vec3.toString();
+  };
+
+  return _Vec3Wrapper;
+})(function (x, y, z) {
+  if (this instanceof Vec3) {
+    Array.call(this, x, y, z);
+  } else {
+    var vec3 = vec3pool.shiftElement();
+    if (vec3) {
+      vec3[0] = x;
+      vec3[1] = y;
+      vec3[2] = z;
+    }
+    return vec3 && node.init(options) || [x, y, z];
+  }
+});
+
+Vec3.prototype = Object.create(Array.prototype);
+Vec3.prototype.constructor = Vec3;
+
+Vec3.prototype.recycle = function () {
+  vec3pool.push(this);
+};
+
+module.exports = Vec3;
+
+},{"./SinglyLinkedList":4}],7:[function(require,module,exports){
 "use strict";
 
 var colors = {
@@ -336,7 +603,7 @@ for (var i = 0; i < log.levels.length; i++) {
   log[log.levels[i]] = log.out.bind(log, log.levels[i]);
 }module.exports = log;
 
-},{}],5:[function(require,module,exports){
+},{}],8:[function(require,module,exports){
 // original authors below, modified to use ES6 exports and support mocks
 
 // http://paulirish.com/2011/requestanimationframe-for-smart-animating/
@@ -399,7 +666,7 @@ if (!window.performance) window.performance = {
 
 module.exports = raf;
 
-},{}],6:[function(require,module,exports){
+},{}],9:[function(require,module,exports){
 (function (global){
 "use strict";
 
@@ -412,7 +679,7 @@ require("core-js/shim");
 
 require("regenerator-babel/runtime");
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{"core-js/shim":7,"regenerator-babel/runtime":8}],7:[function(require,module,exports){
+},{"core-js/shim":10,"regenerator-babel/runtime":11}],10:[function(require,module,exports){
 /**
  * Core.js 0.6.1
  * https://github.com/zloirock/core-js
@@ -2391,7 +2658,7 @@ $define(GLOBAL + BIND, {
   Iterators.NodeList = Iterators[ARRAY];
 }(global.NodeList);
 }(typeof self != 'undefined' && self.Math === Math ? self : Function('return this')(), true);
-},{}],8:[function(require,module,exports){
+},{}],11:[function(require,module,exports){
 (function (global){
 /**
  * Copyright (c) 2014, Facebook, Inc.
@@ -2932,10 +3199,10 @@ $define(GLOBAL + BIND, {
 );
 
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{}],9:[function(require,module,exports){
+},{}],12:[function(require,module,exports){
 module.exports = require("./lib/babel/polyfill");
 
-},{"./lib/babel/polyfill":6}],10:[function(require,module,exports){
+},{"./lib/babel/polyfill":9}],13:[function(require,module,exports){
 module.exports = require("babel-core/polyfill");
 
-},{"babel-core/polyfill":9}]},{},[1]);
+},{"babel-core/polyfill":12}]},{},[1]);
