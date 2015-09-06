@@ -99,9 +99,8 @@ define(function(require, exports, module) {
      * @param {Object} properties property dictionary of "key" => "value"
      */
     Surface.prototype.setProperties = function setProperties(properties) {
-        for (var n in properties) {
-            this.properties[n] = properties[n];
-        }
+        for (var key in properties)
+            this.properties[key] = properties[key];
         this._stylesDirty = true;
         _setDirty.call(this);
         return this;
