@@ -1,5 +1,7 @@
 # famin - famously minimal
 
+Copyright (c) 2015 Gadi Cohen released under MIT license
+
 ## Project goal
 
 A high quality rendering Engine, designed for real world use.  Built
