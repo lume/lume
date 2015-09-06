@@ -11,8 +11,6 @@
 define(function(require, exports, module) {
     var EventHandler = require('samsara/core/EventHandler');
     var OptionsManager = require('samsara/core/OptionsManager');
-    var dirtyQueue = require('samsara/core/queues/dirtyQueue');
-    var postTickQueue = require('samsara/core/queues/postTickQueue');
     var SimpleStream = require('samsara/streams/SimpleStream');
     var Timer = require('samsara/core/Timer');
 
@@ -51,9 +49,7 @@ define(function(require, exports, module) {
         var self = this;
         this._scrollEnd = Timer.debounce(function(){
             self._inProgress = false;
-            dirtyQueue.push(function(){
-                self._eventOutput.emit('end', self._payload);
-            });
+            self._eventOutput.emit('end', self._payload);
         }, 100);
     }
 
@@ -127,9 +123,7 @@ define(function(require, exports, module) {
         payload.velocity = nextVel;
         payload.value = this._value;
 
-        postTickQueue.push(function(){
-            this._eventOutput.emit('update', payload);
-        }.bind(this));
+        this._eventOutput.emit('update', payload);
 
         // debounce `end` event
         this._scrollEnd();
