@@ -57,8 +57,9 @@ define(function(require, exports, module) {
 
             var gestureStream = new Stream({
                 start : function (){
+                    this.position.unsubscribe(differential);
                     return 0;
-                },
+                }.bind(this),
                 update : function (data){
                     var delta = data.delta;
                     var newDelta = delta;
@@ -85,6 +86,7 @@ define(function(require, exports, module) {
                     return newDelta;
                 }.bind(this),
                 end : function (data){
+                    this.position.subscribe(differential);
                     var velocity = data.velocity;
                     var orientation = this.orientation;
                     var length = this.drawerLength;
