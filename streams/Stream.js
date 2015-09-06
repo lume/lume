@@ -2,7 +2,6 @@ define(function(require, exports, module) {
     var EventHandler = require('samsara/core/EventHandler');
     var EventMapper = require('samsara/events/EventMapper');
     var SimpleStream = require('samsara/streams/SimpleStream');
-    var dirtyObjects = require('samsara/core/dirtyObjects');
 
     var preTickQueue = require('samsara/core/queues/preTickQueue');
     var postTickQueue = require('samsara/core/queues/postTickQueue');
@@ -26,20 +25,6 @@ define(function(require, exports, module) {
         var dirtyStart = false;
         var dirtyUpdate = false;
         var dirtyEnd = false;
-        var dirty = false;
-
-        //TODO: is this dirty checking necessary?
-        this._eventInput.on('start', function(){
-            if (dirty) return;
-            dirtyObjects.trigger('dirty');
-            dirty = true;
-        });
-
-        this._eventInput.on('end', function(){
-            if (!dirty) return;
-            dirtyObjects.trigger('dirty');
-            dirty = false;
-        });
 
         function start(data){
             var payload = options && options.start ? options.start(data) : data;

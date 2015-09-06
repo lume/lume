@@ -19,7 +19,6 @@ define(function(require, exports, module) {
      * @constructor
      */
     var tickQueue = require('samsara/core/queues/tickQueue');
-    var dirtyObjects = require('samsara/core/dirtyObjects');
 
     var getTime = (window.performance)
         ? function() { return window.performance.now(); }
@@ -27,7 +26,6 @@ define(function(require, exports, module) {
 
     function _addTimerFunction(fn) {
         tickQueue.push(fn);
-        dirtyObjects.trigger('dirty');
         return fn;
     }
 
@@ -35,7 +33,6 @@ define(function(require, exports, module) {
         var index = tickQueue.indexOf(fn);
         if (index === -1) return;
         tickQueue.splice(index, 1);
-        dirtyObjects.trigger('clean');
     }
 
     var Timer = {};

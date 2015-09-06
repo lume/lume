@@ -10,7 +10,6 @@
 
 define(function(require, exports, module) {
     var ElementOutput = require('samsara/core/ElementOutput');
-    var dirtyObjects = require('samsara/core/dirtyObjects');
     var dirtyQueue = require('samsara/core/queues/dirtyQueue');
     var postTickQueue = require('samsara/core/queues/postTickQueue');
     var preTickQueue = require('samsara/core/queues/preTickQueue');
@@ -60,17 +59,8 @@ define(function(require, exports, module) {
 
     function _setDirty(){
         if (this._dirty) return;
-
         this._dirty = true;
-
         this.emit('dirty');
-        dirtyObjects.trigger('dirty');
-
-        dirtyQueue.push(function(){
-            this.emit('clean');
-            dirtyObjects.trigger('clean');
-            this._dirty = false;
-        }.bind(this));
     }
     /**
      * Set HTML attributes on this Surface. Note that this will cause

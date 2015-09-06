@@ -30,7 +30,6 @@ define(function(require, exports, module) {
     var OptionsManager = require('./OptionsManager');
     var ResizeStream = require('samsara/streams/ResizeStream');
 
-    var dirtyObjects = require('samsara/core/dirtyObjects');
     var preTickQueue = require('./queues/preTickQueue');
     var dirtyQueue = require('./queues/dirtyQueue');
     var postTickQueue = require('./queues/postTickQueue');
@@ -44,7 +43,6 @@ define(function(require, exports, module) {
     var rafId;
     var eventForwarders = {};
     var eventHandler = new EventHandler();
-    var dirty = false;
     var dirtyLock = 0;
     var listenOnTick = false;
     var size = new EventHandler();
@@ -94,14 +92,6 @@ define(function(require, exports, module) {
         return dirtyLock;
     };
 
-    preTickQueue.push(function(){
-        dirtyObjects.emit('dirty');
-    });
-
-    dirtyQueue.push(function(){
-        dirtyObjects.emit('clean');
-    });
-
     function start(){
         preTickQueue.push(function start(){
             handleResize();
@@ -134,10 +124,8 @@ define(function(require, exports, module) {
         eventHandler.emit('resize', windowSize);
 
         //TODO: is this unnecessary? SizeNode will trigger dirty
-        dirtyObjects.emit('dirty');
         dirtyQueue.push(function engineResizeClean(){
             size.emit('resize', windowSize);
-            dirtyObjects.emit('clean');
         });
     }
     window.addEventListener('resize', handleResize, false);
@@ -175,22 +163,6 @@ define(function(require, exports, module) {
         }
         eventHandler.off(type, handler);
     };
-
-    dirtyObjects.on('dirty', function engineDirty(){
-        if (!dirty) {
-            dirty = true;
-            rafId = window.requestAnimationFrame(loop);
-        }
-        dirtyLock++;
-    });
-
-    dirtyObjects.on('clean', function engineClean(){
-        dirtyLock--;
-        if (dirty && dirtyLock === 0) {
-            dirty = false;
-            window.cancelAnimationFrame(rafId);
-        }
-    });
 
     /**
      * Return engine options.
