@@ -63,16 +63,13 @@ define(function(require, exports, module) {
         EventHandler.setInputHandler(this, this._eventInput);
         EventHandler.setOutputHandler(this, this._eventOutput);
 
+        //TODO: put nodeContext in Engine and subscribe?
         this._eventInput.on('start', function(){
             this._node._layout.trigger('start', this._nodeContext);
         }.bind(this));
 
         this._eventInput.on('end', function(){
             this._node._layout.trigger('end', this._nodeContext);
-        }.bind(this));
-
-        this._eventInput.on('resize', function(size){
-            this._eventOutput.emit('resize', size);
         }.bind(this));
 
         this.size.on('resize', function(size){
@@ -150,7 +147,8 @@ define(function(require, exports, module) {
         this._size[1] = size[1];
         this._sizeDirty = true;
 
-        this.trigger('resize', size);
+        this.emit('resize', size);
+        this.size.trigger('resize', size);
         dirtyQueue.push(function(){
             this._node._size.emit('resize', size);
         }.bind(this));
