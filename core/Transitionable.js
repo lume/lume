@@ -156,7 +156,6 @@ define(function(require, exports, module) {
      *    completion (t=1)
      */
     Transitionable.prototype.set = function set(endState, transition, callback) {
-        // TODO: short circuit check
         if (!transition) {
             this.reset(endState, undefined);
 

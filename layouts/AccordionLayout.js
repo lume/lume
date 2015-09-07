@@ -77,10 +77,6 @@ define(function(require, exports, module) {
                 var z = originZ;
                 var length = 0;
 
-                // TODO: remove these offsets
-                var offsetX = 0;
-                var offsetY = 0;
-
                 var angle, transform, l;
                 for (i = startIndex - 1; i >= 0; i--) {
                     angle = angles[i];
@@ -92,11 +88,11 @@ define(function(require, exports, module) {
                     transform = (direction === CONSTANTS.DIRECTION.Y)
                         ? Transform.thenMove(
                             Transform.rotateX(angle),
-                            [offsetX, y + offsetY, z]
+                            [0, y, z]
                         )
                         : Transform.thenMove(
                             Transform.rotateY(-angle),
-                            [offsetX + y, offsetY, z]
+                            [y, 0, z]
                         );
 
                     transforms[i] = transform;
@@ -114,11 +110,11 @@ define(function(require, exports, module) {
                     transform = (direction === CONSTANTS.DIRECTION.Y)
                         ? Transform.thenMove(
                             Transform.rotateX(angle),
-                            [offsetX, y + offsetY, z]
+                            [0, y, z]
                         )
                         : Transform.thenMove(
                             Transform.rotateY(-angle),
-                            [offsetX + y, offsetY, z]
+                            [y, 0, z]
                         );
 
                     z += l * Math.sin(angle);

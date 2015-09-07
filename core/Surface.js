@@ -461,7 +461,6 @@ define(function(require, exports, module) {
      * @param {Array.Number} size as [width, height]
      */
     Surface.prototype.setSize = function setSize(size) {
-        // TODO: future version should only allow streams
         this._cachedSize = size;
         this.sizeNode.set({size : size});
         this._sizeDirty = true;
