@@ -1,10 +1,10 @@
-jest.dontMock('../lib/Node');
-jest.dontMock('../lib/util/SinglyLinkedList');
-jest.dontMock('../lib/util/Vec3');
+jest.dontMock('../../lib/core/Node');
+jest.dontMock('../../lib/util/SinglyLinkedList');
+jest.dontMock('../../lib/util/Vec3');
 
-var Node = require('../lib/Node');
-var Vec3 = require('../lib/util/Vec3');
-var SinglyLinkedList = require('../lib/util/SinglyLinkedList');
+var Node = require('../../lib/core/Node');
+var Vec3 = require('../../lib/util/Vec3');
+var SinglyLinkedList = require('../../lib/util/SinglyLinkedList');
 
 describe('Node', function() {
   beforeEach(function() {

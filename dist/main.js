@@ -7,11 +7,9 @@ require("babelify/polyfill");
 
 var log = _interopRequire(require("./util/log"));
 
-var rafLoop = _interopRequire(require("./rafLoop"));
+var rafLoop = _interopRequire(require("./core/rafLoop"));
 
-var Node = _interopRequire(require("./Node"));
-
-//
+var Node = _interopRequire(require("./core/Node"));
 
 var SinglyLinkedList = _interopRequire(require("./util/SinglyLinkedList"));
 
@@ -22,25 +20,31 @@ var Vec3 = _interopRequire(require("./util/Vec3"));
 rafLoop.start();
 
 var famin = {
-  rafLoop: rafLoop,
-  log: log,
-  SinglyLinkedList: SinglyLinkedList,
-  trash: trash,
-  Vec3: Vec3,
-  Node: Node
+
+  core: {
+    rafLoop: rafLoop,
+    Node: Node
+  },
+
+  util: {
+    log: log,
+    SinglyLinkedList: SinglyLinkedList,
+    trash: trash,
+    Vec3: Vec3
+  }
 };
 
 // global export? :)
 window.famin = famin;
 
-},{"./Node":2,"./rafLoop":3,"./util/SinglyLinkedList":4,"./util/Trash":5,"./util/Vec3":6,"./util/log":7,"babelify/polyfill":13}],2:[function(require,module,exports){
+},{"./core/Node":2,"./core/rafLoop":3,"./util/SinglyLinkedList":4,"./util/Trash":5,"./util/Vec3":6,"./util/log":7,"babelify/polyfill":13}],2:[function(require,module,exports){
 "use strict";
 
 var _interopRequire = function (obj) { return obj && obj.__esModule ? obj["default"] : obj; };
 
-var SinglyLinkedList = _interopRequire(require("./util/SinglyLinkedList"));
+var SinglyLinkedList = _interopRequire(require("../util/SinglyLinkedList"));
 
-var Vec3 = _interopRequire(require("./util/Vec3"));
+var Vec3 = _interopRequire(require("../util/Vec3"));
 
 // See SinglyLinkedList.js for more info on this pattern
 var nodePool = SinglyLinkedList();
@@ -112,7 +116,7 @@ Node.prototype.eachDescendant = function (func) {
 
 module.exports = Node;
 
-},{"./util/SinglyLinkedList":4,"./util/Vec3":6}],3:[function(require,module,exports){
+},{"../util/SinglyLinkedList":4,"../util/Vec3":6}],3:[function(require,module,exports){
 "use strict";
 
 var _interopRequire = function (obj) { return obj && obj.__esModule ? obj["default"] : obj; };
@@ -130,13 +134,13 @@ var _interopRequire = function (obj) { return obj && obj.__esModule ? obj["defau
  *
  */
 
-var SinglyLinkedList = _interopRequire(require("./util/SinglyLinkedList"));
+var SinglyLinkedList = _interopRequire(require("../util/SinglyLinkedList"));
 
 //var requestFrame = require('request-frame');
 
-var raf = _interopRequire(require("./util/raf-polyfill"));
+var raf = _interopRequire(require("../util/raf-polyfill"));
 
-var log = _interopRequire(require("./util/log"));
+var log = _interopRequire(require("../util/log"));
 
 // Singleton, no need for class instantiation here
 var rafLoop = {
@@ -246,7 +250,7 @@ var rafLoop = {
 
 module.exports = rafLoop;
 
-},{"./util/SinglyLinkedList":4,"./util/log":7,"./util/raf-polyfill":8}],4:[function(require,module,exports){
+},{"../util/SinglyLinkedList":4,"../util/log":7,"../util/raf-polyfill":8}],4:[function(require,module,exports){
 /*
  * SinglyLinkedList Pool
  *

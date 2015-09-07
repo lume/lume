@@ -1,6 +1,6 @@
-jest.dontMock('../lib/rafLoop');
-jest.dontMock('../lib/util/raf-polyfill');
-jest.dontMock('../lib/util/SinglyLinkedList');
+jest.dontMock('../../lib/core/rafLoop');
+jest.dontMock('../../lib/util/raf-polyfill');
+jest.dontMock('../../lib/util/SinglyLinkedList');
 
 /*
  * Async is a bit rough with current Jest.  Will get better when they
@@ -12,7 +12,7 @@ jest.dontMock('../lib/util/SinglyLinkedList');
  */
 
 describe('raf-mock', function() {
-  var raf = require('../lib/util/raf-polyfill');
+  var raf = require('../../lib/util/raf-polyfill');
   raf.mock(true);
 
   it('should execute callbacks', function() {
@@ -24,8 +24,8 @@ describe('raf-mock', function() {
 });
 
 describe('rafLoop', function() {
-  var rafLoop = require('../lib/rafLoop');
-  var raf = require('../lib/util/raf-polyfill');
+  var rafLoop = require('../../lib/core/rafLoop');
+  var raf = require('../../lib/util/raf-polyfill');
 
   rafLoop.start();
 
