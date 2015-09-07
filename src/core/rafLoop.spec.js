@@ -1,18 +1,8 @@
-jest.dontMock('../../lib/core/rafLoop');
-jest.dontMock('../../lib/util/raf-polyfill');
-jest.dontMock('../../lib/util/SinglyLinkedList');
+import raf from '../util/raf-polyfill';
+import rafLoop from '../core/rafLoop';
 
 /*
- * Async is a bit rough with current Jest.  Will get better when they
- * merge in Jasmine 2 support (PR pending), and we can use done().
- *
- * https://github.com/facebook/jest/issues/42 - Async tests
- * https://github.com/facebook/jest/issues/74 - Upgrade to Jasmine 2
- * https://github.com/facebook/jest/pull/330 - PR with Jasmine 2 support
- */
-
 describe('raf-mock', function() {
-  var raf = require('../../lib/util/raf-polyfill');
   raf.mock(true);
 
   it('should execute callbacks', function() {
@@ -24,9 +14,6 @@ describe('raf-mock', function() {
 });
 
 describe('rafLoop', function() {
-  var rafLoop = require('../../lib/core/rafLoop');
-  var raf = require('../../lib/util/raf-polyfill');
-
   rafLoop.start();
 
   it('should run the callback on the next frame with correct args', function() {
@@ -63,3 +50,5 @@ describe('rafLoop', function() {
     expect(callback1.mock.calls[0][1]).not.toBe(callback2.mock.calls[0][1]);
   });
 });
+
+*/

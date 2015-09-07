@@ -1,5 +1,3 @@
-require('babelify/polyfill');
-
 import log from './util/log';
 import rafLoop from './core/rafLoop';
 import Node from './core/Node';

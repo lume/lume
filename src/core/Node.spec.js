@@ -1,10 +1,6 @@
-jest.dontMock('../../lib/core/Node');
-jest.dontMock('../../lib/util/SinglyLinkedList');
-jest.dontMock('../../lib/util/Vec3');
-
-var Node = require('../../lib/core/Node');
-var Vec3 = require('../../lib/util/Vec3');
-var SinglyLinkedList = require('../../lib/util/SinglyLinkedList');
+import Node from './Node';
+import Vec3 from '../util/Vec3';
+import SinglyLinkedList from '../util/SinglyLinkedList';
 
 describe('Node', function() {
   beforeEach(function() {

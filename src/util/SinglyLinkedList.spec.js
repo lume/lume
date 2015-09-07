@@ -1,8 +1,6 @@
-jest.dontMock('../../lib/util/SinglyLinkedList');
+import SinglyLinkedList from './SinglyLinkedList';
 
 describe('SinglyLinkedList', function() {
-  var SinglyLinkedList = require('../../lib/util/SinglyLinkedList');
-
   beforeEach(function () {
     this.list = new SinglyLinkedList();
   });
