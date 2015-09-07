@@ -48,9 +48,6 @@ define(function(require, exports, module) {
             this._node = new SceneGraphNode();
             this._node.tempRoot = this._node;
 
-            Controller.apply(this, arguments);
-            if (this.options) setOptions.call(this, this.options);
-
             this.size = ResizeStream.lift(
                 function ViewSizeAlgebra (sizeSpec, parentSize){
                     return (sizeSpec)
@@ -73,7 +70,10 @@ define(function(require, exports, module) {
             this._node._size.subscribe(this.size).subscribe(this._size);
             this._node._layout.subscribe(layout).subscribe(this._layout);
 
+            Controller.apply(this, arguments);
             this._eventInput.subscribe(this._optionsManager);
+
+            if (this.options) setOptions.call(this, this.options);
         },
         set : function set(){
             return SceneGraphNode.prototype.set.apply(this._node, arguments);
