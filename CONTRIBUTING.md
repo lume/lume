@@ -49,6 +49,26 @@ TODO
   instructions on 1) what changed, 2) why it changed, and
   3) upgrade path for users.
 
+* **Every `commit` or `PR` *must* update History.md**,
+  noting if it is a feature, bugfix, BREAKING change,
+  and what is does and how it works, with a reference
+  to any relevant GitHub issue.
+
+## Pull Requests
+
+* Should be made against the `devel` branch.
+
+* Should adhede to everythign in this doc (comments,
+  data structures, garbage collection, backwards
+  compatibility, proper deprecation process, include
+  tests, make an entry in History.md, etc.)
+
+* Should clearly state if they are ready for merging
+  or are there for discussion purpuses.
+
+* Should be "OK"'d by at least one additional team
+  member, who should review the diff.
+
 ## Architecture
 
 ### General
