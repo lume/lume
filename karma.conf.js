@@ -30,7 +30,7 @@ module.exports = function (config) {
         reporters: ['progress', 'coverage'],
 
         preprocessors: {
-            'src/!(*spec).js': ['babel', 'sourcemap', 'coverage']
+            'src/{!(*spec).js,!(jspm_packages)/**/!(*spec).js}': ['babel', 'sourcemap', 'coverage']
         },
 
         babelPreprocessor: {
