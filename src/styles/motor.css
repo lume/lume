@@ -1,0 +1,39 @@
+.infamous-dom-scene {
+  height: 100%;
+  overflow: hidden;
+  position: absolute;
+  transform-style: preserve-3d;
+  width: 100%;
+}
+
+.infamous-dom-camera {
+  transform-style: preserve-3d;
+}
+
+.infamous-dom-node {
+  backface-visibility: visible;
+  box-sizing: border-box;
+  overflow: hidden;
+  pointer-events: auto;
+  position: absolute;
+  transform-origin: 0% 0%;
+}
+
+.infamous-template-surface {
+    height: 100%;
+    width: 100%
+}
+
+.infamous-scroll, .infamous-scroll-view {
+    overflow-y: scroll;
+    overflow-x: hidden;
+    -webkit-overflow-scrolling: touch
+}
+
+.infamous-scroll-view .header {
+    z-index: 2
+}
+
+.infamous-swapper {
+    overflow: hidden
+}

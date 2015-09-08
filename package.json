@@ -1,0 +1,63 @@
+{
+  "name": "motor.js",
+  "version": "0.0.2",
+  "description": "A rendering Engine for the web.",
+  "format": "es6",
+  "main": "index.js",
+  "browser": "global.js",
+  "global": "global.js",
+  "license": "MIT",
+  "homepage": "http://infamous.io",
+  "scripts": {
+    "test": "echo 'TODO: Test script' && exit 1",
+    "clean": "mkdir save && mv webpack.config.js save && rm -rf ./*.js ./*.js.map engine && mv save/* . && rmdir save",
+    "prepublish": "npm run build-cjs",
+    "build-umd": "babel src --source-maps --out-dir . --modules umd",
+    "build-cjs": "babel src --source-maps --out-dir . --modules common",
+    "build-amd": "babel src --source-maps --out-dir . --modules amd",
+    "build-global": "webpack --progress --colors --output-library-target umd src/index.js global.js --output-library motor"
+  },
+  "dependencies": {
+    "jquery": "^2.1.4",
+    "lodash": "^3.10.1",
+    "lowclass": "^2.0.0",
+    "three": "^0.71.0",
+    "tween.js": "^15.0.0"
+  },
+  "devDependencies": {
+    "babel": "^5.6.6",
+    "babel-loader": "^5.3.2",
+    "babelify": "^6.3.0",
+    "browserify": "^11.1.0",
+    "glslify-loader": "^1.0.2",
+    "raw-loader": "^0.5.1",
+    "webpack": "^1.12.1"
+  },
+  "jspm": {
+    "registry": "jspm",
+    "directories": {
+      "lib": "src"
+    }
+  },
+  "bower": {
+    "TODO": "TODO"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/infamous/motor.git"
+  },
+  "bugs": {
+    "url": "https://github.com/infamous/motor/issues"
+  },
+  "keywords": [
+    "Famous",
+    "WebGL",
+    "DOM",
+    "renderer",
+    "3D",
+    "User",
+    "Interface",
+    "UI"
+  ],
+  "author": ""
+}
