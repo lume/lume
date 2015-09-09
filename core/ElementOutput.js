@@ -68,7 +68,7 @@ define(function(require, exports, module) {
 
         this.size.on('resize', function(size){
             this._sizeDirty = true;
-            this._size = size;
+            this._cachedSpec.size = size;
         }.bind(this));
 
         this._currentTarget = null;
@@ -184,6 +184,14 @@ define(function(require, exports, module) {
             element.style.transform = _formatCSSTransform(matrix);
         };
 
+    var _setSize = function _setSize(target, size){
+        if (size[0] === true) size[0] = target.offsetWidth;
+        else target.style.width = Math.ceil(size[0] * devicePixelRatio) * invDevicePixelRatio + 'px';
+
+        if (size[1] === true) size[1] = target.offsetHeight;
+        else target.style.height = Math.ceil(size[1] * devicePixelRatio) * invDevicePixelRatio + 'px';
+    };
+
     var _setInvisible = usePrefix
         ? function(element) {
             element.style.webkitTransform = 'scale3d(0.0001,0.0001,0.0001)';
@@ -208,18 +216,11 @@ define(function(require, exports, module) {
         var target = this._currentTarget;
         if (!target || !spec) return;
 
-        if (this._sizeDirty) {
-            if (this._size[0] === true) this._size[0] = target.offsetWidth;
-            else target.style.width = Math.ceil(this._size[0] * devicePixelRatio) * invDevicePixelRatio + 'px';
-
-            if (this._size[1] === true) this._size[1] = target.offsetHeight;
-            else target.style.height = Math.ceil(this._size[1] * devicePixelRatio) * invDevicePixelRatio + 'px';
-        }
+        var cache = this._cachedSpec;
 
         var transform = spec.transform || Transform.identity;
         var opacity = (spec.opacity === undefined) ? 1 : spec.opacity;
         var origin = spec.origin || _zeroZero;
-        var cache = this._cachedSpec;
 
         this._transformDirty = Transform.notEquals(cache.transform, transform);
         this._opacityDirty = this._opacityDirty || (cache.opacity !== opacity);
@@ -238,6 +239,11 @@ define(function(require, exports, module) {
         if (this._transformDirty) {
             cache.transform = transform;
             _setTransform(target, transform);
+        }
+
+        if (this._sizeDirty) {
+            var size = cache.size;
+            _setSize(target, size);
         }
 
         this._originDirty = false;

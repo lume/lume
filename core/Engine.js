@@ -119,7 +119,6 @@ define(function(require, exports, module) {
         size.emit('resize', windowSize);
         eventHandler.emit('resize', windowSize);
 
-        //TODO: is this unnecessary? SizeNode will trigger dirty
         dirtyQueue.push(function engineResizeClean(){
             size.emit('resize', windowSize);
         });

@@ -49,8 +49,8 @@ define(function(require, exports, module) {
 
         this._eventInput.subscribe(this.context);
 
-        this._eventInput.on('resize', function(){
-            var size = this.getSize();
+        this.size.on('resize', function(){
+            var size = _getElementSize(this._container);
             this.context.setSize(size);
             this.emit('resize', size);
         }.bind(this));
@@ -67,6 +67,10 @@ define(function(require, exports, module) {
     ContainerSurface.prototype.constructor = ContainerSurface;
     ContainerSurface.prototype.elementType = 'div';
     ContainerSurface.prototype.elementClass = 'samsara-surface';
+
+    function _getElementSize(element) {
+        return [element.clientWidth, element.clientHeight];
+    }
 
     ContainerSurface.prototype.setPerspective = function setPerspective(){
         Context.prototype.setPerspective.apply(this.context, arguments);

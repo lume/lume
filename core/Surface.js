@@ -450,7 +450,7 @@ define(function(require, exports, module) {
      */
     Surface.prototype.getSize = function getSize() {
         // TODO: remove cachedSize
-        return this._size || this._cachedSize;
+        return this._cachedSpec.size || this._cachedSize;
     };
 
     /**
@@ -461,7 +461,6 @@ define(function(require, exports, module) {
      * @param {Array.Number} size as [width, height]
      */
     Surface.prototype.setSize = function setSize(size) {
-        // TODO: future version should only allow streams
         this._cachedSize = size;
         this.sizeNode.set({size : size});
         this._sizeDirty = true;
