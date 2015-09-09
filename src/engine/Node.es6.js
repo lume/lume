@@ -441,7 +441,6 @@ class Node extends THREE.Object3D {
    * @param {Node} node [description]
    */
   addChild (node) {
-    node.parent
     this.add(node);
   }
 
