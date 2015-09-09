@@ -3,7 +3,6 @@ var Utility = Infamous.engine.Utility;
 
 const CSS_CLASS_SCENE  = 'infamous-dom-scene';
 
-
 /**
  * Scene Class
  * @class Scene
