@@ -115,7 +115,7 @@ define(function(require, exports, module) {
      * @param inputs {Object|Array.String} an array of registered input keys
      *    or an object with fields {input key : input options}
      */
-    GenericInput.prototype.addInput = function addSync(inputs) {
+    GenericInput.prototype.addInput = function addInput(inputs) {
         if (inputs instanceof Array)
             for (var i = 0; i < inputs.length; i++)
                 _addSingleInput.call(this, inputs[i]);
