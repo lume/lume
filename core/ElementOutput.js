@@ -77,6 +77,7 @@ define(function(require, exports, module) {
         this._sizeDirty = true;
         this._originDirty = true;
         this._transformDirty = true;
+        this._isVisible = true;
 
         register(this);
         if (element) this.attach(element);
@@ -162,10 +163,23 @@ define(function(require, exports, module) {
         return (a && b) ? (a[0] !== b[0] || a[1] !== b[1]) : a !== b;
     }
 
+    // {Visibility : hidden} allows for DOM events to pass through the element
     var _setOpacity = function _setOpacity(element, opacity){
-        if (opacity >= MAX_OPACITY)     opacity = MAX_OPACITY;
-        else if (opacity < MIN_OPACITY) opacity = MIN_OPACITY;
-        element.style.opacity = opacity;
+        if (!this._isVisible && opacity > MIN_OPACITY){
+            element.style.visibility = 'visible';
+            this._isVisible = true;
+        }
+
+        if (opacity > MAX_OPACITY) opacity = MAX_OPACITY;
+        else if (opacity < MIN_OPACITY) {
+            opacity = MIN_OPACITY;
+            if (this._isVisible){
+                element.style.visibility = 'hidden';
+                this._isVisible = false;
+            }
+        }
+
+        if (this._isVisible) element.style.opacity = opacity;
     };
 
     var _setOrigin = usePrefix
@@ -228,7 +242,7 @@ define(function(require, exports, module) {
 
         if (this._opacityDirty) {
             cache.opacity = opacity;
-            _setOpacity(target, opacity);
+            _setOpacity.call(this, target, opacity);
         }
 
         if (this._originDirty){
