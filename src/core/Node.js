@@ -1,5 +1,6 @@
 import SinglyLinkedList from '../util/SinglyLinkedList';
 import Vec3 from '../util/Vec3';
+import trash from '../util/Trash';
 
 // See SinglyLinkedList.js for more info on this pattern
 let nodePool = SinglyLinkedList();
@@ -13,8 +14,15 @@ let Node = function(options) {
 };
 
 Node.prototype.init = function(options) {
+  this._children && this._children.recycle();
   this._children = SinglyLinkedList();
+
+  this._size && this._size.recycle();
   this._size = Vec3(0, 0, 0);
+
+  this._componentIterator = 0;
+  this.components && trash(this.components);
+  this.components = {};
 };
 
 Node.prototype.addChild = function(child) {
@@ -58,5 +66,34 @@ Node.prototype.eachDescendant = function(func) {
       current.data.eachDescendant(func);
   }
 }
+
+Node.prototype.addComponent = function(component) {
+  var name = component.name;
+  if (name) {
+     if (this.components[name])
+        throw new Error("Node already has a " + name + " component",
+          this, component, this.components[name]);
+  } else
+    name = this._componentIterator++;
+
+  this.components[name] = component;
+  
+  component._node = this;
+  return component;
+};
+
+Node.prototype.removeComponent = function(component) {
+  if (typeof component === 'object') {
+    for (let key in this.components)
+      if (this.components[key] === component) {
+        this.components[key].recycle();
+        this.components[key] = null;
+        break;
+      }
+  } else {
+    this.components[component].recycle();
+    this.components[component] = null;
+  }
+};
 
 export default Node;

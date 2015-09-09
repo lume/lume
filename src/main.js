@@ -6,6 +6,9 @@ import SinglyLinkedList from './util/SinglyLinkedList';
 import trash from './util/Trash';
 import Vec3 from './util/Vec3';
 
+import Component from './components/Component';
+import SizeComponent from './components/SizeComponent';
+
 rafLoop.start();
 
 var famin = {
@@ -20,6 +23,11 @@ var famin = {
     SinglyLinkedList: SinglyLinkedList,
     trash: trash,
     Vec3: Vec3
+  },
+
+  components: {
+    Component: Component,
+    SizeComponent: SizeComponent
   }
 };
 

@@ -116,3 +116,7 @@ TODO
   meant to only collect during idle times, but this isn't
   always the case... we're a better judge.).  This also helps
   keep track of (potentially unnecessary) garbage.
+
+* Controversial: for super high traffic functions, suggest
+  operating directly on _properties rather than gaving
+  getProp() and setProp() methods, to avoid the overhead.

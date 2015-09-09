@@ -10,22 +10,23 @@
  *
  * Usage:
  *
- * var data;
- * while (data = queue.getNext())
- *   doSomethingWith(data);
+ *   // *Not* an anonymous function, don't declare inside a function
+ *   function doSomething(data) { ... }
  *
- * For super high traffic, you can manipulate the list directly:
+ *   queue.forEach(doSomething); 
  *
- * for (let current = rafLoop._queue.head; current; current = current.next)
- *   doSomethingWith(current.data);
+ * Alternatively, you can manipulate the list directly:
  *
- * Before dropping a reference to a list, you should call list.recycle().
- * To recycle a partial list, call list.recycleUntil(listElement).
+ *   for (let current = queue.head; current; current = current.next)
+ *     doSomethingWith(current.data);
+ *
+ * Before dropping a reference to a list, you should call queue.recycle().
+ * To recycle a partial list, call queue.recycleUntil(listElement).
  *
  * NB: These are purpusefully not ES6 classes to allow prototype
  * methods without a _classCallCheck.  We handle this ourselves to
  * allow the method to be called without `new` and retrieve
- * recycled lists and elements from the pool.
+ * recycled lists and elements from the pool, via SinglyLinkedList().
  */
 
 // These will become SinglyLinkedList()'s after the class is defined.
@@ -224,6 +225,22 @@ SinglyLinkedList.prototype.toArray = function(index) {
   for (var current = this.head; current; current = current.next)
     arr.push(current.data);
   return arr;
+};
+
+/*
+ * Cheaply iterates over data in the list using the given
+ * function.  For high traffic, ensure the function is
+ * declared once, permanently, and not constructed inside
+ * inside another function each time you need it.  If the
+ * function returns `false`, we'll break.
+ *
+ * @param {function} func - the funtion to run, called as
+ *                          func(data).  may return `false`
+ *                          to break the loop.
+ */
+SinglyLinkedList.prototype.forEach = function(func) {
+  for (var current = this.head; current; current = current.next)
+    if (!func(current.data)) break;
 };
 
 /*
