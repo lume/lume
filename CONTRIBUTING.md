@@ -96,7 +96,7 @@ TODO
   e.g. always prefer `SinglyLinkedList()` if it answers all
   your needs, e.g. you need to keep a list of items to iterate
   through but (almost) never need to access a specific index
-  directly.   Use `Vec3()` instead of a 1x3 array of primitives
+  directly.   Use `Vec3()` instead of a 3x1 array of primitives
   for size, position, etc.
 
 * **Avoid high traffic anonymous functions**.  For anything
@@ -111,7 +111,7 @@ TODO
   you wish to discard** (before removing your references to it).
   This will keep references to all garbage and avoid garbage
   collection at inconvenient times.  When the engine is sure
-  it is and will remain idle, it calls `Trash.discard()` to
+  it is, and will remain, idle, it calls `Trash.discard()` to
   really make the garbage available to the GC (Note: the GC is
   meant to only collect during idle times, but this isn't
   always the case... we're a better judge.).  This also helps
