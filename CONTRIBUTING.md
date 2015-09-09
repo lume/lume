@@ -107,6 +107,12 @@ TODO
   them.  Iterating through these kinds of functions with a 
   SinglyLinkedList is highly efficient.
 
+* **Don't use *bind()***.  It's not performanent.  Make your
+  own closure (using `.call()` is fine).  It's possible this
+  will get optimized better in the future, but there are still
+  all the old browsers.
+  http://stackoverflow.com/questions/17638305/why-is-bind-slower-than-a-closure
+
 * (?) Import the `Trash` class and **call `trash` on any object
   you wish to discard** (before removing your references to it).
   This will keep references to all garbage and avoid garbage
