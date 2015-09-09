@@ -43,7 +43,6 @@ define(function(require, exports, module) {
     var rafId;
     var eventForwarders = {};
     var eventHandler = new EventHandler();
-    var dirtyLock = 0;
     var listenOnTick = false;
     var size = new EventHandler();
 
@@ -88,8 +87,6 @@ define(function(require, exports, module) {
         while (dirtyQueue.length) (dirtyQueue.shift())();
 
         State.set(State.STATES.START);
-
-        return dirtyLock;
     };
 
     function start(){
@@ -109,9 +106,8 @@ define(function(require, exports, module) {
 
     // engage requestAnimationFrame
     function loop() {
-        var dirty = Engine.step();
-//        if (dirty)
-            rafId = window.requestAnimationFrame(loop);
+        Engine.step();
+        rafId = window.requestAnimationFrame(loop);
     }
 
     Engine.start = start;
