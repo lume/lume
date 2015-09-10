@@ -10,7 +10,12 @@
  *
  * Usage:
  *
- *   // *Not* an anonymous function, don't declare inside a function
+ *   let queue = SinglyLinkedList();
+ *
+ *   // Note, the next line is *not* an anonymous function, it
+ *   // was *not* declared / instanatiated inside another
+ *   // function.  This has a major impact on performance.
+ *
  *   function doSomething(data) { ... }
  *
  *   queue.forEach(doSomething); 
@@ -35,8 +40,8 @@ let elementPool = null;
 
 /*
  * Supply a clean SinglyLinkedListElement with the given data, from
- * the pool if a recycled element is available or from a new instance.
- * The object looks like this:
+ * the pool (if a recycled element is available) otherwise from a
+ * new instance.  The object looks like this:
  *
  * - data {object} - the data to store
  * - next {SinglyLinkedListElement} - optional reference to next element
@@ -47,10 +52,11 @@ let elementPool = null;
  */
 let SinglyLinkedListElement = function(data) {
   if (!(this instanceof SinglyLinkedListElement)) {
+    // called without 'new'
     let el = elementPool && elementPool.shiftElement();
     return el && el.init(data) || new SinglyLinkedListElement(data);
   }
-
+  // call with 'new', a new instantiation
   this.init(data);
 };
 
@@ -80,12 +86,9 @@ SinglyLinkedListElement.prototype.init = function(data) {
  */
 let SinglyLinkedList = function() {
   if (!(this instanceof SinglyLinkedList)) {
-    // called without 'new'
     let list = listPool && listPool.shift();
     return list && list.init() || new SinglyLinkedList();
   }
-
-  // call with 'new', a new instantiation
   this.init();
 };
 
@@ -231,16 +234,17 @@ SinglyLinkedList.prototype.toArray = function(index) {
  * Cheaply iterates over data in the list using the given
  * function.  For high traffic, ensure the function is
  * declared once, permanently, and not constructed inside
- * inside another function each time you need it.  If the
- * function returns `false`, we'll break.
+ * of another function each time you need it.  If the
+ * function returns `false`, we'll break and stop iterating
+ * over the list.
  *
  * @param {function} func - the funtion to run, called as
  *                          func(data).  may return `false`
  *                          to break the loop.
  */
-SinglyLinkedList.prototype.forEach = function(func) {
+SinglyLinkedList.prototype.forEach = function(func, context) {
   for (var current = this.head; current; current = current.next)
-    if (!func(current.data)) break;
+    if (func.call(context, current.data) === false) break;
 };
 
 /*
