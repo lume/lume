@@ -10,6 +10,7 @@
 
 define(function(require, exports, module) {
     var EventHandler = require('samsara/core/EventHandler');
+    var SimpleStream = require('samsara/streams/SimpleStream');
 
     /**
      * Combines multiple types of input classes (e.g. mouse, touch,
@@ -38,6 +39,9 @@ define(function(require, exports, module) {
         if (inputs) this.addInput(inputs);
         if (options) this.setOptions(options);
     }
+
+    GenericInput.prototype = Object.create(SimpleStream.prototype);
+    GenericInput.prototype.constructor = GenericInput;
 
     GenericInput.DIRECTION = {
         X : 0,
