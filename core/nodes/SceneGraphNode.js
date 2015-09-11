@@ -9,6 +9,16 @@ define(function(require, exports, module) {
     var layoutAlgebra = require('samsara/core/algebras/layout');
     var sizeAlgebra = require('samsara/core/algebras/size');
 
+    /**
+     * A node in the scene graph. As such, it wraps a layout or size node,
+     *  providing them with an `add` method. By adding nodes, the scene graph
+     *  is constructed like a tree, the leaves of which are `Surfaces`.
+     *
+     *  @constructor
+     *  @class SceneGraphNode
+     *  @param object {SizeNode, LayoutNode, Surface, View}
+     */
+
     function SceneGraphNode(object) {
         this.sizeStream = null;
         this.layoutStream = null;
@@ -18,15 +28,20 @@ define(function(require, exports, module) {
 
         this.root = null;
 
-        if (object) this.set(object);
+        if (object) _set.call(this, object);
     }
 
-    function _getRootNode(){
-        if (this.root) return this.root;
-        if (this.tempRoot) return _getRootNode.call(this.tempRoot);
-        return this;
-    }
-
+    /**
+     * Extends the scene graph with a new node. Similar to how a tree data structure
+     *  is created, but instead of a node with an array of children, children subscribe
+     *  to notifications from the parent.
+     *
+     *  This method also takes `Views` (subtrees) and `Surfaces` (leaves).
+     *
+     * @method add
+     * @param object {SizeNode, LayoutNode, Surface, View} Node
+     * @return {SceneGraphNode} Wrapped node
+     */
     SceneGraphNode.prototype.add = function add(object) {
         var childNode;
 
@@ -50,7 +65,13 @@ define(function(require, exports, module) {
         return childNode;
     };
 
-    SceneGraphNode.prototype.set = function set(object) {
+    function _getRootNode(){
+        if (this.root) return this.root;
+        if (this.tempRoot) return _getRootNode.call(this.tempRoot);
+        return this;
+    }
+
+    function _set(object) {
         if (object instanceof SizeNode){
             this.sizeStream = ResizeStream.lift(
                 function SGSizeAlgebra (objectSpec, parentSize){
@@ -105,7 +126,7 @@ define(function(require, exports, module) {
                 root.dirtyObjects.push(object);
             }.bind(this));
         }
-    };
+    }
 
     module.exports = SceneGraphNode;
 });

@@ -75,9 +75,6 @@ define(function(require, exports, module) {
 
             if (this.options) setOptions.call(this, this.options);
         },
-        set : function set(){
-            return SceneGraphNode.prototype.set.apply(this._node, arguments);
-        },
         add : function add(){
             return SceneGraphNode.prototype.add.apply(this._node, arguments);
         },
