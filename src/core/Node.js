@@ -67,7 +67,7 @@ Node.prototype.eachDescendant = function(func) {
   }
 }
 
-Node.prototype.addComponent = function(component) {
+Node.prototype._addComponent = function(component) {
   var name = component.name;
   if (name) {
      if (this.components[name])
@@ -82,7 +82,7 @@ Node.prototype.addComponent = function(component) {
   return component;
 };
 
-Node.prototype.removeComponent = function(component) {
+Node.prototype._removeComponent = function(component) {
   if (typeof component === 'object') {
     for (let key in this.components)
       if (this.components[key] === component) {

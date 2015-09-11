@@ -1,6 +1,7 @@
 import log from './util/log';
 import rafLoop from './core/rafLoop';
 import Node from './core/Node';
+import FrameLoop from './core/FrameLoop';
 
 import SinglyLinkedList from './util/SinglyLinkedList';
 import trash from './util/Trash';
@@ -14,20 +15,21 @@ rafLoop.start();
 var famin = {
 
   core: {
-    rafLoop: rafLoop,
-    Node: Node
+    rafLoop,
+    Node,
+    FrameLoop
   },
 
   util: {
-    log: log,
-    SinglyLinkedList: SinglyLinkedList,
-    trash: trash,
-    Vec3: Vec3
+    log,
+    SinglyLinkedList,
+    trash,
+    Vec3
   },
 
   components: {
-    Component: Component,
-    SizeComponent: SizeComponent
+    Component,
+    SizeComponent
   }
 };
 

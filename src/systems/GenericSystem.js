@@ -33,6 +33,7 @@ class GenericSystem {
 
       this._inUpdate = true;
 
+      // Iterate through all components (that are attached to)
       for (let current = head; current; current = current.next)
         current.data._node && current.data.update();
 
