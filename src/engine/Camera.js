@@ -1,4 +1,4 @@
-var Utility = Infamous.engine.Utility;
+import Utility from './Utility'
 
 const CSS_CLASS_CAMERA = 'infamous-dom-camera';
 
@@ -7,6 +7,7 @@ const CSS_CLASS_CAMERA = 'infamous-dom-camera';
  * @class Camera
  * @return {Camera} A new instance of Camera
  */
+export default
 class Camera {
 
   /**
@@ -137,5 +138,3 @@ class Camera {
   }
 
 }
-
-Infamous.engine.Camera = Camera;

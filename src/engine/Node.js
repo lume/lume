@@ -1,13 +1,15 @@
-var Curve = Infamous.engine.Curve;
-var Utility = Infamous.engine.Utility;
+import Curve   from './Curve'
+import Utility from './Utility'
 
 const CSS_CLASS_NODE = 'infamous-dom-node';
+
 /**
  * Node Class
  *
  * @class Node
  * @return {Node} A new instance of Node
  */
+export default
 class Node extends THREE.Object3D {
 
   /**
@@ -475,5 +477,3 @@ class Node extends THREE.Object3D {
     }
   }
 }
-
-Infamous.engine.Node = Node;

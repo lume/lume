@@ -1,4 +1,4 @@
-Infamous.engine.Utility = {
+export default {
 
   /**
    * [epsilon description]

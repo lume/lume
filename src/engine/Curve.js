@@ -3,6 +3,7 @@
  * @class Curve
  * @return {Curve} A new instance of Curve
  */
+export default
 class Curve {
 
   /**
@@ -178,5 +179,3 @@ class Curve {
   }
 
 }
-
-Infamous.engine.Curve = Curve;

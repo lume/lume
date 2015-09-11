@@ -1,10 +1,11 @@
-var Node = Infamous.engine.Node;
+import Node from './Node'
 
 /**
  * Sprite Class
  * @class Sprite
  * @return {Sprite} A new instance of Sprite
  */
+export default
 class Sprite extends Node {
 
   render (scene) {
@@ -25,5 +26,3 @@ class Sprite extends Node {
   }
 
 }
-
-Infamous.engine.Sprite = Sprite;

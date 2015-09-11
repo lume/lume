@@ -1,5 +1,5 @@
-var Camera = Infamous.engine.Camera;
-var Utility = Infamous.engine.Utility;
+import Camera  from './Camera'
+import Utility from './Utility'
 
 const CSS_CLASS_SCENE  = 'infamous-dom-scene';
 
@@ -8,6 +8,7 @@ const CSS_CLASS_SCENE  = 'infamous-dom-scene';
  * @class Scene
  * @return {Scene} A new instance of Scene
  */
+export default
 class Scene {
 
   /**
@@ -179,6 +180,3 @@ class Scene {
     this._controls.addEventListener('change', this.render.bind(this));
   }
 }
-
-Infamous.engine.Scene = Scene;
-
