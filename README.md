@@ -1,10 +1,12 @@
 #Boxer Engine
 
-##A proposal for the new API used by the Infamous Community. 
+##A proposal for the new API used by the Infamous Community.
 
 The goal of this project is to create a scene graph that is minimal with components that are abstracted enough to be swapped out.
 
 The built project is found in dist/boxer.js. Boxer currently operates on the window as an Object, similar to Famous.
+
+- This project is very early in development.
 
 ###Advantages found in this approach:
 
