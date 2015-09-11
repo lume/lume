@@ -1,8 +1,8 @@
 /*
  * Output:
  *
- *   Generatic anonymous closure: 160ms  (86% slower)
- *        Reused static function: 86ms   (46% faster)
+ *   Generatic anonymous closure: 160ms  (46% slower)
+ *        Reused static function: 86ms   (86% faster)
  *
  * Does not include garbage collection!!
 */
