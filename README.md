@@ -1,6 +1,6 @@
 #Boxer Engine
 
-##A proposal for the new API used by the Infamous Community.
+##A proposal for the new API used by the Infamous Community. 
 
 The goal of this project is to create a scene graph that is minimal with components that are abstracted enough to be swapped out.
 
@@ -22,6 +22,25 @@ The built project is found in dist/boxer.js. Boxer currently operates on the win
 * Unified UI Event system for GL and DOM.
 * Refactor to use ES6 Modules.
 
+##Getting Started
+
+An example is provided in the root directory. Use any local server to host index.html. `live-server` is a useful tool for this.
+
+`app.js` initializes the Engine and the Web Worker. It is fairly minimal at the moment.
+
+```
+var sceneWorker = new Worker('worker.js');
+var engine = boxer.core.Engine;
+engine.init(sceneWorker);
+
+```
+
+Currently the scene is injected into the Engine so the Web Worker can receive ticks from the Engine.
+
+`worker.js` handles most of the application logic and it will be where all matrix transformations are calculated.
+
+
+##Development
 
 To build the project yourself use Browserify for the time being.
 
