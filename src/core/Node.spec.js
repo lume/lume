@@ -4,7 +4,7 @@ import SinglyLinkedList from '../util/SinglyLinkedList';
 
 describe('Node', function() {
   beforeEach(function() {
-    this.node = Node();
+    this.node = Node.instance();
   });
 
   it('should return a Node', function() {
@@ -16,11 +16,11 @@ describe('Node', function() {
 
 describe('Node#addChild', function() {
   beforeEach(function() {
-    this.node = Node();
+    this.node = Node.instance();
   });
 
   it('should add children', function() {
-    var child = Node();
+    var child = Node.instance();
     child.id = 'child';
     this.node.addChild(child);
     expect(this.node._children.head.data.id).toBe('child');
@@ -29,9 +29,9 @@ describe('Node#addChild', function() {
 
 describe('Node#getChild', function() {
   it('should retrieve the child at the given index', function() {
-    var node = Node();
-    var child0 = Node(); node.addChild(child0);
-    var child1 = Node(); node.addChild(child1);
+    var node = Node.instance();
+    var child0 = Node.instance(); node.addChild(child0);
+    var child1 = Node.instance(); node.addChild(child1);
     expect(node.getChild(0)).toBe(child0);
     expect(node.getChild(1)).toBe(child1);
   });
@@ -39,13 +39,13 @@ describe('Node#getChild', function() {
 
 describe('Node#eachChildren', function() {
   beforeEach(function() {
-    this.node = Node();
+    this.node = Node.instance();
   });
 
   it('should run iteratively on all children', function() {
     var func = function(node) { node.wasTouched = true; };
-    this.node.addChild(Node());
-    this.node.addChild(Node());
+    this.node.addChild(Node.instance());
+    this.node.addChild(Node.instance());
     this.node.eachChild(func);
     expect(this.node._children.head.data.wasTouched).toBe(true);
     expect(this.node._children.tail.data.wasTouched).toBe(true);
@@ -54,15 +54,15 @@ describe('Node#eachChildren', function() {
 
 describe('Node#eachDescendant', function() {
   beforeEach(function() {
-    this.parent = Node();
+    this.parent = Node.instance();
 
-    this.child1 = Node(); this.parent.addChild(this.child1);
-    this.child2 = Node(); this.parent.addChild(this.child2);
+    this.child1 = Node.instance(); this.parent.addChild(this.child1);
+    this.child2 = Node.instance(); this.parent.addChild(this.child2);
 
-    this.gchild1a = Node(); this.child1.addChild(this.gchild1a);
-    this.gchild1b = Node(); this.child1.addChild(this.gchild1b);
-    this.gchild2a = Node(); this.child2.addChild(this.gchild2a);
-    this.gchild2b = Node(); this.child2.addChild(this.gchild2b);
+    this.gchild1a = Node.instance(); this.child1.addChild(this.gchild1a);
+    this.gchild1b = Node.instance(); this.child1.addChild(this.gchild1b);
+    this.gchild2a = Node.instance(); this.child2.addChild(this.gchild2a);
+    this.gchild2b = Node.instance(); this.child2.addChild(this.gchild2b);
   });
 
   it('should run iteratively on all descendents when returning true', function() {

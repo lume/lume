@@ -2,14 +2,26 @@ import log from './util/log';
 import rafLoop from './core/rafLoop';
 import Node from './core/Node';
 import FrameLoop from './core/FrameLoop';
+import Messaging from './core/Messaging';
 
 import SinglyLinkedList from './util/SinglyLinkedList';
 import trash from './util/Trash';
 import Vec3 from './util/Vec3';
+import Event from './util/Event';
 
 import Component from './components/Component';
-import SizeComponent from './components/SizeComponent';
+import Size from './components/Size';
+import Position from './components/Position';
+import Transform from './components/Transform';
+import DOMElement from './components/DOMElement';
 
+import DOMRenderer from './ui_thread/DOMRenderer';
+
+// for everything in a single thread
+Component.loop = rafLoop;
+rafLoop.onFinish = function() {
+  Messaging.flush();
+}
 rafLoop.start();
 
 var famin = {
@@ -17,19 +29,28 @@ var famin = {
   core: {
     rafLoop,
     Node,
-    FrameLoop
+    FrameLoop,
+    Messaging
   },
 
   util: {
     log,
     SinglyLinkedList,
     trash,
-    Vec3
+    Vec3,
+    Event
   },
 
   components: {
     Component,
-    SizeComponent
+    Size,
+    Position,
+    Transform,
+    DOMElement
+  },
+
+  ui_thread: {
+    DOMRenderer
   }
 };
 

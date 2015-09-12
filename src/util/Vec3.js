@@ -32,7 +32,7 @@ Vec3.prototype.recycle = function() {
   pool.push(this);
 };
 
-Vec3.prototype.equal = function(other) {
+Vec3.prototype.equal = Vec3.prototype.equals = function(other) {
   return this[0] === other[0] && this[1] === other[1] && this[2] === other[2];
 };
 

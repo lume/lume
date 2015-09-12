@@ -34,6 +34,7 @@ class FrameLoop {
     var self = this;
     this.stepAndQueue = function() {
       self.step();
+      if (self.onFinish) self.onFinish();
       self.queueFrame();
     }
   }

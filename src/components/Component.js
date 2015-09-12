@@ -1,6 +1,8 @@
 import SinglyLinkedList from '../util/SinglyLinkedList';
 import Pool from '../util/Pool';
 import FrameLoop from '../core/FrameLoop';
+import log from '../util/log';
+import Event from '../util/Event';
 
 var componentCount = 0;
 var componentMap = {};
@@ -10,6 +12,7 @@ class Component {
   constructor(options, allow) {
     if (!allow)
       throw new Error("Did you mean to (Class).instance(options)?");
+
     this.init(options);
   }
 
@@ -24,7 +27,7 @@ class Component {
       this._observers = SinglyLinkedList();
 
     if (!this._observing)
-      this._observing = SinglyLinkedList();    
+      this._observing = SinglyLinkedList();
   }
 
   recycle() {
@@ -40,13 +43,21 @@ class Component {
     delete componentMap[this._id];
   }
 
+  // Uh, yeah... TODO: better
+  requires(/* arguments */) {
+    var node = this._node;
+    for (var i=0, len=arguments.length; i < len; i++)
+      if (!node.hasComponent(arguments[i]))
+        node.addComponent(arguments[i]);
+  }
+
   /* Updates */
 
   // What to do when an update is called
   update(changed) {
     this._updateRequested = false;
-    if (changed)
-      this._notifyObservers();
+//    if (changed)
+//      this._notifyObservers();
   }
 
   _updateWrapper() {
@@ -62,16 +73,45 @@ class Component {
   /* Nodes */
 
   attachTo(node) {
-    node._addComponent(this);
+    this._node = node;
+    node._attachComponentInstance(this);
+
+    if (this.onAttach)
+      this.onAttach();
+
+    var autoListen = this.__proto__.constructor.autoListen;
+    if (autoListen)
+      for (var i=0; i < autoListen.length; i++)
+        node.addComponentListener(autoListen[i], this);
+
     return this; // chainable
   }
 
   detach() {
-    node._removeComponent(this);
+
+    node._detachComponentInstance(this);
+  }
+
+  onEvent(event, sender /*, arguments */) {
+    // Extra if, because computing the log message is a little expensive
+    if (log.level === 'trace') {
+      let args = Array.prototype.slice(arguments, 2);
+      log.trace('Component #' + this._id + ' received "' + Event[event]
+        + '" from component #' + sender._id + ' with: ', args);
+    }
+
+    this.requestUpdate();
+  }
+
+  emit(/* , arguments */) {
+    // Inject componentInstance as 2nd arg
+    Array.prototype.splice.call(arguments, 1, 0, this);
+    this._node && this._node._emit.apply(this._node, arguments);
   }
 
   /* Observes */
 
+  /*
   observe(component) {
     component._addObserver(this);
     this._observing.push(component);
@@ -85,6 +125,7 @@ class Component {
   unobserveAll() {
     this._observing.forEach(this.unobserve, this);
   }
+  */
 
   _addObserver(component) {
     this._observers.push(component);
@@ -102,12 +143,10 @@ class Component {
     this._observers.forEach(this._notifyObserver);
   }
 
+//  observeComponents()
+
 }
 
 Pool.extend(Component);
-
-// temporary
-Component.loop = new FrameLoop();
-Component.loop.start();
 
 export default Component;

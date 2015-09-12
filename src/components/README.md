@@ -1,43 +1,30 @@
-## Components
+# Components
 
-### What is it?
+## What is it?
 
 Node simply forms part of a hierarchical structure, they can't
 do very much on their on.  Hence, we extend nodes with components,
-that add specific properties and behaviours to it.  These can be:
+that add specific properties and behaviours to it.  They are
+responsible for things like:
 
-* Size, Position
-* DOMElement, Mesh
+* **Node characteristics**: Size, Position, etc.
+* **Node rendering**: DOMElement, Mesh, etc
 
-### Usage
-
-```js
-var node = Node.instance();
-var size = SizeComponent.instance();
-node.addComponent(size);
-```
+## Usage
 
 ```js
 var node = Node.instance();
-
-var size = SizeComponent.instance().attachTo(node);
-size === node.components.size;  // created automatically
-```
-
-```js
-var node = Node.instance();
-SizeComponent.instance().attachTo(node);
+node.addComponents(Size, Position);
 node.size.setAbsolute(...);
+
+node.size.recycle();
+node.recycleAllComponents();
+var old = node.size.detach();
 ```
 
-```js
-var node = Node.instance();
-node.addComponents(SizeComponent, PositionComponent);
-node.size.setAbsolute(...);
-```
+## Architecture
 
-
-### Architecture
+### Characteristics
 
 Components
 
@@ -68,3 +55,28 @@ single file.  i.e. no SizeComponent AND SizeSystem.
 
 [1] https://en.wikipedia.org/wiki/Entity_component_system
 [2] https://en.wikipedia.org/wiki/Observer_pattern
+
+### Alternative Patterns that were considered
+
+**Usage**:
+
+A big concern was verbosity in Famous' original pattern,
+hence the final pattern above over these other options:
+
+```js
+var node = Node.instance();
+var size = SizeComponent.instance();
+node.addComponent(size);
+```
+
+```js
+var node = Node.instance();
+var size = SizeComponent.instance().attachTo(node);
+size === node.components.size;  // created automatically
+```
+
+```js
+var node = Node.instance();
+SizeComponent.instance().attachTo(node);
+node.size.setAbsolute(...);
+```
