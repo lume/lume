@@ -20,14 +20,17 @@ define(function(require, exports, module) {
     var EventMapper = require('samsara/events/EventMapper');
 
     /**
-     * The top-level container for a renderable piece of the document.
-     *   It is directly updated by the process-wide Engine object, and manages one
-     *   render tree root, which can contain other renderables.
+     * A Context defines a top-level DOM element inside which other nodes (like Surfaces) are rendered.
+     *  This DOM element can be provided as an argument if it exists in the document,
+     *  otherwise it is created for you and appended to the <body>.
+     *
+     *  The CSS class `samsara-context` is applied, which provides the minimal CSS necessary
+     *  to create a performant 3D context (specifically preserve-3d).
      *
      * @class Context
      * @constructor
-     * @private
-     * @param {Node} container Element in which content will be inserted
+     * @uses RootNode
+     * @param container {Node} DOM element which will serve as a container for added nodes.
      */
     function Context(container) {
         this.container = container;
@@ -78,67 +81,34 @@ define(function(require, exports, module) {
         }.bind(this));
     }
 
-    function _getElementSize(element) {
-        return [element.clientWidth, element.clientHeight];
-    }
-
-    function _setElementSize(element, size) {
-        element.style.width = size[0] + 'px';
-        element.style.height = size[1] + 'px';
-    }
-
-    var usePrefix = !('perspective' in document.documentElement.style);
-
-    var _setPerspective = usePrefix
-        ? function _setPerspective(element, perspective) {
-            element.style.webkitPerspective = perspective ? perspective.toFixed() + 'px' : '';
-        }
-        : function _setPerspective(element, perspective) {
-            element.style.perspective = perspective ? perspective.toFixed() + 'px' : '';
-        };
-
     /**
-     * Add renderables to this Context's render tree.
+     * Extends the scene graph beginning with the Context's RootNode with a new node.
+     *  Delegates to RootNode's `add` method.
      *
      * @method add
      *
      * @param {Object} obj renderable object
-     * @return {RenderNode} RenderNode wrapping this object, if not already a RenderNode
+     * @return {SceneGraphNode} Wrapped node
      */
     Context.prototype.add = function add() {
         return RootNode.prototype.add.apply(this._node, arguments);
     };
 
     /**
-     * Move this Context to another containing document element.
-     *
-     * @method migrate
-     *
-     * @param {Node} container Element to which content will be migrated
-     */
-    Context.prototype.migrate = function migrate(container) {
-        if (container === this.container) return;
-        this.container = container;
-        this.allocator.migrate(container);
-    };
-
-    /**
-     * Gets viewport size for Context.
+     * Gets DOM size for the Context's container.
      *
      * @method getSize
-     *
-     * @return {Array.Number} viewport size as [width, height]
+     * @return {Array.Number} Container size provided as [width, height]
      */
     Context.prototype.getSize = function getSize() {
         return this._size;
     };
 
     /**
-     * Sets viewport size for Context.
+     * Sets DOM size for the Context's container.
      *
      * @method setSize
-     *
-     * @param {Array.Number} size [width, height].  If unspecified, use size of root document element.
+     * @param size {Array.Number} Size provided as [width, height]
      */
     Context.prototype.setSize = function setSize(size) {
         if (this._size == size) return;
@@ -154,10 +124,10 @@ define(function(require, exports, module) {
     };
 
     /**
-     * Get current perspective of this context in pixels.
+     * Get current perspective of this Context in pixels.
      *
      * @method getPerspective
-     * @return {Number} depth perspective in pixels
+     * @return {Number} Perspective in pixels
      */
     Context.prototype.getPerspective = function getPerspective() {
         return this._perspective.get();
@@ -167,14 +137,24 @@ define(function(require, exports, module) {
      * Set current perspective of this context in pixels.
      *
      * @method setPerspective
-     * @param {Number} perspective in pixels
-     * @param {Object} transition object for applying the change
-     * @param {Function} callback function called on completion of transition
+     * @param perspective {Number}  Perspective in pixels
+     * @param [transition] {Object} Transition definition
+     * @param [callback] {Function} Callback executed on completion of transition
      */
     Context.prototype.setPerspective = function setPerspective(perspective, transition, callback) {
         this._perspective.set(perspective, transition, callback);
     };
 
+    /**
+     * Commits the CSS properties of perspective and size if they have changed.
+     *  Then commits the contents of the Context's RootNode.
+     *  This is called by Engine every frame when some layout or size data has changed.
+     *
+     * @method setPerspective
+     * @param perspective {Number}  Perspective in pixels
+     * @param [transition] {Object} Transition definition
+     * @param [callback] {Function} Callback executed on completion of transition
+     */
     Context.prototype.commit = function(){
         if (this._perspectiveDirty){
             _setPerspective.call(this, this.container, this.getPerspective());
@@ -187,6 +167,25 @@ define(function(require, exports, module) {
         }
 
         this._node.commit(this.allocator);
+    };
+
+    function _getElementSize(element) {
+        return [element.clientWidth, element.clientHeight];
+    }
+
+    function _setElementSize(element, size) {
+        element.style.width = size[0] + 'px';
+        element.style.height = size[1] + 'px';
+    }
+
+    var usePrefix = !('perspective' in document.documentElement.style);
+
+    var _setPerspective = usePrefix
+        ? function _setPerspective(element, perspective) {
+        element.style.webkitPerspective = perspective ? perspective.toFixed() + 'px' : '';
+    }
+        : function _setPerspective(element, perspective) {
+        element.style.perspective = perspective ? perspective.toFixed() + 'px' : '';
     };
 
     module.exports = Context;
