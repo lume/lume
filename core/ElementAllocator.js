@@ -11,14 +11,16 @@
 define(function(require, exports, module) {
 
     /**
-     * Internal helper object to Context that handles the process of
-     *   creating and allocating DOM elements within a managed div.
-     *   Private.
+     * Handles creating, allocating and removing DOM elements within a provided DOM element.
+     *  Manages a pool of nodes based on DOM tagName for DOM node reuse.
+     *  When a Surface is deallocated, its element is cleared and put back in the pool.
+     *  When a Surface is allocated, an existing cleared element of the same tagName is
+     *  looked for. If it is not found, a new DOM element is created.
      *
      * @class ElementAllocator
      * @constructor
      * @private
-     * @param {Node} container document element in which Famo.us content will be inserted
+     * @param container {Node} DOM element
      */
     function ElementAllocator(container) {
         if (!container) container = document.createDocumentFragment();
@@ -27,12 +29,10 @@ define(function(require, exports, module) {
     }
 
     /**
-     * Move the document elements from their original container to a new one.
+     * Move the DOM elements from their original container to a new one.
      *
-     * @private
      * @method migrate
-     *
-     * @param {Node} container document element to which Famo.us content will be migrated
+     * @param container {Node} DOM element
      */
     ElementAllocator.prototype.migrate = function migrate(container) {
         var oldContainer = this.container;
@@ -50,11 +50,9 @@ define(function(require, exports, module) {
     /**
      * Allocate an element of specified type from the pool.
      *
-     * @private
      * @method allocate
-     *
-     * @param {string} type type of element, e.g. 'div'
-     * @return {Node} allocated document element
+     * @param type {string} DOM tagName, e.g., "div"
+     * @return {Node}
      */
     ElementAllocator.prototype.allocate = function allocate(type) {
         type = type.toLowerCase();
@@ -72,10 +70,8 @@ define(function(require, exports, module) {
     /**
      * De-allocate an element of specified type to the pool for recycling.
      *
-     * @private
      * @method deallocate
-     *
-     * @param {Node} element document element to deallocate
+     * @param element {Node} DOM element
      */
     ElementAllocator.prototype.deallocate = function deallocate(element) {
         var nodeType = element.nodeName.toLowerCase();
