@@ -177,11 +177,13 @@ SinglyLinkedList.prototype.recycle = function() {
 
   // Move all our objects to the object pool
   if (this.head) {
-    if (elementPool.tail)
+    if (elementPool.tail) {
       elementPool.tail.next = this.head;
-    else
+      elementPool.tail = this;
+    } else {
       elementPool.head = this.head;
-    elementPool.tail = this.tail;
+      elementPool.tail = this.tail;
+    }
     // this.head = this.tail = null; - happens on init
   }
 };
@@ -242,9 +244,18 @@ SinglyLinkedList.prototype.toArray = function(index) {
  *                          func(data).  may return `false`
  *                          to break the loop.
  */
-SinglyLinkedList.prototype.forEach = function(func, context) {
+SinglyLinkedList.prototype.forEach = function(func, context, data) {
   for (var current = this.head; current; current = current.next)
-    if (func.call(context, current.data) === false) break;
+    if (func.call(context, current.data, data) === false) break;
+};
+
+/*
+ * If your list contains just functions, this is a shortcut to
+ * run them all.
+ */
+SinglyLinkedList.prototype.forEachCall = function(context, arg) {
+  for (var current = this.head; current; current = current.next)
+    current.data.call(context, arg);
 };
 
 /*
