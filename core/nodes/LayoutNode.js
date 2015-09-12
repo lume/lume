@@ -7,13 +7,13 @@ define(function(require, exports, module) {
     var Observable = require('samsara/core/Observable');
 
     /**
-     * Encapsulates a stream of layout specs (transform, origin, align, opacity).
+     * Encapsulates a stream of layout data (transform, origin, align, opacity).
      *  Listens on start/update/end events, batches them, and emits them downstream
      *  to descendant layout nodes.
      *
      * @class LayoutNode
      * @constructor
-     * @param sources {Object}  Object size spec
+     * @param sources {Object}  Object of layout sources
      */
 
     function LayoutNode(sources) {
