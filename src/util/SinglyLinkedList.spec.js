@@ -66,25 +66,37 @@ describe('SinglyLinkedList pooling', function() {
   });
 
   it('should be recyclable', function() {
-    expect(this.listPool.head).toBe(null);
-    expect(this.elementPool.head).toBe(null);
-    expect(this.listPool.tail).toBe(null);
-    expect(this.elementPool.tail).toBe(null);
+    var stats = SinglyLinkedList.stats();
+    expect(stats.lists).toBe(0);
+    expect(stats.elements).toBe(0);
+    expect(stats.pooledLists).toBe(0);
+    expect(stats.pooledElements).toBe(0);
 
     var list1 = SinglyLinkedList();
     list1.push('A'); list1.push('B');
+
+    stats = SinglyLinkedList.stats();
+    expect(stats.lists).toBe(1);
+    expect(stats.elements).toBe(2);
+    expect(stats.pooledLists).toBe(0);
+    expect(stats.pooledElements).toBe(0);
+
     list1.recycle();
 
-    expect(this.elementPool.head.data).toBe('A');
-    expect(this.elementPool.tail.data).toBe('B');
+    stats = SinglyLinkedList.stats();
+    expect(stats.lists).toBe(1);
+    expect(stats.elements).toBe(3);  // one to store the recycled List
+    expect(stats.pooledLists).toBe(1);
+    expect(stats.pooledElements).toBe(2);
 
     var list2 = SinglyLinkedList();
     list2.push('A'); list2.push('B');
 
-    expect(this.listPool.head).toBe(null);
-    expect(this.elementPool.head).toBe(null);
-    expect(this.listPool.tail).toBe(null);
-    expect(this.elementPool.tail).toBe(null);
+    stats = SinglyLinkedList.stats();
+    expect(stats.lists).toBe(1);
+    expect(stats.elements).toBe(3);
+    expect(stats.pooledLists).toBe(0);
+    expect(stats.pooledElements).toBe(1);
   });
 
   it('recycleUntil', function() {

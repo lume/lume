@@ -14,6 +14,7 @@ class Component {
       throw new Error("Did you mean to (Class).instance(options)?");
 
     this.init(options);
+    log.debug("New " + this.constructor.name + " Component #" + this._id);
   }
 
   init(options) {
@@ -95,7 +96,7 @@ class Component {
   onEvent(event, sender /*, arguments */) {
     // Extra if, because computing the log message is a little expensive
     if (log.level === 'trace') {
-      let args = Array.prototype.slice(arguments, 2);
+      let args = Array.prototype.slice.call(arguments, 2);
       log.trace('[Frame ' + Component.loop._currentFrame + '] '
         + this.constructor.name + ' #' + this._id + ' received "'
         + Event[event] + '" from ' + sender.constructor.name

@@ -1,5 +1,3 @@
-import log from './log';
-
 /*
  * SinglyLinkedList Pool
  *
@@ -36,11 +34,16 @@ import log from './log';
  * recycled lists and elements from the pool, via SinglyLinkedList().
  */
 
+import log from './log';
+
 // These will become SinglyLinkedList()'s after the class is defined.
 let listPool = null;
 let elementPool = null;
 
-/*
+let listCount = 0;
+let elementCount = 0;
+
+/**
  * Supply a clean SinglyLinkedListElement with the given data, from
  * the pool (if a recycled element is available) otherwise from a
  * new instance.  The object looks like this:
@@ -55,19 +58,20 @@ let elementPool = null;
 let SinglyLinkedListElement = function(data) {
   if (!(this instanceof SinglyLinkedListElement)) {
     // called without 'new'
-    let el = elementPool && elementPool.shiftElement();
+    let el = elementPool.shiftElement();
     //return el && el.init(data) || new SinglyLinkedListElement(data);
     if (el)
       return el.init(data);
     el = new SinglyLinkedListElement(data);
     log.trace('New SinglyLinkedListElement instance', el);
+    elementCount++;
     return el;
   }
   // call with 'new', a new instantiation
   this.init(data);
 };
 
-/*
+/**
  * Sets the initial state of an element, called on both new
  * instantiations and recycled elements.  In the case of the
  * latter, where actual garbage is created.
@@ -81,7 +85,7 @@ SinglyLinkedListElement.prototype.init = function(data) {
   return this;
 };
 
-/*
+/**
  * Supplies a clean SinglyLinkedList, from the pool if a recycled list
  * is available, else from a new instance.  The object looks like this:
  *
@@ -93,12 +97,13 @@ SinglyLinkedListElement.prototype.init = function(data) {
  */
 let SinglyLinkedList = function() {
   if (!(this instanceof SinglyLinkedList)) {
-    let list = listPool && listPool.shift();
+    let list = listPool.shift();
     //return list && list.init() || new SinglyLinkedList();
     if (list)
       return list.init();
     list = new SinglyLinkedList();
     log.trace('New SinglyLinkedList instance', list);
+    listCount++;
     return list;
   }
   this.init();
@@ -111,7 +116,7 @@ SinglyLinkedList.prototype.init = function() {
   return this;
 };
 
-/*
+/**
  * Reset the "current" index of the list to the beginning / head,
  * for use with getNext()
  */
@@ -119,7 +124,7 @@ SinglyLinkedList.prototype.reset = function() {
   this.current = this.head;
 };
 
-/*
+/**
  * Returns the data of the next element in the list, or the first
  * element if it has never been called before.  The index can be
  * reset with the reset() method.
@@ -140,7 +145,7 @@ SinglyLinkedList.prototype.getNext = function() {
   return null;
 };
 
-/*
+/**
  * Push data to the end / tail of the list
  * @param {object} data - the data to store
  */
@@ -154,7 +159,7 @@ SinglyLinkedList.prototype.push = function(data) {
   this.tail = el;
 };
 
-/*
+/**
  * Returns and removes the first ELEMENT (not data) in the list.
  * Use shift() to get the actaul data.
  *
@@ -172,18 +177,29 @@ SinglyLinkedList.prototype.shiftElement = function() {
   return el;
 };
 
-/*
+/**
  * Removes the first element of the list and returns it's data.
  * Use shiftElement() to get the actual element.
  *
  * @returns {object} - the data stored in the first element
  */
 SinglyLinkedList.prototype.shift = function() {
-  var el = this.shiftElement();
-  return el && el.data;
+  if (!this.head)
+    return null;
+
+  let el = this.head;
+  this.head = el.next;
+  if (!el.next)
+    this.tail = null;
+
+  // recycle the element
+  el.next = elementPool.head;
+  elementPool.head = el;
+
+  return el.data;
 };
 
-/*
+/**
  * Call this before dropping your references to a list.  We pool previously
  * created instances and hand them back to you via SingleLinkedList();
  */
@@ -203,7 +219,7 @@ SinglyLinkedList.prototype.recycle = function() {
   }
 };
 
-/*
+/**
  * Instead of recycling the entire list, this will recycle all the
  * elements from the head of a list up to and including the given element.
  *
@@ -218,27 +234,15 @@ SinglyLinkedList.prototype.recycleUntil = function(target) {
     elementPool.head = this.head;
     elementPool.tail = target;
   }
+
+  // Fix references in this list
   this.head = target.next;
   target.next = null;
   if (this.tail === target)
     this.tail = null;
-
-  /*
-  var newList = SinglyLinkedList();
-
-  newList.head = this.head;
-  this.head = target.next;
-  if (this.tail === target)
-    this.tail = null;
-
-  newList.tail = target;
-  target.next = null;
-
-  newList.recycle();
-  */
 };
 
-/*
+/**
  * Get the data from the given index.  Computationally expensive.  Useful
  * for testing, but if you find yourself using this often, consider using
  * a regular array.
@@ -252,7 +256,18 @@ SinglyLinkedList.prototype.get = function(index) {
   return null;
 };
 
-/*
+/**
+ * Counts the number of elements in the list.  Computationally
+ * expensive.  Useful for testing, but if you find yourself using
+ * this often, consider using a regular array.
+ */
+SinglyLinkedList.prototype.count = function() {
+  var i, current;
+  for (i=0, current=this.head; current; i++, current=current.next);
+  return i;
+}
+
+/**
  * Builds and returns an array version of the list.  Computationally
  * expensive, useful for testing, but if you find yourself using this
  * often, consider using a regular array.
@@ -264,7 +279,7 @@ SinglyLinkedList.prototype.toArray = function(index) {
   return arr;
 };
 
-/*
+/**
  * Cheaply iterates over data in the list using the given
  * function.  For high traffic, ensure the function is
  * declared once, permanently, and not constructed inside
@@ -281,7 +296,7 @@ SinglyLinkedList.prototype.forEach = function(func, context, data) {
     if (func.call(context, current.data, data) === false) break;
 };
 
-/*
+/**
  * If your list contains just functions, this is a shortcut to
  * run them all.
  */
@@ -293,8 +308,8 @@ SinglyLinkedList.prototype.forEachCall = function(context, arg) {
 /*
  * Oh look!  A data structure that maintains itself with itself ^_^
  */
-listPool = SinglyLinkedList();
-elementPool = SinglyLinkedList();
+listPool = new SinglyLinkedList();
+elementPool = new SinglyLinkedList();
 
 // to avoid a circular dependency, let's set this up later & optionally
 let trash = function() { };
@@ -303,7 +318,30 @@ SinglyLinkedList.prototype.setTrashFunc = function(func) {
 }
 
 // useful for testing
-SinglyLinkedList._setListPool = function(_listPool) { listPool = _listPool; }
-SinglyLinkedList._setElementPool = function(_elementPool) { elementPool = _elementPool; }
+SinglyLinkedList._listPool = listPool;
+SinglyLinkedList._elementPool = elementPool;
+SinglyLinkedList._listCount = listCount;
+SinglyLinkedList._elementCount = elementCount;
+SinglyLinkedList._setListPool = function(_listPool) {
+  listPool = _listPool;
+  listCount = 0;
+}
+SinglyLinkedList._setElementPool = function(_elementPool) {
+  elementPool = _elementPool;
+  elementCount = 0;
+}
+
+SinglyLinkedList.stats = function() {
+  var listPoolCount = listPool.count();
+  var elementPoolCount = elementPool.count();
+  return {
+    lists: listCount,
+    pooledLists: listPoolCount,
+    busyLists: (listCount - listPoolCount),
+    elements: elementCount,
+    pooledElements: elementPoolCount,
+    busyElements: (elementCount - elementPoolCount)
+  };
+}
 
 export default SinglyLinkedList;

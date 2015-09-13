@@ -110,6 +110,7 @@ class FrameLoop {
           completed = false;
           break;
         }
+
       }
 
       if (completed) {
