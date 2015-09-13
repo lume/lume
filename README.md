@@ -89,7 +89,7 @@ If you want to help on this project, join the community on the infamous/boxer Gi
 
 ##What's Needed
 
-* Update Queue for Nodes in a Scene
+* Update Queue
 * Component API
 * DOM Component
 * Three.js Mesh Component
