@@ -1,6 +1,6 @@
 var Node = function(conf){
     if(conf){
-        this.setProperties(conf);
+        this.serialize(conf);
     } else {
         this.setDefaults();
     }
@@ -11,15 +11,18 @@ Node.prototype.setDefaults = function(conf){
     this.origin = [0.0,0.0,0.0];
     this.align = [0.0,0.0,0.0];
     this.size = [0,0,0];
+    this.rotate = [0,0,0];
     this.opacity = 1.0;
 };
 
-Node.prototype.setProperties = function(conf){
-    this.position = conf.position || [0,0,0];
-    this.origin = conf.origin || [0.0,0.0,0.0];
-    this.align = conf.align || [0.0,0.0,0.0];
-    this.size = conf.size || [0,0,0];
-    this.opacity = conf.opacity || 1.0;
+Node.prototype.serialize = function(conf){
+    this.id = conf.id ? conf.id : null;
+    this.position = conf.position ? conf.position : [0,0,0];
+    this.origin = conf.origin ? conf.origin : [0.0,0.0,0.0];
+    this.align = conf.align ? conf.align : [0.0,0.0,0.0];
+    this.size = conf.size ? conf.size : [0,0,0];
+    this.rotate = conf.rotate ? conf.rotate : [0,0,0];
+    this.opacity = conf.opacity ? conf.opacity : 1.0;
 };
 
 Node.prototype.getProperties = function(){
@@ -28,6 +31,7 @@ Node.prototype.getProperties = function(){
         origin: this.origin,
         align: this.align,
         size: this.size,
+        rotate: this.rotate,
         opacity: this.opacity
     }
 };
@@ -62,6 +66,14 @@ Node.prototype.setAlign = function(align){
 
 Node.prototype.getAlign = function(){
     return this.align;
+}
+
+Node.prototype.setRotation = function(rotation){
+    this.rotation = rotation;
+}
+
+Node.prototype.getRotation = function(){
+    return this.rotation;
 }
 
 Node.prototype.setOpacity = function(opacity){

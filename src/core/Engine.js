@@ -1,14 +1,17 @@
 var Clock = require('./Clock');
 
 var Engine = function(){
+
     this._clock = new Clock();
     this._worker = null;
+
 }
 
 Engine.prototype.init = function(worker){
     window.requestAnimationFrame(this.tick.bind(this));
     if(worker){
         this._worker = worker;
+        this._worker.postMessage({init:'done'});
     }
 }
 
