@@ -1,5 +1,7 @@
 #Boxer Engine
 
+[![Join the chat at https://gitter.im/infamous/boxer](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/infamous/boxer?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
+
 ##A proposal for the new API used by the Infamous Community.
 
 The goal of this project is to create a scene graph that is minimal with components that are abstracted enough to be swapped out.
