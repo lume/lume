@@ -10,6 +10,7 @@
 
 define(function(require, exports, module) {
     var Context = require('./Context');
+    var Transform = require('./Transform');
     var EventHandler = require('./EventHandler');
     var ResizeStream = require('samsara/streams/ResizeStream');
     var preTickQueue = require('./queues/preTickQueue');
@@ -19,14 +20,23 @@ define(function(require, exports, module) {
     var tickQueue = require('./queues/tickQueue');
     var Stream = require('samsara/streams/Stream');
 
+    var containerType = 'div';
+    var containerClass = 'samsara-context';
     var contexts = [];
-    var rafId;
+    var rafId = 0;
     var eventForwarders = {};
     var listenOnTick = false;
     var size = new EventHandler();
-    var containerType = 'div';
-    var containerClass = 'samsara-context';
+    var layout = new EventHandler();
     var eventHandler = new EventHandler();
+
+    var layoutSpec = {
+        transform : Transform.identity,
+        opacity : 1,
+        origin : null,
+        align : null,
+        nextSizeTransform : Transform.identity
+    };
 
     /**
      * Engine is a singleton object that is required to run a Samsara application.
@@ -36,6 +46,7 @@ define(function(require, exports, module) {
      *   It also listens and can respond to DOM events on the HTML <body> tag.
      *
      * @class Engine
+     * @uses EventHandler
      */
     var Engine = {};
 
@@ -106,7 +117,8 @@ define(function(require, exports, module) {
      * @param context {Context}     Context to register
      */
     Engine.registerContext = function registerContext(context) {
-        context.size.subscribe(size);
+        context._size.subscribe(size);
+        context._layout.subscribe(layout);
         contexts.push(context);
     };
 
@@ -120,6 +132,7 @@ define(function(require, exports, module) {
     Engine.deregisterContext = function deregisterContext(context) {
         var i = contexts.indexOf(context);
         context.size.unsubscribe(size);
+        context.layout.unsubscribe(layout);
         if (i >= 0) contexts.splice(i, 1);
     };
 
@@ -167,12 +180,9 @@ define(function(require, exports, module) {
     function start(){
         preTickQueue.push(function start(){
             handleResize();
-            for (var i = 0; i < contexts.length; i++)
-                contexts[i].trigger('start');
-
+            layout.emit('start', layoutSpec);
             dirtyQueue.push(function(){
-                for (var i = 0; i < contexts.length; i++)
-                    contexts[i].trigger('end');
+                layout.emit('end', layoutSpec);
             });
         });
 

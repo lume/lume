@@ -12,7 +12,6 @@ define(function(require, exports, module) {
     var RootNode = require('./nodes/RootNode');
     var EventHandler = require('./EventHandler');
     var ElementAllocator = require('./ElementAllocator');
-    var Transform = require('./Transform');
     var Transitionable = require('./Transitionable');
     var dirtyQueue = require('samsara/core/queues/dirtyQueue');
     var ResizeStream = require('samsara/streams/ResizeStream');
@@ -38,47 +37,35 @@ define(function(require, exports, module) {
 
         this._node = new RootNode();
 
-        this._size = _getElementSize(this.container);
+        this.size = _getElementSize(this.container);
         this._sizeDirty = false;
-        this.size = new EventHandler();
+
+        this._size = new EventHandler();
+        this._layout = new EventHandler();
+
+        var DOMSizeMapper = new EventMapper(function(){
+            return _getElementSize(this.container);
+        }.bind(this));
+
+        this._node._size.subscribe(DOMSizeMapper).subscribe(this._size);
+        this._node._layout.subscribe(this._layout);
 
         this._perspective = new Transitionable(0);
         this._perspectiveDirty = false;
 
-        this._perspective.on('update', function(value){
+        //TODO: fix this hack
+        this._perspective.on('update', function(){
             this._perspectiveDirty = true;
         }.bind(this));
 
-        this._perspective.on('end', function(value){
+        this._perspective.on('end', function(){
             this._perspectiveDirty = true;
         }.bind(this));
-
-        this._nodeContext = {
-            transform : Transform.identity,
-            opacity : 1,
-            origin : null,
-            align : null,
-            nextSizeTransform : Transform.identity
-        };
 
         this._eventInput = new EventHandler();
         this._eventOutput = new EventHandler();
         EventHandler.setInputHandler(this, this._eventInput);
         EventHandler.setOutputHandler(this, this._eventOutput);
-
-        //TODO: put nodeContext in Engine and subscribe?
-        this._eventInput.on('start', function(){
-            this._node._layout.trigger('start', this._nodeContext);
-        }.bind(this));
-
-        this._eventInput.on('end', function(){
-            this._node._layout.trigger('end', this._nodeContext);
-        }.bind(this));
-
-        this.size.on('resize', function(){
-            var size = _getElementSize(this.container);
-            this._node._size.emit('resize', size);
-        }.bind(this));
     }
 
     /**
@@ -101,7 +88,7 @@ define(function(require, exports, module) {
      * @return {Array.Number} Container size provided as [width, height]
      */
     Context.prototype.getSize = function getSize() {
-        return this._size;
+        return this.size;
     };
 
     /**
@@ -111,15 +98,15 @@ define(function(require, exports, module) {
      * @param size {Array.Number} Size provided as [width, height]
      */
     Context.prototype.setSize = function setSize(size) {
-        if (this._size == size) return;
-        this._size[0] = size[0];
-        this._size[1] = size[1];
+        if (this.size == size) return;
+        this.size[0] = size[0];
+        this.size[1] = size[1];
         this._sizeDirty = true;
 
         this.emit('resize', size);
-        this.size.trigger('resize', size);
+        this._size.trigger('resize', size);
         dirtyQueue.push(function(){
-            this._node._size.emit('resize', size);
+            this._size.trigger('resize', size);
         }.bind(this));
     };
 

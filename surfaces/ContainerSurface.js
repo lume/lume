@@ -15,6 +15,15 @@ define(function(require, exports, module) {
     var EventHandler = require('samsara/core/EventHandler');
     var dirtyQueue = require('samsara/core/queues/dirtyQueue');
     var preTickQueue = require('samsara/core/queues/preTickQueue');
+    var Transform = require('samsara/core/Transform');
+
+    var layoutSpec = {
+        transform : Transform.identity,
+        opacity : 1,
+        origin : null,
+        align : null,
+        nextSizeTransform : Transform.identity
+    };
 
     /**
      * ContainerSurface is an object designed to contain surfaces and
@@ -47,8 +56,6 @@ define(function(require, exports, module) {
         this.context = new Context(this._container);
         this.setContent(this._container);
 
-        this._eventInput.subscribe(this.context);
-
         this.size.on('resize', function(){
             var size = _getElementSize(this._container);
             this.context.setSize(size);
@@ -56,9 +63,9 @@ define(function(require, exports, module) {
         }.bind(this));
 
         preTickQueue.push(function(){
-            this.context.trigger('start');
+            this.context._layout.trigger('start', layoutSpec);
             dirtyQueue.push(function(){
-                this.context.trigger('end');
+                this.context._layout.trigger('end', layoutSpec);
             }.bind(this));
         }.bind(this));
     }
