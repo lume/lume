@@ -10,9 +10,6 @@
 
 define(function(require, exports, module) {
     var ElementOutput = require('samsara/core/ElementOutput');
-    var dirtyQueue = require('samsara/core/queues/dirtyQueue');
-    var postTickQueue = require('samsara/core/queues/postTickQueue');
-    var preTickQueue = require('samsara/core/queues/preTickQueue');
 
     /**
      * A base class for viewable content and event
@@ -31,11 +28,8 @@ define(function(require, exports, module) {
      * @param {string} [options.content] inner (HTML) content of surface
      */
     function Surface(options) {
-        ElementOutput.call(this);
-
         this.properties = {};
         this.attributes = {};
-        this.template = null;
         this.content = '';
 
         this._classesDirty = true;
@@ -49,7 +43,11 @@ define(function(require, exports, module) {
         this.classList = [];
         this._dirtyClasses = [];
 
-        if (options) this.setOptions(options);
+        if (options) {
+            ElementOutput.call(this, options.el);
+            this.setOptions(options);
+        }
+        else ElementOutput.call(this);
     }
 
     Surface.prototype = Object.create(ElementOutput.prototype);
@@ -199,19 +197,6 @@ define(function(require, exports, module) {
         return this.classList;
     };
 
-    Surface.prototype.setTemplate = function setTemplate(template){
-        this.template = template;
-    };
-
-    Surface.prototype.getTemplate = function getTemplate(){
-        return this.template;
-    };
-
-    Surface.prototype.compile = function compile(data){
-        if (!this.template) return;
-        this.setContent(this.template(data));
-    };
-
     /**
      * Set or overwrite inner (HTML) content of this surface. Note that this
      *    causes a re-rendering if the content has changed.
@@ -256,16 +241,9 @@ define(function(require, exports, module) {
         if (options.properties !== undefined) this.setProperties(options.properties);
         if (options.attributes !== undefined) this.setAttributes(options.attributes);
         if (options.content !== undefined) this.setContent(options.content);
-        if (options.template !== undefined) this.setTemplate(options.template);
         if (options.proportions !== undefined) this.setProportions(options.proportions);
         if (options.margins !== undefined) this.setMargins(options.margins);
     };
-
-    //  Apply to document all changes from removeClass() since last setup().
-    function _cleanupClasses(target) {
-        for (var i = 0; i < this._dirtyClasses.length; i++) target.classList.remove(this._dirtyClasses[i]);
-        this._dirtyClasses = [];
-    }
 
     // Apply values of all Famous-managed styles to the document element.
     //  These will be deployed to the document on call to #setup().
@@ -281,13 +259,6 @@ define(function(require, exports, module) {
             target.style[key] = this.properties[key];
     }
 
-    // Clear all Famous-managed styles from the document element.
-    // These will be deployed to the document on call to #setup().
-    function _cleanupStyles(target) {
-        for (var key in this.properties)
-            target.style[key] = '';
-    }
-
     // Apply values of all Famous-managed attributes to the document element.
     //  These will be deployed to the document on call to #setup().
     function _applyAttributes(target) {
@@ -295,9 +266,22 @@ define(function(require, exports, module) {
             target.setAttribute(key, this.attributes[key]);
     }
 
+    //  Apply to document all changes from removeClass() since last setup().
+    function _removeClasses(target) {
+        for (var i = 0; i < this._dirtyClasses.length; i++) target.classList.remove(this._dirtyClasses[i]);
+        this._dirtyClasses = [];
+    }
+
+    // Clear all Famous-managed styles from the document element.
+    // These will be deployed to the document on call to #setup().
+    function _removeStyles(target) {
+        for (var key in this.properties)
+            target.style[key] = '';
+    }
+
     // Clear all Famous-managed attributes from the document element.
     // These will be deployed to the document on call to #setup().
-    function _cleanupAttributes(target) {
+    function _removeAttributes(target) {
         for (var key in this.attributes)
             target.removeAttribute(key);
     }
@@ -339,55 +323,14 @@ define(function(require, exports, module) {
     };
 
     /**
-     * Apply changes from this component to the corresponding document element.
-     * This includes changes to classes, styles, size, content, opacity, origin,
-     * and matrix transforms.
-     *
-     * @private
-     * @method commit
-     * @param {Spec} spec commit context
-     */
-    Surface.prototype.commit = function commit(spec, allocator) {
-        if (!this._currentTarget) this.setup(allocator);
-
-        var target = this._currentTarget;
-
-        if (this._contentDirty) {
-            this.deploy(target);
-            this._contentDirty = false;
-            this._sizeDirty = true;
-        }
-
-        if (this._classesDirty) {
-            _cleanupClasses.call(this, target);
-            _applyClasses.call(this, target);
-            this._classesDirty = false;
-            this._sizeDirty = true;
-        }
-
-        if (this._stylesDirty) {
-            _applyStyles.call(this, target);
-            this._stylesDirty = false;
-            this._sizeDirty = true;
-        }
-
-        if (this._attributesDirty) {
-            _applyAttributes.call(this, target);
-            this._attributesDirty = false;
-        }
-
-        ElementOutput.prototype.commit.call(this, spec);
-    };
-
-    /**
      *  Remove all Famous-relevant attributes from a document element.
      *    This is called by the Context if the Surface is no longer rendered.
      *
      * @private
-     * @method cleanup
+     * @method remove
      * @param {ElementAllocator} allocator
      */
-    Surface.prototype.cleanup = function cleanup(allocator) {
+    Surface.prototype.remove = function remove(allocator) {
         var target = this._currentTarget;
 
         // cache the target's contents for later deployment
@@ -400,9 +343,9 @@ define(function(require, exports, module) {
         target.style.height = '';
 
         // clear all styles, classes and attributes
-        _cleanupStyles.call(this, target);
-        _cleanupAttributes.call(this, target);
-        _cleanupClasses.call(this, target);
+        _removeStyles.call(this, target);
+        _removeAttributes.call(this, target);
+        _removeClasses.call(this, target);
 
         // garbage collect current target and remove bound event listeners
         this.detach();
@@ -462,33 +405,74 @@ define(function(require, exports, module) {
      */
     Surface.prototype.setSize = function setSize(size) {
         this._cachedSize = size;
-        this.sizeNode.set({size : size});
+        this._sizeNode.set({size : size});
         this._sizeDirty = true;
         _setDirty.call(this);
     };
 
     Surface.prototype.setProportions = function setProportions(proportions) {
-        this.sizeNode.set({proportions : proportions});
+        this._sizeNode.set({proportions : proportions});
         this._sizeDirty = true;
         _setDirty.call(this);
     };
 
     Surface.prototype.setMargins = function setMargins(margins) {
-        this.sizeNode.set({margins : margins});
+        this._sizeNode.set({margins : margins});
         this._sizeDirty = true;
         _setDirty.call(this);
     };
 
     Surface.prototype.setOrigin = function setOrigin(origin){
-        this.layoutNode.set({origin : origin});
+        this._layoutNode.set({origin : origin});
         this._originDirty = true;
         _setDirty.call(this);
     };
 
     Surface.prototype.setOpacity = function setOpacity(opacity){
-        this.layoutNode.set({opacity : opacity});
+        this._layoutNode.set({opacity : opacity});
         this._opacityDirty = true;
         _setDirty.call(this);
+    };
+
+    /**
+     * Apply changes from this component to the corresponding document element.
+     * This includes changes to classes, styles, size, content, opacity, origin,
+     * and matrix transforms.
+     *
+     * @private
+     * @method commit
+     * @param {Spec} spec commit context
+     */
+    Surface.prototype.commit = function commit(spec, allocator) {
+        if (!this._currentTarget) this.setup(allocator);
+
+        var target = this._currentTarget;
+
+        if (this._contentDirty) {
+            this.deploy(target);
+            this._contentDirty = false;
+            this._sizeDirty = true;
+        }
+
+        if (this._classesDirty) {
+            _removeClasses.call(this, target);
+            _applyClasses.call(this, target);
+            this._classesDirty = false;
+            this._sizeDirty = true;
+        }
+
+        if (this._stylesDirty) {
+            _applyStyles.call(this, target);
+            this._stylesDirty = false;
+            this._sizeDirty = true;
+        }
+
+        if (this._attributesDirty) {
+            _applyAttributes.call(this, target);
+            this._attributesDirty = false;
+        }
+
+        ElementOutput.prototype.commit.call(this, spec);
     };
 
     module.exports = Surface;
