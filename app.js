@@ -29,8 +29,9 @@ var scene = {
     }]
 };
 
-SceneWorker.postMessage(scene);
+SceneWorker.postMessage(scene); // Adds Nodes to the Scene.
 SceneWorker.postMessage({graph:true}); // send message to Scene Worker to retrieve current Graph.
+//TODO: Make a better API for this.
 
 
 SceneWorker.onmessage = function(e) {
