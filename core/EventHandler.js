@@ -12,8 +12,9 @@ define(function(require, exports, module) {
     var EventEmitter = require('./EventEmitter');
 
     /**
-     * EventHandler forwards received events to a set of provided callback functions.
-     * It allows events to be captured, processed, and optionally subscribed from to other event handlers.
+     * EventHandler extends EventEmitter to provide subscription methods.
+     *  It also includes helper methods on the constructor for setting up Controllers and Views
+     *  with input and output emitters.
      *
      * @class EventHandler
      * @extends EventEmitter
@@ -30,13 +31,11 @@ define(function(require, exports, module) {
     EventHandler.prototype.constructor = EventHandler;
 
     /**
-     * Assign an event handler to receive an object's input events.
+     * Constructor helper method. Assign an event handler to receive an object's input events.
      *
      * @method setInputHandler
-     * @static
-     *
-     * @param {Object} object object to mix trigger, subscribe, and unsubscribe functions into
-     * @param {EventHandler} handler assigned event handler
+     * @param object {Object}           Class to provide trigger, subscribe and unsubscribe methods
+     * @param handler {EventHandler}    EventHandler representing an input source
      */
     EventHandler.setInputHandler = function setInputHandler(object, handler) {
         object.trigger = handler.trigger.bind(handler);
@@ -45,13 +44,11 @@ define(function(require, exports, module) {
     };
 
     /**
-     * Assign an event handler to receive an object's output events.
+     * Constructor helper method. Assign an event handler to receive an object's output events.
      *
      * @method setOutputHandler
-     * @static
-     *
-     * @param {Object} object object to mix on, and off functions into
-     * @param {EventHandler} handler assigned event handler
+     * @param object {Object}           Object to provide on, off and emit methods
+     * @param handler {EventHandler}    Handler assigned event handler
      */
     EventHandler.setOutputHandler = function setOutputHandler(object, handler) {
         handler.bindThis(object);
@@ -60,6 +57,14 @@ define(function(require, exports, module) {
         object.off = handler.off.bind(handler);
     };
 
+    /**
+     * Constructor helper method. Given an events dictionary of {eventName : handler} pairs, attach them to
+     *  a provided input handler for an object.
+     *
+     * @method setInputEvents
+     * @param object {Object}           Object to provide on, off and emit methods
+     * @param handler {EventHandler}    Handler assigned event handler
+     */
     EventHandler.setInputEvents = function setInputEvents(object, events, handlerIn){
         for (var key in events) {
             var handlerName = events[key];
@@ -74,10 +79,8 @@ define(function(require, exports, module) {
      * Bind a callback function to an event type handled by this object.
      *
      * @method "on"
-     *
-     * @param {string} type event type key (for example, 'click')
-     * @param {function(string, Object)} handler callback
-     * @return {EventHandler} this
+     * @param type {string}             Event channel name
+     * @param handler {function}        Handler
      */
     EventHandler.prototype.on = function on(type, handler) {
         EventEmitter.prototype.on.apply(this, arguments);
@@ -91,11 +94,10 @@ define(function(require, exports, module) {
     };
 
     /**
-     * Listen for events from an upstream event handler.
+     * Listen for events from an an upstream source.
      *
      * @method subscribe
-     *
-     * @param {EventEmitter} source source emitter object
+     * @param source {EventEmitter} Event source
      */
     EventHandler.prototype.subscribe = function subscribe(source) {
         var index = this.upstream.indexOf(source);
@@ -109,11 +111,11 @@ define(function(require, exports, module) {
     };
 
     /**
-     * Stop listening to events from an upstream event handler.
+     * Stop listening to events from an upstream source.
+     *  Undoes work of `subscribe`.
      *
      * @method unsubscribe
-     *
-     * @param {EventEmitter} source source emitter object
+     * @param source {EventEmitter} Event source
      */
     EventHandler.prototype.unsubscribe = function unsubscribe(source) {
         var index = this.upstream.indexOf(source);
