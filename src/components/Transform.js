@@ -29,7 +29,8 @@ class Transform extends Component {
     this._matrix[13] = this._node.position._position[1];
     this._matrix[14] = this._node.position._position[2];
 
-    this.emit(Event.TRANSFORM_CHANGE);
+    //this.emit(Event.TRANSFORM_CHANGE);
+    this._node._emit(Event.TRANSFORM_CHANGE, this);
     super.update();
   }
 

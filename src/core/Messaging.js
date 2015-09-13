@@ -8,7 +8,9 @@ var Messaging = {
    * over intact to the target thread, which take measures to limit
    * garbage collection.
    */
-  _queue: [],
+  _queue: new Array(50),
+
+  // And this one doesn't change much.
   _receivers: [],
 
   toUI: function(/* arguments */) {

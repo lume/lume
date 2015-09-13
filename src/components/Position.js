@@ -40,7 +40,8 @@ class Position extends Component {
   }
 
   update() {
-    this.emit(Event.POSITION_CHANGE);
+    //this.emit(Event.POSITION_CHANGE);
+    this._node._emit(Event.POSITION_CHANGE, this);
     super.update();
   }
 

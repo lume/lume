@@ -96,15 +96,33 @@ class Component {
     // Extra if, because computing the log message is a little expensive
     if (log.level === 'trace') {
       let args = Array.prototype.slice(arguments, 2);
-      log.trace('Component #' + this._id + ' received "' + Event[event]
-        + '" from component #' + sender._id + ' with: ', args);
+      log.trace('[Frame ' + Component.loop._currentFrame + '] '
+        + this.constructor.name + ' #' + this._id + ' received "'
+        + Event[event] + '" from ' + sender.constructor.name
+        + ' #' + sender._id + ' with: ', args);
     }
 
     this.requestUpdate();
   }
 
+  /*
+  emit(/* , arguments *//*) {
+    // Inject componentInstance as 2nd org
+    var len = arguments.length;
+    var args = new Array(len + 1);
+    for (var i=0, len=arguments.length; i < len; i++) {
+
+    }
+    Array.prototype.splice.call(arguments, 1, 0, this);
+    this._node && this._node._emit.apply(this._node, arguments);
+  }
+  */
+
+
+  // XXX consider avoiding this abstraction for extra function call XXX
   emit(/* , arguments */) {
     // Inject componentInstance as 2nd arg
+    // Note, if we spliced `arguments` directly, it's a v8 deop
     Array.prototype.splice.call(arguments, 1, 0, this);
     this._node && this._node._emit.apply(this._node, arguments);
   }

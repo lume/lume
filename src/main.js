@@ -17,6 +17,9 @@ import DOMElement from './components/DOMElement';
 
 import DOMRenderer from './ui_thread/DOMRenderer';
 
+import Transitionable from './famous/Transitionable';
+import Curves from './famous/Curves';
+
 // for everything in a single thread
 Component.loop = rafLoop;
 rafLoop.onFinish = function() {
@@ -47,6 +50,11 @@ var famin = {
     Position,
     Transform,
     DOMElement
+  },
+
+  transitions: {
+    Transitionable,
+    Curves
   },
 
   ui_thread: {

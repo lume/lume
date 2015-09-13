@@ -1,3 +1,5 @@
+import log from './log';
+
 /*
  * SinglyLinkedList Pool
  *
@@ -54,7 +56,12 @@ let SinglyLinkedListElement = function(data) {
   if (!(this instanceof SinglyLinkedListElement)) {
     // called without 'new'
     let el = elementPool && elementPool.shiftElement();
-    return el && el.init(data) || new SinglyLinkedListElement(data);
+    //return el && el.init(data) || new SinglyLinkedListElement(data);
+    if (el)
+      return el.init(data);
+    el = new SinglyLinkedListElement(data);
+    log.trace('New SinglyLinkedListElement instance', el);
+    return el;
   }
   // call with 'new', a new instantiation
   this.init(data);
@@ -87,7 +94,12 @@ SinglyLinkedListElement.prototype.init = function(data) {
 let SinglyLinkedList = function() {
   if (!(this instanceof SinglyLinkedList)) {
     let list = listPool && listPool.shift();
-    return list && list.init() || new SinglyLinkedList();
+    //return list && list.init() || new SinglyLinkedList();
+    if (list)
+      return list.init();
+    list = new SinglyLinkedList();
+    log.trace('New SinglyLinkedList instance', list);
+    return list;
   }
   this.init();
 };
@@ -154,6 +166,9 @@ SinglyLinkedList.prototype.shiftElement = function() {
 
   let el = this.head;
   this.head = el.next;
+  if (!el.next)
+    this.tail = null;
+
   return el;
 };
 
@@ -179,7 +194,7 @@ SinglyLinkedList.prototype.recycle = function() {
   if (this.head) {
     if (elementPool.tail) {
       elementPool.tail.next = this.head;
-      elementPool.tail = this;
+      elementPool.tail = this.tail;
     } else {
       elementPool.head = this.head;
       elementPool.tail = this.tail;
@@ -195,15 +210,32 @@ SinglyLinkedList.prototype.recycle = function() {
  * @param {SinglyLinkedListElement} target - element to recycle up to (inclusive)
  */
 SinglyLinkedList.prototype.recycleUntil = function(target) {
+  // Move all our objects to the object pool
+  if (elementPool.tail) {
+    elementPool.tail.next = this.head;
+    elementPool.tail = target;
+  } else {
+    elementPool.head = this.head;
+    elementPool.tail = target;
+  }
+  this.head = target.next;
+  target.next = null;
+  if (this.tail === target)
+    this.tail = null;
+
+  /*
   var newList = SinglyLinkedList();
 
   newList.head = this.head;
   this.head = target.next;
+  if (this.tail === target)
+    this.tail = null;
 
   newList.tail = target;
   target.next = null;
 
   newList.recycle();
+  */
 };
 
 /*
@@ -269,5 +301,9 @@ let trash = function() { };
 SinglyLinkedList.prototype.setTrashFunc = function(func) {
   trash = func;
 }
+
+// useful for testing
+SinglyLinkedList._setListPool = function(_listPool) { listPool = _listPool; }
+SinglyLinkedList._setElementPool = function(_elementPool) { elementPool = _elementPool; }
 
 export default SinglyLinkedList;

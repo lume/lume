@@ -2,12 +2,39 @@
   <script src="jspm_packages/system.js"></script>
   <script src="config.js"></script>
   <script>
-    System.import('main');
+    System.import('main').then(function() {
+
+for (var i=0; i < 10; i++) {
+  (function(){
+    var n = new famin.core.Node.instance();
+    n.addComponents(famin.components.DOMElement, famin.components.Position);
+    n.size.setAbsolute(50,50,0);
+    n.position.set(Math.random()*10,Math.random()*50,0);
+    n.dOMElement.setClassName('mary');
+
+    famin.util.log.level = 'debug';
+
+    var dir = 1;
+    var speedX = Math.random()*2;
+    var speedY = Math.random()*2;
+    var x = function() {
+      dir = dir === 1 && n.position._position[1] < 300 || n.position._position[1] < 10 ? 1 : -1;
+      n.position.set(
+        n.position._position[0]+speedX*dir,
+        n.position._position[1]+speedY*dir,
+        0
+      );
+      famin.core.rafLoop.onNextTick(x);
+    };
+    famin.core.rafLoop.onNextTick(x);
+  })();
+}
+    });
   </script>
   <body>
     <style type="text/css">
       .mary { background: rgba(255,100,100,0.5); }
-      html, body { margin: 0; padding: 0; }
+      html, body { margin: 0; padding: 0; width: 100%; height: 100%; overflow: hidden; }
       body { position: absolute; }
     </style>
   </body>

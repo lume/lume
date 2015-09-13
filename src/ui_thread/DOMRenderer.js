@@ -17,19 +17,20 @@ function read() {}
 
 Messaging.on(Event.DOMEL_CREATE, function(id, tagName) {
   map[id] = document.createElement(tagName);
+  map[id].style.position = 'absolute';
   document.body.appendChild(map[id]);
 });
 
-Messaging.on(Event.DOMEL_SIZE, function(id, size) {
+Messaging.on(Event.DOMEL_SIZE, function DOMEL_SIZE(id, size) {
   map[id].style.width = size[0] + 'px';
   map[id].style.height = size[1] + 'px';
 });
 
-Messaging.on(Event.DOMEL_CLASSNAME, function(id, className) {
+Messaging.on(Event.DOMEL_CLASSNAME, function DOMEL_CLASSNAME(id, className) {
   map[id].className = className;
 });
 
-Messaging.on(Event.DOMEL_TRANSFORM, function(id, transform) {
+Messaging.on(Event.DOMEL_TRANSFORM, function DOMEL_TRANSFORM(id, transform) {
   map[id].style.transform = 'matrix3d(' + transform.join(',') + ')';
 });
 

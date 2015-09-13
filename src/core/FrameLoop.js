@@ -21,7 +21,7 @@ class FrameLoop {
 
     this._FPS = 60;
     this._FRAME_DURATION = 1000 / this._FPS;
-    this._THRESHOLD = this._FRAME_DURATION * 0.75;
+    this._THRESHOLD = this._FRAME_DURATION * 0.6;  // browser overhead
 
     this._queue = SinglyLinkedList();      // for upcoming tick
     this._nextQueue = SinglyLinkedList();  // for tick after that
@@ -29,6 +29,7 @@ class FrameLoop {
     this._started = false;
     this._inTick = false;                  // true during step()
     this._exceedCount = 0;
+    this._currentFrame = 0;
 
     // Believe it or not, bind() isn't performant (see CONTRIBUTING.md)
     var self = this;
@@ -82,6 +83,9 @@ class FrameLoop {
   step(timestamp) {
     var current, data, completed = true;
     this._lastFrameStart = timestamp || performance.now();
+    var finishThreshold = this._lastFrameStart + this._THRESHOLD;
+
+    this._currentFrame++;
 
     // Short circuit if the queue is empty
     if (this._queue.head) {
@@ -99,7 +103,7 @@ class FrameLoop {
           this._lastFrameStart);
 
         // If we exceeded the threshold and didn't complete the queue
-        if ( ! this.timeOk() && current.next ) {
+        if ( performance.now() > finishThreshold && current.next ) {
           if (++this._exceedCount === 30)
             log.debug('Didn\'t complete all updates for 30 frames in a row!');
           this._queue.recycleUntil(current);
@@ -107,9 +111,6 @@ class FrameLoop {
           break;
         }
       }
-
-      // while (current = queue.getNext())
-      //  current[0].call(current[1], current[2], timestamp);
 
       if (completed) {
         if (this._exceedCount) {
