@@ -1,4 +1,4 @@
-var SceneWorker = new Worker('src/workers/SceneWorker.js');
+var SceneWorker = new Worker('dist/workers/SceneWorker.js');
 var Engine = boxer.core.Engine;
 var Scene = boxer.core.Scene;
 
@@ -33,10 +33,9 @@ SceneWorker.postMessage(scene);
 SceneWorker.postMessage({graph:true}); // send message to Scene Worker to retrieve current Graph.
 
 
-// TODO: Change for better API? Need to link Scene to receive updates somehow...
-Engine.init(SceneWorker);
-
-
 SceneWorker.onmessage = function(e) {
   console.log(e.data);  // receieve message from Scene Worker that represents current Graph.
 }
+
+// TODO: Change for better API? Need to link Scene to receive updates somehow...
+Engine.init(SceneWorker);
