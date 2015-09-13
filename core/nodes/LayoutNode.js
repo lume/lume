@@ -15,7 +15,6 @@ define(function(require, exports, module) {
      * @constructor
      * @param sources {Object}  Object of layout sources
      */
-
     function LayoutNode(sources) {
         this.stream = _createStream(sources);
         EventHandler.setOutputHandler(this, this.stream);

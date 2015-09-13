@@ -18,7 +18,6 @@ define(function(require, exports, module) {
      *  @class SceneGraphNode
      *  @param object {SizeNode, LayoutNode, Surface, View}
      */
-
     function SceneGraphNode(object) {
         this.sizeStream = null;
         this.layoutStream = null;

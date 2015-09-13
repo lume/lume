@@ -12,7 +12,6 @@ define(function(require, exports, module) {
      * @constructor
      * @extends SceneGraphNode
      */
-
     function RootNode() {
         SceneGraphNode.call(this);
 

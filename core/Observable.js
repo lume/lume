@@ -18,14 +18,15 @@ define(function(require, exports, module) {
     };
 
     Observable.prototype.set = function(value){
+        var self = this;
         preTickQueue.push(function(){
-            this.value = value;
-            this.emit('start', value);
+            self.value = value;
+            self.emit('start', value);
 
             dirtyQueue.push(function(){
-                this.emit('end', value);
-            }.bind(this));
-        }.bind(this))
+                self.emit('end', value);
+            });
+        });
     };
 
     module.exports = Observable;
