@@ -34,7 +34,7 @@ SceneWorker.postMessage({graph:true}); // send message to Scene Worker to retrie
 
 
 SceneWorker.onmessage = function(e) {
-  console.log(e.data);  // receieve message from Scene Worker that represents current Graph.
+  console.log(e.data);  // receive message from Scene Worker that represents current Graph.
 }
 
 // TODO: Change for better API? Need to link Scene to receive updates somehow...
