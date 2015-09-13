@@ -94,5 +94,5 @@ If you want to help on this project, join the community on the infamous/boxer Gi
 * DOM Component
 * Three.js Mesh Component
 * Finish integrating Famous Transitionable
-* Unified UI Event System for Nodes
+* Unified UI Event System for DOM / GL
 * Math Utilities (Vec2, Vec3, Matrix, etc)
