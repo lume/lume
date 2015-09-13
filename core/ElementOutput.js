@@ -16,22 +16,34 @@ define(function(require, exports, module) {
     var SizeNode = require('samsara/core/nodes/SizeNode');
     var LayoutNode = require('samsara/core/nodes/LayoutNode');
     var register = require('samsara/core/register');
-
     var sizeAlgebra = require('samsara/core/algebras/size');
     var layoutAlgebra = require('samsara/core/algebras/layout');
 
+    var usePrefix = !('transform' in document.documentElement.style);
+    var devicePixelRatio = window.devicePixelRatio || 1;
+    var invDevicePixelRatio = 1 / devicePixelRatio;
+    var MIN_OPACITY = 0.0001;
+    var MAX_OPACITY = 0.9999;
+    var EPSILON = 1e-5;
+    var _zeroZero = [0,0];
+
     /**
-     * A base class for viewable content and event
-     *   targets inside a Famo.us application, containing a renderable document
-     *   fragment. Like an HTML div, it can accept internal markup,
-     *   properties, classes, and handle events.
+     * Responsible for committing CSS3 properties to the DOM and providing DOM event hooks
+     *  from a provided DOM element. Where Surface's API handles inputs from the developer
+     *  from within Samsara, ElementOutput handles the DOM interaction layer.
+     *
      *
      * @class ElementOutput
      * @constructor
-     *
+     * @extensionfor Surface
+     * @uses LayoutNode
+     * @uses SizeNode
+     * @private
      * @param {Node} element document parent of this container
      */
     function ElementOutput(element) {
+        this._currentTarget = null;
+
         this._cachedSpec = {
             transform : null,
             opacity : 1,
@@ -39,119 +51,43 @@ define(function(require, exports, module) {
             size : null
         };
 
-        this._eventInput = new EventHandler();
+        this._opacityDirty = true;
+        this._sizeDirty = true;
+        this._originDirty = true;
+        this._transformDirty = true;
+
         this._eventOutput = new EventHandler();
-        EventHandler.setInputHandler(this, this._eventInput);
         EventHandler.setOutputHandler(this, this._eventOutput);
 
-        this.eventForwarder = function eventForwarder(event) {
+        this._eventForwarder = function _eventForwarder(event) {
             this._eventOutput.emit(event.type, event);
         }.bind(this);
 
-        this.sizeNode = new SizeNode();
-        this.layoutNode = new LayoutNode();
+        this._sizeNode = new SizeNode();
+        this._layoutNode = new LayoutNode();
 
         this._size = new EventHandler();
         this._layout = new EventHandler();
 
-        this.size = ResizeStream.lift(function elementSizeLift(sizeNode, parentSize){
+        this.size = ResizeStream.lift(function elementSizeLift(sizeSpec, parentSize){
             if (!parentSize) return; // occurs when surface is never added
-            return sizeAlgebra(sizeNode, parentSize);
-        }, [this.sizeNode, this._size]);
+            return sizeAlgebra(sizeSpec, parentSize);
+        }, [this._sizeNode, this._size]);
 
         this.layout = Stream.lift(function(parentSpec, objectSpec, size){
             if (!parentSpec || !size) return;
             return (objectSpec)
                 ? layoutAlgebra(objectSpec, parentSpec, size)
                 : parentSpec;
-        }, [this._layout, this.layoutNode, this.size]);
+        }, [this._layout, this._layoutNode, this.size]);
 
         this.size.on('resize', function(size){
             this._sizeDirty = true;
             this._cachedSpec.size = size;
         }.bind(this));
 
-        this._currentTarget = null;
-
-        this._opacityDirty = true;
-        this._sizeDirty = true;
-        this._originDirty = true;
-        this._transformDirty = true;
-
         register(this);
         if (element) this.attach(element);
-    }
-
-    /**
-     * Bind a callback function to an event type handled by this object.
-     *
-     * @method "on"
-     *
-     * @param {string} type event type key (for example, 'click')
-     * @param {function(string, Object)} fn handler callback
-     * @return {EventHandler} this
-     */
-    ElementOutput.prototype.on = function on(type, fn) {
-        if (this._currentTarget)
-            this._currentTarget.addEventListener(type, this.eventForwarder);
-        this._eventOutput.on(type, fn);
-    };
-
-    /**
-     * Unbind an event by type and handler.
-     *   This undoes the work of "on"
-     *
-     * @method removeListener
-     * @param {string} type event type key (for example, 'click')
-     * @param {function(string, Object)} fn handler
-     */
-    ElementOutput.prototype.off = function off(type, fn) {
-        this._eventOutput.off(type, fn);
-    };
-
-    /**
-     * Trigger an event, sending to all downstream handlers
-     *   listening for provided 'type' key.
-     *
-     * @method emit
-     *
-     * @param {string} type event type key (for example, 'click')
-     * @param {Object} [event] event data
-     * @return {EventHandler} this
-     */
-    ElementOutput.prototype.emit = function emit(type, event) {
-        var handled = this._eventOutput.emit(type, event);
-        if (handled && event && event.stopPropagation) event.stopPropagation();
-        return handled;
-    };
-
-    var usePrefix = !('transform' in document.documentElement.style);
-    var devicePixelRatio = window.devicePixelRatio || 1;
-    var invDevicePixelRatio = 1 / devicePixelRatio;
-
-    var MIN_OPACITY = 0.0001;
-    var MAX_OPACITY = 0.9999;
-    var EPSILON = 1e-5;
-
-    function _addEventListeners(target) {
-        for (var i in this._eventOutput.listeners)
-            target.addEventListener(i, this.eventForwarder);
-    }
-
-    function _removeEventListeners(target) {
-        for (var i in this._eventOutput.listeners)
-            target.removeEventListener(i, this.eventForwarder);
-    }
-
-    function _formatCSSTransform(transform) {
-        var result = 'matrix3d(';
-        for (var i = 0; i < 15; i++) {
-            if (Math.abs(transform[i]) < EPSILON) transform[i] = 0;
-            result += (i === 12 || i === 13)
-                ? Math.round(transform[i] * devicePixelRatio) * invDevicePixelRatio + ','
-                : transform[i] + ',';
-        }
-        return result + transform[15] + ')';
     }
 
     function _formatCSSOrigin(origin) {
@@ -170,19 +106,19 @@ define(function(require, exports, module) {
 
     var _setOrigin = usePrefix
         ? function _setOrigin(element, origin) {
-            element.style.webkitTransformOrigin = _formatCSSOrigin(origin);
-        }
+        element.style.webkitTransformOrigin = _formatCSSOrigin(origin);
+    }
         : function _setOrigin(element, origin) {
-            element.style.transformOrigin = _formatCSSOrigin(origin);
-        };
+        element.style.transformOrigin = _formatCSSOrigin(origin);
+    };
 
     var _setTransform = (usePrefix)
         ? function _setTransform(element, transform) {
-            element.style.webkitTransform = _formatCSSTransform(transform);
-        }
+        element.style.webkitTransform = _formatCSSTransform(transform);
+    }
         : function _setTransform(element, matrix) {
-            element.style.transform = _formatCSSTransform(matrix);
-        };
+        element.style.transform = _formatCSSTransform(matrix);
+    };
 
     var _setSize = function _setSize(target, size){
         if (size[0] === true) size[0] = target.offsetWidth;
@@ -192,35 +128,121 @@ define(function(require, exports, module) {
         else target.style.height = Math.ceil(size[1] * devicePixelRatio) * invDevicePixelRatio + 'px';
     };
 
+
+    function _addEventListeners(target) {
+        for (var i in this._eventOutput.listeners)
+            target.addEventListener(i, this._eventForwarder);
+    }
+
+    function _removeEventListeners(target) {
+        for (var i in this._eventOutput.listeners)
+            target.removeEventListener(i, this._eventForwarder);
+    }
+
+    function _formatCSSTransform(transform) {
+        var result = 'matrix3d(';
+        for (var i = 0; i < 15; i++) {
+            if (Math.abs(transform[i]) < EPSILON) transform[i] = 0;
+            result += (i === 12 || i === 13)
+                ? Math.round(transform[i] * devicePixelRatio) * invDevicePixelRatio + ','
+                : transform[i] + ',';
+        }
+        return result + transform[15] + ')';
+    }
+
     var _setInvisible = usePrefix
         ? function(element) {
-            element.style.webkitTransform = 'scale3d(0.0001,0.0001,0.0001)';
-            element.style.opacity = MIN_OPACITY;
-        }
+        element.style.webkitTransform = 'scale3d(0.0001,0.0001,0.0001)';
+        element.style.opacity = MIN_OPACITY;
+    }
         : function(element) {
-            element.style.transform = 'scale3d(0.0001,0.0001,0.0001)';
-            element.style.opacity = MIN_OPACITY;
-        };
+        element.style.transform = 'scale3d(0.0001,0.0001,0.0001)';
+        element.style.opacity = MIN_OPACITY;
+    };
 
     /**
-     * Apply changes from this component to the corresponding document element.
-     * This includes changes to classes, styles, size, content, opacity, origin,
-     * and matrix transforms.
+     * Adds a handler to the `type` channel which will be executed on `emit`.
+     *
+     * @method "on"
+     *
+     * @param type {string}         DOM event channel name, e.g., "click", "touchmove"
+     * @param handler {function}    Handler. It's only argument will be an emitted data payload.
+     */
+    ElementOutput.prototype.on = function on(type, handler) {
+        if (this._currentTarget)
+            this._currentTarget.addEventListener(type, this._eventForwarder);
+        EventHandler.prototype.on.apply(this._eventOutput, arguments);
+    };
+
+    /**
+     * Removes a previously added handler to the `type` channel.
+     *  Undoes the work of `on`.
+     *
+     * @method removeListener
+     * @param type {string}         DOM event channel name e.g., "click", "touchmove"
+     * @param handler {function}    Handler
+     */
+    ElementOutput.prototype.off = function off(type, handler) {
+        EventHandler.prototype.off.apply(this._eventOutput, arguments);
+    };
+
+    /**
+     * Emit an event with optional data payload. This will execute all listening
+     *  to the channel name with the payload as only argument.
+     *
+     * @method emit
+     * @param type {string}         Event channel name
+     * @param [payload] {Object}    User defined data payload
+     */
+    ElementOutput.prototype.emit = function emit(type, payload) {
+        EventHandler.prototype.emit.apply(this._eventOutput, arguments);
+    };
+
+    /**
+     * Assigns the DOM element for committing and to and attaches event listeners.
      *
      * @private
-     * @method commit
-     * @param {Spec} spec commit context
+     * @method attach
+     * @param {Node} target document parent of this container
      */
-    var _zeroZero = [0,0];
-    ElementOutput.prototype.commit = function commit(spec) {
+    ElementOutput.prototype.attach = function attach(target) {
+        this._currentTarget = target;
+        _addEventListeners.call(this, target);
+    };
+
+    /**
+     * Removes the associated DOM element in memory and detached event listeners.
+     *
+     * @private
+     * @method detach
+     */
+    ElementOutput.prototype.detach = function detach() {
         var target = this._currentTarget;
-        if (!target || !spec) return;
+        if (target) {
+            _removeEventListeners.call(this, target);
+            target.style.display = '';
+        }
+        this._currentTarget = null;
+    };
+
+    /**
+     * Commits the layout and size information of the element to the DOM.
+     *  Called once per Engine tick by the RootNode this element has been added to
+     *  if some parent's SceneGraph node's data has changed.
+     *
+     * @method commit
+     * @private
+     * @param [layout] {Object} Layout data: transform, origin, opacity.
+     */
+    ElementOutput.prototype.commit = function commit(layout) {
+        var target = this._currentTarget;
+        if (!target || !layout) return;
 
         var cache = this._cachedSpec;
 
-        var transform = spec.transform || Transform.identity;
-        var opacity = (spec.opacity === undefined) ? 1 : spec.opacity;
-        var origin = spec.origin || _zeroZero;
+        var transform = layout.transform || Transform.identity;
+        var opacity = (layout.opacity === undefined) ? 1 : layout.opacity;
+        var origin = layout.origin || _zeroZero;
 
         this._transformDirty = Transform.notEquals(cache.transform, transform);
         this._opacityDirty = this._opacityDirty || (cache.opacity !== opacity);
@@ -251,40 +273,6 @@ define(function(require, exports, module) {
         this._opacityDirty = false;
         this._sizeDirty = false;
         this._dirty = false;
-    };
-
-    ElementOutput.prototype.cleanup = function cleanup() {
-        if (!this._currentTarget) return;
-        _setInvisible(this._currentTarget);
-        this._currentTarget.style.display = 'none';
-    };
-
-    /**
-     * Assigns the currentTarget for committing and binds event listeners.
-     *
-     * @private
-     * @method attach
-     * @param {Node} target document parent of this container
-     */
-    ElementOutput.prototype.attach = function attach(target) {
-        this._currentTarget = target;
-        _addEventListeners.call(this, target);
-    };
-
-    /**
-     * Remove any contained document content associated with this surface
-     *   from the actual document.
-     *
-     * @private
-     * @method detach
-     */
-    ElementOutput.prototype.detach = function detach() {
-        var target = this._currentTarget;
-        if (target) {
-            _removeEventListeners.call(this, target);
-            target.style.display = '';
-        }
-        this._currentTarget = null;
     };
 
     module.exports = ElementOutput;
