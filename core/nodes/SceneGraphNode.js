@@ -118,12 +118,14 @@ define(function(require, exports, module) {
 
             object.size.on('resize', function(){
                 var root = _getRootNode.call(this);
-                root.dirtyObjects.push(object);
+                if (root.dirtyObjects.indexOf(object) == -1)
+                    root.dirtyObjects.push(object);
             }.bind(this));
 
             object.on('dirty', function(){
                 var root = _getRootNode.call(this);
-                root.dirtyObjects.push(object);
+                if (root.dirtyObjects.indexOf(object) == -1)
+                    root.dirtyObjects.push(object);
             }.bind(this));
         }
     }
