@@ -12,7 +12,7 @@ define(function(require, exports, module) {
     /**
      * EventEmitter represents an asynchronous channel for broadcasting and receiving events.
      *
-     *  @example
+     * @example
      *      var eventEmitter = new EventEmitter();
      *      eventEmitter.on('send', function(payload){
      *          console.log(payload) // {data : 0}
@@ -36,8 +36,8 @@ define(function(require, exports, module) {
      *
      * @method emit
      *
-     * @param type {string}     channel name
-     * @param data {Object}     payload
+     * @param type {string}     Channel name
+     * @param data {Object}     Payload
      */
     EventEmitter.prototype.emit = function emit(type, data) {
         if (data === false) return; // do not propagate
@@ -60,8 +60,8 @@ define(function(require, exports, module) {
      *
      * @method "on"
      *
-     * @param type {string}         channel name
-     * @param handler {function}    callback
+     * @param type {string}         Channel name
+     * @param handler {function}    Callback
      */
     EventEmitter.prototype.on = function on(type, handler) {
         if (!(type in this.listeners)) this.listeners[type] = [];
@@ -73,8 +73,8 @@ define(function(require, exports, module) {
      *
      * @method "on"
      *
-     * @param type {string}         event type key (for example, 'click')
-     * @param handler {function}    callback
+     * @param type {string}         Event type key (for example, 'click')
+     * @param handler {function}    Callback
      */
     EventEmitter.prototype.once = function once(type, handler){
         var onceHandler = function(){
@@ -90,8 +90,8 @@ define(function(require, exports, module) {
      *
      * @method off
      *
-     * @param type {string}         channel name
-     * @param handler {function}    callback
+     * @param type {string}         Channel name
+     * @param handler {function}    Callback
      */
     EventEmitter.prototype.off = function off(type, handler) {
         if (!type) {
@@ -110,11 +110,11 @@ define(function(require, exports, module) {
     };
 
     /**
-     * A convenience method to bound the provided object to all added handlers.
+     * A convenience method to bind the provided object to all added handlers.
      *
      * @method bindThis
      *
-     * @param owner {Object} Bound context
+     * @param owner {Object}        Bound `this` context
      */
     EventEmitter.prototype.bindThis = function bindThis(owner) {
         this._owner = owner;
