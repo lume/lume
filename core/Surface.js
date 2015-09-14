@@ -3,7 +3,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  *
  * @license MPL 2.0
- * @copyright Famous Industries, Inc. 2014
+ * @copyright Samsara Industries, Inc. 2014
  */
 
 /* Modified work copyright © 2015 David Valdman */
@@ -12,26 +12,34 @@ define(function(require, exports, module) {
     var ElementOutput = require('samsara/core/ElementOutput');
 
     /**
-     * A base class for viewable content and event
-     *   targets inside a Famo.us application, containing a renderable document
-     *   fragmen`t. Like an HTML div, it can accept internal markup,
-     *   properties, classes, and handle events.
+     * Surface is a wrapper for DOM element controlled by Samsara.
+     *  Samsara will commit opacity, size and CSS3 `transform` properties into the Surface.
+     *  CSS classes, properties and DOM attributes can also be added and dynamically changed.
+     *  Surfaces also act as sources for DOM events such as `click`.
      *
      * @class Surface
      * @constructor
+     * @extends ElementOutput
      *
-     * @param {Object} [options] default option overrides
-     * @param {Array.Number} [options.size] [width, height] in pixels
-     * @param {Array.string} [options.classes] CSS classes to set on target div
-     * @param {Array} [options.properties] string dictionary of CSS properties to set on target div
-     * @param {Array} [options.attributes] string dictionary of HTML attributes to set on target div
-     * @param {string} [options.content] inner (HTML) content of surface
+     * @param [options] {Object}                Options
+     * @param [options.size] {Number[]}         Size [width, height] in pixels. These can also be `true` or `undefined`.
+     * @param [options.classes] {string[]}      CSS classes
+     * @param [options.properties] {Object}     Dictionary of CSS properties
+     * @param [options.attributes] {Object}     Dictionary of HTML attributes
+     * @param [options.content] {string}        InnerHTML content
+     * @param [options.origin] {Number[]}       Origin [x,y], with values between 0 and 1
+     * @param [options.margins] {Number[]}      Margins [x,y] in pixels
+     * @param [options.proportions] {Number[]}  Proportions [x,y] with values between 0 and 1
+     * @param [options.opacity] {Number}        Opacity
+     * @param [options.tagName] {string}        HTML tagName (default is "div")
      */
     function Surface(options) {
         this.properties = {};
         this.attributes = {};
         this.content = '';
+        this.classList = [];
 
+        this._dirtyClasses = [];
         this._classesDirty = true;
         this._stylesDirty = true;
         this._attributesDirty = true;
@@ -39,9 +47,6 @@ define(function(require, exports, module) {
         this._contentDirty = true;
         this._dirty = false;
         this._cachedSize = null;
-
-        this.classList = [];
-        this._dirtyClasses = [];
 
         if (options) {
             ElementOutput.call(this, options.el);
@@ -60,12 +65,42 @@ define(function(require, exports, module) {
         this._dirty = true;
         this.emit('dirty');
     }
+
+    function _applyClasses(target) {
+        for (var i = 0; i < this.classList.length; i++)
+            target.classList.add(this.classList[i]);
+    }
+
+    function _applyStyles(target) {
+        for (var key in this.properties)
+            target.style[key] = this.properties[key];
+    }
+
+    function _applyAttributes(target) {
+        for (var key in this.attributes)
+            target.setAttribute(key, this.attributes[key]);
+    }
+
+    function _removeClasses(target) {
+        for (var i = 0; i < this._dirtyClasses.length; i++) target.classList.remove(this._dirtyClasses[i]);
+        this._dirtyClasses = [];
+    }
+
+    function _removeStyles(target) {
+        for (var key in this.properties)
+            target.style[key] = '';
+    }
+
+    function _removeAttributes(target) {
+        for (var key in this.attributes)
+            target.removeAttribute(key);
+    }
+    
     /**
-     * Set HTML attributes on this Surface. Note that this will cause
-     *    dirtying and thus re-rendering, even if values do not change.
+     * Setter for HTML attributes.
      *
      * @method setAttributes
-    * @param {Object} attributes property dictionary of "key" => "value"
+     * @param attributes {Object}   HTML Attributes
      */
     Surface.prototype.setAttributes = function setAttributes(attributes) {
         for (var key in attributes) {
@@ -78,23 +113,22 @@ define(function(require, exports, module) {
     };
 
     /**
-     * Get HTML attributes on this Surface.
+     * Getter for HTML attributes.
      *
      * @method getAttributes
-     *
-     * @return {Object} Dictionary of this Surface's attributes.
+     * @return {Object}
      */
     Surface.prototype.getAttributes = function getAttributes() {
         return this.attributes;
     };
 
     /**
-     * Set CSS-style properties on this Surface. Note that this will cause
-     *    dirtying and thus re-rendering, even if values do not change.
+     * Setter for CSS properties.
+     *  Note: properties are camelCased, not hyphenated.
      *
      * @method setProperties
      * @chainable
-     * @param {Object} properties property dictionary of "key" => "value"
+     * @param properties {Object}   CSS properties
      */
     Surface.prototype.setProperties = function setProperties(properties) {
         for (var key in properties)
@@ -105,10 +139,9 @@ define(function(require, exports, module) {
     };
 
     /**
-     * Get CSS-style properties on this Surface.
+     * Getter for CSS properties.
      *
      * @method getProperties
-     *
      * @return {Object} Dictionary of this Surface's properties.
      */
     Surface.prototype.getProperties = function getProperties() {
@@ -116,13 +149,11 @@ define(function(require, exports, module) {
     };
 
     /**
-     * Add CSS-style class to the list of classes on this Surface. Note
-     *   this will map directly to the HTML property of the actual
-     *   corresponding rendered <div>.
+     * Add CSS class to the list of classes on this Surface.
      *
      * @method addClass
      * @chainable
-     * @param {string} className name of class to add
+     * @param className {string}    Class name
      */
     Surface.prototype.addClass = function addClass(className) {
         if (this.classList.indexOf(className) < 0) {
@@ -134,13 +165,11 @@ define(function(require, exports, module) {
     };
 
     /**
-     * Remove CSS-style class from the list of classes on this Surface.
-     *   Note this will map directly to the HTML property of the actual
-     *   corresponding rendered <div>.
+     * Remove CSS class from the list of classes on this Surface.
      *
      * @method removeClass
      * @chainable
-     * @param {string} className name of class to remove
+     * @param className {string}    Class name
      */
     Surface.prototype.removeClass = function removeClass(className) {
         var i = this.classList.indexOf(className);
@@ -153,12 +182,11 @@ define(function(require, exports, module) {
     };
 
     /**
-     * Toggle CSS-style class from the list of classes on this Surface.
-     *   Note this will map directly to the HTML property of the actual
-     *   corresponding rendered <div>.
+     * Toggle CSS class for this Surface.
      *
      * @method toggleClass
-     * @param {string} className name of class to toggle
+     * @chainable
+     * @param  className {string}   Class name
      */
     Surface.prototype.toggleClass = function toggleClass(className) {
         var i = this.classList.indexOf(className);
@@ -169,10 +197,11 @@ define(function(require, exports, module) {
     };
 
     /**
-     * Reset class list to provided dictionary.
+     * Reset classlist.
+     *
      * @method setClasses
      * @chainable
-     * @param {Array.string} classList
+     * @param classlist {Array.string}  ClassList
      */
     Surface.prototype.setClasses = function setClasses(classList) {
         var i = 0;
@@ -188,22 +217,21 @@ define(function(require, exports, module) {
     };
 
     /**
-     * Get array of CSS-style classes attached to this div.
+     * Get array of CSS classes attached to this Surface.
      *
      * @method getClasslist
-     * @return {Array.string} array of class names
+     * @return {Array.string}
      */
     Surface.prototype.getClassList = function getClassList() {
         return this.classList;
     };
 
     /**
-     * Set or overwrite inner (HTML) content of this surface. Note that this
-     *    causes a re-rendering if the content has changed.
+     * Set or overwrite innerHTML content of this Surface.
      *
      * @method setContent
      * @chainable
-     * @param {string|DocumentFragment} content HTML content
+     * @param content {string|DocumentFragment} HTML content
      */
     Surface.prototype.setContent = function setContent(content) {
         if (this.content !== content) {
@@ -215,11 +243,10 @@ define(function(require, exports, module) {
     };
 
     /**
-     * Return inner (HTML) content of this surface.
+     * Return innerHTML content of this Surface.
      *
      * @method getContent
-     *
-     * @return {string} inner (HTML) content
+     * @return {string}
      */
     Surface.prototype.getContent = function getContent() {
         return this.content;
@@ -229,71 +256,28 @@ define(function(require, exports, module) {
      * Set options for this surface
      *
      * @method setOptions
-     * @chainable
-     * @param {Object} [options] overrides for default options.  See constructor.
+     * @param [options] {Object} Overrides for default options. See constructor.
      */
     Surface.prototype.setOptions = function setOptions(options) {
         if (options.tagName !== undefined) this.elementType = options.tagName;
         if (options.opacity !== undefined) this.setOpacity(options.opacity);
         if (options.size !== undefined) this.setSize(options.size);
         if (options.origin !== undefined) this.setOrigin(options.origin);
+        if (options.proportions !== undefined) this.setProportions(options.proportions);
+        if (options.margins !== undefined) this.setMargins(options.margins);
         if (options.classes !== undefined) this.setClasses(options.classes);
         if (options.properties !== undefined) this.setProperties(options.properties);
         if (options.attributes !== undefined) this.setAttributes(options.attributes);
         if (options.content !== undefined) this.setContent(options.content);
-        if (options.proportions !== undefined) this.setProportions(options.proportions);
-        if (options.margins !== undefined) this.setMargins(options.margins);
     };
-
-    // Apply values of all Famous-managed styles to the document element.
-    //  These will be deployed to the document on call to #setup().
-    function _applyClasses(target) {
-        for (var i = 0; i < this.classList.length; i++)
-            target.classList.add(this.classList[i]);
-    }
-
-    // Apply values of all Famous-managed styles to the document element.
-    //  These will be deployed to the document on call to #setup().
-    function _applyStyles(target) {
-        for (var key in this.properties)
-            target.style[key] = this.properties[key];
-    }
-
-    // Apply values of all Famous-managed attributes to the document element.
-    //  These will be deployed to the document on call to #setup().
-    function _applyAttributes(target) {
-        for (var key in this.attributes)
-            target.setAttribute(key, this.attributes[key]);
-    }
-
-    //  Apply to document all changes from removeClass() since last setup().
-    function _removeClasses(target) {
-        for (var i = 0; i < this._dirtyClasses.length; i++) target.classList.remove(this._dirtyClasses[i]);
-        this._dirtyClasses = [];
-    }
-
-    // Clear all Famous-managed styles from the document element.
-    // These will be deployed to the document on call to #setup().
-    function _removeStyles(target) {
-        for (var key in this.properties)
-            target.style[key] = '';
-    }
-
-    // Clear all Famous-managed attributes from the document element.
-    // These will be deployed to the document on call to #setup().
-    function _removeAttributes(target) {
-        for (var key in this.attributes)
-            target.removeAttribute(key);
-    }
 
     /**
      * Allocates the element-type associated with the Surface, adds its given
-     * element classes, and prepares it for future committing.
+     *  element classes, and prepares it for future committing.
      *
      * @private
      * @method setup
-     *
-     * @param {ElementAllocator} allocator document element pool for this context
+     * @param allocator {ElementAllocator} Allocator
      */
     Surface.prototype.setup = function setup(allocator) {
         // create element of specific type
@@ -323,8 +307,7 @@ define(function(require, exports, module) {
     };
 
     /**
-     *  Remove all Famous-relevant attributes from a document element.
-     *    This is called by the Context if the Surface is no longer rendered.
+     * Remove all Samsara-relevant data from the Surface.
      *
      * @private
      * @method remove
@@ -359,7 +342,7 @@ define(function(require, exports, module) {
      *
      * @private
      * @method deploy
-     * @param {Node} target document parent of this container
+     * @param target {Node} Container DOM element
      */
     Surface.prototype.deploy = function deploy(target) {
         //TODO: make sure target.tagName is of correct type! Tag pools must be implemented.
@@ -373,7 +356,7 @@ define(function(require, exports, module) {
     };
 
     /**
-     * Cache the content of the surface in a document fragment for future deployment.
+     * Cache the content of the Surface in a document fragment for future deployment.
      *
      * @private
      * @method recall
@@ -386,10 +369,10 @@ define(function(require, exports, module) {
     };
 
     /**
-     *  Get the x and y dimensions of the surface.
+     * Getter for size.
      *
      * @method getSize
-     * @return {Array.Number} [x,y] size of surface
+     * @return {Number[]}
      */
     Surface.prototype.getSize = function getSize() {
         // TODO: remove cachedSize
@@ -397,11 +380,10 @@ define(function(require, exports, module) {
     };
 
     /**
-     * Set x and y dimensions of the surface.
+     * Setter for size.
      *
      * @method setSize
-     * @chainable
-     * @param {Array.Number} size as [width, height]
+     * @param size {Number[], Stream} Size as [width, height] in pixels, or a stream.
      */
     Surface.prototype.setSize = function setSize(size) {
         this._cachedSize = size;
@@ -410,24 +392,48 @@ define(function(require, exports, module) {
         _setDirty.call(this);
     };
 
+    /**
+     * Setter for proportions.
+     *
+     * @method setProportions
+     * @param proportions {Number[], Stream} Proportions as [x,y], or a stream.
+     */
     Surface.prototype.setProportions = function setProportions(proportions) {
         this._sizeNode.set({proportions : proportions});
         this._sizeDirty = true;
         _setDirty.call(this);
     };
 
+    /**
+     * Setter for margins.
+     *
+     * @method setMargins
+     * @param margins {Number[], Stream} Margins as [width, height] in pixels, or a stream.
+     */
     Surface.prototype.setMargins = function setMargins(margins) {
         this._sizeNode.set({margins : margins});
         this._sizeDirty = true;
         _setDirty.call(this);
     };
 
+    /**
+     * Setter for origin.
+     *
+     * @method setOrigin
+     * @param origin {Number[], Stream} Origin as [x,y], or a stream.
+     */
     Surface.prototype.setOrigin = function setOrigin(origin){
         this._layoutNode.set({origin : origin});
         this._originDirty = true;
         _setDirty.call(this);
     };
 
+    /**
+     * Setter for opacity.
+     *
+     * @method setOpacity
+     * @param opacity {Number} Opacity
+     */
     Surface.prototype.setOpacity = function setOpacity(opacity){
         this._layoutNode.set({opacity : opacity});
         this._opacityDirty = true;
@@ -436,14 +442,15 @@ define(function(require, exports, module) {
 
     /**
      * Apply changes from this component to the corresponding document element.
-     * This includes changes to classes, styles, size, content, opacity, origin,
-     * and matrix transforms.
+     *  This includes changes to classes, styles, size, content, opacity, origin,
+     *  and CSS3 transforms.
      *
      * @private
      * @method commit
-     * @param {Spec} spec commit context
+     * @param layout {Object}               Layout data
+     * @param allocator {ElementAllocator}  Allocator
      */
-    Surface.prototype.commit = function commit(spec, allocator) {
+    Surface.prototype.commit = function commit(layout, allocator) {
         if (!this._currentTarget) this.setup(allocator);
 
         var target = this._currentTarget;
@@ -472,7 +479,7 @@ define(function(require, exports, module) {
             this._attributesDirty = false;
         }
 
-        ElementOutput.prototype.commit.call(this, spec);
+        ElementOutput.prototype.commit.call(this, layout);
     };
 
     module.exports = Surface;
