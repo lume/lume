@@ -32,9 +32,10 @@ define(function(require, exports, module) {
 
     /**
      * Constructor helper method. Assign an event handler to receive an object's input events.
+     *  Defines `trigger`, `subscribe` and `unsubscribe` methods on the class instance.
      *
      * @method setInputHandler
-     * @param object {Object}           Class to provide trigger, subscribe and unsubscribe methods
+     * @param object {Object}           Class instance
      * @param handler {EventHandler}    EventHandler representing an input source
      */
     EventHandler.setInputHandler = function setInputHandler(object, handler) {
@@ -44,7 +45,8 @@ define(function(require, exports, module) {
     };
 
     /**
-     * Constructor helper method. Assign an event handler to receive an object's output events.
+     * Constructor helper method. Assign an event handler to emit an object's output events.
+     *  Defines `emit`, `on` and `off` methods on the class instance.
      *
      * @method setOutputHandler
      * @param object {Object}           Object to provide on, off and emit methods
