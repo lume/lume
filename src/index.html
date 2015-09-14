@@ -2,39 +2,57 @@
   <script src="jspm_packages/system.js"></script>
   <script src="config.js"></script>
   <script>
-    System.import('main').then(function() {
+System.import('main').then(function() {
 
-for (var i=0; i < 10; i++) {
-  (function(){
-    var n = new famin.core.Node.instance();
-    n.addComponents(famin.components.DOMElement, famin.components.Position);
-    n.size.setAbsolute(50,50,0);
-    n.position.set(Math.random()*10,Math.random()*50,0);
-    n.dOMElement.setClassName('mary');
+  famin.util.log.level = 'debug';
 
-    famin.util.log.level = 'debug';
+  var width = window.innerWidth, height = window.innerHeight;
+  window.onresize = function() {
+    width = window.innerWidth;
+    height = window.innerHeight;
+  };
 
-    var dir = 1;
-    var speedX = Math.random()*2;
-    var speedY = Math.random()*2;
-    var x = function() {
-      dir = dir === 1 && n.position._position[1] < 300 || n.position._position[1] < 10 ? 1 : -1;
-      n.position.set(
-        n.position._position[0]+speedX*dir,
-        n.position._position[1]+speedY*dir,
-        0
+  var randomPosition = function() {
+    return famin.util.Vec3(
+      Math.random() * (width - 50),
+      Math.random() * (height - 50),
+      (Math.random() * 1000) - 500
+    );
+  };
+
+  var num = 500;
+  window.n = Array(num);
+  for (var i=0; i < num; i++) (function(i) {
+    var node = window.n[i] = new famin.core.Node.instance();
+    node.addComponents(famin.components.DOMElement, famin.components.Position);
+    node.position.set(randomPosition());
+    node.size.setAbsolute(50,50,0);
+    node.dOMElement.setClassName('mary');
+    node.dOMElement.setProperty('background',
+      'hsla(' + (360/num*i) + ', 100%, 50%, 0.8)');
+
+    var toRandomPosition = function() {
+      node.position.set(
+        randomPosition(),
+        { curve: 'inOutElastic', duration: 500 + Math.random() * 1500 },
+        toRandomPosition
       );
-      famin.core.rafLoop.onNextTick(x);
     };
-    famin.core.rafLoop.onNextTick(x);
-  })();
-}
-    });
+
+    window.setTimeout(toRandomPosition, Math.random() * 1000);
+  })(i);
+});
   </script>
   <body>
     <style type="text/css">
-      .mary { background: rgba(255,100,100,0.5); }
       html, body { margin: 0; padding: 0; width: 100%; height: 100%; overflow: hidden; }
-      body { position: absolute; }
+      body { perspective: 1000px; background: #555; }
+      body * {
+        transform-style: preserve-3d;
+      }
+      .mary {
+        border: 1px solid black;
+        box-shadow: 1px 1px 1px rgba(0,0,0,0.5);
+      }
     </style>
   </body>

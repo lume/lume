@@ -67,7 +67,7 @@ gulp.task("build", () => {
   runSequence(
     "clean",
     "bundle",
-    // "uglify",
+    "uglify",
     "gzip-size"
   )
 });

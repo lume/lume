@@ -22,7 +22,8 @@ class DOMElement extends Component {
     elementMap[this._id] = this;
 
     this._className = '';
-    this._style = '';
+    this._style = {};
+    this._styleUpdated = {};
 
     // sends DOMEL_CREATE
     this.requestUpdate();
@@ -39,6 +40,13 @@ class DOMElement extends Component {
     }
   }
 
+  setProperty(prop, value) {
+    if (this._style[prop] !== value) {
+      this._style[prop] = value;
+      this._styleUpdated[prop] = value;
+    }
+  }
+
   update() {
     if (!this._created) {
       this._created = true;
@@ -50,11 +58,17 @@ class DOMElement extends Component {
       Messaging.toUI(Event.DOMEL_CLASSNAME, this._elementId, this._className);
     }
 
+    if (this._styleUpdated) {
+      Messaging.toUI(Event.DOMEL_PROPERTY, this._elementId, this._styleUpdated);
+      this._styleUpdated = {};
+    }
+
     super.update();
   }
 
   onEvent(event, sender) {
-    super.onEvent.apply(this, arguments);
+    //super.onEvent.apply(this, arguments);
+    this._updateRequested = false;
 
     switch(event) {
 

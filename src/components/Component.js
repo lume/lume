@@ -14,7 +14,7 @@ class Component {
       throw new Error("Did you mean to (Class).instance(options)?");
 
     this.init(options);
-    log.debug("New " + this.constructor.name + " Component #" + this._id);
+    log.trace("New " + this.constructor.name + " Component #" + this._id);
   }
 
   init(options) {
@@ -61,8 +61,8 @@ class Component {
 //      this._notifyObservers();
   }
 
-  _updateWrapper() {
-    this._node && this.update();
+  _updateWrapper(data, timestamp) {
+    this._node && this.update(data, timestamp);
   }
   requestUpdate() {
     if (!this._updateRequested) {

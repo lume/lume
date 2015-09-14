@@ -23,6 +23,8 @@ class Transform extends Component {
   }
 
   update() {
+    this._updateRequested = false;
+    
     // TODO compare new matrix
 
     this._matrix[12] = this._node.position._position[0];
@@ -31,7 +33,6 @@ class Transform extends Component {
 
     //this.emit(Event.TRANSFORM_CHANGE);
     this._node._emit(Event.TRANSFORM_CHANGE, this);
-    super.update();
   }
 
 }

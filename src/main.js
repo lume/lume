@@ -27,6 +27,9 @@ rafLoop.onFinish = function() {
 }
 rafLoop.start();
 
+console.log("Try \"famin.util.log.level = famin.util.log.level === 'debug' " +
+  "? 'trace' : 'debug';\" to toggle between the two lowest log levels.");
+
 var famin = {
 
   core: {

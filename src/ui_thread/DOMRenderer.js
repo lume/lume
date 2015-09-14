@@ -9,6 +9,7 @@ var DOMRenderer = {
 };
 
 var map = DOMRenderer.map = [];
+var data = DOMRenderer.data = [];
 
 var readQueue = SinglyLinkedList();
 var readRequested = false;
@@ -33,5 +34,11 @@ Messaging.on(Event.DOMEL_CLASSNAME, function DOMEL_CLASSNAME(id, className) {
 Messaging.on(Event.DOMEL_TRANSFORM, function DOMEL_TRANSFORM(id, transform) {
   map[id].style.transform = 'matrix3d(' + transform.join(',') + ')';
 });
+
+Messaging.on(Event.DOMEL_PROPERTY, function DOMEL_PROPERTY(id, dict) {
+  for (var prop in dict)
+    map[id].style[prop] = dict[prop];
+});
+
 
 export default DOMRenderer;
