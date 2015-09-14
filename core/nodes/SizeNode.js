@@ -6,8 +6,18 @@ define(function(require, exports, module) {
     var ResizeStream = require('samsara/streams/ResizeStream');
     var SizeObservable = require('samsara/core/SizeObservable');
 
+    /**
+     * Encapsulates a stream of size data (size, proportions, margins).
+     *  Listens on start/update/end events, batches them, and emits resize events downstream
+     *  to descendant size nodes.
+     *
+     * @class SizeNode
+     * @constructor
+     * @param sources {Object}  Object of size sources
+     */
     function SizeNode(sources) {
-        this.stream = this.createStream(sources);
+        this.stream = _createStream(sources);
+        EventHandler.setOutputHandler(this, this.stream);
 
         this.stream._eventInput.on('start', function(data){
             this.stream.trigger('resize', data);
@@ -20,22 +30,17 @@ define(function(require, exports, module) {
         this.stream._eventInput.on('end', function(data){
             this.stream.trigger('resize', data);
         }.bind(this));
-
-        EventHandler.setInputHandler(this, this.stream);
-        EventHandler.setOutputHandler(this, this.stream);
     }
 
-    SizeNode.prototype.createStream = function (sources){
-        for (var key in sources){
-            var value = sources[key];
-            if (typeof value == 'number' || value instanceof Array){
-                var source = new SizeObservable(value);
-                sources[key] = source;
-            }
-        }
-        return ResizeStream.merge(sources);
-    };
-
+    /**
+     * Introduce new data streams to the size node in {key : value} pairs.
+     *  Here the `key` is one of "size", "proportions" or "marins".
+     *  The `value` is either a stream, or a simple type like a `Number` or `Array`.
+     *  Simple types will be wrapped in an `Observerable` to emit appropriate events.
+     *
+     * @method set
+     * @param obj {Object}      Object of data sources
+     */
     SizeNode.prototype.set = function(obj){
         for (var key in obj){
             var value = obj[key];
@@ -47,6 +52,17 @@ define(function(require, exports, module) {
             this.stream.addStream(key, source);
         }
     };
+
+    function _createStream(sources){
+        for (var key in sources){
+            var value = sources[key];
+            if (typeof value == 'number' || value instanceof Array){
+                var source = new SizeObservable(value);
+                sources[key] = source;
+            }
+        }
+        return ResizeStream.merge(sources);
+    }
 
     module.exports = SizeNode;
 });

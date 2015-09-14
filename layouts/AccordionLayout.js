@@ -32,7 +32,6 @@ define(function(require, exports, module) {
         },
         initialize : function(options){
             this.angles = new Transitionable(options.initialAngles);
-            this.input = new Stream();
             this.output = new Stream();
             this.output.subscribe(this._eventOutput);
 

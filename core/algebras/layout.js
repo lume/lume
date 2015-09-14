@@ -10,82 +10,63 @@ define(function(require, exports, module) {
         ALIGN : null
     };
 
+    /**
+     * Defines the rules for composing layout specs: transform, align, origin and opacity.
+     *   Transform is multiplied by the parent's transform (matrix multiplication).
+     *   Align is a proportional offset relative to the parent size.
+     *   Origin is a proportional offset relative to the current size.
+     *   Opacity is multiplied by the parent's opacity.
+     *
+     *   @method compose
+     *   @param spec {object}           Object layout spec
+     *   @param parentSpec {object}     Parent layout spec
+     *   @param size {Array}            Object size
+     *   @return {object}               The composed layout spec
+     */
+
     function compose(spec, parentSpec, size){
-        var mergedSpec;
+        var parentOpacity = (parentSpec.opacity !== undefined) ? parentSpec.opacity : DEFAULT.OPACITY;
+        var parentTransform = parentSpec.transform || DEFAULT.TRANSFORM;
 
-        if (typeof spec == 'number') {
+        var origin = spec.origin || DEFAULT.ORIGIN;
+        var align = spec.align || DEFAULT.ALIGN;
 
-            var transform = parentSpec.transform || DEFAULT.TRANSFORM;
-            var align = parentSpec.align || DEFAULT.ALIGN;
-            var opacity = (parentSpec.opacity !== undefined) ? parentSpec.opacity : DEFAULT.OPACITY;
+        var opacity = (spec.opacity !== undefined)
+            ? parentOpacity * spec.opacity
+            : parentOpacity;
 
-            if (align && (align[0] || align[1])) {
-                var nextSizeTransform = parentSpec.nextSizeTransform || transform;
-                var alignAdjust = [align[0] * size[0], align[1] * size[1], 0];
-                var shift = (nextSizeTransform) ? _vecInContext(alignAdjust, nextSizeTransform) : alignAdjust;
-                transform = Transform.thenMove(transform, shift);
-            }
+        var transform = (spec.transform)
+            ? Transform.compose(parentTransform, spec.transform)
+            : parentTransform;
 
-            mergedSpec = {
-                transform : transform,
-                opacity : opacity,
-                origin : parentSpec.origin || DEFAULT.ORIGIN
-            };
+        var nextSizeTransform = (spec.origin)
+            ? parentTransform
+            : parentSpec.nextSizeTransform || parentTransform;
 
-        } else if (spec instanceof Array){
-            var mergedSpec = [];
-            for (var i = 0; i < spec.length; i++)
-                mergedSpec[i] = compose.merge(spec[i], parentSpec);
-        }
-        else if (spec instanceof Object){
-            var parentOpacity = (parentSpec.opacity !== undefined) ? parentSpec.opacity : DEFAULT.OPACITY;
-            var parentTransform = parentSpec.transform || DEFAULT.TRANSFORM;
+        if (spec.size)
+            nextSizeTransform = parentTransform;
 
-            var origin = spec.origin || DEFAULT.ORIGIN;
-            var align = spec.align || DEFAULT.ALIGN;
-
-            var opacity = (spec.opacity !== undefined)
-                ? parentOpacity * spec.opacity
-                : parentOpacity;
-
-            var transform = (spec.transform)
-                ? Transform.compose(parentTransform, spec.transform)
-                : parentTransform;
-
-            var nextSizeTransform = (spec.origin)
-                ? parentTransform
-                : parentSpec.nextSizeTransform || parentTransform;
-
-            if (spec.size)
-                nextSizeTransform = parentTransform;
-
-            if (origin && (origin[0] || origin[1])){
-                //TODO: allow origin to propogate when size is non-numeric
-                var tx =  (typeof size[0] === 'number') ? -origin[0] * size[0] : 0;
-                var ty =  (typeof size[1] === 'number') ? -origin[1] * size[1] : 0;
-                transform = Transform.moveThen([tx, ty, 0], transform);
-                origin = null;
-            }
-
-            if (size && align && (align[0] || align[1])) {
-                var shift = _vecInContext([align[0] * size[0], align[1] * size[1], 0], nextSizeTransform);
-                transform = Transform.thenMove(transform, shift);
-                align = null;
-            }
-
-            mergedSpec = {
-                transform : transform,
-                opacity : opacity,
-                origin : origin,
-                align : align,
-                nextSizeTransform : nextSizeTransform
-            };
-
-            if (spec.target !== undefined)
-                mergedSpec = compose(spec.target, mergedSpec);
+        if (origin && (origin[0] || origin[1])){
+            //TODO: allow origin to propogate when size is non-numeric
+            var tx =  (typeof size[0] === 'number') ? -origin[0] * size[0] : 0;
+            var ty =  (typeof size[1] === 'number') ? -origin[1] * size[1] : 0;
+            transform = Transform.moveThen([tx, ty, 0], transform);
+            origin = null;
         }
 
-        return mergedSpec;
+        if (size && align && (align[0] || align[1])) {
+            var shift = _vecInContext([align[0] * size[0], align[1] * size[1], 0], nextSizeTransform);
+            transform = Transform.thenMove(transform, shift);
+            align = null;
+        }
+
+        return {
+            transform : transform,
+            opacity : opacity,
+            origin : origin,
+            align : align,
+            nextSizeTransform : nextSizeTransform
+        };
     }
 
     function _vecInContext(v, m) {

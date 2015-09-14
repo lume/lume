@@ -10,17 +10,25 @@ define(function(require, exports, module) {
 
     var currentState = STATE.START;
 
-    function set(state){
+    /**
+     * SUE specified the global state of the application, whether it is in a
+     *  `start`, `update` or `end` state. This is necessary for coordinating
+     *  `resize` events with `start`, `update`, `end` states in stream.
+     *
+     * @class SUE
+     * @private
+     */
+    var SUE = {};
+
+    SUE.STATES = STATE;
+
+    SUE.set = function set(state){
         currentState = state;
-    }
-
-    function get(){
-        return currentState;
-    }
-
-    module.exports = {
-        STATES : STATE,
-        set : set,
-        get : get
     };
+
+    SUE.get = function get(){
+        return currentState;
+    };
+
+    module.exports = SUE;
 });

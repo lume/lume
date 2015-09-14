@@ -1,6 +1,22 @@
 /* copyright © 2015 David Valdman */
 
 define(function(require, exports, module) {
+
+    /**
+     * Defines the rules for composing size specs (size, margin, proportions) into a new size.
+     *   A margin array reduces the parent size by an amount specified in pixels.
+     *   A proportions array scales the parent size by a provided ratio.
+     *   A size array [width, height] can take `true`, `undefined`, or numeric values.
+     *      `undefined` takes the parent value
+     *      `true` takes the value defined by the DOM
+     *      numeric values override parent values
+     *
+     *   @method compose
+     *   @param spec {object}           Object size spec
+     *   @param parentSize {object}     Parent size
+     *   @return size {object}          Composed size
+     */
+
     function compose(spec, parentSize){
         if (!spec) return parentSize;
 

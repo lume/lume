@@ -138,7 +138,7 @@ define(function(require, exports, module) {
                 }
             }.bind(this));
 
-            this._eventOutput.subscribe(outputMapper).subscribe(this.position);
+            this.output.subscribe(outputMapper).subscribe(this.position);
         },
         addDrawer : function addDrawer(drawer){
             this.drawer = drawer;
