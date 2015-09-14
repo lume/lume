@@ -16,7 +16,7 @@ define(function(require, exports, module) {
     var Transitionable = require('samsara/core/Transitionable');
     var EventHandler = require('samsara/core/EventHandler');
     var EventMapper = require('samsara/events/EventMapper');
-
+    var SimpleStream = require('samsara/streams/SimpleStream');
     var Stream = require('samsara/streams/Stream');
     var ResizeStream = require('samsara/streams/ResizeStream');
     var SizeObservable = require('samsara/core/SizeObservable');
@@ -48,6 +48,9 @@ define(function(require, exports, module) {
             this._node = new SceneGraphNode();
             this._node.tempRoot = this._node;
 
+            this.input = new SimpleStream();
+            this.output = new SimpleStream();
+
             this.size = ResizeStream.lift(
                 function ViewSizeAlgebra (sizeSpec, parentSize){
                     return (sizeSpec)
@@ -71,8 +74,6 @@ define(function(require, exports, module) {
             this._node._layout.subscribe(layout).subscribe(this._layout);
 
             Controller.apply(this, arguments);
-            this._eventInput.subscribe(this._optionsManager);
-
             if (this.options) setOptions.call(this, this.options);
         },
         add : function add(){
