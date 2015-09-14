@@ -9,16 +9,16 @@
 /* Modified work copyright © 2015 David Valdman */
 
 define(function(require, exports, module) {
+    var tickQueue = require('samsara/core/queues/tickQueue');
+
     /**
-     * An internal library to reproduce javascript time-based scheduling.
-     *   Using standard javascript setTimeout methods can have a negative performance impact
-     *   when combined with the Famous rendering process, so instead require Timer and call
-     *   Timer.setTimeout, Timer.setInterval, etc.
+     * A collection of timing utilities meant to translate the familiar setInterval, setTimeout
+     *  timers to use Samsara's internal clock, which is backed by a requestAnimationFrame loop.
+     *  It also includes other helpful methods for debouncing.
      *
      * @class Timer
-     * @constructor
      */
-    var tickQueue = require('samsara/core/queues/tickQueue');
+    var Timer = {};
 
     var getTime = (window.performance)
         ? function() { return window.performance.now(); }
@@ -35,50 +35,42 @@ define(function(require, exports, module) {
         tickQueue.splice(index, 1);
     }
 
-    var Timer = {};
-
     /**
      * Wraps a function to be invoked after a certain amount of time.
-     *  After a set duration has passed, it executes the function and
-     *  removes it as a listener to 'prerender'.
+     *  After a set duration has passed, it executes the function.
      *
      * @method setTimeout
-     *
-     * @param {function} fn function to be run after a specified duration
-     * @param {number} duration milliseconds from now to execute the function
-     *
-     * @return {function} function passed in as parameter
+     * @param handler {Function}    Function to be run after a specified duration
+     * @param duration {Number}     Time to delay execution (in milliseconds)
+     * @return {Function}
      */
-    Timer.setTimeout = function setTimeout(fn, duration) {
+    Timer.setTimeout = function setTimeout(handler, duration) {
         var t = getTime();
         var callback = function() {
             var t2 = getTime();
             if (t2 - t >= duration) {
-                fn.apply(this, arguments);
-                Timer.clear(callback);
+                handler.apply(this, arguments);
+                Timer.clear(handler);
             }
         };
         return _addTimerFunction(callback);
     };
 
     /**
-     * Wraps a function to be invoked after a certain amount of time.
-     *  After a set duration has passed, it executes the function and
-     *  resets the execution time.
+     * Wraps a function to be invoked at repeated intervals.
      *
      * @method setInterval
      *
-     * @param {function} fn function to be run after a specified duration
-     * @param {number} duration interval to execute function in milliseconds
-     *
-     * @return {function} function passed in as parameter
+     * @param handler {Function}    Function to be run at specified intervals
+     * @param interval {Number}     Time interval (in milliseconds)
+     * @return {Function}
      */
-    Timer.setInterval = function setInterval(fn, duration) {
+    Timer.setInterval = function setInterval(handler, duration) {
         var t = getTime();
         var callback = function() {
             var t2 = getTime();
             if (t2 - t >= duration) {
-                fn.apply(this, arguments);
+                handler.apply(this, arguments);
                 t = getTime();
             }
         };
@@ -86,46 +78,40 @@ define(function(require, exports, module) {
     };
 
     /**
-     * Wraps a function to be invoked after a certain amount of prerender ticks.
-     *  Similar use to setTimeout but tied to the engine's run speed.
+     * Wraps a function to be invoked after a specified number of Engine ticks.
      *
      * @method after
-     *
-     * @param {function} fn function to be run after a specified amount of ticks
-     * @param {number} numTicks number of prerender frames to wait
-     *
-     * @return {function} function passed in as parameter
+     * @param handler {Function}    Function to be executed
+     * @param numTicks {Number}     Number of frames to delay execution
+     * @return {Function}
      */
-    Timer.after = function after(fn, numTicks) {
+    Timer.after = function after(handler, numTicks) {
         if (numTicks === undefined) return undefined;
         var callback = function() {
             numTicks--;
             if (numTicks <= 0) { //in case numTicks is fraction or negative
-                fn.apply(this, arguments);
-                Timer.clear(callback);
+                handler.apply(this, arguments);
+                Timer.clear(handler);
             }
         };
         return _addTimerFunction(callback);
     };
 
     /**
-     * Wraps a function to be continually invoked after a certain amount of prerender ticks.
-     *  Similar use to setInterval but tied to the engine's run speed.
+     * Wraps a function to be invoked every specified number of Engine ticks.
      *
      * @method every
-     *
-     * @param {function} fn function to be run after a specified amount of ticks
-     * @param {number} numTicks number of prerender frames to wait
-     *
-     * @return {function} function passed in as parameter
+     * @param handler {Function}    Function to be executed
+     * @param numTicks {Number}     Number of frames per execution
+     * @return {Function}
      */
-    Timer.every = function every(fn, numTicks) {
+    Timer.every = function every(handler, numTicks) {
         numTicks = numTicks || 1;
         var initial = numTicks;
         var callback = function() {
             numTicks--;
-            if (numTicks <= 0) { //in case numTicks is fraction or negative
-                fn.apply(this, arguments);
+            if (numTicks <= 0) {
+                handler.apply(this, arguments);
                 numTicks = initial;
             }
         };
@@ -133,50 +119,54 @@ define(function(require, exports, module) {
     };
 
     /**
-     * Remove a function that gets called every prerender
+     * Cancel a timer.
      *
      * @method clear
-     *
-     * @param {function} fn event linstener
+     * @param handler {Function} Handler
      */
-    Timer.clear = function clear(fn) {
-        _clearTimerFunction(fn);
+    Timer.clear = function clear(handler) {
+        _clearTimerFunction(handler);
     };
 
     /**
-     * Executes a function after a certain amount of time. Makes sure
-     *  the function is not run multiple times.
+     * Debounces a function for specified duration.
      *
      * @method debounce
-     *
-     * @param {function} func function to run after certain amount of time
-     * @param {number} wait amount of time
-     *
-     * @return {function} function that is not able to debounce
+     * @param handler {Function}  Handler
+     * @param duration {Number}   Duration
+     * @return {function}
      */
-    Timer.debounce = function debounce(func, wait) {
+    Timer.debounce = function debounce(handler, duration) {
         var timeout;
         return function() {
             var args = arguments;
 
             var fn = function() {
                 timeout = null;
-                func.apply(this, args);
+                handler.apply(this, args);
             }.bind(this);
 
             Timer.clear(timeout);
-            timeout = Timer.setTimeout(fn, wait);
+            timeout = Timer.setTimeout(fn, duration);
         };
     };
 
-    Timer.frameDebounce = function frameDebounce(func, numFrames){
+    /**
+     * Debounces a function for a specified number of Engine frames.
+     *
+     * @method frameDebounce
+     * @param handler {Function}  Handler
+     * @param numFrames {Number}  Number of frames
+     * @return {function}
+     */
+    Timer.frameDebounce = function frameDebounce(handler, numFrames){
         var timeout;
         return function() {
             var args = arguments;
 
             var fn = function() {
                 timeout = null;
-                func.apply(this, args);
+                handler.apply(this, args);
             }.bind(this);
 
             if (timeout) Timer.clear(timeout);
