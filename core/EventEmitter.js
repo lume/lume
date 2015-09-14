@@ -50,6 +50,7 @@ define(function(require, exports, module) {
 
     /**
      * Alias for emit.
+     *
      * @method trigger
      */
     EventEmitter.prototype.trigger = EventEmitter.prototype.emit;
@@ -59,7 +60,6 @@ define(function(require, exports, module) {
      * Adds a handler to the `type` channel which will be executed on `emit`.
      *
      * @method "on"
-     *
      * @param type {string}         Channel name
      * @param handler {function}    Callback
      */
@@ -72,7 +72,6 @@ define(function(require, exports, module) {
      * Behaves like `EventEmitter.prototype.on`, except the handler is only executed once.
      *
      * @method "on"
-     *
      * @param type {string}         Event type key (for example, 'click')
      * @param handler {function}    Callback
      */
@@ -86,10 +85,9 @@ define(function(require, exports, module) {
 
    /**
      * Removes the `handler` from the `type` channel.
-     *   This undoes the work of "on".
+     *   This undoes the work of `on`.
      *
      * @method off
-     *
      * @param type {string}         Channel name
      * @param handler {function}    Callback
      */
@@ -113,7 +111,6 @@ define(function(require, exports, module) {
      * A convenience method to bind the provided object to all added handlers.
      *
      * @method bindThis
-     *
      * @param owner {Object}        Bound `this` context
      */
     EventEmitter.prototype.bindThis = function bindThis(owner) {

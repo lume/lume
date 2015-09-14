@@ -78,7 +78,7 @@ define(function(require, exports, module) {
     };
 
     /**
-     * Bind a callback function to an event type handled by this object.
+     * Adds a handler to the `type` channel which will be executed on `emit`.
      *
      * @method "on"
      * @param type {string}             Event channel name
