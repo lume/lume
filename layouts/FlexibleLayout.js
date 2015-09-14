@@ -43,60 +43,57 @@ define(function(require, exports, module) {
             ratios : []
         },
         events : {},
-        initialize : function initialize(){
-            this.ratios = new Transitionable(this.options.ratios);
+        initialize : function initialize(options){
+            this.ratios = new Transitionable(options.ratios);
             this.nodes = [];
 
-            var stateStream = Stream.lift(
-                function(ratios, parentSize){
-                    var direction = this.options.direction;
+            var stateStream = Stream.lift(function(ratios, parentSize){
+                var direction = options.direction;
 
-                    // calculate remaining size after true-sized nodes are accounted for
-                    var flexLength = parentSize[direction];
-                    var ratioSum = 0;
-                    for (var i = 0; i < ratios.length; i++) {
-                        var ratio = ratios[i];
-                        var node = this.nodes[i];
+                // calculate remaining size after true-sized nodes are accounted for
+                var flexLength = parentSize[direction];
+                var ratioSum = 0;
+                for (var i = 0; i < ratios.length; i++) {
+                    var ratio = ratios[i];
+                    var node = this.nodes[i];
 
-                        (typeof ratio !== 'number')
-                            ? flexLength -= node.getSize()[direction] || 0
-                            : ratioSum += ratio;
-                    }
+                    (typeof ratio !== 'number')
+                        ? flexLength -= node.getSize()[direction] || 0
+                        : ratioSum += ratio;
+                }
 
-                    // calculate sizes and displacements of nodes
-                    var displacement = 0;
-                    var transforms = [];
-                    var sizes = [];
-                    for (var i = 0; i < ratios.length; i++) {
-                        node = this.nodes[i];
-                        ratio = ratios[i];
+                // calculate sizes and displacements of nodes
+                var displacement = 0;
+                var transforms = [];
+                var sizes = [];
+                for (var i = 0; i < ratios.length; i++) {
+                    node = this.nodes[i];
+                    ratio = ratios[i];
 
-                        var nodeLength = (typeof ratio === 'number')
-                            ? flexLength * ratio / ratioSum
-                            : node.getSize()[direction];
+                    var nodeLength = (typeof ratio === 'number')
+                        ? flexLength * ratio / ratioSum
+                        : node.getSize()[direction];
 
-                        var transform = (direction == CONSTANTS.DIRECTION.X)
-                            ? Transform.translateX(displacement)
-                            : Transform.translateY(displacement);
+                    var transform = (direction == CONSTANTS.DIRECTION.X)
+                        ? Transform.translateX(displacement)
+                        : Transform.translateY(displacement);
 
-                        var size = (direction == CONSTANTS.DIRECTION.X)
-                            ? [nodeLength, undefined]
-                            : [undefined, nodeLength];
+                    var size = (direction == CONSTANTS.DIRECTION.X)
+                        ? [nodeLength, undefined]
+                        : [undefined, nodeLength];
 
-                        sizes.push(size);
-                        transforms.push(transform);
+                    sizes.push(size);
+                    transforms.push(transform);
 
-                        displacement += nodeLength;
-                    }
+                    displacement += nodeLength;
+                }
 
-                    return {
-                        transforms : transforms,
-                        sizes : sizes
-                    };
+                return {
+                    transforms : transforms,
+                    sizes : sizes
+                };
 
-                }.bind(this),
-                [this.ratios, this.size]
-            );
+            }.bind(this), [this.ratios, this.size]);
 
             this.transforms = stateStream.pluck('transforms');
             this.sizes = stateStream.pluck('sizes');
@@ -122,7 +119,6 @@ define(function(require, exports, module) {
                     size : this.sizes.pluck(i)
                 });
 
-                //TODO: fix order bug
                 this.add(layoutNode).add(sizeNode).add(node);
             }
         },
