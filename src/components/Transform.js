@@ -6,19 +6,17 @@ import Position from '../components/Position';
 
 Event.register('TRANSFORM_CHANGE');
 
-class Transform extends Component {
+var Transform = Component.extend({
 
-  init() {
-    super.init();
+  name: 'transform',
+
+  init: function() {
+    this._init();
+
     this._matrix = [1,0,0,0,0,1,0,0,0,0,1,0,0,0,0,1]; // tmp TODO pool
-  }
+  },
 
-  onEvent(event, sender) {
-    super.onEvent.apply(this, arguments);
-    this.requestUpdate();
-  }
-
-  update() {
+  update: function() {
     var node = this._node;
     this._updateRequested = false;
 
@@ -39,10 +37,8 @@ class Transform extends Component {
     this._node._emit(Event.TRANSFORM_CHANGE, this);
   }
 
-}
+});
 
 Transform.autoListen = [ Event.POSITION_CHANGE ];
-
-Component.configure('transform', Transform);
 
 export default Transform;

@@ -11,12 +11,14 @@ var elementCount = 0;
 var elementMap = {};
 
 Event.register('DOMEL_CREATE', 'DOMEL_SIZE', 'DOMEL_CLASSNAME',
-  'DOMEL_TRANSFORM');
+  'DOMEL_TRANSFORM', 'DOMEL_PROPERTY');
 
-class DOMElement extends Component {
+var DOMElement = Component.extend({
 
-  init() {
-    super.init();
+  name: 'domElement',
+
+  init: function() {
+    this._init();
 
     this._elementId = ++elementCount;
     elementMap[this._id] = this;
@@ -27,27 +29,29 @@ class DOMElement extends Component {
 
     // sends DOMEL_CREATE
     this.requestUpdate();
-  }
+  },
 
-  onAttach() {
+  onAttach: function() {
     this.requires('size', 'transform');
-  }
+  },
 
-  setClassName(className) {
+  setClassName: function(className) {
     if (className !== this._className) {
       this._className = className;
       this._classNameUpdated = true;
     }
-  }
+  },
 
   setProperty(prop, value) {
     if (this._style[prop] !== value) {
       this._style[prop] = value;
       this._styleUpdated[prop] = value;
     }
-  }
+  },
 
-  update() {
+  update: function() {
+    this._update();
+
     if (!this._created) {
       this._created = true;
       Messaging.toUI(Event.DOMEL_CREATE, this._elementId, 'DIV');
@@ -62,13 +66,10 @@ class DOMElement extends Component {
       Messaging.toUI(Event.DOMEL_PROPERTY, this._elementId, this._styleUpdated);
       this._styleUpdated = {};
     }
+  },
 
-    super.update();
-  }
-
-  onEvent(event, sender) {
-    //super.onEvent.apply(this, arguments);
-    this._updateRequested = false;
+  onEvent: function(event, sender) {
+    this._onEvent(event, sender);
 
     switch(event) {
 
@@ -83,10 +84,8 @@ class DOMElement extends Component {
     }
   }
 
-};
+});
 
 DOMElement.autoListen = [ Event.SIZE_CHANGE, Event.TRANSFORM_CHANGE ];
-
-Component.configure('domElement', DOMElement);
 
 export default DOMElement;

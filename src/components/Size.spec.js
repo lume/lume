@@ -6,7 +6,7 @@ import Component from '../components/Component';
 describe('SizeComponent', function() {
   beforeEach(function() {
     Component.loop = new FrameLoop();
-    this.size = Size.instance();
+    this.size = Size();
   });
 
   it('accepts setSizeMode with x, y, z args', function() {

@@ -7,18 +7,21 @@ import Transitionable from '../famous/Transitionable';
 
 Event.register('POSITION_CHANGE');
 
-class Position extends Component {
+var Position = Component.extend({
 
-  init() {
-    super.init();
+  name: 'position',
+
+  init: function() {
+    this._init();
+
     this._position = Vec3(0, 0, 0);
-  }
+  },
 
-  onAttach() {
+  onAttach: function() {
     this.requires('transform');
-  }
+  },
 
-  set(XorVec3, y, z, transition, callback) {
+  set: function(XorVec3, y, z, transition, callback) {
     var argc = arguments.length;
     var vec3 = arguments[0] instanceof Vec3 && arguments[0];
     var callback = typeof arguments[argc-1] === 'function' && arguments[--argc];
@@ -70,11 +73,10 @@ class Position extends Component {
 
 
     }
-  }
+  },
 
-  update(data, timestamp) {
-    //super.update(data, timestamp);
-    this._updateRequested = false;
+  update: function(data, timestamp) {
+    this._update(data, timestamp);
 
     if (this._transition /* next part until pool ready */ && this._transition._queue.length) {
 
@@ -96,8 +98,6 @@ class Position extends Component {
     this._node._emit(Event.POSITION_CHANGE, this);
   }
 
-}
-
-Component.configure('position', Position);
+});
 
 export default Position;

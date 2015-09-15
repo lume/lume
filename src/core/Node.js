@@ -109,13 +109,16 @@ class Node {
 
   addComponent(componentName) {
     if (!this.hasComponent(componentName))
-      return Component._map[componentName].instance().attachTo(this);
+      return Component._map[componentName]().attachTo(this);
   }
 
   addComponents(/* arguments */) {
     for (var i=0; i < arguments.length; i++)
-      if (!this.hasComponent(arguments[i]))
-        Component._map[arguments[i]].instance().attachTo(this);
+      if (!this.hasComponent(arguments[i])) {
+        console.log(arguments[i]);
+        console.log(Component._map);
+        Component._map[arguments[i]]().attachTo(this);
+      }
   }
   /*
   // babel output adds some overhead but this looks so nice :(

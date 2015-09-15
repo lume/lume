@@ -5,11 +5,12 @@ import FrameLoop from '../core/FrameLoop';
 describe('Component (unattached)', function() {
   beforeEach(function() {
     Component.loop = new FrameLoop();
+    this.Component = Component.extend({ name: 'component' });    
   });
 
   it('should not run updates when not attached to a node', function() {
     return;
-    var wasRun = false, comp = Component.instance();
+    var wasRun = false, comp = this.Component();
     comp.update = function() { wasRun = true };
     comp.requestUpdate();
     // TODO: need a fake loop to test
@@ -19,8 +20,10 @@ describe('Component (unattached)', function() {
 describe('Component (attached)', function() {
   beforeEach(function() {
     Component.loop = new FrameLoop();
+    this.Component = Component.extend({ name: 'component' });    
+
     this.node = Node.instance();
-    this.node.addComponents(Component);
+    this.node.addComponent('component');
   });
 
   it('should have a ref to the node', function() {

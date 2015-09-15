@@ -6,10 +6,11 @@ import Event from '../util/Event';
 
 Event.register('SIZE_CHANGE');
 
-class Size extends Component {
+var Size = Component.extend({
+  name: 'size',
 
-  init(options) {
-    super.init(options);
+  init: function(options) {
+    this._init();
 
     this._sizeMode = options && options.sizeMode || Vec3(
       Size.ABSOLUTE_SIZE,
@@ -20,10 +21,12 @@ class Size extends Component {
     this._absoluteSize = options && options.absoluteSize || Vec3(0, 0, 0);
 
     // The actual, computed, current size.
-    this._size = Vec3();
-  }
+    this._size = Vec3();    
+  },
 
-  update() {
+  update: function() {
+    this._update();
+
     var changed = false;
 
     for (var i=0; i < this._size.length; i++) {
@@ -44,21 +47,19 @@ class Size extends Component {
 
     if (changed)
       this.emit(Event.SIZE_CHANGE);
+  },
 
-    // Must be last; sets _updateRequested=false
-    super.update();
-  }
+  recycle: function() {
+    this._recycle();
 
-  recycle() {
     this._sizeMode.recycle();
     this._absoluteSize.recycle();
     this._size.recycle();
-    super.recycle();
-  }
+  },
 
   /* CustomComponent specific methods */
 
-  setSizeMode(vec3orX, y, z) {
+  setSizeMode: function(vec3orX, y, z) {
     if (y) {
 
       for (var i=0; i < arguments.length; i++) {
@@ -79,9 +80,9 @@ class Size extends Component {
       }
 
     }
-  }
+  },
 
-  setAbsolute(newSizeVec3orX, y, z) {
+  setAbsolute: function(newSizeVec3orX, y, z) {
     if (y) {
 
       for (var i=0; i < arguments.length; i++) {
@@ -104,9 +105,7 @@ class Size extends Component {
     }
   }
 
-}
-
-Component.configure('size', Size);
+});
 
 Size.ABSOLUTE_SIZE = 1;
 Size.RELATIVE_SIZE = 2;

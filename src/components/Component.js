@@ -6,72 +6,98 @@ import Event from '../util/Event';
 
 var componentCount = 0;
 var componentMap = {};
+var componentPool = SinglyLinkedList();
 
-class Component {
+var Component = {
 
-  constructor(options, allow) {
-    if (!allow)
-      throw new Error("Did you mean to (Class).instance(options)?");
+  _map: {},
 
-    this.init(options);
-    log.trace("New " + this.constructor.name + " Component #" + this._id);
+  extend: function(overrides) {
+
+    var Sub, key, name = overrides.name;
+
+    if (!name)
+      throw new Error("Usage: Component.extend({ name: 'componentName' });");
+    if (componentMap[name])
+      throw new Error('A component named "' + name + '" already exists');
+
+    Sub = function Component() {
+      var component;
+
+      if (!(this instanceof Sub)) {
+        component = componentPool.shift();
+        if (component)
+            return component.init.apply(component, arguments);
+        else
+          return new Sub();
+      }
+
+      // new instance
+      this.init.apply(this, arguments);
+    };
+
+    Sub.prototype = Object.create(_super);
+    Sub.prototype.constructor = Sub;
+
+    // Just for constructor, *sub* class's one is this.__constructor
+    overrides.__constructor = overrides.constructor;
+
+    // For everything else, "super" version is, e.g. this._update()
+    for (key in overrides) {
+      if (Sub.prototype[key])
+        Sub.prototype['_'+key] = Sub.prototype[key];
+      Sub.prototype[key] = overrides[key];
+    }
+
+    // Map from name to component class, e.g. "size" -> Size
+    Component._map[name] = Sub;
+
+    return Sub;
+
   }
 
-  init(options) {
-    // These lists should be empty on old instances
-    // Check?  XXX
+};
 
+var _super = {
+
+  init: function() {
     this._id = ++componentCount;
     componentMap[this._id] = this;
 
-    if (!this._observers)
-      this._observers = SinglyLinkedList();
+    log.trace("New " + this.name + " component #" + this._id);    
+  },
 
-    if (!this._observing)
-      this._observing = SinglyLinkedList();
-  }
-
-  recycle() {
-    if (this._observering.head)
-      this.unobserveAll();
-
-    // maybe we should just be nice and loop through and unobserve
-    // them for the user?
-    if (this._observers.head)
-      throw new Error("Tried to remove me while others depend on me",
-        this, this._observers);
-
+  recycle: function() {
     delete componentMap[this._id];
-  }
+  },
 
-  requires(/* arguments */) {
+  requires: function(/* arguments */) {
     var node = this._node;
     for (var i=0, len=arguments.length; i < len; i++)
       node.addComponent(arguments[i], true /* noWarn */);
-  }
+  },
 
   /* Updates */
 
   // What to do when an update is called
-  update(changed) {
+  update: function(changed) {
     this._updateRequested = false;
-//    if (changed)
-//      this._notifyObservers();
-  }
+  },
 
-  _updateWrapper(data, timestamp) {
+  _updateWrapper: function(data, timestamp) {
     this._node && this.update(data, timestamp);
-  }
-  requestUpdate() {
+  },
+
+  requestUpdate: function() {
     if (!this._updateRequested) {
       this._updateRequested = true;
       Component.loop.onNextTick(this._updateWrapper, this);
     }
-  }
+  },
 
   /* Nodes */
 
-  attachTo(node) {
+  attachTo: function(node) {
     this._node = node;
     node._attachComponentInstance(this);
 
@@ -84,17 +110,16 @@ class Component {
         node.addComponentListener(autoListen[i], this);
 
     return this; // chainable
-  }
+  },
 
-  detach() {
+  detach: function() {
+    this._node._detachComponentInstance(this);
+  },
 
-    node._detachComponentInstance(this);
-  }
-
-  onEvent(event, sender /*, arguments */) {
+  onEvent: function(event, sender /*, arguments */) {
     // Extra if, because computing the log message is a little expensive
     if (log.level === 'trace') {
-      let args = Array.prototype.slice.call(arguments, 2);
+      var args = Array.prototype.slice.call(arguments, 2);
       log.trace('[Frame ' + Component.loop._currentFrame + '] '
         + this.constructor.name + ' #' + this._id + ' received "'
         + Event[event] + '" from ' + sender.constructor.name
@@ -102,7 +127,7 @@ class Component {
     }
 
     this.requestUpdate();
-  }
+  },
 
   /*
   emit(/* , arguments *//*) {
@@ -119,59 +144,13 @@ class Component {
 
 
   // XXX consider avoiding this abstraction for extra function call XXX
-  emit(/* , arguments */) {
+  emit: function(/* , arguments */) {
     // Inject componentInstance as 2nd arg
     // Note, if we spliced `arguments` directly, it's a v8 deop
     Array.prototype.splice.call(arguments, 1, 0, this);
     this._node && this._node._emit.apply(this._node, arguments);
   }
 
-  /* Observes */
-
-  /*
-  observe(component) {
-    component._addObserver(this);
-    this._observing.push(component);
-  }
-
-  unobserve(component) {
-    component._removeObserver(this);
-    this._observing.remove(component);
-  }
-
-  unobserveAll() {
-    this._observing.forEach(this.unobserve, this);
-  }
-  */
-
-  _addObserver(component) {
-    this._observers.push(component);
-  }
-
-  _removeObserver(component) {
-    this._observers.remove(component);
-  }
-
-  _notifyObserver(component) {
-    component.update()
-  }
-
-  _notifyObservers() {
-    this._observers.forEach(this._notifyObserver);
-  }
-
-//  observeComponents()
-
 }
-
-Component._map = {};
-
-Component.configure = function(name, Comp) {
-  Comp.prototype.name = name;
-  Component._map[name] = Comp;
-  Pool.extend(Comp);
-}
-
-Component.configure('component', Component);
 
 export default Component;
