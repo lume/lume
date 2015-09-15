@@ -2,6 +2,7 @@ import SinglyLinkedList from '../util/SinglyLinkedList';
 import Vec3 from '../util/Vec3';
 import trash from '../util/Trash';
 import Pool from '../util/Pool';
+import Component from '../components/Component';
 
 class Node {
 
@@ -18,9 +19,8 @@ class Node {
     this._size && this._size.recycle();
     this._size = Vec3(0, 0, 0);
 
-    this._componentIterator = 0;
-    this.components && trash(this.components);
-    this.components = {};
+    this._components && trash(this.components);
+    this._components = {};
 
     this._listeners && trash(this._listeners);
     this._listeners = {};
@@ -107,15 +107,15 @@ class Node {
 
   /* components */
 
-  addComponent(Component) {
-    if (!this.hasComponent(Component))
-      Component.instance().attachTo(this);
+  addComponent(componentName) {
+    if (!this.hasComponent(componentName))
+      return Component._map[componentName].instance().attachTo(this);
   }
 
   addComponents(/* arguments */) {
     for (var i=0; i < arguments.length; i++)
       if (!this.hasComponent(arguments[i]))
-        arguments[i].instance().attachTo(this);
+        Component._map[arguments[i]].instance().attachTo(this);
   }
   /*
   // babel output adds some overhead but this looks so nice :(
@@ -124,43 +124,19 @@ class Node {
   }
   */
 
-  // awful.  TODO with better map
-  hasComponent(Component) {
-    var has = false;
-    var components = Object.values(this.components);  // !!
-    var len = components.length;
-    for (var i=0; i < len; i++) {
-      if (components[i] instanceof Component) {
-        has = true; break;
-      }
-    }
-    return has;
+  hasComponent(componentName) {
+    return this._components[componentName];
   }
 
   _attachComponentInstance(component) {
-    var name = component.constructor.name;
-    name = name.charAt(0).toLowerCase() + name.substr(1);
-
-    if (this.components[name])
-      throw new Error("Node already has a " + name + " component",
-        this, component, this.components[name]);
-
-    this[name] = this.components[name] = component;
+    this[component.name] = component;
+    this._components[component.name] = true;
     return component;
   }
 
   _detachComponentInstance(component) {
-    if (typeof component === 'object') {
-      for (let key in this.components)
-        if (this.components[key] === component) {
-          this.components[key].recycle();
-          this.components[key] = null;
-          break;
-        }
-    } else {
-      this.components[component].recycle();
-      this.components[component] = null;
-    }
+    this[component.name].recycle();
+    this._components[component.name] = false;
   }
 
 }

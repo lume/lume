@@ -106,7 +106,7 @@ class Size extends Component {
 
 }
 
-Pool.extend(Size);
+Component.configure('size', Size);
 
 Size.ABSOLUTE_SIZE = 1;
 Size.RELATIVE_SIZE = 2;

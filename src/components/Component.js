@@ -44,12 +44,10 @@ class Component {
     delete componentMap[this._id];
   }
 
-  // Uh, yeah... TODO: better
   requires(/* arguments */) {
     var node = this._node;
     for (var i=0, len=arguments.length; i < len; i++)
-      if (!node.hasComponent(arguments[i]))
-        node.addComponent(arguments[i]);
+      node.addComponent(arguments[i], true /* noWarn */);
   }
 
   /* Updates */
@@ -166,6 +164,14 @@ class Component {
 
 }
 
-Pool.extend(Component);
+Component._map = {};
+
+Component.configure = function(name, Comp) {
+  Comp.prototype.name = name;
+  Component._map[name] = Comp;
+  Pool.extend(Comp);
+}
+
+Component.configure('component', Component);
 
 export default Component;

@@ -20,15 +20,15 @@ System.import('main').then(function() {
     );
   };
 
-  var num = 500;
+  var num = 50;
   window.n = Array(num);
   for (var i=0; i < num; i++) (function(i) {
     var node = window.n[i] = new famin.core.Node.instance();
-    node.addComponents(famin.components.DOMElement, famin.components.Position);
+    node.addComponents('domElement', 'position');
     node.position.set(randomPosition());
     node.size.setAbsolute(50,50,0);
-    node.dOMElement.setClassName('mary');
-    node.dOMElement.setProperty('background',
+    node.domElement.setClassName('mary');
+    node.domElement.setProperty('background',
       'hsla(' + (360/num*i) + ', 100%, 50%, 0.8)');
 
     var toRandomPosition = function() {

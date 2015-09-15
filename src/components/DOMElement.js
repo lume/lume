@@ -30,7 +30,7 @@ class DOMElement extends Component {
   }
 
   onAttach() {
-    this.requires(Size);
+    this.requires('size', 'transform');
   }
 
   setClassName(className) {
@@ -87,6 +87,6 @@ class DOMElement extends Component {
 
 DOMElement.autoListen = [ Event.SIZE_CHANGE, Event.TRANSFORM_CHANGE ];
 
-Pool.extend(DOMElement);
+Component.configure('domElement', DOMElement);
 
 export default DOMElement;

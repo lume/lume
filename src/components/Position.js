@@ -15,8 +15,7 @@ class Position extends Component {
   }
 
   onAttach() {
-    // to avoid circular dependecy; need a better way XXX
-    this.requires(famin.components.Transform);
+    this.requires('transform');
   }
 
   set(XorVec3, y, z, transition, callback) {
@@ -99,6 +98,6 @@ class Position extends Component {
 
 }
 
-Pool.extend(Position);
+Component.configure('position', Position);
 
 export default Position;
