@@ -20,7 +20,7 @@ System.import('main').then(function() {
     );
   };
 
-  var num = 50;
+  var num = location.hash && location.hash.substr(1) || 500;
   window.n = Array(num);
   for (var i=0; i < num; i++) (function(i) {
     var node = window.n[i] = new famin.core.Node.instance();

@@ -7,7 +7,7 @@ let colors = {
 };
 
 let log = {
-  level: 'debug',
+  level: 'info',
   levels: [ 'error', 'warn', 'info', 'debug', 'trace' ],
 
   showLevel: function(level) {

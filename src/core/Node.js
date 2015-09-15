@@ -109,15 +109,13 @@ class Node {
 
   addComponent(componentName) {
     if (!this.hasComponent(componentName))
-      return Component._map[componentName]().attachTo(this);
+      return Component.get(componentName)().attachTo(this);
   }
 
   addComponents(/* arguments */) {
     for (var i=0; i < arguments.length; i++)
       if (!this.hasComponent(arguments[i])) {
-        console.log(arguments[i]);
-        console.log(Component._map);
-        Component._map[arguments[i]]().attachTo(this);
+        Component.get(arguments[i])().attachTo(this);
       }
   }
   /*

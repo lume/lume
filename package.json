@@ -10,15 +10,17 @@
     }
   },
   "scripts": {
-    "test": "node_modules/karma/bin/karma start",
+    "build": "gulp build",
     "dev": "gulp serve",
-    "build": "gulp build"
+    "test": "node_modules/karma/bin/karma start",
+    "test:perf": "node_modules/karma/bin/karma start karma-perf.conf.js"
   },
   "devDependencies": {
     "babel": "^5.8.23",
     "babel-core": "^5.8.23",
     "browser-sync": "^2.9.1",
     "del": "^1.1.1",
+    "grunt": "^0.4.5",
     "gulp": "^3.8.11",
     "gulp-cache": "^0.2.8",
     "gulp-cached": "^1.1.0",
@@ -39,10 +41,14 @@
     "jspm": "^0.16.2",
     "karma": "^0.13.9",
     "karma-babel-preprocessor": "^5.2.2",
+    "karma-benchmark": "^0.4.0",
+    "karma-benchmark-reporter": "^0.1.1",
     "karma-chrome-launcher": "^0.2.0",
     "karma-coverage": "douglasduteil/karma-coverage#next",
+    "karma-htmlfile-reporter": "^0.2.2",
     "karma-jasmine": "^0.3.6",
     "karma-jspm": "^2.0.1",
+    "karma-junit-reporter": "^0.3.4",
     "karma-phantomjs-launcher": "^0.2.1",
     "karma-sourcemap-loader": "^0.3.5",
     "phantomjs": "^1.9.18",

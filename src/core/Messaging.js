@@ -42,7 +42,7 @@ var Messaging = {
 
       let dest = this._receivers[command];
 
-      log.trace(Event[command], args);
+      log.trace('Incoming message "' + Event[command] + '"', command, args);
 
       if (dest) {
         if (dest instanceof Array)

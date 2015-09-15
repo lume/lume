@@ -14,7 +14,8 @@ in tandem with high quality, reuseable components, to ensure relevance.
 * `npm i && jspm i` - install deps (before building/testing)
 * `npm run build` - build to `dist/`
 * `npm run dev` - file watcher with browser sync
-* `npm test` - including code coverage in `coverage/`
+* `npm run test` - including code coverage in `coverage/`
+* `npm run test:perf` - performance tests, results in `benchmarks/`
 
 Credit: babel-jspm-karma-jasmine-istanbul seed from
 https://github.com/gunnarlium/babel-jspm-karma-jasmine-istanbul.

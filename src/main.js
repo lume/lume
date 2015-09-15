@@ -67,3 +67,5 @@ var famin = {
 
 // global export? :)
 window.famin = famin;
+
+export default famin;

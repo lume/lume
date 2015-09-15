@@ -7,10 +7,9 @@ import Event from '../util/Event';
 var componentCount = 0;
 var componentMap = {};
 var componentPool = SinglyLinkedList();
+var registered = {};
 
 var Component = {
-
-  _map: {},
 
   extend: function(overrides) {
 
@@ -18,7 +17,7 @@ var Component = {
 
     if (!name)
       throw new Error("Usage: Component.extend({ name: 'componentName' });");
-    if (componentMap[name])
+    if (registered[name])
       throw new Error('A component named "' + name + '" already exists');
 
     Sub = function Component() {
@@ -50,10 +49,22 @@ var Component = {
     }
 
     // Map from name to component class, e.g. "size" -> Size
-    Component._map[name] = Sub;
+    registered[name] = Sub;
 
     return Sub;
 
+  },
+
+  exists: function(name) {
+    return !!registered[name];
+  },
+
+  get: function(name) {
+    if (registered[name])
+      return registered[name];
+    else
+      throw new Error('No component "' + name +
+        '" exists, did you forget to import it?');
   }
 
 };
