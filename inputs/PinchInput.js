@@ -5,6 +5,11 @@
  * @license MPL 2.0
  * @copyright Famous Industries, Inc. 2014
  */
+
+/* Modified work copyright © 2015 David Valdman */
+
+/* Documentation in progress. May be outdated. */
+
 define(function(require, exports, module) {
     var TwoFingerInput = require('samsara/inputs/TwoFingerInput');
     var OptionsManager = require('samsara/core/OptionsManager');

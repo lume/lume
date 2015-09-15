@@ -8,6 +8,8 @@
 
 /* Modified work copyright © 2015 David Valdman */
 
+/* Documentation in progress. May be outdated. */
+
 define(function(require, exports, module) {
     var OptionsManager = require('samsara/core/OptionsManager');
 
@@ -84,12 +86,11 @@ define(function(require, exports, module) {
     };
 
     /**
-     * Add "unit" curve to internal dictionary of registered curves.
+     * Constructor method. A way of registering custom easing curves by a key.
+     *  Curves are functions that take a number between 0 and 1 and return
+     *  a number (often between 0 and 1, but can over/under shoot).
      *
      * @method register
-     *
-     * @static
-     *
      * @param {string} curveName dictionary key
      * @param {unitCurve} curve function of one numeric variable mapping [0,1]
      *    to range inside [0,1]

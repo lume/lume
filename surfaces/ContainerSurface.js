@@ -9,6 +9,8 @@
 
 /* Modified work copyright © 2015 David Valdman */
 
+/* Documentation in progress. May be outdated. */
+
 define(function(require, exports, module) {
     var Surface = require('samsara/core/Surface');
     var Context = require('samsara/core/Context');

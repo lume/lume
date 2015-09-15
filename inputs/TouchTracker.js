@@ -8,6 +8,8 @@
 
 /* Modified work copyright © 2015 David Valdman */
 
+/* Documentation in progress. May be outdated. */
+
 define(function(require, exports, module) {
     var OptionsManager = require('samsara/core/OptionsManager');
     var EventHandler = require('samsara/core/EventHandler');

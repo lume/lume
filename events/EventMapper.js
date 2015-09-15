@@ -1,5 +1,7 @@
 /* copyright © 2015 David Valdman */
 
+/* Documentation in progress. May be outdated. */
+
 define(function(require, exports, module) {
     var EventHandler = require('samsara/core/EventHandler');
 
