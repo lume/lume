@@ -11,66 +11,85 @@
 define(function(require, exports, module) {
 
     /**
-     *  A high-performance static matrix math library used to calculate
-     *    affine transforms on surfaces and other renderables.
-     *    Famo.us uses 4x4 matrices corresponding directly to
-     *    WebKit matrices (column-major order).
-     *
-     *    The internal "type" of a Matrix is a 16-long float array in
-     *    row-major order, with:
-     *    elements [0],[1],[2],[4],[5],[6],[8],[9],[10] forming the 3x3
-     *          transformation matrix;
-     *    elements [12], [13], [14] corresponding to the t_x, t_y, t_z
-     *           translation;
+     *  A matrix math library for calculating CSS3 matrix transforms.
+     *    A Transform is a 16 element float array in row-major order, with:
+     *    elements [0],[1],[2],[4],[5],[6],[8],[9],[10] forming the 3x3 transformation matrix
+     *     for scale, skew, and rotation;
+     *    elements [12], [13], [14] corresponding to translation in x-, y-, and z-axes;
      *    elements [3], [7], [11] set to 0;
      *    element [15] set to 1.
-     *    All methods are static.
      *
-     * @static
+     *    Note: these matrices are transposes from their mathematical counterparts.
      *
      * @class Transform
+     * @static
      */
     var Transform = {};
 
-    // WARNING: these matrices correspond to WebKit matrices, which are
-    //    transposed from their math counterparts
-    Transform.precision = 1e-6;
+    /**
+     * Identity transform.
+     *
+     * @property identity {Array}
+     * @final
+     */
     Transform.identity = [1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1];
 
+    //TODO: why do inFront/behind need to translate by >1 to overcome DOM order?
     /**
-     * Fast-multiply two or more Transform matrix types to return a
-     *    Matrix, assuming bottom row on each is [0 0 0 1].
+     * Transform for moving a renderable in front of another renderable in the z-direction.
+     *
+     * @property inFront {Array}
+     * @final
+     */
+    Transform.inFront = [1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 1.001, 1];
+
+    /**
+     * Transform for moving a renderable behind another renderable in the z-direction.
+     *
+     * @property behind {Array}
+     * @final
+     */
+    Transform.behind = [1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, -1.001, 1];
+
+    /**
+     * Compose Transform arrays via matrix multiplication.
      *
      * @method compose
-     * @static
-     * @param {Transform} a left Transform
-     * @param {Transform} b right Transform
-     * @return {Transform}
+     * @param t1 {Transform} Left Transform
+     * @param t2 {Transform} Right Transform
+     * @return {Array}
      */
-    Transform.compose = function multiply(a, b) {
-        if (a === Transform.identity) return b.slice();
-        if (b === Transform.identity) return a.slice();
+    Transform.compose = function multiply(t1, t2) {
+        if (t1 === Transform.identity) return t2.slice();
+        if (t2 === Transform.identity) return t1.slice();
         return [
-            a[0] * b[0] + a[4] * b[1] + a[8] * b[2],
-            a[1] * b[0] + a[5] * b[1] + a[9] * b[2],
-            a[2] * b[0] + a[6] * b[1] + a[10] * b[2],
+            t1[0] * t2[0] + t1[4] * t2[1] + t1[8] * t2[2],
+            t1[1] * t2[0] + t1[5] * t2[1] + t1[9] * t2[2],
+            t1[2] * t2[0] + t1[6] * t2[1] + t1[10] * t2[2],
             0,
-            a[0] * b[4] + a[4] * b[5] + a[8] * b[6],
-            a[1] * b[4] + a[5] * b[5] + a[9] * b[6],
-            a[2] * b[4] + a[6] * b[5] + a[10] * b[6],
+            t1[0] * t2[4] + t1[4] * t2[5] + t1[8] * t2[6],
+            t1[1] * t2[4] + t1[5] * t2[5] + t1[9] * t2[6],
+            t1[2] * t2[4] + t1[6] * t2[5] + t1[10] * t2[6],
             0,
-            a[0] * b[8] + a[4] * b[9] + a[8] * b[10],
-            a[1] * b[8] + a[5] * b[9] + a[9] * b[10],
-            a[2] * b[8] + a[6] * b[9] + a[10] * b[10],
+            t1[0] * t2[8] + t1[4] * t2[9] + t1[8] * t2[10],
+            t1[1] * t2[8] + t1[5] * t2[9] + t1[9] * t2[10],
+            t1[2] * t2[8] + t1[6] * t2[9] + t1[10] * t2[10],
             0,
-            a[0] * b[12] + a[4] * b[13] + a[8] * b[14] + a[12],
-            a[1] * b[12] + a[5] * b[13] + a[9] * b[14] + a[13],
-            a[2] * b[12] + a[6] * b[13] + a[10] * b[14] + a[14],
+            t1[0] * t2[12] + t1[4] * t2[13] + t1[8] * t2[14] + t1[12],
+            t1[1] * t2[12] + t1[5] * t2[13] + t1[9] * t2[14] + t1[13],
+            t1[2] * t2[12] + t1[6] * t2[13] + t1[10] * t2[14] + t1[14],
             1
         ];
     };
 
-    Transform.composeMany = function multiplyMany(){
+    /**
+     * Convenience method to Compose several Transform arrays.
+     *
+     * @method composeMany
+     * @param {...Transform}    Transform arrays
+     * @return {Array}
+     */
+    Transform.composeMany = function composeMany(){
         if (arguments.length > 2){
             var first = arguments[0];
             var second = arguments[1];
@@ -82,46 +101,40 @@ define(function(require, exports, module) {
     };
 
     /**
-     * Return a Transform translated by additional amounts in each
-     *    dimension. This is equivalent to the result of
+     * Translate a Transform after the Transform is applied.
      *
      * @method thenMove
-     * @static
-     * @param {Transform} m a Transform
-     * @param {Array.Number} t floats delta vector of length 2 or 3
-     * @return {Transform}
+     * @param t {Transform}     Transform
+     * @param v {Number[]}      Array of [x,y,z] translation components
+     * @return {Array}
      */
-    Transform.thenMove = function thenMove(m, t) {
-        if (!t[2]) t[2] = 0;
-        return [m[0], m[1], m[2], 0, m[4], m[5], m[6], 0, m[8], m[9], m[10], 0, m[12] + t[0], m[13] + t[1], m[14] + t[2], 1];
+    Transform.thenMove = function thenMove(t, v) {
+        if (!v[2]) v[2] = 0;
+        return [t[0], t[1], t[2], 0, t[4], t[5], t[6], 0, t[8], t[9], t[10], 0, t[12] + v[0], t[13] + v[1], t[14] + v[2], 1];
     };
 
     /**
-     * Return a Transform matrix which represents the result of a transform matrix
-     *    applied after a move. This is faster than the equivalent multiply.
-     *    This is equivalent to the result of:
+     * Translate a Transform before the Transform is applied.
      *
      * @method moveThen
-     * @static
-     * @param {Array.Number} v vector representing initial movement
-     * @param {Transform} m matrix to apply afterwards
-     * @return {Transform} the resulting matrix
+     * @param v {Number[]}      Array of [x,y,z] translation components
+     * @param t {Transform}     Transform
+     * @return {Array}
      */
-    Transform.moveThen = function moveThen(v, m) {
+    Transform.moveThen = function moveThen(v, t) {
         if (!v[2]) v[2] = 0;
-        var t0 = v[0] * m[0] + v[1] * m[4] + v[2] * m[8];
-        var t1 = v[0] * m[1] + v[1] * m[5] + v[2] * m[9];
-        var t2 = v[0] * m[2] + v[1] * m[6] + v[2] * m[10];
-        return Transform.thenMove(m, [t0, t1, t2]);
+        var t0 = v[0] * t[0] + v[1] * t[4] + v[2] * t[8];
+        var t1 = v[0] * t[1] + v[1] * t[5] + v[2] * t[9];
+        var t2 = v[0] * t[2] + v[1] * t[6] + v[2] * t[10];
+        return Transform.thenMove(t, [t0, t1, t2]);
     };
 
     /**
-     * Return a Transform which represents a translation by specified
-     *    amounts in each dimension.
+     * Return a Transform which represents translation by a translation vector.
      *
      * @method translate
-     * @static
-     * @return {Transform}
+     * @param v {Number[]}      Translation vector [x,y,z]
+     * @return {Array}
      */
     Transform.translate = function translate(v) {
         var x = v[0] || 0;
@@ -130,48 +143,44 @@ define(function(require, exports, module) {
         return [1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, x, y, z, 1];
     };
 
+    /**
+     * Return a Transform which represents translation in the x-direction.
+     *
+     * @method translate
+     * @param x {Number}        Translation amount
+     */
     Transform.translateX = function translate(x) {
         return [1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, x, 0, 0, 1];
     };
 
+    /**
+     * Return a Transform which represents translation in the y-direction.
+     *
+     * @method translate
+     * @param y {Number}        Translation amount
+     */
     Transform.translateY = function translate(y) {
         return [1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, y, 0, 1];
     };
 
+    /**
+     * Return a Transform which represents translation in the z-direction.
+     *
+     * @method translate
+     * @param z {Number}        Translation amount
+     */
     Transform.translateZ = function translate(z) {
         return [1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, z, 1];
     };
 
     /**
-     * Return a Transform scaled by a vector in each
-     *    dimension. This is a more performant equivalent to the result of
-     *
-     * @method thenScale
-     * @static
-     * @param {Transform} m a matrix
-     * @param {Array.Number} s delta vector (array of floats &&
-     *    array.length == 3)
-     * @return {Transform}
-     */
-    Transform.thenScale = function thenScale(m, s) {
-        return [
-            s[0] * m[0], s[1] * m[1], s[2] * m[2], 0,
-            s[0] * m[4], s[1] * m[5], s[2] * m[6], 0,
-            s[0] * m[8], s[1] * m[9], s[2] * m[10], 0,
-            s[0] * m[12], s[1] * m[13], s[2] * m[14], 1
-        ];
-    };
-
-    /**
-     * Return a Transform which represents a scale by specified amounts
-     *    in each dimension.
+     * Return a Transform which represents a scaling by specified amounts in each dimension.
      *
      * @method scale
-     * @static
-     * @param {Number} x x scale factor
-     * @param {Number} y y scale factor
-     * @param {Number} z z scale factor
-     * @return {Transform}
+     * @param x {Number}        Scale in x-axis
+     * @param y {Number}        Scale in y-axis
+     * @param z {Number}        Scale in z-axis
+     * @return {Array}
      */
     Transform.scale = function scale(x, y, z) {
         if (z === undefined) z = 1;
@@ -180,43 +189,54 @@ define(function(require, exports, module) {
     };
 
     /**
-     * Return a Transform which represents a clockwise
-     *    rotation around the x axis.
+     * Scale a Transform after the Transform is applied.
+     *
+     * @method thenScale
+     * @param t {Transform}     Transform
+     * @param v {Number[]}      Array of [x,y,z] scale components
+     * @return {Array}
+     */
+    Transform.thenScale = function thenScale(t, v) {
+        return [
+            v[0] * t[0], v[1] * t[1], v[2] * t[2], 0,
+            v[0] * t[4], v[1] * t[5], v[2] * t[6], 0,
+            v[0] * t[8], v[1] * t[9], v[2] * t[10], 0,
+            v[0] * t[12], v[1] * t[13], v[2] * t[14], 1
+        ];
+    };
+
+    /**
+     * Return a Transform representing a clockwise rotation around the x-axis.
      *
      * @method rotateX
-     * @static
-     * @param {Number} theta radians
-     * @return {Transform}
+     * @param angle {Number}    Angle in radians
+     * @return {Array}
      */
-    Transform.rotateX = function rotateX(theta) {
-        var cosTheta = Math.cos(theta);
-        var sinTheta = Math.sin(theta);
+    Transform.rotateX = function rotateX(angle) {
+        var cosTheta = Math.cos(angle);
+        var sinTheta = Math.sin(angle);
         return [1, 0, 0, 0, 0, cosTheta, sinTheta, 0, 0, -sinTheta, cosTheta, 0, 0, 0, 0, 1];
     };
 
     /**
-     * Return a Transform which represents a clockwise
-     *    rotation around the y axis.
+     * Return a Transform representing a clockwise rotation around the y-axis.
      *
      * @method rotateY
-     * @static
-     * @param {Number} theta radians
-     * @return {Transform}
+     * @param angle {Number}    Angle in radians
+     * @return {Array}
      */
-    Transform.rotateY = function rotateY(theta) {
-        var cosTheta = Math.cos(theta);
-        var sinTheta = Math.sin(theta);
+    Transform.rotateY = function rotateY(angle) {
+        var cosTheta = Math.cos(angle);
+        var sinTheta = Math.sin(angle);
         return [cosTheta, 0, -sinTheta, 0, 0, 1, 0, 0, sinTheta, 0, cosTheta, 0, 0, 0, 0, 1];
     };
 
     /**
-     * Return a Transform which represents a clockwise
-     *    rotation around the z axis.
+     * Return a Transform representing a clockwise rotation around the z-axis.
      *
-     * @method rotateZ
-     * @static
-     * @param {Number} theta radians
-     * @return {Transform}
+     * @method rotateX
+     * @param angle {Number}    Angle in radians
+     * @return {Array}
      */
     Transform.rotateZ = function rotateZ(theta) {
         var cosTheta = Math.cos(theta);
@@ -225,54 +245,38 @@ define(function(require, exports, module) {
     };
 
     /**
-     * Return a Transform which represents composed clockwise
-     *    rotations along each of the axes. Equivalent to the result of
-     *    Matrix.multiply(rotateX(phi), rotateY(theta), rotateZ(psi)).
+     * Return a Transform representation of a skew in the x-direction
      *
-     * @method rotate
-     * @static
-     * @param {Number} phi radians to rotate about the positive x axis
-     * @param {Number} theta radians to rotate about the positive y axis
-     * @param {Number} psi radians to rotate about the positive z axis
-     * @return {Transform}
+     * @method skewX
+     * @param angle {Number}    The angle between the top and left sides
+     * @return {Array}
      */
-    Transform.rotate = function rotate(phi, theta, psi) {
-        var cosPhi = Math.cos(phi);
-        var sinPhi = Math.sin(phi);
-        var cosTheta = Math.cos(theta);
-        var sinTheta = Math.sin(theta);
-        var cosPsi = Math.cos(psi);
-        var sinPsi = Math.sin(psi);
-        var result = [
-            cosTheta * cosPsi,
-            cosPhi * sinPsi + sinPhi * sinTheta * cosPsi,
-            sinPhi * sinPsi - cosPhi * sinTheta * cosPsi,
-            0,
-            -cosTheta * sinPsi,
-            cosPhi * cosPsi - sinPhi * sinTheta * sinPsi,
-            sinPhi * cosPsi + cosPhi * sinTheta * sinPsi,
-            0,
-            sinTheta,
-            -sinPhi * cosTheta,
-            cosPhi * cosTheta,
-            0,
-            0, 0, 0, 1
-        ];
-        return result;
+    Transform.skewX = function skewX(angle) {
+        return [1, 0, 0, 0, Math.tan(angle), 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1];
     };
 
     /**
-     * Return a Transform which represents an axis-angle rotation
+     * Return a Transform representation of a skew in the y-direction
+     *
+     * @method skewY
+     * @param angle {Number}    The angle between the bottom and right sides
+     * @return {Array}
+     */
+    Transform.skewY = function skewY(angle) {
+        return [1, Math.tan(angle), 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1];
+    };
+
+    /**
+     * Return a Transform which represents an axis-angle rotation.
      *
      * @method rotateAxis
-     * @static
-     * @param {Array.Number} v unit vector representing the axis to rotate about
-     * @param {Number} theta radians to rotate clockwise about the axis
-     * @return {Transform}
+     * @param v {Number[]}   Unit vector representing the axis to rotate about
+     * @param angle {Number} Radians to rotate clockwise about the axis
+     * @return {Array}
      */
-    Transform.rotateAxis = function rotateAxis(v, theta) {
-        var sinTheta = Math.sin(theta);
-        var cosTheta = Math.cos(theta);
+    Transform.rotateAxis = function rotateAxis(v, angle) {
+        var sinTheta = Math.sin(angle);
+        var cosTheta = 1 - Math.cos(angle);
         var verTheta = 1 - cosTheta; // versine of theta
 
         var xxV = v[0] * v[0] * verTheta;
@@ -285,116 +289,73 @@ define(function(require, exports, module) {
         var ys = v[1] * sinTheta;
         var zs = v[2] * sinTheta;
 
-        var result = [
+        return [
             xxV + cosTheta, xyV + zs, xzV - ys, 0,
             xyV - zs, yyV + cosTheta, yzV + xs, 0,
             xzV + ys, yzV - xs, zzV + cosTheta, 0,
             0, 0, 0, 1
         ];
-        return result;
     };
 
     /**
-     * Return a Transform which represents a transform matrix applied about
-     * a separate origin point.
+     * Return a Transform which represents a Transform applied about an origin point.
+     *  Useful for rotating and scaling relative to an origin.
      *
      * @method aboutOrigin
-     * @static
-     * @param {Array.Number} v origin point to apply matrix
-     * @param {Transform} m matrix to apply
-     * @return {Transform}
+     * @param v {Number[]}          Origin point [x,y,z]
+     * @param t {Transform}         Transform
+     * @return {Array}
      */
-    Transform.aboutOrigin = function aboutOrigin(v, m) {
-        var t0 = v[0] - (v[0] * m[0] + v[1] * m[4] + v[2] * m[8]);
-        var t1 = v[1] - (v[0] * m[1] + v[1] * m[5] + v[2] * m[9]);
-        var t2 = v[2] - (v[0] * m[2] + v[1] * m[6] + v[2] * m[10]);
-        return Transform.thenMove(m, [t0, t1, t2]);
+    Transform.aboutOrigin = function aboutOrigin(v, t) {
+        v[2] = v[2] || 0;
+        var t0 = v[0] - (v[0] * t[0] + v[1] * t[4] + v[2] * t[8]);
+        var t1 = v[1] - (v[0] * t[1] + v[1] * t[5] + v[2] * t[9]);
+        var t2 = v[2] - (v[0] * t[2] + v[1] * t[6] + v[2] * t[10]);
+        return Transform.thenMove(t, [t0, t1, t2]);
     };
 
     /**
-     * Return a Transform representation of a skew transformation
-     *
-     * @method skew
-     * @static
-     * @param {Number} phi scale factor skew in the x axis
-     * @param {Number} theta scale factor skew in the y axis
-     * @param {Number} psi scale factor skew in the z axis
-     * @return {Transform}
-     */
-    Transform.skew = function skew(phi, theta, psi) {
-        return [1, Math.tan(theta), 0, 0, Math.tan(psi), 1, 0, 0, 0, Math.tan(phi), 1, 0, 0, 0, 0, 1];
-    };
-
-    /**
-     * Return a Transform representation of a skew in the x-direction
-     *
-     * @method skewX
-     * @static
-     * @param {Number} angle the angle between the top and left sides
-     * @return {Transform}
-     */
-    Transform.skewX = function skewX(angle) {
-        return [1, 0, 0, 0, Math.tan(angle), 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1];
-    };
-
-    /**
-     * Return a Transform representation of a skew in the y-direction
-     *
-     * @method skewY
-     * @static
-     * @param {Number} angle the angle between the top and right sides
-     * @return {Transform}
-     */
-    Transform.skewY = function skewY(angle) {
-        return [1, Math.tan(angle), 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1];
-    };
-
-    /**
-     * Returns a perspective Transform matrix
+     * Returns a perspective Transform.
      *
      * @method perspective
-     * @static
-     * @param {Number} focusZ z position of focal point
-     * @return {Transform}
+     * @param focusZ {Number}       z-depth of focal point
+     * @return {Array}
      */
     Transform.perspective = function perspective(focusZ) {
         return [1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, -1 / focusZ, 0, 0, 0, 1];
     };
 
     /**
-     * Return translation vector component of given Transform
+     * Return translation vector component of the given Transform.
      *
      * @method getTranslate
-     * @static
-     * @param {Transform} m Transform
-     * @return {Array.Number} the translation vector [t_x, t_y, t_z]
+     * @param t {Transform}         Transform
+     * @return {Number[]}
      */
-    Transform.getTranslate = function getTranslate(m) {
-        return [m[12], m[13], m[14]];
+    Transform.getTranslate = function getTranslate(t) {
+        return [t[12], t[13], t[14]];
     };
 
     /**
-     * Return inverse affine transform for given Transform.
-     *   Note: This assumes m[3] = m[7] = m[11] = 0, and m[15] = 1.
-     *   Will provide incorrect results if not invertible or preconditions not met.
+     * Return inverse Transform for given Transform.
+     *   Note: will provide incorrect results if Transform is not invertible.
      *
      * @method inverse
-     * @static
-     * @param {Transform} m Transform
-     * @return {Transform}
+     * @param t {Transform} Transform
+     * @return {Array}
      */
-    Transform.inverse = function inverse(m) {
+    Transform.inverse = function inverse(t) {
         // only need to consider 3x3 section for affine
-        var c0 = m[5] * m[10] - m[6] * m[9];
-        var c1 = m[4] * m[10] - m[6] * m[8];
-        var c2 = m[4] * m[9] - m[5] * m[8];
-        var c4 = m[1] * m[10] - m[2] * m[9];
-        var c5 = m[0] * m[10] - m[2] * m[8];
-        var c6 = m[0] * m[9] - m[1] * m[8];
-        var c8 = m[1] * m[6] - m[2] * m[5];
-        var c9 = m[0] * m[6] - m[2] * m[4];
-        var c10 = m[0] * m[5] - m[1] * m[4];
-        var detM = m[0] * c0 - m[1] * c1 + m[2] * c2;
+        var c0 = t[5] * t[10] - t[6] * t[9];
+        var c1 = t[4] * t[10] - t[6] * t[8];
+        var c2 = t[4] * t[9] - t[5] * t[8];
+        var c4 = t[1] * t[10] - t[2] * t[9];
+        var c5 = t[0] * t[10] - t[2] * t[8];
+        var c6 = t[0] * t[9] - t[1] * t[8];
+        var c8 = t[1] * t[6] - t[2] * t[5];
+        var c9 = t[0] * t[6] - t[2] * t[4];
+        var c10 = t[0] * t[5] - t[1] * t[4];
+        var detM = t[0] * c0 - t[1] * c1 + t[2] * c2;
         var invD = 1 / detM;
         var result = [
             invD * c0, -invD * c4, invD * c8, 0,
@@ -402,26 +363,27 @@ define(function(require, exports, module) {
             invD * c2, -invD * c6, invD * c10, 0,
             0, 0, 0, 1
         ];
-        result[12] = -m[12] * result[0] - m[13] * result[4] - m[14] * result[8];
-        result[13] = -m[12] * result[1] - m[13] * result[5] - m[14] * result[9];
-        result[14] = -m[12] * result[2] - m[13] * result[6] - m[14] * result[10];
+        result[12] = -t[12] * result[0] - t[13] * result[4] - t[14] * result[8];
+        result[13] = -t[12] * result[1] - t[13] * result[5] - t[14] * result[9];
+        result[14] = -t[12] * result[2] - t[13] * result[6] - t[14] * result[10];
         return result;
     };
 
     /**
-     * Returns the transpose of a 4x4 matrix
+     * Returns the transpose of a Transform.
      *
      * @method transpose
-     * @static
-     * @param {Transform} m matrix
-     * @return {Transform} the resulting transposed matrix
+     * @param t {Transform}     Transform
+     * @return {Array}
      */
-    Transform.transpose = function transpose(m) {
-        return [m[0], m[4], m[8], m[12], m[1], m[5], m[9], m[13], m[2], m[6], m[10], m[14], m[3], m[7], m[11], m[15]];
+    Transform.transpose = function transpose(t) {
+        return [t[0], t[4], t[8], t[12], t[1], t[5], t[9], t[13], t[2], t[6], t[10], t[14], t[3], t[7], t[11], t[15]];
     };
 
     function _normSquared(v) {
-        return (v.length === 2) ? v[0] * v[0] + v[1] * v[1] : v[0] * v[0] + v[1] * v[1] + v[2] * v[2];
+        return (v.length === 2)
+            ? v[0] * v[0] + v[1] * v[1]
+            : v[0] * v[0] + v[1] * v[1] + v[2] * v[2];
     }
     function _norm(v) {
         return Math.sqrt(_normSquared(v));
@@ -431,21 +393,18 @@ define(function(require, exports, module) {
     }
 
     /**
-     * Decompose Transform into separate .translate, .rotate, .scale,
-     *    and .skew components.
+     * Decompose Transform into separate `translate`, `rotate`, `scale` and `skew` components.
      *
      * @method interpret
-     * @static
-     * @param {Transform} M transform matrix
-     * @return {Object} matrix spec object with component matrices .translate,
-     *    .rotate, .scale, .skew
+     * @param t {Transform}     Transform
+     * @return {Object}
      */
-    Transform.interpret = function interpret(M) {
+    Transform.interpret = function interpret(t) {
         // QR decomposition via Householder reflections
-        //FIRST ITERATION
+        // FIRST ITERATION
 
         //default Q1 to the identity matrix;
-        var x = [M[0], M[1], M[2]];                // first column vector
+        var x = [t[0], t[1], t[2]];                // first column vector
         var sgn = _sign(x[0]);                     // sign of first component of x (for stability)
         var xNorm = _norm(x);                      // norm of first column vector
         var v = [x[0] + sgn * xNorm, x[1], x[2]];  // v = x + sign(x[0])|x|e1
@@ -453,7 +412,12 @@ define(function(require, exports, module) {
 
         //bail out if our Matrix is singular
         if (mult >= Infinity) {
-            return {translate: Transform.getTranslate(M), rotate: [0, 0, 0], scale: [0, 0, 0], skew: [0, 0, 0]};
+            return {
+                translate: Transform.getTranslate(t),
+                rotate: [0, 0, 0],
+                scale: [0, 0, 0],
+                skew: [0, 0, 0]
+            };
         }
 
         //evaluate Q1 = I - 2vv'/v'v
@@ -475,9 +439,9 @@ define(function(require, exports, module) {
         Q1[9] = Q1[6];                      // 2,1 entry
 
         //reduce first column of M
-        var MQ1 = Transform.compose(Q1, M);
+        var MQ1 = Transform.compose(Q1, t);
 
-        //SECOND ITERATION on (1,1) minor
+        // SECOND ITERATION on (1,1) minor
         var x2 = [MQ1[5], MQ1[6]];
         var sgn2 = _sign(x2[0]);                    // sign of first component of x (for stability)
         var x2Norm = _norm(x2);                     // norm of first column vector
@@ -497,7 +461,7 @@ define(function(require, exports, module) {
 
         //calc QR decomposition. Q = Q1*Q2, R = Q'*M
         var Q = Transform.compose(Q2, Q1);      //note: really Q transpose
-        var R = Transform.compose(Q, M);
+        var R = Transform.compose(Q, t);
 
         //remove negative scaling
         var remover = Transform.scale(R[0] < 0 ? -1 : 1, R[5] < 0 ? -1 : 1, R[10] < 0 ? -1 : 1);
@@ -506,7 +470,7 @@ define(function(require, exports, module) {
 
         //decompose into rotate/scale/skew matrices
         var result = {};
-        result.translate = Transform.getTranslate(M);
+        result.translate = Transform.getTranslate(t);
         result.rotate = [Math.atan2(-Q[6], Q[10]), Math.asin(Q[2]), Math.atan2(-Q[1], Q[0])];
         if (!result.rotate[0]) {
             result.rotate[0] = 0;
@@ -530,16 +494,33 @@ define(function(require, exports, module) {
     };
 
     /**
+     * Compose .translate, .rotate, .scale and .skew components into a Transform matrix.
+     *  The "inverse" of .interpret.
+     *
+     * @method build
+     * @param spec {Object} Object with keys "translate, rotate, scale, skew" and their vector values
+     * @return {Array}
+     */
+    Transform.build = function build(spec) {
+        var scaleMatrix = Transform.scale(spec.scale[0], spec.scale[1], spec.scale[2]);
+        var skewMatrix = Transform.skew(spec.skew[0], spec.skew[1], spec.skew[2]);
+        var rotateMatrix = Transform.rotate(spec.rotate[0], spec.rotate[1], spec.rotate[2]);
+        return Transform.thenMove(
+            Transform.compose(Transform.compose(rotateMatrix, skewMatrix), scaleMatrix),
+            spec.translate
+        );
+    };
+
+    /**
      * Weighted average between two matrices by averaging their
-     *     translation, rotation, scale, skew components.
-     *     f(M1,M2,t) = (1 - t) * M1 + t * M2
+     *  translation, rotation, scale, skew components.
+     *  f(M1,M2,t) = (1 - t) * M1 + t * M2
      *
      * @method average
-     * @static
-     * @param {Transform} M1 f(M1,M2,0) = M1
-     * @param {Transform} M2 f(M1,M2,1) = M2
-     * @param {Number} t
-     * @return {Transform}
+     * @param M1 {Transform}    M1 = f(M1,M2,0) Transform
+     * @param M2 {Transform}    M2 = f(M1,M2,1) Transform
+     * @param [t=1/2] {Number}
+     * @return {Array}
      */
     Transform.average = function average(M1, M2, t) {
         t = (t === undefined) ? 0.5 : t;
@@ -559,35 +540,17 @@ define(function(require, exports, module) {
             specAvg.scale[i] = (1 - t) * specM1.scale[i] + t * specM2.scale[i];
             specAvg.skew[i] = (1 - t) * specM1.skew[i] + t * specM2.skew[i];
         }
+
         return Transform.build(specAvg);
     };
 
     /**
-     * Compose .translate, .rotate, .scale, .skew components into
-     * Transform matrix
-     *
-     * @method build
-     * @static
-     * @param {matrixSpec} spec object with component matrices .translate,
-     *    .rotate, .scale, .skew
-     * @return {Transform} composed transform
-     */
-    Transform.build = function build(spec) {
-        var scaleMatrix = Transform.scale(spec.scale[0], spec.scale[1], spec.scale[2]);
-        var skewMatrix = Transform.skew(spec.skew[0], spec.skew[1], spec.skew[2]);
-        var rotateMatrix = Transform.rotate(spec.rotate[0], spec.rotate[1], spec.rotate[2]);
-        return Transform.thenMove(Transform.compose(Transform.compose(rotateMatrix, skewMatrix), scaleMatrix), spec.translate);
-    };
-
-    /**
-     * Determine if two Transforms are component-wise equal
-     *   Warning: breaks on perspective Transforms
+     * Determine if two Transforms are component-wise equal.
      *
      * @method equals
-     * @static
-     * @param {Transform} a matrix
-     * @param {Transform} b matrix
-     * @return {boolean}
+     * @param a {Transform}     Transform
+     * @param b {Transform}     Transform
+     * @return {Boolean}
      */
     Transform.equals = function equals(a, b) {
         return !Transform.notEquals(a, b);
@@ -595,78 +558,21 @@ define(function(require, exports, module) {
 
     /**
      * Determine if two Transforms are component-wise unequal
-     *   Warning: breaks on perspective Transforms
      *
      * @method notEquals
-     * @static
-     * @param {Transform} a matrix
-     * @param {Transform} b matrix
-     * @return {boolean}
+     * @param a {Transform}     Transform
+     * @param b {Transform}     Transform
+     * @return {Boolean}
      */
     Transform.notEquals = function notEquals(a, b) {
         if (a === b) return false;
 
-        // shortci
         return !(a && b) ||
             a[12] !== b[12] || a[13] !== b[13] || a[14] !== b[14] ||
             a[0] !== b[0] || a[1] !== b[1] || a[2] !== b[2] ||
             a[4] !== b[4] || a[5] !== b[5] || a[6] !== b[6] ||
             a[8] !== b[8] || a[9] !== b[9] || a[10] !== b[10];
     };
-
-    /**
-     * Constrain angle-trio components to range of [-pi, pi).
-     *
-     * @method normalizeRotation
-     * @static
-     * @param {Array.Number} rotation phi, theta, psi (array of floats
-     *    && array.length == 3)
-     * @return {Array.Number} new phi, theta, psi triplet
-     *    (array of floats && array.length == 3)
-     */
-    Transform.normalizeRotation = function normalizeRotation(rotation) {
-        var result = rotation.slice(0);
-        if (result[0] === Math.PI * 0.5 || result[0] === -Math.PI * 0.5) {
-            result[0] = -result[0];
-            result[1] = Math.PI - result[1];
-            result[2] -= Math.PI;
-        }
-        if (result[0] > Math.PI * 0.5) {
-            result[0] = result[0] - Math.PI;
-            result[1] = Math.PI - result[1];
-            result[2] -= Math.PI;
-        }
-        if (result[0] < -Math.PI * 0.5) {
-            result[0] = result[0] + Math.PI;
-            result[1] = -Math.PI - result[1];
-            result[2] -= Math.PI;
-        }
-        while (result[1] < -Math.PI) result[1] += 2 * Math.PI;
-        while (result[1] >= Math.PI) result[1] -= 2 * Math.PI;
-        while (result[2] < -Math.PI) result[2] += 2 * Math.PI;
-        while (result[2] >= Math.PI) result[2] -= 2 * Math.PI;
-        return result;
-    };
-
-    //TODO: why do inFront/behind need to translate by >1 to overcome DOM order?
-
-    /**
-     * (Property) Array defining a translation forward in z
-     *
-     * @property {array} inFront
-     * @static
-     * @final
-     */
-    Transform.inFront = [1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 1.001, 1];
-
-    /**
-     * (Property) Array defining a translation backwards in z
-     *
-     * @property {array} behind
-     * @static
-     * @final
-     */
-    Transform.behind = [1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, -1.001, 1];
 
     module.exports = Transform;
 });
