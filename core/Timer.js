@@ -17,6 +17,7 @@ define(function(require, exports, module) {
      *  It also includes other helpful methods for debouncing.
      *
      * @class Timer
+     * @static
      */
     var Timer = {};
 
