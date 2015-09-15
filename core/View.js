@@ -24,10 +24,21 @@ define(function(require, exports, module) {
     var sizeAlgebra = require('samsara/core/algebras/size');
 
     /**
+     * A View provides encapsulation for a subtree of the scene graph. You can build
+     *  complicated visual components and add them to a scene graph as you would a Surface.
+     *  In addition to what a Controller provides, a View provides:
+     *      Input and output streams in this.input, this.output
+     *      An `add` method to build up its internal scene graph
+     *      Size methods: setSize, setProportions
+     *      Layout methods: setOpacity, setOrigin
+     *
      * @class View
      * @constructor
+     * @extends Controller
+     * @uses SizeNode
+     * @uses LayoutNode
+     * @uses SimpleStream
      */
-
     var View = Controller.extend({
         _isView : true,
         defaults : {
@@ -76,18 +87,49 @@ define(function(require, exports, module) {
             Controller.apply(this, arguments);
             if (this.options) setOptions.call(this, this.options);
         },
+        /**
+         * Extends the scene graph subtree with a new node.
+         *
+         * @method add
+         * @param object {SizeNode|LayoutNode|Surface} Node
+         * @return {SceneGraphNode}
+         */
         add : function add(){
             return SceneGraphNode.prototype.add.apply(this._node, arguments);
         },
+        /**
+         * Setter for size.
+         *
+         * @method setSize
+         * @param size {Number[]|Stream} Size as [width, height] in pixels, or a stream.
+         */
         setSize : function setSize(size){
             this._sizeNode.set({size : size});
         },
+        /**
+         * Setter for proportions.
+         *
+         * @method setProportions
+         * @param proportions {Number[]|Stream} Proportions as [x,y], or a stream.
+         */
         setProportions : function setProportions(proportions){
             this._sizeNode.set({proportions : proportions});
         },
+        /**
+         * Setter for origin.
+         *
+         * @method setOrigin
+         * @param origin {Number[]|Stream} Origin as [x,y], or a stream.
+         */
         setOrigin : function setOrigin(origin){
             this._layoutNode.set({origin : origin});
         },
+        /**
+         * Setter for opacity.
+         *
+         * @method setOpacity
+         * @param opacity {Number|Stream} Opacity
+         */
         setOpacity : function setOpacity(opacity){
             this._layoutNode.set({opacity : opacity});
         }
