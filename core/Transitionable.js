@@ -9,33 +9,31 @@
 /* Modified work copyright © 2015 David Valdman */
 
 define(function(require, exports, module) {
-    var TweenTransition = require('./../transitions/TweenTransition');
+    var TweenTransition = require('samsara/transitions/TweenTransition');
     var EventHandler = require('samsara/core/EventHandler');
     var dirtyQueue = require('samsara/core/queues/dirtyQueue');
     var preTickQueue = require('samsara/core/queues/preTickQueue');
     var tickQueue = require('samsara/core/queues/tickQueue');
     var SimpleStream = require('samsara/streams/SimpleStream');
 
+    var transitionMethods = {};
+
+    var STATE = {
+        NONE : -1,
+        START : 0,
+        UPDATE : 1,
+        END : 2
+    };
+
     /**
-     * A state maintainer for a smooth transition between
-     *    numerically-specified states. Example numeric states include floats or
-     *    Transform objects.
-     *
-     * An initial state is set with the constructor or set(startState). A
-     *    corresponding end state and transition are set with set(endState,
-     *    transition). Subsequent calls to set(endState, transition) begin at
-     *    the last state. Calls to get(timestamp) provide the interpolated state
-     *    along the way.
-     *
-     * Note that there is no event loop here - calls to get() are the only way
-     *    to find state projected to the current (or provided) time and are
-     *    the only way to trigger callbacks. Usually this kind of object would
-     *    be part of the render() path of a visible component.
+     * A way to transition numeric values and arrays of numbers between start and end states.
+     *  Transitions are given an easing curve and a duration.
+     *  Non-numeric values are ignored.
      *
      * @class Transitionable
      * @constructor
-     * @param {number|Array.Number|Object.<number|string, number>} start
-     *    beginning state
+     * @extends SimpleStream
+     * @param start {Number|Number[]}   Starting value
      */
     function Transitionable(start) {
         this.transitionQueue = [];
@@ -54,7 +52,7 @@ define(function(require, exports, module) {
         EventHandler.setInputHandler(this, this._eventInput);
         EventHandler.setOutputHandler(this, this._eventOutput);
 
-        var boundUpdate = this.update.bind(this);
+        var boundUpdate = _update.bind(this);
 
         this._eventOutput.on('start', function(){
             tickQueue.push(boundUpdate);
@@ -77,26 +75,11 @@ define(function(require, exports, module) {
     Transitionable.prototype = Object.create(SimpleStream.prototype);
     Transitionable.prototype.constructor = Transitionable;
 
-    var transitionMethods = {};
-    var STATE = {
-        NONE : -1,
-        START : 0,
-        UPDATE : 1,
-        END : 2
-    };
-
-    Transitionable.register = function register(name, engineClass) {
-        if (!(name in transitionMethods))
-            transitionMethods[name] = engineClass;
-    };
-
-    Transitionable.unregister = function unregister(name) {
-        if (name in transitionMethods) {
-            delete transitionMethods[name];
-            return true;
-        }
-        else return false;
-    };
+    function _update(){
+        if (!this._engineInstance) return;
+        this.state = this._engineInstance.get();
+        this.emit('update', this.state);
+    }
 
     function _loadNext() {
         if (this.endStateQueue.length === 0) {
@@ -140,20 +123,44 @@ define(function(require, exports, module) {
         this._engineInstance.set(endValue, transition, _loadNext.bind(this));
     }
 
-    /**Trans
-     * Add transition to end state to the queue of pending transitions. Special
-     *    Use: calling without a transition resets the object to that state with
-     *    no pending actions
+    /**
+     * Constructor method. A way of registering other engines that can interpolate
+     *  between start and end values. For instance, a physics engine.
+     *
+     *  @method register
+     *  @param name {string}    Identifier for the engine
+     *  @param constructor      Constructor for the engine
+     */
+    Transitionable.register = function register(name, constructor) {
+        if (!(name in transitionMethods))
+            transitionMethods[name] = constructor;
+    };
+
+    /**
+     * Constructor method. Unregister an interpolating engine.
+     *  Undoes work of `register`.
+     *
+     *  @method unregister
+     *  @param name {string}    Identifier for the engine
+     */
+    Transitionable.unregister = function unregister(name) {
+        if (name in transitionMethods) {
+            delete transitionMethods[name];
+            return true;
+        }
+        else return false;
+    };
+
+    /**
+     * Define a new end value that will be transitioned towards with the prescribed
+     *  transition. An optional callback can fire when the transition completes.
      *
      * @method set
-     *
-     * @param {number|Array.Number|Object.<number, number>} endState
-     *    end state to which we interpolate
-     * @param {transition=} transition object of type {duration: number, curve:
-     *    f[0,1] -> [0,1] or name}. If transition is omitted, change will be
-     *    instantaneous.
-     * @param {function()=} callback Zero-argument function to call on observed
-     *    completion (t=1)
+     * @param endState {Number|Number[]}        End value
+     * @param [transition] {Object}             Transition definition
+     * @param [transition.curve] {string}       Easing curve name, e.g., "easeIn"
+     * @param [transition.duration] {string}    Duration of transition
+     * @param [callback] {Function}             Callback
      */
     Transitionable.prototype.set = function set(endState, transition, callback) {
         if (!transition) {
@@ -192,31 +199,21 @@ define(function(require, exports, module) {
     };
 
     /**
-     * Get interpolated state of current action at provided time. If the last
-     *    action has completed, invoke its callback.
+     * Return the current state of the transition.
      *
      * @method get
-     *
-     * @return {number|Object.<number|string, number>} beginning state
-     *    interpolated to this point in time.
+     * @return {Number|Number[]}    Current state
      */
     Transitionable.prototype.get = function get() {
         return this.state;
     };
 
-    Transitionable.prototype.update = function update(){
-        if (!this._engineInstance) return;
-        this.state = this._engineInstance.get();
-        this.emit('update', this.state);
-    };
-
     /**
-     * Cancel all transitions and reset to a stable state
+     * Cancel all transitions and reset to a provided state.
      *
      * @method reset
-     *
-     * @param {number|Array.Number|Object.<number, number>} startState
-     *    stable state to set to
+     * @param startState {Number|Number[]}      Value state
+     * @param [startVelocity] {Number|Number[]} Velocity state (unused for now)
      */
     Transitionable.prototype.reset = function reset(startState, startVelocity) {
         if (this._engineInstance)
@@ -231,6 +228,17 @@ define(function(require, exports, module) {
         this.callbackQueue = [];
     };
 
+    /**
+     * Iterate through the provided values with the provided transitions. Firing an
+     *  optional callback when the series of transitions completes.
+     *  One transition may be provided as opposed to an array when you want all the
+     *  transitions to behave the same way.
+     *
+     * @method iterate
+     * @param values {Array}                    Array of values
+     * @param transitions {Object|Object[]}     Array of transitions
+     * @param [callback] {Function}             Callback
+     */
     Transitionable.prototype.iterate = function iterate(values, transitions, callback){
         if (values.length === 0) {
             if (callback) callback();
@@ -247,6 +255,15 @@ define(function(require, exports, module) {
         }.bind(this));
     };
 
+    /**
+     * Loop indefinitely between values with provided transitions. Fire a callback
+     *  after each new value is reached.
+     *
+     * @method loop
+     * @param values {Array}                    Array of values
+     * @param transitions {Object|Object[]}     Array of transitions
+     * @param [callback] {Function}             Callback
+     */
     Transitionable.prototype.loop = function(values, transitions, callback){
         var val = values.slice(0);
         this.iterate(values, transitions, function(){
@@ -256,15 +273,13 @@ define(function(require, exports, module) {
     };
 
     /**
-     * Add delay action to the pending action queue queue.
+     * Postpone a transition, and fire it by providing it in the callback parameter.
      *
      * @method delay
-     *
-     * @param {number} duration delay time (ms)
-     * @param {function} callback Zero-argument function to call on observed
-     *    completion (t=1)
+     * @param callback {Function}   Callback
+     * @param duration {Number}     Duration of delay (in millisecons)
      */
-    Transitionable.prototype.delay = function delay(duration, callback) {
+    Transitionable.prototype.delay = function delay(callback, duration) {
         this.set(this.get(), {
             duration: duration,
             curve: function(){return 0;}},
@@ -273,18 +288,17 @@ define(function(require, exports, module) {
     };
 
     /**
-     * Is there at least one action pending completion?
+     * Determine is the transition is ongoing, or has completed.
      *
      * @method isActive
-     *
-     * @return {boolean}
+     * @return {Boolean}
      */
     Transitionable.prototype.isActive = function isActive() {
         return this._state == STATE.UPDATE;
     };
 
     /**
-     * Halt transition at current state and erase all pending actions.
+     * Stop transition at the current value and erase all pending actions.
      *
      * @method halt
      */
