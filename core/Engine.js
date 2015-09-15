@@ -25,7 +25,6 @@ define(function(require, exports, module) {
     var contexts = [];
     var rafId = 0;
     var eventForwarders = {};
-    var eventHandler = new EventHandler();
     var listenOnTick = false;
     var size = new EventHandler();
     var layout = new EventHandler();
