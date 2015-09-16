@@ -26,19 +26,17 @@ module.exports = function (config) {
             '/base': '/base/src'
         },
 
-        browsers: ['PhantomJS' /*, 'Chrome' */],
+        browsers: [ 'PhantomJS' /*, 'Chrome' */ ],
 
         reporters: ['progress', /* 'junit' */, 'html'],
 
         preprocessors: {
-           '{*.js}': ['babel']
+//           '{*.js}': ['babel']
         },
 
         babelPreprocessor: {
             options: {
                 sourceMap: 'inline',
-                modules: 'system',
-                moduleIds: true,
                 blacklist: ['useStrict']
             },
             sourceFileName: function(file) {

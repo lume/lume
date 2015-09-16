@@ -5,7 +5,7 @@ import FrameLoop from '../core/FrameLoop';
 describe('Component (unattached)', function() {
   beforeEach(function() {
     Component.loop = new FrameLoop();
-    this.Component = Component.extend({ name: 'component' });    
+    this.Component = Component.extend({ name: 'component' }, true /* ignoreDup */);
   });
 
   it('should not run updates when not attached to a node', function() {
@@ -20,7 +20,7 @@ describe('Component (unattached)', function() {
 describe('Component (attached)', function() {
   beforeEach(function() {
     Component.loop = new FrameLoop();
-    this.Component = Component.extend({ name: 'component' });    
+    this.Component = Component.extend({ name: 'component' }, true /* ignoreDup */);
 
     this.node = Node.instance();
     this.node.addComponent('component');

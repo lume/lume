@@ -11,13 +11,13 @@ var registered = {};
 
 var Component = {
 
-  extend: function(overrides) {
+  extend: function(overrides, ignoreDup) {
 
     var Sub, key, name = overrides.name;
 
     if (!name)
       throw new Error("Usage: Component.extend({ name: 'componentName' });");
-    if (registered[name])
+    if (registered[name] && !ignoreDup)
       throw new Error('A component named "' + name + '" already exists');
 
     Sub = function Component() {
@@ -35,8 +35,15 @@ var Component = {
       this.init.apply(this, arguments);
     };
 
-    Sub.prototype = Object.create(_super);
-    Sub.prototype.constructor = Sub;
+    /*
+     * There are only a small number of components, with a small
+     * number of methods, so let's avoid the (minor, but accumulative)
+     * overhead of inheritance.
+     */
+    //Sub.prototype = Object.create(_super);
+    //Sub.prototype.constructor = Sub;
+    for (key in _super)
+      Sub.prototype[key] = _super[key];
 
     // Just for constructor, *sub* class's one is this.__constructor
     overrides.__constructor = overrides.constructor;
@@ -75,7 +82,8 @@ var _super = {
     this._id = ++componentCount;
     componentMap[this._id] = this;
 
-    log.trace("New " + this.name + " component #" + this._id);    
+    if (log.level === 'trace')
+      log.trace("New " + this.name + " component #" + this._id);    
   },
 
   recycle: function() {

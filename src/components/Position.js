@@ -75,17 +75,17 @@ var Position = Component.extend({
     }
   },
 
-  update: function(data, timestamp) {
+  update: function updatePosition(data, timestamp) {
     this._update(data, timestamp);
 
-    if (this._transition /* next part until pool ready */ && this._transition._queue.length) {
+    if (this._transition /* next part until pool ready */ && this._transition._queue.head) {
 
       var current = this._transition.get(timestamp);
 
       for (var i=0; i < current.length; i++)
         this._position[i] = current[i];
 
-      if (this._transition._queue.length) {
+      if (this._transition._queue.head) {
         this.requestUpdate();
       } else {
         // XXX recycle  this._transition.recycle(); and .to(vec3)

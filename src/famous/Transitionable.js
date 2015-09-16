@@ -29,6 +29,7 @@
 
 import Curves from './Curves';
 import Component from '../components/Component';
+import SinglyLinkedList from '../util/SinglyLinkedList';
 
 /**
  * A state maintainer for a smooth transition between
@@ -76,7 +77,8 @@ import Component from '../components/Component';
  *                                              {@link Transitionable#from}
  */
 function Transitionable(initialState) {
-    this._queue = [];
+    //this._queue = [];
+    this._queue = SinglyLinkedList();
     this._from = null;
     this._state = null;
     this._startedAt = null;
@@ -117,12 +119,14 @@ function Transitionable(initialState) {
  */
 Transitionable.prototype.to = function to(finalState, curve, duration, callback, method) {
     curve = curve != null && curve.constructor === String ? Curves[curve] : curve;
-    if (this._queue.length === 0) {
+    //if (this._queue.length === 0) {
+    if (!this._queue.head) {
         this._startedAt = Component.loop._lastFrameStart;
         //this._startedAt = this.constructor.Clock.now();
         this._pausedAt = null;
     }
-    this._queue.push(
+    //this._queue.push(
+    this._queue.pushMany(
         finalState,
         curve != null ? curve : Curves.linear,
         duration != null ? duration : 100,
@@ -145,7 +149,8 @@ Transitionable.prototype.to = function to(finalState, curve, duration, callback,
 Transitionable.prototype.from = function from(initialState) {
     this._state = initialState;
     this._from = this._sync(null, this._state);
-    this._queue.length = 0;
+    //this._queue.length = 0;
+    this._queue.empty();
     //this._startedAt = this.constructor.Clock.now();
     this._startedAt = Component.loop._lastFrameStart;
     this._pausedAt = null;
@@ -165,7 +170,9 @@ Transitionable.prototype.from = function from(initialState) {
  * @return {Transitionable}         this
  */
 Transitionable.prototype.delay = function delay(duration, callback) {
-    var endState = this._queue.length > 0 ? this._queue[this._queue.length - 5] : this._state;
+    //var endState = this._queue.length > 0 ? this._queue[this._queue.length - 5] : this._state;
+    // XXX needs doublelinkedlist for proper optimization
+    var endState = this._queue.head ? this._queue.get(this._queue.count() - 5) : this._state;
     return this.to(endState, Curves.flat, duration, callback);
 };
 
@@ -190,6 +197,7 @@ Transitionable.prototype.delay = function delay(duration, callback) {
  * @return {Transitionable}         this
  */
 Transitionable.prototype.override = function override(finalState, curve, duration, callback, method) {
+    /*
     if (this._queue.length > 0) {
         if (finalState != null) this._queue[0] = finalState;
         if (curve != null)      this._queue[1] = curve.constructor === String ? Curves[curve] : curve;
@@ -197,6 +205,22 @@ Transitionable.prototype.override = function override(finalState, curve, duratio
         if (callback != null)   this._queue[3] = callback;
         if (method != null)     this._queue[4] = method;
     }
+    */
+    if (this._queue.head) {
+        if (finalState != null)
+            this._queue.head.data = finalState;
+        if (curve != null)
+            this._queue.head.next.data = curve.constructor === String ? Curves[curve] : curve;
+        if (duration != null)
+            this._queue.head.next.next.data = duration;
+        if (callback != null) {
+            //trash(callback);
+            this._queue.head.next.next.next.data = callback;
+        }
+        if (method != null)
+            this._queue.head.next.next.next.next.data = method;
+    }
+
     return this;
 };
 
@@ -322,23 +346,33 @@ Transitionable.prototype._sync = function _sync(output, input) {
  *                                  in time.
  */
 Transitionable.prototype.get = function get(t) {
-    if (this._queue.length === 0) return this._state;
+    var head = this._queue.head, two = head.next.next;
+
+    //if (this._queue.length === 0) return this._state;
+    if (!head) return this._state;
 
     t = this._pausedAt ? this._pausedAt : t;
     //t = t ? t : this.constructor.Clock.now();
     t = t ? t : Component.loop._lastFrameStart;
 
-    var progress = (t - this._startedAt) / this._queue[2];
+    //var progress = (t - this._startedAt) / this._queue[2];
+    var progress = (t - this._startedAt) / two.data;
     this._state = this._interpolate(
         this._state,
         this._from,
+        /*
         this._queue[0],
         this._queue[1](progress > 1 ? 1 : progress),
         this._queue[4]
+        */
+        head.data,
+        head.next.data(progress > 1 ? 1 : progress),
+        two.next.next.data
     );
     var state = this._state;
     if (progress >= 1) {
-        this._startedAt = this._startedAt + this._queue[2];
+        //this._startedAt = this._startedAt + this._queue[2];
+        this._startedAt = this._startedAt + two.data;
         this._from = this._sync(this._from, this._state);
         this._queue.shift();
         this._queue.shift();
@@ -360,7 +394,8 @@ Transitionable.prototype.get = function get(t) {
  *                      considered active.
  */
 Transitionable.prototype.isActive = function isActive() {
-    return this._queue.length > 0;
+    //return this._queue.length > 0;
+    return this._queue.head;
 };
 
 /**

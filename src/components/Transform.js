@@ -16,7 +16,7 @@ var Transform = Component.extend({
     this._matrix = [1,0,0,0,0,1,0,0,0,0,1,0,0,0,0,1]; // tmp TODO pool
   },
 
-  update: function() {
+  update: function updateTransform() {
     var node = this._node;
     this._updateRequested = false;
 

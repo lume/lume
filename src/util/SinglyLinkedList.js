@@ -63,7 +63,8 @@ let SinglyLinkedListElement = function(data) {
     if (el)
       return el.init(data);
     el = new SinglyLinkedListElement(data);
-    log.trace('New SinglyLinkedListElement instance', el);
+    if (log.level === 'trace')
+      log.trace('New SinglyLinkedListElement instance', el);
     elementCount++;
     return el;
   }
@@ -102,7 +103,8 @@ let SinglyLinkedList = function() {
     if (list)
       return list.init();
     list = new SinglyLinkedList();
-    log.trace('New SinglyLinkedList instance', list);
+    if (log.level === 'trace')
+      log.trace('New SinglyLinkedList instance', list);
     listCount++;
     return list;
   }
@@ -156,6 +158,23 @@ SinglyLinkedList.prototype.push = function(data) {
     this.head = el;
   if (this.tail)
     this.tail.next = el;
+  this.tail = el;
+};
+
+SinglyLinkedList.prototype.pushMany = function(/* arguments */) {
+  var el, i, len, lastEl = this.tail;
+
+  for (i=0, len=arguments.length; i < len; i++) {
+    el = SinglyLinkedListElement(arguments[i]);
+
+    if (this.head === null)
+      this.head = el;
+
+    if (lastEl)
+      lastEl.next = el;
+    lastEl = el;
+  }
+
   this.tail = el;
 };
 
@@ -241,6 +260,20 @@ SinglyLinkedList.prototype.recycleUntil = function(target) {
   if (this.tail === target)
     this.tail = null;
 };
+
+SinglyLinkedList.prototype.empty = function() {
+  // Move all our objects to the object pool
+  if (elementPool.tail)
+    elementPool.tail.next = this.head;
+  else
+    elementPool.head = this.head;
+  
+  elementPool.tail = this.tail;
+
+  // Fix references in this list
+  this.head = null;
+  this.tail = null;
+}
 
 /**
  * Get the data from the given index.  Computationally expensive.  Useful

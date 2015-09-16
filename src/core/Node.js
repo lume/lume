@@ -126,12 +126,13 @@ class Node {
   */
 
   hasComponent(componentName) {
-    return this._components[componentName];
+    return !!this._components[componentName];
   }
 
   _attachComponentInstance(component) {
     this[component.name] = component;
     this._components[component.name] = true;
+
     return component;
   }
 

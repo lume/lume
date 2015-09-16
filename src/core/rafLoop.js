@@ -2,14 +2,20 @@
 //import raf from '../util/raf-polyfill';
 import FrameLoop from '../core/FrameLoop';
 
-class RafLoop extends FrameLoop {
+/*
+ * Since this will only ever be a single instance, and it's high traffic,
+ * let's avoid the cost of true inheritance
+ */
 
-  queueFrame() {
-    window.requestAnimationFrame(this.stepAndQueue);
-  }
+var rafLoop = {};
 
-}
+for (var key in FrameLoop.prototype)
+  rafLoop[key] = FrameLoop.prototype[key];
 
-var rafLoop = new RafLoop();
+FrameLoop.apply(rafLoop);
+
+rafLoop.queueFrame = function() {
+  window.requestAnimationFrame(this.stepAndQueue);
+};
 
 export default rafLoop;
