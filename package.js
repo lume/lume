@@ -6,36 +6,16 @@ Package.describe({
 });
 
 Package.on_use(function (api) {
-  api.export('Motor');
-  api.export('THREE');
-  api.versionsFrom('METEOR@1.0');
+  api.versionsFrom('METEOR@1.2-rc.7');
 
+  // TODO
   api.use([
-    'jquery',
-    'underscore',
-    'infinitedg:tween',
-    'grigio:babel'
+    'rocket:module' // TODO: configure npm.json.
   ],['client']);
 
   api.add_files([
-
-    'export.js',
-
-    // Lib
-    'lib/three.js',
-    'lib/TrackballControls.js', // TODO, TrackballControls can be part of the Motor.js NPM library.
-
-    // Engine
-    'src/engine/Utility.es6.js',
-    'src/engine/Curve.es6.js',
-    'src/engine/Node.es6.js',
-    'src/engine/Sprite.es6.js',
-    'src/engine/Camera.es6.js',
-    'src/engine/Scene.es6.js',
-
-    //Styles
-    'src/styles/engine.css'
-
+    'entry.js', // TODO: a single file imports motor.js from NPM, and export a global var for Meteor packages depending on this.
   ], 'client');
 
+  api.export('Motor');
 });
