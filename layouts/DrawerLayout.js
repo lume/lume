@@ -24,9 +24,9 @@ define(function(require, exports, module) {
             Y : 1
         },
         SIDE : {
-            LEFT   : 0,
-            TOP    : 1,
-            RIGHT  : 2,
+            LEFT : 0,
+            TOP : 1,
+            RIGHT : 2,
             BOTTOM : 3
         },
         ORIENTATION : {
@@ -35,10 +35,34 @@ define(function(require, exports, module) {
         }
     };
 
+    /**
+     * A layout composed of two sections: content and drawer.
+     *
+     *  The drawer is initially hidden behind the content, until it is moved
+     *  by a call to setPosition. The source of the movement can be by subscribing
+     *  the layout to user input (like a Mouse/Touch/Scroll input), or by manually
+     *  calling setPosition with a transition.
+     *
+     *  The layout emits a stream of pixel displacement and progress (between 0 and 1) JSON.
+     *
+     *  The drawer can be revealed from any side of the content (top, left, bottom, right).
+     *
+     *  @class DrawerLayout
+     *  @constructor
+     *  @extends View
+     *  @param [options] {Object}                       Options
+     *  @param [options.side] {Number}                  Side to reveal the drawer from. Defined in DrawerLayout.SIDES
+     *  @param [options.revealLength] {Number}          The maximum length to reveal the drawer
+     *  @param [options.velocityThreshold] {Number}     The velocity needed to complete the drawer transition
+     *  @param [options.positionThreshold] {Number}     The displacement needed to complete the drawer transition
+     *  @param [options.transitionClose] {Object}       A transition definition for closing the drawer
+     *  @param [options.transitionOpen] {Object}        A transition definition for opening the drawer
+     */
+
     var DrawerLayout = View.extend({
         defaults : {
             side : CONSTANTS.SIDE.LEFT,
-            drawerLength : 0,
+            revealLength : undefined,
             velocityThreshold : 0,
             positionThreshold : 0,
             transitionOpen : true,
@@ -48,21 +72,37 @@ define(function(require, exports, module) {
             change : _updateState
         },
         initialize : function initialize(options){
+            // DERIVED STATE
+
+            // vertical or horizontal movement
             this.direction = _getDirectionFromSide(options.side);
+
+            // positive or negative movement along the direction
             this.orientation = _getOrientationFromSide(options.side);
-            this.drawerLength = options.drawerLength;
+
+            // scale the revealLength by the parity of the direction
+            this.options.revealLength *= this.orientation;
+
+            // open state (needed for toggling)
             this.isOpen = false;
 
-            this.input = new Stream();
+            // STREAMS
+            
+            // responsible for manually moving the content without user input
+            this.transitionStream = new Transitionable(0);
 
+            // responsible for moving the content from user input
             var gestureStream = new Stream({
                 start : function (){
                     this.position.unsubscribe(differential);
                     return 0;
                 }.bind(this),
                 update : function (data){
+                    // modify the delta from user input to be constrained
+                    // by the revealLength
                     var delta = data.delta;
                     var newDelta = delta;
+                    var revealLength = options.revealLength;
 
                     var currentPosition = this.position.get();
                     var newPosition = currentPosition + delta;
@@ -71,9 +111,9 @@ define(function(require, exports, module) {
                     var MAX_LENGTH = 0;
 
                     if (this.orientation === CONSTANTS.ORIENTATION.POSITIVE)
-                        MAX_LENGTH = this.drawerLength;
+                        MAX_LENGTH = revealLength;
                     else
-                        MIN_LENGTH = this.drawerLength;
+                        MIN_LENGTH = revealLength;
 
                     if (newPosition >= MAX_LENGTH || newPosition <= MIN_LENGTH){
                         if (newPosition > MAX_LENGTH && newPosition > MIN_LENGTH && currentPosition !== MAX_LENGTH)
@@ -89,7 +129,7 @@ define(function(require, exports, module) {
                     this.position.subscribe(differential);
                     var velocity = data.velocity;
                     var orientation = this.orientation;
-                    var length = this.drawerLength;
+                    var length = this.options.revealLength;
                     var isOpen = this.isOpen;
                     var currentPosition = this.position.get();
 
@@ -113,7 +153,7 @@ define(function(require, exports, module) {
                     }
 
                     var shouldToggle =
-                        Math.abs(velocity) > velocityThreshold          ||
+                        Math.abs(velocity) > velocityThreshold           ||
                         (!isOpen && currentPosition > positionThreshold) ||
                         (isOpen && currentPosition < positionThreshold);
 
@@ -123,24 +163,31 @@ define(function(require, exports, module) {
 
             gestureStream.subscribe(this.input);
 
-            this.inertialStream = new Transitionable(0);
             var differential = new Differential();
-            differential.subscribe(this.inertialStream);
+            differential.subscribe(this.transitionStream);
 
             this.position = new Accumulator();
             this.position.subscribe(gestureStream);
             this.position.subscribe(differential);
 
+
+            this.position.on('start', function(){console.log('start')})
+            this.position.on('update', function(){console.log('update')})
+            this.position.on('end', function(){console.log('end')})
+
             var outputMapper = new EventMapper(function(position){
                 return {
                     value : position,
-                    progress : position / this.drawerLength
+                    progress : position / this.options.revealLength
                 }
             }.bind(this));
 
             this.output.subscribe(outputMapper).subscribe(this.position);
         },
         addDrawer : function addDrawer(drawer){
+            if (this.options.revealLength == undefined)
+                this.options.revealLength = drawer.getSize()[this.direction];
+
             this.drawer = drawer;
             var layout = new LayoutNode({transform : Transform.behind});
             this.add(layout).add(this.drawer);
@@ -167,7 +214,7 @@ define(function(require, exports, module) {
         open : function open(transition, callback){
             if (transition instanceof Function) callback = transition;
             if (transition === undefined) transition = this.options.transitionOpen;
-            this.setPosition(this.drawerLength, transition, callback);
+            this.setPosition(this.options.revealLength, transition, callback);
             if (!this.isOpen) {
                 this.isOpen = true;
                 this.emit('open');
@@ -209,8 +256,8 @@ define(function(require, exports, module) {
          * @param [callback] {Function}         callback
          */
         setPosition : function setPosition(position, transition, callback) {
-            this.inertialStream.set(this.position.get());
-            this.inertialStream.set(position, transition, callback);
+            this.transitionStream.set(this.position.get());
+            this.transitionStream.set(position, transition, callback);
         },
         /**
          * Resets to last state of being open or closed
@@ -246,6 +293,7 @@ define(function(require, exports, module) {
             this.direction = _getDirectionFromSide(value);
             this.orientation = _getOrientationFromSide(value);
         }
+        this.options.revealLength *= this.direction;
     }
 
     module.exports = DrawerLayout;
