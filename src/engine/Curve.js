@@ -1,3 +1,5 @@
+import TWEEN from 'tween'
+
 /**
  * Curve Class
  * @class Curve

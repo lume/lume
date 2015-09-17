@@ -18,7 +18,10 @@
     "build-global": "webpack --progress --colors --output-library-target umd --output-library motor src/index.js motor.js"
   },
   "dependencies": {
-    "three": "^0.71.0"
+    "jquery": "^2.1.4",
+    "lodash": "^3.10.1",
+    "three": "^0.71.0",
+    "tween.js": "^15.0.0"
   },
   "devDependencies": {
     "babel": "^5.6.6",

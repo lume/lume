@@ -1,4 +1,6 @@
 import THREE from 'three'
+import _ from 'lodash'
+import TWEEN from 'tween.js'
 
 import Curve   from './Curve'
 import Utility from './Utility'
