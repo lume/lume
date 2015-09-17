@@ -15,6 +15,7 @@ Package.onUse(function(api) {
 
   api.add_files([
     'entry.js',
+    'npm.json',
   ], 'client');
 
   api.export('motor');
