@@ -1,3 +1,5 @@
+import THREE from 'three'
+
 import Utility from './Utility'
 
 const CSS_CLASS_CAMERA = 'infamous-dom-camera';

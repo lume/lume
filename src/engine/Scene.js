@@ -1,3 +1,5 @@
+import THREE from 'three'
+
 import Camera  from './Camera'
 import Utility from './Utility'
 

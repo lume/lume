@@ -1,4 +1,4 @@
-import THREE from 'three.js'
+import THREE from 'three'
 
 /**
  * @author Eberhard Graether / http://egraether.com/

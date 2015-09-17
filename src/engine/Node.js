@@ -1,3 +1,5 @@
+import THREE from 'three'
+
 import Curve   from './Curve'
 import Utility from './Utility'
 
