@@ -1,6 +1,6 @@
 Package.describe({
   name: 'infamous:motor',
-  version: '0.0.1',
+  version: '0.0.2',
   summary: 'A rendering engine for the web.',
   git: 'https://github.com/infamous/motor.git'
 });
