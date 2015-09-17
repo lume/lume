@@ -1,6 +1,6 @@
 {
   "name": "motor.js",
-  "version": "0.0.0",
+  "version": "0.0.1",
   "description": "A rendering Engine for the web.",
   "format": "es6",
   "main": "index.js",
@@ -10,7 +10,7 @@
   "homepage": "http://infamous.io",
   "scripts": {
     "test": "echo 'TODO: Test script' && exit 1",
-    "clean": "mkdir save && mv package.js webpack.config.js save && rm -rf ./*.js ./*.js.map engine && mv save/* . && rmdir save",
+    "clean": "mkdir save && mv webpack.config.js save && rm -rf ./*.js ./*.js.map engine && mv save/* . && rmdir save",
     "prepublish": "npm run build-cjs",
     "build-umd": "babel src --source-maps --optional runtime --out-dir . --modules umd",
     "build-cjs": "babel src --source-maps --optional runtime --out-dir . --modules common",
