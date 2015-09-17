@@ -18,6 +18,7 @@
     "build-global": "webpack --progress --colors --output-library-target umd --output-library motor src/index.js motor.js"
   },
   "dependencies": {
+    "babel-runtime": "^5.8.24",
     "jquery": "^2.1.4",
     "lodash": "^3.10.1",
     "three": "^0.71.0",
@@ -26,7 +27,6 @@
   "devDependencies": {
     "babel": "^5.6.6",
     "babel-loader": "^5.3.2",
-    "babel-runtime": "^5.8.24",
     "babelify": "^6.3.0",
     "browserify": "^11.1.0",
     "glslify-loader": "^1.0.2",
