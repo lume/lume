@@ -1,12 +1,12 @@
 Package.describe({
-  summary: 'Infamous',
-  version: '0.0.1',
-  name: 'infamous:engine',
-  git: 'https://github.com/infamous/engine.git'
+  summary: 'motor.js',
+  version: '0.0.0',
+  name: 'infamous:motor',
+  git: 'https://github.com/infamous/motor.git'
 });
 
 Package.on_use(function (api) {
-  api.export('Infamous');
+  api.export('Motor');
   api.export('THREE');
   api.versionsFrom('METEOR@1.0');
 
@@ -19,12 +19,11 @@ Package.on_use(function (api) {
 
   api.add_files([
 
-    // Hybrid UI
     'export.js',
 
     // Lib
     'lib/three.js',
-    'lib/TrackballControls.js',
+    'lib/TrackballControls.js', // TODO, TrackballControls can be part of the Motor.js NPM library.
 
     // Engine
     'src/engine/Utility.es6.js',
