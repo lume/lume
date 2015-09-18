@@ -3,30 +3,19 @@ var Engine = boxer.core.Engine;
 var Scene = boxer.core.Scene;
 
 var scene = {
-    addSubGraph: [{
-        position : [0,0,0],
+    addSubGraph: []
+};
+
+// Add 180 Nodes to the Scene in a SubGraph.
+for( var i=0; i<180; i++ ){
+    scene.addSubGraph.push({
+        position : [Math.random() * (window.innerWidth - 0) + 0 , Math.random() * (window.innerHeight - 0) + 0 , 0],
         origin : [0.0,0.0,0.0],
         align : [0.0,0.0,0.0],
-        size : [120,120,120],
-        rotate: [0,180,0],
+        size : [20,20,20],
+        rotate: [i*4,i*4,0],
         opacity : 1.0,
-    },
-    {
-        position : [0,0,0],
-        origin : [0.5,0.5,0.5],
-        align : [0.5,0.5,0.5],
-        size : [120,120,120],
-        rotate: [0,0,0],
-        opacity : 1.0,
-    },
-    {
-        position : [0,0,0],
-        origin : [0.5,0.5,0.5],
-        align : [0.9,0.5,0.5],
-        size : [120,120,120],
-        rotate: [0,-180,0],
-        opacity : 1.0,
-    }]
+    });
 };
 
 SceneWorker.postMessage(scene); // Adds Nodes to the Scene.
