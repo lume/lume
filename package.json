@@ -39,6 +39,8 @@
       "lib": "src"
     }
   },
+  "bower": {
+  },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/infamous/motor.git"
