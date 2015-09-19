@@ -6,7 +6,7 @@ var Scene = function(graph){
 }
 
 Scene.prototype.addChild = function(node){
-    node.id = 'id-'+this.length;
+    node.id = 'node-'+this.length;
     this.length++;
     this.graph[node.id] = node;
 }
@@ -46,7 +46,7 @@ Scene.prototype.findOne = function(query) {
 
 
 Scene.prototype.update = function(tick){
-    //console.log(tick, this.graph['id-1'].t.get());
+    //console.log(tick, this.graph['node-1'].t.get());
 }
 
 module.exports = new Scene();

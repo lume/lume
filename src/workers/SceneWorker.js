@@ -29,4 +29,7 @@ onmessage = function(e) {
     if(e.data.graph){
         postMessage(Scene.graph);
     }
+    if(e.data.query){
+        postMessage(Scene.findOne(e.data.query));
+    }
 }
