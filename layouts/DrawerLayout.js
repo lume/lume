@@ -92,9 +92,9 @@ define(function(require, exports, module) {
             this.transitionStream = new Transitionable(0);
 
             // responsible for moving the content from user input
-            var gestureStream = new Stream({
+            var gestureDelta = new Stream({
                 start : function (){
-                    this.position.unsubscribe(differential);
+                    this.position.unsubscribe(transitionDelta);
                     return 0;
                 }.bind(this),
                 update : function (data){
@@ -126,7 +126,7 @@ define(function(require, exports, module) {
                     return newDelta;
                 }.bind(this),
                 end : function (data){
-                    this.position.subscribe(differential);
+                    this.position.subscribe(transitionDelta);
                     var velocity = data.velocity;
                     var orientation = this.orientation;
                     var length = this.options.revealLength;
@@ -161,19 +161,14 @@ define(function(require, exports, module) {
                 }.bind(this)
             });
 
-            gestureStream.subscribe(this.input);
+            gestureDelta.subscribe(this.input);
 
-            var differential = new Differential();
-            differential.subscribe(this.transitionStream);
+            var transitionDelta = new Differential();
+            transitionDelta.subscribe(this.transitionStream);
 
             this.position = new Accumulator();
-            this.position.subscribe(gestureStream);
-            this.position.subscribe(differential);
-
-
-            this.position.on('start', function(){console.log('start')})
-            this.position.on('update', function(){console.log('update')})
-            this.position.on('end', function(){console.log('end')})
+            this.position.subscribe(gestureDelta);
+            this.position.subscribe(transitionDelta);
 
             var outputMapper = new EventMapper(function(position){
                 return {
@@ -256,7 +251,7 @@ define(function(require, exports, module) {
          * @param [callback] {Function}         callback
          */
         setPosition : function setPosition(position, transition, callback) {
-            this.transitionStream.set(this.position.get());
+            this.transitionStream.reset(this.position.get());
             this.transitionStream.set(position, transition, callback);
         },
         /**
