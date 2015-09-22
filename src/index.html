@@ -4,43 +4,8 @@
   <script>
 System.import('main').then(function() {
 
-  famin.util.log.level = 'debug';
 
-  var width = window.innerWidth, height = window.innerHeight;
-  window.onresize = function() {
-    width = window.innerWidth;
-    height = window.innerHeight;
-  };
 
-  var randomPosition = function() {
-    return famin.util.Vec3(
-      Math.random() * (width - 50),
-      Math.random() * (height - 50),
-      (Math.random() * 1000) - 500
-    );
-  };
-
-  var num = location.hash && location.hash.substr(1) || 500;
-  window.n = Array(num);
-  for (var i=0; i < num; i++) (function(i) {
-    var node = window.n[i] = new famin.core.Node.instance();
-    node.addComponents('domElement', 'position');
-    node.position.set(randomPosition());
-    node.size.setAbsolute(50,50,0);
-    node.domElement.setClassName('mary');
-    node.domElement.setProperty('background',
-      'hsla(' + (360/num*i) + ', 100%, 50%, 0.8)');
-
-    var toRandomPosition = function() {
-      node.position.set(
-        randomPosition(),
-        { curve: 'inOutElastic', duration: 500 + Math.random() * 1500 },
-        toRandomPosition
-      );
-    };
-
-    window.setTimeout(toRandomPosition, Math.random() * 1000);
-  })(i);
 });
   </script>
   <body>

@@ -18,7 +18,6 @@ var Transform = Component.extend({
 
   update: function updateTransform() {
     var node = this._node;
-    this._updateRequested = false;
 
     // TODO compare new matrix
 
@@ -35,6 +34,8 @@ var Transform = Component.extend({
 
     //this.emit(Event.TRANSFORM_CHANGE);
     this._node._emit(Event.TRANSFORM_CHANGE, this);
+
+    this._update();
   }
 
 });

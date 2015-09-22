@@ -45,8 +45,9 @@ var Component = {
     for (key in _super)
       Sub.prototype[key] = _super[key];
 
+    // can remove?
     // Just for constructor, *sub* class's one is this.__constructor
-    overrides.__constructor = overrides.constructor;
+    //overrides.__constructor = overrides.constructor;
 
     // For everything else, "super" version is, e.g. this._update()
     for (key in overrides) {
@@ -57,6 +58,15 @@ var Component = {
 
     // Map from name to component class, e.g. "size" -> Size
     registered[name] = Sub;
+
+    // per component update queue
+    Sub._updateQueue = SinglyLinkedList();
+    Sub._updateQueueCount = 0;
+    Sub._updateQueueNext = SinglyLinkedList();
+    Sub._updateQueueNextCount = 0;
+    Sub._updateRequested = false;
+    Sub.requestUpdate = Component._requestUpdate;
+    Sub.runUpdates = Component._runUpdates;
 
     return Sub;
 
@@ -72,11 +82,53 @@ var Component = {
     else
       throw new Error('No component "' + name +
         '" exists, did you forget to import it?');
-  }
+  },
+
+  // Will be runUpdates() (without the _) on "real" (extended) components
+  _runUpdates: function(timestamp) {
+    if (!this._updateQueueCount)
+      return 0;
+
+    this._inTick = true;
+
+    if (this.preUpdates)
+      this.preUpdates();
+
+    for (let current = this._updateQueue.head; current; current = current.next) {
+      current.data.update();
+    }
+
+    var count = this._updateQueueCount;
+    this._updateQueue = this._updateQueueNext;
+    this._updateQueueCount = this._updateQueueNextCount;
+    this._updateQueueNextCount = 0;
+    this._updateQueueNext = SinglyLinkedList();
+
+    if (this.postUpdates)
+      this.postUpdates();
+
+    this._inTick = false;
+
+    return count;
+  },
+
+  _requestUpdate: function(comp) {
+    if (this._inTick) {
+      this._updateQueueNext.push(comp);
+      this._updateQueueNextCount++;      
+    } else {
+      this._updateQueue.push(comp);
+      this._updateQueueCount++;      
+    }
+  },
+
+  _registered: registered
 
 };
 
 var _super = {
+
+  /* Life cycle */
 
   init: function() {
     this._id = ++componentCount;
@@ -103,18 +155,20 @@ var _super = {
     this._updateRequested = false;
   },
 
-  _updateWrapper: function(data, timestamp) {
-    this._node && this.update(data, timestamp);
-  },
+  // can remove?
+  //_updateWrapper: function(data, timestamp) {
+  //  this._node && this.update(data, timestamp);
+  //},
 
   requestUpdate: function() {
     if (!this._updateRequested) {
       this._updateRequested = true;
-      Component.loop.onNextTick(this._updateWrapper, this);
+      this.__proto__.constructor.requestUpdate(this);
+      //Component.loop.onNextTick(this._updateWrapper, this);
     }
   },
 
-  /* Nodes */
+  /* Node Interactions */
 
   attachTo: function(node) {
     this._node = node;

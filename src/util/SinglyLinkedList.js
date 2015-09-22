@@ -261,6 +261,10 @@ SinglyLinkedList.prototype.recycleUntil = function(target) {
     this.tail = null;
 };
 
+/**
+ * If you want to recycle all the elements in a list, but still keep
+ * the (now empty) list itself, use this.
+ */
 SinglyLinkedList.prototype.empty = function() {
   // Move all our objects to the object pool
   if (elementPool.tail)

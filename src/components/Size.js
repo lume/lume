@@ -25,8 +25,6 @@ var Size = Component.extend({
   },
 
   update: function() {
-    this._update();
-
     var changed = false;
 
     for (var i=0; i < this._size.length; i++) {
@@ -47,6 +45,8 @@ var Size = Component.extend({
 
     if (changed)
       this.emit(Event.SIZE_CHANGE);
+
+    this._update();
   },
 
   recycle: function() {

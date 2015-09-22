@@ -346,10 +346,12 @@ Transitionable.prototype._sync = function _sync(output, input) {
  *                                  in time.
  */
 Transitionable.prototype.get = function get(t) {
-    var head = this._queue.head, two = head.next.next;
+    var head = this._queue.head;
 
     //if (this._queue.length === 0) return this._state;
     if (!head) return this._state;
+
+    var two = head.next.next;
 
     t = this._pausedAt ? this._pausedAt : t;
     //t = t ? t : this.constructor.Clock.now();
