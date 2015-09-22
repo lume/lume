@@ -4,6 +4,7 @@
 
 define(function(require, exports, module) {
     var EventHandler = require('samsara/core/EventHandler');
+    var SimpleStream = require('samsara/streams/SimpleStream');
     var OptionsManager = require('samsara/core/OptionsManager');
 
     /**
@@ -58,9 +59,10 @@ define(function(require, exports, module) {
         if (options) this.setOptions(options);
 
         this._eventInput = new EventHandler();
-        this._eventOutput = new EventHandler();
-        EventHandler.setInputHandler(this, this._eventInput);
-        EventHandler.setOutputHandler(this, this._eventOutput);
+        this.input = new SimpleStream();
+        this.output = new SimpleStream();
+        EventHandler.setInputHandler(this, this.input);
+        EventHandler.setOutputHandler(this, this.output);
         EventHandler.setInputEvents(this, this.constructor.EVENTS || Controller.EVENTS, this._eventInput);
 
         this._eventInput.bindThis(this);

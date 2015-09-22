@@ -58,9 +58,6 @@ define(function(require, exports, module) {
             this._node = new SceneGraphNode();
             this._node.tempRoot = this._node;
 
-            this.input = new SimpleStream();
-            this.output = new SimpleStream();
-
             this.size = ResizeStream.lift(
                 function ViewSizeAlgebra (sizeSpec, parentSize){
                     return (sizeSpec)
@@ -73,7 +70,7 @@ define(function(require, exports, module) {
             var layout = Stream.lift(
                 function ViewLayoutAlgebra (parentSpec, objectSpec, size){
                     if (!parentSpec || !size) return;
-                    return (this.options.origin)
+                    return (objectSpec)
                         ? layoutAlgebra(objectSpec, parentSpec, size)
                         : parentSpec;
                 }.bind(this),
