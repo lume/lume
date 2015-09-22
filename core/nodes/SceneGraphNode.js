@@ -106,6 +106,9 @@ define(function(require, exports, module) {
 
             object.layout.on('update', function(spec){
                 var root = _getRootNode.call(this);
+                //TODO: this is a bug. needs fixing.
+                if (root.objects[object._id] === undefined)
+                    root.objects[object._id] = object;
                 root.specs[object._id] = spec;
             }.bind(this));
 
