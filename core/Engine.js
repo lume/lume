@@ -190,9 +190,6 @@ define(function(require, exports, module) {
         loop();
     }
 
-    //window.requestAnimationFrame(start);
-    //Engine.start = function(){};
-
     function handleResize() {
         var windowSize = [window.innerWidth, window.innerHeight];
         size.emit('resize', windowSize);
