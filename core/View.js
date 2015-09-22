@@ -11,15 +11,14 @@
 define(function(require, exports, module) {
     var SceneGraphNode = require('samsara/core/nodes/SceneGraphNode');
     var Controller = require('samsara/core/Controller');
-    var SizeNode = require('samsara/core/nodes/SizeNode');
-    var LayoutNode = require('samsara/core/nodes/LayoutNode');
+    var SizeNode = require('samsara/core/SizeNode');
+    var LayoutNode = require('samsara/core/LayoutNode');
     var Transitionable = require('samsara/core/Transitionable');
     var EventHandler = require('samsara/core/EventHandler');
-    var EventMapper = require('samsara/events/EventMapper');
     var SimpleStream = require('samsara/streams/SimpleStream');
     var Stream = require('samsara/streams/Stream');
     var ResizeStream = require('samsara/streams/ResizeStream');
-    var SizeObservable = require('samsara/core/SizeObservable');
+    var SizeObservable = require('samsara/streams/SizeObservable');
     var layoutAlgebra = require('samsara/core/algebras/layout');
     var sizeAlgebra = require('samsara/core/algebras/size');
 

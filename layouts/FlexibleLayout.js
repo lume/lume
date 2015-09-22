@@ -14,8 +14,8 @@ define(function(require, exports, module) {
     var View = require('samsara/core/View');
     var Stream = require('samsara/streams/Stream');
     var ResizeStream = require('samsara/streams/ResizeStream');
-    var LayoutNode = require('samsara/core/nodes/LayoutNode');
-    var SizeNode = require('samsara/core/nodes/SizeNode');
+    var LayoutNode = require('samsara/core/LayoutNode');
+    var SizeNode = require('samsara/core/SizeNode');
 
     /**
      * A layout which divides a context into sections based on a proportion

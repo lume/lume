@@ -4,8 +4,8 @@ define(function(require, exports, module) {
     var Transform = require('samsara/core/Transform');
     var View = require('samsara/core/View');
     var ResizeStream = require('samsara/streams/ResizeStream');
-    var LayoutNode = require('samsara/core/nodes/LayoutNode');
-    var SizeNode = require('samsara/core/nodes/SizeNode');
+    var LayoutNode = require('samsara/core/LayoutNode');
+    var SizeNode = require('samsara/core/SizeNode');
 
     var CONSTANTS = {
         DIRECTION : {

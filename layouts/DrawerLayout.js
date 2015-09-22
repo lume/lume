@@ -12,7 +12,7 @@ define(function(require, exports, module) {
     var Transform = require('samsara/core/Transform');
     var Transitionable = require('samsara/core/Transitionable');
     var View = require('samsara/core/view');
-    var LayoutNode = require('samsara/core/nodes/LayoutNode');
+    var LayoutNode = require('samsara/core/LayoutNode');
     var Stream = require('samsara/streams/Stream');
     var Differential = require('samsara/streams/Differential');
     var Accumulator = require('samsara/streams/Accumulator');

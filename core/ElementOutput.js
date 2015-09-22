@@ -13,8 +13,8 @@ define(function(require, exports, module) {
     var Transform = require('samsara/core/Transform');
     var Stream = require('samsara/streams/Stream');
     var ResizeStream = require('samsara/streams/ResizeStream');
-    var SizeNode = require('samsara/core/nodes/SizeNode');
-    var LayoutNode = require('samsara/core/nodes/LayoutNode');
+    var SizeNode = require('samsara/core/SizeNode');
+    var LayoutNode = require('samsara/core/LayoutNode');
     var register = require('samsara/core/register');
     var sizeAlgebra = require('samsara/core/algebras/size');
     var layoutAlgebra = require('samsara/core/algebras/layout');

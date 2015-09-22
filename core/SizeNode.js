@@ -4,7 +4,7 @@ define(function(require, exports, module) {
     var EventHandler = require('samsara/core/EventHandler');
     var SimpleStream = require('samsara/streams/SimpleStream');
     var ResizeStream = require('samsara/streams/ResizeStream');
-    var SizeObservable = require('samsara/core/SizeObservable');
+    var SizeObservable = require('samsara/streams/SizeObservable');
 
     /**
      * Encapsulates a stream of size data (size, proportions, margins).

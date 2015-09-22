@@ -4,8 +4,7 @@ define(function(require, exports, module) {
     var EventHandler = require('samsara/core/EventHandler');
     var Stream = require('samsara/streams/Stream');
     var ResizeStream = require('samsara/streams/ResizeStream');
-    var SizeNode = require('samsara/core/nodes/SizeNode');
-    var LayoutNode = require('samsara/core/nodes/LayoutNode');
+    var SizeNode = require('samsara/core/SizeNode');
     var layoutAlgebra = require('samsara/core/algebras/layout');
     var sizeAlgebra = require('samsara/core/algebras/size');
 

@@ -4,7 +4,7 @@ define(function(require, exports, module) {
     var EventHandler = require('samsara/core/EventHandler');
     var SimpleStream = require('samsara/streams/SimpleStream');
     var Stream = require('samsara/streams/Stream');
-    var Observable = require('samsara/core/Observable');
+    var Observable = require('samsara/streams/Observable');
 
     /**
      * Encapsulates a stream of layout data (transform, origin, align, opacity).
