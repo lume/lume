@@ -12,15 +12,15 @@
     "test": "echo 'TODO: Test script' && exit 1",
     "clean": "mkdir save && mv webpack.config.js save && rm -rf ./*.js ./*.js.map engine && mv save/* . && rmdir save",
     "prepublish": "npm run build-cjs",
-    "build-umd": "babel src --source-maps --optional runtime --out-dir . --modules umd",
-    "build-cjs": "babel src --source-maps --optional runtime --out-dir . --modules common",
-    "build-amd": "babel src --source-maps --optional runtime --out-dir . --modules amd",
-    "build-global": "webpack --progress --colors --output-library-target umd --output-library motor src/index.js motor.js"
+    "build-umd": "babel src --source-maps --out-dir . --modules umd",
+    "build-cjs": "babel src --source-maps --out-dir . --modules common",
+    "build-amd": "babel src --source-maps --out-dir . --modules amd",
+    "build-global": "webpack --progress --colors --output-library-target umd src/index.js global.js --output-library motor"
   },
   "dependencies": {
-    "babel-runtime": "^5.8.24",
     "jquery": "^2.1.4",
     "lodash": "^3.10.1",
+    "lowclass": "^2.0.0",
     "three": "^0.71.0",
     "tween.js": "^15.0.0"
   },
@@ -40,7 +40,7 @@
     }
   },
   "bower": {
-      "TODO": "TODO"
+    "TODO": "TODO"
   },
   "repository": {
     "type": "git",
