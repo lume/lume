@@ -1,7 +1,8 @@
 ###Getting Started
 This repository is for the codebase itself. The best way to get started with SamsaraJS is to
 clone the [base scaffolding repository](https://github.com/dmvaldman/samsara-base) and follow the
-install instructions there.
+install instructions there. We are also working to greatly improve the documentation. Currently the
+only documentation is in the source code and examples.
 
 ###WHAT?
 SamsaraJS is a JavaScript library for making user interfaces on the mobile and desktop web. 
@@ -10,19 +11,20 @@ for their application.
 
 ####Examples:
 
-1. JSNavigationController
+1. **JSNavigationController**
 A simple web version of iOS's UINavigationController. You can drag the blue area, or click on the
 nav buttons to transition the screens.
-[demo](samsara-navigation-controller.s3-website-us-west-2.amazonaws.com)
-[source](https://github.com/dmvaldman/JSNavigationController)
+[[demo]](samsara-navigation-controller.s3-website-us-west-2.amazonaws.com)
+[[source]](https://github.com/dmvaldman/JSNavigationController)
 
-2. SamsaraJS logo
-[demo](samsara-logo.s3-website.eu-central-1.amazonaws.com)
-[source](https://github.com/dmvaldman/samsara-base)
+2. **SamsaraJS logo**
+The SamsaraJS logo.
+[[demo]](samsara-logo.s3-website.eu-central-1.amazonaws.com)
+[[source]](https://github.com/dmvaldman/samsara-base)
 
-3. Accordion
+3. **Accordion**
 A playful UI for scrolling by folding and unfolding an accordion.
-[demo](samsara-accordion.s3-website.eu-central-1.amazonaws.com)
+[[demo]](samsara-accordion.s3-website.eu-central-1.amazonaws.com)
  
 SamsaraJS is unique in that it is allows for many parts of an interface to animate in unison. 
 This kind of dependency management is hard to do, and we believe it means rethinking some 
