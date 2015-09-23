@@ -1,9 +1,11 @@
 import UUID from './util/UUID';
 import log from './util/log';
+import SinglyLinkedList from './util/SinglyLinkedList';
+import Vec3 from './util/Vec3';
 log.level = 'trace';
 
 // todo, autodetect
-var WORKERS = 2;
+var WORKERS = 1;
 var workerCount = 0;
 
 var start = performance.now();
@@ -20,7 +22,30 @@ dispatcher.onmessage = function(e) {
 
 var domMap = new Array(WORKERS);
 
-var i, j;
+var timeoutQueue = SinglyLinkedList();
+function setTimeout(func, time) {
+  timeoutQueue.push(Vec3(func, performance.now() + time));
+}
+function runTimeouts(timestamp) {
+  if (!timeoutQueue.head)
+    return;
+
+  var now = performance.now();
+var i = 0;
+  var current, prev;
+  for (current = timeoutQueue.head; current; prev = current, current = current.next) {
+    i++;
+    if (current.data[1] < now) {
+      current.data[0]();
+    }
+    else
+      break;
+  }
+
+  if (prev)
+    timeoutQueue.recycleUntil(prev);
+}
+
 
 /* will require changes in systemjs
 var urlStart = location.href.substr(0, location.href.length - location.hash.length);
@@ -35,17 +60,19 @@ var workerBlob = URL.createObjectURL( new Blob( [
 */
 
 log.debug('Spinning up ' + WORKERS + ' workers (besides dispatcher)');
+var i, j;
 for (i=0; i < WORKERS; i++) {
   workers[i] = new Worker('worker_loader.js' /* workerBlob */);
   workers[i].onmessage = (function(i) { return function workerMessage(e) {
     window.onmessage.call(window, e, i);
-  } })(i);
+  }; })(i);
   domMap[i] = [];
 }
 
 //URL.revokeObjectURL( workerBlob );
 
 function setupMessaging() {
+  var i, j;
 
   for (i=0; i < WORKERS; i++) {
     dchans[i] = new MessageChannel();
@@ -61,30 +88,81 @@ function setupMessaging() {
 
 }
 
-//window.faminWorkers = workers;
-var transformQueue, elementQueue;
+var queue = new Array(50);
+var queueLength = 0;
+var queueIndex = 0;
+var queueTaskIndex = 0;
+window.x = { queue, queueLength, queueIndex, queueTaskIndex };
+
+function dequeue(_timestamp) {
+  if (workerWaitCount !== WORKERS)
+    return true;
+
+  var timestamp = _timestamp || lastTimestamp;
+  var threshold = timestamp + 2;
+  //console.log('queueIndex', queueIndex, 'queueLength', queueLength, 'queueTaskIndex', queueTaskIndex);
+
+  for (; queueIndex < queueLength; queueIndex += 3) {
+    queueTaskIndex =
+      dequeue[ queue[queueIndex] ](
+        threshold,
+        queueTaskIndex,
+        queue[queueIndex+1],
+        queue[queueIndex+2]
+      );
+
+    if (queueTaskIndex) {
+//      console.log('not complete')
+//      window.requestAnimationFrame(rafLoop);
+      return false;
+    }
+  }
+
+  queueIndex = 0;
+  queueLength = 0;
+
+  //console.log('complete');
+  //runTimeouts(timestamp);
+  window.requestAnimationFrame(rafLoop);  
+
+  return true;
+}
+
+dequeue.DOMEL_TRANSFORM = function(threshold, queueTaskIndex, workerNo, data) {
+  var arr = new Float32Array(data);
+
+  for (var i=queueTaskIndex||0, len=arr.length; i < len; i+= 17) {
+    //if (i % 85 === 0 && performance.now() > threshold) {
+    //  return i;
+    //}
+
+    var id = arr[i+16];
+
+    // XXXX only necessary because of transform bug
+    if (!id) break; 
+
+    var transform = 'matrix3d(' +
+      arr[i+0] + ',' + arr[i+1] + ',' + arr[i+2] + ',' + arr[i+3] + ',' +
+      arr[i+4] + ',' + arr[i+5] + ',' + arr[i+6] + ',' + arr[i+7] + ',' +
+      arr[i+8] + ',' + arr[i+9] + ',' + arr[i+10] + ',' + arr[i+11] + ',' +
+      arr[i+12] + ',' + arr[i+13] + ',' + arr[i+14] + ',' + arr[i+15] + ')';
+    domMap[workerNo][id].style.transform = transform;
+  }
+};
 
 window.onmessage = function onmessage(e, workerNo) {
   if (typeof e.data === 'object') {
 
-    if (e.data.type === 'MATRIX') {
+    workerWaitCount++;
+    for (var key in e.data) {
 
-      var arr = new Float32Array(e.data.matrixQueue);
-      for (var i=0, len=arr.length; i < len; i+= 17) {
-        var id = arr[i+16];
-
-        // XXXX only necessary because of transform bug
-        if (!id) break; 
-
-        var transform = 'matrix3d(' +
-          arr[i+0] + ',' + arr[i+1] + ',' + arr[i+2] + ',' + arr[i+3] + ',' +
-          arr[i+4] + ',' + arr[i+5] + ',' + arr[i+6] + ',' + arr[i+7] + ',' +
-          arr[i+8] + ',' + arr[i+9] + ',' + arr[i+10] + ',' + arr[i+11] + ',' +
-          arr[i+12] + ',' + arr[i+13] + ',' + arr[i+14] + ',' + arr[i+15] + ')';
-        domMap[workerNo][id].style.transform = transform;
-      }      
+      queue[queueLength] = key;
+      queue[queueLength+1] = workerNo;
+      queue[queueLength+2] = e.data[key];
+      queueLength += 3;
 
     }
+    dequeue();
 
   } else if (e.data === 'loaded') {
 
@@ -107,7 +185,7 @@ window.onmessage = function onmessage(e, workerNo) {
       el.style.position = 'absolute';
       el.style.width = '50px';
       el.style.height = '50px';
-      el.style.background = 'red';
+      el.style.background = 'hsl(' + Math.floor(Math.random() * 360) + ', 100%, 50%)';
       el.style.position = 'absolute';
       el.className = 'mary';
       document.body.appendChild(el);
@@ -169,49 +247,53 @@ class Position {
   }
 }
 
-var transformQueue = [], last = 0;
+var lastTimestamp, workerWaitCount = WORKERS;
 function rafLoop(timestamp) {
-  for (i=0; i < WORKERS; i++)
-    workers[i].postMessage(timestamp);
+  var i;
 
-  /*
-  if (timestamp < 10000) {
-  }
+  lastTimestamp = timestamp;
 
-  if (transformQueue.length) {
-    for (var i=0, len = transformQueue.length; i < len; i+=2) {
-      //console.log('deshift at ' + performance.now());
-      var el = transformQueue[i];
-      var transform = transformQueue[i+1];
-      el.style.transform = 'matrix3d(' + transform.join(',') + ')';
+  if (workerWaitCount === WORKERS) {
 
-      //console.log(i, 'raf', timestamp, timestamp - last);
-      last = timestamp;
+    if (queueLength === 0) {
+
+      workerWaitCount = 0;
+      for (i=0; i < WORKERS; i++)
+        workers[i].postMessage(timestamp);
+      
+      runTimeouts(timestamp);
+
+    } else {
+
+      if (dequeue(timestamp))
+        runTimeouts(timestamp);
+
     }
-    transformQueue.length = 0;
-  }
-  */
 
-  window.requestAnimationFrame(rafLoop);
+  }
+
 };
 
 function begin() {
   var width = window.innerWidth;
   var height = window.innerHeight;
 
-  for (var i=0; i < 100; i++)
+  for (var i=0; i < 50; i++)
     (function(i) {
       var node = new Node();
       node.addComponents('domElement', 'position');
       node.position.set(0, 0, 0);
-      setTimeout(function() { 
+      var anim = function() { 
+        var duration = 1000+Math.random()*1500; 
         node.position.set(
           Math.random()*(width - 50),
           Math.random()*(height - 50),
-          0,
-          { duration: 1000+Math.random()*1500, curve: 'inOutBounce' }
+          Math.random()*1000 - 500,
+          { duration: duration, curve: 'inOutCubic' }
         );
-      }, Math.random() * 2000); 
+        setTimeout(anim, duration);
+      };
+      setTimeout(anim, Math.random()*1500 + 500);
     })(i);      
 }
 
@@ -219,4 +301,4 @@ window.famin = {
   Node,
   UUID,
   begin
-}
+};

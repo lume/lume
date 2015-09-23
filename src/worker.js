@@ -81,11 +81,7 @@ setTimeout(function() {
 
 
 var i =0;
-var obj = {
-  type: 'DOMEL_TRANSFORM',
-  transforms: null
-}
-;
+
 var step = function(timestamp) {
   //if (i++ > 5) return;
 
@@ -97,12 +93,17 @@ var step = function(timestamp) {
 
   frameLoop.step(timestamp);
 
+  var obj = {};
+  var transferables = [];
+
+  for (var key in obj)
+    obj[key] = null;
+
   for (var comp in Component._registered) {
-    Component._registered[comp].runUpdates();
+    Component._registered[comp].runUpdates(timestamp, obj, transferables);
   }
-  for (var comp in Component._registered) {
-    Component._registered[comp].runUpdates();
-  }
+
+  postMessage(obj);
 
   //var now = performance.now();
   //console.log('Worker ' + iam + ' flushed in ' + (now - start) +

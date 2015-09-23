@@ -140,10 +140,9 @@ DOMElement.preUpdates = function() {
   this._matrixQueueLength = 0;
 }
 
-var matrixMsg = { type: 'MATRIX', matrixQueue: null };
-DOMElement.postUpdates = function() {
-  matrixMsg.matrixQueue = this._matrixQueue.buffer;
-  postMessage(matrixMsg, [ matrixMsg.matrixQueue ]);
+DOMElement.postUpdates = function(timestamp, obj, transferables) {
+  obj.DOMEL_TRANSFORM = this._matrixQueue.buffer;
+  transferables.push(obj.DOMEL_TRANSFORM);
 }
 
 DOMElement.addMatrixChange = function(id, matrix) {

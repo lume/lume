@@ -85,14 +85,14 @@ var Component = {
   },
 
   // Will be runUpdates() (without the _) on "real" (extended) components
-  _runUpdates: function(timestamp) {
+  _runUpdates: function(timestamp, obj, transferables) {
     if (!this._updateQueueCount)
       return 0;
 
     this._inTick = true;
 
     if (this.preUpdates)
-      this.preUpdates();
+      this.preUpdates(timestamp, obj, transferables);
 
     for (let current = this._updateQueue.head; current; current = current.next) {
       current.data.update();
@@ -105,7 +105,7 @@ var Component = {
     this._updateQueueNext = SinglyLinkedList();
 
     if (this.postUpdates)
-      this.postUpdates();
+      this.postUpdates(timestamp, obj, transferables);
 
     this._inTick = false;
 

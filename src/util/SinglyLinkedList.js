@@ -258,7 +258,7 @@ SinglyLinkedList.prototype.recycleUntil = function(target) {
   this.head = target.next;
   target.next = null;
   if (this.tail === target)
-    this.tail = null;
+    this.tail = this.head;
 };
 
 /**
