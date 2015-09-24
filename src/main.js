@@ -235,17 +235,40 @@ function n2w(id) {
   return id.charCodeAt(0) % WORKERS;
 }
 
+// TODO, workerBuffer that contains poolable workerBuffer instances
+// with methods to clear, etc.
+
+var nodeBuffer = [];
+
 class Node {
   constructor() {
     this.id = UUID.generate();
-    this.worker = workers[n2w(this.id)];
-    this.worker.postMessage('node ' + this.id);
+    this.workerNo = n2w(this.id);
+    this.worker = workers[this.workerNo];
+
+    if (!nodeBuffer[this.workerNo])
+      nodeBuffer[this.workerNo] = {};
+    if (!nodeBuffer[this.workerNo].create)
+      nodeBuffer[this.workerNo].create = [];
+    nodeBuffer[this.workerNo].create.push(this.id);
+    //this.worker.postMessage('node ' + this.id);
+
+    // for local one, need code in local addComponents to handle this
     this.position = new Position(this);
   }
   addComponents() {
+    var args = [this.id].concat(Array.prototype.slice.call(arguments));
+    if (!nodeBuffer[this.workerNo])
+      nodeBuffer[this.workerNo] = {};
+    if (!nodeBuffer[this.workerNo].components)
+      nodeBuffer[this.workerNo].components = [];
+    nodeBuffer[this.workerNo].components.push(args);
+
+    /*
     this.worker.postMessage('addComponents ' +
       this.id + ' ' +
       Array.prototype.slice.call(arguments).join(' '));
+    */
   }
 }
 
@@ -254,23 +277,35 @@ class Position {
     this._node = node;
   }
   set() {
-    this._node.worker.postMessage('position set ' +
-      this._node.id + ' ' + JSON.stringify(arguments));
+    var node = this._node;
+    var args = [node.id].concat(Array.prototype.slice.call(arguments));
+    if (!nodeBuffer[node.workerNo])
+      nodeBuffer[node.workerNo] = {};
+    if (!nodeBuffer[node.workerNo].position)
+      nodeBuffer[node.workerNo].position = [];
+    nodeBuffer[node.workerNo].position.push(args);
+
+//    this._node.worker.postMessage('position set ' +
+//      this._node.id + ' ' + JSON.stringify(arguments));
   }
 }
 
 var lastTimestamp, workerWaitCount = WORKERS, doWorkerReq = false;
-var returnObj = { ts: null, g: null };
+var rafSend = { ts: null, g: null };
 function rafLoop(timestamp) {
   var i;
 
   //lastTimestamp = timestamp;
 
   //workerWaitCount = 0;
-  returnObj.ts = timestamp;
+  rafSend.ts = timestamp;
   for (i=0; i < WORKERS; i++) {
-    returnObj.g = garbageReturn[i];
-    workers[i].postMessage(returnObj, garbageReturn[i]);
+    rafSend.b = nodeBuffer[i];
+    if (nodeBuffer[i]) {
+      nodeBuffer[i] = undefined;
+    }
+    rafSend.g = garbageReturn[i];
+    workers[i].postMessage(rafSend, garbageReturn[i]);
     garbageReturn[i].length = 0;
   }
 

@@ -22,28 +22,46 @@ self.onmessage = function(e) {
 
   if (typeof e.data === 'object') {
 
+    if (e.data.b) {
+
+      //console.log(e.data.b);
+
+      if (e.data.b.create) {
+
+        var create = e.data.b.create, len = create.length;
+        for (var i=0; i < len; i++) {
+          var node = Node.instance();
+          node.id = create[i];
+          map[node.id] = node;
+        }
+
+      } 
+
+      if (e.data.b.components) {
+
+        var components = e.data.b.components, len = components.length;
+        for (var i=0; i < len; i++) {
+          var id = components[i][0];
+          var comps = components[i].slice(1);
+          map[id].addComponents.apply(map[id], comps);
+        }
+
+      }
+
+      if (e.data.b.position) {
+
+        var positions = e.data.b.position, len = positions.length;
+        for (var i=0; i < len; i++) {
+          var id = positions[i][0];
+          var poses = positions[i].slice(1);
+          map[id].position.set.apply(map[id].position, poses);
+        }
+
+      }
+
+    }
+
     step(e.data.ts);
-
-  } else if (e.data.substr(0, 5) === 'node ') {
-
-    var node = Node.instance();
-    node.id = e.data.substr(5);
-    map[node.id] = node;
-
-  } else if (e.data.substr(0, 14) === 'addComponents ') {
-
-    var data = e.data.split(' ');
-    var id = data[1];
-    var components = data.slice(2);
-    map[id].addComponents.apply(map[id], components);
-
-  } else if (e.data.substr(0, 13) === 'position set ') {
-
-    var data = e.data.split(' ');
-    var id = data[2];
-    var args = Object.values(JSON.parse(data.slice(3))); // 3 for "position set "
-    map[id].position.set.apply(map[id].position, args);
-    //console.log(map[id].position);
 
   } else if (e.data.substr(0, 6) === 'worker') {
 
