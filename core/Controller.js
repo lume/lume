@@ -13,7 +13,7 @@ define(function(require, exports, module) {
      *  parameters with defaults, and take an event dictionary.
      *
      *  Specifically, instantiations will have an `options` dictionary property,
-     *  `_eventInput`, `_eventOutput` stream properties, and
+     *  `input`, `output` stream properties, and
      *  `on`, `off`, `emit`, `trigger`, `subscribe`, `unsubscribe` methods.
      *
      *  @example
@@ -23,13 +23,13 @@ define(function(require, exports, module) {
      *              defaultOption2 : value2
      *          },
      *          events : {
-     *              'change' : myUpdateFunction
+     *              'change' : myUpdateOptionsFunction
      *          },
      *          initialize : function(options){
      *              // this method called on instantiation
      *              // options are passed in after being patched by the specified defaults
      *
-     *              this._eventInput.on('test', function(){
+     *              this.input.on('test', function(){
      *                  console.log('test fired');
      *              });
      *          }
@@ -58,15 +58,14 @@ define(function(require, exports, module) {
         this._optionsManager = new OptionsManager(this.options);
         if (options) this.setOptions(options);
 
-        this._eventInput = new EventHandler();
         this.input = new SimpleStream();
         this.output = new SimpleStream();
         EventHandler.setInputHandler(this, this.input);
         EventHandler.setOutputHandler(this, this.output);
-        EventHandler.setInputEvents(this, this.constructor.EVENTS || Controller.EVENTS, this._eventInput);
+        EventHandler.setInputEvents(this, this.constructor.EVENTS || Controller.EVENTS, this.input);
 
-        this._eventInput.bindThis(this);
-        this._eventInput.subscribe(this._optionsManager);
+        this.input.bindThis(this);
+        this.input.subscribe(this._optionsManager);
 
         if (this.initialize) this.initialize(this.options);
     }
