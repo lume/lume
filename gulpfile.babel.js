@@ -44,12 +44,23 @@ gulp.task("clean", del.bind(null, ["dist"]));
 
 // Bundle with jspm
 gulp.task("bundle", [/* "lint" */], plugins.shell.task([
-  "jspm bundle main dist/bundle.js"
+  "jspm bundle main dist/bundle.js",
+  "jspm bundle worker dist/worker.js"
 ]));
 
 // Uglify the bundle
 gulp.task("uglify", () => {
   return gulp.src("dist/bundle.js")
+    .pipe(plugins.sourcemaps.init({
+      loadMaps: true
+    }))
+    .pipe(plugins.uglify())
+    .pipe(plugins.sourcemaps.write("."))
+    .pipe(gulp.dest("dist/min"))
+    .on("error", plugins.util.log);
+});
+gulp.task("uglify-worker", () => {
+  return gulp.src("dist/worker.js")
     .pipe(plugins.sourcemaps.init({
       loadMaps: true
     }))
@@ -68,6 +79,7 @@ gulp.task("build", () => {
     "clean",
     "bundle",
     "uglify",
+    "uglify-worker",
     "gzip-size"
   )
 });

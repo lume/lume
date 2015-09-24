@@ -55,7 +55,7 @@ let elementCount = 0;
  * @returns {SinglyLinkedList}
  *
  */
-let SinglyLinkedListElement = function(data) {
+let SinglyLinkedListElement = function(data, nolog) {
   if (!(this instanceof SinglyLinkedListElement)) {
     // called without 'new'
     let el = elementPool.shiftElement();
@@ -63,7 +63,7 @@ let SinglyLinkedListElement = function(data) {
     if (el)
       return el.init(data);
     el = new SinglyLinkedListElement(data);
-    if (log.level === 'trace')
+    if (log.level === 'trace' && !nolog)
       log.trace('New SinglyLinkedListElement instance', el);
     elementCount++;
     return el;
@@ -109,6 +109,23 @@ let SinglyLinkedList = function() {
     return list;
   }
   this.init();
+};
+
+SinglyLinkedList.populatePool = function(num) {
+  var i, first, el, prev;
+  for (i = 0; i < num; i++) {
+    el = SinglyLinkedListElement(null, true);
+    if (prev)
+      prev.next = el;
+    else
+      first = el;
+    prev = el;
+  }
+  if (elementPool.tail)
+    elementPool.tail.next = first;
+  else
+    elementPool.head = first;
+  elementPool.tail = el;
 };
 
 SinglyLinkedList.prototype.init = function() {

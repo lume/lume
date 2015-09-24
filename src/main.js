@@ -287,8 +287,11 @@ window.onresize = function() {
   height = window.innerHeight;
 }
 
+var num = location.search.substr(1) || 500;
+SinglyLinkedList.populatePool(num * 2); // node + callback
+
 function begin() {
-  for (var i=0; i < 500; i++)
+  for (var i=0; i < num; i++)
     (function(i) {
       var node = new Node();
       node.addComponents('domElement', 'position');
@@ -299,7 +302,7 @@ function begin() {
           Math.random()*(width - 50),
           Math.random()*(height - 50),
           Math.random()*1000 - 500,
-          { duration: duration, curve: 'inOutElastic' }
+          { duration: duration, curve: 'inOutQuad' }
         );
         setTimeout(anim, duration - 100);
       };
