@@ -20,9 +20,9 @@ var map = {};
 
 self.onmessage = function(e) {
 
-  if (typeof e.data === 'number') {
+  if (typeof e.data === 'object') {
 
-    step(e.data);
+    step(e.data.ts);
 
   } else if (e.data.substr(0, 5) === 'node ') {
 

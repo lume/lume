@@ -13,11 +13,15 @@ var start = performance.now();
 var workers = new Array(WORKERS);
 var channels = new Array(WORKERS);
 var dchans = new Array(WORKERS);
+var garbageReturn = new Array(WORKERS);
 
-var dispatcher = new Worker('dispatcher.js');
-dispatcher.onmessage = function(e) {
-  // probably UI will never get messages from dispatcher?
-  console.log('got unknown ' + e.data + ' from dispatcher');
+var dispatcher;
+if (WORKERS > 1) {
+  dispatcher = new Worker('dispatcher.js');
+  dispatcher.onmessage = function(e) {
+    // probably UI will never get messages from dispatcher?
+    console.log('got unknown ' + e.data + ' from dispatcher');
+  }
 }
 
 var domMap = new Array(WORKERS);
@@ -67,6 +71,7 @@ for (i=0; i < WORKERS; i++) {
     window.onmessage.call(window, e, i);
   }; })(i);
   domMap[i] = [];
+  garbageReturn[i] = [];
 }
 
 //URL.revokeObjectURL( workerBlob );
@@ -95,12 +100,12 @@ var queueTaskIndex = 0;
 window.x = { queue, queueLength, queueIndex, queueTaskIndex };
 
 function dequeue(_timestamp) {
-  if (workerWaitCount !== WORKERS)
-    return true;
+  //if (workerWaitCount !== WORKERS)
+  //  return true;
 
   var timestamp = _timestamp || lastTimestamp;
-  var threshold = timestamp + 2;
-  //console.log('queueIndex', queueIndex, 'queueLength', queueLength, 'queueTaskIndex', queueTaskIndex);
+  var threshold = timestamp + 8;
+//  console.log('queueIndex', queueIndex, 'queueLength', queueLength, 'queueTaskIndex', queueTaskIndex);
 
   for (; queueIndex < queueLength; queueIndex += 3) {
     queueTaskIndex =
@@ -115,7 +120,13 @@ function dequeue(_timestamp) {
 //      console.log('not complete')
 //      window.requestAnimationFrame(rafLoop);
       return false;
+    } else if (queueTaskIndex === false) {
+      // drop the rest
+      break;
     }
+
+    if (queue[queueIndex+2] instanceof ArrayBuffer)
+      garbageReturn[queue[queueIndex+1]].push(queue[queueIndex+2]);
   }
 
   queueIndex = 0;
@@ -123,7 +134,7 @@ function dequeue(_timestamp) {
 
   //console.log('complete');
   //runTimeouts(timestamp);
-  window.requestAnimationFrame(rafLoop);  
+  //window.requestAnimationFrame(rafLoop);  
 
   return true;
 }
@@ -133,7 +144,7 @@ dequeue.DOMEL_TRANSFORM = function(threshold, queueTaskIndex, workerNo, data) {
 
   for (var i=queueTaskIndex||0, len=arr.length; i < len; i+= 17) {
     //if (i % 85 === 0 && performance.now() > threshold) {
-    //  return i;
+    //  return false;  // or return i
     //}
 
     var id = arr[i+16];
@@ -153,7 +164,7 @@ dequeue.DOMEL_TRANSFORM = function(threshold, queueTaskIndex, workerNo, data) {
 window.onmessage = function onmessage(e, workerNo) {
   if (typeof e.data === 'object') {
 
-    workerWaitCount++;
+    //workerWaitCount++;
     for (var key in e.data) {
 
       queue[queueLength] = key;
@@ -162,15 +173,16 @@ window.onmessage = function onmessage(e, workerNo) {
       queueLength += 3;
 
     }
-    dequeue();
+    //dequeue();
 
   } else if (e.data === 'loaded') {
 
     if (++workerCount === WORKERS) {
       log.debug('All ' + WORKERS + ' workers ready after ' +
         (performance.now() - start) + 'ms');
-      setupMessaging();
-      //window.setTimeout(begin, 1000); // let settle
+      if (WORKERS > 1)
+        setupMessaging();
+      setTimeout(begin, 1000); // let settle
       window.requestAnimationFrame(rafLoop);
     }
 
@@ -185,7 +197,7 @@ window.onmessage = function onmessage(e, workerNo) {
       el.style.position = 'absolute';
       el.style.width = '50px';
       el.style.height = '50px';
-      el.style.background = 'hsl(' + Math.floor(Math.random() * 360) + ', 100%, 50%)';
+      el.style.background = 'hsla(' + Math.floor(Math.random() * 360) + ', 100%, 50%, 0.8)';
       el.style.position = 'absolute';
       el.className = 'mary';
       document.body.appendChild(el);
@@ -247,38 +259,36 @@ class Position {
   }
 }
 
-var lastTimestamp, workerWaitCount = WORKERS;
+var lastTimestamp, workerWaitCount = WORKERS, doWorkerReq = false;
+var returnObj = { ts: null, g: null };
 function rafLoop(timestamp) {
   var i;
 
-  lastTimestamp = timestamp;
+  //lastTimestamp = timestamp;
 
-  if (workerWaitCount === WORKERS) {
-
-    if (queueLength === 0) {
-
-      workerWaitCount = 0;
-      for (i=0; i < WORKERS; i++)
-        workers[i].postMessage(timestamp);
-      
-      runTimeouts(timestamp);
-
-    } else {
-
-      if (dequeue(timestamp))
-        runTimeouts(timestamp);
-
-    }
-
+  //workerWaitCount = 0;
+  returnObj.ts = timestamp;
+  for (i=0; i < WORKERS; i++) {
+    returnObj.g = garbageReturn[i];
+    workers[i].postMessage(returnObj, garbageReturn[i]);
+    garbageReturn[i].length = 0;
   }
 
+  runTimeouts(timestamp);
+  //console.log('call dq; workerWaitCount', workerWaitCount);
+  dequeue(timestamp);
+  window.requestAnimationFrame(rafLoop);
 };
 
-function begin() {
-  var width = window.innerWidth;
-  var height = window.innerHeight;
+var width = window.innerWidth;
+var height = window.innerHeight;
+window.onresize = function() {
+  width = window.innerWidth;
+  height = window.innerHeight;
+}
 
-  for (var i=0; i < 50; i++)
+function begin() {
+  for (var i=0; i < 500; i++)
     (function(i) {
       var node = new Node();
       node.addComponents('domElement', 'position');
@@ -289,9 +299,9 @@ function begin() {
           Math.random()*(width - 50),
           Math.random()*(height - 50),
           Math.random()*1000 - 500,
-          { duration: duration, curve: 'inOutCubic' }
+          { duration: duration, curve: 'inOutElastic' }
         );
-        setTimeout(anim, duration);
+        setTimeout(anim, duration - 100);
       };
       setTimeout(anim, Math.random()*1500 + 500);
     })(i);      
