@@ -14,17 +14,17 @@ for their application.
 1. **JSNavigationController**
 A simple web version of iOS's UINavigationController. You can drag the blue area, or click on the
 nav buttons to transition the screens.
-[[demo]](samsara-navigation-controller.s3-website-us-west-2.amazonaws.com)
+[[demo]](http://samsara-navigation-controller.s3-website-us-west-2.amazonaws.com)
 [[source]](https://github.com/dmvaldman/JSNavigationController)
 
 2. **SamsaraJS logo**
 The SamsaraJS logo.
-[[demo]](samsara-logo.s3-website.eu-central-1.amazonaws.com)
+[[demo]](http://samsara-logo.s3-website.eu-central-1.amazonaws.com)
 [[source]](https://github.com/dmvaldman/samsara-base)
 
 3. **Accordion**
 A playful UI for scrolling by folding and unfolding an accordion.
-[[demo]](samsara-accordion.s3-website.eu-central-1.amazonaws.com)
+[[demo]](http://samsara-accordion.s3-website.eu-central-1.amazonaws.com)
  
 SamsaraJS is unique in that it is allows for many parts of an interface to animate in unison. 
 This kind of dependency management is hard to do, and we believe it means rethinking some 
@@ -38,7 +38,7 @@ best to improve.
  
 ###HOW?
 Samsara takes an approach to layout called functional reactive programming (specifically, we ascribe 
-the the philosophy of Berkeley’s [subjective idealism](gist.github.com/dmvaldman/f957dd9a8ed3f6edf35d)). 
+the the philosophy of Berkeley’s [subjective idealism](https://gist.github.com/dmvaldman/f957dd9a8ed3f6edf35d)). 
 We think of layout and user input as streams of continuously changing data. You can, for instance, 
 subscribe the opacity of a nav bar to the transition of a hamburger menu to a touch gesture of a user. 
 Developing an interface in Samsara is nothing more than creating, modifying, and piping streams. At the 
