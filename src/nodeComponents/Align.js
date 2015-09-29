@@ -1,8 +1,8 @@
 import Class     from 'lowclass'
-import Component from 'Component'
+import NodeComponent from './NodeComponent'
 
 export default
-Class ('Align') .extends (Component, {
+Class ('Align') .extends (NodeComponent, {
     Align() {
     }
 })

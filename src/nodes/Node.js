@@ -2,10 +2,8 @@ import THREE from 'three'
 import TWEEN from 'tween.js'
 import _ from 'lodash'
 
-import '../ThreeTrackballControls'
-
-import Curve   from './Curve'
-import Utility from './Utility'
+import Curve   from '../animation/Curve'
+import utilities from '../utilities'
 
 const CSS_CLASS_NODE = 'infamous-dom-node';
 
@@ -137,22 +135,22 @@ class Node extends THREE.Object3D {
 
     var transform = `
       matrix3d(
-        ${ Utility.epsilon(  matrix3d[0]  ) },
-        ${ Utility.epsilon(  matrix3d[1]  ) },
-        ${ Utility.epsilon(  matrix3d[2]  ) },
-        ${ Utility.epsilon(  matrix3d[3]  ) },
-        ${ Utility.epsilon(- matrix3d[4]  ) },
-        ${ Utility.epsilon(- matrix3d[5]  ) },
-        ${ Utility.epsilon(- matrix3d[6]  ) },
-        ${ Utility.epsilon(- matrix3d[7]  ) },
-        ${ Utility.epsilon(  matrix3d[8]  ) },
-        ${ Utility.epsilon(  matrix3d[9]  ) },
-        ${ Utility.epsilon(  matrix3d[10] ) },
-        ${ Utility.epsilon(  matrix3d[11] ) },
-        ${ Utility.epsilon(  matrix3d[12] ) },
-        ${ Utility.epsilon(  matrix3d[13] ) },
-        ${ Utility.epsilon(  matrix3d[14] ) },
-        ${ Utility.epsilon(  matrix3d[15] ) }
+        ${ utilities.epsilon(  matrix3d[0]  ) },
+        ${ utilities.epsilon(  matrix3d[1]  ) },
+        ${ utilities.epsilon(  matrix3d[2]  ) },
+        ${ utilities.epsilon(  matrix3d[3]  ) },
+        ${ utilities.epsilon(- matrix3d[4]  ) },
+        ${ utilities.epsilon(- matrix3d[5]  ) },
+        ${ utilities.epsilon(- matrix3d[6]  ) },
+        ${ utilities.epsilon(- matrix3d[7]  ) },
+        ${ utilities.epsilon(  matrix3d[8]  ) },
+        ${ utilities.epsilon(  matrix3d[9]  ) },
+        ${ utilities.epsilon(  matrix3d[10] ) },
+        ${ utilities.epsilon(  matrix3d[11] ) },
+        ${ utilities.epsilon(  matrix3d[12] ) },
+        ${ utilities.epsilon(  matrix3d[13] ) },
+        ${ utilities.epsilon(  matrix3d[14] ) },
+        ${ utilities.epsilon(  matrix3d[15] ) }
       )
     `;
 

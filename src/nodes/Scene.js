@@ -2,10 +2,8 @@ import THREE from 'three'
 import TWEEN from 'tween.js'
 import $ from 'jquery'
 
-import '../ThreeTrackballControls'
-
-import Camera  from './Camera'
-import Utility from './Utility'
+import Camera  from '../nodeComponents/Camera'
+import utilities from '../utilities'
 
 const CSS_CLASS_SCENE  = 'infamous-dom-scene';
 

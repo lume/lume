@@ -1,8 +1,8 @@
 import Class     from 'lowclass'
-import Component from 'Component'
+import NodeComponent from './NodeComponent'
 
 export default
-Class ('Size') .extends (Component, {
+Class ('Size') .extends (NodeComponent, {
     Size() {
     }
 })

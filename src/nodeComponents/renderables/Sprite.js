@@ -1,4 +1,4 @@
-import Node from './Node'
+import NodeComponent from '../NodeComponent'
 
 /**
  * Sprite Class
@@ -6,7 +6,7 @@ import Node from './Node'
  * @return {Sprite} A new instance of Sprite
  */
 export default
-class Sprite extends Node {
+class Sprite extends NodeComponent {
 
   render (scene) {
 
