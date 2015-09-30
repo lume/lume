@@ -44,15 +44,19 @@ define(function(require, exports, module) {
         this._stylesDirty = true;
         this._attributesDirty = true;
         this._sizeDirty = true;
-        this._contentDirty = true;
         this._dirty = false;
         this._cachedSize = null;
 
         if (options) {
+            this._contentDirty = false;
+            if (!options.size) options.size = [true, true];
             ElementOutput.call(this, options.el);
             this.setOptions(options);
         }
-        else ElementOutput.call(this);
+        else {
+            this._contentDirty = true;
+            ElementOutput.call(this);
+        }
     }
 
     Surface.prototype = Object.create(ElementOutput.prototype);
