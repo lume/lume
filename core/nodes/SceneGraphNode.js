@@ -18,11 +18,13 @@ define(function(require, exports, module) {
      *  @param object {SizeNode, LayoutNode, Surface, View}
      */
     function SceneGraphNode(object) {
-        this.sizeStream = null;
-        this.layoutStream = null;
-
+        // layout and size inputs
         this._layout = new EventHandler();
         this._size = new EventHandler();
+
+        // layout and size streams
+        this.size = null;
+        this.layout = null;
 
         this.root = null;
 
@@ -57,8 +59,8 @@ define(function(require, exports, module) {
             else childNode.root = _getRootNode.call(this);
         }
 
-        childNode._layout.subscribe(this.layoutStream || this._layout);
-        childNode._size.subscribe(this.sizeStream || this._size);
+        childNode._layout.subscribe(this.layout || this._layout);
+        childNode._size.subscribe(this.size || this._size);
 
         return childNode;
     };
@@ -71,7 +73,7 @@ define(function(require, exports, module) {
 
     function _set(object) {
         if (object instanceof SizeNode){
-            this.sizeStream = ResizeStream.lift(
+            this.size = ResizeStream.lift(
                 function SGSizeAlgebra (objectSpec, parentSize){
                     return (objectSpec)
                         ? sizeAlgebra(objectSpec, parentSize)
@@ -82,7 +84,7 @@ define(function(require, exports, module) {
         }
 
         if (!object.commit){
-            this.layoutStream = Stream.lift(
+            this.layout = Stream.lift(
                 function SGLayoutAlgebra (objectSpec, parentSpec, size){
                     // TODO: bug fix for when successive `start` events are fired downstream
                     if (!parentSpec || !size) return;
