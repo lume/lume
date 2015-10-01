@@ -19,10 +19,10 @@ define(function(require, exports, module) {
     var State = require('samsara/core/SUE');
     var tickQueue = require('./queues/tickQueue');
     var Stream = require('samsara/streams/Stream');
+    var RootNode = require('./nodes/RootNode');
 
-    var containerType = 'div';
-    var containerClass = 'samsara-context';
     var contexts = [];
+    var roots = [];
     var rafId = 0;
     var eventForwarders = {};
     var listenOnTick = false;
@@ -82,11 +82,54 @@ define(function(require, exports, module) {
 
         State.set(State.STATES.END);
 
-        for (var i = 0; i < contexts.length; i++) contexts[i].commit();
+        for (var i = 0; i < contexts.length; i++)
+            contexts[i].commit();
+
+        for (var i = 0; i < roots.length; i++)
+            roots[i].commit();
 
         while (dirtyQueue.length) (dirtyQueue.shift())();
 
         State.set(State.STATES.START);
+    };
+
+    /**
+     * Creates a new Root Node from which a scene graph can be constructed.
+     *  Use this to modify preexisting elements in 2D space.
+     *
+     * @method createRoot
+     * @return {RootNode}
+     */
+    Engine.createRoot = function createRoot(){
+        var root = new RootNode();
+        Engine.registerRoot(root);
+        return root;
+    };
+
+    /**
+     * Hook up listeners to a RootNode and add to an internal array for commiting.
+     *
+     * @method registerRoot
+     * @private
+     */
+    Engine.registerRoot = function registerRoot(root){
+        root._size.subscribe(size);
+        root._layout.subscribe(layout);
+        roots.push(root);
+    };
+
+    /**
+     * Remove listeners to RootNode and remove from internal commit array.
+     *
+     * @method deregisterRoot
+     * @private
+     */
+    Engine.deregisterRoot = function deregisterRoot(root){
+        var i = roots.indexOf(root);
+        if (i < 0) return;
+        root._size.unsubscribe(size);
+        root._layout.unsubscribe(layout);
+        roots.splice(i, 1);
     };
 
     /**
@@ -97,16 +140,9 @@ define(function(require, exports, module) {
      * @return {Context}
      */
     Engine.createContext = function createContext(DOMelement) {
-        var needMountContainer = (DOMelement === undefined);
-        if (needMountContainer) DOMelement = document.createElement(containerType);
-
-        DOMelement.classList.add(containerClass);
-
         var context = new Context(DOMelement);
         Engine.registerContext(context);
-
-        if (needMountContainer) document.body.appendChild(DOMelement);
-
+        if (!DOMelement) document.body.appendChild(context.container);
         return context;
     };
 
@@ -132,9 +168,10 @@ define(function(require, exports, module) {
      */
     Engine.deregisterContext = function deregisterContext(context) {
         var i = contexts.indexOf(context);
-        context.size.unsubscribe(size);
-        context.layout.unsubscribe(layout);
-        if (i >= 0) contexts.splice(i, 1);
+        if (i < 0) return;
+        context._size.unsubscribe(size);
+        context._layout.unsubscribe(layout);
+        contexts.splice(i, 1);
     };
 
     /**

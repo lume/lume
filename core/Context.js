@@ -18,6 +18,9 @@ define(function(require, exports, module) {
     var Stream = require('samsara/streams/Stream');
     var EventMapper = require('samsara/events/EventMapper');
 
+    var elementType = 'div';
+    var elementClass = 'samsara-context';
+
     /**
      * A Context defines a top-level DOM element inside which other nodes (like Surfaces) are rendered.
      *  This DOM element can be provided as an argument if it exists in the document,
@@ -32,8 +35,10 @@ define(function(require, exports, module) {
      * @param container {Node} DOM element which will serve as a container for added nodes.
      */
     function Context(container) {
-        this.container = container;
-        this.allocator = new ElementAllocator(container);
+        this.container = container || document.createElement(elementType);
+        this.container.classList.add(elementClass);
+
+        this.allocator = new ElementAllocator(this.container);
 
         this._node = new RootNode();
 
