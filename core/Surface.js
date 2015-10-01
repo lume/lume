@@ -49,7 +49,11 @@ define(function(require, exports, module) {
 
         if (options) {
             this._contentDirty = false;
-            if (!options.size) options.size = [true, true];
+
+            // default to DOM size for provided elements
+            if (options.el && !options.size)
+                options.size = [true, true];
+
             ElementOutput.call(this, options.el);
             this.setOptions(options);
         }
