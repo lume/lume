@@ -488,6 +488,7 @@ define(function(require, exports, module) {
         }
 
         ElementOutput.prototype.commit.call(this, layout);
+        this._dirty = false;
     };
 
     module.exports = Surface;

@@ -289,7 +289,6 @@ define(function(require, exports, module) {
         this._transformDirty = false;
         this._opacityDirty = false;
         this._sizeDirty = false;
-        this._dirty = false;
     };
 
     module.exports = ElementOutput;
