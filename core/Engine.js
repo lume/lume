@@ -26,7 +26,7 @@ define(function(require, exports, module) {
     var rafId = 0;
     var eventForwarders = {};
     var listenOnTick = false;
-    var size = new EventHandler();
+    var size = new ResizeStream;
     var layout = new EventHandler();
     var eventHandler = new EventHandler();
 
@@ -92,6 +92,13 @@ define(function(require, exports, module) {
 
         State.set(State.STATES.START);
     };
+
+    /**
+     * A ResizeStream representing the document's <body> size.
+     *
+     * @property size
+     */
+    Engine.size = size;
 
     /**
      * Creates a new Root Node from which a scene graph can be constructed.
