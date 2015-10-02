@@ -27,9 +27,15 @@ onmessage = function(e) {
         });
     }
     if(e.data.graph){
+      console.log(Scene.graph);
         postMessage(Scene.graph);
     }
     if(e.data.query){
         postMessage(Scene.findOne(e.data.query));
+    }
+    if(e.data.transition){
+        var n = Scene.findOne(e.data.query);
+        n.setTransitionable(e.data.transition);
+        //postMessage(n.t[e.data.transition.t]);
     }
 }

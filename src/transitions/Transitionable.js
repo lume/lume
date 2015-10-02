@@ -79,6 +79,8 @@ function Transitionable(initialState) {
     this._startedAt = null;
     this._pausedAt = null;
     if (initialState != null) this.from(initialState);
+    console.log(Engine.id);
+    Engine.updateQueue.push(this);
 }
 
 /**
@@ -452,6 +454,10 @@ Transitionable.prototype.set = function(state, transition, callback) {
         this.to(state, transition.curve, transition.duration, callback, transition.method);
     }
     return this;
+};
+
+Transitionable.prototype.update = function(time) {
+  this.constructor.Clock.step(time);
 };
 
 module.exports = Transitionable;

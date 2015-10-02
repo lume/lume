@@ -8,7 +8,7 @@ var scene = {
 };
 
 var elements = {}; // a graph of elements;
-
+console.log(Engine.id);
 
 // Add 180 Nodes to the Scene in a SubGraph.
 for( var i=0; i<180; i++ ){
@@ -19,15 +19,35 @@ for( var i=0; i<180; i++ ){
         size : [20,20,20],
         rotate: [i*4,i*4,0],
         opacity : 1.0,
+        transitionables : [{
+            id: 'opacity',
+            startValue: 0.0
+        },{
+            id: 'position',
+            startValue: [0,0,0]
+        }],
+        observables: ['opacity','position','align','rotate']
     });
     elements['elem-'+i] = new DOMComponent('node-'+i);
 };
 
 SceneWorker.postMessage(scene); // Adds Nodes to the Scene.
 SceneWorker.postMessage({graph:true}); // send message to Scene Worker to retrieve current Graph.
-//TODO: Make a better API for this.
+//TODO: Make a better API for messaging Graph?
 SceneWorker.postMessage({query:{
                             id:'node-24'}
+                        });
+SceneWorker.postMessage({query: {
+                           id:'node-24'
+                        },
+                        transition:{
+                            t: 'opacity',
+                            from: 0.0,
+                            to: 1.0,
+                            curve: 'linear',
+                            duration: 10000,
+                            delay: 0
+                        }
                         });
 
 SceneWorker.onmessage = function(e) {
