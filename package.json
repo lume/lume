@@ -29,8 +29,10 @@
     "babel-loader": "^5.3.2",
     "babelify": "^6.3.0",
     "browserify": "^11.1.0",
+    "css-loader": "^0.19.0",
     "glslify-loader": "^1.0.2",
     "raw-loader": "^0.5.1",
+    "style-loader": "^0.12.4",
     "webpack": "^1.12.1"
   },
   "jspm": {
