@@ -226,11 +226,14 @@ define(function(require, exports, module) {
      * @return {Array}
      */
     Transform.thenScale = function thenScale(t, v) {
+        var x = (v[0] !== undefined) ? v[0] : 1;
+        var y = (v[1] !== undefined) ? v[1] : 1;
+        var z = (v[2] !== undefined) ? v[2] : 1;
         return [
-            v[0] * t[0], v[1] * t[1], v[2] * t[2], 0,
-            v[0] * t[4], v[1] * t[5], v[2] * t[6], 0,
-            v[0] * t[8], v[1] * t[9], v[2] * t[10], 0,
-            v[0] * t[12], v[1] * t[13], v[2] * t[14], 1
+            x * t[0],  y * t[1],  z * t[2],  0,
+            x * t[4],  y * t[5],  z * t[6],  0,
+            x * t[8],  y * t[9],  z * t[10], 0,
+            x * t[12], y * t[13], z * t[14], 1
         ];
     };
 
