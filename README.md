@@ -4,6 +4,8 @@ clone the [base scaffolding repository](https://github.com/dmvaldman/samsara-bas
 install instructions there. We are also working to greatly improve the documentation. Currently the
 only documentation is in the source code and examples.
 
+If you have questions, join the [SamsaraJS Google Group](https://groups.google.com/forum/#!forum/samsarajs) 
+
 ###WHAT?
 SamsaraJS is a JavaScript library for making user interfaces on the mobile and desktop web. 
 The target audience is web developers looking to build complex, gesture-based interactions 
