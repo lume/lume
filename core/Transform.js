@@ -146,30 +146,30 @@ define(function(require, exports, module) {
     /**
      * Return a Transform which represents translation in the x-direction.
      *
-     * @method translate
+     * @method translateX
      * @param x {Number}        Translation amount
      */
-    Transform.translateX = function translate(x) {
+    Transform.translateX = function translateX(x) {
         return [1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, x, 0, 0, 1];
     };
 
     /**
      * Return a Transform which represents translation in the y-direction.
      *
-     * @method translate
+     * @method translateY
      * @param y {Number}        Translation amount
      */
-    Transform.translateY = function translate(y) {
+    Transform.translateY = function translateY(y) {
         return [1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, y, 0, 1];
     };
 
     /**
      * Return a Transform which represents translation in the z-direction.
      *
-     * @method translate
+     * @method translateZ
      * @param z {Number}        Translation amount
      */
-    Transform.translateZ = function translate(z) {
+    Transform.translateZ = function translateZ(z) {
         return [1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, z, 1];
     };
 
@@ -177,15 +177,44 @@ define(function(require, exports, module) {
      * Return a Transform which represents a scaling by specified amounts in each dimension.
      *
      * @method scale
-     * @param x {Number}        Scale in x-axis
-     * @param y {Number}        Scale in y-axis
-     * @param z {Number}        Scale in z-axis
+     * @param v {Number[]}      Scale vector [x,y,z]
      * @return {Array}
      */
-    Transform.scale = function scale(x, y, z) {
-        if (z === undefined) z = 1;
-        if (y === undefined) y = x;
+    Transform.scale = function scale(v) {
+        var x = (v[0] !== undefined) ? v[0] : 1;
+        var y = (v[1] !== undefined) ? v[1] : 1;
+        var z = (v[2] !== undefined) ? v[2] : 1;
         return [x, 0, 0, 0, 0, y, 0, 0, 0, 0, z, 0, 0, 0, 0, 1];
+    };
+
+    /**
+     * Return a Transform which represents scaling in the x-direction.
+     *
+     * @method scaleX
+     * @param x {Number}        Scale amount
+     */
+    Transform.scaleX = function scaleX(x) {
+        return [1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, x, 0, 0, 1];
+    };
+
+    /**
+     * Return a Transform which represents scaling in the y-direction.
+     *
+     * @method scaleY
+     * @param y {Number}        Scale amount
+     */
+    Transform.scaleY = function scaleY(y) {
+        return [1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, y, 0, 1];
+    };
+
+    /**
+     * Return a Transform which represents scaling in the z-direction.
+     *
+     * @method scaleZ
+     * @param z {Number}        Scale amount
+     */
+    Transform.scaleZ = function scaleZ(z) {
+        return [1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, z, 1];
     };
 
     /**
