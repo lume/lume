@@ -22,8 +22,8 @@ define(function(require, exports, module) {
      *  @constructor
      *  @extends View
      *  @param [options] {Object}                       Options
-     *  @param [options.itemsByRow] {Array|Object}      Number of items per row, or an object of {width : itemsByRow} pairs
-     *  @param [options.gutter] {Transitionable|Number} Gap space between successive items
+     *  @param options.itemsByRow {Array|Object}      Number of items per row, or an object of {width : itemsByRow} pairs
+     *  @param [options.gutter=0] {Transitionable|Number} Gap space between successive items
      */
     var GridLayout = View.extend({
         defaults : {

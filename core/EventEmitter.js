@@ -59,7 +59,7 @@ define(function(require, exports, module) {
     /**
      * Adds a handler to the `type` channel which will be executed on `emit`.
      *
-     * @method "on"
+     * @method on
      * @param type {string}         Channel name
      * @param handler {function}    Callback
      */
@@ -71,7 +71,7 @@ define(function(require, exports, module) {
     /**
      * Behaves like `EventEmitter.prototype.on`, except the handler is only executed once.
      *
-     * @method "on"
+     * @method once
      * @param type {string}         Event type key (for example, 'click')
      * @param handler {function}    Callback
      */
