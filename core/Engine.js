@@ -223,8 +223,8 @@ define(function(require, exports, module) {
     }
 
     function start(){
+        handleResize();
         preTickQueue.push(function start(){
-            handleResize();
             layout.emit('start', layoutSpec);
             dirtyQueue.push(function(){
                 layout.emit('end', layoutSpec);
