@@ -22,16 +22,16 @@ define(function(require, exports, module) {
      * @extends ElementOutput
      *
      * @param [options] {Object}                Options
-     * @param [options.size] {Number[]}         Size [width, height] in pixels. These can also be `true` or `undefined`.
+     * @param [options.size] {Number[]}         Size (width, height) in pixels. These can also be `true` or `undefined`.
      * @param [options.classes] {string[]}      CSS classes
      * @param [options.properties] {Object}     Dictionary of CSS properties
      * @param [options.attributes] {Object}     Dictionary of HTML attributes
      * @param [options.content] {string}        InnerHTML content
-     * @param [options.origin] {Number[]}       Origin [x,y], with values between 0 and 1
-     * @param [options.margins] {Number[]}      Margins [x,y] in pixels
-     * @param [options.proportions] {Number[]}  Proportions [x,y] with values between 0 and 1
-     * @param [options.opacity] {Number}        Opacity
-     * @param [options.tagName] {string}        HTML tagName (default is "div")
+     * @param [options.origin] {Number[]}       Origin (x,y), with values between 0 and 1
+     * @param [options.margins] {Number[]}      Margins (x,y) in pixels
+     * @param [options.proportions] {Number[]}  Proportions (x,y) with values between 0 and 1
+     * @param [options.opacity=1] {Number}        Opacity
+     * @param [options.tagName="div"] {string}        HTML tagName
      */
     function Surface(options) {
         this.properties = {};
@@ -108,6 +108,7 @@ define(function(require, exports, module) {
      * Setter for HTML attributes.
      *
      * @method setAttributes
+     * @chainable
      * @param attributes {Object}   HTML Attributes
      */
     Surface.prototype.setAttributes = function setAttributes(attributes) {
@@ -176,7 +177,6 @@ define(function(require, exports, module) {
      * Remove CSS class from the list of classes on this Surface.
      *
      * @method removeClass
-     * @chainable
      * @param className {string}    Class name
      */
     Surface.prototype.removeClass = function removeClass(className) {
@@ -186,14 +186,12 @@ define(function(require, exports, module) {
             this._classesDirty = true;
             _setDirty.call(this);
         }
-        return this;
     };
 
     /**
      * Toggle CSS class for this Surface.
      *
      * @method toggleClass
-     * @chainable
      * @param  className {string}   Class name
      */
     Surface.prototype.toggleClass = function toggleClass(className) {
@@ -201,7 +199,6 @@ define(function(require, exports, module) {
         (i == -1)
             ? this.addClass(className)
             : this.removeClass(className);
-        return this;
     };
 
     /**
@@ -264,7 +261,7 @@ define(function(require, exports, module) {
      * Set options for this surface
      *
      * @method setOptions
-     * @param [options] {Object} Overrides for default options. See constructor.
+     * @param options {Object} Overrides for default options. See constructor.
      */
     Surface.prototype.setOptions = function setOptions(options) {
         if (options.tagName !== undefined) this.elementType = options.tagName;

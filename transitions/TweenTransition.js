@@ -30,6 +30,7 @@ define(function(require, exports, module) {
      *    be part of the render() path of a visible component.
      *
      * @class TweenTransition
+     * @namespace Transitions
      * @constructor
      */
     function TweenTransition(options) {

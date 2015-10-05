@@ -20,6 +20,7 @@ define(function(require, exports, module) {
      *
      * @class OptionsManager
      * @constructor
+     * @private
      * @uses EventHandler
      * @param value {Object} Options object literal
      */

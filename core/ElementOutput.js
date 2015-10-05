@@ -180,7 +180,7 @@ define(function(require, exports, module) {
     /**
      * Adds a handler to the `type` channel which will be executed on `emit`.
      *
-     * @method "on"
+     * @method on
      *
      * @param type {string}         DOM event channel name, e.g., "click", "touchmove"
      * @param handler {function}    Handler. It's only argument will be an emitted data payload.

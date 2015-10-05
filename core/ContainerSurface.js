@@ -30,7 +30,8 @@ define(function(require, exports, module) {
      *  this is used for clipping by settings `{overflow : hidden}` as a CSS
      *  property.
      *
-     *      @example
+     *  @example
+     *
      *      var myContainer = new ContainerSurface({
      *          size : [100,100],
      *          properties : {overflow : hidden}
@@ -46,6 +47,7 @@ define(function(require, exports, module) {
      *      context.add(myContainer);
      *
      * @class ContainerSurface
+     * @namespace Core
      * @extends Surface
      * @uses Context
      * @constructor

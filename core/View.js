@@ -28,8 +28,8 @@ define(function(require, exports, module) {
      *  In addition to what a Controller provides, a View provides:
      *      Input and output streams in this.input, this.output
      *      An `add` method to build up its internal scene graph
-     *      Size methods: setSize, setProportions
-     *      Layout methods: setOpacity, setOrigin
+     *      Size methods: `setSize`, `setProportions`
+     *      Layout methods: `setOpacity`, `setOrigin`
      *
      * @class View
      * @constructor

@@ -24,7 +24,7 @@ define(function(require, exports, module) {
     /**
      * A Context defines a top-level DOM element inside which other nodes (like Surfaces) are rendered.
      *  This DOM element can be provided as an argument if it exists in the document,
-     *  otherwise it is created for you and appended to the <body>.
+     *  otherwise it is created for you and appended to the document's `<body>`.
      *
      *  The CSS class `samsara-context` is applied, which provides the minimal CSS necessary
      *  to create a performant 3D context (specifically preserve-3d).
@@ -79,7 +79,7 @@ define(function(require, exports, module) {
      *
      * @method add
      *
-     * @param {Object} obj renderable object
+     * @param {Object}          Renderable
      * @return {SceneGraphNode} Wrapped node
      */
     Context.prototype.add = function add() {

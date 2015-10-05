@@ -18,6 +18,7 @@ define(function(require, exports, module) {
      *  a specified condition function of standard event type: function(type, data).
      *
      * @class EventFilter
+     * @namespace Events
      * @constructor
      *
      * @param {function} condition function to determine whether or not

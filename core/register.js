@@ -4,7 +4,7 @@ define(function(require, exports, module) {
     /**
      * Register provides a unique Id for every commitable object for later reference.
      *
-     * @class Engine
+     * @class register
      * @private
      */
     module.exports = function register(commitable){

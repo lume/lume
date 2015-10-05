@@ -26,6 +26,7 @@ define(function(require, exports, module) {
      *
      * @class GenericInput
      * @constructor
+     * @namespace Inputs
      * @param inputs {Object|Array} object with fields {input key : input options}
      *    or an array of registered input keys
      * @param [options] {Object|Array} options object to set on all inputs

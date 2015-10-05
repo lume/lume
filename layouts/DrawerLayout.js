@@ -49,6 +49,7 @@ define(function(require, exports, module) {
      *
      *  @class DrawerLayout
      *  @constructor
+     *  @namespace Layouts
      *  @extends View
      *  @param [options] {Object}                       Options
      *  @param [options.side] {Number}                  Side to reveal the drawer from. Defined in DrawerLayout.SIDES

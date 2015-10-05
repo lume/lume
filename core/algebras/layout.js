@@ -12,16 +12,17 @@ define(function(require, exports, module) {
 
     /**
      * Defines the rules for composing layout specs: transform, align, origin and opacity.
-     *   Transform is multiplied by the parent's transform (matrix multiplication).
-     *   Align is a proportional offset relative to the parent size.
-     *   Origin is a proportional offset relative to the current size.
-     *   Opacity is multiplied by the parent's opacity.
+     *  Transform is multiplied by the parent's transform (matrix multiplication).
+     *  Align is a proportional offset relative to the parent size.
+     *  Origin is a proportional offset relative to the current size.
+     *  Opacity is multiplied by the parent's opacity.
      *
-     *   @method compose
-     *   @param spec {object}           Object layout spec
-     *   @param parentSpec {object}     Parent layout spec
-     *   @param size {Array}            Object size
-     *   @return {object}               The composed layout spec
+     * @method compose
+     * @private
+     * @param spec {object}           Object layout spec
+     * @param parentSpec {object}     Parent layout spec
+     * @param size {Array}            Object size
+     * @return {object}               The composed layout spec
      */
 
     function compose(spec, parentSpec, size){

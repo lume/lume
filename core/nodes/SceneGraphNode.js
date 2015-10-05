@@ -15,6 +15,7 @@ define(function(require, exports, module) {
      *
      *  @constructor
      *  @class SceneGraphNode
+     *  @private
      *  @param object {SizeNode, LayoutNode, Surface, View}
      */
     function SceneGraphNode(object) {
@@ -39,21 +40,21 @@ define(function(require, exports, module) {
      *  This method also takes `Views` (subtrees) and `Surfaces` (leaves).
      *
      * @method add
-     * @param object {SizeNode, LayoutNode, Surface, View} Node
-     * @return {SceneGraphNode} Wrapped node
+     * @param node {SizeNode|LayoutNode|Surface|View} Node
+     * @return {SceneGraphNode}
      */
-    SceneGraphNode.prototype.add = function add(object) {
+    SceneGraphNode.prototype.add = function add(node) {
         var childNode;
 
-        if (object._isView){
+        if (node._isView){
             if (this.root)
-                object._node.root = this.root;
+                node._node.root = this.root;
             else if (this.tempRoot)
-                object._node.tempRoot = this.tempRoot;
-            childNode = object;
+                node._node.tempRoot = this.tempRoot;
+            childNode = node;
         }
         else {
-            childNode = new SceneGraphNode(object);
+            childNode = new SceneGraphNode(node);
             if (this.tempRoot)
                 childNode.tempRoot = this.tempRoot;
             else childNode.root = _getRootNode.call(this);

@@ -11,15 +11,23 @@
 define(function(require, exports, module) {
 
     /**
-     *  A matrix math library for calculating CSS3 matrix transforms.
-     *    A Transform is a 16 element float array in row-major order, with:
-     *    elements [0],[1],[2],[4],[5],[6],[8],[9],[10] forming the 3x3 transformation matrix
-     *     for scale, skew, and rotation;
-     *    elements [12], [13], [14] corresponding to translation in x-, y-, and z-axes;
-     *    elements [3], [7], [11] set to 0;
-     *    element [15] set to 1.
+     * A library for creating and composing CSS3 matrix transforms.
+     *  A Transform is a 16 element float array `t = [t0, ..., t15]`
+     *  that corresponds to a 4x4 transformation matrix (in row-major order)
      *
-     *    Note: these matrices are transposes from their mathematical counterparts.
+     * ```
+     *    ┌               ┐
+     *    │ t0  t1  t2  0 │
+     *    │ t4  t5  t6  0 │
+     *    │ t8  t9  t10 0 │
+     *    │ t12 t13 t14 1 │
+     *    └               ┘
+     *```
+     *
+     *  This matrix is a data structure encoding a combination of translation,
+     *  scale, skew and rotation components.
+     *
+     *  Note: these matrices are transposes from their mathematical counterparts.
      *
      * @class Transform
      * @static
@@ -30,6 +38,7 @@ define(function(require, exports, module) {
      * Identity transform.
      *
      * @property identity {Array}
+     * @static
      * @final
      */
     Transform.identity = [1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1];
@@ -39,6 +48,7 @@ define(function(require, exports, module) {
      * Transform for moving a renderable in front of another renderable in the z-direction.
      *
      * @property inFront {Array}
+     * @static
      * @final
      */
     Transform.inFront = [1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 1.001, 1];
@@ -47,6 +57,7 @@ define(function(require, exports, module) {
      * Transform for moving a renderable behind another renderable in the z-direction.
      *
      * @property behind {Array}
+     * @static
      * @final
      */
     Transform.behind = [1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, -1.001, 1];
@@ -55,6 +66,7 @@ define(function(require, exports, module) {
      * Compose Transform arrays via matrix multiplication.
      *
      * @method compose
+     * @static
      * @param t1 {Transform} Left Transform
      * @param t2 {Transform} Right Transform
      * @return {Array}
@@ -86,6 +98,7 @@ define(function(require, exports, module) {
      * Convenience method to Compose several Transform arrays.
      *
      * @method composeMany
+     * @static
      * @param {...Transform}    Transform arrays
      * @return {Array}
      */
@@ -104,6 +117,7 @@ define(function(require, exports, module) {
      * Translate a Transform after the Transform is applied.
      *
      * @method thenMove
+     * @static
      * @param t {Transform}     Transform
      * @param v {Number[]}      Array of [x,y,z] translation components
      * @return {Array}
@@ -117,6 +131,7 @@ define(function(require, exports, module) {
      * Translate a Transform before the Transform is applied.
      *
      * @method moveThen
+     * @static
      * @param v {Number[]}      Array of [x,y,z] translation components
      * @param t {Transform}     Transform
      * @return {Array}
@@ -133,6 +148,7 @@ define(function(require, exports, module) {
      * Return a Transform which represents translation by a translation vector.
      *
      * @method translate
+     * @static
      * @param v {Number[]}      Translation vector [x,y,z]
      * @return {Array}
      */
@@ -147,6 +163,7 @@ define(function(require, exports, module) {
      * Return a Transform which represents translation in the x-direction.
      *
      * @method translateX
+     * @static
      * @param x {Number}        Translation amount
      */
     Transform.translateX = function translateX(x) {
@@ -157,6 +174,7 @@ define(function(require, exports, module) {
      * Return a Transform which represents translation in the y-direction.
      *
      * @method translateY
+     * @static
      * @param y {Number}        Translation amount
      */
     Transform.translateY = function translateY(y) {
@@ -167,6 +185,7 @@ define(function(require, exports, module) {
      * Return a Transform which represents translation in the z-direction.
      *
      * @method translateZ
+     * @static
      * @param z {Number}        Translation amount
      */
     Transform.translateZ = function translateZ(z) {
@@ -177,6 +196,7 @@ define(function(require, exports, module) {
      * Return a Transform which represents a scaling by specified amounts in each dimension.
      *
      * @method scale
+     * @static
      * @param v {Number[]}      Scale vector [x,y,z]
      * @return {Array}
      */
@@ -191,6 +211,7 @@ define(function(require, exports, module) {
      * Return a Transform which represents scaling in the x-direction.
      *
      * @method scaleX
+     * @static
      * @param x {Number}        Scale amount
      */
     Transform.scaleX = function scaleX(x) {
@@ -201,6 +222,7 @@ define(function(require, exports, module) {
      * Return a Transform which represents scaling in the y-direction.
      *
      * @method scaleY
+     * @static
      * @param y {Number}        Scale amount
      */
     Transform.scaleY = function scaleY(y) {
@@ -211,6 +233,7 @@ define(function(require, exports, module) {
      * Return a Transform which represents scaling in the z-direction.
      *
      * @method scaleZ
+     * @static
      * @param z {Number}        Scale amount
      */
     Transform.scaleZ = function scaleZ(z) {
@@ -221,6 +244,7 @@ define(function(require, exports, module) {
      * Scale a Transform after the Transform is applied.
      *
      * @method thenScale
+     * @static
      * @param t {Transform}     Transform
      * @param v {Number[]}      Array of [x,y,z] scale components
      * @return {Array}
@@ -241,6 +265,7 @@ define(function(require, exports, module) {
      * Return a Transform representing a clockwise rotation around the x-axis.
      *
      * @method rotateX
+     * @static
      * @param angle {Number}    Angle in radians
      * @return {Array}
      */
@@ -254,6 +279,7 @@ define(function(require, exports, module) {
      * Return a Transform representing a clockwise rotation around the y-axis.
      *
      * @method rotateY
+     * @static
      * @param angle {Number}    Angle in radians
      * @return {Array}
      */
@@ -267,6 +293,7 @@ define(function(require, exports, module) {
      * Return a Transform representing a clockwise rotation around the z-axis.
      *
      * @method rotateX
+     * @static
      * @param angle {Number}    Angle in radians
      * @return {Array}
      */
@@ -280,6 +307,7 @@ define(function(require, exports, module) {
      * Return a Transform representation of a skew in the x-direction
      *
      * @method skewX
+     * @static
      * @param angle {Number}    The angle between the top and left sides
      * @return {Array}
      */
@@ -291,6 +319,7 @@ define(function(require, exports, module) {
      * Return a Transform representation of a skew in the y-direction
      *
      * @method skewY
+     * @static
      * @param angle {Number}    The angle between the bottom and right sides
      * @return {Array}
      */
@@ -302,6 +331,7 @@ define(function(require, exports, module) {
      * Return a Transform which represents an axis-angle rotation.
      *
      * @method rotateAxis
+     * @static
      * @param v {Number[]}   Unit vector representing the axis to rotate about
      * @param angle {Number} Radians to rotate clockwise about the axis
      * @return {Array}
@@ -334,6 +364,7 @@ define(function(require, exports, module) {
      *  Useful for rotating and scaling relative to an origin.
      *
      * @method aboutOrigin
+     * @static
      * @param v {Number[]}          Origin point [x,y,z]
      * @param t {Transform}         Transform
      * @return {Array}
@@ -350,6 +381,7 @@ define(function(require, exports, module) {
      * Returns a perspective Transform.
      *
      * @method perspective
+     * @static
      * @param focusZ {Number}       z-depth of focal point
      * @return {Array}
      */
@@ -361,6 +393,7 @@ define(function(require, exports, module) {
      * Return translation vector component of the given Transform.
      *
      * @method getTranslate
+     * @static
      * @param t {Transform}         Transform
      * @return {Number[]}
      */
@@ -373,6 +406,7 @@ define(function(require, exports, module) {
      *   Note: will provide incorrect results if Transform is not invertible.
      *
      * @method inverse
+     * @static
      * @param t {Transform} Transform
      * @return {Array}
      */
@@ -405,6 +439,7 @@ define(function(require, exports, module) {
      * Returns the transpose of a Transform.
      *
      * @method transpose
+     * @static
      * @param t {Transform}     Transform
      * @return {Array}
      */
@@ -428,6 +463,8 @@ define(function(require, exports, module) {
      * Decompose Transform into separate `translate`, `rotate`, `scale` and `skew` components.
      *
      * @method interpret
+     * @static
+     * @private
      * @param t {Transform}     Transform
      * @return {Object}
      */
@@ -530,6 +567,8 @@ define(function(require, exports, module) {
      *  The "inverse" of .interpret.
      *
      * @method build
+     * @static
+     * @private
      * @param spec {Object} Object with keys "translate, rotate, scale, skew" and their vector values
      * @return {Array}
      */
@@ -549,6 +588,7 @@ define(function(require, exports, module) {
      *  f(M1,M2,t) = (1 - t) * M1 + t * M2
      *
      * @method average
+     * @static
      * @param M1 {Transform}    M1 = f(M1,M2,0) Transform
      * @param M2 {Transform}    M2 = f(M1,M2,1) Transform
      * @param [t=1/2] {Number}
@@ -580,6 +620,7 @@ define(function(require, exports, module) {
      * Determine if two Transforms are component-wise equal.
      *
      * @method equals
+     * @static
      * @param a {Transform}     Transform
      * @param b {Transform}     Transform
      * @return {Boolean}
@@ -592,6 +633,7 @@ define(function(require, exports, module) {
      * Determine if two Transforms are component-wise unequal
      *
      * @method notEquals
+     * @static
      * @param a {Transform}     Transform
      * @param b {Transform}     Transform
      * @return {Boolean}

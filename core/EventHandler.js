@@ -35,6 +35,7 @@ define(function(require, exports, module) {
      *  Defines `trigger`, `subscribe` and `unsubscribe` methods on the class instance.
      *
      * @method setInputHandler
+     * @static
      * @param object {Object}           Class instance
      * @param handler {EventHandler}    EventHandler representing an input source
      */
@@ -49,6 +50,7 @@ define(function(require, exports, module) {
      *  Defines `emit`, `on` and `off` methods on the class instance.
      *
      * @method setOutputHandler
+     * @static
      * @param object {Object}           Object to provide on, off and emit methods
      * @param handler {EventHandler}    Handler assigned event handler
      */
@@ -64,6 +66,7 @@ define(function(require, exports, module) {
      *  a provided input handler for an object.
      *
      * @method setInputEvents
+     * @static
      * @param object {Object}           Object to provide on, off and emit methods
      * @param handler {EventHandler}    Handler assigned event handler
      */
@@ -79,8 +82,9 @@ define(function(require, exports, module) {
 
     /**
      * Adds a handler to the `type` channel which will be executed on `emit`.
+     *  Extends EventEmitter's `on` method.
      *
-     * @method "on"
+     * @method on
      * @param type {string}             Event channel name
      * @param handler {function}        Handler
      */

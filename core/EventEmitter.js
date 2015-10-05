@@ -36,7 +36,7 @@ define(function(require, exports, module) {
      *
      * @method emit
      *
-     * @param type {string}     Channel name
+     * @param type {String}     Channel name
      * @param data {Object}     Payload
      */
     EventEmitter.prototype.emit = function emit(type, data) {
@@ -60,8 +60,8 @@ define(function(require, exports, module) {
      * Adds a handler to the `type` channel which will be executed on `emit`.
      *
      * @method on
-     * @param type {string}         Channel name
-     * @param handler {function}    Callback
+     * @param type {String}         Channel name
+     * @param handler {Function}    Callback
      */
     EventEmitter.prototype.on = function on(type, handler) {
         if (!(type in this.listeners)) this.listeners[type] = [];
@@ -72,8 +72,8 @@ define(function(require, exports, module) {
      * Behaves like `EventEmitter.prototype.on`, except the handler is only executed once.
      *
      * @method once
-     * @param type {string}         Event type key (for example, 'click')
-     * @param handler {function}    Callback
+     * @param type {String}         Event type key (for example, 'click')
+     * @param handler {Function}    Callback
      */
     EventEmitter.prototype.once = function once(type, handler){
         var onceHandler = function(){
@@ -88,8 +88,8 @@ define(function(require, exports, module) {
      *   This undoes the work of `on`.
      *
      * @method off
-     * @param type {string}         Channel name
-     * @param handler {function}    Callback
+     * @param type {String}         Channel name
+     * @param handler {Function}    Callback
      */
     EventEmitter.prototype.off = function off(type, handler) {
         if (!type) {

@@ -41,6 +41,7 @@ define(function(require, exports, module) {
      *  After a set duration has passed, it executes the function.
      *
      * @method setTimeout
+     * @static
      * @param handler {Function}    Function to be run after a specified duration
      * @param duration {Number}     Time to delay execution (in milliseconds)
      * @return {Function}
@@ -61,7 +62,7 @@ define(function(require, exports, module) {
      * Wraps a function to be invoked at repeated intervals.
      *
      * @method setInterval
-     *
+     * @static
      * @param handler {Function}    Function to be run at specified intervals
      * @param interval {Number}     Time interval (in milliseconds)
      * @return {Function}
@@ -82,6 +83,7 @@ define(function(require, exports, module) {
      * Wraps a function to be invoked after a specified number of Engine ticks.
      *
      * @method after
+     * @static
      * @param handler {Function}    Function to be executed
      * @param numTicks {Number}     Number of frames to delay execution
      * @return {Function}
@@ -102,6 +104,7 @@ define(function(require, exports, module) {
      * Wraps a function to be invoked every specified number of Engine ticks.
      *
      * @method every
+     * @static
      * @param handler {Function}    Function to be executed
      * @param numTicks {Number}     Number of frames per execution
      * @return {Function}
@@ -123,6 +126,7 @@ define(function(require, exports, module) {
      * Cancel a timer.
      *
      * @method clear
+     * @static
      * @param handler {Function} Handler
      */
     Timer.clear = function clear(handler) {
@@ -133,6 +137,7 @@ define(function(require, exports, module) {
      * Debounces a function for specified duration.
      *
      * @method debounce
+     * @static
      * @param handler {Function}  Handler
      * @param duration {Number}   Duration
      * @return {function}
@@ -156,6 +161,7 @@ define(function(require, exports, module) {
      * Debounces a function for a specified number of Engine frames.
      *
      * @method frameDebounce
+     * @static
      * @param handler {Function}  Handler
      * @param numFrames {Number}  Number of frames
      * @return {function}

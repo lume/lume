@@ -40,10 +40,10 @@ define(function(require, exports, module) {
 
     /**
      * Engine is a singleton object that is required to run a Samsara application.
-     *   It is the "heartbeat" of the application, managing the batching of streams
-     *   and the commiting of all RootNodes.
+     *  It is the "heartbeat" of the application, managing the batching of streams
+     *  and the commiting of all RootNodes.
      *
-     *   It also listens and can respond to DOM events on the HTML <body> tag.
+     *  It also listens and can respond to DOM events on the HTML <body> tag.
      *
      * @class Engine
      * @static
@@ -105,6 +105,7 @@ define(function(require, exports, module) {
      *  Use this to modify preexisting elements in 2D space.
      *
      * @method createRoot
+     * @static
      * @return {RootNode}
      */
     Engine.createRoot = function createRoot(){
@@ -117,6 +118,7 @@ define(function(require, exports, module) {
      * Hook up listeners to a RootNode and add to an internal array for commiting.
      *
      * @method registerRoot
+     * @static
      * @private
      */
     Engine.registerRoot = function registerRoot(root){
@@ -129,6 +131,7 @@ define(function(require, exports, module) {
      * Remove listeners to RootNode and remove from internal commit array.
      *
      * @method deregisterRoot
+     * @static
      * @private
      */
     Engine.deregisterRoot = function deregisterRoot(root){
@@ -143,6 +146,7 @@ define(function(require, exports, module) {
      * Creates a new Context from which a scene graph can be constructed.
      *
      * @method createContext
+     * @static
      * @param [DOMelement] {Node}   Pre-existing element in the document
      * @return {Context}
      */
@@ -156,8 +160,9 @@ define(function(require, exports, module) {
     /**
      * Registers an existing Context to be updated by the run loop.
      *
-     * @static
      * @method registerContext
+     * @static
+     * @private
      * @param context {Context}     Context to register
      */
     Engine.registerContext = function registerContext(context) {
@@ -171,6 +176,8 @@ define(function(require, exports, module) {
      *  Note: this does not do any cleanup.
      *
      * @method deregisterContext
+     * @static
+     * @private
      * @param context {Context}     Context to deregister
      */
     Engine.deregisterContext = function deregisterContext(context) {
@@ -185,6 +192,7 @@ define(function(require, exports, module) {
      * Adds a handler to an event on the DOM <body>, e.g., "click".
      *
      * @method on
+     * @static
      * @param type {string}         DOM event name
      * @param handler {function}    Handler
      */
@@ -201,6 +209,9 @@ define(function(require, exports, module) {
      * Removes a previously added handler.
      *
      * @method off
+     * @static
+     * @param type {string}         DOM event name
+     * @param handler {function}    Handler
      */
     Engine.off = function off(type, handler){
         if (type === 'tick') listenOnTick = false;
@@ -214,6 +225,7 @@ define(function(require, exports, module) {
      * Initiates the Engine's heartbeat.
      *
      * @method start
+     * @static
      */
     Engine.start = start;
 

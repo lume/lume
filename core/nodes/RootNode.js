@@ -10,6 +10,7 @@ define(function(require, exports, module) {
      *
      * @class RootNode
      * @constructor
+     * @private
      * @extends SceneGraphNode
      */
     function RootNode() {

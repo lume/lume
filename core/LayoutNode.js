@@ -13,7 +13,11 @@ define(function(require, exports, module) {
      *
      * @class LayoutNode
      * @constructor
-     * @param sources {Object}  Object of layout sources
+     * @param sources {Object}                          Object of layout sources
+     * @param [sources.transform] {Stream|Transform}    Transform source
+     * @param [sources.align] {Stream|Array}            Align source
+     * @param [sources.origin] {Stream|Array}           Origin source
+     * @param [sources.opacity] {Stream|Number}         Opacity source
      */
     function LayoutNode(sources) {
         this.stream = _createStream(sources);
@@ -27,11 +31,11 @@ define(function(require, exports, module) {
      *  Simple types will be wrapped in an `Observerable` to emit appropriate events.
      *
      * @method set
-     * @param obj {Object}      Object of data sources
+     * @param sources {Object}      Object of data sources
      */
-    LayoutNode.prototype.set = function(obj){
-        for (var key in obj){
-            var value = obj[key];
+    LayoutNode.prototype.set = function(sources){
+        for (var key in sources){
+            var value = sources[key];
 
             var source = (value instanceof SimpleStream)
                 ? value

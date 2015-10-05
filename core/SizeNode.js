@@ -13,7 +13,10 @@ define(function(require, exports, module) {
      *
      * @class SizeNode
      * @constructor
-     * @param sources {Object}  Object of size sources
+     * @param sources {Object}                      Object of size sources
+     * @param [sources.size] {Stream|Array}         Size source
+     * @param [sources.margin] {Stream|Array}       Margin source
+     * @param [sources.propotions] {Stream|Array}   Proportions source
      */
     function SizeNode(sources) {
         this.stream = _createStream(sources);
