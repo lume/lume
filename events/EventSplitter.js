@@ -8,46 +8,44 @@
 
 /* Modified work copyright © 2015 David Valdman */
 
-/* Documentation in progress. May be outdated. */
-
 define(function(require, exports, module) {
     var EventHandler = require('../core/EventHandler');
 
     /**
      * EventSplitter routes events to various event destinations
-     *  based on custom logic.  The function signature is arbitrary.
+     *  based on custom logic. The return of the provided splitter
+     *  function should be of type EventEmitter.
      *
      * @class EventSplitter
      * @constructor
-     *
-     * @param {function} mappingFunction function to determine where
-     *  events are routed to.
+     * @param splitter {Function}
      */
-    function EventSplitter(mappingFunction) {
+    function EventSplitter(splitter) {
         EventHandler.call(this);
-        this._mappingFunction = mappingFunction;
+        this._splitter = splitter;
     }
     EventSplitter.prototype = Object.create(EventHandler.prototype);
     EventSplitter.prototype.constructor = EventSplitter;
 
     /**
-     * Trigger an event, sending to all mapped downstream handlers
-     *   listening for provided 'type' key.
+     * Emit event.
      *
      * @method emit
-     *
-     * @param {string} type event type key (for example, 'click')
-     * @param {Object} data event data
-     * @return {EventHandler} this
+     * @param type {String} Channel name
+     * @param data {Object} Payload
      */
     EventSplitter.prototype.emit = function emit(type, data) {
-        var target = this._mappingFunction.apply(this, arguments);
-        if (target && (target.emit instanceof Function)) target.emit(type, data);
+        var target = this._splitter.apply(this, arguments);
+        if (target && target.emit instanceof Function)
+            target.emit(type, data);
     };
 
     /**
      * Alias of emit.
+     *
      * @method trigger
+     * @param type {String} Channel name
+     * @param data {Object} Payload
      */
     EventSplitter.prototype.trigger = EventSplitter.prototype.emit;
 

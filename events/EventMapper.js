@@ -1,37 +1,32 @@
 /* copyright © 2015 David Valdman */
 
-/* Documentation in progress. May be outdated. */
-
 define(function(require, exports, module) {
     var EventHandler = require('samsara/core/EventHandler');
 
     /**
      * EventMapper modifies the data payload of an event based on
-     *  a given function provided on initialization.
+     *  a provided function.
+     *
+     *  Note: it does not modify the event's type.
      *
      * @class EventMapper
      * @constructor
-     *
-     * @param {function} mappingFunction function to modify the incoming
-     *  event data payload
+     * @param map {Function}  Function to modify the event payload
      */
-    function EventMapper(mappingFunction) {
+    function EventMapper(map) {
         EventHandler.call(this);
-        this._mappingFunction = mappingFunction;
+        this._mappingFunction = map;
     }
 
     EventMapper.prototype = Object.create(EventHandler.prototype);
     EventMapper.prototype.constructor = EventMapper;
 
     /**
-     * Trigger an event, sending to all mapped downstream handlers
-     *   listening for provided 'type' key.
+     * Emit mapped event.
      *
      * @method emit
-     *
-     * @param {string} type event type key (for example, 'click')
-     * @param {Object} data event data
-     * @return {EventHandler} this
+     * @param type {String} Channel name
+     * @param data {Object} Payload
      */
     EventMapper.prototype.emit = function emit(type, data) {
         var mappedData = this._mappingFunction(data);
@@ -40,7 +35,10 @@ define(function(require, exports, module) {
 
     /**
      * Alias of emit.
+     *
      * @method trigger
+     * @param type {String} Channel name
+     * @param data {Object} Payload
      */
     EventMapper.prototype.trigger = EventMapper.prototype.emit;
 

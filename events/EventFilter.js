@@ -8,52 +8,44 @@
 
 /* Modified work copyright © 2015 David Valdman */
 
-/* Documentation in progress. May be outdated. */
-
 define(function(require, exports, module) {
     var EventHandler = require('../core/EventHandler');
 
     /**
      * EventFilter regulates the broadcasting of events based on
-     *  a specified condition function of standard event type: function(type, data).
+     *  a specified condition prescribed by a provided function
+     *  with the signature `(type, data) -> Boolean`
      *
      * @class EventFilter
      * @namespace Events
      * @constructor
-     *
-     * @param {function} condition function to determine whether or not
-     *    events are emitted.
+     * @param filter {Function}  Function returning a Boolean
      */
-    function EventFilter(condition) {
+    function EventFilter(filter) {
         EventHandler.call(this);
-        this._condition = condition;
+        this._condition = filter;
     }
     EventFilter.prototype = Object.create(EventHandler.prototype);
     EventFilter.prototype.constructor = EventFilter;
 
     /**
-     * If filter condition is met, trigger an event, sending to all downstream handlers
-     *   listening for provided 'type' key.
+     * Emit event if the condition is satisfied.
      *
      * @method emit
-     *
-     * @param {string} type event type key (for example, 'click')
-     * @param {Object} data event data
-     * @return {EventHandler} this
+     * @param type {String} Channel name
+     * @param data {Object} Payload
      */
     EventFilter.prototype.emit = function emit(type, data) {
-        if (this._condition(type, data))
-            return EventHandler.prototype.emit.apply(this, arguments);
+        if (!this._condition(type, data)) return;
+        EventHandler.prototype.emit.apply(this, arguments);
     };
 
     /**
-     * An alias of emit. Trigger determines whether to send
-     *  events based on the return value of it's condition function
-     *  when passed the event type and associated data.
+     * Alias of emit.
      *
      * @method trigger
-     * @param {string} type name of the event
-     * @param {object} data associated data
+     * @param type {String} Channel name
+     * @param data {Object} Payload
      */
     EventFilter.prototype.trigger = EventFilter.prototype.emit;
 
