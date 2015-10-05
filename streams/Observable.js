@@ -1,3 +1,7 @@
+/* Copyright © 2015 David Valdman */
+
+/* Documentation in progress. May be outdated. */
+
 define(function(require, exports, module) {
     var SimpleStream = require('samsara/streams/SimpleStream');
     var preTickQueue = require('samsara/core/queues/preTickQueue');

@@ -1,3 +1,5 @@
+/* Copyright © 2015 David Valdman */
+
 define(function(require, exports, module) {
     var counter = 0;
 
