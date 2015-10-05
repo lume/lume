@@ -1,4 +1,3 @@
-
 /* This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
@@ -9,8 +8,6 @@
 
 /* Modified work copyright © 2015 David Valdman */
 
-/* Documentation in progress. May be outdated. */
-
 define(function(require, exports, module) {
     var Surface = require('samsara/core/Surface');
     var Context = require('samsara/core/Context');
@@ -19,7 +16,7 @@ define(function(require, exports, module) {
     var preTickQueue = require('samsara/core/queues/preTickQueue');
     var Transform = require('samsara/core/Transform');
 
-    var layoutSpec = {
+    var defaultLayout = {
         transform : Transform.identity,
         opacity : 1,
         origin : null,
@@ -28,26 +25,41 @@ define(function(require, exports, module) {
     };
 
     /**
-     * ContainerSurface is an object designed to contain surfaces and
-     *   set properties to be applied to all of them at once.
-     *   This extends the Surface class.
-     *   A container surface will enforce these properties on the
-     *   surfaces it contains:
+     * ContainerSurface enables nesting of DOM. A ContainerSurface manages
+     *  its own Scene Graph that it inserts inside a DOM node. Typically
+     *  this is used for clipping by settings `{overflow : hidden}` as a CSS
+     *  property.
      *
-     *   size (clips contained surfaces to its own width and height);
+     *      @example
+     *      var myContainer = new ContainerSurface({
+     *          size : [100,100],
+     *          properties : {overflow : hidden}
+     *      });
      *
-     *   origin;
+     *      var surface = new Surface({
+     *          size : [200,200],
+     *          properties : {background : 'red'}
+     *      });
      *
-     *   its own opacity and transform, which will be automatically
-     *   applied to  all Surfaces contained directly and indirectly.
+     *      myContainer.add(surface);
+     *
+     *      context.add(myContainer);
      *
      * @class ContainerSurface
      * @extends Surface
+     * @uses Context
      * @constructor
-     * @param {Array.Number} [options.size] [width, height] in pixels
-     * @param {Array.string} [options.classes] CSS classes to set on all inner content
-     * @param {Array} [options.properties] string dictionary of HTML attributes to set on target div
-     * @param {string} [options.content] inner (HTML) content of surface (should not be used)
+     *
+     * @param [options] {Object}                Options
+     * @param [options.size] {Number[]}         Size (width, height) in pixels. These can also be `true` or `undefined`.
+     * @param [options.classes] {string[]}      CSS classes
+     * @param [options.properties] {Object}     Dictionary of CSS properties
+     * @param [options.attributes] {Object}     Dictionary of HTML attributes
+     * @param [options.content] {string}        InnerHTML content
+     * @param [options.origin] {Number[]}       Origin (x,y), with values between 0 and 1
+     * @param [options.proportions] {Number[]}  Proportions (x,y) with values between 0 and 1
+     * @param [options.margins] {Number[]}      Margins (x,y) in pixels
+     * @param [options.opacity] {Number}        Opacity
      */
     function ContainerSurface(options) {
         Surface.call(this, options);
@@ -65,9 +77,9 @@ define(function(require, exports, module) {
         }.bind(this));
 
         preTickQueue.push(function(){
-            this.context._layout.trigger('start', layoutSpec);
+            this.context._layout.trigger('start', defaultLayout);
             dirtyQueue.push(function(){
-                this.context._layout.trigger('end', layoutSpec);
+                this.context._layout.trigger('end', defaultLayout);
             }.bind(this));
         }.bind(this));
     }
@@ -81,17 +93,34 @@ define(function(require, exports, module) {
         return [element.clientWidth, element.clientHeight];
     }
 
+    /**
+     * Get current perspective in pixels.
+     *
+     * @method getPerspective
+     * @return {Number} Perspective in pixels
+     */
+    ContainerSurface.prototype.getPerspective = function getPerspective() {
+        return Context.prototype.getPerspective.apply(this.context, arguments);
+    };
+
+    /**
+     * Set current perspective in pixels.
+     *
+     * @method setPerspective
+     * @param perspective {Number}  Perspective in pixels
+     * @param [transition] {Object} Transition definition
+     * @param [callback] {Function} Callback executed on completion of transition
+     */
     ContainerSurface.prototype.setPerspective = function setPerspective(){
         Context.prototype.setPerspective.apply(this.context, arguments);
     };
 
     /**
-     * Add renderables to this object's render tree
+     * Extends the scene graph with a provided node.
      *
      * @method add
-     *
-     * @param {Object} obj renderable object
-     * @return {RenderNode} RenderNode wrapping this object, if not already a RenderNode
+     * @param node {Object}     Node, Surface, or View
+     * @return {SceneGraphNode}
      */
     ContainerSurface.prototype.add = function add() {
         return Context.prototype.add.apply(this.context, arguments);
@@ -100,8 +129,8 @@ define(function(require, exports, module) {
     /**
      * Place the document element this component manages into the document.
      *
-     * @private
      * @method deploy
+     * @private
      * @param {Node} target document parent of this container
      */
     ContainerSurface.prototype.deploy = function deploy() {
@@ -113,8 +142,8 @@ define(function(require, exports, module) {
      * This includes changes to classes, styles, size, content, opacity, origin,
      * and matrix transforms.
      *
-     * @private
      * @method commit
+     * @private
      * @param {Spec} spec commit context
      */
     ContainerSurface.prototype.commit = function commit(spec, allocator) {
