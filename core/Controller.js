@@ -84,7 +84,7 @@ define(function(require, exports, module) {
      *  with the Controller to include events in {key : value} pairs where the keys are
      *  event channel names and the values are functions to be executed.
      *
-     * @attribute DEFAULT_EVENTS
+     * @attribute DEFAULT_OPTIONS
      * @readOnly
      */
     Controller.EVENTS = {};
