@@ -20,10 +20,10 @@ define(function(require, exports, module) {
      *
      *  @class GridLayout
      *  @constructor
-     *  @extends View
-     *  @param [options] {Object}                       Options
-     *  @param options.itemsByRow {Array|Object}      Number of items per row, or an object of {width : itemsByRow} pairs
-     *  @param [options.gutter=0] {Transitionable|Number} Gap space between successive items
+     *  @extends Core.View
+     *  @param [options] {Object}                           Options
+     *  @param options.itemsByRow {Array|Object}            Number of items per row, or an object of {width : itemsByRow} pairs
+     *  @param [options.gutter=0] {Transitionable|Number}   Gap space between successive items
      */
     var GridLayout = View.extend({
         defaults : {

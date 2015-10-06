@@ -14,17 +14,34 @@ define(function(require, exports, module) {
         }
     };
 
+    /**
+     * A layout which arranges items in series based on their size.
+     *  Items can be arranged vertically or horizontally.
+     *
+     * @class SequentialLayout
+     * @constructor
+     * @namespace Layouts
+     * @extends Core.View
+     * @param [options] {Object}                        Options
+     * @param [options.direction]{Number}               Direction to lay out items
+     * @param [options.spacing] {Transitionable|Array}  Gutter spacing between items
+     */
     var SequentialLayout = View.extend({
         defaults : {
             direction : CONSTANTS.DIRECTION.X,
             spacing : 0
         },
-        events : {},
         initialize : function initialize(){},
-        sequenceFrom : function sequenceFrom(sequence){
+        /**
+         * Add content as an array of Views or Surfaces.
+         *
+         * @method addItems
+         * @param items {Array}  An array of Views or Surfaces
+         */
+        addItems : function addItems(items){
             var sizes = [];
-            for (var i = 0; i < sequence.length; i++)
-                sizes.push(sequence[i].size);
+            for (var i = 0; i < items.length; i++)
+                sizes.push(items[i].size);
 
             var transformStream = ResizeStream.lift(function(){
                 var sizes = arguments;
@@ -47,8 +64,8 @@ define(function(require, exports, module) {
                 return transforms;
             }.bind(this), sizes);
 
-            for (var i = 0; i < sequence.length; i++){
-                var node = sequence[i];
+            for (var i = 0; i < items.length; i++){
+                var node = items[i];
                 var transform = transformStream.pluck(i);
                 var layout = new LayoutNode({transform : transform});
                 this.add(layout).add(node);

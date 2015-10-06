@@ -14,6 +14,9 @@ define(function(require, exports, module) {
         }
     };
 
+    // Still in development
+    // TODO: documentation
+
     var AccordionLayout = View.extend({
         defaults : {
             direction : CONSTANTS.DIRECTION.Y,

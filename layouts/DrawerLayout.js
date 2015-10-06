@@ -35,14 +35,20 @@ define(function(require, exports, module) {
      *  the layout to user input (like a Mouse/Touch/Scroll input), or by manually
      *  calling setPosition with a transition.
      *
-     *  The layout emits a stream of pixel displacement and progress (between 0 and 1) JSON.
+     *  The layout emits a `start`, `update` and `end` Stream with payload
      *
-     *  The drawer can be revealed from any side of the content (top, left, bottom, right).
+     *      `progress` - Number between 0 and 1 indicating how open the drawer is
+     *      `value` - Pixel displacement in how open the drawer is
+     *
+     *  It also emits `close` and `open` events.
+     *
+     *  The drawer can be revealed from any side of the content (top, left, bottom, right),
+     *  by specifying a side option.
      *
      *  @class DrawerLayout
      *  @constructor
      *  @namespace Layouts
-     *  @extends View
+     *  @extends Core.View
      *  @param [options] {Object}                       Options
      *  @param [options.side] {Number}                  Side to reveal the drawer from. Defined in DrawerLayout.SIDES
      *  @param [options.revealLength] {Number}          The maximum length to reveal the drawer
@@ -51,7 +57,6 @@ define(function(require, exports, module) {
      *  @param [options.transitionClose] {Object}       A transition definition for closing the drawer
      *  @param [options.transitionOpen] {Object}        A transition definition for opening the drawer
      */
-
     var DrawerLayout = View.extend({
         defaults : {
             side : CONSTANTS.SIDE.LEFT,
@@ -172,6 +177,12 @@ define(function(require, exports, module) {
 
             this.output.subscribe(outputMapper).subscribe(this.position);
         },
+        /**
+         * Set the drawer component with a Surface of View.
+         *
+         * @method addDrawer
+         * @param drawer {Surface|View}
+         */
         addDrawer : function addDrawer(drawer){
             if (this.options.revealLength == undefined)
                 this.options.revealLength = drawer.getSize()[this.direction];
@@ -180,6 +191,12 @@ define(function(require, exports, module) {
             var layout = new LayoutNode({transform : Transform.behind});
             this.add(layout).add(this.drawer);
         },
+        /**
+         * Set the content component with a Surface or View.
+         *
+         * @method addContent
+         * @param content {Surface|View}
+         */
         addContent : function addContent(content){
             var transform = this.position.map(function(position){
                 return (this.direction === CONSTANTS.DIRECTION.X)
@@ -192,8 +209,8 @@ define(function(require, exports, module) {
             this.add(layout).add(content);
         },
         /**
-         * Reveals the drawer with a transition
-         *   Emits an 'open' event when an opening transition has been committed to.
+         * Reveals the drawer with a transition.
+         *   Emits an `open` event when an opening transition has been committed to.
          *
          * @method open
          * @param [transition] {Boolean|Object} transition definition
@@ -209,8 +226,8 @@ define(function(require, exports, module) {
             }
         },
         /**
-         * Conceals the drawer with a transition
-         *   Emits a 'close' event when an closing transition has been committed to.
+         * Conceals the drawer with a transition.
+         *   Emits a `close` event when an closing transition has been committed to.
          *
          * @method close
          * @param [transition] {Boolean|Object} transition definition
@@ -226,7 +243,7 @@ define(function(require, exports, module) {
             }
         },
         /**
-         * Toggles between open and closed states
+         * Toggles between open and closed states.
          *
          * @method toggle
          * @param [transition] {Boolean|Object} transition definition
@@ -236,7 +253,7 @@ define(function(require, exports, module) {
             else this.open(transition);
         },
         /**
-         * Sets the position in pixels for the content's displacement
+         * Sets the position in pixels for the content's displacement.
          *
          * @method setPosition
          * @param position {Number}             position

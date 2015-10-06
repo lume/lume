@@ -43,7 +43,7 @@ define(function(require, exports, module) {
      *  It is the "heartbeat" of the application, managing the batching of streams
      *  and the commiting of all RootNodes.
      *
-     *  It also listens and can respond to DOM events on the HTML <body> tag.
+     *  It also listens and can respond to DOM events on the HTML `<body>` tag.
      *
      * @class Engine
      * @namespace Core

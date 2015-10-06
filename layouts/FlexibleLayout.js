@@ -5,21 +5,8 @@ define(function(require, exports, module) {
     var Transitionable = require('samsara/core/Transitionable');
     var View = require('samsara/core/View');
     var Stream = require('samsara/streams/Stream');
-    var ResizeStream = require('samsara/streams/ResizeStream');
     var LayoutNode = require('samsara/core/LayoutNode');
     var SizeNode = require('samsara/core/SizeNode');
-
-    /**
-     * A layout which divides a context into sections based on a proportion
-     *   of the total sum of ratios.  FlexibleLayout can either lay renderables
-     *   out vertically or horizontally.
-     * @class FlexibleLayout
-     * @constructor
-     * @param {Options} [options] An object of configurable options.
-     * @param {Number} [options.direction=0] Direction the FlexibleLayout instance should lay out renderables.
-     * @param {Transition} [options.transition=false] The transiton that controls the FlexibleLayout instance's reflow.
-     * @param {Ratios} [options.ratios=[]] The proportions for the renderables to maintain
-     */
 
     var CONSTANTS = {
         DIRECTION : {
@@ -28,15 +15,29 @@ define(function(require, exports, module) {
         }
     };
 
+    /**
+     * A layout which arranges items vertically or horizontally and
+     *  with sizes prescribed by ratios of a containing size. These
+     *  ratios can be animated.
+     *
+     * @class FlexibleLayout
+     * @constructor
+     * @namespace Layouts
+     * @extends Core.View
+     * @param [options] {Object}                        Options
+     * @param [options.direction]{Number}               Direction to lay out items
+     * @param [options.ratios] {Transitionable|Array}   The proportions
+     */
     var FlexibleLayout = View.extend({
         defaults : {
             direction : CONSTANTS.DIRECTION.X,
-            transition : true,
             ratios : []
         },
-        events : {},
         initialize : function initialize(options){
-            this.ratios = new Transitionable(options.ratios);
+            var ratios = (options.ratios instanceof Transitionable)
+                ? options.ratios
+                : new Transitionable(options.ratios);
+
             this.nodes = [];
 
             var stateStream = Stream.lift(function(ratios, parentSize){
@@ -85,20 +86,19 @@ define(function(require, exports, module) {
                     sizes : sizes
                 };
 
-            }.bind(this), [this.ratios, this.size]);
+            }.bind(this), [ratios, this.size]);
 
             this.transforms = stateStream.pluck('transforms');
             this.sizes = stateStream.pluck('sizes');
         },
         /**
-         * Sets the collection of renderables under the FlexibleLayout instance's control.  Also sets
-         * the associated ratio values for sizing the renderables if given.
+         * Add content as an array of Views or Surfaces.
          *
-         * @method sequenceFrom
-         * @param {Array} sequence An array of renderables.
+         * @method addItems
+         * @param items {Array}  An array of Views or Surfaces
          */
-        sequenceFrom : function sequenceFrom(sequence){
-            this.nodes = sequence;
+        addItems : function addItems(items){
+            this.nodes = items;
 
             for (var i = 0; i < this.nodes.length; i++){
                 var node = this.nodes[i];
@@ -113,16 +113,6 @@ define(function(require, exports, module) {
 
                 this.add(layoutNode).add(sizeNode).add(node);
             }
-        },
-        /**
-         * Sets the associated ratio values for sizing the renderables.
-         *
-         * @method setRatios
-         * @param {Array} ratios Array of ratios corresponding to the percentage sizes each renderable should be
-         */
-        setRatios : function setRatios(ratios, transition, callback){
-            if (transition === undefined) transition = this.options.transition;
-            this.ratios.set(ratios, transition, callback);
         }
     }, CONSTANTS);
 
