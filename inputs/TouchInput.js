@@ -8,26 +8,40 @@
 
 /* Modified work copyright © 2015 David Valdman */
 
-/* Documentation in progress. May be outdated. */
-
 define(function(require, exports, module) {
     var TouchTracker = require('samsara/inputs/TouchTracker');
     var EventHandler = require('samsara/core/EventHandler');
     var SimpleStream = require('samsara/streams/SimpleStream');
     var OptionsManager = require('samsara/core/OptionsManager');
 
+    var MINIMUM_TICK_TIME = 8;
+
     /**
-     * Handles piped in touch events. Emits 'start', 'update', and 'events'
-     *   events with delta, position, velocity, acceleration, clientX, clientY, count, and touch id.
-     *   Useful for dealing with inputs on touch devices. Designed to be used either as standalone, or
-     *   included in a GenericInput.
+     * Wrapper for DOM touch events. Converts
+     *
+     *      `touchstart` -> `start`
+     *      `touchmove`  -> `update`
+     *      `touchend`   -> `end`
+     *
+     * TouchInput emits these events with the following payload data:
+     *
+     *      `value`     - Displacement in pixels from `touchstart`
+     *      `delta`     - Differential in pixels between successive mouse positions
+     *      `velocity`  - Velocity of mouse movement in pixels per second
+     *      `clientX`   - DOM event clientX property
+     *      `clientY`   - DOM event clientY property
+     *      `count`     - DOM event for number of simultaneous touches
+     *      `touch`     - DOM touch event identifier
      *
      * @class TouchInput
      * @constructor
-     *
-     * @param [options] {Object}             default options overrides
-     * @param [options.direction] {Number}   read from a particular axis
-     * @param [options.scale] {Number}       constant factor to scale velocity output
+     * @extends Streams.SimpleStream
+     * @uses TouchTracker
+     * @uses OptionsManager
+     * @param [options] {Object}                Options
+     * @param [options.direction] {Number}      Direction to project movement onto.
+     *                                          Options found in TouchInput.DIRECTION.
+     * @param [options.scale=1] {Number}        Scale the response to the mouse
      */
     function TouchInput(options) {
         this.options = OptionsManager.setOptions(this, options);
@@ -38,9 +52,9 @@ define(function(require, exports, module) {
         EventHandler.setOutputHandler(this, this._eventOutput);
         EventHandler.setInputHandler(this, this._touchTracker);
 
-        this._touchTracker.on('trackstart', _handleStart.bind(this));
-        this._touchTracker.on('trackmove', _handleMove.bind(this));
-        this._touchTracker.on('trackend', _handleEnd.bind(this));
+        this._touchTracker.on('trackstart', handleStart.bind(this));
+        this._touchTracker.on('trackmove', handleMove.bind(this));
+        this._touchTracker.on('trackend', handleEnd.bind(this));
 
         this._payload = {
             delta    : null,
@@ -63,19 +77,20 @@ define(function(require, exports, module) {
         scale: 1
     };
 
+    /**
+     * Constrain the input along a specific axis.
+     *
+     * @property DIRECTION {Object}
+     * @property DIRECTION.X {Number}   x-axis
+     * @property DIRECTION.Y {Number}   y-axis
+     * @static
+     */
     TouchInput.DIRECTION = {
         X : 0,
         Y : 1
     };
 
-    var MINIMUM_TICK_TIME = 8;
-
-    /**
-     *  Triggered by trackstart.
-     *  @method _handleStart
-     *  @private
-     */
-    function _handleStart(data) {
+    function handleStart(data) {
         var velocity;
         var delta;
         if (this.options.direction !== undefined){
@@ -101,12 +116,7 @@ define(function(require, exports, module) {
         this._eventOutput.emit('start', payload);
     }
 
-    /**
-     *  Triggered by trackmove.
-     *  @method _handleMove
-     *  @private
-     */
-    function _handleMove(data) {
+    function handleMove(data) {
         var history = data.history;
 
         var currHistory = history[history.length - 1];
@@ -159,12 +169,7 @@ define(function(require, exports, module) {
         this._eventOutput.emit('update', payload);
     }
 
-    /**
-     *  Triggered by trackend.
-     *  @method _handleEnd
-     *  @private
-     */
-    function _handleEnd(data) {
+    function handleEnd(data) {
         this._payload.count = data.count;
         this._eventOutput.emit('end', this._payload);
     }

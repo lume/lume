@@ -13,6 +13,7 @@ define(function(require, exports, module) {
      *
      * @class LayoutNode
      * @constructor
+     * @namespace Core
      * @param sources {Object}                          Object of layout sources
      * @param [sources.transform] {Stream|Transform}    Transform source
      * @param [sources.align] {Stream|Array}            Align source

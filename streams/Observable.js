@@ -14,7 +14,7 @@ define(function(require, exports, module) {
      * @class Observable
      * @constructor
      * @private
-     * @extends SimpleStream
+     * @extends Streams.Stream
      * @param value {Number, String, Array, Object} Value
      */
     function Observable(value){

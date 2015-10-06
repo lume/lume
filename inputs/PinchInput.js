@@ -8,22 +8,27 @@
 
 /* Modified work copyright © 2015 David Valdman */
 
-/* Documentation in progress. May be outdated. */
-
 define(function(require, exports, module) {
     var TwoFingerInput = require('samsara/inputs/TwoFingerInput');
     var OptionsManager = require('samsara/core/OptionsManager');
 
     /**
-     * Handles two-finger touch events to change position via pinching / expanding.
-     *   Emits 'start', 'update' and 'end' events with
-     *   position, velocity, touch ids, and distance between fingers.
+     * Detects two-finger pinching motion and emits `start`, `update` and
+     *  `end` events with the payload data:
+     *
+     *      `value`         - Distance between the two touches
+     *      `delta`         - Differential in successive distances
+     *      `velocity`      - Relative velocity between two touches
+     *      `displacement`  - Total accumulated displacement
+     *      `center`        - Midpoint between the two touches
+     *      `touches`       - Array of DOM event touch identifiers
      *
      * @class PinchInput
-     * @extends TwoFingerInput
+     * @extends Inputs.TwoFingerInput
+     * @uses OptionsManager
      * @constructor
-     * @param {Object} options default options overrides
-     * @param {Number} [options.scale] scale velocity by this factor
+     * @param options {Object}              Options
+     * @param [options.scale=1] {Number}    Scale the response to pinch
      */
     function PinchInput(options) {
         TwoFingerInput.call(this);

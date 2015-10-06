@@ -16,15 +16,25 @@ define(function(require, exports, module) {
     var SimpleStream = require('samsara/streams/SimpleStream');
     var Timer = require('samsara/core/Timer');
 
+    var MINIMUM_TICK_TIME = 8;
+
     /**
-     * Handles DOM wheel/mousewheel events.
-     *   Emits 'start', 'update', and 'end' events with payloads including:
-     *   delta: pixel differential since last event,
-     *   value: pixel displacement,
-     *   velocity: speed of change in pixels per ms,
+     * Wrapper for DOM wheel/mousewheel events. Converts `scroll` events
+     *  to `start`, `update` and `end` events and emits them with the payload:
+     *
+     *      `value`     - Scroll displacement in pixels from start
+     *      `delta`     - Scroll differential in pixels between subsequent events
+     *      `velocity`  - Velocity of scroll
      *
      * @class ScrollInput
      * @constructor
+     * @extends Streams.SimpleStream
+     * @uses TouchTracker
+     * @uses OptionsManager
+     * @param [options] {Object}                Options
+     * @param [options.direction] {Number}      Direction to project movement onto.
+     *                                          Options found in TouchInput.DIRECTION.
+     * @param [options.scale=1] {Number}        Scale the response to the mouse
      */
     function ScrollInput(options) {
         this.options = OptionsManager.setOptions(this, options);
@@ -41,8 +51,8 @@ define(function(require, exports, module) {
         EventHandler.setInputHandler(this, this._eventInput);
         EventHandler.setOutputHandler(this, this._eventOutput);
 
-        this._eventInput.on('mousewheel', _handleMove.bind(this));
-        this._eventInput.on('wheel', _handleMove.bind(this));
+        this._eventInput.on('mousewheel', handleMove.bind(this));
+        this._eventInput.on('wheel', handleMove.bind(this));
 
         this._value = (this.options.direction === undefined) ? [0,0] : 0;
         this._prevTime = undefined;
@@ -63,16 +73,22 @@ define(function(require, exports, module) {
         scale: 1
     };
 
+    /**
+     * Constrain the input along a specific axis.
+     *
+     * @property DIRECTION {Object}
+     * @property DIRECTION.X {Number}   x-axis
+     * @property DIRECTION.Y {Number}   y-axis
+     * @static
+     */
     ScrollInput.DIRECTION = {
         X : 0,
         Y : 1
     };
 
-    var MINIMUM_TICK_TIME = 8;
-
     var _now = Date.now;
 
-    function _handleMove(event) {
+    function handleMove(event) {
         if (!this._inProgress) {
             this._value = (this.options.direction === undefined) ? [0,0] : 0;
             payload = this._payload;

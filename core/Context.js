@@ -31,6 +31,7 @@ define(function(require, exports, module) {
      *
      * @class Context
      * @constructor
+     * @namespace Core
      * @uses RootNode
      * @param container {Node} DOM element which will serve as a container for added nodes.
      */
@@ -142,10 +143,7 @@ define(function(require, exports, module) {
      *  Then commits the contents of the Context's RootNode.
      *  This is called by Engine every frame when some layout or size data has changed.
      *
-     * @method setPerspective
-     * @param perspective {Number}  Perspective in pixels
-     * @param [transition] {Object} Transition definition
-     * @param [callback] {Function} Callback executed on completion of transition
+     * @method commit
      */
     Context.prototype.commit = function(){
         if (this._perspectiveDirty){

@@ -8,28 +8,18 @@
 
 /* Modified work copyright © 2015 David Valdman */
 
-/* Documentation in progress. May be outdated. */
-
 define(function(require, exports, module) {
     var OptionsManager = require('samsara/core/OptionsManager');
 
+    var registeredCurves = {};
+    var eps = 1e-7; // for calculating velocity using finite difference
+
     /**
-     * A state maintainer for a smooth transition between
-     *    numerically-specified states.  Example numeric states include floats or
-     *    Transfornm objects.
-     *
-     *    An initial state is set with the constructor or set(startValue). A
-     *    corresponding end state and transition are set with set(endValue,
-     *    transition). Subsequent calls to set(endValue, transition) begin at
-     *    the last state. Calls to get(timestamp) provide the _interpolated state
-     *    along the way.
-     *
-     *   Note that there is no event loop here - calls to get() are the only way
-     *    to find out state projected to the current (or provided) time and are
-     *    the only way to trigger callbacks. Usually this kind of object would
-     *    be part of the render() path of a visible component.
+     * A method of interpolating between start and end values (numbers or
+     *  arrays of numbers) via an easing curve.
      *
      * @class TweenTransition
+     * @private
      * @namespace Transitions
      * @constructor
      */
@@ -47,16 +37,17 @@ define(function(require, exports, module) {
         this.velocity = undefined;
     }
 
-    var registeredCurves = {};
-    var eps = 1e-7; // for calculating velocity using finite difference
-
     /**
-     * Transition curves mapping independent variable t from domain [0,1] to a
-     *    range within [0,1]. Includes functions 'linear', 'easeIn', 'easeOut',
-     *    'easeInOut', 'easeOutBounce', 'spring'.
+     * Default easing curves.
      *
-     * @property {object} Curve
-     * @final
+     * @property CURVES {object}
+     * @property CURVES.linear {Function}           Linear interpolation
+     * @property CURVES.easeIn {Function}           EaseIn interpolation
+     * @property CURVES.easeOut {Function}          EaseOut interpolation
+     * @property CURVES.easeInOut {Function}        EaseInOut interpolation
+     * @property CURVES.easeInOutBounce {Function}  EaseInOutBounce interpolation
+     * @property CURVES.spring {Function}           Spring-like interpolation
+     * @static
      */
     TweenTransition.CURVES = {
         linear: function(t) {
@@ -87,76 +78,56 @@ define(function(require, exports, module) {
     };
 
     /**
-     * Constructor method. A way of registering custom easing curves by a key.
+     * A way of registering custom easing curves by name.
      *  Curves are functions that take a number between 0 and 1 and return
      *  a number (often between 0 and 1, but can over/under shoot).
      *
      * @method register
-     * @param {string} curveName dictionary key
-     * @param {unitCurve} curve function of one numeric variable mapping [0,1]
-     *    to range inside [0,1]
-     * @return {boolean} false if key is taken, else true
+     * @static
+     * @param name {String}         Identifying name
+     * @param curve {Function}      Function defined on the domain [0,1]
+     * @return {Boolean}            False if key is taken, else true
      */
-    TweenTransition.register = function register(curveName, curve) {
-        if (!registeredCurves[curveName]) {
-            registeredCurves[curveName] = curve;
+    TweenTransition.register = function register(name, curve) {
+        if (!registeredCurves[name]) {
+            registeredCurves[name] = curve;
             return true;
         }
         else return false;
     };
 
     /**
-     * Remove object with key "curveName" from internal dictionary of registered
-     *    curves.
+     * Remove curve from internal registry. Undoes work of `register`.
      *
-     * @method unregisterCurve
-     *
+     * @method deregister
      * @static
-     *
-     * @param {string} curveName dictionary key
-     * @return {boolean} false if key has no dictionary value
+     * @param name {String}     Name dictionary key
+     * @return {Boolean}        False if key doesn't exist
      */
-    TweenTransition.unregister = function unregister(curveName) {
-        if (registeredCurves[curveName]) {
-            delete registeredCurves[curveName];
+    TweenTransition.deregister = function deregister(name) {
+        if (registeredCurves[name]) {
+            delete registeredCurves[name];
             return true;
         }
         else return false;
     };
 
     /**
-     * Retrieve function with key "curveName" from internal dictionary of
-     *    registered curves. Default curves are defined in the
-     *    TweenTransition.CURVES array, where the values represent
-     *    unitCurve functions.
-     *
-     * @method getCurve
-     *
-     * @static
-     *
-     * @param {string} curveName dictionary key
-     * @return {unitCurve} curve function of one numeric variable mapping [0,1]
-     *    to range inside [0,1]
-     */
-    TweenTransition.getCurve = function getCurve(curveName) {
-        var curve = registeredCurves[curveName];
-        if (curve !== undefined) return curve;
-        else throw new Error('curve not registered');
-    };
-
-    /**
-     * Retrieve all available curves.
+     * Retrieve all registered curves.
      *
      * @method getCurves
-     *
      * @static
-     *
-     * @return {object} curve functions of one numeric variable mapping [0,1]
-     *    to range inside [0,1]
+     * @return {Object}
      */
     TweenTransition.getCurves = function getCurves() {
         return registeredCurves;
     };
+
+    function getCurve(curveName) {
+        var curve = registeredCurves[curveName];
+        if (curve !== undefined) return curve;
+        else throw new Error('curve not registered');
+    }
 
     function _interpolate(a, b, t) {
         return ((1 - t) * a) + (t * b);
@@ -184,9 +155,6 @@ define(function(require, exports, module) {
         else return obj;
     }
 
-    // Fill in missing properties in "transition" with those in defaultTransition, and
-    //   convert internal named curve to function object, returning as new
-    //   object.
     function _normalize(transition, endValue, defaultTransition) {
         var result = {curve: defaultTransition.curve};
         if (defaultTransition.duration) result.duration = defaultTransition.duration;
@@ -196,27 +164,20 @@ define(function(require, exports, module) {
             if (transition.curve) result.curve = transition.curve;
             if (transition.speed) result.speed = transition.speed;
         }
-        if (typeof result.curve === 'string') result.curve = TweenTransition.getCurve(result.curve);
+        if (typeof result.curve === 'string') result.curve = getCurve(result.curve);
         if (transition.speed) result.duration = _speed2Duration(endValue, this._startValue, transition.speed);
 
         return result;
     }
 
     /**
-     * Add transition to end state to the queue of pending transitions. Special
-     *    Use: calling without a transition resets the object to that state with
-     *    no pending actions
+     * Set new value to transition to.
      *
      * @method set
-     *
-     *
-     * @param {number|Array.Number|Object.<number, number>} endValue
-     *    end state to which we _interpolate
-     * @param {transition=} transition object of type {duration: number, curve:
-     *    f[0,1] -> [0,1] or name}. If transition is omitted, change will be
-     *    instantaneous.
-     * @param {function()=} callback Zero-argument function to call on observed
-     *    completion (t=1)
+     * @param endValue {Number|Number[]}    End value
+     * @param [transition] {Object}         Transition object of type
+     *                                      {duration: number, curve: name}
+     * @param [callback] {Function}         Callback to execute on completion of transition
      */
     TweenTransition.prototype.set = function set(endValue, transition, callback) {
         if (!transition) {
@@ -245,15 +206,12 @@ define(function(require, exports, module) {
      * Cancel all transitions and reset to a stable state
      *
      * @method reset
-     *
-     * @param {number|Array.Number|Object.<number, number>} startValue
-     *    starting state
-     * @param {number} startVelocity
-     *    starting velocity
+     * @param value {number|Number[]}       Value
+     * @param [velocity] {number|Number[]}  Velocity
      */
-    TweenTransition.prototype.reset = function reset(startValue, startVelocity) {
-        this.state = _clone(startValue);
-        this.velocity = _clone(startVelocity);
+    TweenTransition.prototype.reset = function reset(value, velocity) {
+        this.state = _clone(value);
+        this.velocity = _clone(velocity);
         this._startTime = 0;
         this._duration = 0;
         this._startValue = this.state;
@@ -266,25 +224,20 @@ define(function(require, exports, module) {
      * Get current velocity
      *
      * @method getVelocity
-     *
-     * @returns {Number} velocity
+     * @returns {Number}
      */
     TweenTransition.prototype.getVelocity = function getVelocity() {
         return this.velocity;
     };
 
     /**
-     * Get interpolated state of current action at provided time. If the last
-     *    action has completed, invoke its callback.
+     * Get current value.
      *
      * @method get
-     *
-     *
-     * @return {number|Object.<number|string, number>} beginning state
-     *    _interpolated to this point in time.
+     * @return {Number|Number[]}
      */
     TweenTransition.prototype.get = function get() {
-        if (this.isActive()) this.update();
+        if (this.isActive()) update.call(this);
         return this.state;
     };
 
@@ -318,13 +271,7 @@ define(function(require, exports, module) {
         return state;
     }
 
-    /**
-     * Update internal state to the provided timestamp. This may invoke the last
-     *    callback and begin a new action.
-     *
-     * @method update
-     */
-    TweenTransition.prototype.update = function update() {
+    function update() {
         var timestamp = Date.now();
 
         var timeSinceStart = timestamp - this._startTime;
@@ -349,14 +296,13 @@ define(function(require, exports, module) {
             this.state = _calculateState(this._startValue, this._endValue, this._curve(t));
             this.velocity = _calculateVelocity(this.state, this._startValue, this._curve, this._duration, t);
         }
-    };
+    }
 
     /**
-     * Is there at least one action pending completion?
+     * Returns true if the animation is ongoing, false otherwise.
      *
      * @method isActive
-     *
-     * @return {boolean}
+     * @return {Boolean}
      */
     TweenTransition.prototype.isActive = function isActive() {
         return this._active;

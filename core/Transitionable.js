@@ -32,7 +32,7 @@ define(function(require, exports, module) {
      *
      * @class Transitionable
      * @constructor
-     * @extends SimpleStream
+     * @extends Streams.SimpleStream
      * @param start {Number|Number[]}   Starting value
      */
     function Transitionable(start) {

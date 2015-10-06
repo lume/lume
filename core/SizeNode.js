@@ -12,6 +12,7 @@ define(function(require, exports, module) {
      *  to descendant size nodes.
      *
      * @class SizeNode
+     * @namespace Core
      * @constructor
      * @param sources {Object}                      Object of size sources
      * @param [sources.size] {Stream|Array}         Size source

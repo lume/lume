@@ -17,7 +17,8 @@ define(function(require, exports, module) {
      *  with input and output emitters.
      *
      * @class EventHandler
-     * @extends EventEmitter
+     * @namespace Core
+     * @extends Core.EventEmitter
      * @constructor
      */
     function EventHandler() {
@@ -67,6 +68,7 @@ define(function(require, exports, module) {
      *
      * @method setInputEvents
      * @static
+     * @private
      * @param object {Object}           Object to provide on, off and emit methods
      * @param handler {EventHandler}    Handler assigned event handler
      */

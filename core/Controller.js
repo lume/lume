@@ -50,6 +50,7 @@ define(function(require, exports, module) {
      *
      * @class Controller
      * @constructor
+     * @namespace Core
      * @uses OptionsManager
      * @param options {Object} Instance options
      */
@@ -84,7 +85,7 @@ define(function(require, exports, module) {
      *  with the Controller to include events in {key : value} pairs where the keys are
      *  event channel names and the values are functions to be executed.
      *
-     * @attribute DEFAULT_OPTIONS
+     * @attribute EVENTS
      * @readOnly
      */
     Controller.EVENTS = {};

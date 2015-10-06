@@ -1,11 +1,28 @@
 /* Copyright © 2015 David Valdman */
 
-/* Documentation in progress. May be outdated. */
-
 define(function(require, exports, module){
     var Stream = require('samsara/streams/Stream');
 
+    /**
+     * Accumulator is a Stream that accumulates a value given by a
+     *  number or array of numbers.
+     *
+     *  It emits `start`, `update` and `end` events.
+     *
+     *  @example
+     *
+     *      // this gives the total displacement of mouse input
+     *      accumulator.subscribe(mouseInput.pluck('delta'));
+     *
+     *
+     * @class Accumulator
+     * @extends Streams.Stream
+     * @namespace Streams
+     * @constructor
+     * @param [sum] {Number|Array}    Initial value
+     */
     function Accumulator(sum){
+        // TODO: is this state necessary?
         this.sum = sum || undefined;
 
         Stream.call(this, {
@@ -36,11 +53,15 @@ define(function(require, exports, module){
         }.bind(this));
     }
 
-    Accumulator.DEFAULT_OPTIONS = {};
-
     Accumulator.prototype = Object.create(Stream.prototype);
     Accumulator.prototype.constructor = Accumulator;
 
+    /**
+     * Returns current accumulated value.
+     *
+     * @method get
+     * @return {Number}
+     */
     Accumulator.prototype.get = function(){
         return this.sum;
     };

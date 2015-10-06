@@ -7,6 +7,7 @@ define(function(require, exports, module) {
      * Register provides a unique Id for every commitable object for later reference.
      *
      * @class register
+     * @namespace Core
      * @private
      */
     module.exports = function register(commitable){

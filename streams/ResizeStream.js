@@ -1,7 +1,5 @@
 /* Copyright © 2015 David Valdman */
 
-/* Documentation in progress. May be outdated. */
-
 define(function(require, exports, module) {
     var SimpleStream = require('samsara/streams/SimpleStream');
     var EventMapper = require('samsara/events/EventMapper');
@@ -16,6 +14,15 @@ define(function(require, exports, module) {
         RESIZE : 'resize'
     };
 
+    /**
+     * ResizeStream is a stream that listens to and emits `resize` events.
+     *
+     * @class ResizeStream
+     * @private
+     * @extends Streams.Stream
+     * @namespace Streams
+     * @constructor
+     */
     function ResizeStream(){
         var dirtyResize = false;
 
@@ -52,11 +59,27 @@ define(function(require, exports, module) {
     ResizeStream.prototype = Object.create(SimpleStream.prototype);
     ResizeStream.prototype.constructor = ResizeStream;
 
+    /**
+     * Extends SimpleStream.lift
+     *
+     * @method lift
+     * @static
+     * @private
+     */
     ResizeStream.lift = SimpleStream.lift;
 
-    ResizeStream.merge = function(streamObj){
+    /**
+     * Batches resize events for provided object of streams in
+     *  {key : stream} pairs. Emits one `resize` event per Engine cycle.
+     *
+     * @method merge
+     * @static
+     * @private
+     * @param streams {Object}  Dictionary of `resize` streams
+     */
+    ResizeStream.merge = function(streams){
         var mergedStream = new ResizeStream();
-        var mergedData = (streamObj instanceof Array) ? [] : {};
+        var mergedData = (streams instanceof Array) ? [] : {};
 
         mergedStream.addStream = function(key, stream){
             var mapper = (function(key){
@@ -69,8 +92,8 @@ define(function(require, exports, module) {
             mergedStream.subscribe(mapper).subscribe(stream);
         };
 
-        for (var key in streamObj){
-            var stream = streamObj[key];
+        for (var key in streams){
+            var stream = streams[key];
             mergedStream.addStream(key, stream);
         }
 

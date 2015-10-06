@@ -8,22 +8,35 @@
 
 /* Modified work copyright © 2015 David Valdman */
 
-/* Documentation in progress. May be outdated. */
+//TODO: deprecate in favor of generic history stream
 
 define(function(require, exports, module) {
     var OptionsManager = require('samsara/core/OptionsManager');
     var EventHandler = require('samsara/core/EventHandler');
 
+    var _now = Date.now;
+
     /**
-     * Helper to TouchInput – tracks piped in touch events, organizes touch
-     *   events by ID, and emits track events back to TouchInput.
-     *   Emits 'trackstart', 'trackmove', and 'trackend' events upstream.
+     * Catalogues a history of touch events. Useful for creating more complex
+     *  touch recognition for gestures. Currently only used by TouchInput to
+     *  track previous touches to compute velocity.
+     *
+     * TouchTracker emits these events with the following payload data:
+     *
+     *      `x`             - Displacement in x-direction
+     *      `y`             - Displacement in y-direction
+     *      `identifier`    - DOM event touch identifier
+     *      `timestamp`     - Timestamp
+     *      `count`         - DOM event for number of simultaneous touches
+     *      `history`       - History of touches for the gesture
      *
      * @class TouchTracker
      * @constructor
+     * @private
+     * @uses OptionsManager
+     * @param [options] {Object}                Options
+     * @param [options.limit] {Number}          Number of touches to record
      */
-
-    //TODO: implement max sampling length (default to 2?) and payload caching
 
     function TouchTracker(options) {
         this.options = OptionsManager.setOptions(this, options);
@@ -57,14 +70,11 @@ define(function(require, exports, module) {
         this.touchHistory[data.identifier] = [data];
     };
 
-    var _now = Date.now;
-
     function _timestampTouch(touch, event, history) {
         return {
             x: touch.clientX,
             y: touch.clientY,
             identifier : touch.identifier,
-            origin: event.origin,
             timestamp: _now(),
             count: event.touches.length,
             history: history

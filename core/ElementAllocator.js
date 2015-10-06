@@ -19,6 +19,7 @@ define(function(require, exports, module) {
      *
      * @class ElementAllocator
      * @constructor
+     * @namespace Core
      * @private
      * @param container {Node} DOM element
      */

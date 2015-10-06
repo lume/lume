@@ -46,6 +46,7 @@ define(function(require, exports, module) {
      *  It also listens and can respond to DOM events on the HTML <body> tag.
      *
      * @class Engine
+     * @namespace Core
      * @static
      * @uses EventHandler
      */

@@ -14,7 +14,7 @@ define(function(require, exports, module) {
      * @class Observable
      * @constructor
      * @private
-     * @extends SimpleStream
+     * @extends Streams.SimpleStream
      * @param value {Array} Size
      */
     function SizeObservable(value){

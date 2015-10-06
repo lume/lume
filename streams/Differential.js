@@ -1,11 +1,29 @@
 /* Copyright © 2015 David Valdman */
 
-/* Documentation in progress. May be outdated. */
-
 define(function(require, exports, module){
     var Stream = require('samsara/streams/Stream');
     var OptionsManager = require('samsara/core/OptionsManager');
 
+    /**
+     * Differential is a Stream that emits differentials of consecutive
+     *  input values.
+     *
+     *  It emits `start`, `update` and `end` events.
+     *
+     *  @example
+     *
+     *      // this gives differentials of mouse input
+     *      differential.subscribe(mouseInput.pluck('value'));
+     *
+     *
+     * @class Differential
+     * @extends Streams.Stream
+     * @uses OptionsManager
+     * @namespace Streams
+     * @constructor
+     * @param [options] {Object}        Options
+     * @param [options.scale] {Number}  Scale to apply to differential
+     */
     function Differential(options){
         this.options = OptionsManager.setOptions(this, options);
 

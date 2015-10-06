@@ -19,6 +19,7 @@ define(function(require, exports, module) {
      *   Note: only JSONable objects are allowed, so no functions.
      *
      * @class OptionsManager
+     * @namespace Core
      * @constructor
      * @private
      * @uses EventHandler

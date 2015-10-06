@@ -25,7 +25,7 @@ define(function(require, exports, module) {
      *
      * @class View
      * @constructor
-     * @extends Controller
+     * @extends Core.Controller
      * @uses SizeNode
      * @uses LayoutNode
      * @uses SimpleStream

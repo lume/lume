@@ -8,14 +8,14 @@
 
 /* Modified work copyright © 2015 David Valdman */
 
-/* Documentation in progress. May be outdated. */
-
 define(function(require, exports, module) {
 
     /**
-     * A library of curves which map an animation explicitly as a function of time.
+     * A library of easing curves.
      *
      * @class Easing
+     * @namespace Transitions
+     * @static
      */
     var Easing = {
 

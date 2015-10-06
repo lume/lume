@@ -8,27 +8,39 @@
 
 /* Modified work copyright © 2015 David Valdman */
 
-/* Documentation in progress. May be outdated. */
-
 define(function(require, exports, module) {
     var EventHandler = require('samsara/core/EventHandler');
     var OptionsManager = require('samsara/core/OptionsManager');
     var SimpleStream = require('samsara/streams/SimpleStream');
 
+    var MINIMUM_TICK_TIME = 8;
+    var _now = Date.now;
+
     /**
-     * Handles piped in mouse drag events. Outputs an object with two
-     *   properties, position and velocity.
-     *   Emits 'start', 'update' and 'end' events with DOM event passthroughs,
-     *   with position, velocity, and a delta key.
+     * Wrapper for DOM mouse events. Converts
+     *
+     *      `mousedown` -> `start`
+     *      `mousemove` -> `update`
+     *      `mouseup`   -> `end`
+     *
+     * MouseInput emits these events with the following payload data:
+     *
+     *      `value`     - Displacement in pixels from `mousedown`
+     *      `delta`     - Differential in pixels between successive mouse positions
+     *      `velocity`  - Velocity of mouse movement in pixels per second
+     *      `clientX`   - DOM event clientX property
+     *      `clientY`   - DOM event clientY property
+     *      `offsetX`   - DOM event offsetX property
+     *      `offsetY`   - DOM event offsetY property
      *
      * @class MouseInput
      * @constructor
-     *
-     * @param [options] {Object}             default options overrides
-     * @param [options.] {Number}   read from a particular axis
-     * @param [options.propogate] {Boolean}  add listened to document on mouseleave
+     * @extend SimpleStream
+     * @param [options] {Object}                Options
+     * @param [options.direction] {Number}      Direction to project movement onto.
+     *                                          Options found in MouseInput.DIRECTION.
+     * @param [options.scale=1] {Number}        Scale the response to the mouse
      */
-
     function MouseInput(options) {
         this.options = OptionsManager.setOptions(this, options);
 
@@ -38,12 +50,10 @@ define(function(require, exports, module) {
         EventHandler.setInputHandler(this, this._eventInput);
         EventHandler.setOutputHandler(this, this._eventOutput);
 
-        this._eventInput.on('mousedown', _handleStart.bind(this));
-        this._eventInput.on('mousemove', _handleMove.bind(this));
-        this._eventInput.on('mouseup', _handleEnd.bind(this));
-
-        if (this.options.propogate) this._eventInput.on('mouseleave', _handleLeave.bind(this));
-        else this._eventInput.on('mouseleave', _handleEnd.bind(this));
+        this._eventInput.on('mousedown',    handleStart.bind(this));
+        this._eventInput.on('mousemove',    handleMove.bind(this));
+        this._eventInput.on('mouseup',      handleEnd.bind(this));
+        this._eventInput.on('mouseleave',   handleLeave.bind(this));
 
         this._payload = {
             delta    : null,
@@ -67,20 +77,23 @@ define(function(require, exports, module) {
 
     MouseInput.DEFAULT_OPTIONS = {
         direction: undefined,
-        scale: 1,
-        propogate: true  // events piped to document on mouseleave
+        scale: 1
     };
 
+    /**
+     * Constrain the input along a specific axis.
+     *
+     * @property DIRECTION {Object}
+     * @property DIRECTION.X {Number}   x-axis
+     * @property DIRECTION.Y {Number}   y-axis
+     * @static
+     */
     MouseInput.DIRECTION = {
         X : 0,
         Y : 1
     };
 
-    var MINIMUM_TICK_TIME = 8;
-
-    var _now = Date.now;
-
-    function _handleStart(event) {
+    function handleStart(event) {
         var delta;
         var velocity;
 
@@ -117,7 +130,7 @@ define(function(require, exports, module) {
         this._eventOutput.emit('start', payload);
     }
 
-    function _handleMove(event) {
+    function handleMove(event) {
         if (!this._prevCoord) return;
 
         var prevCoord = this._prevCoord;
@@ -173,7 +186,7 @@ define(function(require, exports, module) {
         this._move = true;
     }
 
-    function _handleEnd() {
+    function handleEnd() {
         if (!this._down) return;
 
         this._eventOutput.emit('end', this._payload);
@@ -183,12 +196,12 @@ define(function(require, exports, module) {
         this._move = false;
     }
 
-    function _handleLeave(event) {
+    function handleLeave(event) {
         if (!this._down || !this._move) return;
 
-        var boundMove = _handleMove.bind(this);
+        var boundMove = handleMove.bind(this);
         var boundEnd = function(event) {
-            _handleEnd.call(this, event);
+            handleEnd.call(this, event);
             document.removeEventListener('mousemove', boundMove);
             document.removeEventListener('mouseup', boundEnd);
         }.bind(this, event);

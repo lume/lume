@@ -35,7 +35,7 @@ define(function(require, exports, module) {
      *
      * @class ElementOutput
      * @constructor
-     * @extensionfor Surface
+     * @namespace Core
      * @uses LayoutNode
      * @uses SizeNode
      * @private

@@ -1,7 +1,5 @@
 /* Copyright © 2015 David Valdman */
 
-/* Documentation in progress. May be outdated. */
-
 define(function(require, exports, module) {
     var EventHandler = require('samsara/core/EventHandler');
     var EventMapper = require('samsara/events/EventMapper');
@@ -19,6 +17,18 @@ define(function(require, exports, module) {
         RESIZE : 'resize'
     };
 
+    /**
+     * Stream listens to `resize`, `start`, `update` and `end` events and
+     *  emits `start`, `update` and `end` events.
+     *
+     *  If listening to multiple sources, Stream emits a single event per
+     *  Engine cycle.
+     *
+     * @class Stream
+     * @extends Streams.SimpleStream
+     * @namespace Streams
+     * @constructor
+     */
     function Stream(options){
         this._eventInput = new EventHandler();
         this._eventOutput = new EventHandler();
@@ -86,8 +96,21 @@ define(function(require, exports, module) {
     Stream.prototype = Object.create(SimpleStream.prototype);
     Stream.prototype.constructor = Stream;
 
+    /**
+     * Extends SimpleStream.lift
+     *
+     * @static
+     */
     Stream.lift = SimpleStream.lift;
 
+    /**
+     * Batches events for provided object of streams in
+     *  {key : stream} pairs. Emits one event per Engine cycle.
+     *
+     * @method merge
+     * @static
+     * @param streams {Object}  Dictionary of `resize` streams
+     */
     Stream.merge = function(streamObj){
         var mergedStream = new Stream();
         var mergedData = (streamObj instanceof Array) ? [] : {};

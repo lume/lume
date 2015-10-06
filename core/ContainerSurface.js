@@ -47,8 +47,8 @@ define(function(require, exports, module) {
      *      context.add(myContainer);
      *
      * @class ContainerSurface
+     * @extends Core.Surface
      * @namespace Core
-     * @extends Surface
      * @uses Context
      * @constructor
      *

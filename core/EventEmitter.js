@@ -22,6 +22,7 @@ define(function(require, exports, module) {
      *      eventEmitter.emit('send', {data : 0});
      *
      * @class EventEmitter
+     * @namespace Core
      * @constructor
      */
     function EventEmitter() {

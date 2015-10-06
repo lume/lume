@@ -16,6 +16,7 @@ define(function(require, exports, module) {
      *  `resize` events with `start`, `update`, `end` states in stream.
      *
      * @class SUE
+     * @namespace Core
      * @static
      * @private
      */

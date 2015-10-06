@@ -18,8 +18,9 @@ define(function(require, exports, module) {
      *  Surfaces also act as sources for DOM events such as `click`.
      *
      * @class Surface
+     * @namespace Core
      * @constructor
-     * @extends ElementOutput
+     * @extends Core.ElementOutput
      *
      * @param [options] {Object}                Options
      * @param [options.size] {Number[]}         Size (width, height) in pixels. These can also be `true` or `undefined`.

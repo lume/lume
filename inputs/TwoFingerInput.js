@@ -8,21 +8,26 @@
 
 /* Modified work copyright © 2015 David Valdman */
 
-/* Documentation in progress. May be outdated. */
+// TODO: emit start, update, end events instead
+// of calling protected _startUpdate etc methods
 
 define(function(require, exports, module) {
     var EventHandler = require('samsara/core/EventHandler');
     var SimpleStream = require('samsara/streams/SimpleStream');
 
+    var _now = Date.now;
+
     /**
-     * Helper to PinchInput, RotateInput, and ScaleInput.  Generalized handling of
-     *   two-finger touch events.
-     *   This class is meant to be overridden and not used directly.
+     * Generalizes handling of two-finger touch events.
+     *  Helper to PinchInput, RotateInput, and ScaleInput.
+     *  This class is meant to be overridden and not used directly.
      *
-     * @class TwoFingerSync
+     * @class TwoFingerInput
+     * @extends Streams.SimpleStream
+     * @private
      * @constructor
      */
-    function TwoFingerSync() {
+    function TwoFingerInput() {
         this._eventInput = new EventHandler();
         this._eventOutput = new EventHandler();
 
@@ -44,29 +49,54 @@ define(function(require, exports, module) {
         this._eventInput.on('touchcancel', this.handleEnd.bind(this));
     }
 
-    TwoFingerSync.prototype = Object.create(SimpleStream.prototype);
-    TwoFingerSync.prototype.constructor = TwoFingerSync;
+    TwoFingerInput.prototype = Object.create(SimpleStream.prototype);
+    TwoFingerInput.prototype.constructor = TwoFingerInput;
 
-    TwoFingerSync.calculateAngle = function(posA, posB) {
+    /**
+     * Calculates the angle between two touches relative to [0,1].
+     *
+     * @method calculateAngle
+     * @static
+     * @param posA {Array}  First touch location (x,y)
+     * @param posB {Array}  Second touch location (x,y)
+     * @return {Number}
+     */
+    TwoFingerInput.calculateAngle = function(posA, posB) {
         var diffX = posB[0] - posA[0];
         var diffY = posB[1] - posA[1];
         return Math.atan2(diffY, diffX);
     };
 
-    TwoFingerSync.calculateDistance = function(posA, posB) {
+    /**
+     * Calculates the distance between two touches.
+     *
+     * @method calculateDistance
+     * @static
+     * @param posA {Array}  First touch location (x,y)
+     * @param posB {Array}  Second touch location (x,y)
+     * @return {Number}
+     */
+    TwoFingerInput.calculateDistance = function(posA, posB) {
         var diffX = posB[0] - posA[0];
         var diffY = posB[1] - posA[1];
         return Math.sqrt(diffX * diffX + diffY * diffY);
     };
 
-    TwoFingerSync.calculateCenter = function(posA, posB) {
+    /**
+     * Calculates the midpoint between two touches.
+     *
+     * @method calculateCenter
+     * @static
+     * @param posA {Array}  First touch location (x,y)
+     * @param posB {Array}  Second touch location (x,y)
+     * @return {Array}
+     */
+    TwoFingerInput.calculateCenter = function(posA, posB) {
         return [(posA[0] + posB[0]) / 2.0, (posA[1] + posB[1]) / 2.0];
     };
 
-    var _now = Date.now;
-
     // private
-    TwoFingerSync.prototype.handleStart = function handleStart(event) {
+    TwoFingerInput.prototype.handleStart = function handleStart(event) {
         for (var i = 0; i < event.changedTouches.length; i++) {
             var touch = event.changedTouches[i];
             if (!this.touchAEnabled) {
@@ -86,7 +116,7 @@ define(function(require, exports, module) {
     };
 
     // private
-    TwoFingerSync.prototype.handleMove = function handleMove(event) {
+    TwoFingerInput.prototype.handleMove = function handleMove(event) {
         if (!(this.touchAEnabled && this.touchBEnabled)) return;
         var prevTimeA = this.timestampA;
         var prevTimeB = this.timestampB;
@@ -108,7 +138,7 @@ define(function(require, exports, module) {
     };
 
     // private
-    TwoFingerSync.prototype.handleEnd = function handleEnd(event) {
+    TwoFingerInput.prototype.handleEnd = function handleEnd(event) {
         for (var i = 0; i < event.changedTouches.length; i++) {
             var touch = event.changedTouches[i];
             if (touch.identifier === this.touchAId || touch.identifier === this.touchBId) {
@@ -126,5 +156,5 @@ define(function(require, exports, module) {
         }
     };
 
-    module.exports = TwoFingerSync;
+    module.exports = TwoFingerInput;
 });
