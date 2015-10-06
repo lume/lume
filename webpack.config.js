@@ -11,4 +11,9 @@ module.exports = {
             { test: /\.(glsl|frag|vert)$/, loader: 'glslify' },
         ],
     },
+    //worker: {
+        //output: {
+            //filename: "worker.js",
+        //},
+    //},
 }

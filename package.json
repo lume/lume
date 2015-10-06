@@ -33,7 +33,8 @@
     "glslify-loader": "^1.0.2",
     "raw-loader": "^0.5.1",
     "style-loader": "^0.12.4",
-    "webpack": "^1.12.1"
+    "webpack": "^1.12.1",
+    "worker-loader": "^0.6.0"
   },
   "jspm": {
     "registry": "jspm",
