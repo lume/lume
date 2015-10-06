@@ -1,8 +1,9 @@
 ###Getting Started
 This repository is for the codebase itself. The best way to get started with SamsaraJS is to
 clone the [base scaffolding repository](https://github.com/dmvaldman/samsara-base) and follow the
-install instructions there. We are also working to greatly improve the documentation. Currently the
-only documentation is in the source code and examples.
+install instructions there.
+
+You can find reference documentation here: [samsaraJS.org/docs](http://www.samsaraJS.org/docs). We'll be ading more "higher level" documentation and examples soon!
 
 If you have questions, join the [SamsaraJS Google Group](https://groups.google.com/forum/#!forum/samsarajs) 
 
