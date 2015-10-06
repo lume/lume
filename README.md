@@ -3,7 +3,7 @@ This repository is for the codebase itself. The best way to get started with Sam
 clone the [base scaffolding repository](https://github.com/dmvaldman/samsara-base) and follow the
 install instructions there.
 
-You can find reference documentation here: [samsaraJS.org/docs](http://www.samsaraJS.org/docs). We'll be ading more "higher level" documentation and examples soon!
+You can find reference documentation here: [samsaraJS.org/docs](http://www.samsaraJS.org/docs). We'll be adding more "higher level" documentation and examples soon!
 
 If you have questions, join the [SamsaraJS Google Group](https://groups.google.com/forum/#!forum/samsarajs) 
 
