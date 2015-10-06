@@ -49,7 +49,7 @@ define(function(require, exports, module) {
      * @class ContainerSurface
      * @extends Core.Surface
      * @namespace Core
-     * @uses Context
+     * @uses Core.Context
      * @constructor
      *
      * @param [options] {Object}                Options

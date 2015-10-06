@@ -51,7 +51,7 @@ define(function(require, exports, module) {
      * @class Controller
      * @constructor
      * @namespace Core
-     * @uses OptionsManager
+     * @uses Core.OptionsManager
      * @param options {Object} Instance options
      */
     function Controller(options) {

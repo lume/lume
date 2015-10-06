@@ -29,8 +29,8 @@ define(function(require, exports, module) {
      * @class ScrollInput
      * @constructor
      * @extends Streams.SimpleStream
-     * @uses TouchTracker
-     * @uses OptionsManager
+     * @uses Inputs.TouchTracker
+     * @uses Core.OptionsManager
      * @param [options] {Object}                Options
      * @param [options.direction] {Number}      Direction to project movement onto.
      *                                          Options found in TouchInput.DIRECTION.

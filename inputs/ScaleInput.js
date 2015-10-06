@@ -31,7 +31,7 @@ define(function(require, exports, module) {
      *
      * @class ScaleInput
      * @extends Inputs.TwoFingerInput
-     * @uses OptionsManager
+     * @uses Core.OptionsManager
      * @constructor
      * @param options {Object}              Options
      * @param [options.scale=1] {Number}    Scale the response to pinch

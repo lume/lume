@@ -22,7 +22,7 @@ define(function(require, exports, module) {
      * @namespace Core
      * @constructor
      * @private
-     * @uses EventHandler
+     * @uses Core.EventHandler
      * @param value {Object} Options object literal
      */
     function OptionsManager(value) {

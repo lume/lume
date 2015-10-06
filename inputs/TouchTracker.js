@@ -33,7 +33,7 @@ define(function(require, exports, module) {
      * @class TouchTracker
      * @constructor
      * @private
-     * @uses OptionsManager
+     * @uses Core.OptionsManager
      * @param [options] {Object}                Options
      * @param [options.limit] {Number}          Number of touches to record
      */

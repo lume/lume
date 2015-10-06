@@ -36,8 +36,8 @@ define(function(require, exports, module) {
      * @class ElementOutput
      * @constructor
      * @namespace Core
-     * @uses LayoutNode
-     * @uses SizeNode
+     * @uses Core.LayoutNode
+     * @uses Core.SizeNode
      * @private
      * @param {Node} element document parent of this container
      */

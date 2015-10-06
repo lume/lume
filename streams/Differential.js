@@ -18,7 +18,7 @@ define(function(require, exports, module){
      *
      * @class Differential
      * @extends Streams.Stream
-     * @uses OptionsManager
+     * @uses Core.OptionsManager
      * @namespace Streams
      * @constructor
      * @param [options] {Object}        Options

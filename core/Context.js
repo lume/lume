@@ -32,7 +32,7 @@ define(function(require, exports, module) {
      * @class Context
      * @constructor
      * @namespace Core
-     * @uses RootNode
+     * @uses Core.RootNode
      * @param container {Node} DOM element which will serve as a container for added nodes.
      */
     function Context(container) {

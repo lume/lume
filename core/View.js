@@ -26,9 +26,9 @@ define(function(require, exports, module) {
      * @class View
      * @constructor
      * @extends Core.Controller
-     * @uses SizeNode
-     * @uses LayoutNode
-     * @uses SimpleStream
+     * @uses Core.SizeNode
+     * @uses Core.LayoutNode
+     * @uses Core.SimpleStream
      */
     var View = Controller.extend({
         _isView : true,

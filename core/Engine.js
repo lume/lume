@@ -48,7 +48,7 @@ define(function(require, exports, module) {
      * @class Engine
      * @namespace Core
      * @static
-     * @uses EventHandler
+     * @uses Core.EventHandler
      */
     var Engine = {};
 
