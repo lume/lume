@@ -1,0 +1,27 @@
+{
+  "name": "samsarajs",
+  "description": "Streaming user interfaces for the web",
+  "url": "http://samsaraJS.org",
+  "author": "David Valdman <dmvaldman@gmail.com>",
+  "version": "0.0.2",
+  "main": "",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/dmvaldman/samsara.git"
+  },
+  "keywords": [
+    "UI",
+    "streams",
+    "FRP",
+    "reactive",
+    "layout"
+  ],
+  "license": ["MIT", "MPL V2"],
+  "bugs": {
+    "url": "https://github.com/dmvaldman/samsara/issues"
+  },
+  "homepage": "https://github.com/dmvaldman/samsara#readme"
+}
