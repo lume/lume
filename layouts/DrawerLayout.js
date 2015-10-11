@@ -61,7 +61,7 @@ define(function(require, exports, module) {
         defaults : {
             side : CONSTANTS.SIDE.LEFT,
             revealLength : undefined,
-            velocityThreshold : 0,
+            velocityThreshold : Infinity,
             positionThreshold : 0,
             transitionOpen : true,
             transitionClose : true
