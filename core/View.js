@@ -52,6 +52,7 @@ define(function(require, exports, module) {
 
             this.size = ResizeStream.lift(
                 function ViewSizeAlgebra (sizeSpec, parentSize){
+                    if (!parentSize) return false;
                     return (sizeSpec)
                         ? sizeAlgebra(sizeSpec, parentSize)
                         : parentSize;
@@ -61,16 +62,16 @@ define(function(require, exports, module) {
 
             var layout = Stream.lift(
                 function ViewLayoutAlgebra (parentSpec, objectSpec, size){
-                    if (!parentSpec || !size) return;
+                    if (!parentSpec || !size) return false;
                     return (objectSpec)
                         ? layoutAlgebra(objectSpec, parentSpec, size)
                         : parentSpec;
                 }.bind(this),
-                [this._layout, this._layoutNode, this.size || this._size]
+                [this._layout, this._layoutNode, this.size]
             );
 
-            this._node._size.subscribe(this.size).subscribe(this._size);
-            this._node._layout.subscribe(layout).subscribe(this._layout);
+            this._node._size.subscribe(this.size);
+            this._node._layout.subscribe(layout);
 
             Controller.apply(this, arguments);
             if (this.options) setOptions.call(this, this.options);
