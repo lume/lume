@@ -27,8 +27,6 @@ define(function(require, exports, module) {
         },
         initialize : function(options){
             this.angles = new Transitionable(options.initialAngles);
-            this.output = new Stream();
-            this.output.subscribe(this._eventOutput);
 
             this.maxLength = 0; // length of all nodes fully extended
             this.offset = 0; // shift accordion so starting point is at (0,0)
@@ -148,7 +146,7 @@ define(function(require, exports, module) {
                 this.maxLength += nodes[i].getSize()[this.options.direction];
             }
 
-            this._eventOutput.subscribe(transforms
+            this.output.subscribe(transforms
                 .pluck('length')
                 .map(function(length){
                     return {
