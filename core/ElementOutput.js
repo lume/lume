@@ -96,6 +96,7 @@ define(function(require, exports, module) {
                 this.setup(root.allocator);
             }
             commitSize.call(this, size);
+            this.emit('resize', size);
         }.bind(this));
 
         this._currentTarget = null;
