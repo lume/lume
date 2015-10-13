@@ -95,7 +95,7 @@ define(function(require, exports, module) {
                 _applyAttributes.call(this, target);
                 this._attributesDirty = false;
             }
-            this._dirty = true;
+            this._dirty = false;
         }.bind(this))
     }
 
