@@ -83,12 +83,6 @@ define(function(require, exports, module) {
 
         State.set(State.STATES.END);
 
-        for (var i = 0; i < contexts.length; i++)
-            contexts[i].commit();
-
-        for (var i = 0; i < roots.length; i++)
-            roots[i].commit();
-
         while (dirtyQueue.length) (dirtyQueue.shift())();
 
         State.set(State.STATES.START);
@@ -151,10 +145,11 @@ define(function(require, exports, module) {
      * @param [DOMelement] {Node}   Pre-existing element in the document
      * @return {Context}
      */
-    Engine.createContext = function createContext(DOMelement) {
-        var context = new Context(DOMelement);
+    Engine.createContext = function createContext(options) {
+        var context = new Context(options);
         Engine.registerContext(context);
-        if (!DOMelement) document.body.appendChild(context.container);
+        if (!options || !options.el)
+            document.body.appendChild(context.container);
         return context;
     };
 

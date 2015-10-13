@@ -15,7 +15,6 @@ define(function(require, exports, module) {
     var ResizeStream = require('samsara/streams/ResizeStream');
     var SizeNode = require('samsara/core/SizeNode');
     var LayoutNode = require('samsara/core/LayoutNode');
-    var register = require('samsara/core/register');
     var sizeAlgebra = require('samsara/core/algebras/size');
     var layoutAlgebra = require('samsara/core/algebras/layout');
 
@@ -51,11 +50,6 @@ define(function(require, exports, module) {
             size : null
         };
 
-        this._opacityDirty = true;
-        this._sizeDirty = true;
-        this._originDirty = true;
-        this._transformDirty = true;
-
         this._eventOutput = new EventHandler();
         EventHandler.setOutputHandler(this, this._eventOutput);
 
@@ -70,31 +64,47 @@ define(function(require, exports, module) {
         this._layout = new EventHandler();
 
         this.size = ResizeStream.lift(function elementSizeLift(sizeSpec, parentSize){
-            if (!parentSize) return; // occurs when surface is never added
+            if (!parentSize) return false; // occurs when surface is never added
             return sizeAlgebra(sizeSpec, parentSize);
         }, [this._sizeNode, this._size]);
 
         this.layout = Stream.lift(function(parentSpec, objectSpec, size){
-            if (!parentSpec || !size) return;
+            if (!parentSpec || !size) return false;
             return (objectSpec)
                 ? layoutAlgebra(objectSpec, parentSpec, size)
                 : parentSpec;
         }, [this._layout, this._layoutNode, this.size]);
 
+        this.layout.on('start', function(){
+            if (!this._currentTarget){
+                var root = this._getRoot();
+                this.setup(root.allocator);
+            }
+        }.bind(this));
+
+        this.layout.on('update', function(layout){
+            commitLayout.call(this, layout)
+        }.bind(this));
+
+        this.layout.on('end', function(layout){
+            commitLayout.call(this, layout)
+        }.bind(this));
+
         this.size.on('resize', function(size){
-            this._sizeDirty = true;
-            this._cachedSpec.size = size;
+            if (!this._currentTarget){
+                var root = this._getRoot();
+                this.setup(root.allocator);
+            }
+            commitSize.call(this, size);
         }.bind(this));
 
         this._currentTarget = null;
 
         this._opacityDirty = true;
-        this._sizeDirty = true;
         this._originDirty = true;
         this._transformDirty = true;
         this._isVisible = true;
 
-        register(this);
         if (element) this.attach(element);
     }
 
@@ -242,18 +252,9 @@ define(function(require, exports, module) {
         this._currentTarget = null;
     };
 
-    /**
-     * Commits the layout and size information of the element to the DOM.
-     *  Called once per Engine tick by the RootNode this element has been added to
-     *  if some parent's SceneGraph node's data has changed.
-     *
-     * @method commit
-     * @private
-     * @param [layout] {Object} Layout data: transform, origin, opacity.
-     */
-    ElementOutput.prototype.commit = function commit(layout) {
+    function commitLayout(layout) {
         var target = this._currentTarget;
-        if (!target || !layout) return;
+        if (!target) return;
 
         var cache = this._cachedSpec;
 
@@ -280,16 +281,20 @@ define(function(require, exports, module) {
             _setTransform(target, transform);
         }
 
-        if (this._sizeDirty) {
-            var size = cache.size;
-            _setSize(target, size);
-        }
-
         this._originDirty = false;
         this._transformDirty = false;
         this._opacityDirty = false;
-        this._sizeDirty = false;
-    };
+    }
+
+    function commitSize(size){
+        var target = this._currentTarget;
+        if (!target) return;
+
+        if (_xyNotEquals(this._cachedSpec.size, size)){
+            this._cachedSpec.size = size;
+            _setSize(target, size);
+        }
+    }
 
     module.exports = ElementOutput;
 });

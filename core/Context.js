@@ -17,6 +17,8 @@ define(function(require, exports, module) {
     var ResizeStream = require('samsara/streams/ResizeStream');
     var Stream = require('samsara/streams/Stream');
     var EventMapper = require('samsara/events/EventMapper');
+    var SizeNode = require('samsara/core/SizeNode');
+    var sizeAlgebra = require('samsara/core/algebras/size');
 
     var elementType = 'div';
     var elementClass = 'samsara-context';
@@ -35,43 +37,43 @@ define(function(require, exports, module) {
      * @uses Core.RootNode
      * @param container {Node} DOM element which will serve as a container for added nodes.
      */
-    function Context(container) {
-        this.container = container || document.createElement(elementType);
-        this.container.classList.add(elementClass);
+    function Context(options) {
+        options = options || {};
+        container = options.el || document.createElement(elementType);
+        container.classList.add(elementClass);
 
-        var allocator = new ElementAllocator(this.container);
+        var allocator = new ElementAllocator(container);
 
         this._node = new RootNode(allocator);
 
-        this.size = _getElementSize(this.container);
-        this._sizeDirty = false;
+        this._sizeNode = new SizeNode();
 
         this._size = new EventHandler();
         this._layout = new EventHandler();
 
-        var DOMSizeMapper = new EventMapper(function(){
-            return _getElementSize(this.container);
-        }.bind(this));
+        this.size = ResizeStream.lift(function(sizeSpec, parentSize){
+            if (!parentSize) return false;
+            return sizeAlgebra(sizeSpec, parentSize);
+        }, [this._sizeNode, this._size]);
 
-        this._node._size.subscribe(DOMSizeMapper).subscribe(this._size);
+        this._node._size.subscribe(this._size);
         this._node._layout.subscribe(this._layout);
 
         this._perspective = new Transitionable(0);
-        this._perspectiveDirty = false;
 
-        //TODO: fix this hack
-        this._perspective.on('update', function(){
-            this._perspectiveDirty = true;
-        }.bind(this));
+        this._perspective.on('update', function(perspective){
+            setPerspective(container, perspective);
+        });
 
-        this._perspective.on('end', function(){
-            this._perspectiveDirty = true;
-        }.bind(this));
+        this._perspective.on('end', function(perspective){
+            setPerspective(container, perspective);
+        });
 
-        this._eventInput = new EventHandler();
-        this._eventOutput = new EventHandler();
-        EventHandler.setInputHandler(this, this._eventInput);
-        EventHandler.setOutputHandler(this, this._eventOutput);
+        this._size.on('resize', function(size){
+            setElementSize(container, size);
+        });
+
+        this.container = container;
     }
 
     /**
@@ -88,32 +90,13 @@ define(function(require, exports, module) {
     };
 
     /**
-     * Gets DOM size for the Context's container.
-     *
-     * @method getSize
-     * @return {Array.Number} Container size provided as [width, height]
-     */
-    Context.prototype.getSize = function getSize() {
-        return this.size;
-    };
-
-    /**
      * Sets DOM size for the Context's container.
      *
      * @method setSize
      * @param size {Array.Number} Size provided as [width, height]
      */
     Context.prototype.setSize = function setSize(size) {
-        if (this.size == size) return;
-        this.size[0] = size[0];
-        this.size[1] = size[1];
-        this._sizeDirty = true;
-
-        this.emit('resize', size);
-        this._size.trigger('resize', size);
-        dirtyQueue.push(function(){
-            this._size.trigger('resize', size);
-        }.bind(this));
+        this._sizeNode.set({size : size});
     };
 
     /**
@@ -138,43 +121,21 @@ define(function(require, exports, module) {
         this._perspective.set(perspective, transition, callback);
     };
 
-    /**
-     * Commits the CSS properties of perspective and size if they have changed.
-     *  Then commits the contents of the Context's RootNode.
-     *  This is called by Engine every frame when some layout or size data has changed.
-     *
-     * @method commit
-     */
-    Context.prototype.commit = function(){
-        if (this._perspectiveDirty){
-            _setPerspective.call(this, this.container, this.getPerspective());
-            this._perspectiveDirty = false;
-        }
+    function setElementSize(target, size) {
+        if (size[0] === true) size[0] = target.offsetWidth;
+        else target.style.width = size[0] + 'px';
 
-        if (this._sizeDirty){
-            _setElementSize(this.container, this.getSize());
-            this._sizeDirty = false;
-        }
-
-        this._node.commit();
-    };
-
-    function _getElementSize(element) {
-        return [element.clientWidth, element.clientHeight];
-    }
-
-    function _setElementSize(element, size) {
-        element.style.width = size[0] + 'px';
-        element.style.height = size[1] + 'px';
+        if (size[1] === true) size[1] = target.offsetHeight;
+        else target.style.height = size[1] + 'px';
     }
 
     var usePrefix = !('perspective' in document.documentElement.style);
 
-    var _setPerspective = usePrefix
-        ? function _setPerspective(element, perspective) {
+    var setPerspective = usePrefix
+        ? function setPerspective(element, perspective) {
         element.style.webkitPerspective = perspective ? perspective.toFixed() + 'px' : '';
     }
-        : function _setPerspective(element, perspective) {
+        : function setPerspective(element, perspective) {
         element.style.perspective = perspective ? perspective.toFixed() + 'px' : '';
     };
 

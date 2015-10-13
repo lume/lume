@@ -5,6 +5,7 @@ define(function(require, exports, module) {
     var Stream = require('samsara/streams/Stream');
     var ResizeStream = require('samsara/streams/ResizeStream');
     var SizeNode = require('samsara/core/SizeNode');
+    var LayoutNode = require('samsara/core/LayoutNode');
     var layoutAlgebra = require('samsara/core/algebras/layout');
     var sizeAlgebra = require('samsara/core/algebras/size');
 
@@ -76,62 +77,33 @@ define(function(require, exports, module) {
         if (object instanceof SizeNode){
             this.size = ResizeStream.lift(
                 function SGSizeAlgebra (objectSpec, parentSize){
+                    if (!parentSize) return false;
                     return (objectSpec)
                         ? sizeAlgebra(objectSpec, parentSize)
                         : parentSize;
                 },
                 [object, this._size]
             );
+            return;
         }
 
-        if (!object.commit){
+        if (object instanceof LayoutNode){
             this.layout = Stream.lift(
                 function SGLayoutAlgebra (objectSpec, parentSpec, size){
-                    // TODO: bug fix for when successive `start` events are fired downstream
-                    if (!parentSpec || !size) return;
+                    if (!parentSpec || !size) return false;
                     return (objectSpec)
                         ? layoutAlgebra(objectSpec, parentSpec, size)
                         : parentSpec;
                 },
                 [object, this._layout, this._size]
             );
+            return;
         }
-        else {
-            object._size.subscribe(this._size);
-            object._layout.subscribe(this._layout);
 
-            object.layout.on('start', function(spec){
-                var root = _getRootNode.call(this);
-                root.objects[object._id] = object;
-                root.specs[object._id] = spec;
-            }.bind(this));
-
-            object.layout.on('update', function(spec){
-                var root = _getRootNode.call(this);
-                //TODO: this is a bug. needs fixing.
-                if (root.objects[object._id] === undefined)
-                    root.objects[object._id] = object;
-                root.specs[object._id] = spec;
-            }.bind(this));
-
-            object.layout.on('end', function(){
-                var root = _getRootNode.call(this);
-                delete root.objects[object._id];
-                delete root.specs[object._id];
-            }.bind(this));
-
-            object.size.on('resize', function(){
-                var root = _getRootNode.call(this);
-                if (root.dirtyObjects.indexOf(object) == -1)
-                    root.dirtyObjects.push(object);
-            }.bind(this));
-
-            object.on('dirty', function(){
-                var root = _getRootNode.call(this);
-                if (root.dirtyObjects.indexOf(object) == -1)
-                    root.dirtyObjects.push(object);
-            }.bind(this));
-        }
+        // object is a leaf node
+        object._size.subscribe(this._size);
+        object._layout.subscribe(this._layout);
+        object._getRoot = _getRootNode.bind(this);
     }
 
     module.exports = SceneGraphNode;

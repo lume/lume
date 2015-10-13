@@ -10,6 +10,7 @@
 
 define(function(require, exports, module) {
     var ElementOutput = require('samsara/core/ElementOutput');
+    var dirtyQueue = require('samsara/core/queues/dirtyQueue');
 
     /**
      * Surface is a wrapper for DOM element controlled by Samsara.
@@ -44,7 +45,6 @@ define(function(require, exports, module) {
         this._classesDirty = true;
         this._stylesDirty = true;
         this._attributesDirty = true;
-        this._sizeDirty = true;
         this._dirty = false;
         this._cachedSize = null;
 
@@ -71,8 +71,32 @@ define(function(require, exports, module) {
 
     function _setDirty(){
         if (this._dirty) return;
-        this._dirty = true;
-        this.emit('dirty');
+
+        dirtyQueue.push(function(){
+            var target = this._currentTarget;
+
+            if (this._contentDirty) {
+                this.deploy(target);
+                this._contentDirty = false;
+            }
+
+            if (this._classesDirty) {
+                _removeClasses.call(this, target);
+                _applyClasses.call(this, target);
+                this._classesDirty = false;
+            }
+
+            if (this._stylesDirty) {
+                _applyStyles.call(this, target);
+                this._stylesDirty = false;
+            }
+
+            if (this._attributesDirty) {
+                _applyAttributes.call(this, target);
+                this._attributesDirty = false;
+            }
+            this._dirty = true;
+        }.bind(this))
     }
 
     function _applyClasses(target) {
@@ -306,7 +330,6 @@ define(function(require, exports, module) {
         this._stylesDirty = true;
         this._classesDirty = true;
         this._attributesDirty = true;
-        this._sizeDirty = true;
         this._contentDirty = true;
         this._originDirty = true;
         this._transformDirty = true;
@@ -395,7 +418,6 @@ define(function(require, exports, module) {
     Surface.prototype.setSize = function setSize(size) {
         this._cachedSize = size;
         this._sizeNode.set({size : size});
-        this._sizeDirty = true;
         _setDirty.call(this);
     };
 
@@ -407,7 +429,6 @@ define(function(require, exports, module) {
      */
     Surface.prototype.setProportions = function setProportions(proportions) {
         this._sizeNode.set({proportions : proportions});
-        this._sizeDirty = true;
         _setDirty.call(this);
     };
 
@@ -419,7 +440,6 @@ define(function(require, exports, module) {
      */
     Surface.prototype.setMargins = function setMargins(margins) {
         this._sizeNode.set({margins : margins});
-        this._sizeDirty = true;
         _setDirty.call(this);
     };
 
@@ -457,37 +477,7 @@ define(function(require, exports, module) {
      * @param layout {Object}               Layout data
      * @param allocator {ElementAllocator}  Allocator
      */
-    Surface.prototype.commit = function commit(layout, allocator) {
-        if (!this._currentTarget) this.setup(allocator);
-
-        var target = this._currentTarget;
-
-        if (this._contentDirty) {
-            this.deploy(target);
-            this._contentDirty = false;
-            this._sizeDirty = true;
-        }
-
-        if (this._classesDirty) {
-            _removeClasses.call(this, target);
-            _applyClasses.call(this, target);
-            this._classesDirty = false;
-            this._sizeDirty = true;
-        }
-
-        if (this._stylesDirty) {
-            _applyStyles.call(this, target);
-            this._stylesDirty = false;
-            this._sizeDirty = true;
-        }
-
-        if (this._attributesDirty) {
-            _applyAttributes.call(this, target);
-            this._attributesDirty = false;
-        }
-
-        ElementOutput.prototype.commit.call(this, layout);
-        this._dirty = false;
+    Surface.prototype.commit = function commit() {
     };
 
     module.exports = Surface;
