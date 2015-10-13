@@ -100,6 +100,7 @@ define(function(require, exports, module) {
      * Extends SimpleStream.lift
      *
      * @static
+     * @return
      */
     Stream.lift = SimpleStream.lift;
 

@@ -64,7 +64,6 @@ define(function(require, exports, module) {
      *
      * @method lift
      * @static
-     * @private
      */
     ResizeStream.lift = SimpleStream.lift;
 
