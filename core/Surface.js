@@ -25,15 +25,15 @@ define(function(require, exports, module) {
      *
      * @param [options] {Object}                Options
      * @param [options.size] {Number[]}         Size (width, height) in pixels. These can also be `true` or `undefined`.
-     * @param [options.classes] {string[]}      CSS classes
+     * @param [options.classes] {String[]}      CSS classes
      * @param [options.properties] {Object}     Dictionary of CSS properties
      * @param [options.attributes] {Object}     Dictionary of HTML attributes
-     * @param [options.content] {string}        InnerHTML content
+     * @param [options.content] Sstring}        InnerHTML content
      * @param [options.origin] {Number[]}       Origin (x,y), with values between 0 and 1
      * @param [options.margins] {Number[]}      Margins (x,y) in pixels
      * @param [options.proportions] {Number[]}  Proportions (x,y) with values between 0 and 1
      * @param [options.opacity=1] {Number}        Opacity
-     * @param [options.tagName="div"] {string}        HTML tagName
+     * @param [options.tagName="div"] {String}        HTML tagName
      */
     function Surface(options) {
         this.properties = {};
