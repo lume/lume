@@ -32,8 +32,9 @@ define(function(require, exports, module) {
      * @param [options.origin] {Number[]}       Origin (x,y), with values between 0 and 1
      * @param [options.margins] {Number[]}      Margins (x,y) in pixels
      * @param [options.proportions] {Number[]}  Proportions (x,y) with values between 0 and 1
-     * @param [options.opacity=1] {Number}        Opacity
-     * @param [options.tagName="div"] {String}        HTML tagName
+     * @param [options.aspectRatio] {Number}    Aspect ratio
+     * @param [options.opacity=1] {Number}      Opacity
+     * @param [options.tagName="div"] {String}  HTML tagName
      */
     function Surface(options) {
         this.properties = {};
@@ -299,6 +300,7 @@ define(function(require, exports, module) {
         if (options.properties !== undefined) this.setProperties(options.properties);
         if (options.attributes !== undefined) this.setAttributes(options.attributes);
         if (options.content !== undefined) this.setContent(options.content);
+        if (options.aspectRatio !== undefined) this.setAspectRatio(options.aspectRatio);
     };
 
     /**
@@ -440,6 +442,19 @@ define(function(require, exports, module) {
      */
     Surface.prototype.setMargins = function setMargins(margins) {
         this._sizeNode.set({margins : margins});
+        _setDirty.call(this);
+    };
+
+    /**
+     * Setter for aspect ratio. If only one of width or height is specified,
+     *  the aspect ratio will replace the unspecified dimension by scaling
+     *  the specified dimension by the value provided.
+     *
+     * @method setAspectRatio
+     * @param aspectRatio {Number|Stream} Aspect ratio.
+     */
+    Surface.prototype.setAspectRatio = function setAspectRatio(aspectRatio) {
+        this._sizeNode.set({aspectRatio : aspectRatio});
         _setDirty.call(this);
     };
 

@@ -35,10 +35,6 @@ define(function(require, exports, module) {
             if (spec.size[0] === true) size[0] = true;
             if (spec.size[1] === true) size[1] = true;
         }
-        else {
-            size[0] = parentSize[0];
-            size[1] = parentSize[1];
-        }
 
         //TODO: what is parentSize isn't numeric? Compose margin/proportions?
         if (spec.margins){
@@ -47,9 +43,17 @@ define(function(require, exports, module) {
         }
 
         if (spec.proportions) {
-            if (spec.proportions[0] !== undefined) size[0] = spec.proportions[0] * parentSize[0];
-            if (spec.proportions[1] !== undefined) size[1] = spec.proportions[1] * parentSize[1];
+            if (typeof spec.proportions[0] === 'number') size[0] = spec.proportions[0] * parentSize[0];
+            if (typeof spec.proportions[1] === 'number') size[1] = spec.proportions[1] * parentSize[1];
         }
+
+        if (spec.aspectRatio) {
+            if (typeof size[0] === 'number') size[1] = spec.aspectRatio * size[0];
+            else if (typeof size[1] === 'number') size[0] = spec.aspectRatio * size[1];
+        }
+
+        if (size[0] === undefined) size[0] = parentSize[0];
+        if (size[1] === undefined) size[1] = parentSize[1];
 
         return size;
     }
