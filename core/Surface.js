@@ -152,7 +152,7 @@ define(function(require, exports, module) {
      * Getter for CSS properties.
      *
      * @method getProperties
-     * @return {Object} Dictionary of this Surface's properties.
+     * @return {Object}             Dictionary of this Surface's properties.
      */
     Surface.prototype.getProperties = function getProperties() {
         return this.properties;
@@ -163,7 +163,7 @@ define(function(require, exports, module) {
      *
      * @method addClass
      * @chainable
-     * @param className {string}    Class name
+     * @param className {String}    Class name
      */
     Surface.prototype.addClass = function addClass(className) {
         if (this.classList.indexOf(className) < 0) {
@@ -193,7 +193,7 @@ define(function(require, exports, module) {
      * Toggle CSS class for this Surface.
      *
      * @method toggleClass
-     * @param  className {string}   Class name
+     * @param  className {String}   Class name
      */
     Surface.prototype.toggleClass = function toggleClass(className) {
         var i = this.classList.indexOf(className);
@@ -207,7 +207,7 @@ define(function(require, exports, module) {
      *
      * @method setClasses
      * @chainable
-     * @param classlist {Array.string}  ClassList
+     * @param classlist {String[]}  ClassList
      */
     Surface.prototype.setClasses = function setClasses(classList) {
         var i = 0;
@@ -226,7 +226,7 @@ define(function(require, exports, module) {
      * Get array of CSS classes attached to this Surface.
      *
      * @method getClasslist
-     * @return {Array.string}
+     * @return {String[]}
      */
     Surface.prototype.getClassList = function getClassList() {
         return this.classList;
@@ -237,7 +237,7 @@ define(function(require, exports, module) {
      *
      * @method setContent
      * @chainable
-     * @param content {string|DocumentFragment} HTML content
+     * @param content {String|DocumentFragment} HTML content
      */
     Surface.prototype.setContent = function setContent(content) {
         if (this.content !== content) {
@@ -252,7 +252,7 @@ define(function(require, exports, module) {
      * Return innerHTML content of this Surface.
      *
      * @method getContent
-     * @return {string}
+     * @return {String}
      */
     Surface.prototype.getContent = function getContent() {
         return this.content;
@@ -317,7 +317,7 @@ define(function(require, exports, module) {
      *
      * @private
      * @method remove
-     * @param {ElementAllocator} allocator
+     * @param allocator {ElementAllocator} Allocator
      */
     Surface.prototype.remove = function remove(allocator) {
         var target = this._currentTarget;
@@ -366,6 +366,7 @@ define(function(require, exports, module) {
      *
      * @private
      * @method recall
+     * @param target {Node}
      */
     Surface.prototype.recall = function recall(target) {
         this._eventOutput.emit('recall');
@@ -389,7 +390,7 @@ define(function(require, exports, module) {
      * Setter for size.
      *
      * @method setSize
-     * @param size {Number[], Stream} Size as [width, height] in pixels, or a stream.
+     * @param size {Number[]|Stream} Size as [width, height] in pixels, or a stream.
      */
     Surface.prototype.setSize = function setSize(size) {
         this._cachedSize = size;
@@ -402,7 +403,7 @@ define(function(require, exports, module) {
      * Setter for proportions.
      *
      * @method setProportions
-     * @param proportions {Number[], Stream} Proportions as [x,y], or a stream.
+     * @param proportions {Number[]|Stream} Proportions as [x,y], or a stream.
      */
     Surface.prototype.setProportions = function setProportions(proportions) {
         this._sizeNode.set({proportions : proportions});
@@ -414,7 +415,7 @@ define(function(require, exports, module) {
      * Setter for margins.
      *
      * @method setMargins
-     * @param margins {Number[], Stream} Margins as [width, height] in pixels, or a stream.
+     * @param margins {Number[]|Stream} Margins as [width, height] in pixels, or a stream.
      */
     Surface.prototype.setMargins = function setMargins(margins) {
         this._sizeNode.set({margins : margins});
@@ -426,7 +427,7 @@ define(function(require, exports, module) {
      * Setter for origin.
      *
      * @method setOrigin
-     * @param origin {Number[], Stream} Origin as [x,y], or a stream.
+     * @param origin {Number[]|Stream} Origin as [x,y], or a stream.
      */
     Surface.prototype.setOrigin = function setOrigin(origin){
         this._layoutNode.set({origin : origin});
