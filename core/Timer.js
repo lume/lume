@@ -148,11 +148,12 @@ define(function(require, exports, module) {
             var args = arguments;
 
             var fn = function() {
+                Timer.clear(timeout);
                 timeout = null;
                 handler.apply(this, args);
             }.bind(this);
 
-            Timer.clear(timeout);
+            if (timeout) Timer.clear(timeout);
             timeout = Timer.setTimeout(fn, duration);
         };
     };
