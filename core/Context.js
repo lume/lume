@@ -39,9 +39,9 @@ define(function(require, exports, module) {
         this.container = container || document.createElement(elementType);
         this.container.classList.add(elementClass);
 
-        this.allocator = new ElementAllocator(this.container);
+        var allocator = new ElementAllocator(this.container);
 
-        this._node = new RootNode();
+        this._node = new RootNode(allocator);
 
         this.size = _getElementSize(this.container);
         this._sizeDirty = false;
@@ -156,7 +156,7 @@ define(function(require, exports, module) {
             this._sizeDirty = false;
         }
 
-        this._node.commit(this.allocator);
+        this._node.commit();
     };
 
     function _getElementSize(element) {
