@@ -54,10 +54,10 @@ define(function(require, exports, module) {
      *
      * @param [options] {Object}                Options
      * @param [options.size] {Number[]}         Size (width, height) in pixels. These can also be `true` or `undefined`.
-     * @param [options.classes] {string[]}      CSS classes
+     * @param [options.classes] {String[]}      CSS classes
      * @param [options.properties] {Object}     Dictionary of CSS properties
      * @param [options.attributes] {Object}     Dictionary of HTML attributes
-     * @param [options.content] {string}        InnerHTML content
+     * @param [options.content] {String}        InnerHTML content
      * @param [options.origin] {Number[]}       Origin (x,y), with values between 0 and 1
      * @param [options.proportions] {Number[]}  Proportions (x,y) with values between 0 and 1
      * @param [options.margins] {Number[]}      Margins (x,y) in pixels
@@ -69,31 +69,19 @@ define(function(require, exports, module) {
         this._container = document.createElement('div');
         this._container.classList.add('samsara-container');
 
-        this.context = new Context(this._container);
+        this.context = new Context({el : this._container});
         this.setContent(this._container);
 
-        this.size.on('resize', function(){
-            var size = _getElementSize(this._container);
-            this.context.setSize(size);
-            this.emit('resize', size);
-        }.bind(this));
-
-        preTickQueue.push(function(){
-            this.context._layout.trigger('start', defaultLayout);
-            dirtyQueue.push(function(){
-                this.context._layout.trigger('end', defaultLayout);
-            }.bind(this));
-        }.bind(this));
+        this.context._size.subscribe(this.size);
+        this.context._layout.subscribe(this.layout.map(function(){
+            return defaultLayout;
+        }));
     }
 
     ContainerSurface.prototype = Object.create(Surface.prototype);
     ContainerSurface.prototype.constructor = ContainerSurface;
     ContainerSurface.prototype.elementType = 'div';
     ContainerSurface.prototype.elementClass = 'samsara-surface';
-
-    function _getElementSize(element) {
-        return [element.clientWidth, element.clientHeight];
-    }
 
     /**
      * Get current perspective in pixels.
@@ -133,24 +121,10 @@ define(function(require, exports, module) {
      *
      * @method deploy
      * @private
-     * @param {Node} target document parent of this container
+     * @param target {Node} Container DOM element
      */
     ContainerSurface.prototype.deploy = function deploy() {
-        return Surface.prototype.deploy.apply(this, arguments);
-    };
-
-    /**
-     * Apply changes from this component to the corresponding document element.
-     * This includes changes to classes, styles, size, content, opacity, origin,
-     * and matrix transforms.
-     *
-     * @method commit
-     * @private
-     * @param {Spec} spec commit context
-     */
-    ContainerSurface.prototype.commit = function commit(spec, allocator) {
-        Surface.prototype.commit.apply(this, arguments);
-        Context.prototype.commit.apply(this.context);
+        Surface.prototype.deploy.apply(this, arguments);
     };
 
     module.exports = ContainerSurface;
