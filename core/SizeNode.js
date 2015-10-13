@@ -17,7 +17,8 @@ define(function(require, exports, module) {
      * @param sources {Object}                      Object of size sources
      * @param [sources.size] {Stream|Array}         Size source
      * @param [sources.margin] {Stream|Array}       Margin source
-     * @param [sources.propotions] {Stream|Array}   Proportions source
+     * @param [sources.proportions] {Stream|Array}  Proportions source
+     * @param [sources.aspectRatio] {Stream|Number} Aspect ratio source
      */
     function SizeNode(sources) {
         this.stream = _createStream(sources);
