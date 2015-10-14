@@ -13,12 +13,9 @@ define(function(require, exports, module) {
     var EventHandler = require('./EventHandler');
     var ElementAllocator = require('./ElementAllocator');
     var Transitionable = require('./Transitionable');
-    var dirtyQueue = require('samsara/core/queues/dirtyQueue');
     var ResizeStream = require('samsara/streams/ResizeStream');
     var Stream = require('samsara/streams/Stream');
     var EventMapper = require('samsara/events/EventMapper');
-    var SizeNode = require('samsara/core/SizeNode');
-    var sizeAlgebra = require('samsara/core/algebras/size');
 
     var elementType = 'div';
     var elementClass = 'samsara-context';
@@ -43,20 +40,17 @@ define(function(require, exports, module) {
         container.classList.add(elementClass);
 
         var allocator = new ElementAllocator(container);
-
         this._node = new RootNode(allocator);
-
-        this._sizeNode = new SizeNode();
-
-        this._size = new EventHandler();
+        this._size = new ResizeStream();
         this._layout = new EventHandler();
 
-        this.size = ResizeStream.lift(function(sizeSpec, parentSize){
-            if (!parentSize) return false;
-            return sizeAlgebra(sizeSpec, parentSize);
-        }, [this._sizeNode, this._size]);
+        this.size = this._size.map(function(size){
+            return (options.el)
+                ? [this.container.clientWidth, this.container.clientHeight]
+                : size;
+        }.bind(this));
 
-        this._node._size.subscribe(this._size);
+        this._node._size.subscribe(this.size);
         this._node._layout.subscribe(this._layout);
 
         this._perspective = new Transitionable(0);
@@ -67,10 +61,6 @@ define(function(require, exports, module) {
 
         this._perspective.on('end', function(perspective){
             setPerspective(container, perspective);
-        });
-
-        this._size.on('resize', function(size){
-            setElementSize(container, size);
         });
 
         this.container = container;
@@ -87,16 +77,6 @@ define(function(require, exports, module) {
      */
     Context.prototype.add = function add() {
         return RootNode.prototype.add.apply(this._node, arguments);
-    };
-
-    /**
-     * Sets DOM size for the Context's container.
-     *
-     * @method setSize
-     * @param size {Array.Number} Size provided as [width, height]
-     */
-    Context.prototype.setSize = function setSize(size) {
-        this._sizeNode.set({size : size});
     };
 
     /**
@@ -120,14 +100,6 @@ define(function(require, exports, module) {
     Context.prototype.setPerspective = function setPerspective(perspective, transition, callback) {
         this._perspective.set(perspective, transition, callback);
     };
-
-    function setElementSize(target, size) {
-        if (size[0] === true) size[0] = target.offsetWidth;
-        else target.style.width = size[0] + 'px';
-
-        if (size[1] === true) size[1] = target.offsetHeight;
-        else target.style.height = size[1] + 'px';
-    }
 
     var usePrefix = !('perspective' in document.documentElement.style);
 
