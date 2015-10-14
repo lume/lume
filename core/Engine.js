@@ -139,10 +139,13 @@ define(function(require, exports, module) {
 
     /**
      * Creates a new Context from which a scene graph can be constructed.
+     *  If no DOM element is specified, one will be created and appended
+     *  to the document body.
      *
      * @method createContext
      * @static
-     * @param [DOMelement] {Node}   Pre-existing element in the document
+     * @param [options] {Object}    Options
+     * @param [options.el] {Node}   Pre-existing element in the document
      * @return {Context}
      */
     Engine.createContext = function createContext(options) {
