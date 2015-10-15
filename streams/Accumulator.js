@@ -2,6 +2,8 @@
 
 define(function(require, exports, module){
     var Stream = require('samsara/streams/Stream');
+    var preTickQueue = require('samsara/core/queues/preTickQueue');
+    var dirtyQueue = require('samsara/core/queues/dirtyQueue');
 
     /**
      * Accumulator is a Stream that accumulates a value given by a
@@ -23,10 +25,14 @@ define(function(require, exports, module){
      */
     function Accumulator(sum){
         // TODO: is this state necessary?
-        this.sum = sum || undefined;
+        this.sum = undefined;
+
+        if (sum) this.set(sum);
 
         Stream.call(this, {
-            start : function(){ return this.sum || 0; }.bind(this),
+            start : function(){
+                return this.sum || 0;
+            }.bind(this),
             update : function(){ return this.sum; }.bind(this),
             end : function(){ return this.sum || 0; }.bind(this)
         });
@@ -55,6 +61,23 @@ define(function(require, exports, module){
 
     Accumulator.prototype = Object.create(Stream.prototype);
     Accumulator.prototype.constructor = Accumulator;
+
+    /**
+     * Set accumulated value.
+     *
+     * @method set
+     * @param sum {Number} Current value
+     */
+    Accumulator.prototype.set = function(sum){
+        this.sum = sum;
+        var self = this;
+        preTickQueue.push(function(){
+            self.emit('start', sum);
+            dirtyQueue.push(function(){
+                self.emit('end', sum);
+            });
+        })
+    };
 
     /**
      * Returns current accumulated value.
