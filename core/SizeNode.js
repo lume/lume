@@ -47,6 +47,7 @@ define(function(require, exports, module) {
      * @param obj {Object}      Object of data sources
      */
     SizeNode.prototype.set = function(obj){
+        // TODO: be able to overwrite streams. Not only add
         for (var key in obj){
             var value = obj[key];
 

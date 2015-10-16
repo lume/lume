@@ -35,6 +35,7 @@ define(function(require, exports, module) {
      * @param sources {Object}      Object of data sources
      */
     LayoutNode.prototype.set = function(sources){
+        // TODO: be able to overwrite streams. Not only add
         for (var key in sources){
             var value = sources[key];
 
