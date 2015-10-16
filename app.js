@@ -8,7 +8,7 @@ var scene = {
 };
 
 var elements = {}; // a graph of elements;
-console.log(Engine.id);
+
 
 // Add 180 Nodes to the Scene in a SubGraph.
 for( var i=0; i<180; i++ ){

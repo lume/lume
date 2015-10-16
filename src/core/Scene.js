@@ -46,7 +46,7 @@ Scene.prototype.findOne = function(query) {
 
 
 Scene.prototype.update = function(tick){
-    //console.log(tick, this.graph['node-1'].t.get());
+    //console.log(tick);
 }
 
 module.exports = new Scene();

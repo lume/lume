@@ -79,18 +79,8 @@ function Transitionable(initialState) {
     this._startedAt = null;
     this._pausedAt = null;
     if (initialState != null) this.from(initialState);
-    console.log(Engine.id);
     Engine.updateQueue.push(this);
 }
-
-/**
- * Internal Clock used for determining the current time for the ongoing
- * transitions.
- *
- * @type {Performance|Date|Clock}
- */
-
-Transitionable.Clock = Engine.getClock();
 
 /**
  * Registers a transition to be pushed onto the internal queue.
@@ -116,9 +106,10 @@ Transitionable.Clock = Engine.getClock();
  * @return {Transitionable}         this
  */
 Transitionable.prototype.to = function to(finalState, curve, duration, callback, method) {
+
     curve = curve != null && curve.constructor === String ? Curves[curve] : curve;
     if (this._queue.length === 0) {
-        this._startedAt = this.constructor.Clock.now();
+        this._startedAt = performance.now();
         this._pausedAt = null;
     }
     this._queue.push(
@@ -145,7 +136,7 @@ Transitionable.prototype.from = function from(initialState) {
     this._state = initialState;
     this._from = this._sync(null, this._state);
     this._queue.length = 0;
-    this._startedAt = this.constructor.Clock.now();
+    this._startedAt = performance.now();
     this._pausedAt = null;
     return this;
 };
@@ -323,7 +314,7 @@ Transitionable.prototype.get = function get(t) {
     if (this._queue.length === 0) return this._state;
 
     t = this._pausedAt ? this._pausedAt : t;
-    t = t ? t : this.constructor.Clock.now();
+    t = t ? t : performance.now();
 
     var progress = (t - this._startedAt) / this._queue[2];
     this._state = this._interpolate(
@@ -381,7 +372,7 @@ Transitionable.prototype.halt = function halt() {
  * @return {Transitionable} this
  */
 Transitionable.prototype.pause = function pause() {
-    this._pausedAt = this.constructor.Clock.now();
+    this._pausedAt = performance.now();
     return this;
 };
 
@@ -407,7 +398,7 @@ Transitionable.prototype.isPaused = function isPaused() {
  */
 Transitionable.prototype.resume = function resume() {
     var diff = this._pausedAt - this._startedAt;
-    this._startedAt = this.constructor.Clock.now() - diff;
+    this._startedAt = performance.now() - diff;
     this._pausedAt = null;
     return this;
 };
@@ -457,7 +448,8 @@ Transitionable.prototype.set = function(state, transition, callback) {
 };
 
 Transitionable.prototype.update = function(time) {
-  this.constructor.Clock.step(time);
+  //this.constructor.Clock.step(time);
+  console.log(time);
 };
 
 module.exports = Transitionable;

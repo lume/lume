@@ -103,7 +103,11 @@ Node.prototype.setTransitionable = function(conf){
     n.transitionables[conf.t] = conf;
     n.transitionables[conf.t].transition = new Transitionable(conf.from);
     n.transitionables[conf.t].transition.set(conf.from);
+    n.transitionables[conf.t].transition.set(conf.to);
+  //  n.transitionables[conf.t].transition.from(conf.from).delay(conf.delay).to(conf.to, conf.curve, conf.duration);
+                  console.log('transition!',n.transitionables[conf.t].transition);
     if(conf.delay) {
+
       n.transit(conf);
     }
 };
@@ -111,6 +115,7 @@ Node.prototype.setTransitionable = function(conf){
 Node.prototype.transit = function(conf){
     var n  = this;
     if(conf.delay) {
+
       n.transitionables[conf.t].transition.from(conf.from).delay(conf.delay).to(conf.to, conf.curve, conf.duration);
     }
 };
