@@ -37,6 +37,8 @@ define(function(require, exports, module) {
                 : new Transitionable(options.gutter);
 
             this.stream = Stream.lift(function(size, gutter){
+                if (!size) return false; // TODO: fix bug
+
                 var width = size[0];
                 var height = size[1];
 
