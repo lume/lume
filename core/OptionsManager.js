@@ -53,7 +53,7 @@ define(function(require, exports, module) {
      * @return source {Object}
      */
     OptionsManager.setOptions = function(instance, options, defaults){
-        defaults = defaults || instance.constructor.DEFAULT_OPTIONS || {};
+        defaults = defaults || _clone(instance.constructor.DEFAULT_OPTIONS) || {};
         var optionsManager = new OptionsManager(defaults);
         instance.setOptions = OptionsManager.prototype.setOptions.bind(optionsManager);
         instance.getOptions = OptionsManager.prototype.getOptions.bind(optionsManager);
@@ -72,7 +72,7 @@ define(function(require, exports, module) {
      * @param options {Object}          Patch options
      * @return this {OptionsManager}
      */
-    OptionsManager.prototype.patch = function patch(options) {
+    OptionsManager.prototype.patch = function patch(options, clone) {
         var myState = this._value;
         for (var k in options) {
             if ((k in myState) && (options[k] && options[k].constructor === Object) && (myState[k] && myState[k].constructor === Object)) {
@@ -162,6 +162,28 @@ define(function(require, exports, module) {
         _createEventHandler.call(this);
         EventHandler.prototype.off.apply(this._eventHandler, arguments);
     };
+
+    function _clone(obj) {
+        var copy;
+        if (typeof obj === 'object') {
+            copy = (obj instanceof Array) ? [] : {};
+            for (var key in obj) {
+                var value = obj[key];
+                if (typeof value === 'object' && value !== null) {
+                    if (value instanceof Array) {
+                        copy[key] = [];
+                        for (var i = 0; i < value.length; i++)
+                            copy[key][i] = _clone(value[i]);
+                    }
+                    else copy[key] = _clone(value);
+                }
+                else copy[key] = value;
+            }
+        }
+        else copy = obj;
+
+        return copy;
+    }
 
     module.exports = OptionsManager;
 });
