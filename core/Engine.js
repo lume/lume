@@ -256,9 +256,6 @@ define(function(require, exports, module) {
     }
 
     window.addEventListener('resize', handleResize, false);
-    window.addEventListener('touchmove', function(event) {
-        event.preventDefault();
-    }, true);
 
     module.exports = Engine;
 });
