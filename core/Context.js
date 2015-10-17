@@ -74,7 +74,7 @@ define(function(require, exports, module) {
      * @method add
      *
      * @param {Object}          Renderable
-     * @return {SceneGraphNode} Wrapped node
+     * @return {RenderTreeNode} Wrapped node
      */
     Context.prototype.add = function add() {
         return RootNode.prototype.add.apply(this._node, arguments);

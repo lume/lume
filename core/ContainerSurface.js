@@ -110,7 +110,7 @@ define(function(require, exports, module) {
      *
      * @method add
      * @param node {Object}     Node, Surface, or View
-     * @return {SceneGraphNode}
+     * @return {RenderTreeNode}
      */
     ContainerSurface.prototype.add = function add() {
         return Context.prototype.add.apply(this.context, arguments);

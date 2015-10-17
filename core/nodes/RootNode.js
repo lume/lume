@@ -1,26 +1,26 @@
 /* Copyright © 2015 David Valdman */
 
 define(function(require, exports, module) {
-    var SceneGraphNode = require('samsara/core/nodes/SceneGraphNode');
+    var RenderTreeNode = require('samsara/core/nodes/RenderTreeNode');
 
     /**
-     * A RootNode is a first node in the Scene Graph. It is like any other
-     *  SceneGraphNode but with the additional responsibility of commiting
-     *  the Scene Graph leaves that are its descendents to the DOM.
+     * A RootNode is a first node in the Render Tree. It is like any other
+     *  RenderTreeNode but with the additional responsibility of defining
+     *  an allocating DOM node to render to.
      *
      * @class RootNode
      * @constructor
      * @private
-     * @extends Core.SceneGraphNode
+     * @extends Core.RenderTreeNode
      * @param [allocator] {ElementAllocator} ElementAllocator
      */
     function RootNode(allocator) {
-        SceneGraphNode.call(this);
+        RenderTreeNode.call(this);
         this.root = this;
         this.allocator = allocator;
     }
 
-    RootNode.prototype = Object.create(SceneGraphNode.prototype);
+    RootNode.prototype = Object.create(RenderTreeNode.prototype);
     RootNode.prototype.constructor = RootNode;
 
     module.exports = RootNode;

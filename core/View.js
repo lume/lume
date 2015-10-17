@@ -1,7 +1,7 @@
 /* Copyright © 2015 David Valdman */
 
 define(function(require, exports, module) {
-    var SceneGraphNode = require('samsara/core/nodes/SceneGraphNode');
+    var RenderTreeNode = require('samsara/core/nodes/RenderTreeNode');
     var Controller = require('samsara/core/Controller');
     var SizeNode = require('samsara/core/SizeNode');
     var LayoutNode = require('samsara/core/LayoutNode');
@@ -47,7 +47,7 @@ define(function(require, exports, module) {
             this._sizeNode = new SizeNode();
             this._layoutNode = new LayoutNode();
 
-            this._node = new SceneGraphNode();
+            this._node = new RenderTreeNode();
             this._node.tempRoot = this._node;
 
             this.size = ResizeStream.lift(
@@ -81,10 +81,10 @@ define(function(require, exports, module) {
          *
          * @method add
          * @param object {SizeNode|LayoutNode|Surface} Node
-         * @return {SceneGraphNode}
+         * @return {RenderTreeNode}
          */
         add : function add(){
-            return SceneGraphNode.prototype.add.apply(this._node, arguments);
+            return RenderTreeNode.prototype.add.apply(this._node, arguments);
         },
         /**
          * Setter for size.

@@ -15,11 +15,11 @@ define(function(require, exports, module) {
      *  is constructed like a tree, the leaves of which are `Surfaces`.
      *
      *  @constructor
-     *  @class SceneGraphNode
+     *  @class RenderTreeNode
      *  @private
      *  @param object {SizeNode, LayoutNode, Surface, View}
      */
-    function SceneGraphNode(object) {
+    function RenderTreeNode(object) {
         // layout and size inputs
         this._layout = new EventHandler();
         this._size = new EventHandler();
@@ -42,9 +42,9 @@ define(function(require, exports, module) {
      *
      * @method add
      * @param node {SizeNode|LayoutNode|Surface|View} Node
-     * @return {SceneGraphNode}
+     * @return {RenderTreeNode}
      */
-    SceneGraphNode.prototype.add = function add(node) {
+    RenderTreeNode.prototype.add = function add(node) {
         var childNode;
 
         if (node._isView){
@@ -55,7 +55,7 @@ define(function(require, exports, module) {
             childNode = node;
         }
         else {
-            childNode = new SceneGraphNode(node);
+            childNode = new RenderTreeNode(node);
             if (this.tempRoot)
                 childNode.tempRoot = this.tempRoot;
             else childNode.root = _getRootNode.call(this);
@@ -106,5 +106,5 @@ define(function(require, exports, module) {
         object._getRoot = _getRootNode.bind(this);
     }
 
-    module.exports = SceneGraphNode;
+    module.exports = RenderTreeNode;
 });
