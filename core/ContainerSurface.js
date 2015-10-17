@@ -26,7 +26,7 @@ define(function(require, exports, module) {
 
     /**
      * ContainerSurface enables nesting of DOM. A ContainerSurface manages
-     *  its own Scene Graph that it inserts inside a DOM node. Typically
+     *  its own render tree that it inserts inside a DOM node. Typically
      *  this is used for clipping by settings `{overflow : hidden}` as a CSS
      *  property.
      *
@@ -106,7 +106,7 @@ define(function(require, exports, module) {
     };
 
     /**
-     * Extends the scene graph with a provided node.
+     * Extends the render tree with a provided node.
      *
      * @method add
      * @param node {Object}     Node, Surface, or View

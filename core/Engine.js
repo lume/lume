@@ -96,7 +96,7 @@ define(function(require, exports, module) {
     Engine.size = size;
 
     /**
-     * Creates a new Root Node from which a scene graph can be constructed.
+     * Creates a new Root Node from which a render tree can be constructed.
      *  Use this to modify preexisting elements in 2D space.
      *
      * @method createRoot
@@ -138,7 +138,7 @@ define(function(require, exports, module) {
     };
 
     /**
-     * Creates a new Context from which a scene graph can be constructed.
+     * Creates a new Context from which a render tree can be constructed.
      *  If no DOM element is specified, one will be created and appended
      *  to the document body.
      *

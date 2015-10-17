@@ -68,7 +68,7 @@ define(function(require, exports, module) {
     }
 
     /**
-     * Extends the scene graph beginning with the Context's RootNode with a new node.
+     * Extends the render tree beginning with the Context's RootNode with a new node.
      *  Delegates to RootNode's `add` method.
      *
      * @method add

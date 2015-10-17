@@ -15,11 +15,11 @@ define(function(require, exports, module) {
     var sizeAlgebra = require('samsara/core/algebras/size');
 
     /**
-     * A View provides encapsulation for a subtree of the scene graph. You can build
-     *  complicated visual components and add them to a scene graph as you would a Surface.
+     * A View provides encapsulation for a subtree of the render tree. You can build
+     *  complicated visual components and add them to a render tree as you would a Surface.
      *  In addition to what a Controller provides, a View provides:
      *      Input and output streams in this.input, this.output
-     *      An `add` method to build up its internal scene graph
+     *      An `add` method to build up its internal render tree
      *      Size methods: `setSize`, `setProportions`
      *      Layout methods: `setOpacity`, `setOrigin`
      *
@@ -77,7 +77,7 @@ define(function(require, exports, module) {
             if (this.options) setOptions.call(this, this.options);
         },
         /**
-         * Extends the scene graph subtree with a new node.
+         * Extends the render tree subtree with a new node.
          *
          * @method add
          * @param object {SizeNode|LayoutNode|Surface} Node

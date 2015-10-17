@@ -10,9 +10,9 @@ define(function(require, exports, module) {
     var sizeAlgebra = require('samsara/core/algebras/size');
 
     /**
-     * A node in the scene graph. As such, it wraps a layout or size node,
-     *  providing them with an `add` method. By adding nodes, the scene graph
-     *  is constructed like a tree, the leaves of which are `Surfaces`.
+     * A node in the render tree. As such, it wraps a layout or size node,
+     *  providing them with an `add` method. By adding nodes, the render tree
+     *  is constructed, the leaves of which are `Surfaces`.
      *
      *  @constructor
      *  @class RenderTreeNode
@@ -34,7 +34,7 @@ define(function(require, exports, module) {
     }
 
     /**
-     * Extends the scene graph with a new node. Similar to how a tree data structure
+     * Extends the render tree with a new node. Similar to how a tree data structure
      *  is created, but instead of a node with an array of children, children subscribe
      *  to notifications from the parent.
      *
