@@ -7,7 +7,23 @@ define(function(require, exports, module) {
      * EventMapper modifies the data payload of an event based on
      *  a provided function.
      *
-     *  Note: it does not modify the event's type.
+     *  Note: it does not modify the event's `type`.
+     *
+     *  @example
+     *
+     *      var eventMapper = new EventMapper(function(payload){
+     *          return payload.x + payload.y
+     *      });
+     *
+     *      var eventEmitter = new EventEmitter();
+     *
+     *      eventMapper.subscribe(eventEmitter);
+     *
+     *      eventMapper.on('name', function(value){
+     *          alert(value);
+     *      });
+     *
+     *      eventEmitter.emit('name', {x : 1, y : 2}); // alerts 3
      *
      * @class EventMapper
      * @constructor

@@ -16,6 +16,30 @@ define(function(require, exports, module) {
      *  based on custom logic. The return of the provided splitter
      *  function should be of type EventEmitter.
      *
+     *  @example
+     *
+     *      var eventEmitter = new EventEmitter();
+     *      var eventEmitterX = new eventEmitter();
+     *      var eventEmitterY = new eventEmitter();
+     *
+     *      var eventSplitter = new EventSplitter(function(payload){
+     *          return (payload.x > payload.y)
+     *              ? eventEmitterX;
+     *              : eventEmitterY;
+     *      });
+     *
+     *      eventSplitter.subscribe(eventEmitter);
+     *
+     *      eventEmitterX.on('move', function(){
+     *          console.log('x is bigger')
+     *      });
+     *
+     *      eventEmitterY.on('move', function(){
+     *          console.log('y is bigger')
+     *      })
+     *
+     *      eventEmitter.emit('move', {x : 3, y : 2}); // x is bigger
+     *
      * @class EventSplitter
      * @constructor
      * @param splitter {Function}

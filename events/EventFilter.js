@@ -16,6 +16,23 @@ define(function(require, exports, module) {
      *  a specified condition prescribed by a provided function
      *  with the signature `(type, data) -> Boolean`
      *
+     *  @example
+     *
+     *      var eventFilter = new EventFilter(function(type, payload){
+     *          return (payload.value == 0);
+     *      });
+     *
+     *      var eventEmitter = new EventEmitter();
+     *
+     *      eventFilter.subscribe(eventEmitter);
+     *
+     *      eventFilter.on('click', function(data){
+     *          alert('fired');
+     *      });
+     *
+     *      eventEmitter.emit('click', {value : 0}); // fired
+     *      eventEmitter.emit('click', {value : 1}); // doesn't fire
+     *
      * @class EventFilter
      * @namespace Events
      * @constructor
