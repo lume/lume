@@ -16,6 +16,19 @@ define(function(require, exports, module) {
      *  It also includes helper methods on the constructor for setting up Controllers and Views
      *  with input and output emitters.
      *
+     *  @example
+     *
+     *      var eventHandlerA = new EventHandler();
+     *      var eventHandlerB = new EventHandler();
+     *
+     *      eventHandlerB.subscribe(eventHandlerA);
+     *
+     *      eventHandlerB.on('name', function(payload){
+     *          console.log(payload) // {data : 0}
+     *      });
+     *
+     *      eventHandlerA.emit('name', {data : 0});
+     *
      * @class EventHandler
      * @namespace Core
      * @extends Core.EventEmitter
@@ -87,8 +100,8 @@ define(function(require, exports, module) {
      *  Extends EventEmitter's `on` method.
      *
      * @method on
-     * @param type {string}             Event channel name
-     * @param handler {function}        Handler
+     * @param type {String}             Event channel name
+     * @param handler {Function}        Handler
      */
     EventHandler.prototype.on = function on(type, handler) {
         EventEmitter.prototype.on.apply(this, arguments);

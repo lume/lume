@@ -41,9 +41,27 @@ define(function(require, exports, module) {
     /**
      * Engine is a singleton object that is required to run a Samsara application.
      *  It is the "heartbeat" of the application, managing the batching of streams
-     *  and the commiting of all RootNodes.
+     *  and creating `RootNodes` and `Contexts` to begin render trees.
      *
-     *  It also listens and can respond to DOM events on the HTML `<body>` tag.
+     *  It also listens and can respond to DOM events on the HTML `<body>` tag
+     *  and `window` object. For instance the `resize` event.
+     *
+     *  @example
+     *
+     *      var context = Engine.createContext();
+     *
+     *      var surface = new Surface({
+     *          size : [100,100],
+     *          properties : {background : 'red'}
+     *      });
+     *
+     *      context.add(surface);
+     *
+     *      Engine.start();
+     *
+     *      Engine.on('click', function(){
+     *          alert('clicked!');
+     *      });
      *
      * @class Engine
      * @namespace Core
@@ -192,8 +210,8 @@ define(function(require, exports, module) {
      *
      * @method on
      * @static
-     * @param type {string}         DOM event name
-     * @param handler {function}    Handler
+     * @param type {String}         DOM event name
+     * @param handler {Function}    Handler
      */
     Engine.on = function on(type, handler){
         if (type === 'tick') listenOnTick = true;
@@ -209,8 +227,8 @@ define(function(require, exports, module) {
      *
      * @method off
      * @static
-     * @param type {string}         DOM event name
-     * @param handler {function}    Handler
+     * @param type {String}         DOM event name
+     * @param handler {Function}    Handler
      */
     Engine.off = function off(type, handler){
         if (type === 'tick') listenOnTick = false;

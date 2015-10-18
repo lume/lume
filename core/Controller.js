@@ -17,6 +17,7 @@ define(function(require, exports, module) {
      *  `on`, `off`, `emit`, `trigger`, `subscribe`, `unsubscribe` methods.
      *
      *  @example
+     *
      *      var MyClass = Controller.extend({
      *          defaults : {
      *              defaultOption1 : value1,

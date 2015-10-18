@@ -193,8 +193,8 @@ define(function(require, exports, module) {
      *
      * @method on
      *
-     * @param type {string}         DOM event channel name, e.g., "click", "touchmove"
-     * @param handler {function}    Handler. It's only argument will be an emitted data payload.
+     * @param type {String}         DOM event channel name, e.g., "click", "touchmove"
+     * @param handler {Function}    Handler. It's only argument will be an emitted data payload.
      */
     ElementOutput.prototype.on = function on(type, handler) {
         if (this._currentTarget)
@@ -207,8 +207,8 @@ define(function(require, exports, module) {
      *  Undoes the work of `on`.
      *
      * @method removeListener
-     * @param type {string}         DOM event channel name e.g., "click", "touchmove"
-     * @param handler {function}    Handler
+     * @param type {String}         DOM event channel name e.g., "click", "touchmove"
+     * @param handler {Function}    Handler
      */
     ElementOutput.prototype.off = function off(type, handler) {
         EventHandler.prototype.off.apply(this._eventOutput, arguments);

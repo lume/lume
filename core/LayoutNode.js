@@ -11,6 +11,30 @@ define(function(require, exports, module) {
      *  Listens on start/update/end events, batches them, and emits them downstream
      *  to descendant layout nodes.
      *
+     *  @example
+     *
+     *      var context = Engine.createContext();
+     *
+     *      var surface = new Surface({
+     *          size : [100,100],
+     *          properties : {background : 'red'}
+     *      });
+     *
+     *      var opacity = new Transitionable(1);
+     *
+     *      var layout = new LayoutNode({
+     *          transform : Transform.translateX(100),
+     *          opacity : opacity
+     *      });
+     *
+     *      context.add(layout).add(surface);
+     *
+     *      Engine.on('click', function(){
+     *          opacity.set(0, {duration : 1000});
+     *      });
+     *
+     *      Engine.start();
+     *
      * @class LayoutNode
      * @constructor
      * @namespace Core

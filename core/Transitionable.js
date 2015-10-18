@@ -30,6 +30,24 @@ define(function(require, exports, module) {
      *  Transitions are given an easing curve and a duration.
      *  Non-numeric values are ignored.
      *
+     *  @example
+     *
+     *      var transitionable = new Transitionable(0);
+     *
+     *      transitionable.set(100, {duration : 1000, curve : 'easeIn'});
+     *
+     *      transitionable.on('start', function(value){
+     *          console.log(value); // 0
+     *      });
+     *
+     *      transitionable.on('update', function(value){
+     *          console.log(value); // numbers between 0 and 100
+     *      });
+     *
+     *      transitionable.on('end', function(value){
+     *          console.log(value); // 100
+     *      });
+     *
      * @class Transitionable
      * @constructor
      * @extends Streams.SimpleStream

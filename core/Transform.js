@@ -15,19 +15,39 @@ define(function(require, exports, module) {
      *  A Transform is a 16 element float array `t = [t0, ..., t15]`
      *  that corresponds to a 4x4 transformation matrix (in row-major order)
      *
-     * ```
+     *  ```
      *    ┌               ┐
      *    │ t0  t1  t2  0 │
      *    │ t4  t5  t6  0 │
      *    │ t8  t9  t10 0 │
      *    │ t12 t13 t14 1 │
      *    └               ┘
-     *```
+     *  ```
      *
      *  This matrix is a data structure encoding a combination of translation,
      *  scale, skew and rotation components.
      *
      *  Note: these matrices are transposes from their mathematical counterparts.
+     *
+     *  @example
+     *
+     *      var layoutNode = var LayoutNode({
+     *          transform : Transform.translate([100,200,50])
+     *      });
+     *
+     *  @example
+     *
+     *      var transitionable = new Transitionable(0);
+     *
+     *      var transform = transitionable.map(function(value){
+     *          return Transform.scaleX(value);
+     *      });
+     *
+     *      var layoutNode = var LayoutNode({
+     *          transform : transform
+     *      });
+     *
+     *      transitionable.set(100, {duration : 500});
      *
      * @class Transform
      * @static

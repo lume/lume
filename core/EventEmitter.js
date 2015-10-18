@@ -13,7 +13,9 @@ define(function(require, exports, module) {
      * EventEmitter represents an asynchronous channel for broadcasting and receiving events.
      *
      * @example
+     *
      *      var eventEmitter = new EventEmitter();
+     *
      *      eventEmitter.on('send', function(payload){
      *          console.log(payload) // {data : 0}
      *      });

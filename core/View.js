@@ -16,12 +16,43 @@ define(function(require, exports, module) {
 
     /**
      * A View provides encapsulation for a subtree of the render tree. You can build
-     *  complicated visual components and add them to a render tree as you would a Surface.
-     *  In addition to what a Controller provides, a View provides:
-     *      Input and output streams in this.input, this.output
-     *      An `add` method to build up its internal render tree
+     *  complicated visual components and add them to a render tree as you would a `Surface`.
+     *
+     *  Custom `Views` are created by calling `extend` on the `View` constructor.
+     *
+     *  In addition to what a `Controller` provides, a View provides:
+     *
+     *      Render Tree method: `.add`
      *      Size methods: `setSize`, `setProportions`
      *      Layout methods: `setOpacity`, `setOrigin`
+     *
+     *  @example
+     *
+     *      var MyView = View.extend({
+     *          defaults : {
+     *              defaultOption1 : '',
+     *              defaultOption2 : 42
+     *          },
+     *          initialize : function(options){
+     *              // this method called on instantiation
+     *              // options are passed in after being patched by the specified defaults
+     *
+     *              var surface = new Surface({
+     *                  content : options.defaultOption1,
+     *                  size : [options.defaultOption2,100],
+     *                  properties : {background : 'red'}
+     *              });
+     *
+     *              this.add(surface);
+     *          }
+     *      });
+     *
+     *      var myView = new myView({defaultOption1 : 'hello'});
+     *
+     *      var context = Engine.createContext();
+     *      context.add(myView);
+     *
+     *      Engine.start()
      *
      * @class View
      * @constructor

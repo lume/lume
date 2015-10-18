@@ -13,8 +13,27 @@ define(function(require, exports, module) {
 
     /**
      * A collection of timing utilities meant to translate the familiar setInterval, setTimeout
-     *  timers to use Samsara's internal clock, which is backed by a requestAnimationFrame loop.
+     *  timers to use Samsara's internal clock, which is backed by a requestAnimationFrame (RAF) loop.
      *  It also includes other helpful methods for debouncing.
+     *
+     * @example
+     *
+     *      Timer.setTimeout(function(){
+     *          alert('I will execute after 1 second');
+     *      }, 1000);
+     *
+     *      Timer.after(function(){
+     *          alert('I will execute on the following RAF loop');
+     *      }, 1);
+     *
+     *      var debouncedResize = Timer.debounce(function(){
+     *          // this code will execute when the `resize` event
+     *          // has stopped firing (for the last 200 milliseconds)
+     *      }, 200);
+     *
+     *      Engine.on('resize', function(){
+     *          debounceResize();
+     *      });
      *
      * @class Timer
      * @static
@@ -140,7 +159,7 @@ define(function(require, exports, module) {
      * @static
      * @param handler {Function}  Handler
      * @param duration {Number}   Duration
-     * @return {function}
+     * @return {Function}
      */
     Timer.debounce = function debounce(handler, duration) {
         var timeout;
@@ -165,7 +184,7 @@ define(function(require, exports, module) {
      * @static
      * @param handler {Function}  Handler
      * @param numFrames {Number}  Number of frames
-     * @return {function}
+     * @return {Function}
      */
     Timer.frameDebounce = function frameDebounce(handler, numFrames){
         var timeout;

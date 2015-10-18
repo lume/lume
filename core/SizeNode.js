@@ -11,6 +11,33 @@ define(function(require, exports, module) {
      *  Listens on start/update/end events, batches them, and emits resize events downstream
      *  to descendant size nodes.
      *
+     *  Size can be defined with height and width given numerically, but
+     *  they can also be:
+     *
+     *  ```
+     *      `undefined` - takes the parent value
+     *      `true`      - takes the DOM calculated value
+     *      `false`     - value defined by setting an aspect ratio
+     *  ```
+     *
+     *  @example
+     *
+     *      var context = Engine.createContext();
+     *
+     *      var surface = new Surface({
+     *          size : [100,100],
+     *          properties : {background : 'red'}
+     *      });
+     *
+     *      var sizeNode = new SizeNode({
+     *          size : [100, undefined],
+     *          margins : [50, 50]
+     *      });
+     *
+     *      context.add(sizeNode).add(surface);
+     *
+     *      Engine.start();
+     *
      * @class SizeNode
      * @namespace Core
      * @constructor

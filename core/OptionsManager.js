@@ -142,8 +142,8 @@ define(function(require, exports, module) {
      * Adds a handler to the `type` channel which will be executed on `emit`.
      *
      * @method "on"
-     * @param type {string}         Channel name
-     * @param handler {function}    Callback
+     * @param type {String}         Channel name
+     * @param handler {Function}    Callback
      */
     OptionsManager.prototype.on = function on(type, handler) {
         _createEventHandler.call(this);
@@ -155,8 +155,8 @@ define(function(require, exports, module) {
      *   This undoes the work of `on`.
      *
      * @method off
-     * @param type {string}         Channel name
-     * @param handler {function}    Callback
+     * @param type {String}         Channel name
+     * @param handler {Function}    Callback
      */
     OptionsManager.prototype.off = function off(type, handler) {
         _createEventHandler.call(this);

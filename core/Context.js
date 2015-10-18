@@ -26,7 +26,25 @@ define(function(require, exports, module) {
      *  otherwise it is created for you and appended to the document's `<body>`.
      *
      *  The CSS class `samsara-context` is applied, which provides the minimal CSS necessary
-     *  to create a performant 3D context (specifically preserve-3d).
+     *  to create a performant 3D context (specifically `preserve-3d`).
+     *
+     *  As of now, `Context` is not typically instantiated on its own, but rather is
+     *  created by calling `Engine.createContext()`. This may change in the near future.
+     *
+     *  @example
+     *
+     *      var context = Engine.createContext({
+     *          el : document.querySelector('#myElement')
+     *      });
+     *
+     *      var surface = new Surface({
+     *          size : [100,100],
+     *          properties : {background : 'red'}
+     *      });
+     *
+     *      context.add(surface);
+     *
+     *      Engine.start();
      *
      * @class Context
      * @constructor

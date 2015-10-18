@@ -18,11 +18,39 @@ define(function(require, exports, module) {
      *  CSS classes, properties and DOM attributes can also be added and dynamically changed.
      *  Surfaces also act as sources for DOM events such as `click`.
      *
+     * @example
+     *
+     *      var context = Engine.createContext({
+     *          el : document.querySelector('#myElement')
+     *      });
+     *
+     *      var surface = new Surface({
+     *          content : 'Hello world!',
+     *          size : [true,100],
+     *          opacity : .5,
+     *          classes : ['myClass1', 'myClass2'],
+     *          properties : {background : 'red'}
+     *      });
+     *
+     *      context.add(surface);
+     *
+     *      Engine.start();
+     *
+     *  @example
+     *
+     *      // same as above but create an image instead
+     *      var surface = new Surface({
+     *          attributes : {
+     *              src : 'cat.jpg'
+     *          },
+     *          size : [100,100],
+     *          tagName : 'img'
+     *      });
+     *
      * @class Surface
      * @namespace Core
      * @constructor
      * @extends Core.ElementOutput
-     *
      * @param [options] {Object}                Options
      * @param [options.size] {Number[]}         Size (width, height) in pixels. These can also be `true` or `undefined`.
      * @param [options.classes] {String[]}      CSS classes
@@ -480,19 +508,6 @@ define(function(require, exports, module) {
         this._layoutNode.set({opacity : opacity});
         this._opacityDirty = true;
         _setDirty.call(this);
-    };
-
-    /**
-     * Apply changes from this component to the corresponding document element.
-     *  This includes changes to classes, styles, size, content, opacity, origin,
-     *  and CSS3 transforms.
-     *
-     * @private
-     * @method commit
-     * @param layout {Object}               Layout data
-     * @param allocator {ElementAllocator}  Allocator
-     */
-    Surface.prototype.commit = function commit() {
     };
 
     module.exports = Surface;
