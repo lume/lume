@@ -11,9 +11,11 @@ define(function(require, exports, module) {
      *  methods of `map`, `filter`, `split`, and `pluck` to
      *  transform one stream into another.
      *
+     * @example
      *
      * @class SimpleStream
      * @extends Core.EventHandler
+     * @private
      * @namespace Streams
      * @constructor
      */

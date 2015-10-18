@@ -13,6 +13,8 @@ define(function(require, exports, module){
      *
      *  @example
      *
+     *      var accumulator = new Accumulator();
+     *
      *      // this gives the total displacement of mouse input
      *      accumulator.subscribe(mouseInput.pluck('delta'));
      *

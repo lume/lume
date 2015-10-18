@@ -19,10 +19,41 @@ define(function(require, exports, module) {
 
     /**
      * Stream listens to `resize`, `start`, `update` and `end` events and
-     *  emits `start`, `update` and `end` events.
+     *  emits `start`, `update` and `end` events. `Resize` events get
+     *  unified with `start`, `update`, and `end` events depending on
+     *  when they are fired within Samsara's engine cycle.
      *
      *  If listening to multiple sources, Stream emits a single event per
      *  Engine cycle.
+     *
+     *  @example
+     *
+     *      var position = new Transitionable([0,0]);
+     *      var size = new EventEmitter();
+     *
+     *      var translationStream = Stream.lift(function(position, size){
+     *          var translation = [
+     *              position[0] + size[0],
+     *              position[1] + size[1]
+     *          ];
+     *
+     *          return Transform.translate(translation);
+     *      }, [positionStream, sizeStream]);
+     *
+     *      translationStream.on('start', function(transform){
+     *          console.log(transform);
+     *      });
+     *
+     *      translationStream.on('update', function(transform){
+     *          console.log(transform);
+     *      });
+     *
+     *      translationStream.on('end', function(transform){
+     *          console.log(transform);
+     *      });
+     *
+     *      position.set([100, 50], {duration : 500});
+     *      size.emit('resize', [100,100]);
      *
      * @class Stream
      * @extends Streams.SimpleStream

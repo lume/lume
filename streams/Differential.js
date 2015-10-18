@@ -12,6 +12,7 @@ define(function(require, exports, module){
      *
      *  @example
      *
+     *      var differential = new Differential();
      *      // this gives differentials of mouse input
      *      differential.subscribe(mouseInput.pluck('value'));
      *
