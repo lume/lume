@@ -13,6 +13,27 @@ define(function(require, exports, module) {
     /**
      * A library of easing curves.
      *
+     * @example
+     *
+     *      var t = new Transitionable(0);
+     *
+     *      t.set(100, {
+     *          duration : 1000,
+     *          curve : Easing.inQuad
+     *      }
+     *
+     *      transitionable.on('start', function(value){
+     *          console.log(value); // 0
+     *      });
+     *
+     *      transitionable.on('update', function(value){
+     *          console.log(value); // numbers between 0 and 100
+     *      });
+     *
+     *      transitionable.on('end', function(value){
+     *          console.log(value); // 100
+     *      });
+     *
      * @class Easing
      * @namespace Transitions
      * @static
