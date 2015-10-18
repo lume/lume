@@ -22,6 +22,24 @@ define(function(require, exports, module) {
      *      `center`        - Midpoint between the two touches
      *      `touches`       - Array of DOM event touch identifiers
      *
+     * @example
+     *
+     *      var rotateInput = new RotateInput();
+     *
+     *      rotateInput.subscribe(Engine) // listens on `window` events
+     *
+     *      rotateInput.on('start', function(payload){
+     *          console.log('start', payload);
+     *      });
+     *
+     *      rotateInput.on('update', function(payload){
+     *          console.log('update', payload);
+     *      });
+     *
+     *      rotateInput.on('end', function(payload){
+     *          console.log('end', payload);
+     *      });
+     *
      * @class RotateInput
      * @extends Inputs.TwoFingerInput
      * @uses Core.OptionsManager

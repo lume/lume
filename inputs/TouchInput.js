@@ -33,6 +33,29 @@ define(function(require, exports, module) {
      *      `count`     - DOM event for number of simultaneous touches
      *      `touch`     - DOM touch event identifier
      *
+     * @example
+     *
+     *      var touchInput = new TouchInput({
+     *          direction : TouchInput.DIRECTION.Y
+     *      });
+     *
+     *      touchInput.subscribe(Engine);
+     *
+     *      touchInput.on('start', function(payload){
+     *          // fired on mouse down
+     *          console.log('start', payload);
+     *      });
+     *
+     *      touchInput.on('update', function(payload){
+     *          // fired on mouse move
+     *          console.log('update', payload);
+     *      });
+     *
+     *      touchInput.on('end', function(payload){
+     *          // fired on mouse up
+     *          console.log('end', payload);
+     *      });
+     *
      * @class TouchInput
      * @constructor
      * @extends Streams.SimpleStream

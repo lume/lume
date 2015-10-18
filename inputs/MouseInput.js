@@ -33,6 +33,34 @@ define(function(require, exports, module) {
      *      `offsetX`   - DOM event offsetX property
      *      `offsetY`   - DOM event offsetY property
      *
+     * @example
+     *
+     *      var surface = new Surface({
+     *          size : [100,100],
+     *          properties : {background : 'red'}
+     *      });
+     *
+     *      var mouseInput = new MouseInput({
+     *          direction : MouseInput.DIRECTION.X
+     *      });
+     *
+     *      mouseInput.subscribe(surface);
+     *
+     *      mouseInput.on('start', function(payload){
+     *          // fired on mouse down
+     *          console.log('start', payload);
+     *      });
+     *
+     *      mouseInput.on('update', function(payload){
+     *          // fired on mouse move
+     *          console.log('update', payload);
+     *      });
+     *
+     *      mouseInput.on('end', function(payload){
+     *          // fired on mouse up
+     *          console.log('end', payload);
+     *      });
+     *
      * @class MouseInput
      * @constructor
      * @extend SimpleStream

@@ -29,6 +29,24 @@ define(function(require, exports, module) {
      *  touches begin at 100 px apart, and move to 200 px apart, ScaleInput will emit
      *  a value of 2 (for 2x magnification), while PinchInput will emit a value of 100.
      *
+     * @example
+     *
+     *      var scaleInput = new ScaleInput();
+     *
+     *      scaleInput.subscribe(Engine) // listens on `window` events
+     *
+     *      scaleInput.on('start', function(payload){
+     *          console.log('start', payload);
+     *      });
+     *
+     *      scaleInput.on('update', function(payload){
+     *          console.log('update', payload);
+     *      });
+     *
+     *      scaleInput.on('end', function(payload){
+     *          console.log('end', payload);
+     *      });
+     *
      * @class ScaleInput
      * @extends Inputs.TwoFingerInput
      * @uses Core.OptionsManager

@@ -26,6 +26,24 @@ define(function(require, exports, module) {
      *      `delta`     - Scroll differential in pixels between subsequent events
      *      `velocity`  - Velocity of scroll
      *
+     * @example
+     *
+     *      var scrollInput = new ScrollInput();
+     *
+     *      scrollInput.subscribe(Engine) // listens on `window` events
+     *
+     *      scrollInput.on('start', function(payload){
+     *          console.log('start', payload);
+     *      });
+     *
+     *      scrollInput.on('update', function(payload){
+     *          console.log('update', payload);
+     *      });
+     *
+     *      scrollInput.on('end', function(payload){
+     *          console.log('end', payload);
+     *      });
+     *
      * @class ScrollInput
      * @constructor
      * @extends Streams.SimpleStream

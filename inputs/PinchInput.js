@@ -23,6 +23,24 @@ define(function(require, exports, module) {
      *      `center`        - Midpoint between the two touches
      *      `touches`       - Array of DOM event touch identifiers
      *
+     * @example
+     *
+     *      var pinchInput = new PinchInput();
+     *
+     *      pinchInput.subscribe(Engine) // listens on `window` events
+     *
+     *      pinchInput.on('start', function(payload){
+     *          console.log('start', payload);
+     *      });
+     *
+     *      pinchInput.on('update', function(payload){
+     *          console.log('update', payload);
+     *      });
+     *
+     *      pinchInput.on('end', function(payload){
+     *          console.log('end', payload);
+     *      });
+     *
      * @class PinchInput
      * @extends Inputs.TwoFingerInput
      * @uses Core.OptionsManager
