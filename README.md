@@ -1,18 +1,22 @@
 ###Getting Started
 This repository is for the codebase itself. The best way to get started with SamsaraJS is to
 clone the [base scaffolding repository](https://github.com/dmvaldman/samsara-base) and follow the
-install instructions there.
+install instructions there. Here are some other links to get your started.
 
-You can find reference documentation here: [samsaraJS.org/docs](http://www.samsaraJS.org/docs). We'll be adding more "higher level" documentation and examples soon!
+| Resources      ||
+| -------------- | ------------- |
+| Documentation  | [samsaraJS.org/docs](http://www.samsaraJS.org/docs)  |
+| Examples       | [samsaraJS.org/examples](http://www.samsaraJS.org/examples)  |
+| Questions?     | [SamsaraJS Google Group](https://groups.google.com/forum/#!forum/samsarajs) |
 
-If you have questions, join the [SamsaraJS Google Group](https://groups.google.com/forum/#!forum/samsarajs) 
+We'll be adding more "higher level" documentation soon!
 
 ###WHAT?
 SamsaraJS is a JavaScript library for making user interfaces on the mobile and desktop web. 
 The target audience is web developers looking to build complex, gesture-based interactions 
 for their application.
 
-####Examples:
+####Examples (with source code):
 
 1. **JSNavigationController**
 A simple web version of iOS's UINavigationController. You can drag the blue area, or click on the
@@ -58,3 +62,12 @@ The purpose of Samsara is not only to mimic the interactions of the native world
 but to free the creativity of web developers to invent new interactions, where previously they were 
 curtailed by performance and complexity. In the native world there are the Android, iOS and Windows 
 design guides. On the web there are no rules. We’re excited to see what you build.
+
+###Roadmap
+- [ ] Samsara.js, Samsara.min.js bundles
+- [ ] Ability to remove render tree nodes (surface.remove(), layoutNode.remove(), etc)
+- [ ] Physics engine
+- [ ] Backbone.js & React.js integration
+- [ ] Scrollview
+- [ ] 3D Camera
+- [ ] More layouts
