@@ -21,13 +21,18 @@ define(function(require, exports, module) {
      * @private
      * @extends Streams.Stream
      * @namespace Streams
+     * @param [options] {Object}            Options
+     * @param [options.resize] {Function}   Custom logic to map the `resize` event
      * @constructor
      */
-    function ResizeStream(){
+    function ResizeStream(options){
         var dirtyResize = false;
 
         function resize(data){
-            this.emit(EVENTS.RESIZE, data);
+            var payload = (options && options.resize)
+                ? options.resize(data)
+                : data;
+            this.emit(EVENTS.RESIZE, payload);
             dirtyResize = false;
         }
 

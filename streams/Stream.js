@@ -58,6 +58,10 @@ define(function(require, exports, module) {
      * @class Stream
      * @extends Streams.SimpleStream
      * @namespace Streams
+     * @param [options] {Object}            Options
+     * @param [options.start] {Function}    Custom logic to map the `start` event
+     * @param [options.update] {Function}   Custom logic to map the `update` event
+     * @param [options.end] {Function}      Custom logic to map the `end` event
      * @constructor
      */
     function Stream(options){
