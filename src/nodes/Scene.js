@@ -1,9 +1,9 @@
 import Class from 'lowclass'
 
-import Motor from '../core/Motor'
 import Node from './Node'
 
 /**
+ * @public
  * @class Scene
  */
 export default
@@ -14,7 +14,5 @@ Class ('Scene') .extends (Node, {
      */
     Scene(mountPoint) {
         this.super.call(this)
-
-        this.motor = new Motor
     },
 })

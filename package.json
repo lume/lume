@@ -21,6 +21,7 @@
     "jquery": "^2.1.4",
     "lodash": "^3.10.1",
     "lowclass": "^2.0.0",
+    "randomstring": "^1.1.0",
     "three": "^0.71.0",
     "tween.js": "^15.0.0"
   },

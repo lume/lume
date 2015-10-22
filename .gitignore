@@ -3,4 +3,10 @@ node_modules
 
 /*.js
 /*.js.map
-/engine
+/animation
+/core
+/core
+/nodeComponents
+/nodes
+/renderers
+/utilities
