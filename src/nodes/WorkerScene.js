@@ -4,15 +4,15 @@ import WorkerNode from './WorkerNode'
 
 /**
  * @private
- * @class WorkerNode
+ * @class WorkerScene
  */
 export default
-Class ('WorkerNode') .extends (WorkerNode, {
+Class ('WorkerScene') .extends (WorkerNode, {
 
     /**
      * @constructor
      */
-    WorkerNode(mountPoint) {
-        this.super.call(this)
+    WorkerScene(id) {
+        this.super.call(this, id)
     },
 })

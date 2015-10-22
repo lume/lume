@@ -1,6 +1,7 @@
 import Class from 'lowclass'
 
-// TODO: prevent from overriding the import syntax with the "worker!".
+// TODO: prevent from overriding the import syntax with the "worker!" prefix so
+// we can be compatible with other build systems.
 import SceneWorker from 'worker!./SceneWorker.js'
 
 // to keep track of whether the singleton Motor is instantiated or not.
