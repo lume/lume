@@ -63,6 +63,10 @@ but to free the creativity of web developers to invent new interactions, where p
 curtailed by performance and complexity. In the native world there are the Android, iOS and Windows 
 design guides. On the web there are no rules. We’re excited to see what you build.
 
+###Talks
+[![Talk](http://i.imgur.com/tGbmVk4.png)](https://www.youtube.com/watch?v=biJXpv-6XVY)
+[JSConf EU 2015 Berlin, Germany](https://www.youtube.com/watch?v=biJXpv-6XVY)
+
 ###Roadmap
 - [ ] Samsara.js, Samsara.min.js bundles
 - [ ] Ability to remove render tree nodes (surface.remove(), layoutNode.remove(), etc)
