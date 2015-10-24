@@ -4,12 +4,11 @@ import Class from 'lowclass'
 // we can be compatible with other build systems.
 import SceneWorker from 'worker!./SceneWorker.js'
 
+import Privates from '../utilities/Privates'
+let __ = new Privates()
+
 // to keep track of whether the singleton Motor is instantiated or not.
 let singleton = null
-
-// privates holds private data for each instance of the class defined in this file.
-let privates = new WeakMap
-let __ = key => privates.get(key)
 
 export default
 Class ('Motor', {
@@ -21,11 +20,14 @@ Class ('Motor', {
         if (singleton) return singleton
         else singleton = this
 
-        privates.set(this, {
-            updateQueue: [], // holds update functions
-            rAF: null, // ID of the currently requested animation frame
-            sceneWorker: null, // ref to a SceneWorker
-        })
+        // holds update functions
+        __(this).updateQueue = []
+
+        // ID of the currently requested animation frame
+        __(this).rAF = null
+
+        // ref to a SceneWorker
+        __(this).sceneWorker = null
 
         this._initSceneWorker()
     },

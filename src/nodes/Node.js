@@ -2,9 +2,10 @@ import Class from 'lowclass'
 import randomstring from 'randomstring'
 
 import Motor from '../core/Motor'
+import Transform from '../nodeComponents/Transform'
 
-let privates = new WeakMap
-let __ = key => privates.get(key)
+import Privates from '../utilities/Privates'
+let __ = new Privates()
 
 /**
  * @public
@@ -17,7 +18,6 @@ Class ('Node', {
      * @constructor
      */
     Node() {
-        privates.set(this, {})
 
         // Motor is a singleton, so if it already exists, the existing one is
         // returned from the constructor here.
@@ -30,6 +30,10 @@ Class ('Node', {
         // registers this Node with the Motor, which creates it's worker twin
         // in the SceneWorker.
         motor.registerNode(this)
+
+        if (this.useDefaultComponents) {
+            this.addComponent(new Transform)
+        }
     },
 
     // don't override this unless you know what you're doing.
@@ -37,7 +41,14 @@ Class ('Node', {
         return "Node"
     },
 
+    get useDefaultComponents() {
+        return true
+    },
+
     addChild() {},
 
-    addComponent() {},
+    addComponent(component) {
+        console.log('Add component: ', component)
+        component.addTo(this)
+    },
 })
