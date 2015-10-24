@@ -33,7 +33,7 @@ TODO List (and some theory)
       generated when making a `new Node()`.
       TODO: Handle the case of an ID collision, and generate a new ID (for the
       unlikely event this ever happens).
-* [ ] Make the NodeComponent registration pattern. When adding a component to a
+* [x] Make the NodeComponent registration pattern. When adding a component to a
       node, the component registers one or more getter/setter pairs on the Node.
       Components in Motor's case don't have onUpdate methods, they just house logic
       for static values on a Node (the value is get/set with a getter/setter). Like
