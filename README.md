@@ -53,14 +53,29 @@ TODO List (and some theory)
       IE). The nested, one-to-one DOM structure in non-IE browsers serves to cache
       transforms all the way from the root of the tree to the leaf nodes so that
       matrix transform calculations for the DOM scene can be deferred to the native
-      side of the browser instead of JavaScript, and once cached, they are fast
-      when animating only subtrees. Unfortunately for IE, the matrix tranform
+      side of the browser instead of JavaScript (the browser will natively
+      calculate final world transforms). Unfortunately for IE, the matrix tranform
       multiplications for the DOM will need to happen in our JavaScript, which
-      means 3D DOM in IE might be slower (at the very least it's harder to work
-      with). What we can do is use the calculations SceneWorker and apply those
-      calculations to both the DOMRenderer and the WebGLRenderer to avoid
-      calculating everything twice.  We already have to do all calculations
-      manually for the WebGLRenderer anyways, so we might as well share the results
-      of those calculations with the DOMRenderer in IE's case.
+      means 3D DOM in IE might be slower (at the very least it'll be harder to work
+      with).
+      NOTE -- In Famous Engine, nodes without a DOMElement don't manifest into
+      the DOM, but they can still have transforms; the Famous DOMRenderer
+      treats a node chain (a chain meaning a chain of nodes with trnsforms, but
+      no rendereable such as a DOMElement) like a single node, and a
+      finally-calculated transform is applied to the DOMElement at the end of
+      the chain. So, the question is: Should we calculate matrix transforms on
+      chains of Nodes that don't have any DOMElement renderable except for one
+      at the end of the chain or should we just construct an actual DOM element
+      for every node, and let the browser handle transform caching 100% of the
+      time (thus not needing a Web Worker for the DOMRenderer)?  The second is
+      of course much easier to implement, and is what I'll do, plus it will
+      take advantage of 100% DOM transform caching in non-IE browsers.
+      NOTE -- At this point, the DOM version of our scene graph will be rendered
+      to the page, although it will be static (no animation yet).
+  * [ ] Calculate final transforms (world transforms) in the SceneWorker (so
+        the results can be given to both the DOMRenderer and the WebGLRenderer as
+        needed).
+  * [ ] Use the selector from the root Scene to determine where to begin
+        inserting the DOM scene.
 * [ ] WebGL renderer.
 * [ ] Mixed Mode (webgl + dom) rendering
