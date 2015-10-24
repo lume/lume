@@ -1,9 +1,7 @@
 import Curve from './Curve'
-import TransitionableInterface from './TransitionableInterface'
-import TweenJsTransitionable from './TweenJsTransitionable'
+import Transition from './Transition'
 
 export default {
     Curve,
-    TransitionableInterface,
-    TweenJsTransitionable,
+    Transition,
 }
