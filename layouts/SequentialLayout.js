@@ -43,30 +43,38 @@ define(function(require, exports, module) {
             for (var i = 0; i < items.length; i++)
                 sizes.push(items[i].size);
 
-            var transformStream = ResizeStream.lift(function(){
+            var stream = ResizeStream.lift(function(){
                 var sizes = arguments;
                 var direction = this.options.direction;
                 var transforms = [];
 
-                var displacement = 0;
+                var length = 0;
                 for (var i = 0; i < sizes.length; i++){
                     var size = sizes[i];
 
                     var transform = direction === CONSTANTS.DIRECTION.X
-                        ? Transform.translateX(displacement)
-                        : Transform.translateY(displacement);
+                        ? Transform.translateX(length)
+                        : Transform.translateY(length);
 
                     transforms.push(transform);
 
-                    displacement += size[direction] + this.options.spacing;
+                    length += size[direction] + this.options.spacing;
                 }
 
-                return transforms;
+                return {
+                    transforms : transforms,
+                    length: length
+                };
             }.bind(this), sizes);
+
+            var transforms = stream.pluck('transforms');
+            var length = stream.pluck('length');
+
+            this.output.subscribe(length);
 
             for (var i = 0; i < items.length; i++){
                 var node = items[i];
-                var transform = transformStream.pluck(i);
+                var transform = transforms.pluck(i);
                 var layout = new LayoutNode({transform : transform});
                 this.add(layout).add(node);
             }
