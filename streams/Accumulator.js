@@ -29,7 +29,7 @@ define(function(require, exports, module){
         // TODO: is this state necessary?
         this.sum = undefined;
 
-        if (sum) this.set(sum);
+        if (sum !== undefined) this.set(sum);
 
         Stream.call(this, {
             start : function(){
@@ -68,11 +68,13 @@ define(function(require, exports, module){
      * Set accumulated value.
      *
      * @method set
-     * @param sum {Number} Current value
+     * @param sum {Number}              Current value
+     * @param [silent=false] {Boolean}  Flag to suppress events
      */
-    Accumulator.prototype.set = function(sum){
+    Accumulator.prototype.set = function(sum, silent){
         this.sum = sum;
         var self = this;
+        if (silent === true) return;
         preTickQueue.push(function(){
             self.emit('start', sum);
             dirtyQueue.push(function(){
