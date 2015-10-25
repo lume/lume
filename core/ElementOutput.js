@@ -82,13 +82,8 @@ define(function(require, exports, module) {
             }
         }.bind(this));
 
-        this.layout.on('update', function(layout){
-            commitLayout.call(this, layout)
-        }.bind(this));
-
-        this.layout.on('end', function(layout){
-            commitLayout.call(this, layout)
-        }.bind(this));
+        this.layout.on('update', commitLayout.bind(this));
+        this.layout.on('end', commitLayout.bind(this));
 
         this.size.on('resize', function(size){
             if (!this._currentTarget){
@@ -96,7 +91,6 @@ define(function(require, exports, module) {
                 this.setup(root.allocator);
             }
             commitSize.call(this, size);
-            this.emit('resize', size);
         }.bind(this));
 
         this._currentTarget = null;
@@ -294,6 +288,7 @@ define(function(require, exports, module) {
         if (_xyNotEquals(this._cachedSpec.size, size)){
             this._cachedSpec.size = size;
             _setSize(target, size);
+            this.emit('resize', size);
         }
     }
 
