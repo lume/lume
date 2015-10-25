@@ -71,7 +71,7 @@ define(function(require, exports, module) {
             var t2 = getTime();
             if (t2 - t >= duration) {
                 handler.apply(this, arguments);
-                Timer.clear(handler);
+                Timer.clear(callback);
             }
         };
         return _addTimerFunction(callback);
@@ -113,7 +113,7 @@ define(function(require, exports, module) {
             numTicks--;
             if (numTicks <= 0) { //in case numTicks is fraction or negative
                 handler.apply(this, arguments);
-                Timer.clear(handler);
+                Timer.clear(callback);
             }
         };
         return _addTimerFunction(callback);
