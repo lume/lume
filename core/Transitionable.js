@@ -132,6 +132,7 @@ define(function(require, exports, module) {
         }
 
         this._engineInstance.reset(this.state, this.velocity);
+        this._state = STATE.UPDATE;
 
         if (this.velocity !== undefined) {
             this.velocity = this._engineInstance.getVelocity();
