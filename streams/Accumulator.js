@@ -76,9 +76,9 @@ define(function(require, exports, module){
         var self = this;
         if (silent === true) return;
         preTickQueue.push(function(){
-            self.emit('start', sum);
+            self.trigger('start', sum);
             dirtyQueue.push(function(){
-                self.emit('end', sum);
+                self.trigger('end', sum);
             });
         })
     };
