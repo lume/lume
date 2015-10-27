@@ -333,6 +333,13 @@ define(function(require, exports, module) {
         this.endStateQueue = [];
         this.transitionQueue = [];
         this.callbackQueue = [];
+
+        dirtyQueue.push(function(){
+            if (!this._engineInstance){
+                this._state = STATE.END;
+                this.emit('end', this.state);
+            }
+        }.bind(this));
     };
 
     module.exports = Transitionable;
