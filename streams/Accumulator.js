@@ -1,9 +1,9 @@
 /* Copyright © 2015 David Valdman */
 
 define(function(require, exports, module){
-    var Stream = require('samsara/streams/Stream');
-    var preTickQueue = require('samsara/core/queues/preTickQueue');
-    var dirtyQueue = require('samsara/core/queues/dirtyQueue');
+    var Stream = require('../streams/Stream');
+    var preTickQueue = require('../core/queues/preTickQueue');
+    var dirtyQueue = require('../core/queues/dirtyQueue');
 
     /**
      * Accumulator is a Stream that accumulates a value given by a

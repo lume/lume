@@ -9,8 +9,8 @@
 /* Modified work copyright © 2015 David Valdman */
 
 define(function(require, exports, module) {
-    var EventHandler = require('samsara/events/EventHandler');
-    var SimpleStream = require('samsara/streams/SimpleStream');
+    var EventHandler = require('../events/EventHandler');
+    var SimpleStream = require('../streams/SimpleStream');
 
     // Global registry of input constructors. Append only.
     var registry = {};

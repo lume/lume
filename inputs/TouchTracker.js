@@ -11,8 +11,8 @@
 //TODO: deprecate in favor of generic history stream
 
 define(function(require, exports, module) {
-    var OptionsManager = require('samsara/core/OptionsManager');
-    var EventHandler = require('samsara/events/EventHandler');
+    var OptionsManager = require('../core/OptionsManager');
+    var EventHandler = require('../events/EventHandler');
 
     var _now = Date.now;
 

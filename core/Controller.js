@@ -3,9 +3,9 @@
  */
 
 define(function(require, exports, module) {
-    var EventHandler = require('samsara/events/EventHandler');
-    var SimpleStream = require('samsara/streams/SimpleStream');
-    var OptionsManager = require('samsara/core/OptionsManager');
+    var OptionsManager = require('./OptionsManager');
+    var EventHandler = require('../events/EventHandler');
+    var SimpleStream = require('../streams/SimpleStream');
 
     /**
      * A utility class which can be extended by custom classes. These classes will then

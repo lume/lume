@@ -1,10 +1,10 @@
 /* Copyright © 2015 David Valdman */
 
 define(function(require, exports, module) {
-    var EventHandler = require('samsara/events/EventHandler');
-    var EventMapper = require('samsara/events/EventMapper');
-    var EventFilter = require('samsara/events/EventFilter');
-    var EventSplitter = require('samsara/events/EventSplitter');
+    var EventHandler = require('../events/EventHandler');
+    var EventMapper = require('../events/EventMapper');
+    var EventFilter = require('../events/EventFilter');
+    var EventSplitter = require('../events/EventSplitter');
 
     /**
      * A SimpleStream wraps an EventHandler and provides convenience

@@ -13,9 +13,9 @@ define(function(require, exports, module) {
     var EventHandler = require('./../events/EventHandler');
     var ElementAllocator = require('./ElementAllocator');
     var Transitionable = require('./Transitionable');
-    var ResizeStream = require('samsara/streams/ResizeStream');
-    var Stream = require('samsara/streams/Stream');
-    var EventMapper = require('samsara/events/EventMapper');
+    var ResizeStream = require('../streams/ResizeStream');
+    var Stream = require('../streams/Stream');
+    var EventMapper = require('../events/EventMapper');
 
     var elementType = 'div';
     var elementClass = 'samsara-context';

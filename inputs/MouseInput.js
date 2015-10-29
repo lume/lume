@@ -9,9 +9,9 @@
 /* Modified work copyright © 2015 David Valdman */
 
 define(function(require, exports, module) {
-    var EventHandler = require('samsara/events/EventHandler');
-    var OptionsManager = require('samsara/core/OptionsManager');
-    var SimpleStream = require('samsara/streams/SimpleStream');
+    var EventHandler = require('../events/EventHandler');
+    var OptionsManager = require('../core/OptionsManager');
+    var SimpleStream = require('../streams/SimpleStream');
 
     var MINIMUM_TICK_TIME = 8;
     var _now = Date.now;

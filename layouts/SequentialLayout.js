@@ -1,11 +1,10 @@
 /* Copyright © 2015 David Valdman */
 
 define(function(require, exports, module) {
-    var Transform = require('samsara/core/Transform');
-    var View = require('samsara/core/View');
-    var ResizeStream = require('samsara/streams/ResizeStream');
-    var LayoutNode = require('samsara/core/LayoutNode');
-    var SizeNode = require('samsara/core/SizeNode');
+    var Transform = require('../core/Transform');
+    var View = require('../core/View');
+    var ResizeStream = require('../streams/ResizeStream');
+    var LayoutNode = require('../core/LayoutNode');
 
     var CONSTANTS = {
         DIRECTION : {

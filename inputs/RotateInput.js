@@ -9,8 +9,8 @@
 /* Modified work copyright © 2015 David Valdman */
 
 define(function(require, exports, module) {
-    var TwoFingerInput = require('samsara/inputs/TwoFingerInput');
-    var OptionsManager = require('samsara/core/OptionsManager');
+    var TwoFingerInput = require('../inputs/TwoFingerInput');
+    var OptionsManager = require('../core/OptionsManager');
 
     /**
      * Detects two-finger rotational motion and emits `start`, `update` and

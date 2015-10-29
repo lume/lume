@@ -1,18 +1,17 @@
 /* Copyright © 2015 David Valdman */
 
 define(function(require, exports, module) {
-    var RenderTreeNode = require('samsara/core/nodes/RenderTreeNode');
-    var Controller = require('samsara/core/Controller');
-    var SizeNode = require('samsara/core/SizeNode');
-    var LayoutNode = require('samsara/core/LayoutNode');
-    var Transitionable = require('samsara/core/Transitionable');
-    var EventHandler = require('samsara/events/EventHandler');
-    var SimpleStream = require('samsara/streams/SimpleStream');
-    var Stream = require('samsara/streams/Stream');
-    var ResizeStream = require('samsara/streams/ResizeStream');
-    var SizeObservable = require('samsara/streams/SizeObservable');
-    var layoutAlgebra = require('samsara/core/algebras/layout');
-    var sizeAlgebra = require('samsara/core/algebras/size');
+    var RenderTreeNode = require('./nodes/RenderTreeNode');
+    var Controller = require('./Controller');
+    var SizeNode = require('./SizeNode');
+    var LayoutNode = require('./LayoutNode');
+    var Transitionable = require('./Transitionable');
+    var EventHandler = require('../events/EventHandler');
+    var Stream = require('../streams/Stream');
+    var ResizeStream = require('../streams/ResizeStream');
+    var SizeObservable = require('../streams/SizeObservable');
+    var layoutAlgebra = require('./algebras/layout');
+    var sizeAlgebra = require('./algebras/size');
 
     /**
      * A View provides encapsulation for a subtree of the render tree. You can build

@@ -1,13 +1,13 @@
 /* Copyright © 2015 David Valdman */
 
 define(function(require, exports, module) {
-    var EventHandler = require('samsara/events/EventHandler');
-    var Stream = require('samsara/streams/Stream');
-    var ResizeStream = require('samsara/streams/ResizeStream');
-    var SizeNode = require('samsara/core/SizeNode');
-    var LayoutNode = require('samsara/core/LayoutNode');
-    var layoutAlgebra = require('samsara/core/algebras/layout');
-    var sizeAlgebra = require('samsara/core/algebras/size');
+    var EventHandler = require('../../events/EventHandler');
+    var Stream = require('../../streams/Stream');
+    var ResizeStream = require('../../streams/ResizeStream');
+    var SizeNode = require('../SizeNode');
+    var LayoutNode = require('../LayoutNode');
+    var layoutAlgebra = require('../algebras/layout');
+    var sizeAlgebra = require('../algebras/size');
 
     /**
      * A node in the render tree. As such, it wraps a layout or size node,

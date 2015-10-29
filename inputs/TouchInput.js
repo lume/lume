@@ -9,10 +9,10 @@
 /* Modified work copyright © 2015 David Valdman */
 
 define(function(require, exports, module) {
-    var TouchTracker = require('samsara/inputs/TouchTracker');
-    var EventHandler = require('samsara/events/EventHandler');
-    var SimpleStream = require('samsara/streams/SimpleStream');
-    var OptionsManager = require('samsara/core/OptionsManager');
+    var TouchTracker = require('../inputs/TouchTracker');
+    var EventHandler = require('../events/EventHandler');
+    var SimpleStream = require('../streams/SimpleStream');
+    var OptionsManager = require('../core/OptionsManager');
 
     var MINIMUM_TICK_TIME = 8;
 

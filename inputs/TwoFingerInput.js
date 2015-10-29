@@ -12,8 +12,8 @@
 // of calling protected _startUpdate etc methods
 
 define(function(require, exports, module) {
-    var EventHandler = require('samsara/events/EventHandler');
-    var SimpleStream = require('samsara/streams/SimpleStream');
+    var EventHandler = require('../events/EventHandler');
+    var SimpleStream = require('../streams/SimpleStream');
 
     var _now = Date.now;
 

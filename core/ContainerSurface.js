@@ -9,12 +9,12 @@
 /* Modified work copyright © 2015 David Valdman */
 
 define(function(require, exports, module) {
-    var Surface = require('samsara/core/Surface');
-    var Context = require('samsara/core/Context');
-    var EventHandler = require('samsara/events/EventHandler');
-    var dirtyQueue = require('samsara/core/queues/dirtyQueue');
-    var preTickQueue = require('samsara/core/queues/preTickQueue');
-    var Transform = require('samsara/core/Transform');
+    var Surface = require('./Surface');
+    var Context = require('./Context');
+    var dirtyQueue = require('./queues/dirtyQueue');
+    var preTickQueue = require('./queues/preTickQueue');
+    var Transform = require('./Transform');
+    var EventHandler = require('../events/EventHandler');
 
     var defaultLayout = {
         transform : Transform.identity,

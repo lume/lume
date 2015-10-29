@@ -9,7 +9,7 @@
 /* Modified work copyright © 2015 David Valdman */
 
 define(function(require, exports, module) {
-    var tickQueue = require('samsara/core/queues/tickQueue');
+    var tickQueue = require('./queues/tickQueue');
 
     /**
      * A collection of timing utilities meant to translate the familiar setInterval, setTimeout

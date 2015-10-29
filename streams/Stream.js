@@ -1,14 +1,14 @@
 /* Copyright © 2015 David Valdman */
 
 define(function(require, exports, module) {
-    var EventHandler = require('samsara/events/EventHandler');
-    var EventMapper = require('samsara/events/EventMapper');
-    var SimpleStream = require('samsara/streams/SimpleStream');
+    var EventHandler = require('../events/EventHandler');
+    var EventMapper = require('../events/EventMapper');
+    var SimpleStream = require('../streams/SimpleStream');
 
-    var preTickQueue = require('samsara/core/queues/preTickQueue');
-    var postTickQueue = require('samsara/core/queues/postTickQueue');
-    var dirtyQueue = require('samsara/core/queues/dirtyQueue');
-    var State = require('samsara/core/SUE');
+    var preTickQueue = require('../core/queues/preTickQueue');
+    var postTickQueue = require('../core/queues/postTickQueue');
+    var dirtyQueue = require('../core/queues/dirtyQueue');
+    var State = require('../core/SUE');
 
     var EVENTS = {
         START : 'start',

@@ -9,14 +9,14 @@
 /* Modified work copyright © 2015 David Valdman */
 
 define(function(require, exports, module) {
-    var EventHandler = require('samsara/events/EventHandler');
-    var Transform = require('samsara/core/Transform');
-    var Stream = require('samsara/streams/Stream');
-    var ResizeStream = require('samsara/streams/ResizeStream');
-    var SizeNode = require('samsara/core/SizeNode');
-    var LayoutNode = require('samsara/core/LayoutNode');
-    var sizeAlgebra = require('samsara/core/algebras/size');
-    var layoutAlgebra = require('samsara/core/algebras/layout');
+    var EventHandler = require('../events/EventHandler');
+    var Transform = require('./Transform');
+    var Stream = require('../streams/Stream');
+    var ResizeStream = require('../streams/ResizeStream');
+    var SizeNode = require('./SizeNode');
+    var LayoutNode = require('./LayoutNode');
+    var sizeAlgebra = require('./algebras/size');
+    var layoutAlgebra = require('./algebras/layout');
 
     var usePrefix = !('transform' in document.documentElement.style);
     var devicePixelRatio = window.devicePixelRatio || 1;

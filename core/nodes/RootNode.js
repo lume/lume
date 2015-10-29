@@ -1,7 +1,7 @@
 /* Copyright © 2015 David Valdman */
 
 define(function(require, exports, module) {
-    var RenderTreeNode = require('samsara/core/nodes/RenderTreeNode');
+    var RenderTreeNode = require('./RenderTreeNode');
 
     /**
      * A RootNode is a first node in the Render Tree. It is like any other

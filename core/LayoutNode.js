@@ -1,10 +1,10 @@
 /* Copyright © 2015 David Valdman */
 
 define(function(require, exports, module) {
-    var EventHandler = require('samsara/events/EventHandler');
-    var SimpleStream = require('samsara/streams/SimpleStream');
-    var Stream = require('samsara/streams/Stream');
-    var Observable = require('samsara/streams/Observable');
+    var EventHandler = require('../events/EventHandler');
+    var SimpleStream = require('../streams/SimpleStream');
+    var Stream = require('../streams/Stream');
+    var Observable = require('../streams/Observable');
 
     /**
      * Encapsulates a stream of layout data (transform, origin, align, opacity).

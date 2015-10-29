@@ -9,12 +9,12 @@
 /* Modified work copyright © 2015 David Valdman */
 
 define(function(require, exports, module) {
-    var TweenTransition = require('samsara/transitions/TweenTransition');
-    var EventHandler = require('samsara/events/EventHandler');
-    var dirtyQueue = require('samsara/core/queues/dirtyQueue');
-    var preTickQueue = require('samsara/core/queues/preTickQueue');
-    var tickQueue = require('samsara/core/queues/tickQueue');
-    var SimpleStream = require('samsara/streams/SimpleStream');
+    var dirtyQueue = require('./queues/dirtyQueue');
+    var preTickQueue = require('./queues/preTickQueue');
+    var tickQueue = require('./queues/tickQueue');
+    var TweenTransition = require('../transitions/TweenTransition');
+    var EventHandler = require('../events/EventHandler');
+    var SimpleStream = require('../streams/SimpleStream');
 
     var transitionMethods = {};
 

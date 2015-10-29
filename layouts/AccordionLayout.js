@@ -1,11 +1,11 @@
 /* Copyright © 2015 David Valdman */
 
 define(function(require, exports, module) {
-    var Transform = require('samsara/core/Transform');
-    var Transitionable = require('samsara/core/Transitionable');
-    var View = require('samsara/core/view');
-    var LayoutNode = require('samsara/core/LayoutNode');
-    var Stream = require('samsara/streams/Stream');
+    var Transform = require('../core/Transform');
+    var Transitionable = require('../core/Transitionable');
+    var View = require('../core/View');
+    var LayoutNode = require('../core/LayoutNode');
+    var Stream = require('../streams/Stream');
 
     var CONSTANTS = {
         DIRECTION : {

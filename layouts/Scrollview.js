@@ -1,21 +1,21 @@
 /* Copyright © 2015 David Valdman */
 
 define(function(require, exports, module) {
-    var Transform = require('samsara/core/Transform');
-    var Transitionable = require('samsara/core/Transitionable');
-    var View = require('samsara/core/View');
-    var LayoutNode = require('samsara/core/LayoutNode');
-    var Stream = require('samsara/streams/Stream');
-    var ResizeStream = require('samsara/streams/ResizeStream');
-    var Accumulator = require('samsara/streams/Accumulator');
-    var Differential = require('samsara/streams/Differential');
+    var Transform = require('../core/Transform');
+    var Transitionable = require('../core/Transitionable');
+    var View = require('../core/View');
+    var LayoutNode = require('../core/LayoutNode');
+    var Stream = require('../streams/Stream');
+    var ResizeStream = require('../streams/ResizeStream');
+    var Accumulator = require('../streams/Accumulator');
+    var Differential = require('../streams/Differential');
 
-    var SequentialLayout = require('samsara/layouts/SequentialLayout');
-    var ContainerSurface = require('samsara/core/ContainerSurface');
+    var SequentialLayout = require('./SequentialLayout');
+    var ContainerSurface = require('../core/ContainerSurface');
 
-    var GenericInput = require('samsara/inputs/GenericInput');
-    var ScrollInput = require('samsara/inputs/ScrollInput');
-    var TouchInput = require('samsara/inputs/TouchInput');
+    var GenericInput = require('../inputs/GenericInput');
+    var ScrollInput = require('../inputs/ScrollInput');
+    var TouchInput = require('../inputs/TouchInput');
 
     GenericInput.register({
         touch : TouchInput,

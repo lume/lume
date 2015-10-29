@@ -9,7 +9,7 @@
 /* Modified work copyright © 2015 David Valdman */
 
 define(function(require, exports, module) {
-    var OptionsManager = require('samsara/core/OptionsManager');
+    var OptionsManager = require('../core/OptionsManager');
 
     var registeredCurves = {};
     var eps = 1e-7; // for calculating velocity using finite difference

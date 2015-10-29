@@ -3,9 +3,9 @@
 /* Documentation in progress. May be outdated. */
 
 define(function(require, exports, module) {
-    var SimpleStream = require('samsara/streams/SimpleStream');
-    var preTickQueue = require('samsara/core/queues/preTickQueue');
-    var dirtyQueue = require('samsara/core/queues/dirtyQueue');
+    var SimpleStream = require('../streams/SimpleStream');
+    var preTickQueue = require('../core/queues/preTickQueue');
+    var dirtyQueue = require('../core/queues/dirtyQueue');
 
     /**
      * A SizeObservable is a stream for resize events set discretely in time, as opposed to continuously.

@@ -1,8 +1,8 @@
 /* Copyright © 2015 David Valdman */
 
 define(function(require, exports, module){
-    var Stream = require('samsara/streams/Stream');
-    var OptionsManager = require('samsara/core/OptionsManager');
+    var Stream = require('../streams/Stream');
+    var OptionsManager = require('../core/OptionsManager');
 
     /**
      * Differential is a Stream that emits differentials of consecutive

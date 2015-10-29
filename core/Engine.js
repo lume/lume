@@ -11,15 +11,16 @@
 define(function(require, exports, module) {
     var Context = require('./Context');
     var Transform = require('./Transform');
-    var EventHandler = require('./../events/EventHandler');
-    var ResizeStream = require('samsara/streams/ResizeStream');
+    var State = require('./SUE');
+    var RootNode = require('./nodes/RootNode');
+    var postTickQueue = require('./queues/postTickQueue');
     var preTickQueue = require('./queues/preTickQueue');
     var dirtyQueue = require('./queues/dirtyQueue');
-    var postTickQueue = require('./queues/postTickQueue');
-    var State = require('samsara/core/SUE');
     var tickQueue = require('./queues/tickQueue');
-    var Stream = require('samsara/streams/Stream');
-    var RootNode = require('./nodes/RootNode');
+    var EventHandler = require('../events/EventHandler');
+    var ResizeStream = require('../streams/ResizeStream');
+    var Stream = require('../streams/Stream');
+
 
     var contexts = [];
     var roots = [];
