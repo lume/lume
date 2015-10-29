@@ -45,16 +45,38 @@ Class ('Motor', {
         })
     },
 
+    /*
+     * XXX: For the following register* methods, We can create proxy methods
+     * that use postMessage internally to create RPC-like method calling
+     * between UI and worker. So, for example, we can do something like
+     *
+     *   __(this).sceneWorker.registerNode(node.id)
+     *
+     * instead of
+     *
+     *   __(this).sceneWorker.postMessage({method: 'registerNode', id: node.id})
+     *
+     * See https://github.com/blittle/bridged-worker for ideas.
+     */
+
     /**
-     * Registers a Node with the Motor, which creates it's twin WorkerNode in the SceneWorker.
+     * Registers a Node with the Motor, which creates it's twin WorkerNode in
+     * the SceneWorker.
+     *
      * @param {../nodes/Node} node The node to be registered.
      */
     registerNode(node) {
-
-        // TODO: We can create proxy methods that use postMessage internally to
-        // create RPC-like method calling between UI and worker. See
-        // https://github.com/blittle/bridged-worker for ideas.
         __(this).sceneWorker.postMessage({method: 'registerNode', id: node.id})
+    },
+
+    /**
+     * Registers a NodeComponent with the Motor, which creates it's twin
+     * WorkerNodeComponent in the SceneWorker.
+     *
+     * @param {../nodes/Node} node The component to be registered.
+     */
+    registerComponent(component) {
+        __(this).sceneWorker.postMessage({method: 'registerComponent', id: component.id})
     },
 
 

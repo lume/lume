@@ -17,6 +17,9 @@ Class ('Camera') .extends (NodeComponent, {
         this.test = 'test'
     },
 
+    // don't override this unless you know what you're doing.
+    get _idPrefix() { return "Camera" },
+
     /**
      * @override
      */

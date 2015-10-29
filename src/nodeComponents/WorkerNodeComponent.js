@@ -1,36 +1,14 @@
 import Class        from 'lowclass'
-import randomstring from 'randomstring'
-import _            from 'lodash'
-
-import Motor from '../core/Motor'
-
-import Privates from '../utilities/Privates'
-let __ = new Privates()
 
 export default
-Class ('NodeComponent', {
-    NodeComponent(node) {
+Class ('WorkerNodeComponent', {
 
-        // Motor is a singleton, so if it already exists, the existing one is
-        // returned from the constructor here.
-        let motor = __(this).motor = new Motor
-
-        // new Nodes get a new random ID, used to associate the UI Node with a
-        // twin WorkerNode.
-        this.id = this._idPrefix + '#' + randomstring.generate()
-        // TODO: detect ID collisions.
-
-        // registers this Component with the Motor, which creates it's
-        // component twin in the SceneWorker.
-        motor.registerComponent(this)
-
-        if (node) {
-            this.addTo(node)
-        }
+    /**
+     * @constructor
+     */
+    WorkerNodeComponent(id) {
+        this.id = id
     },
-
-    // don't override this unless you know what you're doing.
-    get _idPrefix() { return "NodeComponent" },
 
     /**
      * Must return a valid JavaScript identifier string. The value defined here
@@ -60,7 +38,7 @@ Class ('NodeComponent', {
         }
 
         // save the node for use by the component.
-        __(this).node = node
+        this.node = node
 
         Object.defineProperty(node, this.referenceName, {
             configurable: true,

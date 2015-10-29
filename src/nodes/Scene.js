@@ -17,7 +17,7 @@ Class ('Scene') .extends (Node, {
     },
 
     // don't override this unless you know what you're doing.
-    get idPrefix() {
+    get _idPrefix() {
         return "Scene"
     },
 })
