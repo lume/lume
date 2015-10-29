@@ -12,7 +12,7 @@
 // of calling protected _startUpdate etc methods
 
 define(function(require, exports, module) {
-    var EventHandler = require('samsara/core/EventHandler');
+    var EventHandler = require('samsara/events/EventHandler');
     var SimpleStream = require('samsara/streams/SimpleStream');
 
     var _now = Date.now;

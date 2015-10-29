@@ -11,7 +11,7 @@
 /* Documentation in progress. May be outdated. */
 
 define(function(require, exports, module) {
-    var EventHandler = require('samsara/core/EventHandler');
+    var EventHandler = require('samsara/events/EventHandler');
     var OptionsManager = require('samsara/core/OptionsManager');
     var SimpleStream = require('samsara/streams/SimpleStream');
     var Timer = require('samsara/core/Timer');

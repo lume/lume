@@ -1,7 +1,7 @@
 /* Copyright © 2015 David Valdman */
 
 define(function(require, exports, module) {
-    var EventHandler = require('samsara/core/EventHandler');
+    var EventHandler = require('samsara/events/EventHandler');
     var Stream = require('samsara/streams/Stream');
     var ResizeStream = require('samsara/streams/ResizeStream');
     var SizeNode = require('samsara/core/SizeNode');

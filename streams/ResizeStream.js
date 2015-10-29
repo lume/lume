@@ -3,7 +3,7 @@
 define(function(require, exports, module) {
     var SimpleStream = require('samsara/streams/SimpleStream');
     var EventMapper = require('samsara/events/EventMapper');
-    var EventHandler = require('samsara/core/EventHandler');
+    var EventHandler = require('samsara/events/EventHandler');
 
     var preTickQueue = require('samsara/core/queues/preTickQueue');
     var postTickQueue = require('samsara/core/queues/postTickQueue');

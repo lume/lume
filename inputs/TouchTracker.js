@@ -12,7 +12,7 @@
 
 define(function(require, exports, module) {
     var OptionsManager = require('samsara/core/OptionsManager');
-    var EventHandler = require('samsara/core/EventHandler');
+    var EventHandler = require('samsara/events/EventHandler');
 
     var _now = Date.now;
 

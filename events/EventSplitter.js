@@ -9,7 +9,7 @@
 /* Modified work copyright © 2015 David Valdman */
 
 define(function(require, exports, module) {
-    var EventHandler = require('../core/EventHandler');
+    var EventHandler = require('./EventHandler');
 
     /**
      * EventSplitter routes events to various event destinations

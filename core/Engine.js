@@ -11,7 +11,7 @@
 define(function(require, exports, module) {
     var Context = require('./Context');
     var Transform = require('./Transform');
-    var EventHandler = require('./EventHandler');
+    var EventHandler = require('./../events/EventHandler');
     var ResizeStream = require('samsara/streams/ResizeStream');
     var preTickQueue = require('./queues/preTickQueue');
     var dirtyQueue = require('./queues/dirtyQueue');

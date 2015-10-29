@@ -1,7 +1,7 @@
 /* Copyright © 2015 David Valdman */
 
 define(function(require, exports, module) {
-    var EventHandler = require('samsara/core/EventHandler');
+    var EventHandler = require('samsara/events/EventHandler');
     var EventMapper = require('samsara/events/EventMapper');
     var EventFilter = require('samsara/events/EventFilter');
     var EventSplitter = require('samsara/events/EventSplitter');

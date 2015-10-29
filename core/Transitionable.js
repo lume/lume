@@ -10,7 +10,7 @@
 
 define(function(require, exports, module) {
     var TweenTransition = require('samsara/transitions/TweenTransition');
-    var EventHandler = require('samsara/core/EventHandler');
+    var EventHandler = require('samsara/events/EventHandler');
     var dirtyQueue = require('samsara/core/queues/dirtyQueue');
     var preTickQueue = require('samsara/core/queues/preTickQueue');
     var tickQueue = require('samsara/core/queues/tickQueue');

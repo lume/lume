@@ -9,7 +9,7 @@
 /* Modified work copyright © 2015 David Valdman */
 
 define(function(require, exports, module) {
-    var EventHandler = require('./EventHandler');
+    var EventHandler = require('./../events/EventHandler');
 
     /**
      *  A utility for setting options in a class that enables patching options

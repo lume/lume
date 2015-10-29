@@ -3,7 +3,7 @@
  */
 
 define(function(require, exports, module) {
-    var EventHandler = require('samsara/core/EventHandler');
+    var EventHandler = require('samsara/events/EventHandler');
     var SimpleStream = require('samsara/streams/SimpleStream');
     var OptionsManager = require('samsara/core/OptionsManager');
 

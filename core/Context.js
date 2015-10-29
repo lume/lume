@@ -10,7 +10,7 @@
 
 define(function(require, exports, module) {
     var RootNode = require('./nodes/RootNode');
-    var EventHandler = require('./EventHandler');
+    var EventHandler = require('./../events/EventHandler');
     var ElementAllocator = require('./ElementAllocator');
     var Transitionable = require('./Transitionable');
     var ResizeStream = require('samsara/streams/ResizeStream');

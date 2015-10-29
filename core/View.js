@@ -6,7 +6,7 @@ define(function(require, exports, module) {
     var SizeNode = require('samsara/core/SizeNode');
     var LayoutNode = require('samsara/core/LayoutNode');
     var Transitionable = require('samsara/core/Transitionable');
-    var EventHandler = require('samsara/core/EventHandler');
+    var EventHandler = require('samsara/events/EventHandler');
     var SimpleStream = require('samsara/streams/SimpleStream');
     var Stream = require('samsara/streams/Stream');
     var ResizeStream = require('samsara/streams/ResizeStream');

@@ -1,7 +1,7 @@
 /* copyright © 2015 David Valdman */
 
 define(function(require, exports, module) {
-    var EventHandler = require('samsara/core/EventHandler');
+    var EventHandler = require('./EventHandler');
 
     /**
      * EventMapper modifies the data payload of an event based on
