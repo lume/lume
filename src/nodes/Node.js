@@ -4,6 +4,8 @@ import randomstring from 'randomstring'
 import Motor from '../core/Motor'
 import Transform from '../nodeComponents/Transform'
 
+import env from '../utilities/environment'
+
 import Privates from '../utilities/Privates'
 let __ = new Privates()
 
@@ -18,6 +20,13 @@ Class ('Node', {
      * @constructor
      */
     Node() {
+
+        if (env.isWeb) {
+            console.log(' --- UI thread')
+        }
+        else if (env.isWebWorker) {
+            console.log(' --- Web worker')
+        }
 
         // Motor is a singleton, so if it already exists, the existing one is
         // returned from the constructor here.
