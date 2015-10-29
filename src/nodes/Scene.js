@@ -2,6 +2,9 @@ import Class from 'lowclass'
 
 import Node from './Node'
 
+import Privates from '../utilities/Privates'
+let __ = new Privates()
+
 /**
  * @public
  * @class Scene
@@ -10,14 +13,19 @@ export default
 Class ('Scene') .extends (Node, {
 
     /**
-     * @constructor
+     * @override
+     *
+     * @param {HTMLElement} mountPoint The HTMLElement in which this scene will
+     * be mounted. The scene will place the HTMLElements for the DOMRenderer
+     * and/or WebGLRenderer in this element.
      */
-    Scene(mountPoint) {
-        this.super.call(this)
+    init(mountPoint) {
+        __(this).mountPoint = mountPoint
     },
 
-    // don't override this unless you know what you're doing.
-    get _idPrefix() {
-        return "Scene"
-    },
+    /**
+     * Don't override this unless you know what you're doing.
+     * @override
+     */
+    get _idPrefix() { return "Scene" },
 })

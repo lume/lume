@@ -1,5 +1,5 @@
-import WorkerScene from '../nodes/WorkerScene'
-import WorkerNode  from '../nodes/WorkerNode'
+import Scene from '../nodes/Scene'
+import Node  from '../nodes/Node'
 
 import WorkerAlign      from '../nodeComponents/WorkerAlign'
 import WorkerCamera     from '../nodeComponents/WorkerCamera'
@@ -13,10 +13,10 @@ import WorkerSize       from '../nodeComponents/WorkerSize'
 import WorkerTransform  from '../nodeComponents/WorkerTransform'
 
 let nodeList = {}
-self.nodes = { WorkerScene, WorkerNode }
+self.nodeClasses = { Scene, Node }
 
 let componentList = {}
-self.components = {
+self.componentClasses = {
     WorkerAlign,
     WorkerCamera,
     WorkerMountPoint,
@@ -41,7 +41,7 @@ self.addEventListener('message', function(message) {
         // the ID prefix.
         console.log(' --- worker component ID: ', data.id)
         let idPrefix = data.id.split('#')[0]
-        let workerComponent = new self.components["Worker"+idPrefix](data.id)
+        let workerComponent = new self.componentClasses["Worker"+idPrefix](data.id)
 
         // What are the memory and garabage collection implications of storing
         // references to every component in componentList?
@@ -52,10 +52,11 @@ self.addEventListener('message', function(message) {
 
     else if (data instanceof Object && data.method === 'registerNode') {
 
-        // Create a new WorkerNode or WorkerScene, the type inferred from the
+        // Create a new worker Node or Scene, the type inferred from the
         // from the ID prefix.
         let idPrefix = data.id.split('#')[0]
-        let workerNode = new self.nodes["Worker"+idPrefix](data.id)
+        console.log('Making a worker-side ', idPrefix)
+        let workerNode = new self.nodeClasses[idPrefix](data.id)
 
         // What are the memory and garabage collection implications of storing
         // references to every node in nodeList?
