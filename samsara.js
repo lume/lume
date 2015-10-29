@@ -55,17 +55,13 @@ return /******/ (function(modules) { // webpackBootstrap
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_RESULT__;!(__WEBPACK_AMD_DEFINE_RESULT__ = function(require, exports, module) {
-	    var Engine = __webpack_require__(1);
-
 	    module.exports = {
-	        core: __webpack_require__(29),
-	        events: __webpack_require__(36),
-	        inputs: __webpack_require__(37),
-	        layouts: __webpack_require__(47),
-	        streams: __webpack_require__(55),
-	        transitions: __webpack_require__(56),
-	        Transform: __webpack_require__(22),
-	        CreateContext: Engine.createContext
+	        Core: __webpack_require__(1),
+	        Events: __webpack_require__(36),
+	        Inputs: __webpack_require__(37),
+	        Layouts: __webpack_require__(47),
+	        Streams: __webpack_require__(55),
+	        Transitions: __webpack_require__(56)
 	    };
 	}.call(exports, __webpack_require__, exports, module), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
 
@@ -74,285 +70,19 @@ return /******/ (function(modules) { // webpackBootstrap
 /* 1 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var __WEBPACK_AMD_DEFINE_RESULT__;/* This Source Code Form is subject to the terms of the Mozilla Public
-	 * License, v. 2.0. If a copy of the MPL was not distributed with this
-	 * file, You can obtain one at http://mozilla.org/MPL/2.0/.
-	 *
-	 * @license MPL 2.0
-	 * @copyright Famous Industries, Inc. 2014
-	 */
-
-	/* Modified work copyright © 2015 David Valdman */
-
-	!(__WEBPACK_AMD_DEFINE_RESULT__ = function(require, exports, module) {
-	    var Context = __webpack_require__(2);
-	    var Transform = __webpack_require__(22);
-	    var State = __webpack_require__(15);
-	    var RootNode = __webpack_require__(3);
-	    var postTickQueue = __webpack_require__(13);
-	    var preTickQueue = __webpack_require__(12);
-	    var dirtyQueue = __webpack_require__(14);
-	    var tickQueue = __webpack_require__(26);
-	    var EventHandler = __webpack_require__(5);
-	    var ResizeStream = __webpack_require__(16);
-	    var Stream = __webpack_require__(7);
-
-
-	    var contexts = [];
-	    var roots = [];
-	    var rafId = 0;
-	    var eventForwarders = {};
-	    var listenOnTick = false;
-	    var size = new ResizeStream;
-	    var layout = new EventHandler();
-	    var eventHandler = new EventHandler();
-
-	    var layoutSpec = {
-	        transform : Transform.identity,
-	        opacity : 1,
-	        origin : null,
-	        align : null,
-	        nextSizeTransform : Transform.identity
+	var __WEBPACK_AMD_DEFINE_RESULT__;!(__WEBPACK_AMD_DEFINE_RESULT__ = function(require, exports, module) {
+	    module.exports = {
+	        ContainerSurface: __webpack_require__(2),
+	        Context: __webpack_require__(24),
+	        Engine: __webpack_require__(32),
+	        LayoutNode: __webpack_require__(20),
+	        SizeNode: __webpack_require__(18),
+	        Surface: __webpack_require__(3),
+	        Timer: __webpack_require__(33),
+	        Transform: __webpack_require__(7),
+	        Transitionable: __webpack_require__(28),
+	        View: __webpack_require__(34)
 	    };
-
-	    /**
-	     * Engine is a singleton object that is required to run a Samsara application.
-	     *  It is the "heartbeat" of the application, managing the batching of streams
-	     *  and creating `RootNodes` and `Contexts` to begin render trees.
-	     *
-	     *  It also listens and can respond to DOM events on the HTML `<body>` tag
-	     *  and `window` object. For instance the `resize` event.
-	     *
-	     *  @example
-	     *
-	     *      var context = Engine.createContext();
-	     *
-	     *      var surface = new Surface({
-	     *          size : [100,100],
-	     *          properties : {background : 'red'}
-	     *      });
-	     *
-	     *      context.add(surface);
-	     *
-	     *      Engine.start();
-	     *
-	     *      Engine.on('click', function(){
-	     *          alert('clicked!');
-	     *      });
-	     *
-	     * @class Engine
-	     * @namespace Core
-	     * @static
-	     * @uses Core.EventHandler
-	     */
-	    var Engine = {};
-
-	    EventHandler.setInputHandler(Engine, eventHandler);
-	    EventHandler.setOutputHandler(Engine, eventHandler);
-
-	    //TODO: add this only for full-screen apps
-	    //document.body.classList.add('samsara-root');
-
-	    /**
-	     * Updates by a single frame of the application by looping through all function queues.
-	     *  This is repeatedly called within a requestAnimationFrame loop until the application
-	     *  is receiving no layout changes. At this point the requestAnimationFrame will be
-	     *  canceled until the next change.
-	     *
-	     * @private
-	     * @method step
-	     */
-	    Engine.step = function step() {
-	        // browser events and their handlers happen before rendering begins
-	        while (preTickQueue.length) (preTickQueue.shift())();
-
-	        // tick signals base event flow coming in
-	        State.set(State.STATES.UPDATE);
-
-	        if (listenOnTick) eventHandler.emit('tick');
-	        
-	        for (var i = 0; i < tickQueue.length; i++) tickQueue[i]();
-
-	        // post tick is for resolving larger components from their incoming signals
-	        while (postTickQueue.length) (postTickQueue.shift())();
-
-	        State.set(State.STATES.END);
-
-	        while (dirtyQueue.length) (dirtyQueue.shift())();
-
-	        State.set(State.STATES.START);
-	    };
-
-	    /**
-	     * A ResizeStream representing the document's <body> size.
-	     *
-	     * @property size
-	     */
-	    Engine.size = size;
-
-	    /**
-	     * Creates a new Root Node from which a render tree can be constructed.
-	     *  Use this to modify preexisting elements in 2D space.
-	     *
-	     * @method createRoot
-	     * @static
-	     * @return {RootNode}
-	     */
-	    Engine.createRoot = function createRoot(){
-	        var root = new RootNode();
-	        Engine.registerRoot(root);
-	        return root;
-	    };
-
-	    /**
-	     * Hook up listeners to a RootNode and add to an internal array for commiting.
-	     *
-	     * @method registerRoot
-	     * @static
-	     * @private
-	     */
-	    Engine.registerRoot = function registerRoot(root){
-	        root._size.subscribe(size);
-	        root._layout.subscribe(layout);
-	        roots.push(root);
-	    };
-
-	    /**
-	     * Remove listeners to RootNode and remove from internal commit array.
-	     *
-	     * @method deregisterRoot
-	     * @static
-	     * @private
-	     */
-	    Engine.deregisterRoot = function deregisterRoot(root){
-	        var i = roots.indexOf(root);
-	        if (i < 0) return;
-	        root._size.unsubscribe(size);
-	        root._layout.unsubscribe(layout);
-	        roots.splice(i, 1);
-	    };
-
-	    /**
-	     * Creates a new Context from which a render tree can be constructed.
-	     *  If no DOM element is specified, one will be created and appended
-	     *  to the document body.
-	     *
-	     * @method createContext
-	     * @static
-	     * @param [options] {Object}    Options
-	     * @param [options.el] {Node}   Pre-existing element in the document
-	     * @return {Context}
-	     */
-	    Engine.createContext = function createContext(options) {
-	        var context = new Context(options);
-	        Engine.registerContext(context);
-	        if (!options || !options.el)
-	            document.body.appendChild(context.container);
-	        return context;
-	    };
-
-	    /**
-	     * Registers an existing Context to be updated by the run loop.
-	     *
-	     * @method registerContext
-	     * @static
-	     * @private
-	     * @param context {Context}     Context to register
-	     */
-	    Engine.registerContext = function registerContext(context) {
-	        context._size.subscribe(size);
-	        context._layout.subscribe(layout);
-	        contexts.push(context);
-	    };
-
-	    /**
-	     * Removes a Context from the run loop.
-	     *  Note: this does not do any cleanup.
-	     *
-	     * @method deregisterContext
-	     * @static
-	     * @private
-	     * @param context {Context}     Context to deregister
-	     */
-	    Engine.deregisterContext = function deregisterContext(context) {
-	        var i = contexts.indexOf(context);
-	        if (i < 0) return;
-	        context._size.unsubscribe(size);
-	        context._layout.unsubscribe(layout);
-	        contexts.splice(i, 1);
-	    };
-
-	    /**
-	     * Adds a handler to an event on the DOM <body>, e.g., "click".
-	     *
-	     * @method on
-	     * @static
-	     * @param type {String}         DOM event name
-	     * @param handler {Function}    Handler
-	     */
-	    Engine.on = function on(type, handler){
-	        if (type === 'tick') listenOnTick = true;
-	        if (!(type in eventForwarders)) {
-	            eventForwarders[type] = eventHandler.emit.bind(eventHandler, type);
-	            document.addEventListener(type, eventForwarders[type]);
-	        }
-	        eventHandler.on(type, handler);
-	    };
-
-	    /**
-	     * Removes a previously added handler.
-	     *
-	     * @method off
-	     * @static
-	     * @param type {String}         DOM event name
-	     * @param handler {Function}    Handler
-	     */
-	    Engine.off = function off(type, handler){
-	        if (type === 'tick') listenOnTick = false;
-	        if (!(type in eventForwarders)) {
-	            document.removeEventListener(type, eventForwarders[type]);
-	        }
-	        eventHandler.off(type, handler);
-	    };
-
-	    /**
-	     * Initiates the Engine's heartbeat.
-	     *
-	     * @method start
-	     * @static
-	     */
-	    Engine.start = start;
-
-	    function loop() {
-	        Engine.step();
-	        rafId = window.requestAnimationFrame(loop);
-	    }
-
-	    function start(){
-	        handleResize();
-	        preTickQueue.push(function start(){
-	            layout.emit('start', layoutSpec);
-	            dirtyQueue.push(function(){
-	                layout.emit('end', layoutSpec);
-	            });
-	        });
-
-	        loop();
-	    }
-
-	    function handleResize() {
-	        var windowSize = [window.innerWidth, window.innerHeight];
-	        size.emit('resize', windowSize);
-	        eventHandler.emit('resize', windowSize);
-
-	        dirtyQueue.push(function engineResizeClean(){
-	            size.emit('resize', windowSize);
-	        });
-	    }
-
-	    window.addEventListener('resize', handleResize, false);
-
-	    module.exports = Engine;
 	}.call(exports, __webpack_require__, exports, module), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
 
 
@@ -371,128 +101,125 @@ return /******/ (function(modules) { // webpackBootstrap
 	/* Modified work copyright © 2015 David Valdman */
 
 	!(__WEBPACK_AMD_DEFINE_RESULT__ = function(require, exports, module) {
-	    var RootNode = __webpack_require__(3);
+	    var Surface = __webpack_require__(3);
+	    var Context = __webpack_require__(24);
+	    var dirtyQueue = __webpack_require__(15);
+	    var preTickQueue = __webpack_require__(13);
+	    var Transform = __webpack_require__(7);
 	    var EventHandler = __webpack_require__(5);
-	    var ElementAllocator = __webpack_require__(24);
-	    var Transitionable = __webpack_require__(25);
-	    var ResizeStream = __webpack_require__(16);
-	    var Stream = __webpack_require__(7);
-	    var EventMapper = __webpack_require__(8);
 
-	    var elementType = 'div';
-	    var elementClass = 'samsara-context';
-
-	    /**
-	     * A Context defines a top-level DOM element inside which other nodes (like Surfaces) are rendered.
-	     *  This DOM element can be provided as an argument if it exists in the document,
-	     *  otherwise it is created for you and appended to the document's `<body>`.
-	     *
-	     *  The CSS class `samsara-context` is applied, which provides the minimal CSS necessary
-	     *  to create a performant 3D context (specifically `preserve-3d`).
-	     *
-	     *  As of now, `Context` is not typically instantiated on its own, but rather is
-	     *  created by calling `Engine.createContext()`. This may change in the near future.
-	     *
-	     *  @example
-	     *
-	     *      var context = Engine.createContext({
-	     *          el : document.querySelector('#myElement')
-	     *      });
-	     *
-	     *      var surface = new Surface({
-	     *          size : [100,100],
-	     *          properties : {background : 'red'}
-	     *      });
-	     *
-	     *      context.add(surface);
-	     *
-	     *      Engine.start();
-	     *
-	     * @class Context
-	     * @constructor
-	     * @namespace Core
-	     * @uses Core.RootNode
-	     * @param [options] {Object}    Options
-	     * @param [options.el] {Node}   DOM element which will serve as a container for added nodes
-	     */
-	    function Context(options) {
-	        options = options || {};
-	        var container = options.el || document.createElement(elementType);
-	        container.classList.add(elementClass);
-
-	        var allocator = new ElementAllocator(container);
-	        this._node = new RootNode(allocator);
-	        this._size = new ResizeStream();
-	        this._layout = new EventHandler();
-
-	        this.size = this._size.map(function(size){
-	            return (options.el)
-	                ? [container.clientWidth, container.clientHeight]
-	                : size;
-	        }.bind(this));
-
-	        this._node._size.subscribe(this.size);
-	        this._node._layout.subscribe(this._layout);
-
-	        this._perspective = new Transitionable(0);
-
-	        this._perspective.on('update', function(perspective){
-	            setPerspective(container, perspective);
-	        });
-
-	        this._perspective.on('end', function(perspective){
-	            setPerspective(container, perspective);
-	        });
-
-	        this.container = container;
-	    }
-
-	    /**
-	     * Extends the render tree beginning with the Context's RootNode with a new node.
-	     *  Delegates to RootNode's `add` method.
-	     *
-	     * @method add
-	     *
-	     * @param {Object}          Renderable
-	     * @return {RenderTreeNode} Wrapped node
-	     */
-	    Context.prototype.add = function add() {
-	        return RootNode.prototype.add.apply(this._node, arguments);
+	    var defaultLayout = {
+	        transform : Transform.identity,
+	        opacity : 1,
+	        origin : null,
+	        align : null,
+	        nextSizeTransform : Transform.identity
 	    };
 
 	    /**
-	     * Get current perspective of this Context in pixels.
+	     * ContainerSurface enables nesting of DOM. A ContainerSurface manages
+	     *  its own render tree that it inserts inside a DOM node. Typically
+	     *  this is used for clipping by settings `{overflow : hidden}` as a CSS
+	     *  property.
+	     *
+	     *  @example
+	     *
+	     *      var myContainer = new ContainerSurface({
+	     *          size : [100,100],
+	     *          properties : {overflow : hidden}
+	     *      });
+	     *
+	     *      var surface = new Surface({
+	     *          size : [200,200],
+	     *          properties : {background : 'red'}
+	     *      });
+	     *
+	     *      myContainer.add(surface);
+	     *
+	     *      context.add(myContainer);
+	     *
+	     * @class ContainerSurface
+	     * @extends Core.Surface
+	     * @namespace Core
+	     * @uses Core.Context
+	     * @constructor
+	     *
+	     * @param [options] {Object}                Options
+	     * @param [options.size] {Number[]}         Size (width, height) in pixels. These can also be `true` or `undefined`.
+	     * @param [options.classes] {String[]}      CSS classes
+	     * @param [options.properties] {Object}     Dictionary of CSS properties
+	     * @param [options.attributes] {Object}     Dictionary of HTML attributes
+	     * @param [options.content] {String}        InnerHTML content
+	     * @param [options.origin] {Number[]}       Origin (x,y), with values between 0 and 1
+	     * @param [options.proportions] {Number[]}  Proportions (x,y) with values between 0 and 1
+	     * @param [options.margins] {Number[]}      Margins (x,y) in pixels
+	     * @param [options.opacity] {Number}        Opacity
+	     */
+	    function ContainerSurface(options) {
+	        Surface.call(this, options);
+
+	        this._container = document.createElement('div');
+	        this._container.classList.add('samsara-container');
+
+	        this.context = new Context({el : this._container});
+	        this.setContent(this._container);
+
+	        this.context._size.subscribe(this.size);
+	        this.context._layout.subscribe(this.layout.map(function(){
+	            return defaultLayout;
+	        }));
+	    }
+
+	    ContainerSurface.prototype = Object.create(Surface.prototype);
+	    ContainerSurface.prototype.constructor = ContainerSurface;
+	    ContainerSurface.prototype.elementType = 'div';
+	    ContainerSurface.prototype.elementClass = 'samsara-surface';
+
+	    /**
+	     * Get current perspective in pixels.
 	     *
 	     * @method getPerspective
 	     * @return {Number} Perspective in pixels
 	     */
-	    Context.prototype.getPerspective = function getPerspective() {
-	        return this._perspective.get();
+	    ContainerSurface.prototype.getPerspective = function getPerspective() {
+	        return Context.prototype.getPerspective.apply(this.context, arguments);
 	    };
 
 	    /**
-	     * Set current perspective of this context in pixels.
+	     * Set current perspective in pixels.
 	     *
 	     * @method setPerspective
 	     * @param perspective {Number}  Perspective in pixels
 	     * @param [transition] {Object} Transition definition
 	     * @param [callback] {Function} Callback executed on completion of transition
 	     */
-	    Context.prototype.setPerspective = function setPerspective(perspective, transition, callback) {
-	        this._perspective.set(perspective, transition, callback);
+	    ContainerSurface.prototype.setPerspective = function setPerspective(){
+	        Context.prototype.setPerspective.apply(this.context, arguments);
 	    };
 
-	    var usePrefix = !('perspective' in document.documentElement.style);
-
-	    var setPerspective = usePrefix
-	        ? function setPerspective(element, perspective) {
-	        element.style.webkitPerspective = perspective ? perspective.toFixed() + 'px' : '';
-	    }
-	        : function setPerspective(element, perspective) {
-	        element.style.perspective = perspective ? perspective.toFixed() + 'px' : '';
+	    /**
+	     * Extends the render tree with a provided node.
+	     *
+	     * @method add
+	     * @param node {Object}     Node, Surface, or View
+	     * @return {RenderTreeNode}
+	     */
+	    ContainerSurface.prototype.add = function add() {
+	        return Context.prototype.add.apply(this.context, arguments);
 	    };
 
-	    module.exports = Context;
+	    /**
+	     * Place the document element this component manages into the document.
+	     *
+	     * @method deploy
+	     * @private
+	     * @param target {Node} Container DOM element
+	     */
+	    ContainerSurface.prototype.deploy = function deploy() {
+	        Surface.prototype.deploy.apply(this, arguments);
+	    };
+
+	    module.exports = ContainerSurface;
 	}.call(exports, __webpack_require__, exports, module), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
 
 
@@ -500,32 +227,519 @@ return /******/ (function(modules) { // webpackBootstrap
 /* 3 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var __WEBPACK_AMD_DEFINE_RESULT__;/* Copyright © 2015 David Valdman */
+	var __WEBPACK_AMD_DEFINE_RESULT__;/* This Source Code Form is subject to the terms of the Mozilla Public
+	 * License, v. 2.0. If a copy of the MPL was not distributed with this
+	 * file, You can obtain one at http://mozilla.org/MPL/2.0/.
+	 *
+	 * @license MPL 2.0
+	 * @copyright Samsara Industries, Inc. 2014
+	 */
+
+	/* Modified work copyright © 2015 David Valdman */
 
 	!(__WEBPACK_AMD_DEFINE_RESULT__ = function(require, exports, module) {
-	    var RenderTreeNode = __webpack_require__(4);
+	    var ElementOutput = __webpack_require__(4);
+	    var dirtyQueue = __webpack_require__(15);
 
 	    /**
-	     * A RootNode is a first node in the Render Tree. It is like any other
-	     *  RenderTreeNode but with the additional responsibility of defining
-	     *  an allocating DOM node to render to.
+	     * Surface is a wrapper for DOM element controlled by Samsara.
+	     *  Samsara will commit opacity, size and CSS3 `transform` properties into the Surface.
+	     *  CSS classes, properties and DOM attributes can also be added and dynamically changed.
+	     *  Surfaces also act as sources for DOM events such as `click`.
 	     *
-	     * @class RootNode
+	     * @example
+	     *
+	     *      var context = Engine.createContext({
+	     *          el : document.querySelector('#myElement')
+	     *      });
+	     *
+	     *      var surface = new Surface({
+	     *          content : 'Hello world!',
+	     *          size : [true,100],
+	     *          opacity : .5,
+	     *          classes : ['myClass1', 'myClass2'],
+	     *          properties : {background : 'red'}
+	     *      });
+	     *
+	     *      context.add(surface);
+	     *
+	     *      Engine.start();
+	     *
+	     *  @example
+	     *
+	     *      // same as above but create an image instead
+	     *      var surface = new Surface({
+	     *          attributes : {
+	     *              src : 'cat.jpg'
+	     *          },
+	     *          size : [100,100],
+	     *          tagName : 'img'
+	     *      });
+	     *
+	     * @class Surface
+	     * @namespace Core
 	     * @constructor
-	     * @private
-	     * @extends Core.RenderTreeNode
-	     * @param [allocator] {ElementAllocator} ElementAllocator
+	     * @extends Core.ElementOutput
+	     * @param [options] {Object}                Options
+	     * @param [options.size] {Number[]}         Size (width, height) in pixels. These can also be `true` or `undefined`.
+	     * @param [options.classes] {String[]}      CSS classes
+	     * @param [options.properties] {Object}     Dictionary of CSS properties
+	     * @param [options.attributes] {Object}     Dictionary of HTML attributes
+	     * @param [options.content] Sstring}        InnerHTML content
+	     * @param [options.origin] {Number[]}       Origin (x,y), with values between 0 and 1
+	     * @param [options.margins] {Number[]}      Margins (x,y) in pixels
+	     * @param [options.proportions] {Number[]}  Proportions (x,y) with values between 0 and 1
+	     * @param [options.aspectRatio] {Number}    Aspect ratio
+	     * @param [options.opacity=1] {Number}      Opacity
+	     * @param [options.tagName="div"] {String}  HTML tagName
 	     */
-	    function RootNode(allocator) {
-	        RenderTreeNode.call(this);
-	        this.root = this;
-	        this.allocator = allocator;
+	    function Surface(options) {
+	        this.properties = {};
+	        this.attributes = {};
+	        this.content = '';
+	        this.classList = [];
+
+	        this._dirtyClasses = [];
+	        this._classesDirty = true;
+	        this._stylesDirty = true;
+	        this._attributesDirty = true;
+	        this._dirty = false;
+	        this._cachedSize = null;
+
+	        if (options) {
+	            this._contentDirty = false;
+
+	            // default to DOM size for provided elements
+	            if (options.el && !options.size)
+	                options.size = [true, true];
+
+	            ElementOutput.call(this, options.el);
+	            this.setOptions(options);
+	        }
+	        else {
+	            this._contentDirty = true;
+	            ElementOutput.call(this);
+	        }
 	    }
 
-	    RootNode.prototype = Object.create(RenderTreeNode.prototype);
-	    RootNode.prototype.constructor = RootNode;
+	    Surface.prototype = Object.create(ElementOutput.prototype);
+	    Surface.prototype.constructor = Surface;
+	    Surface.prototype.elementType = 'div'; // default tagName, but can be overriden in options
+	    Surface.prototype.elementClass = 'samsara-surface';
 
-	    module.exports = RootNode;
+	    function _setDirty(){
+	        if (this._dirty) return;
+
+	        dirtyQueue.push(function(){
+	            var target = this._currentTarget;
+
+	            if (this._contentDirty) {
+	                this.deploy(target);
+	                this._contentDirty = false;
+	            }
+
+	            if (this._classesDirty) {
+	                _removeClasses.call(this, target);
+	                _applyClasses.call(this, target);
+	                this._classesDirty = false;
+	            }
+
+	            if (this._stylesDirty) {
+	                _applyStyles.call(this, target);
+	                this._stylesDirty = false;
+	            }
+
+	            if (this._attributesDirty) {
+	                _applyAttributes.call(this, target);
+	                this._attributesDirty = false;
+	            }
+	            this._dirty = false;
+	        }.bind(this))
+	    }
+
+	    function _applyClasses(target) {
+	        for (var i = 0; i < this.classList.length; i++)
+	            target.classList.add(this.classList[i]);
+	    }
+
+	    function _applyStyles(target) {
+	        for (var key in this.properties)
+	            target.style[key] = this.properties[key];
+	    }
+
+	    function _applyAttributes(target) {
+	        for (var key in this.attributes)
+	            target.setAttribute(key, this.attributes[key]);
+	    }
+
+	    function _removeClasses(target) {
+	        for (var i = 0; i < this._dirtyClasses.length; i++) target.classList.remove(this._dirtyClasses[i]);
+	        this._dirtyClasses = [];
+	    }
+
+	    function _removeStyles(target) {
+	        for (var key in this.properties)
+	            target.style[key] = '';
+	    }
+
+	    function _removeAttributes(target) {
+	        for (var key in this.attributes)
+	            target.removeAttribute(key);
+	    }
+	    
+	    /**
+	     * Setter for HTML attributes.
+	     *
+	     * @method setAttributes
+	     * @chainable
+	     * @param attributes {Object}   HTML Attributes
+	     */
+	    Surface.prototype.setAttributes = function setAttributes(attributes) {
+	        for (var key in attributes) {
+	            var value = attributes[key];
+	            if (value != undefined) this.attributes[key] = attributes[key];
+	        }
+	        this._attributesDirty = true;
+	        _setDirty.call(this);
+	        return this;
+	    };
+
+	    /**
+	     * Getter for HTML attributes.
+	     *
+	     * @method getAttributes
+	     * @return {Object}
+	     */
+	    Surface.prototype.getAttributes = function getAttributes() {
+	        return this.attributes;
+	    };
+
+	    /**
+	     * Setter for CSS properties.
+	     *  Note: properties are camelCased, not hyphenated.
+	     *
+	     * @method setProperties
+	     * @chainable
+	     * @param properties {Object}   CSS properties
+	     */
+	    Surface.prototype.setProperties = function setProperties(properties) {
+	        for (var key in properties)
+	            this.properties[key] = properties[key];
+	        this._stylesDirty = true;
+	        _setDirty.call(this);
+	        return this;
+	    };
+
+	    /**
+	     * Getter for CSS properties.
+	     *
+	     * @method getProperties
+	     * @return {Object}             Dictionary of this Surface's properties.
+	     */
+	    Surface.prototype.getProperties = function getProperties() {
+	        return this.properties;
+	    };
+
+	    /**
+	     * Add CSS class to the list of classes on this Surface.
+	     *
+	     * @method addClass
+	     * @chainable
+	     * @param className {String}    Class name
+	     */
+	    Surface.prototype.addClass = function addClass(className) {
+	        if (this.classList.indexOf(className) < 0) {
+	            this.classList.push(className);
+	            this._classesDirty = true;
+	            _setDirty.call(this);
+	        }
+	        return this;
+	    };
+
+	    /**
+	     * Remove CSS class from the list of classes on this Surface.
+	     *
+	     * @method removeClass
+	     * @param className {string}    Class name
+	     */
+	    Surface.prototype.removeClass = function removeClass(className) {
+	        var i = this.classList.indexOf(className);
+	        if (i >= 0) {
+	            this._dirtyClasses.push(this.classList.splice(i, 1)[0]);
+	            this._classesDirty = true;
+	            _setDirty.call(this);
+	        }
+	    };
+
+	    /**
+	     * Toggle CSS class for this Surface.
+	     *
+	     * @method toggleClass
+	     * @param  className {String}   Class name
+	     */
+	    Surface.prototype.toggleClass = function toggleClass(className) {
+	        var i = this.classList.indexOf(className);
+	        (i == -1)
+	            ? this.addClass(className)
+	            : this.removeClass(className);
+	    };
+
+	    /**
+	     * Reset classlist.
+	     *
+	     * @method setClasses
+	     * @chainable
+	     * @param classlist {String[]}  ClassList
+	     */
+	    Surface.prototype.setClasses = function setClasses(classList) {
+	        var i = 0;
+	        var removal = [];
+	        for (i = 0; i < this.classList.length; i++) {
+	            if (classList.indexOf(this.classList[i]) < 0) removal.push(this.classList[i]);
+	        }
+	        for (i = 0; i < removal.length; i++) this.removeClass(removal[i]);
+	        // duplicates are already checked by addClass()
+	        for (i = 0; i < classList.length; i++) this.addClass(classList[i]);
+	        _setDirty.call(this);
+	        return this;
+	    };
+
+	    /**
+	     * Get array of CSS classes attached to this Surface.
+	     *
+	     * @method getClasslist
+	     * @return {String[]}
+	     */
+	    Surface.prototype.getClassList = function getClassList() {
+	        return this.classList;
+	    };
+
+	    /**
+	     * Set or overwrite innerHTML content of this Surface.
+	     *
+	     * @method setContent
+	     * @chainable
+	     * @param content {String|DocumentFragment} HTML content
+	     */
+	    Surface.prototype.setContent = function setContent(content) {
+	        if (this.content !== content) {
+	            this.content = content;
+	            this._contentDirty = true;
+	            _setDirty.call(this);
+	        }
+	        return this;
+	    };
+
+	    /**
+	     * Return innerHTML content of this Surface.
+	     *
+	     * @method getContent
+	     * @return {String}
+	     */
+	    Surface.prototype.getContent = function getContent() {
+	        return this.content;
+	    };
+
+	    /**
+	     * Set options for this surface
+	     *
+	     * @method setOptions
+	     * @param options {Object} Overrides for default options. See constructor.
+	     */
+	    Surface.prototype.setOptions = function setOptions(options) {
+	        if (options.tagName !== undefined) this.elementType = options.tagName;
+	        if (options.opacity !== undefined) this.setOpacity(options.opacity);
+	        if (options.size !== undefined) this.setSize(options.size);
+	        if (options.origin !== undefined) this.setOrigin(options.origin);
+	        if (options.proportions !== undefined) this.setProportions(options.proportions);
+	        if (options.margins !== undefined) this.setMargins(options.margins);
+	        if (options.classes !== undefined) this.setClasses(options.classes);
+	        if (options.properties !== undefined) this.setProperties(options.properties);
+	        if (options.attributes !== undefined) this.setAttributes(options.attributes);
+	        if (options.content !== undefined) this.setContent(options.content);
+	        if (options.aspectRatio !== undefined) this.setAspectRatio(options.aspectRatio);
+	    };
+
+	    /**
+	     * Allocates the element-type associated with the Surface, adds its given
+	     *  element classes, and prepares it for future committing.
+	     *
+	     * @private
+	     * @method setup
+	     * @param allocator {ElementAllocator} Allocator
+	     */
+	    Surface.prototype.setup = function setup(allocator) {
+	        // create element of specific type
+	        var target = allocator.allocate(this.elementType);
+
+	        // add any element classes
+	        if (this.elementClass) {
+	            if (this.elementClass instanceof Array) {
+	                for (var i = 0; i < this.elementClass.length; i++)
+	                    this.addClass(this.elementClass[i]);
+	            }
+	            else this.addClass(this.elementClass);
+	        }
+
+	        // set the currentTarget and any bound listeners
+	        this.attach(target);
+
+	        // set all dirty flags to true
+	        this._opacityDirty = true;
+	        this._stylesDirty = true;
+	        this._classesDirty = true;
+	        this._attributesDirty = true;
+	        this._contentDirty = true;
+	        this._originDirty = true;
+	        this._transformDirty = true;
+	    };
+
+	    /**
+	     * Remove all Samsara-relevant data from the Surface.
+	     *
+	     * @private
+	     * @method remove
+	     * @param allocator {ElementAllocator} Allocator
+	     */
+	    Surface.prototype.remove = function remove(allocator) {
+	        var target = this._currentTarget;
+
+	        // cache the target's contents for later deployment
+	        this.recall(target);
+
+	        // hide the element
+	        target.style.display = 'none';
+	        target.style.opacity = '';
+	        target.style.width = '';
+	        target.style.height = '';
+
+	        // clear all styles, classes and attributes
+	        _removeStyles.call(this, target);
+	        _removeAttributes.call(this, target);
+	        _removeClasses.call(this, target);
+
+	        // garbage collect current target and remove bound event listeners
+	        this.detach();
+
+	        // store allocated node in cache for recycling
+	        allocator.deallocate(target);
+	    };
+
+	    /**
+	     * Insert the Surface's content into the currentTarget.
+	     *
+	     * @private
+	     * @method deploy
+	     * @param target {Node} Container DOM element
+	     */
+	    Surface.prototype.deploy = function deploy(target) {
+	        //TODO: make sure target.tagName is of correct type! Tag pools must be implemented.
+	        this._eventOutput.emit('deploy');
+	        var content = this.getContent();
+	        if (content instanceof Node) {
+	            while (target.hasChildNodes()) target.removeChild(target.firstChild);
+	            target.appendChild(content);
+	        }
+	        else target.innerHTML = content;
+	    };
+
+	    /**
+	     * Cache the content of the Surface in a document fragment for future deployment.
+	     *
+	     * @private
+	     * @method recall
+	     * @param target {Node}
+	     */
+	    Surface.prototype.recall = function recall(target) {
+	        this._eventOutput.emit('recall');
+	        var df = document.createDocumentFragment();
+	        while (target.hasChildNodes()) df.appendChild(target.firstChild);
+	        this.setContent(df);
+	    };
+
+	    /**
+	     * Getter for size.
+	     *
+	     * @method getSize
+	     * @return {Number[]}
+	     */
+	    Surface.prototype.getSize = function getSize() {
+	        // TODO: remove cachedSize
+	        return this._cachedSpec.size || this._cachedSize;
+	    };
+
+	    /**
+	     * Setter for size.
+	     *
+	     * @method setSize
+	     * @param size {Number[]|Stream} Size as [width, height] in pixels, or a stream.
+	     */
+	    Surface.prototype.setSize = function setSize(size) {
+	        this._cachedSize = size;
+	        this._sizeNode.set({size : size});
+	        _setDirty.call(this);
+	    };
+
+	    /**
+	     * Setter for proportions.
+	     *
+	     * @method setProportions
+	     * @param proportions {Number[]|Stream} Proportions as [x,y], or a stream.
+	     */
+	    Surface.prototype.setProportions = function setProportions(proportions) {
+	        this._sizeNode.set({proportions : proportions});
+	        _setDirty.call(this);
+	    };
+
+	    /**
+	     * Setter for margins.
+	     *
+	     * @method setMargins
+	     * @param margins {Number[]|Stream} Margins as [width, height] in pixels, or a stream.
+	     */
+	    Surface.prototype.setMargins = function setMargins(margins) {
+	        this._sizeNode.set({margins : margins});
+	        _setDirty.call(this);
+	    };
+
+	    /**
+	     * Setter for aspect ratio. If only one of width or height is specified,
+	     *  the aspect ratio will replace the unspecified dimension by scaling
+	     *  the specified dimension by the value provided.
+	     *
+	     * @method setAspectRatio
+	     * @param aspectRatio {Number|Stream} Aspect ratio.
+	     */
+	    Surface.prototype.setAspectRatio = function setAspectRatio(aspectRatio) {
+	        this._sizeNode.set({aspectRatio : aspectRatio});
+	        _setDirty.call(this);
+	    };
+
+	    /**
+	     * Setter for origin.
+	     *
+	     * @method setOrigin
+	     * @param origin {Number[]|Stream} Origin as [x,y], or a stream.
+	     */
+	    Surface.prototype.setOrigin = function setOrigin(origin){
+	        this._layoutNode.set({origin : origin});
+	        this._originDirty = true;
+	        _setDirty.call(this);
+	    };
+
+	    /**
+	     * Setter for opacity.
+	     *
+	     * @method setOpacity
+	     * @param opacity {Number} Opacity
+	     */
+	    Surface.prototype.setOpacity = function setOpacity(opacity){
+	        this._layoutNode.set({opacity : opacity});
+	        this._opacityDirty = true;
+	        _setDirty.call(this);
+	    };
+
+	    module.exports = Surface;
 	}.call(exports, __webpack_require__, exports, module), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
 
 
@@ -533,115 +747,301 @@ return /******/ (function(modules) { // webpackBootstrap
 /* 4 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var __WEBPACK_AMD_DEFINE_RESULT__;/* Copyright © 2015 David Valdman */
+	var __WEBPACK_AMD_DEFINE_RESULT__;/* This Source Code Form is subject to the terms of the Mozilla Public
+	 * License, v. 2.0. If a copy of the MPL was not distributed with this
+	 * file, You can obtain one at http://mozilla.org/MPL/2.0/.
+	 *
+	 * @license MPL 2.0
+	 * @copyright Famous Industries, Inc. 2014
+	 */
+
+	/* Modified work copyright © 2015 David Valdman */
 
 	!(__WEBPACK_AMD_DEFINE_RESULT__ = function(require, exports, module) {
 	    var EventHandler = __webpack_require__(5);
-	    var Stream = __webpack_require__(7);
-	    var ResizeStream = __webpack_require__(16);
-	    var SizeNode = __webpack_require__(17);
-	    var LayoutNode = __webpack_require__(19);
-	    var layoutAlgebra = __webpack_require__(21);
-	    var sizeAlgebra = __webpack_require__(23);
+	    var Transform = __webpack_require__(7);
+	    var Stream = __webpack_require__(8);
+	    var ResizeStream = __webpack_require__(17);
+	    var SizeNode = __webpack_require__(18);
+	    var LayoutNode = __webpack_require__(20);
+	    var sizeAlgebra = __webpack_require__(22);
+	    var layoutAlgebra = __webpack_require__(23);
+
+	    var usePrefix = !('transform' in document.documentElement.style);
+	    var devicePixelRatio = window.devicePixelRatio || 1;
+	    var invDevicePixelRatio = 1 / devicePixelRatio;
+	    var MIN_OPACITY = 0.0001;
+	    var MAX_OPACITY = 0.9999;
+	    var EPSILON = 1e-5;
+	    var _zeroZero = [0,0];
 
 	    /**
-	     * A node in the render tree. As such, it wraps a layout or size node,
-	     *  providing them with an `add` method. By adding nodes, the render tree
-	     *  is constructed, the leaves of which are `Surfaces`.
+	     * Responsible for committing CSS3 properties to the DOM and providing DOM event hooks
+	     *  from a provided DOM element. Where Surface's API handles inputs from the developer
+	     *  from within Samsara, ElementOutput handles the DOM interaction layer.
 	     *
-	     *  @constructor
-	     *  @class RenderTreeNode
-	     *  @private
-	     *  @param object {SizeNode, LayoutNode, Surface, View}
+	     *
+	     * @class ElementOutput
+	     * @constructor
+	     * @namespace Core
+	     * @uses Core.LayoutNode
+	     * @uses Core.SizeNode
+	     * @private
+	     * @param {Node} element document parent of this container
 	     */
-	    function RenderTreeNode(object) {
-	        // layout and size inputs
-	        this._layout = new EventHandler();
+	    function ElementOutput(element) {
+	        this._currentTarget = null;
+
+	        this._cachedSpec = {
+	            transform : null,
+	            opacity : 1,
+	            origin : null,
+	            size : null
+	        };
+
+	        this._eventOutput = new EventHandler();
+	        EventHandler.setOutputHandler(this, this._eventOutput);
+
+	        this._eventForwarder = function _eventForwarder(event) {
+	            this._eventOutput.emit(event.type, event);
+	        }.bind(this);
+
+	        this._sizeNode = new SizeNode();
+	        this._layoutNode = new LayoutNode();
+
 	        this._size = new EventHandler();
+	        this._layout = new EventHandler();
 
-	        // layout and size streams
-	        this.size = null;
-	        this.layout = null;
+	        this.size = ResizeStream.lift(function elementSizeLift(sizeSpec, parentSize){
+	            if (!parentSize) return false; // occurs when surface is never added
+	            return sizeAlgebra(sizeSpec, parentSize);
+	        }, [this._sizeNode, this._size]);
 
-	        this.root = null;
+	        this.layout = Stream.lift(function(parentSpec, objectSpec, size){
+	            if (!parentSpec || !size) return false;
+	            return (objectSpec)
+	                ? layoutAlgebra(objectSpec, parentSpec, size)
+	                : parentSpec;
+	        }, [this._layout, this._layoutNode, this.size]);
 
-	        if (object) _set.call(this, object);
+	        this.layout.on('start', function(){
+	            if (!this._currentTarget){
+	                var root = this._getRoot();
+	                this.setup(root.allocator);
+	            }
+	        }.bind(this));
+
+	        this.layout.on('update', commitLayout.bind(this));
+	        this.layout.on('end', commitLayout.bind(this));
+
+	        this.size.on('resize', function(size){
+	            if (!this._currentTarget){
+	                var root = this._getRoot();
+	                this.setup(root.allocator);
+	            }
+	            commitSize.call(this, size);
+	        }.bind(this));
+
+	        this._currentTarget = null;
+
+	        this._opacityDirty = true;
+	        this._originDirty = true;
+	        this._transformDirty = true;
+	        this._isVisible = true;
+
+	        if (element) this.attach(element);
 	    }
 
-	    /**
-	     * Extends the render tree with a new node. Similar to how a tree data structure
-	     *  is created, but instead of a node with an array of children, children subscribe
-	     *  to notifications from the parent.
-	     *
-	     *  This method also takes `Views` (subtrees) and `Surfaces` (leaves).
-	     *
-	     * @method add
-	     * @param node {SizeNode|LayoutNode|Surface|View} Node
-	     * @return {RenderTreeNode}
-	     */
-	    RenderTreeNode.prototype.add = function add(node) {
-	        var childNode;
+	    function _formatCSSOrigin(origin) {
+	        return (100 * origin[0]) + '% ' + (100 * origin[1]) + '%';
+	    }
 
-	        if (node._isView){
-	            if (this.root)
-	                node._node.root = this.root;
-	            else if (this.tempRoot)
-	                node._node.tempRoot = this.tempRoot;
-	            childNode = node;
-	        }
-	        else {
-	            childNode = new RenderTreeNode(node);
-	            if (this.tempRoot)
-	                childNode.tempRoot = this.tempRoot;
-	            else childNode.root = _getRootNode.call(this);
-	        }
+	    function _xyNotEquals(a, b) {
+	        return (a && b) ? (a[0] !== b[0] || a[1] !== b[1]) : a !== b;
+	    }
 
-	        childNode._layout.subscribe(this.layout || this._layout);
-	        childNode._size.subscribe(this.size || this._size);
-
-	        return childNode;
+	    var _setOpacity = function _setOpacity(element, opacity){
+	        if (opacity >= MAX_OPACITY)     opacity = MAX_OPACITY;
+	        else if (opacity < MIN_OPACITY) opacity = MIN_OPACITY;
+	        element.style.opacity = opacity;
 	    };
 
-	    function _getRootNode(){
-	        if (this.root) return this.root;
-	        if (this.tempRoot) return _getRootNode.call(this.tempRoot);
-	        return this;
+	    var _setOrigin = usePrefix
+	        ? function _setOrigin(element, origin) {
+	        element.style.webkitTransformOrigin = _formatCSSOrigin(origin);
+	    }
+	        : function _setOrigin(element, origin) {
+	        element.style.transformOrigin = _formatCSSOrigin(origin);
+	    };
+
+	    var _setTransform = (usePrefix)
+	        ? function _setTransform(element, transform) {
+	        element.style.webkitTransform = _formatCSSTransform(transform);
+	    }
+	        : function _setTransform(element, matrix) {
+	        element.style.transform = _formatCSSTransform(matrix);
+	    };
+
+	    var _setSize = function _setSize(target, size){
+	        if (size[0] === true) size[0] = target.offsetWidth;
+	        else target.style.width = Math.ceil(size[0] * devicePixelRatio) * invDevicePixelRatio + 'px';
+
+	        if (size[1] === true) size[1] = target.offsetHeight;
+	        else target.style.height = Math.ceil(size[1] * devicePixelRatio) * invDevicePixelRatio + 'px';
+	    };
+
+
+	    function _addEventListeners(target) {
+	        for (var i in this._eventOutput.listeners)
+	            target.addEventListener(i, this._eventForwarder);
 	    }
 
-	    function _set(object) {
-	        if (object instanceof SizeNode){
-	            this.size = ResizeStream.lift(
-	                function SGSizeAlgebra (objectSpec, parentSize){
-	                    if (!parentSize) return false;
-	                    return (objectSpec)
-	                        ? sizeAlgebra(objectSpec, parentSize)
-	                        : parentSize;
-	                },
-	                [object, this._size]
-	            );
-	            return;
-	        }
-
-	        if (object instanceof LayoutNode){
-	            this.layout = Stream.lift(
-	                function SGLayoutAlgebra (objectSpec, parentSpec, size){
-	                    if (!parentSpec || !size) return false;
-	                    return (objectSpec)
-	                        ? layoutAlgebra(objectSpec, parentSpec, size)
-	                        : parentSpec;
-	                },
-	                [object, this._layout, this._size]
-	            );
-	            return;
-	        }
-
-	        // object is a leaf node
-	        object._size.subscribe(this._size);
-	        object._layout.subscribe(this._layout);
-	        object._getRoot = _getRootNode.bind(this);
+	    function _removeEventListeners(target) {
+	        for (var i in this._eventOutput.listeners)
+	            target.removeEventListener(i, this._eventForwarder);
 	    }
 
-	    module.exports = RenderTreeNode;
+	    function _formatCSSTransform(transform) {
+	        var result = 'matrix3d(';
+	        for (var i = 0; i < 15; i++) {
+	            if (Math.abs(transform[i]) < EPSILON) transform[i] = 0;
+	            result += (i === 12 || i === 13)
+	                ? Math.round(transform[i] * devicePixelRatio) * invDevicePixelRatio + ','
+	                : transform[i] + ',';
+	        }
+	        return result + transform[15] + ')';
+	    }
+
+	    // {Visibility : hidden} allows for DOM events to pass through the element
+	    var _setOpacity = function _setOpacity(element, opacity){
+	        if (!this._isVisible && opacity > MIN_OPACITY){
+	            element.style.visibility = 'visible';
+	            this._isVisible = true;
+	        }
+
+	        if (opacity > MAX_OPACITY) opacity = MAX_OPACITY;
+	        else if (opacity < MIN_OPACITY) {
+	            opacity = MIN_OPACITY;
+	            if (this._isVisible){
+	                element.style.visibility = 'hidden';
+	                this._isVisible = false;
+	            }
+	        }
+
+	        if (this._isVisible) element.style.opacity = opacity;
+	    };
+
+	    /**
+	     * Adds a handler to the `type` channel which will be executed on `emit`.
+	     *
+	     * @method on
+	     *
+	     * @param type {String}         DOM event channel name, e.g., "click", "touchmove"
+	     * @param handler {Function}    Handler. It's only argument will be an emitted data payload.
+	     */
+	    ElementOutput.prototype.on = function on(type, handler) {
+	        if (this._currentTarget)
+	            this._currentTarget.addEventListener(type, this._eventForwarder);
+	        EventHandler.prototype.on.apply(this._eventOutput, arguments);
+	    };
+
+	    /**
+	     * Removes a previously added handler to the `type` channel.
+	     *  Undoes the work of `on`.
+	     *
+	     * @method removeListener
+	     * @param type {String}         DOM event channel name e.g., "click", "touchmove"
+	     * @param handler {Function}    Handler
+	     */
+	    ElementOutput.prototype.off = function off(type, handler) {
+	        EventHandler.prototype.off.apply(this._eventOutput, arguments);
+	    };
+
+	    /**
+	     * Emit an event with optional data payload. This will execute all listening
+	     *  to the channel name with the payload as only argument.
+	     *
+	     * @method emit
+	     * @param type {string}         Event channel name
+	     * @param [payload] {Object}    User defined data payload
+	     */
+	    ElementOutput.prototype.emit = function emit(type, payload) {
+	        EventHandler.prototype.emit.apply(this._eventOutput, arguments);
+	    };
+
+	    /**
+	     * Assigns the DOM element for committing and to and attaches event listeners.
+	     *
+	     * @private
+	     * @method attach
+	     * @param {Node} target document parent of this container
+	     */
+	    ElementOutput.prototype.attach = function attach(target) {
+	        this._currentTarget = target;
+	        _addEventListeners.call(this, target);
+	    };
+
+	    /**
+	     * Removes the associated DOM element in memory and detached event listeners.
+	     *
+	     * @private
+	     * @method detach
+	     */
+	    ElementOutput.prototype.detach = function detach() {
+	        var target = this._currentTarget;
+	        if (target) {
+	            _removeEventListeners.call(this, target);
+	            target.style.display = '';
+	        }
+	        this._currentTarget = null;
+	    };
+
+	    function commitLayout(layout) {
+	        var target = this._currentTarget;
+	        if (!target) return;
+
+	        var cache = this._cachedSpec;
+
+	        var transform = layout.transform || Transform.identity;
+	        var opacity = (layout.opacity === undefined) ? 1 : layout.opacity;
+	        var origin = layout.origin || _zeroZero;
+
+	        this._transformDirty = Transform.notEquals(cache.transform, transform);
+	        this._opacityDirty = this._opacityDirty || (cache.opacity !== opacity);
+	        this._originDirty = this._originDirty || (origin && _xyNotEquals(cache.origin, origin));
+
+	        if (this._opacityDirty) {
+	            cache.opacity = opacity;
+	            _setOpacity.call(this, target, opacity);
+	        }
+
+	        if (this._originDirty){
+	            cache.origin = origin;
+	            _setOrigin(target, origin);
+	        }
+
+	        if (this._transformDirty) {
+	            cache.transform = transform;
+	            _setTransform(target, transform);
+	        }
+
+	        this._originDirty = false;
+	        this._transformDirty = false;
+	        this._opacityDirty = false;
+	    }
+
+	    function commitSize(size){
+	        var target = this._currentTarget;
+	        if (!target) return;
+
+	        if (_xyNotEquals(this._cachedSpec.size, size)){
+	            this._cachedSpec.size = size;
+	            _setSize(target, size);
+	            this.emit('resize', size);
+	        }
+	    }
+
+	    module.exports = ElementOutput;
 	}.call(exports, __webpack_require__, exports, module), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
 
 
@@ -936,1171 +1336,6 @@ return /******/ (function(modules) { // webpackBootstrap
 
 /***/ },
 /* 7 */
-/***/ function(module, exports, __webpack_require__) {
-
-	var __WEBPACK_AMD_DEFINE_RESULT__;/* Copyright © 2015 David Valdman */
-
-	!(__WEBPACK_AMD_DEFINE_RESULT__ = function(require, exports, module) {
-	    var EventHandler = __webpack_require__(5);
-	    var EventMapper = __webpack_require__(8);
-	    var SimpleStream = __webpack_require__(9);
-
-	    var preTickQueue = __webpack_require__(12);
-	    var postTickQueue = __webpack_require__(13);
-	    var dirtyQueue = __webpack_require__(14);
-	    var State = __webpack_require__(15);
-
-	    var EVENTS = {
-	        START : 'start',
-	        UPDATE : 'update',
-	        END : 'end',
-	        RESIZE : 'resize'
-	    };
-
-	    /**
-	     * Stream listens to `resize`, `start`, `update` and `end` events and
-	     *  emits `start`, `update` and `end` events. `Resize` events get
-	     *  unified with `start`, `update`, and `end` events depending on
-	     *  when they are fired within Samsara's engine cycle.
-	     *
-	     *  If listening to multiple sources, Stream emits a single event per
-	     *  Engine cycle.
-	     *
-	     *  @example
-	     *
-	     *      var position = new Transitionable([0,0]);
-	     *      var size = new EventEmitter();
-	     *
-	     *      var translationStream = Stream.lift(function(position, size){
-	     *          var translation = [
-	     *              position[0] + size[0],
-	     *              position[1] + size[1]
-	     *          ];
-	     *
-	     *          return Transform.translate(translation);
-	     *      }, [positionStream, sizeStream]);
-	     *
-	     *      translationStream.on('start', function(transform){
-	     *          console.log(transform);
-	     *      });
-	     *
-	     *      translationStream.on('update', function(transform){
-	     *          console.log(transform);
-	     *      });
-	     *
-	     *      translationStream.on('end', function(transform){
-	     *          console.log(transform);
-	     *      });
-	     *
-	     *      position.set([100, 50], {duration : 500});
-	     *      size.emit('resize', [100,100]);
-	     *
-	     * @class Stream
-	     * @extends Streams.SimpleStream
-	     * @namespace Streams
-	     * @param [options] {Object}            Options
-	     * @param [options.start] {Function}    Custom logic to map the `start` event
-	     * @param [options.update] {Function}   Custom logic to map the `update` event
-	     * @param [options.end] {Function}      Custom logic to map the `end` event
-	     * @constructor
-	     */
-	    function Stream(options){
-	        this._eventInput = new EventHandler();
-	        this._eventOutput = new EventHandler();
-	        EventHandler.setInputHandler(this, this._eventInput);
-	        EventHandler.setOutputHandler(this, this._eventOutput);
-
-	        var isUpdating = false;
-	        var dirtyStart = false;
-	        var dirtyUpdate = false;
-	        var dirtyEnd = false;
-
-	        function start(data){
-	            var payload = options && options.start ? options.start(data) : data;
-	            if (payload !== false) this.emit(EVENTS.START, payload);
-	            dirtyStart = false;
-	        }
-
-	        function update(data){
-	            var payload = options && options.update ? options.update(data) : data;
-	            if (payload !== false) this.emit(EVENTS.UPDATE, payload);
-	            dirtyUpdate = false;
-	        }
-
-	        function end(data){
-	            var payload = options && options.end ? options.end(data) : data;
-	            if (payload !== false) this.emit(EVENTS.END, payload);
-	            dirtyEnd = false;
-	        }
-
-	        this._eventInput.on(EVENTS.START, function(data){
-	            if (dirtyStart || isUpdating) return;
-	            dirtyStart = true;
-	            preTickQueue.push(start.bind(this, data));
-	        }.bind(this));
-
-	        this._eventInput.on(EVENTS.UPDATE, function(data){
-	            if (dirtyUpdate) return;
-	            dirtyUpdate = true;
-	            isUpdating = true;
-	            postTickQueue.push(update.bind(this, data));
-	        }.bind(this));
-
-	        this._eventInput.on(EVENTS.END, function(data){
-	            if (dirtyEnd) return;
-	            dirtyEnd = true;
-	            isUpdating = false;
-	            dirtyQueue.push(end.bind(this, data));
-	        }.bind(this));
-
-	        this._eventInput.on(EVENTS.RESIZE, function(data){
-	            switch (State.get()){
-	                case State.STATES.START:
-	                    this.trigger(EVENTS.START, data);
-	                    break;
-	                case State.STATES.UPDATE:
-	                    this.trigger(EVENTS.UPDATE, data);
-	                    break;
-	                case State.STATES.END:
-	                    this.trigger(EVENTS.END, data);
-	                    break;
-	            }
-	        }.bind(this));
-	    }
-
-	    Stream.prototype = Object.create(SimpleStream.prototype);
-	    Stream.prototype.constructor = Stream;
-
-	    /**
-	     * Extends SimpleStream.lift
-	     *
-	     * @static
-	     * @return
-	     */
-	    Stream.lift = SimpleStream.lift;
-
-	    /**
-	     * Batches events for provided object of streams in
-	     *  {key : stream} pairs. Emits one event per Engine cycle.
-	     *
-	     * @method merge
-	     * @static
-	     * @param streams {Object}  Dictionary of `resize` streams
-	     */
-	    Stream.merge = function(streamObj){
-	        var mergedStream = new Stream();
-	        var mergedData = (streamObj instanceof Array) ? [] : {};
-
-	        mergedStream.addStream = function(key, stream){
-	            var mapper = (function(key){
-	                return new EventMapper(function(data){
-	                    mergedData[key] = data;
-	                    return mergedData;
-	                });
-	            })(key);
-
-	            mergedStream.subscribe(mapper).subscribe(stream);
-	        };
-
-	        for (var key in streamObj){
-	            var stream = streamObj[key];
-	            mergedStream.addStream(key, stream);
-	        }
-
-	        return mergedStream;
-	    };
-
-	    module.exports = Stream;
-	}.call(exports, __webpack_require__, exports, module), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
-
-
-/***/ },
-/* 8 */
-/***/ function(module, exports, __webpack_require__) {
-
-	var __WEBPACK_AMD_DEFINE_RESULT__;/* copyright © 2015 David Valdman */
-
-	!(__WEBPACK_AMD_DEFINE_RESULT__ = function(require, exports, module) {
-	    var EventHandler = __webpack_require__(5);
-
-	    /**
-	     * EventMapper modifies the data payload of an event based on
-	     *  a provided function.
-	     *
-	     *  Note: it does not modify the event's `type`.
-	     *
-	     *  @example
-	     *
-	     *      var eventMapper = new EventMapper(function(payload){
-	     *          return payload.x + payload.y
-	     *      });
-	     *
-	     *      var eventEmitter = new EventEmitter();
-	     *
-	     *      eventMapper.subscribe(eventEmitter);
-	     *
-	     *      eventMapper.on('name', function(value){
-	     *          alert(value);
-	     *      });
-	     *
-	     *      eventEmitter.emit('name', {x : 1, y : 2}); // alerts 3
-	     *
-	     * @class EventMapper
-	     * @constructor
-	     * @param map {Function}  Function to modify the event payload
-	     */
-	    function EventMapper(map) {
-	        EventHandler.call(this);
-	        this._mappingFunction = map;
-	    }
-
-	    EventMapper.prototype = Object.create(EventHandler.prototype);
-	    EventMapper.prototype.constructor = EventMapper;
-
-	    /**
-	     * Emit mapped event.
-	     *
-	     * @method emit
-	     * @param type {String} Channel name
-	     * @param data {Object} Payload
-	     */
-	    EventMapper.prototype.emit = function emit(type, data) {
-	        var mappedData = this._mappingFunction(data);
-	        EventHandler.prototype.emit.call(this, type, mappedData);
-	    };
-
-	    /**
-	     * Alias of emit.
-	     *
-	     * @method trigger
-	     * @param type {String} Channel name
-	     * @param data {Object} Payload
-	     */
-	    EventMapper.prototype.trigger = EventMapper.prototype.emit;
-
-	    module.exports = EventMapper;
-	}.call(exports, __webpack_require__, exports, module), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
-
-
-/***/ },
-/* 9 */
-/***/ function(module, exports, __webpack_require__) {
-
-	var __WEBPACK_AMD_DEFINE_RESULT__;/* Copyright © 2015 David Valdman */
-
-	!(__WEBPACK_AMD_DEFINE_RESULT__ = function(require, exports, module) {
-	    var EventHandler = __webpack_require__(5);
-	    var EventMapper = __webpack_require__(8);
-	    var EventFilter = __webpack_require__(10);
-	    var EventSplitter = __webpack_require__(11);
-
-	    /**
-	     * A SimpleStream wraps an EventHandler and provides convenience
-	     *  methods of `map`, `filter`, `split`, and `pluck` to
-	     *  transform one stream into another.
-	     *
-	     * @example
-	     *
-	     * @class SimpleStream
-	     * @extends Core.EventHandler
-	     * @private
-	     * @namespace Streams
-	     * @constructor
-	     */
-	    function SimpleStream(){
-	        EventHandler.call(this);
-	    }
-
-	    SimpleStream.prototype = Object.create(EventHandler.prototype);
-	    SimpleStream.prototype.constructor = SimpleStream;
-
-	    /**
-	     * Map converts the current stream into a new stream
-	     *  with a modified (mapped) data payload.
-	     *
-	     * @method map
-	     * @param mapperFn {Function}   Function to map event payload
-	     */
-	    SimpleStream.prototype.map = function(mapperFn){
-	        var stream = new SimpleStream();
-	        var mapper = new EventMapper(mapperFn);
-	        stream.subscribe(mapper).subscribe(this);
-	        return stream;
-	    };
-
-	    /**
-	     * Filter converts the current stream into a new stream
-	     *  that only emits if the filter condition is satisfied.
-	     *  The function should return a Boolean.
-	     *
-	     * @method filter
-	     * @param filterFn {Function}   Function to filter event payload
-	     */
-	    SimpleStream.prototype.filter = function(filterFn){
-	        var filter = new EventFilter(filterFn);
-	        var filteredStream = new SimpleStream();
-	        filteredStream.subscribe(filter).subscribe(this);
-	        return filteredStream;
-	    };
-
-	    /**
-	     * Split maps one of several streams based on custom logic.
-	     *  The function should return an EventEmitter.
-	     *
-	     * @method split
-	     * @param splitterFn {Function}  Splitter function
-	     */
-	    SimpleStream.prototype.split = function(splitterFn){
-	        var splitter = new EventSplitter(splitterFn);
-	        var splitStream = new SimpleStream();
-	        splitStream.subscribe(splitter).subscribe(this);
-	        return splitStream;
-	    };
-
-	    /**
-	     * Pluck is an opinionated mapper. It projects a Stream
-	     *  onto one of its return values.
-	     *
-	     *  Useful if a Stream returns an array or an object.
-	     *
-	     * @method pluck
-	     * @param key {String|Number}   Key to project event payload onto
-	     */
-	    SimpleStream.prototype.pluck = function(key){
-	        return this.map(function(value){
-	            return value[key];
-	        });
-	    };
-
-	    //TODO: can this be inherited by other streams?
-	    SimpleStream.merge = function(){};
-
-	    /**
-	     * Lift is like map, except it maps several event sources,
-	     *  not only one.
-	     *
-	     *  @example
-	     *
-	     *      var liftedStream = SimpleStream.lift(function(payload1, payload2){
-	     *          return payload1 + payload2;
-	     *      }, [stream2, stream2]);
-	     *
-	     *      liftedStream.on('name'), function(data){
-	     *          // data = 3;
-	     *      });
-	     *
-	     *      stream2.emit('name', 1);
-	     *      stream2.emit('name', 2);
-	     *
-	     * @method lift
-	     * @static
-	     * @param map {Function}            Function to map stream payloads
-	     * @param streams {Array|Object}    Stream sources
-	     */
-	    SimpleStream.lift = function(map, streams){
-	        //TODO: fix comma separated arguments
-	        var mergedStream = (streams instanceof Array)
-	            ? this.merge(streams)
-	            : this.merge.apply(null, Array.prototype.splice.call(arguments, 1));
-
-	        var mappedStream = new EventMapper(function liftMap(data){
-	            return map.apply(null, data);
-	        });
-
-	        var liftedStream = new SimpleStream();
-	        liftedStream.subscribe(mappedStream).subscribe(mergedStream);
-
-	        return liftedStream;
-	    };
-
-	    module.exports = SimpleStream;
-	}.call(exports, __webpack_require__, exports, module), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
-
-
-/***/ },
-/* 10 */
-/***/ function(module, exports, __webpack_require__) {
-
-	var __WEBPACK_AMD_DEFINE_RESULT__;/* This Source Code Form is subject to the terms of the Mozilla Public
-	 * License, v. 2.0. If a copy of the MPL was not distributed with this
-	 * file, You can obtain one at http://mozilla.org/MPL/2.0/.
-	 *
-	 * @license MPL 2.0
-	 * @copyright Famous Industries, Inc. 2014
-	 */
-
-	/* Modified work copyright © 2015 David Valdman */
-
-	!(__WEBPACK_AMD_DEFINE_RESULT__ = function(require, exports, module) {
-	    var EventHandler = __webpack_require__(5);
-
-	    /**
-	     * EventFilter regulates the broadcasting of events based on
-	     *  a specified condition prescribed by a provided function
-	     *  with the signature `(type, data) -> Boolean`
-	     *
-	     *  @example
-	     *
-	     *      var eventFilter = new EventFilter(function(type, payload){
-	     *          return (payload.value == 0);
-	     *      });
-	     *
-	     *      var eventEmitter = new EventEmitter();
-	     *
-	     *      eventFilter.subscribe(eventEmitter);
-	     *
-	     *      eventFilter.on('click', function(data){
-	     *          alert('fired');
-	     *      });
-	     *
-	     *      eventEmitter.emit('click', {value : 0}); // fired
-	     *      eventEmitter.emit('click', {value : 1}); // doesn't fire
-	     *
-	     * @class EventFilter
-	     * @namespace Events
-	     * @constructor
-	     * @param filter {Function}  Function returning a Boolean
-	     */
-	    function EventFilter(filter) {
-	        EventHandler.call(this);
-	        this._condition = filter;
-	    }
-	    EventFilter.prototype = Object.create(EventHandler.prototype);
-	    EventFilter.prototype.constructor = EventFilter;
-
-	    /**
-	     * Emit event if the condition is satisfied.
-	     *
-	     * @method emit
-	     * @param type {String} Channel name
-	     * @param data {Object} Payload
-	     */
-	    EventFilter.prototype.emit = function emit(type, data) {
-	        if (!this._condition(type, data)) return;
-	        EventHandler.prototype.emit.apply(this, arguments);
-	    };
-
-	    /**
-	     * Alias of emit.
-	     *
-	     * @method trigger
-	     * @param type {String} Channel name
-	     * @param data {Object} Payload
-	     */
-	    EventFilter.prototype.trigger = EventFilter.prototype.emit;
-
-	    module.exports = EventFilter;
-	}.call(exports, __webpack_require__, exports, module), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
-
-
-/***/ },
-/* 11 */
-/***/ function(module, exports, __webpack_require__) {
-
-	var __WEBPACK_AMD_DEFINE_RESULT__;/* This Source Code Form is subject to the terms of the Mozilla Public
-	 * License, v. 2.0. If a copy of the MPL was not distributed with this
-	 * file, You can obtain one at http://mozilla.org/MPL/2.0/.
-	 *
-	 * @license MPL 2.0
-	 * @copyright Famous Industries, Inc. 2014
-	 */
-
-	/* Modified work copyright © 2015 David Valdman */
-
-	!(__WEBPACK_AMD_DEFINE_RESULT__ = function(require, exports, module) {
-	    var EventHandler = __webpack_require__(5);
-
-	    /**
-	     * EventSplitter routes events to various event destinations
-	     *  based on custom logic. The return of the provided splitter
-	     *  function should be of type EventEmitter.
-	     *
-	     *  @example
-	     *
-	     *      var eventEmitter = new EventEmitter();
-	     *      var eventEmitterX = new eventEmitter();
-	     *      var eventEmitterY = new eventEmitter();
-	     *
-	     *      var eventSplitter = new EventSplitter(function(payload){
-	     *          return (payload.x > payload.y)
-	     *              ? eventEmitterX;
-	     *              : eventEmitterY;
-	     *      });
-	     *
-	     *      eventSplitter.subscribe(eventEmitter);
-	     *
-	     *      eventEmitterX.on('move', function(){
-	     *          console.log('x is bigger')
-	     *      });
-	     *
-	     *      eventEmitterY.on('move', function(){
-	     *          console.log('y is bigger')
-	     *      })
-	     *
-	     *      eventEmitter.emit('move', {x : 3, y : 2}); // x is bigger
-	     *
-	     * @class EventSplitter
-	     * @constructor
-	     * @param splitter {Function}
-	     */
-	    function EventSplitter(splitter) {
-	        EventHandler.call(this);
-	        this._splitter = splitter;
-	    }
-	    EventSplitter.prototype = Object.create(EventHandler.prototype);
-	    EventSplitter.prototype.constructor = EventSplitter;
-
-	    /**
-	     * Emit event.
-	     *
-	     * @method emit
-	     * @param type {String} Channel name
-	     * @param data {Object} Payload
-	     */
-	    EventSplitter.prototype.emit = function emit(type, data) {
-	        var target = this._splitter.apply(this, arguments);
-	        if (target && target.emit instanceof Function)
-	            target.emit(type, data);
-	    };
-
-	    /**
-	     * Alias of emit.
-	     *
-	     * @method trigger
-	     * @param type {String} Channel name
-	     * @param data {Object} Payload
-	     */
-	    EventSplitter.prototype.trigger = EventSplitter.prototype.emit;
-
-	    module.exports = EventSplitter;
-	}.call(exports, __webpack_require__, exports, module), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
-
-
-/***/ },
-/* 12 */
-/***/ function(module, exports, __webpack_require__) {
-
-	var __WEBPACK_AMD_DEFINE_RESULT__;/* copyright © 2015 David Valdman */
-
-	!(__WEBPACK_AMD_DEFINE_RESULT__ = function(require, exports, module) {
-	    /**
-	     * Queue that batches `start` events.
-	     *  This queue is traversed first (but after DOM events are executed) by the Engine.
-	     *
-	     *  @private
-	     */
-
-	    module.exports = [];
-	}.call(exports, __webpack_require__, exports, module), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
-
-/***/ },
-/* 13 */
-/***/ function(module, exports, __webpack_require__) {
-
-	var __WEBPACK_AMD_DEFINE_RESULT__;/* copyright © 2015 David Valdman */
-
-	!(__WEBPACK_AMD_DEFINE_RESULT__ = function(require, exports, module) {
-	    /**
-	     * Queue that batches `update` events.
-	     *  This queue is traversed after the `preTickQueue` but before `dirtQueue`
-	     *  by the Engine.
-	     *
-	     *  @private
-	     */
-
-	    module.exports = [];
-	}.call(exports, __webpack_require__, exports, module), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
-
-/***/ },
-/* 14 */
-/***/ function(module, exports, __webpack_require__) {
-
-	var __WEBPACK_AMD_DEFINE_RESULT__;/* copyright © 2015 David Valdman */
-
-	!(__WEBPACK_AMD_DEFINE_RESULT__ = function(require, exports, module) {
-	    /**
-	     * Queue that batches `end` and `dirty` events.
-	     *  This queue is traversed after the `postTickQueue` by the Engine.
-	     *
-	     *  @private
-	     */
-
-	    module.exports = [];
-	}.call(exports, __webpack_require__, exports, module), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
-
-/***/ },
-/* 15 */
-/***/ function(module, exports, __webpack_require__) {
-
-	var __WEBPACK_AMD_DEFINE_RESULT__;/* Copyright © 2015 David Valdman */
-
-	!(__WEBPACK_AMD_DEFINE_RESULT__ = function(require, exports, module) {
-	    var STATE = {
-	        NONE : -1,
-	        START : 0,
-	        UPDATE : 1,
-	        END : 2
-	    };
-
-	    var currentState = STATE.START;
-
-	    /**
-	     * SUE specified the global state of the application, whether it is in a
-	     *  `start`, `update` or `end` state. This is necessary for coordinating
-	     *  `resize` events with `start`, `update`, `end` states in stream.
-	     *
-	     * @class SUE
-	     * @namespace Core
-	     * @static
-	     * @private
-	     */
-	    var SUE = {};
-
-	    SUE.STATES = STATE;
-
-	    SUE.set = function set(state){
-	        currentState = state;
-	    };
-
-	    SUE.get = function get(){
-	        return currentState;
-	    };
-
-	    module.exports = SUE;
-	}.call(exports, __webpack_require__, exports, module), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
-
-/***/ },
-/* 16 */
-/***/ function(module, exports, __webpack_require__) {
-
-	var __WEBPACK_AMD_DEFINE_RESULT__;/* Copyright © 2015 David Valdman */
-
-	!(__WEBPACK_AMD_DEFINE_RESULT__ = function(require, exports, module) {
-	    var SimpleStream = __webpack_require__(9);
-	    var EventMapper = __webpack_require__(8);
-	    var EventHandler = __webpack_require__(5);
-
-	    var preTickQueue = __webpack_require__(12);
-	    var postTickQueue = __webpack_require__(13);
-	    var dirtyQueue = __webpack_require__(14);
-	    var State = __webpack_require__(15);
-
-	    var EVENTS = {
-	        RESIZE : 'resize'
-	    };
-
-	    /**
-	     * ResizeStream is a stream that listens to and emits `resize` events.
-	     *
-	     * @class ResizeStream
-	     * @private
-	     * @extends Streams.Stream
-	     * @namespace Streams
-	     * @param [options] {Object}            Options
-	     * @param [options.resize] {Function}   Custom logic to map the `resize` event
-	     * @constructor
-	     */
-	    function ResizeStream(options){
-	        var dirtyResize = false;
-
-	        function resize(data){
-	            var payload = (options && options.resize)
-	                ? options.resize(data)
-	                : data;
-	            this.emit(EVENTS.RESIZE, payload);
-	            dirtyResize = false;
-	        }
-
-	        this._eventInput = new EventHandler();
-	        this._eventOutput = new EventHandler();
-	        EventHandler.setInputHandler(this, this._eventInput);
-	        EventHandler.setOutputHandler(this, this._eventOutput);
-
-	        this._eventInput.on(EVENTS.RESIZE, function(data){
-	            if (!dirtyResize) {
-	                var queue;
-	                switch (State.get()){
-	                    case State.STATES.START:
-	                        queue = preTickQueue;
-	                        break;
-	                    case State.STATES.UPDATE:
-	                        queue = postTickQueue;
-	                        break;
-	                    case State.STATES.END:
-	                        queue = dirtyQueue;
-	                        break;
-	                }
-	                queue.push(resize.bind(this, data));
-	            }
-	            dirtyResize = true;
-	        }.bind(this));
-	    }
-
-	    ResizeStream.prototype = Object.create(SimpleStream.prototype);
-	    ResizeStream.prototype.constructor = ResizeStream;
-
-	    /**
-	     * Extends SimpleStream.lift
-	     *
-	     * @method lift
-	     * @static
-	     */
-	    ResizeStream.lift = SimpleStream.lift;
-
-	    /**
-	     * Batches resize events for provided object of streams in
-	     *  {key : stream} pairs. Emits one `resize` event per Engine cycle.
-	     *
-	     * @method merge
-	     * @static
-	     * @private
-	     * @param streams {Object}  Dictionary of `resize` streams
-	     */
-	    ResizeStream.merge = function(streams){
-	        var mergedStream = new ResizeStream();
-	        var mergedData = (streams instanceof Array) ? [] : {};
-
-	        mergedStream.addStream = function(key, stream){
-	            var mapper = (function(key){
-	                return new EventMapper(function(data){
-	                    mergedData[key] = data;
-	                    return mergedData;
-	                });
-	            })(key);
-
-	            mergedStream.subscribe(mapper).subscribe(stream);
-	        };
-
-	        for (var key in streams){
-	            var stream = streams[key];
-	            mergedStream.addStream(key, stream);
-	        }
-
-	        return mergedStream;
-	    };
-
-	    module.exports = ResizeStream;
-	}.call(exports, __webpack_require__, exports, module), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
-
-
-/***/ },
-/* 17 */
-/***/ function(module, exports, __webpack_require__) {
-
-	var __WEBPACK_AMD_DEFINE_RESULT__;/* Copyright © 2015 David Valdman */
-
-	!(__WEBPACK_AMD_DEFINE_RESULT__ = function(require, exports, module) {
-	    var EventHandler = __webpack_require__(5);
-	    var SimpleStream = __webpack_require__(9);
-	    var ResizeStream = __webpack_require__(16);
-	    var SizeObservable = __webpack_require__(18);
-
-	    /**
-	     * Encapsulates a stream of size data (size, proportions, margins).
-	     *  Listens on start/update/end events, batches them, and emits resize events downstream
-	     *  to descendant size nodes.
-	     *
-	     *  Size can be defined with height and width given numerically, but
-	     *  they can also be:
-	     *
-	     *  ```
-	     *      `undefined` - takes the parent value
-	     *      `true`      - takes the DOM calculated value
-	     *      `false`     - value defined by setting an aspect ratio
-	     *  ```
-	     *
-	     *  @example
-	     *
-	     *      var context = Engine.createContext();
-	     *
-	     *      var surface = new Surface({
-	     *          size : [100,100],
-	     *          properties : {background : 'red'}
-	     *      });
-	     *
-	     *      var sizeNode = new SizeNode({
-	     *          size : [100, undefined],
-	     *          margins : [50, 50]
-	     *      });
-	     *
-	     *      context.add(sizeNode).add(surface);
-	     *
-	     *      Engine.start();
-	     *
-	     * @class SizeNode
-	     * @namespace Core
-	     * @constructor
-	     * @param sources {Object}                      Object of size sources
-	     * @param [sources.size] {Stream|Array}         Size source
-	     * @param [sources.margin] {Stream|Array}       Margin source
-	     * @param [sources.proportions] {Stream|Array}  Proportions source
-	     * @param [sources.aspectRatio] {Stream|Number} Aspect ratio source
-	     */
-	    function SizeNode(sources) {
-	        this.stream = _createStream(sources);
-	        EventHandler.setOutputHandler(this, this.stream);
-
-	        this.stream._eventInput.on('start', function(data){
-	            this.stream.trigger('resize', data);
-	        }.bind(this));
-
-	        this.stream._eventInput.on('update', function(data){
-	            this.stream.trigger('resize', data);
-	        }.bind(this));
-
-	        this.stream._eventInput.on('end', function(data){
-	            this.stream.trigger('resize', data);
-	        }.bind(this));
-	    }
-
-	    /**
-	     * Introduce new data streams to the size node in {key : value} pairs.
-	     *  Here the `key` is one of "size", "proportions" or "marins".
-	     *  The `value` is either a stream, or a simple type like a `Number` or `Array`.
-	     *  Simple types will be wrapped in an `Observerable` to emit appropriate events.
-	     *
-	     * @method set
-	     * @param obj {Object}      Object of data sources
-	     */
-	    SizeNode.prototype.set = function(obj){
-	        // TODO: be able to overwrite streams. Not only add
-	        for (var key in obj){
-	            var value = obj[key];
-
-	            var source = (value instanceof SimpleStream)
-	                ? value
-	                : new SizeObservable(value);
-
-	            this.stream.addStream(key, source);
-	        }
-	    };
-
-	    function _createStream(sources){
-	        for (var key in sources){
-	            var value = sources[key];
-	            if (typeof value == 'number' || value instanceof Array){
-	                var source = new SizeObservable(value);
-	                sources[key] = source;
-	            }
-	        }
-	        return ResizeStream.merge(sources);
-	    }
-
-	    module.exports = SizeNode;
-	}.call(exports, __webpack_require__, exports, module), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
-
-
-/***/ },
-/* 18 */
-/***/ function(module, exports, __webpack_require__) {
-
-	var __WEBPACK_AMD_DEFINE_RESULT__;/* Copyright © 2015 David Valdman */
-
-	/* Documentation in progress. May be outdated. */
-
-	!(__WEBPACK_AMD_DEFINE_RESULT__ = function(require, exports, module) {
-	    var SimpleStream = __webpack_require__(9);
-	    var preTickQueue = __webpack_require__(12);
-	    var dirtyQueue = __webpack_require__(14);
-
-	    /**
-	     * A SizeObservable is a stream for resize events set discretely in time, as opposed to continuously.
-	     *  It emits appropriate `resize` events upon calling the `set` method.
-	     *
-	     * @class Observable
-	     * @constructor
-	     * @private
-	     * @extends Streams.SimpleStream
-	     * @param value {Array} Size
-	     */
-	    function SizeObservable(value){
-	        SimpleStream.call(this);
-	        this.value = value;
-
-	        if (value !== undefined) this.set(value);
-	    }
-
-	    SizeObservable.prototype = Object.create(SimpleStream.prototype);
-	    SizeObservable.prototype.constructor = SizeObservable;
-
-	    /**
-	     * Getter for the provided size.
-	     *
-	     * @method get
-	     * @return {Array}
-	     */
-	    SizeObservable.prototype.get = function(){
-	        return this.value;
-	    };
-
-	    /**
-	     * Setter for the provided size.
-	     *
-	     * @method set
-	     * @param value {Array} Size
-	     */
-	    SizeObservable.prototype.set = function(value){
-	        var self = this;
-	        preTickQueue.push(function(){
-	            self.value = value;
-	            self.emit('resize', value);
-	            dirtyQueue.push(function(){
-	                self.emit('resize', value);
-	            });
-	        });
-	    };
-
-	    module.exports = SizeObservable;
-	}.call(exports, __webpack_require__, exports, module), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
-
-
-/***/ },
-/* 19 */
-/***/ function(module, exports, __webpack_require__) {
-
-	var __WEBPACK_AMD_DEFINE_RESULT__;/* Copyright © 2015 David Valdman */
-
-	!(__WEBPACK_AMD_DEFINE_RESULT__ = function(require, exports, module) {
-	    var EventHandler = __webpack_require__(5);
-	    var SimpleStream = __webpack_require__(9);
-	    var Stream = __webpack_require__(7);
-	    var Observable = __webpack_require__(20);
-
-	    /**
-	     * Encapsulates a stream of layout data (transform, origin, align, opacity).
-	     *  Listens on start/update/end events, batches them, and emits them downstream
-	     *  to descendant layout nodes.
-	     *
-	     *  @example
-	     *
-	     *      var context = Engine.createContext();
-	     *
-	     *      var surface = new Surface({
-	     *          size : [100,100],
-	     *          properties : {background : 'red'}
-	     *      });
-	     *
-	     *      var opacity = new Transitionable(1);
-	     *
-	     *      var layout = new LayoutNode({
-	     *          transform : Transform.translateX(100),
-	     *          opacity : opacity
-	     *      });
-	     *
-	     *      context.add(layout).add(surface);
-	     *
-	     *      Engine.on('click', function(){
-	     *          opacity.set(0, {duration : 1000});
-	     *      });
-	     *
-	     *      Engine.start();
-	     *
-	     * @class LayoutNode
-	     * @constructor
-	     * @namespace Core
-	     * @param sources {Object}                          Object of layout sources
-	     * @param [sources.transform] {Stream|Transform}    Transform source
-	     * @param [sources.align] {Stream|Array}            Align source
-	     * @param [sources.origin] {Stream|Array}           Origin source
-	     * @param [sources.opacity] {Stream|Number}         Opacity source
-	     */
-	    function LayoutNode(sources) {
-	        this.stream = _createStream(sources);
-	        EventHandler.setOutputHandler(this, this.stream);
-	    }
-
-	    /**
-	     * Introduce new data streams to the layout node in {key : value} pairs.
-	     *  Here the `key` is one of "transform", "origin", "align" or "opacity".
-	     *  The `value` is either a stream, or a simple type like a `Number` or `Array`.
-	     *  Simple types will be wrapped in an `Observerable` to emit appropriate events.
-	     *
-	     * @method set
-	     * @param sources {Object}      Object of data sources
-	     */
-	    LayoutNode.prototype.set = function(sources){
-	        // TODO: be able to overwrite streams. Not only add
-	        for (var key in sources){
-	            var value = sources[key];
-
-	            var source = (value instanceof SimpleStream)
-	                ? value
-	                : new Observable(value);
-
-	            this.stream.addStream(key, source);
-	        }
-	    };
-
-	    function _createStream(sources){
-	        for (var key in sources){
-	            var value = sources[key];
-	            if (typeof value === 'number' || value instanceof Array){
-	                var source = new Observable(value);
-	                sources[key] = source;
-	            }
-	        }
-	        return Stream.merge(sources);
-	    }
-
-	    module.exports = LayoutNode;
-	}.call(exports, __webpack_require__, exports, module), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
-
-
-/***/ },
-/* 20 */
-/***/ function(module, exports, __webpack_require__) {
-
-	var __WEBPACK_AMD_DEFINE_RESULT__;/* Copyright © 2015 David Valdman */
-
-	/* Documentation in progress. May be outdated. */
-
-	!(__WEBPACK_AMD_DEFINE_RESULT__ = function(require, exports, module) {
-	    var SimpleStream = __webpack_require__(9);
-	    var preTickQueue = __webpack_require__(12);
-	    var dirtyQueue = __webpack_require__(14);
-
-	    /**
-	     * An Observable is a stream for events set discretely in time, as opposed to continuously.
-	     *  It emits appropriate `start` and `end` events upon calling the `set` method.
-	     *
-	     * @class Observable
-	     * @constructor
-	     * @private
-	     * @extends Streams.Stream
-	     * @param value {Number, String, Array, Object} Value
-	     */
-	    function Observable(value){
-	        SimpleStream.call(this);
-	        this.value = value;
-
-	        if (value !== undefined) this.set(value);
-	    }
-
-	    Observable.prototype = Object.create(SimpleStream.prototype);
-	    Observable.prototype.constructor = Observable;
-
-	    /**
-	     * Getter for the provided value.
-	     *
-	     * @method get
-	     * @return {Number, String, Array, Object}
-	     */
-	    Observable.prototype.get = function(){
-	        return this.value;
-	    };
-
-	    /**
-	     * Setter for the provided value.
-	     *
-	     * @method set
-	     * @param value {Number, String, Array, Object} Value
-	     */
-	    Observable.prototype.set = function(value){
-	        var self = this;
-	        preTickQueue.push(function(){
-	            self.value = value;
-	            self.emit('start', value);
-
-	            dirtyQueue.push(function(){
-	                self.emit('end', value);
-	            });
-	        });
-	    };
-
-	    module.exports = Observable;
-	}.call(exports, __webpack_require__, exports, module), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
-
-
-/***/ },
-/* 21 */
-/***/ function(module, exports, __webpack_require__) {
-
-	var __WEBPACK_AMD_DEFINE_RESULT__;/* copyright © 2015 David Valdman */
-
-	!(__WEBPACK_AMD_DEFINE_RESULT__ = function(require, exports, module) {
-	    var Transform = __webpack_require__(22);
-
-	    var DEFAULT = {
-	        OPACITY : 1,
-	        TRANSFORM : Transform.identity,
-	        ORIGIN : null,
-	        ALIGN : null
-	    };
-
-	    /**
-	     * Defines the rules for composing layout specs: transform, align, origin and opacity.
-	     *  Transform is multiplied by the parent's transform (matrix multiplication).
-	     *  Align is a proportional offset relative to the parent size.
-	     *  Origin is a proportional offset relative to the current size.
-	     *  Opacity is multiplied by the parent's opacity.
-	     *
-	     * @method compose
-	     * @private
-	     * @param spec {object}           Object layout spec
-	     * @param parentSpec {object}     Parent layout spec
-	     * @param size {Array}            Object size
-	     * @return {object}               The composed layout spec
-	     */
-
-	    function compose(spec, parentSpec, size){
-	        var parentOpacity = (parentSpec.opacity !== undefined) ? parentSpec.opacity : DEFAULT.OPACITY;
-	        var parentTransform = parentSpec.transform || DEFAULT.TRANSFORM;
-
-	        var origin = spec.origin || DEFAULT.ORIGIN;
-	        var align = spec.align || DEFAULT.ALIGN;
-
-	        var opacity = (spec.opacity !== undefined)
-	            ? parentOpacity * spec.opacity
-	            : parentOpacity;
-
-	        var transform = (spec.transform)
-	            ? Transform.compose(parentTransform, spec.transform)
-	            : parentTransform;
-
-	        var nextSizeTransform = (spec.origin)
-	            ? parentTransform
-	            : parentSpec.nextSizeTransform || parentTransform;
-
-	        if (spec.size)
-	            nextSizeTransform = parentTransform;
-
-	        if (origin && (origin[0] || origin[1])){
-	            //TODO: allow origin to propogate when size is non-numeric
-	            var tx =  (typeof size[0] === 'number') ? -origin[0] * size[0] : 0;
-	            var ty =  (typeof size[1] === 'number') ? -origin[1] * size[1] : 0;
-	            transform = Transform.moveThen([tx, ty, 0], transform);
-	            origin = null;
-	        }
-
-	        if (size && align && (align[0] || align[1])) {
-	            var shift = _vecInContext([align[0] * size[0], align[1] * size[1], 0], nextSizeTransform);
-	            transform = Transform.thenMove(transform, shift);
-	            align = null;
-	        }
-
-	        return {
-	            transform : transform,
-	            opacity : opacity,
-	            origin : origin,
-	            align : align,
-	            nextSizeTransform : nextSizeTransform
-	        };
-	    }
-
-	    function _vecInContext(v, m) {
-	        return [
-	            v[0] * m[0] + v[1] * m[4] + v[2] * m[8],
-	            v[0] * m[1] + v[1] * m[5] + v[2] * m[9],
-	            v[0] * m[2] + v[1] * m[6] + v[2] * m[10]
-	        ];
-	    }
-
-	    module.exports = compose;
-	}.call(exports, __webpack_require__, exports, module), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
-
-
-/***/ },
-/* 22 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_RESULT__;/* This Source Code Form is subject to the terms of the Mozilla Public
@@ -2778,7 +2013,1084 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 23 */
+/* 8 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var __WEBPACK_AMD_DEFINE_RESULT__;/* Copyright © 2015 David Valdman */
+
+	!(__WEBPACK_AMD_DEFINE_RESULT__ = function(require, exports, module) {
+	    var EventHandler = __webpack_require__(5);
+	    var EventMapper = __webpack_require__(9);
+	    var SimpleStream = __webpack_require__(10);
+
+	    var preTickQueue = __webpack_require__(13);
+	    var postTickQueue = __webpack_require__(14);
+	    var dirtyQueue = __webpack_require__(15);
+	    var State = __webpack_require__(16);
+
+	    var EVENTS = {
+	        START : 'start',
+	        UPDATE : 'update',
+	        END : 'end',
+	        RESIZE : 'resize'
+	    };
+
+	    /**
+	     * Stream listens to `resize`, `start`, `update` and `end` events and
+	     *  emits `start`, `update` and `end` events. `Resize` events get
+	     *  unified with `start`, `update`, and `end` events depending on
+	     *  when they are fired within Samsara's engine cycle.
+	     *
+	     *  If listening to multiple sources, Stream emits a single event per
+	     *  Engine cycle.
+	     *
+	     *  @example
+	     *
+	     *      var position = new Transitionable([0,0]);
+	     *      var size = new EventEmitter();
+	     *
+	     *      var translationStream = Stream.lift(function(position, size){
+	     *          var translation = [
+	     *              position[0] + size[0],
+	     *              position[1] + size[1]
+	     *          ];
+	     *
+	     *          return Transform.translate(translation);
+	     *      }, [positionStream, sizeStream]);
+	     *
+	     *      translationStream.on('start', function(transform){
+	     *          console.log(transform);
+	     *      });
+	     *
+	     *      translationStream.on('update', function(transform){
+	     *          console.log(transform);
+	     *      });
+	     *
+	     *      translationStream.on('end', function(transform){
+	     *          console.log(transform);
+	     *      });
+	     *
+	     *      position.set([100, 50], {duration : 500});
+	     *      size.emit('resize', [100,100]);
+	     *
+	     * @class Stream
+	     * @extends Streams.SimpleStream
+	     * @namespace Streams
+	     * @param [options] {Object}            Options
+	     * @param [options.start] {Function}    Custom logic to map the `start` event
+	     * @param [options.update] {Function}   Custom logic to map the `update` event
+	     * @param [options.end] {Function}      Custom logic to map the `end` event
+	     * @constructor
+	     */
+	    function Stream(options){
+	        this._eventInput = new EventHandler();
+	        this._eventOutput = new EventHandler();
+	        EventHandler.setInputHandler(this, this._eventInput);
+	        EventHandler.setOutputHandler(this, this._eventOutput);
+
+	        var isUpdating = false;
+	        var dirtyStart = false;
+	        var dirtyUpdate = false;
+	        var dirtyEnd = false;
+
+	        function start(data){
+	            var payload = options && options.start ? options.start(data) : data;
+	            if (payload !== false) this.emit(EVENTS.START, payload);
+	            dirtyStart = false;
+	        }
+
+	        function update(data){
+	            var payload = options && options.update ? options.update(data) : data;
+	            if (payload !== false) this.emit(EVENTS.UPDATE, payload);
+	            dirtyUpdate = false;
+	        }
+
+	        function end(data){
+	            var payload = options && options.end ? options.end(data) : data;
+	            if (payload !== false) this.emit(EVENTS.END, payload);
+	            dirtyEnd = false;
+	        }
+
+	        this._eventInput.on(EVENTS.START, function(data){
+	            if (dirtyStart || isUpdating) return;
+	            dirtyStart = true;
+	            preTickQueue.push(start.bind(this, data));
+	        }.bind(this));
+
+	        this._eventInput.on(EVENTS.UPDATE, function(data){
+	            if (dirtyUpdate) return;
+	            dirtyUpdate = true;
+	            isUpdating = true;
+	            postTickQueue.push(update.bind(this, data));
+	        }.bind(this));
+
+	        this._eventInput.on(EVENTS.END, function(data){
+	            if (dirtyEnd) return;
+	            dirtyEnd = true;
+	            isUpdating = false;
+	            dirtyQueue.push(end.bind(this, data));
+	        }.bind(this));
+
+	        this._eventInput.on(EVENTS.RESIZE, function(data){
+	            switch (State.get()){
+	                case State.STATES.START:
+	                    this.trigger(EVENTS.START, data);
+	                    break;
+	                case State.STATES.UPDATE:
+	                    this.trigger(EVENTS.UPDATE, data);
+	                    break;
+	                case State.STATES.END:
+	                    this.trigger(EVENTS.END, data);
+	                    break;
+	            }
+	        }.bind(this));
+	    }
+
+	    Stream.prototype = Object.create(SimpleStream.prototype);
+	    Stream.prototype.constructor = Stream;
+
+	    /**
+	     * Extends SimpleStream.lift
+	     *
+	     * @static
+	     * @return
+	     */
+	    Stream.lift = SimpleStream.lift;
+
+	    /**
+	     * Batches events for provided object of streams in
+	     *  {key : stream} pairs. Emits one event per Engine cycle.
+	     *
+	     * @method merge
+	     * @static
+	     * @param streams {Object}  Dictionary of `resize` streams
+	     */
+	    Stream.merge = function(streamObj){
+	        var mergedStream = new Stream();
+	        var mergedData = (streamObj instanceof Array) ? [] : {};
+
+	        mergedStream.addStream = function(key, stream){
+	            var mapper = (function(key){
+	                return new EventMapper(function(data){
+	                    mergedData[key] = data;
+	                    return mergedData;
+	                });
+	            })(key);
+
+	            mergedStream.subscribe(mapper).subscribe(stream);
+	        };
+
+	        for (var key in streamObj){
+	            var stream = streamObj[key];
+	            mergedStream.addStream(key, stream);
+	        }
+
+	        return mergedStream;
+	    };
+
+	    module.exports = Stream;
+	}.call(exports, __webpack_require__, exports, module), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
+
+
+/***/ },
+/* 9 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var __WEBPACK_AMD_DEFINE_RESULT__;/* copyright © 2015 David Valdman */
+
+	!(__WEBPACK_AMD_DEFINE_RESULT__ = function(require, exports, module) {
+	    var EventHandler = __webpack_require__(5);
+
+	    /**
+	     * EventMapper modifies the data payload of an event based on
+	     *  a provided function.
+	     *
+	     *  Note: it does not modify the event's `type`.
+	     *
+	     *  @example
+	     *
+	     *      var eventMapper = new EventMapper(function(payload){
+	     *          return payload.x + payload.y
+	     *      });
+	     *
+	     *      var eventEmitter = new EventEmitter();
+	     *
+	     *      eventMapper.subscribe(eventEmitter);
+	     *
+	     *      eventMapper.on('name', function(value){
+	     *          alert(value);
+	     *      });
+	     *
+	     *      eventEmitter.emit('name', {x : 1, y : 2}); // alerts 3
+	     *
+	     * @class EventMapper
+	     * @constructor
+	     * @param map {Function}  Function to modify the event payload
+	     */
+	    function EventMapper(map) {
+	        EventHandler.call(this);
+	        this._mappingFunction = map;
+	    }
+
+	    EventMapper.prototype = Object.create(EventHandler.prototype);
+	    EventMapper.prototype.constructor = EventMapper;
+
+	    /**
+	     * Emit mapped event.
+	     *
+	     * @method emit
+	     * @param type {String} Channel name
+	     * @param data {Object} Payload
+	     */
+	    EventMapper.prototype.emit = function emit(type, data) {
+	        var mappedData = this._mappingFunction(data);
+	        EventHandler.prototype.emit.call(this, type, mappedData);
+	    };
+
+	    /**
+	     * Alias of emit.
+	     *
+	     * @method trigger
+	     * @param type {String} Channel name
+	     * @param data {Object} Payload
+	     */
+	    EventMapper.prototype.trigger = EventMapper.prototype.emit;
+
+	    module.exports = EventMapper;
+	}.call(exports, __webpack_require__, exports, module), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
+
+
+/***/ },
+/* 10 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var __WEBPACK_AMD_DEFINE_RESULT__;/* Copyright © 2015 David Valdman */
+
+	!(__WEBPACK_AMD_DEFINE_RESULT__ = function(require, exports, module) {
+	    var EventHandler = __webpack_require__(5);
+	    var EventMapper = __webpack_require__(9);
+	    var EventFilter = __webpack_require__(11);
+	    var EventSplitter = __webpack_require__(12);
+
+	    /**
+	     * A SimpleStream wraps an EventHandler and provides convenience
+	     *  methods of `map`, `filter`, `split`, and `pluck` to
+	     *  transform one stream into another.
+	     *
+	     * @example
+	     *
+	     * @class SimpleStream
+	     * @extends Core.EventHandler
+	     * @private
+	     * @namespace Streams
+	     * @constructor
+	     */
+	    function SimpleStream(){
+	        EventHandler.call(this);
+	    }
+
+	    SimpleStream.prototype = Object.create(EventHandler.prototype);
+	    SimpleStream.prototype.constructor = SimpleStream;
+
+	    /**
+	     * Map converts the current stream into a new stream
+	     *  with a modified (mapped) data payload.
+	     *
+	     * @method map
+	     * @param mapperFn {Function}   Function to map event payload
+	     */
+	    SimpleStream.prototype.map = function(mapperFn){
+	        var stream = new SimpleStream();
+	        var mapper = new EventMapper(mapperFn);
+	        stream.subscribe(mapper).subscribe(this);
+	        return stream;
+	    };
+
+	    /**
+	     * Filter converts the current stream into a new stream
+	     *  that only emits if the filter condition is satisfied.
+	     *  The function should return a Boolean.
+	     *
+	     * @method filter
+	     * @param filterFn {Function}   Function to filter event payload
+	     */
+	    SimpleStream.prototype.filter = function(filterFn){
+	        var filter = new EventFilter(filterFn);
+	        var filteredStream = new SimpleStream();
+	        filteredStream.subscribe(filter).subscribe(this);
+	        return filteredStream;
+	    };
+
+	    /**
+	     * Split maps one of several streams based on custom logic.
+	     *  The function should return an EventEmitter.
+	     *
+	     * @method split
+	     * @param splitterFn {Function}  Splitter function
+	     */
+	    SimpleStream.prototype.split = function(splitterFn){
+	        var splitter = new EventSplitter(splitterFn);
+	        var splitStream = new SimpleStream();
+	        splitStream.subscribe(splitter).subscribe(this);
+	        return splitStream;
+	    };
+
+	    /**
+	     * Pluck is an opinionated mapper. It projects a Stream
+	     *  onto one of its return values.
+	     *
+	     *  Useful if a Stream returns an array or an object.
+	     *
+	     * @method pluck
+	     * @param key {String|Number}   Key to project event payload onto
+	     */
+	    SimpleStream.prototype.pluck = function(key){
+	        return this.map(function(value){
+	            return value[key];
+	        });
+	    };
+
+	    //TODO: can this be inherited by other streams?
+	    SimpleStream.merge = function(){};
+
+	    /**
+	     * Lift is like map, except it maps several event sources,
+	     *  not only one.
+	     *
+	     *  @example
+	     *
+	     *      var liftedStream = SimpleStream.lift(function(payload1, payload2){
+	     *          return payload1 + payload2;
+	     *      }, [stream2, stream2]);
+	     *
+	     *      liftedStream.on('name'), function(data){
+	     *          // data = 3;
+	     *      });
+	     *
+	     *      stream2.emit('name', 1);
+	     *      stream2.emit('name', 2);
+	     *
+	     * @method lift
+	     * @static
+	     * @param map {Function}            Function to map stream payloads
+	     * @param streams {Array|Object}    Stream sources
+	     */
+	    SimpleStream.lift = function(map, streams){
+	        //TODO: fix comma separated arguments
+	        var mergedStream = (streams instanceof Array)
+	            ? this.merge(streams)
+	            : this.merge.apply(null, Array.prototype.splice.call(arguments, 1));
+
+	        var mappedStream = new EventMapper(function liftMap(data){
+	            return map.apply(null, data);
+	        });
+
+	        var liftedStream = new SimpleStream();
+	        liftedStream.subscribe(mappedStream).subscribe(mergedStream);
+
+	        return liftedStream;
+	    };
+
+	    module.exports = SimpleStream;
+	}.call(exports, __webpack_require__, exports, module), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
+
+
+/***/ },
+/* 11 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var __WEBPACK_AMD_DEFINE_RESULT__;/* This Source Code Form is subject to the terms of the Mozilla Public
+	 * License, v. 2.0. If a copy of the MPL was not distributed with this
+	 * file, You can obtain one at http://mozilla.org/MPL/2.0/.
+	 *
+	 * @license MPL 2.0
+	 * @copyright Famous Industries, Inc. 2014
+	 */
+
+	/* Modified work copyright © 2015 David Valdman */
+
+	!(__WEBPACK_AMD_DEFINE_RESULT__ = function(require, exports, module) {
+	    var EventHandler = __webpack_require__(5);
+
+	    /**
+	     * EventFilter regulates the broadcasting of events based on
+	     *  a specified condition prescribed by a provided function
+	     *  with the signature `(type, data) -> Boolean`
+	     *
+	     *  @example
+	     *
+	     *      var eventFilter = new EventFilter(function(type, payload){
+	     *          return (payload.value == 0);
+	     *      });
+	     *
+	     *      var eventEmitter = new EventEmitter();
+	     *
+	     *      eventFilter.subscribe(eventEmitter);
+	     *
+	     *      eventFilter.on('click', function(data){
+	     *          alert('fired');
+	     *      });
+	     *
+	     *      eventEmitter.emit('click', {value : 0}); // fired
+	     *      eventEmitter.emit('click', {value : 1}); // doesn't fire
+	     *
+	     * @class EventFilter
+	     * @namespace Events
+	     * @constructor
+	     * @param filter {Function}  Function returning a Boolean
+	     */
+	    function EventFilter(filter) {
+	        EventHandler.call(this);
+	        this._condition = filter;
+	    }
+	    EventFilter.prototype = Object.create(EventHandler.prototype);
+	    EventFilter.prototype.constructor = EventFilter;
+
+	    /**
+	     * Emit event if the condition is satisfied.
+	     *
+	     * @method emit
+	     * @param type {String} Channel name
+	     * @param data {Object} Payload
+	     */
+	    EventFilter.prototype.emit = function emit(type, data) {
+	        if (!this._condition(type, data)) return;
+	        EventHandler.prototype.emit.apply(this, arguments);
+	    };
+
+	    /**
+	     * Alias of emit.
+	     *
+	     * @method trigger
+	     * @param type {String} Channel name
+	     * @param data {Object} Payload
+	     */
+	    EventFilter.prototype.trigger = EventFilter.prototype.emit;
+
+	    module.exports = EventFilter;
+	}.call(exports, __webpack_require__, exports, module), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
+
+
+/***/ },
+/* 12 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var __WEBPACK_AMD_DEFINE_RESULT__;/* This Source Code Form is subject to the terms of the Mozilla Public
+	 * License, v. 2.0. If a copy of the MPL was not distributed with this
+	 * file, You can obtain one at http://mozilla.org/MPL/2.0/.
+	 *
+	 * @license MPL 2.0
+	 * @copyright Famous Industries, Inc. 2014
+	 */
+
+	/* Modified work copyright © 2015 David Valdman */
+
+	!(__WEBPACK_AMD_DEFINE_RESULT__ = function(require, exports, module) {
+	    var EventHandler = __webpack_require__(5);
+
+	    /**
+	     * EventSplitter routes events to various event destinations
+	     *  based on custom logic. The return of the provided splitter
+	     *  function should be of type EventEmitter.
+	     *
+	     *  @example
+	     *
+	     *      var eventEmitter = new EventEmitter();
+	     *      var eventEmitterX = new eventEmitter();
+	     *      var eventEmitterY = new eventEmitter();
+	     *
+	     *      var eventSplitter = new EventSplitter(function(payload){
+	     *          return (payload.x > payload.y)
+	     *              ? eventEmitterX;
+	     *              : eventEmitterY;
+	     *      });
+	     *
+	     *      eventSplitter.subscribe(eventEmitter);
+	     *
+	     *      eventEmitterX.on('move', function(){
+	     *          console.log('x is bigger')
+	     *      });
+	     *
+	     *      eventEmitterY.on('move', function(){
+	     *          console.log('y is bigger')
+	     *      })
+	     *
+	     *      eventEmitter.emit('move', {x : 3, y : 2}); // x is bigger
+	     *
+	     * @class EventSplitter
+	     * @constructor
+	     * @param splitter {Function}
+	     */
+	    function EventSplitter(splitter) {
+	        EventHandler.call(this);
+	        this._splitter = splitter;
+	    }
+	    EventSplitter.prototype = Object.create(EventHandler.prototype);
+	    EventSplitter.prototype.constructor = EventSplitter;
+
+	    /**
+	     * Emit event.
+	     *
+	     * @method emit
+	     * @param type {String} Channel name
+	     * @param data {Object} Payload
+	     */
+	    EventSplitter.prototype.emit = function emit(type, data) {
+	        var target = this._splitter.apply(this, arguments);
+	        if (target && target.emit instanceof Function)
+	            target.emit(type, data);
+	    };
+
+	    /**
+	     * Alias of emit.
+	     *
+	     * @method trigger
+	     * @param type {String} Channel name
+	     * @param data {Object} Payload
+	     */
+	    EventSplitter.prototype.trigger = EventSplitter.prototype.emit;
+
+	    module.exports = EventSplitter;
+	}.call(exports, __webpack_require__, exports, module), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
+
+
+/***/ },
+/* 13 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var __WEBPACK_AMD_DEFINE_RESULT__;/* copyright © 2015 David Valdman */
+
+	!(__WEBPACK_AMD_DEFINE_RESULT__ = function(require, exports, module) {
+	    /**
+	     * Queue that batches `start` events.
+	     *  This queue is traversed first (but after DOM events are executed) by the Engine.
+	     *
+	     *  @private
+	     */
+
+	    module.exports = [];
+	}.call(exports, __webpack_require__, exports, module), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
+
+/***/ },
+/* 14 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var __WEBPACK_AMD_DEFINE_RESULT__;/* copyright © 2015 David Valdman */
+
+	!(__WEBPACK_AMD_DEFINE_RESULT__ = function(require, exports, module) {
+	    /**
+	     * Queue that batches `update` events.
+	     *  This queue is traversed after the `preTickQueue` but before `dirtQueue`
+	     *  by the Engine.
+	     *
+	     *  @private
+	     */
+
+	    module.exports = [];
+	}.call(exports, __webpack_require__, exports, module), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
+
+/***/ },
+/* 15 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var __WEBPACK_AMD_DEFINE_RESULT__;/* copyright © 2015 David Valdman */
+
+	!(__WEBPACK_AMD_DEFINE_RESULT__ = function(require, exports, module) {
+	    /**
+	     * Queue that batches `end` and `dirty` events.
+	     *  This queue is traversed after the `postTickQueue` by the Engine.
+	     *
+	     *  @private
+	     */
+
+	    module.exports = [];
+	}.call(exports, __webpack_require__, exports, module), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
+
+/***/ },
+/* 16 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var __WEBPACK_AMD_DEFINE_RESULT__;/* Copyright © 2015 David Valdman */
+
+	!(__WEBPACK_AMD_DEFINE_RESULT__ = function(require, exports, module) {
+	    var STATE = {
+	        NONE : -1,
+	        START : 0,
+	        UPDATE : 1,
+	        END : 2
+	    };
+
+	    var currentState = STATE.START;
+
+	    /**
+	     * SUE specified the global state of the application, whether it is in a
+	     *  `start`, `update` or `end` state. This is necessary for coordinating
+	     *  `resize` events with `start`, `update`, `end` states in stream.
+	     *
+	     * @class SUE
+	     * @namespace Core
+	     * @static
+	     * @private
+	     */
+	    var SUE = {};
+
+	    SUE.STATES = STATE;
+
+	    SUE.set = function set(state){
+	        currentState = state;
+	    };
+
+	    SUE.get = function get(){
+	        return currentState;
+	    };
+
+	    module.exports = SUE;
+	}.call(exports, __webpack_require__, exports, module), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
+
+/***/ },
+/* 17 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var __WEBPACK_AMD_DEFINE_RESULT__;/* Copyright © 2015 David Valdman */
+
+	!(__WEBPACK_AMD_DEFINE_RESULT__ = function(require, exports, module) {
+	    var SimpleStream = __webpack_require__(10);
+	    var EventMapper = __webpack_require__(9);
+	    var EventHandler = __webpack_require__(5);
+
+	    var preTickQueue = __webpack_require__(13);
+	    var postTickQueue = __webpack_require__(14);
+	    var dirtyQueue = __webpack_require__(15);
+	    var State = __webpack_require__(16);
+
+	    var EVENTS = {
+	        RESIZE : 'resize'
+	    };
+
+	    /**
+	     * ResizeStream is a stream that listens to and emits `resize` events.
+	     *
+	     * @class ResizeStream
+	     * @private
+	     * @extends Streams.Stream
+	     * @namespace Streams
+	     * @param [options] {Object}            Options
+	     * @param [options.resize] {Function}   Custom logic to map the `resize` event
+	     * @constructor
+	     */
+	    function ResizeStream(options){
+	        var dirtyResize = false;
+
+	        function resize(data){
+	            var payload = (options && options.resize)
+	                ? options.resize(data)
+	                : data;
+	            this.emit(EVENTS.RESIZE, payload);
+	            dirtyResize = false;
+	        }
+
+	        this._eventInput = new EventHandler();
+	        this._eventOutput = new EventHandler();
+	        EventHandler.setInputHandler(this, this._eventInput);
+	        EventHandler.setOutputHandler(this, this._eventOutput);
+
+	        this._eventInput.on(EVENTS.RESIZE, function(data){
+	            if (!dirtyResize) {
+	                var queue;
+	                switch (State.get()){
+	                    case State.STATES.START:
+	                        queue = preTickQueue;
+	                        break;
+	                    case State.STATES.UPDATE:
+	                        queue = postTickQueue;
+	                        break;
+	                    case State.STATES.END:
+	                        queue = dirtyQueue;
+	                        break;
+	                }
+	                queue.push(resize.bind(this, data));
+	            }
+	            dirtyResize = true;
+	        }.bind(this));
+	    }
+
+	    ResizeStream.prototype = Object.create(SimpleStream.prototype);
+	    ResizeStream.prototype.constructor = ResizeStream;
+
+	    /**
+	     * Extends SimpleStream.lift
+	     *
+	     * @method lift
+	     * @static
+	     */
+	    ResizeStream.lift = SimpleStream.lift;
+
+	    /**
+	     * Batches resize events for provided object of streams in
+	     *  {key : stream} pairs. Emits one `resize` event per Engine cycle.
+	     *
+	     * @method merge
+	     * @static
+	     * @private
+	     * @param streams {Object}  Dictionary of `resize` streams
+	     */
+	    ResizeStream.merge = function(streams){
+	        var mergedStream = new ResizeStream();
+	        var mergedData = (streams instanceof Array) ? [] : {};
+
+	        mergedStream.addStream = function(key, stream){
+	            var mapper = (function(key){
+	                return new EventMapper(function(data){
+	                    mergedData[key] = data;
+	                    return mergedData;
+	                });
+	            })(key);
+
+	            mergedStream.subscribe(mapper).subscribe(stream);
+	        };
+
+	        for (var key in streams){
+	            var stream = streams[key];
+	            mergedStream.addStream(key, stream);
+	        }
+
+	        return mergedStream;
+	    };
+
+	    module.exports = ResizeStream;
+	}.call(exports, __webpack_require__, exports, module), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
+
+
+/***/ },
+/* 18 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var __WEBPACK_AMD_DEFINE_RESULT__;/* Copyright © 2015 David Valdman */
+
+	!(__WEBPACK_AMD_DEFINE_RESULT__ = function(require, exports, module) {
+	    var EventHandler = __webpack_require__(5);
+	    var SimpleStream = __webpack_require__(10);
+	    var ResizeStream = __webpack_require__(17);
+	    var SizeObservable = __webpack_require__(19);
+
+	    /**
+	     * Encapsulates a stream of size data (size, proportions, margins).
+	     *  Listens on start/update/end events, batches them, and emits resize events downstream
+	     *  to descendant size nodes.
+	     *
+	     *  Size can be defined with height and width given numerically, but
+	     *  they can also be:
+	     *
+	     *  ```
+	     *      `undefined` - takes the parent value
+	     *      `true`      - takes the DOM calculated value
+	     *      `false`     - value defined by setting an aspect ratio
+	     *  ```
+	     *
+	     *  @example
+	     *
+	     *      var context = Engine.createContext();
+	     *
+	     *      var surface = new Surface({
+	     *          size : [100,100],
+	     *          properties : {background : 'red'}
+	     *      });
+	     *
+	     *      var sizeNode = new SizeNode({
+	     *          size : [100, undefined],
+	     *          margins : [50, 50]
+	     *      });
+	     *
+	     *      context.add(sizeNode).add(surface);
+	     *
+	     *      Engine.start();
+	     *
+	     * @class SizeNode
+	     * @namespace Core
+	     * @constructor
+	     * @param sources {Object}                      Object of size sources
+	     * @param [sources.size] {Stream|Array}         Size source
+	     * @param [sources.margin] {Stream|Array}       Margin source
+	     * @param [sources.proportions] {Stream|Array}  Proportions source
+	     * @param [sources.aspectRatio] {Stream|Number} Aspect ratio source
+	     */
+	    function SizeNode(sources) {
+	        this.stream = _createStream(sources);
+	        EventHandler.setOutputHandler(this, this.stream);
+
+	        this.stream._eventInput.on('start', function(data){
+	            this.stream.trigger('resize', data);
+	        }.bind(this));
+
+	        this.stream._eventInput.on('update', function(data){
+	            this.stream.trigger('resize', data);
+	        }.bind(this));
+
+	        this.stream._eventInput.on('end', function(data){
+	            this.stream.trigger('resize', data);
+	        }.bind(this));
+	    }
+
+	    /**
+	     * Introduce new data streams to the size node in {key : value} pairs.
+	     *  Here the `key` is one of "size", "proportions" or "marins".
+	     *  The `value` is either a stream, or a simple type like a `Number` or `Array`.
+	     *  Simple types will be wrapped in an `Observerable` to emit appropriate events.
+	     *
+	     * @method set
+	     * @param obj {Object}      Object of data sources
+	     */
+	    SizeNode.prototype.set = function(obj){
+	        // TODO: be able to overwrite streams. Not only add
+	        for (var key in obj){
+	            var value = obj[key];
+
+	            var source = (value instanceof SimpleStream)
+	                ? value
+	                : new SizeObservable(value);
+
+	            this.stream.addStream(key, source);
+	        }
+	    };
+
+	    function _createStream(sources){
+	        for (var key in sources){
+	            var value = sources[key];
+	            if (typeof value == 'number' || value instanceof Array){
+	                var source = new SizeObservable(value);
+	                sources[key] = source;
+	            }
+	        }
+	        return ResizeStream.merge(sources);
+	    }
+
+	    module.exports = SizeNode;
+	}.call(exports, __webpack_require__, exports, module), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
+
+
+/***/ },
+/* 19 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var __WEBPACK_AMD_DEFINE_RESULT__;/* Copyright © 2015 David Valdman */
+
+	/* Documentation in progress. May be outdated. */
+
+	!(__WEBPACK_AMD_DEFINE_RESULT__ = function(require, exports, module) {
+	    var SimpleStream = __webpack_require__(10);
+	    var preTickQueue = __webpack_require__(13);
+	    var dirtyQueue = __webpack_require__(15);
+
+	    /**
+	     * A SizeObservable is a stream for resize events set discretely in time, as opposed to continuously.
+	     *  It emits appropriate `resize` events upon calling the `set` method.
+	     *
+	     * @class Observable
+	     * @constructor
+	     * @private
+	     * @extends Streams.SimpleStream
+	     * @param value {Array} Size
+	     */
+	    function SizeObservable(value){
+	        SimpleStream.call(this);
+	        this.value = value;
+
+	        if (value !== undefined) this.set(value);
+	    }
+
+	    SizeObservable.prototype = Object.create(SimpleStream.prototype);
+	    SizeObservable.prototype.constructor = SizeObservable;
+
+	    /**
+	     * Getter for the provided size.
+	     *
+	     * @method get
+	     * @return {Array}
+	     */
+	    SizeObservable.prototype.get = function(){
+	        return this.value;
+	    };
+
+	    /**
+	     * Setter for the provided size.
+	     *
+	     * @method set
+	     * @param value {Array} Size
+	     */
+	    SizeObservable.prototype.set = function(value){
+	        var self = this;
+	        preTickQueue.push(function(){
+	            self.value = value;
+	            self.emit('resize', value);
+	            dirtyQueue.push(function(){
+	                self.emit('resize', value);
+	            });
+	        });
+	    };
+
+	    module.exports = SizeObservable;
+	}.call(exports, __webpack_require__, exports, module), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
+
+
+/***/ },
+/* 20 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var __WEBPACK_AMD_DEFINE_RESULT__;/* Copyright © 2015 David Valdman */
+
+	!(__WEBPACK_AMD_DEFINE_RESULT__ = function(require, exports, module) {
+	    var EventHandler = __webpack_require__(5);
+	    var SimpleStream = __webpack_require__(10);
+	    var Stream = __webpack_require__(8);
+	    var Observable = __webpack_require__(21);
+
+	    /**
+	     * Encapsulates a stream of layout data (transform, origin, align, opacity).
+	     *  Listens on start/update/end events, batches them, and emits them downstream
+	     *  to descendant layout nodes.
+	     *
+	     *  @example
+	     *
+	     *      var context = Engine.createContext();
+	     *
+	     *      var surface = new Surface({
+	     *          size : [100,100],
+	     *          properties : {background : 'red'}
+	     *      });
+	     *
+	     *      var opacity = new Transitionable(1);
+	     *
+	     *      var layout = new LayoutNode({
+	     *          transform : Transform.translateX(100),
+	     *          opacity : opacity
+	     *      });
+	     *
+	     *      context.add(layout).add(surface);
+	     *
+	     *      Engine.on('click', function(){
+	     *          opacity.set(0, {duration : 1000});
+	     *      });
+	     *
+	     *      Engine.start();
+	     *
+	     * @class LayoutNode
+	     * @constructor
+	     * @namespace Core
+	     * @param sources {Object}                          Object of layout sources
+	     * @param [sources.transform] {Stream|Transform}    Transform source
+	     * @param [sources.align] {Stream|Array}            Align source
+	     * @param [sources.origin] {Stream|Array}           Origin source
+	     * @param [sources.opacity] {Stream|Number}         Opacity source
+	     */
+	    function LayoutNode(sources) {
+	        this.stream = _createStream(sources);
+	        EventHandler.setOutputHandler(this, this.stream);
+	    }
+
+	    /**
+	     * Introduce new data streams to the layout node in {key : value} pairs.
+	     *  Here the `key` is one of "transform", "origin", "align" or "opacity".
+	     *  The `value` is either a stream, or a simple type like a `Number` or `Array`.
+	     *  Simple types will be wrapped in an `Observerable` to emit appropriate events.
+	     *
+	     * @method set
+	     * @param sources {Object}      Object of data sources
+	     */
+	    LayoutNode.prototype.set = function(sources){
+	        // TODO: be able to overwrite streams. Not only add
+	        for (var key in sources){
+	            var value = sources[key];
+
+	            var source = (value instanceof SimpleStream)
+	                ? value
+	                : new Observable(value);
+
+	            this.stream.addStream(key, source);
+	        }
+	    };
+
+	    function _createStream(sources){
+	        for (var key in sources){
+	            var value = sources[key];
+	            if (typeof value === 'number' || value instanceof Array){
+	                var source = new Observable(value);
+	                sources[key] = source;
+	            }
+	        }
+	        return Stream.merge(sources);
+	    }
+
+	    module.exports = LayoutNode;
+	}.call(exports, __webpack_require__, exports, module), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
+
+
+/***/ },
+/* 21 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var __WEBPACK_AMD_DEFINE_RESULT__;/* Copyright © 2015 David Valdman */
+
+	/* Documentation in progress. May be outdated. */
+
+	!(__WEBPACK_AMD_DEFINE_RESULT__ = function(require, exports, module) {
+	    var SimpleStream = __webpack_require__(10);
+	    var preTickQueue = __webpack_require__(13);
+	    var dirtyQueue = __webpack_require__(15);
+
+	    /**
+	     * An Observable is a stream for events set discretely in time, as opposed to continuously.
+	     *  It emits appropriate `start` and `end` events upon calling the `set` method.
+	     *
+	     * @class Observable
+	     * @constructor
+	     * @private
+	     * @extends Streams.Stream
+	     * @param value {Number, String, Array, Object} Value
+	     */
+	    function Observable(value){
+	        SimpleStream.call(this);
+	        this.value = value;
+
+	        if (value !== undefined) this.set(value);
+	    }
+
+	    Observable.prototype = Object.create(SimpleStream.prototype);
+	    Observable.prototype.constructor = Observable;
+
+	    /**
+	     * Getter for the provided value.
+	     *
+	     * @method get
+	     * @return {Number, String, Array, Object}
+	     */
+	    Observable.prototype.get = function(){
+	        return this.value;
+	    };
+
+	    /**
+	     * Setter for the provided value.
+	     *
+	     * @method set
+	     * @param value {Number, String, Array, Object} Value
+	     */
+	    Observable.prototype.set = function(value){
+	        var self = this;
+	        preTickQueue.push(function(){
+	            self.value = value;
+	            self.emit('start', value);
+
+	            dirtyQueue.push(function(){
+	                self.emit('end', value);
+	            });
+	        });
+	    };
+
+	    module.exports = Observable;
+	}.call(exports, __webpack_require__, exports, module), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
+
+
+/***/ },
+/* 22 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_RESULT__;/* copyright © 2015 David Valdman */
@@ -2846,7 +3158,384 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
+/* 23 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var __WEBPACK_AMD_DEFINE_RESULT__;/* copyright © 2015 David Valdman */
+
+	!(__WEBPACK_AMD_DEFINE_RESULT__ = function(require, exports, module) {
+	    var Transform = __webpack_require__(7);
+
+	    var DEFAULT = {
+	        OPACITY : 1,
+	        TRANSFORM : Transform.identity,
+	        ORIGIN : null,
+	        ALIGN : null
+	    };
+
+	    /**
+	     * Defines the rules for composing layout specs: transform, align, origin and opacity.
+	     *  Transform is multiplied by the parent's transform (matrix multiplication).
+	     *  Align is a proportional offset relative to the parent size.
+	     *  Origin is a proportional offset relative to the current size.
+	     *  Opacity is multiplied by the parent's opacity.
+	     *
+	     * @method compose
+	     * @private
+	     * @param spec {object}           Object layout spec
+	     * @param parentSpec {object}     Parent layout spec
+	     * @param size {Array}            Object size
+	     * @return {object}               The composed layout spec
+	     */
+
+	    function compose(spec, parentSpec, size){
+	        var parentOpacity = (parentSpec.opacity !== undefined) ? parentSpec.opacity : DEFAULT.OPACITY;
+	        var parentTransform = parentSpec.transform || DEFAULT.TRANSFORM;
+
+	        var origin = spec.origin || DEFAULT.ORIGIN;
+	        var align = spec.align || DEFAULT.ALIGN;
+
+	        var opacity = (spec.opacity !== undefined)
+	            ? parentOpacity * spec.opacity
+	            : parentOpacity;
+
+	        var transform = (spec.transform)
+	            ? Transform.compose(parentTransform, spec.transform)
+	            : parentTransform;
+
+	        var nextSizeTransform = (spec.origin)
+	            ? parentTransform
+	            : parentSpec.nextSizeTransform || parentTransform;
+
+	        if (spec.size)
+	            nextSizeTransform = parentTransform;
+
+	        if (origin && (origin[0] || origin[1])){
+	            //TODO: allow origin to propogate when size is non-numeric
+	            var tx =  (typeof size[0] === 'number') ? -origin[0] * size[0] : 0;
+	            var ty =  (typeof size[1] === 'number') ? -origin[1] * size[1] : 0;
+	            transform = Transform.moveThen([tx, ty, 0], transform);
+	            origin = null;
+	        }
+
+	        if (size && align && (align[0] || align[1])) {
+	            var shift = _vecInContext([align[0] * size[0], align[1] * size[1], 0], nextSizeTransform);
+	            transform = Transform.thenMove(transform, shift);
+	            align = null;
+	        }
+
+	        return {
+	            transform : transform,
+	            opacity : opacity,
+	            origin : origin,
+	            align : align,
+	            nextSizeTransform : nextSizeTransform
+	        };
+	    }
+
+	    function _vecInContext(v, m) {
+	        return [
+	            v[0] * m[0] + v[1] * m[4] + v[2] * m[8],
+	            v[0] * m[1] + v[1] * m[5] + v[2] * m[9],
+	            v[0] * m[2] + v[1] * m[6] + v[2] * m[10]
+	        ];
+	    }
+
+	    module.exports = compose;
+	}.call(exports, __webpack_require__, exports, module), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
+
+
+/***/ },
 /* 24 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var __WEBPACK_AMD_DEFINE_RESULT__;/* This Source Code Form is subject to the terms of the Mozilla Public
+	 * License, v. 2.0. If a copy of the MPL was not distributed with this
+	 * file, You can obtain one at http://mozilla.org/MPL/2.0/.
+	 *
+	 * @license MPL 2.0
+	 * @copyright Famous Industries, Inc. 2014
+	 */
+
+	/* Modified work copyright © 2015 David Valdman */
+
+	!(__WEBPACK_AMD_DEFINE_RESULT__ = function(require, exports, module) {
+	    var RootNode = __webpack_require__(25);
+	    var EventHandler = __webpack_require__(5);
+	    var ElementAllocator = __webpack_require__(27);
+	    var Transitionable = __webpack_require__(28);
+	    var ResizeStream = __webpack_require__(17);
+	    var Stream = __webpack_require__(8);
+	    var EventMapper = __webpack_require__(9);
+
+	    var elementType = 'div';
+	    var elementClass = 'samsara-context';
+
+	    /**
+	     * A Context defines a top-level DOM element inside which other nodes (like Surfaces) are rendered.
+	     *  This DOM element can be provided as an argument if it exists in the document,
+	     *  otherwise it is created for you and appended to the document's `<body>`.
+	     *
+	     *  The CSS class `samsara-context` is applied, which provides the minimal CSS necessary
+	     *  to create a performant 3D context (specifically `preserve-3d`).
+	     *
+	     *  As of now, `Context` is not typically instantiated on its own, but rather is
+	     *  created by calling `Engine.createContext()`. This may change in the near future.
+	     *
+	     *  @example
+	     *
+	     *      var context = Engine.createContext({
+	     *          el : document.querySelector('#myElement')
+	     *      });
+	     *
+	     *      var surface = new Surface({
+	     *          size : [100,100],
+	     *          properties : {background : 'red'}
+	     *      });
+	     *
+	     *      context.add(surface);
+	     *
+	     *      Engine.start();
+	     *
+	     * @class Context
+	     * @constructor
+	     * @namespace Core
+	     * @uses Core.RootNode
+	     * @param [options] {Object}    Options
+	     * @param [options.el] {Node}   DOM element which will serve as a container for added nodes
+	     */
+	    function Context(options) {
+	        options = options || {};
+	        var container = options.el || document.createElement(elementType);
+	        container.classList.add(elementClass);
+
+	        var allocator = new ElementAllocator(container);
+	        this._node = new RootNode(allocator);
+	        this._size = new ResizeStream();
+	        this._layout = new EventHandler();
+
+	        this.size = this._size.map(function(size){
+	            return (options.el)
+	                ? [container.clientWidth, container.clientHeight]
+	                : size;
+	        }.bind(this));
+
+	        this._node._size.subscribe(this.size);
+	        this._node._layout.subscribe(this._layout);
+
+	        this._perspective = new Transitionable(0);
+
+	        this._perspective.on('update', function(perspective){
+	            setPerspective(container, perspective);
+	        });
+
+	        this._perspective.on('end', function(perspective){
+	            setPerspective(container, perspective);
+	        });
+
+	        this.container = container;
+	    }
+
+	    /**
+	     * Extends the render tree beginning with the Context's RootNode with a new node.
+	     *  Delegates to RootNode's `add` method.
+	     *
+	     * @method add
+	     *
+	     * @param {Object}          Renderable
+	     * @return {RenderTreeNode} Wrapped node
+	     */
+	    Context.prototype.add = function add() {
+	        return RootNode.prototype.add.apply(this._node, arguments);
+	    };
+
+	    /**
+	     * Get current perspective of this Context in pixels.
+	     *
+	     * @method getPerspective
+	     * @return {Number} Perspective in pixels
+	     */
+	    Context.prototype.getPerspective = function getPerspective() {
+	        return this._perspective.get();
+	    };
+
+	    /**
+	     * Set current perspective of this context in pixels.
+	     *
+	     * @method setPerspective
+	     * @param perspective {Number}  Perspective in pixels
+	     * @param [transition] {Object} Transition definition
+	     * @param [callback] {Function} Callback executed on completion of transition
+	     */
+	    Context.prototype.setPerspective = function setPerspective(perspective, transition, callback) {
+	        this._perspective.set(perspective, transition, callback);
+	    };
+
+	    var usePrefix = !('perspective' in document.documentElement.style);
+
+	    var setPerspective = usePrefix
+	        ? function setPerspective(element, perspective) {
+	        element.style.webkitPerspective = perspective ? perspective.toFixed() + 'px' : '';
+	    }
+	        : function setPerspective(element, perspective) {
+	        element.style.perspective = perspective ? perspective.toFixed() + 'px' : '';
+	    };
+
+	    module.exports = Context;
+	}.call(exports, __webpack_require__, exports, module), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
+
+
+/***/ },
+/* 25 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var __WEBPACK_AMD_DEFINE_RESULT__;/* Copyright © 2015 David Valdman */
+
+	!(__WEBPACK_AMD_DEFINE_RESULT__ = function(require, exports, module) {
+	    var RenderTreeNode = __webpack_require__(26);
+
+	    /**
+	     * A RootNode is a first node in the Render Tree. It is like any other
+	     *  RenderTreeNode but with the additional responsibility of defining
+	     *  an allocating DOM node to render to.
+	     *
+	     * @class RootNode
+	     * @constructor
+	     * @private
+	     * @extends Core.RenderTreeNode
+	     * @param [allocator] {ElementAllocator} ElementAllocator
+	     */
+	    function RootNode(allocator) {
+	        RenderTreeNode.call(this);
+	        this.root = this;
+	        this.allocator = allocator;
+	    }
+
+	    RootNode.prototype = Object.create(RenderTreeNode.prototype);
+	    RootNode.prototype.constructor = RootNode;
+
+	    module.exports = RootNode;
+	}.call(exports, __webpack_require__, exports, module), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
+
+
+/***/ },
+/* 26 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var __WEBPACK_AMD_DEFINE_RESULT__;/* Copyright © 2015 David Valdman */
+
+	!(__WEBPACK_AMD_DEFINE_RESULT__ = function(require, exports, module) {
+	    var EventHandler = __webpack_require__(5);
+	    var Stream = __webpack_require__(8);
+	    var ResizeStream = __webpack_require__(17);
+	    var SizeNode = __webpack_require__(18);
+	    var LayoutNode = __webpack_require__(20);
+	    var layoutAlgebra = __webpack_require__(23);
+	    var sizeAlgebra = __webpack_require__(22);
+
+	    /**
+	     * A node in the render tree. As such, it wraps a layout or size node,
+	     *  providing them with an `add` method. By adding nodes, the render tree
+	     *  is constructed, the leaves of which are `Surfaces`.
+	     *
+	     *  @constructor
+	     *  @class RenderTreeNode
+	     *  @private
+	     *  @param object {SizeNode, LayoutNode, Surface, View}
+	     */
+	    function RenderTreeNode(object) {
+	        // layout and size inputs
+	        this._layout = new EventHandler();
+	        this._size = new EventHandler();
+
+	        // layout and size streams
+	        this.size = null;
+	        this.layout = null;
+
+	        this.root = null;
+
+	        if (object) _set.call(this, object);
+	    }
+
+	    /**
+	     * Extends the render tree with a new node. Similar to how a tree data structure
+	     *  is created, but instead of a node with an array of children, children subscribe
+	     *  to notifications from the parent.
+	     *
+	     *  This method also takes `Views` (subtrees) and `Surfaces` (leaves).
+	     *
+	     * @method add
+	     * @param node {SizeNode|LayoutNode|Surface|View} Node
+	     * @return {RenderTreeNode}
+	     */
+	    RenderTreeNode.prototype.add = function add(node) {
+	        var childNode;
+
+	        if (node._isView){
+	            if (this.root)
+	                node._node.root = this.root;
+	            else if (this.tempRoot)
+	                node._node.tempRoot = this.tempRoot;
+	            childNode = node;
+	        }
+	        else {
+	            childNode = new RenderTreeNode(node);
+	            if (this.tempRoot)
+	                childNode.tempRoot = this.tempRoot;
+	            else childNode.root = _getRootNode.call(this);
+	        }
+
+	        childNode._layout.subscribe(this.layout || this._layout);
+	        childNode._size.subscribe(this.size || this._size);
+
+	        return childNode;
+	    };
+
+	    function _getRootNode(){
+	        if (this.root) return this.root;
+	        if (this.tempRoot) return _getRootNode.call(this.tempRoot);
+	        return this;
+	    }
+
+	    function _set(object) {
+	        if (object instanceof SizeNode){
+	            this.size = ResizeStream.lift(
+	                function SGSizeAlgebra (objectSpec, parentSize){
+	                    if (!parentSize) return false;
+	                    return (objectSpec)
+	                        ? sizeAlgebra(objectSpec, parentSize)
+	                        : parentSize;
+	                },
+	                [object, this._size]
+	            );
+	            return;
+	        }
+
+	        if (object instanceof LayoutNode){
+	            this.layout = Stream.lift(
+	                function SGLayoutAlgebra (objectSpec, parentSpec, size){
+	                    if (!parentSpec || !size) return false;
+	                    return (objectSpec)
+	                        ? layoutAlgebra(objectSpec, parentSpec, size)
+	                        : parentSpec;
+	                },
+	                [object, this._layout, this._size]
+	            );
+	            return;
+	        }
+
+	        // object is a leaf node
+	        object._size.subscribe(this._size);
+	        object._layout.subscribe(this._layout);
+	        object._getRoot = _getRootNode.bind(this);
+	    }
+
+	    module.exports = RenderTreeNode;
+	}.call(exports, __webpack_require__, exports, module), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
+
+
+/***/ },
+/* 27 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_RESULT__;/* This Source Code Form is subject to the terms of the Mozilla Public
@@ -2936,7 +3625,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 25 */
+/* 28 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_RESULT__;/* This Source Code Form is subject to the terms of the Mozilla Public
@@ -2950,12 +3639,12 @@ return /******/ (function(modules) { // webpackBootstrap
 	/* Modified work copyright © 2015 David Valdman */
 
 	!(__WEBPACK_AMD_DEFINE_RESULT__ = function(require, exports, module) {
-	    var dirtyQueue = __webpack_require__(14);
-	    var preTickQueue = __webpack_require__(12);
-	    var tickQueue = __webpack_require__(26);
-	    var TweenTransition = __webpack_require__(27);
+	    var dirtyQueue = __webpack_require__(15);
+	    var preTickQueue = __webpack_require__(13);
+	    var tickQueue = __webpack_require__(29);
+	    var TweenTransition = __webpack_require__(30);
 	    var EventHandler = __webpack_require__(5);
-	    var SimpleStream = __webpack_require__(9);
+	    var SimpleStream = __webpack_require__(10);
 
 	    var transitionMethods = {};
 
@@ -3288,7 +3977,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 26 */
+/* 29 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_RESULT__;/* copyright © 2015 David Valdman */
@@ -3306,7 +3995,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	}.call(exports, __webpack_require__, exports, module), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
 
 /***/ },
-/* 27 */
+/* 30 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_RESULT__;/* This Source Code Form is subject to the terms of the Mozilla Public
@@ -3320,7 +4009,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	/* Modified work copyright © 2015 David Valdman */
 
 	!(__WEBPACK_AMD_DEFINE_RESULT__ = function(require, exports, module) {
-	    var OptionsManager = __webpack_require__(28);
+	    var OptionsManager = __webpack_require__(31);
 
 	    var registeredCurves = {};
 	    var eps = 1e-7; // for calculating velocity using finite difference
@@ -3633,7 +4322,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 28 */
+/* 31 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_RESULT__;/* This Source Code Form is subject to the terms of the Mozilla Public
@@ -3828,683 +4517,6 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 29 */
-/***/ function(module, exports, __webpack_require__) {
-
-	var __WEBPACK_AMD_DEFINE_RESULT__;!(__WEBPACK_AMD_DEFINE_RESULT__ = function(require, exports, module) {
-	    module.exports = {
-	        ContainerSurface: __webpack_require__(30),
-	        Context: __webpack_require__(2),
-	        Engine: __webpack_require__(1),
-	        LayoutNode: __webpack_require__(19),
-	        SizeNode: __webpack_require__(17),
-	        Surface: __webpack_require__(31),
-	        Timer: __webpack_require__(33),
-	        Transform: __webpack_require__(22),
-	        Transitionable: __webpack_require__(25),
-	        View: __webpack_require__(34)
-	    };
-	}.call(exports, __webpack_require__, exports, module), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
-
-
-/***/ },
-/* 30 */
-/***/ function(module, exports, __webpack_require__) {
-
-	var __WEBPACK_AMD_DEFINE_RESULT__;/* This Source Code Form is subject to the terms of the Mozilla Public
-	 * License, v. 2.0. If a copy of the MPL was not distributed with this
-	 * file, You can obtain one at http://mozilla.org/MPL/2.0/.
-	 *
-	 * @license MPL 2.0
-	 * @copyright Famous Industries, Inc. 2014
-	 */
-
-	/* Modified work copyright © 2015 David Valdman */
-
-	!(__WEBPACK_AMD_DEFINE_RESULT__ = function(require, exports, module) {
-	    var Surface = __webpack_require__(31);
-	    var Context = __webpack_require__(2);
-	    var dirtyQueue = __webpack_require__(14);
-	    var preTickQueue = __webpack_require__(12);
-	    var Transform = __webpack_require__(22);
-	    var EventHandler = __webpack_require__(5);
-
-	    var defaultLayout = {
-	        transform : Transform.identity,
-	        opacity : 1,
-	        origin : null,
-	        align : null,
-	        nextSizeTransform : Transform.identity
-	    };
-
-	    /**
-	     * ContainerSurface enables nesting of DOM. A ContainerSurface manages
-	     *  its own render tree that it inserts inside a DOM node. Typically
-	     *  this is used for clipping by settings `{overflow : hidden}` as a CSS
-	     *  property.
-	     *
-	     *  @example
-	     *
-	     *      var myContainer = new ContainerSurface({
-	     *          size : [100,100],
-	     *          properties : {overflow : hidden}
-	     *      });
-	     *
-	     *      var surface = new Surface({
-	     *          size : [200,200],
-	     *          properties : {background : 'red'}
-	     *      });
-	     *
-	     *      myContainer.add(surface);
-	     *
-	     *      context.add(myContainer);
-	     *
-	     * @class ContainerSurface
-	     * @extends Core.Surface
-	     * @namespace Core
-	     * @uses Core.Context
-	     * @constructor
-	     *
-	     * @param [options] {Object}                Options
-	     * @param [options.size] {Number[]}         Size (width, height) in pixels. These can also be `true` or `undefined`.
-	     * @param [options.classes] {String[]}      CSS classes
-	     * @param [options.properties] {Object}     Dictionary of CSS properties
-	     * @param [options.attributes] {Object}     Dictionary of HTML attributes
-	     * @param [options.content] {String}        InnerHTML content
-	     * @param [options.origin] {Number[]}       Origin (x,y), with values between 0 and 1
-	     * @param [options.proportions] {Number[]}  Proportions (x,y) with values between 0 and 1
-	     * @param [options.margins] {Number[]}      Margins (x,y) in pixels
-	     * @param [options.opacity] {Number}        Opacity
-	     */
-	    function ContainerSurface(options) {
-	        Surface.call(this, options);
-
-	        this._container = document.createElement('div');
-	        this._container.classList.add('samsara-container');
-
-	        this.context = new Context({el : this._container});
-	        this.setContent(this._container);
-
-	        this.context._size.subscribe(this.size);
-	        this.context._layout.subscribe(this.layout.map(function(){
-	            return defaultLayout;
-	        }));
-	    }
-
-	    ContainerSurface.prototype = Object.create(Surface.prototype);
-	    ContainerSurface.prototype.constructor = ContainerSurface;
-	    ContainerSurface.prototype.elementType = 'div';
-	    ContainerSurface.prototype.elementClass = 'samsara-surface';
-
-	    /**
-	     * Get current perspective in pixels.
-	     *
-	     * @method getPerspective
-	     * @return {Number} Perspective in pixels
-	     */
-	    ContainerSurface.prototype.getPerspective = function getPerspective() {
-	        return Context.prototype.getPerspective.apply(this.context, arguments);
-	    };
-
-	    /**
-	     * Set current perspective in pixels.
-	     *
-	     * @method setPerspective
-	     * @param perspective {Number}  Perspective in pixels
-	     * @param [transition] {Object} Transition definition
-	     * @param [callback] {Function} Callback executed on completion of transition
-	     */
-	    ContainerSurface.prototype.setPerspective = function setPerspective(){
-	        Context.prototype.setPerspective.apply(this.context, arguments);
-	    };
-
-	    /**
-	     * Extends the render tree with a provided node.
-	     *
-	     * @method add
-	     * @param node {Object}     Node, Surface, or View
-	     * @return {RenderTreeNode}
-	     */
-	    ContainerSurface.prototype.add = function add() {
-	        return Context.prototype.add.apply(this.context, arguments);
-	    };
-
-	    /**
-	     * Place the document element this component manages into the document.
-	     *
-	     * @method deploy
-	     * @private
-	     * @param target {Node} Container DOM element
-	     */
-	    ContainerSurface.prototype.deploy = function deploy() {
-	        Surface.prototype.deploy.apply(this, arguments);
-	    };
-
-	    module.exports = ContainerSurface;
-	}.call(exports, __webpack_require__, exports, module), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
-
-
-/***/ },
-/* 31 */
-/***/ function(module, exports, __webpack_require__) {
-
-	var __WEBPACK_AMD_DEFINE_RESULT__;/* This Source Code Form is subject to the terms of the Mozilla Public
-	 * License, v. 2.0. If a copy of the MPL was not distributed with this
-	 * file, You can obtain one at http://mozilla.org/MPL/2.0/.
-	 *
-	 * @license MPL 2.0
-	 * @copyright Samsara Industries, Inc. 2014
-	 */
-
-	/* Modified work copyright © 2015 David Valdman */
-
-	!(__WEBPACK_AMD_DEFINE_RESULT__ = function(require, exports, module) {
-	    var ElementOutput = __webpack_require__(32);
-	    var dirtyQueue = __webpack_require__(14);
-
-	    /**
-	     * Surface is a wrapper for DOM element controlled by Samsara.
-	     *  Samsara will commit opacity, size and CSS3 `transform` properties into the Surface.
-	     *  CSS classes, properties and DOM attributes can also be added and dynamically changed.
-	     *  Surfaces also act as sources for DOM events such as `click`.
-	     *
-	     * @example
-	     *
-	     *      var context = Engine.createContext({
-	     *          el : document.querySelector('#myElement')
-	     *      });
-	     *
-	     *      var surface = new Surface({
-	     *          content : 'Hello world!',
-	     *          size : [true,100],
-	     *          opacity : .5,
-	     *          classes : ['myClass1', 'myClass2'],
-	     *          properties : {background : 'red'}
-	     *      });
-	     *
-	     *      context.add(surface);
-	     *
-	     *      Engine.start();
-	     *
-	     *  @example
-	     *
-	     *      // same as above but create an image instead
-	     *      var surface = new Surface({
-	     *          attributes : {
-	     *              src : 'cat.jpg'
-	     *          },
-	     *          size : [100,100],
-	     *          tagName : 'img'
-	     *      });
-	     *
-	     * @class Surface
-	     * @namespace Core
-	     * @constructor
-	     * @extends Core.ElementOutput
-	     * @param [options] {Object}                Options
-	     * @param [options.size] {Number[]}         Size (width, height) in pixels. These can also be `true` or `undefined`.
-	     * @param [options.classes] {String[]}      CSS classes
-	     * @param [options.properties] {Object}     Dictionary of CSS properties
-	     * @param [options.attributes] {Object}     Dictionary of HTML attributes
-	     * @param [options.content] Sstring}        InnerHTML content
-	     * @param [options.origin] {Number[]}       Origin (x,y), with values between 0 and 1
-	     * @param [options.margins] {Number[]}      Margins (x,y) in pixels
-	     * @param [options.proportions] {Number[]}  Proportions (x,y) with values between 0 and 1
-	     * @param [options.aspectRatio] {Number}    Aspect ratio
-	     * @param [options.opacity=1] {Number}      Opacity
-	     * @param [options.tagName="div"] {String}  HTML tagName
-	     */
-	    function Surface(options) {
-	        this.properties = {};
-	        this.attributes = {};
-	        this.content = '';
-	        this.classList = [];
-
-	        this._dirtyClasses = [];
-	        this._classesDirty = true;
-	        this._stylesDirty = true;
-	        this._attributesDirty = true;
-	        this._dirty = false;
-	        this._cachedSize = null;
-
-	        if (options) {
-	            this._contentDirty = false;
-
-	            // default to DOM size for provided elements
-	            if (options.el && !options.size)
-	                options.size = [true, true];
-
-	            ElementOutput.call(this, options.el);
-	            this.setOptions(options);
-	        }
-	        else {
-	            this._contentDirty = true;
-	            ElementOutput.call(this);
-	        }
-	    }
-
-	    Surface.prototype = Object.create(ElementOutput.prototype);
-	    Surface.prototype.constructor = Surface;
-	    Surface.prototype.elementType = 'div'; // default tagName, but can be overriden in options
-	    Surface.prototype.elementClass = 'samsara-surface';
-
-	    function _setDirty(){
-	        if (this._dirty) return;
-
-	        dirtyQueue.push(function(){
-	            var target = this._currentTarget;
-
-	            if (this._contentDirty) {
-	                this.deploy(target);
-	                this._contentDirty = false;
-	            }
-
-	            if (this._classesDirty) {
-	                _removeClasses.call(this, target);
-	                _applyClasses.call(this, target);
-	                this._classesDirty = false;
-	            }
-
-	            if (this._stylesDirty) {
-	                _applyStyles.call(this, target);
-	                this._stylesDirty = false;
-	            }
-
-	            if (this._attributesDirty) {
-	                _applyAttributes.call(this, target);
-	                this._attributesDirty = false;
-	            }
-	            this._dirty = false;
-	        }.bind(this))
-	    }
-
-	    function _applyClasses(target) {
-	        for (var i = 0; i < this.classList.length; i++)
-	            target.classList.add(this.classList[i]);
-	    }
-
-	    function _applyStyles(target) {
-	        for (var key in this.properties)
-	            target.style[key] = this.properties[key];
-	    }
-
-	    function _applyAttributes(target) {
-	        for (var key in this.attributes)
-	            target.setAttribute(key, this.attributes[key]);
-	    }
-
-	    function _removeClasses(target) {
-	        for (var i = 0; i < this._dirtyClasses.length; i++) target.classList.remove(this._dirtyClasses[i]);
-	        this._dirtyClasses = [];
-	    }
-
-	    function _removeStyles(target) {
-	        for (var key in this.properties)
-	            target.style[key] = '';
-	    }
-
-	    function _removeAttributes(target) {
-	        for (var key in this.attributes)
-	            target.removeAttribute(key);
-	    }
-	    
-	    /**
-	     * Setter for HTML attributes.
-	     *
-	     * @method setAttributes
-	     * @chainable
-	     * @param attributes {Object}   HTML Attributes
-	     */
-	    Surface.prototype.setAttributes = function setAttributes(attributes) {
-	        for (var key in attributes) {
-	            var value = attributes[key];
-	            if (value != undefined) this.attributes[key] = attributes[key];
-	        }
-	        this._attributesDirty = true;
-	        _setDirty.call(this);
-	        return this;
-	    };
-
-	    /**
-	     * Getter for HTML attributes.
-	     *
-	     * @method getAttributes
-	     * @return {Object}
-	     */
-	    Surface.prototype.getAttributes = function getAttributes() {
-	        return this.attributes;
-	    };
-
-	    /**
-	     * Setter for CSS properties.
-	     *  Note: properties are camelCased, not hyphenated.
-	     *
-	     * @method setProperties
-	     * @chainable
-	     * @param properties {Object}   CSS properties
-	     */
-	    Surface.prototype.setProperties = function setProperties(properties) {
-	        for (var key in properties)
-	            this.properties[key] = properties[key];
-	        this._stylesDirty = true;
-	        _setDirty.call(this);
-	        return this;
-	    };
-
-	    /**
-	     * Getter for CSS properties.
-	     *
-	     * @method getProperties
-	     * @return {Object}             Dictionary of this Surface's properties.
-	     */
-	    Surface.prototype.getProperties = function getProperties() {
-	        return this.properties;
-	    };
-
-	    /**
-	     * Add CSS class to the list of classes on this Surface.
-	     *
-	     * @method addClass
-	     * @chainable
-	     * @param className {String}    Class name
-	     */
-	    Surface.prototype.addClass = function addClass(className) {
-	        if (this.classList.indexOf(className) < 0) {
-	            this.classList.push(className);
-	            this._classesDirty = true;
-	            _setDirty.call(this);
-	        }
-	        return this;
-	    };
-
-	    /**
-	     * Remove CSS class from the list of classes on this Surface.
-	     *
-	     * @method removeClass
-	     * @param className {string}    Class name
-	     */
-	    Surface.prototype.removeClass = function removeClass(className) {
-	        var i = this.classList.indexOf(className);
-	        if (i >= 0) {
-	            this._dirtyClasses.push(this.classList.splice(i, 1)[0]);
-	            this._classesDirty = true;
-	            _setDirty.call(this);
-	        }
-	    };
-
-	    /**
-	     * Toggle CSS class for this Surface.
-	     *
-	     * @method toggleClass
-	     * @param  className {String}   Class name
-	     */
-	    Surface.prototype.toggleClass = function toggleClass(className) {
-	        var i = this.classList.indexOf(className);
-	        (i == -1)
-	            ? this.addClass(className)
-	            : this.removeClass(className);
-	    };
-
-	    /**
-	     * Reset classlist.
-	     *
-	     * @method setClasses
-	     * @chainable
-	     * @param classlist {String[]}  ClassList
-	     */
-	    Surface.prototype.setClasses = function setClasses(classList) {
-	        var i = 0;
-	        var removal = [];
-	        for (i = 0; i < this.classList.length; i++) {
-	            if (classList.indexOf(this.classList[i]) < 0) removal.push(this.classList[i]);
-	        }
-	        for (i = 0; i < removal.length; i++) this.removeClass(removal[i]);
-	        // duplicates are already checked by addClass()
-	        for (i = 0; i < classList.length; i++) this.addClass(classList[i]);
-	        _setDirty.call(this);
-	        return this;
-	    };
-
-	    /**
-	     * Get array of CSS classes attached to this Surface.
-	     *
-	     * @method getClasslist
-	     * @return {String[]}
-	     */
-	    Surface.prototype.getClassList = function getClassList() {
-	        return this.classList;
-	    };
-
-	    /**
-	     * Set or overwrite innerHTML content of this Surface.
-	     *
-	     * @method setContent
-	     * @chainable
-	     * @param content {String|DocumentFragment} HTML content
-	     */
-	    Surface.prototype.setContent = function setContent(content) {
-	        if (this.content !== content) {
-	            this.content = content;
-	            this._contentDirty = true;
-	            _setDirty.call(this);
-	        }
-	        return this;
-	    };
-
-	    /**
-	     * Return innerHTML content of this Surface.
-	     *
-	     * @method getContent
-	     * @return {String}
-	     */
-	    Surface.prototype.getContent = function getContent() {
-	        return this.content;
-	    };
-
-	    /**
-	     * Set options for this surface
-	     *
-	     * @method setOptions
-	     * @param options {Object} Overrides for default options. See constructor.
-	     */
-	    Surface.prototype.setOptions = function setOptions(options) {
-	        if (options.tagName !== undefined) this.elementType = options.tagName;
-	        if (options.opacity !== undefined) this.setOpacity(options.opacity);
-	        if (options.size !== undefined) this.setSize(options.size);
-	        if (options.origin !== undefined) this.setOrigin(options.origin);
-	        if (options.proportions !== undefined) this.setProportions(options.proportions);
-	        if (options.margins !== undefined) this.setMargins(options.margins);
-	        if (options.classes !== undefined) this.setClasses(options.classes);
-	        if (options.properties !== undefined) this.setProperties(options.properties);
-	        if (options.attributes !== undefined) this.setAttributes(options.attributes);
-	        if (options.content !== undefined) this.setContent(options.content);
-	        if (options.aspectRatio !== undefined) this.setAspectRatio(options.aspectRatio);
-	    };
-
-	    /**
-	     * Allocates the element-type associated with the Surface, adds its given
-	     *  element classes, and prepares it for future committing.
-	     *
-	     * @private
-	     * @method setup
-	     * @param allocator {ElementAllocator} Allocator
-	     */
-	    Surface.prototype.setup = function setup(allocator) {
-	        // create element of specific type
-	        var target = allocator.allocate(this.elementType);
-
-	        // add any element classes
-	        if (this.elementClass) {
-	            if (this.elementClass instanceof Array) {
-	                for (var i = 0; i < this.elementClass.length; i++)
-	                    this.addClass(this.elementClass[i]);
-	            }
-	            else this.addClass(this.elementClass);
-	        }
-
-	        // set the currentTarget and any bound listeners
-	        this.attach(target);
-
-	        // set all dirty flags to true
-	        this._opacityDirty = true;
-	        this._stylesDirty = true;
-	        this._classesDirty = true;
-	        this._attributesDirty = true;
-	        this._contentDirty = true;
-	        this._originDirty = true;
-	        this._transformDirty = true;
-	    };
-
-	    /**
-	     * Remove all Samsara-relevant data from the Surface.
-	     *
-	     * @private
-	     * @method remove
-	     * @param allocator {ElementAllocator} Allocator
-	     */
-	    Surface.prototype.remove = function remove(allocator) {
-	        var target = this._currentTarget;
-
-	        // cache the target's contents for later deployment
-	        this.recall(target);
-
-	        // hide the element
-	        target.style.display = 'none';
-	        target.style.opacity = '';
-	        target.style.width = '';
-	        target.style.height = '';
-
-	        // clear all styles, classes and attributes
-	        _removeStyles.call(this, target);
-	        _removeAttributes.call(this, target);
-	        _removeClasses.call(this, target);
-
-	        // garbage collect current target and remove bound event listeners
-	        this.detach();
-
-	        // store allocated node in cache for recycling
-	        allocator.deallocate(target);
-	    };
-
-	    /**
-	     * Insert the Surface's content into the currentTarget.
-	     *
-	     * @private
-	     * @method deploy
-	     * @param target {Node} Container DOM element
-	     */
-	    Surface.prototype.deploy = function deploy(target) {
-	        //TODO: make sure target.tagName is of correct type! Tag pools must be implemented.
-	        this._eventOutput.emit('deploy');
-	        var content = this.getContent();
-	        if (content instanceof Node) {
-	            while (target.hasChildNodes()) target.removeChild(target.firstChild);
-	            target.appendChild(content);
-	        }
-	        else target.innerHTML = content;
-	    };
-
-	    /**
-	     * Cache the content of the Surface in a document fragment for future deployment.
-	     *
-	     * @private
-	     * @method recall
-	     * @param target {Node}
-	     */
-	    Surface.prototype.recall = function recall(target) {
-	        this._eventOutput.emit('recall');
-	        var df = document.createDocumentFragment();
-	        while (target.hasChildNodes()) df.appendChild(target.firstChild);
-	        this.setContent(df);
-	    };
-
-	    /**
-	     * Getter for size.
-	     *
-	     * @method getSize
-	     * @return {Number[]}
-	     */
-	    Surface.prototype.getSize = function getSize() {
-	        // TODO: remove cachedSize
-	        return this._cachedSpec.size || this._cachedSize;
-	    };
-
-	    /**
-	     * Setter for size.
-	     *
-	     * @method setSize
-	     * @param size {Number[]|Stream} Size as [width, height] in pixels, or a stream.
-	     */
-	    Surface.prototype.setSize = function setSize(size) {
-	        this._cachedSize = size;
-	        this._sizeNode.set({size : size});
-	        _setDirty.call(this);
-	    };
-
-	    /**
-	     * Setter for proportions.
-	     *
-	     * @method setProportions
-	     * @param proportions {Number[]|Stream} Proportions as [x,y], or a stream.
-	     */
-	    Surface.prototype.setProportions = function setProportions(proportions) {
-	        this._sizeNode.set({proportions : proportions});
-	        _setDirty.call(this);
-	    };
-
-	    /**
-	     * Setter for margins.
-	     *
-	     * @method setMargins
-	     * @param margins {Number[]|Stream} Margins as [width, height] in pixels, or a stream.
-	     */
-	    Surface.prototype.setMargins = function setMargins(margins) {
-	        this._sizeNode.set({margins : margins});
-	        _setDirty.call(this);
-	    };
-
-	    /**
-	     * Setter for aspect ratio. If only one of width or height is specified,
-	     *  the aspect ratio will replace the unspecified dimension by scaling
-	     *  the specified dimension by the value provided.
-	     *
-	     * @method setAspectRatio
-	     * @param aspectRatio {Number|Stream} Aspect ratio.
-	     */
-	    Surface.prototype.setAspectRatio = function setAspectRatio(aspectRatio) {
-	        this._sizeNode.set({aspectRatio : aspectRatio});
-	        _setDirty.call(this);
-	    };
-
-	    /**
-	     * Setter for origin.
-	     *
-	     * @method setOrigin
-	     * @param origin {Number[]|Stream} Origin as [x,y], or a stream.
-	     */
-	    Surface.prototype.setOrigin = function setOrigin(origin){
-	        this._layoutNode.set({origin : origin});
-	        this._originDirty = true;
-	        _setDirty.call(this);
-	    };
-
-	    /**
-	     * Setter for opacity.
-	     *
-	     * @method setOpacity
-	     * @param opacity {Number} Opacity
-	     */
-	    Surface.prototype.setOpacity = function setOpacity(opacity){
-	        this._layoutNode.set({opacity : opacity});
-	        this._opacityDirty = true;
-	        _setDirty.call(this);
-	    };
-
-	    module.exports = Surface;
-	}.call(exports, __webpack_require__, exports, module), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
-
-
-/***/ },
 /* 32 */
 /***/ function(module, exports, __webpack_require__) {
 
@@ -4519,290 +4531,274 @@ return /******/ (function(modules) { // webpackBootstrap
 	/* Modified work copyright © 2015 David Valdman */
 
 	!(__WEBPACK_AMD_DEFINE_RESULT__ = function(require, exports, module) {
+	    var Context = __webpack_require__(24);
+	    var Transform = __webpack_require__(7);
+	    var State = __webpack_require__(16);
+	    var RootNode = __webpack_require__(25);
+	    var postTickQueue = __webpack_require__(14);
+	    var preTickQueue = __webpack_require__(13);
+	    var dirtyQueue = __webpack_require__(15);
+	    var tickQueue = __webpack_require__(29);
 	    var EventHandler = __webpack_require__(5);
-	    var Transform = __webpack_require__(22);
-	    var Stream = __webpack_require__(7);
-	    var ResizeStream = __webpack_require__(16);
-	    var SizeNode = __webpack_require__(17);
-	    var LayoutNode = __webpack_require__(19);
-	    var sizeAlgebra = __webpack_require__(23);
-	    var layoutAlgebra = __webpack_require__(21);
+	    var ResizeStream = __webpack_require__(17);
+	    var Stream = __webpack_require__(8);
 
-	    var usePrefix = !('transform' in document.documentElement.style);
-	    var devicePixelRatio = window.devicePixelRatio || 1;
-	    var invDevicePixelRatio = 1 / devicePixelRatio;
-	    var MIN_OPACITY = 0.0001;
-	    var MAX_OPACITY = 0.9999;
-	    var EPSILON = 1e-5;
-	    var _zeroZero = [0,0];
+
+	    var contexts = [];
+	    var roots = [];
+	    var rafId = 0;
+	    var eventForwarders = {};
+	    var listenOnTick = false;
+	    var size = new ResizeStream;
+	    var layout = new EventHandler();
+	    var eventHandler = new EventHandler();
+
+	    var layoutSpec = {
+	        transform : Transform.identity,
+	        opacity : 1,
+	        origin : null,
+	        align : null,
+	        nextSizeTransform : Transform.identity
+	    };
 
 	    /**
-	     * Responsible for committing CSS3 properties to the DOM and providing DOM event hooks
-	     *  from a provided DOM element. Where Surface's API handles inputs from the developer
-	     *  from within Samsara, ElementOutput handles the DOM interaction layer.
+	     * Engine is a singleton object that is required to run a Samsara application.
+	     *  It is the "heartbeat" of the application, managing the batching of streams
+	     *  and creating `RootNodes` and `Contexts` to begin render trees.
 	     *
+	     *  It also listens and can respond to DOM events on the HTML `<body>` tag
+	     *  and `window` object. For instance the `resize` event.
 	     *
-	     * @class ElementOutput
-	     * @constructor
+	     *  @example
+	     *
+	     *      var context = Engine.createContext();
+	     *
+	     *      var surface = new Surface({
+	     *          size : [100,100],
+	     *          properties : {background : 'red'}
+	     *      });
+	     *
+	     *      context.add(surface);
+	     *
+	     *      Engine.start();
+	     *
+	     *      Engine.on('click', function(){
+	     *          alert('clicked!');
+	     *      });
+	     *
+	     * @class Engine
 	     * @namespace Core
-	     * @uses Core.LayoutNode
-	     * @uses Core.SizeNode
-	     * @private
-	     * @param {Node} element document parent of this container
+	     * @static
+	     * @uses Core.EventHandler
 	     */
-	    function ElementOutput(element) {
-	        this._currentTarget = null;
+	    var Engine = {};
 
-	        this._cachedSpec = {
-	            transform : null,
-	            opacity : 1,
-	            origin : null,
-	            size : null
-	        };
+	    EventHandler.setInputHandler(Engine, eventHandler);
+	    EventHandler.setOutputHandler(Engine, eventHandler);
 
-	        this._eventOutput = new EventHandler();
-	        EventHandler.setOutputHandler(this, this._eventOutput);
+	    //TODO: add this only for full-screen apps
+	    //document.body.classList.add('samsara-root');
 
-	        this._eventForwarder = function _eventForwarder(event) {
-	            this._eventOutput.emit(event.type, event);
-	        }.bind(this);
+	    /**
+	     * Updates by a single frame of the application by looping through all function queues.
+	     *  This is repeatedly called within a requestAnimationFrame loop until the application
+	     *  is receiving no layout changes. At this point the requestAnimationFrame will be
+	     *  canceled until the next change.
+	     *
+	     * @private
+	     * @method step
+	     */
+	    Engine.step = function step() {
+	        // browser events and their handlers happen before rendering begins
+	        while (preTickQueue.length) (preTickQueue.shift())();
 
-	        this._sizeNode = new SizeNode();
-	        this._layoutNode = new LayoutNode();
+	        // tick signals base event flow coming in
+	        State.set(State.STATES.UPDATE);
 
-	        this._size = new EventHandler();
-	        this._layout = new EventHandler();
+	        if (listenOnTick) eventHandler.emit('tick');
+	        
+	        for (var i = 0; i < tickQueue.length; i++) tickQueue[i]();
 
-	        this.size = ResizeStream.lift(function elementSizeLift(sizeSpec, parentSize){
-	            if (!parentSize) return false; // occurs when surface is never added
-	            return sizeAlgebra(sizeSpec, parentSize);
-	        }, [this._sizeNode, this._size]);
+	        // post tick is for resolving larger components from their incoming signals
+	        while (postTickQueue.length) (postTickQueue.shift())();
 
-	        this.layout = Stream.lift(function(parentSpec, objectSpec, size){
-	            if (!parentSpec || !size) return false;
-	            return (objectSpec)
-	                ? layoutAlgebra(objectSpec, parentSpec, size)
-	                : parentSpec;
-	        }, [this._layout, this._layoutNode, this.size]);
+	        State.set(State.STATES.END);
 
-	        this.layout.on('start', function(){
-	            if (!this._currentTarget){
-	                var root = this._getRoot();
-	                this.setup(root.allocator);
-	            }
-	        }.bind(this));
+	        while (dirtyQueue.length) (dirtyQueue.shift())();
 
-	        this.layout.on('update', commitLayout.bind(this));
-	        this.layout.on('end', commitLayout.bind(this));
-
-	        this.size.on('resize', function(size){
-	            if (!this._currentTarget){
-	                var root = this._getRoot();
-	                this.setup(root.allocator);
-	            }
-	            commitSize.call(this, size);
-	        }.bind(this));
-
-	        this._currentTarget = null;
-
-	        this._opacityDirty = true;
-	        this._originDirty = true;
-	        this._transformDirty = true;
-	        this._isVisible = true;
-
-	        if (element) this.attach(element);
-	    }
-
-	    function _formatCSSOrigin(origin) {
-	        return (100 * origin[0]) + '% ' + (100 * origin[1]) + '%';
-	    }
-
-	    function _xyNotEquals(a, b) {
-	        return (a && b) ? (a[0] !== b[0] || a[1] !== b[1]) : a !== b;
-	    }
-
-	    var _setOpacity = function _setOpacity(element, opacity){
-	        if (opacity >= MAX_OPACITY)     opacity = MAX_OPACITY;
-	        else if (opacity < MIN_OPACITY) opacity = MIN_OPACITY;
-	        element.style.opacity = opacity;
-	    };
-
-	    var _setOrigin = usePrefix
-	        ? function _setOrigin(element, origin) {
-	        element.style.webkitTransformOrigin = _formatCSSOrigin(origin);
-	    }
-	        : function _setOrigin(element, origin) {
-	        element.style.transformOrigin = _formatCSSOrigin(origin);
-	    };
-
-	    var _setTransform = (usePrefix)
-	        ? function _setTransform(element, transform) {
-	        element.style.webkitTransform = _formatCSSTransform(transform);
-	    }
-	        : function _setTransform(element, matrix) {
-	        element.style.transform = _formatCSSTransform(matrix);
-	    };
-
-	    var _setSize = function _setSize(target, size){
-	        if (size[0] === true) size[0] = target.offsetWidth;
-	        else target.style.width = Math.ceil(size[0] * devicePixelRatio) * invDevicePixelRatio + 'px';
-
-	        if (size[1] === true) size[1] = target.offsetHeight;
-	        else target.style.height = Math.ceil(size[1] * devicePixelRatio) * invDevicePixelRatio + 'px';
-	    };
-
-
-	    function _addEventListeners(target) {
-	        for (var i in this._eventOutput.listeners)
-	            target.addEventListener(i, this._eventForwarder);
-	    }
-
-	    function _removeEventListeners(target) {
-	        for (var i in this._eventOutput.listeners)
-	            target.removeEventListener(i, this._eventForwarder);
-	    }
-
-	    function _formatCSSTransform(transform) {
-	        var result = 'matrix3d(';
-	        for (var i = 0; i < 15; i++) {
-	            if (Math.abs(transform[i]) < EPSILON) transform[i] = 0;
-	            result += (i === 12 || i === 13)
-	                ? Math.round(transform[i] * devicePixelRatio) * invDevicePixelRatio + ','
-	                : transform[i] + ',';
-	        }
-	        return result + transform[15] + ')';
-	    }
-
-	    // {Visibility : hidden} allows for DOM events to pass through the element
-	    var _setOpacity = function _setOpacity(element, opacity){
-	        if (!this._isVisible && opacity > MIN_OPACITY){
-	            element.style.visibility = 'visible';
-	            this._isVisible = true;
-	        }
-
-	        if (opacity > MAX_OPACITY) opacity = MAX_OPACITY;
-	        else if (opacity < MIN_OPACITY) {
-	            opacity = MIN_OPACITY;
-	            if (this._isVisible){
-	                element.style.visibility = 'hidden';
-	                this._isVisible = false;
-	            }
-	        }
-
-	        if (this._isVisible) element.style.opacity = opacity;
+	        State.set(State.STATES.START);
 	    };
 
 	    /**
-	     * Adds a handler to the `type` channel which will be executed on `emit`.
+	     * A ResizeStream representing the document's <body> size.
+	     *
+	     * @property size
+	     */
+	    Engine.size = size;
+
+	    /**
+	     * Creates a new Root Node from which a render tree can be constructed.
+	     *  Use this to modify preexisting elements in 2D space.
+	     *
+	     * @method createRoot
+	     * @static
+	     * @return {RootNode}
+	     */
+	    Engine.createRoot = function createRoot(){
+	        var root = new RootNode();
+	        Engine.registerRoot(root);
+	        return root;
+	    };
+
+	    /**
+	     * Hook up listeners to a RootNode and add to an internal array for commiting.
+	     *
+	     * @method registerRoot
+	     * @static
+	     * @private
+	     */
+	    Engine.registerRoot = function registerRoot(root){
+	        root._size.subscribe(size);
+	        root._layout.subscribe(layout);
+	        roots.push(root);
+	    };
+
+	    /**
+	     * Remove listeners to RootNode and remove from internal commit array.
+	     *
+	     * @method deregisterRoot
+	     * @static
+	     * @private
+	     */
+	    Engine.deregisterRoot = function deregisterRoot(root){
+	        var i = roots.indexOf(root);
+	        if (i < 0) return;
+	        root._size.unsubscribe(size);
+	        root._layout.unsubscribe(layout);
+	        roots.splice(i, 1);
+	    };
+
+	    /**
+	     * Creates a new Context from which a render tree can be constructed.
+	     *  If no DOM element is specified, one will be created and appended
+	     *  to the document body.
+	     *
+	     * @method createContext
+	     * @static
+	     * @param [options] {Object}    Options
+	     * @param [options.el] {Node}   Pre-existing element in the document
+	     * @return {Context}
+	     */
+	    Engine.createContext = function createContext(options) {
+	        var context = new Context(options);
+	        Engine.registerContext(context);
+	        if (!options || !options.el)
+	            document.body.appendChild(context.container);
+	        return context;
+	    };
+
+	    /**
+	     * Registers an existing Context to be updated by the run loop.
+	     *
+	     * @method registerContext
+	     * @static
+	     * @private
+	     * @param context {Context}     Context to register
+	     */
+	    Engine.registerContext = function registerContext(context) {
+	        context._size.subscribe(size);
+	        context._layout.subscribe(layout);
+	        contexts.push(context);
+	    };
+
+	    /**
+	     * Removes a Context from the run loop.
+	     *  Note: this does not do any cleanup.
+	     *
+	     * @method deregisterContext
+	     * @static
+	     * @private
+	     * @param context {Context}     Context to deregister
+	     */
+	    Engine.deregisterContext = function deregisterContext(context) {
+	        var i = contexts.indexOf(context);
+	        if (i < 0) return;
+	        context._size.unsubscribe(size);
+	        context._layout.unsubscribe(layout);
+	        contexts.splice(i, 1);
+	    };
+
+	    /**
+	     * Adds a handler to an event on the DOM <body>, e.g., "click".
 	     *
 	     * @method on
-	     *
-	     * @param type {String}         DOM event channel name, e.g., "click", "touchmove"
-	     * @param handler {Function}    Handler. It's only argument will be an emitted data payload.
-	     */
-	    ElementOutput.prototype.on = function on(type, handler) {
-	        if (this._currentTarget)
-	            this._currentTarget.addEventListener(type, this._eventForwarder);
-	        EventHandler.prototype.on.apply(this._eventOutput, arguments);
-	    };
-
-	    /**
-	     * Removes a previously added handler to the `type` channel.
-	     *  Undoes the work of `on`.
-	     *
-	     * @method removeListener
-	     * @param type {String}         DOM event channel name e.g., "click", "touchmove"
+	     * @static
+	     * @param type {String}         DOM event name
 	     * @param handler {Function}    Handler
 	     */
-	    ElementOutput.prototype.off = function off(type, handler) {
-	        EventHandler.prototype.off.apply(this._eventOutput, arguments);
+	    Engine.on = function on(type, handler){
+	        if (type === 'tick') listenOnTick = true;
+	        if (!(type in eventForwarders)) {
+	            eventForwarders[type] = eventHandler.emit.bind(eventHandler, type);
+	            document.addEventListener(type, eventForwarders[type]);
+	        }
+	        eventHandler.on(type, handler);
 	    };
 
 	    /**
-	     * Emit an event with optional data payload. This will execute all listening
-	     *  to the channel name with the payload as only argument.
+	     * Removes a previously added handler.
 	     *
-	     * @method emit
-	     * @param type {string}         Event channel name
-	     * @param [payload] {Object}    User defined data payload
+	     * @method off
+	     * @static
+	     * @param type {String}         DOM event name
+	     * @param handler {Function}    Handler
 	     */
-	    ElementOutput.prototype.emit = function emit(type, payload) {
-	        EventHandler.prototype.emit.apply(this._eventOutput, arguments);
+	    Engine.off = function off(type, handler){
+	        if (type === 'tick') listenOnTick = false;
+	        if (!(type in eventForwarders)) {
+	            document.removeEventListener(type, eventForwarders[type]);
+	        }
+	        eventHandler.off(type, handler);
 	    };
 
 	    /**
-	     * Assigns the DOM element for committing and to and attaches event listeners.
+	     * Initiates the Engine's heartbeat.
 	     *
-	     * @private
-	     * @method attach
-	     * @param {Node} target document parent of this container
+	     * @method start
+	     * @static
 	     */
-	    ElementOutput.prototype.attach = function attach(target) {
-	        this._currentTarget = target;
-	        _addEventListeners.call(this, target);
-	    };
+	    Engine.start = start;
 
-	    /**
-	     * Removes the associated DOM element in memory and detached event listeners.
-	     *
-	     * @private
-	     * @method detach
-	     */
-	    ElementOutput.prototype.detach = function detach() {
-	        var target = this._currentTarget;
-	        if (target) {
-	            _removeEventListeners.call(this, target);
-	            target.style.display = '';
-	        }
-	        this._currentTarget = null;
-	    };
-
-	    function commitLayout(layout) {
-	        var target = this._currentTarget;
-	        if (!target) return;
-
-	        var cache = this._cachedSpec;
-
-	        var transform = layout.transform || Transform.identity;
-	        var opacity = (layout.opacity === undefined) ? 1 : layout.opacity;
-	        var origin = layout.origin || _zeroZero;
-
-	        this._transformDirty = Transform.notEquals(cache.transform, transform);
-	        this._opacityDirty = this._opacityDirty || (cache.opacity !== opacity);
-	        this._originDirty = this._originDirty || (origin && _xyNotEquals(cache.origin, origin));
-
-	        if (this._opacityDirty) {
-	            cache.opacity = opacity;
-	            _setOpacity.call(this, target, opacity);
-	        }
-
-	        if (this._originDirty){
-	            cache.origin = origin;
-	            _setOrigin(target, origin);
-	        }
-
-	        if (this._transformDirty) {
-	            cache.transform = transform;
-	            _setTransform(target, transform);
-	        }
-
-	        this._originDirty = false;
-	        this._transformDirty = false;
-	        this._opacityDirty = false;
+	    function loop() {
+	        Engine.step();
+	        rafId = window.requestAnimationFrame(loop);
 	    }
 
-	    function commitSize(size){
-	        var target = this._currentTarget;
-	        if (!target) return;
+	    function start(){
+	        handleResize();
+	        preTickQueue.push(function start(){
+	            layout.emit('start', layoutSpec);
+	            dirtyQueue.push(function(){
+	                layout.emit('end', layoutSpec);
+	            });
+	        });
 
-	        if (_xyNotEquals(this._cachedSpec.size, size)){
-	            this._cachedSpec.size = size;
-	            _setSize(target, size);
-	            this.emit('resize', size);
-	        }
+	        loop();
 	    }
 
-	    module.exports = ElementOutput;
+	    function handleResize() {
+	        var windowSize = [window.innerWidth, window.innerHeight];
+	        size.emit('resize', windowSize);
+	        eventHandler.emit('resize', windowSize);
+
+	        dirtyQueue.push(function engineResizeClean(){
+	            size.emit('resize', windowSize);
+	        });
+	    }
+
+	    window.addEventListener('resize', handleResize, false);
+
+	    module.exports = Engine;
 	}.call(exports, __webpack_require__, exports, module), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
 
 
@@ -4821,7 +4817,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	/* Modified work copyright © 2015 David Valdman */
 
 	!(__WEBPACK_AMD_DEFINE_RESULT__ = function(require, exports, module) {
-	    var tickQueue = __webpack_require__(26);
+	    var tickQueue = __webpack_require__(29);
 
 	    /**
 	     * A collection of timing utilities meant to translate the familiar setInterval, setTimeout
@@ -5024,17 +5020,17 @@ return /******/ (function(modules) { // webpackBootstrap
 	var __WEBPACK_AMD_DEFINE_RESULT__;/* Copyright © 2015 David Valdman */
 
 	!(__WEBPACK_AMD_DEFINE_RESULT__ = function(require, exports, module) {
-	    var RenderTreeNode = __webpack_require__(4);
+	    var RenderTreeNode = __webpack_require__(26);
 	    var Controller = __webpack_require__(35);
-	    var SizeNode = __webpack_require__(17);
-	    var LayoutNode = __webpack_require__(19);
-	    var Transitionable = __webpack_require__(25);
+	    var SizeNode = __webpack_require__(18);
+	    var LayoutNode = __webpack_require__(20);
+	    var Transitionable = __webpack_require__(28);
 	    var EventHandler = __webpack_require__(5);
-	    var Stream = __webpack_require__(7);
-	    var ResizeStream = __webpack_require__(16);
-	    var SizeObservable = __webpack_require__(18);
-	    var layoutAlgebra = __webpack_require__(21);
-	    var sizeAlgebra = __webpack_require__(23);
+	    var Stream = __webpack_require__(8);
+	    var ResizeStream = __webpack_require__(17);
+	    var SizeObservable = __webpack_require__(19);
+	    var layoutAlgebra = __webpack_require__(23);
+	    var sizeAlgebra = __webpack_require__(22);
 
 	    /**
 	     * A View provides encapsulation for a subtree of the render tree. You can build
@@ -5210,9 +5206,9 @@ return /******/ (function(modules) { // webpackBootstrap
 	 */
 
 	!(__WEBPACK_AMD_DEFINE_RESULT__ = function(require, exports, module) {
-	    var OptionsManager = __webpack_require__(28);
+	    var OptionsManager = __webpack_require__(31);
 	    var EventHandler = __webpack_require__(5);
-	    var SimpleStream = __webpack_require__(9);
+	    var SimpleStream = __webpack_require__(10);
 
 	    /**
 	     * A utility class which can be extended by custom classes. These classes will then
@@ -5403,9 +5399,9 @@ return /******/ (function(modules) { // webpackBootstrap
 	    module.exports = {
 	        EventEmitter: __webpack_require__(6),
 	        EventHandler: __webpack_require__(5),
-	        EventMapper: __webpack_require__(8),
-	        EventFilter: __webpack_require__(10),
-	        EventSplitter: __webpack_require__(11)
+	        EventMapper: __webpack_require__(9),
+	        EventFilter: __webpack_require__(11),
+	        EventSplitter: __webpack_require__(12)
 	    };
 	}.call(exports, __webpack_require__, exports, module), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
 
@@ -5443,7 +5439,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	!(__WEBPACK_AMD_DEFINE_RESULT__ = function(require, exports, module) {
 	    var EventHandler = __webpack_require__(5);
-	    var SimpleStream = __webpack_require__(9);
+	    var SimpleStream = __webpack_require__(10);
 
 	    // Global registry of input constructors. Append only.
 	    var registry = {};
@@ -5594,8 +5590,8 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	!(__WEBPACK_AMD_DEFINE_RESULT__ = function(require, exports, module) {
 	    var EventHandler = __webpack_require__(5);
-	    var OptionsManager = __webpack_require__(28);
-	    var SimpleStream = __webpack_require__(9);
+	    var OptionsManager = __webpack_require__(31);
+	    var SimpleStream = __webpack_require__(10);
 
 	    var MINIMUM_TICK_TIME = 8;
 	    var _now = Date.now;
@@ -5842,8 +5838,8 @@ return /******/ (function(modules) { // webpackBootstrap
 	!(__WEBPACK_AMD_DEFINE_RESULT__ = function(require, exports, module) {
 	    var TouchTracker = __webpack_require__(41);
 	    var EventHandler = __webpack_require__(5);
-	    var SimpleStream = __webpack_require__(9);
-	    var OptionsManager = __webpack_require__(28);
+	    var SimpleStream = __webpack_require__(10);
+	    var OptionsManager = __webpack_require__(31);
 
 	    var MINIMUM_TICK_TIME = 8;
 
@@ -6049,7 +6045,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	//TODO: deprecate in favor of generic history stream
 
 	!(__WEBPACK_AMD_DEFINE_RESULT__ = function(require, exports, module) {
-	    var OptionsManager = __webpack_require__(28);
+	    var OptionsManager = __webpack_require__(31);
 	    var EventHandler = __webpack_require__(5);
 
 	    var _now = Date.now;
@@ -6181,8 +6177,8 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	!(__WEBPACK_AMD_DEFINE_RESULT__ = function(require, exports, module) {
 	    var EventHandler = __webpack_require__(5);
-	    var OptionsManager = __webpack_require__(28);
-	    var SimpleStream = __webpack_require__(9);
+	    var OptionsManager = __webpack_require__(31);
+	    var SimpleStream = __webpack_require__(10);
 	    var Timer = __webpack_require__(33);
 
 	    var MINIMUM_TICK_TIME = 8;
@@ -6357,7 +6353,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	!(__WEBPACK_AMD_DEFINE_RESULT__ = function(require, exports, module) {
 	    var TwoFingerInput = __webpack_require__(44);
-	    var OptionsManager = __webpack_require__(28);
+	    var OptionsManager = __webpack_require__(31);
 
 	    /**
 	     * Detects two-finger pinching motion and emits `start`, `update` and
@@ -6476,7 +6472,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	!(__WEBPACK_AMD_DEFINE_RESULT__ = function(require, exports, module) {
 	    var EventHandler = __webpack_require__(5);
-	    var SimpleStream = __webpack_require__(9);
+	    var SimpleStream = __webpack_require__(10);
 
 	    var _now = Date.now;
 
@@ -6639,7 +6635,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	!(__WEBPACK_AMD_DEFINE_RESULT__ = function(require, exports, module) {
 	    var TwoFingerInput = __webpack_require__(44);
-	    var OptionsManager = __webpack_require__(28);
+	    var OptionsManager = __webpack_require__(31);
 
 	    /**
 	     * Detects two-finger rotational motion and emits `start`, `update` and
@@ -6748,7 +6744,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	!(__WEBPACK_AMD_DEFINE_RESULT__ = function(require, exports, module) {
 	    var TwoFingerInput = __webpack_require__(44);
-	    var OptionsManager = __webpack_require__(28);
+	    var OptionsManager = __webpack_require__(31);
 
 	    /**
 	     * Detects two-finger pinching motion and emits `start`, `update` and
@@ -6864,14 +6860,14 @@ return /******/ (function(modules) { // webpackBootstrap
 	var __WEBPACK_AMD_DEFINE_RESULT__;/* Copyright © 2015 David Valdman */
 
 	!(__WEBPACK_AMD_DEFINE_RESULT__ = function(require, exports, module) {
-	    var Transform = __webpack_require__(22);
-	    var Transitionable = __webpack_require__(25);
+	    var Transform = __webpack_require__(7);
+	    var Transitionable = __webpack_require__(28);
 	    var View = __webpack_require__(34);
-	    var LayoutNode = __webpack_require__(19);
-	    var Stream = __webpack_require__(7);
+	    var LayoutNode = __webpack_require__(20);
+	    var Stream = __webpack_require__(8);
 	    var Differential = __webpack_require__(49);
 	    var Accumulator = __webpack_require__(50);
-	    var EventMapper = __webpack_require__(8);
+	    var EventMapper = __webpack_require__(9);
 
 	    var CONSTANTS = {
 	        DIRECTION : {
@@ -7175,8 +7171,8 @@ return /******/ (function(modules) { // webpackBootstrap
 	var __WEBPACK_AMD_DEFINE_RESULT__;/* Copyright © 2015 David Valdman */
 
 	!(__WEBPACK_AMD_DEFINE_RESULT__ = function(require, exports, module){
-	    var Stream = __webpack_require__(7);
-	    var OptionsManager = __webpack_require__(28);
+	    var Stream = __webpack_require__(8);
+	    var OptionsManager = __webpack_require__(31);
 
 	    /**
 	     * Differential is a Stream that emits differentials of consecutive
@@ -7243,9 +7239,9 @@ return /******/ (function(modules) { // webpackBootstrap
 	var __WEBPACK_AMD_DEFINE_RESULT__;/* Copyright © 2015 David Valdman */
 
 	!(__WEBPACK_AMD_DEFINE_RESULT__ = function(require, exports, module){
-	    var Stream = __webpack_require__(7);
-	    var preTickQueue = __webpack_require__(12);
-	    var dirtyQueue = __webpack_require__(14);
+	    var Stream = __webpack_require__(8);
+	    var preTickQueue = __webpack_require__(13);
+	    var dirtyQueue = __webpack_require__(15);
 
 	    /**
 	     * Accumulator is a Stream that accumulates a value given by a
@@ -7346,12 +7342,12 @@ return /******/ (function(modules) { // webpackBootstrap
 	var __WEBPACK_AMD_DEFINE_RESULT__;/* Copyright © 2015 David Valdman */
 
 	!(__WEBPACK_AMD_DEFINE_RESULT__ = function(require, exports, module) {
-	    var Transform = __webpack_require__(22);
-	    var Transitionable = __webpack_require__(25);
+	    var Transform = __webpack_require__(7);
+	    var Transitionable = __webpack_require__(28);
 	    var View = __webpack_require__(34);
-	    var Stream = __webpack_require__(7);
-	    var LayoutNode = __webpack_require__(19);
-	    var SizeNode = __webpack_require__(17);
+	    var Stream = __webpack_require__(8);
+	    var LayoutNode = __webpack_require__(20);
+	    var SizeNode = __webpack_require__(18);
 
 	    var CONSTANTS = {
 	        DIRECTION : {
@@ -7472,12 +7468,12 @@ return /******/ (function(modules) { // webpackBootstrap
 	var __WEBPACK_AMD_DEFINE_RESULT__;/* Copyright © 2015 David Valdman */
 
 	!(__WEBPACK_AMD_DEFINE_RESULT__ = function(require, exports, module) {
-	    var Transform = __webpack_require__(22);
+	    var Transform = __webpack_require__(7);
 	    var View = __webpack_require__(34);
-	    var Stream = __webpack_require__(7);
-	    var LayoutNode = __webpack_require__(19);
-	    var SizeNode = __webpack_require__(17);
-	    var Transitionable = __webpack_require__(25);
+	    var Stream = __webpack_require__(8);
+	    var LayoutNode = __webpack_require__(20);
+	    var SizeNode = __webpack_require__(18);
+	    var Transitionable = __webpack_require__(28);
 
 	    /**
 	     * A layout that arranges items in a grid and can rearrange the grid responsively.
@@ -7592,10 +7588,10 @@ return /******/ (function(modules) { // webpackBootstrap
 	var __WEBPACK_AMD_DEFINE_RESULT__;/* Copyright © 2015 David Valdman */
 
 	!(__WEBPACK_AMD_DEFINE_RESULT__ = function(require, exports, module) {
-	    var Transform = __webpack_require__(22);
+	    var Transform = __webpack_require__(7);
 	    var View = __webpack_require__(34);
-	    var ResizeStream = __webpack_require__(16);
-	    var LayoutNode = __webpack_require__(19);
+	    var ResizeStream = __webpack_require__(17);
+	    var LayoutNode = __webpack_require__(20);
 
 	    var CONSTANTS = {
 	        DIRECTION : {
@@ -7682,17 +7678,17 @@ return /******/ (function(modules) { // webpackBootstrap
 	var __WEBPACK_AMD_DEFINE_RESULT__;/* Copyright © 2015 David Valdman */
 
 	!(__WEBPACK_AMD_DEFINE_RESULT__ = function(require, exports, module) {
-	    var Transform = __webpack_require__(22);
-	    var Transitionable = __webpack_require__(25);
+	    var Transform = __webpack_require__(7);
+	    var Transitionable = __webpack_require__(28);
 	    var View = __webpack_require__(34);
-	    var LayoutNode = __webpack_require__(19);
-	    var Stream = __webpack_require__(7);
-	    var ResizeStream = __webpack_require__(16);
+	    var LayoutNode = __webpack_require__(20);
+	    var Stream = __webpack_require__(8);
+	    var ResizeStream = __webpack_require__(17);
 	    var Accumulator = __webpack_require__(50);
 	    var Differential = __webpack_require__(49);
 
 	    var SequentialLayout = __webpack_require__(53);
-	    var ContainerSurface = __webpack_require__(30);
+	    var ContainerSurface = __webpack_require__(2);
 
 	    var GenericInput = __webpack_require__(38);
 	    var ScrollInput = __webpack_require__(42);
@@ -7909,10 +7905,10 @@ return /******/ (function(modules) { // webpackBootstrap
 	    module.exports = {
 	        Accumulator: __webpack_require__(50),
 	        Differential: __webpack_require__(49),
-	        SimpleStream: __webpack_require__(9),
-	        Stream: __webpack_require__(7),
-	        Observable: __webpack_require__(20),
-	        SizeObservable: __webpack_require__(18)
+	        SimpleStream: __webpack_require__(10),
+	        Stream: __webpack_require__(8),
+	        Observable: __webpack_require__(21),
+	        SizeObservable: __webpack_require__(19)
 	    };
 	}.call(exports, __webpack_require__, exports, module), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
 
