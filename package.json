@@ -18,6 +18,7 @@
     "build-global": "webpack --progress --colors --output-library-target umd src/index.js global.js --output-library motor"
   },
   "dependencies": {
+    "babel-plugin-external-helpers-2": "^6.0.2",
     "jquery": "^2.1.4",
     "lodash": "^3.10.1",
     "lowclass": "^2.0.0",

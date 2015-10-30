@@ -12,7 +12,7 @@ Class ('Camera') .extends (NodeComponent, {
      * @constructor
      */
     Camera() {
-        this.super.apply(this, arguments)
+        NodeComponent.apply(this, arguments)
 
         this.test = 'test'
     },

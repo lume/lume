@@ -12,7 +12,7 @@ Class ('WorkerCamera') .extends (WorkerNodeComponent, {
      * @constructor
      */
     WorkerCamera(id) {
-        this.super.call(this, id)
+        WorkerNodeComponent.call(this, id)
 
         this.perspective = null
     },

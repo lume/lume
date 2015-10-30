@@ -17,4 +17,5 @@ module.exports = {
             filename: "[name].worker.js",
         },
     },
+    devtool: "source-map",
 }

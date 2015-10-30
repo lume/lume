@@ -1,5 +1,4 @@
-import Scene from '../nodes/Scene'
-import Node  from '../nodes/Node'
+import Node  from '../nodes/InternalNode'
 
 import WorkerAlign      from '../nodeComponents/WorkerAlign'
 import WorkerCamera     from '../nodeComponents/WorkerCamera'
@@ -13,7 +12,9 @@ import WorkerSize       from '../nodeComponents/WorkerSize'
 import WorkerTransform  from '../nodeComponents/WorkerTransform'
 
 let nodeList = {}
-self.nodeClasses = { Scene, Node }
+self.nodeClasses = {
+    Node,
+}
 
 let componentList = {}
 self.componentClasses = {
@@ -51,11 +52,11 @@ self.addEventListener('message', function(message) {
     }
 
     else if (data instanceof Object && data.method === 'registerNode') {
+        console.log('SceneWorker: Registering node with ID.', data.id)
 
-        // Create a new worker Node or Scene, the type inferred from the
-        // from the ID prefix.
+        // Create a new worker InternalNode
         let idPrefix = data.id.split('#')[0]
-        console.log('Making a worker-side ', idPrefix)
+        console.log('SceneWorker: Making a worker-side node with idPrefix ', idPrefix)
         let workerNode = new self.nodeClasses[idPrefix](data.id)
 
         // What are the memory and garabage collection implications of storing

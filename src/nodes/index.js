@@ -5,3 +5,5 @@ export default {
     Node,
     Scene,
 }
+
+// XXX: Should we also export private classes?

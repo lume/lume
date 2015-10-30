@@ -3,8 +3,6 @@ import NodeComponent from './NodeComponent'
 
 export default
 Class ('Transform') .extends (NodeComponent, {
-    Transform() {
-    },
 
     // don't override this unless you know what you're doing.
     get _idPrefix() { return "Transform" },

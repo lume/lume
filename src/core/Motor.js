@@ -60,10 +60,10 @@ Class ('Motor', {
      */
 
     /**
-     * Registers a Node with the Motor, which creates it's twin WorkerNode in
-     * the SceneWorker.
+     * Registers an InternalNode with the Motor, which creates it's twin
+     * InternalNode in the SceneWorker.
      *
-     * @param {../nodes/Node} node The node to be registered.
+     * @param {../nodes/InternalNode} node The node to be registered.
      */
     registerNode(node) {
         __(this).sceneWorker.postMessage({method: 'registerNode', id: node.id})
@@ -73,7 +73,7 @@ Class ('Motor', {
      * Registers a NodeComponent with the Motor, which creates it's twin
      * WorkerNodeComponent in the SceneWorker.
      *
-     * @param {../nodes/Node} node The component to be registered.
+     * @param {../nodeComponents/NodeComponent} component The component to be registered.
      */
     registerComponent(component) {
         __(this).sceneWorker.postMessage({method: 'registerComponent', id: component.id})
