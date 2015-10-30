@@ -9,6 +9,9 @@ define(function(require, exports, module) {
     var layoutAlgebra = require('../algebras/layout');
     var sizeAlgebra = require('../algebras/size');
 
+    var SIZE_KEYS = SizeNode.KEYS;
+    var LAYOUT_KEYS = LayoutNode.KEYS;
+
     /**
      * A node in the render tree. As such, it wraps a layout or size node,
      *  providing them with an `add` method. By adding nodes, the render tree
@@ -17,7 +20,7 @@ define(function(require, exports, module) {
      *  @constructor
      *  @class RenderTreeNode
      *  @private
-     *  @param object {SizeNode, LayoutNode, Surface, View}
+     *  @param object {Object|SizeNode|LayoutNode|Surface|View}
      */
     function RenderTreeNode(object) {
         // layout and size inputs
@@ -38,16 +41,25 @@ define(function(require, exports, module) {
      *  is created, but instead of a node with an array of children, children subscribe
      *  to notifications from the parent.
      *
+     *  Nodes can be instances of `LayoutNode`, `SizeNode`, or Object literals with
+     *  size and layout properties, in which case, appropriate nodes will be created.
+     *
      *  This method also takes `Views` (subtrees) and `Surfaces` (leaves).
      *
      * @method add
-     * @param node {SizeNode|LayoutNode|Surface|View} Node
+     * @chainable
+     * @param node {Object|SizeNode|LayoutNode|Surface|View} Node
      * @return {RenderTreeNode}
      */
     RenderTreeNode.prototype.add = function add(node) {
         var childNode;
 
-        if (node._isView){
+        if (node.constructor === Object){
+            // Object literal case
+            return _createNodeFromObjectLiteral.call(this, node);
+        }
+        else if (node._isView){
+            // View case
             if (this.root)
                 node._node.root = this.root;
             else if (this.tempRoot)
@@ -55,6 +67,7 @@ define(function(require, exports, module) {
             childNode = node;
         }
         else {
+            // Node case
             childNode = new RenderTreeNode(node);
             if (this.tempRoot)
                 childNode.tempRoot = this.tempRoot;
@@ -66,6 +79,39 @@ define(function(require, exports, module) {
 
         return childNode;
     };
+
+    function _createNodeFromObjectLiteral(object){
+        var sizeKeys = {};
+        var layoutKeys = {};
+
+        for (var key in object){
+            if (SIZE_KEYS[key]) sizeKeys[key] = object[key];
+            else if (LAYOUT_KEYS[key]) layoutKeys[key] = object[key];
+        }
+
+        var node = this;
+        var needsSize = Object.keys(sizeKeys).length > 0;
+        var needsLayout = Object.keys(layoutKeys).length > 0;
+
+        // create extra align node if needed
+        if (needsSize && layoutKeys.align){
+            var alignNode = new LayoutNode({
+                align : layoutKeys.align
+            });
+            delete layoutKeys.align;
+            node = node.add(alignNode);
+        }
+
+        // create size node first if needed
+        if (needsSize)
+            node = node.add(new SizeNode(sizeKeys));
+
+        // create layout node if needed
+        if (needsLayout)
+            node = node.add(new LayoutNode(layoutKeys));
+
+        return node;
+    }
 
     function _getRootNode(){
         if (this.root) return this.root;
@@ -86,8 +132,7 @@ define(function(require, exports, module) {
             );
             return;
         }
-
-        if (object instanceof LayoutNode){
+        else if (object instanceof LayoutNode){
             this.layout = Stream.lift(
                 function SGLayoutAlgebra (objectSpec, parentSpec, size){
                     if (!parentSpec || !size) return false;

@@ -64,6 +64,14 @@ define(function(require, exports, module) {
         }.bind(this));
     }
 
+    // Enumeration of types of size properties
+    SizeNode.KEYS = {
+        size : 'size',
+        proportions : 'proportions',
+        margins : 'margins',
+        aspectRatio : 'aspectRatio'
+    };
+
     /**
      * Introduce new data streams to the size node in {key : value} pairs.
      *  Here the `key` is one of "size", "proportions" or "marins".

@@ -49,6 +49,14 @@ define(function(require, exports, module) {
         EventHandler.setOutputHandler(this, this.stream);
     }
 
+    // Enumeration of types of layout properties
+    LayoutNode.KEYS = {
+        transform : 'transform',
+        origin : 'origin',
+        align : 'align',
+        opacity : 'opacity'
+    };
+
     /**
      * Introduce new data streams to the layout node in {key : value} pairs.
      *  Here the `key` is one of "transform", "origin", "align" or "opacity".
