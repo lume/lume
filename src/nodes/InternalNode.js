@@ -4,6 +4,11 @@ import randomstring from 'randomstring'
 import env from '../utilities/environment'
 
 /**
+ * The InternalNode class is used on both the UI-side and the Worker-side. On
+ * the UI-side, InternalNode is exposed for the end user via tne Node and Scene
+ * classes, which are public, while InternalNode is private for internal use by
+ * the library.
+ *
  * @private
  * @class InternalNode
  */
@@ -17,7 +22,6 @@ Class ('InternalNode', {
      * @constructor
      */
     InternalNode() {
-        console.log(' -- InternalNode constructor')
         if (env.isWeb) this.init.apply(this, arguments)
         else if (env.isWebWorker) this.worker__init.apply(this, arguments)
     },
@@ -53,7 +57,9 @@ Class ('InternalNode', {
     /**
      * Add a child InternalNode to this InternalNode.
      */
-    addChild() {console.log('hello')},
+    addChild() {
+        console.log('add child')
+    },
 
     /**
      * Add a NodeComponent to this InternalNode.
@@ -61,12 +67,11 @@ Class ('InternalNode', {
      * @param {NodeComponent} component The component to add to this InternalNode.
      */
     addComponent(component) {
-        console.log('Add component: ', component)
         component.addTo(this)
     },
 
     /*
-     * Worker methods --------------------------------------------------
+     * Worker stuff --------------------------------------------------
      */
 
     /**

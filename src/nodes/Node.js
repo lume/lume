@@ -16,11 +16,6 @@ let __ = new Privates()
 export default
 Class ('Node') .extends (InternalNode, {
 
-    Node() {
-        console.log(' -- Node constructor')
-        InternalNode.apply(this, arguments)
-    },
-
     /**
      * @override
      *
@@ -30,8 +25,6 @@ Class ('Node') .extends (InternalNode, {
         InternalNode.prototype.init.call(this)
 
         registerNodeWithMotor(this, __)
-
-        console.log(' --- private in Node', __(this))
 
         if (this.useDefaultComponents) {
             // TODO: Scenes will have different default components than Nodes?
