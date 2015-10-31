@@ -21,9 +21,6 @@ define(function(require, exports, module) {
     var ResizeStream = require('../streams/ResizeStream');
     var Stream = require('../streams/Stream');
 
-
-    var contexts = [];
-    var roots = [];
     var rafId = 0;
     var eventForwarders = {};
     var listenOnTick = false;
@@ -138,7 +135,6 @@ define(function(require, exports, module) {
     Engine.registerRoot = function registerRoot(root){
         root._size.subscribe(size);
         root._layout.subscribe(layout);
-        roots.push(root);
     };
 
     /**
@@ -149,11 +145,8 @@ define(function(require, exports, module) {
      * @private
      */
     Engine.deregisterRoot = function deregisterRoot(root){
-        var i = roots.indexOf(root);
-        if (i < 0) return;
         root._size.unsubscribe(size);
         root._layout.unsubscribe(layout);
-        roots.splice(i, 1);
     };
 
     /**
@@ -186,7 +179,6 @@ define(function(require, exports, module) {
     Engine.registerContext = function registerContext(context) {
         context._size.subscribe(size);
         context._layout.subscribe(layout);
-        contexts.push(context);
     };
 
     /**
@@ -199,11 +191,8 @@ define(function(require, exports, module) {
      * @param context {Context}     Context to deregister
      */
     Engine.deregisterContext = function deregisterContext(context) {
-        var i = contexts.indexOf(context);
-        if (i < 0) return;
         context._size.unsubscribe(size);
         context._layout.unsubscribe(layout);
-        contexts.splice(i, 1);
     };
 
     /**
