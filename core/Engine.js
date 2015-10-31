@@ -1,5 +1,5 @@
 /* Modified work copyright © 2015 David Valdman */
-
+// TODO: cancel RAF when asleep
 define(function(require, exports, module) {
     var State = require('./SUE');
     var postTickQueue = require('./queues/postTickQueue');
@@ -54,17 +54,15 @@ define(function(require, exports, module) {
     };
 
     /**
-     * Initiates the Engine's heartbeat.
+     * Initiate the Engine's request animation frame loop.
      *
      * @method start
      * @static
      */
-    Engine.start = start;
-
-    function start() {
+    Engine.start = function start(){
         Engine.step();
         rafId = window.requestAnimationFrame(start);
-    }
+    };
 
     module.exports = Engine;
 });
