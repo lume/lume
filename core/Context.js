@@ -1,17 +1,19 @@
 /* Modified work copyright © 2015 David Valdman */
 // TODO: Enable CSS properties on Context
 define(function(require, exports, module) {
+    var Engine = require('./Engine');
     var RootNode = require('./nodes/RootNode');
     var Transform = require('./Transform');
     var ElementAllocator = require('./ElementAllocator');
     var Transitionable = require('./Transitionable');
     var SimpleStream = require('../streams/SimpleStream');
     var EventHandler = require('../events/EventHandler');
-    var preTickQueue = require('./queues/dirtyQueue');
+    var preTickQueue = require('./queues/preTickQueue');
     var dirtyQueue = require('./queues/dirtyQueue');
 
     var elementType = 'div';
     var elementClass = 'samsara-context';
+    var rafStarted = false;
 
     var layoutSpec = {
         transform : Transform.identity,
@@ -114,13 +116,16 @@ define(function(require, exports, module) {
 
         if (!node) document.body.appendChild(this.container);
 
-        handleResize.call(this);
         preTickQueue.push(function (){
-            layoutStream.trigger('start', layoutSpec);
+            handleResize();
+            layoutStream.emit('start', layoutSpec);
             dirtyQueue.push(function(){
-                layoutStream.trigger('end', layoutSpec);
+                layoutStream.emit('end', layoutSpec);
             });
         });
+
+        if (!rafStarted) Engine.start();
+        rafStarted = true;
     };
 
     Context.prototype.on = function on(type, handler){
