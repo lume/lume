@@ -1,24 +1,28 @@
-/* This Source Code Form is subject to the terms of the Mozilla Public
- * License, v. 2.0. If a copy of the MPL was not distributed with this
- * file, You can obtain one at http://mozilla.org/MPL/2.0/.
- *
- * @license MPL 2.0
- * @copyright Famous Industries, Inc. 2014
- */
-
 /* Modified work copyright © 2015 David Valdman */
-
+// TODO: Enable CSS properties on Context
 define(function(require, exports, module) {
     var RootNode = require('./nodes/RootNode');
-    var EventHandler = require('./../events/EventHandler');
+    var Transform = require('./Transform');
     var ElementAllocator = require('./ElementAllocator');
     var Transitionable = require('./Transitionable');
-    var ResizeStream = require('../streams/ResizeStream');
-    var Stream = require('../streams/Stream');
-    var EventMapper = require('../events/EventMapper');
+    var SimpleStream = require('../streams/SimpleStream');
+    var EventHandler = require('../events/EventHandler');
+    var preTickQueue = require('./queues/dirtyQueue');
+    var dirtyQueue = require('./queues/dirtyQueue');
 
     var elementType = 'div';
     var elementClass = 'samsara-context';
+
+    var layoutSpec = {
+        transform : Transform.identity,
+        opacity : 1,
+        origin : null,
+        align : null,
+        nextSizeTransform : Transform.identity
+    };
+
+    var windowSizeStream = new SimpleStream();
+    var layoutStream = new EventHandler();
 
     /**
      * A Context defines a top-level DOM element inside which other nodes (like Surfaces) are rendered.
@@ -33,19 +37,6 @@ define(function(require, exports, module) {
      *
      *  @example
      *
-     *      var context = Engine.createContext({
-     *          el : document.querySelector('#myElement')
-     *      });
-     *
-     *      var surface = new Surface({
-     *          size : [100,100],
-     *          properties : {background : 'red'}
-     *      });
-     *
-     *      context.add(surface);
-     *
-     *      Engine.start();
-     *
      * @class Context
      * @constructor
      * @namespace Core
@@ -54,35 +45,29 @@ define(function(require, exports, module) {
      * @param [options.el] {Node}   DOM element which will serve as a container for added nodes
      */
     function Context(options) {
-        options = options || {};
-        var container = options.el || document.createElement(elementType);
-        container.classList.add(elementClass);
+        this._node = new RootNode();
 
-        var allocator = new ElementAllocator(container);
-        this._node = new RootNode(allocator);
-        this._size = new ResizeStream();
-        this._layout = new EventHandler();
-
-        this.size = this._size.map(function(size){
-            return (options.el)
-                ? [container.clientWidth, container.clientHeight]
-                : size;
+        this.size = windowSizeStream.map(function(){
+            return [this.container.clientWidth, this.container.clientHeight];
         }.bind(this));
 
         this._node._size.subscribe(this.size);
-        this._node._layout.subscribe(this._layout);
+        this._node._layout.subscribe(layoutStream);
 
         this._perspective = new Transitionable(0);
 
         this._perspective.on('update', function(perspective){
-            setPerspective(container, perspective);
-        });
+            setPerspective(this.container, perspective);
+        }.bind(this));
 
         this._perspective.on('end', function(perspective){
-            setPerspective(container, perspective);
-        });
+            setPerspective(this.container, perspective);
+        }.bind(this));
 
-        this.container = container;
+        this._eventOutput = new EventHandler();
+        this._eventForwarder = function _eventForwarder(event) {
+            this._eventOutput.emit(event.type, event);
+        }.bind(this);
     }
 
     /**
@@ -120,15 +105,55 @@ define(function(require, exports, module) {
         this._perspective.set(perspective, transition, callback);
     };
 
+    Context.prototype.mount = function mount(node){
+        this.container = node || document.createElement(elementType);
+        this.container.classList.add(elementClass);
+
+        var allocator = new ElementAllocator(this.container);
+        this._node.setAllocator(allocator);
+
+        if (!node) document.body.appendChild(this.container);
+
+        handleResize.call(this);
+        preTickQueue.push(function (){
+            layoutStream.trigger('start', layoutSpec);
+            dirtyQueue.push(function(){
+                layoutStream.trigger('end', layoutSpec);
+            });
+        });
+    };
+
+    Context.prototype.on = function on(type, handler){
+        this.container.addEventListener(type, this._eventForwarder);
+        EventHandler.prototype.on.apply(this._eventOutput, arguments);
+    };
+
+    Context.prototype.off = function off(type, handler) {
+        EventHandler.prototype.off.apply(this._eventOutput, arguments);
+    };
+
+    Context.prototype.emit = function emit(type, payload) {
+        EventHandler.prototype.emit.apply(this._eventOutput, arguments);
+    };
+
     var usePrefix = !('perspective' in document.documentElement.style);
 
     var setPerspective = usePrefix
         ? function setPerspective(element, perspective) {
-        element.style.webkitPerspective = perspective ? perspective.toFixed() + 'px' : '';
-    }
+            element.style.webkitPerspective = perspective ? perspective.toFixed() + 'px' : '';
+        }
         : function setPerspective(element, perspective) {
-        element.style.perspective = perspective ? perspective.toFixed() + 'px' : '';
-    };
+            element.style.perspective = perspective ? perspective.toFixed() + 'px' : '';
+        };
+
+    function handleResize() {
+        windowSizeStream.emit('resize');
+        dirtyQueue.push(function(){
+            windowSizeStream.emit('resize');
+        });
+    }
+
+    window.addEventListener('resize', handleResize, false);
 
     module.exports = Context;
 });

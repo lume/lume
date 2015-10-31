@@ -17,11 +17,15 @@ define(function(require, exports, module) {
     function RootNode(allocator) {
         RenderTreeNode.call(this);
         this.root = this;
-        this.allocator = allocator;
+        if (allocator) this.setAllocator(allocator);
     }
 
     RootNode.prototype = Object.create(RenderTreeNode.prototype);
     RootNode.prototype.constructor = RootNode;
+
+    RootNode.prototype.setAllocator = function setAllocator(allocator){
+        this.allocator = allocator;
+    };
 
     module.exports = RootNode;
 });
