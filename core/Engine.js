@@ -71,9 +71,6 @@ define(function(require, exports, module) {
     EventHandler.setInputHandler(Engine, eventHandler);
     EventHandler.setOutputHandler(Engine, eventHandler);
 
-    //TODO: add this only for full-screen apps
-    //document.body.classList.add('samsara-root');
-
     /**
      * Updates by a single frame of the application by looping through all function queues.
      *  This is repeatedly called within a requestAnimationFrame loop until the application
