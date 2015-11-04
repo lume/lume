@@ -10,6 +10,8 @@
 
 .samsara-context {
     position: absolute;
+    height: 100%;
+    width: 100%;
     -webkit-transform-style: preserve-3d;
        -moz-transform-style: preserve-3d;
             transform-style: preserve-3d;
