@@ -23,9 +23,6 @@ define(function(require, exports, module) {
         nextSizeTransform : Transform.identity
     };
 
-    var windowSizeStream = new SimpleStream();
-    var layoutStream = new EventHandler();
-
     /**
      * A Context defines a top-level DOM element inside which other nodes (like Surfaces) are rendered.
      *  This DOM element can be provided as an argument if it exists in the document,
@@ -43,20 +40,26 @@ define(function(require, exports, module) {
      * @constructor
      * @namespace Core
      * @uses Core.RootNode
-     * @param [options] {Object}    Options
-     * @param [options.el] {Node}   DOM element which will serve as a container for added nodes
+     * @param [options] {Object}                Options
+     * @param [options.perspective] {Number}    Perspective in pixels
      */
     function Context(options) {
+        options = options || {};
         this._node = new RootNode();
 
-        this.size = windowSizeStream.map(function(){
-            return [this.container.clientWidth, this.container.clientHeight];
+        this._size = new SimpleStream();
+        this._layout = new SimpleStream();
+
+        this.size = this._size.map(function(){
+            var size = [this.container.clientWidth, this.container.clientHeight];
+            this.emit('resize', size);
+            return size;
         }.bind(this));
 
         this._node._size.subscribe(this.size);
-        this._node._layout.subscribe(layoutStream);
+        this._node._layout.subscribe(this._layout);
 
-        this._perspective = new Transitionable(0);
+        this._perspective = new Transitionable(options.perspective || 0);
 
         this._perspective.on('update', function(perspective){
             setPerspective(this.container, perspective);
@@ -96,7 +99,7 @@ define(function(require, exports, module) {
     };
 
     /**
-     * Set current perspective of this context in pixels.
+     * Set current perspective of the `context` in pixels.
      *
      * @method setPerspective
      * @param perspective {Number}  Perspective in pixels
@@ -107,36 +110,73 @@ define(function(require, exports, module) {
         this._perspective.set(perspective, transition, callback);
     };
 
-    Context.prototype.mount = function mount(node){
+    /**
+     * Allocate contents of the `context` to a DOM node.
+     *
+     * @method mount
+     * @param node {Number}  DOM element
+     */
+    Context.prototype.mount = function mount(node, resizeListenFlag){
         this.container = node || document.createElement(elementType);
         this.container.classList.add(elementClass);
 
         var allocator = new ElementAllocator(this.container);
         this._node.setAllocator(allocator);
 
-        if (!node) document.body.appendChild(this.container);
+        if (!node)
+            document.body.appendChild(this.container);
+
+        if (!resizeListenFlag)
+            window.addEventListener('resize', handleResize.bind(this), false);
 
         preTickQueue.push(function (){
-            handleResize();
-            layoutStream.emit('start', layoutSpec);
+            handleResize.call(this);
+            this._layout.trigger('start', layoutSpec);
             dirtyQueue.push(function(){
-                layoutStream.emit('end', layoutSpec);
-            });
-        });
+                this._layout.trigger('end', layoutSpec);
+            }.bind(this));
+        }.bind(this));
 
-        if (!rafStarted) Engine.start();
-        rafStarted = true;
+        if (!rafStarted) {
+            rafStarted = true;
+            Engine.start();
+        }
     };
 
+    /**
+     * Adds a handler to the `type` channel which will be executed on `emit`.
+     *  These events should be DOM events that occur on the DOM node the
+     *  context has been mounted to.
+     *
+     * @method on
+     * @param type {String}         Channel name
+     * @param handler {Function}    Callback
+     */
     Context.prototype.on = function on(type, handler){
         this.container.addEventListener(type, this._eventForwarder);
         EventHandler.prototype.on.apply(this._eventOutput, arguments);
     };
 
+    /**
+     * Removes the `handler` from the `type`.
+     *  Undoes the work of `on`.
+     *
+     * @method on
+     * @param type {String}         Channel name
+     * @param handler {Function}    Callback
+     */
     Context.prototype.off = function off(type, handler) {
         EventHandler.prototype.off.apply(this._eventOutput, arguments);
     };
 
+    /**
+     * Used internally when context is subscribed to.
+     *
+     * @method emit
+     * @private
+     * @param type {String}     Channel name
+     * @param data {Object}     Payload
+     */
     Context.prototype.emit = function emit(type, payload) {
         EventHandler.prototype.emit.apply(this._eventOutput, arguments);
     };
@@ -145,20 +185,18 @@ define(function(require, exports, module) {
 
     var setPerspective = usePrefix
         ? function setPerspective(element, perspective) {
-            element.style.webkitPerspective = perspective ? perspective.toFixed() + 'px' : '';
+            element.style.webkitPerspective = perspective ? (perspective | 0) + 'px' : '0px';
         }
         : function setPerspective(element, perspective) {
-            element.style.perspective = perspective ? perspective.toFixed() + 'px' : '';
+            element.style.perspective = perspective ? (perspective | 0) + 'px' : '0px';
         };
 
     function handleResize() {
-        windowSizeStream.emit('resize');
+        this._size.emit('resize');
         dirtyQueue.push(function(){
-            windowSizeStream.emit('resize');
-        });
+            this._size.emit('resize');
+        }.bind(this));
     }
-
-    window.addEventListener('resize', handleResize, false);
 
     module.exports = Context;
 });

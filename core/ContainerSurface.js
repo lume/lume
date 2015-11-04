@@ -16,14 +16,6 @@ define(function(require, exports, module) {
     var Transform = require('./Transform');
     var EventHandler = require('../events/EventHandler');
 
-    var defaultLayout = {
-        transform : Transform.identity,
-        opacity : 1,
-        origin : null,
-        align : null,
-        nextSizeTransform : Transform.identity
-    };
-
     /**
      * ContainerSurface enables nesting of DOM. A ContainerSurface manages
      *  its own render tree that it inserts inside a DOM node. Typically
@@ -65,23 +57,18 @@ define(function(require, exports, module) {
      */
     function ContainerSurface(options) {
         Surface.call(this, options);
-
-        this._container = document.createElement('div');
-        this._container.classList.add('samsara-container');
-
-        this.context = new Context({el : this._container});
-        this.setContent(this._container);
-
+        this.context = new Context();
         this.context._size.subscribe(this.size);
-        this.context._layout.subscribe(this.layout.map(function(){
-            return defaultLayout;
-        }));
+
+        this.on('deploy', function(){
+            this.context.mount(this._currentTarget, true);
+        }.bind(this));
     }
 
     ContainerSurface.prototype = Object.create(Surface.prototype);
     ContainerSurface.prototype.constructor = ContainerSurface;
     ContainerSurface.prototype.elementType = 'div';
-    ContainerSurface.prototype.elementClass = 'samsara-surface';
+    ContainerSurface.prototype.elementClass = ['samsara-surface', 'samsara-container'];
 
     /**
      * Get current perspective in pixels.
@@ -114,17 +101,6 @@ define(function(require, exports, module) {
      */
     ContainerSurface.prototype.add = function add() {
         return Context.prototype.add.apply(this.context, arguments);
-    };
-
-    /**
-     * Place the document element this component manages into the document.
-     *
-     * @method deploy
-     * @private
-     * @param target {Node} Container DOM element
-     */
-    ContainerSurface.prototype.deploy = function deploy() {
-        Surface.prototype.deploy.apply(this, arguments);
     };
 
     module.exports = ContainerSurface;
