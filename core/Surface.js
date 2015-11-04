@@ -70,6 +70,7 @@ define(function(require, exports, module) {
         this.content = '';
         this.classList = [];
 
+        this._contentDirty = true;
         this._dirtyClasses = [];
         this._classesDirty = true;
         this._stylesDirty = true;
@@ -78,19 +79,16 @@ define(function(require, exports, module) {
         this._cachedSize = null;
 
         if (options) {
-            this._contentDirty = false;
-
             // default to DOM size for provided elements
-            if (options.el && !options.size)
+            if (options.el && !options.size){
+                this._contentDirty = false;
                 options.size = [true, true];
+            }
 
             ElementOutput.call(this, options.el);
             this.setOptions(options);
         }
-        else {
-            this._contentDirty = true;
-            ElementOutput.call(this);
-        }
+        else ElementOutput.call(this);
     }
 
     Surface.prototype = Object.create(ElementOutput.prototype);
@@ -99,31 +97,22 @@ define(function(require, exports, module) {
     Surface.prototype.elementClass = 'samsara-surface';
 
     function _setDirty(){
-        if (this._dirty) return;
+        if (this._dirty || !this._currentTarget) return;
 
         dirtyQueue.push(function(){
             var target = this._currentTarget;
 
-            if (this._contentDirty) {
-                this.deploy(target);
-                this._contentDirty = false;
-            }
-
             if (this._classesDirty) {
                 _removeClasses.call(this, target);
                 _applyClasses.call(this, target);
-                this._classesDirty = false;
             }
 
-            if (this._stylesDirty) {
-                _applyStyles.call(this, target);
-                this._stylesDirty = false;
-            }
+            if (this._stylesDirty) _applyProperties.call(this, target);
 
-            if (this._attributesDirty) {
-                _applyAttributes.call(this, target);
-                this._attributesDirty = false;
-            }
+            if (this._attributesDirty) _applyAttributes.call(this, target);
+
+            if (this._contentDirty) this.deploy(target);
+
             this._dirty = false;
         }.bind(this))
     }
@@ -131,16 +120,19 @@ define(function(require, exports, module) {
     function _applyClasses(target) {
         for (var i = 0; i < this.classList.length; i++)
             target.classList.add(this.classList[i]);
+        this._classesDirty = false;
     }
 
-    function _applyStyles(target) {
+    function _applyProperties(target) {
         for (var key in this.properties)
             target.style[key] = this.properties[key];
+        this._stylesDirty = false;
     }
 
     function _applyAttributes(target) {
         for (var key in this.attributes)
             target.setAttribute(key, this.attributes[key]);
+        this._attributesDirty = false;
     }
 
     function _removeClasses(target) {
@@ -148,7 +140,7 @@ define(function(require, exports, module) {
         this._dirtyClasses = [];
     }
 
-    function _removeStyles(target) {
+    function _removeProperties(target) {
         for (var key in this.properties)
             target.style[key] = '';
     }
@@ -263,9 +255,8 @@ define(function(require, exports, module) {
      * @param classlist {String[]}  ClassList
      */
     Surface.prototype.setClasses = function setClasses(classList) {
-        var i = 0;
         var removal = [];
-        for (i = 0; i < this.classList.length; i++) {
+        for (var i = 0; i < this.classList.length; i++) {
             if (classList.indexOf(this.classList[i]) < 0) removal.push(this.classList[i]);
         }
         for (i = 0; i < removal.length; i++) this.removeClass(removal[i]);
@@ -335,6 +326,9 @@ define(function(require, exports, module) {
      * Allocates the element-type associated with the Surface, adds its given
      *  element classes, and prepares it for future committing.
      *
+     *  This method is called upon the first `start` or `resize`
+     *  event the Surface gets.
+     *
      * @private
      * @method setup
      * @param allocator {ElementAllocator} Allocator
@@ -345,24 +339,19 @@ define(function(require, exports, module) {
 
         // add any element classes
         if (this.elementClass) {
-            if (this.elementClass instanceof Array) {
+            if (this.elementClass instanceof Array)
                 for (var i = 0; i < this.elementClass.length; i++)
                     this.addClass(this.elementClass[i]);
-            }
             else this.addClass(this.elementClass);
         }
 
         // set the currentTarget and any bound listeners
         this.attach(target);
 
-        // set all dirty flags to true
-        this._opacityDirty = true;
-        this._stylesDirty = true;
-        this._classesDirty = true;
-        this._attributesDirty = true;
-        this._contentDirty = true;
-        this._originDirty = true;
-        this._transformDirty = true;
+        _applyClasses.call(this, target);
+        _applyProperties.call(this, target);
+        _applyAttributes.call(this, target);
+        this.deploy(target);
     };
 
     /**
@@ -385,7 +374,7 @@ define(function(require, exports, module) {
         target.style.height = '';
 
         // clear all styles, classes and attributes
-        _removeStyles.call(this, target);
+        _removeProperties.call(this, target);
         _removeAttributes.call(this, target);
         _removeClasses.call(this, target);
 
@@ -401,17 +390,20 @@ define(function(require, exports, module) {
      *
      * @private
      * @method deploy
-     * @param target {Node} Container DOM element
+     * @param target {Node} DOM element to set content into
      */
     Surface.prototype.deploy = function deploy(target) {
         //TODO: make sure target.tagName is of correct type! Tag pools must be implemented.
-        this._eventOutput.emit('deploy');
+        if (!target) return;
         var content = this.getContent();
         if (content instanceof Node) {
             while (target.hasChildNodes()) target.removeChild(target.firstChild);
             target.appendChild(content);
         }
         else target.innerHTML = content;
+
+        this._contentDirty = false;
+        this._eventOutput.emit('deploy');
     };
 
     /**
