@@ -114,7 +114,7 @@ define(function(require, exports, module) {
      * Allocate contents of the `context` to a DOM node.
      *
      * @method mount
-     * @param node {Number}  DOM element
+     * @param node {Node}  DOM element
      */
     Context.prototype.mount = function mount(node, resizeListenFlag){
         this.container = node || document.createElement(elementType);

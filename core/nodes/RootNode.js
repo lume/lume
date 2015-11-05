@@ -23,6 +23,12 @@ define(function(require, exports, module) {
     RootNode.prototype = Object.create(RenderTreeNode.prototype);
     RootNode.prototype.constructor = RootNode;
 
+    /**
+     * Define an allocator
+     *
+     * @method setAllocator
+     * @param allocator {Allocator} Allocator
+     */
     RootNode.prototype.setAllocator = function setAllocator(allocator){
         this.allocator = allocator;
     };
