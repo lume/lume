@@ -9,8 +9,8 @@
 /* Modified work copyright © 2015 David Valdman */
 
 define(function(require, exports, module) {
-    var ElementOutput = require('./ElementOutput');
-    var dirtyQueue = require('./queues/dirtyQueue');
+    var ElementOutput = require('../core/ElementOutput');
+    var dirtyQueue = require('../core/queues/dirtyQueue');
 
     /**
      * Surface is a wrapper for DOM element controlled by Samsara.

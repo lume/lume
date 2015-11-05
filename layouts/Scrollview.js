@@ -11,7 +11,7 @@ define(function(require, exports, module) {
     var Differential = require('../streams/Differential');
 
     var SequentialLayout = require('./SequentialLayout');
-    var ContainerSurface = require('../core/ContainerSurface');
+    var ContainerSurface = require('../dom/ContainerSurface');
 
     var GenericInput = require('../inputs/GenericInput');
     var ScrollInput = require('../inputs/ScrollInput');

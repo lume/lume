@@ -11,9 +11,9 @@
 define(function(require, exports, module) {
     var Surface = require('./Surface');
     var Context = require('./Context');
-    var dirtyQueue = require('./queues/dirtyQueue');
-    var preTickQueue = require('./queues/preTickQueue');
-    var Transform = require('./Transform');
+    var dirtyQueue = require('../core/queues/dirtyQueue');
+    var preTickQueue = require('../core/queues/preTickQueue');
+    var Transform = require('../core/Transform');
     var EventHandler = require('../events/EventHandler');
 
     /**

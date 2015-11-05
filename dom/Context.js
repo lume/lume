@@ -1,15 +1,15 @@
 /* Modified work copyright © 2015 David Valdman */
 // TODO: Enable CSS properties on Context
 define(function(require, exports, module) {
-    var Engine = require('./Engine');
-    var RootNode = require('./nodes/RootNode');
-    var Transform = require('./Transform');
-    var ElementAllocator = require('./ElementAllocator');
-    var Transitionable = require('./Transitionable');
+    var Engine = require('../core/Engine');
+    var RootNode = require('../core/nodes/RootNode');
+    var Transform = require('../core/Transform');
+    var ElementAllocator = require('../core/ElementAllocator');
+    var Transitionable = require('../core/Transitionable');
     var SimpleStream = require('../streams/SimpleStream');
     var EventHandler = require('../events/EventHandler');
-    var preTickQueue = require('./queues/preTickQueue');
-    var dirtyQueue = require('./queues/dirtyQueue');
+    var preTickQueue = require('../core/queues/preTickQueue');
+    var dirtyQueue = require('../core/queues/dirtyQueue');
 
     var elementType = 'div';
     var elementClass = 'samsara-context';
