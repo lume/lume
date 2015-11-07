@@ -123,6 +123,8 @@ define(function(require, exports, module) {
         var allocator = new ElementAllocator(this.container);
         this._node.setAllocator(allocator);
 
+        this.emit('deploy', this.container);
+
         if (!node)
             document.body.appendChild(this.container);
 
@@ -153,7 +155,13 @@ define(function(require, exports, module) {
      * @param handler {Function}    Callback
      */
     Context.prototype.on = function on(type, handler){
-        this.container.addEventListener(type, this._eventForwarder);
+        if (this.container)
+            this.container.addEventListener(type, this._eventForwarder);
+        else {
+            this._eventOutput.on('deploy', function(target){
+                target.addEventListener(type, this._eventForwarder);
+            }.bind(this));
+        }
         EventHandler.prototype.on.apply(this._eventOutput, arguments);
     };
 
