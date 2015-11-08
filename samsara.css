@@ -10,30 +10,29 @@
 
 .samsara-context {
     position: absolute;
+    height: 100%;
+    width: 100%;
     -webkit-transform-style: preserve-3d;
        -moz-transform-style: preserve-3d;
             transform-style: preserve-3d;
     -webkit-backface-visibility: hidden;
-       -moz-backface-visibility: hidden;
-            backface-visibility: hidden;
+           -moz-backface-visibility: hidden;
+                backface-visibility: hidden;
+}
+
+.samsara-container {
+    -webkit-transform-style: preserve-3d;
+       -moz-transform-style: preserve-3d;
+            transform-style: preserve-3d;
 }
 
 .samsara-surface {
     position: absolute;
     -webkit-tap-highlight-color: transparent;
-    -webkit-transform-origin: center center;
-       -moz-transform-origin: center center;
-            transform-origin: center center;
     -webkit-backface-visibility: visible;
        -moz-backface-visibility: visible;
             backface-visibility: visible;
     -webkit-box-sizing: border-box;
        -moz-box-sizing: border-box;
             box-sizing: border-box;
-}
-
-.samsara-container {
-    position: relative;
-    width: 100%;
-    height: 100%;
 }
