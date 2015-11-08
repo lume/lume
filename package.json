@@ -1,10 +1,10 @@
 {
   "name": "samsarajs",
-  "description": "Streaming user interfaces for the web",
+  "description": "Streaming layout for the web",
   "url": "http://samsaraJS.org",
   "author": "David Valdman <dmvaldman@gmail.com>",
-  "version": "0.0.2",
-  "main": "",
+  "version": "0.0.4",
+  "main": "samsara.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
