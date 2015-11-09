@@ -78,6 +78,8 @@ function Transitionable(initialState) {
     this._state = null;
     this._startedAt = null;
     this._pausedAt = null;
+    this.id = null;
+    this.param = null;
     if (initialState != null) this.from(initialState);
     Engine.updateQueue.push(this);
 }

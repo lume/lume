@@ -15,3 +15,11 @@ body {
   perspective: none;
   overflow: hidden;
 }
+
+.v-node {
+  background: green;
+  width: 25%;
+  height: 25vw;
+  float:left;
+  opacity: 0;
+}

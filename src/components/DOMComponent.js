@@ -7,6 +7,8 @@ var DOMComponent = function(node, elem, container){
     var container = container ? container : document.body;
 
     this.elem.dataset.node = this.node;
+    this.elem.classList.add('v-node');
+    this.elem.classList.add(this.node);
     container.appendChild(this.elem);
 };
 

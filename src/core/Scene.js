@@ -1,8 +1,17 @@
+var cxt = self;
+
 var Scene = function(graph){
 
     this.graph = graph || {};
     this.length = 0;
 
+}
+
+Scene.prototype.init = function(worker) {
+    if(worker){
+        this.worker = worker;
+    }
+    console.log(this.worker);
 }
 
 Scene.prototype.addChild = function(node){
@@ -45,8 +54,8 @@ Scene.prototype.findOne = function(query) {
 }
 
 
-Scene.prototype.update = function(tick){
-    //console.log(tick);
+Scene.prototype.update = function(change){
+  cxt.postMessage(JSON.parse(JSON.stringify(change)));
 }
 
 module.exports = new Scene();

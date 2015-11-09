@@ -8,14 +8,18 @@ var Node = boxer.core.Node;
 onmessage = function(e) {
 
     if(e.data.frame){
-        Scene.update(e.data.frame);
+      //  Scene.update(e.data.frame);
+    }
+    if(e.data.message) {
+      //  Scene.update(e.data.message);
+        //postMessage(e.data.message);
     }
     if(e.data.addNode){
-        Scene.addChild(new Node(e.data.addNode));
+        Scene.addChild(new Node(e.data.addNode, Scene));
     }
     if(e.data.addSubGraph){
         e.data.addSubGraph.forEach(function(node){
-            Scene.addChild(new Node(node));
+            Scene.addChild(new Node(node, Scene));
         });
     }
     if(e.data.removeNode){
@@ -38,4 +42,5 @@ onmessage = function(e) {
         n.setTransitionable(e.data.transition);
         //postMessage(n.t[e.data.transition.t]);
     }
+
 }

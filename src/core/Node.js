@@ -4,7 +4,7 @@ var Curves = require('../transitions/Curves');
 
 var _observableCallback = {};
 
-var Node = function(conf){
+var Node = function(conf, parent){
 
     this.transitionables = {};
 
@@ -13,6 +13,8 @@ var Node = function(conf){
     } else {
         this.setDefaults();
     }
+
+    parent ? this.parent = parent : this.parent = null;
 
 };
 
@@ -33,7 +35,7 @@ Node.prototype.serialize = function(conf){
     this.size = conf.size ? conf.size : [0,0,0];
     this.rotate = conf.rotate ? conf.rotate : [0,0,0];
     this.opacity = conf.opacity ? conf.opacity : 1.0;
-    this.observe(this.id);
+    this.observe(this.id, this);
     conf.t ? this.setTransitionables(conf.transitionables) : false;
 };
 
@@ -116,7 +118,14 @@ Node.prototype.setTransitionable = function(conf){
 
 
     this[conf.t] = conf.to;
-    console.log(conf.t, this[conf.t], n.transitionables[conf.t].transition.get());
+    n.transitionables[conf.t].transition.id = this.id;
+    n.transitionables[conf.t].transition.param = conf.t;
+    this.observe(this.id+'-'+conf.t, n.transitionables[conf.t].transition);
+    //console.log(conf.t, this[conf.t], n.transitionables[conf.t].transition.get());
+    //TODO: figure out a better way to update Transitionable
+    setInterval(function(){
+      n.transitionables[conf.t].transition.get();
+    },10);
 
 };
 
@@ -128,17 +137,36 @@ Node.prototype.transit = function(conf){
     }
 };
 
-Node.prototype.observe = function(id) {
-    var n = this;
+Node.prototype.observe = function(id, obj) {
+      var n = this;
       _observableCallback[id] = function(changes){
           changes.forEach(function(change) {
-                  console.log(change);
             if(change.type === 'update' && change.name !== 'id') {
+              //TODO:broadcast change to scene
+
+              if(change.object.constructor.name === 'Transitionable'){
+                n[change.object.param] = change.oldValue;
+              } else {
+                n.parent.update({
+                              message:{
+                                prop: change.name,
+                                val: change.oldValue
+                              },
+                              node: n.id
+                            });
+                // console.log({
+                //               message:{
+                //                 prop: change.name,
+                //                 val: change.oldValue
+                //               },
+                //               node: n.id
+                //             });
+              }
 
             }
           });
       };
-      Object.observe(this, _observableCallback[id]);
+      Object.observe(obj, _observableCallback[id]);
 
 };
 
@@ -155,7 +183,7 @@ Node.prototype.eventManager = function(){
   return {
     sub: function(ev, listener) {
 
-      this.observe(ev);
+      this.observe(ev, this);
       // Create the event's object if not yet created
       if(!hasEvent.call(events, ev)) events[ev] = [];
 
