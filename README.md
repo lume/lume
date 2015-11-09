@@ -68,7 +68,6 @@ design guides. On the web there are no rules. We’re excited to see what you bu
 [JSConf EU 2015 Berlin, Germany](https://www.youtube.com/watch?v=biJXpv-6XVY)
 
 ###Roadmap
-- [ ] Samsara.js, Samsara.min.js bundles
 - [ ] Ability to remove render tree nodes (surface.remove(), layoutNode.remove(), etc)
 - [ ] Physics engine
 - [ ] Backbone.js & React.js integration
