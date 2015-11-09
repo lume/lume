@@ -119,12 +119,6 @@ define(function(require, exports, module) {
                 }
             });
 
-            container.on('deploy', function(){
-                container._container.addEventListener('touchmove', function(event){
-                    event.preventDefault();
-                })
-            });
-
             genericInput.subscribe(container);
 
             container.add(displacementNode).add(this.layout);
