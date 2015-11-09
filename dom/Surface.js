@@ -46,7 +46,7 @@ define(function(require, exports, module) {
      *      });
      *
      * @class Surface
-     * @namespace Core
+     * @namespace DOM
      * @constructor
      * @extends Core.ElementOutput
      * @param [options] {Object}                Options

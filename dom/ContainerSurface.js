@@ -39,9 +39,9 @@ define(function(require, exports, module) {
      *      context.add(myContainer);
      *
      * @class ContainerSurface
-     * @extends Core.Surface
-     * @namespace Core
-     * @uses Core.Context
+     * @extends DOM.Surface
+     * @namespace DOM
+     * @uses DOM.Context
      * @constructor
      *
      * @param [options] {Object}                Options

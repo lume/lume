@@ -30,8 +30,8 @@ define(function(require, exports, module) {
      *      eventHandlerA.emit('name', {data : 0});
      *
      * @class EventHandler
-     * @namespace Core
-     * @extends Core.EventEmitter
+     * @namespace Events
+     * @extends Events.EventEmitter
      * @constructor
      */
     function EventHandler() {

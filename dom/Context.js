@@ -46,7 +46,7 @@ define(function(require, exports, module) {
      *
      * @class Context
      * @constructor
-     * @namespace Core
+     * @namespace DOM
      * @uses Core.RootNode
      * @param [options] {Object}                Options
      * @param [options.perspective] {Number}    Perspective in pixels

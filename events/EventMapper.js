@@ -26,6 +26,7 @@ define(function(require, exports, module) {
      *      eventEmitter.emit('name', {x : 1, y : 2}); // alerts 3
      *
      * @class EventMapper
+     * @namespace Events
      * @constructor
      * @param map {Function}  Function to modify the event payload
      */
