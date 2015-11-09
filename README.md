@@ -7,7 +7,7 @@ install instructions there. Here are some other links to get your started.
 | -------------- | ------------- |
 | Guide          | [samsaraJS.org/docs](http://www.samsaraJS.org/docs)  |
 | Examples       | [samsaraJS.org/examples](http://www.samsaraJS.org/examples)  |
-| Reference Docs | [samsaraJS.org/docs](http://www.samsaraJS.org/reference_docs)  |
+| API            | [samsaraJS.org/reference_docs](http://www.samsaraJS.org/reference_docs)  |
 | Questions      | [SamsaraJS Google Group](https://groups.google.com/forum/#!forum/samsarajs) |
 
 ###WHAT?
