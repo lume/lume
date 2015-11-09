@@ -1,22 +1,19 @@
 ###Getting Started
 This repository is for the codebase itself. The best way to get started with SamsaraJS is to
-clone the [base scaffolding repository](https://github.com/dmvaldman/samsara-base) and follow the
+clone the [base scaffolding repo](https://github.com/dmvaldman/samsara-base) and follow the
 install instructions there. Here are some other links to get your started.
 
 | Resources      ||
 | -------------- | ------------- |
-| Documentation  | [samsaraJS.org/docs](http://www.samsaraJS.org/docs)  |
+| Guide          | [samsaraJS.org/docs](http://www.samsaraJS.org/docs)  |
 | Examples       | [samsaraJS.org/examples](http://www.samsaraJS.org/examples)  |
-| Questions?     | [SamsaraJS Google Group](https://groups.google.com/forum/#!forum/samsarajs) |
-
-We'll be adding more "higher level" documentation soon!
+| Reference Docs | [samsaraJS.org/docs](http://www.samsaraJS.org/reference_docs)  |
+| Questions      | [SamsaraJS Google Group](https://groups.google.com/forum/#!forum/samsarajs) |
 
 ###WHAT?
-SamsaraJS is a JavaScript library for making user interfaces on the mobile and desktop web. 
-The target audience is web developers looking to build complex, gesture-based interactions 
-for their application.
+Samsara is a JavaScript library for doing dynamic layout. It provides a language for positioning, orienting and sizing DOM elements and animating these properties over time. This is all Samsara does, but it has its strong opinions. Everything in Samsara — from the user input to the rendering pipeline — is a stream. Building a user interface is nothing more than composing streams.
 
-####Examples (with source code):
+####Examples:
 
 1. **JSNavigationController**
 A simple web version of iOS's UINavigationController. You can drag the blue area, or click on the
@@ -33,35 +30,17 @@ The SamsaraJS logo.
 A playful UI for scrolling by folding and unfolding an accordion.
 [[demo]](http://samsara-accordion.s3-website.eu-central-1.amazonaws.com)
  
-SamsaraJS is unique in that it is allows for many parts of an interface to animate in unison. 
-This kind of dependency management is hard to do, and we believe it means rethinking some 
-current practices. We provides a library for making this easier, maintainable and fast.
- 
 SamsaraJS has no dependencies, and was made to play nicely with other frameworks. We move rectangles 
-around the screen -- what you do inside those rectangles is up to you. Samsara doesn’t include any 
+around the screen — what you do inside those rectangles is up to you. Samsara doesn’t include any 
 support for routing, server syncing, templating and data-binding; there are plenty of other great tools 
 for that. If we don’t play nicely with your tools, that’s our fault. Let us know and we will do our 
-best to improve.
+best to improve. Integrations with React.js and Backbone.js is in the pipeline.
  
 ###HOW?
-Samsara takes an approach to layout called functional reactive programming (specifically, we ascribe 
-the the philosophy of Berkeley’s [subjective idealism](https://gist.github.com/dmvaldman/f957dd9a8ed3f6edf35d)). 
-We think of layout and user input as streams of continuously changing data. You can, for instance, 
-subscribe the opacity of a nav bar to the transition of a hamburger menu to a touch gesture of a user. 
-Developing an interface in Samsara is nothing more than creating, modifying, and piping streams. At the 
-end of these streams we export style properties (opacity, transform and size) to the DOM.
+Samsara takes an approach to called functional reactive programming. We think of layout and user input as streams of continuously changing data. You can, for instance, subscribe the opacity of a nav bar to the transition of a hamburger menu to a touch gesture of a user. Developing an interface in Samsara is nothing more than creating, modifying, and joining streams. At the end of these streams, SamsaraJS exports style properties (opacity, transform and size) to the DOM.
  
 ###WHY?
-We believe that layout should be decoupled from content (HTML) and style (CSS). The [vision](Section 3.4 http://dev.w3.org/html5/html-design-principles/)
-for HTML was to markup content and structure, not presentation. Instead of nesting layout in HTML, 
-in SamsaraJS you nest layout primitives in JavaScript. Internally, Samsara will flatten this nested 
-structure before it reaches the DOM. The usefulness of CSS is for discrete interactions, 
-like point and click. SamsaraJS was designed for point and move, and translating motion into layout.
- 
-The purpose of Samsara is not only to mimic the interactions of the native world on the web, 
-but to free the creativity of web developers to invent new interactions, where previously they were 
-curtailed by performance and complexity. In the native world there are the Android, iOS and Windows 
-design guides. On the web there are no rules. We’re excited to see what you build.
+I created SamsaraJS because I believe that we can do so much more with our user interfaces. Until recently, a “point and click” ethos dominated user interaction with CSS and HTML defining the language. We can evolve this ethos to “point and move”. SamsaraJS is made for interfaces where the connection between the user and the application evolve in lock-step.
 
 ###Talks
 [![Talk](http://i.imgur.com/tGbmVk4.png)](https://www.youtube.com/watch?v=biJXpv-6XVY)
