@@ -18,6 +18,7 @@ for( var i=0; i<180; i++ ){
         align : [0.0,0.0,0.0],
         size : [20,20,20],
         rotate: [i*4,i*4,0],
+        id: 'node-'+i,
         opacity : 1.0,
         transitionables : [{
             id: 'opacity',
@@ -51,11 +52,11 @@ SceneWorker.postMessage({query: {
                         });
 
 SceneWorker.onmessage = function(e) {
-  console.log(e.data);  // receive message from Scene Worker that represents current Graph.
+//  console.log(e.data);  // receive message from Scene Worker that represents current Graph.
 
 }
 
-console.log(elements);
+//console.log(elements);
 
 // TODO: Change for better API? Need to link Scene to receive updates somehow...
 Engine.init(SceneWorker);

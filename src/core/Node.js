@@ -100,16 +100,24 @@ Node.prototype.getOpacity = function(){
 
 Node.prototype.setTransitionable = function(conf){
     var n  = this;
+
     n.transitionables[conf.t] = conf;
     n.transitionables[conf.t].transition = new Transitionable(conf.from);
-    n.transitionables[conf.t].transition.set(conf.from);
     n.transitionables[conf.t].transition.set(conf.to);
-  //  n.transitionables[conf.t].transition.from(conf.from).delay(conf.delay).to(conf.to, conf.curve, conf.duration);
-                  console.log('transition!',n.transitionables[conf.t].transition);
+    //n.transitionables[conf.t].transition.set(conf.to);
     if(conf.delay) {
-
       n.transit(conf);
+    } else {
+      n.transitionables[conf.t]
+       .transition
+       .from(conf.from)
+       .to(conf.to, conf.curve, conf.duration);
     }
+
+
+    this[conf.t] = conf.to;
+    console.log(conf.t, this[conf.t], n.transitionables[conf.t].transition.get());
+
 };
 
 Node.prototype.transit = function(conf){
@@ -122,11 +130,11 @@ Node.prototype.transit = function(conf){
 
 Node.prototype.observe = function(id) {
     var n = this;
-
       _observableCallback[id] = function(changes){
           changes.forEach(function(change) {
+                  console.log(change);
             if(change.type === 'update' && change.name !== 'id') {
-                    console.log(change);
+
             }
           });
       };

@@ -112,6 +112,7 @@ Transitionable.prototype.to = function to(finalState, curve, duration, callback,
         this._startedAt = performance.now();
         this._pausedAt = null;
     }
+
     this._queue.push(
         finalState,
         curve != null ? curve : Curves.linear,
@@ -119,6 +120,7 @@ Transitionable.prototype.to = function to(finalState, curve, duration, callback,
         callback,
         method
     );
+
     return this;
 };
 
@@ -447,9 +449,5 @@ Transitionable.prototype.set = function(state, transition, callback) {
     return this;
 };
 
-Transitionable.prototype.update = function(time) {
-  //this.constructor.Clock.step(time);
-  console.log(time);
-};
 
 module.exports = Transitionable;

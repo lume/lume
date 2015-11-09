@@ -76,7 +76,7 @@ Engine.init(SceneWorker);
 
 ```
 
-Currently the scene is injected into the Engine so the Web Worker can receive ticks from the Engine. `SceneWorker.js` handles the calculations on each Node and maintains the graph on a seprate thread from application logic (above).
+Currently the scene is injected into the Engine so the Web Worker can receive ticks from the Engine. `SceneWorker.js` handles the calculations on each Node and maintains the graph on a separate thread from application logic (above).
 
 
 ##Development

@@ -27,7 +27,7 @@ onmessage = function(e) {
         });
     }
     if(e.data.graph){
-      console.log(Scene.graph);
+        //console.log(Scene.graph);
         postMessage(Scene.graph);
     }
     if(e.data.query){
