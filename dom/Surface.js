@@ -20,9 +20,7 @@ define(function(require, exports, module) {
      *
      * @example
      *
-     *      var context = Engine.createContext({
-     *          el : document.querySelector('#myElement')
-     *      });
+     *      var context = new Context()
      *
      *      var surface = new Surface({
      *          content : 'Hello world!',
@@ -34,7 +32,7 @@ define(function(require, exports, module) {
      *
      *      context.add(surface);
      *
-     *      Engine.start();
+     *      context.mount(document.body);
      *
      *  @example
      *

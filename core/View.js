@@ -48,10 +48,10 @@ define(function(require, exports, module) {
      *
      *      var myView = new myView({defaultOption1 : 'hello'});
      *
-     *      var context = Engine.createContext();
+     *      var context = Context();
      *      context.add(myView);
      *
-     *      Engine.start()
+     *      context.mount(document.body);
      *
      * @class View
      * @constructor

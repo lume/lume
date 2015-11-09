@@ -13,7 +13,7 @@ define(function(require, exports, module) {
      *
      *  @example
      *
-     *      var context = Engine.createContext();
+     *      var context = Context();
      *
      *      var surface = new Surface({
      *          size : [100,100],
@@ -28,16 +28,14 @@ define(function(require, exports, module) {
      *      });
      *
      *      context.add(layout).add(surface);
+     *      context.mount(document.body)
      *
-     *      Engine.on('click', function(){
-     *          opacity.set(0, {duration : 1000});
-     *      });
-     *
-     *      Engine.start();
+     *      opacity.set(0, {duration : 1000});
      *
      * @class LayoutNode
      * @constructor
      * @namespace Core
+     * @private
      * @param sources {Object}                          Object of layout sources
      * @param [sources.transform] {Stream|Transform}    Transform source
      * @param [sources.align] {Stream|Array}            Align source

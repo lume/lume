@@ -22,7 +22,7 @@ define(function(require, exports, module) {
      *
      *  @example
      *
-     *      var context = Engine.createContext();
+     *      var context = Context();
      *
      *      var surface = new Surface({
      *          size : [100,100],
@@ -35,12 +35,12 @@ define(function(require, exports, module) {
      *      });
      *
      *      context.add(sizeNode).add(surface);
-     *
-     *      Engine.start();
+     *      context.mount(document.body)
      *
      * @class SizeNode
      * @namespace Core
      * @constructor
+     * @private
      * @param sources {Object}                      Object of size sources
      * @param [sources.size] {Stream|Array}         Size source
      * @param [sources.margin] {Stream|Array}       Margin source
