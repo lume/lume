@@ -12,24 +12,18 @@ var elements = {}; // a graph of elements;
 
 // Add 180 Nodes to the Scene in a SubGraph.
 for( var i=0; i<180; i++ ){
-    scene.addSubGraph.push({
-        position : [Math.random() * (window.innerWidth - 0) + 0 , Math.random() * (window.innerHeight - 0) + 0 , 0],
+    var conf = {
+        position : [0, 0, 0],
         origin : [0.0,0.0,0.0],
         align : [0.0,0.0,0.0],
         size : [20,20,20],
+        scale : [2.0,2.0,2.0],
         rotate: [i*4,i*4,0],
         id: 'node-'+i,
-        opacity : 0.0,
-        transitionables : [{
-            id: 'opacity',
-            startValue: 0.0
-        },{
-            id: 'position',
-            startValue: [0,0,0]
-        }],
-        observables: ['opacity','position','align','rotate']
-    });
-    elements['elem-'+i] = new DOMComponent('node-'+i);
+        opacity : 0.0
+    };
+    scene.addSubGraph.push(conf);
+    elements['node-'+i] = new DOMComponent(conf);
 };
 
 SceneWorker.postMessage(scene); // Adds Nodes to the Scene.
@@ -55,13 +49,13 @@ SceneWorker.postMessage({query: {
 SceneWorker.onmessage = function(e) {
 
   if(e.data.message) {
-    console.log(e.data.message);
-      document.getElementsByClassName(e.data.node)[0].style.opacity = e.data.message.val;
+  //  console.log(e.data.message);
+    elements[e.data.node].elem.style.opacity = e.data.message.val;
   }
 
 }
 
-//console.log(elements);
+console.log(elements);
 
 
 // TODO: Change for better API? Need to link Scene to receive updates somehow...

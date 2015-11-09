@@ -16,7 +16,7 @@ body {
   overflow: hidden;
 }
 
-.v-node {
+.node {
   background: green;
   width: 25%;
   height: 25vw;

@@ -23,6 +23,7 @@ Node.prototype.setDefaults = function(conf){
     this.origin = [0.0,0.0,0.0];
     this.align = [0.0,0.0,0.0];
     this.size = [0,0,0];
+    this.scale = [1.0,1.0,1.0];
     this.rotate = [0,0,0];
     this.opacity = 1.0;
 };
@@ -33,6 +34,7 @@ Node.prototype.serialize = function(conf){
     this.origin = conf.origin ? conf.origin : [0.0,0.0,0.0];
     this.align = conf.align ? conf.align : [0.0,0.0,0.0];
     this.size = conf.size ? conf.size : [0,0,0];
+    this.scale = conf.scale ? conf.scale : [1.0,1.0,1.0];
     this.rotate = conf.rotate ? conf.rotate : [0,0,0];
     this.opacity = conf.opacity ? conf.opacity : 1.0;
     this.observe(this.id, this);
@@ -45,6 +47,7 @@ Node.prototype.getProperties = function(){
         origin: this.origin,
         align: this.align,
         size: this.size,
+        scale: this.scale,
         rotate: this.rotate,
         opacity: this.opacity,
         transitionables: this.transitionables//,
@@ -66,6 +69,14 @@ Node.prototype.setSize = function(size){
 
 Node.prototype.getSize = function(){
     return this.size;
+};
+
+Node.prototype.setScale = function(scale){
+    this.scale = scale;
+};
+
+Node.prototype.getScale = function(){
+    return this.scale;
 };
 
 Node.prototype.setOrigin = function(origin){
