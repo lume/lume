@@ -1,3 +1,28 @@
+## 0.0.4
+
+**General**
+
+- ADD samsara.css, samsara.js, samsara.min.js bundles
+- ADD `dom` directory
+- ADD `index.js` files for concatenation
+- MOVE `Surface`, `Context`, `ContainerSurface` to `dom` directory
+- MOVE `EventHandler` and `EventEmitter` to `events` directory
+- UPDATE `samsara.css` for streamlining. Delete from `core` directory
+- UPDATE require.js paths to be relative
+ 
+**Core**
+
+- UPDATE `Engine` to private class. Strip DOM dependency.
+- UPDATE `Context` with `mount` method and new API use
+- UPDATE `Transitionable.halt` emits events
+- UPDATE `LayoutNode` and `SizeNode` created with JSON automatically
+- FIX `Timer` clearing
+
+**Layouts**
+
+- UPDATE `SequentialLayout` to output length stream
+- ADD Desktop version of `Scrollview`
+
 ## 0.0.3
 
 **General**
