@@ -19,7 +19,8 @@ var Node = function(conf, parent){
 };
 
 Node.prototype.setDefaults = function(conf){
-    this.position = [0,0,0];
+    this.position = 'absolute';
+    this.translate = [0,0,0];
     this.origin = [0.0,0.0,0.0];
     this.align = [0.0,0.0,0.0];
     this.size = [0,0,0];
@@ -30,7 +31,8 @@ Node.prototype.setDefaults = function(conf){
 
 Node.prototype.serialize = function(conf){
     this.id = conf.id ? conf.id : null;
-    this.position = conf.position ? conf.position : [0,0,0];
+    this.position = conf.position ? conf.position : 'absolute';
+    this.translate = conf.translate ? conf.translate : [0,0,0];
     this.origin = conf.origin ? conf.origin : [0.0,0.0,0.0];
     this.align = conf.align ? conf.align : [0.0,0.0,0.0];
     this.size = conf.size ? conf.size : [0,0,0];
@@ -44,6 +46,7 @@ Node.prototype.serialize = function(conf){
 Node.prototype.getProperties = function(){
     return {
         position: this.position,
+        translate: this.translate,
         origin: this.origin,
         align: this.align,
         size: this.size,
@@ -61,6 +64,14 @@ Node.prototype.setPosition = function(pos){
 
 Node.prototype.getPosition = function(){
     return this.position;
+};
+
+Node.prototype.setTranslation = function(pos){
+    this.translate = pos;
+};
+
+Node.prototype.getTranslation = function(){
+    return this.translate;
 };
 
 Node.prototype.setSize = function(size){

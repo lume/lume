@@ -13,7 +13,8 @@ var elements = {}; // a graph of elements;
 // Add 180 Nodes to the Scene in a SubGraph.
 for( var i=0; i<180; i++ ){
     var conf = {
-        position : [0, 0, 0],
+        position: 'absolute',
+        translate : [0, 0, 0],
         origin : [0.0,0.0,0.0],
         align : [0.0,0.0,0.0],
         size : [20,20,20],
