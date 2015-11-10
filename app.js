@@ -18,8 +18,8 @@ for( var i=0; i<180; i++ ){
         origin : [0.0,0.0,0.0],
         align : [0.0,0.0,0.0],
         size : [20,20,20],
-        scale : [1.0,1.0,1.0],
-        rotate: [i*4,i*4,0],
+        scale : [0.5,0.5,0.5],
+        rotate: [(i+1)*4,0,(i+1)*4],
         id: 'node-'+i,
         opacity : 0.0
     };
@@ -33,8 +33,9 @@ SceneWorker.postMessage({graph:true}); // send message to Scene Worker to retrie
 SceneWorker.postMessage({query:{
                             id:'node-4'}
                         });
+
 SceneWorker.postMessage({query: {
-                           id:'node-4'
+                           id:'node-0'
                         },
                         transition:{
                             t: 'opacity',

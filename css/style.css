@@ -11,9 +11,10 @@ body {
   transform-style: preserve-3d;
   -webkit-font-smoothing: antialiased;
   -webkit-tap-highlight-color: transparent;
-  -webkit-perspective: 0;
-  perspective: none;
-  overflow: hidden;
+  -webkit-perspective: 1000px;
+  perspective: 1000px;
+  overflow-x: hidden;
+  overflow-y:scroll;
 }
 
 .node {
@@ -21,5 +22,5 @@ body {
   width: 25%;
   height: 25vw;
   float:left;
-  opacity: 0;
+  opacity: 1;
 }
