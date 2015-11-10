@@ -81,7 +81,6 @@ If you want to help on this project, join the community on the infamous/boxer Gi
 ##What's Needed
 
 * API for timeline
-* API for Transitioning CSS 3D Transforms
 * Unified UI Event System for DOM / GL
 * Update Queue?
 * Component API
