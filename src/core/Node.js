@@ -40,7 +40,7 @@ Node.prototype.serialize = function(conf){
     this.rotate = conf.rotate ? conf.rotate : [0,0,0];
     this.opacity = conf.opacity ? conf.opacity : 1.0;
     this.observe(this.id, this);
-    conf.t ? this.setTransitionables(conf.transitionables) : false;
+    conf.transition ? this.setTransitionable(conf.transition) : false;
 };
 
 Node.prototype.getProperties = function(){

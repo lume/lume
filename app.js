@@ -21,7 +21,15 @@ for( var i=0; i<180; i++ ){
         scale : [0.5,0.5,0.5],
         rotate: [(i+1)*4,0,(i+1)*4],
         id: 'node-'+i,
-        opacity : 0.0
+        opacity : 0.0,
+        transition:{
+            t: 'opacity',
+            from: 0.0,
+            to: 1.0,
+            curve: 'linear',
+            duration: 1000,
+            delay: 0
+        }
     };
     scene.addSubGraph.push(conf);
     elements['node-'+i] = new DOMComponent(conf);
@@ -51,7 +59,7 @@ SceneWorker.postMessage({query: {
 SceneWorker.onmessage = function(e) {
 
   if(e.data.message) {
-    console.log(e.data.message, elements[e.data.node].elem.style[e.data.message.prop]);
+    //console.log(e.data.message, elements[e.data.node].elem.style[e.data.message.prop]);
     elements[e.data.node].elem.style[e.data.message.prop] = e.data.message.val;
   }
 
