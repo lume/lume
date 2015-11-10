@@ -10,18 +10,9 @@ The built project is found in dist/boxer.js. Boxer currently operates on the win
 
 - This project is very early in development.
 
-###Advantages found in this approach:
-
-* Scene Graph can be queried for Nodes so you don't have to store references to Nodes in your project.
-
-* Scene operates in a Web Worker, meaning the calculations needed to transform Nodes also happen separately on this thread while DOM Manipulation happens in your application logic.
-
-* Not dependent on external libraries.
-
 
 ###Coming Soon:
 
-* Support for Matrix Transformations and Vector Math on Nodes.
 * API for making UI Components and examples for DOMElement and Mesh.
 * Unified UI Event system for GL and DOM.
 * Refactor to use ES6 Modules.
