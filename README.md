@@ -33,46 +33,35 @@ An example is provided in the root directory. Use any local server to host index
 `app.js` initializes the Engine and the Web Worker. It is fairly minimal at the moment.
 
 ```
-var SceneWorker = new Worker('dist/workers/SceneWorker.js');
-var Engine = boxer.core.Engine;
+var SceneWorker = new Worker('src/workers/SceneWorker.js');
+var controller;
+var nodes = [];
 
-var scene = {
-    addSubGraph: [{
-        position : [0,0,0],
+// Add 180 Nodes to the Scene in a SubGraph.
+for( var i=0; i<180; i++ ){
+    nodes.push({
+        position: 'absolute',
+        translate : [0, 0, 0],
         origin : [0.0,0.0,0.0],
         align : [0.0,0.0,0.0],
-        size : [120,120,120],
-        rotate: [0,180,0],
-        opacity : 1.0,
-    },
-    {
-        position : [0,0,0],
-        origin : [0.5,0.5,0.5],
-        align : [0.5,0.5,0.5],
-        size : [120,120,120],
-        rotate: [0,0,0],
-        opacity : 1.0,
-    },
-    {
-        position : [0,0,0],
-        origin : [0.5,0.5,0.5],
-        align : [0.9,0.5,0.5],
-        size : [120,120,120],
-        rotate: [0,-180,0],
-        opacity : 1.0,
-    }]
+        size : [80,80,80],
+        scale : [0.5,0.5,0.5],
+        rotate: [(i+1)*4,0,(i+1)*4],
+        id: 'node-'+i,
+        opacity : 0.0,
+        transition:{
+            t: 'opacity',
+            from: 0.0,
+            to: 1.0,
+            curve: 'linear',
+            duration: 1000,
+            delay: 0
+        }
+    });
 };
 
-SceneWorker.postMessage(scene);
-SceneWorker.postMessage({graph:true}); // send message to Scene Worker to retrieve current Graph.
+controller = new ViewController(nodes, SceneWorker);
 
-
-SceneWorker.onmessage = function(e) {
-  console.log(e.data);  // receieve message from Scene Worker that represents current Graph.
-}
-
-// TODO: Change for better API? Need to link Scene to receive updates somehow...
-Engine.init(SceneWorker);
 
 ```
 
@@ -94,7 +83,7 @@ If you want to help on this project, join the community on the infamous/boxer Gi
 * API for timeline
 * API for Transitioning CSS 3D Transforms
 * Unified UI Event System for DOM / GL
-* Update Queue? 
+* Update Queue?
 * Component API
 * Three.js Mesh Component
 * Math Utilities (Vec2, Vec3, Matrix, etc)
