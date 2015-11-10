@@ -1,0 +1,23 @@
+{
+  "name": "Boxer Engine",
+  "version": "0.5.0",
+  "private": false,
+  "description": "A prototype Engine for manipulation CSS3DTransforms with Javascript.",
+  "keywords": "",
+  "homepage": "",
+  "bugs": {
+    "url": "",
+    "email": ""
+  },
+  "license": "../license",
+  "contributors": [
+    "Steve Belovarich <steveblue@gmail.com>"
+  ],
+  "repository": {
+    "type": "git",
+    "url": ""
+  },
+  "dependencies": {
+    "xcssmatrix": "=0.2.2"
+  }
+}

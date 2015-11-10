@@ -18,7 +18,7 @@ for( var i=0; i<180; i++ ){
         origin : [0.0,0.0,0.0],
         align : [0.0,0.0,0.0],
         size : [20,20,20],
-        scale : [2.0,2.0,2.0],
+        scale : [1.0,1.0,1.0],
         rotate: [i*4,i*4,0],
         id: 'node-'+i,
         opacity : 0.0
@@ -50,8 +50,8 @@ SceneWorker.postMessage({query: {
 SceneWorker.onmessage = function(e) {
 
   if(e.data.message) {
-  //  console.log(e.data.message);
-    elements[e.data.node].elem.style.opacity = e.data.message.val;
+    console.log(e.data.message, elements[e.data.node].elem.style[e.data.message.prop]);
+    //elements[e.data.node].elem.style[e.data.message.prop] = e.data.message.val;
   }
 
 }
