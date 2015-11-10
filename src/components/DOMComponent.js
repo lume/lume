@@ -39,7 +39,7 @@ DOMComponent.prototype.transform = function(node){
   if(node.rotate) {
     matrix = matrix.rotate(node.rotate[0], node.rotate[1], node.rotate[2]);
   }
-  this.elem.style.transform = matrix.toString();
+  this.elem.style.webkitTransform = matrix.toString();
 
   // if(node.opacity) {
   //   this.elem.style.opacity = node.opacity;

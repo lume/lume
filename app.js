@@ -51,7 +51,7 @@ SceneWorker.onmessage = function(e) {
 
   if(e.data.message) {
     console.log(e.data.message, elements[e.data.node].elem.style[e.data.message.prop]);
-    //elements[e.data.node].elem.style[e.data.message.prop] = e.data.message.val;
+    elements[e.data.node].elem.style[e.data.message.prop] = e.data.message.val;
   }
 
 }
