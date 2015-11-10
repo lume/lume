@@ -20,7 +20,7 @@ The built project is found in dist/boxer.js. Boxer currently operates on the win
 
 ##Getting Started
 
-An example is provided in the root directory. Use any local server to host index.html. `live-server` is a useful tool for this.
+An example is provided in the root directory and [here](http://devmagnet.net/boxer/demo).
 
 `app.js` initializes the Engine and the Web Worker. It is fairly minimal at the moment.
 
@@ -67,6 +67,8 @@ Currently the scene is injected into the Engine so the Web Worker can receive ti
 To build the project yourself use Browserify for the time being.
 
 `browserify src/index.js -d --s boxer > dist/boxer.js`
+
+Lately, I've been relying on `live-server` to setup watchers and give me an instant dev server. `npm install -g live-server` will install this package globally.
 
 If you want to help on this project, join the community on the infamous/boxer Gitter.
 
