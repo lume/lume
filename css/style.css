@@ -23,3 +23,13 @@ body {
   float:left;
   opacity: 1;
 }
+
+a:link, a:visited {
+  color:#BAEFC5;
+  text-decoration: none;
+  font-family: sans-serif;
+}
+
+.cta {
+  text-align:center;
+}

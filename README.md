@@ -16,6 +16,7 @@ The built project is found in dist/boxer.js. Boxer currently operates on the win
 * API for making UI Components and examples for DOMElement and Mesh.
 * Unified UI Event system for GL and DOM.
 * Refactor to use ES6 Modules.
+* Add Support for Safari, Firefox, and Edge.
 
 ##Getting Started
 
