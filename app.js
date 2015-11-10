@@ -38,9 +38,6 @@ for( var i=0; i<180; i++ ){
 SceneWorker.postMessage(scene); // Adds Nodes to the Scene.
 SceneWorker.postMessage({graph:true}); // send message to Scene Worker to retrieve current Graph.
 //TODO: Make a better API for messaging Graph?
-SceneWorker.postMessage({query:{
-                            id:'node-4'}
-                        });
 
 SceneWorker.postMessage({query: {
                            id:'node-0'
@@ -64,8 +61,6 @@ SceneWorker.onmessage = function(e) {
   }
 
 }
-
-console.log(elements);
 
 
 // TODO: Change for better API? Need to link Scene to receive updates somehow...
