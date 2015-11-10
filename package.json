@@ -1,5 +1,5 @@
 {
-  "name": "Boxer Engine",
+  "name": "BoxerEngine",
   "version": "0.5.0",
   "private": false,
   "description": "A prototype Engine for manipulation CSS3DTransforms with Javascript.",
