@@ -39,6 +39,7 @@ onmessage = function(e) {
     }
     if(e.data.transition){
         var n = Scene.findOne(e.data.query);
+        console.log(Scene);
         n.setTransitionable(e.data.transition);
         //postMessage(n.t[e.data.transition.t]);
     }

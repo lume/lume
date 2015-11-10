@@ -41,19 +41,19 @@ DOMComponent.prototype.transform = function(node){
   }
   this.elem.style.webkitTransform = matrix.toString();
 
-  // if(node.opacity) {
-  //   this.elem.style.opacity = node.opacity;
-  // }
+  if(node.opacity) {
+    this.elem.style.opacity = node.opacity;
+  }
   // if(node.position) {
   //   this.elem.style.position = node.position;
   // }
-  // if(node.size) {
-  //   this.elem.style.width = node.size[0]+'px';
-  //   this.elem.style.height = node.size[1]+'px';
-  // }
-  // if(node.origin) {
-  //   this.elem.style.transformOrigin = node.origin[0]+'%,'+node.origin[1]+'%,'+node.origin[2]+'%';
-  // }
+  if(node.size) {
+    this.elem.style.width = node.size[0]+'px';
+    this.elem.style.height = node.size[1]+'px';
+  }
+  if(node.origin) {
+    this.elem.style.transformOrigin = node.origin[0]+'%,'+node.origin[1]+'%,'+node.origin[2]+'%';
+  }
   //TODO: Figure out how to get browser to output css matrix3D transform
 
 

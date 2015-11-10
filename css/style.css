@@ -15,12 +15,11 @@ body {
   perspective: 1000px;
   overflow-x: hidden;
   overflow-y:scroll;
+  background: #FF5347;
 }
 
 .node {
-  background: green;
-  width: 25%;
-  height: 25vw;
+  background: #BAEFC5;
   float:left;
   opacity: 1;
 }
