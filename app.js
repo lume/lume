@@ -29,29 +29,3 @@ for( var i=0; i<180; i++ ){
 };
 
 controller = new ViewController(nodes, SceneWorker);
-
-controller.broadcast({graph:true}); // send message to Scene Worker to retrieve current Graph.
-//TODO: Make a better API for messaging Graph?
-controller.broadcast({query:{
-                            id:'node-4'}
-                        });
-
-controller.broadcast({query: {
-                           id:'node-0'
-                        },
-                        transition:{
-                            t: 'opacity',
-                            from: 0.0,
-                            to: 1.0,
-                            curve: 'linear',
-                            duration: 1000,
-                            delay: 0
-                        }
-                        });
-
-SceneWorker.onmessage = function(e) {
-  console.log(e);
-  if(e.data && e.data.message) {
-    this.elements[e.data.node].elem.style[e.data.message.prop] = e.data.message.val;
-  }
-}

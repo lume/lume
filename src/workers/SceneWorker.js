@@ -30,16 +30,16 @@ onmessage = function(e) {
             Scene.removeChild(Scene.findOne(query));
         });
     }
-    if(e.data.graph){
-        //console.log(Scene.graph);
-        postMessage(Scene.graph);
-    }
-    if(e.data.query){
-        postMessage(Scene.findOne(e.data.query));
-    }
+    // if(e.data.graph){
+    //     //console.log(Scene.graph);
+    //     postMessage(Scene.graph);
+    // }
+    // if(e.data.query){
+    //     postMessage(Scene.findOne(e.data.query));
+    // }
     if(e.data.transition){
         var n = Scene.findOne(e.data.query);
-        console.log(Scene);
+        //console.log(Scene);
         n.setTransitionable(e.data.transition);
         //postMessage(n.t[e.data.transition.t]);
     }
