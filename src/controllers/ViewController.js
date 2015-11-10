@@ -35,7 +35,12 @@ ViewController.prototype.broadcast = function(msg){
 ViewController.prototype.receive = function(e) {
   //console.log(e);
   if(e.data && e.data.message) {
-    this.elements[e.data.node].elem.style[e.data.message.prop] = e.data.message.val;
+    if(e.data.message.prop === 'rotate'){
+      this.elements[e.data.node]._node[e.data.message.prop] = e.data.message.val;
+    } else {
+      this.elements[e.data.node].elem.style[e.data.message.prop] = e.data.message.val;
+    }
+
   }
 
 }

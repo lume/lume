@@ -4,7 +4,7 @@ var nodes = [];
 
 // Add 180 Nodes to the Scene in a SubGraph.
 for( var i=0; i<180; i++ ){
-    var conf = {
+    nodes.push({
         position: 'absolute',
         translate : [0, 0, 0],
         origin : [0.0,0.0,0.0],
@@ -15,16 +15,15 @@ for( var i=0; i<180; i++ ){
         id: 'node-'+i,
         opacity : 0.0,
         transition:{
-            t: 'opacity',
-            from: 0.0,
-            to: 1.0,
+            t: 'rotate',
+            from: [(i+1)*4,0,(i+1)*4],
+            to: [(i+1)*-4,0,(i+1)*-4],
             curve: 'linear',
-            duration: 1000,
-            delay: 0
+            duration: 10000,
+            delay: 0,
+            loop: true
         }
-    };
-
-    nodes.push(conf);
+    });
 
 };
 

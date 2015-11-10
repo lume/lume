@@ -8,7 +8,7 @@ var Node = boxer.core.Node;
 onmessage = function(e) {
 
     if(e.data.frame){
-      //  Scene.update(e.data.frame);
+      Scene.tick(e.data.frame);
     }
     if(e.data.message) {
       //  Scene.update(e.data.message);

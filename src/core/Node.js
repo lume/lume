@@ -138,16 +138,15 @@ Node.prototype.setTransitionable = function(conf){
        .to(conf.to, conf.curve, conf.duration);
     }
 
-
     this[conf.t] = conf.to;
+
     n.transitionables[conf.t].transition.id = this.id;
     n.transitionables[conf.t].transition.param = conf.t;
-    this.observe(this.id+'-'+conf.t, n.transitionables[conf.t].transition);
+    this.observe(this.id+'-'+conf.t, n.transitionables[conf.t].transition.get());
     //console.log(conf.t, this[conf.t], n.transitionables[conf.t].transition.get());
     //TODO: figure out a better way to update Transitionable
-    setInterval(function(){
-      n.transitionables[conf.t].transition.get();
-    },10);
+    //TODO: unobserve object, clearInerval
+
 
 };
 
@@ -161,14 +160,34 @@ Node.prototype.transit = function(conf){
 
 Node.prototype.observe = function(id, obj) {
       var n = this;
+
       _observableCallback[id] = function(changes){
           changes.forEach(function(change) {
             if(change.type === 'update' && change.name !== 'id') {
-              //TODO:broadcast change to scene
 
-              if(change.object.constructor.name === 'Transitionable'){
+              //console.log(change.object);
+              if(change.object.constructor.name === 'Array'){
+
+                //n[change.object.param] = change.object;
+                //console.log(change);
+                n.parent.update({
+                              message:{
+                                prop: 'rotate',
+                                val: change.object
+                              },
+                              node: n.id
+                            });
+              }
+              else if(change.object.constructor.name === 'Transitionable'){
                 n[change.object.param] = change.oldValue;
               } else {
+                // console.log({
+                //               message:{
+                //                 prop: change.name,
+                //                 val: change.oldValue
+                //               },
+                //               node: n.id
+                //             });
                 n.parent.update({
                               message:{
                                 prop: change.name,
@@ -230,6 +249,12 @@ Node.prototype.eventManager = function(){
       });
     }
   };
+};
+
+Node.prototype.update = function(frame){
+  for(var id in this.transitionables) {
+    this.transitionables[id].transition.get();
+  }
 };
 
 module.exports = Node;

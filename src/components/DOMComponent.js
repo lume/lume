@@ -3,6 +3,7 @@ var Matrix = require('xcssmatrix');
 
 var DOMComponent = function(node, elem, container){
     this.node = node.id ? node.id : node;
+    this._node = node;
     this.elem = elem ? elem : document.createElement('div');
 
     var container = container ? container : document.body;
@@ -12,12 +13,15 @@ var DOMComponent = function(node, elem, container){
     this.elem.classList.add('node');
     container.appendChild(this.elem);
 
+    Object.observe(this._node, function(changes){
+        this.transform(this._node);
+    }.bind(this));
+
     this.transform(node);
 };
 
 DOMComponent.prototype = Object.create(Component.prototype);
 DOMComponent.prototype.constructor = Component;
-
 
 
 DOMComponent.prototype.transform = function(node){

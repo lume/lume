@@ -53,6 +53,11 @@ Scene.prototype.findOne = function(query) {
 
 }
 
+Scene.prototype.tick = function(frame){
+  for(var node in this.graph) {
+    this.graph[node].update(frame);
+  }
+}
 
 Scene.prototype.update = function(change){
   cxt.postMessage(JSON.parse(JSON.stringify(change)));
