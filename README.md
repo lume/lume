@@ -81,6 +81,8 @@ Currently the scene is injected into the Engine so the Web Worker can receive ti
 
 ##Development
 
+`npm install` - Install only 1 dependency for prototype, XCSSMatrix to get up and running with CSS 3D Transforms.
+
 To build the project yourself use Browserify for the time being.
 
 `browserify src/index.js -d --s boxer > dist/boxer.js`
@@ -89,10 +91,10 @@ If you want to help on this project, join the community on the infamous/boxer Gi
 
 ##What's Needed
 
-* Update Queue
-* Component API
-* DOM Component
-* Three.js Mesh Component
-* Finish integrating Famous Transitionable
+* API for timeline
+* API for Transitioning CSS 3D Transforms
 * Unified UI Event System for DOM / GL
+* Update Queue? 
+* Component API
+* Three.js Mesh Component
 * Math Utilities (Vec2, Vec3, Matrix, etc)
