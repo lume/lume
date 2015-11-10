@@ -37,7 +37,7 @@ var SceneWorker = new Worker('src/workers/SceneWorker.js');
 var controller;
 var nodes = [];
 
-// Add 180 Nodes to the Scene in a SubGraph.
+// Add 180 Nodes to the Scene and fade them in.
 for( var i=0; i<180; i++ ){
     nodes.push({
         position: 'absolute',
