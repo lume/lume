@@ -17,6 +17,37 @@ var DOMComponent = function(node, elem, container){
         this.transform(this._node);
     }.bind(this));
 
+    var prefix = function () {
+      var styles = window.getComputedStyle(document.documentElement, ''),
+        transform,
+        pre = (Array.prototype.slice
+          .call(styles)
+          .join('')
+          .match(/-(moz|webkit|ms)-/) || (styles.OLink === '' && ['', 'o'])
+        )[1],
+        dom = ('WebKit|Moz|MS|O').match(new RegExp('(' + pre + ')', 'i'))[1];
+        if(dom ==='Moz'){
+          transform = 'transform';
+        } else if(dom ==='WebKit'){
+          transform = 'webkitTransform';
+        } else if(dom ==='MS'){
+          transform = 'msTransform';
+        } else if (dom ==='O'){
+          transform = 'OTransform';
+        } else {
+          transform = 'transform';
+        }
+      return {
+        dom: dom,
+        lowercase: pre,
+        css: '-' + pre + '-',
+        js: pre[0].toUpperCase() + pre.substr(1),
+        transform: transform
+      };
+    };
+    //
+    this.vendor = prefix();
+
     this.transform(node);
 };
 
@@ -43,7 +74,7 @@ DOMComponent.prototype.transform = function(node){
   if(node.rotate) {
     matrix = matrix.rotate(node.rotate[0], node.rotate[1], node.rotate[2]);
   }
-  this.elem.style.webkitTransform = matrix.toString();
+  this.elem.style[this.vendor.transform]= matrix.toString();
 
   if(node.opacity) {
     this.elem.style.opacity = node.opacity;
@@ -56,7 +87,7 @@ DOMComponent.prototype.transform = function(node){
     this.elem.style.height = node.size[1]+'px';
   }
   if(node.origin) {
-    this.elem.style.transformOrigin = node.origin[0]+'%,'+node.origin[1]+'%,'+node.origin[2]+'%';
+    //this.elem.style.transformOrigin = node.origin[0]+'%,'+node.origin[1]+'%';//','+node.origin[2]+'%';
   }
   //TODO: Figure out how to get browser to output css matrix3D transform
 

@@ -1,7 +1,7 @@
 
 var Engine = function(){
 
-    this.time = performance.now();
+    this.time = 0;
     this._worker = null;
     this.updateQueue = [];
 
