@@ -1,4 +1,5 @@
 // Node handles storing the state of a node on the Scene Graph.
+
 var Transitionable = require('../transitions/Transitionable');
 var Curves = require('../transitions/Curves');
 

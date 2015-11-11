@@ -72,6 +72,28 @@ var Engine = require('../core/Engine');
  *                                              invocation of
  *                                              {@link Transitionable#from}
  */
+ var performance = {};
+
+ (function(){
+
+   Date.now = (Date.now || function () {  // thanks IE8
+ 	  return new Date().getTime();
+   });
+
+   if ("now" in performance == false){
+
+     var nowOffset = Date.now();
+
+     if (performance.timing && performance.timing.navigationStart){
+       nowOffset = performance.timing.navigationStart
+     }
+
+     performance.now = function now(){
+       return Date.now() - nowOffset;
+     }
+   }
+
+ })();
 function Transitionable(initialState) {
     this._queue = [];
     this._from = null;
