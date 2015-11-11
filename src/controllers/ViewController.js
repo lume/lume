@@ -35,7 +35,9 @@ ViewController.prototype.broadcast = function(msg){
 ViewController.prototype.receive = function(e) {
   //console.log(e);
   if(e.data && e.data.message) {
-    if(e.data.message.prop === 'rotate'){
+    if(e.data.message.prop === 'rotate' ||
+       e.data.message.prop === 'translate' ||
+       e.data.message.prop === 'scale'){
       this.elements[e.data.node]._node[e.data.message.prop] = e.data.message.val;
     } else {
       this.elements[e.data.node].elem.style[e.data.message.prop] = e.data.message.val;

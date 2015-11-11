@@ -94,14 +94,15 @@ var Engine = require('../core/Engine');
    }
 
  })();
-function Transitionable(initialState) {
+
+function Transitionable(initialState, param) {
     this._queue = [];
     this._from = null;
     this._state = null;
     this._startedAt = null;
     this._pausedAt = null;
     this.id = null;
-    this.param = null;
+    param ? this.param = param : param = null;
     if (initialState != null) this.from(initialState);
     Engine.updateQueue.push(this);
 }
