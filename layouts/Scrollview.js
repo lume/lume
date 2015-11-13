@@ -124,7 +124,8 @@ define(function(require, exports, module) {
             container.add(displacementNode).add(this.layout);
             this.add(container);
         },
-        goto : function(index){
+        goto : function(index, transition, callback){
+            transition = transition || this.options.transition;
             var position = this.itemOffset;
             if (index > this._currentIndex){
                 for (var i = this._currentIndex; i < index; i++)
@@ -137,7 +138,7 @@ define(function(require, exports, module) {
             else return;
 
             this.bounce.set(0);
-            this.bounce.set(position, {duration : 500});
+            this.bounce.set(Math.ceil(position), transition, callback);
         },
         addItems : function(items){
             this.layout.addItems(items);
