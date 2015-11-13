@@ -90,6 +90,11 @@ define(function(require, exports, module) {
                 [this._sizeNode, this._size]
             );
 
+            this._cachedSize = [0,0];
+            this.size.on('resize', function(size){
+                this._cachedSize = size;
+            }.bind(this));
+
             var layout = Stream.lift(
                 function ViewLayoutAlgebra (parentSpec, objectSpec, size){
                     if (!parentSpec || !size) return false;
@@ -115,6 +120,15 @@ define(function(require, exports, module) {
          */
         add : function add(){
             return RenderTreeNode.prototype.add.apply(this._node, arguments);
+        },
+        /**
+         * Getter for size.
+         *
+         * @method getSize
+         * @return size {Number[]}
+         */
+        getSize : function(){
+            return this._cachedSize;
         },
         /**
          * Setter for size.
