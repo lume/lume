@@ -34,13 +34,13 @@ SamsaraJS has no dependencies, and was made to play nicely with other frameworks
 around the screen — what you do inside those rectangles is up to you. Samsara doesn’t include any 
 support for routing, server syncing, templating and data-binding; there are plenty of other great tools 
 for that. If we don’t play nicely with your tools, that’s our fault. Let us know and we will do our 
-best to improve. Integrations with React.js and Backbone.js is in the pipeline.
+best to improve. Integrations with React.js and Backbone.js are in the pipeline.
  
 ###HOW?
-Samsara takes an approach to called functional reactive programming. We think of layout and user input as streams of continuously changing data. You can, for instance, subscribe the opacity of a nav bar to the transition of a hamburger menu to a touch gesture of a user. Developing an interface in Samsara is nothing more than creating, modifying, and joining streams. At the end of these streams, SamsaraJS exports style properties (opacity, transform and size) to the DOM.
+Samsara takes a "functional reactive" approach. We think of layout and user input as streams of continuously changing data. You can, for instance, subscribe the opacity of a nav bar to the transition of a hamburger menu which listens to the touch gesture of a user. Developing an interface in Samsara is nothing more than creating, modifying, and joining streams. At the end of these streams, SamsaraJS exports style properties (opacity, transform and size) to the DOM.
  
 ###WHY?
-I created SamsaraJS because I believe that we can do so much more with our user interfaces. Until recently, a “point and click” ethos dominated user interaction with CSS and HTML defining the language. We can evolve this ethos to “point and move”. SamsaraJS is made for interfaces where the connection between the user and the application evolve in lock-step.
+I created SamsaraJS because I believe that we can do so much more with our user interfaces. Until recently, a “point and click” ethos dominated user interaction with CSS and HTML defining the language. We can evolve this ethos to “point and move”. SamsaraJS is made for interfaces where the connection between the user and the application evolves in lock-step.
 
 ###Talks
 [![Talk](http://i.imgur.com/tGbmVk4.png)](https://www.youtube.com/watch?v=biJXpv-6XVY)
