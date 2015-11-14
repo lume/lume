@@ -3,6 +3,7 @@ var Scene = boxer.core.Scene;
 var DOMComponent = boxer.components.DOMComponent;
 
 var ViewController = function(model, worker){
+  var v = this;
   this.scene = {
       addSubGraph: []
   }; // a model for a scene graph
@@ -12,6 +13,14 @@ var ViewController = function(model, worker){
 
   Engine.init(SceneWorker);
 
+  window.addEventListener('resize',this.resize.bind(this));
+
+};
+
+ViewController.prototype.resize = function(){
+  for(var prop in this.elements) {
+    this.elements[prop].resize();
+  }
 };
 
 ViewController.prototype.set = function(model, worker){
