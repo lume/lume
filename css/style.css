@@ -38,6 +38,10 @@ a:link, a:visited {
   background: #BAEFC5;
 }
 
+.app-sidebar {
+  background: #F0B67F;
+}
+
 .app-content {
   background: #EFEFEF;
 }
