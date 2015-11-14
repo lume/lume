@@ -54,6 +54,14 @@ var DOMComponent = function(node, elem, container){
 DOMComponent.prototype = Object.create(Component.prototype);
 DOMComponent.prototype.constructor = Component;
 
+DOMComponent.prototype.isInt = function(n){
+    return Number(n) === n && n % 1 === 0;
+}
+
+DOMComponent.prototype.isFloat = function(n){
+    if(n === parseFloat(1.0)) return true;
+    return n === Number(n) && n % 1 !== 0;
+}
 
 DOMComponent.prototype.transform = function(node){
 
@@ -65,7 +73,11 @@ DOMComponent.prototype.transform = function(node){
   //                         'rotateY('+node.rotate[1]+'deg) '+
   //                         'rotateZ('+node.rotate[2]+'deg)');
   var matrix = new Matrix();
-  if(node.translate) {
+  if(node.align) {
+    console.log(node.align[0],node.align[1],node.align[2]);
+    matrix = matrix.translate(node.align[0]*100+'%',node.align[1]*100+'%',node.align[2]*100+'%');
+  }
+  else if(node.translate) {
     matrix = matrix.translate(node.translate[0],node.translate[1],node.translate[2]);
   }
   if(node.scale) {
@@ -82,15 +94,18 @@ DOMComponent.prototype.transform = function(node){
   // if(node.position) {
   //   this.elem.style.position = node.position;
   // }
+
+  if(node.size[0] === 1) node.size[0] = parseFloat(1.0);
+  if(node.size[1] === 1) node.size[1] = parseFloat(1.0);
+
   if(node.size) {
-    this.elem.style.width = node.size[0]+'px';
-    this.elem.style.height = node.size[1]+'px';
+    this.isFloat(node.size[0]) ? this.elem.style.width = node.size[0]*100+'%' : this.elem.style.width = node.size[0]+'px' ;
+    this.isFloat(node.size[1]) ? this.elem.style.height = node.size[1]*100+'%' : this.elem.style.height = node.size[1]+'px';
   }
+
   if(node.origin) {
     //this.elem.style.transformOrigin = node.origin[0]+'%,'+node.origin[1]+'%';//','+node.origin[2]+'%';
   }
-  //TODO: Figure out how to get browser to output css matrix3D transform
-
 
 
 };

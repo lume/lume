@@ -33,3 +33,11 @@ a:link, a:visited {
 .cta {
   text-align:center;
 }
+
+.app-header, .app-footer {
+  background: #BAEFC5;
+}
+
+.app-content {
+  background: #EFEFEF;
+}
