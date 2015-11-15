@@ -1,4 +1,4 @@
-var SceneWorker = new Worker('../../src/workers/SceneWorker.js');
+var SceneWorker = new Worker('src/workers/SceneWorker.js');
 var controller,
     header,
     footer,
@@ -54,7 +54,11 @@ aside = controller.getComponent({id:'app-sidebar'});
 mainContent = controller.getComponent({id:'app-content'});
 footer = controller.getComponent({id:'app-footer'});
 
-header.setContent('<h1>Headline</h1>');
-aside.setContent('<h3>Aside</h3>');
-mainContent.setContent('<ul><li>Item 1</li><li>Item 2</li><li>Item 3</li></ul>');
+header.setContent('<h1>Boxer Engine App Layout Example</h1>');
+header.addClass('pad-1');
+aside.elem.innerHTML = '<h5>Add content using Element.prototype.innerHTML</h5>';
+aside.addClass('pad-2');
+mainContent.setContent('<ul><li>Header</li><li>Aside</li><li>Main Content</li><li>Footer</li></ul>');
+mainContent.addClass('pad-2');
 footer.setContent('<a href="https://github.com/infamous/boxer">Prototype CSS 3D Matrix Rendering Engine on Github</a>');
+footer.addClass('pad-2');

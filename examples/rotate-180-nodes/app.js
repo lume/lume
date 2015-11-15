@@ -24,3 +24,9 @@ for( var i=0; i<180; i++ ){
 };
 
 controller = new ViewController(nodes, SceneWorker);
+
+for( var i=0; i<180; i++ ){
+
+controller.getComponent({id:'node-'+i}).addClass('rotate-node');
+
+}

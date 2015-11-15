@@ -1,3 +1,5 @@
+@import url(https://fonts.googleapis.com/css?family=Exo:400,100,300,200,500,600,700);
+
 html, body {
   width: 100%;
   height: 100%;
@@ -16,18 +18,27 @@ body {
   overflow-x: hidden;
   overflow-y:scroll;
   background: #FF5347;
+  font-family: 'Exo', sans-serif;
 }
 
-.node {
+.rotate-node {
   background: #BAEFC5;
   float:left;
   opacity: 1;
 }
 
+h1 {
+  font-weight: 100;
+}
+
+h2, h3, h4, h5, h6{
+  font-weight: 200;
+}
+
 a:link, a:visited {
-  color:#FF5347;
+  font-weight: 600;
+  color:#232323;
   text-decoration: none;
-  font-family: sans-serif;
 }
 
 .cta {
@@ -35,11 +46,19 @@ a:link, a:visited {
 }
 
 .app-header, .app-footer {
-  background: #BAEFC5;
+  background: #8CFA89;
 }
 
 .app-sidebar {
-  background: #F0B67F;
+  background: #8BFABB;
+}
+
+.pad-1 {
+  padding: 1em;
+}
+
+.pad-2 {
+  padding: 2em;
 }
 
 .app-content {
