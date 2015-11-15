@@ -11,9 +11,8 @@ var controller = new ViewController([], SceneWorker),
     }];
 
 controller.addComponent({
-    position: 'absolute',
     origin : [0.0,0.0,0.0],
-    align : [0.0,0.0,0.0],
+    align : [0.0,0.0,1],
     size : [1.0,0.1,0],
     scale : [1.0,1.0,1.0],
     rotate: [0,0,0],
@@ -23,9 +22,8 @@ controller.addComponent({
 });
 
 controller.addComponent({
-    position: 'absolute',
     origin : [0.0,0.0,0.0],
-    align : [0.0,0.1,0.0],
+    align : [0.0,0.0,1],
     size : [1.0,1.0,0],
     scale : [1.0,1.0,1.0],
     rotate: [0,0,0],
@@ -37,9 +35,8 @@ controller.addComponent({
 for(var i=0; i<listItems.length; i++) {
 
   controller.addComponent({
-      position: 'relative',
       origin : [0.0,0.0,0.0],
-      align : [0.0,0.0,0.0],
+      align : [0.0,0.0,1],
       size : [320,'auto',0],
       scale : [1.0,1.0,1.0],
       rotate: [0,0,0],

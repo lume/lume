@@ -29,6 +29,10 @@ body {
 
 h1 {
   font-weight: 100;
+  -webkit-margin-before: 0em;
+  -webkit-margin-after: 0em;
+  padding-top:0.5em;
+  padding-left:0.5em;
 }
 
 h2, h3, h4, h5, h6{
@@ -58,6 +62,7 @@ a:link, a:visited {
 
 .app-header, .app-footer {
   background: #8CFA89;
+  clear:both;
 }
 
 .app-header h1 {
@@ -75,13 +80,14 @@ a:link, a:visited {
   background: #8BFABB;
 }
 
+.app-sidebar, .app-content {
+  float:left;
+}
+
 .app-directory-header {
   background: #BAEFC5;
 }
 
-.app-directory-header h1 {
-  padding-left:0.5em;
-}
 
 .app-directory-list-item {
     background: #EFAF73;

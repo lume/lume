@@ -111,13 +111,14 @@ DOMComponent.prototype.transform = function(node){
   }
 
   if(node.translate && node.align) {
-    matrix = matrix.translate((node.align[0] * this.elem.parentNode.clientWidth)+node.translate[0], (node.align[1] * this.elem.parentNode.clientHeight)+node.translate[1], node.align[2]+node.translate[2] );
+    matrix = matrix.translate((node.align[0] * this.elem.parentNode.clientWidth)+node.translate[0], (node.align[1] * this.elem.parentNode.clientHeight)+node.translate[1], node.align[2]+ node.translate[2] === 0 ? 1 : node.translate[2] );
   } else if(node.align) {
     matrix = matrix.translate(node.align[0] * this.elem.parentNode.clientWidth, node.align[1] * this.elem.parentNode.clientHeight, node.align[2] );
+
   } else if(node.translate) {
-    matrix = matrix.translate(node.translate[0], node.translate[1], node.translate[2] || 0);
+    matrix = matrix.translate(node.translate[0], node.translate[1], node.translate[2] === 0 ? 1 : node.translate[2]);
   } else {
-    matrix = matrix.translate(0, 0, 0);
+    matrix = matrix.translate(0, 0, 1);
   }
 
   matrix = matrix.scale(node.scale[0] || 0, node.scale[1] || 0, node.scale[2] || 0);
