@@ -58,6 +58,11 @@ controller = new ViewController(nodes, SceneWorker);
 
 Behind the scenes, a Scene Graph is injected into the Engine so the Web Worker can receive ticks from the Engine. `SceneWorker.js` handles the calculations on each Node and maintains the graph on a separate thread from application logic (above).
 
+##Performance Tips
+
+- Don't use 'position' property to force elements into a layout, this will make the browser repaint Elements unnecessarily. Use float or flexbox instead.
+- Setting the z to either 'translate' or 'align' an Element to 1 will force DOMComponent to draw Matrix3D transforms and leverage GPU.
+
 
 ##Development
 
@@ -76,7 +81,7 @@ If you want to help on this project, join the community on the infamous/boxer Gi
 * API for timeline to create complex Transitions
 * Event System similar to Famo.us 0.3.5 that allows dev to sync EventListeners
 * Update Queue, Performance Audit
-* Optimize performance by forcing CSS Transforms to always use Matrix3D
+* Deprecate position property in favor of flexbox.
 * Physics Engine
 * Three.js Mesh Component
 * Math Utilities (Vec2, Vec3, Matrix, etc)
