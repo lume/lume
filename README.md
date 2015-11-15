@@ -76,8 +76,9 @@ If you want to help on this project, join the community on the infamous/boxer Gi
 * API for timeline to create complex Transitions
 * Event System similar to Famo.us 0.3.5 that allows dev to sync EventListeners
 * Update Queue, Performance Audit
+* Optimize performance by forcing CSS Transforms to always use Matrix3D
 * Physics Engine
 * Three.js Mesh Component
 * Math Utilities (Vec2, Vec3, Matrix, etc)
-* Refactor translate, rotate, scale, align, origin, etc to use Vec2 and Vec3 Objects instead of Arrays. 
+* Refactor translate, rotate, scale, align, origin, etc to use Vec2 and Vec3 Objects instead of Arrays.
 * Refactor library to use ES6 Modules, remove Browserify dependency for build
