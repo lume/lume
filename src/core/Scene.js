@@ -15,7 +15,7 @@ Scene.prototype.init = function(worker) {
 }
 
 Scene.prototype.addChild = function(node){
-    node.id = 'node-'+this.length;
+    node.id = node.id || 'node-'+this.length;
     this.length++;
     this.graph[node.id] = node;
 }

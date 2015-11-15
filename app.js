@@ -1,26 +1,48 @@
-var SceneWorker = new Worker('src/workers/SceneWorker.js');
+var SceneWorker = new Worker('../../src/workers/SceneWorker.js');
 var controller;
-var nodes = [];
-
-// Add 180 Nodes to the Scene in a SubGraph.
-for( var i=0; i<180; i++ ){
-    nodes.push({
-        size : [0.1,null,80],
-        scale : [0.5,0.5,0.5],
-        rotate: [(i+1)*4,0,(i+1)*4],
-        id: 'node-'+i,
-        opacity : 0.0,
-        transition:{
-            t: 'rotate',
-            from: [(i+1)*4,0,(i+1)*4],
-            to: [(i+1)*-4,0,(i+1)*-4],
-            curve: 'linear',
-            duration: 14000,
-            delay: 0,
-            loop: true
-        }
-    });
-
-};
+var nodes = [{
+    position: 'absolute',
+    origin : [0.0,0.0,0.0],
+    align : [0.0,0.0,0.0],
+    size : [1.0,0.1,0],
+    scale : [1.0,1.0,1.0],
+    rotate: [0,0,0],
+    id: 'app-header',
+    opacity : 1.0
+},
+{
+    position: 'absolute',
+    origin : [0.0,0.0,0.0],
+    align : [0.0,0.1,0.0],
+    translate: [0,0,1],
+    size : [0.3336,0.8,0],
+    scale : [1.0,1.0,1.0],
+    rotate: [0,0,0],
+    id: 'app-sidebar',
+    opacity : 1.0
+},
+{
+    position: 'absolute',
+    origin : [0.0,0.0,0.0],
+    align : [0.3336,0.1,0.0],
+    translate: [0,0,1],
+    size : [0.6667,0.8,0],
+    scale : [1.0,1.0,1.0],
+    rotate: [0,0,0],
+    id: 'app-content',
+    opacity : 1.0
+},
+{
+    position: 'absolute',
+    origin : [0.0,1.0,0.0],
+    align : [0.0,0.9,0.0],
+    size : [1.0,0.1,0],
+    scale : [1.0,1.0,1.0],
+    rotate: [0,0,0],
+    id: 'app-footer',
+    opacity : 1.0
+}];
 
 controller = new ViewController(nodes, SceneWorker);
+
+console.log(controller.getComponent({id:'app-footer'}));

@@ -8,6 +8,7 @@ var ViewController = function(model, worker){
       addSubGraph: []
   }; // a model for a scene graph
   this.elements = {}; // a graph of elements;
+  this._callback = null;
 
   this.set(model, worker);
 
@@ -27,7 +28,7 @@ ViewController.prototype.set = function(model, worker){
   var v = this;
   for( var i=0; i<model.length; i++ ){
     this.scene.addSubGraph.push(model[i]);
-    this.elements['node-'+i] = new DOMComponent(model[i]);
+    this.elements[model[i].id || 'node-'+i] = new DOMComponent(model[i]);
   }
   this.worker = worker;
   this.worker.onmessage = this.receive.bind(this);
@@ -39,19 +40,22 @@ ViewController.prototype.addNode = function(model){
   var id = model.id || 'node-'+Math.floor(Math.random() * (32768 - 16384)) + 16384;
   model.id = id;
   this.scene.addSubGraph.push(model);
-  this.elements['node-'+i] = new DOMComponent(model);
+  this.elements[model.id || 'node-'+i] = new DOMComponent(model);
 
+};
+
+ViewController.prototype.getComponent = function(model){
+    return this.elements[model.id];
 };
 
 ViewController.prototype.broadcast = function(msg){
   if(this.worker){
       this.worker.postMessage(msg);
   }
-
 };
 
 ViewController.prototype.receive = function(e) {
-  //console.log(e);
+
   if(e.data && e.data.message) {
     if(e.data.message.prop === 'rotate' ||
        e.data.message.prop === 'translate' ||
@@ -60,6 +64,9 @@ ViewController.prototype.receive = function(e) {
     } else {
       this.elements[e.data.node].elem.style[e.data.message.prop] = e.data.message.val;
     }
+
+  } else if(e.data && e.data.id) {
+    console.log(e.data.id, this.elements[e.data.id]);
 
   }
 

@@ -1,4 +1,4 @@
-var SceneWorker = new Worker('../src/workers/SceneWorker.js');
+var SceneWorker = new Worker('../../src/workers/SceneWorker.js');
 var controller;
 var nodes = [{
     position: 'absolute',
