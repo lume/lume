@@ -1,5 +1,9 @@
 var SceneWorker = new Worker('../../src/workers/SceneWorker.js');
-var controller;
+var controller,
+    header,
+    footer,
+    aside,
+    main-content;
 var nodes = [{
     position: 'absolute',
     origin : [0.0,0.0,0.0],
@@ -44,5 +48,7 @@ var nodes = [{
 }];
 
 controller = new ViewController(nodes, SceneWorker);
-
-console.log(controller.getComponent({id:'app-footer'}));
+header = controller.getComponent({id:'app-header'});
+aside = controller.getComponent({id:'app-aside'});
+main-content = controller.getComponent({id:'app-content'});
+footer = controller.getComponent({id:'app-footer'});
