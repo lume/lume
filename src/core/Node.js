@@ -13,7 +13,6 @@ var Node = function(conf, parent){
     } else {
         this.setDefaults();
     }
-
     parent ? this.parent = parent : this.parent = null;
 
 };

@@ -1,130 +1,60 @@
 var SceneWorker = new Worker('src/workers/SceneWorker.js');
-var controller,
-    header,
-    footer,
-    aside,
-    mainContent;
-var navOpen = true;
-var nodes = [{
+var controller = new ViewController([], SceneWorker),
+    list,
+    listItems = [{
+      path: 'examples/header-aside-content-footer/',
+      title: 'Simple App Layout'
+    },
+    {
+      path: 'examples/rotate-180-nodes/',
+      title: 'Rotate 180 Nodes'
+    }];
+
+controller.addComponent({
     position: 'absolute',
     origin : [0.0,0.0,0.0],
     align : [0.0,0.0,0.0],
     size : [1.0,0.1,0],
     scale : [1.0,1.0,1.0],
     rotate: [0,0,0],
-    id: 'app-header',
+    id: 'app-directory-header',
+    content: '<h1>Boxer Engine Examples</h1>',
     opacity : 1.0
-},
-{
+});
+
+controller.addComponent({
     position: 'absolute',
     origin : [0.0,0.0,0.0],
     align : [0.0,0.1,0.0],
-    translate: [0,0,1],
-    size : [0.3336,0.8,0],
+    size : [1.0,1.0,0],
     scale : [1.0,1.0,1.0],
     rotate: [0,0,0],
-    id: 'app-sidebar',
+    id: 'app-directory',
     opacity : 1.0
-},
-{
-    position: 'absolute',
-    origin : [0.0,0.0,0.0],
-    align : [0.3336,0.1,0.0],
-    translate: [0,0,1],
-    size : [0.6667,0.8,0],
-    scale : [1.0,1.0,1.0],
-    rotate: [0,0,0],
-    id: 'app-content',
-    opacity : 1.0
-},
-{
-    position: 'absolute',
-    origin : [0.0,1.0,0.0],
-    align : [0.0,0.9,0.0],
-    size : [1.0,0.1,0],
-    scale : [1.0,1.0,1.0],
-    rotate: [0,0,0],
-    id: 'app-footer',
-    opacity : 1.0
-}];
+},'ul');
 
-controller = new ViewController(nodes, SceneWorker);
 
-header = controller.getComponent({id:'app-header'});
-aside = controller.getComponent({id:'app-sidebar'});
-mainContent = controller.getComponent({id:'app-content'});
-footer = controller.getComponent({id:'app-footer'});
+for(var i=0; i<listItems.length; i++) {
 
-header.setContent('<h1>Boxer Engine App Layout Example</h1>');
-header.addClass('pad-1');
-aside.elem.innerHTML = '<h5>Add content using Element.innerHTML or DOMComponent.setContent(). Click aside to animate view.</h5>';
-aside.addClass('pad-2');
-mainContent.setContent('<ul><li>Header</li><li>Aside</li><li>Main Content</li><li>Footer</li></ul>');
-mainContent.addClass('pad-2');
-footer.setContent('<a href="https://github.com/infamous/boxer">Prototype CSS 3D Matrix Rendering Engine on Github</a>');
-footer.addClass('pad-2');
+  controller.addComponent({
+      position: 'relative',
+      origin : [0.0,0.0,0.0],
+      align : [0.0,0.0,0.0],
+      size : [320,'auto',0],
+      scale : [1.0,1.0,1.0],
+      rotate: [0,0,0],
+      id: 'app-directory-list-item-'+i,
+      opacity : 1.0,
+      content: '<a href="'+listItems[i].path+'">'+listItems[i].title+'</a>',
+      classes: ['app-directory-list-item','pad-1'],
+      transition:{
+          key: 'rotate',
+          from: [0, 0, -90],
+          to: [0, 0, 0],
+          curve: 'outElastic',
+          duration: 2400
+      }
+  },'li',document.getElementsByClassName('app-directory')[0]);
 
-aside.elem.addEventListener('click',function(){
-  
-  controller.transition('app-sidebar',{
-      key: 'translate',
-      from: [0,0,1],
-      to: [0.3336*window.innerWidth*-1,0,1],
-      curve: 'linear',
-      duration:500,
-      delay: 0
-  });
-  controller.transition('app-content',{
-      key: 'align',
-      from: [0.3336,0.1,0.0],
-      to: [0.0,0.1,0.0],
-      curve: 'linear',
-      duration:500,
-      delay: 0
-  });
-  controller.transition('app-content',{
-      key: 'size',
-      from: [0.6667,0.8,0],
-      to: [1.0,0.8,0],
-      curve: 'linear',
-      duration:500,
-      delay: 0
-  });
 
-  navOpen = false;
-
-});
-
-mainContent.elem.addEventListener('click',function(ev){
-
-  if(navOpen === false) {
-
-  controller.transition('app-sidebar',{
-      key: 'translate',
-      from: [0.3336*window.innerWidth*-1,0,1],
-      to: [0,0,1],
-      curve: 'linear',
-      duration:500,
-      delay: 0
-  });
-  controller.transition('app-content',{
-      key: 'align',
-      from: [0.0,0.1,0.0],
-      to: [0.3336,0.1,0.0],
-      curve: 'linear',
-      duration:500,
-      delay: 0
-  });
-  controller.transition('app-content',{
-      key: 'size',
-      from: [1.0,0.8,0],
-      to: [0.6667,0.8,0],
-      curve: 'linear',
-      duration:500,
-      delay: 0
-  });
-
-  navOpen = true;
-
-  }
-});
+}

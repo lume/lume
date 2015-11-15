@@ -6,7 +6,6 @@ var Node = boxer.core.Node;
 // API for working on a Scene via messages to/from WebWorker
 
 onmessage = function(e) {
-
     if(e.data.frame){
       Scene.tick(e.data.frame);
     }

@@ -4,7 +4,7 @@ var Matrix = require('xcssmatrix');
 var DOMComponent = function(node, elem, container){
     this.node = node.id ? node.id : node;
     this._node = node;
-    this.elem = elem ? elem : document.createElement('div');
+    this.elem = elem ? document.createElement(elem) : document.createElement('div');
 
     var container = container ? container : document.body;
 
@@ -54,6 +54,16 @@ var DOMComponent = function(node, elem, container){
     };
     //
     this.vendor = prefix();
+
+    if(node.content) {
+      this.setContent(node.content);
+    }
+
+    if(node.classes) {
+      for(var i=0; i<node.classes.length; i++){
+        this.addClass(node.classes[i]);
+      }
+    }
 
     this.transform(node);
 };
@@ -128,11 +138,15 @@ DOMComponent.prototype.transform = function(node){
   if(node.size) {
     if(node.size[0] === null) {
         this.elem.style.width = node.size[1]*100+'vh';
+    } else if(node.size[0] === 'auto') {
+        this.elem.style.width = 'auto';
     } else {
         this.isFloat(node.size[0]) ? this.elem.style.width = node.size[0]*100+'%' : this.elem.style.width = node.size[0]+'px';
     }
     if(node.size[1] === null) {
         this.elem.style.height = node.size[0]*100+'vw';
+    } else if(node.size[1] === 'auto') {
+        this.elem.style.height = 'auto';
     } else {
         this.isFloat(node.size[1]) ? this.elem.style.height = node.size[1]*100+'%' : this.elem.style.height = node.size[1]+'px';
     }

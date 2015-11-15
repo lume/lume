@@ -33,6 +33,17 @@ h1 {
 
 h2, h3, h4, h5, h6{
   font-weight: 200;
+  -webkit-margin-before: 0em;
+  -webkit-margin-after: 0em;
+}
+
+ul {
+  list-style-type: none;
+  -webkit-padding-start: 0px;
+  -webkit-margin-before: 0px;
+  -webkit-margin-after: 0px;
+  margin: 0;
+  padding: 0;
 }
 
 a:link, a:visited {
@@ -51,6 +62,25 @@ a:link, a:visited {
 
 .app-sidebar {
   background: #8BFABB;
+}
+
+.app-directory-header {
+  background: #BAEFC5;
+}
+
+.app-directory-header h1 {
+  padding-left:0.5em;
+}
+
+.app-directory-list-item {
+    background: #EFAF73;
+}
+
+.app-directory-list-item a:link, .app-directory-list-item a:visited{
+    display:block;
+    width:100%;
+    height:100%;
+    color:#BAEFC5;
 }
 
 .pad-1 {

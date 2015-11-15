@@ -35,12 +35,14 @@ ViewController.prototype.set = function(model, worker){
   this.worker.postMessage(v.scene); // send the model to the Scene Graph
 };
 
-ViewController.prototype.addNode = function(model){
+ViewController.prototype.addComponent = function(model, elem, container){
 
   var id = model.id || 'node-'+Math.floor(Math.random() * (32768 - 16384)) + 16384;
   model.id = id;
-  this.scene.addSubGraph.push(model);
-  this.elements[model.id || 'node-'+i] = new DOMComponent(model);
+  this.elements[model.id] = new DOMComponent(model, elem, container);
+  this.worker.postMessage({
+    addNode: model
+  }); 
 
 };
 
