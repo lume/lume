@@ -48,13 +48,15 @@ ViewController.prototype.getComponent = function(model){
     return this.elements[model.id];
 };
 
-ViewController.prototype.broadcast = function(msg,conf){
+ViewController.prototype.transition = function(msg,conf){
   if(this.worker){
-      if(msg.constructor.name === 'String'){
-        this.worker.postMessage({query:{id:msg},transition:conf});
-      } else {
-        this.worker.postMessage(msg);
-      }
+      this.worker.postMessage({query:{id:msg},transition:conf});
+  }
+};
+
+ViewController.prototype.broadcast = function(msg){
+  if(this.worker){
+      this.worker.postMessage(msg);
   }
 };
 

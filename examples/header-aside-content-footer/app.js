@@ -64,7 +64,7 @@ footer.setContent('<a href="https://github.com/infamous/boxer">Prototype CSS 3D 
 footer.addClass('pad-2');
 
 aside.elem.addEventListener('click',function(){
-  controller.broadcast('app-sidebar',{
+  controller.transition('app-sidebar',{
       key: 'translate',
       from: [0,0,1],
       to: [0.3336*window.innerWidth*-1,0,1],
@@ -72,15 +72,15 @@ aside.elem.addEventListener('click',function(){
       duration:500,
       delay: 0
   });
-  controller.broadcast('app-content',{
-      key: 'translate',
-      from: [0,0,1],
-      to: [0.3336*window.innerWidth*-1,0,1],
+  controller.transition('app-content',{
+      key: 'align',
+      from: [0.3336,0.1,0.0],
+      to: [0.0,0.1,0.0],
       curve: 'linear',
       duration:500,
       delay: 0
   });
-  controller.broadcast('app-content',{
+  controller.transition('app-content',{
       key: 'size',
       from: [0.6667,0.8,0],
       to: [1.0,0.8,0],
