@@ -65,9 +65,7 @@ define(function(require, exports, module) {
         this._currentMethod = null;
         this._state = STATE.NONE;
 
-        this._eventInput = new EventHandler();
         this._eventOutput = new EventHandler();
-        EventHandler.setInputHandler(this, this._eventInput);
         EventHandler.setOutputHandler(this, this._eventOutput);
 
         var boundUpdate = _update.bind(this);
