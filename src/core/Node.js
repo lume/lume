@@ -142,7 +142,7 @@ Node.prototype.setTransitionable = function(conf){
 
     n.transitionables[conf.t].transition.id = this.id;
     n.transitionables[conf.t].transition.param = conf.t;
-    this.observe(this.id+'-'+conf.t, n.transitionables[conf.t].transition.get());
+    this.observe(conf.t, n.transitionables[conf.t].transition.get(), conf);
     //console.log(conf.t, this[conf.t], n.transitionables[conf.t].transition.get());
     //TODO: figure out a better way to update Transitionable
     //TODO: unobserve object, clearInerval
@@ -158,7 +158,7 @@ Node.prototype.transit = function(conf){
     }
 };
 
-Node.prototype.observe = function(id, obj) {
+Node.prototype.observe = function(id, obj, conf) {
       var n = this;
 
       _observableCallback[id] = function(changes){
@@ -169,10 +169,9 @@ Node.prototype.observe = function(id, obj) {
               if(change.object.constructor.name === 'Array'){
 
                 //n[change.object.param] = change.object;
-                //console.log(change);
                 n.parent.update({
                               message:{
-                                prop: 'rotate',
+                                prop: id,
                                 val: change.object
                               },
                               node: n.id
