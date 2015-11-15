@@ -56,7 +56,7 @@ footer = controller.getComponent({id:'app-footer'});
 
 header.setContent('<h1>Boxer Engine App Layout Example</h1>');
 header.addClass('pad-1');
-aside.elem.innerHTML = '<h5>Add content using Element.innerHTML or DOMComponent.setContent()</h5>';
+aside.elem.innerHTML = '<h5>Add content using Element.innerHTML or DOMComponent.setContent(). Click aside to see view transition.</h5>';
 aside.addClass('pad-2');
 mainContent.setContent('<ul><li>Header</li><li>Aside</li><li>Main Content</li><li>Footer</li></ul>');
 mainContent.addClass('pad-2');
@@ -67,10 +67,25 @@ aside.elem.addEventListener('click',function(){
   controller.broadcast('app-sidebar',{
       t: 'translate',
       from: [0,0,1],
-      to: [-1000,0,1],
+      to: [0.3336*window.innerWidth*-1,0,1],
       curve: 'linear',
-      duration:2000,
-      delay: 0,
-      loop: true
+      duration:800,
+      delay: 0
+  });
+  controller.broadcast('app-content',{
+      t: 'translate',
+      from: [0,0,1],
+      to: [0.3336*window.innerWidth*-1,0,1],
+      curve: 'linear',
+      duration:800,
+      delay: 0
+  });
+  controller.broadcast('app-content',{
+      t: 'size',
+      from: [0.6667,0.8,0],
+      to: [1.0,0.8,0],
+      curve: 'linear',
+      duration:800,
+      delay: 0
   });
 });

@@ -50,13 +50,11 @@ ViewController.prototype.getComponent = function(model){
 
 ViewController.prototype.broadcast = function(msg,conf){
   if(this.worker){
-      console.log(msg.constructor.name);
       if(msg.constructor.name === 'String'){
         this.worker.postMessage({query:{id:msg},transition:conf});
       } else {
         this.worker.postMessage(msg);
       }
-
   }
 };
 
@@ -65,14 +63,19 @@ ViewController.prototype.receive = function(e) {
   if(e.data && e.data.message) {
     if(e.data.message.prop === 'rotate' ||
        e.data.message.prop === 'translate' ||
-       e.data.message.prop === 'scale'){
+       e.data.message.prop === 'scale' ||
+       e.data.message.prop === 'opacity' ||
+       e.data.message.prop === 'size' ||
+       e.data.message.prop === 'origin' ||
+       e.data.message.prop === 'align'  ){
       this.elements[e.data.node]._node[e.data.message.prop] = e.data.message.val;
     } else {
       this.elements[e.data.node].elem.style[e.data.message.prop] = e.data.message.val;
     }
 
   } else if(e.data && e.data.id) {
-    console.log(e.data.id, this.elements[e.data.id]);
+    // node is received, but what use is it?
+    //console.log(e.data.id, this.elements[e.data.id]);
 
   }
 
