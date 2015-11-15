@@ -4,6 +4,7 @@ var controller,
     footer,
     aside,
     mainContent;
+var navOpen = true;
 var nodes = [{
     position: 'absolute',
     origin : [0.0,0.0,0.0],
@@ -64,6 +65,7 @@ footer.setContent('<a href="https://github.com/infamous/boxer">Prototype CSS 3D 
 footer.addClass('pad-2');
 
 aside.elem.addEventListener('click',function(){
+  
   controller.transition('app-sidebar',{
       key: 'translate',
       from: [0,0,1],
@@ -88,4 +90,41 @@ aside.elem.addEventListener('click',function(){
       duration:500,
       delay: 0
   });
+
+  navOpen = false;
+
+});
+
+mainContent.elem.addEventListener('click',function(ev){
+
+  if(navOpen === false) {
+
+  controller.transition('app-sidebar',{
+      key: 'translate',
+      from: [0.3336*window.innerWidth*-1,0,1],
+      to: [0,0,1],
+      curve: 'linear',
+      duration:500,
+      delay: 0
+  });
+  controller.transition('app-content',{
+      key: 'align',
+      from: [0.0,0.1,0.0],
+      to: [0.3336,0.1,0.0],
+      curve: 'linear',
+      duration:500,
+      delay: 0
+  });
+  controller.transition('app-content',{
+      key: 'size',
+      from: [1.0,0.8,0],
+      to: [0.6667,0.8,0],
+      curve: 'linear',
+      duration:500,
+      delay: 0
+  });
+
+  navOpen = true;
+
+  }
 });
