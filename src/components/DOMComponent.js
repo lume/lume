@@ -80,6 +80,18 @@ DOMComponent.prototype.isFloat = function(n){
     return n === Number(n) && n % 1 !== 0;
 }
 
+DOMComponent.prototype.setContent = function(content){
+  this.elem.innerHTML = content;
+}
+
+DOMComponent.prototype.addClass = function(cl){
+  this.elem.classList.add(cl);
+}
+
+DOMComponent.prototype.removeClass = function(cl){
+  this.elem.classList.remove(cl);
+}
+
 DOMComponent.prototype.transform = function(node){
 
   var matrix = new Matrix();

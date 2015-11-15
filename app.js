@@ -3,7 +3,7 @@ var controller,
     header,
     footer,
     aside,
-    main-content;
+    mainContent;
 var nodes = [{
     position: 'absolute',
     origin : [0.0,0.0,0.0],
@@ -48,7 +48,13 @@ var nodes = [{
 }];
 
 controller = new ViewController(nodes, SceneWorker);
+
 header = controller.getComponent({id:'app-header'});
-aside = controller.getComponent({id:'app-aside'});
-main-content = controller.getComponent({id:'app-content'});
+aside = controller.getComponent({id:'app-sidebar'});
+mainContent = controller.getComponent({id:'app-content'});
 footer = controller.getComponent({id:'app-footer'});
+
+header.setContent('<h1>Headline</h1>');
+aside.setContent('<h3>Aside</h3>');
+mainContent.setContent('<ul><li>Item 1</li><li>Item 2</li><li>Item 3</li></ul>');
+footer.setContent('<a href="https://github.com/infamous/boxer">Prototype CSS 3D Matrix Rendering Engine on Github</a>');
