@@ -80,3 +80,4 @@ If you want to help on this project, join the community on the infamous/boxer Gi
 * Three.js Mesh Component
 * Math Utilities (Vec2, Vec3, Matrix, etc)
 * Refactor translate, rotate, scale, align, origin, etc to use Vec2 and Vec3 Objects instead of Arrays. 
+* Refactor library to use ES6 Modules, remove Browserify dependency for build
