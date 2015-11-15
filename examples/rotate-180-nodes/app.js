@@ -11,7 +11,7 @@ for( var i=0; i<180; i++ ){
         id: 'node-'+i,
         opacity : 0.0,
         transition:{
-            t: 'rotate',
+            key: 'rotate',
             from: [(i+1)*4,0,(i+1)*4],
             to: [(i+1)*-4,0,(i+1)*-4],
             curve: 'linear',

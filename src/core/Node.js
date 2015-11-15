@@ -125,25 +125,25 @@ Node.prototype.getOpacity = function(){
 Node.prototype.setTransitionable = function(conf){
     var n  = this;
 
-    n.transitionables[conf.t] = conf;
-    n.transitionables[conf.t].transition = new Transitionable(conf.from);
-    n.transitionables[conf.t].transition.set(conf.to);
-    //n.transitionables[conf.t].transition.set(conf.to);
+    n.transitionables[conf.key] = conf;
+    n.transitionables[conf.key].transition = new Transitionable(conf.from);
+    n.transitionables[conf.key].transition.set(conf.to);
+    //n.transitionables[conf.key].transition.set(conf.to);
     if(conf.delay) {
       n.transit(conf);
     } else {
-      n.transitionables[conf.t]
+      n.transitionables[conf.key]
        .transition
        .from(conf.from)
        .to(conf.to, conf.curve, conf.duration);
     }
 
-    this[conf.t] = conf.to;
+    this[conf.key] = conf.to;
 
-    n.transitionables[conf.t].transition.id = this.id;
-    n.transitionables[conf.t].transition.param = conf.t;
-    this.observe(conf.t, n.transitionables[conf.t].transition.get(), conf);
-    //console.log(conf.t, this[conf.t], n.transitionables[conf.t].transition.get());
+    n.transitionables[conf.key].transition.id = this.id;
+    n.transitionables[conf.key].transition.param = conf.key;
+    this.observe(conf.key, n.transitionables[conf.key].transition.get(), conf);
+    //console.log(conf.key, this[conf.key], n.transitionables[conf.key].transition.get());
     //TODO: figure out a better way to update Transitionable
     //TODO: unobserve object, clearInerval
 
@@ -154,7 +154,7 @@ Node.prototype.transit = function(conf){
     var n  = this;
     if(conf.delay) {
 
-      n.transitionables[conf.t].transition.from(conf.from).delay(conf.delay).to(conf.to, conf.curve, conf.duration);
+      n.transitionables[conf.key].transition.from(conf.from).delay(conf.delay).to(conf.to, conf.curve, conf.duration);
     }
 };
 
