@@ -1,5 +1,4 @@
 // Node handles storing the state of a node on the Scene Graph.
-
 var Transitionable = require('../transitions/Transitionable');
 var Curves = require('../transitions/Curves');
 
@@ -124,21 +123,16 @@ Node.prototype.getOpacity = function(){
 };
 
 Node.prototype.setTransitionable = function(conf){
+    var n  = this;
 
-    this.transitionables[conf.t] = conf;
-    this.transitionables[conf.t].transition = new Transitionable(conf.from, conf.t);
-    this.transitionables[conf.t].transition.set(conf.from);
+    n.transitionables[conf.t] = conf;
+    n.transitionables[conf.t].transition = new Transitionable(conf.from);
+    n.transitionables[conf.t].transition.set(conf.to);
     //n.transitionables[conf.t].transition.set(conf.to);
     if(conf.delay) {
-      this.transit(conf);
-    } else if(conf.loop){
-      //TODO: figure out how to loop
-      this.transitionables[conf.t]
-       .transition
-       .from(conf.from)
-       .to(conf.to, conf.curve, conf.duration);
+      n.transit(conf);
     } else {
-      this.transitionables[conf.t]
+      n.transitionables[conf.t]
        .transition
        .from(conf.from)
        .to(conf.to, conf.curve, conf.duration);
@@ -146,10 +140,12 @@ Node.prototype.setTransitionable = function(conf){
 
     this[conf.t] = conf.to;
 
-    this.transitionables[conf.t].transition.id = this.id;
-    this.transitionables[conf.t].transition.param = conf.t;
-    this.observe(conf.t, this.transitionables[conf.t].transition.get());
-
+    n.transitionables[conf.t].transition.id = this.id;
+    n.transitionables[conf.t].transition.param = conf.t;
+    this.observe(this.id+'-'+conf.t, n.transitionables[conf.t].transition.get());
+    //console.log(conf.t, this[conf.t], n.transitionables[conf.t].transition.get());
+    //TODO: figure out a better way to update Transitionable
+    //TODO: unobserve object, clearInerval
 
 
 };
@@ -176,18 +172,22 @@ Node.prototype.observe = function(id, obj) {
                 //console.log(change);
                 n.parent.update({
                               message:{
-                                prop: id,
+                                prop: 'rotate',
                                 val: change.object
                               },
                               node: n.id
                             });
               }
               else if(change.object.constructor.name === 'Transitionable'){
-
-                console.log(n[change.object.param]);
-                //n[change.object.param] = change.oldValue;
+                n[change.object.param] = change.oldValue;
               } else {
-
+                // console.log({
+                //               message:{
+                //                 prop: change.name,
+                //                 val: change.oldValue
+                //               },
+                //               node: n.id
+                //             });
                 n.parent.update({
                               message:{
                                 prop: change.name,
@@ -195,7 +195,13 @@ Node.prototype.observe = function(id, obj) {
                               },
                               node: n.id
                             });
-
+                // console.log({
+                //               message:{
+                //                 prop: change.name,
+                //                 val: change.oldValue
+                //               },
+                //               node: n.id
+                //             });
               }
 
             }
@@ -205,8 +211,8 @@ Node.prototype.observe = function(id, obj) {
 
 };
 
-Node.prototype.unobserve = function(obj, fn) {
-    Object.unobserve(obj, fn);
+Node.prototype.unobserve = function(param) {
+    Object.unobserve(this, _observableCallback[this.id]);
 };
 
 

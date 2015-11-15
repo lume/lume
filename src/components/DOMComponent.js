@@ -115,7 +115,12 @@ DOMComponent.prototype.transform = function(node){
 
   if(node.size) {
     this.isFloat(node.size[0]) ? this.elem.style.width = node.size[0]*100+'%' : this.elem.style.width = node.size[0]+'px' ;
-    this.isFloat(node.size[1]) ? this.elem.style.height = node.size[1]*100+'%' : this.elem.style.height = node.size[1]+'px';
+    if(node.size[1] === null) {
+        this.elem.style.height = node.size[0]*100+'vw';
+    } else {
+        this.isFloat(node.size[1]) ? this.elem.style.height = node.size[1]*100+'%' : this.elem.style.height = node.size[1]+'px';
+    }
+
   }
 
 };

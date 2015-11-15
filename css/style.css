@@ -11,8 +11,8 @@ body {
   transform-style: preserve-3d;
   -webkit-font-smoothing: antialiased;
   -webkit-tap-highlight-color: transparent;
-  -webkit-perspective: 1000px;
-  perspective: 1000px;
+  -webkit-perspective: 2400px;
+  perspective: 2400px;
   overflow-x: hidden;
   overflow-y:scroll;
   background: #FF5347;

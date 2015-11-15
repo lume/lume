@@ -95,12 +95,13 @@ var Engine = require('../core/Engine');
 
  })();
 
-function Transitionable(initialState, param) {
+function Transitionable(initialState, param, loop) {
     this._queue = [];
     this._from = null;
     this._state = null;
     this._startedAt = null;
     this._pausedAt = null;
+    this._loop = loop || null;
     this.id = null;
     param ? this.param = param : param = null;
     if (initialState != null) this.from(initialState);
