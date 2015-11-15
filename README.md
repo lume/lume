@@ -1,10 +1,10 @@
-#Boxer Engine
+#View Engine (Codename Boxer)
 
 [![Join the chat at https://gitter.im/infamous/boxer](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/infamous/boxer?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
 
-##A proposal for the new API used by the Infamous Community.
+##A library that uses CSS 3D Transforms to provide highly performant Views to Web Apps.
 
-The goal of this project is to create a scene graph that is minimal with components that are abstracted enough to be swapped out.
+The goal of this project is to create a scene graph that contains nodes which handle calculations needed to animate DOM Elements.
 
 The built project is found in dist/boxer.js. Boxer currently operates on the window as an Object, similar to Famous.
 
@@ -13,16 +13,15 @@ The built project is found in dist/boxer.js. Boxer currently operates on the win
 
 ###Coming Soon:
 
-* API for making UI Components and examples for DOMElement and Mesh.
-* Unified UI Event system for GL and DOM.
-* Refactor to use ES6 Modules.
-* Add Support for Safari, Firefox, and Edge.
+* UI Event System
+* Responsive Framework
+* ES6 Modules
 
 ##Getting Started
 
-An example is provided in the root directory and [here](http://devmagnet.net/boxer/demo).
+Examples are provided in a web app built with this Engine in the root directory of the repo and [here](http://devmagnet.net/boxer/demo).
 
-`app.js` initializes the Engine and the Web Worker. It is fairly minimal at the moment.
+Below is an example that initializes the Engine and a Web Worker, configures 180 nodes and adds them to the Scene Graph. Each node is set to transition it's opacity over 1 second from 0 to 1. A ViewController handles normal tasks associated with a higher level API.
 
 ```
 var SceneWorker = new Worker('src/workers/SceneWorker.js');
@@ -57,7 +56,7 @@ controller = new ViewController(nodes, SceneWorker);
 
 ```
 
-Currently the scene is injected into the Engine so the Web Worker can receive ticks from the Engine. `SceneWorker.js` handles the calculations on each Node and maintains the graph on a separate thread from application logic (above).
+Behind the scenes, a Scene Graph is injected into the Engine so the Web Worker can receive ticks from the Engine. `SceneWorker.js` handles the calculations on each Node and maintains the graph on a separate thread from application logic (above).
 
 
 ##Development
@@ -74,9 +73,10 @@ If you want to help on this project, join the community on the infamous/boxer Gi
 
 ##What's Needed
 
-* API for timeline
-* Unified UI Event System for DOM / GL
-* Update Queue?
-* Component API
+* API for timeline to create complex Transitions
+* Event System similar to Famo.us 0.3.5 that allows dev to sync EventListeners
+* Update Queue, Performance Audit
+* Physics Engine
 * Three.js Mesh Component
 * Math Utilities (Vec2, Vec3, Matrix, etc)
+* Refactor translate, rotate, scale, align, origin, etc to use Vec2 and Vec3 Objects instead of Arrays. 
