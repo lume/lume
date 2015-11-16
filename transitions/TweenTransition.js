@@ -15,8 +15,8 @@ define(function(require, exports, module) {
     var eps = 1e-7; // for calculating velocity using finite difference
 
     /**
-     * A method of interpolating between start and end values (numbers or
-     *  arrays of numbers) via an easing curve.
+     * A method of interpolating between start and end values with
+     *  an easing curve.
      *
      * @class TweenTransition
      * @private
@@ -65,9 +65,6 @@ define(function(require, exports, module) {
         },
         easeOutBounce: function(t) {
             return t*(3 - 2*t);
-        },
-        spring: function(t) {
-            return (1 - t) * Math.sin(6 * Math.PI * t) + t;
         }
     };
 
@@ -134,25 +131,7 @@ define(function(require, exports, module) {
     }
 
     function _speed2Duration(start, end, speed){
-        var duration;
-        var startValue = this._startValue;
-        if (startValue instanceof Array) {
-            var variance = 0;
-            for (var i in startValue)
-                variance += (end[i] - start[i]) * (end[i] - start[i]);
-            duration = Math.sqrt(variance) / speed;
-        }
-        else duration = Math.abs(end - start) / speed;
-
-        return duration;
-    }
-
-    function _clone(obj) {
-        if (obj instanceof Object) {
-            if (obj instanceof Array) return obj.slice(0);
-            else return Object.create(obj);
-        }
-        else return obj;
+        return Math.abs(end - start) / speed;
     }
 
     function _normalize(transition, endValue, defaultTransition) {
@@ -190,12 +169,12 @@ define(function(require, exports, module) {
         if (!registeredCurves[curve] && TweenTransition.CURVES[curve])
             TweenTransition.register(curve, TweenTransition.CURVES[curve]);
 
-        this._startValue = _clone(this.get());
+        this._startValue = this.get();
         transition = _normalize(transition, endValue, this.options);
 
         this._startTime = Date.now();
-        this._endValue = _clone(endValue);
-        this._startVelocity = _clone(transition.velocity);
+        this._endValue = endValue;
+        this._startVelocity = transition.velocity;
         this._duration = transition.duration;
         this._curve = transition.curve;
         this._active = true;
@@ -210,8 +189,8 @@ define(function(require, exports, module) {
      * @param [velocity] {number|Number[]}  Velocity
      */
     TweenTransition.prototype.reset = function reset(value, velocity) {
-        this.state = _clone(value);
-        this.velocity = _clone(velocity);
+        this.state = value;
+        this.velocity = velocity;
         this._startTime = 0;
         this._duration = 0;
         this._startValue = this.state;
@@ -242,33 +221,8 @@ define(function(require, exports, module) {
     };
 
     function _calculateVelocity(current, start, curve, duration, t) {
-        var velocity;
         var speed = (curve(t) - curve(t - eps)) / eps;
-        if (current instanceof Array) {
-            velocity = [];
-            for (var i = 0; i < current.length; i++){
-                velocity[i] = (typeof current[i] === 'number')
-                    ? speed * (current[i] - start[i]) / duration
-                    : 0;
-            }
-        }
-        else velocity = speed * (current - start) / duration;
-        return velocity;
-    }
-
-    function _calculateState(start, end, t) {
-        var state;
-        if (start instanceof Array) {
-            state = [];
-            for (var i = 0; i < start.length; i++) {
-                if (typeof start[i] === 'number')
-                    state[i] = _interpolate(start[i], end[i], t);
-                else
-                    state[i] = start[i];
-            }
-        }
-        else state = _interpolate(start, end, t);
-        return state;
+        return speed * (current - start) / duration;
     }
 
     function update() {
@@ -293,7 +247,7 @@ define(function(require, exports, module) {
         }
         else {
             var t = timeSinceStart / this._duration;
-            this.state = _calculateState(this._startValue, this._endValue, this._curve(t));
+            this.state = _interpolate(this._startValue, this._endValue, this._curve(t));
             this.velocity = _calculateVelocity(this.state, this._startValue, this._curve, this._duration, t);
         }
     }
