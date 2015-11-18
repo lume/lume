@@ -146,7 +146,7 @@ define(function (require, exports, module) {
         var timeSinceStart = now() - this.startTime;
 
         var value = this.curve(timeSinceStart);
-        this.velocity = (this.curve(timeSinceStart + eps) - value) / eps;
+        this.velocity = (this.curve(timeSinceStart + eps) - this.curve(timeSinceStart - eps)) / (2 * eps);
 
         var displacement = Math.abs(value - this.target);
         var omega = 2 * Math.PI * this.frequency;

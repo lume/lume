@@ -263,7 +263,7 @@ define(function(require, exports, module) {
     }
 
     function _calculateVelocity(current, start, curve, duration, t) {
-        return (current - start) * (curve(t) - curve(t - eps)) / (eps * duration);
+        return (current - start) * (curve(t + eps) - curve(t - eps)) / (2 * eps * duration);
     }
 
     function update() {
