@@ -259,11 +259,40 @@ define(function(require, exports, module) {
     }
 
     function _interpolate(a, b, t) {
+        var result;
+        if (a instanceof Array){
+            result = [];
+            for (var i = 0; i < a.length; i++){
+                if (typeof a[i] === 'number')
+                    result.push(_interpolate1D(a[i], b[i], t));
+                else result.push(a[i]);
+            }
+
+        }
+        else result = _interpolate1D(a, b, t);
+        return result;
+    }
+
+    function _interpolate1D(a, b, t){
         return ((1 - t) * a) + (t * b);
     }
 
-    function _calculateVelocity(current, start, curve, duration, t) {
+    function _calculateVelocity1D(current, start, curve, duration, t) {
         return (current - start) * (curve(t + eps) - curve(t - eps)) / (2 * eps * duration);
+    }
+
+    function _calculateVelocity(current, start, curve, duration, t) {
+        var result;
+        if (current instanceof Array){
+            result = [];
+            for (var i = 0; i < current.length; i++){
+                if (typeof current[i] === 'number')
+                    result.push(_calculateVelocity1D(current, start, curve, duration, t));
+                else result.push(current[i]);
+            }
+        }
+        else result = _calculateVelocity1D(current, start, curve, duration, t);
+        return result;
     }
 
     function update() {
