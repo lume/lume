@@ -9,7 +9,7 @@ define(function (require, exports, module) {
 
     var now = Date.now;
     var eps = 1e-6; // for calculating velocity using finite difference
-    var tolerance = 1e-10; // energy minimum
+    var tolerance = 1e-9; // energy minimum
 
     function Spring(value) {
         SimpleStream.call(this);
@@ -22,7 +22,6 @@ define(function (require, exports, module) {
         this.curve = null;
         this.boundUpdate = update.bind(this);
         this.energyTolerance = tolerance;
-
         this.currentActive = false;
 
         this._eventOutput = new EventHandler();
@@ -69,7 +68,8 @@ define(function (require, exports, module) {
             this.emit('start', x0);
         }
 
-        this.energyTolerance = tolerance * Math.pow(value - x0, 2);
+        var spread = Math.max(1, Math.abs(value - x0));
+        this.energyTolerance = tolerance * Math.pow(spread, 2);
 
         var damping = transition.damping || Spring.DEFAULT_OPTIONS.damping;
         var frequency = transition.frequency || Spring.DEFAULT_OPTIONS.frequency;
@@ -99,6 +99,7 @@ define(function (require, exports, module) {
 
     Spring.prototype.reset = function (value) {
         this.value = value;
+        this.velocity = 0;
         end.call(this);
     };
 
