@@ -9,12 +9,12 @@ html, body {
 
 body {
   position: absolute;
-  /*-webkit-transform-style: preserve-3d;
-  transform-style: preserve-3d;*/
+  -webkit-transform-style: preserve-3d;
+  transform-style: preserve-3d;
   -webkit-font-smoothing: antialiased;
   -webkit-tap-highlight-color: transparent;
-  /*-webkit-perspective: 2400px;
-  perspective: 2400px;*/
+  -webkit-perspective: 2400px;
+  perspective: 2400px;
   overflow-x: hidden;
   overflow-y:scroll;
   background: #FF5347;
@@ -114,11 +114,30 @@ a:link, a:visited {
   perspective: 1000px;
 }
 
-.app-carousel-container .btn {
-      background: #EFAF73;
-      width: 40px;
-      height: 40px;
-      float:left;
+.app-carousel-btn {
+  background: #EFAF73;
+  width: 40px;
+  height: 40px;
+  position:absolute;
+  top:50%;
+  margin-top: -20px;
+  background-repeat: no-repeat;
+
+}
+
+.app-carousel-btn.prev {
+    left: 0;
+    transform: rotateZ(90deg);
+    background-image: url('img/arrow-down.svg');
+    background-size: 100% 100%;
+
+}
+
+.app-carousel-btn.next {
+    right: 0;
+    transform: rotateZ(-90deg);
+    background-image: url('img/arrow-down.svg');
+    background-size: 100% 100%;
 }
 
 .app-carousel {
@@ -129,9 +148,9 @@ a:link, a:visited {
   left: 50%;
 
   -webkit-transition: -webkit-transform 1s;
--moz-transition: -moz-transform 1s;
--o-transition: -o-transform 1s;
-transition: transform 1s;
+  -moz-transition: -moz-transform 1s;
+  -o-transition: -o-transform 1s;
+  transition: transform 1s;
 
 }
 
@@ -143,7 +162,22 @@ transition: transform 1s;
   height: 116px;
   left: 10px;
   top: 10px;
-  border: 2px solid black;
+  background: #8BFABB;
+  text-align: center;
+}
+
+.app-carousel-slide h3 {
+  padding-top: 40px;
+  color: #FFFFFF;
+  font-weight: 700;
+}
+
+.app-memo {
+  color: #FFFFFF;
+}
+
+.app-memo a:link, .app-memo a:visited {
+  color: #FFFFFF;
 }
 
 .pad-1 {
@@ -152,6 +186,17 @@ transition: transform 1s;
 
 .pad-2 {
   padding: 2em;
+}
+
+.text-center {
+    text-align: center;
+}
+
+.hide-backface {
+  -webkit-backface-visibility: hidden;
+  -moz-backface-visibility: hidden;
+  -o-backface-visibility: hidden;
+  backface-visibility: hidden;
 }
 
 .app-content {

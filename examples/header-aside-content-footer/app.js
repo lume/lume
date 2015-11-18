@@ -56,7 +56,7 @@ mainContent = controller.getComponent({id:'app-content'});
 footer = controller.getComponent({id:'app-footer'});
 
 header.setContent('<h1>Boxer Engine App Layout Example</h1>');
-aside.elem.innerHTML = '<h5 class="pad-2">Add content using Element.innerHTML or DOMComponent.setContent(). Click aside to animate view.</h5>';
+aside.elem.innerHTML = '<h5 class="pad-2">Add content using Element.innerHTML or DOMComponent.setContent().</h5><div class="app-carousel-btn prev"></div>';
 mainContent.setContent('<ul class="pad-2"><li>Header</li><li>Aside</li><li>Main Content</li><li>Footer</li></ul>');
 footer.setContent('<a href="https://github.com/infamous/boxer">Prototype CSS 3D Matrix Rendering Engine on Github</a>');
 

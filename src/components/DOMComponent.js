@@ -103,7 +103,7 @@ DOMComponent.prototype.removeClass = function(cl){
 }
 
 DOMComponent.prototype.transform = function(node){
-  console.log(node);
+
   if(node.size) {
     if(node.size[0] === 1) node.size[0] = parseFloat(1.0);
     if(node.size[1] === 1) node.size[1] = parseFloat(1.0);
