@@ -1,41 +1,66 @@
-/* This Source Code Form is subject to the terms of the Mozilla Public
- * License, v. 2.0. If a copy of the MPL was not distributed with this
- * file, You can obtain one at http://mozilla.org/MPL/2.0/.
- *
- * @license MPL 2.0
- * @copyright Famous Industries, Inc. 2014
- */
-
-/* Modified work copyright © 2015 David Valdman */
+/* Copyright © 2015 David Valdman */
 
 define(function(require, exports, module) {
-    var OptionsManager = require('../core/OptionsManager');
+    var preTickQueue = require('../core/queues/preTickQueue');
+    var tickQueue = require('../core/queues/tickQueue');
+    var dirtyQueue = require('../core/queues/dirtyQueue');
+    var EventHandler = require('../events/EventHandler');
+    var SimpleStream = require('../streams/SimpleStream');
 
-    var registeredCurves = {};
+    var now = Date.now;
     var eps = 1e-7; // for calculating velocity using finite difference
+    var registeredCurves = {};
 
     /**
      * A method of interpolating between start and end values with
      *  an easing curve.
      *
-     * @class TweenTransition
+     * @class Tween
      * @private
      * @namespace Transitions
      * @constructor
      */
-    function TweenTransition(options) {
-        this.options = OptionsManager.setOptions(this, options);
+    function Tween(value) {
+        SimpleStream.call(this);
 
-        this._startTime = 0;
-        this._startValue = 0;
+        this.state = value || 0;
+        this.velocity = undefined;
+        this._startValue = value || 0;
         this._endValue = 0;
+        this._startTime = now();
         this._curve = undefined;
         this._duration = 0;
         this._active = false;
-        this._callback = undefined;
-        this.state = 0;
-        this.velocity = undefined;
+        this._boundUpdate = update.bind(this);
+
+        this._eventOutput = new EventHandler();
+        EventHandler.setOutputHandler(this, this._eventOutput);
+
+        this.on('start', function () {
+            tickQueue.push(this._boundUpdate);
+        }.bind(this));
+
+        this.on('end', function () {
+            var index = tickQueue.indexOf(this._boundUpdate);
+            if (index >= 0) tickQueue.splice(index, 1);
+        }.bind(this));
+
+        if (value !== undefined) {
+            preTickQueue.push(function () {
+                if (!this._active) {
+                    this.emit('start', value);
+                    this.state = value;
+
+                    dirtyQueue.push(function () {
+                        this.emit('end', value);
+                    }.bind(this));
+                }
+            }.bind(this))
+        }
     }
+
+    Tween.prototype = Object.create(SimpleStream.prototype);
+    Tween.prototype.constructor = Tween;
 
     /**
      * Default easing curves.
@@ -49,7 +74,7 @@ define(function(require, exports, module) {
      * @property CURVES.spring {Function}           Spring-like interpolation
      * @static
      */
-    TweenTransition.CURVES = {
+    Tween.CURVES = {
         linear: function(t) {
             return t;
         },
@@ -68,10 +93,9 @@ define(function(require, exports, module) {
         }
     };
 
-    TweenTransition.DEFAULT_OPTIONS = {
-        curve: TweenTransition.CURVES.linear,
-        duration: 500,
-        speed: 0
+    Tween.DEFAULT_OPTIONS = {
+        curve: Tween.CURVES.linear,
+        duration: 500
     };
 
     /**
@@ -85,7 +109,7 @@ define(function(require, exports, module) {
      * @param curve {Function}      Function defined on the domain [0,1]
      * @return {Boolean}            False if key is taken, else true
      */
-    TweenTransition.register = function register(name, curve) {
+    Tween.register = function register(name, curve) {
         if (!registeredCurves[name]) {
             registeredCurves[name] = curve;
             return true;
@@ -101,7 +125,7 @@ define(function(require, exports, module) {
      * @param name {String}     Name dictionary key
      * @return {Boolean}        False if key doesn't exist
      */
-    TweenTransition.deregister = function deregister(name) {
+    Tween.deregister = function deregister(name) {
         if (registeredCurves[name]) {
             delete registeredCurves[name];
             return true;
@@ -116,8 +140,90 @@ define(function(require, exports, module) {
      * @static
      * @return {Object}
      */
-    TweenTransition.getCurves = function getCurves() {
+    Tween.getCurves = function getCurves() {
         return registeredCurves;
+    };
+
+    /**
+     * Set new value to transition to.
+     *
+     * @method set
+     * @param endValue {Number|Number[]}    End value
+     * @param [transition] {Object}         Transition object of type
+     *                                      {duration: number, curve: name}
+     * @param [callback] {Function}         Callback to execute on completion of transition
+     */
+    Tween.prototype.set = function set(endValue, transition) {
+        this._startValue = this.get();
+        this._endValue = endValue;
+        this._startTime = now();
+
+        if (!this._active) {
+            this._active = true;
+            this.emit('start', this._startValue);
+        }
+
+        var curve = transition.curve;
+        if (!registeredCurves[curve] && Tween.CURVES[curve])
+            Tween.register(curve, Tween.CURVES[curve]);
+
+        this.velocity = transition.velocity;
+        this._duration = transition.duration || Tween.DEFAULT_OPTIONS.duration;
+        this._curve = curve
+            ? (curve instanceof Function) ? curve : getCurve(curve)
+            : Tween.DEFAULT_OPTIONS.curve;
+    };
+
+    /**
+     * Cancel all transitions and reset to a stable state
+     *
+     * @method reset
+     * @param value {number|Number[]}       Value
+     * @param [velocity] {number|Number[]}  Velocity
+     */
+    Tween.prototype.reset = function reset(value) {
+        this.state = value;
+        end.call(this);
+    };
+
+    /**
+     * Get current velocity
+     *
+     * @method getVelocity
+     * @returns {Number}
+     */
+    Tween.prototype.getVelocity = function getVelocity() {
+        return this.velocity;
+    };
+
+    /**
+     * Get current value.
+     *
+     * @method get
+     * @return {Number|Number[]}
+     */
+    Tween.prototype.get = function get() {
+        return this.state;
+    };
+
+
+    /**
+     * Returns true if the animation is ongoing, false otherwise.
+     *
+     * @method isActive
+     * @return {Boolean}
+     */
+    Tween.prototype.isActive = function isActive() {
+        return this._active;
+    };
+
+    /**
+     * Halt transition at current state and erase all pending actions.
+     *
+     * @method halt
+     */
+    Tween.prototype.halt = function halt() {
+        this.reset(this.get());
     };
 
     function getCurve(curveName) {
@@ -130,146 +236,32 @@ define(function(require, exports, module) {
         return ((1 - t) * a) + (t * b);
     }
 
-    function _speed2Duration(start, end, speed){
-        return Math.abs(end - start) / speed;
-    }
-
-    function _normalize(transition, endValue, defaultTransition) {
-        var result = {curve: defaultTransition.curve};
-        if (defaultTransition.duration) result.duration = defaultTransition.duration;
-        if (defaultTransition.speed) result.speed = defaultTransition.speed;
-        if (transition instanceof Object) {
-            if (transition.duration !== undefined) result.duration = transition.duration;
-            if (transition.curve) result.curve = transition.curve;
-            if (transition.speed) result.speed = transition.speed;
-        }
-        if (typeof result.curve === 'string') result.curve = getCurve(result.curve);
-        if (transition.speed) result.duration = _speed2Duration(endValue, this._startValue, transition.speed);
-
-        return result;
-    }
-
-    /**
-     * Set new value to transition to.
-     *
-     * @method set
-     * @param endValue {Number|Number[]}    End value
-     * @param [transition] {Object}         Transition object of type
-     *                                      {duration: number, curve: name}
-     * @param [callback] {Function}         Callback to execute on completion of transition
-     */
-    TweenTransition.prototype.set = function set(endValue, transition, callback) {
-        if (!transition) {
-            this.reset(endValue);
-            if (callback) callback();
-            return;
-        }
-
-        var curve = transition.curve;
-        if (!registeredCurves[curve] && TweenTransition.CURVES[curve])
-            TweenTransition.register(curve, TweenTransition.CURVES[curve]);
-
-        this._startValue = this.get();
-        transition = _normalize(transition, endValue, this.options);
-
-        this._startTime = Date.now();
-        this._endValue = endValue;
-        this._startVelocity = transition.velocity;
-        this._duration = transition.duration;
-        this._curve = transition.curve;
-        this._active = true;
-        this._callback = callback;
-    };
-
-    /**
-     * Cancel all transitions and reset to a stable state
-     *
-     * @method reset
-     * @param value {number|Number[]}       Value
-     * @param [velocity] {number|Number[]}  Velocity
-     */
-    TweenTransition.prototype.reset = function reset(value, velocity) {
-        this.state = value;
-        this.velocity = velocity;
-        this._startTime = 0;
-        this._duration = 0;
-        this._startValue = this.state;
-        this._startVelocity = this.velocity;
-        this._endValue = this.state;
-        this._active = false;
-    };
-
-    /**
-     * Get current velocity
-     *
-     * @method getVelocity
-     * @returns {Number}
-     */
-    TweenTransition.prototype.getVelocity = function getVelocity() {
-        return this.velocity;
-    };
-
-    /**
-     * Get current value.
-     *
-     * @method get
-     * @return {Number|Number[]}
-     */
-    TweenTransition.prototype.get = function get() {
-        if (this.isActive()) update.call(this);
-        return this.state;
-    };
-
     function _calculateVelocity(current, start, curve, duration, t) {
-        var speed = (curve(t) - curve(t - eps)) / eps;
-        return speed * (current - start) / duration;
+        return (current - start) * (curve(t) - curve(t - eps)) / (eps * duration);
     }
 
     function update() {
-        var timestamp = Date.now();
-
+        var timestamp = now();
         var timeSinceStart = timestamp - this._startTime;
 
-        if (timeSinceStart >= this._duration) {
-            this.state = this._endValue;
-            this.velocity = _calculateVelocity(this.state, this._startValue, this._curve, this._duration, 1);
-            this._active = false;
-            if (this._callback) {
-                var callback = this._callback;
-                this._callback = undefined;
-                callback();
-            }
-            return;
-        }
-        else if (timeSinceStart < 0) {
-            this.state = this._startValue;
-            this.velocity = this._startVelocity;
-        }
-        else {
+        this.velocity = _calculateVelocity(this.state, this._startValue, this._curve, this._duration, 1);
+
+        if (timeSinceStart < this._duration) {
             var t = timeSinceStart / this._duration;
             this.state = _interpolate(this._startValue, this._endValue, this._curve(t));
-            this.velocity = _calculateVelocity(this.state, this._startValue, this._curve, this._duration, t);
+            this.emit('update', this.state);
         }
+        else this.reset(this._endValue);
     }
 
-    /**
-     * Returns true if the animation is ongoing, false otherwise.
-     *
-     * @method isActive
-     * @return {Boolean}
-     */
-    TweenTransition.prototype.isActive = function isActive() {
-        return this._active;
-    };
+    function end() {
+        this._active = false;
 
-    /**
-     * Halt transition at current state and erase all pending actions.
-     *
-     * @method halt
-     */
-    TweenTransition.prototype.halt = function halt() {
-        this.reset(this.get());
-    };
+        dirtyQueue.push(function () {
+            if (!this._active)
+                this.emit('end', this.get());
+        }.bind(this));
+    }
 
-    module.exports = TweenTransition;
+    module.exports = Tween;
 });
