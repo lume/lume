@@ -67,11 +67,13 @@ define(function(require, exports, module) {
      *
      * @property CURVES {object}
      * @property CURVES.linear {Function}           Linear interpolation
-     * @property CURVES.easeIn {Function}           EaseIn interpolation
-     * @property CURVES.easeOut {Function}          EaseOut interpolation
-     * @property CURVES.easeInOut {Function}        EaseInOut interpolation
-     * @property CURVES.easeInOutBounce {Function}  EaseInOutBounce interpolation
-     * @property CURVES.spring {Function}           Spring-like interpolation
+     * @property CURVES.easeIn {Function}           EaseIn interpolation. Deceleration from zero velocity.
+     * @property CURVES.easeInCubic {Function}      Cubic interpolation. Acceleration from zero velocity.
+     * @property CURVES.easeOut {Function}          EaseOut interpolation. Acceleration from zero velocity.
+     * @property CURVES.easeOutCubic {Function}     Cubic interpolation. Deceleration from zero velocity.
+     * @property CURVES.easeOutWall                 Interpolation with wall boundary.
+     * @property CURVES.easeInOut {Function}        EaseInOut interpolation. Acceleration then deceleration.
+     * @property CURVES.easeInOutCubic {Function}   Cubic interpolation. Acceleration then deceleration.
      * @static
      */
     Tween.CURVES = {
@@ -79,17 +81,41 @@ define(function(require, exports, module) {
             return t;
         },
         easeIn: function(t) {
-            return t*t;
+            return t * t;
         },
         easeOut: function(t) {
-            return t*(2-t);
+            return t * (2 - t);
         },
         easeInOut: function(t) {
-            if (t <= 0.5) return 2*t*t;
-            else return -2*t*t + 4*t - 1;
+            return (t <= 0.5)
+                ?  2 * t * t
+                : -2 * t * t + 4 * t - 1;
         },
         easeOutBounce: function(t) {
-            return t*(3 - 2*t);
+            return t * (3 - 2 * t);
+        },
+        easeInCubic: function (t) {
+            return t * t * t;
+        },
+        easeOutCubic: function (t) {
+            return 1 + Math.pow(t - 1, 3);
+        },
+        easeInOutCubic: function (t) {
+            t *= 2;
+            return (t < 1)
+                ? .5 * t * t * t
+                : .5 * Math.pow(t - 2, 3) + 1;
+        },
+        easeOutWall: function (t) {
+            if (t < (1 / 2.75)) {
+                return (7.5625 * t * t);
+            } else if (t < (2 / 2.75)) {
+                return (7.5625 * (t -= (1.5 / 2.75)) * t + .75);
+            } else if (t < (2.5 / 2.75)) {
+                return (7.5625 * (t -= (2.25 / 2.75)) * t + .9375);
+            } else {
+                return (7.5625 * (t -= (2.625 / 2.75)) * t + .984375);
+            }
         }
     };
 
