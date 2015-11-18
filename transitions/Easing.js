@@ -141,30 +141,6 @@ define(function(require, exports, module) {
         },
 
         /**
-         * @method inSine
-         * @static
-         */
-        inSine: function(t) {
-            return -1.0*Math.cos(t * (Math.PI/2)) + 1.0;
-        },
-
-        /**
-         * @method outSine
-         * @static
-         */
-        outSine: function(t) {
-            return Math.sin(t * (Math.PI/2));
-        },
-
-        /**
-         * @method inOutSine
-         * @static
-         */
-        inOutSine: function(t) {
-            return -.5*(Math.cos(Math.PI*t) - 1);
-        },
-
-        /**
          * @method inExpo
          * @static
          */
@@ -189,31 +165,6 @@ define(function(require, exports, module) {
             if (t===1.0) return 1.0;
             if ((t/=.5) < 1) return .5 * Math.pow(2, 10 * (t - 1));
             return .5 * (-Math.pow(2, -10 * --t) + 2);
-        },
-
-        /**
-         * @method inCirc
-         * @static
-         */
-        inCirc: function(t) {
-            return -(Math.sqrt(1 - t*t) - 1);
-        },
-
-        /**
-         * @method outCirc
-         * @static
-         */
-        outCirc: function(t) {
-            return Math.sqrt(1 - (--t)*t);
-        },
-
-        /**
-         * @method inOutCirc
-         * @static
-         */
-        inOutCirc: function(t) {
-            if ((t/=.5) < 1) return -.5 * (Math.sqrt(1 - t*t) - 1);
-            return .5 * (Math.sqrt(1 - (t-=2)*t) + 1);
         },
 
         /**
@@ -300,27 +251,6 @@ define(function(require, exports, module) {
             } else {
                 return (7.5625*(t-=(2.625/2.75))*t + .984375);
             }
-        },
-
-        /**
-         * @method inOutBounce
-         * @static
-         */
-        inOutBounce: function(t) {
-            if (t < .5) return Easing.inBounce(t*2) * .5;
-            return Easing.outBounce(t*2-1.0) * .5 + .5;
-        },
-
-        /**
-         * @method createCustomCurve
-         * @static
-         */
-        createCustomCurve: function(slope0, slope1) {
-            if (slope0 === undefined) slope0 = 0; // slope at t = 0
-            if (slope1 === undefined) slope1 = 0; // slope at t = 1
-            return function(t) {
-                return slope0*t + (-2*slope0 - slope1 + 3)*t*t + (slope0 + slope1 - 2)*t*t*t;
-            };
         }
     };
 
