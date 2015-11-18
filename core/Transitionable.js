@@ -45,7 +45,7 @@ define(function(require, exports, module) {
      */
     function Transitionable(value) {
         this.value = value || 0;
-        this.velocity = undefined;
+        this.velocity = 0;
         this._callback = undefined;
         this._method = null;
 
@@ -57,15 +57,14 @@ define(function(require, exports, module) {
         EventHandler.setInputHandler(this, this._eventInput);
         EventHandler.setOutputHandler(this, this._eventOutput);
 
-        this._eventInput.on('start', function(data){
-            if (!this._totalActive){
-                this._totalActive = true;
-                this.emit('start', data)
-            }
+        this._eventInput.on('start', function(){
+            this._currentActive = true;
         }.bind(this));
 
-        this._eventInput.on('update', function(data){
-            this.emit('update', data);
+        this._eventInput.on('update', function(value){
+            this.value = value;
+            this.velocity = this._engineInstance.getVelocity();
+            this.emit('update', value);
         }.bind(this));
 
         this._eventInput.on('end', end.bind(this));
@@ -116,8 +115,10 @@ define(function(require, exports, module) {
         else return false;
     };
 
-    function end() {
+    function end(value) {
         this._currentActive = false;
+        this.value = value;
+        this.velocity = this._engineInstance.getVelocity();
 
         dirtyQueue.push(function () {
             if (this._callback) {
@@ -209,7 +210,7 @@ define(function(require, exports, module) {
      * @return {Boolean}
      */
     Transitionable.prototype.isActive = function isActive() {
-        return this._currentActive;
+        return this._totalActive;
     };
 
     /**
@@ -239,6 +240,18 @@ define(function(require, exports, module) {
         }.bind(this));
     };
 
+    Transitionable.prototype.setMany = function(array, callback){
+        var first = array.shift();
+        if (array.length === 0){
+            this.set(first.value, first.transition, callback)
+        }
+        else {
+            this.set(first.value, first.transition, function() {
+                this.setMany(array, callback);
+            }.bind(this));
+        }
+    };
+
     /**
      * Loop indefinitely between values with provided transitions. Fire a callback
      *  after each new value is reached.
@@ -248,11 +261,10 @@ define(function(require, exports, module) {
      * @param transitions {Object|Object[]}     Array of transitions
      * @param [callback] {Function}             Callback
      */
-    Transitionable.prototype.loop = function(values, transitions, callback){
-        var val = values.slice(0);
-        this.iterate(values, transitions, function(){
-            if (callback) callback();
-            this.loop(val, transitions, callback);
+    Transitionable.prototype.loop = function(array){
+        var arrayClone = array.slice(0);
+        this.setMany(array, function(){
+            this.loop(arrayClone);
         }.bind(this));
     };
 
