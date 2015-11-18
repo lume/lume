@@ -1,12 +1,15 @@
+/* Copyright © 2015 David Valdman */
+
 define(function (require, exports, module) {
+    var preTickQueue = require('../core/queues/preTickQueue');
     var tickQueue = require('../core/queues/tickQueue');
     var dirtyQueue = require('../core/queues/dirtyQueue');
     var EventHandler = require('../events/EventHandler');
     var SimpleStream = require('../streams/SimpleStream');
 
     var now = Date.now;
-    var eps = 1e-6;
-    var tolerance = 1e-2;
+    var eps = 1e-6; // for calculating velocity using finite difference
+    var tolerance = 1e-10; // energy minimum
 
     function Spring(value) {
         SimpleStream.call(this);
@@ -14,16 +17,31 @@ define(function (require, exports, module) {
         this.value = value || 0;
         this.target = Number.NaN;
         this.velocity = 0;
-        this.active = false;
+        this.frequency = Number.NaN;
         this.startTime = now();
         this.curve = null;
-        this.callback = null;
+        this.callback = undefined;
         this.boundUpdate = update.bind(this);
+        this.energyTolerance = tolerance;
+
+        this.currentActive = false;
+        this.totalActive = false;
 
         this._eventOutput = new EventHandler();
         EventHandler.setOutputHandler(this, this._eventOutput);
 
-        if (value !== undefined) this.set(value);
+        if (value !== undefined) {
+            preTickQueue.push(function(){
+                if (!this.currentActive){
+                    this.emit('start', value);
+                    this.value = value;
+
+                    dirtyQueue.push(function () {
+                        this.emit('end', value);
+                    }.bind(this));
+                }
+            }.bind(this))
+        }
     }
 
     Spring.DEFAULT_OPTIONS = {
@@ -37,23 +55,30 @@ define(function (require, exports, module) {
     Spring.prototype.set = function (value, transition, callback) {
         var x0 = this.get();
         this.target = value;
+        this.startTime = now();
+
         if (callback) this.callback = callback;
 
-        if (!this.active) {
+        this.currentActive = true;
+
+        if (!this.totalActive){
+            this.totalActive = true;
             this.emit('start', x0);
-            this.active = true;
+            if (transition)
+                tickQueue.push(this.boundUpdate);
         }
 
         if (!transition) {
-            this.reset(value, 0);
+            if (!callback) this.callback = undefined;
+            this.reset(value);
             return;
         }
+
+        this.energyTolerance = tolerance * Math.pow(value - x0, 2);
 
         var damping = transition.damping || Spring.DEFAULT_OPTIONS.damping;
         var frequency = transition.frequency || Spring.DEFAULT_OPTIONS.frequency;
         var v0 = transition.velocity || this.velocity;
-
-        this.startTime = now();
 
         if (damping < 1)
             this.curve = createUnderDampedSpring(damping, frequency, x0, value, v0);
@@ -62,9 +87,7 @@ define(function (require, exports, module) {
         else
             this.curve = createOverDampedSpring(damping, frequency, x0, value, v0);
 
-        if (callback) this.callback = callback;
-
-        tickQueue.push(this.boundUpdate);
+        this.frequency = frequency;
     };
 
     Spring.prototype.get = function () {
@@ -72,7 +95,7 @@ define(function (require, exports, module) {
     };
 
     Spring.prototype.isActive = function () {
-        return this.active;
+        return this.totalActive;
     };
 
     Spring.prototype.reset = function (value) {
@@ -81,25 +104,9 @@ define(function (require, exports, module) {
     };
 
     Spring.prototype.halt = function () {
+        this.callback = undefined;
         this.reset(this.get());
-        end.call(this);
     };
-
-    function end() {
-        this.active = false;
-        var index = tickQueue.indexOf(this.boundUpdate);
-        if (index >= 0) tickQueue.splice(index, 1);
-        dirtyQueue.push(function () {
-            if (this.active) return;
-
-            this.emit('end', this.get());
-            if (this.callback) {
-                var callback = this.callback;
-                this.callback = null;
-                callback();
-            }
-        }.bind(this));
-    }
 
     function createUnderDampedSpring(damping, frequency, x0, x1, v0) {
         var w_d = frequency * Math.sqrt(1 - damping * damping); // damped frequency
@@ -137,21 +144,47 @@ define(function (require, exports, module) {
     }
 
     function update() {
-        var timestamp = now();
-        var timeSinceStart = timestamp - this.startTime;
+        var timeSinceStart = now() - this.startTime;
 
         var value = this.curve(timeSinceStart);
+        this.velocity = (this.curve(timeSinceStart + eps) - value) / eps;
 
-        var energy = (!this.velocity)
-            ? Infinity
-            : this.velocity * this.velocity / 2 + Math.abs(value - this.target);
+        var displacement = Math.abs(value - this.target);
+        var omega = 2 * Math.PI * this.frequency;
 
-        if (energy >= tolerance) {
+        var potentialEnergy = omega * omega * displacement * displacement;
+        var kineticEnergy = this.velocity * this.velocity;
+        var energy = kineticEnergy + potentialEnergy;
+
+
+        if (energy >= this.energyTolerance) {
             this.value = value;
-            this.velocity = (this.curve(timeSinceStart + eps) - value) / eps;
             this.emit('update', value);
         }
-        else this.reset(this.target);
+        else {
+            this.reset(this.target);
+        }
+    }
+
+    function end() {
+        this.currentActive = false;
+
+        dirtyQueue.push(function () {
+            if (this.callback) {
+                var callback = this.callback;
+                this.callback = undefined;
+                callback();
+            }
+
+            if (!this.currentActive && this.totalActive){
+                var index = tickQueue.indexOf(this.boundUpdate);
+                if (index >= 0) tickQueue.splice(index, 1);
+
+                this.emit('end', this.get());
+                this.totalActive = false;
+            }
+
+        }.bind(this));
     }
 
     module.exports = Spring;
