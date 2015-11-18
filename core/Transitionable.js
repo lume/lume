@@ -1,28 +1,18 @@
-/* This Source Code Form is subject to the terms of the Mozilla Public
- * License, v. 2.0. If a copy of the MPL was not distributed with this
- * file, You can obtain one at http://mozilla.org/MPL/2.0/.
- *
- * @license MPL 2.0
- * @copyright Famous Industries, Inc. 2014
- */
-
-/* Modified work copyright © 2015 David Valdman */
+/* Copyright © 2015 David Valdman */
 
 define(function(require, exports, module) {
     var dirtyQueue = require('./queues/dirtyQueue');
     var preTickQueue = require('./queues/preTickQueue');
     var tickQueue = require('./queues/tickQueue');
-    var TweenTransition = require('../transitions/TweenTransition');
     var EventHandler = require('../events/EventHandler');
     var SimpleStream = require('../streams/SimpleStream');
 
-    var transitionMethods = {};
+    var Tween = require('../transitions/TweenTransition');
+    var Spring = require('../physics/Spring');
 
-    var STATE = {
-        NONE : -1,
-        START : 0,
-        UPDATE : 1,
-        END : 2
+    var transitionMethods = {
+        tween: Tween,
+        spring : Spring
     };
 
     /**
@@ -51,94 +41,52 @@ define(function(require, exports, module) {
      * @class Transitionable
      * @constructor
      * @extends Streams.SimpleStream
-     * @param start {Number|Number[]}   Starting value
+     * @param value {Number|Number[]}   Starting value
      */
-    function Transitionable(start) {
-        this.transitionQueue = [];
-        this.endStateQueue = [];
-        this.callbackQueue = [];
-
-        this.state = start || 0;
+    function Transitionable(value) {
+        this.value = value || 0;
         this.velocity = undefined;
         this._callback = undefined;
-        this._engineInstance = null;
-        this._currentMethod = null;
-        this._state = STATE.NONE;
+        this._method = null;
 
+        this._totalActive = false;
+        this._currentActive = false;
+
+        this._eventInput = new EventHandler();
         this._eventOutput = new EventHandler();
+        EventHandler.setInputHandler(this, this._eventInput);
         EventHandler.setOutputHandler(this, this._eventOutput);
 
-        var boundUpdate = _update.bind(this);
+        this._eventInput.on('start', function(data){
+            if (!this._totalActive){
+                this._totalActive = true;
+                this.emit('start', data)
+            }
+        }.bind(this));
 
-        this._eventOutput.on('start', function(){
-            tickQueue.push(boundUpdate);
-        });
+        this._eventInput.on('update', function(data){
+            this.emit('update', data);
+        }.bind(this));
 
-        this._eventOutput.on('end', function(){
-            var index = tickQueue.indexOf(boundUpdate);
-            tickQueue.splice(index,1);
-        });
+        this._eventInput.on('end', end.bind(this));
 
-        if (start !== undefined){
-            preTickQueue.push(function transitionableSet(){
-                // make sure didn't set in same tick as defined
-                if (this._state == STATE.NONE || this._state == STATE.END)
-                    this.set(start);
-            }.bind(this));
+        if (value !== undefined) {
+            preTickQueue.push(function () {
+                if (!this._currentActive) {
+                    this.emit('start', value);
+                    this.value = value;
+
+                    dirtyQueue.push(function () {
+                        this.emit('end', value);
+                    }.bind(this));
+                }
+            }.bind(this))
         }
     }
 
     Transitionable.prototype = Object.create(SimpleStream.prototype);
     Transitionable.prototype.constructor = Transitionable;
 
-    function _update(){
-        if (!this._engineInstance) return;
-        this.state = this._engineInstance.get();
-        this.emit('update', this.state);
-    }
-
-    function _loadNext() {
-        if (this.endStateQueue.length === 0) {
-            if (this._callback) {
-                var callback = this._callback;
-                this._callback = undefined;
-                callback();
-            }
-
-            dirtyQueue.push(function(){
-                if (this._engineInstance && !this._engineInstance.isActive()){
-                    this._state = STATE.END;
-                    this.emit('end', this.state);
-                }
-            }.bind(this));
-
-            return;
-        }
-
-        var endValue = this.endStateQueue.shift();
-        var transition = this.transitionQueue.shift();
-        this._callback = this.callbackQueue.shift();
-
-        var curve = transition.curve;
-        var method = (transition instanceof Object && curve && transitionMethods[curve])
-            ? transitionMethods[curve]
-            : TweenTransition;
-
-        if (this._currentMethod !== method) {
-            this._engineInstance = new method();
-            this._currentMethod = method;
-        }
-
-        this._engineInstance.reset(this.state, this.velocity);
-        this._state = STATE.UPDATE;
-
-        if (this.velocity !== undefined) {
-            this.velocity = this._engineInstance.getVelocity();
-            transition.velocity = this.velocity;
-        }
-
-        this._engineInstance.set(endValue, transition, _loadNext.bind(this));
-    }
 
     /**
      * Constructor method. A way of registering other engines that can interpolate
@@ -168,51 +116,69 @@ define(function(require, exports, module) {
         else return false;
     };
 
+    function end() {
+        this._currentActive = false;
+
+        dirtyQueue.push(function () {
+            if (this._callback) {
+                var callback = this._callback;
+                this._callback = undefined;
+                callback();
+            }
+
+            if (!this._currentActive && this._totalActive) {
+                this.emit('end', this.get());
+                this._totalActive = false;
+            }
+        }.bind(this));
+    }
+
     /**
      * Define a new end value that will be transitioned towards with the prescribed
      *  transition. An optional callback can fire when the transition completes.
      *
      * @method set
-     * @param endState {Number|Number[]}        End value
+     * @param value {Number|Number[]}        End value
      * @param [transition] {Object}             Transition definition
      * @param [transition.curve] {string}       Easing curve name, e.g., "easeIn"
      * @param [transition.duration] {string}    Duration of transition
      * @param [callback] {Function}             Callback
      */
-    Transitionable.prototype.set = function set(endState, transition, callback) {
+    Transitionable.prototype.set = function set(value, transition, callback) {
+        this._currentActive = true;
+
+        if (!this._totalActive){
+            this.emit('start', this.get());
+            this._totalActive = true;
+        }
+
         if (!transition) {
-            this.reset(endState, undefined);
-
-            if (this._state !== STATE.START){
-                this._state = STATE.START;
-                this.emit('start', this.state);
-                dirtyQueue.push(function(){
-                    if (!this._engineInstance){
-                        this._state = STATE.END;
-                        this.emit('end', this.state);
-                    }
-                }.bind(this));
-            }
-
-            if (callback) callback();
-            return this;
+            this.reset(value);
+            return;
         }
 
-        if (this.isActive()) this.halt();
-        else {
-            if (this._state !== STATE.START){
-                this._state = STATE.START;
-                this.emit('start', this.state);
-            }
+        if (callback) this._callback = callback;
+
+        var curve = transition.curve;
+
+        var method = (curve && transitionMethods[curve])
+            ? transitionMethods[curve]
+            : Tween;
+
+        if (this._engineInstance && this._engineInstance.getVelocity)
+            transition.velocity = this._engineInstance.getVelocity();
+
+        if (this._method !== method) {
+            if (this._engineInstance)
+                this.unsubscribe(this._engineInstance);
+
+            this._engineInstance = new method(this.value);
+
+            this.subscribe(this._engineInstance);
+            this._method = method;
         }
 
-        this.endStateQueue.push(endState);
-        this.transitionQueue.push(transition);
-        this.callbackQueue.push(callback);
-
-        _loadNext.call(this);
-
-        return this;
+        this._engineInstance.set(value, transition);
     };
 
     /**
@@ -222,27 +188,28 @@ define(function(require, exports, module) {
      * @return {Number|Number[]}    Current state
      */
     Transitionable.prototype.get = function get() {
-        return this.state;
+        return this.value;
+    };
+
+    Transitionable.prototype.reset = function (value) {
+        this.value = value;
+        this._callback = undefined;
+        this._method = null;
+        end.call(this);
+    };
+
+    Transitionable.prototype.halt = function () {
+        this.reset(this.get());
     };
 
     /**
-     * Cancel all transitions and reset to a provided state.
+     * Determine is the transition is ongoing, or has completed.
      *
-     * @method reset
-     * @param startState {Number|Number[]}      Value state
-     * @param [startVelocity] {Number|Number[]} Velocity state (unused for now)
+     * @method isActive
+     * @return {Boolean}
      */
-    Transitionable.prototype.reset = function reset(startState, startVelocity) {
-        if (this._engineInstance)
-            this._engineInstance.reset(startState);
-
-        this._currentMethod = null;
-        this._engineInstance = null;
-        this.state = startState;
-        this.velocity = startVelocity;
-        this.endStateQueue = [];
-        this.transitionQueue = [];
-        this.callbackQueue = [];
+    Transitionable.prototype.isActive = function isActive() {
+        return this._currentActive;
     };
 
     /**
@@ -302,42 +269,6 @@ define(function(require, exports, module) {
             curve: function(){return 0;}},
             callback
         );
-    };
-
-    /**
-     * Determine is the transition is ongoing, or has completed.
-     *
-     * @method isActive
-     * @return {Boolean}
-     */
-    Transitionable.prototype.isActive = function isActive() {
-        return this._state == STATE.UPDATE;
-    };
-
-    /**
-     * Stop transition at the current value and erase all pending actions.
-     *
-     * @method halt
-     */
-    Transitionable.prototype.halt = function halt() {
-        var currentState = this.get();
-
-        if (this._engineInstance) this._engineInstance.reset(currentState);
-
-        this._currentMethod = null;
-        this._engineInstance = null;
-        this.state = currentState;
-        this.velocity = undefined;
-        this.endStateQueue = [];
-        this.transitionQueue = [];
-        this.callbackQueue = [];
-
-        dirtyQueue.push(function(){
-            if (!this._engineInstance){
-                this._state = STATE.END;
-                this.emit('end', this.state);
-            }
-        }.bind(this));
     };
 
     module.exports = Transitionable;
