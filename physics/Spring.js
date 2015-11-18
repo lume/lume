@@ -20,15 +20,22 @@ define(function (require, exports, module) {
         this.frequency = Number.NaN;
         this.startTime = now();
         this.curve = null;
-        this.callback = undefined;
         this.boundUpdate = update.bind(this);
         this.energyTolerance = tolerance;
 
         this.currentActive = false;
-        this.totalActive = false;
 
         this._eventOutput = new EventHandler();
         EventHandler.setOutputHandler(this, this._eventOutput);
+
+        this.on('start', function(){
+            tickQueue.push(this.boundUpdate);
+        }.bind(this));
+
+        this.on('end', function () {
+            var index = tickQueue.indexOf(this.boundUpdate);
+            if (index >= 0) tickQueue.splice(index, 1);
+        }.bind(this));
 
         if (value !== undefined) {
             preTickQueue.push(function(){
@@ -46,32 +53,20 @@ define(function (require, exports, module) {
 
     Spring.DEFAULT_OPTIONS = {
         damping: 0.5,
-        frequency: 1 / 1000
+        frequency: 1 / 100
     };
 
     Spring.prototype = Object.create(SimpleStream.prototype);
     Spring.prototype.constructor = Spring;
 
-    Spring.prototype.set = function (value, transition, callback) {
+    Spring.prototype.set = function (value, transition) {
         var x0 = this.get();
         this.target = value;
         this.startTime = now();
 
-        if (callback) this.callback = callback;
-
-        this.currentActive = true;
-
-        if (!this.totalActive){
-            this.totalActive = true;
+        if (!this.currentActive){
+            this.currentActive = true;
             this.emit('start', x0);
-            if (transition)
-                tickQueue.push(this.boundUpdate);
-        }
-
-        if (!transition) {
-            if (!callback) this.callback = undefined;
-            this.reset(value);
-            return;
         }
 
         this.energyTolerance = tolerance * Math.pow(value - x0, 2);
@@ -94,8 +89,12 @@ define(function (require, exports, module) {
         return this.value;
     };
 
+    Spring.prototype.getVelocity = function () {
+        return this.velocity;
+    };
+
     Spring.prototype.isActive = function () {
-        return this.totalActive;
+        return this.currentActive;
     };
 
     Spring.prototype.reset = function (value) {
@@ -104,7 +103,6 @@ define(function (require, exports, module) {
     };
 
     Spring.prototype.halt = function () {
-        this.callback = undefined;
         this.reset(this.get());
     };
 
@@ -156,34 +154,19 @@ define(function (require, exports, module) {
         var kineticEnergy = this.velocity * this.velocity;
         var energy = kineticEnergy + potentialEnergy;
 
-
         if (energy >= this.energyTolerance) {
             this.value = value;
             this.emit('update', value);
         }
-        else {
-            this.reset(this.target);
-        }
+        else this.reset(this.target);
     }
 
     function end() {
         this.currentActive = false;
 
         dirtyQueue.push(function () {
-            if (this.callback) {
-                var callback = this.callback;
-                this.callback = undefined;
-                callback();
-            }
-
-            if (!this.currentActive && this.totalActive){
-                var index = tickQueue.indexOf(this.boundUpdate);
-                if (index >= 0) tickQueue.splice(index, 1);
-
+            if (!this.currentActive)
                 this.emit('end', this.get());
-                this.totalActive = false;
-            }
-
         }.bind(this));
     }
 
