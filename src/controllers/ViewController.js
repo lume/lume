@@ -35,6 +35,21 @@ ViewController.prototype.set = function(model, worker){
   this.worker.postMessage(v.scene); // send the model to the Scene Graph
 };
 
+ViewController.prototype.addComponents = function(model){
+  
+  var scene = {
+    subGraph : []
+  };
+  for( var i=0; i<model.length; i++ ){
+    var id = model.id || 'node-'+Math.floor(Math.random() * (32768 - 16384)) + 16384;
+    model[i].id = id;
+    scene.addSubGraph.push(model[i]);
+    this.elements[model[i].id || 'node-'+i] = new DOMComponent(model[i], model[i].elem, model[i].container);
+  }
+  this.worker.postMessage(scene);
+
+};
+
 ViewController.prototype.addComponent = function(model, elem, container){
 
   var id = model.id || 'node-'+Math.floor(Math.random() * (32768 - 16384)) + 16384;
@@ -42,7 +57,7 @@ ViewController.prototype.addComponent = function(model, elem, container){
   this.elements[model.id] = new DOMComponent(model, elem, container);
   this.worker.postMessage({
     addNode: model
-  }); 
+  });
 
 };
 

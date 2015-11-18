@@ -6,6 +6,10 @@ var controller = new ViewController([], SceneWorker),
       title: 'Simple App Layout'
     },
     {
+      path: 'examples/carousel/',
+      title: '3D Carousel'
+    },
+    {
       path: 'examples/rotate-180-nodes/',
       title: 'Rotate 180 Nodes'
     }];

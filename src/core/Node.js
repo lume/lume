@@ -26,6 +26,7 @@ Node.prototype.setDefaults = function(conf){
     this.scale = [1.0,1.0,1.0];
     this.rotate = [0,0,0];
     this.opacity = 1.0;
+    this.transform = null;
 };
 
 Node.prototype.serialize = function(conf){
@@ -38,6 +39,7 @@ Node.prototype.serialize = function(conf){
     this.scale = conf.scale ? conf.scale : [1.0,1.0,1.0];
     this.rotate = conf.rotate ? conf.rotate : [0,0,0];
     this.opacity = conf.opacity ? conf.opacity : 1.0;
+    this.transform = conf.transform ? conf.transform : null;
     this.observe(this.id, this);
     conf.transition ? this.setTransitionable(conf.transition) : false;
 };

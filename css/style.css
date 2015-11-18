@@ -9,17 +9,19 @@ html, body {
 
 body {
   position: absolute;
-  -webkit-transform-style: preserve-3d;
-  transform-style: preserve-3d;
+  /*-webkit-transform-style: preserve-3d;
+  transform-style: preserve-3d;*/
   -webkit-font-smoothing: antialiased;
   -webkit-tap-highlight-color: transparent;
-  -webkit-perspective: 2400px;
-  perspective: 2400px;
+  /*-webkit-perspective: 2400px;
+  perspective: 2400px;*/
   overflow-x: hidden;
   overflow-y:scroll;
   background: #FF5347;
   font-family: 'Exo', sans-serif;
 }
+
+
 
 .rotate-node {
   background: #BAEFC5;
@@ -98,6 +100,50 @@ a:link, a:visited {
     width:100%;
     height:100%;
     color:#BAEFC5;
+}
+
+.app-carousel-container {
+  width: 210px;
+  height: 140px;
+  position: relative;
+  top:50%;
+  left:50%;
+  margin-top: -140px;
+  margin-left: -210px;
+  -webkit-perspective: 1000px;
+  perspective: 1000px;
+}
+
+.app-carousel-container .btn {
+      background: #EFAF73;
+      width: 40px;
+      height: 40px;
+      float:left;
+}
+
+.app-carousel {
+
+  -webkit-transform-style: preserve-3d;
+  transform-style: preserve-3d;
+  top: 50%;
+  left: 50%;
+
+  -webkit-transition: -webkit-transform 1s;
+-moz-transition: -moz-transform 1s;
+-o-transition: -o-transform 1s;
+transition: transform 1s;
+
+}
+
+.app-carousel-slide {
+  margin: 0;
+  display: block;
+  position: absolute;
+  width: 186px;
+  height: 116px;
+  left: 10px;
+  top: 10px;
+  border: 2px solid black;
 }
 
 .pad-1 {

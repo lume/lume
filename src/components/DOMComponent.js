@@ -103,40 +103,11 @@ DOMComponent.prototype.removeClass = function(cl){
 }
 
 DOMComponent.prototype.transform = function(node){
-
-  var matrix = new Matrix();
-
-  if(node.origin) {
-    this.elem.style[this.vendor.origin] = (node.origin[0]*100)+'% '+(node.origin[1]*100)+'% '+node.origin[2] || 0;
-  }
-
-  if(node.translate && node.align) {
-    matrix = matrix.translate((node.align[0] * this.elem.parentNode.clientWidth)+node.translate[0], (node.align[1] * this.elem.parentNode.clientHeight)+node.translate[1], node.align[2]+ node.translate[2] === 0 ? 1 : node.translate[2] );
-  } else if(node.align) {
-    matrix = matrix.translate(node.align[0] * this.elem.parentNode.clientWidth, node.align[1] * this.elem.parentNode.clientHeight, node.align[2] );
-
-  } else if(node.translate) {
-    matrix = matrix.translate(node.translate[0], node.translate[1], node.translate[2] === 0 ? 1 : node.translate[2]);
-  } else {
-    matrix = matrix.translate(0, 0, 1);
-  }
-
-  matrix = matrix.scale(node.scale[0] || 0, node.scale[1] || 0, node.scale[2] || 0);
-  matrix = matrix.rotate(node.rotate[0] || 0, node.rotate[1] || 0, node.rotate[2] || 0);
-
-  this.elem.style[this.vendor.transform] = matrix.toString();
-
-  if(node.opacity) {
-    this.elem.style.opacity = node.opacity;
-  }
-  if(node.position) {
-    this.elem.style.position = node.position;
-  }
-
-  if(node.size[0] === 1) node.size[0] = parseFloat(1.0);
-  if(node.size[1] === 1) node.size[1] = parseFloat(1.0);
-
+  console.log(node);
   if(node.size) {
+    if(node.size[0] === 1) node.size[0] = parseFloat(1.0);
+    if(node.size[1] === 1) node.size[1] = parseFloat(1.0);
+
     if(node.size[0] === null) {
         this.elem.style.width = node.size[1]*100+'vh';
     } else if(node.size[0] === 'auto') {
@@ -153,6 +124,50 @@ DOMComponent.prototype.transform = function(node){
     }
 
   }
+
+  if(node.opacity) {
+    this.elem.style.opacity = node.opacity;
+  }
+
+  if(node.position) {
+    this.elem.style.position = node.position;
+  }
+
+  if(node.transform) {
+
+    this.elem.style[this.vendor.transform] = node.transform;
+
+  } else {
+
+  var matrix = new Matrix();
+
+  if(node.origin) {
+    this.elem.style[this.vendor.origin] = (node.origin[0]*100)+'% '+(node.origin[1]*100)+'%  '+node.origin[2] || 0;
+  }
+
+  if(node.translate && node.align) {
+    matrix = matrix.translate((node.align[0] * this.elem.parentNode.clientWidth)+node.translate[0], (node.align[1] * this.elem.parentNode.clientHeight)+node.translate[1], node.align[2]+ node.translate[2] === 0 ? 1 : node.translate[2] );
+  } else if(node.align) {
+    matrix = matrix.translate(node.align[0] * this.elem.parentNode.clientWidth, node.align[1] * this.elem.parentNode.clientHeight, node.align[2] );
+  } else if(node.translate) {
+    matrix = matrix.translate(node.translate[0], node.translate[1], node.translate[2] === 0 ? 1 : node.translate[2]);
+  } else {
+    matrix = matrix.translate(0, 0, 1);
+  }
+
+  if(node.scale) {
+      matrix = matrix.scale(node.scale[0] || 0, node.scale[1] || 0, node.scale[2] || 0);
+  }
+  if(node.rotate) {
+      matrix = matrix.rotate(node.rotate[0] || 0, node.rotate[1] || 0, node.rotate[2] || 0);
+  }
+
+  this.elem.style[this.vendor.transform] = matrix.toString();
+
+
+  }
+
+
 
 };
 
