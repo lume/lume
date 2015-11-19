@@ -16,8 +16,5 @@
   "repository": {
     "type": "git",
     "url": ""
-  },
-  "dependencies": {
-    "xcssmatrix": "=0.2.2"
   }
 }

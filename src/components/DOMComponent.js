@@ -1,5 +1,6 @@
 var Component = require('./Component');
-var Matrix = require('xcssmatrix');
+// var Matrix = require('xcssmatrix');
+var Matrix = require('./Matrix');
 
 var DOMComponent = function(node, elem, container){
     this.node = node.id ? node.id : node;
@@ -102,8 +103,12 @@ DOMComponent.prototype.removeClass = function(cl){
   this.elem.classList.remove(cl);
 }
 
-DOMComponent.prototype.transform = function(node){
+DOMComponent.prototype.degreesToRadians = function(degrees) {
+  return degrees * (Math.PI / 180);
+};
 
+DOMComponent.prototype.transform = function(node){
+  var d = this;
   if(node.size) {
     if(node.size[0] === 1) node.size[0] = parseFloat(1.0);
     if(node.size[1] === 1) node.size[1] = parseFloat(1.0);
@@ -156,10 +161,18 @@ DOMComponent.prototype.transform = function(node){
   }
 
   if(node.scale) {
-      matrix = matrix.scale(node.scale[0] || 0, node.scale[1] || 0, node.scale[2] || 0);
+      matrix.scale(node.scale[0] || 1, node.scale[1] || 1, node.scale[2] || 1);
   }
   if(node.rotate) {
-      matrix = matrix.rotate(node.rotate[0] || 0, node.rotate[1] || 0, node.rotate[2] || 0);
+      if(node.rotate[0]) {
+        matrix = matrix.rotateX(d.degreesToRadians(node.rotate[0]));
+      }
+      if(node.rotate[1]) {
+        matrix = matrix.rotateY(d.degreesToRadians(node.rotate[1]));
+      }
+      if(node.rotate[2]) {
+        matrix = matrix.rotateZ(d.degreesToRadians(node.rotate[2]));
+      }
   }
 
   this.elem.style[this.vendor.transform] = matrix.toString();

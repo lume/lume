@@ -154,6 +154,24 @@ a:link, a:visited {
 
 }
 
+.app-carousel-matrix {
+
+  -webkit-transform-style: preserve-3d;
+  transform-style: preserve-3d;
+  top: 50%;
+  left: 50%;
+
+}
+
+.app-carousel-slide-matrix {
+  margin: 0;
+  display: block;
+  left: 10px;
+  top: 10px;
+  background: #8BFABB;
+  text-align: center;
+}
+
 .app-carousel-slide {
   margin: 0;
   display: block;

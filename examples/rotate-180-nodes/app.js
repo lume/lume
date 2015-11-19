@@ -7,7 +7,7 @@ for( var i=0; i<180; i++ ){
     nodes.push({
         size : [0.1,null,80],
         scale : [0.5,0.5,0.5],
-        rotate: [(i+1)*4,0,(i+1)*4],
+        rotate: [0.0,0,0],
         id: 'node-'+i,
         opacity : 0.0,
         transition:{
@@ -15,7 +15,7 @@ for( var i=0; i<180; i++ ){
             from: [(i+1)*4,0,(i+1)*4],
             to: [(i+1)*-4,0,(i+1)*-4],
             curve: 'linear',
-            duration: 14000,
+            duration: 10000,
             delay: 0,
             loop: true
         }

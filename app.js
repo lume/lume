@@ -10,6 +10,10 @@ var controller = new ViewController([], SceneWorker),
       title: '3D Carousel'
     },
     {
+      path: 'examples/carousel-matrix3d/',
+      title: '3D Carousel (Matrix3D)'
+    },
+    {
       path: 'examples/rotate-180-nodes/',
       title: 'Rotate 180 Nodes'
     }];

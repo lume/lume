@@ -36,7 +36,7 @@ ViewController.prototype.set = function(model, worker){
 };
 
 ViewController.prototype.addComponents = function(model){
-  
+
   var scene = {
     subGraph : []
   };
@@ -77,11 +77,19 @@ ViewController.prototype.broadcast = function(msg){
   }
 };
 
+ViewController.prototype.degreesToRadians = function(degrees) {
+  return degrees * Math.PI / 180;
+};
+
 ViewController.prototype.receive = function(e) {
 
   if(e.data && e.data.message) {
-    if(e.data.message.prop === 'rotate' ||
-       e.data.message.prop === 'translate' ||
+    if(e.data.message.prop === 'rotate') {
+      this.elements[e.data.node]._node[e.data.message.prop] = [e.data.message.val[0],
+       e.data.message.val[1],
+       e.data.message.val[2]];
+    }
+    else if(e.data.message.prop === 'translate' ||
        e.data.message.prop === 'scale' ||
        e.data.message.prop === 'opacity' ||
        e.data.message.prop === 'size' ||

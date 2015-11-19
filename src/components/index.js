@@ -1,4 +1,5 @@
 module.exports = {
     Component: require('./Component'),
-    DOMComponent: require('./DOMComponent')
+    DOMComponent: require('./DOMComponent'),
+    Matrix: require('./Matrix')
 };
