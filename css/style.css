@@ -13,8 +13,8 @@ body {
   transform-style: preserve-3d;
   -webkit-font-smoothing: antialiased;
   -webkit-tap-highlight-color: transparent;
-  -webkit-perspective: 2400px;
-  perspective: 2400px;
+  -webkit-perspective: 1000px;
+  perspective: 1000px;
   overflow-x: hidden;
   overflow-y:scroll;
   background: #FF5347;
@@ -109,7 +109,7 @@ a:link, a:visited {
   top:50%;
   left:50%;
   margin-top: -140px;
-  margin-left: -210px;
+  margin-left: -240px;
   -webkit-perspective: 1000px;
   perspective: 1000px;
 }
@@ -166,8 +166,6 @@ a:link, a:visited {
 .app-carousel-slide-matrix {
   margin: 0;
   display: block;
-  left: 10px;
-  top: 10px;
   background: #8BFABB;
   text-align: center;
 }
@@ -184,10 +182,11 @@ a:link, a:visited {
   text-align: center;
 }
 
-.app-carousel-slide h3 {
-  padding-top: 40px;
+.app-carousel-slide h3, .app-carousel-slide-matrix h3 {
+  padding-top: 26px;
   color: #FFFFFF;
   font-weight: 700;
+  font-size: 3em;
 }
 
 .app-memo {

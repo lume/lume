@@ -60,8 +60,8 @@ prevBtn.addEventListener('click',function(ev){
       key: 'rotate',
       from: [0,oldAngle,0],
       to: [0,slideAngle * currentAngle * -1,0],
-      curve: 'linear',
-      duration:200,
+      curve: 'inOutQuad',
+      duration:1000,
       delay: 0
   });
 
@@ -74,9 +74,18 @@ nextBtn.addEventListener('click',function(ev){
       key: 'rotate',
       from: [0,oldAngle,0],
       to: [0,slideAngle * currentAngle * -1,0],
-      curve: 'linear',
-      duration:200,
+      curve: 'inOutQuad',
+      duration:1000,
       delay: 0
   });
 
+});
+
+controller.transition('app-carousel-matrix',{
+    key: 'rotate',
+    from: [0,0,0],
+    to: [0,slideAngle * currentAngle * -1,0],
+    curve: 'inOutQuad',
+    duration:1000,
+    delay: 0
 });
