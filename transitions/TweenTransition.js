@@ -287,7 +287,7 @@ define(function(require, exports, module) {
             result = [];
             for (var i = 0; i < current.length; i++){
                 if (typeof current[i] === 'number')
-                    result.push(_calculateVelocity1D(current, start, curve, duration, t));
+                    result.push(_calculateVelocity1D(current[i], start[i], curve, duration, t));
                 else result.push(current[i]);
             }
         }
