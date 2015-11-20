@@ -9,7 +9,7 @@ var Engine = function(){
 
 Engine.prototype.init = function(worker){
     window.requestAnimationFrame(this.tick.bind(this));
-    if(worker){
+    if(worker && worker.constructor.name === 'Worker'){
         this._worker = worker;
         this._worker.postMessage({init:'done'});
     }

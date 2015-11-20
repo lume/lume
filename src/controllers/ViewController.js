@@ -1,5 +1,6 @@
 var Engine = boxer.core.Engine;
 var Scene = boxer.core.Scene;
+var Node = boxer.core.Node;
 var DOMComponent = boxer.components.DOMComponent;
 
 var ViewController = function(model, worker){
@@ -12,7 +13,7 @@ var ViewController = function(model, worker){
 
   this.set(model, worker);
 
-  Engine.init(SceneWorker);
+  Engine.init(worker);
 
   window.addEventListener('resize',this.resize.bind(this));
 
@@ -31,33 +32,64 @@ ViewController.prototype.set = function(model, worker){
     this.elements[model[i].id || 'node-'+i] = new DOMComponent(model[i]);
   }
   this.worker = worker;
-  this.worker.onmessage = this.receive.bind(this);
-  this.worker.postMessage(v.scene); // send the model to the Scene Graph
+  if(this.worker.constructor.name === 'Worker'){
+    this.worker.onmessage = this.receive.bind(this);
+    this.worker.postMessage(v.scene); // send the model to the Scene Graph
+  }
+  else {
+     var scene = this.scene;
+     this.worker.onmessage = this.receive.bind(this);
+     for(var i=0; i<this.scene.addSubGraph.length; i++) {
+        this.worker.addChild(new Node(scene.addSubGraph[i], worker));
+        if(this.scene.addSubGraph[i].transition) {
+
+          this.transition(scene.addSubGraph[i].id, scene.addSubGraph[i].transition);
+        }
+     }
+  }
 };
 
 ViewController.prototype.addComponents = function(model){
 
   var scene = {
     subGraph : []
-  };
+  },
+  worker = this.worker;
+
   for( var i=0; i<model.length; i++ ){
     var id = model.id || 'node-'+Math.floor(Math.random() * (32768 - 16384)) + 16384;
     model[i].id = id;
-    scene.addSubGraph.push(model[i]);
+    scene.subGraph.push(model[i]);
     this.elements[model[i].id || 'node-'+i] = new DOMComponent(model[i], model[i].elem, model[i].container);
   }
-  this.worker.postMessage(scene);
+
+  if(this.worker.constructor.name === 'Worker'){
+      this.worker.postMessage(scene);
+  } else {
+     for(var i=0; i<scene.subGraph.length; i++) {
+        this.worker.addChild(new Node(scene.subGraph[i], worker));
+        if(scene.subGraph[i].transition) {
+          this.transition(scene.subGraph[i].id, scene.subGraph[i].transition);
+        }
+     }
+  }
+
 
 };
 
 ViewController.prototype.addComponent = function(model, elem, container){
 
-  var id = model.id || 'node-'+Math.floor(Math.random() * (32768 - 16384)) + 16384;
+  var id = model.id || 'node-'+Math.floor(Math.random() * (32768 - 16384)) + 16384,
+      worker = this.worker;
   model.id = id;
   this.elements[model.id] = new DOMComponent(model, elem, container);
-  this.worker.postMessage({
-    addNode: model
-  });
+  if(this.worker.constructor.name === 'Worker'){
+    this.worker.postMessage({
+      addNode: model
+    });
+  } else {
+    this.worker.addChild(new Node(model, worker));
+  }
 
 };
 
@@ -66,14 +98,19 @@ ViewController.prototype.getComponent = function(model){
 };
 
 ViewController.prototype.transition = function(msg,conf){
-  if(this.worker){
+  if(this.worker.constructor.name === 'Worker'){
       this.worker.postMessage({query:{id:msg},transition:conf});
+  } else {
+    var n = this.worker.fetchNode(msg);
+    n.setTransitionable(conf);
   }
 };
 
 ViewController.prototype.broadcast = function(msg){
-  if(this.worker){
+  if(this.worker.constructor.name === 'Worker'){
       this.worker.postMessage(msg);
+  } else {
+
   }
 };
 

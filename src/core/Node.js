@@ -161,15 +161,13 @@ Node.prototype.transit = function(conf){
 
 Node.prototype.observe = function(id, obj, conf) {
       var n = this;
-
+      console.log(n.parent);
       _observableCallback[id] = function(changes){
           changes.forEach(function(change) {
             if(change.type === 'update' && change.name !== 'id') {
 
-              //console.log(change.object);
               if(change.object.constructor.name === 'Array'){
 
-                //n[change.object.param] = change.object;
                 n.parent.update({
                               message:{
                                 prop: id,
@@ -181,13 +179,6 @@ Node.prototype.observe = function(id, obj, conf) {
               else if(change.object.constructor.name === 'Transitionable'){
                 n[change.object.param] = change.oldValue;
               } else {
-                // console.log({
-                //               message:{
-                //                 prop: change.name,
-                //                 val: change.oldValue
-                //               },
-                //               node: n.id
-                //             });
                 n.parent.update({
                               message:{
                                 prop: change.name,
@@ -195,13 +186,6 @@ Node.prototype.observe = function(id, obj, conf) {
                               },
                               node: n.id
                             });
-                // console.log({
-                //               message:{
-                //                 prop: change.name,
-                //                 val: change.oldValue
-                //               },
-                //               node: n.id
-                //             });
               }
 
             }

@@ -60,7 +60,11 @@ Scene.prototype.tick = function(frame){
 }
 
 Scene.prototype.update = function(change){
-  cxt.postMessage(JSON.parse(JSON.stringify(change)));
+  if(cxt.constructor.name === 'DedicatedWorkerGlobalScope') {
+    cxt.postMessage(JSON.parse(JSON.stringify(change)));
+  } else {
+    this.onmessage(change);
+  }
 }
 
 module.exports = new Scene();
