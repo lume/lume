@@ -72,7 +72,7 @@ var nodes = [{
 {
    position: 'absolute',
    origin : [0.0,1.0,1],
-   align : [0.0,0.9,0.0],
+   align : [0.0,0.9,1],
    size : [1.0,0.1,0],
    scale : [1.0,1.0,1.0],
    rotate: [0,0,0],
@@ -115,7 +115,7 @@ hamburger.elem.addEventListener('click',function(){
   controller.transition('app-sidebar',{
       key: 'translate',
       from: respond.state === 'desktop' ? [0.3336*window.innerWidth*-1,0,1] : [window.innerWidth*-1,0,1],
-      to: [0,0.1,0.0],
+      to: [0,0,1],
       curve: 'inOutSine',
       duration:300,
       delay: 0
@@ -123,7 +123,7 @@ hamburger.elem.addEventListener('click',function(){
   controller.transition('app-content',{
       key: 'align',
       from: [0.0,0.1,0.0],
-      to: respond.state === 'desktop' ? [0.3336,0.1,0.0] : [1.0,0.1,0.0],
+      to: respond.state === 'desktop' ? [0.3336,0.1,1] : [1.0,0.1,1],
       curve: 'inOutSine',
       duration:300,
       delay: 0
@@ -143,7 +143,7 @@ hamburger.elem.addEventListener('click',function(){
 
   controller.transition('app-sidebar',{
       key: 'translate',
-      from: [0,0.1,0.0],
+      from: [0,0,1],
       to: respond.state === 'desktop' ? [0.3336*window.innerWidth*-1,0,1] : [window.innerWidth*-1,0,1],
       curve: 'inOutSine',
       duration:300,
@@ -151,7 +151,7 @@ hamburger.elem.addEventListener('click',function(){
   });
   controller.transition('app-content',{
       key: 'align',
-      from: respond.state === 'desktop' ? [0.3336,0.1,0.0] : [1.0,0.1,0.0],
+      from: respond.state === 'desktop' ? [0.3336,0.1,1] : [1.0,0.1,1],
       to: [0.0,0.1,0.0],
       curve: 'inOutSine',
       duration:300,
@@ -188,8 +188,8 @@ window.addEventListener('resize',function(ev){
     if(navOpen) {
       controller.transition('app-sidebar',{
           key: 'translate',
-          from: [0.0,0.1,0.0],
-          to: [0.0,0.1,0.0],
+          from: [0.0,0.1,1],
+          to: [0.0,0.1,1],
           curve: 'inOutSine',
           duration:300,
           delay: 0
@@ -204,8 +204,8 @@ window.addEventListener('resize',function(ev){
       });
       controller.transition('app-content',{
           key: 'align',
-          from: [1.0,0.1,0.0],
-          to: [1.0,0.1,0.0],
+          from: [1.0,0.1,1],
+          to: [1.0,0.1,1],
           curve: 'inOutSine',
           duration:300,
           delay: 0
@@ -229,8 +229,8 @@ window.addEventListener('resize',function(ev){
       });
       controller.transition('app-content',{
           key: 'align',
-          from: [0.0,0.1,0.0],
-          to: [0.0,0.1,0.0],
+          from: [0.0,0.1,1],
+          to: [0.0,0.1,1],
           curve: 'inOutSine',
           duration:300,
           delay: 0
@@ -267,8 +267,8 @@ window.addEventListener('resize',function(ev){
       });
       controller.transition('app-content',{
           key: 'align',
-          from: [0.3336,0.1,0.0],
-          to: [0.3336,0.1,0.0],
+          from: [0.3336,0.1,1],
+          to: [0.3336,0.1,1],
           curve: 'inOutSine',
           duration:300,
           delay: 0
@@ -293,8 +293,8 @@ window.addEventListener('resize',function(ev){
       });
       controller.transition('app-content',{
           key: 'align',
-          from: [0.0,0.1,0.0],
-          to: [0.0,0.1,0.0],
+          from: [0.0,0.1,1],
+          to: [0.0,0.1,1],
           curve: 'inOutSine',
           duration:300,
           delay: 0
