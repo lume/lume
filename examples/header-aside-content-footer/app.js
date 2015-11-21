@@ -131,7 +131,7 @@ hamburger.elem.addEventListener('click',function(){
   controller.transition('app-content',{
       key: 'size',
       from: [1.0,0.8,0],
-      to: respond.state === 'desktop' ? [1.0,0.8,0] : [0.6667,0.8,0],
+      to: respond.state === 'desktop' ? [0.6667,0.8,0]: [1.0,0.8,0] ,
       curve: 'inOutSine',
       duration:300,
       delay: 0
@@ -159,7 +159,7 @@ hamburger.elem.addEventListener('click',function(){
   });
   controller.transition('app-content',{
       key: 'size',
-      from: respond.state === 'desktop' ? [1.0,0.8,0] : [0.6667,0.8,0],
+      from: respond.state === 'desktop' ? [0.6667,0.8,0]: [1.0,0.8,0] ,
       to: [1.0,0.8,0],
       curve: 'inOutSine',
       duration:300,
@@ -173,7 +173,7 @@ hamburger.elem.addEventListener('click',function(){
 
 // stateChange emitted from res.js library, resizes elements
 
-window.addEventListener('stateChange',function(ev){
+window.addEventListener('resize',function(ev){
 
   if(respond.state === 'mobile'){
     controller.transition('app-sidebar',{
@@ -184,7 +184,16 @@ window.addEventListener('stateChange',function(ev){
         duration:300,
         delay: 0
     });
+
     if(navOpen) {
+      controller.transition('app-sidebar',{
+          key: 'translate',
+          from: [0.0,0.1,0.0],
+          to: [0.0,0.1,0.0],
+          curve: 'inOutSine',
+          duration:300,
+          delay: 0
+      });
       controller.transition('app-content',{
           key: 'size',
           from: [0.6667,0.8,0],
@@ -193,11 +202,35 @@ window.addEventListener('stateChange',function(ev){
           duration:300,
           delay: 0
       });
+      controller.transition('app-content',{
+          key: 'align',
+          from: [1.0,0.1,0.0],
+          to: [1.0,0.1,0.0],
+          curve: 'inOutSine',
+          duration:300,
+          delay: 0
+      });
     } else {
+      controller.transition('app-sidebar',{
+          key: 'translate',
+          from: [window.innerWidth*-1,0,1],
+          to: [window.innerWidth*-1,0,1],
+          curve: 'inOutSine',
+          duration:300,
+          delay: 0
+      });
       controller.transition('app-content',{
           key: 'size',
           from: [1.0,0.8,0],
           to: [1.0,0.8,0],
+          curve: 'inOutSine',
+          duration:300,
+          delay: 0
+      });
+      controller.transition('app-content',{
+          key: 'align',
+          from: [0.0,0.1,0.0],
+          to: [0.0,0.1,0.0],
           curve: 'inOutSine',
           duration:300,
           delay: 0
@@ -216,6 +249,14 @@ window.addEventListener('stateChange',function(ev){
     });
 
     if(navOpen) {
+      controller.transition('app-sidebar',{
+          key: 'translate',
+          from: [0.0,0,1],
+          to: [0.0,0,1],
+          curve: 'inOutSine',
+          duration:300,
+          delay: 0
+      });
       controller.transition('app-content',{
           key: 'size',
           from: [1.0,0.8,0],
@@ -224,11 +265,36 @@ window.addEventListener('stateChange',function(ev){
           duration:300,
           delay: 0
       });
+      controller.transition('app-content',{
+          key: 'align',
+          from: [0.3336,0.1,0.0],
+          to: [0.3336,0.1,0.0],
+          curve: 'inOutSine',
+          duration:300,
+          delay: 0
+      });
     } else {
+
+      controller.transition('app-sidebar',{
+          key: 'translate',
+          from: [0.3336*window.innerWidth*-1,0,1],
+          to: [0.3336*window.innerWidth*-1,0,1],
+          curve: 'inOutSine',
+          duration:300,
+          delay: 0
+      });
       controller.transition('app-content',{
           key: 'size',
           from: [1.0,0.8,0],
           to: [1.0,0.8,0],
+          curve: 'inOutSine',
+          duration:300,
+          delay: 0
+      });
+      controller.transition('app-content',{
+          key: 'align',
+          from: [0.0,0.1,0.0],
+          to: [0.0,0.1,0.0],
           curve: 'inOutSine',
           duration:300,
           delay: 0

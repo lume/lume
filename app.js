@@ -3,7 +3,7 @@ var controller = new ViewController([], Scene),
     list,
     listItems = [{
       path: 'examples/header-aside-content-footer/',
-      title: 'Simple App Layout'
+      title: 'Responsive App Layout'
     },
     {
       path: 'examples/carousel/',
