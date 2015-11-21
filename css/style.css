@@ -1,5 +1,9 @@
 @import url(https://fonts.googleapis.com/css?family=Exo:400,100,300,200,500,600,700);
-
+/*$color1: #0f0d09; //rgba(135, 117, 81, 100)
+$color2: #c2c7ce; //rgba(194, 199, 206, 100)
+$color3: #131412; //rgba(19, 20, 18, 100)
+$color4: #0a0701; //rgba(10, 7, 1, 100)
+$color5: #060c0f; //rgba(6, 12, 15, 100)*/
 html, body {
   width: 100%;
   height: 100%;
@@ -21,7 +25,45 @@ body {
   font-family: 'Exo', sans-serif;
 }
 
+.dark-yellow {
+  color: rgba(135, 117, 81, 100);
+}
 
+.dark-yellow-bg {
+  background-color: rgba(135, 117, 81, 100);
+}
+
+.dark-white {
+  color: rgba(194, 199, 206, 100);
+}
+
+.dark-white-bg {
+  background-color: rgba(194, 199, 206, 100);
+}
+
+.dark-grey {
+  color: rgba(19, 20, 18, 100);
+}
+
+.dark-grey-bg {
+  background-color: rgba(19, 20, 18, 100);
+}
+
+.dark-black {
+  color: rgba(10, 7, 1, 100);
+}
+
+.dark-black-bg {
+  background-color: rgba(10, 7, 1, 100);
+}
+
+.dark-blue {
+  color: rgba(6, 12, 15, 100);
+}
+
+.dark-blue-bg {
+  background-color: rgba(6, 12, 15, 100);
+}
 
 .rotate-node {
   background: #BAEFC5;
@@ -62,34 +104,13 @@ a:link, a:visited {
   text-align:center;
 }
 
-.app-header, .app-footer {
-  background: #8CFA89;
-  clear:both;
-}
-
-.app-header h1 {
-  padding-left:1.0em;
-}
 
 .app-footer a:link, .app-footer a:visited {
   position:relative;
   top:1em;
   left:1em;
+  color: rgba(194, 199, 206, 100);
 }
-
-
-.app-sidebar {
-  background: #8BFABB;
-}
-
-.app-sidebar, .app-content {
-  float:left;
-}
-
-.app-directory-header {
-  background: #BAEFC5;
-}
-
 
 .app-directory-list-item {
     background: #EFAF73;
@@ -122,7 +143,12 @@ a:link, a:visited {
   top:50%;
   margin-top: -20px;
   background-repeat: no-repeat;
+}
 
+.app-hamburger {
+    background-repeat: no-repeat;
+    background-image: url('img/hamburger.svg');
+    background-size: 100% 100%;
 }
 
 .app-carousel-btn.prev {
@@ -130,7 +156,6 @@ a:link, a:visited {
     transform: rotateZ(90deg);
     background-image: url('img/arrow-down.svg');
     background-size: 100% 100%;
-
 }
 
 .app-carousel-btn.next {
@@ -214,8 +239,4 @@ a:link, a:visited {
   -moz-backface-visibility: hidden;
   -o-backface-visibility: hidden;
   backface-visibility: hidden;
-}
-
-.app-content {
-  background: #EFEFEF;
 }

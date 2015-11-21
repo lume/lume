@@ -42,7 +42,6 @@ ViewController.prototype.set = function(model, worker){
      for(var i=0; i<this.scene.addSubGraph.length; i++) {
         this.worker.addChild(new Node(scene.addSubGraph[i], worker));
         if(this.scene.addSubGraph[i].transition) {
-
           this.transition(scene.addSubGraph[i].id, scene.addSubGraph[i].transition);
         }
      }

@@ -123,6 +123,10 @@ Node.prototype.getOpacity = function(){
     return this.opacity;
 };
 
+Node.prototype.transition = function(conf) {
+  this.setTransitionable(conf);
+};
+
 Node.prototype.setTransitionable = function(conf){
     var n  = this;
 
