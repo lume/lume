@@ -1,5 +1,5 @@
-var SceneWorker = new Worker('../../src/workers/SceneWorker.js');
-var controller = new ViewController([], SceneWorker);
+var Scene = boxer.core.Scene;
+var controller = new ViewController([], Scene);
 var slides = [1,2,3,4,5,6,7,8,9];
 var slideAngle = 360 / slides.length;
 var slideWidth = 288;

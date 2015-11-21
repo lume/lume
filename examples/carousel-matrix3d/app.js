@@ -1,5 +1,5 @@
-var SceneWorker = new Worker('../../src/workers/SceneWorker.js');
-var controller = new ViewController([], SceneWorker);
+var Scene = boxer.core.Scene;
+var controller = new ViewController([], Scene);
 var slides = [1,2,3,4,5,6,7,8,9];
 var slideAngle = 360 / slides.length;
 var slideWidth = 288;
@@ -21,7 +21,7 @@ controller.addComponent({
     size: [1.0,40,0],
     align: [0.0,0.1,1],
     id: 'app-carousel-memo-top',
-    content: 'Positioning and animating with JS, Web Worker, and Matrix3D Transforms!',
+    content: 'Positioning and animating with requestAnimationFrame and Matrix3D Transforms!',
     classes: ['text-center','app-memo'],
     opacity : 1.0
 },'div');

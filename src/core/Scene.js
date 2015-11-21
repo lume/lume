@@ -60,11 +60,11 @@ Scene.prototype.tick = function(frame){
 }
 
 Scene.prototype.update = function(change){
-  if(cxt.constructor.name === 'DedicatedWorkerGlobalScope') {
-    cxt.postMessage(JSON.parse(JSON.stringify(change)));
-  } else {
+  // if(cxt.constructor.name === 'DedicatedWorkerGlobalScope') {
+  //   cxt.postMessage(JSON.parse(JSON.stringify(change)));
+  // } else {
     this.onmessage(JSON.parse(JSON.stringify(change)));
-  }
+  // }
 }
 
 module.exports = new Scene();

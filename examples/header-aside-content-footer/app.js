@@ -1,4 +1,4 @@
-var SceneWorker = new Worker('../../src/workers/SceneWorker.js');
+var Scene = boxer.core.Scene;
 var controller,
     header,
     footer,
@@ -48,7 +48,7 @@ var nodes = [{
     opacity : 1.0
 }];
 
-controller = new ViewController(nodes, SceneWorker);
+controller = new ViewController(nodes, Scene);
 
 header = controller.getComponent({id:'app-header'});
 aside = controller.getComponent({id:'app-sidebar'});

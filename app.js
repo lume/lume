@@ -1,5 +1,5 @@
-var SceneWorker = new Worker('src/workers/SceneWorker.js');
-var controller = new ViewController([], SceneWorker),
+var Scene = boxer.core.Scene;
+var controller = new ViewController([], Scene),
     list,
     listItems = [{
       path: 'examples/header-aside-content-footer/',
@@ -16,10 +16,6 @@ var controller = new ViewController([], SceneWorker),
     {
       path: 'examples/rotate-180-nodes/',
       title: 'Rotate 180 Nodes'
-    },
-    {
-      path: 'examples/rotate-180-nodes-no-worker/',
-      title: 'Rotate 180 Nodes (No Worker)'
     }];
 
 controller.addComponent({

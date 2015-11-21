@@ -1,4 +1,5 @@
-var SceneWorker = new Worker('../../src/workers/SceneWorker.js');
+var Scene = boxer.core.Scene;
+var Node = boxer.core.Node;
 var controller;
 var nodes = [];
 
@@ -23,7 +24,7 @@ for( var i=0; i<180; i++ ){
 
 };
 
-controller = new ViewController(nodes, SceneWorker);
+controller = new ViewController(nodes, Scene);
 
 for( var i=0; i<180; i++ ){
 

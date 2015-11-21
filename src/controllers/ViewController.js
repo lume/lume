@@ -32,11 +32,11 @@ ViewController.prototype.set = function(model, worker){
     this.elements[model[i].id || 'node-'+i] = new DOMComponent(model[i]);
   }
   this.worker = worker;
-  if(this.worker.constructor.name === 'Worker'){
-    this.worker.onmessage = this.receive.bind(this);
-    this.worker.postMessage(v.scene); // send the model to the Scene Graph
-  }
-  else {
+  // if(this.worker.constructor.name === 'Worker'){
+  //   this.worker.onmessage = this.receive.bind(this);
+  //   this.worker.postMessage(v.scene); // send the model to the Scene Graph
+  // }
+  // else {
      var scene = this.scene;
      this.worker.onmessage = this.update.bind(this);
      for(var i=0; i<this.scene.addSubGraph.length; i++) {
@@ -46,7 +46,7 @@ ViewController.prototype.set = function(model, worker){
           this.transition(scene.addSubGraph[i].id, scene.addSubGraph[i].transition);
         }
      }
-  }
+  // }
 };
 
 ViewController.prototype.addComponents = function(model){
@@ -62,17 +62,17 @@ ViewController.prototype.addComponents = function(model){
     scene.subGraph.push(model[i]);
     this.elements[model[i].id || 'node-'+i] = new DOMComponent(model[i], model[i].elem, model[i].container);
   }
-
-  if(this.worker.constructor.name === 'Worker'){
-      this.worker.postMessage(scene);
-  } else {
-     for(var i=0; i<scene.subGraph.length; i++) {
-        this.worker.addChild(new Node(scene.subGraph[i], worker));
-        if(scene.subGraph[i].transition) {
-          this.transition(scene.subGraph[i].id, scene.subGraph[i].transition);
-        }
-     }
-  }
+  //
+  // if(this.worker.constructor.name === 'Worker'){
+  //     this.worker.postMessage(scene);
+  // } else {
+ for(var i=0; i<scene.subGraph.length; i++) {
+    this.worker.addChild(new Node(scene.subGraph[i], worker));
+    if(scene.subGraph[i].transition) {
+      this.transition(scene.subGraph[i].id, scene.subGraph[i].transition);
+    }
+ }
+  // }
 
 
 };
@@ -83,13 +83,13 @@ ViewController.prototype.addComponent = function(model, elem, container){
       worker = this.worker;
   model.id = id;
   this.elements[model.id] = new DOMComponent(model, elem, container);
-  if(this.worker.constructor.name === 'Worker'){
-    this.worker.postMessage({
-      addNode: model
-    });
-  } else {
-    this.worker.addChild(new Node(model, worker));
-  }
+  // if(this.worker.constructor.name === 'Worker'){
+  //   this.worker.postMessage({
+  //     addNode: model
+  //   });
+  // } else {
+  this.worker.addChild(new Node(model, worker));
+  // }
 
 };
 
@@ -98,20 +98,20 @@ ViewController.prototype.getComponent = function(model){
 };
 
 ViewController.prototype.transition = function(msg,conf){
-  if(this.worker.constructor.name === 'Worker'){
-      this.worker.postMessage({query:{id:msg},transition:conf});
-  } else {
+  // if(this.worker.constructor.name === 'Worker'){
+  //     this.worker.postMessage({query:{id:msg},transition:conf});
+  // } else {
     var n = this.worker.fetchNode(msg);
     n.setTransitionable(conf);
-  }
+  // }
 };
 
 ViewController.prototype.broadcast = function(msg){
-  if(this.worker.constructor.name === 'Worker'){
-      this.worker.postMessage(msg);
-  } else {
-
-  }
+  // if(this.worker.constructor.name === 'Worker'){
+  //     this.worker.postMessage(msg);
+  // } else {
+  //
+  // }
 };
 
 ViewController.prototype.degreesToRadians = function(degrees) {
