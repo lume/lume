@@ -38,7 +38,7 @@ ViewController.prototype.set = function(model, worker){
   }
   else {
      var scene = this.scene;
-     this.worker.onmessage = this.receive.bind(this);
+     this.worker.onmessage = this.update.bind(this);
      for(var i=0; i<this.scene.addSubGraph.length; i++) {
         this.worker.addChild(new Node(scene.addSubGraph[i], worker));
         if(this.scene.addSubGraph[i].transition) {
@@ -118,6 +118,29 @@ ViewController.prototype.degreesToRadians = function(degrees) {
   return degrees * Math.PI / 180;
 };
 
+ViewController.prototype.update = function(e) {
+
+  if(e.message) {
+    if(e.message.prop === 'rotate') {
+      this.elements[e.node]._node[e.message.prop] = [e.message.val[0],
+       e.message.val[1],
+       e.message.val[2]];
+    }
+    else if(e.message.prop === 'translate' ||
+       e.message.prop === 'scale' ||
+       e.message.prop === 'opacity' ||
+       e.message.prop === 'size' ||
+       e.message.prop === 'origin' ||
+       e.message.prop === 'align'  ){
+      this.elements[e.node]._node[e.message.prop] = e.message.val;
+    } else {
+      this.elements[e.node].elem.style[e.message.prop] = e.message.val;
+    }
+
+  }
+
+};
+
 ViewController.prototype.receive = function(e) {
 
   if(e.data && e.data.message) {
@@ -143,6 +166,6 @@ ViewController.prototype.receive = function(e) {
 
   }
 
-}
+};
 //
 // module.exports = ViewController;

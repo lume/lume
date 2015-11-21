@@ -63,7 +63,7 @@ Scene.prototype.update = function(change){
   if(cxt.constructor.name === 'DedicatedWorkerGlobalScope') {
     cxt.postMessage(JSON.parse(JSON.stringify(change)));
   } else {
-    this.onmessage(change);
+    this.onmessage(JSON.parse(JSON.stringify(change)));
   }
 }
 

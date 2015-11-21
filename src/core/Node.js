@@ -144,7 +144,7 @@ Node.prototype.setTransitionable = function(conf){
     n.transitionables[conf.key].transition.id = this.id;
     n.transitionables[conf.key].transition.param = conf.key;
     this.observe(conf.key, n.transitionables[conf.key].transition.get(), conf);
-    //console.log(conf.key, this[conf.key], n.transitionables[conf.key].transition.get());
+
     //TODO: figure out a better way to update Transitionable
     //TODO: unobserve object, clearInerval
 
@@ -161,7 +161,7 @@ Node.prototype.transit = function(conf){
 
 Node.prototype.observe = function(id, obj, conf) {
       var n = this;
-      console.log(n.parent);
+
       _observableCallback[id] = function(changes){
           changes.forEach(function(change) {
             if(change.type === 'update' && change.name !== 'id') {
@@ -191,6 +191,7 @@ Node.prototype.observe = function(id, obj, conf) {
             }
           });
       };
+
       Object.observe(obj, _observableCallback[id]);
 
 };

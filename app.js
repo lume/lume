@@ -16,6 +16,10 @@ var controller = new ViewController([], SceneWorker),
     {
       path: 'examples/rotate-180-nodes/',
       title: 'Rotate 180 Nodes'
+    },
+    {
+      path: 'examples/rotate-180-nodes-no-worker/',
+      title: 'Rotate 180 Nodes (No Worker)'
     }];
 
 controller.addComponent({

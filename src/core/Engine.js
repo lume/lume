@@ -9,8 +9,10 @@ var Engine = function(){
 
 Engine.prototype.init = function(worker){
     window.requestAnimationFrame(this.tick.bind(this));
-    if(worker && worker.constructor.name === 'Worker'){
+    if(worker){
         this._worker = worker;
+    }
+    if(worker.constructor.name === 'Worker'){
         this._worker.postMessage({init:'done'});
     }
 }
@@ -20,8 +22,10 @@ Engine.prototype.tick = function(time){
     var item;
     this.time = performance.now();
 
-    if(this._worker){
-        this._worker.postMessage({frame:this.time});
+    if(this._worker.constructor.name === 'Worker'){
+      this._worker.postMessage({frame:this.time});
+    } else {
+      this._worker.tick(time);
     }
 
     while (this.updateQueue.length) {
