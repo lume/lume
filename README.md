@@ -21,16 +21,16 @@ The built project is found in dist/boxer.js. Boxer currently operates on the win
 
 Examples are provided in a web app built with this Engine in the root directory of the repo and [here](http://devmagnet.net/boxer/demo).
 
-Below is an example that initializes the Engine and a Web Worker, configures 180 nodes and adds them to the Scene Graph. Each node is set to transition it's opacity over 1 second from 0 to 1. A ViewController handles normal tasks associated with a higher level API.
+Below is an example that initializes the Engine and Scene Graph, configures 180 nodes and adds them to the graph. Each node is set to transition it's opacity over 1 second from 0 to 1. A ViewController handles normal tasks associated with a higher level API.
 
 ```
-var SceneWorker = new Worker('src/workers/SceneWorker.js');
-var controller;
+var Scene = boxer.core.Scene;
+var controller = new ViewController([], Scene);
 var nodes = [];
 
 // Add 180 Nodes to the Scene and fade them in.
 for( var i=0; i<180; i++ ){
-    nodes.push({
+    controller.addComponent({
         position: 'absolute',
         translate : [0, 0, 0],
         origin : [0.0,0.0,0.0],
@@ -51,12 +51,8 @@ for( var i=0; i<180; i++ ){
     });
 };
 
-controller = new ViewController(nodes, SceneWorker);
-
 
 ```
-
-Behind the scenes, a Scene Graph is injected into the Engine so the Web Worker can receive ticks from the Engine. `SceneWorker.js` handles the calculations on each Node and maintains the graph on a separate thread from application logic (above).
 
 ##Performance Tips
 
