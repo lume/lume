@@ -16,7 +16,21 @@ var controller = new ViewController([], Scene),
     {
       path: 'examples/rotate-180-nodes/',
       title: 'Rotate 180 Nodes'
-    }];
+    }],
+    respond = new res([{
+                         "state": "mobile",
+                         "breakpoint": 640,
+                         "cols": 4,
+                         "margin": 20,
+                         "gutter": 20
+                     },
+                     {
+                         "state": "desktop",
+                         "breakpoint": 3840,
+                         "cols": 16,
+                         "margin": 160,
+                         "gutter": 40
+                     }]);
 
 controller.addComponent({
     origin : [0.0,0.0,0.0],
@@ -46,7 +60,7 @@ for(var i=0; i<listItems.length; i++) {
   controller.addComponent({
       origin : [0.0,0.0,0.0],
       align : [0.0,0.0,1],
-      size : [320,'auto',0],
+      size : [respond.state === 'mobile' ? 1.0 : 320,'auto',0],
       scale : [1.0,1.0,1.0],
       rotate: [0,0,0],
       id: 'app-directory-list-item-'+i,
