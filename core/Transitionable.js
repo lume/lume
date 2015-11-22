@@ -57,8 +57,9 @@ define(function(require, exports, module) {
         EventHandler.setInputHandler(this, this._eventInput);
         EventHandler.setOutputHandler(this, this._eventOutput);
 
-        this._eventInput.on('start', function(){
+        this._eventInput.on('start', function(value){
             this._currentActive = true;
+            this.emit('start', value);
         }.bind(this));
 
         this._eventInput.on('update', function(value){
@@ -67,7 +68,12 @@ define(function(require, exports, module) {
             this.emit('update', value);
         }.bind(this));
 
-        this._eventInput.on('end', end.bind(this));
+        this._eventInput.on('end', function(value){
+            this._currentActive = false;
+            this.value = value;
+            this.velocity = this._engineInstance.getVelocity();
+            end.apply(this, arguments)
+        }.bind(this));
 
         if (value !== undefined) {
             preTickQueue.push(function () {
@@ -116,10 +122,6 @@ define(function(require, exports, module) {
     };
 
     function end(value) {
-        this._currentActive = false;
-        this.value = value;
-        this.velocity = this._engineInstance.getVelocity();
-
         dirtyQueue.push(function () {
             if (this._callback) {
                 var callback = this._callback;
@@ -149,7 +151,7 @@ define(function(require, exports, module) {
         this._currentActive = true;
 
         if (!this._totalActive){
-            this.emit('start', this.get());
+            this.trigger('start', this.get());
             this._totalActive = true;
         }
 
@@ -193,10 +195,9 @@ define(function(require, exports, module) {
     };
 
     Transitionable.prototype.reset = function (value) {
-        this.value = value;
         this._callback = undefined;
         this._method = null;
-        end.call(this);
+        this.trigger('end', value);
     };
 
     Transitionable.prototype.halt = function () {
@@ -284,4 +285,5 @@ define(function(require, exports, module) {
     };
 
     module.exports = Transitionable;
+
 });
