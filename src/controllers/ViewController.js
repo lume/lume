@@ -89,7 +89,7 @@ ViewController.prototype.addComponent = function(model, elem, container){
   // } else {
   this.worker.addChild(new Node(model, worker));
   // }
-
+  return this.elements[model.id];
 };
 
 ViewController.prototype.getComponent = function(model){

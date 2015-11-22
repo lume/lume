@@ -1,8 +1,8 @@
 var Component = require('./Component');
-// var Matrix = require('xcssmatrix');
 var Matrix = require('./Matrix');
 
 var DOMComponent = function(node, elem, container){
+
     this.node = node.id ? node.id : node;
     this._node = node;
     this.elem = elem ? document.createElement(elem) : document.createElement('div');
@@ -19,9 +19,11 @@ var DOMComponent = function(node, elem, container){
     }.bind(this));
 
     var prefix = function () {
+
       var styles = window.getComputedStyle(document.documentElement, ''),
         transform,
         origin,
+        perspective,
         pre = (Array.prototype.slice
           .call(styles)
           .join('')
@@ -31,18 +33,23 @@ var DOMComponent = function(node, elem, container){
         if(dom ==='Moz'){
           transform = 'transform';
           origin = 'transformOrigin';
+          perspective = 'perspective';
         } else if(dom ==='WebKit'){
           transform = 'webkitTransform';
           origin = 'webkitTransformOrigin';
+          perspective = 'perspective';
         } else if(dom ==='MS'){
           transform = 'msTransform';
           origin = 'msTransformOrigin';
+          perspective = 'perspective';
         } else if (dom ==='O'){
           transform = 'OTransform';
           origin = 'transformOrigin';
+          perspective = 'perspective';
         } else {
           transform = 'transform';
           origin = 'transformOrigin';
+          perspective = 'perspective';
         }
       return {
         dom: dom,
@@ -52,8 +59,9 @@ var DOMComponent = function(node, elem, container){
         transform: transform,
         origin: origin
       };
+
     };
-    //
+
     this.vendor = prefix();
 
     if(node.content) {
@@ -72,44 +80,67 @@ var DOMComponent = function(node, elem, container){
 DOMComponent.prototype = Object.create(Component.prototype);
 DOMComponent.prototype.constructor = Component;
 
-
 DOMComponent.prototype.configure = function(n){
+
   n.origin = n.origin || [0.0,0.0,0.0];
   n.align = n.align || [0.0,0.0,0.0];
   n.size = n.size || [1.0,1.0,1.0];
   n.scale = n.scale || [1.0,1.0,1.0];
   n.rotate = n.rotate || [0,0,0];
   n.opacity = n.opacity || 1.0;
+
 }
 
 DOMComponent.prototype.isInt = function(n){
+
     return Number(n) === n && n % 1 === 0;
+
 }
 
 DOMComponent.prototype.isFloat = function(n){
+
     if(n === parseFloat(1.0)) return true;
     return n === Number(n) && n % 1 !== 0;
+
 }
 
 DOMComponent.prototype.setContent = function(content){
+
   this.elem.innerHTML = content;
+
 }
 
 DOMComponent.prototype.addClass = function(cl){
+
   this.elem.classList.add(cl);
+
 }
 
 DOMComponent.prototype.removeClass = function(cl){
+
   this.elem.classList.remove(cl);
+
 }
 
 DOMComponent.prototype.degreesToRadians = function(degrees) {
+
   return degrees * (Math.PI / 180);
+
 };
 
 DOMComponent.prototype.transform = function(node){
+
   var d = this;
+
+  if(node.origin) {
+
+    this.elem.style[this.vendor.origin] = (node.origin[0]*100)+'% '+(node.origin[1]*100)+'%';
+
+  }
+
+
   if(node.size) {
+
     if(node.size[0] === 1) node.size[0] = parseFloat(1.0);
     if(node.size[1] === 1) node.size[1] = parseFloat(1.0);
 
@@ -126,16 +157,24 @@ DOMComponent.prototype.transform = function(node){
         this.elem.style.height = 'auto';
     } else {
         this.isFloat(node.size[1]) ? this.elem.style.height = node.size[1]*100+'%' : this.elem.style.height = node.size[1]+'px';
+        // console.log(node.size[1]*100+'%');
+        // this.elem.style.height = node.size[1]*100+'%';
     }
+
+    //TODO: fix isFloat and isInt, its not working!
 
   }
 
   if(node.opacity) {
+
     this.elem.style.opacity = node.opacity;
+
   }
 
   if(node.position) {
+
     this.elem.style.position = node.position;
+
   }
 
   if(node.transform) {
@@ -146,24 +185,31 @@ DOMComponent.prototype.transform = function(node){
 
   var matrix = new Matrix();
 
-  if(node.origin) {
-    this.elem.style[this.vendor.origin] = (node.origin[0]*100)+'% '+(node.origin[1]*100)+'%  '+node.origin[2] || 0;
-  }
-
   if(node.translate && node.align) {
+
     matrix = matrix.translate((node.align[0] * this.elem.parentNode.clientWidth)+node.translate[0], (node.align[1] * this.elem.parentNode.clientHeight)+node.translate[1], node.align[2]+ node.translate[2] === 0 ? 1 : node.translate[2] );
+
   } else if(node.align) {
+
     matrix = matrix.translate(node.align[0] * this.elem.parentNode.clientWidth, node.align[1] * this.elem.parentNode.clientHeight, node.align[2] );
+
   } else if(node.translate) {
+
     matrix = matrix.translate(node.translate[0], node.translate[1], node.translate[2] === 0 ? 1 : node.translate[2]);
+
   } else {
+
     matrix = matrix.translate(0, 0, 1);
+
   }
 
   if(node.scale) {
+
       matrix.scale(node.scale[0] || 1, node.scale[1] || 1, node.scale[2] || 1);
+
   }
   if(node.rotate) {
+
       if(node.rotate[0]) {
         matrix = matrix.rotateX(d.degreesToRadians(node.rotate[0]));
       }
@@ -173,19 +219,25 @@ DOMComponent.prototype.transform = function(node){
       if(node.rotate[2]) {
         matrix = matrix.rotateZ(d.degreesToRadians(node.rotate[2]));
       }
+
   }
 
   this.elem.style[this.vendor.transform] = matrix.toString();
 
-
   }
 
+};
 
+DOMComponent.prototype.setPerspective = function(p){
+
+  this.elem.style['perspective'] = p;
 
 };
 
 DOMComponent.prototype.resize = function(){
+
   this.transform(this._node);
+
 };
 
 module.exports = DOMComponent;
