@@ -14,6 +14,10 @@ var controller = new ViewController([], Scene),
       title: '3D Carousel (Matrix3D)'
     },
     {
+      path: 'examples/scrollview/',
+      title: 'Scrollview'
+    },
+    {
       path: 'examples/rotate-180-nodes/',
       title: 'Rotate 180 Nodes'
     }],

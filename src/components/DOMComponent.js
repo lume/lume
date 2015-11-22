@@ -234,6 +234,17 @@ DOMComponent.prototype.setPerspective = function(p){
 
 };
 
+DOMComponent.prototype.sync = function(events, cb){
+
+  for( var i = 0; i < events.length; i++ ){
+    this.elem.addEventListener(events[i],cb);
+  }
+
+  //TODO: Make a Sync Class and properly sync mousewheel and touch drag
+
+};
+
+
 DOMComponent.prototype.resize = function(){
 
   this.transform(this._node);

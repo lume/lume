@@ -191,6 +191,11 @@ a:link, a:visited {
     background-size: 100% 100%;
 }
 
+.app-scrollview {
+  overflow: hidden;
+  background-color: #BAEFC5;
+}
+
 .app-carousel-btn.prev {
     left: 0;
     transform: rotateZ(90deg);
@@ -252,6 +257,11 @@ a:link, a:visited {
   color: #FFFFFF;
   font-weight: 700;
   font-size: 3em;
+}
+
+.app-card {
+  margin: 10px;
+  border-radius: 6px;
 }
 
 .app-memo {
