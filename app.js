@@ -26,7 +26,8 @@ controller.addComponent({
     rotate: [0,0,0],
     id: 'app-directory-header',
     content: '<h1>Boxer Engine Examples</h1>',
-    opacity : 1.0
+    opacity : 1.0,
+    classes: ['mint-green-bg']
 });
 
 controller.addComponent({

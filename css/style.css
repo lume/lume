@@ -65,6 +65,46 @@ body {
   background-color: rgba(6, 12, 15, 100);
 }
 
+.warm {
+  color: #FF5347;
+}
+
+.warm-bg {
+  background-color: #FF5347;
+}
+
+.tan {
+  color: #D6CFA7;
+}
+
+.tan-bg {
+  background-color: #D6CFA7;
+}
+
+.light-tan {
+  color: #EAF4CD;
+}
+
+.light-tan-bg {
+  background-color: #EAF4CD;
+}
+
+.khaki {
+  color: #EFAF73;
+}
+
+.khaki-bg {
+  background-color: #EFAF73;
+}
+
+.mint-green {
+  color: #BAEFC5;
+}
+
+.mint-green-bg {
+  background-color: #BAEFC5;
+}
+
 .rotate-node {
   background: #BAEFC5;
   float:left;
