@@ -26,7 +26,6 @@ Below is an example that initializes the Engine and Scene Graph, configures 180 
 ```
 var Scene = boxer.core.Scene;
 var controller = new ViewController([], Scene);
-var nodes = [];
 
 // Add 180 Nodes to the Scene and fade them in.
 for( var i=0; i<180; i++ ){
