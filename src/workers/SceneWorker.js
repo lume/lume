@@ -1,5 +1,15 @@
 importScripts('../../dist/boxer.js');
 
+/**
+* SceneWorker
+*
+* API for messaging a Scene in a WebWorker. Compatible with ViewController. 
+*
+* by Steve Belovarich
+* Licensed under MIT, see license.txt or http://www.opensource.org/licenses/mit-license.php
+**/
+
+
 var Scene = boxer.core.Scene;
 var Node = boxer.core.Node;
 

@@ -1,3 +1,11 @@
+/**
+* Engine
+*
+* A simple Rendering Engine that uses requestAnimationFrame to update.
+*
+* by Steve Belovarich
+* Licensed under MIT, see license.txt or http://www.opensource.org/licenses/mit-license.php
+**/
 
 var Engine = function(){
 

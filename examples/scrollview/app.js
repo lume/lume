@@ -35,6 +35,7 @@ for( var i=0; i<180; i++ ){
 };
 
 sync = new ScrollSync(scroller.elem, function(delta) {
+
   lastPosition = currentPosition;
   currentPosition -= delta;
   controller.transition('app-scroller',{
@@ -45,4 +46,5 @@ sync = new ScrollSync(scroller.elem, function(delta) {
       duration: 100,
       delay: 0
   });
+  
 });

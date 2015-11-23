@@ -1,3 +1,12 @@
+/**
+* Scene
+*
+* API for storing Nodes on a Scene Graph. Currently the Scene is flat, but that could very well change in the near future to keep track of parent child relationships between Nodes.
+*
+* by Steve Belovarich
+* Licensed under MIT, see license.txt or http://www.opensource.org/licenses/mit-license.php
+**/
+
 var cxt = self;
 
 var Scene = function(graph){

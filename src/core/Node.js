@@ -1,4 +1,13 @@
-// Node handles storing the state of a node on the Scene Graph.
+/**
+* Node
+*
+* A model that determines properties that can be animated or changed performantly.
+* This model can be applied to Components that use it to animate DOMElement or Mesh.
+*
+* by Steve Belovarich
+* Licensed under MIT, see license.txt or http://www.opensource.org/licenses/mit-license.php
+**/
+
 var Transitionable = require('../transitions/Transitionable');
 var Curves = require('../transitions/Curves');
 

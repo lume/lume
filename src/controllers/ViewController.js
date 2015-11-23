@@ -1,3 +1,14 @@
+/**
+* ViewController
+*
+* A Controller that handles communication between Nodes and DOMComponents.
+* This API may be renamed to DOMController.
+*
+* by Steve Belovarich
+* Licensed under MIT, see license.txt or http://www.opensource.org/licenses/mit-license.php
+**/
+
+
 var Engine = boxer.core.Engine;
 var Scene = boxer.core.Scene;
 var Node = boxer.core.Node;

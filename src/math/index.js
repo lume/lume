@@ -27,5 +27,6 @@ module.exports = {
     Quaternion: require('./Quaternion'),
     Vec2: require('./Vec2'),
     Vec3: require('./Vec3'),
-    Ray: require('./Ray')
+    Ray: require('./Ray'),
+    Matrix: require('./Matrix')
 };

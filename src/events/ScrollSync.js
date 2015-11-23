@@ -1,5 +1,11 @@
-
-'use strict';
+/**
+* ScrollSync
+*
+* API for syncing mousewheel and touchmove Events.
+*
+* by Steve Belovarich
+* Licensed under MIT, see license.txt or http://www.opensource.org/licenses/mit-license.php
+**/
 
 var ScrollSync = function(elem, cb, direction) {
 

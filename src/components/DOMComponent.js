@@ -1,5 +1,14 @@
+/**
+* DOMComponent
+*
+* Handles updating a 4x4 Matrix mapped to Matrix3D transforms on a DOMElement.
+*
+* by Steve Belovarich
+* Licensed under MIT, see license.txt or http://www.opensource.org/licenses/mit-license.php
+**/
+
 var Component = require('./Component');
-var Matrix = require('./Matrix');
+var Matrix = require('../math/Matrix');
 
 var DOMComponent = function(node, elem, container){
 
