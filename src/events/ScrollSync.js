@@ -30,13 +30,14 @@ var ScrollSync = function(elem, cb, direction) {
   elem.addEventListener('touchmove', function (ev){
 
      var te = ev[prop[0]];
+
      if(ts > te){
 
-       cb((ts-te)*0.25);
+       cb((ts-te)*1.5);
 
      }else if(ts < te){
 
-       cb((ts-te)*0.25);
+       cb((ts-te)*1.5);
 
      }
 
