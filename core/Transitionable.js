@@ -1,18 +1,19 @@
 /* Copyright © 2015 David Valdman */
 
-define(function(require, exports, module) {
+define(function (require, exports, module) {
     var dirtyQueue = require('./queues/dirtyQueue');
     var preTickQueue = require('./queues/preTickQueue');
     var tickQueue = require('./queues/tickQueue');
     var EventHandler = require('../events/EventHandler');
     var SimpleStream = require('../streams/SimpleStream');
+    var Stream = require('../streams/Stream');
 
     var Tween = require('../transitions/TweenTransition');
     var Spring = require('../physics/Spring');
 
     var transitionMethods = {
         tween: Tween,
-        spring : Spring
+        spring: Spring
     };
 
     /**
@@ -48,7 +49,6 @@ define(function(require, exports, module) {
         this.velocity = 0;
         this._callback = undefined;
         this._method = null;
-
         this._totalActive = false;
         this._currentActive = false;
 
@@ -57,41 +57,66 @@ define(function(require, exports, module) {
         EventHandler.setInputHandler(this, this._eventInput);
         EventHandler.setOutputHandler(this, this._eventOutput);
 
-        this._eventInput.on('start', function(value){
+        var update;
+        this._eventInput.on('start', function (value) {
             this._currentActive = true;
-            this.emit('start', value);
+            if (!this._totalActive) {
+                this.emit('start', value);
+
+                if (this._engineInstance){
+                    update = this._engineInstance.update.bind(this._engineInstance);
+                    tickQueue.push(update);
+                }
+
+                this._totalActive = true;
+            }
         }.bind(this));
 
-        this._eventInput.on('update', function(value){
+        this._eventInput.on('update', function (value) {
             this.value = value;
             this.velocity = this._engineInstance.getVelocity();
             this.emit('update', value);
         }.bind(this));
 
-        this._eventInput.on('end', function(value){
-            this._currentActive = false;
+        this._eventInput.on('end', function (value) {
             this.value = value;
-            this.velocity = this._engineInstance.getVelocity();
-            end.apply(this, arguments)
+            this._currentActive = false;
+
+            if (this._totalActive) {
+                if (this._callback) {
+                    var callback = this._callback;
+                    this._callback = undefined;
+                    callback();
+                }
+
+                if (!this._currentActive){
+                    this._totalActive = false;
+                    this.emit('end', value);
+
+                    if (!this._engineInstance) return;
+                    this.velocity = this._engineInstance.getVelocity();
+                    var index = tickQueue.indexOf(update);
+                    if (index >= 0) tickQueue.splice(index, 1);
+                }
+            }
+
         }.bind(this));
 
         if (value !== undefined) {
+            this.value = value;
             preTickQueue.push(function () {
-                if (!this._currentActive) {
-                    this.emit('start', value);
-                    this.value = value;
+                this.trigger('start', value);
 
-                    dirtyQueue.push(function () {
-                        this.emit('end', value);
-                    }.bind(this));
-                }
-            }.bind(this))
+                dirtyQueue.push(function () {
+                    if (!this._totalActive)
+                        this.trigger('end', value);
+                }.bind(this));
+            }.bind(this));
         }
     }
 
     Transitionable.prototype = Object.create(SimpleStream.prototype);
     Transitionable.prototype.constructor = Transitionable;
-
 
     /**
      * Constructor method. A way of registering other engines that can interpolate
@@ -121,42 +146,25 @@ define(function(require, exports, module) {
         else return false;
     };
 
-    function end(value) {
-        dirtyQueue.push(function () {
-            if (this._callback) {
-                var callback = this._callback;
-                this._callback = undefined;
-                callback();
-            }
-
-            if (!this._currentActive && this._totalActive) {
-                this.emit('end', this.get());
-                this._totalActive = false;
-            }
-        }.bind(this));
-    }
-
     /**
      * Define a new end value that will be transitioned towards with the prescribed
      *  transition. An optional callback can fire when the transition completes.
      *
      * @method set
-     * @param value {Number|Number[]}        End value
+     * @param value {Number|Number[]}           End value
      * @param [transition] {Object}             Transition definition
      * @param [transition.curve] {string}       Easing curve name, e.g., "easeIn"
      * @param [transition.duration] {string}    Duration of transition
      * @param [callback] {Function}             Callback
      */
     Transitionable.prototype.set = function set(value, transition, callback) {
-        this._currentActive = true;
-
-        if (!this._totalActive){
-            this.trigger('start', this.get());
-            this._totalActive = true;
-        }
-
         if (!transition) {
-            this.reset(value);
+            this.value = value;
+            this.trigger('start', value);
+
+            dirtyQueue.push(function () {
+                this.trigger('end', value);
+            }.bind(this));
             return;
         }
 
@@ -175,9 +183,16 @@ define(function(require, exports, module) {
             if (this._engineInstance)
                 this.unsubscribe(this._engineInstance);
 
-            this._engineInstance = new method(this.value);
+            if (this.value instanceof Array) {
+                var dimensions = this.value.length;
+                this._engineInstance = (dimensions < method.DIMENSIONS)
+                    ? new method(this.value)
+                    : new NDTransitionable(this.value, method);
+            }
+            else this._engineInstance = new method(this.value);
 
             this.subscribe(this._engineInstance);
+
             this._method = method;
         }
 
@@ -194,14 +209,12 @@ define(function(require, exports, module) {
         return this.value;
     };
 
-    Transitionable.prototype.reset = function (value) {
+    Transitionable.prototype.halt = function () {
+        this.value = this.get();
         this._callback = undefined;
         this._method = null;
-        this.trigger('end', value);
-    };
-
-    Transitionable.prototype.halt = function () {
-        this.reset(this.get());
+        this._totalActive = false;
+        this.emit('end', this.value);
     };
 
     /**
@@ -225,7 +238,7 @@ define(function(require, exports, module) {
      * @param transitions {Object|Object[]}     Array of transitions
      * @param [callback] {Function}             Callback
      */
-    Transitionable.prototype.iterate = function iterate(values, transitions, callback){
+    Transitionable.prototype.iterate = function iterate(values, transitions, callback) {
         if (values.length === 0) {
             if (callback) callback();
             return;
@@ -236,18 +249,18 @@ define(function(require, exports, module) {
             ? transitions.shift()
             : transitions;
 
-        this.set(values.shift(), transition, function(){
+        this.set(values.shift(), transition, function () {
             this.iterate(values, transitions, callback);
         }.bind(this));
     };
 
-    Transitionable.prototype.setMany = function(array, callback){
+    Transitionable.prototype.setMany = function (array, callback) {
         var first = array.shift();
-        if (array.length === 0){
+        if (array.length === 0) {
             this.set(first.value, first.transition, callback)
         }
         else {
-            this.set(first.value, first.transition, function() {
+            this.set(first.value, first.transition, function () {
                 this.setMany(array, callback);
             }.bind(this));
         }
@@ -262,9 +275,9 @@ define(function(require, exports, module) {
      * @param transitions {Object|Object[]}     Array of transitions
      * @param [callback] {Function}             Callback
      */
-    Transitionable.prototype.loop = function(array){
+    Transitionable.prototype.loop = function (array) {
         var arrayClone = array.slice(0);
-        this.setMany(array, function(){
+        this.setMany(array, function () {
             this.loop(arrayClone);
         }.bind(this));
     };
@@ -278,12 +291,45 @@ define(function(require, exports, module) {
      */
     Transitionable.prototype.delay = function delay(callback, duration) {
         this.set(this.get(), {
-            duration: duration,
-            curve: function(){return 0;}},
+                duration: duration,
+                curve: function () {
+                    return 0;
+                }
+            },
             callback
         );
     };
 
-    module.exports = Transitionable;
+    function NDTransitionable(value, method) {
+        this._eventOutput = new EventHandler();
+        EventHandler.setOutputHandler(this, this._eventOutput);
 
+        this.sources = [];
+        for (var i = 0; i < value.length; i++) {
+            var source = new method(value[i]);
+            this.sources.push(source);
+        }
+
+        this.stream = Stream.merge(this.sources);
+        this._eventOutput.subscribe(this.stream);
+    }
+
+    NDTransitionable.prototype.set = function (value, transition) {
+        for (var i = 0; i < value.length; i++)
+            this.sources[i].set(value[i], transition);
+    };
+
+    NDTransitionable.prototype.getVelocity = function () {
+        var velocity = [];
+        for (var i = 0; i < this.sources.length; i++)
+            velocity[i] = this.sources[i].getVelocity();
+        return velocity;
+    };
+
+    NDTransitionable.prototype.update = function () {
+        for (var i = 0; i < this.sources.length; i++)
+            this.sources[i].update();
+    };
+
+    module.exports = Transitionable;
 });
