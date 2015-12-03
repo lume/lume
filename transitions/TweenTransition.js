@@ -1,9 +1,6 @@
 /* Copyright © 2015 David Valdman */
 
 define(function(require, exports, module) {
-    var preTickQueue = require('../core/queues/preTickQueue');
-    var tickQueue = require('../core/queues/tickQueue');
-    var dirtyQueue = require('../core/queues/dirtyQueue');
     var EventHandler = require('../events/EventHandler');
     var SimpleStream = require('../streams/SimpleStream');
 
@@ -24,39 +21,15 @@ define(function(require, exports, module) {
         SimpleStream.call(this);
 
         this.state = value || 0;
-        this.velocity = undefined;
+        this.velocity = 0;
         this._startValue = value || 0;
         this._endValue = 0;
         this._startTime = now();
         this._curve = undefined;
         this._duration = 0;
-        this._active = false;
-        this._boundUpdate = update.bind(this);
 
         this._eventOutput = new EventHandler();
         EventHandler.setOutputHandler(this, this._eventOutput);
-
-        this.on('start', function () {
-            tickQueue.push(this._boundUpdate);
-        }.bind(this));
-
-        this.on('end', function () {
-            var index = tickQueue.indexOf(this._boundUpdate);
-            if (index >= 0) tickQueue.splice(index, 1);
-        }.bind(this));
-
-        if (value !== undefined) {
-            preTickQueue.push(function () {
-                if (!this._active) {
-                    this.emit('start', value);
-                    this.state = value;
-
-                    dirtyQueue.push(function () {
-                        this.emit('end', value);
-                    }.bind(this));
-                }
-            }.bind(this))
-        }
     }
 
     Tween.prototype = Object.create(SimpleStream.prototype);
@@ -118,6 +91,8 @@ define(function(require, exports, module) {
             }
         }
     };
+
+    Tween.DIMENSIONS = Infinity;
 
     Tween.DEFAULT_OPTIONS = {
         curve: Tween.CURVES.linear,
@@ -184,11 +159,6 @@ define(function(require, exports, module) {
         this._endValue = endValue;
         this._startTime = now();
 
-        if (!this._active) {
-            this._active = true;
-            this.emit('start', this._startValue);
-        }
-
         var curve = transition.curve;
         if (!registeredCurves[curve] && Tween.CURVES[curve])
             Tween.register(curve, Tween.CURVES[curve]);
@@ -207,8 +177,9 @@ define(function(require, exports, module) {
      * @param value {number|Number[]}       Value
      * @param [velocity] {number|Number[]}  Velocity
      */
-    Tween.prototype.reset = function reset(value) {
+    Tween.prototype.reset = function reset(value, velocity) {
         this.state = value;
+        this.velocity = velocity || 0;
         end.call(this);
     };
 
@@ -232,17 +203,6 @@ define(function(require, exports, module) {
         return this.state;
     };
 
-
-    /**
-     * Returns true if the animation is ongoing, false otherwise.
-     *
-     * @method isActive
-     * @return {Boolean}
-     */
-    Tween.prototype.isActive = function isActive() {
-        return this._active;
-    };
-
     /**
      * Halt transition at current state and erase all pending actions.
      *
@@ -250,6 +210,21 @@ define(function(require, exports, module) {
      */
     Tween.prototype.halt = function halt() {
         this.reset(this.get());
+        end.call(this);
+    };
+
+    Tween.prototype.update = function update() {
+        var timestamp = now();
+        var timeSinceStart = timestamp - this._startTime;
+
+        this.velocity = _calculateVelocity(this.state, this._startValue, this._curve, this._duration, 1);
+
+        if (timeSinceStart < this._duration) {
+            var t = timeSinceStart / this._duration;
+            this.state = _interpolate(this._startValue, this._endValue, this._curve(t));
+            this.emit('update', this.state);
+        }
+        else this.reset(this._endValue);
     };
 
     function getCurve(curveName) {
@@ -295,27 +270,8 @@ define(function(require, exports, module) {
         return result;
     }
 
-    function update() {
-        var timestamp = now();
-        var timeSinceStart = timestamp - this._startTime;
-
-        this.velocity = _calculateVelocity(this.state, this._startValue, this._curve, this._duration, 1);
-
-        if (timeSinceStart < this._duration) {
-            var t = timeSinceStart / this._duration;
-            this.state = _interpolate(this._startValue, this._endValue, this._curve(t));
-            this.emit('update', this.state);
-        }
-        else this.reset(this._endValue);
-    }
-
     function end() {
-        this._active = false;
-
-        dirtyQueue.push(function () {
-            if (!this._active)
-                this.emit('end', this.get());
-        }.bind(this));
+        this.emit('end', this.get());
     }
 
     module.exports = Tween;
