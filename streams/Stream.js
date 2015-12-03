@@ -70,9 +70,9 @@ define(function(require, exports, module) {
         EventHandler.setInputHandler(this, this._eventInput);
         EventHandler.setOutputHandler(this, this._eventOutput);
 
+        var counter = 0;
         var isUpdating = false;
         var dirtyStart = false;
-        var dirtyUpdate = false;
         var dirtyEnd = false;
 
         function start(data){
@@ -84,7 +84,6 @@ define(function(require, exports, module) {
         function update(data){
             var payload = options && options.update ? options.update(data) : data;
             if (payload !== false) this.emit(EVENTS.UPDATE, payload);
-            dirtyUpdate = false;
         }
 
         function end(data){
@@ -94,22 +93,26 @@ define(function(require, exports, module) {
         }
 
         this._eventInput.on(EVENTS.START, function(data){
+            counter++;
             if (dirtyStart || isUpdating) return;
             dirtyStart = true;
             preTickQueue.push(start.bind(this, data));
         }.bind(this));
 
         this._eventInput.on(EVENTS.UPDATE, function(data){
-            if (dirtyUpdate) return;
-            dirtyUpdate = true;
             isUpdating = true;
             postTickQueue.push(update.bind(this, data));
         }.bind(this));
 
         this._eventInput.on(EVENTS.END, function(data){
+            counter--;
+            if (isUpdating && counter > 0) {
+                update.call(this, data);
+                return;
+            }
+            isUpdating = false;
             if (dirtyEnd) return;
             dirtyEnd = true;
-            isUpdating = false;
             dirtyQueue.push(end.bind(this, data));
         }.bind(this));
 
