@@ -11,8 +11,18 @@ var ScrollSync = function(elem, cb, direction) {
 
   var ts,
       prop,
-      to,
-      pos;
+      pos,
+      startTime,
+      pauseTime,
+      endTime,
+      startPos,
+      lastPos,
+      endPos,
+      dist,
+      angle,
+      vel,
+      currentTarget,
+      threshold = 1.4;
 
   direction === 'hor' ? prop = ['pageX', 'deltaX'] : prop = ['pageY', 'deltaY'];
 
@@ -28,13 +38,15 @@ var ScrollSync = function(elem, cb, direction) {
 
      ev.preventDefault();
      ts = ev[prop[0]];
+     startTime = new Date().getMilliseconds();
+     startPos = [ev.pageX,ev.pageY];
+     currentTarget = ev.target;
 
   });
 
   elem.addEventListener('touchmove', function (ev){
 
      var te = ev[prop[0]];
-     clearTimeout(to);
 
      if(te < ts){
 
@@ -48,30 +60,41 @@ var ScrollSync = function(elem, cb, direction) {
 
      }
 
+     pauseTime = new Date().getMilliseconds();
+     lastPos = ts-te;
+
   });
 
   elem.addEventListener('touchend', function (ev){
 
-    to = setTimeout(function(){
+    endTime = new Date().getMilliseconds();
+    endPos = [ev.pageX,ev.pageY];
+    dist = [startPos[0]-endPos[0], startPos[1]-endPos[1]];
+    dur = startTime - endTime;
+    angle = Math.atan(dist[1] / dist[0]) * 180 / Math.PI;
+    vel = Math.sqrt((dist[0]*dist[0])+(dist[1]*dist[1])) / dur;
 
-      if((ev[prop[0]] < (ts - 260))){
-        pos = pos + 400;
-        cb(pos, true);
-      }
-      else if((ev[prop[0]] > (ts + 260))){
-        pos = pos - 400;
-        cb(pos, true);
-      }
-      else if((ev[prop[0]] < (ts - 200))){
-        pos = pos + 200;
-        cb(pos, true);
-      }
-      else if((ev[prop[0]] > (ts + 200))){
-        pos = pos - 200;
-        cb(pos, true);
+
+
+    if(!ev.target.isEqualNode(currentTarget)) {
+        console.log(vel, (vel < -threshold || vel > threshold));
+    }
+
+    if(vel < -threshold || vel > threshold) {
+
+      if(endTime - pauseTime < 500) {
+        if(ev[prop[0]] < ts){
+          pos = pos + (elem.clientHeight - 60);
+          cb(pos, true);
+        }
+        else if(ev[prop[0]] > ts){
+          pos = pos - (elem.clientHeight + 60);
+          cb(pos, true);
+        }
       }
 
-    }, 80);
+    }
+
 
   });
 

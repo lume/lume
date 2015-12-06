@@ -76,7 +76,7 @@ sync = new ScrollSync(scroller.elem, function(delta, end) {
             from: [0,lastPosition,1],
             to: [0,currentPosition,1],
             curve: 'inOutQuart',
-            duration: 80,
+            duration: 10,
             delay: 0
         });
 
