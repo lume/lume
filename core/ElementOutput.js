@@ -103,6 +103,27 @@ define(function(require, exports, module) {
         if (element) this.attach(element);
     }
 
+    function _addEventListeners(target) {
+        for (var i in this._eventOutput.listeners)
+            target.addEventListener(i, this._eventForwarder);
+    }
+
+    function _removeEventListeners(target) {
+        for (var i in this._eventOutput.listeners)
+            target.removeEventListener(i, this._eventForwarder);
+    }
+
+    function _formatCSSTransform(transform) {
+        var result = 'matrix3d(';
+        for (var i = 0; i < 15; i++) {
+            if (Math.abs(transform[i]) < EPSILON) transform[i] = 0;
+            result += (i === 12 || i === 13)
+                ? Math.round(transform[i] * devicePixelRatio) * invDevicePixelRatio + ','
+                : transform[i] + ',';
+        }
+        return result + transform[15] + ')';
+    }
+
     function _formatCSSOrigin(origin) {
         return (100 * origin[0]) + '% ' + (100 * origin[1]) + '%';
     }
@@ -110,12 +131,6 @@ define(function(require, exports, module) {
     function _xyNotEquals(a, b) {
         return (a && b) ? (a[0] !== b[0] || a[1] !== b[1]) : a !== b;
     }
-
-    var _setOpacity = function _setOpacity(element, opacity){
-        if (opacity >= MAX_OPACITY)     opacity = MAX_OPACITY;
-        else if (opacity < MIN_OPACITY) opacity = MIN_OPACITY;
-        element.style.opacity = opacity;
-    };
 
     var _setOrigin = usePrefix
         ? function _setOrigin(element, origin) {
@@ -141,31 +156,9 @@ define(function(require, exports, module) {
         else target.style.height = Math.ceil(size[1] * devicePixelRatio) * invDevicePixelRatio + 'px';
     };
 
-
-    function _addEventListeners(target) {
-        for (var i in this._eventOutput.listeners)
-            target.addEventListener(i, this._eventForwarder);
-    }
-
-    function _removeEventListeners(target) {
-        for (var i in this._eventOutput.listeners)
-            target.removeEventListener(i, this._eventForwarder);
-    }
-
-    function _formatCSSTransform(transform) {
-        var result = 'matrix3d(';
-        for (var i = 0; i < 15; i++) {
-            if (Math.abs(transform[i]) < EPSILON) transform[i] = 0;
-            result += (i === 12 || i === 13)
-                ? Math.round(transform[i] * devicePixelRatio) * invDevicePixelRatio + ','
-                : transform[i] + ',';
-        }
-        return result + transform[15] + ')';
-    }
-
     // {Visibility : hidden} allows for DOM events to pass through the element
-    var _setOpacity = function _setOpacity(element, opacity){
-        if (!this._isVisible && opacity > MIN_OPACITY){
+    var _setOpacity = function _setOpacity(element, opacity) {
+        if (!this._isVisible && opacity > MIN_OPACITY) {
             element.style.visibility = 'visible';
             this._isVisible = true;
         }
@@ -173,7 +166,7 @@ define(function(require, exports, module) {
         if (opacity > MAX_OPACITY) opacity = MAX_OPACITY;
         else if (opacity < MIN_OPACITY) {
             opacity = MIN_OPACITY;
-            if (this._isVisible){
+            if (this._isVisible) {
                 element.style.visibility = 'hidden';
                 this._isVisible = false;
             }
