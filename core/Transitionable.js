@@ -10,10 +10,12 @@ define(function (require, exports, module) {
 
     var Tween = require('../transitions/TweenTransition');
     var Spring = require('../physics/Spring');
+    var Inertia = require('../physics/Inertia');
 
     var transitionMethods = {
         tween: Tween,
-        spring: Spring
+        spring: Spring,
+        inertia: Inertia
     };
 
     /**
@@ -49,30 +51,27 @@ define(function (require, exports, module) {
         this.velocity = 0;
         this._callback = undefined;
         this._method = null;
-        this._totalActive = false;
+        this._active = false;
         this._currentActive = false;
+
+        var hasUpdated = false;
+        this.updateMethod = undefined;
 
         this._eventInput = new EventHandler();
         this._eventOutput = new EventHandler();
         EventHandler.setInputHandler(this, this._eventInput);
         EventHandler.setOutputHandler(this, this._eventOutput);
 
-        var update;
         this._eventInput.on('start', function (value) {
             this._currentActive = true;
-            if (!this._totalActive) {
+            if (!this._active) {
                 this.emit('start', value);
-
-                if (this._engineInstance){
-                    update = this._engineInstance.update.bind(this._engineInstance);
-                    tickQueue.push(update);
-                }
-
-                this._totalActive = true;
+                this._active = true;
             }
         }.bind(this));
 
         this._eventInput.on('update', function (value) {
+            hasUpdated = true;
             this.value = value;
             this.velocity = this._engineInstance.getVelocity();
             this.emit('update', value);
@@ -82,24 +81,23 @@ define(function (require, exports, module) {
             this.value = value;
             this._currentActive = false;
 
-            if (this._totalActive) {
-                if (this._callback) {
-                    var callback = this._callback;
-                    this._callback = undefined;
-                    callback();
-                }
-
-                if (!this._currentActive){
-                    this._totalActive = false;
-                    this.emit('end', value);
-
-                    if (!this._engineInstance) return;
-                    this.velocity = this._engineInstance.getVelocity();
-                    var index = tickQueue.indexOf(update);
-                    if (index >= 0) tickQueue.splice(index, 1);
-                }
+            if (this._callback) {
+                var callback = this._callback;
+                this._callback = undefined;
+                callback();
             }
 
+            if (!this._currentActive){
+                this._active = false;
+                hasUpdated = false;
+
+                if (this._engineInstance) {
+                    this.velocity = this._engineInstance.getVelocity();
+                }
+
+                this._active = false;
+                this.emit('end', value);
+            }
         }.bind(this));
 
         if (value !== undefined) {
@@ -108,8 +106,8 @@ define(function (require, exports, module) {
                 this.trigger('start', value);
 
                 dirtyQueue.push(function () {
-                    if (!this._totalActive)
-                        this.trigger('end', value);
+                    if (hasUpdated) return;
+                    this.trigger('end', value);
                 }.bind(this));
             }.bind(this));
         }
@@ -176,12 +174,14 @@ define(function (require, exports, module) {
             ? transitionMethods[curve]
             : Tween;
 
-        if (this._engineInstance && this._engineInstance.getVelocity)
-            transition.velocity = this._engineInstance.getVelocity();
-
         if (this._method !== method) {
-            if (this._engineInstance)
+            if (this._engineInstance){
+                if (this.updateMethod){
+                    var index = tickQueue.indexOf(this.updateMethod);
+                    if (index >= 0) tickQueue.splice(index, 1);
+                }
                 this.unsubscribe(this._engineInstance);
+            }
 
             if (this.value instanceof Array) {
                 var dimensions = this.value.length;
@@ -192,9 +192,13 @@ define(function (require, exports, module) {
             else this._engineInstance = new method(this.value);
 
             this.subscribe(this._engineInstance);
+            this.updateMethod = this._engineInstance.update.bind(this._engineInstance);
+            tickQueue.push(this.updateMethod);
 
             this._method = method;
         }
+
+        if (!transition.velocity) transition.velocity = this.velocity;
 
         this._engineInstance.set(value, transition);
     };
@@ -213,7 +217,6 @@ define(function (require, exports, module) {
         this.value = this.get();
         this._callback = undefined;
         this._method = null;
-        this._totalActive = false;
         this.emit('end', this.value);
     };
 
@@ -224,7 +227,7 @@ define(function (require, exports, module) {
      * @return {Boolean}
      */
     Transitionable.prototype.isActive = function isActive() {
-        return this._totalActive;
+        return this._active;
     };
 
     /**
