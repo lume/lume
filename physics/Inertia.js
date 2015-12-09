@@ -42,7 +42,6 @@ define(function (require, exports, module) {
         var v0 = transition.velocity || this.velocity;
 
         this.curve = getCurve(damping, value, v0);
-
         this.startTime = now();
     };
 
@@ -86,7 +85,7 @@ define(function (require, exports, module) {
         else {
             this.reset(this.target);
             this._active = false;
-            this.emit('end', this.target);
+            this.emit('end', value);
         }
     };
 
@@ -95,8 +94,7 @@ define(function (require, exports, module) {
             return createNoDamping(x0, v0);
         else if (damping > 0)
             return createWithDamping(damping, x0, v0);
-        else
-            console.error('damping must be positive');
+        else console.error('damping must be positive');
     }
 
     function createNoDamping(x0, v0){
