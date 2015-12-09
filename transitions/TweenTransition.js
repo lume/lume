@@ -27,6 +27,7 @@ define(function(require, exports, module) {
         this._startTime = now();
         this._curve = undefined;
         this._duration = 0;
+        this._active = false;
 
         this._eventOutput = new EventHandler();
         EventHandler.setOutputHandler(this, this._eventOutput);
@@ -156,6 +157,12 @@ define(function(require, exports, module) {
      */
     Tween.prototype.set = function set(endValue, transition) {
         this._startValue = this.get();
+
+        if (!this._active) {
+            this.emit('start', this._startValue);
+            this._active = true;
+        }
+
         this._endValue = endValue;
         this._startTime = now();
 
@@ -180,7 +187,6 @@ define(function(require, exports, module) {
     Tween.prototype.reset = function reset(value, velocity) {
         this.state = value;
         this.velocity = velocity || 0;
-        end.call(this);
     };
 
     /**
@@ -210,12 +216,11 @@ define(function(require, exports, module) {
      */
     Tween.prototype.halt = function halt() {
         this.reset(this.get());
-        end.call(this);
+        this.emit('end', this.get());
     };
 
     Tween.prototype.update = function update() {
-        var timestamp = now();
-        var timeSinceStart = timestamp - this._startTime;
+        var timeSinceStart = now() - this._startTime;
 
         this.velocity = _calculateVelocity(this.state, this._startValue, this._curve, this._duration, 1);
 
@@ -224,7 +229,11 @@ define(function(require, exports, module) {
             this.state = _interpolate(this._startValue, this._endValue, this._curve(t));
             this.emit('update', this.state);
         }
-        else this.reset(this._endValue);
+        else {
+            this.reset(this._endValue);
+            this._active = false;
+            this.emit('end', this._endValue);
+        }
     };
 
     function getCurve(curveName) {
@@ -268,10 +277,6 @@ define(function(require, exports, module) {
         }
         else result = _calculateVelocity1D(current, start, curve, duration, t);
         return result;
-    }
-
-    function end() {
-        this.emit('end', this.get());
     }
 
     module.exports = Tween;
