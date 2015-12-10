@@ -16,6 +16,7 @@ define(function(require, exports, module) {
      * @private
      * @namespace Transitions
      * @constructor
+     * @param value {Number}    Initial value
      */
     function Tween(value) {
         SimpleStream.call(this);
@@ -153,7 +154,6 @@ define(function(require, exports, module) {
      * @param endValue {Number|Number[]}    End value
      * @param [transition] {Object}         Transition object of type
      *                                      {duration: number, curve: name}
-     * @param [callback] {Function}         Callback to execute on completion of transition
      */
     Tween.prototype.set = function set(endValue, transition) {
         this._startValue = this.get();
@@ -191,18 +191,18 @@ define(function(require, exports, module) {
      * Get current velocity
      *
      * @method getVelocity
-     * @returns {Number}
+     * @returns {Number|Number[]}
      */
     Tween.prototype.getVelocity = function getVelocity() {
         return this.velocity;
     };
 
     /**
-     * Cancel all transitions and reset to a stable state
+     * Reset the value and velocity of the transition.
      *
      * @method reset
-     * @param value {number|Number[]}       Value
-     * @param [velocity] {number|Number[]}  Velocity
+     * @param value {Number|Number[]}       Value
+     * @param [velocity] {Number|Number[]}  Velocity
      */
     Tween.prototype.reset = function reset(value, velocity) {
         this.state = value;
@@ -221,6 +221,11 @@ define(function(require, exports, module) {
         this.emit('end', value);
     };
 
+    /**
+     * Update the transition in time.
+     *
+     * @method update
+     */
     Tween.prototype.update = function update() {
         var timeSinceStart = now() - this._startTime;
 

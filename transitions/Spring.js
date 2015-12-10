@@ -8,6 +8,17 @@ define(function (require, exports, module) {
     var eps = 1e-6; // for calculating velocity using finite difference
     var tolerance = 1e-9; // energy minimum
 
+    /**
+     * A method of interpolating between start and end values with
+     *  a spring transition.
+     *
+     * @class Tween
+     * @private
+     * @namespace Transitions
+     * @constructor
+     * @param value {Number}    Initial value
+     * @param velocity {Number} Initial velocity
+     */
     function Spring(value, velocity) {
         SimpleStream.call(this);
 
@@ -36,6 +47,13 @@ define(function (require, exports, module) {
     Spring.prototype = Object.create(SimpleStream.prototype);
     Spring.prototype.constructor = Spring;
 
+    /**
+     * Set new value to transition to.
+     *
+     * @method set
+     * @param value {Number}                End value
+     * @param [transition] {Object}         Transition definition
+     */
     Spring.prototype.set = function (value, transition) {
         var x0 = this.get();
 
@@ -58,19 +76,43 @@ define(function (require, exports, module) {
         this.startTime = now();
     };
 
+    /**
+     * Get current value.
+     *
+     * @method get
+     * @return {Number}
+     */
     Spring.prototype.get = function () {
         return this.value;
     };
 
+    /**
+     * Get current velocity
+     *
+     * @method getVelocity
+     * @returns {Number}
+     */
     Spring.prototype.getVelocity = function () {
         return this.velocity;
     };
 
+    /**
+     * Reset the value and velocity of the transition.
+     *
+     * @method reset
+     * @param value {Number}       Value
+     * @param [velocity] {Number}  Velocity
+     */
     Spring.prototype.reset = function (value, velocity) {
         this.value = value;
         this.velocity = velocity || 0;
     };
 
+    /**
+     * Halt transition at current state and erase all pending actions.
+     *
+     * @method halt
+     */
     Spring.prototype.halt = function () {
         var value = this.get();
         this.reset(value);
@@ -78,6 +120,11 @@ define(function (require, exports, module) {
         this.emit('end', value);
     };
 
+    /**
+     * Update the transition in time.
+     *
+     * @method update
+     */
     Spring.prototype.update = function update() {
         if (!this._active) return;
 

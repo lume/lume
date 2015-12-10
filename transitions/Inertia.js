@@ -8,6 +8,16 @@ define(function (require, exports, module) {
     var eps = 1e-6; // for calculating velocity using finite difference
     var tolerance = 1e-9; // energy minimum
 
+    /**
+     * Defines an inertial transition, which decreases
+     *
+     * @class Tween
+     * @private
+     * @namespace Transitions
+     * @constructor
+     * @param value {Number}    Initial value
+     * @param velocity {Number} Initial velocity
+     */
     function Inertia(value, velocity) {
         SimpleStream.call(this);
 
@@ -32,6 +42,13 @@ define(function (require, exports, module) {
     Inertia.prototype = Object.create(SimpleStream.prototype);
     Inertia.prototype.constructor = Inertia;
 
+    /**
+     * Set new value to transition to, with a transition definition.
+     *
+     * @method set
+     * @param endValue {Number}             End value
+     * @param [transition] {Object}         Transition definition
+     */
     Inertia.prototype.set = function (value, transition) {
         if (!this._active) {
             this.emit('start', value);
@@ -51,19 +68,43 @@ define(function (require, exports, module) {
         this.startTime = now();
     };
 
+    /**
+     * Get current value.
+     *
+     * @method get
+     * @return {Number}
+     */
     Inertia.prototype.get = function () {
         return this.value;
     };
 
+    /**
+     * Get current velocity
+     *
+     * @method getVelocity
+     * @returns {Number}
+     */
     Inertia.prototype.getVelocity = function () {
         return this.velocity;
     };
 
+    /**
+     * Reset the value and velocity of the transition.
+     *
+     * @method reset
+     * @param value {Number}       Value
+     * @param [velocity] {Number}  Velocity
+     */
     Inertia.prototype.reset = function (value, velocity) {
         this.value = value;
         this.velocity = velocity || 0;
     };
 
+    /**
+     * Halt transition at current state and erase all pending actions.
+     *
+     * @method halt
+     */
     Inertia.prototype.halt = function () {
         var value = this.get();
         this.reset(value);
@@ -71,6 +112,11 @@ define(function (require, exports, module) {
         this.emit('end', value);
     };
 
+    /**
+     * Update the transition in time.
+     *
+     * @method update
+     */
     Inertia.prototype.update = function update() {
         if (!this._active) return;
 
