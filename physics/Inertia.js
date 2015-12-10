@@ -38,7 +38,13 @@ define(function (require, exports, module) {
             this._active = true;
         }
 
-        var damping = transition.damping || Inertia.DEFAULT_OPTIONS.damping;
+        var damping = (transition.damping == undefined)
+            ? Inertia.DEFAULT_OPTIONS.damping
+            : Math.min(transition.damping, 1);
+
+        // convert [0,1] input to [0,Infinity] in a way that seams reasonable
+        damping = 0.005 * damping / (1 - damping);
+
         var v0 = transition.velocity || this.velocity;
 
         this.curve = getCurve(damping, value, v0);
@@ -83,7 +89,7 @@ define(function (require, exports, module) {
             this.emit('update', value);
         }
         else {
-            this.reset(this.target);
+            this.reset(value);
             this._active = false;
             this.emit('end', value);
         }
