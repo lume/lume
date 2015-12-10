@@ -178,15 +178,13 @@ define(function(require, exports, module) {
     };
 
     /**
-     * Cancel all transitions and reset to a stable state
+     * Get current value.
      *
-     * @method reset
-     * @param value {number|Number[]}       Value
-     * @param [velocity] {number|Number[]}  Velocity
+     * @method get
+     * @return {Number|Number[]}
      */
-    Tween.prototype.reset = function reset(value, velocity) {
-        this.state = value;
-        this.velocity = velocity || 0;
+    Tween.prototype.get = function get() {
+        return this.state;
     };
 
     /**
@@ -200,13 +198,15 @@ define(function(require, exports, module) {
     };
 
     /**
-     * Get current value.
+     * Cancel all transitions and reset to a stable state
      *
-     * @method get
-     * @return {Number|Number[]}
+     * @method reset
+     * @param value {number|Number[]}       Value
+     * @param [velocity] {number|Number[]}  Velocity
      */
-    Tween.prototype.get = function get() {
-        return this.state;
+    Tween.prototype.reset = function reset(value, velocity) {
+        this.state = value;
+        this.velocity = velocity || 0;
     };
 
     /**
@@ -215,8 +215,10 @@ define(function(require, exports, module) {
      * @method halt
      */
     Tween.prototype.halt = function halt() {
-        this.reset(this.get());
-        this.emit('end', this.get());
+        var value = this.get();
+        this.reset(value);
+        this._active = false;
+        this.emit('end', value);
     };
 
     Tween.prototype.update = function update() {
