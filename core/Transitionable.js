@@ -9,8 +9,8 @@ define(function (require, exports, module) {
     var Stream = require('../streams/Stream');
 
     var Tween = require('../transitions/TweenTransition');
-    var Spring = require('../physics/Spring');
-    var Inertia = require('../physics/Inertia');
+    var Spring = require('../transitions/Spring');
+    var Inertia = require('../transitions/Inertia');
 
     var transitionMethods = {
         tween: Tween,
