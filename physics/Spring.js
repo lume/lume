@@ -30,7 +30,7 @@ define(function (require, exports, module) {
     Spring.DEFAULT_OPTIONS = {
         velocity: 0,
         damping: 0.5,
-        frequency: 1 / 100
+        period : 100
     };
 
     Spring.prototype = Object.create(SimpleStream.prototype);
@@ -45,11 +45,11 @@ define(function (require, exports, module) {
         }
 
         var damping = transition.damping || Spring.DEFAULT_OPTIONS.damping;
-        var frequency = transition.frequency || Spring.DEFAULT_OPTIONS.frequency;
+        var period = transition.period || Spring.DEFAULT_OPTIONS.period;
         var v0 = transition.velocity || this.velocity;
 
-        this.curve = getCurve(damping, frequency, x0, value, v0);
-        this.energy = calculateEnergy(frequency);
+        this.curve = getCurve(damping, period, x0, value, v0);
+        this.energy = calculateEnergy(period);
 
         var spread = getSpread(value, x0);
         this.energyTolerance = tolerance * Math.pow(spread, 2);
@@ -106,17 +106,17 @@ define(function (require, exports, module) {
         return Math.max(1, Math.abs(value - x0));
     }
 
-    function getCurve(damping, frequency, x0, value, v0){
+    function getCurve(damping, period, x0, value, v0){
         if (damping < 1)
-            return createUnderDampedSpring(damping, frequency, x0, value, v0);
+            return createUnderDampedSpring(damping, period, x0, value, v0);
         else if (damping === 1)
-            return createCriticallyDampedSpring(damping, frequency, x0, value, v0);
+            return createCriticallyDampedSpring(damping, period, x0, value, v0);
         else
-            return createOverDampedSpring(damping, frequency, x0, value, v0);
+            return createOverDampedSpring(damping, period, x0, value, v0);
     }
 
-    function calculateEnergy(frequency){
-        var omega = 2 * Math.PI * frequency;
+    function calculateEnergy(period){
+        var omega = 2 * Math.PI / period;
 
         return function(origin, position, velocity){
             var distance = origin - position;
@@ -126,30 +126,30 @@ define(function (require, exports, module) {
         }
     }
 
-    function createUnderDampedSpring(damping, frequency, x0, x1, v0) {
-        var w_d = frequency * Math.sqrt(1 - damping * damping); // damped frequency
+    function createUnderDampedSpring(damping, period, x0, x1, v0) {
+        var w_d =  Math.sqrt(1 - damping * damping) / period; // damped frequency
         var A = x0 - x1;
-        var B = 1 / w_d * (damping * frequency * A + v0);
+        var B = (damping * A + v0) / (period * w_d);
 
         return function (t) {
-            return x1 + Math.exp(-damping * frequency * t) *
+            return x1 + Math.exp(-damping * t / period) *
                 (A * Math.cos(w_d * t) + B * Math.sin(w_d * t));
         }
     }
 
-    function createCriticallyDampedSpring(damping, frequency, x0, x1, v0) {
+    function createCriticallyDampedSpring(damping, period, x0, x1, v0) {
         var A = x0 - x1;
-        var B = v0 + frequency * A;
+        var B = v0 + A / period;
 
         return function (t) {
-            return x1 + Math.exp(-damping * frequency * t) * (A + B * t);
+            return x1 + Math.exp(-damping * t / period) * (A + B * t);
         }
     }
 
-    function createOverDampedSpring(damping, frequency, x0, x1, v0) {
-        var w_d = frequency * Math.sqrt(damping * damping - 1); // damped frequency
-        var r1 = -damping * frequency + w_d;
-        var r2 = -damping * frequency - w_d;
+    function createOverDampedSpring(damping, period, x0, x1, v0) {
+        var w_d = Math.sqrt(damping * damping - 1) / period; // damped frequency
+        var r1 = -damping / period + w_d;
+        var r2 = -damping / period - w_d;
         var L = x0 - x1;
         var const1 = (r1 * L - v0) / (r2 - r1);
         var A = L + const1;
