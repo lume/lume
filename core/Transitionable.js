@@ -8,7 +8,7 @@ define(function (require, exports, module) {
     var SimpleStream = require('../streams/SimpleStream');
     var Stream = require('../streams/Stream');
 
-    var Tween = require('../transitions/TweenTransition');
+    var Tween = require('../transitions/Tween');
     var Spring = require('../transitions/Spring');
     var Inertia = require('../transitions/Inertia');
 
