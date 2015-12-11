@@ -5,7 +5,6 @@ define(function (require, exports, module) {
     var SimpleStream = require('../streams/SimpleStream');
 
     var now = Date.now;
-    var eps = 1e-6; // for calculating velocity using finite difference
     var tolerance = 1e-9; // energy minimum
 
     /**
@@ -23,10 +22,11 @@ define(function (require, exports, module) {
 
         this.value = value || 0;
         this.velocity = velocity || 0;
+        this.damping = 0;
 
-        this.startTime = now();
         this.energy = null;
         this._active = false;
+        this._previousTime = now();
 
         this._eventOutput = new EventHandler();
         EventHandler.setOutputHandler(this, this._eventOutput);
@@ -36,7 +36,7 @@ define(function (require, exports, module) {
 
     Inertia.DEFAULT_OPTIONS = {
         velocity: 0,
-        damping: 0.5
+        damping: 0.1
     };
 
     Inertia.prototype = Object.create(SimpleStream.prototype);
@@ -46,7 +46,7 @@ define(function (require, exports, module) {
      * Set new value to transition to, with a transition definition.
      *
      * @method set
-     * @param endValue {Number}             End value
+     * @param value {Number}                Starting value
      * @param [transition] {Object}         Transition definition
      */
     Inertia.prototype.set = function (value, transition) {
@@ -55,17 +55,13 @@ define(function (require, exports, module) {
             this._active = true;
         }
 
-        var damping = (transition.damping == undefined)
+        this.value = value;
+
+        this.damping = (transition.damping == undefined)
             ? Inertia.DEFAULT_OPTIONS.damping
-            : Math.min(transition.damping, 1);
+            : Math.pow(Math.min(transition.damping, 1), 3);
 
-        // convert [0,1] input to [0,Infinity] in a way that seams reasonable
-        damping = 0.005 * damping / (1 - damping);
-
-        var v0 = transition.velocity || this.velocity;
-
-        this.curve = getCurve(damping, value, v0);
-        this.startTime = now();
+        this.velocity = transition.velocity || this.velocity;
     };
 
     /**
@@ -120,46 +116,24 @@ define(function (require, exports, module) {
     Inertia.prototype.update = function update() {
         if (!this._active) return;
 
-        var timeSinceStart = now() - this.startTime;
+        var currentTime = now();
+        var dt = currentTime - this._previousTime;
+        this._previousTime = currentTime;
 
-        var value = this.curve(timeSinceStart);
-        var next = this.curve(timeSinceStart + eps);
-        var prev = this.curve(timeSinceStart - eps);
-
-        this.velocity = (next - prev) / (2 * eps);
+        this.velocity *= (1 - this.damping);
+        this.value += dt * this.velocity;
 
         var energy = 0.5 * this.velocity * this.velocity;
 
         if (energy >= tolerance) {
-            this.value = value;
-            this.emit('update', value);
+            this.emit('update', this.value);
         }
         else {
-            this.reset(value);
+            this.reset(this.value);
             this._active = false;
-            this.emit('end', value);
+            this.emit('end', this.value);
         }
     };
-
-    function getCurve(damping, x0, v0) {
-        if (damping == 0)
-            return createNoDamping(x0, v0);
-        else if (damping > 0)
-            return createWithDamping(damping, x0, v0);
-        else console.error('damping must be positive');
-    }
-
-    function createNoDamping(x0, v0){
-        return function(t){
-            return x0 + v0 * t;
-        }
-    }
-
-    function createWithDamping(damping, x0, v0){
-        return function(t){
-            return x0 + (v0 / damping) * (1 - Math.exp(-damping * t));
-        }
-    }
 
     module.exports = Inertia;
 });
