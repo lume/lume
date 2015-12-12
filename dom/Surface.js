@@ -61,6 +61,7 @@ define(function(require, exports, module) {
      * @param [options.aspectRatio] {Number}    Aspect ratio
      * @param [options.opacity=1] {Number}      Opacity
      * @param [options.tagName="div"] {String}  HTML tagName
+     * @param [options.preventDrag] {Boolean}   Prevents default scroll behavior on touch devices
      */
     function Surface(options) {
         this.properties = {};
@@ -146,6 +147,21 @@ define(function(require, exports, module) {
     function _removeAttributes(target) {
         for (var key in this.attributes)
             target.removeAttribute(key);
+    }
+
+    function preventDrag(){
+        if (this._currentTarget){
+            this._currentTarget.addEventListener('touchmove', function (event) {
+                event.preventDefault();
+            });
+        }
+        else {
+            this.on('deploy', function (target) {
+                target.addEventListener('touchmove', function (event) {
+                    event.preventDefault();
+                });
+            }.bind(this));
+        }
     }
     
     /**
@@ -318,6 +334,7 @@ define(function(require, exports, module) {
         if (options.attributes !== undefined) this.setAttributes(options.attributes);
         if (options.content !== undefined) this.setContent(options.content);
         if (options.aspectRatio !== undefined) this.setAspectRatio(options.aspectRatio);
+        if (options.preventDrag) preventDrag.call(this, options.aspectRatio);
     };
 
     /**
@@ -401,7 +418,7 @@ define(function(require, exports, module) {
         else target.innerHTML = content;
 
         this._contentDirty = false;
-        this._eventOutput.emit('deploy');
+        this._eventOutput.emit('deploy', target);
     };
 
     /**

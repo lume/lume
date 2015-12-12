@@ -49,10 +49,9 @@ define(function(require, exports, module) {
      * @namespace DOM
      * @uses Core.RootNode
      * @param [options] {Object}                Options
-     * @param [options.perspective] {Number}    Perspective in pixels
+     * @param [options.preventDrag] {Boolean}   Prevents default scroll behavior on touch devices
      */
     function Context(options) {
-        options = options || {};
         this._node = new RootNode();
 
         this._size = new SimpleStream();
@@ -67,7 +66,7 @@ define(function(require, exports, module) {
         this._node._size.subscribe(this.size);
         this._node._layout.subscribe(this._layout);
 
-        this._perspective = new Transitionable(options.perspective || 0);
+        this._perspective = new Transitionable();
 
         this._perspective.on('update', function(perspective){
             setPerspective(this.container, perspective);
@@ -81,6 +80,14 @@ define(function(require, exports, module) {
         this._eventForwarder = function _eventForwarder(event) {
             this._eventOutput.emit(event.type, event);
         }.bind(this);
+
+        if (options.preventDrag) {
+            this.on('deploy', function (target) {
+                target.addEventListener('touchmove', function (event) {
+                    event.preventDefault();
+                });
+            });
+        }
     }
 
     /**
