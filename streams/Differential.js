@@ -32,16 +32,13 @@ define(function(require, exports, module){
         var delta = undefined;
 
         Stream.call(this, {
-            update : function(){ return delta; }
+            update: function () { return delta; }
         });
 
-        this._eventInput.on('start', function(value){
-            previous = value;
-        });
-
+        this._eventInput.on('start', function(value){ previous = value; });
         this._eventInput.on('update', function(value){
             var scale = this.options.scale;
-            if (previous instanceof Array){
+            if (previous instanceof Array) {
                 delta = [];
                 for (var i = 0; i < previous.length; i++)
                     delta[i] = scale * (value[i] - previous[i]);
