@@ -92,7 +92,7 @@ define(function(require, exports, module) {
             // responsible for moving the content from user input
             var gestureDelta = new Stream({
                 start : function (){
-                    this.position.unsubscribe(transitionDelta);
+                    this.transitionStream.halt();
                     return 0;
                 }.bind(this),
                 update : function (data){
@@ -118,44 +118,49 @@ define(function(require, exports, module) {
                             newDelta = MAX_LENGTH - currentPosition;
                         else if (newPosition < MIN_LENGTH && currentPosition !== MIN_LENGTH)
                             newDelta = MIN_LENGTH - currentPosition;
-                        else newDelta = 0;
+                        else
+                            newDelta = 0;
                     }
 
                     return newDelta;
                 }.bind(this),
                 end : function (data){
-                    this.position.subscribe(transitionDelta);
                     var velocity = data.velocity;
+
                     var orientation = this.orientation;
-                    var length = this.options.revealLength;
-                    var isOpen = this.isOpen;
-                    var currentPosition = this.position.get();
+                    var position = this.position.get();
 
-                    var options = this.options;
-
+                    var length = options.revealLength;
                     var MAX_LENGTH = orientation * length;
                     var positionThreshold = options.positionThreshold || MAX_LENGTH / 2;
                     var velocityThreshold = options.velocityThreshold;
 
-                    if (options.transition instanceof Object)
-                        options.transition.velocity = velocity;
-
-                    if (currentPosition === 0) {
+                    if (position === 0) {
                         this.isOpen = false;
-                        return;
+                        return false;
                     }
 
-                    if (currentPosition === MAX_LENGTH) {
+                    if (position === MAX_LENGTH) {
                         this.isOpen = true;
-                        return;
+                        return false;
                     }
 
-                    var shouldToggle =
-                        Math.abs(velocity) > velocityThreshold           ||
-                        (!isOpen && currentPosition > positionThreshold) ||
-                        (isOpen && currentPosition < positionThreshold);
+                    var shouldOpen =
+                        (position >= positionThreshold) && ((velocity > -velocityThreshold) || (velocity > velocityThreshold)) ||
+                        (position <  positionThreshold) && ((velocity >  velocityThreshold));
 
-                    (shouldToggle) ? this.toggle() : this.reset();
+                    if (shouldOpen){
+                        this.options.transitionOpen.velocity = velocity;
+                        this.open(this.options.transitionOpen, function(){
+                            this.options.transitionOpen.velocity = 0;
+                        }.bind(this));
+                    }
+                    else {
+                        this.options.transitionClose.velocity = velocity;
+                        this.close(this.options.transitionClose, function(){
+                            this.options.transitionClose.velocity = 0;
+                        }.bind(this));
+                    }
                 }.bind(this)
             });
 
@@ -164,7 +169,7 @@ define(function(require, exports, module) {
             var transitionDelta = new Differential();
             transitionDelta.subscribe(this.transitionStream);
 
-            this.position = new Accumulator();
+            this.position = new Accumulator(0);
             this.position.subscribe(gestureDelta);
             this.position.subscribe(transitionDelta);
 
@@ -217,7 +222,6 @@ define(function(require, exports, module) {
          * @param [callback] {Function}         callback
          */
         open : function open(transition, callback){
-            if (transition instanceof Function) callback = transition;
             if (transition === undefined) transition = this.options.transitionOpen;
             this.setPosition(this.options.revealLength, transition, callback);
             if (!this.isOpen) {
@@ -234,7 +238,6 @@ define(function(require, exports, module) {
          * @param [callback] {Function}         callback
          */
         close : function close(transition, callback){
-            if (transition instanceof Function) callback = transition;
             if (transition === undefined) transition = this.options.transitionClose;
             this.setPosition(0, transition, callback);
             if (this.isOpen){
