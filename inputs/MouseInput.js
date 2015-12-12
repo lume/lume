@@ -159,7 +159,7 @@ define(function(require, exports, module) {
     }
 
     function handleMove(event) {
-        if (!this._down) return;
+        if (!this._down) return false;
 
         var scale = this.options.scale;
 
@@ -217,7 +217,7 @@ define(function(require, exports, module) {
     }
 
     function handleEnd() {
-        if (!this._down) return;
+        if (!this._down) return false;
 
         this._eventOutput.emit('end', this._payload);
         this._prevCoord = undefined;
