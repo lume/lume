@@ -56,7 +56,6 @@ define(function(require, exports, module){
 
         this._eventInput.on('update', function(delta){
             if (delta instanceof Array){
-                if (!this.sum) this.sum = [];
                 for (var i = 0; i < delta.length; i++){
                     this.sum[i] += delta[i];
                     this.sum[i] = clamp(this.sum[i], this.options.min, this.options.max);
