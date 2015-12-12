@@ -143,6 +143,8 @@ define(function (require, exports, module) {
             this.emit('update', value);
         }
         else {
+            this.emit('update', this.target);
+
             this.reset(this.target);
             this._active = false;
             this.emit('end', this.target);
@@ -176,7 +178,7 @@ define(function (require, exports, module) {
     function createUnderDampedSpring(damping, period, x0, x1, v0) {
         var w_d =  Math.sqrt(1 - damping * damping) / period; // damped frequency
         var A = x0 - x1;
-        var B = (damping * A + v0) / (period * w_d);
+        var B = (damping / period * A + v0) / (w_d);
 
         return function (t) {
             return x1 + Math.exp(-damping * t / period) *
