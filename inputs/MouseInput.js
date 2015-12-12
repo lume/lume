@@ -159,7 +159,9 @@ define(function(require, exports, module) {
     }
 
     function handleMove(event) {
-        if (!this._prevCoord) return;
+        if (!this._down) return;
+
+        var scale = this.options.scale;
 
         var prevCoord = this._prevCoord;
         var prevTime = this._prevTime;
@@ -169,36 +171,36 @@ define(function(require, exports, module) {
 
         var currTime = _now();
 
-        var diffX = x - prevCoord[0];
-        var diffY = y - prevCoord[1];
+        var diffX = scale * (x - prevCoord[0]);
+        var diffY = scale * (y - prevCoord[1]);
 
-        var diffTime = Math.max(currTime - prevTime, MINIMUM_TICK_TIME); // minimum tick time
+        var dt = Math.max(currTime - prevTime, MINIMUM_TICK_TIME); // minimum tick time
+        var inv_dt = 1 / dt;
 
-        var velX = diffX / diffTime;
-        var velY = diffY / diffTime;
+        var velX = diffX * inv_dt;
+        var velY = diffY * inv_dt;
 
-        var scale = this.options.scale;
         var nextVel;
         var nextDelta;
 
         if (this.options.direction === MouseInput.DIRECTION.X) {
-            nextDelta = scale * diffX;
-            nextVel = scale * velX;
+            nextDelta = diffX;
+            nextVel = velX;
             this._position += nextDelta;
         }
         else if (this.options.direction === MouseInput.DIRECTION.Y) {
-            nextDelta = scale * diffY;
-            nextVel = scale * velY;
+            nextDelta = diffY;
+            nextVel = velY;
             this._position += nextDelta;
         }
         else {
-            nextDelta = [scale * diffX, scale * diffY];
-            nextVel = [scale * velX, scale * velY];
+            nextDelta = [diffX, diffY];
+            nextVel = [velX, velY];
             this._position[0] += nextDelta[0];
             this._position[1] += nextDelta[1];
         }
 
-        var payload = this._payload;
+        var payload      = this._payload;
         payload.delta    = nextDelta;
         payload.value    = this._position;
         payload.velocity = nextVel;

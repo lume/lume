@@ -140,42 +140,39 @@ define(function(require, exports, module) {
     }
 
     function handleMove(data) {
+        var scale = this.options.scale;
         var history = data.history;
 
         var currHistory = history[history.length - 1];
         var prevHistory = history[history.length - 2];
 
-        var distantTime = prevHistory.timestamp;
+        var prevTime = prevHistory.timestamp;
         var currTime = currHistory.timestamp;
 
-        var diffX = currHistory.x - prevHistory.x;
-        var diffY = currHistory.y - prevHistory.y;
+        var diffX = scale * (currHistory.x - prevHistory.x);
+        var diffY = scale * (currHistory.y - prevHistory.y);
 
-        var velDiffX = currHistory.x - prevHistory.x;
-        var velDiffY = currHistory.y - prevHistory.y;
+        var dt = Math.max(currTime - prevTime, MINIMUM_TICK_TIME);
+        var inv_dt = 1 / dt;
 
-        var invDeltaT = Math.max(currTime - distantTime, MINIMUM_TICK_TIME);
+        var velX = diffX * inv_dt;
+        var velY = diffY * inv_dt;
 
-        var velX = velDiffX * invDeltaT;
-        var velY = velDiffY * invDeltaT;
-
-        var scale = this.options.scale;
         var nextVel;
         var nextDelta;
-
         if (this.options.direction === TouchInput.DIRECTION.X) {
-            nextDelta = scale * diffX;
-            nextVel = scale * velX;
-            this._position += nextDelta;
+            nextDelta = diffX;
+            nextVel = velX;
+            this._position += diffX;
         }
         else if (this.options.direction === TouchInput.DIRECTION.Y) {
-            nextDelta = scale * diffY;
-            nextVel = scale * velY;
+            nextDelta = diffY;
+            nextVel = velY;
             this._position += nextDelta;
         }
         else {
-            nextDelta = [scale * diffX, scale * diffY];
-            nextVel = [scale * velX, scale * velY];
+            nextDelta = [diffX, diffY];
+            nextVel = [velX, velY];
             this._position[0] += nextDelta[0];
             this._position[1] += nextDelta[1];
         }
