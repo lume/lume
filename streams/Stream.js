@@ -94,7 +94,7 @@ define(function(require, exports, module) {
 
         this._eventInput.on(EVENTS.START, function(data){
             counter++;
-            if (dirtyStart || isUpdating) return;
+            if (dirtyStart || isUpdating) return false;
             dirtyStart = true;
             preTickQueue.push(start.bind(this, data));
         }.bind(this));
@@ -108,7 +108,7 @@ define(function(require, exports, module) {
             counter--;
             if (isUpdating && counter > 0) {
                 update.call(this, data);
-                return;
+                return false;
             }
             isUpdating = false;
             if (dirtyEnd) return;
