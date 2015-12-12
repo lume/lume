@@ -11,10 +11,6 @@
 define(function(require, exports, module) {
     var Surface = require('./Surface');
     var Context = require('./Context');
-    var dirtyQueue = require('../core/queues/dirtyQueue');
-    var preTickQueue = require('../core/queues/preTickQueue');
-    var Transform = require('../core/Transform');
-    var EventHandler = require('../events/EventHandler');
 
     /**
      * ContainerSurface enables nesting of DOM. A ContainerSurface manages
