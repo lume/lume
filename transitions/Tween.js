@@ -5,7 +5,7 @@ define(function(require, exports, module) {
     var SimpleStream = require('../streams/SimpleStream');
 
     var now = Date.now;
-    var eps = 1e-7; // for calculating velocity using finite difference
+    var eps = 1e-9; // for calculating velocity using finite difference
     var registeredCurves = {};
 
     /**
@@ -227,6 +227,8 @@ define(function(require, exports, module) {
      * @method update
      */
     Tween.prototype.update = function update() {
+        if (!this._active) return;
+
         var timeSinceStart = now() - this._startTime;
 
         this.velocity = _calculateVelocity(this.state, this._startValue, this._curve, this._duration, 1);
@@ -237,6 +239,8 @@ define(function(require, exports, module) {
             this.emit('update', this.state);
         }
         else {
+            this.emit('update', this._endValue);
+
             this.reset(this._endValue);
             this._active = false;
             this.emit('end', this._endValue);

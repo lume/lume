@@ -129,6 +129,8 @@ define(function (require, exports, module) {
             this.emit('update', this.value);
         }
         else {
+            this.emit('update', this.value);
+
             this.reset(this.value);
             this._active = false;
             this.emit('end', this.value);
