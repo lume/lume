@@ -93,6 +93,8 @@ define(function (require, exports, module) {
 
                 if (this._engineInstance) {
                     this.velocity = this._engineInstance.getVelocity();
+                    var index = tickQueue.indexOf(this.updateMethod);
+                    if (index >= 0) tickQueue.splice(index, 1);
                 }
 
                 this._active = false;
@@ -213,11 +215,17 @@ define(function (require, exports, module) {
         return this.value;
     };
 
-    Transitionable.prototype.halt = function () {
-        this.value = this.get();
-        this._callback = undefined;
+    Transitionable.prototype.reset = function reset(value, velocity){
+        this.value = value;
+        this.velocity = velocity;
+        this._callback = null;
         this._method = null;
-        this.emit('end', this.value);
+        if (this._engineInstance) this._engineInstance.reset(value, velocity);
+    };
+
+    Transitionable.prototype.halt = function () {
+        this.reset(this.get());
+        this.trigger('end', this.value);
     };
 
     /**
