@@ -57,12 +57,12 @@ return /******/ (function(modules) { // webpackBootstrap
 	var __WEBPACK_AMD_DEFINE_RESULT__;!(__WEBPACK_AMD_DEFINE_RESULT__ = function(require, exports, module) {
 	    module.exports = {
 	        Core: __webpack_require__(1),
-	        DOM: __webpack_require__(30),
-	        Events: __webpack_require__(37),
-	        Inputs: __webpack_require__(38),
-	        Layouts: __webpack_require__(48),
-	        Streams: __webpack_require__(56),
-	        Transitions: __webpack_require__(57)
+	        DOM: __webpack_require__(32),
+	        Events: __webpack_require__(39),
+	        Inputs: __webpack_require__(40),
+	        Layouts: __webpack_require__(50),
+	        Streams: __webpack_require__(58),
+	        Transitions: __webpack_require__(59)
 	    };
 	}.call(exports, __webpack_require__, exports, module), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
 
@@ -79,7 +79,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	        Timer: __webpack_require__(20),
 	        Transform: __webpack_require__(21),
 	        Transitionable: __webpack_require__(22),
-	        View: __webpack_require__(25)
+	        View: __webpack_require__(26)
 	    };
 	}.call(exports, __webpack_require__, exports, module), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
 
@@ -288,7 +288,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	     *
 	     *  @example
 	     *
-	     *      var context = Engine.createContext();
+	     *      var context = Context();
 	     *
 	     *      var surface = new Surface({
 	     *          size : [100,100],
@@ -303,16 +303,14 @@ return /******/ (function(modules) { // webpackBootstrap
 	     *      });
 	     *
 	     *      context.add(layout).add(surface);
+	     *      context.mount(document.body)
 	     *
-	     *      Engine.on('click', function(){
-	     *          opacity.set(0, {duration : 1000});
-	     *      });
-	     *
-	     *      Engine.start();
+	     *      opacity.set(0, {duration : 1000});
 	     *
 	     * @class LayoutNode
 	     * @constructor
 	     * @namespace Core
+	     * @private
 	     * @param sources {Object}                          Object of layout sources
 	     * @param [sources.transform] {Stream|Transform}    Transform source
 	     * @param [sources.align] {Stream|Array}            Align source
@@ -405,8 +403,8 @@ return /******/ (function(modules) { // webpackBootstrap
 	     *      eventHandlerA.emit('name', {data : 0});
 	     *
 	     * @class EventHandler
-	     * @namespace Core
-	     * @extends Core.EventEmitter
+	     * @namespace Events
+	     * @extends Events.EventEmitter
 	     * @constructor
 	     */
 	    function EventHandler() {
@@ -558,7 +556,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	     *      eventEmitter.emit('send', {data : 0});
 	     *
 	     * @class EventEmitter
-	     * @namespace Core
+	     * @namespace Events
 	     * @constructor
 	     */
 	    function EventEmitter() {
@@ -825,6 +823,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	     *      eventEmitter.emit('name', {x : 1, y : 2}); // alerts 3
 	     *
 	     * @class EventMapper
+	     * @namespace Events
 	     * @constructor
 	     * @param map {Function}  Function to modify the event payload
 	     */
@@ -984,6 +983,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	     *      eventEmitter.emit('move', {x : 3, y : 2}); // x is bigger
 	     *
 	     * @class EventSplitter
+	     * @namespace Events
 	     * @constructor
 	     * @param splitter {Function}
 	     */
@@ -1096,9 +1096,9 @@ return /******/ (function(modules) { // webpackBootstrap
 	        EventHandler.setInputHandler(this, this._eventInput);
 	        EventHandler.setOutputHandler(this, this._eventOutput);
 
+	        var counter = 0;
 	        var isUpdating = false;
 	        var dirtyStart = false;
-	        var dirtyUpdate = false;
 	        var dirtyEnd = false;
 
 	        function start(data){
@@ -1110,7 +1110,6 @@ return /******/ (function(modules) { // webpackBootstrap
 	        function update(data){
 	            var payload = options && options.update ? options.update(data) : data;
 	            if (payload !== false) this.emit(EVENTS.UPDATE, payload);
-	            dirtyUpdate = false;
 	        }
 
 	        function end(data){
@@ -1120,22 +1119,26 @@ return /******/ (function(modules) { // webpackBootstrap
 	        }
 
 	        this._eventInput.on(EVENTS.START, function(data){
-	            if (dirtyStart || isUpdating) return;
+	            counter++;
+	            if (dirtyStart || isUpdating) return false;
 	            dirtyStart = true;
 	            preTickQueue.push(start.bind(this, data));
 	        }.bind(this));
 
 	        this._eventInput.on(EVENTS.UPDATE, function(data){
-	            if (dirtyUpdate) return;
-	            dirtyUpdate = true;
 	            isUpdating = true;
 	            postTickQueue.push(update.bind(this, data));
 	        }.bind(this));
 
 	        this._eventInput.on(EVENTS.END, function(data){
+	            counter--;
+	            if (isUpdating && counter > 0) {
+	                update.call(this, data);
+	                return false;
+	            }
+	            isUpdating = false;
 	            if (dirtyEnd) return;
 	            dirtyEnd = true;
-	            isUpdating = false;
 	            dirtyQueue.push(end.bind(this, data));
 	        }.bind(this));
 
@@ -1293,7 +1296,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	     *
 	     *  @example
 	     *
-	     *      var context = Engine.createContext();
+	     *      var context = Context();
 	     *
 	     *      var surface = new Surface({
 	     *          size : [100,100],
@@ -1306,12 +1309,12 @@ return /******/ (function(modules) { // webpackBootstrap
 	     *      });
 	     *
 	     *      context.add(sizeNode).add(surface);
-	     *
-	     *      Engine.start();
+	     *      context.mount(document.body)
 	     *
 	     * @class SizeNode
 	     * @namespace Core
 	     * @constructor
+	     * @private
 	     * @param sources {Object}                      Object of size sources
 	     * @param [sources.size] {Stream|Array}         Size source
 	     * @param [sources.margin] {Stream|Array}       Margin source
@@ -2451,31 +2454,24 @@ return /******/ (function(modules) { // webpackBootstrap
 /* 22 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var __WEBPACK_AMD_DEFINE_RESULT__;/* This Source Code Form is subject to the terms of the Mozilla Public
-	 * License, v. 2.0. If a copy of the MPL was not distributed with this
-	 * file, You can obtain one at http://mozilla.org/MPL/2.0/.
-	 *
-	 * @license MPL 2.0
-	 * @copyright Famous Industries, Inc. 2014
-	 */
+	var __WEBPACK_AMD_DEFINE_RESULT__;/* Copyright © 2015 David Valdman */
 
-	/* Modified work copyright © 2015 David Valdman */
-
-	!(__WEBPACK_AMD_DEFINE_RESULT__ = function(require, exports, module) {
+	!(__WEBPACK_AMD_DEFINE_RESULT__ = function (require, exports, module) {
 	    var dirtyQueue = __webpack_require__(6);
 	    var preTickQueue = __webpack_require__(5);
 	    var tickQueue = __webpack_require__(7);
-	    var TweenTransition = __webpack_require__(23);
 	    var EventHandler = __webpack_require__(9);
 	    var SimpleStream = __webpack_require__(11);
+	    var Stream = __webpack_require__(15);
 
-	    var transitionMethods = {};
+	    var Tween = __webpack_require__(23);
+	    var Spring = __webpack_require__(24);
+	    var Inertia = __webpack_require__(25);
 
-	    var STATE = {
-	        NONE : -1,
-	        START : 0,
-	        UPDATE : 1,
-	        END : 2
+	    var transitionMethods = {
+	        tween: Tween,
+	        spring: Spring,
+	        inertia: Inertia
 	    };
 
 	    /**
@@ -2504,96 +2500,76 @@ return /******/ (function(modules) { // webpackBootstrap
 	     * @class Transitionable
 	     * @constructor
 	     * @extends Streams.SimpleStream
-	     * @param start {Number|Number[]}   Starting value
+	     * @param value {Number|Number[]}   Starting value
 	     */
-	    function Transitionable(start) {
-	        this.transitionQueue = [];
-	        this.endStateQueue = [];
-	        this.callbackQueue = [];
-
-	        this.state = start || 0;
-	        this.velocity = undefined;
+	    function Transitionable(value) {
+	        this.value = value || 0;
+	        this.velocity = 0;
 	        this._callback = undefined;
-	        this._engineInstance = null;
-	        this._currentMethod = null;
-	        this._state = STATE.NONE;
+	        this._method = null;
+	        this._active = false;
+	        this._currentActive = false;
+
+	        var hasUpdated = false;
+	        this.updateMethod = undefined;
 
 	        this._eventInput = new EventHandler();
 	        this._eventOutput = new EventHandler();
 	        EventHandler.setInputHandler(this, this._eventInput);
 	        EventHandler.setOutputHandler(this, this._eventOutput);
 
-	        var boundUpdate = _update.bind(this);
+	        this._eventInput.on('start', function (value) {
+	            this._currentActive = true;
+	            if (!this._active) {
+	                this.emit('start', value);
+	                this._active = true;
+	            }
+	        }.bind(this));
 
-	        this._eventOutput.on('start', function(){
-	            tickQueue.push(boundUpdate);
-	        });
+	        this._eventInput.on('update', function (value) {
+	            hasUpdated = true;
+	            this.value = value;
+	            this.velocity = this._engineInstance.getVelocity();
+	            this.emit('update', value);
+	        }.bind(this));
 
-	        this._eventOutput.on('end', function(){
-	            var index = tickQueue.indexOf(boundUpdate);
-	            tickQueue.splice(index,1);
-	        });
+	        this._eventInput.on('end', function (value) {
+	            this.value = value;
+	            this._currentActive = false;
 
-	        if (start !== undefined){
-	            preTickQueue.push(function transitionableSet(){
-	                // make sure didn't set in same tick as defined
-	                if (this._state == STATE.NONE || this._state == STATE.END)
-	                    this.set(start);
-	            }.bind(this));
-	        }
-	    }
-
-	    Transitionable.prototype = Object.create(SimpleStream.prototype);
-	    Transitionable.prototype.constructor = Transitionable;
-
-	    function _update(){
-	        if (!this._engineInstance) return;
-	        this.state = this._engineInstance.get();
-	        this.emit('update', this.state);
-	    }
-
-	    function _loadNext() {
-	        if (this.endStateQueue.length === 0) {
 	            if (this._callback) {
 	                var callback = this._callback;
 	                this._callback = undefined;
 	                callback();
 	            }
 
-	            dirtyQueue.push(function(){
-	                if (this._engineInstance && !this._engineInstance.isActive()){
-	                    this._state = STATE.END;
-	                    this.emit('end', this.state);
-	                }
+	            if (!this._currentActive){
+	                this._active = false;
+	                hasUpdated = false;
+
+	                if (this._engineInstance)
+	                    this.velocity = this._engineInstance.getVelocity();
+
+	                this._active = false;
+	                this.emit('end', value);
+	            }
+	        }.bind(this));
+
+	        if (value !== undefined) {
+	            this.value = value;
+	            preTickQueue.push(function () {
+	                this.trigger('start', value);
+
+	                dirtyQueue.push(function () {
+	                    if (hasUpdated) return;
+	                    this.trigger('end', value);
+	                }.bind(this));
 	            }.bind(this));
-
-	            return;
 	        }
-
-	        var endValue = this.endStateQueue.shift();
-	        var transition = this.transitionQueue.shift();
-	        this._callback = this.callbackQueue.shift();
-
-	        var curve = transition.curve;
-	        var method = (transition instanceof Object && curve && transitionMethods[curve])
-	            ? transitionMethods[curve]
-	            : TweenTransition;
-
-	        if (this._currentMethod !== method) {
-	            this._engineInstance = new method();
-	            this._currentMethod = method;
-	        }
-
-	        this._engineInstance.reset(this.state, this.velocity);
-	        this._state = STATE.UPDATE;
-
-	        if (this.velocity !== undefined) {
-	            this.velocity = this._engineInstance.getVelocity();
-	            transition.velocity = this.velocity;
-	        }
-
-	        this._engineInstance.set(endValue, transition, _loadNext.bind(this));
 	    }
+
+	    Transitionable.prototype = Object.create(SimpleStream.prototype);
+	    Transitionable.prototype.constructor = Transitionable;
 
 	    /**
 	     * Constructor method. A way of registering other engines that can interpolate
@@ -2628,46 +2604,58 @@ return /******/ (function(modules) { // webpackBootstrap
 	     *  transition. An optional callback can fire when the transition completes.
 	     *
 	     * @method set
-	     * @param endState {Number|Number[]}        End value
+	     * @param value {Number|Number[]}           End value
 	     * @param [transition] {Object}             Transition definition
 	     * @param [transition.curve] {string}       Easing curve name, e.g., "easeIn"
 	     * @param [transition.duration] {string}    Duration of transition
 	     * @param [callback] {Function}             Callback
 	     */
-	    Transitionable.prototype.set = function set(endState, transition, callback) {
+	    Transitionable.prototype.set = function set(value, transition, callback) {
 	        if (!transition) {
-	            this.reset(endState, undefined);
+	            this.value = value;
+	            this.trigger('start', value);
 
-	            if (this._state !== STATE.START){
-	                this._state = STATE.START;
-	                this.emit('start', this.state);
-	                dirtyQueue.push(function(){
-	                    if (!this._engineInstance){
-	                        this._state = STATE.END;
-	                        this.emit('end', this.state);
-	                    }
-	                }.bind(this));
-	            }
-
-	            if (callback) callback();
-	            return this;
+	            dirtyQueue.push(function () {
+	                this.trigger('end', value);
+	            }.bind(this));
+	            return;
 	        }
 
-	        if (this.isActive()) this.halt();
-	        else {
-	            if (this._state !== STATE.START){
-	                this._state = STATE.START;
-	                this.emit('start', this.state);
+	        if (callback) this._callback = callback;
+
+	        var curve = transition.curve;
+
+	        var method = (curve && transitionMethods[curve])
+	            ? transitionMethods[curve]
+	            : Tween;
+
+	        if (this._method !== method) {
+	            if (this._engineInstance){
+	                if (this.updateMethod){
+	                    var index = tickQueue.indexOf(this.updateMethod);
+	                    if (index >= 0) tickQueue.splice(index, 1);
+	                }
+	                this.unsubscribe(this._engineInstance);
 	            }
+
+	            if (this.value instanceof Array) {
+	                var dimensions = this.value.length;
+	                this._engineInstance = (dimensions < method.DIMENSIONS)
+	                    ? new method(this.value)
+	                    : new NDTransitionable(this.value, method);
+	            }
+	            else this._engineInstance = new method(this.value);
+
+	            this.subscribe(this._engineInstance);
+	            this.updateMethod = this._engineInstance.update.bind(this._engineInstance);
+	            tickQueue.push(this.updateMethod);
+
+	            this._method = method;
 	        }
 
-	        this.endStateQueue.push(endState);
-	        this.transitionQueue.push(transition);
-	        this.callbackQueue.push(callback);
+	        if (!transition.velocity) transition.velocity = this.velocity;
 
-	        _loadNext.call(this);
-
-	        return this;
+	        this._engineInstance.set(value, transition);
 	    };
 
 	    /**
@@ -2677,27 +2665,52 @@ return /******/ (function(modules) { // webpackBootstrap
 	     * @return {Number|Number[]}    Current state
 	     */
 	    Transitionable.prototype.get = function get() {
-	        return this.state;
+	        return this.value;
 	    };
 
 	    /**
-	     * Cancel all transitions and reset to a provided state.
+	     * Return the current velocity of the transition.
+	     *
+	     * @method getVelocity
+	     * @return {Number|Number[]}    Current state
+	     */
+	    Transitionable.prototype.getVelocity = function getVelocity(){
+	        return this.velocity;
+	    };
+
+	    /**
+	     * Sets the value and velocity of the transition without firing any events.
 	     *
 	     * @method reset
-	     * @param startState {Number|Number[]}      Value state
-	     * @param [startVelocity] {Number|Number[]} Velocity state (unused for now)
+	     * @param value {Number|Number[]}       New value
+	     * @param [velocity] {Number|Number[]}  New velocity
 	     */
-	    Transitionable.prototype.reset = function reset(startState, startVelocity) {
-	        if (this._engineInstance)
-	            this._engineInstance.reset(startState);
+	    Transitionable.prototype.reset = function reset(value, velocity){
+	        this.value = value;
+	        this.velocity = velocity || 0;
+	        this._callback = null;
+	        this._method = null;
+	        if (this._engineInstance) this._engineInstance.reset(value, velocity);
+	    };
 
-	        this._currentMethod = null;
-	        this._engineInstance = null;
-	        this.state = startState;
-	        this.velocity = startVelocity;
-	        this.endStateQueue = [];
-	        this.transitionQueue = [];
-	        this.callbackQueue = [];
+	    /**
+	     * Ends the transition in place.
+	     *
+	     * @method halt
+	     */
+	    Transitionable.prototype.halt = function () {
+	        this.reset(this.get());
+	        this.trigger('end', this.value);
+	    };
+
+	    /**
+	     * Determine is the transition is ongoing, or has completed.
+	     *
+	     * @method isActive
+	     * @return {Boolean}
+	     */
+	    Transitionable.prototype.isActive = function isActive() {
+	        return this._active;
 	    };
 
 	    /**
@@ -2711,7 +2724,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	     * @param transitions {Object|Object[]}     Array of transitions
 	     * @param [callback] {Function}             Callback
 	     */
-	    Transitionable.prototype.iterate = function iterate(values, transitions, callback){
+	    Transitionable.prototype.iterate = function iterate(values, transitions, callback) {
 	        if (values.length === 0) {
 	            if (callback) callback();
 	            return;
@@ -2722,25 +2735,54 @@ return /******/ (function(modules) { // webpackBootstrap
 	            ? transitions.shift()
 	            : transitions;
 
-	        this.set(values.shift(), transition, function(){
+	        this.set(values.shift(), transition, function () {
 	            this.iterate(values, transitions, callback);
 	        }.bind(this));
 	    };
 
 	    /**
-	     * Loop indefinitely between values with provided transitions. Fire a callback
-	     *  after each new value is reached.
+	     * Combine multiple transitions to be executed sequentially. Provide the
+	     *  transitions as an array of transition definitions.
+	     *
+	     *  @example
+	     *
+	     *  transitionable.setMany([
+	     *      {value : 0, transition : {curve : 'easeOut', duration : 500}},
+	     *      {value : 1, transition : {curve : 'spring', period : 100, damping : 0.5}}
+	     *  ]);
+	     *
+	     * @method setMany
+	     * @param transitions {Array}   Array of transitions
+	     */
+	    Transitionable.prototype.setMany = function (transitions) {
+	        var first = transitions.shift();
+	        if (transitions.length === 0) {
+	            this.set(first.value, first.transition, first.callback)
+	        }
+	        else {
+	            this.set(first.value, first.transition, function () {
+	                this.setMany(transitions);
+	            }.bind(this));
+	        }
+	    };
+
+	    /**
+	     * Loop indefinitely between values with provided transitions array.
+	     *
+	     *  @example
+	     *
+	     *  transitionable.loop([
+	     *      {value : 0, transition : {curve : 'easeOut', duration : 500}},
+	     *      {value : 1, transition : {curve : 'spring', period : 100, damping : 0.5}}
+	     *  ]);
 	     *
 	     * @method loop
-	     * @param values {Array}                    Array of values
-	     * @param transitions {Object|Object[]}     Array of transitions
-	     * @param [callback] {Function}             Callback
+	     * @param transitions {Array}   Array of transitions
 	     */
-	    Transitionable.prototype.loop = function(values, transitions, callback){
-	        var val = values.slice(0);
-	        this.iterate(values, transitions, function(){
-	            if (callback) callback();
-	            this.loop(val, transitions, callback);
+	    Transitionable.prototype.loop = function (transitions) {
+	        var arrayClone = transitions.slice(0);
+	        this.setMany(transitions, function () {
+	            this.loop(arrayClone);
 	        }.bind(this));
 	    };
 
@@ -2753,46 +2795,44 @@ return /******/ (function(modules) { // webpackBootstrap
 	     */
 	    Transitionable.prototype.delay = function delay(callback, duration) {
 	        this.set(this.get(), {
-	            duration: duration,
-	            curve: function(){return 0;}},
+	                duration: duration,
+	                curve: function () {
+	                    return 0;
+	                }
+	            },
 	            callback
 	        );
 	    };
 
-	    /**
-	     * Determine is the transition is ongoing, or has completed.
-	     *
-	     * @method isActive
-	     * @return {Boolean}
-	     */
-	    Transitionable.prototype.isActive = function isActive() {
-	        return this._state == STATE.UPDATE;
+	    function NDTransitionable(value, method) {
+	        this._eventOutput = new EventHandler();
+	        EventHandler.setOutputHandler(this, this._eventOutput);
+
+	        this.sources = [];
+	        for (var i = 0; i < value.length; i++) {
+	            var source = new method(value[i]);
+	            this.sources.push(source);
+	        }
+
+	        this.stream = Stream.merge(this.sources);
+	        this._eventOutput.subscribe(this.stream);
+	    }
+
+	    NDTransitionable.prototype.set = function (value, transition) {
+	        for (var i = 0; i < value.length; i++)
+	            this.sources[i].set(value[i], transition);
 	    };
 
-	    /**
-	     * Stop transition at the current value and erase all pending actions.
-	     *
-	     * @method halt
-	     */
-	    Transitionable.prototype.halt = function halt() {
-	        var currentState = this.get();
+	    NDTransitionable.prototype.getVelocity = function () {
+	        var velocity = [];
+	        for (var i = 0; i < this.sources.length; i++)
+	            velocity[i] = this.sources[i].getVelocity();
+	        return velocity;
+	    };
 
-	        if (this._engineInstance) this._engineInstance.reset(currentState);
-
-	        this._currentMethod = null;
-	        this._engineInstance = null;
-	        this.state = currentState;
-	        this.velocity = undefined;
-	        this.endStateQueue = [];
-	        this.transitionQueue = [];
-	        this.callbackQueue = [];
-
-	        dirtyQueue.push(function(){
-	            if (!this._engineInstance){
-	                this._state = STATE.END;
-	                this.emit('end', this.state);
-	            }
-	        }.bind(this));
+	    NDTransitionable.prototype.update = function () {
+	        for (var i = 0; i < this.sources.length; i++)
+	            this.sources[i].update();
 	    };
 
 	    module.exports = Transitionable;
@@ -2803,83 +2843,107 @@ return /******/ (function(modules) { // webpackBootstrap
 /* 23 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var __WEBPACK_AMD_DEFINE_RESULT__;/* This Source Code Form is subject to the terms of the Mozilla Public
-	 * License, v. 2.0. If a copy of the MPL was not distributed with this
-	 * file, You can obtain one at http://mozilla.org/MPL/2.0/.
-	 *
-	 * @license MPL 2.0
-	 * @copyright Famous Industries, Inc. 2014
-	 */
-
-	/* Modified work copyright © 2015 David Valdman */
+	var __WEBPACK_AMD_DEFINE_RESULT__;/* Copyright © 2015 David Valdman */
 
 	!(__WEBPACK_AMD_DEFINE_RESULT__ = function(require, exports, module) {
-	    var OptionsManager = __webpack_require__(24);
+	    var EventHandler = __webpack_require__(9);
+	    var SimpleStream = __webpack_require__(11);
 
+	    var now = Date.now;
+	    var eps = 1e-9; // for calculating velocity using finite difference
 	    var registeredCurves = {};
-	    var eps = 1e-7; // for calculating velocity using finite difference
 
 	    /**
-	     * A method of interpolating between start and end values (numbers or
-	     *  arrays of numbers) via an easing curve.
+	     * A method of interpolating between start and end values with
+	     *  an easing curve.
 	     *
-	     * @class TweenTransition
+	     * @class Tween
 	     * @private
 	     * @namespace Transitions
 	     * @constructor
+	     * @param value {Number}    Initial value
 	     */
-	    function TweenTransition(options) {
-	        this.options = OptionsManager.setOptions(this, options);
+	    function Tween(value) {
+	        SimpleStream.call(this);
 
-	        this._startTime = 0;
-	        this._startValue = 0;
+	        this.state = value || 0;
+	        this.velocity = 0;
+	        this._startValue = value || 0;
 	        this._endValue = 0;
+	        this._startTime = now();
 	        this._curve = undefined;
 	        this._duration = 0;
 	        this._active = false;
-	        this._callback = undefined;
-	        this.state = 0;
-	        this.velocity = undefined;
+
+	        this._eventOutput = new EventHandler();
+	        EventHandler.setOutputHandler(this, this._eventOutput);
 	    }
+
+	    Tween.prototype = Object.create(SimpleStream.prototype);
+	    Tween.prototype.constructor = Tween;
 
 	    /**
 	     * Default easing curves.
 	     *
 	     * @property CURVES {object}
 	     * @property CURVES.linear {Function}           Linear interpolation
-	     * @property CURVES.easeIn {Function}           EaseIn interpolation
-	     * @property CURVES.easeOut {Function}          EaseOut interpolation
-	     * @property CURVES.easeInOut {Function}        EaseInOut interpolation
-	     * @property CURVES.easeInOutBounce {Function}  EaseInOutBounce interpolation
-	     * @property CURVES.spring {Function}           Spring-like interpolation
+	     * @property CURVES.easeIn {Function}           EaseIn interpolation. Deceleration from zero velocity.
+	     * @property CURVES.easeInCubic {Function}      Cubic interpolation. Acceleration from zero velocity.
+	     * @property CURVES.easeOut {Function}          EaseOut interpolation. Acceleration from zero velocity.
+	     * @property CURVES.easeOutCubic {Function}     Cubic interpolation. Deceleration from zero velocity.
+	     * @property CURVES.easeOutWall                 Interpolation with wall boundary.
+	     * @property CURVES.easeInOut {Function}        EaseInOut interpolation. Acceleration then deceleration.
+	     * @property CURVES.easeInOutCubic {Function}   Cubic interpolation. Acceleration then deceleration.
 	     * @static
 	     */
-	    TweenTransition.CURVES = {
+	    Tween.CURVES = {
 	        linear: function(t) {
 	            return t;
 	        },
 	        easeIn: function(t) {
-	            return t*t;
+	            return t * t;
 	        },
 	        easeOut: function(t) {
-	            return t*(2-t);
+	            return t * (2 - t);
 	        },
 	        easeInOut: function(t) {
-	            if (t <= 0.5) return 2*t*t;
-	            else return -2*t*t + 4*t - 1;
+	            return (t <= 0.5)
+	                ?  2 * t * t
+	                : -2 * t * t + 4 * t - 1;
 	        },
 	        easeOutBounce: function(t) {
-	            return t*(3 - 2*t);
+	            return t * (3 - 2 * t);
 	        },
-	        spring: function(t) {
-	            return (1 - t) * Math.sin(6 * Math.PI * t) + t;
+	        easeInCubic: function (t) {
+	            return t * t * t;
+	        },
+	        easeOutCubic: function (t) {
+	            return 1 + Math.pow(t - 1, 3);
+	        },
+	        easeInOutCubic: function (t) {
+	            t *= 2;
+	            return (t < 1)
+	                ? .5 * t * t * t
+	                : .5 * Math.pow(t - 2, 3) + 1;
+	        },
+	        easeOutWall: function (t) {
+	            if (t < (1 / 2.75)) {
+	                return (7.5625 * t * t);
+	            } else if (t < (2 / 2.75)) {
+	                return (7.5625 * (t -= (1.5 / 2.75)) * t + .75);
+	            } else if (t < (2.5 / 2.75)) {
+	                return (7.5625 * (t -= (2.25 / 2.75)) * t + .9375);
+	            } else {
+	                return (7.5625 * (t -= (2.625 / 2.75)) * t + .984375);
+	            }
 	        }
 	    };
 
-	    TweenTransition.DEFAULT_OPTIONS = {
-	        curve: TweenTransition.CURVES.linear,
-	        duration: 500,
-	        speed: 0
+	    Tween.DIMENSIONS = Infinity;
+
+	    Tween.DEFAULT_OPTIONS = {
+	        curve: Tween.CURVES.linear,
+	        duration: 500
 	    };
 
 	    /**
@@ -2893,7 +2957,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	     * @param curve {Function}      Function defined on the domain [0,1]
 	     * @return {Boolean}            False if key is taken, else true
 	     */
-	    TweenTransition.register = function register(name, curve) {
+	    Tween.register = function register(name, curve) {
 	        if (!registeredCurves[name]) {
 	            registeredCurves[name] = curve;
 	            return true;
@@ -2909,7 +2973,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	     * @param name {String}     Name dictionary key
 	     * @return {Boolean}        False if key doesn't exist
 	     */
-	    TweenTransition.deregister = function deregister(name) {
+	    Tween.deregister = function deregister(name) {
 	        if (registeredCurves[name]) {
 	            delete registeredCurves[name];
 	            return true;
@@ -2924,8 +2988,108 @@ return /******/ (function(modules) { // webpackBootstrap
 	     * @static
 	     * @return {Object}
 	     */
-	    TweenTransition.getCurves = function getCurves() {
+	    Tween.getCurves = function getCurves() {
 	        return registeredCurves;
+	    };
+
+	    /**
+	     * Set new value to transition to.
+	     *
+	     * @method set
+	     * @param endValue {Number|Number[]}    End value
+	     * @param [transition] {Object}         Transition object of type
+	     *                                      {duration: number, curve: name}
+	     */
+	    Tween.prototype.set = function set(endValue, transition) {
+	        this._startValue = this.get();
+
+	        if (!this._active) {
+	            this.emit('start', this._startValue);
+	            this._active = true;
+	        }
+
+	        this._endValue = endValue;
+	        this._startTime = now();
+
+	        var curve = transition.curve;
+	        if (!registeredCurves[curve] && Tween.CURVES[curve])
+	            Tween.register(curve, Tween.CURVES[curve]);
+
+	        this.velocity = transition.velocity;
+	        this._duration = transition.duration || Tween.DEFAULT_OPTIONS.duration;
+	        this._curve = curve
+	            ? (curve instanceof Function) ? curve : getCurve(curve)
+	            : Tween.DEFAULT_OPTIONS.curve;
+	    };
+
+	    /**
+	     * Get current value.
+	     *
+	     * @method get
+	     * @return {Number|Number[]}
+	     */
+	    Tween.prototype.get = function get() {
+	        return this.state;
+	    };
+
+	    /**
+	     * Get current velocity
+	     *
+	     * @method getVelocity
+	     * @returns {Number|Number[]}
+	     */
+	    Tween.prototype.getVelocity = function getVelocity() {
+	        return this.velocity;
+	    };
+
+	    /**
+	     * Reset the value and velocity of the transition.
+	     *
+	     * @method reset
+	     * @param value {Number|Number[]}       Value
+	     * @param [velocity] {Number|Number[]}  Velocity
+	     */
+	    Tween.prototype.reset = function reset(value, velocity) {
+	        this.state = value;
+	        this.velocity = velocity || 0;
+	    };
+
+	    /**
+	     * Halt transition at current state and erase all pending actions.
+	     *
+	     * @method halt
+	     */
+	    Tween.prototype.halt = function halt() {
+	        var value = this.get();
+	        this.reset(value);
+	        this._active = false;
+	        this.emit('end', value);
+	    };
+
+	    /**
+	     * Update the transition in time.
+	     *
+	     * @method update
+	     */
+	    Tween.prototype.update = function update() {
+	        if (!this._active) return;
+
+	        var timeSinceStart = now() - this._startTime;
+
+	        this.velocity = _calculateVelocity(this.state, this._startValue, this._curve, this._duration, 1);
+
+	        if (timeSinceStart < this._duration) {
+	            var t = timeSinceStart / this._duration;
+	            this.state = _interpolate(this._startValue, this._endValue, this._curve(t));
+	            this.emit('update', this.state);
+	        }
+	        else {
+	            this.emit('update', this._endValue);
+
+	            this.reset(this._endValue);
+	            this._active = false;
+	            this.emit('end', this._endValue);
+	        }
 	    };
 
 	    function getCurve(curveName) {
@@ -2935,94 +3099,136 @@ return /******/ (function(modules) { // webpackBootstrap
 	    }
 
 	    function _interpolate(a, b, t) {
+	        var result;
+	        if (a instanceof Array){
+	            result = [];
+	            for (var i = 0; i < a.length; i++){
+	                if (typeof a[i] === 'number')
+	                    result.push(_interpolate1D(a[i], b[i], t));
+	                else result.push(a[i]);
+	            }
+
+	        }
+	        else result = _interpolate1D(a, b, t);
+	        return result;
+	    }
+
+	    function _interpolate1D(a, b, t){
 	        return ((1 - t) * a) + (t * b);
 	    }
 
-	    function _speed2Duration(start, end, speed){
-	        var duration;
-	        var startValue = this._startValue;
-	        if (startValue instanceof Array) {
-	            var variance = 0;
-	            for (var i in startValue)
-	                variance += (end[i] - start[i]) * (end[i] - start[i]);
-	            duration = Math.sqrt(variance) / speed;
-	        }
-	        else duration = Math.abs(end - start) / speed;
-
-	        return duration;
+	    function _calculateVelocity1D(current, start, curve, duration, t) {
+	        return (current - start) * (curve(t + eps) - curve(t - eps)) / (2 * eps * duration);
 	    }
 
-	    function _clone(obj) {
-	        if (obj instanceof Object) {
-	            if (obj instanceof Array) return obj.slice(0);
-	            else return Object.create(obj);
+	    function _calculateVelocity(current, start, curve, duration, t) {
+	        var result;
+	        if (current instanceof Array){
+	            result = [];
+	            for (var i = 0; i < current.length; i++){
+	                if (typeof current[i] === 'number')
+	                    result.push(_calculateVelocity1D(current[i], start[i], curve, duration, t));
+	                else result.push(current[i]);
+	            }
 	        }
-	        else return obj;
-	    }
-
-	    function _normalize(transition, endValue, defaultTransition) {
-	        var result = {curve: defaultTransition.curve};
-	        if (defaultTransition.duration) result.duration = defaultTransition.duration;
-	        if (defaultTransition.speed) result.speed = defaultTransition.speed;
-	        if (transition instanceof Object) {
-	            if (transition.duration !== undefined) result.duration = transition.duration;
-	            if (transition.curve) result.curve = transition.curve;
-	            if (transition.speed) result.speed = transition.speed;
-	        }
-	        if (typeof result.curve === 'string') result.curve = getCurve(result.curve);
-	        if (transition.speed) result.duration = _speed2Duration(endValue, this._startValue, transition.speed);
-
+	        else result = _calculateVelocity1D(current, start, curve, duration, t);
 	        return result;
 	    }
+
+	    module.exports = Tween;
+	}.call(exports, __webpack_require__, exports, module), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
+
+
+/***/ },
+/* 24 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var __WEBPACK_AMD_DEFINE_RESULT__;/* Copyright © 2015 David Valdman */
+
+	!(__WEBPACK_AMD_DEFINE_RESULT__ = function (require, exports, module) {
+	    var EventHandler = __webpack_require__(9);
+	    var SimpleStream = __webpack_require__(11);
+
+	    var now = Date.now;
+	    var eps = 1e-6; // for calculating velocity using finite difference
+	    var tolerance = 1e-9; // energy minimum
+
+	    /**
+	     * A method of interpolating between start and end values with
+	     *  a spring transition.
+	     *
+	     * @class Tween
+	     * @private
+	     * @namespace Transitions
+	     * @constructor
+	     * @param value {Number}    Initial value
+	     * @param velocity {Number} Initial velocity
+	     */
+	    function Spring(value, velocity) {
+	        SimpleStream.call(this);
+
+	        this.value = value || 0;
+	        this.velocity = velocity || 0;
+
+	        this.target = null;
+	        this.startTime = now();
+	        this.curve = null;
+	        this.energy = null;
+	        this.energyTolerance = tolerance;
+	        this._active = false;
+
+	        this._eventOutput = new EventHandler();
+	        EventHandler.setOutputHandler(this, this._eventOutput);
+	    }
+
+	    Spring.DIMENSIONS = 1;
+
+	    Spring.DEFAULT_OPTIONS = {
+	        velocity: 0,
+	        damping: 0.5,
+	        period : 100
+	    };
+
+	    Spring.prototype = Object.create(SimpleStream.prototype);
+	    Spring.prototype.constructor = Spring;
 
 	    /**
 	     * Set new value to transition to.
 	     *
 	     * @method set
-	     * @param endValue {Number|Number[]}    End value
-	     * @param [transition] {Object}         Transition object of type
-	     *                                      {duration: number, curve: name}
-	     * @param [callback] {Function}         Callback to execute on completion of transition
+	     * @param value {Number}                End value
+	     * @param [transition] {Object}         Transition definition
 	     */
-	    TweenTransition.prototype.set = function set(endValue, transition, callback) {
-	        if (!transition) {
-	            this.reset(endValue);
-	            if (callback) callback();
-	            return;
+	    Spring.prototype.set = function (value, transition) {
+	        var x0 = this.get();
+
+	        if (!this._active){
+	            this.emit('start', x0);
+	            this._active = true;
 	        }
 
-	        var curve = transition.curve;
-	        if (!registeredCurves[curve] && TweenTransition.CURVES[curve])
-	            TweenTransition.register(curve, TweenTransition.CURVES[curve]);
+	        var damping = transition.damping || Spring.DEFAULT_OPTIONS.damping;
+	        var period = transition.period || Spring.DEFAULT_OPTIONS.period;
+	        var v0 = transition.velocity || this.velocity;
 
-	        this._startValue = _clone(this.get());
-	        transition = _normalize(transition, endValue, this.options);
+	        this.curve = getCurve(damping, period, x0, value, v0);
+	        this.energy = calculateEnergy(period);
 
-	        this._startTime = Date.now();
-	        this._endValue = _clone(endValue);
-	        this._startVelocity = _clone(transition.velocity);
-	        this._duration = transition.duration;
-	        this._curve = transition.curve;
-	        this._active = true;
-	        this._callback = callback;
+	        var spread = getSpread(value, x0);
+	        this.energyTolerance = tolerance * Math.pow(spread, 2);
+
+	        this.target = value;
+	        this.startTime = now();
 	    };
 
 	    /**
-	     * Cancel all transitions and reset to a stable state
+	     * Get current value.
 	     *
-	     * @method reset
-	     * @param value {number|Number[]}       Value
-	     * @param [velocity] {number|Number[]}  Velocity
+	     * @method get
+	     * @return {Number}
 	     */
-	    TweenTransition.prototype.reset = function reset(value, velocity) {
-	        this.state = _clone(value);
-	        this.velocity = _clone(velocity);
-	        this._startTime = 0;
-	        this._duration = 0;
-	        this._startValue = this.state;
-	        this._startVelocity = this.velocity;
-	        this._endValue = this.state;
-	        this._active = false;
+	    Spring.prototype.get = function () {
+	        return this.value;
 	    };
 
 	    /**
@@ -3031,86 +3237,20 @@ return /******/ (function(modules) { // webpackBootstrap
 	     * @method getVelocity
 	     * @returns {Number}
 	     */
-	    TweenTransition.prototype.getVelocity = function getVelocity() {
+	    Spring.prototype.getVelocity = function () {
 	        return this.velocity;
 	    };
 
 	    /**
-	     * Get current value.
+	     * Reset the value and velocity of the transition.
 	     *
-	     * @method get
-	     * @return {Number|Number[]}
+	     * @method reset
+	     * @param value {Number}       Value
+	     * @param [velocity] {Number}  Velocity
 	     */
-	    TweenTransition.prototype.get = function get() {
-	        if (this.isActive()) update.call(this);
-	        return this.state;
-	    };
-
-	    function _calculateVelocity(current, start, curve, duration, t) {
-	        var velocity;
-	        var speed = (curve(t) - curve(t - eps)) / eps;
-	        if (current instanceof Array) {
-	            velocity = [];
-	            for (var i = 0; i < current.length; i++){
-	                velocity[i] = (typeof current[i] === 'number')
-	                    ? speed * (current[i] - start[i]) / duration
-	                    : 0;
-	            }
-	        }
-	        else velocity = speed * (current - start) / duration;
-	        return velocity;
-	    }
-
-	    function _calculateState(start, end, t) {
-	        var state;
-	        if (start instanceof Array) {
-	            state = [];
-	            for (var i = 0; i < start.length; i++) {
-	                if (typeof start[i] === 'number')
-	                    state[i] = _interpolate(start[i], end[i], t);
-	                else
-	                    state[i] = start[i];
-	            }
-	        }
-	        else state = _interpolate(start, end, t);
-	        return state;
-	    }
-
-	    function update() {
-	        var timestamp = Date.now();
-
-	        var timeSinceStart = timestamp - this._startTime;
-
-	        if (timeSinceStart >= this._duration) {
-	            this.state = this._endValue;
-	            this.velocity = _calculateVelocity(this.state, this._startValue, this._curve, this._duration, 1);
-	            this._active = false;
-	            if (this._callback) {
-	                var callback = this._callback;
-	                this._callback = undefined;
-	                callback();
-	            }
-	            return;
-	        }
-	        else if (timeSinceStart < 0) {
-	            this.state = this._startValue;
-	            this.velocity = this._startVelocity;
-	        }
-	        else {
-	            var t = timeSinceStart / this._duration;
-	            this.state = _calculateState(this._startValue, this._endValue, this._curve(t));
-	            this.velocity = _calculateVelocity(this.state, this._startValue, this._curve, this._duration, t);
-	        }
-	    }
-
-	    /**
-	     * Returns true if the animation is ongoing, false otherwise.
-	     *
-	     * @method isActive
-	     * @return {Boolean}
-	     */
-	    TweenTransition.prototype.isActive = function isActive() {
-	        return this._active;
+	    Spring.prototype.reset = function (value, velocity) {
+	        this.value = value;
+	        this.velocity = velocity || 0;
 	    };
 
 	    /**
@@ -3118,16 +3258,962 @@ return /******/ (function(modules) { // webpackBootstrap
 	     *
 	     * @method halt
 	     */
-	    TweenTransition.prototype.halt = function halt() {
-	        this.reset(this.get());
+	    Spring.prototype.halt = function () {
+	        var value = this.get();
+	        this.reset(value);
+	        this._active = false;
+	        this.emit('end', value);
 	    };
 
-	    module.exports = TweenTransition;
+	    /**
+	     * Update the transition in time.
+	     *
+	     * @method update
+	     */
+	    Spring.prototype.update = function update() {
+	        if (!this._active) return;
+
+	        var timeSinceStart = now() - this.startTime;
+
+	        var value = this.curve(timeSinceStart);
+	        var next = this.curve(timeSinceStart + eps);
+	        var prev = this.curve(timeSinceStart - eps);
+
+	        this.velocity = (next - prev) / (2 * eps);
+
+	        var energy = this.energy(this.target, value, this.velocity);
+
+	        if (energy >= this.energyTolerance) {
+	            this.value = value;
+	            this.emit('update', value);
+	        }
+	        else {
+	            this.emit('update', this.target);
+
+	            this.reset(this.target);
+	            this._active = false;
+	            this.emit('end', this.target);
+	        }
+	    };
+
+	    function getSpread(x0, value){
+	        return Math.max(1, Math.abs(value - x0));
+	    }
+
+	    function getCurve(damping, period, x0, value, v0){
+	        if (damping < 1)
+	            return createUnderDampedSpring(damping, period, x0, value, v0);
+	        else if (damping === 1)
+	            return createCriticallyDampedSpring(damping, period, x0, value, v0);
+	        else
+	            return createOverDampedSpring(damping, period, x0, value, v0);
+	    }
+
+	    function calculateEnergy(period){
+	        var omega = 2 * Math.PI / period;
+
+	        return function(origin, position, velocity){
+	            var distance = origin - position;
+	            var potentialEnergy = omega * omega * distance * distance;
+	            var kineticEnergy = velocity * velocity;
+	            return kineticEnergy + potentialEnergy;
+	        }
+	    }
+
+	    function createUnderDampedSpring(damping, period, x0, x1, v0) {
+	        var w_d =  Math.sqrt(1 - damping * damping) / period; // damped frequency
+	        var A = x0 - x1;
+	        var B = (damping / period * A + v0) / (w_d);
+
+	        return function (t) {
+	            return x1 + Math.exp(-damping * t / period) *
+	                (A * Math.cos(w_d * t) + B * Math.sin(w_d * t));
+	        }
+	    }
+
+	    function createCriticallyDampedSpring(damping, period, x0, x1, v0) {
+	        var A = x0 - x1;
+	        var B = v0 + A / period;
+
+	        return function (t) {
+	            return x1 + Math.exp(-damping * t / period) * (A + B * t);
+	        }
+	    }
+
+	    function createOverDampedSpring(damping, period, x0, x1, v0) {
+	        var w_d = Math.sqrt(damping * damping - 1) / period; // damped frequency
+	        var r1 = -damping / period + w_d;
+	        var r2 = -damping / period - w_d;
+	        var L = x0 - x1;
+	        var const1 = (r1 * L - v0) / (r2 - r1);
+	        var A = L + const1;
+	        var B = -const1;
+
+	        return function (t) {
+	            return x1 + A * Math.exp(r1 * t) + B * Math.exp(r2 * t);
+	        }
+	    }
+
+	    module.exports = Spring;
+	}.call(exports, __webpack_require__, exports, module), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
+
+/***/ },
+/* 25 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var __WEBPACK_AMD_DEFINE_RESULT__;/* Copyright © 2015 David Valdman */
+
+	!(__WEBPACK_AMD_DEFINE_RESULT__ = function (require, exports, module) {
+	    var EventHandler = __webpack_require__(9);
+	    var SimpleStream = __webpack_require__(11);
+
+	    var now = Date.now;
+	    var tolerance = 1e-2; // energy minimum
+
+	    /**
+	     * Defines an inertial transition, which decreases
+	     *
+	     * @class Tween
+	     * @private
+	     * @namespace Transitions
+	     * @constructor
+	     * @param value {Number}    Initial value
+	     * @param velocity {Number} Initial velocity
+	     */
+	    function Inertia(value, velocity) {
+	        SimpleStream.call(this);
+
+	        this.value = value || 0;
+	        this.velocity = velocity || 0;
+	        this.damping = 0;
+
+	        this.energy = null;
+	        this._active = false;
+	        this._previousTime = now();
+
+	        this._eventOutput = new EventHandler();
+	        EventHandler.setOutputHandler(this, this._eventOutput);
+	    }
+
+	    Inertia.DIMENSIONS = 1;
+
+	    Inertia.DEFAULT_OPTIONS = {
+	        velocity: 0,
+	        damping: 0.1
+	    };
+
+	    Inertia.prototype = Object.create(SimpleStream.prototype);
+	    Inertia.prototype.constructor = Inertia;
+
+	    /**
+	     * Set new value to transition to, with a transition definition.
+	     *
+	     * @method set
+	     * @param value {Number}                Starting value
+	     * @param [transition] {Object}         Transition definition
+	     */
+	    Inertia.prototype.set = function (value, transition) {
+	        if (!this._active) {
+	            this.emit('start', value);
+	            this._active = true;
+	        }
+
+	        this.value = value;
+
+	        this.damping = (transition.damping == undefined)
+	            ? Inertia.DEFAULT_OPTIONS.damping
+	            : Math.pow(Math.min(transition.damping, 1), 3);
+
+	        this.velocity = transition.velocity || this.velocity;
+	    };
+
+	    /**
+	     * Get current value.
+	     *
+	     * @method get
+	     * @return {Number}
+	     */
+	    Inertia.prototype.get = function () {
+	        return this.value;
+	    };
+
+	    /**
+	     * Get current velocity
+	     *
+	     * @method getVelocity
+	     * @returns {Number}
+	     */
+	    Inertia.prototype.getVelocity = function () {
+	        return this.velocity;
+	    };
+
+	    /**
+	     * Reset the value and velocity of the transition.
+	     *
+	     * @method reset
+	     * @param value {Number}       Value
+	     * @param [velocity] {Number}  Velocity
+	     */
+	    Inertia.prototype.reset = function (value, velocity) {
+	        this.value = value;
+	        //this.velocity = velocity || 0;
+	    };
+
+	    /**
+	     * Halt transition at current state and erase all pending actions.
+	     *
+	     * @method halt
+	     */
+	    Inertia.prototype.halt = function () {
+	        var value = this.get();
+	        this.reset(value);
+	        this._active = false;
+	        this.emit('end', value);
+	    };
+
+	    /**
+	     * Update the transition in time.
+	     *
+	     * @method update
+	     */
+	    Inertia.prototype.update = function update() {
+	        if (!this._active) return;
+
+	        var currentTime = now();
+	        var dt = currentTime - this._previousTime;
+	        this._previousTime = currentTime;
+
+	        this.velocity *= (1 - this.damping);
+	        this.value += dt * this.velocity;
+
+	        var energy = 0.5 * this.velocity * this.velocity;
+
+	        if (energy >= tolerance) {
+	            this.emit('update', this.value);
+	        }
+	        else {
+	            this.emit('update', this.value);
+
+	            this.reset(this.value);
+	            this._active = false;
+	            this.emit('end', this.value);
+	        }
+	    };
+
+	    module.exports = Inertia;
+	}.call(exports, __webpack_require__, exports, module), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
+
+/***/ },
+/* 26 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var __WEBPACK_AMD_DEFINE_RESULT__;/* Copyright © 2015 David Valdman */
+
+	!(__WEBPACK_AMD_DEFINE_RESULT__ = function(require, exports, module) {
+	    var RenderTreeNode = __webpack_require__(27);
+	    var Controller = __webpack_require__(30);
+	    var SizeNode = __webpack_require__(17);
+	    var LayoutNode = __webpack_require__(8);
+	    var Transitionable = __webpack_require__(22);
+	    var EventHandler = __webpack_require__(9);
+	    var Stream = __webpack_require__(15);
+	    var ResizeStream = __webpack_require__(18);
+	    var SizeObservable = __webpack_require__(19);
+	    var layoutAlgebra = __webpack_require__(28);
+	    var sizeAlgebra = __webpack_require__(29);
+
+	    /**
+	     * A View provides encapsulation for a subtree of the render tree. You can build
+	     *  complicated visual components and add them to a render tree as you would a `Surface`.
+	     *
+	     *  Custom `Views` are created by calling `extend` on the `View` constructor.
+	     *
+	     *  In addition to what a `Controller` provides, a View provides:
+	     *
+	     *      Render Tree method: `.add`
+	     *      Size methods: `setSize`, `setProportions`
+	     *      Layout methods: `setOpacity`, `setOrigin`
+	     *
+	     *  @example
+	     *
+	     *      var MyView = View.extend({
+	     *          defaults : {
+	     *              defaultOption1 : '',
+	     *              defaultOption2 : 42
+	     *          },
+	     *          initialize : function(options){
+	     *              // this method called on instantiation
+	     *              // options are passed in after being patched by the specified defaults
+	     *
+	     *              var surface = new Surface({
+	     *                  content : options.defaultOption1,
+	     *                  size : [options.defaultOption2,100],
+	     *                  properties : {background : 'red'}
+	     *              });
+	     *
+	     *              this.add(surface);
+	     *          }
+	     *      });
+	     *
+	     *      var myView = new myView({defaultOption1 : 'hello'});
+	     *
+	     *      var context = Context();
+	     *      context.add(myView);
+	     *
+	     *      context.mount(document.body);
+	     *
+	     * @class View
+	     * @constructor
+	     * @extends Core.Controller
+	     * @uses Core.SizeNode
+	     * @uses Core.LayoutNode
+	     * @uses Core.SimpleStream
+	     */
+	    var View = Controller.extend({
+	        _isView : true,
+	        defaults : {
+	            size : null,
+	            origin : null,
+	            opacity : 1
+	        },
+	        events : {
+	            change : setOptions
+	        },
+	        constructor : function View(options){
+	            this._size = new EventHandler();
+	            this._layout = new EventHandler();
+
+	            this._sizeNode = new SizeNode();
+	            this._layoutNode = new LayoutNode();
+
+	            this._node = new RenderTreeNode();
+	            this._node.tempRoot = this._node;
+
+	            this.size = ResizeStream.lift(
+	                function ViewSizeAlgebra (sizeSpec, parentSize){
+	                    if (!parentSize) return false;
+	                    return (sizeSpec)
+	                        ? sizeAlgebra(sizeSpec, parentSize)
+	                        : parentSize;
+	                },
+	                [this._sizeNode, this._size]
+	            );
+
+	            this._cachedSize = [0,0];
+	            this.size.on('resize', function(size){
+	                this._cachedSize = size;
+	            }.bind(this));
+
+	            var layout = Stream.lift(
+	                function ViewLayoutAlgebra (parentSpec, objectSpec, size){
+	                    if (!parentSpec || !size) return false;
+	                    return (objectSpec)
+	                        ? layoutAlgebra(objectSpec, parentSpec, size)
+	                        : parentSpec;
+	                }.bind(this),
+	                [this._layout, this._layoutNode, this.size]
+	            );
+
+	            this._node._size.subscribe(this.size);
+	            this._node._layout.subscribe(layout);
+
+	            Controller.apply(this, arguments);
+	            if (this.options) setOptions.call(this, this.options);
+	        },
+	        /**
+	         * Extends the render tree subtree with a new node.
+	         *
+	         * @method add
+	         * @param object {SizeNode|LayoutNode|Surface} Node
+	         * @return {RenderTreeNode}
+	         */
+	        add : function add(){
+	            return RenderTreeNode.prototype.add.apply(this._node, arguments);
+	        },
+	        /**
+	         * Getter for size.
+	         *
+	         * @method getSize
+	         * @return size {Number[]}
+	         */
+	        getSize : function(){
+	            return this._cachedSize;
+	        },
+	        /**
+	         * Setter for size.
+	         *
+	         * @method setSize
+	         * @param size {Number[]|Stream} Size as [width, height] in pixels, or a stream.
+	         */
+	        setSize : function setSize(size){
+	            this._sizeNode.set({size : size});
+	        },
+	        /**
+	         * Setter for proportions.
+	         *
+	         * @method setProportions
+	         * @param proportions {Number[]|Stream} Proportions as [x,y], or a stream.
+	         */
+	        setProportions : function setProportions(proportions){
+	            this._sizeNode.set({proportions : proportions});
+	        },
+	        /**
+	         * Setter for origin.
+	         *
+	         * @method setOrigin
+	         * @param origin {Number[]|Stream} Origin as [x,y], or a stream.
+	         */
+	        setOrigin : function setOrigin(origin){
+	            this._layoutNode.set({origin : origin});
+	        },
+	        /**
+	         * Setter for opacity.
+	         *
+	         * @method setOpacity
+	         * @param opacity {Number|Stream} Opacity
+	         */
+	        setOpacity : function setOpacity(opacity){
+	            this._layoutNode.set({opacity : opacity});
+	        }
+	    });
+
+	    function setOptions(options){
+	        for (var key in options){
+	            var value = options[key];
+	            switch (key){
+	                case 'size':
+	                    this.setSize(value);
+	                    break;
+	                case 'proportions':
+	                    this.setProportions(value);
+	                    break;
+	                case 'origin':
+	                    this.setOrigin(value);
+	                    break;
+	                case 'opacity':
+	                    this.setOpacity(value);
+	                    break;
+	            }
+	        }
+	    }
+
+	    module.exports = View;
 	}.call(exports, __webpack_require__, exports, module), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
 
 
 /***/ },
-/* 24 */
+/* 27 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var __WEBPACK_AMD_DEFINE_RESULT__;/* Copyright © 2015 David Valdman */
+
+	!(__WEBPACK_AMD_DEFINE_RESULT__ = function(require, exports, module) {
+	    var EventHandler = __webpack_require__(9);
+	    var Stream = __webpack_require__(15);
+	    var ResizeStream = __webpack_require__(18);
+	    var SizeNode = __webpack_require__(17);
+	    var LayoutNode = __webpack_require__(8);
+	    var layoutAlgebra = __webpack_require__(28);
+	    var sizeAlgebra = __webpack_require__(29);
+
+	    var SIZE_KEYS = SizeNode.KEYS;
+	    var LAYOUT_KEYS = LayoutNode.KEYS;
+
+	    /**
+	     * A node in the render tree. As such, it wraps a layout or size node,
+	     *  providing them with an `add` method. By adding nodes, the render tree
+	     *  is constructed, the leaves of which are `Surfaces`.
+	     *
+	     *  @constructor
+	     *  @class RenderTreeNode
+	     *  @private
+	     *  @param object {Object|SizeNode|LayoutNode|Surface|View}
+	     */
+	    function RenderTreeNode(object) {
+	        // layout and size inputs
+	        this._layout = new EventHandler();
+	        this._size = new EventHandler();
+
+	        // layout and size streams
+	        this.size = null;
+	        this.layout = null;
+
+	        this.root = null;
+
+	        if (object) _set.call(this, object);
+	    }
+
+	    /**
+	     * Extends the render tree with a new node. Similar to how a tree data structure
+	     *  is created, but instead of a node with an array of children, children subscribe
+	     *  to notifications from the parent.
+	     *
+	     *  Nodes can be instances of `LayoutNode`, `SizeNode`, or Object literals with
+	     *  size and layout properties, in which case, appropriate nodes will be created.
+	     *
+	     *  This method also takes `Views` (subtrees) and `Surfaces` (leaves).
+	     *
+	     * @method add
+	     * @chainable
+	     * @param node {Object|SizeNode|LayoutNode|Surface|View} Node
+	     * @return {RenderTreeNode}
+	     */
+	    RenderTreeNode.prototype.add = function add(node) {
+	        var childNode;
+
+	        if (node.constructor === Object){
+	            // Object literal case
+	            return _createNodeFromObjectLiteral.call(this, node);
+	        }
+	        else if (node._isView){
+	            // View case
+	            if (this.root)
+	                node._node.root = this.root;
+	            else if (this.tempRoot)
+	                node._node.tempRoot = this.tempRoot;
+	            childNode = node;
+	        }
+	        else {
+	            // Node case
+	            childNode = new RenderTreeNode(node);
+	            if (this.tempRoot)
+	                childNode.tempRoot = this.tempRoot;
+	            else childNode.root = _getRootNode.call(this);
+	        }
+
+	        childNode._layout.subscribe(this.layout || this._layout);
+	        childNode._size.subscribe(this.size || this._size);
+
+	        return childNode;
+	    };
+
+	    function _createNodeFromObjectLiteral(object){
+	        var sizeKeys = {};
+	        var layoutKeys = {};
+
+	        for (var key in object){
+	            if (SIZE_KEYS[key]) sizeKeys[key] = object[key];
+	            else if (LAYOUT_KEYS[key]) layoutKeys[key] = object[key];
+	        }
+
+	        var node = this;
+	        var needsSize = Object.keys(sizeKeys).length > 0;
+	        var needsLayout = Object.keys(layoutKeys).length > 0;
+
+	        // create extra align node if needed
+	        if (needsSize && layoutKeys.align){
+	            var alignNode = new LayoutNode({
+	                align : layoutKeys.align
+	            });
+	            delete layoutKeys.align;
+	            node = node.add(alignNode);
+	        }
+
+	        // create size node first if needed
+	        if (needsSize)
+	            node = node.add(new SizeNode(sizeKeys));
+
+	        // create layout node if needed
+	        if (needsLayout)
+	            node = node.add(new LayoutNode(layoutKeys));
+
+	        return node;
+	    }
+
+	    function _getRootNode(){
+	        if (this.root) return this.root;
+	        if (this.tempRoot) return _getRootNode.call(this.tempRoot);
+	        return this;
+	    }
+
+	    function _set(object) {
+	        if (object instanceof SizeNode){
+	            this.size = ResizeStream.lift(
+	                function SGSizeAlgebra (objectSpec, parentSize){
+	                    if (!parentSize) return false;
+	                    return (objectSpec)
+	                        ? sizeAlgebra(objectSpec, parentSize)
+	                        : parentSize;
+	                },
+	                [object, this._size]
+	            );
+	            return;
+	        }
+	        else if (object instanceof LayoutNode){
+	            this.layout = Stream.lift(
+	                function SGLayoutAlgebra (objectSpec, parentSpec, size){
+	                    if (!parentSpec || !size) return false;
+	                    return (objectSpec)
+	                        ? layoutAlgebra(objectSpec, parentSpec, size)
+	                        : parentSpec;
+	                },
+	                [object, this._layout, this._size]
+	            );
+	            return;
+	        }
+
+	        // object is a leaf node
+	        object._size.subscribe(this._size);
+	        object._layout.subscribe(this._layout);
+	        object._getRoot = _getRootNode.bind(this);
+	    }
+
+	    module.exports = RenderTreeNode;
+	}.call(exports, __webpack_require__, exports, module), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
+
+
+/***/ },
+/* 28 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var __WEBPACK_AMD_DEFINE_RESULT__;/* copyright © 2015 David Valdman */
+
+	!(__WEBPACK_AMD_DEFINE_RESULT__ = function(require, exports, module) {
+	    var Transform = __webpack_require__(21);
+
+	    var DEFAULT = {
+	        OPACITY : 1,
+	        TRANSFORM : Transform.identity,
+	        ORIGIN : null,
+	        ALIGN : null
+	    };
+
+	    /**
+	     * Defines the rules for composing layout specs: transform, align, origin and opacity.
+	     *  Transform is multiplied by the parent's transform (matrix multiplication).
+	     *  Align is a proportional offset relative to the parent size.
+	     *  Origin is a proportional offset relative to the current size.
+	     *  Opacity is multiplied by the parent's opacity.
+	     *
+	     * @method compose
+	     * @private
+	     * @param spec {object}           Object layout spec
+	     * @param parentSpec {object}     Parent layout spec
+	     * @param size {Array}            Object size
+	     * @return {object}               The composed layout spec
+	     */
+
+	    function compose(spec, parentSpec, size){
+	        var parentOpacity = (parentSpec.opacity !== undefined) ? parentSpec.opacity : DEFAULT.OPACITY;
+	        var parentTransform = parentSpec.transform || DEFAULT.TRANSFORM;
+
+	        var origin = spec.origin || DEFAULT.ORIGIN;
+	        var align = spec.align || DEFAULT.ALIGN;
+
+	        var opacity = (spec.opacity !== undefined)
+	            ? parentOpacity * spec.opacity
+	            : parentOpacity;
+
+	        var transform = (spec.transform)
+	            ? Transform.compose(parentTransform, spec.transform)
+	            : parentTransform;
+
+	        var nextSizeTransform = (spec.origin)
+	            ? parentTransform
+	            : parentSpec.nextSizeTransform || parentTransform;
+
+	        if (spec.size)
+	            nextSizeTransform = parentTransform;
+
+	        if (origin && (origin[0] || origin[1])){
+	            //TODO: allow origin to propogate when size is non-numeric
+	            var tx =  (typeof size[0] === 'number') ? -origin[0] * size[0] : 0;
+	            var ty =  (typeof size[1] === 'number') ? -origin[1] * size[1] : 0;
+	            transform = Transform.moveThen([tx, ty, 0], transform);
+	            origin = null;
+	        }
+
+	        if (size && align && (align[0] || align[1])) {
+	            var shift = _vecInContext([align[0] * size[0], align[1] * size[1], 0], nextSizeTransform);
+	            transform = Transform.thenMove(transform, shift);
+	            align = null;
+	        }
+
+	        return {
+	            transform : transform,
+	            opacity : opacity,
+	            origin : origin,
+	            align : align,
+	            nextSizeTransform : nextSizeTransform
+	        };
+	    }
+
+	    function _vecInContext(v, m) {
+	        return [
+	            v[0] * m[0] + v[1] * m[4] + v[2] * m[8],
+	            v[0] * m[1] + v[1] * m[5] + v[2] * m[9],
+	            v[0] * m[2] + v[1] * m[6] + v[2] * m[10]
+	        ];
+	    }
+
+	    module.exports = compose;
+	}.call(exports, __webpack_require__, exports, module), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
+
+
+/***/ },
+/* 29 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var __WEBPACK_AMD_DEFINE_RESULT__;/* copyright © 2015 David Valdman */
+
+	!(__WEBPACK_AMD_DEFINE_RESULT__ = function(require, exports, module) {
+
+	    /**
+	     * Defines the rules for composing size specs (size, margin, proportions) into a new size.
+	     *  A margin array reduces the parent size by an amount specified in pixels.
+	     *  A proportions array scales the parent size by a provided ratio.
+	     *  A size array [width, height] can take `true`, `undefined`, or numeric values.
+	     *      `undefined` takes the parent value
+	     *      `true` takes the value defined by the DOM
+	     *      numeric values override parent values
+	     *
+	     * @method compose
+	     * @private
+	     * @param spec {object}           Object size spec
+	     * @param parentSize {object}     Parent size
+	     * @return size {object}          Composed size
+	     */
+
+	    function compose(spec, parentSize){
+	        if (!spec) return parentSize;
+
+	        var size = new Array(2);
+
+	        if (spec.size) {
+	            // inheritance
+	            if (spec.size[0] === undefined) size[0] = parentSize[0];
+	            if (spec.size[1] === undefined) size[1] = parentSize[1];
+
+	            // override
+	            if (typeof spec.size[0] === 'number') size[0] = spec.size[0];
+	            if (typeof spec.size[1] === 'number') size[1] = spec.size[1];
+
+	            if (spec.size[0] === true) size[0] = true;
+	            if (spec.size[1] === true) size[1] = true;
+	        }
+
+	        //TODO: what is parentSize isn't numeric? Compose margin/proportions?
+	        if (spec.margins){
+	            size[0] = parentSize[0] - (2 * spec.margins[0]);
+	            size[1] = parentSize[1] - (2 * spec.margins[1]);
+	        }
+
+	        if (spec.proportions) {
+	            if (typeof spec.proportions[0] === 'number') size[0] = spec.proportions[0] * parentSize[0];
+	            if (typeof spec.proportions[1] === 'number') size[1] = spec.proportions[1] * parentSize[1];
+	        }
+
+	        if (spec.aspectRatio) {
+	            if (typeof size[0] === 'number') size[1] = spec.aspectRatio * size[0];
+	            else if (typeof size[1] === 'number') size[0] = spec.aspectRatio * size[1];
+	        }
+
+	        if (size[0] === undefined) size[0] = parentSize[0];
+	        if (size[1] === undefined) size[1] = parentSize[1];
+
+	        return size;
+	    }
+
+	    module.exports = compose;
+	}.call(exports, __webpack_require__, exports, module), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
+
+
+/***/ },
+/* 30 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var __WEBPACK_AMD_DEFINE_RESULT__;/*
+	 * copyright © 2015 David Valdman
+	 */
+
+	!(__WEBPACK_AMD_DEFINE_RESULT__ = function(require, exports, module) {
+	    var OptionsManager = __webpack_require__(31);
+	    var EventHandler = __webpack_require__(9);
+	    var SimpleStream = __webpack_require__(11);
+
+	    /**
+	     * A utility class which can be extended by custom classes. These classes will then
+	     *  include event input and output streams, a optionsManager for handling optional
+	     *  parameters with defaults, and take an event dictionary.
+	     *
+	     *  Specifically, instantiations will have an `options` dictionary property,
+	     *  `input`, `output` stream properties, and
+	     *  `on`, `off`, `emit`, `trigger`, `subscribe`, `unsubscribe` methods.
+	     *
+	     *  @example
+	     *
+	     *      var MyClass = Controller.extend({
+	     *          defaults : {
+	     *              defaultOption1 : value1,
+	     *              defaultOption2 : value2
+	     *          },
+	     *          events : {
+	     *              'change' : myUpdateOptionsFunction
+	     *          },
+	     *          initialize : function(options){
+	     *              // this method called on instantiation
+	     *              // options are passed in after being patched by the specified defaults
+	     *
+	     *              this.input.on('test', function(){
+	     *                  console.log('test fired');
+	     *              });
+	     *          }
+	     *      });
+	     *
+	     *      var myInstance = new MyClass({
+	     *          defaultOption1 : value3
+	     *      });
+	     *
+	     *      // myInstance.options = {
+	     *      //     defaultOption1 : value3,
+	     *      //     defaultOption2 : value2
+	     *      // }
+	     *
+	     *      myInstance.subscribe(anotherStream);
+	     *
+	     *      anotherStream.emit('test'); // "test fired" in console
+	     *
+	     * @class Controller
+	     * @constructor
+	     * @namespace Core
+	     * @uses Core.OptionsManager
+	     * @param options {Object} Instance options
+	     */
+	    function Controller(options) {
+	        this.options = _clone(this.constructor.DEFAULT_OPTIONS || Controller.DEFAULT_OPTIONS);
+	        this._optionsManager = new OptionsManager(this.options);
+	        if (options) this.setOptions(options);
+
+	        this.input = new SimpleStream();
+	        this.output = new SimpleStream();
+	        EventHandler.setInputHandler(this, this.input);
+	        EventHandler.setOutputHandler(this, this.output);
+	        EventHandler.setInputEvents(this, this.constructor.EVENTS || Controller.EVENTS, this.input);
+
+	        this.input.bindThis(this);
+	        this.input.subscribe(this._optionsManager);
+
+	        if (this.initialize) this.initialize(this.options);
+	    }
+
+	    /**
+	     * Overwrite the DEFAULT_OPTIONS dictionary on the constructor of the class you wish to extend
+	     *  with the Controller to patch any options that are not prescribed on instantiation.
+	     *
+	     * @attribute DEFAULT_OPTIONS
+	     * @readOnly
+	     */
+	    Controller.DEFAULT_OPTIONS = {};
+
+	    /**
+	     * Overwrite the EVENTS dictionary on the constructor of the class you wish to extend
+	     *  with the Controller to include events in {key : value} pairs where the keys are
+	     *  event channel names and the values are functions to be executed.
+	     *
+	     * @attribute EVENTS
+	     * @readOnly
+	     */
+	    Controller.EVENTS = {};
+
+	    /**
+	     * Options getter.
+	     *
+	     * @method getOptions
+	     * @param key {string}      Key
+	     * @return object {Object}  Options value for the key
+	     */
+	    Controller.prototype.getOptions = function getOptions(key) {
+	        return OptionsManager.prototype.getOptions.apply(this._optionsManager, arguments);
+	    };
+
+	    /**
+	     *  Options setter.
+	     *
+	     *  @method setOptions
+	     *  @param options {Object} Options
+	     */
+	    Controller.prototype.setOptions = function setOptions() {
+	        OptionsManager.prototype.setOptions.apply(this._optionsManager, arguments);
+	    };
+
+	    var RESERVED_KEYS = {
+	        DEFAULTS : 'defaults',
+	        EVENTS : 'events'
+	    };
+
+	    function _clone(obj) {
+	        var copy;
+	        if (typeof obj === 'object') {
+	            copy = (obj instanceof Array) ? [] : {};
+	            for (var key in obj) {
+	                var value = obj[key];
+	                if (typeof value === 'object' && value !== null) {
+	                    if (value instanceof Array) {
+	                        copy[key] = [];
+	                        for (var i = 0; i < value.length; i++)
+	                            copy[key][i] = _clone(value[i]);
+	                    }
+	                    else copy[key] = _clone(value);
+	                }
+	                else copy[key] = value;
+	            }
+	        }
+	        else copy = obj;
+
+	        return copy;
+	    }
+
+	    function extend(protoObj, constants){
+	        var parent = this;
+
+	        var child = (protoObj.hasOwnProperty('constructor'))
+	            ? function(){ protoObj.constructor.apply(this, arguments); }
+	            : function(){ parent.apply(this, arguments); };
+
+	        child.extend = extend;
+	        child.prototype = Object.create(parent.prototype);
+	        child.prototype.constructor = child;
+
+	        for (var key in protoObj){
+	            var value = protoObj[key];
+	            switch (key) {
+	                case RESERVED_KEYS.DEFAULTS:
+	                    child.DEFAULT_OPTIONS = value;
+	                    break;
+	                case RESERVED_KEYS.EVENTS:
+	                    if (!child.EVENTS) child.EVENTS = value;
+	                    else
+	                        for (var key in value)
+	                            child.EVENTS[key] = value[key];
+	                    break;
+	                default:
+	                    child.prototype[key] = value;
+	            }
+	        }
+
+
+	        for (var key in constants)
+	            child[key] = constants[key];
+
+	        return child;
+	    }
+
+	    /**
+	     * Allows a class to extend Controller.
+	     *  Note: this is a method defined on the Controller constructor
+	     *
+	     * @method extend
+	     * @param protoObj {Object}     Prototype properties of the extended class
+	     * @param constants {Object}    Constants to be added to the extended class's constructor
+	     */
+	    Controller.extend = extend;
+
+	    module.exports = Controller;
+	}.call(exports, __webpack_require__, exports, module), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
+
+
+/***/ },
+/* 31 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_RESULT__;/* This Source Code Form is subject to the terms of the Mozilla Public
@@ -3322,715 +4408,20 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 25 */
-/***/ function(module, exports, __webpack_require__) {
-
-	var __WEBPACK_AMD_DEFINE_RESULT__;/* Copyright © 2015 David Valdman */
-
-	!(__WEBPACK_AMD_DEFINE_RESULT__ = function(require, exports, module) {
-	    var RenderTreeNode = __webpack_require__(26);
-	    var Controller = __webpack_require__(29);
-	    var SizeNode = __webpack_require__(17);
-	    var LayoutNode = __webpack_require__(8);
-	    var Transitionable = __webpack_require__(22);
-	    var EventHandler = __webpack_require__(9);
-	    var Stream = __webpack_require__(15);
-	    var ResizeStream = __webpack_require__(18);
-	    var SizeObservable = __webpack_require__(19);
-	    var layoutAlgebra = __webpack_require__(27);
-	    var sizeAlgebra = __webpack_require__(28);
-
-	    /**
-	     * A View provides encapsulation for a subtree of the render tree. You can build
-	     *  complicated visual components and add them to a render tree as you would a `Surface`.
-	     *
-	     *  Custom `Views` are created by calling `extend` on the `View` constructor.
-	     *
-	     *  In addition to what a `Controller` provides, a View provides:
-	     *
-	     *      Render Tree method: `.add`
-	     *      Size methods: `setSize`, `setProportions`
-	     *      Layout methods: `setOpacity`, `setOrigin`
-	     *
-	     *  @example
-	     *
-	     *      var MyView = View.extend({
-	     *          defaults : {
-	     *              defaultOption1 : '',
-	     *              defaultOption2 : 42
-	     *          },
-	     *          initialize : function(options){
-	     *              // this method called on instantiation
-	     *              // options are passed in after being patched by the specified defaults
-	     *
-	     *              var surface = new Surface({
-	     *                  content : options.defaultOption1,
-	     *                  size : [options.defaultOption2,100],
-	     *                  properties : {background : 'red'}
-	     *              });
-	     *
-	     *              this.add(surface);
-	     *          }
-	     *      });
-	     *
-	     *      var myView = new myView({defaultOption1 : 'hello'});
-	     *
-	     *      var context = Engine.createContext();
-	     *      context.add(myView);
-	     *
-	     *      Engine.start()
-	     *
-	     * @class View
-	     * @constructor
-	     * @extends Core.Controller
-	     * @uses Core.SizeNode
-	     * @uses Core.LayoutNode
-	     * @uses Core.SimpleStream
-	     */
-	    var View = Controller.extend({
-	        _isView : true,
-	        defaults : {
-	            size : null,
-	            origin : null,
-	            opacity : 1
-	        },
-	        events : {
-	            change : setOptions
-	        },
-	        constructor : function View(options){
-	            this._size = new EventHandler();
-	            this._layout = new EventHandler();
-
-	            this._sizeNode = new SizeNode();
-	            this._layoutNode = new LayoutNode();
-
-	            this._node = new RenderTreeNode();
-	            this._node.tempRoot = this._node;
-
-	            this.size = ResizeStream.lift(
-	                function ViewSizeAlgebra (sizeSpec, parentSize){
-	                    if (!parentSize) return false;
-	                    return (sizeSpec)
-	                        ? sizeAlgebra(sizeSpec, parentSize)
-	                        : parentSize;
-	                },
-	                [this._sizeNode, this._size]
-	            );
-
-	            var layout = Stream.lift(
-	                function ViewLayoutAlgebra (parentSpec, objectSpec, size){
-	                    if (!parentSpec || !size) return false;
-	                    return (objectSpec)
-	                        ? layoutAlgebra(objectSpec, parentSpec, size)
-	                        : parentSpec;
-	                }.bind(this),
-	                [this._layout, this._layoutNode, this.size]
-	            );
-
-	            this._node._size.subscribe(this.size);
-	            this._node._layout.subscribe(layout);
-
-	            Controller.apply(this, arguments);
-	            if (this.options) setOptions.call(this, this.options);
-	        },
-	        /**
-	         * Extends the render tree subtree with a new node.
-	         *
-	         * @method add
-	         * @param object {SizeNode|LayoutNode|Surface} Node
-	         * @return {RenderTreeNode}
-	         */
-	        add : function add(){
-	            return RenderTreeNode.prototype.add.apply(this._node, arguments);
-	        },
-	        /**
-	         * Setter for size.
-	         *
-	         * @method setSize
-	         * @param size {Number[]|Stream} Size as [width, height] in pixels, or a stream.
-	         */
-	        setSize : function setSize(size){
-	            this._sizeNode.set({size : size});
-	        },
-	        /**
-	         * Setter for proportions.
-	         *
-	         * @method setProportions
-	         * @param proportions {Number[]|Stream} Proportions as [x,y], or a stream.
-	         */
-	        setProportions : function setProportions(proportions){
-	            this._sizeNode.set({proportions : proportions});
-	        },
-	        /**
-	         * Setter for origin.
-	         *
-	         * @method setOrigin
-	         * @param origin {Number[]|Stream} Origin as [x,y], or a stream.
-	         */
-	        setOrigin : function setOrigin(origin){
-	            this._layoutNode.set({origin : origin});
-	        },
-	        /**
-	         * Setter for opacity.
-	         *
-	         * @method setOpacity
-	         * @param opacity {Number|Stream} Opacity
-	         */
-	        setOpacity : function setOpacity(opacity){
-	            this._layoutNode.set({opacity : opacity});
-	        }
-	    });
-
-	    function setOptions(options){
-	        for (var key in options){
-	            var value = options[key];
-	            switch (key){
-	                case 'size':
-	                    this.setSize(value);
-	                    break;
-	                case 'proportions':
-	                    this.setProportions(value);
-	                    break;
-	                case 'origin':
-	                    this.setOrigin(value);
-	                    break;
-	                case 'opacity':
-	                    this.setOpacity(value);
-	                    break;
-	            }
-	        }
-	    }
-
-	    module.exports = View;
-	}.call(exports, __webpack_require__, exports, module), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
-
-
-/***/ },
-/* 26 */
-/***/ function(module, exports, __webpack_require__) {
-
-	var __WEBPACK_AMD_DEFINE_RESULT__;/* Copyright © 2015 David Valdman */
-
-	!(__WEBPACK_AMD_DEFINE_RESULT__ = function(require, exports, module) {
-	    var EventHandler = __webpack_require__(9);
-	    var Stream = __webpack_require__(15);
-	    var ResizeStream = __webpack_require__(18);
-	    var SizeNode = __webpack_require__(17);
-	    var LayoutNode = __webpack_require__(8);
-	    var layoutAlgebra = __webpack_require__(27);
-	    var sizeAlgebra = __webpack_require__(28);
-
-	    var SIZE_KEYS = SizeNode.KEYS;
-	    var LAYOUT_KEYS = LayoutNode.KEYS;
-
-	    /**
-	     * A node in the render tree. As such, it wraps a layout or size node,
-	     *  providing them with an `add` method. By adding nodes, the render tree
-	     *  is constructed, the leaves of which are `Surfaces`.
-	     *
-	     *  @constructor
-	     *  @class RenderTreeNode
-	     *  @private
-	     *  @param object {Object|SizeNode|LayoutNode|Surface|View}
-	     */
-	    function RenderTreeNode(object) {
-	        // layout and size inputs
-	        this._layout = new EventHandler();
-	        this._size = new EventHandler();
-
-	        // layout and size streams
-	        this.size = null;
-	        this.layout = null;
-
-	        this.root = null;
-
-	        if (object) _set.call(this, object);
-	    }
-
-	    /**
-	     * Extends the render tree with a new node. Similar to how a tree data structure
-	     *  is created, but instead of a node with an array of children, children subscribe
-	     *  to notifications from the parent.
-	     *
-	     *  Nodes can be instances of `LayoutNode`, `SizeNode`, or Object literals with
-	     *  size and layout properties, in which case, appropriate nodes will be created.
-	     *
-	     *  This method also takes `Views` (subtrees) and `Surfaces` (leaves).
-	     *
-	     * @method add
-	     * @chainable
-	     * @param node {Object|SizeNode|LayoutNode|Surface|View} Node
-	     * @return {RenderTreeNode}
-	     */
-	    RenderTreeNode.prototype.add = function add(node) {
-	        var childNode;
-
-	        if (node.constructor === Object){
-	            // Object literal case
-	            return _createNodeFromObjectLiteral.call(this, node);
-	        }
-	        else if (node._isView){
-	            // View case
-	            if (this.root)
-	                node._node.root = this.root;
-	            else if (this.tempRoot)
-	                node._node.tempRoot = this.tempRoot;
-	            childNode = node;
-	        }
-	        else {
-	            // Node case
-	            childNode = new RenderTreeNode(node);
-	            if (this.tempRoot)
-	                childNode.tempRoot = this.tempRoot;
-	            else childNode.root = _getRootNode.call(this);
-	        }
-
-	        childNode._layout.subscribe(this.layout || this._layout);
-	        childNode._size.subscribe(this.size || this._size);
-
-	        return childNode;
-	    };
-
-	    function _createNodeFromObjectLiteral(object){
-	        var sizeKeys = {};
-	        var layoutKeys = {};
-
-	        for (var key in object){
-	            if (SIZE_KEYS[key]) sizeKeys[key] = object[key];
-	            else if (LAYOUT_KEYS[key]) layoutKeys[key] = object[key];
-	        }
-
-	        var node = this;
-	        var needsSize = Object.keys(sizeKeys).length > 0;
-	        var needsLayout = Object.keys(layoutKeys).length > 0;
-
-	        // create extra align node if needed
-	        if (needsSize && layoutKeys.align){
-	            var alignNode = new LayoutNode({
-	                align : layoutKeys.align
-	            });
-	            delete layoutKeys.align;
-	            node = node.add(alignNode);
-	        }
-
-	        // create size node first if needed
-	        if (needsSize)
-	            node = node.add(new SizeNode(sizeKeys));
-
-	        // create layout node if needed
-	        if (needsLayout)
-	            node = node.add(new LayoutNode(layoutKeys));
-
-	        return node;
-	    }
-
-	    function _getRootNode(){
-	        if (this.root) return this.root;
-	        if (this.tempRoot) return _getRootNode.call(this.tempRoot);
-	        return this;
-	    }
-
-	    function _set(object) {
-	        if (object instanceof SizeNode){
-	            this.size = ResizeStream.lift(
-	                function SGSizeAlgebra (objectSpec, parentSize){
-	                    if (!parentSize) return false;
-	                    return (objectSpec)
-	                        ? sizeAlgebra(objectSpec, parentSize)
-	                        : parentSize;
-	                },
-	                [object, this._size]
-	            );
-	            return;
-	        }
-	        else if (object instanceof LayoutNode){
-	            this.layout = Stream.lift(
-	                function SGLayoutAlgebra (objectSpec, parentSpec, size){
-	                    if (!parentSpec || !size) return false;
-	                    return (objectSpec)
-	                        ? layoutAlgebra(objectSpec, parentSpec, size)
-	                        : parentSpec;
-	                },
-	                [object, this._layout, this._size]
-	            );
-	            return;
-	        }
-
-	        // object is a leaf node
-	        object._size.subscribe(this._size);
-	        object._layout.subscribe(this._layout);
-	        object._getRoot = _getRootNode.bind(this);
-	    }
-
-	    module.exports = RenderTreeNode;
-	}.call(exports, __webpack_require__, exports, module), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
-
-
-/***/ },
-/* 27 */
-/***/ function(module, exports, __webpack_require__) {
-
-	var __WEBPACK_AMD_DEFINE_RESULT__;/* copyright © 2015 David Valdman */
-
-	!(__WEBPACK_AMD_DEFINE_RESULT__ = function(require, exports, module) {
-	    var Transform = __webpack_require__(21);
-
-	    var DEFAULT = {
-	        OPACITY : 1,
-	        TRANSFORM : Transform.identity,
-	        ORIGIN : null,
-	        ALIGN : null
-	    };
-
-	    /**
-	     * Defines the rules for composing layout specs: transform, align, origin and opacity.
-	     *  Transform is multiplied by the parent's transform (matrix multiplication).
-	     *  Align is a proportional offset relative to the parent size.
-	     *  Origin is a proportional offset relative to the current size.
-	     *  Opacity is multiplied by the parent's opacity.
-	     *
-	     * @method compose
-	     * @private
-	     * @param spec {object}           Object layout spec
-	     * @param parentSpec {object}     Parent layout spec
-	     * @param size {Array}            Object size
-	     * @return {object}               The composed layout spec
-	     */
-
-	    function compose(spec, parentSpec, size){
-	        var parentOpacity = (parentSpec.opacity !== undefined) ? parentSpec.opacity : DEFAULT.OPACITY;
-	        var parentTransform = parentSpec.transform || DEFAULT.TRANSFORM;
-
-	        var origin = spec.origin || DEFAULT.ORIGIN;
-	        var align = spec.align || DEFAULT.ALIGN;
-
-	        var opacity = (spec.opacity !== undefined)
-	            ? parentOpacity * spec.opacity
-	            : parentOpacity;
-
-	        var transform = (spec.transform)
-	            ? Transform.compose(parentTransform, spec.transform)
-	            : parentTransform;
-
-	        var nextSizeTransform = (spec.origin)
-	            ? parentTransform
-	            : parentSpec.nextSizeTransform || parentTransform;
-
-	        if (spec.size)
-	            nextSizeTransform = parentTransform;
-
-	        if (origin && (origin[0] || origin[1])){
-	            //TODO: allow origin to propogate when size is non-numeric
-	            var tx =  (typeof size[0] === 'number') ? -origin[0] * size[0] : 0;
-	            var ty =  (typeof size[1] === 'number') ? -origin[1] * size[1] : 0;
-	            transform = Transform.moveThen([tx, ty, 0], transform);
-	            origin = null;
-	        }
-
-	        if (size && align && (align[0] || align[1])) {
-	            var shift = _vecInContext([align[0] * size[0], align[1] * size[1], 0], nextSizeTransform);
-	            transform = Transform.thenMove(transform, shift);
-	            align = null;
-	        }
-
-	        return {
-	            transform : transform,
-	            opacity : opacity,
-	            origin : origin,
-	            align : align,
-	            nextSizeTransform : nextSizeTransform
-	        };
-	    }
-
-	    function _vecInContext(v, m) {
-	        return [
-	            v[0] * m[0] + v[1] * m[4] + v[2] * m[8],
-	            v[0] * m[1] + v[1] * m[5] + v[2] * m[9],
-	            v[0] * m[2] + v[1] * m[6] + v[2] * m[10]
-	        ];
-	    }
-
-	    module.exports = compose;
-	}.call(exports, __webpack_require__, exports, module), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
-
-
-/***/ },
-/* 28 */
-/***/ function(module, exports, __webpack_require__) {
-
-	var __WEBPACK_AMD_DEFINE_RESULT__;/* copyright © 2015 David Valdman */
-
-	!(__WEBPACK_AMD_DEFINE_RESULT__ = function(require, exports, module) {
-
-	    /**
-	     * Defines the rules for composing size specs (size, margin, proportions) into a new size.
-	     *  A margin array reduces the parent size by an amount specified in pixels.
-	     *  A proportions array scales the parent size by a provided ratio.
-	     *  A size array [width, height] can take `true`, `undefined`, or numeric values.
-	     *      `undefined` takes the parent value
-	     *      `true` takes the value defined by the DOM
-	     *      numeric values override parent values
-	     *
-	     * @method compose
-	     * @private
-	     * @param spec {object}           Object size spec
-	     * @param parentSize {object}     Parent size
-	     * @return size {object}          Composed size
-	     */
-
-	    function compose(spec, parentSize){
-	        if (!spec) return parentSize;
-
-	        var size = new Array(2);
-
-	        if (spec.size) {
-	            // inheritance
-	            if (spec.size[0] === undefined) size[0] = parentSize[0];
-	            if (spec.size[1] === undefined) size[1] = parentSize[1];
-
-	            // override
-	            if (typeof spec.size[0] === 'number') size[0] = spec.size[0];
-	            if (typeof spec.size[1] === 'number') size[1] = spec.size[1];
-
-	            if (spec.size[0] === true) size[0] = true;
-	            if (spec.size[1] === true) size[1] = true;
-	        }
-
-	        //TODO: what is parentSize isn't numeric? Compose margin/proportions?
-	        if (spec.margins){
-	            size[0] = parentSize[0] - (2 * spec.margins[0]);
-	            size[1] = parentSize[1] - (2 * spec.margins[1]);
-	        }
-
-	        if (spec.proportions) {
-	            if (typeof spec.proportions[0] === 'number') size[0] = spec.proportions[0] * parentSize[0];
-	            if (typeof spec.proportions[1] === 'number') size[1] = spec.proportions[1] * parentSize[1];
-	        }
-
-	        if (spec.aspectRatio) {
-	            if (typeof size[0] === 'number') size[1] = spec.aspectRatio * size[0];
-	            else if (typeof size[1] === 'number') size[0] = spec.aspectRatio * size[1];
-	        }
-
-	        if (size[0] === undefined) size[0] = parentSize[0];
-	        if (size[1] === undefined) size[1] = parentSize[1];
-
-	        return size;
-	    }
-
-	    module.exports = compose;
-	}.call(exports, __webpack_require__, exports, module), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
-
-
-/***/ },
-/* 29 */
-/***/ function(module, exports, __webpack_require__) {
-
-	var __WEBPACK_AMD_DEFINE_RESULT__;/*
-	 * copyright © 2015 David Valdman
-	 */
-
-	!(__WEBPACK_AMD_DEFINE_RESULT__ = function(require, exports, module) {
-	    var OptionsManager = __webpack_require__(24);
-	    var EventHandler = __webpack_require__(9);
-	    var SimpleStream = __webpack_require__(11);
-
-	    /**
-	     * A utility class which can be extended by custom classes. These classes will then
-	     *  include event input and output streams, a optionsManager for handling optional
-	     *  parameters with defaults, and take an event dictionary.
-	     *
-	     *  Specifically, instantiations will have an `options` dictionary property,
-	     *  `input`, `output` stream properties, and
-	     *  `on`, `off`, `emit`, `trigger`, `subscribe`, `unsubscribe` methods.
-	     *
-	     *  @example
-	     *
-	     *      var MyClass = Controller.extend({
-	     *          defaults : {
-	     *              defaultOption1 : value1,
-	     *              defaultOption2 : value2
-	     *          },
-	     *          events : {
-	     *              'change' : myUpdateOptionsFunction
-	     *          },
-	     *          initialize : function(options){
-	     *              // this method called on instantiation
-	     *              // options are passed in after being patched by the specified defaults
-	     *
-	     *              this.input.on('test', function(){
-	     *                  console.log('test fired');
-	     *              });
-	     *          }
-	     *      });
-	     *
-	     *      var myInstance = new MyClass({
-	     *          defaultOption1 : value3
-	     *      });
-	     *
-	     *      // myInstance.options = {
-	     *      //     defaultOption1 : value3,
-	     *      //     defaultOption2 : value2
-	     *      // }
-	     *
-	     *      myInstance.subscribe(anotherStream);
-	     *
-	     *      anotherStream.emit('test'); // "test fired" in console
-	     *
-	     * @class Controller
-	     * @constructor
-	     * @namespace Core
-	     * @uses Core.OptionsManager
-	     * @param options {Object} Instance options
-	     */
-	    function Controller(options) {
-	        this.options = _clone(this.constructor.DEFAULT_OPTIONS || Controller.DEFAULT_OPTIONS);
-	        this._optionsManager = new OptionsManager(this.options);
-	        if (options) this.setOptions(options);
-
-	        this.input = new SimpleStream();
-	        this.output = new SimpleStream();
-	        EventHandler.setInputHandler(this, this.input);
-	        EventHandler.setOutputHandler(this, this.output);
-	        EventHandler.setInputEvents(this, this.constructor.EVENTS || Controller.EVENTS, this.input);
-
-	        this.input.bindThis(this);
-	        this.input.subscribe(this._optionsManager);
-
-	        if (this.initialize) this.initialize(this.options);
-	    }
-
-	    /**
-	     * Overwrite the DEFAULT_OPTIONS dictionary on the constructor of the class you wish to extend
-	     *  with the Controller to patch any options that are not prescribed on instantiation.
-	     *
-	     * @attribute DEFAULT_OPTIONS
-	     * @readOnly
-	     */
-	    Controller.DEFAULT_OPTIONS = {};
-
-	    /**
-	     * Overwrite the EVENTS dictionary on the constructor of the class you wish to extend
-	     *  with the Controller to include events in {key : value} pairs where the keys are
-	     *  event channel names and the values are functions to be executed.
-	     *
-	     * @attribute EVENTS
-	     * @readOnly
-	     */
-	    Controller.EVENTS = {};
-
-	    /**
-	     * Options getter.
-	     *
-	     * @method getOptions
-	     * @param key {string}      Key
-	     * @return object {Object}  Options value for the key
-	     */
-	    Controller.prototype.getOptions = function getOptions(key) {
-	        return OptionsManager.prototype.getOptions.apply(this._optionsManager, arguments);
-	    };
-
-	    /**
-	     *  Options setter.
-	     *
-	     *  @method setOptions
-	     *  @param options {Object} Options
-	     */
-	    Controller.prototype.setOptions = function setOptions() {
-	        OptionsManager.prototype.setOptions.apply(this._optionsManager, arguments);
-	    };
-
-	    var RESERVED_KEYS = {
-	        DEFAULTS : 'defaults',
-	        EVENTS : 'events'
-	    };
-
-	    function _clone(obj) {
-	        var copy;
-	        if (typeof obj === 'object') {
-	            copy = (obj instanceof Array) ? [] : {};
-	            for (var key in obj) {
-	                var value = obj[key];
-	                if (typeof value === 'object' && value !== null) {
-	                    if (value instanceof Array) {
-	                        copy[key] = [];
-	                        for (var i = 0; i < value.length; i++)
-	                            copy[key][i] = _clone(value[i]);
-	                    }
-	                    else copy[key] = _clone(value);
-	                }
-	                else copy[key] = value;
-	            }
-	        }
-	        else copy = obj;
-
-	        return copy;
-	    }
-
-	    function extend(protoObj, constants){
-	        var parent = this;
-
-	        var child = (protoObj.hasOwnProperty('constructor'))
-	            ? function(){ protoObj.constructor.apply(this, arguments); }
-	            : function(){ parent.apply(this, arguments); };
-
-	        child.extend = extend;
-	        child.prototype = Object.create(parent.prototype);
-	        child.prototype.constructor = child;
-
-	        for (var key in protoObj){
-	            var value = protoObj[key];
-	            switch (key) {
-	                case RESERVED_KEYS.DEFAULTS:
-	                    child.DEFAULT_OPTIONS = value;
-	                    break;
-	                case RESERVED_KEYS.EVENTS:
-	                    if (!child.EVENTS) child.EVENTS = value;
-	                    else
-	                        for (var key in value)
-	                            child.EVENTS[key] = value[key];
-	                    break;
-	                default:
-	                    child.prototype[key] = value;
-	            }
-	        }
-
-
-	        for (var key in constants)
-	            child[key] = constants[key];
-
-	        return child;
-	    }
-
-	    /**
-	     * Allows a class to extend Controller.
-	     *  Note: this is a method defined on the Controller constructor
-	     *
-	     * @method extend
-	     * @param protoObj {Object}     Prototype properties of the extended class
-	     * @param constants {Object}    Constants to be added to the extended class's constructor
-	     */
-	    Controller.extend = extend;
-
-	    module.exports = Controller;
-	}.call(exports, __webpack_require__, exports, module), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
-
-
-/***/ },
-/* 30 */
+/* 32 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_RESULT__;!(__WEBPACK_AMD_DEFINE_RESULT__ = function(require, exports, module) {
 	    module.exports = {
-	        Surface: __webpack_require__(31),
-	        ContainerSurface: __webpack_require__(33),
-	        Context: __webpack_require__(34)
+	        Surface: __webpack_require__(33),
+	        ContainerSurface: __webpack_require__(35),
+	        Context: __webpack_require__(36)
 	    };
 	}.call(exports, __webpack_require__, exports, module), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
 
 
 /***/ },
-/* 31 */
+/* 33 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_RESULT__;/* This Source Code Form is subject to the terms of the Mozilla Public
@@ -4044,20 +4435,20 @@ return /******/ (function(modules) { // webpackBootstrap
 	/* Modified work copyright © 2015 David Valdman */
 
 	!(__WEBPACK_AMD_DEFINE_RESULT__ = function(require, exports, module) {
-	    var ElementOutput = __webpack_require__(32);
+	    var ElementOutput = __webpack_require__(34);
 	    var dirtyQueue = __webpack_require__(6);
 
+	    var isTouchEnabled = "ontouchstart" in window;
+
 	    /**
-	     * Surface is a wrapper for DOM element controlled by Samsara.
+	     * Surface is a wrapper for a DOM element animated by Samsara.
 	     *  Samsara will commit opacity, size and CSS3 `transform` properties into the Surface.
 	     *  CSS classes, properties and DOM attributes can also be added and dynamically changed.
 	     *  Surfaces also act as sources for DOM events such as `click`.
 	     *
 	     * @example
 	     *
-	     *      var context = Engine.createContext({
-	     *          el : document.querySelector('#myElement')
-	     *      });
+	     *      var context = new Context()
 	     *
 	     *      var surface = new Surface({
 	     *          content : 'Hello world!',
@@ -4069,7 +4460,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	     *
 	     *      context.add(surface);
 	     *
-	     *      Engine.start();
+	     *      context.mount(document.body);
 	     *
 	     *  @example
 	     *
@@ -4083,7 +4474,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	     *      });
 	     *
 	     * @class Surface
-	     * @namespace Core
+	     * @namespace DOM
 	     * @constructor
 	     * @extends Core.ElementOutput
 	     * @param [options] {Object}                Options
@@ -4098,6 +4489,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	     * @param [options.aspectRatio] {Number}    Aspect ratio
 	     * @param [options.opacity=1] {Number}      Opacity
 	     * @param [options.tagName="div"] {String}  HTML tagName
+	     * @param [options.enableScroll] {Boolean}  Allows a Surface to support native scroll behavior
 	     */
 	    function Surface(options) {
 	        this.properties = {};
@@ -4128,7 +4520,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	    Surface.prototype = Object.create(ElementOutput.prototype);
 	    Surface.prototype.constructor = Surface;
-	    Surface.prototype.elementType = 'div'; // default tagName, but can be overriden in options
+	    Surface.prototype.elementType = 'div'; // Default tagName. Can be overridden in options.
 	    Surface.prototype.elementClass = 'samsara-surface';
 
 	    function _setDirty(){
@@ -4183,6 +4575,25 @@ return /******/ (function(modules) { // webpackBootstrap
 	    function _removeAttributes(target) {
 	        for (var key in this.attributes)
 	            target.removeAttribute(key);
+	    }
+
+	    function preventDrag(){
+	        if (this._currentTarget){
+	            this._currentTarget.addEventListener('touchmove', function (event) {
+	                event.preventDefault();
+	            }, false);
+	        }
+	        else {
+	            this.on('deploy', function (target) {
+	                target.addEventListener('touchmove', function (event) {
+	                    event.preventDefault();
+	                }, false);
+	            }.bind(this));
+	        }
+	    }
+
+	    function enableScroll(){
+	        this.addClass('samsara-scrollable');
 	    }
 	    
 	    /**
@@ -4355,6 +4766,8 @@ return /******/ (function(modules) { // webpackBootstrap
 	        if (options.attributes !== undefined) this.setAttributes(options.attributes);
 	        if (options.content !== undefined) this.setContent(options.content);
 	        if (options.aspectRatio !== undefined) this.setAspectRatio(options.aspectRatio);
+	        if (options.enableScroll) enableScroll.call(this);
+	        else if (isTouchEnabled) preventDrag.call(this);
 	    };
 
 	    /**
@@ -4438,7 +4851,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	        else target.innerHTML = content;
 
 	        this._contentDirty = false;
-	        this._eventOutput.emit('deploy');
+	        this._eventOutput.emit('deploy', target);
 	    };
 
 	    /**
@@ -4542,7 +4955,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 32 */
+/* 34 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_RESULT__;/* This Source Code Form is subject to the terms of the Mozilla Public
@@ -4562,8 +4975,8 @@ return /******/ (function(modules) { // webpackBootstrap
 	    var ResizeStream = __webpack_require__(18);
 	    var SizeNode = __webpack_require__(17);
 	    var LayoutNode = __webpack_require__(8);
-	    var sizeAlgebra = __webpack_require__(28);
-	    var layoutAlgebra = __webpack_require__(27);
+	    var sizeAlgebra = __webpack_require__(29);
+	    var layoutAlgebra = __webpack_require__(28);
 
 	    var usePrefix = !('transform' in document.documentElement.style);
 	    var devicePixelRatio = window.devicePixelRatio || 1;
@@ -4650,6 +5063,27 @@ return /******/ (function(modules) { // webpackBootstrap
 	        if (element) this.attach(element);
 	    }
 
+	    function _addEventListeners(target) {
+	        for (var i in this._eventOutput.listeners)
+	            target.addEventListener(i, this._eventForwarder);
+	    }
+
+	    function _removeEventListeners(target) {
+	        for (var i in this._eventOutput.listeners)
+	            target.removeEventListener(i, this._eventForwarder);
+	    }
+
+	    function _formatCSSTransform(transform) {
+	        var result = 'matrix3d(';
+	        for (var i = 0; i < 15; i++) {
+	            if (Math.abs(transform[i]) < EPSILON) transform[i] = 0;
+	            result += (i === 12 || i === 13)
+	                ? Math.round(transform[i] * devicePixelRatio) * invDevicePixelRatio + ','
+	                : transform[i] + ',';
+	        }
+	        return result + transform[15] + ')';
+	    }
+
 	    function _formatCSSOrigin(origin) {
 	        return (100 * origin[0]) + '% ' + (100 * origin[1]) + '%';
 	    }
@@ -4657,12 +5091,6 @@ return /******/ (function(modules) { // webpackBootstrap
 	    function _xyNotEquals(a, b) {
 	        return (a && b) ? (a[0] !== b[0] || a[1] !== b[1]) : a !== b;
 	    }
-
-	    var _setOpacity = function _setOpacity(element, opacity){
-	        if (opacity >= MAX_OPACITY)     opacity = MAX_OPACITY;
-	        else if (opacity < MIN_OPACITY) opacity = MIN_OPACITY;
-	        element.style.opacity = opacity;
-	    };
 
 	    var _setOrigin = usePrefix
 	        ? function _setOrigin(element, origin) {
@@ -4688,31 +5116,12 @@ return /******/ (function(modules) { // webpackBootstrap
 	        else target.style.height = Math.ceil(size[1] * devicePixelRatio) * invDevicePixelRatio + 'px';
 	    };
 
-
-	    function _addEventListeners(target) {
-	        for (var i in this._eventOutput.listeners)
-	            target.addEventListener(i, this._eventForwarder);
-	    }
-
-	    function _removeEventListeners(target) {
-	        for (var i in this._eventOutput.listeners)
-	            target.removeEventListener(i, this._eventForwarder);
-	    }
-
-	    function _formatCSSTransform(transform) {
-	        var result = 'matrix3d(';
-	        for (var i = 0; i < 15; i++) {
-	            if (Math.abs(transform[i]) < EPSILON) transform[i] = 0;
-	            result += (i === 12 || i === 13)
-	                ? Math.round(transform[i] * devicePixelRatio) * invDevicePixelRatio + ','
-	                : transform[i] + ',';
-	        }
-	        return result + transform[15] + ')';
-	    }
-
 	    // {Visibility : hidden} allows for DOM events to pass through the element
-	    var _setOpacity = function _setOpacity(element, opacity){
-	        if (!this._isVisible && opacity > MIN_OPACITY){
+	    // TODO: use pointerEvents instead. However, there is a bug in Chrome for Android
+	    // ticket here: https://code.google.com/p/chromium/issues/detail?id=569654
+	    var _setOpacity = function _setOpacity(element, opacity) {
+	        if (!this._isVisible && opacity > MIN_OPACITY) {
+	            //element.style.pointerEvents = 'auto';
 	            element.style.visibility = 'visible';
 	            this._isVisible = true;
 	        }
@@ -4720,7 +5129,8 @@ return /******/ (function(modules) { // webpackBootstrap
 	        if (opacity > MAX_OPACITY) opacity = MAX_OPACITY;
 	        else if (opacity < MIN_OPACITY) {
 	            opacity = MIN_OPACITY;
-	            if (this._isVisible){
+	            if (this._isVisible) {
+	                //element.style.pointerEvents = 'none';
 	                element.style.visibility = 'hidden';
 	                this._isVisible = false;
 	            }
@@ -4844,7 +5254,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 33 */
+/* 35 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_RESULT__;/* This Source Code Form is subject to the terms of the Mozilla Public
@@ -4858,12 +5268,8 @@ return /******/ (function(modules) { // webpackBootstrap
 	/* Modified work copyright © 2015 David Valdman */
 
 	!(__WEBPACK_AMD_DEFINE_RESULT__ = function(require, exports, module) {
-	    var Surface = __webpack_require__(31);
-	    var Context = __webpack_require__(34);
-	    var dirtyQueue = __webpack_require__(6);
-	    var preTickQueue = __webpack_require__(5);
-	    var Transform = __webpack_require__(21);
-	    var EventHandler = __webpack_require__(9);
+	    var Surface = __webpack_require__(33);
+	    var Context = __webpack_require__(36);
 
 	    /**
 	     * ContainerSurface enables nesting of DOM. A ContainerSurface manages
@@ -4888,9 +5294,9 @@ return /******/ (function(modules) { // webpackBootstrap
 	     *      context.add(myContainer);
 	     *
 	     * @class ContainerSurface
-	     * @extends Core.Surface
-	     * @namespace Core
-	     * @uses Core.Context
+	     * @extends DOM.Surface
+	     * @namespace DOM
+	     * @uses DOM.Context
 	     * @constructor
 	     *
 	     * @param [options] {Object}                Options
@@ -4957,16 +5363,16 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 34 */
+/* 36 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_RESULT__;/* Modified work copyright © 2015 David Valdman */
 	// TODO: Enable CSS properties on Context
 	!(__WEBPACK_AMD_DEFINE_RESULT__ = function(require, exports, module) {
 	    var Engine = __webpack_require__(2);
-	    var RootNode = __webpack_require__(35);
+	    var RootNode = __webpack_require__(37);
 	    var Transform = __webpack_require__(21);
-	    var ElementAllocator = __webpack_require__(36);
+	    var ElementAllocator = __webpack_require__(38);
 	    var Transitionable = __webpack_require__(22);
 	    var SimpleStream = __webpack_require__(11);
 	    var EventHandler = __webpack_require__(9);
@@ -4987,26 +5393,31 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	    /**
 	     * A Context defines a top-level DOM element inside which other nodes (like Surfaces) are rendered.
-	     *  This DOM element can be provided as an argument if it exists in the document,
-	     *  otherwise it is created for you and appended to the document's `<body>`.
 	     *
 	     *  The CSS class `samsara-context` is applied, which provides the minimal CSS necessary
 	     *  to create a performant 3D context (specifically `preserve-3d`).
 	     *
-	     *  As of now, `Context` is not typically instantiated on its own, but rather is
-	     *  created by calling `Engine.createContext()`. This may change in the near future.
+	     *  The Context must be mounted to a DOM node via the `mount` method. If no node is specified
+	     *  it is mounted to `document.body`.
 	     *
 	     *  @example
 	     *
+	     *      var context = Context();
+	     *
+	     *      var surface = new Surface({
+	     *          size : [100,100],
+	     *          properties : {background : 'red'}
+	     *      });
+	     *
+	     *      context.add(surface);
+	     *      context.mount(document.body)
+	     *
 	     * @class Context
 	     * @constructor
-	     * @namespace Core
+	     * @namespace DOM
 	     * @uses Core.RootNode
-	     * @param [options] {Object}                Options
-	     * @param [options.perspective] {Number}    Perspective in pixels
 	     */
-	    function Context(options) {
-	        options = options || {};
+	    function Context() {
 	        this._node = new RootNode();
 
 	        this._size = new SimpleStream();
@@ -5021,7 +5432,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	        this._node._size.subscribe(this.size);
 	        this._node._layout.subscribe(this._layout);
 
-	        this._perspective = new Transitionable(options.perspective || 0);
+	        this._perspective = new Transitionable();
 
 	        this._perspective.on('update', function(perspective){
 	            setPerspective(this.container, perspective);
@@ -5173,13 +5584,13 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 35 */
+/* 37 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_RESULT__;/* Copyright © 2015 David Valdman */
 
 	!(__WEBPACK_AMD_DEFINE_RESULT__ = function(require, exports, module) {
-	    var RenderTreeNode = __webpack_require__(26);
+	    var RenderTreeNode = __webpack_require__(27);
 
 	    /**
 	     * A RootNode is a first node in the Render Tree. It is like any other
@@ -5216,7 +5627,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 36 */
+/* 38 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_RESULT__;/* This Source Code Form is subject to the terms of the Mozilla Public
@@ -5306,7 +5717,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 37 */
+/* 39 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_RESULT__;!(__WEBPACK_AMD_DEFINE_RESULT__ = function(require, exports, module) {
@@ -5321,24 +5732,24 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 38 */
+/* 40 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_RESULT__;!(__WEBPACK_AMD_DEFINE_RESULT__ = function(require, exports, module) {
 	    module.exports = {
-	        GenericInput: __webpack_require__(39),
-	        MouseInput: __webpack_require__(40),
-	        TouchInput: __webpack_require__(41),
-	        ScrollInput: __webpack_require__(43),
-	        ScaleInput: __webpack_require__(44),
-	        RotateInput: __webpack_require__(46),
-	        PinchInput: __webpack_require__(47)
+	        GenericInput: __webpack_require__(41),
+	        MouseInput: __webpack_require__(42),
+	        TouchInput: __webpack_require__(43),
+	        ScrollInput: __webpack_require__(45),
+	        ScaleInput: __webpack_require__(46),
+	        RotateInput: __webpack_require__(48),
+	        PinchInput: __webpack_require__(49)
 	    };
 	}.call(exports, __webpack_require__, exports, module), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
 
 
 /***/ },
-/* 39 */
+/* 41 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_RESULT__;/* This Source Code Form is subject to the terms of the Mozilla Public
@@ -5489,7 +5900,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 40 */
+/* 42 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_RESULT__;/* This Source Code Form is subject to the terms of the Mozilla Public
@@ -5504,7 +5915,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	!(__WEBPACK_AMD_DEFINE_RESULT__ = function(require, exports, module) {
 	    var EventHandler = __webpack_require__(9);
-	    var OptionsManager = __webpack_require__(24);
+	    var OptionsManager = __webpack_require__(31);
 	    var SimpleStream = __webpack_require__(11);
 
 	    var MINIMUM_TICK_TIME = 8;
@@ -5653,7 +6064,9 @@ return /******/ (function(modules) { // webpackBootstrap
 	    }
 
 	    function handleMove(event) {
-	        if (!this._prevCoord) return;
+	        if (!this._down) return false;
+
+	        var scale = this.options.scale;
 
 	        var prevCoord = this._prevCoord;
 	        var prevTime = this._prevTime;
@@ -5663,36 +6076,36 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	        var currTime = _now();
 
-	        var diffX = x - prevCoord[0];
-	        var diffY = y - prevCoord[1];
+	        var diffX = scale * (x - prevCoord[0]);
+	        var diffY = scale * (y - prevCoord[1]);
 
-	        var diffTime = Math.max(currTime - prevTime, MINIMUM_TICK_TIME); // minimum tick time
+	        var dt = Math.max(currTime - prevTime, MINIMUM_TICK_TIME); // minimum tick time
+	        var inv_dt = 1 / dt;
 
-	        var velX = diffX / diffTime;
-	        var velY = diffY / diffTime;
+	        var velX = diffX * inv_dt;
+	        var velY = diffY * inv_dt;
 
-	        var scale = this.options.scale;
 	        var nextVel;
 	        var nextDelta;
 
 	        if (this.options.direction === MouseInput.DIRECTION.X) {
-	            nextDelta = scale * diffX;
-	            nextVel = scale * velX;
+	            nextDelta = diffX;
+	            nextVel = velX;
 	            this._position += nextDelta;
 	        }
 	        else if (this.options.direction === MouseInput.DIRECTION.Y) {
-	            nextDelta = scale * diffY;
-	            nextVel = scale * velY;
+	            nextDelta = diffY;
+	            nextVel = velY;
 	            this._position += nextDelta;
 	        }
 	        else {
-	            nextDelta = [scale * diffX, scale * diffY];
-	            nextVel = [scale * velX, scale * velY];
+	            nextDelta = [diffX, diffY];
+	            nextVel = [velX, velY];
 	            this._position[0] += nextDelta[0];
 	            this._position[1] += nextDelta[1];
 	        }
 
-	        var payload = this._payload;
+	        var payload      = this._payload;
 	        payload.delta    = nextDelta;
 	        payload.value    = this._position;
 	        payload.velocity = nextVel;
@@ -5709,7 +6122,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	    }
 
 	    function handleEnd() {
-	        if (!this._down) return;
+	        if (!this._down) return false;
 
 	        this._eventOutput.emit('end', this._payload);
 	        this._prevCoord = undefined;
@@ -5736,7 +6149,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	}.call(exports, __webpack_require__, exports, module), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
 
 /***/ },
-/* 41 */
+/* 43 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_RESULT__;/* This Source Code Form is subject to the terms of the Mozilla Public
@@ -5750,10 +6163,10 @@ return /******/ (function(modules) { // webpackBootstrap
 	/* Modified work copyright © 2015 David Valdman */
 
 	!(__WEBPACK_AMD_DEFINE_RESULT__ = function(require, exports, module) {
-	    var TouchTracker = __webpack_require__(42);
+	    var TouchTracker = __webpack_require__(44);
 	    var EventHandler = __webpack_require__(9);
 	    var SimpleStream = __webpack_require__(11);
-	    var OptionsManager = __webpack_require__(24);
+	    var OptionsManager = __webpack_require__(31);
 
 	    var MINIMUM_TICK_TIME = 8;
 
@@ -5881,42 +6294,39 @@ return /******/ (function(modules) { // webpackBootstrap
 	    }
 
 	    function handleMove(data) {
+	        var scale = this.options.scale;
 	        var history = data.history;
 
 	        var currHistory = history[history.length - 1];
 	        var prevHistory = history[history.length - 2];
 
-	        var distantTime = prevHistory.timestamp;
+	        var prevTime = prevHistory.timestamp;
 	        var currTime = currHistory.timestamp;
 
-	        var diffX = currHistory.x - prevHistory.x;
-	        var diffY = currHistory.y - prevHistory.y;
+	        var diffX = scale * (currHistory.x - prevHistory.x);
+	        var diffY = scale * (currHistory.y - prevHistory.y);
 
-	        var velDiffX = currHistory.x - prevHistory.x;
-	        var velDiffY = currHistory.y - prevHistory.y;
+	        var dt = Math.max(currTime - prevTime, MINIMUM_TICK_TIME);
+	        var inv_dt = 1 / dt;
 
-	        var invDeltaT = Math.max(currTime - distantTime, MINIMUM_TICK_TIME);
+	        var velX = diffX * inv_dt;
+	        var velY = diffY * inv_dt;
 
-	        var velX = velDiffX * invDeltaT;
-	        var velY = velDiffY * invDeltaT;
-
-	        var scale = this.options.scale;
 	        var nextVel;
 	        var nextDelta;
-
 	        if (this.options.direction === TouchInput.DIRECTION.X) {
-	            nextDelta = scale * diffX;
-	            nextVel = scale * velX;
-	            this._position += nextDelta;
+	            nextDelta = diffX;
+	            nextVel = velX;
+	            this._position += diffX;
 	        }
 	        else if (this.options.direction === TouchInput.DIRECTION.Y) {
-	            nextDelta = scale * diffY;
-	            nextVel = scale * velY;
+	            nextDelta = diffY;
+	            nextVel = velY;
 	            this._position += nextDelta;
 	        }
 	        else {
-	            nextDelta = [scale * diffX, scale * diffY];
-	            nextVel = [scale * velX, scale * velY];
+	            nextDelta = [diffX, diffY];
+	            nextVel = [velX, velY];
 	            this._position[0] += nextDelta[0];
 	            this._position[1] += nextDelta[1];
 	        }
@@ -5943,7 +6353,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 42 */
+/* 44 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_RESULT__;/* This Source Code Form is subject to the terms of the Mozilla Public
@@ -5959,7 +6369,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	//TODO: deprecate in favor of generic history stream
 
 	!(__WEBPACK_AMD_DEFINE_RESULT__ = function(require, exports, module) {
-	    var OptionsManager = __webpack_require__(24);
+	    var OptionsManager = __webpack_require__(31);
 	    var EventHandler = __webpack_require__(9);
 
 	    var _now = Date.now;
@@ -6074,7 +6484,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 43 */
+/* 45 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_RESULT__;/* This Source Code Form is subject to the terms of the Mozilla Public
@@ -6091,7 +6501,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	!(__WEBPACK_AMD_DEFINE_RESULT__ = function(require, exports, module) {
 	    var EventHandler = __webpack_require__(9);
-	    var OptionsManager = __webpack_require__(24);
+	    var OptionsManager = __webpack_require__(31);
 	    var SimpleStream = __webpack_require__(11);
 	    var Timer = __webpack_require__(20);
 
@@ -6252,7 +6662,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 44 */
+/* 46 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_RESULT__;/* This Source Code Form is subject to the terms of the Mozilla Public
@@ -6266,8 +6676,8 @@ return /******/ (function(modules) { // webpackBootstrap
 	/* Modified work copyright © 2015 David Valdman */
 
 	!(__WEBPACK_AMD_DEFINE_RESULT__ = function(require, exports, module) {
-	    var TwoFingerInput = __webpack_require__(45);
-	    var OptionsManager = __webpack_require__(24);
+	    var TwoFingerInput = __webpack_require__(47);
+	    var OptionsManager = __webpack_require__(31);
 
 	    /**
 	     * Detects two-finger pinching motion and emits `start`, `update` and
@@ -6368,7 +6778,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 45 */
+/* 47 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_RESULT__;/* This Source Code Form is subject to the terms of the Mozilla Public
@@ -6534,7 +6944,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 46 */
+/* 48 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_RESULT__;/* This Source Code Form is subject to the terms of the Mozilla Public
@@ -6548,8 +6958,8 @@ return /******/ (function(modules) { // webpackBootstrap
 	/* Modified work copyright © 2015 David Valdman */
 
 	!(__WEBPACK_AMD_DEFINE_RESULT__ = function(require, exports, module) {
-	    var TwoFingerInput = __webpack_require__(45);
-	    var OptionsManager = __webpack_require__(24);
+	    var TwoFingerInput = __webpack_require__(47);
+	    var OptionsManager = __webpack_require__(31);
 
 	    /**
 	     * Detects two-finger rotational motion and emits `start`, `update` and
@@ -6643,7 +7053,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 47 */
+/* 49 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_RESULT__;/* This Source Code Form is subject to the terms of the Mozilla Public
@@ -6657,8 +7067,8 @@ return /******/ (function(modules) { // webpackBootstrap
 	/* Modified work copyright © 2015 David Valdman */
 
 	!(__WEBPACK_AMD_DEFINE_RESULT__ = function(require, exports, module) {
-	    var TwoFingerInput = __webpack_require__(45);
-	    var OptionsManager = __webpack_require__(24);
+	    var TwoFingerInput = __webpack_require__(47);
+	    var OptionsManager = __webpack_require__(31);
 
 	    /**
 	     * Detects two-finger pinching motion and emits `start`, `update` and
@@ -6753,22 +7163,22 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 48 */
+/* 50 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_RESULT__;!(__WEBPACK_AMD_DEFINE_RESULT__ = function(require, exports, module) {
 	    module.exports = {
-	        DrawerLayout: __webpack_require__(49),
-	        FlexibleLayout: __webpack_require__(52),
-	        GridLayout: __webpack_require__(53),
-	        SequentialLayout: __webpack_require__(54),
-	        Scrollview: __webpack_require__(55)
+	        DrawerLayout: __webpack_require__(51),
+	        FlexibleLayout: __webpack_require__(54),
+	        GridLayout: __webpack_require__(55),
+	        SequentialLayout: __webpack_require__(56),
+	        Scrollview: __webpack_require__(57)
 	    };
 	}.call(exports, __webpack_require__, exports, module), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
 
 
 /***/ },
-/* 49 */
+/* 51 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_RESULT__;/* Copyright © 2015 David Valdman */
@@ -6776,11 +7186,11 @@ return /******/ (function(modules) { // webpackBootstrap
 	!(__WEBPACK_AMD_DEFINE_RESULT__ = function(require, exports, module) {
 	    var Transform = __webpack_require__(21);
 	    var Transitionable = __webpack_require__(22);
-	    var View = __webpack_require__(25);
+	    var View = __webpack_require__(26);
 	    var LayoutNode = __webpack_require__(8);
 	    var Stream = __webpack_require__(15);
-	    var Differential = __webpack_require__(50);
-	    var Accumulator = __webpack_require__(51);
+	    var Differential = __webpack_require__(52);
+	    var Accumulator = __webpack_require__(53);
 	    var EventMapper = __webpack_require__(12);
 
 	    var CONSTANTS = {
@@ -6865,7 +7275,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	            // responsible for moving the content from user input
 	            var gestureDelta = new Stream({
 	                start : function (){
-	                    this.position.unsubscribe(transitionDelta);
+	                    this.transitionStream.halt();
 	                    return 0;
 	                }.bind(this),
 	                update : function (data){
@@ -6891,44 +7301,49 @@ return /******/ (function(modules) { // webpackBootstrap
 	                            newDelta = MAX_LENGTH - currentPosition;
 	                        else if (newPosition < MIN_LENGTH && currentPosition !== MIN_LENGTH)
 	                            newDelta = MIN_LENGTH - currentPosition;
-	                        else newDelta = 0;
+	                        else
+	                            newDelta = 0;
 	                    }
 
 	                    return newDelta;
 	                }.bind(this),
 	                end : function (data){
-	                    this.position.subscribe(transitionDelta);
 	                    var velocity = data.velocity;
+
 	                    var orientation = this.orientation;
-	                    var length = this.options.revealLength;
-	                    var isOpen = this.isOpen;
-	                    var currentPosition = this.position.get();
+	                    var position = this.position.get();
 
-	                    var options = this.options;
-
+	                    var length = options.revealLength;
 	                    var MAX_LENGTH = orientation * length;
 	                    var positionThreshold = options.positionThreshold || MAX_LENGTH / 2;
 	                    var velocityThreshold = options.velocityThreshold;
 
-	                    if (options.transition instanceof Object)
-	                        options.transition.velocity = velocity;
-
-	                    if (currentPosition === 0) {
+	                    if (position === 0) {
 	                        this.isOpen = false;
-	                        return;
+	                        return false;
 	                    }
 
-	                    if (currentPosition === MAX_LENGTH) {
+	                    if (position === MAX_LENGTH) {
 	                        this.isOpen = true;
-	                        return;
+	                        return false;
 	                    }
 
-	                    var shouldToggle =
-	                        Math.abs(velocity) > velocityThreshold           ||
-	                        (!isOpen && currentPosition > positionThreshold) ||
-	                        (isOpen && currentPosition < positionThreshold);
+	                    var shouldOpen =
+	                        (position >= positionThreshold) && ((velocity > -velocityThreshold) || (velocity > velocityThreshold)) ||
+	                        (position <  positionThreshold) && ((velocity >  velocityThreshold));
 
-	                    (shouldToggle) ? this.toggle() : this.reset();
+	                    if (shouldOpen){
+	                        this.options.transitionOpen.velocity = velocity;
+	                        this.open(this.options.transitionOpen, function(){
+	                            this.options.transitionOpen.velocity = 0;
+	                        }.bind(this));
+	                    }
+	                    else {
+	                        this.options.transitionClose.velocity = velocity;
+	                        this.close(this.options.transitionClose, function(){
+	                            this.options.transitionClose.velocity = 0;
+	                        }.bind(this));
+	                    }
 	                }.bind(this)
 	            });
 
@@ -6937,7 +7352,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	            var transitionDelta = new Differential();
 	            transitionDelta.subscribe(this.transitionStream);
 
-	            this.position = new Accumulator();
+	            this.position = new Accumulator(0);
 	            this.position.subscribe(gestureDelta);
 	            this.position.subscribe(transitionDelta);
 
@@ -6990,7 +7405,6 @@ return /******/ (function(modules) { // webpackBootstrap
 	         * @param [callback] {Function}         callback
 	         */
 	        open : function open(transition, callback){
-	            if (transition instanceof Function) callback = transition;
 	            if (transition === undefined) transition = this.options.transitionOpen;
 	            this.setPosition(this.options.revealLength, transition, callback);
 	            if (!this.isOpen) {
@@ -7007,7 +7421,6 @@ return /******/ (function(modules) { // webpackBootstrap
 	         * @param [callback] {Function}         callback
 	         */
 	        close : function close(transition, callback){
-	            if (transition instanceof Function) callback = transition;
 	            if (transition === undefined) transition = this.options.transitionClose;
 	            this.setPosition(0, transition, callback);
 	            if (this.isOpen){
@@ -7079,14 +7492,14 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 50 */
+/* 52 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_RESULT__;/* Copyright © 2015 David Valdman */
 
 	!(__WEBPACK_AMD_DEFINE_RESULT__ = function(require, exports, module){
 	    var Stream = __webpack_require__(15);
-	    var OptionsManager = __webpack_require__(24);
+	    var OptionsManager = __webpack_require__(31);
 
 	    /**
 	     * Differential is a Stream that emits differentials of consecutive
@@ -7116,16 +7529,13 @@ return /******/ (function(modules) { // webpackBootstrap
 	        var delta = undefined;
 
 	        Stream.call(this, {
-	            update : function(){ return delta; }
+	            update: function () { return delta; }
 	        });
 
-	        this._eventInput.on('start', function(value){
-	            previous = value;
-	        });
-
+	        this._eventInput.on('start', function(value){ previous = value; });
 	        this._eventInput.on('update', function(value){
 	            var scale = this.options.scale;
-	            if (previous instanceof Array){
+	            if (previous instanceof Array) {
 	                delta = [];
 	                for (var i = 0; i < previous.length; i++)
 	                    delta[i] = scale * (value[i] - previous[i]);
@@ -7147,12 +7557,13 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 51 */
+/* 53 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_RESULT__;/* Copyright © 2015 David Valdman */
 
 	!(__WEBPACK_AMD_DEFINE_RESULT__ = function(require, exports, module){
+	    var OptionsManager = __webpack_require__(31);
 	    var Stream = __webpack_require__(15);
 	    var preTickQueue = __webpack_require__(5);
 	    var dirtyQueue = __webpack_require__(6);
@@ -7165,7 +7576,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	     *
 	     *  @example
 	     *
-	     *      var accumulator = new Accumulator();
+	     *      var accumulator = new Accumulator(0);
 	     *
 	     *      // this gives the total displacement of mouse input
 	     *      accumulator.subscribe(mouseInput.pluck('delta'));
@@ -7176,45 +7587,60 @@ return /******/ (function(modules) { // webpackBootstrap
 	     * @namespace Streams
 	     * @constructor
 	     * @param [sum] {Number|Array}    Initial value
+	     * @param [options] {Object}      Options
+	     * @param [options.min] {Number}  Set a minimum value
+	     * @param [options.max] {Number}  Set a maximum value
 	     */
-	    function Accumulator(sum){
+	    function Accumulator(sum, options){
+	        this.options = OptionsManager.setOptions(this, options);
+
 	        // TODO: is this state necessary?
 	        this.sum = undefined;
 
 	        if (sum !== undefined) this.set(sum);
 
 	        Stream.call(this, {
-	            start : function(){
-	                return this.sum || 0;
-	            }.bind(this),
+	            start : function(){ return this.sum || 0; }.bind(this),
 	            update : function(){ return this.sum; }.bind(this),
 	            end : function(){ return this.sum || 0; }.bind(this)
 	        });
 
+	        // TODO: is `start` event necessary?
 	        this._eventInput.on('start', function(value){
-	            if (this.sum === undefined) {
-	                value = value || 0;
-	                if (value instanceof Array){
-	                    this.sum = [];
-	                    for (var i = 0; i < value.length; i++)
-	                        this.sum[i] = value[i];
-	                }
-	                else this.sum = value;
+	            if (this.sum !== undefined) return;
+	            if (value instanceof Array) {
+	                this.sum = [];
+	                for (var i = 0; i < value.length; i++)
+	                    this.sum[i] = clamp(value[i], this.options.min, this.options.max);
 	            }
+	            else this.sum = clamp(value, this.options.min, this.options.max);
 	        }.bind(this));
 
-	        this._eventInput.on('update', function(value){
-	            if (value instanceof Array){
-	                if (!this.sum) this.sum = [];
-	                for (var i = 0; i < value.length; i++)
-	                    this.sum[i] += value[i];
+	        this._eventInput.on('update', function(delta){
+	            if (delta instanceof Array){
+	                for (var i = 0; i < delta.length; i++){
+	                    this.sum[i] += delta[i];
+	                    this.sum[i] = clamp(this.sum[i], this.options.min, this.options.max);
+	                }
 	            }
-	            else this.sum += value;
+	            else {
+	                this.sum += delta;
+	                this.sum = clamp(this.sum, this.options.min, this.options.max);
+	            }
 	        }.bind(this));
 	    }
 
 	    Accumulator.prototype = Object.create(Stream.prototype);
 	    Accumulator.prototype.constructor = Accumulator;
+
+	    Accumulator.DEFAULT_OPTIONS = {
+	        min : -Infinity,
+	        max :  Infinity
+	    };
+
+	    function clamp(value, min, max){
+	        return Math.min(Math.max(value, min), max);
+	    }
 
 	    /**
 	     * Set accumulated value.
@@ -7225,8 +7651,8 @@ return /******/ (function(modules) { // webpackBootstrap
 	     */
 	    Accumulator.prototype.set = function(sum, silent){
 	        this.sum = sum;
-	        var self = this;
 	        if (silent === true) return;
+	        var self = this;
 	        preTickQueue.push(function(){
 	            self.trigger('start', sum);
 	            dirtyQueue.push(function(){
@@ -7250,7 +7676,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 52 */
+/* 54 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_RESULT__;/* Copyright © 2015 David Valdman */
@@ -7258,7 +7684,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	!(__WEBPACK_AMD_DEFINE_RESULT__ = function(require, exports, module) {
 	    var Transform = __webpack_require__(21);
 	    var Transitionable = __webpack_require__(22);
-	    var View = __webpack_require__(25);
+	    var View = __webpack_require__(26);
 	    var Stream = __webpack_require__(15);
 	    var LayoutNode = __webpack_require__(8);
 	    var SizeNode = __webpack_require__(17);
@@ -7376,14 +7802,14 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 53 */
+/* 55 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_RESULT__;/* Copyright © 2015 David Valdman */
 
 	!(__WEBPACK_AMD_DEFINE_RESULT__ = function(require, exports, module) {
 	    var Transform = __webpack_require__(21);
-	    var View = __webpack_require__(25);
+	    var View = __webpack_require__(26);
 	    var Stream = __webpack_require__(15);
 	    var LayoutNode = __webpack_require__(8);
 	    var SizeNode = __webpack_require__(17);
@@ -7496,14 +7922,14 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 54 */
+/* 56 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_RESULT__;/* Copyright © 2015 David Valdman */
 
 	!(__WEBPACK_AMD_DEFINE_RESULT__ = function(require, exports, module) {
 	    var Transform = __webpack_require__(21);
-	    var View = __webpack_require__(25);
+	    var View = __webpack_require__(26);
 	    var ResizeStream = __webpack_require__(18);
 	    var LayoutNode = __webpack_require__(8);
 
@@ -7586,7 +8012,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 55 */
+/* 57 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_RESULT__;/* Copyright © 2015 David Valdman */
@@ -7594,19 +8020,19 @@ return /******/ (function(modules) { // webpackBootstrap
 	!(__WEBPACK_AMD_DEFINE_RESULT__ = function(require, exports, module) {
 	    var Transform = __webpack_require__(21);
 	    var Transitionable = __webpack_require__(22);
-	    var View = __webpack_require__(25);
+	    var View = __webpack_require__(26);
 	    var LayoutNode = __webpack_require__(8);
 	    var Stream = __webpack_require__(15);
 	    var ResizeStream = __webpack_require__(18);
-	    var Accumulator = __webpack_require__(51);
-	    var Differential = __webpack_require__(50);
+	    var Accumulator = __webpack_require__(53);
+	    var Differential = __webpack_require__(52);
 
-	    var SequentialLayout = __webpack_require__(54);
-	    var ContainerSurface = __webpack_require__(33);
+	    var SequentialLayout = __webpack_require__(56);
+	    var ContainerSurface = __webpack_require__(35);
 
-	    var GenericInput = __webpack_require__(39);
-	    var ScrollInput = __webpack_require__(43);
-	    var TouchInput = __webpack_require__(41);
+	    var GenericInput = __webpack_require__(41);
+	    var ScrollInput = __webpack_require__(45);
+	    var TouchInput = __webpack_require__(43);
 
 	    GenericInput.register({
 	        touch : TouchInput,
@@ -7639,32 +8065,52 @@ return /******/ (function(modules) { // webpackBootstrap
 	            });
 
 	            var position = new Accumulator(0);
-	            this.bounce = new Transitionable(0);
 
-	            var bounceDifferential = new Differential();
+	            this.drag = new Transitionable(0);
+	            this.spring = new Transitionable(0);
+
+	            var dragDifferential = new Differential();
+	            var springDifferential = new Differential();
 	            var gestureDifferential = genericInput.pluck('delta');
 
-	            bounceDifferential.subscribe(this.bounce);
+	            dragDifferential.subscribe(this.drag);
+	            springDifferential.subscribe(this.spring);
 
 	            position.subscribe(gestureDifferential);
-	            position.subscribe(bounceDifferential);
+	            position.subscribe(dragDifferential);
+	            //position.subscribe(springDifferential);
 
 	            if (options.pageTransition){
-	                genericInput.on('end', function(){
+	                genericInput.on('end', function(data){
 	                    if (!shouldBounce) return;
-	                    this.bounce.set(0);
-	                    this.bounce.set(this.itemOffset, options.pageTransition);
+	                    this.drag.reset(0);
+	                    this.spring.reset(0);
+	                    options.pageTransition.velocity = data.velocity + this.drag.getVelocity();
+	                    this.drag.set(0, options.pageTransition);
 	                }.bind(this));
 
 	                genericInput.on('start', function(){
-	                    if (this.bounce.isActive())
-	                        this.bounce.halt();
+	                    this.drag.halt();
+	                    this.spring.halt();
 	                }.bind(this));
 
-	                this.bounce.on('end', function(){
+	                this.spring.on('start', function () {
+	                    this.drag.velocity = 0;
+	                }.bind(this));
+
+	                this.spring.on('end', function(){
 	                    changePage.call(this, this._currentIndex);
 	                }.bind(this));
 	            }
+
+	            this.drag.on('end', function(data){
+	                this.spring.set(this.itemOffset, {
+	                    curve: 'spring',
+	                    period: 70,
+	                    damping: 0.7,
+	                    velocity : data.velocity
+	                })
+	            }.bind(this));
 
 	            var overflowStream = ResizeStream.lift(function(contentLength, viewportSize){
 	                if (!contentLength) return false;
@@ -7677,7 +8123,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	                shouldBounce = true;
 	                if (!overflow) return false;
 
-	                if (this.bounce.isActive())
+	                if (this.drag.isActive() || this.spring.isActive())
 	                    return Math.round(top);
 
 	                if (top <= overflow) {
@@ -7710,18 +8156,13 @@ return /******/ (function(modules) { // webpackBootstrap
 	                }
 	            });
 
-	            container.on('deploy', function(){
-	                container._container.addEventListener('touchmove', function(event){
-	                    event.preventDefault();
-	                })
-	            });
-
 	            genericInput.subscribe(container);
 
 	            container.add(displacementNode).add(this.layout);
 	            this.add(container);
 	        },
-	        goto : function(index){
+	        goto : function(index, transition, callback){
+	            transition = transition || this.options.transition;
 	            var position = this.itemOffset;
 	            if (index > this._currentIndex){
 	                for (var i = this._currentIndex; i < index; i++)
@@ -7733,8 +8174,8 @@ return /******/ (function(modules) { // webpackBootstrap
 	            }
 	            else return;
 
-	            this.bounce.set(0);
-	            this.bounce.set(position, {duration : 500});
+	            this.spring.set(0);
+	            this.spring.set(Math.ceil(position), transition, callback);
 	        },
 	        addItems : function(items){
 	            this.layout.addItems(items);
@@ -7802,8 +8243,9 @@ return /******/ (function(modules) { // webpackBootstrap
 	    });
 
 	    function changePage(index){
+	        console.log(index, this._previousIndex)
 	        if (index == this._previousIndex) return;
-	        this.emit('page', index);
+	        this.output.emit('page', index);
 	        this._previousIndex = index;
 	    }
 
@@ -7812,13 +8254,13 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 56 */
+/* 58 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_RESULT__;!(__WEBPACK_AMD_DEFINE_RESULT__ = function(require, exports, module) {
 	    module.exports = {
-	        Accumulator: __webpack_require__(51),
-	        Differential: __webpack_require__(50),
+	        Accumulator: __webpack_require__(53),
+	        Differential: __webpack_require__(52),
 	        SimpleStream: __webpack_require__(11),
 	        Stream: __webpack_require__(15),
 	        Observable: __webpack_require__(16),
@@ -7828,347 +8270,15 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 57 */
+/* 59 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_RESULT__;!(__WEBPACK_AMD_DEFINE_RESULT__ = function(require, exports, module) {
 	    module.exports = {
-	        Easing: __webpack_require__(58)
+	        Tween: __webpack_require__(23),
+	        Spring: __webpack_require__(24),
+	        Inertia: __webpack_require__(25)
 	    };
-	}.call(exports, __webpack_require__, exports, module), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
-
-
-/***/ },
-/* 58 */
-/***/ function(module, exports, __webpack_require__) {
-
-	var __WEBPACK_AMD_DEFINE_RESULT__;/* This Source Code Form is subject to the terms of the Mozilla Public
-	 * License, v. 2.0. If a copy of the MPL was not distributed with this
-	 * file, You can obtain one at http://mozilla.org/MPL/2.0/.
-	 *
-	 * @license MPL 2.0
-	 * @copyright Famous Industries, Inc. 2014
-	 */
-
-	/* Modified work copyright © 2015 David Valdman */
-
-	!(__WEBPACK_AMD_DEFINE_RESULT__ = function(require, exports, module) {
-
-	    /**
-	     * A library of easing curves.
-	     *
-	     * @example
-	     *
-	     *      var t = new Transitionable(0);
-	     *
-	     *      t.set(100, {
-	     *          duration : 1000,
-	     *          curve : Easing.inQuad
-	     *      }
-	     *
-	     *      transitionable.on('start', function(value){
-	     *          console.log(value); // 0
-	     *      });
-	     *
-	     *      transitionable.on('update', function(value){
-	     *          console.log(value); // numbers between 0 and 100
-	     *      });
-	     *
-	     *      transitionable.on('end', function(value){
-	     *          console.log(value); // 100
-	     *      });
-	     *
-	     * @class Easing
-	     * @namespace Transitions
-	     * @static
-	     */
-	    var Easing = {
-
-	        /**
-	         * @method inQuad
-	         * @static
-	         */
-	        inQuad: function(t) {
-	            return t*t;
-	        },
-
-	        /**
-	         * @method outQuad
-	         * @static
-	         */
-	        outQuad: function(t) {
-	            return -(t-=1)*t+1;
-	        },
-
-	        /**
-	         * @method inOutQuad
-	         * @static
-	         */
-	        inOutQuad: function(t) {
-	            if ((t/=.5) < 1) return .5*t*t;
-	            return -.5*((--t)*(t-2) - 1);
-	        },
-
-	        /**
-	         * @method inCubic
-	         * @static
-	         */
-	        inCubic: function(t) {
-	            return t*t*t;
-	        },
-
-	        /**
-	         * @method outCubic
-	         * @static
-	         */
-	        outCubic: function(t) {
-	            return ((--t)*t*t + 1);
-	        },
-
-	        /**
-	         * @method inOutCubic
-	         * @static
-	         */
-	        inOutCubic: function(t) {
-	            if ((t/=.5) < 1) return .5*t*t*t;
-	            return .5*((t-=2)*t*t + 2);
-	        },
-
-	        /**
-	         * @method inQuart
-	         * @static
-	         */
-	        inQuart: function(t) {
-	            return t*t*t*t;
-	        },
-
-	        /**
-	         * @method outQuart
-	         * @static
-	         */
-	        outQuart: function(t) {
-	            return -((--t)*t*t*t - 1);
-	        },
-
-	        /**
-	         * @method inOutQuart
-	         * @static
-	         */
-	        inOutQuart: function(t) {
-	            if ((t/=.5) < 1) return .5*t*t*t*t;
-	            return -.5 * ((t-=2)*t*t*t - 2);
-	        },
-
-	        /**
-	         * @method inQuint
-	         * @static
-	         */
-	        inQuint: function(t) {
-	            return t*t*t*t*t;
-	        },
-
-	        /**
-	         * @method outQuint
-	         * @static
-	         */
-	        outQuint: function(t) {
-	            return ((--t)*t*t*t*t + 1);
-	        },
-
-	        /**
-	         * @method inOutQuint
-	         * @static
-	         */
-	        inOutQuint: function(t) {
-	            if ((t/=.5) < 1) return .5*t*t*t*t*t;
-	            return .5*((t-=2)*t*t*t*t + 2);
-	        },
-
-	        /**
-	         * @method inSine
-	         * @static
-	         */
-	        inSine: function(t) {
-	            return -1.0*Math.cos(t * (Math.PI/2)) + 1.0;
-	        },
-
-	        /**
-	         * @method outSine
-	         * @static
-	         */
-	        outSine: function(t) {
-	            return Math.sin(t * (Math.PI/2));
-	        },
-
-	        /**
-	         * @method inOutSine
-	         * @static
-	         */
-	        inOutSine: function(t) {
-	            return -.5*(Math.cos(Math.PI*t) - 1);
-	        },
-
-	        /**
-	         * @method inExpo
-	         * @static
-	         */
-	        inExpo: function(t) {
-	            return (t===0) ? 0.0 : Math.pow(2, 10 * (t - 1));
-	        },
-
-	        /**
-	         * @method outExpo
-	         * @static
-	         */
-	        outExpo: function(t) {
-	            return (t===1.0) ? 1.0 : (-Math.pow(2, -10 * t) + 1);
-	        },
-
-	        /**
-	         * @method inOutExpo
-	         * @static
-	         */
-	        inOutExpo: function(t) {
-	            if (t===0) return 0.0;
-	            if (t===1.0) return 1.0;
-	            if ((t/=.5) < 1) return .5 * Math.pow(2, 10 * (t - 1));
-	            return .5 * (-Math.pow(2, -10 * --t) + 2);
-	        },
-
-	        /**
-	         * @method inCirc
-	         * @static
-	         */
-	        inCirc: function(t) {
-	            return -(Math.sqrt(1 - t*t) - 1);
-	        },
-
-	        /**
-	         * @method outCirc
-	         * @static
-	         */
-	        outCirc: function(t) {
-	            return Math.sqrt(1 - (--t)*t);
-	        },
-
-	        /**
-	         * @method inOutCirc
-	         * @static
-	         */
-	        inOutCirc: function(t) {
-	            if ((t/=.5) < 1) return -.5 * (Math.sqrt(1 - t*t) - 1);
-	            return .5 * (Math.sqrt(1 - (t-=2)*t) + 1);
-	        },
-
-	        /**
-	         * @property inElastic
-	         * @static
-	         */
-	        inElastic: function(t) {
-	            var s=1.70158;var p=0;var a=1.0;
-	            if (t===0) return 0.0;  if (t===1) return 1.0;  if (!p) p=.3;
-	            s = p/(2*Math.PI) * Math.asin(1.0/a);
-	            return -(a*Math.pow(2,10*(t-=1)) * Math.sin((t-s)*(2*Math.PI)/ p));
-	        },
-
-	        /**
-	         * @method outElastic
-	         * @static
-	         */
-	        outElastic: function(t) {
-	            var s=1.70158;var p=0;var a=1.0;
-	            if (t===0) return 0.0;  if (t===1) return 1.0;  if (!p) p=.3;
-	            s = p/(2*Math.PI) * Math.asin(1.0/a);
-	            return a*Math.pow(2,-10*t) * Math.sin((t-s)*(2*Math.PI)/p) + 1.0;
-	        },
-
-	        /**
-	         * @method inOutElastic
-	         * @static
-	         */
-	        inOutElastic: function(t) {
-	            var s=1.70158;var p=0;var a=1.0;
-	            if (t===0) return 0.0;  if ((t/=.5)===2) return 1.0;  if (!p) p=(.3*1.5);
-	            s = p/(2*Math.PI) * Math.asin(1.0/a);
-	            if (t < 1) return -.5*(a*Math.pow(2,10*(t-=1)) * Math.sin((t-s)*(2*Math.PI)/p));
-	            return a*Math.pow(2,-10*(t-=1)) * Math.sin((t-s)*(2*Math.PI)/p)*.5 + 1.0;
-	        },
-
-	        /**
-	         * @method inBack
-	         * @static
-	         */
-	        inBack: function(t, s) {
-	            if (s === undefined) s = 1.70158;
-	            return t*t*((s+1)*t - s);
-	        },
-
-	        /**
-	         * @method outBack
-	         * @static
-	         */
-	        outBack: function(t, s) {
-	            if (s === undefined) s = 1.70158;
-	            return ((--t)*t*((s+1)*t + s) + 1);
-	        },
-
-	        /**
-	         * @method inOutBack
-	         * @static
-	         */
-	        inOutBack: function(t, s) {
-	            if (s === undefined) s = 1.70158;
-	            if ((t/=.5) < 1) return .5*(t*t*(((s*=(1.525))+1)*t - s));
-	            return .5*((t-=2)*t*(((s*=(1.525))+1)*t + s) + 2);
-	        },
-
-	        /**
-	         * @method inBounce
-	         * @static
-	         */
-	        inBounce: function(t) {
-	            return 1.0 - Easing.outBounce(1.0-t);
-	        },
-
-	        /**
-	         * @method outBounce
-	         * @static
-	         */
-	        outBounce: function(t) {
-	            if (t < (1/2.75)) {
-	                return (7.5625*t*t);
-	            } else if (t < (2/2.75)) {
-	                return (7.5625*(t-=(1.5/2.75))*t + .75);
-	            } else if (t < (2.5/2.75)) {
-	                return (7.5625*(t-=(2.25/2.75))*t + .9375);
-	            } else {
-	                return (7.5625*(t-=(2.625/2.75))*t + .984375);
-	            }
-	        },
-
-	        /**
-	         * @method inOutBounce
-	         * @static
-	         */
-	        inOutBounce: function(t) {
-	            if (t < .5) return Easing.inBounce(t*2) * .5;
-	            return Easing.outBounce(t*2-1.0) * .5 + .5;
-	        },
-
-	        /**
-	         * @method createCustomCurve
-	         * @static
-	         */
-	        createCustomCurve: function(slope0, slope1) {
-	            if (slope0 === undefined) slope0 = 0; // slope at t = 0
-	            if (slope1 === undefined) slope1 = 0; // slope at t = 1
-	            return function(t) {
-	                return slope0*t + (-2*slope0 - slope1 + 3)*t*t + (slope0 + slope1 - 2)*t*t*t;
-	            };
-	        }
-	    };
-
-	    module.exports = Easing;
 	}.call(exports, __webpack_require__, exports, module), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
 
 
