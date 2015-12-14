@@ -157,9 +157,12 @@ define(function(require, exports, module) {
     };
 
     // {Visibility : hidden} allows for DOM events to pass through the element
+    // TODO: use pointerEvents instead. However, there is a bug in Chrome for Android
+    // ticket here: https://code.google.com/p/chromium/issues/detail?id=569654
     var _setOpacity = function _setOpacity(element, opacity) {
         if (!this._isVisible && opacity > MIN_OPACITY) {
-            element.style.pointerEvents = '';
+            //element.style.pointerEvents = 'auto';
+            element.style.visibility = 'visible';
             this._isVisible = true;
         }
 
@@ -167,12 +170,13 @@ define(function(require, exports, module) {
         else if (opacity < MIN_OPACITY) {
             opacity = MIN_OPACITY;
             if (this._isVisible) {
-                element.style.pointerEvents = 'none';
+                //element.style.pointerEvents = 'none';
+                element.style.visibility = 'hidden';
                 this._isVisible = false;
             }
         }
 
-        element.style.opacity = opacity;
+        if (this._isVisible) element.style.opacity = opacity;
     };
 
     /**
