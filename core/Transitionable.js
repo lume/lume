@@ -288,27 +288,24 @@ define(function (require, exports, module) {
      * Combine multiple transitions to be executed sequentially. Provide the
      *  transitions as an array of transition definitions.
      *
-     *  Note : supply the value inside the transition definition.
-     *
      *  @example
      *
      *  transitionable.setMany([
-     *      {value : 0, curve : 'easeOut', duration : 500},
-     *      {value : 1, curve : 'spring', period : 100, damping : 0.5}
+     *      {value : 0, transition : {curve : 'easeOut', duration : 500}},
+     *      {value : 1, transition : {curve : 'spring', period : 100, damping : 0.5}}
      *  ]);
      *
      * @method setMany
      * @param transitions {Array}   Array of transitions
-     * @param [callback] {Function} Callback to execute upon completion
      */
-    Transitionable.prototype.setMany = function (transitions, callback) {
+    Transitionable.prototype.setMany = function (transitions) {
         var first = transitions.shift();
         if (transitions.length === 0) {
-            this.set(first.value, first.transition, callback)
+            this.set(first.value, first.transition, first.callback)
         }
         else {
             this.set(first.value, first.transition, function () {
-                this.setMany(transitions, callback);
+                this.setMany(transitions);
             }.bind(this));
         }
     };
@@ -316,8 +313,15 @@ define(function (require, exports, module) {
     /**
      * Loop indefinitely between values with provided transitions array.
      *
+     *  @example
+     *
+     *  transitionable.loop([
+     *      {value : 0, transition : {curve : 'easeOut', duration : 500}},
+     *      {value : 1, transition : {curve : 'spring', period : 100, damping : 0.5}}
+     *  ]);
+     *
      * @method loop
-     * @param transitions {Array}   Array of values
+     * @param transitions {Array}   Array of transitions
      */
     Transitionable.prototype.loop = function (transitions) {
         var arrayClone = transitions.slice(0);
