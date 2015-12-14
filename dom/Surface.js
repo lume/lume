@@ -12,8 +12,10 @@ define(function(require, exports, module) {
     var ElementOutput = require('../core/ElementOutput');
     var dirtyQueue = require('../core/queues/dirtyQueue');
 
+    var isTouchEnabled = "ontouchstart" in window;
+
     /**
-     * Surface is a wrapper for DOM element controlled by Samsara.
+     * Surface is a wrapper for a DOM element animated by Samsara.
      *  Samsara will commit opacity, size and CSS3 `transform` properties into the Surface.
      *  CSS classes, properties and DOM attributes can also be added and dynamically changed.
      *  Surfaces also act as sources for DOM events such as `click`.
@@ -61,7 +63,7 @@ define(function(require, exports, module) {
      * @param [options.aspectRatio] {Number}    Aspect ratio
      * @param [options.opacity=1] {Number}      Opacity
      * @param [options.tagName="div"] {String}  HTML tagName
-     * @param [options.preventDrag] {Boolean}   Prevents default scroll behavior on touch devices
+     * @param [options.enableScroll] {Boolean}  Allows a Surface to support native scroll behavior
      */
     function Surface(options) {
         this.properties = {};
@@ -92,7 +94,7 @@ define(function(require, exports, module) {
 
     Surface.prototype = Object.create(ElementOutput.prototype);
     Surface.prototype.constructor = Surface;
-    Surface.prototype.elementType = 'div'; // default tagName, but can be overriden in options
+    Surface.prototype.elementType = 'div'; // Default tagName. Can be overridden in options.
     Surface.prototype.elementClass = 'samsara-surface';
 
     function _setDirty(){
@@ -153,15 +155,19 @@ define(function(require, exports, module) {
         if (this._currentTarget){
             this._currentTarget.addEventListener('touchmove', function (event) {
                 event.preventDefault();
-            });
+            }, false);
         }
         else {
             this.on('deploy', function (target) {
                 target.addEventListener('touchmove', function (event) {
                     event.preventDefault();
-                });
+                }, false);
             }.bind(this));
         }
+    }
+
+    function enableScroll(){
+        this.addClass('samsara-scrollable');
     }
     
     /**
@@ -334,7 +340,8 @@ define(function(require, exports, module) {
         if (options.attributes !== undefined) this.setAttributes(options.attributes);
         if (options.content !== undefined) this.setContent(options.content);
         if (options.aspectRatio !== undefined) this.setAspectRatio(options.aspectRatio);
-        if (options.preventDrag) preventDrag.call(this, options.aspectRatio);
+        if (options.enableScroll) enableScroll.call(this);
+        else if (isTouchEnabled) preventDrag.call(this);
     };
 
     /**

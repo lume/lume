@@ -48,10 +48,8 @@ define(function(require, exports, module) {
      * @constructor
      * @namespace DOM
      * @uses Core.RootNode
-     * @param [options] {Object}                Options
-     * @param [options.preventDrag] {Boolean}   Prevents default scroll behavior on touch devices
      */
-    function Context(options) {
+    function Context() {
         this._node = new RootNode();
 
         this._size = new SimpleStream();
@@ -80,14 +78,6 @@ define(function(require, exports, module) {
         this._eventForwarder = function _eventForwarder(event) {
             this._eventOutput.emit(event.type, event);
         }.bind(this);
-
-        if (options.preventDrag) {
-            this.on('deploy', function (target) {
-                target.addEventListener('touchmove', function (event) {
-                    event.preventDefault();
-                });
-            });
-        }
     }
 
     /**
