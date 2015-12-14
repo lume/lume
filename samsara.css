@@ -12,6 +12,8 @@
     position: absolute;
     height: 100%;
     width: 100%;
+    pointer-events: none;
+    overflow: hidden;
     -webkit-transform-style: preserve-3d;
        -moz-transform-style: preserve-3d;
             transform-style: preserve-3d;
@@ -28,6 +30,7 @@
 
 .samsara-surface {
     position: absolute;
+    pointer-events: auto;
     -webkit-tap-highlight-color: transparent;
     -webkit-backface-visibility: visible;
        -moz-backface-visibility: visible;
@@ -35,4 +38,10 @@
     -webkit-box-sizing: border-box;
        -moz-box-sizing: border-box;
             box-sizing: border-box;
+}
+
+.samsara-scrollable {
+    overflow: auto;
+    -webkit-overflow-scrolling: touch;
+            overflow-scrolling: touch;
 }
