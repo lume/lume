@@ -159,7 +159,7 @@ define(function(require, exports, module) {
     // {Visibility : hidden} allows for DOM events to pass through the element
     var _setOpacity = function _setOpacity(element, opacity) {
         if (!this._isVisible && opacity > MIN_OPACITY) {
-            element.style.visibility = 'visible';
+            element.style.pointerEvents = '';
             this._isVisible = true;
         }
 
@@ -167,12 +167,12 @@ define(function(require, exports, module) {
         else if (opacity < MIN_OPACITY) {
             opacity = MIN_OPACITY;
             if (this._isVisible) {
-                element.style.visibility = 'hidden';
+                element.style.pointerEvents = 'none';
                 this._isVisible = false;
             }
         }
 
-        if (this._isVisible) element.style.opacity = opacity;
+        element.style.opacity = opacity;
     };
 
     /**
