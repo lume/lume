@@ -91,11 +91,8 @@ define(function (require, exports, module) {
                 this._active = false;
                 hasUpdated = false;
 
-                if (this._engineInstance) {
+                if (this._engineInstance)
                     this.velocity = this._engineInstance.getVelocity();
-                    var index = tickQueue.indexOf(this.updateMethod);
-                    if (index >= 0) tickQueue.splice(index, 1);
-                }
 
                 this._active = false;
                 this.emit('end', value);
@@ -215,14 +212,36 @@ define(function (require, exports, module) {
         return this.value;
     };
 
+    /**
+     * Return the current velocity of the transition.
+     *
+     * @method getVelocity
+     * @return {Number|Number[]}    Current state
+     */
+    Transitionable.prototype.getVelocity = function getVelocity(){
+        return this.velocity;
+    };
+
+    /**
+     * Sets the value and velocity of the transition without firing any events.
+     *
+     * @method reset
+     * @param value {Number|Number[]}       New value
+     * @param [velocity] {Number|Number[]}  New velocity
+     */
     Transitionable.prototype.reset = function reset(value, velocity){
         this.value = value;
-        this.velocity = velocity;
+        this.velocity = velocity || 0;
         this._callback = null;
         this._method = null;
         if (this._engineInstance) this._engineInstance.reset(value, velocity);
     };
 
+    /**
+     * Ends the transition in place.
+     *
+     * @method halt
+     */
     Transitionable.prototype.halt = function () {
         this.reset(this.get());
         this.trigger('end', this.value);
@@ -265,30 +284,44 @@ define(function (require, exports, module) {
         }.bind(this));
     };
 
-    Transitionable.prototype.setMany = function (array, callback) {
-        var first = array.shift();
-        if (array.length === 0) {
+    /**
+     * Combine multiple transitions to be executed sequentially. Provide the
+     *  transitions as an array of transition definitions.
+     *
+     *  Note : supply the value inside the transition definition.
+     *
+     *  @example
+     *
+     *  transitionable.setMany([
+     *      {value : 0, curve : 'easeOut', duration : 500},
+     *      {value : 1, curve : 'spring', period : 100, damping : 0.5}
+     *  ]);
+     *
+     * @method setMany
+     * @param transitions {Array}   Array of transitions
+     * @param [callback] {Function} Callback to execute upon completion
+     */
+    Transitionable.prototype.setMany = function (transitions, callback) {
+        var first = transitions.shift();
+        if (transitions.length === 0) {
             this.set(first.value, first.transition, callback)
         }
         else {
             this.set(first.value, first.transition, function () {
-                this.setMany(array, callback);
+                this.setMany(transitions, callback);
             }.bind(this));
         }
     };
 
     /**
-     * Loop indefinitely between values with provided transitions. Fire a callback
-     *  after each new value is reached.
+     * Loop indefinitely between values with provided transitions array.
      *
      * @method loop
-     * @param values {Array}                    Array of values
-     * @param transitions {Object|Object[]}     Array of transitions
-     * @param [callback] {Function}             Callback
+     * @param transitions {Array}   Array of values
      */
-    Transitionable.prototype.loop = function (array) {
-        var arrayClone = array.slice(0);
-        this.setMany(array, function () {
+    Transitionable.prototype.loop = function (transitions) {
+        var arrayClone = transitions.slice(0);
+        this.setMany(transitions, function () {
             this.loop(arrayClone);
         }.bind(this));
     };
