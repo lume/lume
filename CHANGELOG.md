@@ -1,3 +1,37 @@
+## 0.1.0
+
+**General**
+- Physics transitions
+- Native scroll support via `enableScroll` option for `Surfaces`
+
+**Core**
+- UPDATE `View` has `getSize` method
+
+**DOM**
+- UPDATE `Surface` has `enableScroll` option supporting native scrolling. 
+
+**Transitions**
+- ADD physics transitions `Spring` and `Inertia`
+- ADD `setMany` method for chaining animations
+- MOVE `TweenTransition` renamed to `Tween`
+- DELETE `Easing.js`, some curves bundled into `Tween.js`
+- UPDATE improved velocity calculation with centered difference scheme
+- UPDATE improved architecture for n-dimensional arrays
+- UPDATE `loop` method to new API
+- FIX `halt` method now emits `end` event
+
+**Inputs**
+ - FIX velocity calculations for `TouchInput`
+ - FIX `MouseInput` returns `false` to stop event propagation
+
+**Streams**
+
+- FIX `Stream` handles `end` events during updating correctly
+- UPDATE `Accumulator` takes clamping options
+
+**Layouts**
+- UPDATE Improved DrawerLayout
+
 ## 0.0.4
 
 **General**
