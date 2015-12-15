@@ -1,0 +1,342 @@
+<!DOCTYPE html>
+
+<html>
+<head>
+  <title>NavBar.js</title>
+  <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+  <meta name="viewport" content="width=device-width, target-densitydpi=160dpi, initial-scale=1.0; maximum-scale=1.0; user-scalable=0;">
+  <link rel="stylesheet" media="all" href="docco.css" />
+</head>
+<body>
+  <div id="container">
+    <div id="background"></div>
+    
+      <ul id="jump_to">
+        <li>
+          <a class="large" href="javascript:void(0);">Jump To &hellip;</a>
+          <a class="small" href="javascript:void(0);">+</a>
+          <div id="jump_wrapper">
+          <div id="jump_page_wrapper">
+            <div id="jump_page">
+              
+                
+                <a class="source" href="App.html">
+                  App.js
+                </a>
+              
+                
+                <a class="source" href="Content.html">
+                  Content.js
+                </a>
+              
+                
+                <a class="source" href="Drawer.html">
+                  Drawer.js
+                </a>
+              
+                
+                <a class="source" href="NavBar.html">
+                  NavBar.js
+                </a>
+              
+                
+                <a class="source" href="NavItem.html">
+                  NavItem.js
+                </a>
+              
+                
+                <a class="source" href="main.html">
+                  main.js
+                </a>
+              
+            </div>
+          </div>
+        </li>
+      </ul>
+    
+    <ul class="sections">
+        
+          <li id="title">
+              <div class="annotation">
+                  <h1>NavBar.js</h1>
+              </div>
+          </li>
+        
+        
+        
+        <li id="section-1">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-1">&#182;</a>
+              </div>
+              
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>define(<span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params">require, exports, module</span>) </span>{
+    <span class="hljs-keyword">var</span> Transitionable = <span class="hljs-built_in">require</span>(<span class="hljs-string">'samsara/core/Transitionable'</span>);
+    <span class="hljs-keyword">var</span> Surface = <span class="hljs-built_in">require</span>(<span class="hljs-string">'samsara/dom/Surface'</span>);
+    <span class="hljs-keyword">var</span> Stream = <span class="hljs-built_in">require</span>(<span class="hljs-string">'samsara/streams/Stream'</span>);
+    <span class="hljs-keyword">var</span> View = <span class="hljs-built_in">require</span>(<span class="hljs-string">'samsara/core/View'</span>);
+    <span class="hljs-keyword">var</span> SequentialLayout = <span class="hljs-built_in">require</span>(<span class="hljs-string">'samsara/layouts/SequentialLayout'</span>);
+
+    <span class="hljs-keyword">var</span> NavItem = <span class="hljs-built_in">require</span>(<span class="hljs-string">'./NavItem'</span>);</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-2">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-2">&#182;</a>
+              </div>
+              <p>Defines the navigation bar. Listens to the Drawer Layout
+and sends these events to the navigation items.</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>    <span class="hljs-keyword">var</span> NavBar = View.extend({</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-3">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-3">&#182;</a>
+              </div>
+              <p>Executed on instantiation. Options are patched by the defaults if unspecified.</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>        initialize : <span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params">options</span>)</span>{</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-4">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-4">&#182;</a>
+              </div>
+              <p>Create a surface with blue color to sit behind the nav</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>            <span class="hljs-keyword">var</span> background = <span class="hljs-keyword">new</span> Surface({
+                classes : [<span class="hljs-string">'navBackground'</span>]
+            });</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-5">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-5">&#182;</a>
+              </div>
+              <p>Create left nav item containing “back” and “messages” sections.
+Translate them by animating their origin relative to the input.</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>            <span class="hljs-keyword">var</span> left = <span class="hljs-keyword">new</span> NavItem({
+                contentFront : <span class="hljs-string">'Back'</span>,
+                contentBack : <span class="hljs-string">'Messages'</span>,
+                classes : [<span class="hljs-string">'nav'</span>, <span class="hljs-string">'left'</span>, <span class="hljs-string">'item'</span>, <span class="hljs-string">'center'</span>],
+                proportions : [<span class="hljs-number">1</span>/<span class="hljs-number">3</span>, <span class="hljs-number">1</span>],
+                origin : <span class="hljs-keyword">this</span>.input.map(<span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params">data</span>)</span>{
+                    <span class="hljs-keyword">var</span> progress = <span class="hljs-built_in">Math</span>.max(data.progress, <span class="hljs-number">0</span>);
+                    <span class="hljs-keyword">return</span> [-progress, <span class="hljs-number">0</span>];
+                })
+            });</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-6">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-6">&#182;</a>
+              </div>
+              <p>Create the center nav item.
+Translate them by animating their origin relative to the input.</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>            <span class="hljs-keyword">var</span> center = <span class="hljs-keyword">new</span> NavItem({
+                contentFront : <span class="hljs-string">'bit.ly/1OZkIch'</span>,
+                classes : [<span class="hljs-string">'nav'</span>, <span class="hljs-string">'item'</span>, <span class="hljs-string">'middle'</span>, <span class="hljs-string">'center'</span>],
+                proportions : [<span class="hljs-number">1</span>/<span class="hljs-number">3</span>, <span class="hljs-number">1</span>],
+                origin : <span class="hljs-keyword">this</span>.input.map(<span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params">data</span>)</span>{
+                    <span class="hljs-keyword">var</span> progress = <span class="hljs-built_in">Math</span>.max(data.progress, <span class="hljs-number">0</span>);
+                    <span class="hljs-keyword">return</span> [-progress, <span class="hljs-number">0</span>];
+                })
+            });</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-7">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-7">&#182;</a>
+              </div>
+              <p>Create the right nav item with details and compose surfaces.</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>            <span class="hljs-keyword">var</span> right = <span class="hljs-keyword">new</span> NavItem({
+                contentFront : <span class="hljs-string">'Details'</span>,
+                contentBack : <span class="hljs-string">'&lt;i class="ion-ios-compose-outline"&gt;&lt;/i&gt;'</span>,
+                classes : [<span class="hljs-string">'nav'</span>, <span class="hljs-string">'right'</span>, <span class="hljs-string">'item'</span>, <span class="hljs-string">'center'</span>],
+                proportions : [<span class="hljs-number">1</span>/<span class="hljs-number">3</span>, <span class="hljs-number">1</span>]
+            });</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-8">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-8">&#182;</a>
+              </div>
+              <p>Layout the nav items horizontally in a SequentialLayout</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>            <span class="hljs-keyword">var</span> layout = <span class="hljs-keyword">new</span> SequentialLayout({
+                direction : SequentialLayout.DIRECTION.X
+            });
+            layout.addItems([left, center, right]);</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-9">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-9">&#182;</a>
+              </div>
+              <p>Create the edit surface and position on the left</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>            <span class="hljs-keyword">var</span> edit = <span class="hljs-keyword">new</span> Surface({
+                content : <span class="hljs-string">'Edit'</span>,
+                classes : [<span class="hljs-string">'nav'</span>, <span class="hljs-string">'edit'</span>, <span class="hljs-string">'item'</span>],
+                opacity : <span class="hljs-keyword">this</span>.input.map(<span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params">data</span>)</span>{
+                    <span class="hljs-keyword">return</span> data.progress;
+                })
+            });</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-10">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-10">&#182;</a>
+              </div>
+              <p>Create back arrow surface and position on the left</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>            <span class="hljs-keyword">var</span> backArrow = <span class="hljs-keyword">new</span> Surface({
+                content : <span class="hljs-string">'&lt;i class="ion-chevron-left"&gt;&lt;/i&gt;'</span>,
+                classes : [<span class="hljs-string">'nav'</span>, <span class="hljs-string">'edit'</span>, <span class="hljs-string">'item'</span>],
+                opacity : <span class="hljs-keyword">this</span>.input.map(<span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params">data</span>)</span>{
+                    <span class="hljs-keyword">return</span> <span class="hljs-built_in">Math</span>.pow(<span class="hljs-number">1</span> - data.progress, <span class="hljs-number">4</span>);
+                })
+            });</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-11">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-11">&#182;</a>
+              </div>
+              <p>Create the render subtree</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>            <span class="hljs-keyword">this</span>.add(background);
+            <span class="hljs-keyword">this</span>.add(edit);
+            <span class="hljs-keyword">this</span>.add(backArrow);
+            <span class="hljs-keyword">this</span>.add(layout);</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-12">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-12">&#182;</a>
+              </div>
+              <p>Convert a <code>front click</code> event from the navItem to an <code>open</code> event</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>            left.on(<span class="hljs-string">'front click'</span>, <span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params"></span>)</span>{
+                <span class="hljs-keyword">this</span>.emit(<span class="hljs-string">'open'</span>);
+            }.bind(<span class="hljs-keyword">this</span>));</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-13">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-13">&#182;</a>
+              </div>
+              <p>Convert a <code>back click</code> event from the navItem to a <code>close</code> event</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>            left.on(<span class="hljs-string">'back click'</span>, <span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params"></span>)</span>{
+                <span class="hljs-keyword">this</span>.emit(<span class="hljs-string">'close'</span>);
+            }.bind(<span class="hljs-keyword">this</span>));</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-14">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-14">&#182;</a>
+              </div>
+              <p>Views listen to the input to get progress data
+coming from the drawer layout</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>            left.subscribe(<span class="hljs-keyword">this</span>.input);
+            center.subscribe(<span class="hljs-keyword">this</span>.input);
+            right.subscribe(<span class="hljs-keyword">this</span>.input);
+        }
+    });
+
+    <span class="hljs-built_in">module</span>.exports = NavBar;
+});</pre></div></div>
+            
+        </li>
+        
+    </ul>
+  </div>
+</body>
+</html>

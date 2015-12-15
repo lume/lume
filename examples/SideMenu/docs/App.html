@@ -1,0 +1,368 @@
+<!DOCTYPE html>
+
+<html>
+<head>
+  <title>App.js</title>
+  <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+  <meta name="viewport" content="width=device-width, target-densitydpi=160dpi, initial-scale=1.0; maximum-scale=1.0; user-scalable=0;">
+  <link rel="stylesheet" media="all" href="docco.css" />
+</head>
+<body>
+  <div id="container">
+    <div id="background"></div>
+    
+      <ul id="jump_to">
+        <li>
+          <a class="large" href="javascript:void(0);">Jump To &hellip;</a>
+          <a class="small" href="javascript:void(0);">+</a>
+          <div id="jump_wrapper">
+          <div id="jump_page_wrapper">
+            <div id="jump_page">
+              
+                
+                <a class="source" href="App.html">
+                  App.js
+                </a>
+              
+                
+                <a class="source" href="Content.html">
+                  Content.js
+                </a>
+              
+                
+                <a class="source" href="Drawer.html">
+                  Drawer.js
+                </a>
+              
+                
+                <a class="source" href="NavBar.html">
+                  NavBar.js
+                </a>
+              
+                
+                <a class="source" href="NavItem.html">
+                  NavItem.js
+                </a>
+              
+                
+                <a class="source" href="main.html">
+                  main.js
+                </a>
+              
+            </div>
+          </div>
+        </li>
+      </ul>
+    
+    <ul class="sections">
+        
+          <li id="title">
+              <div class="annotation">
+                  <h1>App.js</h1>
+              </div>
+          </li>
+        
+        
+        
+        <li id="section-1">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-1">&#182;</a>
+              </div>
+              
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>define(<span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params">require, exports, module</span>) </span>{
+    <span class="hljs-keyword">var</span> View = <span class="hljs-built_in">require</span>(<span class="hljs-string">'samsara/core/View'</span>);
+    <span class="hljs-keyword">var</span> GenericInput = <span class="hljs-built_in">require</span>(<span class="hljs-string">'samsara/inputs/GenericInput'</span>);
+    <span class="hljs-keyword">var</span> DrawerLayout = <span class="hljs-built_in">require</span>(<span class="hljs-string">'samsara/layouts/DrawerLayout'</span>);
+
+    <span class="hljs-keyword">var</span> NavBar = <span class="hljs-built_in">require</span>(<span class="hljs-string">'./NavBar'</span>);
+    <span class="hljs-keyword">var</span> Drawer = <span class="hljs-built_in">require</span>(<span class="hljs-string">'./Drawer'</span>);
+    <span class="hljs-keyword">var</span> Content = <span class="hljs-built_in">require</span>(<span class="hljs-string">'./Content'</span>);</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-2">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-2">&#182;</a>
+              </div>
+              <p>Defines the App, which contains the navigation bar and drawer layout.
+Sets up listeners between all the different views.
+Provides <code>open</code> and <code>close</code> methods.</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>    <span class="hljs-keyword">var</span> App = View.extend({
+        defaults : {
+            navHeightRatio : <span class="hljs-number">0.1</span>,           <span class="hljs-comment">// percentage of height for nav bar</span>
+            drawerLength : <span class="hljs-number">250</span>,             <span class="hljs-comment">// length to slide content</span>
+            drawerVelocityThreshold : <span class="hljs-number">1</span>,    <span class="hljs-comment">// velocity to toggle a transition</span>
+            transitionOpen : <span class="hljs-literal">true</span>,          <span class="hljs-comment">// default open transition</span>
+            transitionClose : <span class="hljs-literal">true</span>          <span class="hljs-comment">// default close transition</span>
+        },</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-3">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-3">&#182;</a>
+              </div>
+              <p>Events the view listens to in <code>{channel : handler}</code> pairs.
+If the handler is a string, it assumes it is a method on the view.
+These events come from the nav bar and drawer.</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>        events : {
+            open : <span class="hljs-string">"open"</span>,
+            close : <span class="hljs-string">"close"</span>
+        },</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-4">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-4">&#182;</a>
+              </div>
+              <p>Executed on instantiation. Options are patched by the defaults if unspecified.</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>        initialize : <span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params">options</span>)</span>{</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-5">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-5">&#182;</a>
+              </div>
+              <p>Create the navigation bar.</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>            <span class="hljs-keyword">var</span> navBar = <span class="hljs-keyword">new</span> NavBar();</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-6">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-6">&#182;</a>
+              </div>
+              <p>Create the drawer layout.</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>            <span class="hljs-keyword">var</span> drawerLayout = <span class="hljs-keyword">new</span> DrawerLayout({
+                revealLength : options.drawerLength,
+                velocityThreshold : options.drawerVelocityThreshold,
+                origin : [<span class="hljs-number">0</span>,<span class="hljs-number">1</span>],
+                transitionOpen : options.transitionOpen,
+                transitionClose : options.transitionClose
+            });</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-7">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-7">&#182;</a>
+              </div>
+              <p>Create the drawer.</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>            <span class="hljs-keyword">var</span> drawer = <span class="hljs-keyword">new</span> Drawer({
+                length : options.drawerLength
+            });</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-8">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-8">&#182;</a>
+              </div>
+              <p>Create the content.</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>            <span class="hljs-keyword">var</span> content = <span class="hljs-keyword">new</span> Content();</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-9">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-9">&#182;</a>
+              </div>
+              <p>Add the drawer and content into the drawerLayout.</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>            drawerLayout.addDrawer(drawer);
+            drawerLayout.addContent(content);</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-10">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-10">&#182;</a>
+              </div>
+              <p>The drawerLayout receives events from dragging the content.
+In particular, it receives <code>start</code>, <code>update</code> and <code>end</code> events.</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>            drawerLayout.subscribe(content);</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-11">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-11">&#182;</a>
+              </div>
+              <p>Additionally, the drawerLayout emits <code>start</code>, <code>update</code>, and <code>end</code> events,
+the progress data indicating how extended the content is.
+Other views listen to these and update themselves.</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>            navBar.subscribe(drawerLayout);  <span class="hljs-comment">// to fade in/out and shift navItems</span>
+            drawer.subscribe(drawerLayout);  <span class="hljs-comment">// to translate the drawer</span>
+            content.subscribe(drawerLayout); <span class="hljs-comment">// to rotate the hand</span></pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-12">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-12">&#182;</a>
+              </div>
+              <p>Listen to events emitted from the navBar and drawer.
+Specifically, <code>open</code> and <code>close</code> events.</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>            <span class="hljs-keyword">this</span>.subscribe(navBar);
+            <span class="hljs-keyword">this</span>.subscribe(drawer);</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-13">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-13">&#182;</a>
+              </div>
+              <p>Create render subtree.</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>            <span class="hljs-keyword">this</span>.add(
+                {
+                    proportions : [<span class="hljs-number">1</span>, options.navHeightRatio] <span class="hljs-comment">// proportional size</span>
+                })
+                .add(navBar);
+
+            <span class="hljs-keyword">this</span>.add(
+                {
+                    align : [<span class="hljs-number">0</span>,<span class="hljs-number">1</span>], <span class="hljs-comment">// align to bottom of screen</span>
+                    proportions : [<span class="hljs-number">1</span>, <span class="hljs-number">1</span> - options.navHeightRatio] <span class="hljs-comment">// proportional size</span>
+                })
+                .add(drawerLayout);</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-14">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-14">&#182;</a>
+              </div>
+              <p>Introduce state so we can call the drawerLayout
+in the <code>open</code> and <code>close</code> methods.</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>            <span class="hljs-keyword">this</span>.drawerLayout = drawerLayout;
+        },</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-15">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-15">&#182;</a>
+              </div>
+              <p>Open the drawer with a transition.</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>        open : <span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params">transition</span>)</span>{
+            transition = transition || <span class="hljs-keyword">this</span>.options.transitionOpen;
+            <span class="hljs-keyword">this</span>.drawerLayout.open(transition);
+        },</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-16">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-16">&#182;</a>
+              </div>
+              <p>Close the drawer with a transition.</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>        close : <span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params">transition</span>)</span>{
+            transition = transition || <span class="hljs-keyword">this</span>.options.transitionClose;
+            <span class="hljs-keyword">this</span>.drawerLayout.close(transition);
+        }
+    });
+
+    <span class="hljs-built_in">module</span>.exports = App;
+});</pre></div></div>
+            
+        </li>
+        
+    </ul>
+  </div>
+</body>
+</html>
