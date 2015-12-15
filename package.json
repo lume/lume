@@ -6,7 +6,9 @@
   "version": "0.1.0",
   "main": "samsara.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "bundle": "webpack --entry ./src/index.js --output-filename samsara.js --output-path ./ --output-library Samsara --output-library-target umd",
+    "build": "uglifyjs --entry samsara.js -o samsara.min.js --mangle --compress warnings=false"
   },
   "repository": {
     "type": "git",
@@ -19,9 +21,17 @@
     "reactive",
     "layout"
   ],
-  "license": ["MIT", "MPL V2"],
+  "license": [
+    "MIT",
+    "MPL V2"
+  ],
   "bugs": {
     "url": "https://github.com/dmvaldman/samsara/issues"
   },
-  "homepage": "https://github.com/dmvaldman/samsara#readme"
+  "homepage": "https://github.com/dmvaldman/samsara#readme",
+  "devDependencies": {
+    "uglify-js": "^2.6.1",
+    "webpack": "^1.12.9",
+    "yuidocjs": "^0.9.0"
+  }
 }
