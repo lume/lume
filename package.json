@@ -8,6 +8,9 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "docs": "yuidoc ./src -t ./node_modules/yuidoc-bootstrap-theme -H ./node_modules/yuidoc-bootstrap-theme/helpers/helpers.js -o ./docs",
+    "docs-examples": "npm run docs-example-logo && npm run docs-example-sidemenu",
+    "docs-example-logo": "docco -l parallel examples/Logo/js/main.js examples/Logo/js/app/*.js -o examples/Logo/docs",
+    "docs-example-sidemenu": "docco -l parallel examples/SideMenu/js/main.js examples/SideMenu/js/app/*.js -o examples/SideMenu/docs",
     "build": "npm run build-bundle && npm run build-min",
     "build-bundle": "webpack --entry ./src/index.js --output-filename samsara.js --output-path ./ --output-library Samsara --output-library-target umd",
     "build-min": "uglifyjs --entry samsara.js -o samsara.min.js --mangle --compress warnings=false"
