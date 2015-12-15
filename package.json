@@ -7,8 +7,10 @@
   "main": "samsara.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "bundle": "webpack --entry ./src/index.js --output-filename samsara.js --output-path ./ --output-library Samsara --output-library-target umd",
-    "build": "uglifyjs --entry samsara.js -o samsara.min.js --mangle --compress warnings=false"
+    "docs": "yuidoc ./src -t ./node_modules/yuidoc-bootstrap-theme -H ./node_modules/yuidoc-bootstrap-theme/helpers/helpers.js -o ./docs",
+    "build": "npm run build-bundle && npm run build-min",
+    "build-bundle": "webpack --entry ./src/index.js --output-filename samsara.js --output-path ./ --output-library Samsara --output-library-target umd",
+    "build-min": "uglifyjs --entry samsara.js -o samsara.min.js --mangle --compress warnings=false"
   },
   "repository": {
     "type": "git",
@@ -32,6 +34,7 @@
   "devDependencies": {
     "uglify-js": "^2.6.1",
     "webpack": "^1.12.9",
+    "yuidoc-bootstrap-theme": "dmvaldman/yuidoc-bootstrap-theme",
     "yuidocjs": "^0.9.0"
   }
 }
