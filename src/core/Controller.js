@@ -50,6 +50,7 @@ define(function(require, exports, module) {
      *      anotherStream.emit('test'); // "test fired" in console
      *
      * @class Controller
+     * @private
      * @constructor
      * @namespace Core
      * @uses Core.OptionsManager

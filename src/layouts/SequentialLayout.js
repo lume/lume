@@ -23,7 +23,7 @@ define(function(require, exports, module) {
      * @extends Core.View
      * @param [options] {Object}                        Options
      * @param [options.direction]{Number}               Direction to lay out items
-     * @param [options.spacing] {Transitionable|Array}  Gutter spacing between items
+     * @param [options.spacing] {Transitionable|Number} Gutter spacing between items
      */
     var SequentialLayout = View.extend({
         defaults : {

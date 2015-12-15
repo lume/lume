@@ -41,6 +41,7 @@ define(function(require, exports, module) {
      *      eventEmitter.emit('move', {x : 3, y : 2}); // x is bigger
      *
      * @class EventSplitter
+     * @private
      * @namespace Events
      * @constructor
      * @param splitter {Function}
