@@ -1,0 +1,9 @@
+{
+  "name": "SamsaraJS",
+  "version": "0.1.0",
+  "url": "http://www.samsaraJS.org",
+  "exclude": "samsara.js,samsara.min.js",
+  "options": {
+    "linkNatives": "true"
+  }
+}
