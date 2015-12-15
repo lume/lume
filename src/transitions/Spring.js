@@ -12,7 +12,7 @@ define(function (require, exports, module) {
      * A method of interpolating between start and end values with
      *  a spring transition.
      *
-     * @class Tween
+     * @class Spring
      * @private
      * @namespace Transitions
      * @constructor

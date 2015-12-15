@@ -10,7 +10,7 @@ define(function (require, exports, module) {
     /**
      * Defines an inertial transition, which decreases
      *
-     * @class Tween
+     * @class Inertia
      * @private
      * @namespace Transitions
      * @constructor
