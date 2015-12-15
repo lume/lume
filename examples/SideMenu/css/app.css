@@ -1,0 +1,136 @@
+* {
+    -webkit-user-callout: none;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    user-select: none;
+}
+
+html {
+    overflow: hidden;
+}
+
+body {
+    font-family: Helvetica Neue, Helvetica;
+    margin: 0px;
+    background: #161616;
+}
+
+.content {
+    font-size: 40px;
+    color : white;
+    cursor: ew-resize;
+    box-shadow: -3px 3px 7px -5px black;
+    background : #3651ff;
+    text-shadow: 0px 0px 1px rgba(0, 0, 0, 0.5);
+}
+
+.drawer {
+    font-size: 30px;
+    font-weight: 200;
+    color : whitesmoke;
+    background : #2c2c2c;
+    -webkit-backface-visibility: visible;
+    backface-visibility: visible;
+    display: block;
+}
+
+.menuItem {
+    text-align:center;
+    font-size: 34px;
+    border-top: 1px solid #404040;
+    box-shadow: 0px 0px 1px black;
+    text-shadow: 0px 0px 1px black;
+}
+
+.center {
+    -webkit-align-items: center;
+            align-items: center;
+    -webkit-justify-content : center;
+            justify-content: center;
+    display: -webkit-flex;
+    display:         flex;
+}
+
+.hand {
+    font-size: 60px;
+    color: white;
+    padding-left: 108px;
+    pointer-events: none;
+    text-shadow: 0px 0px 1px rgba(0,0,0,0.5);
+    z-index: 1;
+}
+
+.ion-chevron-left {
+    font-size: 30px;
+}
+
+.ion-ios-compose-outline{
+    font-size: 40px;
+}
+
+.nav {
+    font-weight:300;
+    font-size: 30px;
+}
+
+.nav.left {
+    color : #3651ff;
+    cursor: pointer;
+}
+
+.nav.left:active {
+    background : rgba(100,100,100,0.3);
+}
+
+.nav.right {
+    color : #3651ff;
+    text-align: right;
+    justify-content: flex-end;
+    padding-right: 16px;
+}
+
+.nav.middle {
+    font-weight: 500;
+    left: -3px;
+}
+
+.nav.edit {
+    color : #3651ff;
+    -webkit-align-items: center;
+    align-items: center;
+    display: -webkit-flex;
+    display:         flex;
+    padding-left: 16px;
+}
+
+.nav.edit.back {
+    padding-left:30px;
+}
+
+.navBackground{
+    background : rgb(236, 240, 243);
+    box-shadow : 0 0 5px 0 black;
+    pointer-events : none;
+}
+
+@media only screen and (max-device-width: 480px) {
+    .nav {
+        font-size: 20px;
+    }
+
+    .ion-chevron-left {
+        font-size: 20px;
+    }
+
+    .ion-ios-compose-outline {
+        font-size: 27px;
+    }
+
+    .nav.middle {
+        font-weight: 400;
+    }
+
+    .ion-chevron-left {
+        padding-top: 1px;
+    }
+}
