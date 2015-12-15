@@ -1,0 +1,1490 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>Layouts.FlexibleLayout - SamsaraJS</title>
+    <link rel="stylesheet" href="">
+    <link rel="stylesheet" href="../assets/vendor/prettify/prettify-min.css">
+    <link rel="stylesheet" href="../assets/css/main.css" id="site_styles">
+    <link rel="stylesheet" href="../assets/css/custom.css">
+    <link rel="stylesheet" href="../assets/vendor/bootstrap/css/bootstrap.css">
+    <link rel="shortcut icon" type="image/png" href="../assets/favicon.png">
+</head>
+<body class="yui3-skin-sam">
+<div class="navbar navbar-fixed-top">
+    <div class="navbar-inner">
+        <h1 class="brand" style="padding: 10px 16px 10px; height: 20px; line-height: 20px; margin-left: 0;">
+        <!---->
+	    <!--<img alt="SamsaraJS" src="../assets/css/logo.png" style="max-height: 65%;" title="SamsaraJS">-->
+        <!---->
+            SamsaraJS
+        </h1>
+	<div class="nav">
+            <li class="divider-vertical"></li>
+            <li>
+                <p class="navbar-text">
+                    API Docs for Version: <b>0.1.0</b>
+                </p>
+            </li>
+        </div>
+        <form class="navbar-form pull-right" style="line-height: 40px; height: 40px;">
+            <input style="margin-top: 0;" type="text" class="search-query" placeholder="Search for classes/modules..." data-obj='["classes/Core.Controller", "classes/Core.ElementAllocator", "classes/Core.ElementOutput", "classes/Core.Engine", "classes/Core.LayoutNode", "classes/Core.OptionsManager", "classes/Core.SizeNode", "classes/Core.SUE", "classes/Core.Timer", "classes/Core.Transform", "classes/Core.Transitionable", "classes/Core.View", "classes/DOM.ContainerSurface", "classes/DOM.Context", "classes/DOM.Surface", "classes/Events.EventEmitter", "classes/Events.EventFilter", "classes/Events.EventHandler", "classes/Events.EventMapper", "classes/Events.EventSplitter", "classes/Inputs.GenericInput", "classes/Inputs.MouseInput", "classes/Inputs.PinchInput", "classes/Inputs.RotateInput", "classes/Inputs.ScaleInput", "classes/Inputs.ScrollInput", "classes/Inputs.TouchInput", "classes/Inputs.TouchTracker", "classes/Inputs.TwoFingerInput", "classes/Layouts.DrawerLayout", "classes/Layouts.FlexibleLayout", "classes/Layouts.GridLayout", "classes/Layouts.SequentialLayout", "classes/RenderTreeNode", "classes/RootNode", "classes/Streams.Accumulator", "classes/Streams.Differential", "classes/Streams.Observable", "classes/Streams.ResizeStream", "classes/Streams.SimpleStream", "classes/Streams.Stream", "classes/Transitions.Inertia", "classes/Transitions.Spring", "classes/Transitions.Tween"]'>
+        </form>
+    </div>
+</div>
+<div class="container">
+    <div class="row">
+        <div class="span3">
+	    <div>
+	        <!--<h3>APIs</h3>-->
+	        <br>
+	        <div id="sidebar">
+	            <!--<ul id="main-nav" class="nav nav-tabs" style="margin-bottom:0;">-->
+	                <!--<li class="active"><a href="#classes" data-toggle="tab">Classes</a></li>-->
+	                <!--<li><a href="#modules" data-toggle="tab">Modules</a></li>-->
+	            <!--</ul>-->
+	    
+	            <div id="api-tabview-filter">
+	                <input type="search" placeholder="Type to filter APIs">
+	            </div>
+	    
+	            <div class="tab-content" style="border: 1px solid #DDD; border-top:0;">
+	                <div class="tab-pane active" id="classes">
+	                    <ul id="api-classes" class="nav nav-list">
+	                            <li><a href="../classes/Core.Timer.html">Core.Timer</a></li>
+	                            <li><a href="../classes/Core.Transform.html">Core.Transform</a></li>
+	                            <li><a href="../classes/Core.Transitionable.html">Core.Transitionable</a></li>
+	                            <li><a href="../classes/Core.View.html">Core.View</a></li>
+	                            <li><a href="../classes/DOM.ContainerSurface.html">DOM.ContainerSurface</a></li>
+	                            <li><a href="../classes/DOM.Context.html">DOM.Context</a></li>
+	                            <li><a href="../classes/DOM.Surface.html">DOM.Surface</a></li>
+	                            <li><a href="../classes/Events.EventEmitter.html">Events.EventEmitter</a></li>
+	                            <li><a href="../classes/Events.EventFilter.html">Events.EventFilter</a></li>
+	                            <li><a href="../classes/Events.EventHandler.html">Events.EventHandler</a></li>
+	                            <li><a href="../classes/Events.EventMapper.html">Events.EventMapper</a></li>
+	                            <li><a href="../classes/Inputs.GenericInput.html">Inputs.GenericInput</a></li>
+	                            <li><a href="../classes/Inputs.MouseInput.html">Inputs.MouseInput</a></li>
+	                            <li><a href="../classes/Inputs.PinchInput.html">Inputs.PinchInput</a></li>
+	                            <li><a href="../classes/Inputs.RotateInput.html">Inputs.RotateInput</a></li>
+	                            <li><a href="../classes/Inputs.ScaleInput.html">Inputs.ScaleInput</a></li>
+	                            <li><a href="../classes/Inputs.ScrollInput.html">Inputs.ScrollInput</a></li>
+	                            <li><a href="../classes/Inputs.TouchInput.html">Inputs.TouchInput</a></li>
+	                            <li><a href="../classes/Layouts.DrawerLayout.html">Layouts.DrawerLayout</a></li>
+	                            <li><a href="../classes/Layouts.FlexibleLayout.html">Layouts.FlexibleLayout</a></li>
+	                            <li><a href="../classes/Layouts.GridLayout.html">Layouts.GridLayout</a></li>
+	                            <li><a href="../classes/Layouts.SequentialLayout.html">Layouts.SequentialLayout</a></li>
+	                            <li><a href="../classes/Streams.Accumulator.html">Streams.Accumulator</a></li>
+	                            <li><a href="../classes/Streams.Differential.html">Streams.Differential</a></li>
+	                            <li><a href="../classes/Streams.Stream.html">Streams.Stream</a></li>
+	                    </ul>
+	                </div>
+	    
+	                <!--<div class="tab-pane" id="modules">-->
+	                    <!--<ul id="api-modules" class="nav nav-list">-->
+	                        <!---->
+	                    <!--</ul>-->
+	                <!--</div>-->
+	            </div>
+	        </div>
+	    </div>
+        </div>
+        <div class="span9">
+                <form id="options-form" class="form-inline pull-right">
+                    Show:
+                    <label for="api-show-inherited" class="checkbox">
+                        <input type="checkbox" id="api-show-inherited" checked>
+                        Inherited
+                    </label>
+            
+                    <label for="api-show-protected" class="checkbox">
+                        <input type="checkbox" id="api-show-protected">
+                        Protected
+                    </label>
+            
+                    <label for="api-show-private" class="checkbox">
+                        <input type="checkbox" id="api-show-private">
+                        Private
+                    </label>
+                    <label for="api-show-deprecated" class="checkbox">
+                        <input type="checkbox" id="api-show-deprecated">
+                        Deprecated
+                    </label>
+            
+                </form>
+            
+            <div class="apidocs">
+                <div id="docs-main">
+                    <div class="content">
+<div class="page-header">
+    <h1>Layouts.FlexibleLayout <small>Class</small></h1>
+</div>
+
+<div class="well well-small">
+
+        <div class="extends">
+            Extends <a href="../classes/Core.View.html" class="crosslink">Core.View</a>
+        </div>
+
+    <!---->
+        <div class="foundat">
+            Defined in: <a href="../files/src_layouts_FlexibleLayout.js.html#l18"><code>src&#x2F;layouts&#x2F;FlexibleLayout.js:18</code></a>
+        </div>
+    <!---->
+
+
+</div>
+
+
+<div class="well well-small">
+    <p>A layout which arranges items vertically or horizontally and
+with sizes prescribed by ratios of a containing size. These
+ratios can be animated.</p>
+
+</div>
+
+    <div class="constructor">
+        <h2>Constructor</h2>
+        <div id="method_Layouts.FlexibleLayout" class="method item">
+            <h3 class="name"><code>Layouts.FlexibleLayout</code></h3>
+        
+                <div class="args">
+                    <span class="paren">(</span><ul class="args-list inline commas">
+                        <li class="arg">
+                                <code class="optional">[options]</code>
+                        </li>
+                    </ul><span class="paren">)</span>
+                </div>
+        
+        
+        
+        
+        
+        
+        
+        
+            <div class="meta">
+                        <p>
+                        <!---->
+                        <!--Defined in-->
+                        <!---->
+                <!---->
+                <!--<a href="../files/src_layouts_FlexibleLayout.js.html#l18"><code>src&#x2F;layouts&#x2F;FlexibleLayout.js:18</code></a>-->
+                <!---->
+                </p>
+        
+        
+        
+            </div>
+        
+            <div class="description">
+                
+            </div>
+        
+                <div class="params">
+                    <h4>Parameters:</h4>
+        
+                    <ul class="params-list">
+                        <li class="param">
+                                <code class="param-name optional">[options]</code>
+                                <span class="type"><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object" class="crosslink external" target="_blank">Object</a></span>
+                                <span class="flag optional" title="This parameter is optional.">optional</span>
+        
+        
+                            <div class="param-description">
+                                <p>Options</p>
+        
+                            </div>
+        
+                                <ul class="params-list">
+                                    <li class="param">
+                                            <code class="param-name optional">[direction]</code>
+                                            <span class="type"><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Number" class="crosslink external" target="_blank">Number</a></span>
+                                            <span class="flag optional" title="This parameter is optional.">optional</span>
+        
+                                        <div class="param-description">
+                                            <p>Direction to lay out items</p>
+        
+                                        </div>
+        
+                                    </li>
+                                    <li class="param">
+                                            <code class="param-name optional">[ratios]</code>
+                                            <span class="type">Transitionable | <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array" class="crosslink external" target="_blank">Array</a></span>
+                                            <span class="flag optional" title="This parameter is optional.">optional</span>
+        
+                                        <div class="param-description">
+                                            <p>The proportions</p>
+        
+                                        </div>
+        
+                                    </li>
+                                </ul>
+                        </li>
+                    </ul>
+                </div>
+        
+        
+        </div>
+    </div>
+
+<div>
+    <ul class="nav nav-tabs">
+        <li class="active"><a data-toggle="tab" href="#index">Index</a></li>
+
+            <li><a data-toggle="tab" href="#methods">Methods</a></li>
+            <li><a data-toggle="tab" href="#attrs">Attributes</a></li>
+    </ul>
+
+    <div class="tab-content">
+        <div id="index" class="tab-pane active">
+            <h2 class="off-left">Item Index</h2>
+
+                <div class="index-section methods">
+                    <h3>Methods</h3>
+
+                    <ul class="index-list methods extends">
+                            <li class="index-item method inherited">
+                                <a href="#" data-tabid="#methods" data-anchor="#method_&quot;on&quot;" data-tablink="&quot;on&quot;">&quot;on&quot;</a>
+
+                            </li>
+                            <li class="index-item method inherited">
+                                <a href="#" data-tabid="#methods" data-anchor="#method_add" data-tablink="add">add</a>
+
+                            </li>
+                            <li class="index-item method">
+                                <a href="#" data-tabid="#methods" data-anchor="#method_addItems" data-tablink="addItems">addItems</a>
+
+                            </li>
+                            <li class="index-item method inherited">
+                                <a href="#" data-tabid="#methods" data-anchor="#method_extend" data-tablink="extend">extend</a>
+
+                            </li>
+                            <li class="index-item method inherited">
+                                <a href="#" data-tabid="#methods" data-anchor="#method_get" data-tablink="get">get</a>
+
+                            </li>
+                            <li class="index-item method inherited inherited">
+                                <a href="#" data-tabid="#methods" data-anchor="#method_getOptions" data-tablink="getOptions">getOptions</a>
+
+                            </li>
+                            <li class="index-item method inherited">
+                                <a href="#" data-tabid="#methods" data-anchor="#method_getSize" data-tablink="getSize">getSize</a>
+
+                            </li>
+                            <li class="index-item method inherited">
+                                <a href="#" data-tabid="#methods" data-anchor="#method_key" data-tablink="key">key</a>
+
+                            </li>
+                            <li class="index-item method inherited">
+                                <a href="#" data-tabid="#methods" data-anchor="#method_off" data-tablink="off">off</a>
+
+                            </li>
+                            <li class="index-item method inherited inherited">
+                                <a href="#" data-tabid="#methods" data-anchor="#method_OptionsManager.patch" data-tablink="OptionsManager.patch">OptionsManager.patch</a>
+
+                            </li>
+                            <li class="index-item method inherited">
+                                <a href="#" data-tabid="#methods" data-anchor="#method_patch" data-tablink="patch">patch</a>
+
+                            </li>
+                            <li class="index-item method inherited inherited">
+                                <a href="#" data-tabid="#methods" data-anchor="#method_set" data-tablink="set">set</a>
+
+                            </li>
+                            <li class="index-item method inherited">
+                                <a href="#" data-tabid="#methods" data-anchor="#method_setOpacity" data-tablink="setOpacity">setOpacity</a>
+
+                            </li>
+                            <li class="index-item method inherited inherited">
+                                <a href="#" data-tabid="#methods" data-anchor="#method_setOptions" data-tablink="setOptions">setOptions</a>
+
+                            </li>
+                            <li class="index-item method inherited">
+                                <a href="#" data-tabid="#methods" data-anchor="#method_setOrigin" data-tablink="setOrigin">setOrigin</a>
+
+                            </li>
+                            <li class="index-item method inherited">
+                                <a href="#" data-tabid="#methods" data-anchor="#method_setProportions" data-tablink="setProportions">setProportions</a>
+
+                            </li>
+                            <li class="index-item method inherited">
+                                <a href="#" data-tabid="#methods" data-anchor="#method_setSize" data-tablink="setSize">setSize</a>
+
+                            </li>
+                    </ul>
+                </div>
+
+
+                <div class="index-section attrs">
+                    <h3>Attributes</h3>
+
+                    <ul class="index-list attrs extends">
+                            <li class="index-item attr inherited">
+                                <a href="#" data-tabid="#attrs" data-anchor="#attr_DEFAULT_OPTIONS" data-tablink="DEFAULT_OPTIONS">DEFAULT_OPTIONS</a>
+                            </li>
+                            <li class="index-item attr inherited">
+                                <a href="#" data-tabid="#attrs" data-anchor="#attr_EVENTS" data-tablink="EVENTS">EVENTS</a>
+                            </li>
+                    </ul>
+                </div>
+
+        </div>
+
+            <div id="methods" class="tab-pane">
+                <h2 class="off-left">Methods</h2>
+
+                    <div id="method_&quot;on&quot;" class="method item inherited">
+                        <h3 class="name"><code>&quot;on&quot;</code></h3>
+                    
+                            <div class="args">
+                                <span class="paren">(</span><ul class="args-list inline commas">
+                                    <li class="arg">
+                                            <code>type</code>
+                                    </li>
+                                    <li class="arg">
+                                            <code>handler</code>
+                                    </li>
+                                </ul><span class="paren">)</span>
+                            </div>
+                    
+                    
+                    
+                    
+                    
+                    
+                    
+                    
+                        <div class="meta">
+                                    <p>Inherited from
+                                    <a href="../classes/Core.OptionsManager.html#method_&quot;on&quot;">Core.OptionsManager</a>:
+                            <!---->
+                            <!--<a href="../files/src_core_OptionsManager.js.html#l141"><code>src&#x2F;core&#x2F;OptionsManager.js:141</code></a>-->
+                            <!---->
+                            </p>
+                    
+                    
+                    
+                        </div>
+                    
+                        <div class="description">
+                            <p>Adds a handler to the <code>type</code> channel which will be executed on <code>emit</code>.</p>
+                    
+                        </div>
+                    
+                            <div class="params">
+                                <h4>Parameters:</h4>
+                    
+                                <ul class="params-list">
+                                    <li class="param">
+                                            <code class="param-name">type</code>
+                                            <span class="type"><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String" class="crosslink external" target="_blank">String</a></span>
+                    
+                    
+                                        <div class="param-description">
+                                            <p>Channel name</p>
+                    
+                                        </div>
+                    
+                                    </li>
+                                    <li class="param">
+                                            <code class="param-name">handler</code>
+                                            <span class="type"><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Function" class="crosslink external" target="_blank">Function</a></span>
+                    
+                    
+                                        <div class="param-description">
+                                            <p>Callback</p>
+                    
+                                        </div>
+                    
+                                    </li>
+                                </ul>
+                            </div>
+                    
+                    
+                    </div>
+                    <div id="method_add" class="method item inherited">
+                        <h3 class="name"><code>add</code></h3>
+                    
+                            <div class="args">
+                                <span class="paren">(</span><ul class="args-list inline commas">
+                                    <li class="arg">
+                                            <code>object</code>
+                                    </li>
+                                </ul><span class="paren">)</span>
+                            </div>
+                    
+                            <span class="returns-inline">
+                                <span class="type"><a href="../classes/RenderTreeNode.html" class="crosslink">RenderTreeNode</a></span>
+                            </span>
+                    
+                    
+                    
+                    
+                    
+                    
+                    
+                        <div class="meta">
+                                    <p>Inherited from
+                                    <a href="../classes/Core.View.html#method_add">Core.View</a>:
+                            <!---->
+                            <!--<a href="../files/src_core_View.js.html#l114"><code>src&#x2F;core&#x2F;View.js:114</code></a>-->
+                            <!---->
+                            </p>
+                    
+                    
+                    
+                        </div>
+                    
+                        <div class="description">
+                            <p>Extends the render tree subtree with a new node.</p>
+                    
+                        </div>
+                    
+                            <div class="params">
+                                <h4>Parameters:</h4>
+                    
+                                <ul class="params-list">
+                                    <li class="param">
+                                            <code class="param-name">object</code>
+                                            <span class="type">SizeNode | LayoutNode | Surface</span>
+                    
+                    
+                                        <div class="param-description">
+                                            <p>Node</p>
+                    
+                                        </div>
+                    
+                                    </li>
+                                </ul>
+                            </div>
+                    
+                            <div class="returns">
+                                <h4>Returns:</h4>
+                    
+                                <div class="returns-description">
+                                            <span class="type"><a href="../classes/RenderTreeNode.html" class="crosslink">RenderTreeNode</a></span>:
+                                </div>
+                            </div>
+                    
+                    </div>
+                    <div id="method_addItems" class="method item">
+                        <h3 class="name"><code>addItems</code></h3>
+                    
+                            <div class="args">
+                                <span class="paren">(</span><ul class="args-list inline commas">
+                                    <li class="arg">
+                                            <code>items</code>
+                                    </li>
+                                </ul><span class="paren">)</span>
+                            </div>
+                    
+                    
+                    
+                    
+                    
+                    
+                    
+                    
+                        <div class="meta">
+                                    <p>
+                                    <!---->
+                                    <!--Defined in-->
+                                    <!---->
+                            <!---->
+                            <!--<a href="../files/src_layouts_FlexibleLayout.js.html#l94"><code>src&#x2F;layouts&#x2F;FlexibleLayout.js:94</code></a>-->
+                            <!---->
+                            </p>
+                    
+                    
+                    
+                        </div>
+                    
+                        <div class="description">
+                            <p>Add content as an array of Views or Surfaces.</p>
+                    
+                        </div>
+                    
+                            <div class="params">
+                                <h4>Parameters:</h4>
+                    
+                                <ul class="params-list">
+                                    <li class="param">
+                                            <code class="param-name">items</code>
+                                            <span class="type"><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array" class="crosslink external" target="_blank">Array</a></span>
+                    
+                    
+                                        <div class="param-description">
+                                            <p>An array of Views or Surfaces</p>
+                    
+                                        </div>
+                    
+                                    </li>
+                                </ul>
+                            </div>
+                    
+                    
+                    </div>
+                    <div id="method_extend" class="method item inherited">
+                        <h3 class="name"><code>extend</code></h3>
+                    
+                            <div class="args">
+                                <span class="paren">(</span><ul class="args-list inline commas">
+                                    <li class="arg">
+                                            <code>protoObj</code>
+                                    </li>
+                                    <li class="arg">
+                                            <code>constants</code>
+                                    </li>
+                                </ul><span class="paren">)</span>
+                            </div>
+                    
+                    
+                    
+                    
+                    
+                    
+                    
+                    
+                        <div class="meta">
+                                    <p>Inherited from
+                                    <a href="../classes/Core.Controller.html#method_extend">Core.Controller</a>:
+                            <!---->
+                            <!--<a href="../files/src_core_Controller.js.html#l178"><code>src&#x2F;core&#x2F;Controller.js:178</code></a>-->
+                            <!---->
+                            </p>
+                    
+                    
+                    
+                        </div>
+                    
+                        <div class="description">
+                            <p>Allows a class to extend Controller.
+                    Note: this is a method defined on the Controller constructor</p>
+                    
+                        </div>
+                    
+                            <div class="params">
+                                <h4>Parameters:</h4>
+                    
+                                <ul class="params-list">
+                                    <li class="param">
+                                            <code class="param-name">protoObj</code>
+                                            <span class="type"><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object" class="crosslink external" target="_blank">Object</a></span>
+                    
+                    
+                                        <div class="param-description">
+                                            <p>Prototype properties of the extended class</p>
+                    
+                                        </div>
+                    
+                                    </li>
+                                    <li class="param">
+                                            <code class="param-name">constants</code>
+                                            <span class="type"><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object" class="crosslink external" target="_blank">Object</a></span>
+                    
+                    
+                                        <div class="param-description">
+                                            <p>Constants to be added to the extended class's constructor</p>
+                    
+                                        </div>
+                    
+                                    </li>
+                                </ul>
+                            </div>
+                    
+                    
+                    </div>
+                    <div id="method_get" class="method item inherited">
+                        <h3 class="name"><code>get</code></h3>
+                    
+                            <div class="args">
+                                <span class="paren">(</span><ul class="args-list inline commas">
+                                    <li class="arg">
+                                            <code>key</code>
+                                    </li>
+                                </ul><span class="paren">)</span>
+                            </div>
+                    
+                            <span class="returns-inline">
+                                <span class="type"><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object" class="crosslink external" target="_blank">Object</a></span>
+                            </span>
+                    
+                    
+                    
+                    
+                    
+                    
+                    
+                        <div class="meta">
+                                    <p>Inherited from
+                                    <a href="../classes/Core.OptionsManager.html#method_get">Core.OptionsManager</a>:
+                            <!---->
+                            <!--<a href="../files/src_core_OptionsManager.js.html#l108"><code>src&#x2F;core&#x2F;OptionsManager.js:108</code></a>-->
+                            <!---->
+                            </p>
+                    
+                    
+                    
+                        </div>
+                    
+                        <div class="description">
+                            <p>Look up options value by key or get the full options hash.</p>
+                    
+                        </div>
+                    
+                            <div class="params">
+                                <h4>Parameters:</h4>
+                    
+                                <ul class="params-list">
+                                    <li class="param">
+                                            <code class="param-name">key</code>
+                                            <span class="type"><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String" class="crosslink external" target="_blank">String</a></span>
+                    
+                    
+                                        <div class="param-description">
+                                            <p>Key</p>
+                    
+                                        </div>
+                    
+                                    </li>
+                                </ul>
+                            </div>
+                    
+                            <div class="returns">
+                                <h4>Returns:</h4>
+                    
+                                <div class="returns-description">
+                                            <span class="type"><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object" class="crosslink external" target="_blank">Object</a></span>:
+                                        <p>Associated object or full options hash</p>
+                    
+                                </div>
+                            </div>
+                    
+                    </div>
+                    <div id="method_getOptions" class="method item inherited">
+                        <h3 class="name"><code>getOptions</code></h3>
+                    
+                            <div class="args">
+                                <span class="paren">(</span><ul class="args-list inline commas">
+                                    <li class="arg">
+                                            <code>key</code>
+                                    </li>
+                                </ul><span class="paren">)</span>
+                            </div>
+                    
+                            <span class="returns-inline">
+                                <span class="type"><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object" class="crosslink external" target="_blank">Object</a></span>
+                            </span>
+                    
+                    
+                    
+                    
+                    
+                    
+                    
+                        <div class="meta">
+                                <p>Inherited from
+                                <a href="../classes/Core.OptionsManager.html#method_getOptions">
+                                    Core.OptionsManager
+                                </a>
+                                but overwritten in
+                            <!---->
+                            <!--<a href="../files/src_core_Controller.js.html#l95"><code>src&#x2F;core&#x2F;Controller.js:95</code></a>-->
+                            <!---->
+                            </p>
+                    
+                    
+                    
+                        </div>
+                    
+                        <div class="description">
+                            <p>Options getter.</p>
+                    
+                        </div>
+                    
+                            <div class="params">
+                                <h4>Parameters:</h4>
+                    
+                                <ul class="params-list">
+                                    <li class="param">
+                                            <code class="param-name">key</code>
+                                            <span class="type"><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String" class="crosslink external" target="_blank">String</a></span>
+                    
+                    
+                                        <div class="param-description">
+                                            <p>Key</p>
+                    
+                                        </div>
+                    
+                                    </li>
+                                </ul>
+                            </div>
+                    
+                            <div class="returns">
+                                <h4>Returns:</h4>
+                    
+                                <div class="returns-description">
+                                            <span class="type"><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object" class="crosslink external" target="_blank">Object</a></span>:
+                                        <p>object   Options value for the key</p>
+                    
+                                </div>
+                            </div>
+                    
+                    </div>
+                    <div id="method_getSize" class="method item inherited">
+                        <h3 class="name"><code>getSize</code></h3>
+                    
+                            <span class="paren">()</span>
+                    
+                            <span class="returns-inline">
+                                <span class="type"><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Number" class="crosslink external" target="_blank">Number[]</a></span>
+                            </span>
+                    
+                    
+                    
+                    
+                    
+                    
+                    
+                        <div class="meta">
+                                    <p>Inherited from
+                                    <a href="../classes/Core.View.html#method_getSize">Core.View</a>:
+                            <!---->
+                            <!--<a href="../files/src_core_View.js.html#l124"><code>src&#x2F;core&#x2F;View.js:124</code></a>-->
+                            <!---->
+                            </p>
+                    
+                    
+                    
+                        </div>
+                    
+                        <div class="description">
+                            <p>Getter for size.</p>
+                    
+                        </div>
+                    
+                    
+                            <div class="returns">
+                                <h4>Returns:</h4>
+                    
+                                <div class="returns-description">
+                                            <span class="type"><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Number" class="crosslink external" target="_blank">Number[]</a></span>:
+                                        <p>size</p>
+                    
+                                </div>
+                            </div>
+                    
+                    </div>
+                    <div id="method_key" class="method item inherited">
+                        <h3 class="name"><code>key</code></h3>
+                    
+                            <div class="args">
+                                <span class="paren">(</span><ul class="args-list inline commas">
+                                    <li class="arg">
+                                            <code>key</code>
+                                    </li>
+                                </ul><span class="paren">)</span>
+                            </div>
+                    
+                            <span class="returns-inline">
+                                <span class="type">OptionsManager</span>
+                            </span>
+                    
+                    
+                    
+                    
+                    
+                    
+                    
+                        <div class="meta">
+                                    <p>Inherited from
+                                    <a href="../classes/Core.OptionsManager.html#method_key">Core.OptionsManager</a>:
+                            <!---->
+                            <!--<a href="../files/src_core_OptionsManager.js.html#l95"><code>src&#x2F;core&#x2F;OptionsManager.js:95</code></a>-->
+                            <!---->
+                            </p>
+                    
+                    
+                    
+                        </div>
+                    
+                        <div class="description">
+                            <p>Return OptionsManager based on sub-object retrieved by <code>key</code>.</p>
+                    
+                        </div>
+                    
+                            <div class="params">
+                                <h4>Parameters:</h4>
+                    
+                                <ul class="params-list">
+                                    <li class="param">
+                                            <code class="param-name">key</code>
+                                            <span class="type"><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String" class="crosslink external" target="_blank">String</a></span>
+                    
+                    
+                                        <div class="param-description">
+                                            <p>Key</p>
+                    
+                                        </div>
+                    
+                                    </li>
+                                </ul>
+                            </div>
+                    
+                            <div class="returns">
+                                <h4>Returns:</h4>
+                    
+                                <div class="returns-description">
+                                            <span class="type">OptionsManager</span>:
+                                        <p>Value</p>
+                    
+                                </div>
+                            </div>
+                    
+                    </div>
+                    <div id="method_off" class="method item inherited">
+                        <h3 class="name"><code>off</code></h3>
+                    
+                            <div class="args">
+                                <span class="paren">(</span><ul class="args-list inline commas">
+                                    <li class="arg">
+                                            <code>type</code>
+                                    </li>
+                                    <li class="arg">
+                                            <code>handler</code>
+                                    </li>
+                                </ul><span class="paren">)</span>
+                            </div>
+                    
+                    
+                    
+                    
+                    
+                    
+                    
+                    
+                        <div class="meta">
+                                    <p>Inherited from
+                                    <a href="../classes/Core.OptionsManager.html#method_off">Core.OptionsManager</a>:
+                            <!---->
+                            <!--<a href="../files/src_core_OptionsManager.js.html#l153"><code>src&#x2F;core&#x2F;OptionsManager.js:153</code></a>-->
+                            <!---->
+                            </p>
+                    
+                    
+                    
+                        </div>
+                    
+                        <div class="description">
+                            <p>Removes the <code>handler</code> from the <code>type</code> channel.
+                    This undoes the work of <code>on</code>.</p>
+                    
+                        </div>
+                    
+                            <div class="params">
+                                <h4>Parameters:</h4>
+                    
+                                <ul class="params-list">
+                                    <li class="param">
+                                            <code class="param-name">type</code>
+                                            <span class="type"><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String" class="crosslink external" target="_blank">String</a></span>
+                    
+                    
+                                        <div class="param-description">
+                                            <p>Channel name</p>
+                    
+                                        </div>
+                    
+                                    </li>
+                                    <li class="param">
+                                            <code class="param-name">handler</code>
+                                            <span class="type"><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Function" class="crosslink external" target="_blank">Function</a></span>
+                    
+                    
+                                        <div class="param-description">
+                                            <p>Callback</p>
+                    
+                                        </div>
+                    
+                                    </li>
+                                </ul>
+                            </div>
+                    
+                    
+                    </div>
+                    <div id="method_OptionsManager.patch" class="method item inherited">
+                        <h3 class="name"><code>OptionsManager.patch</code></h3>
+                    
+                            <div class="args">
+                                <span class="paren">(</span><ul class="args-list inline commas">
+                                    <li class="arg">
+                                            <code>options</code>
+                                    </li>
+                                    <li class="arg">
+                                            <code>patch</code>
+                                    </li>
+                                </ul><span class="paren">)</span>
+                            </div>
+                    
+                            <span class="returns-inline">
+                                <span class="type"><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object" class="crosslink external" target="_blank">Object</a></span>
+                            </span>
+                    
+                    
+                    
+                    
+                    
+                    
+                    
+                        <div class="meta">
+                                <p>Inherited from
+                                <a href="../classes/Core.OptionsManager.html#method_OptionsManager.patch">
+                                    Core.OptionsManager
+                                </a>
+                                but overwritten in
+                            <!---->
+                            <!--<a href="../files/src_core_OptionsManager.js.html#l33"><code>src&#x2F;core&#x2F;OptionsManager.js:33</code></a>-->
+                            <!---->
+                            </p>
+                    
+                    
+                    
+                        </div>
+                    
+                        <div class="description">
+                            <p>Constructor method. Create OptionsManager from source dictionary with arguments overriden by patch dictionary.</p>
+                    
+                        </div>
+                    
+                            <div class="params">
+                                <h4>Parameters:</h4>
+                    
+                                <ul class="params-list">
+                                    <li class="param">
+                                            <code class="param-name">options</code>
+                                            <span class="type"><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object" class="crosslink external" target="_blank">Object</a></span>
+                    
+                    
+                                        <div class="param-description">
+                                            <p>Options to be patched</p>
+                    
+                                        </div>
+                    
+                                    </li>
+                                    <li class="param">
+                                            <code class="param-name">patch</code>
+                                            <span class="type">...Object</span>
+                    
+                    
+                                        <div class="param-description">
+                                            <p>Options to overwrite</p>
+                    
+                                        </div>
+                    
+                                    </li>
+                                </ul>
+                            </div>
+                    
+                            <div class="returns">
+                                <h4>Returns:</h4>
+                    
+                                <div class="returns-description">
+                                            <span class="type"><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object" class="crosslink external" target="_blank">Object</a></span>:
+                                        <p>source</p>
+                    
+                                </div>
+                            </div>
+                    
+                    </div>
+                    <div id="method_patch" class="method item inherited">
+                        <h3 class="name"><code>patch</code></h3>
+                    
+                            <div class="args">
+                                <span class="paren">(</span><ul class="args-list inline commas">
+                                    <li class="arg">
+                                            <code>options</code>
+                                    </li>
+                                </ul><span class="paren">)</span>
+                            </div>
+                    
+                            <span class="returns-inline">
+                                <span class="type">OptionsManager</span>
+                            </span>
+                    
+                    
+                    
+                    
+                    
+                    
+                    
+                        <div class="meta">
+                                    <p>Inherited from
+                                    <a href="../classes/Core.OptionsManager.html#method_patch">Core.OptionsManager</a>:
+                            <!---->
+                            <!--<a href="../files/src_core_OptionsManager.js.html#l68"><code>src&#x2F;core&#x2F;OptionsManager.js:68</code></a>-->
+                            <!---->
+                            </p>
+                    
+                    
+                    
+                        </div>
+                    
+                        <div class="description">
+                            <p>Patch options with provided patches. Triggers <code>change</code> event on the object.</p>
+                    
+                        </div>
+                    
+                            <div class="params">
+                                <h4>Parameters:</h4>
+                    
+                                <ul class="params-list">
+                                    <li class="param">
+                                            <code class="param-name">options</code>
+                                            <span class="type"><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object" class="crosslink external" target="_blank">Object</a></span>
+                    
+                    
+                                        <div class="param-description">
+                                            <p>Patch options</p>
+                    
+                                        </div>
+                    
+                                    </li>
+                                </ul>
+                            </div>
+                    
+                            <div class="returns">
+                                <h4>Returns:</h4>
+                    
+                                <div class="returns-description">
+                                            <span class="type">OptionsManager</span>:
+                                        <p>this</p>
+                    
+                                </div>
+                            </div>
+                    
+                    </div>
+                    <div id="method_set" class="method item inherited">
+                        <h3 class="name"><code>set</code></h3>
+                    
+                            <div class="args">
+                                <span class="paren">(</span><ul class="args-list inline commas">
+                                    <li class="arg">
+                                            <code>sources</code>
+                                    </li>
+                                </ul><span class="paren">)</span>
+                            </div>
+                    
+                    
+                    
+                    
+                    
+                    
+                    
+                    
+                        <div class="meta">
+                                <p>Inherited from
+                                <a href="../classes/Core.OptionsManager.html#method_set">
+                                    Core.OptionsManager
+                                </a>
+                                but overwritten in
+                            <!---->
+                            <!--<a href="../files/src_core_LayoutNode.js.html#l58"><code>src&#x2F;core&#x2F;LayoutNode.js:58</code></a>-->
+                            <!---->
+                            </p>
+                    
+                    
+                    
+                        </div>
+                    
+                        <div class="description">
+                            <p>Introduce new data streams to the layout node in {key : value} pairs.
+                    Here the <code>key</code> is one of "transform", "origin", "align" or "opacity".
+                    The <code>value</code> is either a stream, or a simple type like a <code>Number</code> or <code>Array</code>.
+                    Simple types will be wrapped in an <code>Observerable</code> to emit appropriate events.</p>
+                    
+                        </div>
+                    
+                            <div class="params">
+                                <h4>Parameters:</h4>
+                    
+                                <ul class="params-list">
+                                    <li class="param">
+                                            <code class="param-name">sources</code>
+                                            <span class="type"><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object" class="crosslink external" target="_blank">Object</a></span>
+                    
+                    
+                                        <div class="param-description">
+                                            <p>Object of data sources</p>
+                    
+                                        </div>
+                    
+                                    </li>
+                                </ul>
+                            </div>
+                    
+                    
+                    </div>
+                    <div id="method_setOpacity" class="method item inherited">
+                        <h3 class="name"><code>setOpacity</code></h3>
+                    
+                            <div class="args">
+                                <span class="paren">(</span><ul class="args-list inline commas">
+                                    <li class="arg">
+                                            <code>opacity</code>
+                                    </li>
+                                </ul><span class="paren">)</span>
+                            </div>
+                    
+                    
+                    
+                    
+                    
+                    
+                    
+                    
+                        <div class="meta">
+                                    <p>Inherited from
+                                    <a href="../classes/Core.View.html#method_setOpacity">Core.View</a>:
+                            <!---->
+                            <!--<a href="../files/src_core_View.js.html#l160"><code>src&#x2F;core&#x2F;View.js:160</code></a>-->
+                            <!---->
+                            </p>
+                    
+                    
+                    
+                        </div>
+                    
+                        <div class="description">
+                            <p>Setter for opacity.</p>
+                    
+                        </div>
+                    
+                            <div class="params">
+                                <h4>Parameters:</h4>
+                    
+                                <ul class="params-list">
+                                    <li class="param">
+                                            <code class="param-name">opacity</code>
+                                            <span class="type"><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Number" class="crosslink external" target="_blank">Number</a> | Stream</span>
+                    
+                    
+                                        <div class="param-description">
+                                            <p>Opacity</p>
+                    
+                                        </div>
+                    
+                                    </li>
+                                </ul>
+                            </div>
+                    
+                    
+                    </div>
+                    <div id="method_setOptions" class="method item inherited">
+                        <h3 class="name"><code>setOptions</code></h3>
+                    
+                            <div class="args">
+                                <span class="paren">(</span><ul class="args-list inline commas">
+                                    <li class="arg">
+                                            <code>options</code>
+                                    </li>
+                                </ul><span class="paren">)</span>
+                            </div>
+                    
+                    
+                    
+                    
+                    
+                    
+                    
+                    
+                        <div class="meta">
+                                <p>Inherited from
+                                <a href="../classes/Core.OptionsManager.html#method_setOptions">
+                                    Core.OptionsManager
+                                </a>
+                                but overwritten in
+                            <!---->
+                            <!--<a href="../files/src_core_Controller.js.html#l106"><code>src&#x2F;core&#x2F;Controller.js:106</code></a>-->
+                            <!---->
+                            </p>
+                    
+                    
+                    
+                        </div>
+                    
+                        <div class="description">
+                            <p>Options setter.</p>
+                    
+                        </div>
+                    
+                            <div class="params">
+                                <h4>Parameters:</h4>
+                    
+                                <ul class="params-list">
+                                    <li class="param">
+                                            <code class="param-name">options</code>
+                                            <span class="type"><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object" class="crosslink external" target="_blank">Object</a></span>
+                    
+                    
+                                        <div class="param-description">
+                                            <p>Options</p>
+                    
+                                        </div>
+                    
+                                    </li>
+                                </ul>
+                            </div>
+                    
+                    
+                    </div>
+                    <div id="method_setOrigin" class="method item inherited">
+                        <h3 class="name"><code>setOrigin</code></h3>
+                    
+                            <div class="args">
+                                <span class="paren">(</span><ul class="args-list inline commas">
+                                    <li class="arg">
+                                            <code>origin</code>
+                                    </li>
+                                </ul><span class="paren">)</span>
+                            </div>
+                    
+                    
+                    
+                    
+                    
+                    
+                    
+                    
+                        <div class="meta">
+                                    <p>Inherited from
+                                    <a href="../classes/Core.View.html#method_setOrigin">Core.View</a>:
+                            <!---->
+                            <!--<a href="../files/src_core_View.js.html#l151"><code>src&#x2F;core&#x2F;View.js:151</code></a>-->
+                            <!---->
+                            </p>
+                    
+                    
+                    
+                        </div>
+                    
+                        <div class="description">
+                            <p>Setter for origin.</p>
+                    
+                        </div>
+                    
+                            <div class="params">
+                                <h4>Parameters:</h4>
+                    
+                                <ul class="params-list">
+                                    <li class="param">
+                                            <code class="param-name">origin</code>
+                                            <span class="type"><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Number" class="crosslink external" target="_blank">Number[]</a> | Stream</span>
+                    
+                    
+                                        <div class="param-description">
+                                            <p>Origin as [x,y], or a stream.</p>
+                    
+                                        </div>
+                    
+                                    </li>
+                                </ul>
+                            </div>
+                    
+                    
+                    </div>
+                    <div id="method_setProportions" class="method item inherited">
+                        <h3 class="name"><code>setProportions</code></h3>
+                    
+                            <div class="args">
+                                <span class="paren">(</span><ul class="args-list inline commas">
+                                    <li class="arg">
+                                            <code>proportions</code>
+                                    </li>
+                                </ul><span class="paren">)</span>
+                            </div>
+                    
+                    
+                    
+                    
+                    
+                    
+                    
+                    
+                        <div class="meta">
+                                    <p>Inherited from
+                                    <a href="../classes/Core.View.html#method_setProportions">Core.View</a>:
+                            <!---->
+                            <!--<a href="../files/src_core_View.js.html#l142"><code>src&#x2F;core&#x2F;View.js:142</code></a>-->
+                            <!---->
+                            </p>
+                    
+                    
+                    
+                        </div>
+                    
+                        <div class="description">
+                            <p>Setter for proportions.</p>
+                    
+                        </div>
+                    
+                            <div class="params">
+                                <h4>Parameters:</h4>
+                    
+                                <ul class="params-list">
+                                    <li class="param">
+                                            <code class="param-name">proportions</code>
+                                            <span class="type"><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Number" class="crosslink external" target="_blank">Number[]</a> | Stream</span>
+                    
+                    
+                                        <div class="param-description">
+                                            <p>Proportions as [x,y], or a stream.</p>
+                    
+                                        </div>
+                    
+                                    </li>
+                                </ul>
+                            </div>
+                    
+                    
+                    </div>
+                    <div id="method_setSize" class="method item inherited">
+                        <h3 class="name"><code>setSize</code></h3>
+                    
+                            <div class="args">
+                                <span class="paren">(</span><ul class="args-list inline commas">
+                                    <li class="arg">
+                                            <code>size</code>
+                                    </li>
+                                </ul><span class="paren">)</span>
+                            </div>
+                    
+                    
+                    
+                    
+                    
+                    
+                    
+                    
+                        <div class="meta">
+                                    <p>Inherited from
+                                    <a href="../classes/Core.View.html#method_setSize">Core.View</a>:
+                            <!---->
+                            <!--<a href="../files/src_core_View.js.html#l133"><code>src&#x2F;core&#x2F;View.js:133</code></a>-->
+                            <!---->
+                            </p>
+                    
+                    
+                    
+                        </div>
+                    
+                        <div class="description">
+                            <p>Setter for size.</p>
+                    
+                        </div>
+                    
+                            <div class="params">
+                                <h4>Parameters:</h4>
+                    
+                                <ul class="params-list">
+                                    <li class="param">
+                                            <code class="param-name">size</code>
+                                            <span class="type"><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Number" class="crosslink external" target="_blank">Number[]</a> | Stream</span>
+                    
+                    
+                                        <div class="param-description">
+                                            <p>Size as [width, height] in pixels, or a stream.</p>
+                    
+                                        </div>
+                    
+                                    </li>
+                                </ul>
+                            </div>
+                    
+                    
+                    </div>
+            </div>
+
+
+            <div id="attrs" class="tab-pane">
+                <h2 class="off-left">Attributes</h2>
+
+                    <div id="attr_DEFAULT_OPTIONS" class="attr item inherited">
+                        <a name="config_DEFAULT_OPTIONS"></a> 
+                        <h3 class="name"><code>DEFAULT_OPTIONS</code></h3>
+                        <span class="type"></span>
+                    
+                    
+                    
+                    
+                    
+                    
+                    
+                            <span class="flag readonly">readonly</span>
+                    
+                        <div class="meta">
+                                    <p>Inherited from
+                                    <a href="../classes/Core.Controller.html#attr_DEFAULT_OPTIONS">Core.Controller</a>:
+                            <a href="../files/src_core_Controller.js.html#l76"><code>src&#x2F;core&#x2F;Controller.js:76</code></a>
+                            </p>
+                    
+                    
+                        </div>
+                    
+                        <div class="description">
+                            <p>Overwrite the DEFAULT_OPTIONS dictionary on the constructor of the class you wish to extend
+                    with the Controller to patch any options that are not prescribed on instantiation.</p>
+                    
+                        </div>
+                    
+                    
+                    
+                    </div>
+                    <div id="attr_EVENTS" class="attr item inherited">
+                        <a name="config_EVENTS"></a> 
+                        <h3 class="name"><code>EVENTS</code></h3>
+                        <span class="type"></span>
+                    
+                    
+                    
+                    
+                    
+                    
+                    
+                            <span class="flag readonly">readonly</span>
+                    
+                        <div class="meta">
+                                    <p>Inherited from
+                                    <a href="../classes/Core.Controller.html#attr_EVENTS">Core.Controller</a>:
+                            <a href="../files/src_core_Controller.js.html#l85"><code>src&#x2F;core&#x2F;Controller.js:85</code></a>
+                            </p>
+                    
+                    
+                        </div>
+                    
+                        <div class="description">
+                            <p>Overwrite the EVENTS dictionary on the constructor of the class you wish to extend
+                    with the Controller to include events in {key : value} pairs where the keys are
+                    event channel names and the values are functions to be executed.</p>
+                    
+                        </div>
+                    
+                    
+                    
+                    </div>
+            </div>
+
+    </div>
+</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script src="../assets/vendor/jquery/jquery-1.8.2.min.js"></script>
+<script src="../assets/vendor/bootstrap/js/bootstrap.js"></script>
+<script src="../assets/vendor/prettify/prettify-min.js"></script>
+<script src="../assets/js/yuidoc-bootstrap.js"></script>
+<script>prettyPrint();</script>
+</body>
+</html>

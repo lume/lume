@@ -1,0 +1,292 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>src/events/EventHandler.js - SamsaraJS</title>
+    <link rel="stylesheet" href="">
+    <link rel="stylesheet" href="../assets/vendor/prettify/prettify-min.css">
+    <link rel="stylesheet" href="../assets/css/main.css" id="site_styles">
+    <link rel="stylesheet" href="../assets/css/custom.css">
+    <link rel="stylesheet" href="../assets/vendor/bootstrap/css/bootstrap.css">
+    <link rel="shortcut icon" type="image/png" href="../assets/favicon.png">
+</head>
+<body class="yui3-skin-sam">
+<div class="navbar navbar-fixed-top">
+    <div class="navbar-inner">
+        <h1 class="brand" style="padding: 10px 16px 10px; height: 20px; line-height: 20px; margin-left: 0;">
+        <!---->
+	    <!--<img alt="SamsaraJS" src="../assets/css/logo.png" style="max-height: 65%;" title="SamsaraJS">-->
+        <!---->
+            SamsaraJS
+        </h1>
+	<div class="nav">
+            <li class="divider-vertical"></li>
+            <li>
+                <p class="navbar-text">
+                    API Docs for Version: <b>0.1.0</b>
+                </p>
+            </li>
+        </div>
+        <form class="navbar-form pull-right" style="line-height: 40px; height: 40px;">
+            <input style="margin-top: 0;" type="text" class="search-query" placeholder="Search for classes/modules..." data-obj='["classes/Core.Controller", "classes/Core.ElementAllocator", "classes/Core.ElementOutput", "classes/Core.Engine", "classes/Core.LayoutNode", "classes/Core.OptionsManager", "classes/Core.SizeNode", "classes/Core.SUE", "classes/Core.Timer", "classes/Core.Transform", "classes/Core.Transitionable", "classes/Core.View", "classes/DOM.ContainerSurface", "classes/DOM.Context", "classes/DOM.Surface", "classes/Events.EventEmitter", "classes/Events.EventFilter", "classes/Events.EventHandler", "classes/Events.EventMapper", "classes/Events.EventSplitter", "classes/Inputs.GenericInput", "classes/Inputs.MouseInput", "classes/Inputs.PinchInput", "classes/Inputs.RotateInput", "classes/Inputs.ScaleInput", "classes/Inputs.ScrollInput", "classes/Inputs.TouchInput", "classes/Inputs.TouchTracker", "classes/Inputs.TwoFingerInput", "classes/Layouts.DrawerLayout", "classes/Layouts.FlexibleLayout", "classes/Layouts.GridLayout", "classes/Layouts.SequentialLayout", "classes/RenderTreeNode", "classes/RootNode", "classes/Streams.Accumulator", "classes/Streams.Differential", "classes/Streams.Observable", "classes/Streams.ResizeStream", "classes/Streams.SimpleStream", "classes/Streams.Stream", "classes/Transitions.Inertia", "classes/Transitions.Spring", "classes/Transitions.Tween"]'>
+        </form>
+    </div>
+</div>
+<div class="container">
+    <div class="row">
+        <div class="span3">
+	    <div>
+	        <!--<h3>APIs</h3>-->
+	        <br>
+	        <div id="sidebar">
+	            <!--<ul id="main-nav" class="nav nav-tabs" style="margin-bottom:0;">-->
+	                <!--<li class="active"><a href="#classes" data-toggle="tab">Classes</a></li>-->
+	                <!--<li><a href="#modules" data-toggle="tab">Modules</a></li>-->
+	            <!--</ul>-->
+	    
+	            <div id="api-tabview-filter">
+	                <input type="search" placeholder="Type to filter APIs">
+	            </div>
+	    
+	            <div class="tab-content" style="border: 1px solid #DDD; border-top:0;">
+	                <div class="tab-pane active" id="classes">
+	                    <ul id="api-classes" class="nav nav-list">
+	                            <li><a href="../classes/Core.Timer.html">Core.Timer</a></li>
+	                            <li><a href="../classes/Core.Transform.html">Core.Transform</a></li>
+	                            <li><a href="../classes/Core.Transitionable.html">Core.Transitionable</a></li>
+	                            <li><a href="../classes/Core.View.html">Core.View</a></li>
+	                            <li><a href="../classes/DOM.ContainerSurface.html">DOM.ContainerSurface</a></li>
+	                            <li><a href="../classes/DOM.Context.html">DOM.Context</a></li>
+	                            <li><a href="../classes/DOM.Surface.html">DOM.Surface</a></li>
+	                            <li><a href="../classes/Events.EventEmitter.html">Events.EventEmitter</a></li>
+	                            <li><a href="../classes/Events.EventFilter.html">Events.EventFilter</a></li>
+	                            <li><a href="../classes/Events.EventHandler.html">Events.EventHandler</a></li>
+	                            <li><a href="../classes/Events.EventMapper.html">Events.EventMapper</a></li>
+	                            <li><a href="../classes/Inputs.GenericInput.html">Inputs.GenericInput</a></li>
+	                            <li><a href="../classes/Inputs.MouseInput.html">Inputs.MouseInput</a></li>
+	                            <li><a href="../classes/Inputs.PinchInput.html">Inputs.PinchInput</a></li>
+	                            <li><a href="../classes/Inputs.RotateInput.html">Inputs.RotateInput</a></li>
+	                            <li><a href="../classes/Inputs.ScaleInput.html">Inputs.ScaleInput</a></li>
+	                            <li><a href="../classes/Inputs.ScrollInput.html">Inputs.ScrollInput</a></li>
+	                            <li><a href="../classes/Inputs.TouchInput.html">Inputs.TouchInput</a></li>
+	                            <li><a href="../classes/Layouts.DrawerLayout.html">Layouts.DrawerLayout</a></li>
+	                            <li><a href="../classes/Layouts.FlexibleLayout.html">Layouts.FlexibleLayout</a></li>
+	                            <li><a href="../classes/Layouts.GridLayout.html">Layouts.GridLayout</a></li>
+	                            <li><a href="../classes/Layouts.SequentialLayout.html">Layouts.SequentialLayout</a></li>
+	                            <li><a href="../classes/Streams.Accumulator.html">Streams.Accumulator</a></li>
+	                            <li><a href="../classes/Streams.Differential.html">Streams.Differential</a></li>
+	                            <li><a href="../classes/Streams.Stream.html">Streams.Stream</a></li>
+	                    </ul>
+	                </div>
+	    
+	                <!--<div class="tab-pane" id="modules">-->
+	                    <!--<ul id="api-modules" class="nav nav-list">-->
+	                        <!---->
+	                    <!--</ul>-->
+	                <!--</div>-->
+	            </div>
+	        </div>
+	    </div>
+        </div>
+        <div class="span9">
+                <form id="options-form" class="form-inline pull-right">
+                    Show:
+                    <label for="api-show-inherited" class="checkbox">
+                        <input type="checkbox" id="api-show-inherited" checked>
+                        Inherited
+                    </label>
+            
+                    <label for="api-show-protected" class="checkbox">
+                        <input type="checkbox" id="api-show-protected">
+                        Protected
+                    </label>
+            
+                    <label for="api-show-private" class="checkbox">
+                        <input type="checkbox" id="api-show-private">
+                        Private
+                    </label>
+                    <label for="api-show-deprecated" class="checkbox">
+                        <input type="checkbox" id="api-show-deprecated">
+                        Deprecated
+                    </label>
+            
+                </form>
+            
+            <div class="apidocs">
+                <div id="docs-main">
+                    <div class="content">
+<div class="page-header">
+    <h1>src/events/EventHandler.js <small>File</small></h1>
+</div>
+
+<div class="file">
+    <pre class="prettyprint linenums">
+/* This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at http://mozilla.org/MPL/2.0/.
+ *
+ * @license MPL 2.0
+ * @copyright Famous Industries, Inc. 2014
+ */
+
+/* Modified work copyright © 2015 David Valdman */
+
+define(function(require, exports, module) {
+    var EventEmitter = require(&#x27;./EventEmitter&#x27;);
+
+    /**
+     * EventHandler extends EventEmitter to provide subscription methods.
+     *  It also includes helper methods on the constructor for setting up Controllers and Views
+     *  with input and output emitters.
+     *
+     *  @example
+     *
+     *      var eventHandlerA = new EventHandler();
+     *      var eventHandlerB = new EventHandler();
+     *
+     *      eventHandlerB.subscribe(eventHandlerA);
+     *
+     *      eventHandlerB.on(&#x27;name&#x27;, function(payload){
+     *          console.log(payload) // {data : 0}
+     *      });
+     *
+     *      eventHandlerA.emit(&#x27;name&#x27;, {data : 0});
+     *
+     * @class EventHandler
+     * @namespace Events
+     * @extends Events.EventEmitter
+     * @constructor
+     */
+    function EventHandler() {
+        EventEmitter.apply(this, arguments);
+
+        this.upstream = []; // upstream event handlers
+        this.upstreamListeners = {}; // upstream listeners
+    }
+
+    EventHandler.prototype = Object.create(EventEmitter.prototype);
+    EventHandler.prototype.constructor = EventHandler;
+
+    /**
+     * Constructor helper method. Assign an event handler to receive an object&#x27;s input events.
+     *  Defines &#x60;trigger&#x60;, &#x60;subscribe&#x60; and &#x60;unsubscribe&#x60; methods on the class instance.
+     *
+     * @method setInputHandler
+     * @static
+     * @param object {Object}           Class instance
+     * @param handler {EventHandler}    EventHandler representing an input source
+     */
+    EventHandler.setInputHandler = function setInputHandler(object, handler) {
+        object.trigger = handler.trigger.bind(handler);
+        object.subscribe = handler.subscribe.bind(handler);
+        object.unsubscribe = handler.unsubscribe.bind(handler);
+    };
+
+    /**
+     * Constructor helper method. Assign an event handler to emit an object&#x27;s output events.
+     *  Defines &#x60;emit&#x60;, &#x60;on&#x60; and &#x60;off&#x60; methods on the class instance.
+     *
+     * @method setOutputHandler
+     * @static
+     * @param object {Object}           Object to provide on, off and emit methods
+     * @param handler {EventHandler}    Handler assigned event handler
+     */
+    EventHandler.setOutputHandler = function setOutputHandler(object, handler) {
+        handler.bindThis(object);
+        object.emit = handler.emit.bind(handler);
+        object.on = handler.on.bind(handler);
+        object.off = handler.off.bind(handler);
+    };
+
+    /**
+     * Constructor helper method. Given an events dictionary of {eventName : handler} pairs, attach them to
+     *  a provided input handler for an object.
+     *
+     * @method setInputEvents
+     * @static
+     * @private
+     * @param object {Object}           Object to provide on, off and emit methods
+     * @param handler {EventHandler}    Handler assigned event handler
+     */
+    EventHandler.setInputEvents = function setInputEvents(object, events, handlerIn){
+        for (var key in events) {
+            var handlerName = events[key];
+            var handler = (typeof handlerName === &#x27;string&#x27;)
+                ? object[handlerName]
+                : handlerName;
+            if (handler) handlerIn.on(key, handler.bind(object));
+        }
+    };
+
+    /**
+     * Adds a handler to the &#x60;type&#x60; channel which will be executed on &#x60;emit&#x60;.
+     *  Extends EventEmitter&#x27;s &#x60;on&#x60; method.
+     *
+     * @method on
+     * @param type {String}             Event channel name
+     * @param handler {Function}        Handler
+     */
+    EventHandler.prototype.on = function on(type, handler) {
+        EventEmitter.prototype.on.apply(this, arguments);
+        if (!(type in this.upstreamListeners)) {
+            var upstreamListener = this.trigger.bind(this, type);
+            this.upstreamListeners[type] = upstreamListener;
+            for (var i = 0; i &lt; this.upstream.length; i++) {
+                this.upstream[i].on(type, upstreamListener);
+            }
+        }
+    };
+
+    /**
+     * Listen for events from an an upstream source.
+     *
+     * @method subscribe
+     * @param source {EventEmitter} Event source
+     */
+    EventHandler.prototype.subscribe = function subscribe(source) {
+        var index = this.upstream.indexOf(source);
+        if (index &lt; 0) {
+            this.upstream.push(source);
+            for (var type in this.upstreamListeners) {
+                source.on(type, this.upstreamListeners[type]);
+            }
+        }
+        return source;
+    };
+
+    /**
+     * Stop listening to events from an upstream source.
+     *  Undoes work of &#x60;subscribe&#x60;.
+     *
+     * @method unsubscribe
+     * @param source {EventEmitter} Event source
+     */
+    EventHandler.prototype.unsubscribe = function unsubscribe(source) {
+        var index = this.upstream.indexOf(source);
+        if (index &gt;= 0) {
+            this.upstream.splice(index, 1);
+            for (var type in this.upstreamListeners) {
+                source.off(type, this.upstreamListeners[type]);
+            }
+        }
+        return source;
+    };
+
+    module.exports = EventHandler;
+});
+
+    </pre>
+</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script src="../assets/vendor/jquery/jquery-1.8.2.min.js"></script>
+<script src="../assets/vendor/bootstrap/js/bootstrap.js"></script>
+<script src="../assets/vendor/prettify/prettify-min.js"></script>
+<script src="../assets/js/yuidoc-bootstrap.js"></script>
+<script>prettyPrint();</script>
+</body>
+</html>

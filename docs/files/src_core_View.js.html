@@ -1,0 +1,331 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>src/core/View.js - SamsaraJS</title>
+    <link rel="stylesheet" href="">
+    <link rel="stylesheet" href="../assets/vendor/prettify/prettify-min.css">
+    <link rel="stylesheet" href="../assets/css/main.css" id="site_styles">
+    <link rel="stylesheet" href="../assets/css/custom.css">
+    <link rel="stylesheet" href="../assets/vendor/bootstrap/css/bootstrap.css">
+    <link rel="shortcut icon" type="image/png" href="../assets/favicon.png">
+</head>
+<body class="yui3-skin-sam">
+<div class="navbar navbar-fixed-top">
+    <div class="navbar-inner">
+        <h1 class="brand" style="padding: 10px 16px 10px; height: 20px; line-height: 20px; margin-left: 0;">
+        <!---->
+	    <!--<img alt="SamsaraJS" src="../assets/css/logo.png" style="max-height: 65%;" title="SamsaraJS">-->
+        <!---->
+            SamsaraJS
+        </h1>
+	<div class="nav">
+            <li class="divider-vertical"></li>
+            <li>
+                <p class="navbar-text">
+                    API Docs for Version: <b>0.1.0</b>
+                </p>
+            </li>
+        </div>
+        <form class="navbar-form pull-right" style="line-height: 40px; height: 40px;">
+            <input style="margin-top: 0;" type="text" class="search-query" placeholder="Search for classes/modules..." data-obj='["classes/Core.Controller", "classes/Core.ElementAllocator", "classes/Core.ElementOutput", "classes/Core.Engine", "classes/Core.LayoutNode", "classes/Core.OptionsManager", "classes/Core.SizeNode", "classes/Core.SUE", "classes/Core.Timer", "classes/Core.Transform", "classes/Core.Transitionable", "classes/Core.View", "classes/DOM.ContainerSurface", "classes/DOM.Context", "classes/DOM.Surface", "classes/Events.EventEmitter", "classes/Events.EventFilter", "classes/Events.EventHandler", "classes/Events.EventMapper", "classes/Events.EventSplitter", "classes/Inputs.GenericInput", "classes/Inputs.MouseInput", "classes/Inputs.PinchInput", "classes/Inputs.RotateInput", "classes/Inputs.ScaleInput", "classes/Inputs.ScrollInput", "classes/Inputs.TouchInput", "classes/Inputs.TouchTracker", "classes/Inputs.TwoFingerInput", "classes/Layouts.DrawerLayout", "classes/Layouts.FlexibleLayout", "classes/Layouts.GridLayout", "classes/Layouts.SequentialLayout", "classes/RenderTreeNode", "classes/RootNode", "classes/Streams.Accumulator", "classes/Streams.Differential", "classes/Streams.Observable", "classes/Streams.ResizeStream", "classes/Streams.SimpleStream", "classes/Streams.Stream", "classes/Transitions.Inertia", "classes/Transitions.Spring", "classes/Transitions.Tween"]'>
+        </form>
+    </div>
+</div>
+<div class="container">
+    <div class="row">
+        <div class="span3">
+	    <div>
+	        <!--<h3>APIs</h3>-->
+	        <br>
+	        <div id="sidebar">
+	            <!--<ul id="main-nav" class="nav nav-tabs" style="margin-bottom:0;">-->
+	                <!--<li class="active"><a href="#classes" data-toggle="tab">Classes</a></li>-->
+	                <!--<li><a href="#modules" data-toggle="tab">Modules</a></li>-->
+	            <!--</ul>-->
+	    
+	            <div id="api-tabview-filter">
+	                <input type="search" placeholder="Type to filter APIs">
+	            </div>
+	    
+	            <div class="tab-content" style="border: 1px solid #DDD; border-top:0;">
+	                <div class="tab-pane active" id="classes">
+	                    <ul id="api-classes" class="nav nav-list">
+	                            <li><a href="../classes/Core.Timer.html">Core.Timer</a></li>
+	                            <li><a href="../classes/Core.Transform.html">Core.Transform</a></li>
+	                            <li><a href="../classes/Core.Transitionable.html">Core.Transitionable</a></li>
+	                            <li><a href="../classes/Core.View.html">Core.View</a></li>
+	                            <li><a href="../classes/DOM.ContainerSurface.html">DOM.ContainerSurface</a></li>
+	                            <li><a href="../classes/DOM.Context.html">DOM.Context</a></li>
+	                            <li><a href="../classes/DOM.Surface.html">DOM.Surface</a></li>
+	                            <li><a href="../classes/Events.EventEmitter.html">Events.EventEmitter</a></li>
+	                            <li><a href="../classes/Events.EventFilter.html">Events.EventFilter</a></li>
+	                            <li><a href="../classes/Events.EventHandler.html">Events.EventHandler</a></li>
+	                            <li><a href="../classes/Events.EventMapper.html">Events.EventMapper</a></li>
+	                            <li><a href="../classes/Inputs.GenericInput.html">Inputs.GenericInput</a></li>
+	                            <li><a href="../classes/Inputs.MouseInput.html">Inputs.MouseInput</a></li>
+	                            <li><a href="../classes/Inputs.PinchInput.html">Inputs.PinchInput</a></li>
+	                            <li><a href="../classes/Inputs.RotateInput.html">Inputs.RotateInput</a></li>
+	                            <li><a href="../classes/Inputs.ScaleInput.html">Inputs.ScaleInput</a></li>
+	                            <li><a href="../classes/Inputs.ScrollInput.html">Inputs.ScrollInput</a></li>
+	                            <li><a href="../classes/Inputs.TouchInput.html">Inputs.TouchInput</a></li>
+	                            <li><a href="../classes/Layouts.DrawerLayout.html">Layouts.DrawerLayout</a></li>
+	                            <li><a href="../classes/Layouts.FlexibleLayout.html">Layouts.FlexibleLayout</a></li>
+	                            <li><a href="../classes/Layouts.GridLayout.html">Layouts.GridLayout</a></li>
+	                            <li><a href="../classes/Layouts.SequentialLayout.html">Layouts.SequentialLayout</a></li>
+	                            <li><a href="../classes/Streams.Accumulator.html">Streams.Accumulator</a></li>
+	                            <li><a href="../classes/Streams.Differential.html">Streams.Differential</a></li>
+	                            <li><a href="../classes/Streams.Stream.html">Streams.Stream</a></li>
+	                    </ul>
+	                </div>
+	    
+	                <!--<div class="tab-pane" id="modules">-->
+	                    <!--<ul id="api-modules" class="nav nav-list">-->
+	                        <!---->
+	                    <!--</ul>-->
+	                <!--</div>-->
+	            </div>
+	        </div>
+	    </div>
+        </div>
+        <div class="span9">
+                <form id="options-form" class="form-inline pull-right">
+                    Show:
+                    <label for="api-show-inherited" class="checkbox">
+                        <input type="checkbox" id="api-show-inherited" checked>
+                        Inherited
+                    </label>
+            
+                    <label for="api-show-protected" class="checkbox">
+                        <input type="checkbox" id="api-show-protected">
+                        Protected
+                    </label>
+            
+                    <label for="api-show-private" class="checkbox">
+                        <input type="checkbox" id="api-show-private">
+                        Private
+                    </label>
+                    <label for="api-show-deprecated" class="checkbox">
+                        <input type="checkbox" id="api-show-deprecated">
+                        Deprecated
+                    </label>
+            
+                </form>
+            
+            <div class="apidocs">
+                <div id="docs-main">
+                    <div class="content">
+<div class="page-header">
+    <h1>src/core/View.js <small>File</small></h1>
+</div>
+
+<div class="file">
+    <pre class="prettyprint linenums">
+/* Copyright © 2015 David Valdman */
+
+define(function(require, exports, module) {
+    var RenderTreeNode = require(&#x27;./nodes/RenderTreeNode&#x27;);
+    var Controller = require(&#x27;./Controller&#x27;);
+    var SizeNode = require(&#x27;./SizeNode&#x27;);
+    var LayoutNode = require(&#x27;./LayoutNode&#x27;);
+    var Transitionable = require(&#x27;./Transitionable&#x27;);
+    var EventHandler = require(&#x27;../events/EventHandler&#x27;);
+    var Stream = require(&#x27;../streams/Stream&#x27;);
+    var ResizeStream = require(&#x27;../streams/ResizeStream&#x27;);
+    var SizeObservable = require(&#x27;../streams/SizeObservable&#x27;);
+    var layoutAlgebra = require(&#x27;./algebras/layout&#x27;);
+    var sizeAlgebra = require(&#x27;./algebras/size&#x27;);
+
+    /**
+     * A View provides encapsulation for a subtree of the render tree. You can build
+     *  complicated visual components and add them to a render tree as you would a &#x60;Surface&#x60;.
+     *
+     *  Custom &#x60;Views&#x60; are created by calling &#x60;extend&#x60; on the &#x60;View&#x60; constructor.
+     *
+     *  In addition to what a &#x60;Controller&#x60; provides, a View provides:
+     *
+     *      Render Tree method: &#x60;.add&#x60;
+     *      Size methods: &#x60;setSize&#x60;, &#x60;setProportions&#x60;
+     *      Layout methods: &#x60;setOpacity&#x60;, &#x60;setOrigin&#x60;
+     *
+     *  @example
+     *
+     *      var MyView = View.extend({
+     *          defaults : {
+     *              defaultOption1 : &#x27;&#x27;,
+     *              defaultOption2 : 42
+     *          },
+     *          initialize : function(options){
+     *              // this method called on instantiation
+     *              // options are passed in after being patched by the specified defaults
+     *
+     *              var surface = new Surface({
+     *                  content : options.defaultOption1,
+     *                  size : [options.defaultOption2,100],
+     *                  properties : {background : &#x27;red&#x27;}
+     *              });
+     *
+     *              this.add(surface);
+     *          }
+     *      });
+     *
+     *      var myView = new myView({defaultOption1 : &#x27;hello&#x27;});
+     *
+     *      var context = Context();
+     *      context.add(myView);
+     *
+     *      context.mount(document.body);
+     *
+     * @class View
+     * @constructor
+     * @extends Core.Controller
+     * @uses Core.SizeNode
+     * @uses Core.LayoutNode
+     * @uses Core.SimpleStream
+     */
+    var View = Controller.extend({
+        _isView : true,
+        defaults : {
+            size : null,
+            origin : null,
+            opacity : 1
+        },
+        events : {
+            change : setOptions
+        },
+        constructor : function View(options){
+            this._size = new EventHandler();
+            this._layout = new EventHandler();
+
+            this._sizeNode = new SizeNode();
+            this._layoutNode = new LayoutNode();
+
+            this._node = new RenderTreeNode();
+            this._node.tempRoot = this._node;
+
+            this.size = ResizeStream.lift(
+                function ViewSizeAlgebra (sizeSpec, parentSize){
+                    if (!parentSize) return false;
+                    return (sizeSpec)
+                        ? sizeAlgebra(sizeSpec, parentSize)
+                        : parentSize;
+                },
+                [this._sizeNode, this._size]
+            );
+
+            this._cachedSize = [0,0];
+            this.size.on(&#x27;resize&#x27;, function(size){
+                this._cachedSize = size;
+            }.bind(this));
+
+            var layout = Stream.lift(
+                function ViewLayoutAlgebra (parentSpec, objectSpec, size){
+                    if (!parentSpec || !size) return false;
+                    return (objectSpec)
+                        ? layoutAlgebra(objectSpec, parentSpec, size)
+                        : parentSpec;
+                }.bind(this),
+                [this._layout, this._layoutNode, this.size]
+            );
+
+            this._node._size.subscribe(this.size);
+            this._node._layout.subscribe(layout);
+
+            Controller.apply(this, arguments);
+            if (this.options) setOptions.call(this, this.options);
+        },
+        /**
+         * Extends the render tree subtree with a new node.
+         *
+         * @method add
+         * @param object {SizeNode|LayoutNode|Surface} Node
+         * @return {RenderTreeNode}
+         */
+        add : function add(){
+            return RenderTreeNode.prototype.add.apply(this._node, arguments);
+        },
+        /**
+         * Getter for size.
+         *
+         * @method getSize
+         * @return size {Number[]}
+         */
+        getSize : function(){
+            return this._cachedSize;
+        },
+        /**
+         * Setter for size.
+         *
+         * @method setSize
+         * @param size {Number[]|Stream} Size as [width, height] in pixels, or a stream.
+         */
+        setSize : function setSize(size){
+            this._sizeNode.set({size : size});
+        },
+        /**
+         * Setter for proportions.
+         *
+         * @method setProportions
+         * @param proportions {Number[]|Stream} Proportions as [x,y], or a stream.
+         */
+        setProportions : function setProportions(proportions){
+            this._sizeNode.set({proportions : proportions});
+        },
+        /**
+         * Setter for origin.
+         *
+         * @method setOrigin
+         * @param origin {Number[]|Stream} Origin as [x,y], or a stream.
+         */
+        setOrigin : function setOrigin(origin){
+            this._layoutNode.set({origin : origin});
+        },
+        /**
+         * Setter for opacity.
+         *
+         * @method setOpacity
+         * @param opacity {Number|Stream} Opacity
+         */
+        setOpacity : function setOpacity(opacity){
+            this._layoutNode.set({opacity : opacity});
+        }
+    });
+
+    function setOptions(options){
+        for (var key in options){
+            var value = options[key];
+            switch (key){
+                case &#x27;size&#x27;:
+                    this.setSize(value);
+                    break;
+                case &#x27;proportions&#x27;:
+                    this.setProportions(value);
+                    break;
+                case &#x27;origin&#x27;:
+                    this.setOrigin(value);
+                    break;
+                case &#x27;opacity&#x27;:
+                    this.setOpacity(value);
+                    break;
+            }
+        }
+    }
+
+    module.exports = View;
+});
+
+    </pre>
+</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script src="../assets/vendor/jquery/jquery-1.8.2.min.js"></script>
+<script src="../assets/vendor/bootstrap/js/bootstrap.js"></script>
+<script src="../assets/vendor/prettify/prettify-min.js"></script>
+<script src="../assets/js/yuidoc-bootstrap.js"></script>
+<script>prettyPrint();</script>
+</body>
+</html>

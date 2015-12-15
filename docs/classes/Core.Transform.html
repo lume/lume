@@ -1,0 +1,2507 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>Core.Transform - SamsaraJS</title>
+    <link rel="stylesheet" href="">
+    <link rel="stylesheet" href="../assets/vendor/prettify/prettify-min.css">
+    <link rel="stylesheet" href="../assets/css/main.css" id="site_styles">
+    <link rel="stylesheet" href="../assets/css/custom.css">
+    <link rel="stylesheet" href="../assets/vendor/bootstrap/css/bootstrap.css">
+    <link rel="shortcut icon" type="image/png" href="../assets/favicon.png">
+</head>
+<body class="yui3-skin-sam">
+<div class="navbar navbar-fixed-top">
+    <div class="navbar-inner">
+        <h1 class="brand" style="padding: 10px 16px 10px; height: 20px; line-height: 20px; margin-left: 0;">
+        <!---->
+	    <!--<img alt="SamsaraJS" src="../assets/css/logo.png" style="max-height: 65%;" title="SamsaraJS">-->
+        <!---->
+            SamsaraJS
+        </h1>
+	<div class="nav">
+            <li class="divider-vertical"></li>
+            <li>
+                <p class="navbar-text">
+                    API Docs for Version: <b>0.1.0</b>
+                </p>
+            </li>
+        </div>
+        <form class="navbar-form pull-right" style="line-height: 40px; height: 40px;">
+            <input style="margin-top: 0;" type="text" class="search-query" placeholder="Search for classes/modules..." data-obj='["classes/Core.Controller", "classes/Core.ElementAllocator", "classes/Core.ElementOutput", "classes/Core.Engine", "classes/Core.LayoutNode", "classes/Core.OptionsManager", "classes/Core.SizeNode", "classes/Core.SUE", "classes/Core.Timer", "classes/Core.Transform", "classes/Core.Transitionable", "classes/Core.View", "classes/DOM.ContainerSurface", "classes/DOM.Context", "classes/DOM.Surface", "classes/Events.EventEmitter", "classes/Events.EventFilter", "classes/Events.EventHandler", "classes/Events.EventMapper", "classes/Events.EventSplitter", "classes/Inputs.GenericInput", "classes/Inputs.MouseInput", "classes/Inputs.PinchInput", "classes/Inputs.RotateInput", "classes/Inputs.ScaleInput", "classes/Inputs.ScrollInput", "classes/Inputs.TouchInput", "classes/Inputs.TouchTracker", "classes/Inputs.TwoFingerInput", "classes/Layouts.DrawerLayout", "classes/Layouts.FlexibleLayout", "classes/Layouts.GridLayout", "classes/Layouts.SequentialLayout", "classes/RenderTreeNode", "classes/RootNode", "classes/Streams.Accumulator", "classes/Streams.Differential", "classes/Streams.Observable", "classes/Streams.ResizeStream", "classes/Streams.SimpleStream", "classes/Streams.Stream", "classes/Transitions.Inertia", "classes/Transitions.Spring", "classes/Transitions.Tween"]'>
+        </form>
+    </div>
+</div>
+<div class="container">
+    <div class="row">
+        <div class="span3">
+	    <div>
+	        <!--<h3>APIs</h3>-->
+	        <br>
+	        <div id="sidebar">
+	            <!--<ul id="main-nav" class="nav nav-tabs" style="margin-bottom:0;">-->
+	                <!--<li class="active"><a href="#classes" data-toggle="tab">Classes</a></li>-->
+	                <!--<li><a href="#modules" data-toggle="tab">Modules</a></li>-->
+	            <!--</ul>-->
+	    
+	            <div id="api-tabview-filter">
+	                <input type="search" placeholder="Type to filter APIs">
+	            </div>
+	    
+	            <div class="tab-content" style="border: 1px solid #DDD; border-top:0;">
+	                <div class="tab-pane active" id="classes">
+	                    <ul id="api-classes" class="nav nav-list">
+	                            <li><a href="../classes/Core.Timer.html">Core.Timer</a></li>
+	                            <li><a href="../classes/Core.Transform.html">Core.Transform</a></li>
+	                            <li><a href="../classes/Core.Transitionable.html">Core.Transitionable</a></li>
+	                            <li><a href="../classes/Core.View.html">Core.View</a></li>
+	                            <li><a href="../classes/DOM.ContainerSurface.html">DOM.ContainerSurface</a></li>
+	                            <li><a href="../classes/DOM.Context.html">DOM.Context</a></li>
+	                            <li><a href="../classes/DOM.Surface.html">DOM.Surface</a></li>
+	                            <li><a href="../classes/Events.EventEmitter.html">Events.EventEmitter</a></li>
+	                            <li><a href="../classes/Events.EventFilter.html">Events.EventFilter</a></li>
+	                            <li><a href="../classes/Events.EventHandler.html">Events.EventHandler</a></li>
+	                            <li><a href="../classes/Events.EventMapper.html">Events.EventMapper</a></li>
+	                            <li><a href="../classes/Inputs.GenericInput.html">Inputs.GenericInput</a></li>
+	                            <li><a href="../classes/Inputs.MouseInput.html">Inputs.MouseInput</a></li>
+	                            <li><a href="../classes/Inputs.PinchInput.html">Inputs.PinchInput</a></li>
+	                            <li><a href="../classes/Inputs.RotateInput.html">Inputs.RotateInput</a></li>
+	                            <li><a href="../classes/Inputs.ScaleInput.html">Inputs.ScaleInput</a></li>
+	                            <li><a href="../classes/Inputs.ScrollInput.html">Inputs.ScrollInput</a></li>
+	                            <li><a href="../classes/Inputs.TouchInput.html">Inputs.TouchInput</a></li>
+	                            <li><a href="../classes/Layouts.DrawerLayout.html">Layouts.DrawerLayout</a></li>
+	                            <li><a href="../classes/Layouts.FlexibleLayout.html">Layouts.FlexibleLayout</a></li>
+	                            <li><a href="../classes/Layouts.GridLayout.html">Layouts.GridLayout</a></li>
+	                            <li><a href="../classes/Layouts.SequentialLayout.html">Layouts.SequentialLayout</a></li>
+	                            <li><a href="../classes/Streams.Accumulator.html">Streams.Accumulator</a></li>
+	                            <li><a href="../classes/Streams.Differential.html">Streams.Differential</a></li>
+	                            <li><a href="../classes/Streams.Stream.html">Streams.Stream</a></li>
+	                    </ul>
+	                </div>
+	    
+	                <!--<div class="tab-pane" id="modules">-->
+	                    <!--<ul id="api-modules" class="nav nav-list">-->
+	                        <!---->
+	                    <!--</ul>-->
+	                <!--</div>-->
+	            </div>
+	        </div>
+	    </div>
+        </div>
+        <div class="span9">
+                <form id="options-form" class="form-inline pull-right">
+                    Show:
+                    <label for="api-show-inherited" class="checkbox">
+                        <input type="checkbox" id="api-show-inherited" checked>
+                        Inherited
+                    </label>
+            
+                    <label for="api-show-protected" class="checkbox">
+                        <input type="checkbox" id="api-show-protected">
+                        Protected
+                    </label>
+            
+                    <label for="api-show-private" class="checkbox">
+                        <input type="checkbox" id="api-show-private">
+                        Private
+                    </label>
+                    <label for="api-show-deprecated" class="checkbox">
+                        <input type="checkbox" id="api-show-deprecated">
+                        Deprecated
+                    </label>
+            
+                </form>
+            
+            <div class="apidocs">
+                <div id="docs-main">
+                    <div class="content">
+<div class="page-header">
+    <h1>Core.Transform <small>Class</small></h1>
+</div>
+
+<div class="well well-small">
+
+
+    <!---->
+        <div class="foundat">
+            Defined in: <a href="../files/src_core_Transform.js.html#l13"><code>src&#x2F;core&#x2F;Transform.js:13</code></a>
+        </div>
+    <!---->
+
+
+</div>
+
+
+<div class="well well-small">
+    <p>A library for creating and composing CSS3 matrix transforms.
+A Transform is a 16 element float array <code>t = [t0, ..., t15]</code>
+that corresponds to a 4x4 transformation matrix (in row-major order)</p>
+<pre class="code prettyprint"><code>  ┌               ┐
+  │ t0  t1  t2  0 │
+  │ t4  t5  t6  0 │
+  │ t8  t9  t10 0 │
+  │ t12 t13 t14 1 │
+  └               ┘
+</code></pre>
+<p>This matrix is a data structure encoding a combination of translation,
+scale, skew and rotation components.</p>
+<p>Note: these matrices are transposes from their mathematical counterparts.</p>
+
+</div>
+
+
+<div>
+    <ul class="nav nav-tabs">
+        <li class="active"><a data-toggle="tab" href="#index">Index</a></li>
+
+            <li><a data-toggle="tab" href="#methods">Methods</a></li>
+            <li><a data-toggle="tab" href="#properties">Properties</a></li>
+    </ul>
+
+    <div class="tab-content">
+        <div id="index" class="tab-pane active">
+            <h2 class="off-left">Item Index</h2>
+
+                <div class="index-section methods">
+                    <h3>Methods</h3>
+
+                    <ul class="index-list methods">
+                            <li class="index-item method">
+                                <a href="#" data-tabid="#methods" data-anchor="#method_aboutOrigin" data-tablink="aboutOrigin">aboutOrigin</a>
+
+                                    <span class="flag static">static</span>
+                            </li>
+                            <li class="index-item method">
+                                <a href="#" data-tabid="#methods" data-anchor="#method_average" data-tablink="average">average</a>
+
+                                    <span class="flag static">static</span>
+                            </li>
+                            <li class="index-item method private">
+                                <a href="#" data-tabid="#methods" data-anchor="#method_build" data-tablink="build">build</a>
+
+                                    <span class="flag static">static</span>
+                            </li>
+                            <li class="index-item method">
+                                <a href="#" data-tabid="#methods" data-anchor="#method_compose" data-tablink="compose">compose</a>
+
+                                    <span class="flag static">static</span>
+                            </li>
+                            <li class="index-item method">
+                                <a href="#" data-tabid="#methods" data-anchor="#method_composeMany" data-tablink="composeMany">composeMany</a>
+
+                                    <span class="flag static">static</span>
+                            </li>
+                            <li class="index-item method">
+                                <a href="#" data-tabid="#methods" data-anchor="#method_equals" data-tablink="equals">equals</a>
+
+                                    <span class="flag static">static</span>
+                            </li>
+                            <li class="index-item method">
+                                <a href="#" data-tabid="#methods" data-anchor="#method_getTranslate" data-tablink="getTranslate">getTranslate</a>
+
+                                    <span class="flag static">static</span>
+                            </li>
+                            <li class="index-item method private">
+                                <a href="#" data-tabid="#methods" data-anchor="#method_interpret" data-tablink="interpret">interpret</a>
+
+                                    <span class="flag static">static</span>
+                            </li>
+                            <li class="index-item method">
+                                <a href="#" data-tabid="#methods" data-anchor="#method_inverse" data-tablink="inverse">inverse</a>
+
+                                    <span class="flag static">static</span>
+                            </li>
+                            <li class="index-item method">
+                                <a href="#" data-tabid="#methods" data-anchor="#method_moveThen" data-tablink="moveThen">moveThen</a>
+
+                                    <span class="flag static">static</span>
+                            </li>
+                            <li class="index-item method">
+                                <a href="#" data-tabid="#methods" data-anchor="#method_notEquals" data-tablink="notEquals">notEquals</a>
+
+                                    <span class="flag static">static</span>
+                            </li>
+                            <li class="index-item method">
+                                <a href="#" data-tabid="#methods" data-anchor="#method_perspective" data-tablink="perspective">perspective</a>
+
+                                    <span class="flag static">static</span>
+                            </li>
+                            <li class="index-item method">
+                                <a href="#" data-tabid="#methods" data-anchor="#method_rotateAxis" data-tablink="rotateAxis">rotateAxis</a>
+
+                                    <span class="flag static">static</span>
+                            </li>
+                            <li class="index-item method">
+                                <a href="#" data-tabid="#methods" data-anchor="#method_rotateX" data-tablink="rotateX">rotateX</a>
+
+                                    <span class="flag static">static</span>
+                            </li>
+                            <li class="index-item method">
+                                <a href="#" data-tabid="#methods" data-anchor="#method_rotateX" data-tablink="rotateX">rotateX</a>
+
+                                    <span class="flag static">static</span>
+                            </li>
+                            <li class="index-item method">
+                                <a href="#" data-tabid="#methods" data-anchor="#method_rotateY" data-tablink="rotateY">rotateY</a>
+
+                                    <span class="flag static">static</span>
+                            </li>
+                            <li class="index-item method">
+                                <a href="#" data-tabid="#methods" data-anchor="#method_scale" data-tablink="scale">scale</a>
+
+                                    <span class="flag static">static</span>
+                            </li>
+                            <li class="index-item method">
+                                <a href="#" data-tabid="#methods" data-anchor="#method_scaleX" data-tablink="scaleX">scaleX</a>
+
+                                    <span class="flag static">static</span>
+                            </li>
+                            <li class="index-item method">
+                                <a href="#" data-tabid="#methods" data-anchor="#method_scaleY" data-tablink="scaleY">scaleY</a>
+
+                                    <span class="flag static">static</span>
+                            </li>
+                            <li class="index-item method">
+                                <a href="#" data-tabid="#methods" data-anchor="#method_scaleZ" data-tablink="scaleZ">scaleZ</a>
+
+                                    <span class="flag static">static</span>
+                            </li>
+                            <li class="index-item method">
+                                <a href="#" data-tabid="#methods" data-anchor="#method_skewX" data-tablink="skewX">skewX</a>
+
+                                    <span class="flag static">static</span>
+                            </li>
+                            <li class="index-item method">
+                                <a href="#" data-tabid="#methods" data-anchor="#method_skewY" data-tablink="skewY">skewY</a>
+
+                                    <span class="flag static">static</span>
+                            </li>
+                            <li class="index-item method">
+                                <a href="#" data-tabid="#methods" data-anchor="#method_thenMove" data-tablink="thenMove">thenMove</a>
+
+                                    <span class="flag static">static</span>
+                            </li>
+                            <li class="index-item method">
+                                <a href="#" data-tabid="#methods" data-anchor="#method_thenScale" data-tablink="thenScale">thenScale</a>
+
+                                    <span class="flag static">static</span>
+                            </li>
+                            <li class="index-item method">
+                                <a href="#" data-tabid="#methods" data-anchor="#method_translate" data-tablink="translate">translate</a>
+
+                                    <span class="flag static">static</span>
+                            </li>
+                            <li class="index-item method">
+                                <a href="#" data-tabid="#methods" data-anchor="#method_translateX" data-tablink="translateX">translateX</a>
+
+                                    <span class="flag static">static</span>
+                            </li>
+                            <li class="index-item method">
+                                <a href="#" data-tabid="#methods" data-anchor="#method_translateY" data-tablink="translateY">translateY</a>
+
+                                    <span class="flag static">static</span>
+                            </li>
+                            <li class="index-item method">
+                                <a href="#" data-tabid="#methods" data-anchor="#method_translateZ" data-tablink="translateZ">translateZ</a>
+
+                                    <span class="flag static">static</span>
+                            </li>
+                            <li class="index-item method">
+                                <a href="#" data-tabid="#methods" data-anchor="#method_transpose" data-tablink="transpose">transpose</a>
+
+                                    <span class="flag static">static</span>
+                            </li>
+                    </ul>
+                </div>
+
+                <div class="index-section properties">
+                    <h3>Properties</h3>
+
+                    <ul class="index-list properties">
+                            <li class="index-item property">
+                                <a href="#" data-tabid="#properties" data-anchor="#property_behind" data-tablink="behind">behind</a>
+
+                                    <span class="flag static">static</span>
+                            </li>
+                            <li class="index-item property">
+                                <a href="#" data-tabid="#properties" data-anchor="#property_identity" data-tablink="identity">identity</a>
+
+                                    <span class="flag static">static</span>
+                            </li>
+                            <li class="index-item property">
+                                <a href="#" data-tabid="#properties" data-anchor="#property_inFront" data-tablink="inFront">inFront</a>
+
+                                    <span class="flag static">static</span>
+                            </li>
+                    </ul>
+                </div>
+
+
+        </div>
+
+            <div id="methods" class="tab-pane">
+                <h2 class="off-left">Methods</h2>
+
+                    <div id="method_aboutOrigin" class="method item">
+                        <h3 class="name"><code>aboutOrigin</code></h3>
+                    
+                            <div class="args">
+                                <span class="paren">(</span><ul class="args-list inline commas">
+                                    <li class="arg">
+                                            <code>v</code>
+                                    </li>
+                                    <li class="arg">
+                                            <code>t</code>
+                                    </li>
+                                </ul><span class="paren">)</span>
+                            </div>
+                    
+                            <span class="returns-inline">
+                                <span class="type"><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array" class="crosslink external" target="_blank">Array</a></span>
+                            </span>
+                    
+                    
+                    
+                    
+                            <span class="flag static">static</span>
+                    
+                    
+                    
+                        <div class="meta">
+                                    <p>
+                                    <!---->
+                                    <!--Defined in-->
+                                    <!---->
+                            <!---->
+                            <!--<a href="../files/src_core_Transform.js.html#l382"><code>src&#x2F;core&#x2F;Transform.js:382</code></a>-->
+                            <!---->
+                            </p>
+                    
+                    
+                    
+                        </div>
+                    
+                        <div class="description">
+                            <p>Return a Transform which represents a Transform applied about an origin point.
+                    Useful for rotating and scaling relative to an origin.</p>
+                    
+                        </div>
+                    
+                            <div class="params">
+                                <h4>Parameters:</h4>
+                    
+                                <ul class="params-list">
+                                    <li class="param">
+                                            <code class="param-name">v</code>
+                                            <span class="type"><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Number" class="crosslink external" target="_blank">Number[]</a></span>
+                    
+                    
+                                        <div class="param-description">
+                                            <p>Origin point [x,y,z]</p>
+                    
+                                        </div>
+                    
+                                    </li>
+                                    <li class="param">
+                                            <code class="param-name">t</code>
+                                            <span class="type">Transform</span>
+                    
+                    
+                                        <div class="param-description">
+                                            <p>Transform</p>
+                    
+                                        </div>
+                    
+                                    </li>
+                                </ul>
+                            </div>
+                    
+                            <div class="returns">
+                                <h4>Returns:</h4>
+                    
+                                <div class="returns-description">
+                                            <span class="type"><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array" class="crosslink external" target="_blank">Array</a></span>:
+                                </div>
+                            </div>
+                    
+                    </div>
+                    <div id="method_average" class="method item">
+                        <h3 class="name"><code>average</code></h3>
+                    
+                            <div class="args">
+                                <span class="paren">(</span><ul class="args-list inline commas">
+                                    <li class="arg">
+                                            <code>M1</code>
+                                    </li>
+                                    <li class="arg">
+                                            <code>M2</code>
+                                    </li>
+                                    <li class="arg">
+                                            <code class="optional">[t=1/2]</code>
+                                    </li>
+                                </ul><span class="paren">)</span>
+                            </div>
+                    
+                            <span class="returns-inline">
+                                <span class="type"><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array" class="crosslink external" target="_blank">Array</a></span>
+                            </span>
+                    
+                    
+                    
+                    
+                            <span class="flag static">static</span>
+                    
+                    
+                    
+                        <div class="meta">
+                                    <p>
+                                    <!---->
+                                    <!--Defined in-->
+                                    <!---->
+                            <!---->
+                            <!--<a href="../files/src_core_Transform.js.html#l605"><code>src&#x2F;core&#x2F;Transform.js:605</code></a>-->
+                            <!---->
+                            </p>
+                    
+                    
+                    
+                        </div>
+                    
+                        <div class="description">
+                            <p>Weighted average between two matrices by averaging their
+                    translation, rotation, scale, skew components.
+                    f(M1,M2,t) = (1 - t) * M1 + t * M2</p>
+                    
+                        </div>
+                    
+                            <div class="params">
+                                <h4>Parameters:</h4>
+                    
+                                <ul class="params-list">
+                                    <li class="param">
+                                            <code class="param-name">M1</code>
+                                            <span class="type">Transform</span>
+                    
+                    
+                                        <div class="param-description">
+                                            <p>M1 = f(M1,M2,0) Transform</p>
+                    
+                                        </div>
+                    
+                                    </li>
+                                    <li class="param">
+                                            <code class="param-name">M2</code>
+                                            <span class="type">Transform</span>
+                    
+                    
+                                        <div class="param-description">
+                                            <p>M2 = f(M1,M2,1) Transform</p>
+                    
+                                        </div>
+                    
+                                    </li>
+                                    <li class="param">
+                                            <code class="param-name optional">[t=1/2]</code>
+                                            <span class="type"><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Number" class="crosslink external" target="_blank">Number</a></span>
+                                            <span class="flag optional" title="This parameter is optional.">optional</span>
+                    
+                    
+                                        <div class="param-description">
+                                             
+                                        </div>
+                    
+                                    </li>
+                                </ul>
+                            </div>
+                    
+                            <div class="returns">
+                                <h4>Returns:</h4>
+                    
+                                <div class="returns-description">
+                                            <span class="type"><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array" class="crosslink external" target="_blank">Array</a></span>:
+                                </div>
+                            </div>
+                    
+                    </div>
+                    <div id="method_build" class="method item private">
+                        <h3 class="name"><code>build</code></h3>
+                    
+                            <div class="args">
+                                <span class="paren">(</span><ul class="args-list inline commas">
+                                    <li class="arg">
+                                            <code>spec</code>
+                                    </li>
+                                </ul><span class="paren">)</span>
+                            </div>
+                    
+                            <span class="returns-inline">
+                                <span class="type"><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array" class="crosslink external" target="_blank">Array</a></span>
+                            </span>
+                    
+                    
+                            <span class="flag private">private</span>
+                    
+                    
+                            <span class="flag static">static</span>
+                    
+                    
+                    
+                        <div class="meta">
+                                    <p>
+                                    <!---->
+                                    <!--Defined in-->
+                                    <!---->
+                            <!---->
+                            <!--<a href="../files/src_core_Transform.js.html#l585"><code>src&#x2F;core&#x2F;Transform.js:585</code></a>-->
+                            <!---->
+                            </p>
+                    
+                    
+                    
+                        </div>
+                    
+                        <div class="description">
+                            <p>Compose .translate, .rotate, .scale and .skew components into a Transform matrix.
+                    The "inverse" of .interpret.</p>
+                    
+                        </div>
+                    
+                            <div class="params">
+                                <h4>Parameters:</h4>
+                    
+                                <ul class="params-list">
+                                    <li class="param">
+                                            <code class="param-name">spec</code>
+                                            <span class="type"><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object" class="crosslink external" target="_blank">Object</a></span>
+                    
+                    
+                                        <div class="param-description">
+                                            <p>Object with keys "translate, rotate, scale, skew" and their vector values</p>
+                    
+                                        </div>
+                    
+                                    </li>
+                                </ul>
+                            </div>
+                    
+                            <div class="returns">
+                                <h4>Returns:</h4>
+                    
+                                <div class="returns-description">
+                                            <span class="type"><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array" class="crosslink external" target="_blank">Array</a></span>:
+                                </div>
+                            </div>
+                    
+                    </div>
+                    <div id="method_compose" class="method item">
+                        <h3 class="name"><code>compose</code></h3>
+                    
+                            <div class="args">
+                                <span class="paren">(</span><ul class="args-list inline commas">
+                                    <li class="arg">
+                                            <code>t1</code>
+                                    </li>
+                                    <li class="arg">
+                                            <code>t2</code>
+                                    </li>
+                                </ul><span class="paren">)</span>
+                            </div>
+                    
+                            <span class="returns-inline">
+                                <span class="type"><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array" class="crosslink external" target="_blank">Array</a></span>
+                            </span>
+                    
+                    
+                    
+                    
+                            <span class="flag static">static</span>
+                    
+                    
+                    
+                        <div class="meta">
+                                    <p>
+                                    <!---->
+                                    <!--Defined in-->
+                                    <!---->
+                            <!---->
+                            <!--<a href="../files/src_core_Transform.js.html#l85"><code>src&#x2F;core&#x2F;Transform.js:85</code></a>-->
+                            <!---->
+                            </p>
+                    
+                    
+                    
+                        </div>
+                    
+                        <div class="description">
+                            <p>Compose Transform arrays via matrix multiplication.</p>
+                    
+                        </div>
+                    
+                            <div class="params">
+                                <h4>Parameters:</h4>
+                    
+                                <ul class="params-list">
+                                    <li class="param">
+                                            <code class="param-name">t1</code>
+                                            <span class="type">Transform</span>
+                    
+                    
+                                        <div class="param-description">
+                                            <p>Left Transform</p>
+                    
+                                        </div>
+                    
+                                    </li>
+                                    <li class="param">
+                                            <code class="param-name">t2</code>
+                                            <span class="type">Transform</span>
+                    
+                    
+                                        <div class="param-description">
+                                            <p>Right Transform</p>
+                    
+                                        </div>
+                    
+                                    </li>
+                                </ul>
+                            </div>
+                    
+                            <div class="returns">
+                                <h4>Returns:</h4>
+                    
+                                <div class="returns-description">
+                                            <span class="type"><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array" class="crosslink external" target="_blank">Array</a></span>:
+                                </div>
+                            </div>
+                    
+                    </div>
+                    <div id="method_composeMany" class="method item">
+                        <h3 class="name"><code>composeMany</code></h3>
+                    
+                            <div class="args">
+                                <span class="paren">(</span><ul class="args-list inline commas">
+                                    <li class="arg">
+                                            <code>Transform</code>
+                                    </li>
+                                </ul><span class="paren">)</span>
+                            </div>
+                    
+                            <span class="returns-inline">
+                                <span class="type"><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array" class="crosslink external" target="_blank">Array</a></span>
+                            </span>
+                    
+                    
+                    
+                    
+                            <span class="flag static">static</span>
+                    
+                    
+                    
+                        <div class="meta">
+                                    <p>
+                                    <!---->
+                                    <!--Defined in-->
+                                    <!---->
+                            <!---->
+                            <!--<a href="../files/src_core_Transform.js.html#l117"><code>src&#x2F;core&#x2F;Transform.js:117</code></a>-->
+                            <!---->
+                            </p>
+                    
+                    
+                    
+                        </div>
+                    
+                        <div class="description">
+                            <p>Convenience method to Compose several Transform arrays.</p>
+                    
+                        </div>
+                    
+                            <div class="params">
+                                <h4>Parameters:</h4>
+                    
+                                <ul class="params-list">
+                                    <li class="param">
+                                            <code class="param-name">Transform</code>
+                                            <span class="type">...Transform</span>
+                    
+                    
+                                        <div class="param-description">
+                                            <p>arrays</p>
+                    
+                                        </div>
+                    
+                                    </li>
+                                </ul>
+                            </div>
+                    
+                            <div class="returns">
+                                <h4>Returns:</h4>
+                    
+                                <div class="returns-description">
+                                            <span class="type"><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array" class="crosslink external" target="_blank">Array</a></span>:
+                                </div>
+                            </div>
+                    
+                    </div>
+                    <div id="method_equals" class="method item">
+                        <h3 class="name"><code>equals</code></h3>
+                    
+                            <div class="args">
+                                <span class="paren">(</span><ul class="args-list inline commas">
+                                    <li class="arg">
+                                            <code>a</code>
+                                    </li>
+                                    <li class="arg">
+                                            <code>b</code>
+                                    </li>
+                                </ul><span class="paren">)</span>
+                            </div>
+                    
+                            <span class="returns-inline">
+                                <span class="type"><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Boolean" class="crosslink external" target="_blank">Boolean</a></span>
+                            </span>
+                    
+                    
+                    
+                    
+                            <span class="flag static">static</span>
+                    
+                    
+                    
+                        <div class="meta">
+                                    <p>
+                                    <!---->
+                                    <!--Defined in-->
+                                    <!---->
+                            <!---->
+                            <!--<a href="../files/src_core_Transform.js.html#l639"><code>src&#x2F;core&#x2F;Transform.js:639</code></a>-->
+                            <!---->
+                            </p>
+                    
+                    
+                    
+                        </div>
+                    
+                        <div class="description">
+                            <p>Determine if two Transforms are component-wise equal.</p>
+                    
+                        </div>
+                    
+                            <div class="params">
+                                <h4>Parameters:</h4>
+                    
+                                <ul class="params-list">
+                                    <li class="param">
+                                            <code class="param-name">a</code>
+                                            <span class="type">Transform</span>
+                    
+                    
+                                        <div class="param-description">
+                                            <p>Transform</p>
+                    
+                                        </div>
+                    
+                                    </li>
+                                    <li class="param">
+                                            <code class="param-name">b</code>
+                                            <span class="type">Transform</span>
+                    
+                    
+                                        <div class="param-description">
+                                            <p>Transform</p>
+                    
+                                        </div>
+                    
+                                    </li>
+                                </ul>
+                            </div>
+                    
+                            <div class="returns">
+                                <h4>Returns:</h4>
+                    
+                                <div class="returns-description">
+                                            <span class="type"><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Boolean" class="crosslink external" target="_blank">Boolean</a></span>:
+                                </div>
+                            </div>
+                    
+                    </div>
+                    <div id="method_getTranslate" class="method item">
+                        <h3 class="name"><code>getTranslate</code></h3>
+                    
+                            <div class="args">
+                                <span class="paren">(</span><ul class="args-list inline commas">
+                                    <li class="arg">
+                                            <code>t</code>
+                                    </li>
+                                </ul><span class="paren">)</span>
+                            </div>
+                    
+                            <span class="returns-inline">
+                                <span class="type"><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Number" class="crosslink external" target="_blank">Number[]</a></span>
+                            </span>
+                    
+                    
+                    
+                    
+                            <span class="flag static">static</span>
+                    
+                    
+                    
+                        <div class="meta">
+                                    <p>
+                                    <!---->
+                                    <!--Defined in-->
+                                    <!---->
+                            <!---->
+                            <!--<a href="../files/src_core_Transform.js.html#l412"><code>src&#x2F;core&#x2F;Transform.js:412</code></a>-->
+                            <!---->
+                            </p>
+                    
+                    
+                    
+                        </div>
+                    
+                        <div class="description">
+                            <p>Return translation vector component of the given Transform.</p>
+                    
+                        </div>
+                    
+                            <div class="params">
+                                <h4>Parameters:</h4>
+                    
+                                <ul class="params-list">
+                                    <li class="param">
+                                            <code class="param-name">t</code>
+                                            <span class="type">Transform</span>
+                    
+                    
+                                        <div class="param-description">
+                                            <p>Transform</p>
+                    
+                                        </div>
+                    
+                                    </li>
+                                </ul>
+                            </div>
+                    
+                            <div class="returns">
+                                <h4>Returns:</h4>
+                    
+                                <div class="returns-description">
+                                            <span class="type"><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Number" class="crosslink external" target="_blank">Number[]</a></span>:
+                                </div>
+                            </div>
+                    
+                    </div>
+                    <div id="method_interpret" class="method item private">
+                        <h3 class="name"><code>interpret</code></h3>
+                    
+                            <div class="args">
+                                <span class="paren">(</span><ul class="args-list inline commas">
+                                    <li class="arg">
+                                            <code>t</code>
+                                    </li>
+                                </ul><span class="paren">)</span>
+                            </div>
+                    
+                            <span class="returns-inline">
+                                <span class="type"><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object" class="crosslink external" target="_blank">Object</a></span>
+                            </span>
+                    
+                    
+                            <span class="flag private">private</span>
+                    
+                    
+                            <span class="flag static">static</span>
+                    
+                    
+                    
+                        <div class="meta">
+                                    <p>
+                                    <!---->
+                                    <!--Defined in-->
+                                    <!---->
+                            <!---->
+                            <!--<a href="../files/src_core_Transform.js.html#l482"><code>src&#x2F;core&#x2F;Transform.js:482</code></a>-->
+                            <!---->
+                            </p>
+                    
+                    
+                    
+                        </div>
+                    
+                        <div class="description">
+                            <p>Decompose Transform into separate <code>translate</code>, <code>rotate</code>, <code>scale</code> and <code>skew</code> components.</p>
+                    
+                        </div>
+                    
+                            <div class="params">
+                                <h4>Parameters:</h4>
+                    
+                                <ul class="params-list">
+                                    <li class="param">
+                                            <code class="param-name">t</code>
+                                            <span class="type">Transform</span>
+                    
+                    
+                                        <div class="param-description">
+                                            <p>Transform</p>
+                    
+                                        </div>
+                    
+                                    </li>
+                                </ul>
+                            </div>
+                    
+                            <div class="returns">
+                                <h4>Returns:</h4>
+                    
+                                <div class="returns-description">
+                                            <span class="type"><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object" class="crosslink external" target="_blank">Object</a></span>:
+                                </div>
+                            </div>
+                    
+                    </div>
+                    <div id="method_inverse" class="method item">
+                        <h3 class="name"><code>inverse</code></h3>
+                    
+                            <div class="args">
+                                <span class="paren">(</span><ul class="args-list inline commas">
+                                    <li class="arg">
+                                            <code>t</code>
+                                    </li>
+                                </ul><span class="paren">)</span>
+                            </div>
+                    
+                            <span class="returns-inline">
+                                <span class="type"><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array" class="crosslink external" target="_blank">Array</a></span>
+                            </span>
+                    
+                    
+                    
+                    
+                            <span class="flag static">static</span>
+                    
+                    
+                    
+                        <div class="meta">
+                                    <p>
+                                    <!---->
+                                    <!--Defined in-->
+                                    <!---->
+                            <!---->
+                            <!--<a href="../files/src_core_Transform.js.html#l424"><code>src&#x2F;core&#x2F;Transform.js:424</code></a>-->
+                            <!---->
+                            </p>
+                    
+                    
+                    
+                        </div>
+                    
+                        <div class="description">
+                            <p>Return inverse Transform for given Transform.
+                    Note: will provide incorrect results if Transform is not invertible.</p>
+                    
+                        </div>
+                    
+                            <div class="params">
+                                <h4>Parameters:</h4>
+                    
+                                <ul class="params-list">
+                                    <li class="param">
+                                            <code class="param-name">t</code>
+                                            <span class="type">Transform</span>
+                    
+                    
+                                        <div class="param-description">
+                                            <p>Transform</p>
+                    
+                                        </div>
+                    
+                                    </li>
+                                </ul>
+                            </div>
+                    
+                            <div class="returns">
+                                <h4>Returns:</h4>
+                    
+                                <div class="returns-description">
+                                            <span class="type"><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array" class="crosslink external" target="_blank">Array</a></span>:
+                                </div>
+                            </div>
+                    
+                    </div>
+                    <div id="method_moveThen" class="method item">
+                        <h3 class="name"><code>moveThen</code></h3>
+                    
+                            <div class="args">
+                                <span class="paren">(</span><ul class="args-list inline commas">
+                                    <li class="arg">
+                                            <code>v</code>
+                                    </li>
+                                    <li class="arg">
+                                            <code>t</code>
+                                    </li>
+                                </ul><span class="paren">)</span>
+                            </div>
+                    
+                            <span class="returns-inline">
+                                <span class="type"><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array" class="crosslink external" target="_blank">Array</a></span>
+                            </span>
+                    
+                    
+                    
+                    
+                            <span class="flag static">static</span>
+                    
+                    
+                    
+                        <div class="meta">
+                                    <p>
+                                    <!---->
+                                    <!--Defined in-->
+                                    <!---->
+                            <!---->
+                            <!--<a href="../files/src_core_Transform.js.html#l150"><code>src&#x2F;core&#x2F;Transform.js:150</code></a>-->
+                            <!---->
+                            </p>
+                    
+                    
+                    
+                        </div>
+                    
+                        <div class="description">
+                            <p>Translate a Transform before the Transform is applied.</p>
+                    
+                        </div>
+                    
+                            <div class="params">
+                                <h4>Parameters:</h4>
+                    
+                                <ul class="params-list">
+                                    <li class="param">
+                                            <code class="param-name">v</code>
+                                            <span class="type"><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Number" class="crosslink external" target="_blank">Number[]</a></span>
+                    
+                    
+                                        <div class="param-description">
+                                            <p>Array of [x,y,z] translation components</p>
+                    
+                                        </div>
+                    
+                                    </li>
+                                    <li class="param">
+                                            <code class="param-name">t</code>
+                                            <span class="type">Transform</span>
+                    
+                    
+                                        <div class="param-description">
+                                            <p>Transform</p>
+                    
+                                        </div>
+                    
+                                    </li>
+                                </ul>
+                            </div>
+                    
+                            <div class="returns">
+                                <h4>Returns:</h4>
+                    
+                                <div class="returns-description">
+                                            <span class="type"><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array" class="crosslink external" target="_blank">Array</a></span>:
+                                </div>
+                            </div>
+                    
+                    </div>
+                    <div id="method_notEquals" class="method item">
+                        <h3 class="name"><code>notEquals</code></h3>
+                    
+                            <div class="args">
+                                <span class="paren">(</span><ul class="args-list inline commas">
+                                    <li class="arg">
+                                            <code>a</code>
+                                    </li>
+                                    <li class="arg">
+                                            <code>b</code>
+                                    </li>
+                                </ul><span class="paren">)</span>
+                            </div>
+                    
+                            <span class="returns-inline">
+                                <span class="type"><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Boolean" class="crosslink external" target="_blank">Boolean</a></span>
+                            </span>
+                    
+                    
+                    
+                    
+                            <span class="flag static">static</span>
+                    
+                    
+                    
+                        <div class="meta">
+                                    <p>
+                                    <!---->
+                                    <!--Defined in-->
+                                    <!---->
+                            <!---->
+                            <!--<a href="../files/src_core_Transform.js.html#l652"><code>src&#x2F;core&#x2F;Transform.js:652</code></a>-->
+                            <!---->
+                            </p>
+                    
+                    
+                    
+                        </div>
+                    
+                        <div class="description">
+                            <p>Determine if two Transforms are component-wise unequal</p>
+                    
+                        </div>
+                    
+                            <div class="params">
+                                <h4>Parameters:</h4>
+                    
+                                <ul class="params-list">
+                                    <li class="param">
+                                            <code class="param-name">a</code>
+                                            <span class="type">Transform</span>
+                    
+                    
+                                        <div class="param-description">
+                                            <p>Transform</p>
+                    
+                                        </div>
+                    
+                                    </li>
+                                    <li class="param">
+                                            <code class="param-name">b</code>
+                                            <span class="type">Transform</span>
+                    
+                    
+                                        <div class="param-description">
+                                            <p>Transform</p>
+                    
+                                        </div>
+                    
+                                    </li>
+                                </ul>
+                            </div>
+                    
+                            <div class="returns">
+                                <h4>Returns:</h4>
+                    
+                                <div class="returns-description">
+                                            <span class="type"><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Boolean" class="crosslink external" target="_blank">Boolean</a></span>:
+                                </div>
+                            </div>
+                    
+                    </div>
+                    <div id="method_perspective" class="method item">
+                        <h3 class="name"><code>perspective</code></h3>
+                    
+                            <div class="args">
+                                <span class="paren">(</span><ul class="args-list inline commas">
+                                    <li class="arg">
+                                            <code>focusZ</code>
+                                    </li>
+                                </ul><span class="paren">)</span>
+                            </div>
+                    
+                            <span class="returns-inline">
+                                <span class="type"><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array" class="crosslink external" target="_blank">Array</a></span>
+                            </span>
+                    
+                    
+                    
+                    
+                            <span class="flag static">static</span>
+                    
+                    
+                    
+                        <div class="meta">
+                                    <p>
+                                    <!---->
+                                    <!--Defined in-->
+                                    <!---->
+                            <!---->
+                            <!--<a href="../files/src_core_Transform.js.html#l400"><code>src&#x2F;core&#x2F;Transform.js:400</code></a>-->
+                            <!---->
+                            </p>
+                    
+                    
+                    
+                        </div>
+                    
+                        <div class="description">
+                            <p>Returns a perspective Transform.</p>
+                    
+                        </div>
+                    
+                            <div class="params">
+                                <h4>Parameters:</h4>
+                    
+                                <ul class="params-list">
+                                    <li class="param">
+                                            <code class="param-name">focusZ</code>
+                                            <span class="type"><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Number" class="crosslink external" target="_blank">Number</a></span>
+                    
+                    
+                                        <div class="param-description">
+                                            <p>z-depth of focal point</p>
+                    
+                                        </div>
+                    
+                                    </li>
+                                </ul>
+                            </div>
+                    
+                            <div class="returns">
+                                <h4>Returns:</h4>
+                    
+                                <div class="returns-description">
+                                            <span class="type"><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array" class="crosslink external" target="_blank">Array</a></span>:
+                                </div>
+                            </div>
+                    
+                    </div>
+                    <div id="method_rotateAxis" class="method item">
+                        <h3 class="name"><code>rotateAxis</code></h3>
+                    
+                            <div class="args">
+                                <span class="paren">(</span><ul class="args-list inline commas">
+                                    <li class="arg">
+                                            <code>v</code>
+                                    </li>
+                                    <li class="arg">
+                                            <code>angle</code>
+                                    </li>
+                                </ul><span class="paren">)</span>
+                            </div>
+                    
+                            <span class="returns-inline">
+                                <span class="type"><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array" class="crosslink external" target="_blank">Array</a></span>
+                            </span>
+                    
+                    
+                    
+                    
+                            <span class="flag static">static</span>
+                    
+                    
+                    
+                        <div class="meta">
+                                    <p>
+                                    <!---->
+                                    <!--Defined in-->
+                                    <!---->
+                            <!---->
+                            <!--<a href="../files/src_core_Transform.js.html#l350"><code>src&#x2F;core&#x2F;Transform.js:350</code></a>-->
+                            <!---->
+                            </p>
+                    
+                    
+                    
+                        </div>
+                    
+                        <div class="description">
+                            <p>Return a Transform which represents an axis-angle rotation.</p>
+                    
+                        </div>
+                    
+                            <div class="params">
+                                <h4>Parameters:</h4>
+                    
+                                <ul class="params-list">
+                                    <li class="param">
+                                            <code class="param-name">v</code>
+                                            <span class="type"><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Number" class="crosslink external" target="_blank">Number[]</a></span>
+                    
+                    
+                                        <div class="param-description">
+                                            <p>Unit vector representing the axis to rotate about</p>
+                    
+                                        </div>
+                    
+                                    </li>
+                                    <li class="param">
+                                            <code class="param-name">angle</code>
+                                            <span class="type"><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Number" class="crosslink external" target="_blank">Number</a></span>
+                    
+                    
+                                        <div class="param-description">
+                                            <p>Radians to rotate clockwise about the axis</p>
+                    
+                                        </div>
+                    
+                                    </li>
+                                </ul>
+                            </div>
+                    
+                            <div class="returns">
+                                <h4>Returns:</h4>
+                    
+                                <div class="returns-description">
+                                            <span class="type"><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array" class="crosslink external" target="_blank">Array</a></span>:
+                                </div>
+                            </div>
+                    
+                    </div>
+                    <div id="method_rotateX" class="method item">
+                        <h3 class="name"><code>rotateX</code></h3>
+                    
+                            <div class="args">
+                                <span class="paren">(</span><ul class="args-list inline commas">
+                                    <li class="arg">
+                                            <code>angle</code>
+                                    </li>
+                                </ul><span class="paren">)</span>
+                            </div>
+                    
+                            <span class="returns-inline">
+                                <span class="type"><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array" class="crosslink external" target="_blank">Array</a></span>
+                            </span>
+                    
+                    
+                    
+                    
+                            <span class="flag static">static</span>
+                    
+                    
+                    
+                        <div class="meta">
+                                    <p>
+                                    <!---->
+                                    <!--Defined in-->
+                                    <!---->
+                            <!---->
+                            <!--<a href="../files/src_core_Transform.js.html#l284"><code>src&#x2F;core&#x2F;Transform.js:284</code></a>-->
+                            <!---->
+                            </p>
+                    
+                    
+                    
+                        </div>
+                    
+                        <div class="description">
+                            <p>Return a Transform representing a clockwise rotation around the x-axis.</p>
+                    
+                        </div>
+                    
+                            <div class="params">
+                                <h4>Parameters:</h4>
+                    
+                                <ul class="params-list">
+                                    <li class="param">
+                                            <code class="param-name">angle</code>
+                                            <span class="type"><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Number" class="crosslink external" target="_blank">Number</a></span>
+                    
+                    
+                                        <div class="param-description">
+                                            <p>Angle in radians</p>
+                    
+                                        </div>
+                    
+                                    </li>
+                                </ul>
+                            </div>
+                    
+                            <div class="returns">
+                                <h4>Returns:</h4>
+                    
+                                <div class="returns-description">
+                                            <span class="type"><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array" class="crosslink external" target="_blank">Array</a></span>:
+                                </div>
+                            </div>
+                    
+                    </div>
+                    <div id="method_rotateX" class="method item">
+                        <h3 class="name"><code>rotateX</code></h3>
+                    
+                            <div class="args">
+                                <span class="paren">(</span><ul class="args-list inline commas">
+                                    <li class="arg">
+                                            <code>angle</code>
+                                    </li>
+                                </ul><span class="paren">)</span>
+                            </div>
+                    
+                            <span class="returns-inline">
+                                <span class="type"><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array" class="crosslink external" target="_blank">Array</a></span>
+                            </span>
+                    
+                    
+                    
+                    
+                            <span class="flag static">static</span>
+                    
+                    
+                    
+                        <div class="meta">
+                                    <p>
+                                    <!---->
+                                    <!--Defined in-->
+                                    <!---->
+                            <!---->
+                            <!--<a href="../files/src_core_Transform.js.html#l312"><code>src&#x2F;core&#x2F;Transform.js:312</code></a>-->
+                            <!---->
+                            </p>
+                    
+                    
+                    
+                        </div>
+                    
+                        <div class="description">
+                            <p>Return a Transform representing a clockwise rotation around the z-axis.</p>
+                    
+                        </div>
+                    
+                            <div class="params">
+                                <h4>Parameters:</h4>
+                    
+                                <ul class="params-list">
+                                    <li class="param">
+                                            <code class="param-name">angle</code>
+                                            <span class="type"><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Number" class="crosslink external" target="_blank">Number</a></span>
+                    
+                    
+                                        <div class="param-description">
+                                            <p>Angle in radians</p>
+                    
+                                        </div>
+                    
+                                    </li>
+                                </ul>
+                            </div>
+                    
+                            <div class="returns">
+                                <h4>Returns:</h4>
+                    
+                                <div class="returns-description">
+                                            <span class="type"><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array" class="crosslink external" target="_blank">Array</a></span>:
+                                </div>
+                            </div>
+                    
+                    </div>
+                    <div id="method_rotateY" class="method item">
+                        <h3 class="name"><code>rotateY</code></h3>
+                    
+                            <div class="args">
+                                <span class="paren">(</span><ul class="args-list inline commas">
+                                    <li class="arg">
+                                            <code>angle</code>
+                                    </li>
+                                </ul><span class="paren">)</span>
+                            </div>
+                    
+                            <span class="returns-inline">
+                                <span class="type"><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array" class="crosslink external" target="_blank">Array</a></span>
+                            </span>
+                    
+                    
+                    
+                    
+                            <span class="flag static">static</span>
+                    
+                    
+                    
+                        <div class="meta">
+                                    <p>
+                                    <!---->
+                                    <!--Defined in-->
+                                    <!---->
+                            <!---->
+                            <!--<a href="../files/src_core_Transform.js.html#l298"><code>src&#x2F;core&#x2F;Transform.js:298</code></a>-->
+                            <!---->
+                            </p>
+                    
+                    
+                    
+                        </div>
+                    
+                        <div class="description">
+                            <p>Return a Transform representing a clockwise rotation around the y-axis.</p>
+                    
+                        </div>
+                    
+                            <div class="params">
+                                <h4>Parameters:</h4>
+                    
+                                <ul class="params-list">
+                                    <li class="param">
+                                            <code class="param-name">angle</code>
+                                            <span class="type"><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Number" class="crosslink external" target="_blank">Number</a></span>
+                    
+                    
+                                        <div class="param-description">
+                                            <p>Angle in radians</p>
+                    
+                                        </div>
+                    
+                                    </li>
+                                </ul>
+                            </div>
+                    
+                            <div class="returns">
+                                <h4>Returns:</h4>
+                    
+                                <div class="returns-description">
+                                            <span class="type"><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array" class="crosslink external" target="_blank">Array</a></span>:
+                                </div>
+                            </div>
+                    
+                    </div>
+                    <div id="method_scale" class="method item">
+                        <h3 class="name"><code>scale</code></h3>
+                    
+                            <div class="args">
+                                <span class="paren">(</span><ul class="args-list inline commas">
+                                    <li class="arg">
+                                            <code>v</code>
+                                    </li>
+                                </ul><span class="paren">)</span>
+                            </div>
+                    
+                            <span class="returns-inline">
+                                <span class="type"><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array" class="crosslink external" target="_blank">Array</a></span>
+                            </span>
+                    
+                    
+                    
+                    
+                            <span class="flag static">static</span>
+                    
+                    
+                    
+                        <div class="meta">
+                                    <p>
+                                    <!---->
+                                    <!--Defined in-->
+                                    <!---->
+                            <!---->
+                            <!--<a href="../files/src_core_Transform.js.html#l215"><code>src&#x2F;core&#x2F;Transform.js:215</code></a>-->
+                            <!---->
+                            </p>
+                    
+                    
+                    
+                        </div>
+                    
+                        <div class="description">
+                            <p>Return a Transform which represents a scaling by specified amounts in each dimension.</p>
+                    
+                        </div>
+                    
+                            <div class="params">
+                                <h4>Parameters:</h4>
+                    
+                                <ul class="params-list">
+                                    <li class="param">
+                                            <code class="param-name">v</code>
+                                            <span class="type"><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Number" class="crosslink external" target="_blank">Number[]</a></span>
+                    
+                    
+                                        <div class="param-description">
+                                            <p>Scale vector [x,y,z]</p>
+                    
+                                        </div>
+                    
+                                    </li>
+                                </ul>
+                            </div>
+                    
+                            <div class="returns">
+                                <h4>Returns:</h4>
+                    
+                                <div class="returns-description">
+                                            <span class="type"><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array" class="crosslink external" target="_blank">Array</a></span>:
+                                </div>
+                            </div>
+                    
+                    </div>
+                    <div id="method_scaleX" class="method item">
+                        <h3 class="name"><code>scaleX</code></h3>
+                    
+                            <div class="args">
+                                <span class="paren">(</span><ul class="args-list inline commas">
+                                    <li class="arg">
+                                            <code>x</code>
+                                    </li>
+                                </ul><span class="paren">)</span>
+                            </div>
+                    
+                    
+                    
+                    
+                    
+                            <span class="flag static">static</span>
+                    
+                    
+                    
+                        <div class="meta">
+                                    <p>
+                                    <!---->
+                                    <!--Defined in-->
+                                    <!---->
+                            <!---->
+                            <!--<a href="../files/src_core_Transform.js.html#l230"><code>src&#x2F;core&#x2F;Transform.js:230</code></a>-->
+                            <!---->
+                            </p>
+                    
+                    
+                    
+                        </div>
+                    
+                        <div class="description">
+                            <p>Return a Transform which represents scaling in the x-direction.</p>
+                    
+                        </div>
+                    
+                            <div class="params">
+                                <h4>Parameters:</h4>
+                    
+                                <ul class="params-list">
+                                    <li class="param">
+                                            <code class="param-name">x</code>
+                                            <span class="type"><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Number" class="crosslink external" target="_blank">Number</a></span>
+                    
+                    
+                                        <div class="param-description">
+                                            <p>Scale amount</p>
+                    
+                                        </div>
+                    
+                                    </li>
+                                </ul>
+                            </div>
+                    
+                    
+                    </div>
+                    <div id="method_scaleY" class="method item">
+                        <h3 class="name"><code>scaleY</code></h3>
+                    
+                            <div class="args">
+                                <span class="paren">(</span><ul class="args-list inline commas">
+                                    <li class="arg">
+                                            <code>y</code>
+                                    </li>
+                                </ul><span class="paren">)</span>
+                            </div>
+                    
+                    
+                    
+                    
+                    
+                            <span class="flag static">static</span>
+                    
+                    
+                    
+                        <div class="meta">
+                                    <p>
+                                    <!---->
+                                    <!--Defined in-->
+                                    <!---->
+                            <!---->
+                            <!--<a href="../files/src_core_Transform.js.html#l241"><code>src&#x2F;core&#x2F;Transform.js:241</code></a>-->
+                            <!---->
+                            </p>
+                    
+                    
+                    
+                        </div>
+                    
+                        <div class="description">
+                            <p>Return a Transform which represents scaling in the y-direction.</p>
+                    
+                        </div>
+                    
+                            <div class="params">
+                                <h4>Parameters:</h4>
+                    
+                                <ul class="params-list">
+                                    <li class="param">
+                                            <code class="param-name">y</code>
+                                            <span class="type"><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Number" class="crosslink external" target="_blank">Number</a></span>
+                    
+                    
+                                        <div class="param-description">
+                                            <p>Scale amount</p>
+                    
+                                        </div>
+                    
+                                    </li>
+                                </ul>
+                            </div>
+                    
+                    
+                    </div>
+                    <div id="method_scaleZ" class="method item">
+                        <h3 class="name"><code>scaleZ</code></h3>
+                    
+                            <div class="args">
+                                <span class="paren">(</span><ul class="args-list inline commas">
+                                    <li class="arg">
+                                            <code>z</code>
+                                    </li>
+                                </ul><span class="paren">)</span>
+                            </div>
+                    
+                    
+                    
+                    
+                    
+                            <span class="flag static">static</span>
+                    
+                    
+                    
+                        <div class="meta">
+                                    <p>
+                                    <!---->
+                                    <!--Defined in-->
+                                    <!---->
+                            <!---->
+                            <!--<a href="../files/src_core_Transform.js.html#l252"><code>src&#x2F;core&#x2F;Transform.js:252</code></a>-->
+                            <!---->
+                            </p>
+                    
+                    
+                    
+                        </div>
+                    
+                        <div class="description">
+                            <p>Return a Transform which represents scaling in the z-direction.</p>
+                    
+                        </div>
+                    
+                            <div class="params">
+                                <h4>Parameters:</h4>
+                    
+                                <ul class="params-list">
+                                    <li class="param">
+                                            <code class="param-name">z</code>
+                                            <span class="type"><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Number" class="crosslink external" target="_blank">Number</a></span>
+                    
+                    
+                                        <div class="param-description">
+                                            <p>Scale amount</p>
+                    
+                                        </div>
+                    
+                                    </li>
+                                </ul>
+                            </div>
+                    
+                    
+                    </div>
+                    <div id="method_skewX" class="method item">
+                        <h3 class="name"><code>skewX</code></h3>
+                    
+                            <div class="args">
+                                <span class="paren">(</span><ul class="args-list inline commas">
+                                    <li class="arg">
+                                            <code>angle</code>
+                                    </li>
+                                </ul><span class="paren">)</span>
+                            </div>
+                    
+                            <span class="returns-inline">
+                                <span class="type"><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array" class="crosslink external" target="_blank">Array</a></span>
+                            </span>
+                    
+                    
+                    
+                    
+                            <span class="flag static">static</span>
+                    
+                    
+                    
+                        <div class="meta">
+                                    <p>
+                                    <!---->
+                                    <!--Defined in-->
+                                    <!---->
+                            <!---->
+                            <!--<a href="../files/src_core_Transform.js.html#l326"><code>src&#x2F;core&#x2F;Transform.js:326</code></a>-->
+                            <!---->
+                            </p>
+                    
+                    
+                    
+                        </div>
+                    
+                        <div class="description">
+                            <p>Return a Transform representation of a skew in the x-direction</p>
+                    
+                        </div>
+                    
+                            <div class="params">
+                                <h4>Parameters:</h4>
+                    
+                                <ul class="params-list">
+                                    <li class="param">
+                                            <code class="param-name">angle</code>
+                                            <span class="type"><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Number" class="crosslink external" target="_blank">Number</a></span>
+                    
+                    
+                                        <div class="param-description">
+                                            <p>The angle between the top and left sides</p>
+                    
+                                        </div>
+                    
+                                    </li>
+                                </ul>
+                            </div>
+                    
+                            <div class="returns">
+                                <h4>Returns:</h4>
+                    
+                                <div class="returns-description">
+                                            <span class="type"><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array" class="crosslink external" target="_blank">Array</a></span>:
+                                </div>
+                            </div>
+                    
+                    </div>
+                    <div id="method_skewY" class="method item">
+                        <h3 class="name"><code>skewY</code></h3>
+                    
+                            <div class="args">
+                                <span class="paren">(</span><ul class="args-list inline commas">
+                                    <li class="arg">
+                                            <code>angle</code>
+                                    </li>
+                                </ul><span class="paren">)</span>
+                            </div>
+                    
+                            <span class="returns-inline">
+                                <span class="type"><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array" class="crosslink external" target="_blank">Array</a></span>
+                            </span>
+                    
+                    
+                    
+                    
+                            <span class="flag static">static</span>
+                    
+                    
+                    
+                        <div class="meta">
+                                    <p>
+                                    <!---->
+                                    <!--Defined in-->
+                                    <!---->
+                            <!---->
+                            <!--<a href="../files/src_core_Transform.js.html#l338"><code>src&#x2F;core&#x2F;Transform.js:338</code></a>-->
+                            <!---->
+                            </p>
+                    
+                    
+                    
+                        </div>
+                    
+                        <div class="description">
+                            <p>Return a Transform representation of a skew in the y-direction</p>
+                    
+                        </div>
+                    
+                            <div class="params">
+                                <h4>Parameters:</h4>
+                    
+                                <ul class="params-list">
+                                    <li class="param">
+                                            <code class="param-name">angle</code>
+                                            <span class="type"><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Number" class="crosslink external" target="_blank">Number</a></span>
+                    
+                    
+                                        <div class="param-description">
+                                            <p>The angle between the bottom and right sides</p>
+                    
+                                        </div>
+                    
+                                    </li>
+                                </ul>
+                            </div>
+                    
+                            <div class="returns">
+                                <h4>Returns:</h4>
+                    
+                                <div class="returns-description">
+                                            <span class="type"><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array" class="crosslink external" target="_blank">Array</a></span>:
+                                </div>
+                            </div>
+                    
+                    </div>
+                    <div id="method_thenMove" class="method item">
+                        <h3 class="name"><code>thenMove</code></h3>
+                    
+                            <div class="args">
+                                <span class="paren">(</span><ul class="args-list inline commas">
+                                    <li class="arg">
+                                            <code>t</code>
+                                    </li>
+                                    <li class="arg">
+                                            <code>v</code>
+                                    </li>
+                                </ul><span class="paren">)</span>
+                            </div>
+                    
+                            <span class="returns-inline">
+                                <span class="type"><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array" class="crosslink external" target="_blank">Array</a></span>
+                            </span>
+                    
+                    
+                    
+                    
+                            <span class="flag static">static</span>
+                    
+                    
+                    
+                        <div class="meta">
+                                    <p>
+                                    <!---->
+                                    <!--Defined in-->
+                                    <!---->
+                            <!---->
+                            <!--<a href="../files/src_core_Transform.js.html#l136"><code>src&#x2F;core&#x2F;Transform.js:136</code></a>-->
+                            <!---->
+                            </p>
+                    
+                    
+                    
+                        </div>
+                    
+                        <div class="description">
+                            <p>Translate a Transform after the Transform is applied.</p>
+                    
+                        </div>
+                    
+                            <div class="params">
+                                <h4>Parameters:</h4>
+                    
+                                <ul class="params-list">
+                                    <li class="param">
+                                            <code class="param-name">t</code>
+                                            <span class="type">Transform</span>
+                    
+                    
+                                        <div class="param-description">
+                                            <p>Transform</p>
+                    
+                                        </div>
+                    
+                                    </li>
+                                    <li class="param">
+                                            <code class="param-name">v</code>
+                                            <span class="type"><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Number" class="crosslink external" target="_blank">Number[]</a></span>
+                    
+                    
+                                        <div class="param-description">
+                                            <p>Array of [x,y,z] translation components</p>
+                    
+                                        </div>
+                    
+                                    </li>
+                                </ul>
+                            </div>
+                    
+                            <div class="returns">
+                                <h4>Returns:</h4>
+                    
+                                <div class="returns-description">
+                                            <span class="type"><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array" class="crosslink external" target="_blank">Array</a></span>:
+                                </div>
+                            </div>
+                    
+                    </div>
+                    <div id="method_thenScale" class="method item">
+                        <h3 class="name"><code>thenScale</code></h3>
+                    
+                            <div class="args">
+                                <span class="paren">(</span><ul class="args-list inline commas">
+                                    <li class="arg">
+                                            <code>t</code>
+                                    </li>
+                                    <li class="arg">
+                                            <code>v</code>
+                                    </li>
+                                </ul><span class="paren">)</span>
+                            </div>
+                    
+                            <span class="returns-inline">
+                                <span class="type"><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array" class="crosslink external" target="_blank">Array</a></span>
+                            </span>
+                    
+                    
+                    
+                    
+                            <span class="flag static">static</span>
+                    
+                    
+                    
+                        <div class="meta">
+                                    <p>
+                                    <!---->
+                                    <!--Defined in-->
+                                    <!---->
+                            <!---->
+                            <!--<a href="../files/src_core_Transform.js.html#l263"><code>src&#x2F;core&#x2F;Transform.js:263</code></a>-->
+                            <!---->
+                            </p>
+                    
+                    
+                    
+                        </div>
+                    
+                        <div class="description">
+                            <p>Scale a Transform after the Transform is applied.</p>
+                    
+                        </div>
+                    
+                            <div class="params">
+                                <h4>Parameters:</h4>
+                    
+                                <ul class="params-list">
+                                    <li class="param">
+                                            <code class="param-name">t</code>
+                                            <span class="type">Transform</span>
+                    
+                    
+                                        <div class="param-description">
+                                            <p>Transform</p>
+                    
+                                        </div>
+                    
+                                    </li>
+                                    <li class="param">
+                                            <code class="param-name">v</code>
+                                            <span class="type"><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Number" class="crosslink external" target="_blank">Number[]</a></span>
+                    
+                    
+                                        <div class="param-description">
+                                            <p>Array of [x,y,z] scale components</p>
+                    
+                                        </div>
+                    
+                                    </li>
+                                </ul>
+                            </div>
+                    
+                            <div class="returns">
+                                <h4>Returns:</h4>
+                    
+                                <div class="returns-description">
+                                            <span class="type"><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array" class="crosslink external" target="_blank">Array</a></span>:
+                                </div>
+                            </div>
+                    
+                    </div>
+                    <div id="method_translate" class="method item">
+                        <h3 class="name"><code>translate</code></h3>
+                    
+                            <div class="args">
+                                <span class="paren">(</span><ul class="args-list inline commas">
+                                    <li class="arg">
+                                            <code>v</code>
+                                    </li>
+                                </ul><span class="paren">)</span>
+                            </div>
+                    
+                            <span class="returns-inline">
+                                <span class="type"><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array" class="crosslink external" target="_blank">Array</a></span>
+                            </span>
+                    
+                    
+                    
+                    
+                            <span class="flag static">static</span>
+                    
+                    
+                    
+                        <div class="meta">
+                                    <p>
+                                    <!---->
+                                    <!--Defined in-->
+                                    <!---->
+                            <!---->
+                            <!--<a href="../files/src_core_Transform.js.html#l167"><code>src&#x2F;core&#x2F;Transform.js:167</code></a>-->
+                            <!---->
+                            </p>
+                    
+                    
+                    
+                        </div>
+                    
+                        <div class="description">
+                            <p>Return a Transform which represents translation by a translation vector.</p>
+                    
+                        </div>
+                    
+                            <div class="params">
+                                <h4>Parameters:</h4>
+                    
+                                <ul class="params-list">
+                                    <li class="param">
+                                            <code class="param-name">v</code>
+                                            <span class="type"><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Number" class="crosslink external" target="_blank">Number[]</a></span>
+                    
+                    
+                                        <div class="param-description">
+                                            <p>Translation vector [x,y,z]</p>
+                    
+                                        </div>
+                    
+                                    </li>
+                                </ul>
+                            </div>
+                    
+                            <div class="returns">
+                                <h4>Returns:</h4>
+                    
+                                <div class="returns-description">
+                                            <span class="type"><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array" class="crosslink external" target="_blank">Array</a></span>:
+                                </div>
+                            </div>
+                    
+                    </div>
+                    <div id="method_translateX" class="method item">
+                        <h3 class="name"><code>translateX</code></h3>
+                    
+                            <div class="args">
+                                <span class="paren">(</span><ul class="args-list inline commas">
+                                    <li class="arg">
+                                            <code>x</code>
+                                    </li>
+                                </ul><span class="paren">)</span>
+                            </div>
+                    
+                    
+                    
+                    
+                    
+                            <span class="flag static">static</span>
+                    
+                    
+                    
+                        <div class="meta">
+                                    <p>
+                                    <!---->
+                                    <!--Defined in-->
+                                    <!---->
+                            <!---->
+                            <!--<a href="../files/src_core_Transform.js.html#l182"><code>src&#x2F;core&#x2F;Transform.js:182</code></a>-->
+                            <!---->
+                            </p>
+                    
+                    
+                    
+                        </div>
+                    
+                        <div class="description">
+                            <p>Return a Transform which represents translation in the x-direction.</p>
+                    
+                        </div>
+                    
+                            <div class="params">
+                                <h4>Parameters:</h4>
+                    
+                                <ul class="params-list">
+                                    <li class="param">
+                                            <code class="param-name">x</code>
+                                            <span class="type"><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Number" class="crosslink external" target="_blank">Number</a></span>
+                    
+                    
+                                        <div class="param-description">
+                                            <p>Translation amount</p>
+                    
+                                        </div>
+                    
+                                    </li>
+                                </ul>
+                            </div>
+                    
+                    
+                    </div>
+                    <div id="method_translateY" class="method item">
+                        <h3 class="name"><code>translateY</code></h3>
+                    
+                            <div class="args">
+                                <span class="paren">(</span><ul class="args-list inline commas">
+                                    <li class="arg">
+                                            <code>y</code>
+                                    </li>
+                                </ul><span class="paren">)</span>
+                            </div>
+                    
+                    
+                    
+                    
+                    
+                            <span class="flag static">static</span>
+                    
+                    
+                    
+                        <div class="meta">
+                                    <p>
+                                    <!---->
+                                    <!--Defined in-->
+                                    <!---->
+                            <!---->
+                            <!--<a href="../files/src_core_Transform.js.html#l193"><code>src&#x2F;core&#x2F;Transform.js:193</code></a>-->
+                            <!---->
+                            </p>
+                    
+                    
+                    
+                        </div>
+                    
+                        <div class="description">
+                            <p>Return a Transform which represents translation in the y-direction.</p>
+                    
+                        </div>
+                    
+                            <div class="params">
+                                <h4>Parameters:</h4>
+                    
+                                <ul class="params-list">
+                                    <li class="param">
+                                            <code class="param-name">y</code>
+                                            <span class="type"><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Number" class="crosslink external" target="_blank">Number</a></span>
+                    
+                    
+                                        <div class="param-description">
+                                            <p>Translation amount</p>
+                    
+                                        </div>
+                    
+                                    </li>
+                                </ul>
+                            </div>
+                    
+                    
+                    </div>
+                    <div id="method_translateZ" class="method item">
+                        <h3 class="name"><code>translateZ</code></h3>
+                    
+                            <div class="args">
+                                <span class="paren">(</span><ul class="args-list inline commas">
+                                    <li class="arg">
+                                            <code>z</code>
+                                    </li>
+                                </ul><span class="paren">)</span>
+                            </div>
+                    
+                    
+                    
+                    
+                    
+                            <span class="flag static">static</span>
+                    
+                    
+                    
+                        <div class="meta">
+                                    <p>
+                                    <!---->
+                                    <!--Defined in-->
+                                    <!---->
+                            <!---->
+                            <!--<a href="../files/src_core_Transform.js.html#l204"><code>src&#x2F;core&#x2F;Transform.js:204</code></a>-->
+                            <!---->
+                            </p>
+                    
+                    
+                    
+                        </div>
+                    
+                        <div class="description">
+                            <p>Return a Transform which represents translation in the z-direction.</p>
+                    
+                        </div>
+                    
+                            <div class="params">
+                                <h4>Parameters:</h4>
+                    
+                                <ul class="params-list">
+                                    <li class="param">
+                                            <code class="param-name">z</code>
+                                            <span class="type"><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Number" class="crosslink external" target="_blank">Number</a></span>
+                    
+                    
+                                        <div class="param-description">
+                                            <p>Translation amount</p>
+                    
+                                        </div>
+                    
+                                    </li>
+                                </ul>
+                            </div>
+                    
+                    
+                    </div>
+                    <div id="method_transpose" class="method item">
+                        <h3 class="name"><code>transpose</code></h3>
+                    
+                            <div class="args">
+                                <span class="paren">(</span><ul class="args-list inline commas">
+                                    <li class="arg">
+                                            <code>t</code>
+                                    </li>
+                                </ul><span class="paren">)</span>
+                            </div>
+                    
+                            <span class="returns-inline">
+                                <span class="type"><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array" class="crosslink external" target="_blank">Array</a></span>
+                            </span>
+                    
+                    
+                    
+                    
+                            <span class="flag static">static</span>
+                    
+                    
+                    
+                        <div class="meta">
+                                    <p>
+                                    <!---->
+                                    <!--Defined in-->
+                                    <!---->
+                            <!---->
+                            <!--<a href="../files/src_core_Transform.js.html#l458"><code>src&#x2F;core&#x2F;Transform.js:458</code></a>-->
+                            <!---->
+                            </p>
+                    
+                    
+                    
+                        </div>
+                    
+                        <div class="description">
+                            <p>Returns the transpose of a Transform.</p>
+                    
+                        </div>
+                    
+                            <div class="params">
+                                <h4>Parameters:</h4>
+                    
+                                <ul class="params-list">
+                                    <li class="param">
+                                            <code class="param-name">t</code>
+                                            <span class="type">Transform</span>
+                    
+                    
+                                        <div class="param-description">
+                                            <p>Transform</p>
+                    
+                                        </div>
+                    
+                                    </li>
+                                </ul>
+                            </div>
+                    
+                            <div class="returns">
+                                <h4>Returns:</h4>
+                    
+                                <div class="returns-description">
+                                            <span class="type"><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array" class="crosslink external" target="_blank">Array</a></span>:
+                                </div>
+                            </div>
+                    
+                    </div>
+            </div>
+
+            <div id="properties" class="tab-pane">
+                <h2 class="off-left">Properties</h2>
+
+                    <div id="property_behind" class="property item">
+                        <h3 class="name"><code>behind</code></h3>
+                        <span class="type"><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array" class="crosslink external" target="_blank">Array</a></span>
+                    
+                    
+                    
+                            <span class="flag final">final</span>
+                    
+                            <span class="flag static">static</span>
+                    
+                        <div class="meta">
+                                    <p>
+                                    Defined in
+                            <a href="../files/src_core_Transform.js.html#l76"><code>src&#x2F;core&#x2F;Transform.js:76</code></a>
+                            </p>
+                    
+                    
+                        </div>
+                    
+                        <div class="description">
+                            <p>Transform for moving a renderable behind another renderable in the z-direction.</p>
+                    
+                        </div>
+                    
+                    
+                    
+                    </div>
+                    <div id="property_identity" class="property item">
+                        <h3 class="name"><code>identity</code></h3>
+                        <span class="type"><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array" class="crosslink external" target="_blank">Array</a></span>
+                    
+                    
+                    
+                            <span class="flag final">final</span>
+                    
+                            <span class="flag static">static</span>
+                    
+                        <div class="meta">
+                                    <p>
+                                    Defined in
+                            <a href="../files/src_core_Transform.js.html#l57"><code>src&#x2F;core&#x2F;Transform.js:57</code></a>
+                            </p>
+                    
+                    
+                        </div>
+                    
+                        <div class="description">
+                            <p>Identity transform.</p>
+                    
+                        </div>
+                    
+                    
+                    
+                    </div>
+                    <div id="property_inFront" class="property item">
+                        <h3 class="name"><code>inFront</code></h3>
+                        <span class="type"><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array" class="crosslink external" target="_blank">Array</a></span>
+                    
+                    
+                    
+                            <span class="flag final">final</span>
+                    
+                            <span class="flag static">static</span>
+                    
+                        <div class="meta">
+                                    <p>
+                                    Defined in
+                            <a href="../files/src_core_Transform.js.html#l67"><code>src&#x2F;core&#x2F;Transform.js:67</code></a>
+                            </p>
+                    
+                    
+                        </div>
+                    
+                        <div class="description">
+                            <p>Transform for moving a renderable in front of another renderable in the z-direction.</p>
+                    
+                        </div>
+                    
+                    
+                    
+                    </div>
+            </div>
+
+
+    </div>
+</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script src="../assets/vendor/jquery/jquery-1.8.2.min.js"></script>
+<script src="../assets/vendor/bootstrap/js/bootstrap.js"></script>
+<script src="../assets/vendor/prettify/prettify-min.js"></script>
+<script src="../assets/js/yuidoc-bootstrap.js"></script>
+<script>prettyPrint();</script>
+</body>
+</html>
