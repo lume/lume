@@ -12,6 +12,7 @@ define(function(require, exports, module) {
             // Create the spinning hand.
             var hand = new Surface({
                 content : '☞',
+                properties: {lineHeight: '85px'},
                 classes : ['hand'],
                 size : [50,85],
                 origin : [.5,.5]
