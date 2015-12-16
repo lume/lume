@@ -12,19 +12,26 @@
     "docs-example-logo": "docco -l parallel examples/Logo/js/main.js examples/Logo/js/app/*.js -o examples/Logo/docs",
     "docs-example-sidemenu": "docco -l parallel examples/SideMenu/js/main.js examples/SideMenu/js/app/*.js -o examples/SideMenu/docs",
     "build": "npm run build-bundle && npm run build-min",
-    "build-bundle": "webpack --entry ./src/index.js --output-filename samsara.js --output-path ./ --output-library Samsara --output-library-target umd",
-    "build-min": "uglifyjs --entry samsara.js -o samsara.min.js --mangle --compress warnings=false"
+    "build-bundle": "webpack --entry ./src/index.js --output-filename samsara.js --output-path ./dist --output-library Samsara --output-library-target umd",
+    "build-min": "uglifyjs --entry dist/samsara.js -o dist/samsara.min.js --mangle --compress warnings=false"
   },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/dmvaldman/samsara.git"
   },
+  "files": [
+    "dist/samsara.css",
+    "dist/samsara.js",
+    "dist/samsara.min.js",
+    "src"
+  ],
   "keywords": [
     "UI",
     "streams",
     "FRP",
     "reactive",
-    "layout"
+    "layout",
+    "samsara"
   ],
   "license": [
     "MIT",
