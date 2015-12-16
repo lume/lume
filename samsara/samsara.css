@@ -1,0 +1,47 @@
+/* This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at http://mozilla.org/MPL/2.0/.
+ *
+ * @license MPL 2.0
+ * @copyright Famous Industries, Inc. 2014
+ */
+
+/* Modified work copyright © 2015 David Valdman */
+
+.samsara-context {
+    position: absolute;
+    height: 100%;
+    width: 100%;
+    pointer-events: none;
+    overflow: hidden;
+    -webkit-transform-style: preserve-3d;
+       -moz-transform-style: preserve-3d;
+            transform-style: preserve-3d;
+    -webkit-backface-visibility: hidden;
+           -moz-backface-visibility: hidden;
+                backface-visibility: hidden;
+}
+
+.samsara-container {
+    -webkit-transform-style: preserve-3d;
+       -moz-transform-style: preserve-3d;
+            transform-style: preserve-3d;
+}
+
+.samsara-surface {
+    position: absolute;
+    pointer-events: auto;
+    -webkit-tap-highlight-color: transparent;
+    -webkit-backface-visibility: visible;
+       -moz-backface-visibility: visible;
+            backface-visibility: visible;
+    -webkit-box-sizing: border-box;
+       -moz-box-sizing: border-box;
+            box-sizing: border-box;
+}
+
+.samsara-scrollable {
+    overflow: auto;
+    /*-webkit-overflow-scrolling: touch;*/
+            /*overflow-scrolling: touch;*/
+}
