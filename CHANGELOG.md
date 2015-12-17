@@ -3,6 +3,7 @@
 **General**
 - Physics transitions
 - Native scroll support via `enableScroll` option for `Surfaces`
+- New directory structure, with examples and docs included
 
 **Core**
 - UPDATE `View` has `getSize` method
