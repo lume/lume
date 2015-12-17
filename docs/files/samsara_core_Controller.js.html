@@ -1,0 +1,328 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>samsara/core/Controller.js - SamsaraJS</title>
+    <link rel="stylesheet" href="">
+    <link rel="stylesheet" href="../assets/vendor/prettify/prettify-min.css">
+    <link rel="stylesheet" href="../assets/css/main.css" id="site_styles">
+    <link rel="stylesheet" href="../assets/css/custom.css">
+    <link rel="stylesheet" href="../assets/vendor/bootstrap/css/bootstrap.css">
+    <link rel="shortcut icon" type="image/png" href="../assets/favicon.png">
+</head>
+<body class="yui3-skin-sam">
+<div class="navbar navbar-fixed-top">
+    <div class="navbar-inner">
+        <h1 class="brand" style="padding: 10px 16px 10px; height: 20px; line-height: 20px; margin-left: 0;">
+        <!---->
+	    <!--<img alt="SamsaraJS" src="../assets/css/logo.png" style="max-height: 65%;" title="SamsaraJS">-->
+        <!---->
+            SamsaraJS
+        </h1>
+	<div class="nav">
+            <li class="divider-vertical"></li>
+            <li>
+                <p class="navbar-text">
+                    API Docs for Version: <b>0.1.1</b>
+                </p>
+            </li>
+        </div>
+        <form class="navbar-form pull-right" style="line-height: 40px; height: 40px;">
+            <input style="margin-top: 0;" type="text" class="search-query" placeholder="Search for classes/modules..." data-obj='["classes/Core.Controller", "classes/Core.ElementAllocator", "classes/Core.ElementOutput", "classes/Core.Engine", "classes/Core.LayoutNode", "classes/Core.OptionsManager", "classes/Core.SizeNode", "classes/Core.SUE", "classes/Core.Timer", "classes/Core.Transform", "classes/Core.Transitionable", "classes/Core.View", "classes/DOM.ContainerSurface", "classes/DOM.Context", "classes/DOM.Surface", "classes/Events.EventEmitter", "classes/Events.EventFilter", "classes/Events.EventHandler", "classes/Events.EventMapper", "classes/Events.EventSplitter", "classes/Inputs.GenericInput", "classes/Inputs.MouseInput", "classes/Inputs.PinchInput", "classes/Inputs.RotateInput", "classes/Inputs.ScaleInput", "classes/Inputs.ScrollInput", "classes/Inputs.TouchInput", "classes/Inputs.TouchTracker", "classes/Inputs.TwoFingerInput", "classes/Layouts.DrawerLayout", "classes/Layouts.FlexibleLayout", "classes/Layouts.GridLayout", "classes/Layouts.SequentialLayout", "classes/RenderTreeNode", "classes/RootNode", "classes/Streams.Accumulator", "classes/Streams.Differential", "classes/Streams.Observable", "classes/Streams.ResizeStream", "classes/Streams.SimpleStream", "classes/Streams.Stream", "classes/Transitions.Inertia", "classes/Transitions.Spring", "classes/Transitions.Tween"]'>
+        </form>
+    </div>
+</div>
+<div class="container">
+    <div class="row">
+        <div class="span3">
+	    <div>
+	        <!--<h3>APIs</h3>-->
+	        <br>
+	        <div id="sidebar">
+	            <!--<ul id="main-nav" class="nav nav-tabs" style="margin-bottom:0;">-->
+	                <!--<li class="active"><a href="#classes" data-toggle="tab">Classes</a></li>-->
+	                <!--<li><a href="#modules" data-toggle="tab">Modules</a></li>-->
+	            <!--</ul>-->
+	    
+	            <div id="api-tabview-filter">
+	                <input type="search" placeholder="Type to filter APIs">
+	            </div>
+	    
+	            <div class="tab-content" style="border: 1px solid #DDD; border-top:0;">
+	                <div class="tab-pane active" id="classes">
+	                    <ul id="api-classes" class="nav nav-list">
+	                            <li><a href="../classes/Core.Timer.html">Core.Timer</a></li>
+	                            <li><a href="../classes/Core.Transform.html">Core.Transform</a></li>
+	                            <li><a href="../classes/Core.Transitionable.html">Core.Transitionable</a></li>
+	                            <li><a href="../classes/Core.View.html">Core.View</a></li>
+	                            <li><a href="../classes/DOM.ContainerSurface.html">DOM.ContainerSurface</a></li>
+	                            <li><a href="../classes/DOM.Context.html">DOM.Context</a></li>
+	                            <li><a href="../classes/DOM.Surface.html">DOM.Surface</a></li>
+	                            <li><a href="../classes/Events.EventEmitter.html">Events.EventEmitter</a></li>
+	                            <li><a href="../classes/Events.EventFilter.html">Events.EventFilter</a></li>
+	                            <li><a href="../classes/Events.EventHandler.html">Events.EventHandler</a></li>
+	                            <li><a href="../classes/Events.EventMapper.html">Events.EventMapper</a></li>
+	                            <li><a href="../classes/Inputs.GenericInput.html">Inputs.GenericInput</a></li>
+	                            <li><a href="../classes/Inputs.MouseInput.html">Inputs.MouseInput</a></li>
+	                            <li><a href="../classes/Inputs.PinchInput.html">Inputs.PinchInput</a></li>
+	                            <li><a href="../classes/Inputs.RotateInput.html">Inputs.RotateInput</a></li>
+	                            <li><a href="../classes/Inputs.ScaleInput.html">Inputs.ScaleInput</a></li>
+	                            <li><a href="../classes/Inputs.ScrollInput.html">Inputs.ScrollInput</a></li>
+	                            <li><a href="../classes/Inputs.TouchInput.html">Inputs.TouchInput</a></li>
+	                            <li><a href="../classes/Layouts.DrawerLayout.html">Layouts.DrawerLayout</a></li>
+	                            <li><a href="../classes/Layouts.FlexibleLayout.html">Layouts.FlexibleLayout</a></li>
+	                            <li><a href="../classes/Layouts.GridLayout.html">Layouts.GridLayout</a></li>
+	                            <li><a href="../classes/Layouts.SequentialLayout.html">Layouts.SequentialLayout</a></li>
+	                            <li><a href="../classes/Streams.Accumulator.html">Streams.Accumulator</a></li>
+	                            <li><a href="../classes/Streams.Differential.html">Streams.Differential</a></li>
+	                            <li><a href="../classes/Streams.Stream.html">Streams.Stream</a></li>
+	                    </ul>
+	                </div>
+	    
+	                <!--<div class="tab-pane" id="modules">-->
+	                    <!--<ul id="api-modules" class="nav nav-list">-->
+	                        <!---->
+	                    <!--</ul>-->
+	                <!--</div>-->
+	            </div>
+	        </div>
+	    </div>
+        </div>
+        <div class="span9">
+                <form id="options-form" class="form-inline pull-right">
+                    Show:
+                    <label for="api-show-inherited" class="checkbox">
+                        <input type="checkbox" id="api-show-inherited" checked>
+                        Inherited
+                    </label>
+            
+                    <label for="api-show-protected" class="checkbox">
+                        <input type="checkbox" id="api-show-protected">
+                        Protected
+                    </label>
+            
+                    <label for="api-show-private" class="checkbox">
+                        <input type="checkbox" id="api-show-private">
+                        Private
+                    </label>
+                    <label for="api-show-deprecated" class="checkbox">
+                        <input type="checkbox" id="api-show-deprecated">
+                        Deprecated
+                    </label>
+            
+                </form>
+            
+            <div class="apidocs">
+                <div id="docs-main">
+                    <div class="content">
+<div class="page-header">
+    <h1>samsara/core/Controller.js <small>File</small></h1>
+</div>
+
+<div class="file">
+    <pre class="prettyprint linenums">
+/*
+ * copyright © 2015 David Valdman
+ */
+
+define(function(require, exports, module) {
+    var OptionsManager = require(&#x27;./OptionsManager&#x27;);
+    var EventHandler = require(&#x27;../events/EventHandler&#x27;);
+    var SimpleStream = require(&#x27;../streams/SimpleStream&#x27;);
+
+    /**
+     * A utility class which can be extended by custom classes. These classes will then
+     *  include event input and output streams, a optionsManager for handling optional
+     *  parameters with defaults, and take an event dictionary.
+     *
+     *  Specifically, instantiations will have an &#x60;options&#x60; dictionary property,
+     *  &#x60;input&#x60;, &#x60;output&#x60; stream properties, and
+     *  &#x60;on&#x60;, &#x60;off&#x60;, &#x60;emit&#x60;, &#x60;trigger&#x60;, &#x60;subscribe&#x60;, &#x60;unsubscribe&#x60; methods.
+     *
+     *  @example
+     *
+     *      var MyClass = Controller.extend({
+     *          defaults : {
+     *              defaultOption1 : value1,
+     *              defaultOption2 : value2
+     *          },
+     *          events : {
+     *              &#x27;change&#x27; : myUpdateOptionsFunction
+     *          },
+     *          initialize : function(options){
+     *              // this method called on instantiation
+     *              // options are passed in after being patched by the specified defaults
+     *
+     *              this.input.on(&#x27;test&#x27;, function(){
+     *                  console.log(&#x27;test fired&#x27;);
+     *              });
+     *          }
+     *      });
+     *
+     *      var myInstance = new MyClass({
+     *          defaultOption1 : value3
+     *      });
+     *
+     *      // myInstance.options = {
+     *      //     defaultOption1 : value3,
+     *      //     defaultOption2 : value2
+     *      // }
+     *
+     *      myInstance.subscribe(anotherStream);
+     *
+     *      anotherStream.emit(&#x27;test&#x27;); // &quot;test fired&quot; in console
+     *
+     * @class Controller
+     * @private
+     * @constructor
+     * @namespace Core
+     * @uses Core.OptionsManager
+     * @param options {Object} Instance options
+     */
+    function Controller(options) {
+        this.options = _clone(this.constructor.DEFAULT_OPTIONS || Controller.DEFAULT_OPTIONS);
+        this._optionsManager = new OptionsManager(this.options);
+        if (options) this.setOptions(options);
+
+        this.input = new SimpleStream();
+        this.output = new SimpleStream();
+        EventHandler.setInputHandler(this, this.input);
+        EventHandler.setOutputHandler(this, this.output);
+        EventHandler.setInputEvents(this, this.constructor.EVENTS || Controller.EVENTS, this.input);
+
+        this.input.bindThis(this);
+        this.input.subscribe(this._optionsManager);
+
+        if (this.initialize) this.initialize(this.options);
+    }
+
+    /**
+     * Overwrite the DEFAULT_OPTIONS dictionary on the constructor of the class you wish to extend
+     *  with the Controller to patch any options that are not prescribed on instantiation.
+     *
+     * @attribute DEFAULT_OPTIONS
+     * @readOnly
+     */
+    Controller.DEFAULT_OPTIONS = {};
+
+    /**
+     * Overwrite the EVENTS dictionary on the constructor of the class you wish to extend
+     *  with the Controller to include events in {key : value} pairs where the keys are
+     *  event channel names and the values are functions to be executed.
+     *
+     * @attribute EVENTS
+     * @readOnly
+     */
+    Controller.EVENTS = {};
+
+    /**
+     * Options getter.
+     *
+     * @method getOptions
+     * @param key {string}      Key
+     * @return object {Object}  Options value for the key
+     */
+    Controller.prototype.getOptions = function getOptions(key) {
+        return OptionsManager.prototype.getOptions.apply(this._optionsManager, arguments);
+    };
+
+    /**
+     *  Options setter.
+     *
+     *  @method setOptions
+     *  @param options {Object} Options
+     */
+    Controller.prototype.setOptions = function setOptions() {
+        OptionsManager.prototype.setOptions.apply(this._optionsManager, arguments);
+    };
+
+    var RESERVED_KEYS = {
+        DEFAULTS : &#x27;defaults&#x27;,
+        EVENTS : &#x27;events&#x27;
+    };
+
+    function _clone(obj) {
+        var copy;
+        if (typeof obj === &#x27;object&#x27;) {
+            copy = (obj instanceof Array) ? [] : {};
+            for (var key in obj) {
+                var value = obj[key];
+                if (typeof value === &#x27;object&#x27; &amp;&amp; value !== null) {
+                    if (value instanceof Array) {
+                        copy[key] = [];
+                        for (var i = 0; i &lt; value.length; i++)
+                            copy[key][i] = _clone(value[i]);
+                    }
+                    else copy[key] = _clone(value);
+                }
+                else copy[key] = value;
+            }
+        }
+        else copy = obj;
+
+        return copy;
+    }
+
+    function extend(protoObj, constants){
+        var parent = this;
+
+        var child = (protoObj.hasOwnProperty(&#x27;constructor&#x27;))
+            ? function(){ protoObj.constructor.apply(this, arguments); }
+            : function(){ parent.apply(this, arguments); };
+
+        child.extend = extend;
+        child.prototype = Object.create(parent.prototype);
+        child.prototype.constructor = child;
+
+        for (var key in protoObj){
+            var value = protoObj[key];
+            switch (key) {
+                case RESERVED_KEYS.DEFAULTS:
+                    child.DEFAULT_OPTIONS = value;
+                    break;
+                case RESERVED_KEYS.EVENTS:
+                    if (!child.EVENTS) child.EVENTS = value;
+                    else
+                        for (var key in value)
+                            child.EVENTS[key] = value[key];
+                    break;
+                default:
+                    child.prototype[key] = value;
+            }
+        }
+
+
+        for (var key in constants)
+            child[key] = constants[key];
+
+        return child;
+    }
+
+    /**
+     * Allows a class to extend Controller.
+     *  Note: this is a method defined on the Controller constructor
+     *
+     * @method extend
+     * @param protoObj {Object}     Prototype properties of the extended class
+     * @param constants {Object}    Constants to be added to the extended class&#x27;s constructor
+     */
+    Controller.extend = extend;
+
+    module.exports = Controller;
+});
+
+    </pre>
+</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script src="../assets/vendor/jquery/jquery-1.8.2.min.js"></script>
+<script src="../assets/vendor/bootstrap/js/bootstrap.js"></script>
+<script src="../assets/vendor/prettify/prettify-min.js"></script>
+<script src="../assets/js/yuidoc-bootstrap.js"></script>
+<script>prettyPrint();</script>
+</body>
+</html>

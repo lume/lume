@@ -1,0 +1,433 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>samsara/transitions/Tween.js - SamsaraJS</title>
+    <link rel="stylesheet" href="">
+    <link rel="stylesheet" href="../assets/vendor/prettify/prettify-min.css">
+    <link rel="stylesheet" href="../assets/css/main.css" id="site_styles">
+    <link rel="stylesheet" href="../assets/css/custom.css">
+    <link rel="stylesheet" href="../assets/vendor/bootstrap/css/bootstrap.css">
+    <link rel="shortcut icon" type="image/png" href="../assets/favicon.png">
+</head>
+<body class="yui3-skin-sam">
+<div class="navbar navbar-fixed-top">
+    <div class="navbar-inner">
+        <h1 class="brand" style="padding: 10px 16px 10px; height: 20px; line-height: 20px; margin-left: 0;">
+        <!---->
+	    <!--<img alt="SamsaraJS" src="../assets/css/logo.png" style="max-height: 65%;" title="SamsaraJS">-->
+        <!---->
+            SamsaraJS
+        </h1>
+	<div class="nav">
+            <li class="divider-vertical"></li>
+            <li>
+                <p class="navbar-text">
+                    API Docs for Version: <b>0.1.1</b>
+                </p>
+            </li>
+        </div>
+        <form class="navbar-form pull-right" style="line-height: 40px; height: 40px;">
+            <input style="margin-top: 0;" type="text" class="search-query" placeholder="Search for classes/modules..." data-obj='["classes/Core.Controller", "classes/Core.ElementAllocator", "classes/Core.ElementOutput", "classes/Core.Engine", "classes/Core.LayoutNode", "classes/Core.OptionsManager", "classes/Core.SizeNode", "classes/Core.SUE", "classes/Core.Timer", "classes/Core.Transform", "classes/Core.Transitionable", "classes/Core.View", "classes/DOM.ContainerSurface", "classes/DOM.Context", "classes/DOM.Surface", "classes/Events.EventEmitter", "classes/Events.EventFilter", "classes/Events.EventHandler", "classes/Events.EventMapper", "classes/Events.EventSplitter", "classes/Inputs.GenericInput", "classes/Inputs.MouseInput", "classes/Inputs.PinchInput", "classes/Inputs.RotateInput", "classes/Inputs.ScaleInput", "classes/Inputs.ScrollInput", "classes/Inputs.TouchInput", "classes/Inputs.TouchTracker", "classes/Inputs.TwoFingerInput", "classes/Layouts.DrawerLayout", "classes/Layouts.FlexibleLayout", "classes/Layouts.GridLayout", "classes/Layouts.SequentialLayout", "classes/RenderTreeNode", "classes/RootNode", "classes/Streams.Accumulator", "classes/Streams.Differential", "classes/Streams.Observable", "classes/Streams.ResizeStream", "classes/Streams.SimpleStream", "classes/Streams.Stream", "classes/Transitions.Inertia", "classes/Transitions.Spring", "classes/Transitions.Tween"]'>
+        </form>
+    </div>
+</div>
+<div class="container">
+    <div class="row">
+        <div class="span3">
+	    <div>
+	        <!--<h3>APIs</h3>-->
+	        <br>
+	        <div id="sidebar">
+	            <!--<ul id="main-nav" class="nav nav-tabs" style="margin-bottom:0;">-->
+	                <!--<li class="active"><a href="#classes" data-toggle="tab">Classes</a></li>-->
+	                <!--<li><a href="#modules" data-toggle="tab">Modules</a></li>-->
+	            <!--</ul>-->
+	    
+	            <div id="api-tabview-filter">
+	                <input type="search" placeholder="Type to filter APIs">
+	            </div>
+	    
+	            <div class="tab-content" style="border: 1px solid #DDD; border-top:0;">
+	                <div class="tab-pane active" id="classes">
+	                    <ul id="api-classes" class="nav nav-list">
+	                            <li><a href="../classes/Core.Timer.html">Core.Timer</a></li>
+	                            <li><a href="../classes/Core.Transform.html">Core.Transform</a></li>
+	                            <li><a href="../classes/Core.Transitionable.html">Core.Transitionable</a></li>
+	                            <li><a href="../classes/Core.View.html">Core.View</a></li>
+	                            <li><a href="../classes/DOM.ContainerSurface.html">DOM.ContainerSurface</a></li>
+	                            <li><a href="../classes/DOM.Context.html">DOM.Context</a></li>
+	                            <li><a href="../classes/DOM.Surface.html">DOM.Surface</a></li>
+	                            <li><a href="../classes/Events.EventEmitter.html">Events.EventEmitter</a></li>
+	                            <li><a href="../classes/Events.EventFilter.html">Events.EventFilter</a></li>
+	                            <li><a href="../classes/Events.EventHandler.html">Events.EventHandler</a></li>
+	                            <li><a href="../classes/Events.EventMapper.html">Events.EventMapper</a></li>
+	                            <li><a href="../classes/Inputs.GenericInput.html">Inputs.GenericInput</a></li>
+	                            <li><a href="../classes/Inputs.MouseInput.html">Inputs.MouseInput</a></li>
+	                            <li><a href="../classes/Inputs.PinchInput.html">Inputs.PinchInput</a></li>
+	                            <li><a href="../classes/Inputs.RotateInput.html">Inputs.RotateInput</a></li>
+	                            <li><a href="../classes/Inputs.ScaleInput.html">Inputs.ScaleInput</a></li>
+	                            <li><a href="../classes/Inputs.ScrollInput.html">Inputs.ScrollInput</a></li>
+	                            <li><a href="../classes/Inputs.TouchInput.html">Inputs.TouchInput</a></li>
+	                            <li><a href="../classes/Layouts.DrawerLayout.html">Layouts.DrawerLayout</a></li>
+	                            <li><a href="../classes/Layouts.FlexibleLayout.html">Layouts.FlexibleLayout</a></li>
+	                            <li><a href="../classes/Layouts.GridLayout.html">Layouts.GridLayout</a></li>
+	                            <li><a href="../classes/Layouts.SequentialLayout.html">Layouts.SequentialLayout</a></li>
+	                            <li><a href="../classes/Streams.Accumulator.html">Streams.Accumulator</a></li>
+	                            <li><a href="../classes/Streams.Differential.html">Streams.Differential</a></li>
+	                            <li><a href="../classes/Streams.Stream.html">Streams.Stream</a></li>
+	                    </ul>
+	                </div>
+	    
+	                <!--<div class="tab-pane" id="modules">-->
+	                    <!--<ul id="api-modules" class="nav nav-list">-->
+	                        <!---->
+	                    <!--</ul>-->
+	                <!--</div>-->
+	            </div>
+	        </div>
+	    </div>
+        </div>
+        <div class="span9">
+                <form id="options-form" class="form-inline pull-right">
+                    Show:
+                    <label for="api-show-inherited" class="checkbox">
+                        <input type="checkbox" id="api-show-inherited" checked>
+                        Inherited
+                    </label>
+            
+                    <label for="api-show-protected" class="checkbox">
+                        <input type="checkbox" id="api-show-protected">
+                        Protected
+                    </label>
+            
+                    <label for="api-show-private" class="checkbox">
+                        <input type="checkbox" id="api-show-private">
+                        Private
+                    </label>
+                    <label for="api-show-deprecated" class="checkbox">
+                        <input type="checkbox" id="api-show-deprecated">
+                        Deprecated
+                    </label>
+            
+                </form>
+            
+            <div class="apidocs">
+                <div id="docs-main">
+                    <div class="content">
+<div class="page-header">
+    <h1>samsara/transitions/Tween.js <small>File</small></h1>
+</div>
+
+<div class="file">
+    <pre class="prettyprint linenums">
+/* Copyright © 2015 David Valdman */
+
+define(function(require, exports, module) {
+    var EventHandler = require(&#x27;../events/EventHandler&#x27;);
+    var SimpleStream = require(&#x27;../streams/SimpleStream&#x27;);
+
+    var now = Date.now;
+    var eps = 1e-9; // for calculating velocity using finite difference
+    var registeredCurves = {};
+
+    /**
+     * A method of interpolating between start and end values with
+     *  an easing curve.
+     *
+     * @class Tween
+     * @private
+     * @namespace Transitions
+     * @constructor
+     * @param value {Number}    Initial value
+     */
+    function Tween(value) {
+        SimpleStream.call(this);
+
+        this.state = value || 0;
+        this.velocity = 0;
+        this._startValue = value || 0;
+        this._endValue = 0;
+        this._startTime = now();
+        this._curve = undefined;
+        this._duration = 0;
+        this._active = false;
+
+        this._eventOutput = new EventHandler();
+        EventHandler.setOutputHandler(this, this._eventOutput);
+    }
+
+    Tween.prototype = Object.create(SimpleStream.prototype);
+    Tween.prototype.constructor = Tween;
+
+    /**
+     * Default easing curves.
+     *
+     * @property CURVES {object}
+     * @property CURVES.linear {Function}           Linear interpolation
+     * @property CURVES.easeIn {Function}           EaseIn interpolation. Deceleration from zero velocity.
+     * @property CURVES.easeInCubic {Function}      Cubic interpolation. Acceleration from zero velocity.
+     * @property CURVES.easeOut {Function}          EaseOut interpolation. Acceleration from zero velocity.
+     * @property CURVES.easeOutCubic {Function}     Cubic interpolation. Deceleration from zero velocity.
+     * @property CURVES.easeOutWall                 Interpolation with wall boundary.
+     * @property CURVES.easeInOut {Function}        EaseInOut interpolation. Acceleration then deceleration.
+     * @property CURVES.easeInOutCubic {Function}   Cubic interpolation. Acceleration then deceleration.
+     * @static
+     */
+    Tween.CURVES = {
+        linear: function(t) {
+            return t;
+        },
+        easeIn: function(t) {
+            return t * t;
+        },
+        easeOut: function(t) {
+            return t * (2 - t);
+        },
+        easeInOut: function(t) {
+            return (t &lt;= 0.5)
+                ?  2 * t * t
+                : -2 * t * t + 4 * t - 1;
+        },
+        easeOutBounce: function(t) {
+            return t * (3 - 2 * t);
+        },
+        easeInCubic: function (t) {
+            return t * t * t;
+        },
+        easeOutCubic: function (t) {
+            return 1 + Math.pow(t - 1, 3);
+        },
+        easeInOutCubic: function (t) {
+            t *= 2;
+            return (t &lt; 1)
+                ? .5 * t * t * t
+                : .5 * Math.pow(t - 2, 3) + 1;
+        },
+        easeOutWall: function (t) {
+            if (t &lt; (1 / 2.75)) {
+                return (7.5625 * t * t);
+            } else if (t &lt; (2 / 2.75)) {
+                return (7.5625 * (t -= (1.5 / 2.75)) * t + .75);
+            } else if (t &lt; (2.5 / 2.75)) {
+                return (7.5625 * (t -= (2.25 / 2.75)) * t + .9375);
+            } else {
+                return (7.5625 * (t -= (2.625 / 2.75)) * t + .984375);
+            }
+        }
+    };
+
+    Tween.DIMENSIONS = Infinity;
+
+    Tween.DEFAULT_OPTIONS = {
+        curve: Tween.CURVES.linear,
+        duration: 500
+    };
+
+    /**
+     * A way of registering custom easing curves by name.
+     *  Curves are functions that take a number between 0 and 1 and return
+     *  a number (often between 0 and 1, but can over/under shoot).
+     *
+     * @method register
+     * @static
+     * @param name {String}         Identifying name
+     * @param curve {Function}      Function defined on the domain [0,1]
+     * @return {Boolean}            False if key is taken, else true
+     */
+    Tween.register = function register(name, curve) {
+        if (!registeredCurves[name]) {
+            registeredCurves[name] = curve;
+            return true;
+        }
+        else return false;
+    };
+
+    /**
+     * Remove curve from internal registry. Undoes work of &#x60;register&#x60;.
+     *
+     * @method deregister
+     * @static
+     * @param name {String}     Name dictionary key
+     * @return {Boolean}        False if key doesn&#x27;t exist
+     */
+    Tween.deregister = function deregister(name) {
+        if (registeredCurves[name]) {
+            delete registeredCurves[name];
+            return true;
+        }
+        else return false;
+    };
+
+    /**
+     * Retrieve all registered curves.
+     *
+     * @method getCurves
+     * @static
+     * @return {Object}
+     */
+    Tween.getCurves = function getCurves() {
+        return registeredCurves;
+    };
+
+    /**
+     * Set new value to transition to.
+     *
+     * @method set
+     * @param endValue {Number|Number[]}    End value
+     * @param [transition] {Object}         Transition object of type
+     *                                      {duration: number, curve: name}
+     */
+    Tween.prototype.set = function set(endValue, transition) {
+        this._startValue = this.get();
+
+        if (!this._active) {
+            this.emit(&#x27;start&#x27;, this._startValue);
+            this._active = true;
+        }
+
+        this._endValue = endValue;
+        this._startTime = now();
+
+        var curve = transition.curve;
+        if (!registeredCurves[curve] &amp;&amp; Tween.CURVES[curve])
+            Tween.register(curve, Tween.CURVES[curve]);
+
+        this.velocity = transition.velocity;
+        this._duration = transition.duration || Tween.DEFAULT_OPTIONS.duration;
+        this._curve = curve
+            ? (curve instanceof Function) ? curve : getCurve(curve)
+            : Tween.DEFAULT_OPTIONS.curve;
+    };
+
+    /**
+     * Get current value.
+     *
+     * @method get
+     * @return {Number|Number[]}
+     */
+    Tween.prototype.get = function get() {
+        return this.state;
+    };
+
+    /**
+     * Get current velocity
+     *
+     * @method getVelocity
+     * @returns {Number|Number[]}
+     */
+    Tween.prototype.getVelocity = function getVelocity() {
+        return this.velocity;
+    };
+
+    /**
+     * Reset the value and velocity of the transition.
+     *
+     * @method reset
+     * @param value {Number|Number[]}       Value
+     * @param [velocity] {Number|Number[]}  Velocity
+     */
+    Tween.prototype.reset = function reset(value, velocity) {
+        this.state = value;
+        this.velocity = velocity || 0;
+    };
+
+    /**
+     * Halt transition at current state and erase all pending actions.
+     *
+     * @method halt
+     */
+    Tween.prototype.halt = function halt() {
+        var value = this.get();
+        this.reset(value);
+        this._active = false;
+        this.emit(&#x27;end&#x27;, value);
+    };
+
+    /**
+     * Update the transition in time.
+     *
+     * @method update
+     */
+    Tween.prototype.update = function update() {
+        if (!this._active) return;
+
+        var timeSinceStart = now() - this._startTime;
+
+        this.velocity = _calculateVelocity(this.state, this._startValue, this._curve, this._duration, 1);
+
+        if (timeSinceStart &lt; this._duration) {
+            var t = timeSinceStart / this._duration;
+            this.state = _interpolate(this._startValue, this._endValue, this._curve(t));
+            this.emit(&#x27;update&#x27;, this.state);
+        }
+        else {
+            this.emit(&#x27;update&#x27;, this._endValue);
+
+            this.reset(this._endValue);
+            this._active = false;
+            this.emit(&#x27;end&#x27;, this._endValue);
+        }
+    };
+
+    function getCurve(curveName) {
+        var curve = registeredCurves[curveName];
+        if (curve !== undefined) return curve;
+        else throw new Error(&#x27;curve not registered&#x27;);
+    }
+
+    function _interpolate(a, b, t) {
+        var result;
+        if (a instanceof Array){
+            result = [];
+            for (var i = 0; i &lt; a.length; i++){
+                if (typeof a[i] === &#x27;number&#x27;)
+                    result.push(_interpolate1D(a[i], b[i], t));
+                else result.push(a[i]);
+            }
+
+        }
+        else result = _interpolate1D(a, b, t);
+        return result;
+    }
+
+    function _interpolate1D(a, b, t){
+        return ((1 - t) * a) + (t * b);
+    }
+
+    function _calculateVelocity1D(current, start, curve, duration, t) {
+        return (current - start) * (curve(t + eps) - curve(t - eps)) / (2 * eps * duration);
+    }
+
+    function _calculateVelocity(current, start, curve, duration, t) {
+        var result;
+        if (current instanceof Array){
+            result = [];
+            for (var i = 0; i &lt; current.length; i++){
+                if (typeof current[i] === &#x27;number&#x27;)
+                    result.push(_calculateVelocity1D(current[i], start[i], curve, duration, t));
+                else result.push(current[i]);
+            }
+        }
+        else result = _calculateVelocity1D(current, start, curve, duration, t);
+        return result;
+    }
+
+    module.exports = Tween;
+});
+
+    </pre>
+</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script src="../assets/vendor/jquery/jquery-1.8.2.min.js"></script>
+<script src="../assets/vendor/bootstrap/js/bootstrap.js"></script>
+<script src="../assets/vendor/prettify/prettify-min.js"></script>
+<script src="../assets/js/yuidoc-bootstrap.js"></script>
+<script>prettyPrint();</script>
+</body>
+</html>

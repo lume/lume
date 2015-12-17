@@ -1,0 +1,354 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>samsara/dom/Context.js - SamsaraJS</title>
+    <link rel="stylesheet" href="">
+    <link rel="stylesheet" href="../assets/vendor/prettify/prettify-min.css">
+    <link rel="stylesheet" href="../assets/css/main.css" id="site_styles">
+    <link rel="stylesheet" href="../assets/css/custom.css">
+    <link rel="stylesheet" href="../assets/vendor/bootstrap/css/bootstrap.css">
+    <link rel="shortcut icon" type="image/png" href="../assets/favicon.png">
+</head>
+<body class="yui3-skin-sam">
+<div class="navbar navbar-fixed-top">
+    <div class="navbar-inner">
+        <h1 class="brand" style="padding: 10px 16px 10px; height: 20px; line-height: 20px; margin-left: 0;">
+        <!---->
+	    <!--<img alt="SamsaraJS" src="../assets/css/logo.png" style="max-height: 65%;" title="SamsaraJS">-->
+        <!---->
+            SamsaraJS
+        </h1>
+	<div class="nav">
+            <li class="divider-vertical"></li>
+            <li>
+                <p class="navbar-text">
+                    API Docs for Version: <b>0.1.1</b>
+                </p>
+            </li>
+        </div>
+        <form class="navbar-form pull-right" style="line-height: 40px; height: 40px;">
+            <input style="margin-top: 0;" type="text" class="search-query" placeholder="Search for classes/modules..." data-obj='["classes/Core.Controller", "classes/Core.ElementAllocator", "classes/Core.ElementOutput", "classes/Core.Engine", "classes/Core.LayoutNode", "classes/Core.OptionsManager", "classes/Core.SizeNode", "classes/Core.SUE", "classes/Core.Timer", "classes/Core.Transform", "classes/Core.Transitionable", "classes/Core.View", "classes/DOM.ContainerSurface", "classes/DOM.Context", "classes/DOM.Surface", "classes/Events.EventEmitter", "classes/Events.EventFilter", "classes/Events.EventHandler", "classes/Events.EventMapper", "classes/Events.EventSplitter", "classes/Inputs.GenericInput", "classes/Inputs.MouseInput", "classes/Inputs.PinchInput", "classes/Inputs.RotateInput", "classes/Inputs.ScaleInput", "classes/Inputs.ScrollInput", "classes/Inputs.TouchInput", "classes/Inputs.TouchTracker", "classes/Inputs.TwoFingerInput", "classes/Layouts.DrawerLayout", "classes/Layouts.FlexibleLayout", "classes/Layouts.GridLayout", "classes/Layouts.SequentialLayout", "classes/RenderTreeNode", "classes/RootNode", "classes/Streams.Accumulator", "classes/Streams.Differential", "classes/Streams.Observable", "classes/Streams.ResizeStream", "classes/Streams.SimpleStream", "classes/Streams.Stream", "classes/Transitions.Inertia", "classes/Transitions.Spring", "classes/Transitions.Tween"]'>
+        </form>
+    </div>
+</div>
+<div class="container">
+    <div class="row">
+        <div class="span3">
+	    <div>
+	        <!--<h3>APIs</h3>-->
+	        <br>
+	        <div id="sidebar">
+	            <!--<ul id="main-nav" class="nav nav-tabs" style="margin-bottom:0;">-->
+	                <!--<li class="active"><a href="#classes" data-toggle="tab">Classes</a></li>-->
+	                <!--<li><a href="#modules" data-toggle="tab">Modules</a></li>-->
+	            <!--</ul>-->
+	    
+	            <div id="api-tabview-filter">
+	                <input type="search" placeholder="Type to filter APIs">
+	            </div>
+	    
+	            <div class="tab-content" style="border: 1px solid #DDD; border-top:0;">
+	                <div class="tab-pane active" id="classes">
+	                    <ul id="api-classes" class="nav nav-list">
+	                            <li><a href="../classes/Core.Timer.html">Core.Timer</a></li>
+	                            <li><a href="../classes/Core.Transform.html">Core.Transform</a></li>
+	                            <li><a href="../classes/Core.Transitionable.html">Core.Transitionable</a></li>
+	                            <li><a href="../classes/Core.View.html">Core.View</a></li>
+	                            <li><a href="../classes/DOM.ContainerSurface.html">DOM.ContainerSurface</a></li>
+	                            <li><a href="../classes/DOM.Context.html">DOM.Context</a></li>
+	                            <li><a href="../classes/DOM.Surface.html">DOM.Surface</a></li>
+	                            <li><a href="../classes/Events.EventEmitter.html">Events.EventEmitter</a></li>
+	                            <li><a href="../classes/Events.EventFilter.html">Events.EventFilter</a></li>
+	                            <li><a href="../classes/Events.EventHandler.html">Events.EventHandler</a></li>
+	                            <li><a href="../classes/Events.EventMapper.html">Events.EventMapper</a></li>
+	                            <li><a href="../classes/Inputs.GenericInput.html">Inputs.GenericInput</a></li>
+	                            <li><a href="../classes/Inputs.MouseInput.html">Inputs.MouseInput</a></li>
+	                            <li><a href="../classes/Inputs.PinchInput.html">Inputs.PinchInput</a></li>
+	                            <li><a href="../classes/Inputs.RotateInput.html">Inputs.RotateInput</a></li>
+	                            <li><a href="../classes/Inputs.ScaleInput.html">Inputs.ScaleInput</a></li>
+	                            <li><a href="../classes/Inputs.ScrollInput.html">Inputs.ScrollInput</a></li>
+	                            <li><a href="../classes/Inputs.TouchInput.html">Inputs.TouchInput</a></li>
+	                            <li><a href="../classes/Layouts.DrawerLayout.html">Layouts.DrawerLayout</a></li>
+	                            <li><a href="../classes/Layouts.FlexibleLayout.html">Layouts.FlexibleLayout</a></li>
+	                            <li><a href="../classes/Layouts.GridLayout.html">Layouts.GridLayout</a></li>
+	                            <li><a href="../classes/Layouts.SequentialLayout.html">Layouts.SequentialLayout</a></li>
+	                            <li><a href="../classes/Streams.Accumulator.html">Streams.Accumulator</a></li>
+	                            <li><a href="../classes/Streams.Differential.html">Streams.Differential</a></li>
+	                            <li><a href="../classes/Streams.Stream.html">Streams.Stream</a></li>
+	                    </ul>
+	                </div>
+	    
+	                <!--<div class="tab-pane" id="modules">-->
+	                    <!--<ul id="api-modules" class="nav nav-list">-->
+	                        <!---->
+	                    <!--</ul>-->
+	                <!--</div>-->
+	            </div>
+	        </div>
+	    </div>
+        </div>
+        <div class="span9">
+                <form id="options-form" class="form-inline pull-right">
+                    Show:
+                    <label for="api-show-inherited" class="checkbox">
+                        <input type="checkbox" id="api-show-inherited" checked>
+                        Inherited
+                    </label>
+            
+                    <label for="api-show-protected" class="checkbox">
+                        <input type="checkbox" id="api-show-protected">
+                        Protected
+                    </label>
+            
+                    <label for="api-show-private" class="checkbox">
+                        <input type="checkbox" id="api-show-private">
+                        Private
+                    </label>
+                    <label for="api-show-deprecated" class="checkbox">
+                        <input type="checkbox" id="api-show-deprecated">
+                        Deprecated
+                    </label>
+            
+                </form>
+            
+            <div class="apidocs">
+                <div id="docs-main">
+                    <div class="content">
+<div class="page-header">
+    <h1>samsara/dom/Context.js <small>File</small></h1>
+</div>
+
+<div class="file">
+    <pre class="prettyprint linenums">
+/* Modified work copyright © 2015 David Valdman */
+// TODO: Enable CSS properties on Context
+define(function(require, exports, module) {
+    var Engine = require(&#x27;../core/Engine&#x27;);
+    var RootNode = require(&#x27;../core/nodes/RootNode&#x27;);
+    var Transform = require(&#x27;../core/Transform&#x27;);
+    var ElementAllocator = require(&#x27;../core/ElementAllocator&#x27;);
+    var Transitionable = require(&#x27;../core/Transitionable&#x27;);
+    var SimpleStream = require(&#x27;../streams/SimpleStream&#x27;);
+    var EventHandler = require(&#x27;../events/EventHandler&#x27;);
+    var preTickQueue = require(&#x27;../core/queues/preTickQueue&#x27;);
+    var dirtyQueue = require(&#x27;../core/queues/dirtyQueue&#x27;);
+
+    var elementType = &#x27;div&#x27;;
+    var elementClass = &#x27;samsara-context&#x27;;
+    var rafStarted = false;
+
+    var layoutSpec = {
+        transform : Transform.identity,
+        opacity : 1,
+        origin : null,
+        align : null,
+        nextSizeTransform : Transform.identity
+    };
+
+    /**
+     * A Context defines a top-level DOM element inside which other nodes (like Surfaces) are rendered.
+     *
+     *  The CSS class &#x60;samsara-context&#x60; is applied, which provides the minimal CSS necessary
+     *  to create a performant 3D context (specifically &#x60;preserve-3d&#x60;).
+     *
+     *  The Context must be mounted to a DOM node via the &#x60;mount&#x60; method. If no node is specified
+     *  it is mounted to &#x60;document.body&#x60;.
+     *
+     *  @example
+     *
+     *      var context = Context();
+     *
+     *      var surface = new Surface({
+     *          size : [100,100],
+     *          properties : {background : &#x27;red&#x27;}
+     *      });
+     *
+     *      context.add(surface);
+     *      context.mount(document.body)
+     *
+     * @class Context
+     * @constructor
+     * @namespace DOM
+     * @uses Core.RootNode
+     */
+    function Context() {
+        this._node = new RootNode();
+
+        this._size = new SimpleStream();
+        this._layout = new SimpleStream();
+
+        this.size = this._size.map(function(){
+            var size = [this.container.clientWidth, this.container.clientHeight];
+            this.emit(&#x27;resize&#x27;, size);
+            return size;
+        }.bind(this));
+
+        this._node._size.subscribe(this.size);
+        this._node._layout.subscribe(this._layout);
+
+        this._perspective = new Transitionable();
+
+        this._perspective.on(&#x27;update&#x27;, function(perspective){
+            setPerspective(this.container, perspective);
+        }.bind(this));
+
+        this._perspective.on(&#x27;end&#x27;, function(perspective){
+            setPerspective(this.container, perspective);
+        }.bind(this));
+
+        this._eventOutput = new EventHandler();
+        this._eventForwarder = function _eventForwarder(event) {
+            this._eventOutput.emit(event.type, event);
+        }.bind(this);
+    }
+
+    /**
+     * Extends the render tree beginning with the Context&#x27;s RootNode with a new node.
+     *  Delegates to RootNode&#x27;s &#x60;add&#x60; method.
+     *
+     * @method add
+     *
+     * @param {Object}          Renderable
+     * @return {RenderTreeNode} Wrapped node
+     */
+    Context.prototype.add = function add() {
+        return RootNode.prototype.add.apply(this._node, arguments);
+    };
+
+    /**
+     * Get current perspective of this Context in pixels.
+     *
+     * @method getPerspective
+     * @return {Number} Perspective in pixels
+     */
+    Context.prototype.getPerspective = function getPerspective() {
+        return this._perspective.get();
+    };
+
+    /**
+     * Set current perspective of the &#x60;context&#x60; in pixels.
+     *
+     * @method setPerspective
+     * @param perspective {Number}  Perspective in pixels
+     * @param [transition] {Object} Transition definition
+     * @param [callback] {Function} Callback executed on completion of transition
+     */
+    Context.prototype.setPerspective = function setPerspective(perspective, transition, callback) {
+        this._perspective.set(perspective, transition, callback);
+    };
+
+    /**
+     * Allocate contents of the &#x60;context&#x60; to a DOM node.
+     *
+     * @method mount
+     * @param node {Node}  DOM element
+     */
+    Context.prototype.mount = function mount(node, resizeListenFlag){
+        this.container = node || document.createElement(elementType);
+        this.container.classList.add(elementClass);
+
+        var allocator = new ElementAllocator(this.container);
+        this._node.setAllocator(allocator);
+
+        this.emit(&#x27;deploy&#x27;, this.container);
+
+        if (!node)
+            document.body.appendChild(this.container);
+
+        if (!resizeListenFlag)
+            window.addEventListener(&#x27;resize&#x27;, handleResize.bind(this), false);
+
+        preTickQueue.push(function (){
+            handleResize.call(this);
+            this._layout.trigger(&#x27;start&#x27;, layoutSpec);
+            dirtyQueue.push(function(){
+                this._layout.trigger(&#x27;end&#x27;, layoutSpec);
+            }.bind(this));
+        }.bind(this));
+
+        if (!rafStarted) {
+            rafStarted = true;
+            Engine.start();
+        }
+    };
+
+    /**
+     * Adds a handler to the &#x60;type&#x60; channel which will be executed on &#x60;emit&#x60;.
+     *  These events should be DOM events that occur on the DOM node the
+     *  context has been mounted to.
+     *
+     * @method on
+     * @param type {String}         Channel name
+     * @param handler {Function}    Callback
+     */
+    Context.prototype.on = function on(type, handler){
+        if (this.container)
+            this.container.addEventListener(type, this._eventForwarder);
+        else {
+            this._eventOutput.on(&#x27;deploy&#x27;, function(target){
+                target.addEventListener(type, this._eventForwarder);
+            }.bind(this));
+        }
+        EventHandler.prototype.on.apply(this._eventOutput, arguments);
+    };
+
+    /**
+     * Removes the &#x60;handler&#x60; from the &#x60;type&#x60;.
+     *  Undoes the work of &#x60;on&#x60;.
+     *
+     * @method on
+     * @param type {String}         Channel name
+     * @param handler {Function}    Callback
+     */
+    Context.prototype.off = function off(type, handler) {
+        EventHandler.prototype.off.apply(this._eventOutput, arguments);
+    };
+
+    /**
+     * Used internally when context is subscribed to.
+     *
+     * @method emit
+     * @private
+     * @param type {String}     Channel name
+     * @param data {Object}     Payload
+     */
+    Context.prototype.emit = function emit(type, payload) {
+        EventHandler.prototype.emit.apply(this._eventOutput, arguments);
+    };
+
+    var usePrefix = !(&#x27;perspective&#x27; in document.documentElement.style);
+
+    var setPerspective = usePrefix
+        ? function setPerspective(element, perspective) {
+            element.style.webkitPerspective = perspective ? (perspective | 0) + &#x27;px&#x27; : &#x27;0px&#x27;;
+        }
+        : function setPerspective(element, perspective) {
+            element.style.perspective = perspective ? (perspective | 0) + &#x27;px&#x27; : &#x27;0px&#x27;;
+        };
+
+    function handleResize() {
+        this._size.emit(&#x27;resize&#x27;);
+        dirtyQueue.push(function(){
+            this._size.emit(&#x27;resize&#x27;);
+        }.bind(this));
+    }
+
+    module.exports = Context;
+});
+
+    </pre>
+</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script src="../assets/vendor/jquery/jquery-1.8.2.min.js"></script>
+<script src="../assets/vendor/bootstrap/js/bootstrap.js"></script>
+<script src="../assets/vendor/prettify/prettify-min.js"></script>
+<script src="../assets/js/yuidoc-bootstrap.js"></script>
+<script>prettyPrint();</script>
+</body>
+</html>
