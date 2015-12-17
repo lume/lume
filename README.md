@@ -1,14 +1,18 @@
 SamsaraJS is a functional reactive library for animating layout. It provides a language for positioning,
-orienting and sizing DOM elements and animating these properties over time. This is all SamsaraJS does, 
-but it has strong opinions. Everything in SamsaraJS — from the user input to the rendering pipeline — is a 
-stream. Building a user interface becomes the art of composing streams.
+orienting and sizing DOM elements and animating these properties over time. Everything in SamsaraJS — from 
+the user input to the rendering pipeline — is a stream. Building a user interface becomes the art of composing streams.
 
 SamsaraJS was created to solve performance on the mobile web. Under the hood, animations are hardware accelerated 
 and batched by a single request animation frame loop. Building responsive user interfaces
 is made possible with physics-based transitions, rich support for gestures, and a stream architecture that 
-makes coordinate complex animations simple.
+makes coordinating complex animations simple.
 
-tl;dr If you've ever wanted the opacity of a nav bar to respond to the displacement of a hamburger menu which
+SamsaraJS doesn't have any opinions about content, only presentation. It moves rectangles around the screen — 
+what you do inside those rectangles is up to you. It doesn’t include any support for routing, server syncing, 
+templating or data-binding; there are plenty of other great frameworks for that. If we don’t play nicely with your tools, 
+let us know and we will do our best to improve.
+
+**tl;dr** If you've ever wanted the opacity of a nav bar to respond to the displacement of a hamburger menu which
 responds to a user's swipe gesture, then you might want to clone this repo.
 
 ### Getting Started
@@ -49,22 +53,21 @@ capitalized for CommonJS but lowercase for AMD.
 
 The `samsara.css` file will also be included in `samsarajs/samsara.css`.
 
-## Window Object
+### Window Object
 
 Copy `dist/samsara.js` and include it as a source file. `Samsara` will then be accessible
 through `window.Samsara`. This is particularly useful for sharing on sites like jsFiddle, CodePen, etc.
 
 ## Examples:
 
-1. **examples/SideMenu**
-A simple demo with a side-drawer. This example showcases the coordination of many animations, 
-physics transitions from a gesture, native scrolling and 3D transformations.
-[[demo]](http://samsara-navigation-controller.s3-website-us-west-2.amazonaws.com)
+1. [**examples/SideMenu**](https://github.com/dmvaldman/samsara/tree/master/examples/SideMenu)
+A simple demo with a side-drawer. This example incorporates gestures, physics transitions, native scrolling, transforms 
+in 3D space and coordinated animations.
+[[demo]](http://goo.gl/nhRGeg)
 
-2. **examples/Logo**
-The SamsaraJS logo. This example showcases responsive design and animation. The logo will scale 
-to fit the size of the window.
-[[demo]](http://samsara-logo.s3-website.eu-central-1.amazonaws.com)
+2. [**examples/Logo**](https://github.com/dmvaldman/samsara/tree/master/examples/Logo)
+The SamsaraJS logo. This example showcases responsive design and animation.
+[[demo]](http://goo.gl/p4HQiv)
 
 More examples can be found [online](http://www.samsaraJS.org/examples).
 
