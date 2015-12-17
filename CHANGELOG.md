@@ -1,3 +1,11 @@
+## 0.1.1
+
+**General**
+
+- Hot fix inertial scroll bug in samsara.css
+- Hot fix build step in package.json
+- Made documentation consistent with src -> samsara rename
+
 ## 0.1.0
 
 **General**
