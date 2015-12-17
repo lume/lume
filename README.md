@@ -1,3 +1,5 @@
+<p align="center"><a href="http://vuejs.org" target="_blank"><img width="200"src="http://i.imgur.com/MCcLoYk.png"></a></p>
+
 SamsaraJS is a functional reactive library for animating layout. It provides a language for positioning,
 orienting and sizing DOM elements and animating these properties over time. Everything in SamsaraJS — from 
 the user input to the rendering pipeline — is a stream. Building a user interface becomes the art of composing streams.
@@ -10,7 +12,7 @@ makes coordinating complex animations simple.
 SamsaraJS doesn't have any opinions about content, only presentation. It moves rectangles around the screen — 
 what you do inside those rectangles is up to you. It doesn’t include any support for routing, server syncing, 
 templating or data-binding; there are plenty of other great frameworks for that. If we don’t play nicely with your tools, 
-let us know and we will do our best to improve.
+let us know and we will do our best to improve. Integrations with MVC frameworks like Backbone and React are on the roadmap.
 
 **tl;dr** If you've ever wanted the opacity of a nav bar to respond to the displacement of a hamburger menu which
 responds to a user's swipe gesture, then you might want to clone this repo.
@@ -69,7 +71,7 @@ in 3D space and coordinated animations.
 The SamsaraJS logo. This example showcases responsive design and animation.
 [[demo]](http://goo.gl/p4HQiv)
 
-More examples can be found [online](http://www.samsaraJS.org/examples).
+More examples can be found at [samsaraJS.org/examples](http://www.samsaraJS.org/examples).
 
 ## Talks
 [![Talk](http://i.imgur.com/tGbmVk4.png)](https://www.youtube.com/watch?v=biJXpv-6XVY)
