@@ -54,4 +54,9 @@ define(function(require, exports, module) {
             }
         }
     ]);
+
+    // Disable scrolling of page
+    window.addEventListener('touchmove', function (event) {
+        event.preventDefault();
+    });
 });
