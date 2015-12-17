@@ -34,7 +34,7 @@ define(function(require, exports, module) {
 
             // Uncomment this for a more funky example
             var drawerTransform = this.input.map(function (data) {
-                var angle = Math.min(Math.PI/2 * (data.progress - 1), 0);
+                var angle = Math.min(Math.PI/2 * (1.3*data.progress - 1), 0);
                 return Transform.thenMove(
                     Transform.rotateY(angle),
                     [data.value, 0, 0]
