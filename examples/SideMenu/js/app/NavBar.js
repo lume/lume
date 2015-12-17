@@ -33,7 +33,7 @@ define(function(require, exports, module) {
             // Create the center nav item.
             // Translate them by animating their origin relative to the input.
             var center = new NavItem({
-                contentFront : 'bit.ly/1OZkIch',
+                contentFront : 'goo.gl/nhRGeg',
                 classes : ['nav', 'item', 'middle', 'center'],
                 proportions : [1/3, 1],
                 origin : this.input.map(function(data){
