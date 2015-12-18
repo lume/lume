@@ -1,13 +1,8 @@
-This is the logo for [SamsaraJS](http://samsaraJS.org). 
-
-Try resizing the page, you'll notice the logo itself resizes while still animating. 
-Behold the power of streams!
+A scrollview example with parallax.
 
 ## Installation
 
 Open `index.html` in your browser. That's it!
-
-To view this demo on a mobile device, go to [goo.gl/p4HQiv](http://goo.gl/p4HQiv)
 
 ## Documentation
 
