@@ -1,7 +1,7 @@
 define(function (require) {
     var registerSuite = require('intern!object');
     var assert = require('intern/chai!assert');
-    var EventEmitter = require('samsara/Events/EventEmitter');
+    var EventEmitter = require('samsara/events/EventEmitter');
 
     registerSuite({
         name : 'EventEmitter',
