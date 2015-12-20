@@ -64,5 +64,15 @@ define(function(require, exports, module) {
         rafId = window.requestAnimationFrame(start);
     };
 
+    /**
+     * Stop the Engine's request animation frame loop.
+     *
+     * @method stop
+     * @static
+     */
+    Engine.stop = function(){
+        window.cancelAnimationFrame(rafId);
+    };
+
     module.exports = Engine;
 });
