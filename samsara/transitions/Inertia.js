@@ -5,7 +5,7 @@ define(function (require, exports, module) {
     var SimpleStream = require('../streams/SimpleStream');
 
     var now = Date.now;
-    var tolerance = 1e-9; // energy minimum
+    var tolerance = 1e-4; // energy minimum
 
     /**
      * Defines an inertial transition, which decreases
@@ -102,10 +102,21 @@ define(function (require, exports, module) {
      * @method halt
      */
     Inertia.prototype.halt = function () {
+        if (!this._active) return;
         var value = this.get();
         this.reset(value);
         this._active = false;
         this.emit('end', value);
+    };
+
+    /**
+     * Check to see if Inertia is actively transitioning
+     *
+     * @method isActive
+     * @returns {Boolean}
+     */
+    Inertia.prototype.isActive = function isActive() {
+        return this._active;
     };
 
     /**

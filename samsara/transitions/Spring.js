@@ -103,7 +103,7 @@ define(function (require, exports, module) {
      * @param value {Number}       Value
      * @param [velocity] {Number}  Velocity
      */
-    Spring.prototype.reset = function (value, velocity) {
+    Spring.prototype.reset = function reset(value, velocity) {
         this.value = value;
         this.velocity = velocity || 0;
     };
@@ -113,11 +113,22 @@ define(function (require, exports, module) {
      *
      * @method halt
      */
-    Spring.prototype.halt = function () {
+    Spring.prototype.halt = function halt() {
+        if (!this._active) return;
         var value = this.get();
         this.reset(value);
         this._active = false;
         this.emit('end', value);
+    };
+
+    /**
+     * Check to see if Spring is actively transitioning
+     *
+     * @method isActive
+     * @returns {Boolean}
+     */
+    Spring.prototype.isActive = function isActive(){
+        return this._active;
     };
 
     /**

@@ -243,6 +243,7 @@ define(function (require, exports, module) {
      * @method halt
      */
     Transitionable.prototype.halt = function () {
+        if (!this._active) return;
         this.reset(this.get());
         this.trigger('end', this.value);
     };
