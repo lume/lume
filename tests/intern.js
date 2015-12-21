@@ -7,7 +7,6 @@ define({
 	// <https://theintern.github.io/intern/#option-capabilities> for links to the different capabilities options for
 	// different services.
 	//
-	basePath: 'node_modules/intern/../../',
 	// Note that the `build` capability will be filled in with the current commit ID or build tag from the CI
 	// environment automatically
 	capabilities: {
@@ -43,7 +42,8 @@ define({
 
 	// Non-functional test suite(s) to run in each browser
 	suites: [
-		'tests/unit/events/EventEmitter'
+		'tests/unit/events/EventEmitter',
+		'tests/unit/streams/ResizeStream'
 	],
 
 	// Functional test suite(s) to execute against each browser once non-functional tests are completed
