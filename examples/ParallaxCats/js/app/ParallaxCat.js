@@ -29,7 +29,7 @@ define(function(require, exports, module) {
                 proportions: [1.25, 1.25]
             });
 
-            var transform = this.input.map(function (data) {
+            var parallaxTransform = this.input.map(function (data) {
                 var offset = shift * (data.index + data.progress);
                 return Transform.translateY(offset)
             });
@@ -43,7 +43,7 @@ define(function(require, exports, module) {
                 })
                 .add({
                     align: [.5, .5],
-                    transform: transform
+                    transform: parallaxTransform
                 })
                 .add(surface);
 
