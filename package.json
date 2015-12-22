@@ -3,8 +3,8 @@
   "description": "Streaming layout for the web",
   "url": "http://samsaraJS.org",
   "author": "David Valdman <dmvaldman@gmail.com>",
-  "version": "0.1.1",
-  "main": "samsara.js",
+  "version": "0.1.2",
+  "main": "dist/samsara.js",
   "scripts": {
     "test": "node_modules/.bin/intern-client config=tests/intern reporters=Pretty",
     "docs": "yuidoc ./samsara -t ./node_modules/yuidoc-bootstrap-theme -H ./node_modules/yuidoc-bootstrap-theme/helpers/helpers.js -o ./docs",
