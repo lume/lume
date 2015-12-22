@@ -119,6 +119,17 @@ define(function(require, exports, module) {
         this._eventOutput.unsubscribe(input);
     };
 
+    /**
+     * Get a registered input by key
+     *
+     * @method getInput
+     * @param key {String} Identifier for input class
+     * @return {Input}
+     */
+    GenericInput.prototype.getInput = function getInput(key){
+        return this._inputs[key];
+    };
+
     function _addSingleInput(key, options) {
         if (!registry[key]) return;
         this._inputs[key] = new (registry[key])(options);
