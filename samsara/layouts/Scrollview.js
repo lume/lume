@@ -39,13 +39,14 @@ define(function (require, exports, module) {
         defaults: {
             direction: CONSTANTS.DIRECTION.Y,
             drag: 0.5,
+            paginated: false,
+            pageChangeSpeed: 0.5,
             pageTransition: false
         },
         initialize: function (options) {
             this._currentIndex = 0;
             this._previousIndex = 0;
             this.itemOffset = 0;
-            this.nearestOffset = 0;
             this.items = [];
             this.velocity = 0;
             var isTouching = false;
@@ -90,22 +91,17 @@ define(function (require, exports, module) {
             genericInput.on('end', function (data) {
                 isTouching = false;
 
-                this.velocity = data.velocity;
-
                 switch (edge){
                     case EDGE.NONE:
-                        this.drag.reset(0);
-                        this.drag.set(0, {
-                            curve: 'inertia',
-                            velocity: this.velocity,
-                            damping: this.options.damping
-                        });
+                        (this.options.paginated)
+                            ? handlePagination.call(this, data.velocity)
+                            : handleDrag.call(this, data.velocity);
                         break;
                     case EDGE.TOP:
-                        handleEdge.call(this, this.overflow);
+                        handleEdge.call(this, this.overflow, data.velocity);
                         break;
                     case EDGE.BOTTOM:
-                        handleEdge.call(this, this.overflow);
+                        handleEdge.call(this, this.overflow, data.velocity);
                         break;
                 }
             }.bind(this));
@@ -262,10 +258,6 @@ define(function (require, exports, module) {
                     progress = itemOffset / currentLength;
                 }
 
-                this.nearestOffset = (itemOffset < currentLength / 2)
-                    ? itemOffset
-                    : itemOffset - currentLength;
-
                 this.itemOffset = itemOffset;
 
                 return {
@@ -293,13 +285,56 @@ define(function (require, exports, module) {
         this._previousIndex = index;
     }
 
-    function handleEdge(overflow){
+    function handleEdge(overflow, velocity){
         this.drag.halt();
         this.spring.reset(overflow);
         this.spring.set(0, {
             curve: 'spring',
-            velocity: this.velocity,
+            velocity: velocity,
             damping: 1
+        });
+    }
+
+    function handlePagination(velocity){
+        var pageChangeSpeed = this.options.pageChangeSpeed;
+        var currentLength = this.items[this._currentIndex].getSize()[this.options.direction];
+
+        var backLength = this.itemOffset;
+        var forwardLength = this.itemOffset - currentLength;
+
+        var position = this.itemOffset;
+        var positionThreshold = currentLength / 2;
+
+        var target;
+        if (velocity < 0){
+            // moving forward
+            target = (position > positionThreshold || velocity < -pageChangeSpeed)
+                ? forwardLength
+                : backLength;
+        }
+        else {
+            // moving backward
+            target = (position < positionThreshold || velocity > pageChangeSpeed)
+                ? backLength
+                : forwardLength;
+        }
+
+        this.spring.halt();
+        this.spring.reset(-target);
+        this.spring.set(0, {
+            curve: 'spring',
+            velocity: velocity,
+            period: 100,
+            damping: 0.9
+        });
+    }
+
+    function handleDrag(velocity){
+        this.drag.reset(0);
+        this.drag.set(0, {
+            curve: 'inertia',
+            velocity: velocity,
+            damping: this.options.damping
         });
     }
 
