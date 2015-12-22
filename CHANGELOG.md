@@ -1,3 +1,9 @@
+## 0.1.2
+
+**General**
+- Included support for tests with Intern.js
+- Minor modifications to examples
+
 ## 0.1.1
 
 **General**
