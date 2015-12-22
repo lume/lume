@@ -25,7 +25,7 @@ define(function (require, exports, module) {
 
     var scrollview = new Scrollview({
         direction: direction,
-        pageTransition: {curve: 'inertia', damping: 0.4}
+        damping : 0.3
     });
 
     dots.on('goto', function(page){
