@@ -1,0 +1,19 @@
+body {
+    background: black;
+    overflow: hidden;
+    margin: 0;
+}
+
+.dot {
+    border : 1px solid white;
+    border-radius: 50%;
+    box-shadow: 0 0 2px 0 rgba(0,0,0,0.7);
+    cursor: pointer;
+    z-index: 1;
+}
+
+.main-dot {
+    background: white;
+    border-radius: 50%;
+    cursor: pointer;
+}
