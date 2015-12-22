@@ -13,10 +13,10 @@ define(function (require, exports, module) {
             start : function () {
                 if (running) return;
                 running = true;
-                process.nextTick(function loop() {
+                setImmediate(function loop() {
                     if (!cancel) {
                         Engine.step();
-                        process.nextTick(loop);
+                        setImmediate(loop);
                     }
                     else running = false;
                 });
