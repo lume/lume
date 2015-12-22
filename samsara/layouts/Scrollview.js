@@ -41,19 +41,17 @@ define(function (require, exports, module) {
             drag: 0.5,
             pageTransition: false
         },
-        events : {
-            onEdge : onEdge,
-            offEdge : offEdge
-        },
         initialize: function (options) {
             this._currentIndex = 0;
             this._previousIndex = 0;
             this.itemOffset = 0;
+            this.nearestOffset = 0;
             this.items = [];
             this.velocity = 0;
             var isTouching = false;
             this.overflow = 0;
             var edge = EDGE.NONE;
+            var isMobile = (window.ontouchstart !== undefined);
 
             this.layout = new SequentialLayout({
                 direction: options.direction
@@ -91,7 +89,8 @@ define(function (require, exports, module) {
 
             genericInput.on('end', function (data) {
                 isTouching = false;
-                this.velocity += data.velocity;
+
+                this.velocity = data.velocity;
 
                 switch (edge){
                     case EDGE.NONE:
@@ -103,20 +102,10 @@ define(function (require, exports, module) {
                         });
                         break;
                     case EDGE.TOP:
-                        this.spring.reset(this.overflow);
-                        this.spring.set(0, {
-                            curve: 'spring',
-                            velocity: this.velocity,
-                            damping: 1
-                        });
+                        handleEdge.call(this, this.overflow);
                         break;
                     case EDGE.BOTTOM:
-                        this.spring.reset(this.overflow);
-                        this.spring.set(0, {
-                            curve: 'spring',
-                            velocity: this.velocity,
-                            damping: 1
-                        });
+                        handleEdge.call(this, this.overflow);
                         break;
                 }
             }.bind(this));
@@ -145,27 +134,28 @@ define(function (require, exports, module) {
 
                 if (this.spring.isActive()) return Math.round(top);
 
-                if (top > 0) {
-                    // reached top of scrollview
+                if (top > 0) { // reached top of scrollview
+                    if (!isMobile){
+                        position.set(0, true);
+                        return 0;
+                    }
+
                     this.overflow = top;
 
                     if (edge !== EDGE.TOP){
                         genericInput.setOptions({scale: .5});
 
                         edge = EDGE.TOP;
-                        if (!isTouching) {
-                            this.drag.halt();
-                            this.spring.reset(this.overflow);
-                            this.spring.set(0, {
-                                curve: 'spring',
-                                velocity: this.velocity,
-                                damping: 1
-                            });
-                        }
+                        if (!isTouching)
+                            handleEdge.call(this, this.overflow);
                     }
                 }
-                else if(top < overflow) {
-                    // reached bottom of scrollview
+                else if(top < overflow) { // reached bottom of scrollview
+                    if (!isMobile) {
+                        position.set(overflow, true);
+                        return overflow;
+                    }
+
                     this.overflow = top - overflow;
 
                     if (edge !== EDGE.BOTTOM){
@@ -173,15 +163,8 @@ define(function (require, exports, module) {
 
                         edge = EDGE.BOTTOM;
 
-                        if (!isTouching) {
-                            this.drag.halt();
-                            this.spring.reset(this.overflow);
-                            this.spring.set(0, {
-                                curve: 'spring',
-                                velocity: this.velocity,
-                                damping: 1
-                            });
-                        }
+                        if (!isTouching)
+                            handleEdge.call(this, this.overflow);
                     }
                 }
                 else if(top > overflow && top < 0 && edge !== EDGE.NONE){
@@ -202,9 +185,7 @@ define(function (require, exports, module) {
             });
 
             var container = new ContainerSurface({
-                properties: {
-                    overflow: 'hidden'
-                }
+                properties: {overflow: 'hidden'}
             });
 
             genericInput.subscribe(container);
@@ -212,21 +193,30 @@ define(function (require, exports, module) {
             container.add(displacementNode).add(this.layout);
             this.add(container);
         },
+        getVelocity: function(){
+            return this.velocity;
+        },
         goto: function (index, transition, callback) {
             transition = transition || this.options.transition;
             var position = this.itemOffset;
-            if (index > this._currentIndex) {
+
+            if (index > this._currentIndex && index < this.items.length) {
                 for (var i = this._currentIndex; i < index; i++)
                     position -= this.items[i].getSize()[this.options.direction];
             }
-            else if (index < this._currentIndex) {
+            else if (index < this._currentIndex && index >= 0) {
                 for (var i = this._currentIndex; i > index; i--)
                     position += this.items[i].getSize()[this.options.direction];
             }
-            else return;
 
+            if (position == 0) return;
+
+            this.spring.halt();
             this.spring.reset(0);
             this.spring.set(Math.ceil(position), transition, callback);
+        },
+        getCurrentIndex: function(){
+            return this._currentIndex;
         },
         addItems: function (items) {
             this.layout.addItems(items);
@@ -239,7 +229,8 @@ define(function (require, exports, module) {
 
             var accumLength = 0;
             var itemOffsetStream = Stream.lift(function () {
-                if (arguments[1] === undefined) return false;
+                if (arguments[0] === undefined || arguments[1] === undefined)
+                    return false;
 
                 var offset = arguments[0];
                 var direction = this.options.direction;
@@ -254,6 +245,7 @@ define(function (require, exports, module) {
 
                 if (itemOffset >= currentLength) {
                     // pass currentNode forwards
+                    if (this._currentIndex == items.length - 1) return false;
                     this._currentIndex++;
                     progress = 0;
                     accumLength += currentLength;
@@ -270,9 +262,11 @@ define(function (require, exports, module) {
                     progress = itemOffset / currentLength;
                 }
 
-                this.itemOffset = (itemOffset < currentLength / 2)
+                this.nearestOffset = (itemOffset < currentLength / 2)
                     ? itemOffset
                     : itemOffset - currentLength;
+
+                this.itemOffset = itemOffset;
 
                 return {
                     index: this._currentIndex,
@@ -299,12 +293,14 @@ define(function (require, exports, module) {
         this._previousIndex = index;
     }
 
-    function onEdge(edge){
-
-    }
-
-    function offEdge(edge){
-
+    function handleEdge(overflow){
+        this.drag.halt();
+        this.spring.reset(overflow);
+        this.spring.set(0, {
+            curve: 'spring',
+            velocity: this.velocity,
+            damping: 1
+        });
     }
 
     module.exports = Scrollview;
