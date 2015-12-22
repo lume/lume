@@ -1,3 +1,8 @@
+## 0.1.3
+
+**General**
+- Fix npm packaging issue
+
 ## 0.1.2
 
 **General**
