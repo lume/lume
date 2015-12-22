@@ -79,6 +79,11 @@ define(function(require, exports, module) {
         var self = this;
         this._scrollEnd = Timer.debounce(function(){
             self._inProgress = false;
+            // this prevents velocities for mousewheel events vs trackpad ones
+            if (self._payload.delta !== 0){
+                self._payload.velocity = 0;
+            }
+
             self._eventOutput.emit('end', self._payload);
         }, 100);
     }
