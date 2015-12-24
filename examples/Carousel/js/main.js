@@ -3,17 +3,18 @@ define(function (require, exports, module) {
     var Surface = require('samsara/dom/Surface');
     var Scrollview = require('samsara/layouts/Scrollview');
 
-    var N = 3;
+    var Dots = require('./app/Dots');
+
+    var N = 10;
 
     var hue = 0;
     var surfaces = [];
     for (var i = 0; i < N; i++){
         var surface = new Surface({
             content : i,
+            classes : ['page'],
             properties : {
-                fontSize : '60px',
-                textAlign : 'center',
-                background : 'hsl(' + hue + ',100%,50%)'
+                background : 'hsl(' + hue + ',80%,50%)'
             }
         });
 
@@ -21,7 +22,7 @@ define(function (require, exports, module) {
         hue += 360 / N;
     }
 
-    carousel = new Scrollview({
+    var carousel = new Scrollview({
         direction : 0,
         paginated : true
     });
@@ -33,14 +34,10 @@ define(function (require, exports, module) {
     };
 
     var leftArrow = new Surface({
-        content : '⟨',
+        content : '❮',
         size : [true, true],
         origin : [0,0.5],
-        properties : {
-            fontSize : '60px',
-            color : 'white',
-            zIndex : 1
-        }
+        classes : ['arrow']
     });
 
     leftArrow.on('click', function () {
@@ -48,14 +45,10 @@ define(function (require, exports, module) {
     });
 
     var rightArrow = new Surface({
-        content: '⟩',
+        content: '❯',
         size: [true, true],
         origin: [1, 0.5],
-        properties: {
-            fontSize: '60px',
-            color: 'white',
-            zIndex: 1
-        }
+        classes: ['arrow']
     });
 
     rightArrow.on('click', function () {
@@ -64,11 +57,22 @@ define(function (require, exports, module) {
 
     carousel.addItems(surfaces);
 
+    var dots = new Dots({
+        numDots: N,
+        diameter: 10,
+        spacing: 4
+    });
+
+    carousel.on('page', function (index) {
+        dots.trigger('set', index);
+    });
+
     var context = new Context();
     context.add(carousel);
 
     context.add({align : [0,.5]}).add(leftArrow);
     context.add({align : [1,.5]}).add(rightArrow);
+    context.add({align : [.5,.9]}).add(dots);
 
     context.mount(document.body);
 });

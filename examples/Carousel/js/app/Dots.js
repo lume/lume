@@ -29,7 +29,6 @@ define(function (require, exports, module) {
                 direction : 0
             });
 
-            var self = this;
             var dots = [];
             for (var i = 0; i < options.numDots; i++){
                 var dot = new Surface({
@@ -37,12 +36,6 @@ define(function (require, exports, module) {
                     origin: [.5, .5],
                     classes : ['dot']
                 });
-
-                //(function(index){
-                //    dot.on('click', function () {
-                //        self.set(index, false);
-                //    });
-                //})(i);
 
                 dots.push(dot);
             }
