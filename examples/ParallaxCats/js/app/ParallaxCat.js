@@ -7,17 +7,14 @@ define(function(require, exports, module) {
     var ParallaxCat = View.extend({
         defaults : {
             path : '',
-            offset : 0
+            parallaxAmount : 70,
+            index : 0,
+            skewAngle : 0
         },
         initialize: function (options) {
-            var shift = 50;
-            var angle = Math.PI / 25;
-
             var container = new ContainerSurface({
-                properties: {
-                    overflow: 'hidden',
-                    border: '2px solid black'
-                }
+                classes: ['cat'],
+                properties: {overflow: 'hidden'}
             });
 
             var surface = new Surface({
@@ -26,19 +23,19 @@ define(function(require, exports, module) {
                     src: options.path
                 },
                 origin: [.5, .5],
-                proportions: [1.25, 1.25]
+                proportions: [1.5, 1.5]
             });
 
             var parallaxTransform = this.input.map(function (data) {
-                var offset = shift * (data.index + data.progress);
+                var offset = options.parallaxAmount * (data.index + data.progress);
                 return Transform.translateY(offset)
             });
 
             container
                 .add({
                     transform: Transform.compose(
-                        Transform.skewY(angle),
-                        Transform.translateY(options.offset)
+                        Transform.skewY(options.skewAngle),
+                        Transform.translateY(-options.index * options.parallaxAmount)
                     )
                 })
                 .add({
@@ -48,7 +45,7 @@ define(function(require, exports, module) {
                 .add(surface);
 
             this
-                .add({transform: Transform.skewY(-angle)})
+                .add({transform: Transform.skewY(-options.skewAngle)})
                 .add(container);
         }
     });
