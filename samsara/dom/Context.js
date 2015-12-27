@@ -78,6 +78,13 @@ define(function(require, exports, module) {
         this._eventForwarder = function _eventForwarder(event) {
             this._eventOutput.emit(event.type, event);
         }.bind(this);
+
+        // Prevents dragging of entire page
+        this.on('deploy', function(target){
+            target.addEventListener('touchmove', function (event) {
+                event.preventDefault();
+            }, false);
+        })
     }
 
     /**

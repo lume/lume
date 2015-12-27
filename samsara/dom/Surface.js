@@ -13,6 +13,7 @@ define(function(require, exports, module) {
     var dirtyQueue = require('../core/queues/dirtyQueue');
 
     var isTouchEnabled = "ontouchstart" in window;
+    var isIOS = /iPad|iPhone|iPod/.test(navigator.platform);
 
     /**
      * Surface is a wrapper for a DOM element animated by Samsara.
@@ -151,23 +152,32 @@ define(function(require, exports, module) {
             target.removeAttribute(key);
     }
 
-    function preventDrag(){
-        if (this._currentTarget){
-            this._currentTarget.addEventListener('touchmove', function (event) {
-                event.preventDefault();
-            }, false);
-        }
-        else {
-            this.on('deploy', function (target) {
-                target.addEventListener('touchmove', function (event) {
-                    event.preventDefault();
-                }, false);
-            }.bind(this));
-        }
-    }
-
     function enableScroll(){
         this.addClass('samsara-scrollable');
+
+        if (!isTouchEnabled) return;
+
+        this.on('deploy', function(target){
+            // Hack to prevent page scrolling for iOS when scroll starts at extremes
+            if (isIOS) {
+                target.addEventListener('touchstart', function () {
+                    var top = target.scrollTop;
+                    var height = target.offsetHeight;
+                    var scrollHeight = target.scrollHeight;
+
+                    if (top == 0)
+                        target.scrollTop = 1;
+                    else if (top + height == scrollHeight)
+                        target.scrollTop = scrollHeight - height - 1;
+
+                }, false);
+            }
+
+            // Prevent bubbling to capture phase of window's touchmove event which prevents default.
+            target.addEventListener('touchmove', function(event){
+                event.stopPropagation();
+            }, false);
+        });
     }
     
     /**
@@ -341,7 +351,6 @@ define(function(require, exports, module) {
         if (options.content !== undefined) this.setContent(options.content);
         if (options.aspectRatio !== undefined) this.setAspectRatio(options.aspectRatio);
         if (options.enableScroll) enableScroll.call(this);
-        else if (isTouchEnabled) preventDrag.call(this);
     };
 
     /**
