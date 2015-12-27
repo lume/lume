@@ -1,100 +1,118 @@
 define(function(require, exports, module) {
-    var Transitionable = require('samsara/core/Transitionable');
     var Surface = require('samsara/dom/Surface');
-    var Stream = require('samsara/streams/Stream');
     var View = require('samsara/core/View');
-    var SequentialLayout = require('samsara/layouts/SequentialLayout');
 
-    var NavItem = require('./NavItem');
+    var CrossFader = require('./CrossFader');
 
     // Defines the navigation bar. Listens to the Drawer Layout
     // and sends these events to the navigation items.
     var NavBar = View.extend({
-        // Executed on instantiation. Options are patched by the defaults if unspecified.
-        initialize : function(options){
-            // Create a surface with blue color to sit behind the nav
+        initialize : function(){
+
+            // The origin and alignment of the "back" and "messages"
+            // surfaces will go from [0,0] to [.5,0] as the input goes
+            // from 0 to 1
+            var leftAlignAndOrigin = this.input.map(function (data) {
+                var progress = Math.max(data.progress, 0);
+                return [0.5 * progress, 0]
+            });
+
+            // The origin and alignment of the "middle" surface will
+            // go from [0.5,0] to [1,0] as the input goes from 0 to 1
+            var middleAlignAndOrigin = this.input.map(function (data) {
+                var progress = Math.max(data.progress, 0);
+                return [0.5 * (1 + progress), 0]
+            });
+
+            // Create a surface with faint blue color to be a background
+            // of the navigation bar
             var background = new Surface({
                 classes : ['navBackground']
             });
 
-            // Create left nav item containing "back" and "messages" sections.
-            // Translate them by animating their origin relative to the input.
-            var left = new NavItem({
-                contentFront : 'Back',
-                contentBack : 'Messages',
-                classes : ['nav', 'left', 'item', 'center'],
-                proportions : [1/3, 1],
-                origin : this.input.map(function(data){
-                    var progress = Math.max(data.progress, 0);
-                    return [-progress, 0];
-                })
+            // Create a "back" surface
+            var back = new Surface({
+                size: [true, undefined],  // width = HTML width, height inherits from navBar
+                content: 'Back',
+                classes: ['nav', 'back', 'center'],
+                origin: leftAlignAndOrigin
             });
 
-            // Create the center nav item.
-            // Translate them by animating their origin relative to the input.
-            var center = new NavItem({
-                contentFront : 'goo.gl/nhRGeg',
-                classes : ['nav', 'item', 'middle', 'center'],
-                proportions : [1/3, 1],
-                origin : this.input.map(function(data){
-                    var progress = Math.max(data.progress, 0);
-                    return [-progress, 0];
-                })
-            });
-
-            // Create the right nav item with details and compose surfaces.
-            var right = new NavItem({
-                contentFront : 'Details',
-                contentBack : '<i class="ion-ios-compose-outline"></i>',
-                classes : ['nav', 'right', 'item', 'center'],
-                proportions : [1/3, 1]
-            });
-
-            // Layout the nav items horizontally in a SequentialLayout
-            var layout = new SequentialLayout({
-                direction : SequentialLayout.DIRECTION.X
-            });
-            layout.addItems([left, center, right]);
-
-            // Create the edit surface and position on the left
-            var edit = new Surface({
-                content : 'Edit',
-                classes : ['nav', 'edit', 'item'],
-                opacity : this.input.map(function(data){
-                    return data.progress;
-                })
-            });
-
-            // Create back arrow surface and position on the left
-            var backArrow = new Surface({
-                content : '<i class="ion-chevron-left"></i>',
-                classes : ['nav', 'edit', 'item'],
-                opacity : this.input.map(function(data){
-                    return Math.pow(1 - data.progress, 4);
-                })
-            });
-
-            // Create the render subtree
-            this.add(background);
-            this.add(edit);
-            this.add(backArrow);
-            this.add(layout);
-
-            // Convert a `front click` event from the navItem to an `open` event
-            left.on('front click', function(){
+            // Emit an `open` event when the back button is clicked
+            back.on('click', function () {
                 this.emit('open');
             }.bind(this));
 
-            // Convert a `back click` event from the navItem to a `close` event
-            left.on('back click', function(){
+            // Create a "messages" surface
+            var messages = new Surface({
+                size: [true, undefined],
+                content: 'Messages',
+                classes: ['nav', 'center'],
+                origin: leftAlignAndOrigin
+            });
+
+            // Cross-fade between these the "back" and "messages" surfaces
+            // as the input goes from 0 to 1
+            var leftFader = new CrossFader();
+            leftFader.subscribe(this.input);
+            leftFader.addFront(back);
+            leftFader.addBack(messages);
+
+            // Create back arrow surface. Here instead of creating a `<div>`
+            // we create an `<img>` tag.
+
+            // Note: we scale down this element and manually center it as opposed
+            // to applying the `center` CSS class.
+            var backArrow = new Surface({
+                size: [true, false],
+                proportions: [false, 0.4],
+                tagName: 'img',
+                origin: [0, 0.5],
+                attributes: {
+                    src: './assets/chevron-left.svg'
+                },
+                classes: ['nav', 'backArrow']
+            });
+
+            // Create a "hide" surface
+            var hide = new Surface({
+                size: [true, true],
+                content: 'Hide',
+                classes: ['nav', 'hide'],
+                origin: [0,.5]
+            });
+
+            // Emit a `close` event when the "hide" surface is clicked
+            hide.on('click', function () {
                 this.emit('close');
             }.bind(this));
 
-            // Views listen to the input to get progress data
-            // coming from the drawer layout
-            left.subscribe(this.input);
-            center.subscribe(this.input);
-            right.subscribe(this.input);
+            // Cross-fade between these the "backArrow" and "hide" surfaces
+            // as the input goes from 0 to 1
+            var arrowHideFader = new CrossFader();
+            arrowHideFader.subscribe(this.input);
+            arrowHideFader.addFront(backArrow);
+            arrowHideFader.addBack(hide);
+
+            // Create a "middle" surface
+            var middle = new Surface({
+                size: [true, undefined],
+                content: 'goo.gl/nhRGeg',
+                classes: ['nav', 'middle', 'center'],
+                origin: middleAlignAndOrigin
+            });
+
+            // Fade out the "middle" surface as the input goes from 0 to 1
+            var middleFader = new CrossFader();
+            middleFader.subscribe(this.input);
+            middleFader.addFront(middle);
+
+            // Create the render subtree
+            this.add(background);
+
+            this.add({align: [0, 0.5]}).add(arrowHideFader);
+            this.add({align: leftAlignAndOrigin}).add(leftFader);
+            this.add({align : middleAlignAndOrigin}).add(middleFader);
         }
     });
 
