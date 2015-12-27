@@ -50,11 +50,6 @@ define(function(require, exports, module) {
                 transform: drawerTransform,
                 opacity : opacity
             }).add(drawer);
-
-            // Emit a `close` event to close the drawer.
-            drawer.on('click', function(){
-                this.emit('close');
-            }.bind(this));
         }
     });
 

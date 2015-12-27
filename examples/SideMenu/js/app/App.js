@@ -65,7 +65,6 @@ define(function(require, exports, module) {
             // Listen to events emitted from the navBar and drawer.
             // Specifically, `open` and `close` events.
             this.subscribe(navBar);
-            this.subscribe(drawer);
 
             // Create render subtree.
             this.add(
