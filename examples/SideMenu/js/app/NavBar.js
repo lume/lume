@@ -2,12 +2,22 @@ define(function(require, exports, module) {
     var Surface = require('samsara/dom/Surface');
     var View = require('samsara/core/View');
 
-    var CrossFader = require('./CrossFader');
-
     // Defines the navigation bar. Listens to the Drawer Layout
     // and sends these events to the navigation items.
     var NavBar = View.extend({
         initialize : function(){
+
+            // Define how the nav fades out for the "back", "middle" and "leftArrow"
+            // surfaces as input goes from 0 to 1
+            var fadeOut = this.input.map(function(data){
+                return Math.pow(1 - data.progress, 4);
+            });
+
+            // Define how the nav fades in for the "hide" and "messages"
+            // surfaces as input goes from 0 to 1
+            var fadeIn = this.input.map(function(data){
+                return data.progress;
+            });
 
             // The origin and alignment of the "back" and "messages"
             // surfaces will go from [0,0] to [.5,0] as the input goes
@@ -35,7 +45,8 @@ define(function(require, exports, module) {
                 size: [true, undefined],  // width = HTML width, height inherits from navBar
                 content: 'Back',
                 classes: ['nav', 'back', 'center'],
-                origin: leftAlignAndOrigin
+                origin: leftAlignAndOrigin,
+                opacity: fadeOut
             });
 
             // Emit an `open` event when the back button is clicked
@@ -48,15 +59,9 @@ define(function(require, exports, module) {
                 size: [true, undefined],
                 content: 'Messages',
                 classes: ['nav', 'center'],
-                origin: leftAlignAndOrigin
+                origin: leftAlignAndOrigin,
+                opacity: fadeIn
             });
-
-            // Cross-fade between these the "back" and "messages" surfaces
-            // as the input goes from 0 to 1
-            var leftFader = new CrossFader();
-            leftFader.subscribe(this.input);
-            leftFader.addFront(back);
-            leftFader.addBack(messages);
 
             // Create back arrow surface. Here instead of creating a `<div>`
             // we create an `<img>` tag.
@@ -67,19 +72,20 @@ define(function(require, exports, module) {
                 size: [true, false],
                 proportions: [false, 0.4],
                 tagName: 'img',
-                origin: [0, 0.5],
+                classes: ['nav', 'backArrow'],
                 attributes: {
                     src: './assets/chevron-left.svg'
                 },
-                classes: ['nav', 'backArrow']
+                origin: [0, 0.5],
+                opacity: fadeOut
             });
 
             // Create a "hide" surface
             var hide = new Surface({
-                size: [true, true],
+                size: [true, undefined],
                 content: 'Hide',
-                classes: ['nav', 'hide'],
-                origin: [0,.5]
+                classes: ['nav', 'hide', 'center'],
+                opacity: fadeIn
             });
 
             // Emit a `close` event when the "hide" surface is clicked
@@ -87,32 +93,22 @@ define(function(require, exports, module) {
                 this.emit('close');
             }.bind(this));
 
-            // Cross-fade between these the "backArrow" and "hide" surfaces
-            // as the input goes from 0 to 1
-            var arrowHideFader = new CrossFader();
-            arrowHideFader.subscribe(this.input);
-            arrowHideFader.addFront(backArrow);
-            arrowHideFader.addBack(hide);
-
             // Create a "middle" surface
             var middle = new Surface({
                 size: [true, undefined],
                 content: 'goo.gl/nhRGeg',
                 classes: ['nav', 'middle', 'center'],
-                origin: middleAlignAndOrigin
+                origin: middleAlignAndOrigin,
+                opacity: fadeOut
             });
-
-            // Fade out the "middle" surface as the input goes from 0 to 1
-            var middleFader = new CrossFader();
-            middleFader.subscribe(this.input);
-            middleFader.addFront(middle);
 
             // Create the render subtree
             this.add(background);
-
-            this.add({align: [0, 0.5]}).add(arrowHideFader);
-            this.add({align: leftAlignAndOrigin}).add(leftFader);
-            this.add({align : middleAlignAndOrigin}).add(middleFader);
+            this.add(hide);
+            this.add({align: [0, 0.5]}).add(backArrow);
+            this.add({align: leftAlignAndOrigin}).add(back);
+            this.add({align: leftAlignAndOrigin}).add(messages);
+            this.add({align : middleAlignAndOrigin}).add(middle);
         }
     });
 
