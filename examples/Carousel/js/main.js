@@ -4,6 +4,8 @@ define(function (require, exports, module) {
     var Scrollview = require('samsara/layouts/Scrollview');
 
     var Dots = require('./app/Dots');
+    var FastClick = require('./lib/fastClick');
+    FastClick.attach(document.body);
 
     var N = 10;
 
