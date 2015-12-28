@@ -125,16 +125,10 @@ define(function (require, exports, module) {
                 this.velocity = this.spring.getVelocity();
             }.bind(this));
 
-            if (this.options.paginated){
-                this.spring.on('end', function () {
+            position.on('end', function () {
+                if (!this.spring.isActive())
                     changePage.call(this, this._currentIndex);
-                }.bind(this));
-            }
-            else {
-                this.drag.on('end', function () {
-                    changePage.call(this, this._currentIndex);
-                }.bind(this));
-            }
+            }.bind(this));
 
             // overflow is a measure of how much of the content
             // extends past the viewport
@@ -212,7 +206,7 @@ define(function (require, exports, module) {
         getVelocity: function(){
             return this.velocity;
         },
-        goto: function (index, transition, callback) {
+        goTo: function (index, transition, callback) {
             transition = transition || this.options.transition;
             var position = this.itemOffset;
 
