@@ -125,9 +125,16 @@ define(function (require, exports, module) {
                 this.velocity = this.spring.getVelocity();
             }.bind(this));
 
-            position.on('end', function(){
-                changePage.call(this, this._currentIndex);
-            }.bind(this));
+            if (this.options.paginated){
+                this.spring.on('end', function () {
+                    changePage.call(this, this._currentIndex);
+                }.bind(this));
+            }
+            else {
+                this.drag.on('end', function () {
+                    changePage.call(this, this._currentIndex);
+                }.bind(this));
+            }
 
             // overflow is a measure of how much of the content
             // extends past the viewport
@@ -144,6 +151,7 @@ define(function (require, exports, module) {
                 if (top > 0) { // reached top of scrollview
                     if (!isMobile){
                         position.set(0, true);
+                        changePage.call(this, this._currentIndex);
                         return 0;
                     }
 
@@ -160,6 +168,7 @@ define(function (require, exports, module) {
                 else if(top < overflow) { // reached bottom of scrollview
                     if (!isMobile) {
                         position.set(overflow, true);
+                        changePage.call(this, this._currentIndex);
                         return overflow;
                     }
 
