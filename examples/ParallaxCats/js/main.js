@@ -5,13 +5,12 @@ define(function (require, exports, module) {
 
     var ParallaxCat = require('./app/ParallaxCat');
 
-    var direction = 1;
     var N = 8;
     var size = [400, 400];
 
     var scrollview = new Scrollview({
         origin : [.5,.5],
-        direction: direction,
+        direction: Scrollview.DIRECTION.Y,
         damping : 0.3
     });
 
@@ -20,7 +19,7 @@ define(function (require, exports, module) {
         var parallaxCat = new ParallaxCat({
             size: [undefined, size[1]],
             skewAngle: Math.PI / 25,
-            path: './assets/cat' + (i + 1) + '.jpg',
+            src: './assets/cat' + (i + 1) + '.jpg',
             index: i
         });
 

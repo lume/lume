@@ -6,7 +6,7 @@ define(function(require, exports, module) {
 
     var ParallaxCat = View.extend({
         defaults : {
-            path : '',
+            src : '',
             parallaxAmount : 70,
             index : 0,
             skewAngle : 0
@@ -20,7 +20,7 @@ define(function(require, exports, module) {
             var surface = new Surface({
                 tagName: 'img',
                 attributes: {
-                    src: options.path
+                    src: options.src
                 },
                 origin: [.5, .5],
                 proportions: [1.5, 1.5]
