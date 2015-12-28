@@ -41,7 +41,17 @@ define(function (require, exports, module) {
             drag: 0.5,
             paginated: false,
             pageChangeSpeed: 0.5,
-            pageTransition: false
+            pageTransition: {
+                curve : 'spring',
+                period : 100,
+                damping : 0.9
+            },
+            edgeTransition: {
+                curve: 'spring',
+                period: 100,
+                damping: 1
+            },
+            edgeGrip: 0.5
         },
         initialize: function (options) {
             this._currentIndex = 0;
@@ -51,6 +61,7 @@ define(function (require, exports, module) {
             this.velocity = 0;
             var isTouching = false;
             this.overflow = 0;
+
             var edge = EDGE.NONE;
             var isMobile = (window.ontouchstart !== undefined);
 
@@ -139,7 +150,7 @@ define(function (require, exports, module) {
                     this.overflow = top;
 
                     if (edge !== EDGE.TOP){
-                        genericInput.setOptions({scale: .5});
+                        genericInput.setOptions({scale: this.options.edgeGrip});
 
                         edge = EDGE.TOP;
                         if (!isTouching)
@@ -268,16 +279,11 @@ define(function (require, exports, module) {
 
             this.output.subscribe(itemOffsetStream);
 
-            itemOffsetStream.on('start', function (value) {
-            }.bind(this));
-
-            itemOffsetStream.on('update', function (value) {
-            }.bind(this));
-
-            itemOffsetStream.on('end', function (value) {
-            }.bind(this));
+            itemOffsetStream.on('start', function () {});
+            itemOffsetStream.on('update', function () {});
+            itemOffsetStream.on('end', function () {});
         }
-    });
+    }, CONSTANTS);
 
     function changePage(index) {
         if (index == this._previousIndex) return;
@@ -288,11 +294,8 @@ define(function (require, exports, module) {
     function handleEdge(overflow, velocity){
         this.drag.halt();
         this.spring.reset(overflow);
-        this.spring.set(0, {
-            curve: 'spring',
-            velocity: velocity,
-            damping: 1
-        });
+        this.options.edgeTransition.velocity = velocity;
+        this.spring.set(0, this.options.edgeTransition);
     }
 
     function handlePagination(velocity){
@@ -319,17 +322,14 @@ define(function (require, exports, module) {
                 : forwardLength;
         }
 
+        this.options.pageTransition.velocity = velocity;
         this.spring.halt();
         this.spring.reset(-target);
-        this.spring.set(0, {
-            curve: 'spring',
-            velocity: velocity,
-            period: 100,
-            damping: 0.9
-        });
+        this.spring.set(0, this.options.pageTransition);
     }
 
     function handleDrag(velocity){
+        this.drag.halt();
         this.drag.reset(0);
         this.drag.set(0, {
             curve: 'inertia',
