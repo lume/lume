@@ -337,7 +337,7 @@ define(function (require, exports, module) {
         this.drag.set(0, {
             curve: 'inertia',
             velocity: velocity,
-            damping: this.options.damping
+            drag: this.options.drag
         });
     }
 

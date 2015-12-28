@@ -22,7 +22,7 @@ define(function (require, exports, module) {
 
         this.value = value || 0;
         this.velocity = velocity || 0;
-        this.damping = 0;
+        this.drag = 0;
 
         this.energy = null;
         this._active = false;
@@ -36,7 +36,7 @@ define(function (require, exports, module) {
 
     Inertia.DEFAULT_OPTIONS = {
         velocity: 0,
-        damping: 0.1
+        drag: 0.1
     };
 
     Inertia.prototype = Object.create(SimpleStream.prototype);
@@ -57,9 +57,9 @@ define(function (require, exports, module) {
 
         this.value = value;
 
-        this.damping = (transition.damping == undefined)
-            ? Inertia.DEFAULT_OPTIONS.damping
-            : Math.pow(Math.min(transition.damping, 1), 3);
+        this.drag = (transition.drag == undefined)
+            ? Inertia.DEFAULT_OPTIONS.drag
+            : Math.pow(Math.min(transition.drag, 1), 3);
 
         this.velocity = transition.velocity || this.velocity;
     };
@@ -131,7 +131,7 @@ define(function (require, exports, module) {
         var dt = currentTime - this._previousTime;
         this._previousTime = currentTime;
 
-        this.velocity *= (1 - this.damping);
+        this.velocity *= (1 - this.drag);
         this.value += dt * this.velocity;
 
         var energy = 0.5 * this.velocity * this.velocity;

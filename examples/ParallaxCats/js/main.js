@@ -11,7 +11,7 @@ define(function (require, exports, module) {
     var scrollview = new Scrollview({
         origin : [.5,.5],
         direction: Scrollview.DIRECTION.Y,
-        damping : 0.3
+        drag : 0.3
     });
 
     var surfaces = [];
