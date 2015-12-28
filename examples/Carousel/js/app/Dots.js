@@ -11,9 +11,6 @@ define(function (require, exports, module) {
             diameter : 5,
             numDots : 5
         },
-        events : {
-            set : "set"
-        },
         initialize: function (options) {
             var diameter = options.diameter;
             var spacing = options.spacing;
@@ -61,13 +58,12 @@ define(function (require, exports, module) {
             node.add(dotLayout);
             node.add(mainDotLayout).add(mainDot);
         },
-        set : function(index, silent){
+        set : function(index){
             var length = this.options.diameter + this.options.spacing;
             this.opacity.set(0, {duration: 100}, function () {
                 this.x.set(index * length);
                 this.opacity.set(1, {duration: 50});
             }.bind(this));
-            if (!silent) this.emit('goto', index);
         }
     });
 
