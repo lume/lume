@@ -44,7 +44,7 @@ define(function (require, exports, module) {
             pageTransition: {
                 curve : 'spring',
                 period : 100,
-                damping : 0.9
+                damping : 0.8
             },
             edgeTransition: {
                 curve: 'spring',
@@ -207,7 +207,7 @@ define(function (require, exports, module) {
             return this.velocity;
         },
         goTo: function (index, transition, callback) {
-            transition = transition || this.options.transition;
+            transition = transition || this.options.pageTransition;
             var position = this.itemOffset;
 
             if (index > this._currentIndex && index < this.items.length) {
