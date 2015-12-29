@@ -149,6 +149,15 @@ define(function(require, exports, module) {
             this._sizeNode.set({proportions : proportions});
         },
         /**
+         * Setter for proportions.
+         *
+         * @method setProportions
+         * @param proportions {Number[]|Stream} Proportions as [x,y], or a stream.
+         */
+        setAspectRatio: function setProportions(aspectRatio) {
+            this._sizeNode.set({aspectRatio: aspectRatio});
+        },
+        /**
          * Setter for origin.
          *
          * @method setOrigin
@@ -177,6 +186,9 @@ define(function(require, exports, module) {
                     break;
                 case 'proportions':
                     this.setProportions(value);
+                    break;
+                case 'aspectRatio':
+                    this.setAspectRatio(value);
                     break;
                 case 'origin':
                     this.setOrigin(value);
