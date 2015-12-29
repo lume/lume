@@ -16,13 +16,7 @@ define(function(require, exports, module) {
         initialize : function(options){
             // Containing surface to apply skew to.
             var skewedContainer = new ContainerSurface({
-                proportions : [1/3, false], // the width is a third the parent width, the height unspecified
-                aspectRatio : 1,            // sets the height to be equal to the width
-                properties : {
-                    overflow : 'hidden',
-                    border: '1px solid transparent',
-                    pointerEvents: 'none'
-                }
+                classes : ['wedge-container']
             });
 
             // A circle to apply inverse skew to
@@ -30,18 +24,14 @@ define(function(require, exports, module) {
             // thickness equal to the border radius.
             var wedge = new Surface({
                 origin : [.5,.5],           // place the center of the circle at (0,0)
-                properties : {
-                    borderRadius : '50%',
-                    borderColor : 'rgba(255,255,255,0.9)',
-                    borderStyle : 'solid'
-                }
+                classes : ['wedge']
             });
 
             // When the wedge resizes, change the border proportionally.
             wedge.on('resize', function(size){
                 wedge.setProperties({
                     borderWidth : Math.round(size[0]/3) + 'px'
-                })
+                });
             });
 
             // Spinning animation mapped from the swivel transitionable.

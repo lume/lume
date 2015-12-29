@@ -3,3 +3,15 @@ body {
     overflow: hidden;
     margin: 0;
 }
+
+.wedge {
+    border-radius : 50%;
+    border-color: rgba(255,255,255,0.9);
+    border-style: solid;
+}
+
+.wedge-container {
+    overflow : hidden;
+    border : 1px solid transparent;
+    pointer-events : none;
+}
