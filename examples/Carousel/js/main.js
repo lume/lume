@@ -1,13 +1,13 @@
 define(function (require, exports, module) {
     var Context = require('samsara/dom/Context');
-    var App = require('./app/App');
+    var Carousel = require('./app/Carousel');
 
     var FastClick = require('./lib/fastClick');
     FastClick.attach(document.body);
 
     var N = 10;
 
-    var app = new App({
+    var carousel = new Carousel({
         pages : N,
         arrows : {
             leftContent : '❮',
@@ -21,6 +21,6 @@ define(function (require, exports, module) {
     });
 
     var context = new Context();
-    context.add(app);
+    context.add(carousel);
     context.mount(document.body);
 });

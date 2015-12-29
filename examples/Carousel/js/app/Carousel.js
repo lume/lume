@@ -6,7 +6,7 @@ define(function (require, exports, module) {
     var Dots = require('./Dots');
     var Arrows = require('./Arrows');
 
-    var App = View.extend({
+    var Carousel = View.extend({
         defaults: {
             pages: 10
         },
@@ -79,5 +79,5 @@ define(function (require, exports, module) {
         }
     });
 
-    module.exports = App;
+    module.exports = Carousel;
 });
