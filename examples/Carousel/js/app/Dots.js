@@ -30,7 +30,6 @@ define(function (require, exports, module) {
             for (var i = 0; i < options.numDots; i++){
                 var dot = new Surface({
                     size: [diameter, diameter],
-                    origin: [.5, .5],
                     classes : ['dot']
                 });
 
@@ -48,7 +47,6 @@ define(function (require, exports, module) {
 
             var mainDot = new Surface({
                 size: [diameter, diameter],
-                origin: [.5, .5],
                 classes : ['main-dot']
             });
 
