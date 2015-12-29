@@ -9,7 +9,7 @@ define(function(require, exports, module) {
             src : '',
             parallaxAmount : 70,
             index : 0,
-            skewAngle : 0
+            skew : 0
         },
         initialize: function (options) {
             var container = new ContainerSurface({
@@ -17,13 +17,13 @@ define(function(require, exports, module) {
                 properties: {overflow: 'hidden'}
             });
 
-            var surface = new Surface({
-                tagName: 'img',
-                attributes: {
-                    src: options.src
+            var cat = new Surface({
+                properties: {
+                    backgroundImage: 'url(' + options.src + ')',
+                    backgroundSize: 'cover'
                 },
                 origin: [.5, .5],
-                proportions: [1.5, 1.5]
+                proportions: [1.3, 1.3]
             });
 
             var parallaxTransform = this.input.map(function (data) {
@@ -34,7 +34,7 @@ define(function(require, exports, module) {
             container
                 .add({
                     transform: Transform.compose(
-                        Transform.skewY(options.skewAngle),
+                        Transform.skewY(options.skew),
                         Transform.translateY(-options.index * options.parallaxAmount)
                     )
                 })
@@ -42,10 +42,10 @@ define(function(require, exports, module) {
                     align: [.5, .5],
                     transform: parallaxTransform
                 })
-                .add(surface);
+                .add(cat);
 
             this
-                .add({transform: Transform.skewY(-options.skewAngle)})
+                .add({transform: Transform.skewY(-options.skew)})
                 .add(container);
         }
     });
