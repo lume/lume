@@ -157,11 +157,14 @@ define(function (require, exports, module) {
     Transitionable.prototype.set = function set(value, transition, callback) {
         if (!transition) {
             this.value = value;
-            this.trigger('start', value);
+            if (callback) callback();
+            if (!this.isActive()){
+                this.trigger('start', value);
 
-            dirtyQueue.push(function () {
-                this.trigger('end', value);
-            }.bind(this));
+                dirtyQueue.push(function () {
+                    this.trigger('end', value);
+                }.bind(this));
+            }
             return;
         }
 
