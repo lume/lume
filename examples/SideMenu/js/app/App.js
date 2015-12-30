@@ -1,6 +1,5 @@
 define(function(require, exports, module) {
     var View = require('samsara/core/View');
-    var GenericInput = require('samsara/inputs/GenericInput');
     var DrawerLayout = require('samsara/layouts/DrawerLayout');
 
     var NavBar = require('./NavBar');
@@ -67,10 +66,7 @@ define(function(require, exports, module) {
             this.subscribe(navBar);
 
             // Create render subtree.
-            this.add(
-                {
-                    proportions : [1, options.navHeightRatio] // proportional size
-                })
+            this.add({proportions : [1, options.navHeightRatio]})
                 .add(navBar);
 
             this.add(

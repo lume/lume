@@ -40,11 +40,6 @@
                 </a>
               
                 
-                <a class="source" href="NavItem.html">
-                  NavItem.js
-                </a>
-              
-                
                 <a class="source" href="main.html">
                   main.js
                 </a>
@@ -74,13 +69,8 @@
             </div>
             
             <div class="content"><div class='highlight'><pre>define(<span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params">require, exports, module</span>) </span>{
-    <span class="hljs-keyword">var</span> Transitionable = <span class="hljs-built_in">require</span>(<span class="hljs-string">'samsara/core/Transitionable'</span>);
     <span class="hljs-keyword">var</span> Surface = <span class="hljs-built_in">require</span>(<span class="hljs-string">'samsara/dom/Surface'</span>);
-    <span class="hljs-keyword">var</span> Stream = <span class="hljs-built_in">require</span>(<span class="hljs-string">'samsara/streams/Stream'</span>);
-    <span class="hljs-keyword">var</span> View = <span class="hljs-built_in">require</span>(<span class="hljs-string">'samsara/core/View'</span>);
-    <span class="hljs-keyword">var</span> SequentialLayout = <span class="hljs-built_in">require</span>(<span class="hljs-string">'samsara/layouts/SequentialLayout'</span>);
-
-    <span class="hljs-keyword">var</span> NavItem = <span class="hljs-built_in">require</span>(<span class="hljs-string">'./NavItem'</span>);</pre></div></div>
+    <span class="hljs-keyword">var</span> View = <span class="hljs-built_in">require</span>(<span class="hljs-string">'samsara/core/View'</span>);</pre></div></div>
             
         </li>
         
@@ -96,7 +86,8 @@ and sends these events to the navigation items.</p>
 
             </div>
             
-            <div class="content"><div class='highlight'><pre>    <span class="hljs-keyword">var</span> NavBar = View.extend({</pre></div></div>
+            <div class="content"><div class='highlight'><pre>    <span class="hljs-keyword">var</span> NavBar = View.extend({
+        initialize : <span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params"></span>)</span>{</pre></div></div>
             
         </li>
         
@@ -107,11 +98,14 @@ and sends these events to the navigation items.</p>
               <div class="pilwrap ">
                 <a class="pilcrow" href="#section-3">&#182;</a>
               </div>
-              <p>Executed on instantiation. Options are patched by the defaults if unspecified.</p>
+              <p>Define how the nav fades out for the “back”, “middle” and “leftArrow”
+surfaces as input goes from 0 to 1</p>
 
             </div>
             
-            <div class="content"><div class='highlight'><pre>        initialize : <span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params">options</span>)</span>{</pre></div></div>
+            <div class="content"><div class='highlight'><pre>            <span class="hljs-keyword">var</span> fadeOut = <span class="hljs-keyword">this</span>.input.map(<span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params">data</span>)</span>{
+                <span class="hljs-keyword">return</span> <span class="hljs-built_in">Math</span>.pow(<span class="hljs-number">1</span> - data.progress, <span class="hljs-number">4</span>);
+            });</pre></div></div>
             
         </li>
         
@@ -122,12 +116,13 @@ and sends these events to the navigation items.</p>
               <div class="pilwrap ">
                 <a class="pilcrow" href="#section-4">&#182;</a>
               </div>
-              <p>Create a surface with blue color to sit behind the nav</p>
+              <p>Define how the nav fades in for the “hide” and “messages”
+surfaces as input goes from 0 to 1</p>
 
             </div>
             
-            <div class="content"><div class='highlight'><pre>            <span class="hljs-keyword">var</span> background = <span class="hljs-keyword">new</span> Surface({
-                classes : [<span class="hljs-string">'navBackground'</span>]
+            <div class="content"><div class='highlight'><pre>            <span class="hljs-keyword">var</span> fadeIn = <span class="hljs-keyword">this</span>.input.map(<span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params">data</span>)</span>{
+                <span class="hljs-keyword">return</span> data.progress;
             });</pre></div></div>
             
         </li>
@@ -139,20 +134,15 @@ and sends these events to the navigation items.</p>
               <div class="pilwrap ">
                 <a class="pilcrow" href="#section-5">&#182;</a>
               </div>
-              <p>Create left nav item containing “back” and “messages” sections.
-Translate them by animating their origin relative to the input.</p>
+              <p>The origin and alignment of the “back” and “messages”
+surfaces will go from [0,0] to [.5,0] as the input goes
+from 0 to 1</p>
 
             </div>
             
-            <div class="content"><div class='highlight'><pre>            <span class="hljs-keyword">var</span> left = <span class="hljs-keyword">new</span> NavItem({
-                contentFront : <span class="hljs-string">'Back'</span>,
-                contentBack : <span class="hljs-string">'Messages'</span>,
-                classes : [<span class="hljs-string">'nav'</span>, <span class="hljs-string">'left'</span>, <span class="hljs-string">'item'</span>, <span class="hljs-string">'center'</span>],
-                proportions : [<span class="hljs-number">1</span>/<span class="hljs-number">3</span>, <span class="hljs-number">1</span>],
-                origin : <span class="hljs-keyword">this</span>.input.map(<span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params">data</span>)</span>{
-                    <span class="hljs-keyword">var</span> progress = <span class="hljs-built_in">Math</span>.max(data.progress, <span class="hljs-number">0</span>);
-                    <span class="hljs-keyword">return</span> [-progress, <span class="hljs-number">0</span>];
-                })
+            <div class="content"><div class='highlight'><pre>            <span class="hljs-keyword">var</span> leftAlignAndOrigin = <span class="hljs-keyword">this</span>.input.map(<span class="hljs-function"><span class="hljs-keyword">function</span> (<span class="hljs-params">data</span>) </span>{
+                <span class="hljs-keyword">var</span> progress = <span class="hljs-built_in">Math</span>.max(data.progress, <span class="hljs-number">0</span>);
+                <span class="hljs-keyword">return</span> [<span class="hljs-number">0.5</span> * progress, <span class="hljs-number">0</span>]
             });</pre></div></div>
             
         </li>
@@ -164,19 +154,14 @@ Translate them by animating their origin relative to the input.</p>
               <div class="pilwrap ">
                 <a class="pilcrow" href="#section-6">&#182;</a>
               </div>
-              <p>Create the center nav item.
-Translate them by animating their origin relative to the input.</p>
+              <p>The origin and alignment of the “middle” surface will
+go from [0.5,0] to [1,0] as the input goes from 0 to 1</p>
 
             </div>
             
-            <div class="content"><div class='highlight'><pre>            <span class="hljs-keyword">var</span> center = <span class="hljs-keyword">new</span> NavItem({
-                contentFront : <span class="hljs-string">'bit.ly/1OZkIch'</span>,
-                classes : [<span class="hljs-string">'nav'</span>, <span class="hljs-string">'item'</span>, <span class="hljs-string">'middle'</span>, <span class="hljs-string">'center'</span>],
-                proportions : [<span class="hljs-number">1</span>/<span class="hljs-number">3</span>, <span class="hljs-number">1</span>],
-                origin : <span class="hljs-keyword">this</span>.input.map(<span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params">data</span>)</span>{
-                    <span class="hljs-keyword">var</span> progress = <span class="hljs-built_in">Math</span>.max(data.progress, <span class="hljs-number">0</span>);
-                    <span class="hljs-keyword">return</span> [-progress, <span class="hljs-number">0</span>];
-                })
+            <div class="content"><div class='highlight'><pre>            <span class="hljs-keyword">var</span> middleAlignAndOrigin = <span class="hljs-keyword">this</span>.input.map(<span class="hljs-function"><span class="hljs-keyword">function</span> (<span class="hljs-params">data</span>) </span>{
+                <span class="hljs-keyword">var</span> progress = <span class="hljs-built_in">Math</span>.max(data.progress, <span class="hljs-number">0</span>);
+                <span class="hljs-keyword">return</span> [<span class="hljs-number">0.5</span> * (<span class="hljs-number">1</span> + progress), <span class="hljs-number">0</span>]
             });</pre></div></div>
             
         </li>
@@ -188,15 +173,13 @@ Translate them by animating their origin relative to the input.</p>
               <div class="pilwrap ">
                 <a class="pilcrow" href="#section-7">&#182;</a>
               </div>
-              <p>Create the right nav item with details and compose surfaces.</p>
+              <p>Create a surface with faint blue color to be a background
+of the navigation bar</p>
 
             </div>
             
-            <div class="content"><div class='highlight'><pre>            <span class="hljs-keyword">var</span> right = <span class="hljs-keyword">new</span> NavItem({
-                contentFront : <span class="hljs-string">'Details'</span>,
-                contentBack : <span class="hljs-string">'&lt;i class="ion-ios-compose-outline"&gt;&lt;/i&gt;'</span>,
-                classes : [<span class="hljs-string">'nav'</span>, <span class="hljs-string">'right'</span>, <span class="hljs-string">'item'</span>, <span class="hljs-string">'center'</span>],
-                proportions : [<span class="hljs-number">1</span>/<span class="hljs-number">3</span>, <span class="hljs-number">1</span>]
+            <div class="content"><div class='highlight'><pre>            <span class="hljs-keyword">var</span> background = <span class="hljs-keyword">new</span> Surface({
+                classes : [<span class="hljs-string">'navBackground'</span>]
             });</pre></div></div>
             
         </li>
@@ -208,14 +191,17 @@ Translate them by animating their origin relative to the input.</p>
               <div class="pilwrap ">
                 <a class="pilcrow" href="#section-8">&#182;</a>
               </div>
-              <p>Layout the nav items horizontally in a SequentialLayout</p>
+              <p>Create a “back” surface</p>
 
             </div>
             
-            <div class="content"><div class='highlight'><pre>            <span class="hljs-keyword">var</span> layout = <span class="hljs-keyword">new</span> SequentialLayout({
-                direction : SequentialLayout.DIRECTION.X
-            });
-            layout.addItems([left, center, right]);</pre></div></div>
+            <div class="content"><div class='highlight'><pre>            <span class="hljs-keyword">var</span> back = <span class="hljs-keyword">new</span> Surface({
+                size: [<span class="hljs-literal">true</span>, <span class="hljs-literal">undefined</span>],  <span class="hljs-comment">// width = HTML width, height inherits from navBar</span>
+                content: <span class="hljs-string">'Back'</span>,
+                classes: [<span class="hljs-string">'nav'</span>, <span class="hljs-string">'back'</span>, <span class="hljs-string">'center'</span>],
+                origin: leftAlignAndOrigin,
+                opacity: fadeOut
+            });</pre></div></div>
             
         </li>
         
@@ -226,17 +212,13 @@ Translate them by animating their origin relative to the input.</p>
               <div class="pilwrap ">
                 <a class="pilcrow" href="#section-9">&#182;</a>
               </div>
-              <p>Create the edit surface and position on the left</p>
+              <p>Emit an <code>open</code> event when the back button is clicked</p>
 
             </div>
             
-            <div class="content"><div class='highlight'><pre>            <span class="hljs-keyword">var</span> edit = <span class="hljs-keyword">new</span> Surface({
-                content : <span class="hljs-string">'Edit'</span>,
-                classes : [<span class="hljs-string">'nav'</span>, <span class="hljs-string">'edit'</span>, <span class="hljs-string">'item'</span>],
-                opacity : <span class="hljs-keyword">this</span>.input.map(<span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params">data</span>)</span>{
-                    <span class="hljs-keyword">return</span> data.progress;
-                })
-            });</pre></div></div>
+            <div class="content"><div class='highlight'><pre>            back.on(<span class="hljs-string">'click'</span>, <span class="hljs-function"><span class="hljs-keyword">function</span> (<span class="hljs-params"></span>) </span>{
+                <span class="hljs-keyword">this</span>.emit(<span class="hljs-string">'open'</span>);
+            }.bind(<span class="hljs-keyword">this</span>));</pre></div></div>
             
         </li>
         
@@ -247,16 +229,16 @@ Translate them by animating their origin relative to the input.</p>
               <div class="pilwrap ">
                 <a class="pilcrow" href="#section-10">&#182;</a>
               </div>
-              <p>Create back arrow surface and position on the left</p>
+              <p>Create a “messages” surface</p>
 
             </div>
             
-            <div class="content"><div class='highlight'><pre>            <span class="hljs-keyword">var</span> backArrow = <span class="hljs-keyword">new</span> Surface({
-                content : <span class="hljs-string">'&lt;i class="ion-chevron-left"&gt;&lt;/i&gt;'</span>,
-                classes : [<span class="hljs-string">'nav'</span>, <span class="hljs-string">'edit'</span>, <span class="hljs-string">'item'</span>],
-                opacity : <span class="hljs-keyword">this</span>.input.map(<span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params">data</span>)</span>{
-                    <span class="hljs-keyword">return</span> <span class="hljs-built_in">Math</span>.pow(<span class="hljs-number">1</span> - data.progress, <span class="hljs-number">4</span>);
-                })
+            <div class="content"><div class='highlight'><pre>            <span class="hljs-keyword">var</span> messages = <span class="hljs-keyword">new</span> Surface({
+                size: [<span class="hljs-literal">true</span>, <span class="hljs-literal">undefined</span>],
+                content: <span class="hljs-string">'Messages'</span>,
+                classes: [<span class="hljs-string">'nav'</span>, <span class="hljs-string">'center'</span>],
+                origin: leftAlignAndOrigin,
+                opacity: fadeIn
             });</pre></div></div>
             
         </li>
@@ -268,14 +250,10 @@ Translate them by animating their origin relative to the input.</p>
               <div class="pilwrap ">
                 <a class="pilcrow" href="#section-11">&#182;</a>
               </div>
-              <p>Create the render subtree</p>
+              <p>Create back arrow surface. Here instead of creating a <code>&lt;div&gt;</code>
+we create an <code>&lt;img&gt;</code> tag.</p>
 
             </div>
-            
-            <div class="content"><div class='highlight'><pre>            <span class="hljs-keyword">this</span>.add(background);
-            <span class="hljs-keyword">this</span>.add(edit);
-            <span class="hljs-keyword">this</span>.add(backArrow);
-            <span class="hljs-keyword">this</span>.add(layout);</pre></div></div>
             
         </li>
         
@@ -286,13 +264,22 @@ Translate them by animating their origin relative to the input.</p>
               <div class="pilwrap ">
                 <a class="pilcrow" href="#section-12">&#182;</a>
               </div>
-              <p>Convert a <code>front click</code> event from the navItem to an <code>open</code> event</p>
+              <p>Note: we scale down this element and manually center it as opposed
+to applying the <code>center</code> CSS class.</p>
 
             </div>
             
-            <div class="content"><div class='highlight'><pre>            left.on(<span class="hljs-string">'front click'</span>, <span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params"></span>)</span>{
-                <span class="hljs-keyword">this</span>.emit(<span class="hljs-string">'open'</span>);
-            }.bind(<span class="hljs-keyword">this</span>));</pre></div></div>
+            <div class="content"><div class='highlight'><pre>            <span class="hljs-keyword">var</span> backArrow = <span class="hljs-keyword">new</span> Surface({
+                size: [<span class="hljs-literal">true</span>, <span class="hljs-literal">false</span>],
+                proportions: [<span class="hljs-literal">false</span>, <span class="hljs-number">0.4</span>],
+                tagName: <span class="hljs-string">'img'</span>,
+                classes: [<span class="hljs-string">'nav'</span>, <span class="hljs-string">'backArrow'</span>],
+                attributes: {
+                    src: <span class="hljs-string">'./assets/chevron-left.svg'</span>
+                },
+                origin: [<span class="hljs-number">0</span>, <span class="hljs-number">0.5</span>],
+                opacity: fadeOut
+            });</pre></div></div>
             
         </li>
         
@@ -303,13 +290,16 @@ Translate them by animating their origin relative to the input.</p>
               <div class="pilwrap ">
                 <a class="pilcrow" href="#section-13">&#182;</a>
               </div>
-              <p>Convert a <code>back click</code> event from the navItem to a <code>close</code> event</p>
+              <p>Create a “hide” surface</p>
 
             </div>
             
-            <div class="content"><div class='highlight'><pre>            left.on(<span class="hljs-string">'back click'</span>, <span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params"></span>)</span>{
-                <span class="hljs-keyword">this</span>.emit(<span class="hljs-string">'close'</span>);
-            }.bind(<span class="hljs-keyword">this</span>));</pre></div></div>
+            <div class="content"><div class='highlight'><pre>            <span class="hljs-keyword">var</span> hide = <span class="hljs-keyword">new</span> Surface({
+                size: [<span class="hljs-literal">true</span>, <span class="hljs-literal">undefined</span>],
+                content: <span class="hljs-string">'Hide'</span>,
+                classes: [<span class="hljs-string">'nav'</span>, <span class="hljs-string">'hide'</span>, <span class="hljs-string">'center'</span>],
+                opacity: fadeIn
+            });</pre></div></div>
             
         </li>
         
@@ -320,14 +310,54 @@ Translate them by animating their origin relative to the input.</p>
               <div class="pilwrap ">
                 <a class="pilcrow" href="#section-14">&#182;</a>
               </div>
-              <p>Views listen to the input to get progress data
-coming from the drawer layout</p>
+              <p>Emit a <code>close</code> event when the “hide” surface is clicked</p>
 
             </div>
             
-            <div class="content"><div class='highlight'><pre>            left.subscribe(<span class="hljs-keyword">this</span>.input);
-            center.subscribe(<span class="hljs-keyword">this</span>.input);
-            right.subscribe(<span class="hljs-keyword">this</span>.input);
+            <div class="content"><div class='highlight'><pre>            hide.on(<span class="hljs-string">'click'</span>, <span class="hljs-function"><span class="hljs-keyword">function</span> (<span class="hljs-params"></span>) </span>{
+                <span class="hljs-keyword">this</span>.emit(<span class="hljs-string">'close'</span>);
+            }.bind(<span class="hljs-keyword">this</span>));</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-15">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-15">&#182;</a>
+              </div>
+              <p>Create a “middle” surface</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>            <span class="hljs-keyword">var</span> middle = <span class="hljs-keyword">new</span> Surface({
+                size: [<span class="hljs-literal">true</span>, <span class="hljs-literal">undefined</span>],
+                content: <span class="hljs-string">'goo.gl/nhRGeg'</span>,
+                classes: [<span class="hljs-string">'nav'</span>, <span class="hljs-string">'middle'</span>, <span class="hljs-string">'center'</span>],
+                origin: middleAlignAndOrigin,
+                opacity: fadeOut
+            });</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-16">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-16">&#182;</a>
+              </div>
+              <p>Create the render subtree</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>            <span class="hljs-keyword">this</span>.add(background);
+            <span class="hljs-keyword">this</span>.add(hide);
+            <span class="hljs-keyword">this</span>.add({align: [<span class="hljs-number">0</span>, <span class="hljs-number">0.5</span>]}).add(backArrow);
+            <span class="hljs-keyword">this</span>.add({align: leftAlignAndOrigin}).add(back);
+            <span class="hljs-keyword">this</span>.add({align: leftAlignAndOrigin}).add(messages);
+            <span class="hljs-keyword">this</span>.add({align : middleAlignAndOrigin}).add(middle);
         }
     });
 

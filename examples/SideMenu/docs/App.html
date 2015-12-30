@@ -40,11 +40,6 @@
                 </a>
               
                 
-                <a class="source" href="NavItem.html">
-                  NavItem.js
-                </a>
-              
-                
                 <a class="source" href="main.html">
                   main.js
                 </a>
@@ -75,7 +70,6 @@
             
             <div class="content"><div class='highlight'><pre>define(<span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params">require, exports, module</span>) </span>{
     <span class="hljs-keyword">var</span> View = <span class="hljs-built_in">require</span>(<span class="hljs-string">'samsara/core/View'</span>);
-    <span class="hljs-keyword">var</span> GenericInput = <span class="hljs-built_in">require</span>(<span class="hljs-string">'samsara/inputs/GenericInput'</span>);
     <span class="hljs-keyword">var</span> DrawerLayout = <span class="hljs-built_in">require</span>(<span class="hljs-string">'samsara/layouts/DrawerLayout'</span>);
 
     <span class="hljs-keyword">var</span> NavBar = <span class="hljs-built_in">require</span>(<span class="hljs-string">'./NavBar'</span>);
@@ -274,8 +268,7 @@ Specifically, <code>open</code> and <code>close</code> events.</p>
 
             </div>
             
-            <div class="content"><div class='highlight'><pre>            <span class="hljs-keyword">this</span>.subscribe(navBar);
-            <span class="hljs-keyword">this</span>.subscribe(drawer);</pre></div></div>
+            <div class="content"><div class='highlight'><pre>            <span class="hljs-keyword">this</span>.subscribe(navBar);</pre></div></div>
             
         </li>
         
@@ -290,10 +283,7 @@ Specifically, <code>open</code> and <code>close</code> events.</p>
 
             </div>
             
-            <div class="content"><div class='highlight'><pre>            <span class="hljs-keyword">this</span>.add(
-                {
-                    proportions : [<span class="hljs-number">1</span>, options.navHeightRatio] <span class="hljs-comment">// proportional size</span>
-                })
+            <div class="content"><div class='highlight'><pre>            <span class="hljs-keyword">this</span>.add({proportions : [<span class="hljs-number">1</span>, options.navHeightRatio]})
                 .add(navBar);
 
             <span class="hljs-keyword">this</span>.add(

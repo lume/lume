@@ -17,7 +17,7 @@ define(function(require, exports, module) {
         },
         // Executed on instantiation. Options are patched by the defaults if unspecified.
         initialize : function(options){
-
+            // Create a list which acts as the side menu
             var content = '';
             for (var i = 1; i <= 50; i++){
                 content += '<div class="menuItem">' + i + '</div>'
@@ -32,18 +32,17 @@ define(function(require, exports, module) {
                 enableScroll: true
             });
 
-            // Uncomment this for a more funky example
+            // The drawer rotation and translation animation
             var drawerTransform = this.input.map(function (data) {
-                var angle = Math.min(Math.PI/2 * (1.3*data.progress - 1), 0);
+                var angle = Math.min(Math.PI/2 * (data.progress - 1), 0);
                 return Transform.thenMove(
                     Transform.rotateY(angle),
                     [data.value, 0, 0]
                 );
             });
 
-            var opacity = this.input.pluck('progress').map(function(value){
-                return value;
-            });
+            // Animate the drawer's opacity on close and open
+            var opacity = this.input.pluck('progress');
 
             // Create the render subtree
             this.add({

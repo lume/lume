@@ -5,6 +5,7 @@ define(function (require, exports, module) {
     var GenericInput = require('samsara/inputs/GenericInput'); // unifies multiple input sources
     var App = require('./app/App'); // load our application view
 
+    // Load [FT's fastclick](https://github.com/ftlabs/fastclick) for iOS devices to get around the 300ms click delay
     var FastClick = require('./lib/fastClick');
     FastClick.attach(document.body);
 

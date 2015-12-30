@@ -40,11 +40,6 @@
                 </a>
               
                 
-                <a class="source" href="NavItem.html">
-                  NavItem.js
-                </a>
-              
-                
                 <a class="source" href="main.html">
                   main.js
                 </a>
@@ -78,10 +73,7 @@
     <span class="hljs-keyword">var</span> MouseInput = <span class="hljs-built_in">require</span>(<span class="hljs-string">'samsara/inputs/MouseInput'</span>); <span class="hljs-comment">// wraps DOM mouse events</span>
     <span class="hljs-keyword">var</span> TouchInput = <span class="hljs-built_in">require</span>(<span class="hljs-string">'samsara/inputs/TouchInput'</span>); <span class="hljs-comment">// wraps DOM touch events</span>
     <span class="hljs-keyword">var</span> GenericInput = <span class="hljs-built_in">require</span>(<span class="hljs-string">'samsara/inputs/GenericInput'</span>); <span class="hljs-comment">// unifies multiple input sources</span>
-    <span class="hljs-keyword">var</span> App = <span class="hljs-built_in">require</span>(<span class="hljs-string">'./app/App'</span>); <span class="hljs-comment">// load our application view</span>
-
-    <span class="hljs-keyword">var</span> FastClick = <span class="hljs-built_in">require</span>(<span class="hljs-string">'./lib/fastClick'</span>);
-    FastClick.attach(<span class="hljs-built_in">document</span>.body);</pre></div></div>
+    <span class="hljs-keyword">var</span> App = <span class="hljs-built_in">require</span>(<span class="hljs-string">'./app/App'</span>); <span class="hljs-comment">// load our application view</span></pre></div></div>
             
         </li>
         
@@ -91,6 +83,22 @@
               
               <div class="pilwrap ">
                 <a class="pilcrow" href="#section-2">&#182;</a>
+              </div>
+              <p>Load <a href="https://github.com/ftlabs/fastclick">FT’s fastclick</a> for iOS devices to get around the 300ms click delay</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>    <span class="hljs-keyword">var</span> FastClick = <span class="hljs-built_in">require</span>(<span class="hljs-string">'./lib/fastClick'</span>);
+    FastClick.attach(<span class="hljs-built_in">document</span>.body);</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-3">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-3">&#182;</a>
               </div>
               <p>Register touch and mouse events for this application. GenericInput allows
 for a unified input interface for mobile and desktop applications.</p>
@@ -105,11 +113,11 @@ for a unified input interface for mobile and desktop applications.</p>
         </li>
         
         
-        <li id="section-3">
+        <li id="section-4">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-3">&#182;</a>
+                <a class="pilcrow" href="#section-4">&#182;</a>
               </div>
               <p>Instantiate the application view with options.</p>
 
@@ -126,11 +134,11 @@ for a unified input interface for mobile and desktop applications.</p>
         </li>
         
         
-        <li id="section-4">
+        <li id="section-5">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-4">&#182;</a>
+                <a class="pilcrow" href="#section-5">&#182;</a>
               </div>
               <p>Create a 3D context DOM element to begin the render tree.</p>
 
@@ -142,11 +150,11 @@ for a unified input interface for mobile and desktop applications.</p>
         </li>
         
         
-        <li id="section-5">
+        <li id="section-6">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-5">&#182;</a>
+                <a class="pilcrow" href="#section-6">&#182;</a>
               </div>
               <p>Add the application view to the render tree.</p>
 
@@ -157,11 +165,11 @@ for a unified input interface for mobile and desktop applications.</p>
         </li>
         
         
-        <li id="section-6">
+        <li id="section-7">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-6">&#182;</a>
+                <a class="pilcrow" href="#section-7">&#182;</a>
               </div>
               <p>Mount context to <code>document.body</code></p>
 
