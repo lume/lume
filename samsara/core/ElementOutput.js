@@ -54,6 +54,7 @@ define(function(require, exports, module) {
         EventHandler.setOutputHandler(this, this._eventOutput);
 
         this._eventForwarder = function _eventForwarder(event) {
+            event.stopImmediatePropagation();
             this._eventOutput.emit(event.type, event);
         }.bind(this);
 
