@@ -7,60 +7,58 @@ define(function (require, exports, module) {
 
     var Dots = View.extend({
         defaults: {
-            spacing : 5,
-            diameter : 5,
-            numDots : 5
+            spacing : 0,
+            diameter : 0,
+            numDots : 0,
+            fadeIn : false,
+            fadeOut : false
         },
         initialize: function (options) {
-            var diameter = options.diameter;
-            var spacing = options.spacing;
-            var N = options.numDots;
-            var size = [N * diameter + (N - 1) * spacing, diameter];
+            // Position of the main dot
+            this.position = new Transitionable(0);
 
-            this.x = new Transitionable(0);
+            // Opacity of the main dot
             this.opacity = new Transitionable(1);
 
+            // Layout the dots sequentially in the x-direction
             var dotLayout = new SequentialLayout({
-                size : size,
-                spacing: spacing,
-                direction : 0
+                spacing: options.spacing,
+                direction : SequentialLayout.DIRECTION.X
             });
 
+            // Create the dots and add to the layout
             var dots = [];
             for (var i = 0; i < options.numDots; i++){
                 var dot = new Surface({
-                    size: [diameter, diameter],
+                    size: [options.diameter, options.diameter],
                     classes : ['dot']
                 });
-
                 dots.push(dot);
             }
 
-            var transform = this.x.map(function (x) {
-                return Transform.translateX(x);
-            });
+            dotLayout.addItems(dots);
 
-            var mainDotLayout = {
-                transform: transform,
-                opacity: this.opacity
-            };
-
+            // Create the main dot
             var mainDot = new Surface({
-                size: [diameter, diameter],
+                size: [options.diameter, options.diameter],
                 classes : ['main-dot']
             });
 
-            dotLayout.addItems(dots);
-
-            var node = this.add({size : size, origin : [.5,.5]});
-            node.add(dotLayout);
-            node.add(mainDotLayout).add(mainDot);
+            // Build the render subtree
+            this.add(dotLayout);
+            this.add({
+                transform: this.position.map(function (x) {
+                    return Transform.translateX(x);
+                }),
+                opacity: this.opacity
+            }).add(mainDot);
         },
-        set : function(index){
+        // Move the active dot with a fadeIn/Out transition
+        goTo : function(index){
             var length = this.options.diameter + this.options.spacing;
-            this.opacity.set(0, {duration: 100}, function () {
-                this.x.set(index * length);
-                this.opacity.set(1, {duration: 50});
+            this.opacity.set(0, this.options.fadeOut, function () {
+                this.position.set(index * length);
+                this.opacity.set(1, this.options.fadeIn);
             }.bind(this));
         }
     });

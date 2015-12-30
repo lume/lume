@@ -11,6 +11,15 @@ define(function (require, exports, module) {
             pages: 10
         },
         initialize: function (options) {
+            // Tracks the current page state
+            this.currentPage = 0;
+
+            // Create the arrows, dots and scrollview
+            this.createArrows(options.arrows);
+            this.createDots(options.dots);
+            this.createScrollview();
+
+            // Create the surfaces with uniformly graded hues
             var hue = 0;
             var surfaces = [];
             for (var i = 0; i < options.pages; i++) {
@@ -26,56 +35,71 @@ define(function (require, exports, module) {
                 hue += 360 / options.pages;
             }
 
-            var carousel = new Scrollview({
-                direction: Scrollview.DIRECTION.X,
-                paginated: true,
-                pageTransition: {
-                    curve: 'spring',
-                    period: 100,
-                    damping: 0.8
-                },
-                edgeTransition: {
-                    curve: 'spring',
-                    period: 100,
-                    damping: 1
-                }
-            });
+            // Add the surfaces to the carousel
+            this.addItems(surfaces);
+        },
+        createArrows : function(options){
+            this.arrows = new Arrows(options);
 
-            carousel.addItems(surfaces);
+            // Transition the scrollview to the next page
+            this.arrows.on('next', function () {
+                if (this.currentPage < this.options.pages - 1)
+                    this.scrollview.goTo(++this.currentPage);
+            }.bind(this));
 
-            var arrows = new Arrows(options.arrows);
+            // Transition the scrollview to the previous page
+            this.arrows.on('prev', function () {
+                if (this.currentPage > 0)
+                    this.scrollview.goTo(--this.currentPage);
+            }.bind(this));
 
-            var currentPage = 0;
-            arrows.on('next', function () {
-                if (currentPage < options.pages - 1)
-                    carousel.goTo(++currentPage);
-            });
+            // Add the arrows the render subtree
+            this.add(this.arrows);
+        },
+        createScrollview : function(options){
+            // Patch the options with necessary defaults
+            options = options || {};
+            options.direction = Scrollview.DIRECTION.X;
+            options.paginated = true;
 
-            arrows.on('prev', function () {
-                if (currentPage > 0)
-                    carousel.goTo(--currentPage);
-            });
+            this.scrollview = new Scrollview(options);
 
-            var dots = new Dots(options.dots);
+            // Update the current page in case the user has changed
+            // it by scrolling
+            this.scrollview.on('page', function (index) {
+                this.currentPage = index;
+                this.dots.goTo(index);
+            }.bind(this));
 
-            carousel.on('page', function (index) {
-                currentPage = index;
-                dots.set(index);
-            });
-
-            carousel.on('update', function(data){
+            // Check if the scrollview is at the beginning or end
+            this.scrollview.on('update', function (data) {
                 (data.index == 0)
-                    ? arrows.hideLeft()
-                    : arrows.showLeft();
+                    ? this.arrows.hideLeft()
+                    : this.arrows.showLeft();
 
-                (data.index == options.pages-1)
-                    ? arrows.hideRight()
-                    : arrows.showRight();
-            });
+                (data.index == this.options.pages - 1)
+                    ? this.arrows.hideRight()
+                    : this.arrows.showRight();
+            }.bind(this));
 
-            this.add(carousel);
-            this.add(arrows);
-            this.add({align : [.5,.9]}).add(dots);
+            this.add(this.scrollview);
+        },
+        createDots : function(options){
+            this.dots = new Dots(options);
+
+            // Calculate the size of the dots
+            var N = options.numDots;
+            var spacing = options.spacing;
+            var diameter = options.diameter;
+            var size = [N * diameter + (N - 1) * spacing, diameter];
+
+            // Center and align towards the bottom
+            this.add({align: [.5, .9]})
+                .add({size: size, origin: [.5, .5]}) // define origin point and size of dots view
+                .add(this.dots);
+        },
+        addItems : function(items){
+            this.scrollview.addItems(items);
         }
     });
 
