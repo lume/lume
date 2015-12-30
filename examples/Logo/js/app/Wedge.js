@@ -23,7 +23,7 @@ define(function(require, exports, module) {
             // More accurately, it's an annulus with
             // thickness equal to the border radius.
             var wedge = new Surface({
-                origin : [.5,.5],           // place the center of the circle at (0,0)
+                origin : [.5,.5],  // place the center of the circle at (0,0)
                 classes : ['wedge']
             });
 

@@ -20,6 +20,11 @@
             <div id="jump_page">
               
                 
+                <a class="source" href="Logo.html">
+                  Logo.js
+                </a>
+              
+                
                 <a class="source" href="Wedge.html">
                   Wedge.js
                 </a>
@@ -55,13 +60,7 @@
             
             <div class="content"><div class='highlight'><pre>define(<span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params">require, exports, module</span>) </span>{
     <span class="hljs-keyword">var</span> Context = <span class="hljs-built_in">require</span>(<span class="hljs-string">'samsara/dom/Context'</span>);
-    <span class="hljs-keyword">var</span> Transform = <span class="hljs-built_in">require</span>(<span class="hljs-string">'samsara/core/Transform'</span>);
-    <span class="hljs-keyword">var</span> Transitionable = <span class="hljs-built_in">require</span>(<span class="hljs-string">'samsara/core/Transitionable'</span>);
-    <span class="hljs-keyword">var</span> Wedge = <span class="hljs-built_in">require</span>(<span class="hljs-string">'./app/Wedge'</span>);
-
-    <span class="hljs-comment">/* State*/</span>
-    <span class="hljs-keyword">var</span> N = <span class="hljs-number">6</span>;                              <span class="hljs-comment">// number of wedges</span>
-    <span class="hljs-keyword">var</span> swivel = <span class="hljs-keyword">new</span> Transitionable(<span class="hljs-number">0</span>);     <span class="hljs-comment">// animation parameter</span></pre></div></div>
+    <span class="hljs-keyword">var</span> Logo = <span class="hljs-built_in">require</span>(<span class="hljs-string">'./app/Logo'</span>);</pre></div></div>
             
         </li>
         
@@ -72,12 +71,16 @@
               <div class="pilwrap ">
                 <a class="pilcrow" href="#section-2">&#182;</a>
               </div>
-              <p>Create a 3D context, acting as the root of the <code>render tree</code>
-and an HTML container to render other <code>surfaces</code> into.</p>
+              <p>Create the logo</p>
 
             </div>
             
-            <div class="content"><div class='highlight'><pre>    <span class="hljs-keyword">var</span> context = <span class="hljs-keyword">new</span> Context();</pre></div></div>
+            <div class="content"><div class='highlight'><pre>    <span class="hljs-keyword">var</span> logo = <span class="hljs-keyword">new</span> Logo({
+        proportions : [<span class="hljs-number">1</span>/<span class="hljs-number">3</span>, <span class="hljs-literal">false</span>], <span class="hljs-comment">// The logo's width will be 1/2 the screen</span>
+        aspectRatio : <span class="hljs-number">1</span>,            <span class="hljs-comment">// Forces logo's height = width</span>
+        origin : [<span class="hljs-number">.5</span>,<span class="hljs-number">.5</span>],           <span class="hljs-comment">// Origin point of the logo for centering</span>
+        sides : <span class="hljs-number">6</span>                   <span class="hljs-comment">// Number of sides</span>
+    });</pre></div></div>
             
         </li>
         
@@ -88,11 +91,11 @@ and an HTML container to render other <code>surfaces</code> into.</p>
               <div class="pilwrap ">
                 <a class="pilcrow" href="#section-3">&#182;</a>
               </div>
-              <p>Set a 3D perspective on the context.</p>
+              <p>Create a Samsara Context as the root of the render tree</p>
 
             </div>
             
-            <div class="content"><div class='highlight'><pre>    context.setPerspective(<span class="hljs-number">5000</span>);</pre></div></div>
+            <div class="content"><div class='highlight'><pre>    <span class="hljs-keyword">var</span> context = <span class="hljs-keyword">new</span> Context();</pre></div></div>
             
         </li>
         
@@ -103,11 +106,11 @@ and an HTML container to render other <code>surfaces</code> into.</p>
               <div class="pilwrap ">
                 <a class="pilcrow" href="#section-4">&#182;</a>
               </div>
-              <p>A reference to the render tree starting from a centered location</p>
+              <p>Set a perspective on the context</p>
 
             </div>
             
-            <div class="content"><div class='highlight'><pre>    <span class="hljs-keyword">var</span> centeredNode = context.add({align : [<span class="hljs-number">.5</span>, <span class="hljs-number">.5</span>]});</pre></div></div>
+            <div class="content"><div class='highlight'><pre>    context.setPerspective(<span class="hljs-number">10000</span>);</pre></div></div>
             
         </li>
         
@@ -118,15 +121,13 @@ and an HTML container to render other <code>surfaces</code> into.</p>
               <div class="pilwrap ">
                 <a class="pilcrow" href="#section-5">&#182;</a>
               </div>
-              <p>Create N wedges to form the logo.</p>
+              <p>Add the logo and center the origin point</p>
 
             </div>
             
-            <div class="content"><div class='highlight'><pre>    <span class="hljs-keyword">var</span> rotation = <span class="hljs-number">0</span>;
-    <span class="hljs-keyword">for</span> (<span class="hljs-keyword">var</span> index = <span class="hljs-number">0</span>; index &lt; N; index++){
-        <span class="hljs-keyword">var</span> wedge = <span class="hljs-keyword">new</span> Wedge({
-            angle : <span class="hljs-number">2</span> * <span class="hljs-built_in">Math</span>.PI / N
-        });</pre></div></div>
+            <div class="content"><div class='highlight'><pre>    context
+        .add({align : [<span class="hljs-number">.5</span>,<span class="hljs-number">.5</span>]})
+        .add(logo);</pre></div></div>
             
         </li>
         
@@ -137,11 +138,11 @@ and an HTML container to render other <code>surfaces</code> into.</p>
               <div class="pilwrap ">
                 <a class="pilcrow" href="#section-6">&#182;</a>
               </div>
-              <p>The wedge now listens to changes in swivel</p>
+              <p>Mount the context to a DOM element</p>
 
             </div>
             
-            <div class="content"><div class='highlight'><pre>        wedge.input.subscribe(swivel);</pre></div></div>
+            <div class="content"><div class='highlight'><pre>    context.mount(<span class="hljs-built_in">document</span>.body);</pre></div></div>
             
         </li>
         
@@ -152,59 +153,11 @@ and an HTML container to render other <code>surfaces</code> into.</p>
               <div class="pilwrap ">
                 <a class="pilcrow" href="#section-7">&#182;</a>
               </div>
-              <p>Add the wedge to the render tree with a rotation</p>
+              <p>Begin the animation</p>
 
             </div>
             
-            <div class="content"><div class='highlight'><pre>        centeredNode.add({transform : Transform.rotateZ(rotation)}).add(wedge);
-
-        rotation += <span class="hljs-number">2</span> * <span class="hljs-built_in">Math</span>.PI / N;
-    }</pre></div></div>
-            
-        </li>
-        
-        
-        <li id="section-8">
-            <div class="annotation">
-              
-              <div class="pilwrap ">
-                <a class="pilcrow" href="#section-8">&#182;</a>
-              </div>
-              <p>Mount the context to a DOM element</p>
-
-            </div>
-            
-            <div class="content"><div class='highlight'><pre>    context.mount(<span class="hljs-built_in">document</span>.body);</pre></div></div>
-            
-        </li>
-        
-        
-        <li id="section-9">
-            <div class="annotation">
-              
-              <div class="pilwrap ">
-                <a class="pilcrow" href="#section-9">&#182;</a>
-              </div>
-              <p>Initiate the animation</p>
-
-            </div>
-            
-            <div class="content"><div class='highlight'><pre>    swivel.loop([
-        {
-            value: <span class="hljs-number">4</span> * <span class="hljs-built_in">Math</span>.PI,
-            transition: {
-                duration: <span class="hljs-number">30000</span>,
-                curve: <span class="hljs-string">'easeInOut'</span>
-            }
-        },
-        {
-            value: <span class="hljs-number">0</span>,
-            transition: {
-                duration: <span class="hljs-number">30000</span>,
-                curve: <span class="hljs-string">'easeInOut'</span>
-            }
-        }
-    ]);
+            <div class="content"><div class='highlight'><pre>    logo.loop();
 });</pre></div></div>
             
         </li>

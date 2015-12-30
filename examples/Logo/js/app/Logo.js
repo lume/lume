@@ -12,9 +12,11 @@ define(function (require, exports, module) {
             // Animation parameter
             this.swivel = new Transitionable(0);
 
+            // Save a reference for a centered node
             var centerNode = this.add({align : [.5,.5]});
 
-            // Create wedges to form the logo.
+            // Create wedges to form the logo and
+            // add them to the centered node
             var rotation = 0;
             for (var index = 0; index < options.sides; index++) {
                 var wedge = new Wedge({
@@ -32,6 +34,7 @@ define(function (require, exports, module) {
                 rotation += 2 * Math.PI / options.sides;
             }
         },
+        // Animate the logo
         loop : function(){
             this.swivel.loop([
                 {

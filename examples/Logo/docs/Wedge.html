@@ -20,6 +20,11 @@
             <div id="jump_page">
               
                 
+                <a class="source" href="Logo.html">
+                  Logo.js
+                </a>
+              
+                
                 <a class="source" href="Wedge.html">
                   Wedge.js
                 </a>
@@ -96,13 +101,7 @@ the circle.</p>
             </div>
             
             <div class="content"><div class='highlight'><pre>            <span class="hljs-keyword">var</span> skewedContainer = <span class="hljs-keyword">new</span> ContainerSurface({
-                proportions : [<span class="hljs-number">1</span>/<span class="hljs-number">3</span>, <span class="hljs-literal">false</span>], <span class="hljs-comment">// the width is a third the parent width, the height unspecified</span>
-                aspectRatio : <span class="hljs-number">1</span>,            <span class="hljs-comment">// sets the height to be equal to the width</span>
-                properties : {
-                    overflow : <span class="hljs-string">'hidden'</span>,
-                    border: <span class="hljs-string">'1px solid transparent'</span>,
-                    pointerEvents: <span class="hljs-string">'none'</span>
-                }
+                classes : [<span class="hljs-string">'wedge-container'</span>]
             });</pre></div></div>
             
         </li>
@@ -121,12 +120,8 @@ thickness equal to the border radius.</p>
             </div>
             
             <div class="content"><div class='highlight'><pre>            <span class="hljs-keyword">var</span> wedge = <span class="hljs-keyword">new</span> Surface({
-                origin : [<span class="hljs-number">.5</span>,<span class="hljs-number">.5</span>],           <span class="hljs-comment">// place the center of the circle at (0,0)</span>
-                properties : {
-                    borderRadius : <span class="hljs-string">'50%'</span>,
-                    borderColor : <span class="hljs-string">'rgba(255,255,255,0.9)'</span>,
-                    borderStyle : <span class="hljs-string">'solid'</span>
-                }
+                origin : [<span class="hljs-number">.5</span>,<span class="hljs-number">.5</span>],  <span class="hljs-comment">// place the center of the circle at (0,0)</span>
+                classes : [<span class="hljs-string">'wedge'</span>]
             });</pre></div></div>
             
         </li>
@@ -145,7 +140,7 @@ thickness equal to the border radius.</p>
             <div class="content"><div class='highlight'><pre>            wedge.on(<span class="hljs-string">'resize'</span>, <span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params">size</span>)</span>{
                 wedge.setProperties({
                     borderWidth : <span class="hljs-built_in">Math</span>.round(size[<span class="hljs-number">0</span>]/<span class="hljs-number">3</span>) + <span class="hljs-string">'px'</span>
-                })
+                });
             });</pre></div></div>
             
         </li>
