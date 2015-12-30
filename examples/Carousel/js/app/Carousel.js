@@ -73,11 +73,11 @@ define(function (require, exports, module) {
 
             // Check if the scrollview is at the beginning or end
             this.scrollview.on('update', function (data) {
-                (data.index == 0)
+                (data.index == 0 && data.progress < .5)
                     ? this.arrows.hideLeft()
                     : this.arrows.showLeft();
 
-                (data.index == this.options.pages - 1)
+                (data.index == this.options.pages - 1 && data.progress > .5)
                     ? this.arrows.hideRight()
                     : this.arrows.showRight();
             }.bind(this));
