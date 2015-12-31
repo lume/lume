@@ -1,4 +1,4 @@
-/* copyright © 2015 David Valdman */
+/* Copyright © 2015 David Valdman */
 
 define(function(require, exports, module) {
     /**
