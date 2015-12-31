@@ -1,4 +1,4 @@
-/* Modified work copyright © 2015 David Valdman */
+/* Copyright © 2015 David Valdman */
 // TODO: Enable CSS properties on Context
 define(function(require, exports, module) {
     var Engine = require('../core/Engine');

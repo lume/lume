@@ -1,7 +1,5 @@
 /* Copyright © 2015 David Valdman */
 
-/* Documentation in progress. May be outdated. */
-
 define(function(require, exports, module) {
     var SimpleStream = require('../streams/SimpleStream');
     var preTickQueue = require('../core/queues/preTickQueue');

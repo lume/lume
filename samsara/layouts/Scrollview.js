@@ -1,5 +1,7 @@
 /* Copyright © 2015 David Valdman */
 
+// This code is still in beta. Documentation forthcoming.
+
 define(function (require, exports, module) {
     var Transform = require('../core/Transform');
     var Transitionable = require('../core/Transitionable');
