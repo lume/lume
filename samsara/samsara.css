@@ -4,7 +4,6 @@
     position: absolute;
     height: 100%;
     width: 100%;
-    overflow: hidden;
     -webkit-transform-style: preserve-3d;
        -moz-transform-style: preserve-3d;
             transform-style: preserve-3d;
