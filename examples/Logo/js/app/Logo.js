@@ -37,20 +37,8 @@ define(function (require, exports, module) {
         // Animate the logo
         loop : function(){
             this.swivel.loop([
-                {
-                    value: 4 * Math.PI,
-                    transition: {
-                        duration: 30000,
-                        curve: 'easeInOut'
-                    }
-                },
-                {
-                    value: 0,
-                    transition: {
-                        duration: 30000,
-                        curve: 'easeInOut'
-                    }
-                }
+                [4 * Math.PI, {duration : 30000, curve : 'easeInOut'}],
+                [0, {duration: 30000, curve: 'easeInOut'}]
             ]);
         }
     });

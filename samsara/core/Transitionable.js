@@ -262,56 +262,27 @@ define(function (require, exports, module) {
     };
 
     /**
-     * Iterate through the provided values with the provided transitions. Firing an
-     *  optional callback when the series of transitions completes.
-     *  One transition may be provided as opposed to an array when you want all the
-     *  transitions to behave the same way.
-     *
-     * @method iterate
-     * @param values {Array}                    Array of values
-     * @param transitions {Object|Object[]}     Array of transitions
-     * @param [callback] {Function}             Callback
-     */
-    Transitionable.prototype.iterate = function iterate(values, transitions, callback) {
-        if (values.length === 0) {
-            if (callback) callback();
-            return;
-        }
-
-        // sugar for same transition across value changes
-        var transition = (transitions instanceof Array)
-            ? transitions.shift()
-            : transitions;
-
-        this.set(values.shift(), transition, function () {
-            this.iterate(values, transitions, callback);
-        }.bind(this));
-    };
-
-    /**
-     * Combine multiple transitions to be executed sequentially. Provide the
-     *  transitions as an array of transition definitions.
+     * Combine multiple transitions to be executed sequentially. Pass an optional
+     *  callback to fire on completion. Provide the transitions as an array of
+     *  transition definition pairs: [value, method]
      *
      *  @example
      *
      *  transitionable.setMany([
-     *      {value : 0, transition : {curve : 'easeOut', duration : 500}},
-     *      {value : 1, transition : {curve : 'spring', period : 100, damping : 0.5}}
+     *      [0, {curve : 'easeOut', duration : 500}],
+     *      [1, {curve : 'spring', period : 100, damping : 0.5}]
      *  ]);
      *
      * @method setMany
      * @param transitions {Array}   Array of transitions
+     * @param [callback] {Function} Callback
      */
-    Transitionable.prototype.setMany = function (transitions) {
-        var first = transitions.shift();
+    Transitionable.prototype.setMany = function (transitions, callback) {
+        var transition = transitions.shift();
         if (transitions.length === 0) {
-            this.set(first.value, first.transition, first.callback)
+            this.set(transition[0], transition[1], callback);
         }
-        else {
-            this.set(first.value, first.transition, function () {
-                this.setMany(transitions);
-            }.bind(this));
-        }
+        else this.set(transition[0], transition[1], this.setMany.bind(this, transitions, callback));
     };
 
     /**
@@ -320,8 +291,8 @@ define(function (require, exports, module) {
      *  @example
      *
      *  transitionable.loop([
-     *      {value : 0, transition : {curve : 'easeOut', duration : 500}},
-     *      {value : 1, transition : {curve : 'spring', period : 100, damping : 0.5}}
+     *      [0, {curve : 'easeOut', duration : 500}],
+     *      [1, {curve : 'spring', period : 100, damping : 0.5}]
      *  ]);
      *
      * @method loop
@@ -329,9 +300,7 @@ define(function (require, exports, module) {
      */
     Transitionable.prototype.loop = function (transitions) {
         var arrayClone = transitions.slice(0);
-        this.setMany(transitions, function () {
-            this.loop(arrayClone);
-        }.bind(this));
+        this.setMany(transitions, this.loop.bind(this, arrayClone));
     };
 
     /**
@@ -344,9 +313,7 @@ define(function (require, exports, module) {
     Transitionable.prototype.delay = function delay(callback, duration) {
         this.set(this.get(), {
                 duration: duration,
-                curve: function () {
-                    return 0;
-                }
+                curve: function () { return 0; }
             },
             callback
         );
