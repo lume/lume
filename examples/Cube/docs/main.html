@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+
+<html>
+<head>
+  <title>main.js</title>
+  <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+  <meta name="viewport" content="width=device-width, target-densitydpi=160dpi, initial-scale=1.0; maximum-scale=1.0; user-scalable=0;">
+  <link rel="stylesheet" media="all" href="docco.css" />
+</head>
+<body>
+  <div id="container">
+    <div id="background"></div>
+    
+      <ul id="jump_to">
+        <li>
+          <a class="large" href="javascript:void(0);">Jump To &hellip;</a>
+          <a class="small" href="javascript:void(0);">+</a>
+          <div id="jump_wrapper">
+          <div id="jump_page_wrapper">
+            <div id="jump_page">
+              
+                
+                <a class="source" href="Cube.html">
+                  Cube.js
+                </a>
+              
+                
+                <a class="source" href="main.html">
+                  main.js
+                </a>
+              
+            </div>
+          </div>
+        </li>
+      </ul>
+    
+    <ul class="sections">
+        
+          <li id="title">
+              <div class="annotation">
+                  <h1>main.js</h1>
+              </div>
+          </li>
+        
+        
+        
+        <li id="section-1">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-1">&#182;</a>
+              </div>
+              
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>define(<span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params">require, exports, module</span>) </span>{
+    <span class="hljs-keyword">var</span> Context = <span class="hljs-built_in">require</span>(<span class="hljs-string">'samsara/dom/Context'</span>);
+    <span class="hljs-keyword">var</span> Cube = <span class="hljs-built_in">require</span>(<span class="hljs-string">'./app/Cube'</span>);
+    <span class="hljs-keyword">var</span> Transform = <span class="hljs-built_in">require</span>(<span class="hljs-string">'samsara/core/Transform'</span>);
+    <span class="hljs-keyword">var</span> Transitionable = <span class="hljs-built_in">require</span>(<span class="hljs-string">'samsara/core/Transitionable'</span>);</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-2">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-2">&#182;</a>
+              </div>
+              <p>Angle to rotate cube by</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>    <span class="hljs-keyword">var</span> angle = <span class="hljs-keyword">new</span> Transitionable(<span class="hljs-number">0</span>);</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-3">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-3">&#182;</a>
+              </div>
+              <p>Map the angle to a rotation <code>Transform</code></p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>    <span class="hljs-keyword">var</span> rotation = angle.map(<span class="hljs-function"><span class="hljs-keyword">function</span> (<span class="hljs-params">angle</span>) </span>{
+        <span class="hljs-keyword">return</span> Transform.compose(
+            Transform.rotateX(angle),
+            Transform.rotateY(angle)
+        );
+    });</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-4">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-4">&#182;</a>
+              </div>
+              <p>Create the cube</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>    <span class="hljs-keyword">var</span> cube = <span class="hljs-keyword">new</span> Cube({
+        origin : [<span class="hljs-number">.5</span>,<span class="hljs-number">.5</span>],
+        length : <span class="hljs-number">200</span> <span class="hljs-comment">// Length of the side of the cube</span>
+    });</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-5">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-5">&#182;</a>
+              </div>
+              <p>Create a Samsara Context as the root of the render tree</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>    <span class="hljs-keyword">var</span> context = <span class="hljs-keyword">new</span> Context();</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-6">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-6">&#182;</a>
+              </div>
+              <p>Set a perspective on the context</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>    context.setPerspective(<span class="hljs-number">600</span>);</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-7">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-7">&#182;</a>
+              </div>
+              <p>Add the cube and center the origin point</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>    context.add({
+        align : [<span class="hljs-number">.5</span>,<span class="hljs-number">.5</span>],
+        transform : rotation
+    }).add(cube);</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-8">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-8">&#182;</a>
+              </div>
+              <p>Mount the context to a DOM element</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>    context.mount(<span class="hljs-built_in">document</span>.body);</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-9">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-9">&#182;</a>
+              </div>
+              <p>Animate the angle</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>    angle.loop([
+        [<span class="hljs-number">2</span> * <span class="hljs-built_in">Math</span>.PI, {duration : <span class="hljs-number">10000</span>}],
+        [<span class="hljs-number">0</span>, {duration: <span class="hljs-number">10000</span>}]
+    ]);</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-10">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-10">&#182;</a>
+              </div>
+              <p>Animate the Cube’s length</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>    cube.length.loop([
+        [<span class="hljs-number">300</span>, {curve: <span class="hljs-string">'spring'</span>, period: <span class="hljs-number">80</span>, damping: <span class="hljs-number">.5</span>}],
+        [<span class="hljs-number">200</span>, {curve: <span class="hljs-string">'spring'</span>, period: <span class="hljs-number">80</span>, damping: <span class="hljs-number">.5</span>}]
+    ]);
+});</pre></div></div>
+            
+        </li>
+        
+    </ul>
+  </div>
+</body>
+</html>
