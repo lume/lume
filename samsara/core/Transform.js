@@ -235,7 +235,7 @@ define(function(require, exports, module) {
      * @param x {Number}        Scale amount
      */
     Transform.scaleX = function scaleX(x) {
-        return [1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, x, 0, 0, 1];
+        return [x, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1];
     };
 
     /**
@@ -246,7 +246,7 @@ define(function(require, exports, module) {
      * @param y {Number}        Scale amount
      */
     Transform.scaleY = function scaleY(y) {
-        return [1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, y, 0, 1];
+        return [1, 0, 0, 0, 0, y, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1];
     };
 
     /**
@@ -257,7 +257,7 @@ define(function(require, exports, module) {
      * @param z {Number}        Scale amount
      */
     Transform.scaleZ = function scaleZ(z) {
-        return [1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, z, 1];
+        return [1, 0, 0, 0, 0, 1, 0, 0, 0, 0, z, 0, 0, 0, 0, 1];
     };
 
     /**
