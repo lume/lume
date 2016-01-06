@@ -70,7 +70,6 @@ define(function(require, exports, module) {
         EventHandler.setInputHandler(this, this._eventInput);
         EventHandler.setOutputHandler(this, this._eventOutput);
 
-        this._eventInput.on('mousewheel', handleMove.bind(this));
         this._eventInput.on('wheel', handleMove.bind(this));
 
         this._value = (this.options.direction === undefined) ? [0,0] : 0;
@@ -130,8 +129,8 @@ define(function(require, exports, module) {
         var currTime = _now();
         var prevTime = this._prevTime || currTime;
 
-        var diffX = (event.wheelDeltaX !== undefined) ? event.wheelDeltaX : -event.deltaX;
-        var diffY = (event.wheelDeltaY !== undefined) ? event.wheelDeltaY : -event.deltaY;
+        var diffX = -event.deltaX;
+        var diffY = -event.deltaY;
 
         if (diffX > MAX_DIFFERENTIAL) diffX = MAX_DIFFERENTIAL;
         if (diffY > MAX_DIFFERENTIAL) diffY = MAX_DIFFERENTIAL;
