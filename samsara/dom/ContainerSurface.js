@@ -56,8 +56,8 @@ define(function(require, exports, module) {
         this.context = new Context();
         this.context._size.subscribe(this.size);
 
-        this.on('deploy', function(){
-            this.context.mount(this._currentTarget, true);
+        this.on('deploy', function(target){
+            this.context.mount(target, true);
         }.bind(this));
     }
 
