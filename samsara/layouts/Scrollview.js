@@ -43,6 +43,7 @@ define(function (require, exports, module) {
             drag: 0.5,
             paginated: false,
             pageChangeSpeed: 0.5,
+            marginBottom: 0,
             pageTransition: {
                 curve : 'spring',
                 period : 100,
@@ -136,7 +137,8 @@ define(function (require, exports, module) {
             // extends past the viewport
             var overflowStream = ResizeStream.lift(function (contentLength, viewportSize) {
                 if (!contentLength) return false;
-                return viewportSize[options.direction] - contentLength;
+                var overflow = viewportSize[options.direction] - options.marginBottom - contentLength;
+                return (overflow >= 0) ? false : overflow;
             }, [this.layout, this.size]);
 
             this.offset = Stream.lift(function (top, overflow) {
@@ -146,6 +148,7 @@ define(function (require, exports, module) {
 
                 if (top > 0) { // reached top of scrollview
                     if (!isMobile){
+                        edge = EDGE.TOP;
                         position.set(0, true);
                         changePage.call(this, this._currentIndex);
                         return 0;
@@ -158,11 +161,12 @@ define(function (require, exports, module) {
 
                         edge = EDGE.TOP;
                         if (!isTouching)
-                            handleEdge.call(this, this.overflow);
+                            handleEdge.call(this, this.overflow, this.velocity);
                     }
                 }
                 else if(top < overflow) { // reached bottom of scrollview
                     if (!isMobile) {
+                        edge = EDGE.BOTTOM;
                         position.set(overflow, true);
                         changePage.call(this, this._currentIndex);
                         return overflow;
@@ -176,7 +180,7 @@ define(function (require, exports, module) {
                         edge = EDGE.BOTTOM;
 
                         if (!isTouching)
-                            handleEdge.call(this, this.overflow);
+                            handleEdge.call(this, this.overflow, this.velocity);
                     }
                 }
                 else if(top > overflow && top < 0 && edge !== EDGE.NONE){
@@ -255,16 +259,14 @@ define(function (require, exports, module) {
                 var itemOffset = -offset - accumLength;
                 var currentLength = currentSize[direction];
 
-                if (itemOffset >= currentLength) {
+                if (itemOffset >= currentLength && this._currentIndex !== items.length - 1) {
                     // pass currentNode forwards
-                    if (this._currentIndex == items.length - 1) return false;
                     this._currentIndex++;
                     progress = 0;
                     accumLength += currentLength;
                 }
-                else if (itemOffset < 0) {
+                else if (itemOffset < 0 && this._currentIndex !== 0) {
                     // pass currentNode backwards
-                    if (this._currentIndex == 0) return false;
                     this._currentIndex--;
                     progress = 1;
                     currentLength = arguments[this._currentIndex + 1][direction];
