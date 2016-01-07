@@ -46,13 +46,13 @@ define(function(require, exports, module) {
             else if (typeof size[1] === 'number') size[0] = spec.aspectRatio * size[1];
         }
 
+        if (size[0] === undefined) size[0] = parentSize[0];
+        if (size[1] === undefined) size[1] = parentSize[1];
+
         if (spec.margins) {
             size[0] -= 2 * spec.margins[0];
             size[1] -= 2 * spec.margins[1];
         }
-
-        if (size[0] === undefined) size[0] = parentSize[0];
-        if (size[1] === undefined) size[1] = parentSize[1];
 
         return size;
     }
