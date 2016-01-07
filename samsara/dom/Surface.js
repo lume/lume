@@ -13,6 +13,7 @@ define(function(require, exports, module) {
     var dirtyQueue = require('../core/queues/dirtyQueue');
 
     var isTouchEnabled = "ontouchstart" in window;
+    var usePrefix = !('transform' in document.documentElement.style);
     var isIOS = /iPad|iPhone|iPod/.test(navigator.platform);
 
     /**
@@ -79,6 +80,7 @@ define(function(require, exports, module) {
         this._attributesDirty = true;
         this._dirty = false;
         this._cachedSize = null;
+        this._allocator = null;
 
         if (options) {
             // default to DOM size for provided elements
@@ -103,6 +105,8 @@ define(function(require, exports, module) {
 
         dirtyQueue.push(function(){
             var target = this._currentTarget;
+
+            if (!target) return;
 
             if (this._classesDirty) {
                 _removeClasses.call(this, target);
@@ -138,7 +142,8 @@ define(function(require, exports, module) {
     }
 
     function _removeClasses(target) {
-        for (var i = 0; i < this._dirtyClasses.length; i++) target.classList.remove(this._dirtyClasses[i]);
+        for (var i = 0; i < this._dirtyClasses.length; i++)
+            target.classList.remove(this._dirtyClasses[i]);
         this._dirtyClasses = [];
     }
 
@@ -365,6 +370,8 @@ define(function(require, exports, module) {
      * @param allocator {ElementAllocator} Allocator
      */
     Surface.prototype.setup = function setup(allocator) {
+        this._allocator = allocator;
+
         // create element of specific type
         var target = allocator.allocate(this.elementType);
 
@@ -393,6 +400,8 @@ define(function(require, exports, module) {
      * @param allocator {ElementAllocator} Allocator
      */
     Surface.prototype.remove = function remove(allocator) {
+        //TODO: don't reference allocator in state
+        allocator = allocator || this._allocator;
         var target = this._currentTarget;
 
         // cache the target's contents for later deployment
@@ -403,6 +412,18 @@ define(function(require, exports, module) {
         target.style.opacity = '';
         target.style.width = '';
         target.style.height = '';
+
+        if (usePrefix){
+            target.style.webkitTransform = 'scale3d(0.0001,0.0001,0.0001)';
+            target.style.webkitTransformOrigin = '';
+        }
+        else {
+            target.style.transform = 'scale3d(0.0001,0.0001,0.0001)';
+            target.style.transformOrigin = '';
+        }
+
+        for (var i = 0; i < this.classList.length; i++)
+            this.removeClass(this.classList[i]);
 
         // clear all styles, classes and attributes
         _removeProperties.call(this, target);
