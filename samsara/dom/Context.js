@@ -12,7 +12,6 @@ define(function(require, exports, module) {
     var dirtyQueue = require('../core/queues/dirtyQueue');
 
     var elementType = 'div';
-    var elementClass = 'samsara-context';
     var rafStarted = false;
 
     var layoutSpec = {
@@ -87,6 +86,8 @@ define(function(require, exports, module) {
         })
     }
 
+    Context.prototype.elementClass = 'samsara-context';
+
     /**
      * Extends the render tree beginning with the Context's RootNode with a new node.
      *  Delegates to RootNode's `add` method.
@@ -130,7 +131,7 @@ define(function(require, exports, module) {
      */
     Context.prototype.mount = function mount(node, resizeListenFlag){
         this.container = node || document.createElement(elementType);
-        this.container.classList.add(elementClass);
+        this.container.classList.add(this.elementClass);
 
         var allocator = new ElementAllocator(this.container);
         this._node.setAllocator(allocator);
