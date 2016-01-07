@@ -94,7 +94,6 @@ define(function(require, exports, module) {
             this.size.on('resize', function(size){
                 if (size === this._cachedSize) return false;
                 this._cachedSize = size;
-                this.emit('resize', size);
             }.bind(this));
 
             var layout = Stream.lift(
