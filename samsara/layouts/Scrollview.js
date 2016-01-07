@@ -40,10 +40,13 @@ define(function (require, exports, module) {
     var Scrollview = View.extend({
         defaults: {
             direction: CONSTANTS.DIRECTION.Y,
-            drag: 0.5,
+            drag: 0.4,
             paginated: false,
             pageChangeSpeed: 0.5,
+            startPosition: 0,
+            marginTop: 0,
             marginBottom: 0,
+            clip: true,
             pageTransition: {
                 curve : 'spring',
                 period : 100,
@@ -76,7 +79,7 @@ define(function (require, exports, module) {
                 direction: options.direction
             });
 
-            var position = new Accumulator(0);
+            var position = new Accumulator(-options.startPosition);
 
             this.drag = new Transitionable(0);
             this.spring = new Transitionable(0);
@@ -194,14 +197,20 @@ define(function (require, exports, module) {
 
             var displacementNode = new LayoutNode({
                 transform: this.offset.map(function (position) {
+                    position += options.marginTop;
                     return options.direction == CONSTANTS.DIRECTION.Y
                         ? Transform.translateY(position)
                         : Transform.translateX(position);
                 })
             });
 
+
+            var overflow = (options.clip)
+                ? 'hidden'
+                : '';
+
             var container = new ContainerSurface({
-                properties: {overflow: 'hidden'}
+                properties: {overflow: overflow}
             });
 
             genericInput.subscribe(container);
