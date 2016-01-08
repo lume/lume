@@ -3,7 +3,7 @@
     "docs": "docco -l parallel js/main.js js/app/*.js -o docs",
     "build": "npm run build-bundle && npm run build-min",
     "build-bundle": "r.js -o optimize=none wrap=true paths.samsara=../../samsara baseUrl=. name=node_modules/almond/almond include=js/main insertRequire=js/main out=build/app.js",
-    "build-min": "uglifyjs ./build/app.js -o ./build/app.min.js --mangle --compress warnings=false"
+    "build-min": "uglifyjs ./build/app.js -o ./build/app.min.js --mangle --screw-ie8 -c dead_code,sequences,properties,evaluate,unused,if_return,join_vars,warnings=false"
   },
   "license": "MIT",
   "devDependencies": {
