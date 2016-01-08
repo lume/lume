@@ -1,7 +1,7 @@
 infamous
 ========
 
-A famo.us UI library.
+A famous UI library.
 
 [![NPM](https://nodei.co/npm/infamous.png)](https://nodei.co/npm/infamous/)
 
@@ -10,13 +10,16 @@ A famo.us UI library.
 Getting Started
 ---------------
 
-The following sample workflows show possible ways to install and start using infamous. These examples will refer to the [snippets](#snippets) at the end of the README.
+The following sample workflows show possible ways to install and start using
+infamous. These examples will refer to the [snippets](#snippets) at the end of
+the README.
 
 Also read the [docs](http://infamous.github.io/infamous).
 
 ### browserify workflow
 
-Install [nodejs](http://nodejs.org), then create `package.json` for your project.
+Install [nodejs](http://nodejs.org), then create `package.json` for your
+project.
 
 ```
 npm init # creates package.json
@@ -34,7 +37,8 @@ Install infamous along with famous, famousify, and cssify into your project.
 npm install infamous famous famousify cssify --save
 ```
 
-Add the the famousify and cssify transforms to your package.json so it looks similar to the following.
+Add the the famousify and cssify transforms to your package.json so it looks
+similar to the following.
 
 ```json
 {
@@ -53,13 +57,16 @@ Add the the famousify and cssify transforms to your package.json so it looks sim
 }
 ```
 
-Suppose you have `src/app.js` containing [Snippet 1](#snippet-1) and `public/index.html` containing [Snippet 2](#snippet-2). Compile a bundle for production.
+Suppose you have `src/app.js` containing [Snippet 1](#snippet-1) and
+`public/index.html` containing [Snippet 2](#snippet-2). Compile a bundle for
+production.
 
 ```
 browserify src/app.js -o public/app.js
 ```
 
-Alternatively, use [watchify](https://github.com/substack/watchify) to watch the filesystem for changes and re-compile automatically.
+Alternatively, use [watchify](https://github.com/substack/watchify) to watch
+the filesystem for changes and re-compile automatically.
 
 ```
 watchify src/app.js -o public/app.js
@@ -81,7 +88,8 @@ Visit `localhost:3000` in your browser.
 
 ### webpack workflow
 
-Install [nodejs](http://nodejs.org), then create `package.json` for your project.
+Install [nodejs](http://nodejs.org), then create `package.json` for your
+project.
 
 ```
 npm init # creates package.json
@@ -93,7 +101,8 @@ Install [`webpack`](http://webpack.github.io) globally.
 npm install -g webpack
 ```
 
-Install infamous along with famous, webpack, css-loader, and style-loader into your project.
+Install infamous along with famous, webpack, css-loader, and style-loader into
+your project.
 
 ```
 npm install infamous webpack famous css-loader style-loader --save
@@ -123,7 +132,9 @@ module.exports = {
 }
 ```
 
-Suppose you have `src/app.js` containing [Snippet 1](#snippet-1) and `public/index.html` containing [Snippet 2](#snippet-2). Compile a bundle for production.
+Suppose you have `src/app.js` containing [Snippet 1](#snippet-1) and
+`public/index.html` containing [Snippet 2](#snippet-2). Compile a bundle for
+production.
 
 ```
 webpack
@@ -151,7 +162,8 @@ Visit `localhost:3000` in your browser.
 
 ### jspm workflow
 
-Install [nodejs](http://nodejs.org), then create `package.json` for your project.
+Install [nodejs](http://nodejs.org), then create `package.json` for your
+project.
 
 ```
 npm init # creates package.json
@@ -163,7 +175,8 @@ Install [`jspm`](http://jspm.io) globally.
 npm install -g jspm
 ```
 
-Set `jspm.directories.baseURL` in your package.json to `"src"`, similar to the following.
+Set `jspm.directories.baseURL` in your package.json to `"src"`, similar to the
+following.
 
 ```json
 {
@@ -181,7 +194,8 @@ Install infamous along with famous and css into your project.
 jspm install -y infamous famous css
 ```
 
-Suppose you have `src/app.js` containing [Snippet 3](#snippet-3) and `src/index.html` containing [Snippet 4](#snippet-4). Install `serve` globally.
+Suppose you have `src/app.js` containing [Snippet 3](#snippet-3) and
+`src/index.html` containing [Snippet 4](#snippet-4). Install `serve` globally.
 
 ```
 npm install -g serve
