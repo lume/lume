@@ -40,7 +40,7 @@ import "army-knife/polyfill.Function.name";
  * @class Molecule
  * @extends {module: famous/core/RenderNode}
  */
-export class Molecule extends RenderNode {
+export class Molecule {
 
     /**
      * Creates a new `Molecule` and applies `initialOptions` to it's internal
@@ -63,7 +63,8 @@ export class Molecule extends RenderNode {
      * @param {Object} initialOptions The options to initialize this Molecule's `Modifier` with.
      */
     constructor(initialOptions) {
-        super(RenderNode)
+
+        this.node = new RenderNode
 
         // "private" stuff. Not really, but regard it like so. For example, if
         // you see something like obj._.someVariable then you're accessing
@@ -165,7 +166,7 @@ export class Molecule extends RenderNode {
      */
     resetOptions() {
         this.modifier = new Modifier();
-        this.set(this.modifier);
+        this.node.set(this.modifier);
         this.setOptions(this._.defaultOptions);
     }
 
@@ -176,7 +177,7 @@ export class Molecule extends RenderNode {
      * This method is equivalent to [famous/core/EventHandler.pipe](#famous/core/EventHandler.pipe),
      * acting upon `this.handler`.
      *
-     * TODO v0.1.0: Let this method accept a `Molecule`, then stop doing `pipe(this._.handler)` in other places
+     * TODO v0.1.0: Let this method accept a `Molecule`, then stop doing `pipe(this.options.handler)` in other places
      */
     pipe() {
         var args = Array.prototype.splice.call(arguments, 0);
@@ -190,7 +191,7 @@ export class Molecule extends RenderNode {
      * This method is equivalent to [famous/core/EventHandler.unpipe](#famous/core/EventHandler.unpipe),
      * acting upon `this.handler`.
      *
-     * TODO v0.1.0: Let this method accept a `Molecule`, then stop doing `pipe(this.options.handler)` in other places
+     * TODO v0.1.0: Let this method accept a `Molecule`, then stop doing `unpipe(this.options.handler)` in other places
      */
     unpipe() {
         var args = Array.prototype.splice.call(arguments, 0);

@@ -69,7 +69,7 @@ export class Calendar extends Molecule {
         }.bind(this));
 
         grid.setChildren(this.planes);
-        this.add(grid);
+        this.node.add(grid);
     }
 
     /**
