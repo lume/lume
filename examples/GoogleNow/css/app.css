@@ -1,0 +1,62 @@
+body {
+    background: rgb(240, 240, 240);
+    margin: 0;
+    overflow : hidden;
+}
+
+.topNav {
+    padding : 5px;
+}
+
+.statusBar {
+    z-index : 1;
+}
+
+.searchBar {
+    background : white;
+    border-radius : 2px;
+    box-shadow: 0 0 1px 1px rgba(0,0,0,.2);
+    z-index : 1;
+}
+
+.searchBar .mic {
+    position: relative;
+    height: 33%;
+    float: right;
+    top: 33%;
+    right: 10px;
+}
+
+.card {
+    background: white;
+    box-shadow : 0px 0px 1px 1px rgba(100,100,100,.2);
+    border-radius : 2px;
+}
+
+.time-card {
+    z-index : 1;
+}
+
+.movie-card {
+    z-index : 2;
+}
+
+.traffic-card {
+    z-index : 3;
+}
+
+#time-title {
+    font-family: Helvetica Neue;
+    font-size: 7vw;
+    margin-top: 3%;
+    padding-left: 5%;
+    color : #5b5b5b;
+}
+
+#time-description {
+    font-family: Helvetica Neue;
+    font-size: 4vw;
+    padding-left: 5%;
+    margin-bottom: 3%;
+    color : #979797;
+}
