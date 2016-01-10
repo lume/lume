@@ -32,7 +32,7 @@
     "tween.js": "^16.3.1",
     "army-knife": "^0.2.1",
 
-    "famous": "git+https://github.com/trusktr/famous.git#trusktr",
+    "famous": "trusktr/famous#commonjs",
     "famousify": "^0.1.5",
 
     "jss": "^3.0.0",
