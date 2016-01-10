@@ -12,15 +12,20 @@ function startTween(tween) {
 function startLoop() {
     // start an rAF loop if there isn't one.
     if (!rAF) {
-        rAF = requestAnimationFrame(function tick() {
+        rAF = window.requestAnimationFrame(function tick() {
 
-            // (errors could happen in the TWEEN.update() call below, so we catch them.)
+            // (errors could happen in the TWEEN.update() call below, so we
+            // catch them and rethrow them, for now.)
             try {
 
                 // If we have a reason to request a new frame, continue.
                 if (TWEEN.getAll().length) { // if we have tweens left to animate.
                     TWEEN.update() // update all tweens
-                    rAF = requestAnimationFrame(tick)
+                    // ^ TODO: pass in a custom timestamp here. We'll need to
+                    // do this in order to synchronize all the parts (DOM
+                    // renderer, WebGL renderer, etc).
+
+                    rAF = window.requestAnimationFrame(tick)
                 }
 
                 // Otherwise don't request the next frame, and nullify the rAF
@@ -33,6 +38,14 @@ function startLoop() {
                 throw error
             }
         })
+    }
+}
+
+// TODO: How do we pause tweens?
+function stopLoop() {
+    if (rAF) {
+        window.cancelAnimationFrame(rAF)
+        rAF = null
     }
 }
 
@@ -56,11 +69,10 @@ function applyCSSLabel(value, label) {
  */
 async function documentReady() {
     if (document.readyState === 'loading') {
-        return new Promise(function(resolve) {
-            document.addEventListener('DOMContentLoaded', event => resolve())
+        await new Promise(function(resolve) {
+            document.addEventListener('DOMContentLoaded', resolve)
         })
     }
-    else return
 }
 
 /**
@@ -69,11 +81,10 @@ async function documentReady() {
  */
 async function windowLoaded() {
     if (document.readyState !== 'complete') {
-        return new Promise(function(resolve) {
-            window.addEventListener('load', event => resolve())
+        await new Promise(function(resolve) {
+            window.addEventListener('load', resolve)
         })
     }
-    else return
 }
 
 
@@ -81,7 +92,7 @@ async function windowLoaded() {
  * Alias to windowLoaded.
  */
 async function documentLoaded() {
-    return await windowLoaded()
+    await windowLoaded()
 }
 
 /**
