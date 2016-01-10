@@ -1,4 +1,4 @@
-import jss from '/app/src/both/jss-configured'
+import jss from '../jss-configured'
 import {epsilon} from './Utility'
 
 const CSS_CLASS_NODE = 'motor-dom-node';

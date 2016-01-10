@@ -63,6 +63,7 @@ export class Molecule {
      * @param {Object} initialOptions The options to initialize this Molecule's `Modifier` with.
      */
     constructor(initialOptions) {
+        console.log('Molecule constructor.')
 
         this.node = new RenderNode
 

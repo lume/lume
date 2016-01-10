@@ -1,4 +1,4 @@
-import jss from '/app/src/both/jss-configured'
+import jss from '../jss-configured'
 
 import Node from './Node'
 import {documentReady} from './Utility'
