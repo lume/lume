@@ -9,12 +9,12 @@
 
 import jss from 'jss';
 
-import Surface from 'famous/core/Surface';
-import RenderNode from 'famous/core/RenderNode';
-import Transitionable from 'famous/transitions/Transitionable';
-import Easing from 'famous/transitions/Easing';
-import TouchSync from 'famous/inputs/TouchSync';
-import GenericSync from 'famous/inputs/GenericSync';
+import Surface from 'famous/src/core/Surface';
+import RenderNode from 'famous/src/core/RenderNode';
+import Transitionable from 'famous/src/transitions/Transitionable';
+import Easing from 'famous/src/transitions/Easing';
+import TouchSync from 'famous/src/inputs/TouchSync';
+import GenericSync from 'famous/src/inputs/GenericSync';
 
 import Plane from './Plane';
 import Molecule from './Molecule';
@@ -84,7 +84,7 @@ export class PushMenuLayout extends Molecule {
         // TODO v0.1.0: Mark these as private.
             // TODO v0.1.0: this.contentWidth should be the width of whatever is containing
             // the layout, but we're just using it as a whole-page app for now. Get
-            // size from a commit? UPDATE: See the new famous/views/SizeAwareView
+            // size from a commit? UPDATE: See the new famous/src/views/SizeAwareView
             this.contentWidth = document.body.clientWidth - this.options.menuHintSize;
 
             // Changing these values outside of an instance of PushMenuLayout might
@@ -419,7 +419,7 @@ export class PushMenuLayout extends Molecule {
      * just be careful not to let them cover the menu or you'll block the user
      * from interacting with the menu.
      *
-     * @param {module: famous/core/RenderNode} node A scenegraph, i.e. a
+     * @param {module: famous/src/core/RenderNode} node A scenegraph, i.e. a
      * RenderNode with stuff in it.
      *
      * TODO: Accept plain renderables, f.e. Surfaces, etc. This change requires
@@ -445,7 +445,7 @@ export class PushMenuLayout extends Molecule {
      * contained within the boundaries of the menu or you might have touch and
      * mouse interaction outside of the menu.
      *
-     * @param {module: famous/core/RenderNode} node A scenegraph, i.e. a
+     * @param {module: famous/src/core/RenderNode} node A scenegraph, i.e. a
      * RenderNode with stuff in it.
      *
      * TODO: Accept plain renderables, f.e. Surfaces, etc.

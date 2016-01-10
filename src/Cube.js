@@ -7,10 +7,10 @@
  *
  */
 
-import Transform from 'famous/core/Transform';
-import MouseSync from 'famous/inputs/MouseSync';
-import TouchSync from 'famous/inputs/TouchSync';
-import GenericSync from 'famous/inputs/GenericSync';
+import Transform from 'famous/src/core/Transform';
+import MouseSync from 'famous/src/inputs/MouseSync';
+import TouchSync from 'famous/src/inputs/TouchSync';
+import GenericSync from 'famous/src/inputs/GenericSync';
 
 import Molecule from './Molecule';
 import Plane from './Plane';
@@ -20,7 +20,7 @@ import forLength from 'army-knife/forLength';
 /**
  * A scenegraph tree that lays things out in a cube form. The leaf nodes of the
  * scenegraph (the cube sides) are Molecules. Add anything to the leaf nodes
- * that a [famous/core/RenderNode](#famous/core/RenderNode) would normally accept.
+ * that a [famous/src/core/RenderNode](#famous/src/core/RenderNode) would normally accept.
  *
  * @class Cube
  * @extends Molecule
@@ -94,7 +94,7 @@ export class Cube extends Molecule {
      * Set the content for the sides of the cube.
      *
      * @param {Array} children An array containing anything that a
-     * [famous/core/RenderNode](#famous/core/RenderNode) would accept in it's `add` method. Only the
+     * [famous/src/core/RenderNode](#famous/src/core/RenderNode) would accept in it's `add` method. Only the
      * first 6 items are used, the rest are ignored.
      */
     setChildren(children) {

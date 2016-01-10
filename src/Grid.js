@@ -7,8 +7,8 @@
  *
  */
 
-import Modifier from 'famous/core/Modifier';
-import Transform from 'famous/core/Transform';
+import Modifier from 'famous/src/core/Modifier';
+import Transform from 'famous/src/core/Transform';
 
 import Molecule from './Molecule';
 
@@ -16,7 +16,7 @@ import forLength from 'army-knife/forLength';
 
 /**
  * A scenegraph tree with a variable number of leaf node Modifiers (the grid
- * cells) that are arranged in a grid. Add any [famous/core/RenderNode](#famous/core/RenderNode)-compatible
+ * cells) that are arranged in a grid. Add any [famous/src/core/RenderNode](#famous/src/core/RenderNode)-compatible
  * item to each leafnode of the grid.
  *
  * TODO: Use Molecule instead of Modifier for the grid cells.
@@ -84,7 +84,7 @@ export class Grid extends Molecule {
     /**
      * Sets the items to be layed out in the grid.
      *
-     * @param {Array} children An array of [famous/core/RenderNode](#famous/core/RenderNode)-compatible items.
+     * @param {Array} children An array of [famous/src/core/RenderNode](#famous/src/core/RenderNode)-compatible items.
      */
     setChildren(children) {
         forLength(this.columns*this.rows, function(index) {

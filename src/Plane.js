@@ -7,15 +7,15 @@
  *
  */
 
-import Surface from 'famous/core/Surface';
+import Surface from 'famous/src/core/Surface';
 
 import Molecule from './Molecule';
 
 /**
  * Planes have the properties of [Molecules](#Molecule), plus they contain a
- * [famous/core/Surface](#famous/core/Surface) so that they ultimately render
+ * [famous/src/core/Surface](#famous/src/core/Surface) so that they ultimately render
  * onto the screen. A Surface's events are automatically piped to it's
- * [famous/core/EventHandler](#famous/core/EventHandler), inherited from
+ * [famous/src/core/EventHandler](#famous/src/core/EventHandler), inherited from
  * `Molecule`.
  *
  * @class Plane
@@ -25,8 +25,8 @@ export class Plane extends Molecule {
 
     /**
      * Creates a new `Plane`. Properties from the `initialOptions` parameter
-     * are applied to this Plane's [famous/core/Surface](#famous/core/Surface) as well as to
-     * to this Plane's [famous/core/Modifier](#famous/core/Modifier), hence the API of a Plane
+     * are applied to this Plane's [famous/src/core/Surface](#famous/src/core/Surface) as well as to
+     * to this Plane's [famous/src/core/Modifier](#famous/src/core/Modifier), hence the API of a Plane
      * is currently the combination of the Famo.us `Modifier` and `Surface` APIs.
      *
      * @constructor
@@ -41,8 +41,8 @@ export class Plane extends Molecule {
     }
 
     /**
-     * Get the content of this Plane's [famous/core/Surface](#famous/core/Surface).
-     * See [famous/core/Surface.getContent](#famous/core/Surface.getContent).
+     * Get the content of this Plane's [famous/src/core/Surface](#famous/src/core/Surface).
+     * See [famous/src/core/Surface.getContent](#famous/src/core/Surface.getContent).
      */
     getContent() {
         var args = Array.prototype.splice.call(arguments, 0);
@@ -50,8 +50,8 @@ export class Plane extends Molecule {
     }
 
     /**
-     * Set the content of this Plane's [famous/core/Surface](#famous/core/Surface).
-     * See [famous/core/Surface.setContent](#famous/core/Surface.setContent).
+     * Set the content of this Plane's [famous/src/core/Surface](#famous/src/core/Surface).
+     * See [famous/src/core/Surface.setContent](#famous/src/core/Surface.setContent).
      */
     setContent() {
         var args = Array.prototype.splice.call(arguments, 0);

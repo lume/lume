@@ -7,7 +7,7 @@
  *
  */
 
-import Transform from 'famous/core/Transform';
+import Transform from 'famous/src/core/Transform';
 
 import Molecule from './Molecule';
 import Plane from './Plane';
@@ -51,7 +51,7 @@ export class DoubleSidedPlane extends Molecule {
     }
 
     /**
-     * Get the content of the [famous/core/Surface](#famous/core/Surface) of each [Plane](#Plane).
+     * Get the content of the [famous/src/core/Surface](#famous/src/core/Surface) of each [Plane](#Plane).
      *
      * @returns {Array} An array containing two items, the content of each
      * `Plane`. The first item is from "plane1".

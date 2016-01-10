@@ -7,9 +7,9 @@
  *
  */
 
-import Transform from 'famous/core/Transform';
-import Transitionable from 'famous/transitions/Transitionable';
-import Easing from 'famous/transitions/Easing';
+import Transform from 'famous/src/core/Transform';
+import Transitionable from 'famous/src/transitions/Transitionable';
+import Easing from 'famous/src/transitions/Easing';
 
 import Molecule from './Molecule';
 import Grid from './Grid';

@@ -7,10 +7,10 @@
  *
  */
 
-import Modifier from 'famous/core/Modifier';
-import RenderNode from 'famous/core/RenderNode';
-import TransitionableTransform from 'famous/transitions/TransitionableTransform';
-import EventHandler from 'famous/core/EventHandler';
+import Modifier from 'famous/src/core/Modifier';
+import RenderNode from 'famous/src/core/RenderNode';
+import TransitionableTransform from 'famous/src/transitions/TransitionableTransform';
+import EventHandler from 'famous/src/core/EventHandler';
 
 import {simpleExtend} from './utils'
 
@@ -18,7 +18,7 @@ import "army-knife/polyfill.Function.name";
 
 /**
  * Molecules are the basic building blocks of all UI components. Molecules
- * extend [famous/core/RenderNode](#famous/core/RenderNode), so they can be
+ * extend [famous/src/core/RenderNode](#famous/src/core/RenderNode), so they can be
  * added to any `RenderNode` of a famo.us render tree, and by default they will
  * also accept anything that a normal Famo.us `RenderNode` can accept via the
  * `add` method.  Classes that extend from `Molecule` might override
@@ -26,10 +26,10 @@ import "army-knife/polyfill.Function.name";
  * stead of a single renderable.
  *
  * Molecules encapsulate the basic things you need for a component -- a
- * [famous/transitions/TransitionableTransform](#famous/transitions/TransitionableTransform)
- * for positioning things in space, and a [famous/core/EventHandler](#famous/core/EventHandler)
+ * [famous/src/transitions/TransitionableTransform](#famous/src/transitions/TransitionableTransform)
+ * for positioning things in space, and a [famous/src/core/EventHandler](#famous/src/core/EventHandler)
  * for capturing user interaction -- exposing a unified API for working with these
- * things. For now, [famous/core/Modifier](#famous/core/Modifier) is used as the interface
+ * things. For now, [famous/src/core/Modifier](#famous/src/core/Modifier) is used as the interface
  * for applying transforms and sizing, but this will change in Mixed Mode
  * Famo.us.
  *
@@ -38,13 +38,13 @@ import "army-knife/polyfill.Function.name";
  * position multiple things in space.
  *
  * @class Molecule
- * @extends {module: famous/core/RenderNode}
+ * @extends {module: famous/src/core/RenderNode}
  */
 export class Molecule {
 
     /**
      * Creates a new `Molecule` and applies `initialOptions` to it's internal
-     * `famous/core/Modifier`. See [famous/core/Modifier](#famous/core/Modifier)
+     * `famous/src/core/Modifier`. See [famous/src/core/Modifier](#famous/src/core/Modifier)
      * for details on what options you can pass.
      *
      * Note: Mixed Mode Famo.us does away with Modifiers, so this API will
@@ -104,7 +104,7 @@ export class Molecule {
      * values.
      *
      * Note: Anytime `this.options` is assigned a new value, `this.modifier` is set
-     * to a new [famous/core/Modifier](#famous/core/Modifier).
+     * to a new [famous/src/core/Modifier](#famous/src/core/Modifier).
      */
     set options(newOptions) {
         this.resetOptions();
@@ -115,11 +115,11 @@ export class Molecule {
     }
 
     /**
-     * @property {module: famous/transitions/TransitionableTransform} transform
+     * @property {module: famous/src/transitions/TransitionableTransform} transform
      * The transform of this `Molecule`. The default is a
-     * [famous/transitions/TransitionableTransform](#famous/transitions/TransitionableTransform).
+     * [famous/src/transitions/TransitionableTransform](#famous/src/transitions/TransitionableTransform).
      * Setting this property automatically puts the new transform into effect.
-     * See [famous/core/Modifier.transformFrom](#famous/core/Modifier.transformFrom).
+     * See [famous/src/core/Modifier.transformFrom](#famous/src/core/Modifier.transformFrom).
      */
     set transform(newTransform) {
         this.setOptions({transform: newTransform});
@@ -162,7 +162,7 @@ export class Molecule {
      * Sets all options back to their defaults.
      *
      * Note: Anytime this is called, `this.modifier` is set to a new
-     * [famous/core/Modifier](#famous/core/Modifier) having the default
+     * [famous/src/core/Modifier](#famous/src/core/Modifier) having the default
      * options.
      */
     resetOptions() {
@@ -172,10 +172,10 @@ export class Molecule {
     }
 
     /**
-     * Forwards events from this Molecule's [famous/core/EventHandler](#famous/core/EventHandler) to the given
+     * Forwards events from this Molecule's [famous/src/core/EventHandler](#famous/src/core/EventHandler) to the given
      * target, which can be another `EventHandler` or `Molecule`.
      *
-     * This method is equivalent to [famous/core/EventHandler.pipe](#famous/core/EventHandler.pipe),
+     * This method is equivalent to [famous/src/core/EventHandler.pipe](#famous/src/core/EventHandler.pipe),
      * acting upon `this.handler`.
      *
      * TODO v0.1.0: Let this method accept a `Molecule`, then stop doing `pipe(this.options.handler)` in other places
@@ -186,10 +186,10 @@ export class Molecule {
     }
 
     /**
-     * Stops events from this Molecule's [famous/core/EventHandler](#famous/core/EventHandler)
+     * Stops events from this Molecule's [famous/src/core/EventHandler](#famous/src/core/EventHandler)
      * from being sent to the given target.
      *
-     * This method is equivalent to [famous/core/EventHandler.unpipe](#famous/core/EventHandler.unpipe),
+     * This method is equivalent to [famous/src/core/EventHandler.unpipe](#famous/src/core/EventHandler.unpipe),
      * acting upon `this.handler`.
      *
      * TODO v0.1.0: Let this method accept a `Molecule`, then stop doing `unpipe(this.options.handler)` in other places
@@ -201,7 +201,7 @@ export class Molecule {
 
     /**
      * Register an event handler for the specified event.
-     * See [famous/core/EventHandler.on](#famous/core/EventHandler.on).
+     * See [famous/src/core/EventHandler.on](#famous/src/core/EventHandler.on).
      */
     on() {
         var args = Array.prototype.splice.call(arguments, 0);
@@ -210,7 +210,7 @@ export class Molecule {
 
     /**
      * Unregister an event handler for the specified event.
-     * See [famous/core/EventHandler.off](#famous/core/EventHandler.off).
+     * See [famous/src/core/EventHandler.off](#famous/src/core/EventHandler.off).
      */
     off() {
         var args = Array.prototype.splice.call(arguments, 0);
