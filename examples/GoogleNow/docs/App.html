@@ -1,0 +1,535 @@
+<!DOCTYPE html>
+
+<html>
+<head>
+  <title>App.js</title>
+  <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+  <meta name="viewport" content="width=device-width, target-densitydpi=160dpi, initial-scale=1.0; maximum-scale=1.0; user-scalable=0;">
+  <link rel="stylesheet" media="all" href="docco.css" />
+</head>
+<body>
+  <div id="container">
+    <div id="background"></div>
+    
+      <ul id="jump_to">
+        <li>
+          <a class="large" href="javascript:void(0);">Jump To &hellip;</a>
+          <a class="small" href="javascript:void(0);">+</a>
+          <div id="jump_wrapper">
+          <div id="jump_page_wrapper">
+            <div id="jump_page">
+              
+                
+                <a class="source" href="App.html">
+                  App.js
+                </a>
+              
+                
+                <a class="source" href="main.html">
+                  main.js
+                </a>
+              
+            </div>
+          </div>
+        </li>
+      </ul>
+    
+    <ul class="sections">
+        
+          <li id="title">
+              <div class="annotation">
+                  <h1>App.js</h1>
+              </div>
+          </li>
+        
+        
+        
+        <li id="section-1">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-1">&#182;</a>
+              </div>
+              
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>define(<span class="hljs-function"><span class="hljs-keyword">function</span> (<span class="hljs-params">require, exports, module</span>) </span>{
+    <span class="hljs-keyword">var</span> View = <span class="hljs-built_in">require</span>(<span class="hljs-string">'samsara/core/View'</span>);
+    <span class="hljs-keyword">var</span> Transform = <span class="hljs-built_in">require</span>(<span class="hljs-string">'samsara/core/Transform'</span>);
+    <span class="hljs-keyword">var</span> Transitionable = <span class="hljs-built_in">require</span>(<span class="hljs-string">'samsara/core/Transitionable'</span>);
+    <span class="hljs-keyword">var</span> Surface = <span class="hljs-built_in">require</span>(<span class="hljs-string">'samsara/dom/Surface'</span>);
+    <span class="hljs-keyword">var</span> Stream = <span class="hljs-built_in">require</span>(<span class="hljs-string">'samsara/streams/Stream'</span>);</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-2">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-2">&#182;</a>
+              </div>
+              <p>Creates and lays out the <code>Surfaces</code> for the application.
+Responsible for coordinating both physics and easing
+animations to create a fun user interface transition.</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>    <span class="hljs-keyword">var</span> App = View.extend({
+        defaults : {
+            springTransition : {
+                curve: <span class="hljs-string">'spring'</span>,
+                period: <span class="hljs-number">60</span>,
+                damping: <span class="hljs-number">0.75</span>
+            },
+            easingTransition : {
+                curve : <span class="hljs-string">'easeIn'</span>,
+                duration : <span class="hljs-number">200</span>
+            },
+            cardOffset : <span class="hljs-number">5</span>,
+            cardPadding : <span class="hljs-number">10</span>
+        },
+        initialize: <span class="hljs-function"><span class="hljs-keyword">function</span> (<span class="hljs-params">options</span>) </span>{</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-3">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-3">&#182;</a>
+              </div>
+              <p>Define the Transitionables which will control the animation
+One takes an easing curve, the other a spring</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>            <span class="hljs-keyword">this</span>.easingTransition = <span class="hljs-keyword">new</span> Transitionable(<span class="hljs-number">0</span>);
+            <span class="hljs-keyword">this</span>.springTransition = <span class="hljs-keyword">new</span> Transitionable(<span class="hljs-number">0</span>);
+            
+            <span class="hljs-keyword">this</span>.toggle = <span class="hljs-literal">false</span>; <span class="hljs-comment">// Boolean indicating the state of the animation</span></pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-4">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-4">&#182;</a>
+              </div>
+              <p>Add all the elements to the render subtree</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>            <span class="hljs-keyword">this</span>.addTopNav();
+            <span class="hljs-keyword">this</span>.addSearchBar();
+            <span class="hljs-keyword">this</span>.addStatusBar();
+            <span class="hljs-keyword">this</span>.addMountains();
+            <span class="hljs-keyword">this</span>.addGoogleLogo();
+            <span class="hljs-keyword">this</span>.addCards(options);
+        },</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-5">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-5">&#182;</a>
+              </div>
+              <p>Toggle the animation</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>        toggleAnimation : <span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params"></span>)</span>{
+            <span class="hljs-keyword">var</span> target = <span class="hljs-keyword">this</span>.toggle ? <span class="hljs-number">0</span> : <span class="hljs-number">1</span>;
+            <span class="hljs-keyword">this</span>.easingTransition.set(target, <span class="hljs-keyword">this</span>.options.easingTransition);
+            <span class="hljs-keyword">this</span>.springTransition.set(target, <span class="hljs-keyword">this</span>.options.springTransition);
+            <span class="hljs-keyword">this</span>.toggle = !<span class="hljs-keyword">this</span>.toggle;
+        },
+        addTopNav : <span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params"></span>)</span>{</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-6">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-6">&#182;</a>
+              </div>
+              <p>The opacity goes from 1 to 0 with the easing animation</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>            <span class="hljs-keyword">var</span> opacity = <span class="hljs-keyword">this</span>.easingTransition.map(<span class="hljs-function"><span class="hljs-keyword">function</span> (<span class="hljs-params">value</span>) </span>{
+                <span class="hljs-keyword">return</span> <span class="hljs-number">1</span> - value;
+            });</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-7">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-7">&#182;</a>
+              </div>
+              <p>The origin point goes from top left to bottom left with the spring animation.
+This has the effect of “raising” the <code>Surface</code></p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>            <span class="hljs-keyword">var</span> origin = <span class="hljs-keyword">this</span>.springTransition.map(<span class="hljs-function"><span class="hljs-keyword">function</span> (<span class="hljs-params">value</span>) </span>{
+                <span class="hljs-keyword">return</span> [<span class="hljs-number">0</span>, value];
+            });
+
+            <span class="hljs-keyword">var</span> topNav = <span class="hljs-keyword">new</span> Surface({
+                tagName: <span class="hljs-string">'img'</span>,
+                size: [<span class="hljs-literal">undefined</span>, <span class="hljs-literal">true</span>],
+                classes: [<span class="hljs-string">'topNav'</span>],
+                attributes: {src: <span class="hljs-string">'./assets/top.png'</span>},
+                opacity: opacity,
+                origin: origin
+            });
+
+            <span class="hljs-keyword">this</span>.add(topNav);
+        },</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-8">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-8">&#182;</a>
+              </div>
+              <p>The search bar will raise and scale slightly in the <code>x</code>-direction as the animation progresses</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>        addSearchBar : <span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params"></span>)</span>{
+            <span class="hljs-keyword">var</span> search = <span class="hljs-keyword">new</span> Surface({
+                content: <span class="hljs-string">'&lt;img class="mic" src="./assets/mic.png"/&gt;'</span>,
+                classes: [<span class="hljs-string">'searchBar'</span>],
+                proportions: [<span class="hljs-number">1</span>, <span class="hljs-number">1</span> / <span class="hljs-number">10</span>],
+                origin: [<span class="hljs-number">.5</span>, <span class="hljs-number">.5</span>]
+            });
+
+            <span class="hljs-keyword">this</span>.add({
+                align: <span class="hljs-keyword">this</span>.springTransition.map(<span class="hljs-function"><span class="hljs-keyword">function</span> (<span class="hljs-params">value</span>) </span>{
+                    <span class="hljs-keyword">return</span> [<span class="hljs-number">.5</span>, <span class="hljs-number">.52</span> - value / <span class="hljs-number">4</span>];
+                }),
+                transform: <span class="hljs-keyword">this</span>.easingTransition.map(<span class="hljs-function"><span class="hljs-keyword">function</span> (<span class="hljs-params">value</span>) </span>{
+                    <span class="hljs-keyword">return</span> Transform.scaleX(<span class="hljs-number">.9</span> + value / <span class="hljs-number">20</span>);
+                })
+            }).add(search);
+        },
+        addStatusBar : <span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params"></span>)</span>{</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-9">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-9">&#182;</a>
+              </div>
+              <p>The opacity of the status bar begins at 0, and becomes visible with the easing animation.</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>            <span class="hljs-keyword">var</span> statusBar = <span class="hljs-keyword">new</span> Surface({
+                tagName: <span class="hljs-string">'img'</span>,
+                size: [<span class="hljs-literal">undefined</span>, <span class="hljs-literal">true</span>],
+                attributes: {src: <span class="hljs-string">'./assets/status-bar.png'</span>},
+                classes: [<span class="hljs-string">'statusBar'</span>],
+                opacity: <span class="hljs-keyword">this</span>.easingTransition
+            });
+
+            <span class="hljs-keyword">this</span>.add(statusBar);
+        },
+        addMountains : <span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params"></span>)</span>{</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-10">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-10">&#182;</a>
+              </div>
+              <p>The mountain <code>Surface</code> begins slightly scaled in <code>x</code>, and shrinks
+with the easing animation.
+We align it so that it is centered and scales from the center.</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>            <span class="hljs-keyword">var</span> mountains = <span class="hljs-keyword">new</span> Surface({
+                tagName: <span class="hljs-string">'img'</span>,
+                proportions: [<span class="hljs-number">1</span>, <span class="hljs-number">1</span> / <span class="hljs-number">3</span>],
+                attributes: {src: <span class="hljs-string">'./assets/background.png'</span>},
+                origin: [<span class="hljs-number">0.5</span>, <span class="hljs-number">0</span>],
+                opacity: <span class="hljs-keyword">this</span>.springTransition
+            });
+
+            <span class="hljs-keyword">this</span>.add({
+                align: [<span class="hljs-number">0.5</span>, <span class="hljs-number">0</span>],
+                transform: <span class="hljs-keyword">this</span>.easingTransition.map(<span class="hljs-function"><span class="hljs-keyword">function</span> (<span class="hljs-params">value</span>) </span>{
+                    <span class="hljs-keyword">var</span> scale = <span class="hljs-number">1.1</span> - value / <span class="hljs-number">10</span>;
+                    <span class="hljs-keyword">return</span> Transform.scale([scale, scale]);
+                })
+            }).add(mountains);
+        },
+        addGoogleLogo : <span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params"></span>)</span>{</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-11">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-11">&#182;</a>
+              </div>
+              <p>We define the Google logos so that they remain the same
+aspect ratio even when rescaled. We then cross fade between
+a colored, and white version as the animation progresses. This
+gives the effect that it is changing colors.</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>            <span class="hljs-keyword">var</span> googleColor = <span class="hljs-keyword">new</span> Surface({
+                tagName: <span class="hljs-string">'img'</span>,
+                proportions: [<span class="hljs-literal">false</span>, <span class="hljs-number">.1</span>],
+                aspectRatio: <span class="hljs-number">3</span>,
+                attributes: {src: <span class="hljs-string">'./assets/google-color.png'</span>},
+                origin: [<span class="hljs-number">.5</span>, <span class="hljs-number">.5</span>],
+                opacity: <span class="hljs-keyword">this</span>.easingTransition.map(<span class="hljs-function"><span class="hljs-keyword">function</span> (<span class="hljs-params">value</span>) </span>{
+                    <span class="hljs-keyword">return</span> <span class="hljs-number">1</span> - value;
+                })
+            });
+
+            <span class="hljs-keyword">var</span> googleWhite = <span class="hljs-keyword">new</span> Surface({
+                tagName: <span class="hljs-string">'img'</span>,
+                proportions: [<span class="hljs-literal">false</span>, <span class="hljs-number">.1</span>],
+                aspectRatio: <span class="hljs-number">3</span>,
+                attributes: {src: <span class="hljs-string">'./assets/google-white.png'</span>},
+                origin: [<span class="hljs-number">.5</span>, <span class="hljs-number">.5</span>],
+                opacity: <span class="hljs-keyword">this</span>.easingTransition
+            });</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-12">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-12">&#182;</a>
+              </div>
+              <p>Since both logo versions are moved together, we create one
+node for the movement and add both surfaces to it.</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>            <span class="hljs-keyword">var</span> googleNode = <span class="hljs-keyword">this</span>.add({
+                align: <span class="hljs-keyword">this</span>.springTransition.map(<span class="hljs-function"><span class="hljs-keyword">function</span> (<span class="hljs-params">value</span>) </span>{
+                    <span class="hljs-keyword">return</span> [<span class="hljs-number">.5</span>, <span class="hljs-number">.38</span> - value / <span class="hljs-number">4</span>];
+                }),
+                transform: <span class="hljs-keyword">this</span>.springTransition.map(<span class="hljs-function"><span class="hljs-keyword">function</span> (<span class="hljs-params">value</span>) </span>{
+                    <span class="hljs-keyword">var</span> scale = <span class="hljs-number">.25</span> * (<span class="hljs-number">1</span> - value) + <span class="hljs-number">.75</span>;
+                    <span class="hljs-keyword">return</span> Transform.scale([scale, scale])
+                })
+            });
+
+            googleNode.add(googleColor);
+            googleNode.add(googleWhite);
+        },</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-13">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-13">&#182;</a>
+              </div>
+              <p>We create three cards that are originally stacked. When the animation begins
+they unstack and are placed sequentially below one another. They also scale
+slightly in the x-direction.</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>        addCards : <span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params">options</span>)</span>{
+            <span class="hljs-keyword">var</span> trafficCard = <span class="hljs-keyword">new</span> Surface({
+                tagName: <span class="hljs-string">'img'</span>,
+                proportions: [<span class="hljs-number">1</span>, <span class="hljs-literal">false</span>],
+                aspectRatio: <span class="hljs-number">1</span> / <span class="hljs-number">1.4</span>,
+                classes: [<span class="hljs-string">'card'</span>, <span class="hljs-string">'traffic-card'</span>],
+                attributes: {src: <span class="hljs-string">'./assets/traffic-card.png'</span>},
+                origin: [<span class="hljs-number">.5</span>, <span class="hljs-number">0</span>]
+            });
+
+            <span class="hljs-keyword">var</span> movieCard = <span class="hljs-keyword">new</span> Surface({
+                tagName: <span class="hljs-string">'img'</span>,
+                proportions: [<span class="hljs-number">1</span>, <span class="hljs-literal">false</span>],
+                aspectRatio: <span class="hljs-number">.58</span>,
+                attributes: {src: <span class="hljs-string">'./assets/movie-card.png'</span>},
+                classes: [<span class="hljs-string">'card'</span>, <span class="hljs-string">'movie-card'</span>],
+                origin: [<span class="hljs-number">.5</span>, <span class="hljs-number">0</span>]
+            });
+
+            <span class="hljs-keyword">var</span> timeContent = <span class="hljs-string">''</span> +
+                <span class="hljs-string">'&lt;div id="time-title"&gt;Wednesday, 12:13 am&lt;/div&gt;'</span> +
+                <span class="hljs-string">'&lt;div id="time-description"&gt;Time at home in Mountain View&lt;/div&gt;'</span>;
+
+            <span class="hljs-keyword">var</span> timeCard = <span class="hljs-keyword">new</span> Surface({
+                content: timeContent,
+                proportions: [<span class="hljs-number">1</span>, <span class="hljs-literal">false</span>],
+                aspectRatio: <span class="hljs-number">1</span> / <span class="hljs-number">5</span>,
+                classes: [<span class="hljs-string">'card'</span>, <span class="hljs-string">'time-card'</span>],
+                origin: [<span class="hljs-number">.5</span>, <span class="hljs-number">0</span>]
+            });</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-14">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-14">&#182;</a>
+              </div>
+              <p>The Movie card is the second card. To make sure it is placed beneath the
+Traffic card, we create a <code>Stream</code> that takes the size of the Traffic card
+and the progress of the easing transition as sources. It is necessary to take the
+Traffic card as a source because it can resize if the <code>window</code> is resized. By
+taking the Traffic card’s size into account, the Movie card is always in the right
+place, even when the <code>window</code> resizes.</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>            <span class="hljs-keyword">var</span> trafficSizeOffset = Stream.lift(<span class="hljs-function"><span class="hljs-keyword">function</span> (<span class="hljs-params">progress, trafficSize</span>) </span>{
+                <span class="hljs-keyword">if</span> (!trafficSize) <span class="hljs-keyword">return</span> <span class="hljs-literal">false</span>;
+                <span class="hljs-keyword">var</span> offsetY = -options.cardOffset + progress * (trafficSize[<span class="hljs-number">1</span>] + options.cardOffset + options.cardPadding);
+                <span class="hljs-keyword">return</span> Transform.thenMove(
+                    Transform.scaleX(<span class="hljs-number">.975</span> + <span class="hljs-number">.025</span> * progress),
+                    [<span class="hljs-number">0</span>, offsetY, <span class="hljs-number">0</span>]
+                );
+            }, [<span class="hljs-keyword">this</span>.easingTransition, trafficCard.size]);</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-15">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-15">&#182;</a>
+              </div>
+              <p>Similarly, the Time card must be placed below both the Traffic and Movie cards.
+This Stream takes three sources: the sizes of the Traffic and Movie cards, and the
+animation’s progress.</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>            <span class="hljs-keyword">var</span> trafficAndMovieSizeOffset = Stream.lift(<span class="hljs-function"><span class="hljs-keyword">function</span> (<span class="hljs-params">progress, trafficSize, movieSize</span>) </span>{
+                <span class="hljs-keyword">if</span> (!trafficSize || !movieSize) <span class="hljs-keyword">return</span> <span class="hljs-literal">false</span>;
+                <span class="hljs-keyword">var</span> offsetY = -<span class="hljs-number">2</span> * options.cardOffset + progress * (movieSize[<span class="hljs-number">1</span>] + trafficSize[<span class="hljs-number">1</span>] + <span class="hljs-number">2</span> * (options.cardOffset + options.cardPadding));
+                <span class="hljs-keyword">return</span> Transform.thenMove(
+                    Transform.scaleX(<span class="hljs-number">.95</span> + <span class="hljs-number">.05</span> * progress),
+                    [<span class="hljs-number">0</span>, offsetY, <span class="hljs-number">0</span>]
+                );
+            }, [<span class="hljs-keyword">this</span>.easingTransition, trafficCard.size, movieCard.size]);</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-16">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-16">&#182;</a>
+              </div>
+              <p>Since all the cards follow the top card upwards with the animation, we create a
+single node that moves all the cards in unison.</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>            <span class="hljs-keyword">var</span> cardsNode = <span class="hljs-keyword">this</span>.add({
+                align: <span class="hljs-keyword">this</span>.springTransition.map(<span class="hljs-function"><span class="hljs-keyword">function</span> (<span class="hljs-params">value</span>) </span>{
+                    <span class="hljs-keyword">return</span> [<span class="hljs-number">.5</span>, <span class="hljs-number">.8</span> - value / <span class="hljs-number">2.23</span>];
+                }),
+                transform: <span class="hljs-keyword">this</span>.easingTransition.map(<span class="hljs-function"><span class="hljs-keyword">function</span> (<span class="hljs-params">value</span>) </span>{
+                    <span class="hljs-keyword">return</span> Transform.scaleX(<span class="hljs-number">.9</span> + value / <span class="hljs-number">20</span>);
+                })
+            });</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-17">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-17">&#182;</a>
+              </div>
+              <p>Add the Traffic Card</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>            cardsNode.add(trafficCard);</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-18">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-18">&#182;</a>
+              </div>
+              <p>Add the Movie card, accounting for the shift when the animation begins</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>            cardsNode
+                .add({transform: trafficSizeOffset})
+                .add(movieCard);</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-19">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-19">&#182;</a>
+              </div>
+              <p>Add the Time card, accounting for the shift when the animation begins</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>            cardsNode
+                .add({transform: trafficAndMovieSizeOffset})
+                .add(timeCard);
+        }
+    });
+
+    <span class="hljs-built_in">module</span>.exports = App;
+});</pre></div></div>
+            
+        </li>
+        
+    </ul>
+  </div>
+</body>
+</html>

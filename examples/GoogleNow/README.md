@@ -24,3 +24,8 @@ If you'd like to bundle the application into a single JavaScript file, run the f
 
 This will create a `build` directory with a bundled `app.js` and minified `app.min.js` files. Keep in mind
 you will need to copy over other assets, such as images, fonts, CSS and the index.html file.
+
+##Trademarks
+
+- Google logo - © 2016 Google Inc, used with permission. Google and the Google logo are registered trademarks of Google Inc.
+- Images - Taken from [this example](http://framerjs.com/examples/preview/#google-now-overview.framer) from [Framerjs](http://framerjs.com/)
