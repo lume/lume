@@ -50,7 +50,7 @@ define(function (require, exports, module) {
         }
     ];
 
-    // Create the parallaxCats view with specified options
+    // Create the safariTabs view with specified options
     var safariTabs = new SafariTabs({
         proportions : [.9, 1],
         origin: [.5, 0],
