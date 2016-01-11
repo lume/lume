@@ -43,7 +43,8 @@ define({
 	// Non-functional test suite(s) to run in each browser
 	suites: [
 		'tests/unit/events/EventEmitter',
-		'tests/unit/streams/ResizeStream'
+		'tests/unit/streams/ResizeStream',
+        'tests/unit/core/Transitionable'
 	],
 
 	// Functional test suite(s) to execute against each browser once non-functional tests are completed
