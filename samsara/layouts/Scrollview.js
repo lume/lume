@@ -40,7 +40,7 @@ define(function (require, exports, module) {
     var Scrollview = View.extend({
         defaults: {
             direction: CONSTANTS.DIRECTION.Y,
-            drag: 0.4,
+            drag: 0.3,
             paginated: false,
             pageChangeSpeed: 0.5,
             startPosition: 0,
@@ -233,8 +233,6 @@ define(function (require, exports, module) {
                 for (var i = this._currentIndex; i > index; i--)
                     position += this.items[i].getSize()[this.options.direction];
             }
-
-            if (position == 0) return;
 
             this.spring.halt();
             this.spring.reset(0);
