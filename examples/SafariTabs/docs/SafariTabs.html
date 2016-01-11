@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+
+<html>
+<head>
+  <title>SafariTabs.js</title>
+  <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+  <meta name="viewport" content="width=device-width, target-densitydpi=160dpi, initial-scale=1.0; maximum-scale=1.0; user-scalable=0;">
+  <link rel="stylesheet" media="all" href="docco.css" />
+</head>
+<body>
+  <div id="container">
+    <div id="background"></div>
+    
+      <ul id="jump_to">
+        <li>
+          <a class="large" href="javascript:void(0);">Jump To &hellip;</a>
+          <a class="small" href="javascript:void(0);">+</a>
+          <div id="jump_wrapper">
+          <div id="jump_page_wrapper">
+            <div id="jump_page">
+              
+                
+                <a class="source" href="SafariTabs.html">
+                  SafariTabs.js
+                </a>
+              
+                
+                <a class="source" href="Tab.html">
+                  Tab.js
+                </a>
+              
+                
+                <a class="source" href="TabContainer.html">
+                  TabContainer.js
+                </a>
+              
+                
+                <a class="source" href="main.html">
+                  main.js
+                </a>
+              
+            </div>
+          </div>
+        </li>
+      </ul>
+    
+    <ul class="sections">
+        
+          <li id="title">
+              <div class="annotation">
+                  <h1>SafariTabs.js</h1>
+              </div>
+          </li>
+        
+        
+        
+        <li id="section-1">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-1">&#182;</a>
+              </div>
+              
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>define(<span class="hljs-function"><span class="hljs-keyword">function</span> (<span class="hljs-params">require, exports, module</span>) </span>{
+    <span class="hljs-keyword">var</span> View = <span class="hljs-built_in">require</span>(<span class="hljs-string">'samsara/core/View'</span>);
+    <span class="hljs-keyword">var</span> Surface = <span class="hljs-built_in">require</span>(<span class="hljs-string">'samsara/dom/Surface'</span>);
+    <span class="hljs-keyword">var</span> Scrollview = <span class="hljs-built_in">require</span>(<span class="hljs-string">'samsara/layouts/Scrollview'</span>);
+    <span class="hljs-keyword">var</span> TabContainer = <span class="hljs-built_in">require</span>(<span class="hljs-string">'./TabContainer'</span>);</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-2">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-2">&#182;</a>
+              </div>
+              <p>A <code>Scrollview</code> consisting of tabs. Tabs can be selected
+by clicking on them, bringing them to fullscreen, or removed
+from the scrollview by clicking their close button.
+The resizing of the scrollview as tabs are made fullscreen or removed
+is handled automatically by animating the tabs’ size streams.</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>    <span class="hljs-keyword">var</span> SafariTabs = View.extend({
+        defaults: {
+            tabData : [],
+            tab : {
+                titleHeight: <span class="hljs-number">26</span>,
+                angle: -<span class="hljs-built_in">Math</span>.PI / <span class="hljs-number">5</span>,
+                spacing: <span class="hljs-number">150</span>,
+                height: <span class="hljs-number">700</span>
+            },
+            selectTransition: {duration: <span class="hljs-number">200</span>},
+            deselectTransition: {duration: <span class="hljs-number">200</span>}
+        },
+        initialize: <span class="hljs-function"><span class="hljs-keyword">function</span> (<span class="hljs-params">options</span>) </span>{</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-3">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-3">&#182;</a>
+              </div>
+              <p>Create the scrollview</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>            <span class="hljs-keyword">var</span> scrollview = <span class="hljs-keyword">new</span> Scrollview({
+                direction: Scrollview.DIRECTION.Y,
+                clip : <span class="hljs-literal">false</span>,  <span class="hljs-comment">// do not set {overflow:hidden} in CSS</span>
+                marginBottom: <span class="hljs-number">200</span> <span class="hljs-comment">// leaves 200px of space at the bottom of the scrollview</span>
+            });</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-4">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-4">&#182;</a>
+              </div>
+              <p>Create the tabs</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>            <span class="hljs-keyword">var</span> tabs = [];
+            <span class="hljs-keyword">for</span> (<span class="hljs-keyword">var</span> i = <span class="hljs-number">0</span>; i &lt; options.tabData.length; i++) {
+                <span class="hljs-keyword">var</span> tab = <span class="hljs-keyword">new</span> TabContainer({
+                    src: options.tabData[i].src,
+                    title: options.tabData[i].title,
+                    index: i,
+                    titleHeight: options.tab.titleHeight,
+                    angle: options.tab.angle,
+                    spacing : options.tab.spacing,
+                    height : options.tab.height,
+                    selectTransition : options.selectTransition,
+                    deselectTransition: options.deselectTransition
+                });</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-5">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-5">&#182;</a>
+              </div>
+              <p>Tabs must listen to the scrollview to create a
+<code>receding</code> effect as the scrollview is scrolled.</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>                tab.subscribe(scrollview);</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-6">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-6">&#182;</a>
+              </div>
+              <p>The scrollview listens to the <code>goto</code> event from the tabs
+to animate the scrollview to the currently selected tab</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>                scrollview.subscribe(tab);
+
+                tabs.push(tab);
+            }</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-7">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-7">&#182;</a>
+              </div>
+              <p>Add the tabs to the scrollview</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>            scrollview.addItems(tabs);</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-8">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-8">&#182;</a>
+              </div>
+              <p>Animate the scrollview to the currently selected tab when a
+tab is clicked</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>            scrollview.input.on(<span class="hljs-string">'goto'</span>, <span class="hljs-function"><span class="hljs-keyword">function</span> (<span class="hljs-params">index</span>) </span>{
+                scrollview.goTo(index, options.selectTransition);
+            });</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-9">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-9">&#182;</a>
+              </div>
+              <p>Build the render subtree consisting of only the scrollview</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>            <span class="hljs-keyword">this</span>.add(scrollview);
+        }
+    });
+
+    <span class="hljs-built_in">module</span>.exports = SafariTabs;
+});</pre></div></div>
+            
+        </li>
+        
+    </ul>
+  </div>
+</body>
+</html>

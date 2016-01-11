@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+
+<html>
+<head>
+  <title>main.js</title>
+  <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+  <meta name="viewport" content="width=device-width, target-densitydpi=160dpi, initial-scale=1.0; maximum-scale=1.0; user-scalable=0;">
+  <link rel="stylesheet" media="all" href="docco.css" />
+</head>
+<body>
+  <div id="container">
+    <div id="background"></div>
+    
+      <ul id="jump_to">
+        <li>
+          <a class="large" href="javascript:void(0);">Jump To &hellip;</a>
+          <a class="small" href="javascript:void(0);">+</a>
+          <div id="jump_wrapper">
+          <div id="jump_page_wrapper">
+            <div id="jump_page">
+              
+                
+                <a class="source" href="SafariTabs.html">
+                  SafariTabs.js
+                </a>
+              
+                
+                <a class="source" href="Tab.html">
+                  Tab.js
+                </a>
+              
+                
+                <a class="source" href="TabContainer.html">
+                  TabContainer.js
+                </a>
+              
+                
+                <a class="source" href="main.html">
+                  main.js
+                </a>
+              
+            </div>
+          </div>
+        </li>
+      </ul>
+    
+    <ul class="sections">
+        
+          <li id="title">
+              <div class="annotation">
+                  <h1>main.js</h1>
+              </div>
+          </li>
+        
+        
+        
+        <li id="section-1">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-1">&#182;</a>
+              </div>
+              
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>define(<span class="hljs-function"><span class="hljs-keyword">function</span> (<span class="hljs-params">require, exports, module</span>) </span>{
+    <span class="hljs-keyword">var</span> Context = <span class="hljs-built_in">require</span>(<span class="hljs-string">'samsara/dom/Context'</span>);
+    <span class="hljs-keyword">var</span> SafariTabs = <span class="hljs-built_in">require</span>(<span class="hljs-string">'./app/SafariTabs'</span>);</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-2">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-2">&#182;</a>
+              </div>
+              <p>This demo mimics the Safari tab viewer on iOS.
+We create several tabs which are screen captures of popular websites
+and place them into a <code>Scrollview</code>. The tabs are rotated in 3D space
+for a nice perspective effect as the user scrolls.</p>
+
+            </div>
+            
+        </li>
+        
+        
+        <li id="section-3">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-3">&#182;</a>
+              </div>
+              <p>Tabs can be selected and brought fullscreen, or removed by clicking the
+<code>x</code> button on their title bar.</p>
+
+            </div>
+            
+        </li>
+        
+        
+        <li id="section-4">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-4">&#182;</a>
+              </div>
+              <p>Data for the creation of the tabs</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>    <span class="hljs-keyword">var</span> tabData = [
+        {
+            src: <span class="hljs-string">'./assets/google.png'</span>,
+            title: <span class="hljs-string">'Google'</span>
+        },
+        {
+            src: <span class="hljs-string">'./assets/twitter.png'</span>,
+            title: <span class="hljs-string">'Twitter'</span>
+        },
+        {
+            src: <span class="hljs-string">'./assets/js-weekly.png'</span>,
+            title: <span class="hljs-string">'JS Weekly'</span>
+        },
+        {
+            src: <span class="hljs-string">'./assets/reddit.png'</span>,
+            title: <span class="hljs-string">'Reddit'</span>
+        },
+        {
+            src: <span class="hljs-string">'./assets/nytimes.png'</span>,
+            title: <span class="hljs-string">'NY Times'</span>
+        },
+        {
+            src: <span class="hljs-string">'./assets/samsara-site.png'</span>,
+            title: <span class="hljs-string">'SamsaraJS'</span>
+        },
+        {
+            src: <span class="hljs-string">'./assets/apple.png'</span>,
+            title: <span class="hljs-string">'Apple'</span>
+        },
+        {
+            src: <span class="hljs-string">'./assets/wiki.png'</span>,
+            title: <span class="hljs-string">'Wikipedia'</span>
+        },
+        {
+            src: <span class="hljs-string">'./assets/hn.png'</span>,
+            title: <span class="hljs-string">'Hacker News'</span>
+        }
+    ];</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-5">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-5">&#182;</a>
+              </div>
+              <p>Create the parallaxCats view with specified options</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>    <span class="hljs-keyword">var</span> safariTabs = <span class="hljs-keyword">new</span> SafariTabs({
+        proportions : [<span class="hljs-number">.9</span>, <span class="hljs-number">1</span>],
+        origin: [<span class="hljs-number">.5</span>, <span class="hljs-number">0</span>],
+        tabData : tabData,
+        tab : {                     <span class="hljs-comment">// Options for the tab</span>
+            titleHeight : <span class="hljs-number">26</span>,       <span class="hljs-comment">// Height of the title bar</span>
+            angle : -<span class="hljs-built_in">Math</span>.PI/<span class="hljs-number">5</span>,     <span class="hljs-comment">// Angle to rotate the tabs by</span>
+            spacing : <span class="hljs-number">150</span>,          <span class="hljs-comment">// Vertical spacing between tabs</span>
+            height : <span class="hljs-number">700</span>            <span class="hljs-comment">// Total height of the tab</span>
+        },
+        selectTransition : {duration : <span class="hljs-number">200</span>},    <span class="hljs-comment">// Animation for selection</span>
+        deselectTransition : {duration : <span class="hljs-number">200</span>}   <span class="hljs-comment">// Animation for deselection</span>
+    });</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-6">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-6">&#182;</a>
+              </div>
+              <p>Create a Samsara <code>Context</code> as the root of the render tree</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>    <span class="hljs-keyword">var</span> context = <span class="hljs-keyword">new</span> Context();</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-7">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-7">&#182;</a>
+              </div>
+              <p>Set the perspective for the <code>Context</code></p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>    context.setPerspective(<span class="hljs-number">1000</span>);</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-8">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-8">&#182;</a>
+              </div>
+              <p>Add the safariTabs to the context and align the origin point to the top</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>    context
+        .add({align : [<span class="hljs-number">.5</span>,<span class="hljs-number">0</span>]})
+        .add(safariTabs);</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-9">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-9">&#182;</a>
+              </div>
+              <p>Mount the context to a DOM node</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>    context.mount(<span class="hljs-built_in">document</span>.body);
+});</pre></div></div>
+            
+        </li>
+        
+    </ul>
+  </div>
+</body>
+</html>

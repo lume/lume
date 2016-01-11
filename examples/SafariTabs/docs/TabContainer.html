@@ -1,0 +1,354 @@
+<!DOCTYPE html>
+
+<html>
+<head>
+  <title>TabContainer.js</title>
+  <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+  <meta name="viewport" content="width=device-width, target-densitydpi=160dpi, initial-scale=1.0; maximum-scale=1.0; user-scalable=0;">
+  <link rel="stylesheet" media="all" href="docco.css" />
+</head>
+<body>
+  <div id="container">
+    <div id="background"></div>
+    
+      <ul id="jump_to">
+        <li>
+          <a class="large" href="javascript:void(0);">Jump To &hellip;</a>
+          <a class="small" href="javascript:void(0);">+</a>
+          <div id="jump_wrapper">
+          <div id="jump_page_wrapper">
+            <div id="jump_page">
+              
+                
+                <a class="source" href="SafariTabs.html">
+                  SafariTabs.js
+                </a>
+              
+                
+                <a class="source" href="Tab.html">
+                  Tab.js
+                </a>
+              
+                
+                <a class="source" href="TabContainer.html">
+                  TabContainer.js
+                </a>
+              
+                
+                <a class="source" href="main.html">
+                  main.js
+                </a>
+              
+            </div>
+          </div>
+        </li>
+      </ul>
+    
+    <ul class="sections">
+        
+          <li id="title">
+              <div class="annotation">
+                  <h1>TabContainer.js</h1>
+              </div>
+          </li>
+        
+        
+        
+        <li id="section-1">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-1">&#182;</a>
+              </div>
+              
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>define(<span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params">require, exports, module</span>) </span>{
+    <span class="hljs-keyword">var</span> View = <span class="hljs-built_in">require</span>(<span class="hljs-string">'samsara/core/View'</span>);
+    <span class="hljs-keyword">var</span> Transform = <span class="hljs-built_in">require</span>(<span class="hljs-string">'samsara/core/Transform'</span>);
+    <span class="hljs-keyword">var</span> Surface = <span class="hljs-built_in">require</span>(<span class="hljs-string">'samsara/dom/Surface'</span>);
+    <span class="hljs-keyword">var</span> Transitionable = <span class="hljs-built_in">require</span>(<span class="hljs-string">'samsara/core/Transitionable'</span>);
+    <span class="hljs-keyword">var</span> Stream = <span class="hljs-built_in">require</span>(<span class="hljs-string">'samsara/Streams/Stream'</span>);
+    <span class="hljs-keyword">var</span> Tab = <span class="hljs-built_in">require</span>(<span class="hljs-string">'./Tab'</span>);</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-2">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-2">&#182;</a>
+              </div>
+              <p>The <code>TabContainer</code> handles the communication between the <code>Tab</code>
+and the <code>Scrollview</code> in which they are placed.</p>
+
+            </div>
+            
+        </li>
+        
+        
+        <li id="section-3">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-3">&#182;</a>
+              </div>
+              <p>A “container” is necessary since the tab’s size is independent from the size
+the <code>Scrollview</code> reads. For instance, the tab is initially taller than the
+spacing the <code>Scrollview</code> allocates. Also, upon deleting a tab, the <code>TabContainer&#39;s</code>
+size is shrunk, while the <code>Tab&#39;s</code> size remains unchanged.</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>    <span class="hljs-keyword">var</span> TabContainer = View.extend({
+        defaults : {
+            src : <span class="hljs-string">''</span>,
+            title : <span class="hljs-string">''</span>,
+            index : <span class="hljs-number">0</span>,
+            titleHeight: <span class="hljs-number">26</span>,
+            angle : -<span class="hljs-built_in">Math</span>.PI / <span class="hljs-number">5</span>,
+            spacing : <span class="hljs-number">150</span>,
+            height : <span class="hljs-number">700</span>,
+            selectTransition : {duration : <span class="hljs-number">200</span>},
+            deselectTransition : {duration : <span class="hljs-number">200</span>}
+        },
+        initialize: <span class="hljs-function"><span class="hljs-keyword">function</span> (<span class="hljs-params">options</span>) </span>{
+            <span class="hljs-keyword">this</span>.angle = <span class="hljs-keyword">new</span> Transitionable(options.angle); <span class="hljs-comment">// Angle to rotate the tabs by</span>
+            <span class="hljs-keyword">this</span>.deleteShift = <span class="hljs-keyword">new</span> Transitionable(<span class="hljs-number">0</span>); <span class="hljs-comment">// Translation to apply when removing a tab</span>
+            <span class="hljs-keyword">this</span>.selected = <span class="hljs-literal">false</span>; <span class="hljs-comment">// Boolean whether the tab is selected or not</span>
+
+            <span class="hljs-keyword">this</span>.parentSize = <span class="hljs-keyword">new</span> Transitionable([<span class="hljs-literal">undefined</span>, options.spacing]); <span class="hljs-comment">// Size of the view (read my the scrollview)</span>
+            <span class="hljs-keyword">this</span>.tabSize = <span class="hljs-keyword">new</span> Transitionable([<span class="hljs-literal">undefined</span>, options.height]); <span class="hljs-comment">// Size of the tab</span></pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-4">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-4">&#182;</a>
+              </div>
+              <p>Set the view’s size</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>            <span class="hljs-keyword">this</span>.setSize(<span class="hljs-keyword">this</span>.parentSize);</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-5">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-5">&#182;</a>
+              </div>
+              <p>Create a tab</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>            <span class="hljs-keyword">this</span>.tab = <span class="hljs-keyword">new</span> Tab({
+                size : <span class="hljs-keyword">this</span>.tabSize,
+                src : options.src,
+                title : options.title,
+                height : options.titleHeight
+            });</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-6">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-6">&#182;</a>
+              </div>
+              <p>On <code>close</code>, call the <code>close</code> method</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>            <span class="hljs-keyword">this</span>.tab.on(<span class="hljs-string">'close'</span>, <span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params"></span>)</span>{
+                <span class="hljs-keyword">this</span>.close();
+            }.bind(<span class="hljs-keyword">this</span>));</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-7">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-7">&#182;</a>
+              </div>
+              <p>On <code>select</code>, call the <code>toggle</code> method</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>            <span class="hljs-keyword">this</span>.tab.on(<span class="hljs-string">'select'</span>, <span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params"></span>)</span>{
+                <span class="hljs-keyword">this</span>.toggle();
+            }.bind(<span class="hljs-keyword">this</span>));</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-8">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-8">&#182;</a>
+              </div>
+              <p>Compute the final transform of the tab by combining
+the effects of the rotation, scrolling, and deletion translation.
+On scroll we create a “receding” effect for the top tabs.</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>            <span class="hljs-keyword">var</span> transform = Stream.lift(<span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params">angle, scrollData, deleteShift</span>)</span>{
+                <span class="hljs-keyword">if</span> (!scrollData) <span class="hljs-keyword">return</span> <span class="hljs-literal">false</span>; <span class="hljs-comment">// This is a bug, sorry!</span></pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-9">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-9">&#182;</a>
+              </div>
+              <p>Create the receding effect based on distance from the top tab</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>                <span class="hljs-keyword">var</span> topShift = <span class="hljs-built_in">Math</span>.exp(scrollData.index - options.index + scrollData.progress) - <span class="hljs-number">1</span>;
+                topShift = <span class="hljs-built_in">Math</span>.max(<span class="hljs-built_in">Math</span>.min(topShift, <span class="hljs-number">2</span>), <span class="hljs-number">-0.2</span>);</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-10">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-10">&#182;</a>
+              </div>
+              <p>Rotate the tab, then translate based on the receding effect and the deletion shift</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>                <span class="hljs-keyword">return</span> Transform.thenMove(
+                    Transform.rotateX(angle),
+                    [deleteShift, <span class="hljs-number">20</span>*topShift, <span class="hljs-number">-100</span>*topShift]
+                );
+            }.bind(<span class="hljs-keyword">this</span>), [<span class="hljs-keyword">this</span>.angle, <span class="hljs-keyword">this</span>.input, <span class="hljs-keyword">this</span>.deleteShift]);</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-11">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-11">&#182;</a>
+              </div>
+              <p>Build the render subtree</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>            <span class="hljs-keyword">this</span>.add({transform : transform})
+                .add(<span class="hljs-keyword">this</span>.tab);
+        },</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-12">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-12">&#182;</a>
+              </div>
+              <p>Close the tab by shrinking the containing size, which brings the later tabs closer
+and translate the tab to the left, out of view, before removing it from the DOM.</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>        close : <span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params"></span>)</span>{
+            <span class="hljs-keyword">this</span>.parentSize.set([<span class="hljs-literal">undefined</span>, <span class="hljs-number">0</span>], {duration: <span class="hljs-number">300</span>});
+            <span class="hljs-keyword">this</span>.deleteShift.set(<span class="hljs-number">-2000</span>, {duration: <span class="hljs-number">1500</span>}, <span class="hljs-function"><span class="hljs-keyword">function</span> (<span class="hljs-params"></span>) </span>{
+                <span class="hljs-keyword">this</span>.tab.remove();
+            }.bind(<span class="hljs-keyword">this</span>));
+        },</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-13">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-13">&#182;</a>
+              </div>
+              <p>Bring the tab to fullscreen and animate the angle to 0.
+Emit a <code>goto</code> event to animate the scrollview to the current tab’s index.</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>        select : <span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params">transition, callback</span>)</span>{
+            transition = transition || <span class="hljs-keyword">this</span>.options.selectTransition;
+            <span class="hljs-keyword">this</span>.angle.set(<span class="hljs-number">0</span>, transition);
+            <span class="hljs-keyword">this</span>.parentSize.set([<span class="hljs-literal">undefined</span>, <span class="hljs-built_in">window</span>.innerHeight], transition);
+            <span class="hljs-keyword">this</span>.tabSize.set([<span class="hljs-literal">undefined</span>, <span class="hljs-built_in">window</span>.innerHeight], transition, callback);
+            <span class="hljs-keyword">this</span>.emit(<span class="hljs-string">'goto'</span>, <span class="hljs-keyword">this</span>.options.index);
+            <span class="hljs-keyword">this</span>.selected = <span class="hljs-literal">true</span>;
+        },</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-14">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-14">&#182;</a>
+              </div>
+              <p>Bring the tab back to its flow in the scrollview</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>        deselect : <span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params">transition, callback</span>)</span>{
+            transition = transition || <span class="hljs-keyword">this</span>.options.deselectTransition;
+            <span class="hljs-keyword">this</span>.parentSize.set([<span class="hljs-literal">undefined</span>, <span class="hljs-keyword">this</span>.options.spacing], transition);
+            <span class="hljs-keyword">this</span>.tabSize.set([<span class="hljs-literal">undefined</span>, <span class="hljs-keyword">this</span>.options.height], transition);
+            <span class="hljs-keyword">this</span>.angle.set(<span class="hljs-keyword">this</span>.options.angle, transition, callback);
+            <span class="hljs-keyword">this</span>.selected = <span class="hljs-literal">false</span>;
+        },</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-15">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-15">&#182;</a>
+              </div>
+              <p>Toggle between <code>select</code> and <code>deselect</code></p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>        toggle : <span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params"></span>)</span>{
+            (<span class="hljs-keyword">this</span>.selected) ? <span class="hljs-keyword">this</span>.deselect() : <span class="hljs-keyword">this</span>.select();
+        }
+    });
+
+    <span class="hljs-built_in">module</span>.exports = TabContainer;
+});</pre></div></div>
+            
+        </li>
+        
+    </ul>
+  </div>
+</body>
+</html>
