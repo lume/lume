@@ -249,6 +249,15 @@ define(function (require, exports, module) {
         if (!this._active) return;
         this.reset(this.get());
         this.trigger('end', this.value);
+
+        //TODO: refactor this
+        if (this._engineInstance) {
+            if (this.updateMethod) {
+                var index = tickQueue.indexOf(this.updateMethod);
+                if (index >= 0) tickQueue.splice(index, 1);
+            }
+            this.unsubscribe(this._engineInstance);
+        }
     };
 
     /**
