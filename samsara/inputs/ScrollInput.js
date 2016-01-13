@@ -112,6 +112,8 @@ define(function(require, exports, module) {
     var _now = Date.now;
 
     function handleMove(event) {
+        event.preventDefault(); // Disable default scrolling behavior
+
         if (!this._inProgress) {
             this._value = (this.options.direction === undefined) ? [0,0] : 0;
             payload = this._payload;
