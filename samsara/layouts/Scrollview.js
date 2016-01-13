@@ -204,19 +204,17 @@ define(function (require, exports, module) {
                 })
             });
 
-
-            var overflow = (options.clip)
-                ? 'hidden'
-                : '';
-
-            var container = new ContainerSurface({
-                properties: {overflow: overflow}
+            this.container = new ContainerSurface({
+                properties: {overflow : 'hidden'}
             });
 
-            genericInput.subscribe(container);
+            genericInput.subscribe(this.container);
 
-            container.add(displacementNode).add(this.layout);
-            this.add(container);
+            this.container.add(displacementNode).add(this.layout);
+            this.add(this.container);
+        },
+        setPerspective: function(){
+            ContainerSurface.prototype.setPerspective.apply(this.container, arguments);
         },
         getVelocity: function(){
             return this.velocity;

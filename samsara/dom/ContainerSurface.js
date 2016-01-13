@@ -56,15 +56,22 @@ define(function(require, exports, module) {
         this.context = new Context();
         this.context._size.subscribe(this.size);
 
-        this.on('deploy', function(target){
-            this.context.mount(target, true);
+        // Create a container DOM node. This allows
+        // properties like {overflow : hidden} to be set while still
+        // preserving the 3D context
+        var container = document.createElement('div');
+        container.classList.add('samsara-container');
+        this.setContent(container);
+
+        this.on('deploy', function(){
+            this.context.mount(container, true);
         }.bind(this));
     }
 
     ContainerSurface.prototype = Object.create(Surface.prototype);
     ContainerSurface.prototype.constructor = ContainerSurface;
     ContainerSurface.prototype.elementType = 'div';
-    ContainerSurface.prototype.elementClass = ['samsara-surface', 'samsara-container'];
+    ContainerSurface.prototype.elementClass = ['samsara-surface'];
 
     /**
      * Get current perspective in pixels.
