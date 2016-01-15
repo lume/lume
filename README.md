@@ -1,4 +1,4 @@
-<p align="center"><a href="http://vuejs.org" target="_blank"><img width="200"src="http://i.imgur.com/MCcLoYk.png"></a></p>
+<p align="center"><img width="200"src="http://i.imgur.com/MCcLoYk.png"></a></p>
 
 SamsaraJS is a functional reactive library for animating layout. It provides a language for positioning,
 orienting and sizing DOM elements and animating these properties over time. Everything in SamsaraJS — from 
