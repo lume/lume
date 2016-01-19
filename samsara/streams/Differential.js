@@ -35,16 +35,25 @@ define(function(require, exports, module){
             update: function () { return delta; }
         });
 
-        this._eventInput.on('start', function(value){ previous = value; });
-        this._eventInput.on('update', function(value){
+        this._eventInput.on('start', function (value) {
+            if (value instanceof Array)
+                previous = value.slice();
+            else previous = value;
+        });
+
+        this._eventInput.on('update', function (value) {
             var scale = this.options.scale;
             if (previous instanceof Array) {
                 delta = [];
-                for (var i = 0; i < previous.length; i++)
+                for (var i = 0; i < previous.length; i++) {
                     delta[i] = scale * (value[i] - previous[i]);
+                    previous[i] = value[i];
+                }
             }
-            else delta = scale * (value - previous);
-            previous = value;
+            else {
+                delta = scale * (value - previous);
+                previous = value;
+            }
         }.bind(this));
     }
 
