@@ -30,7 +30,7 @@ define(function(require, exports, module) {
                     backgroundImage: 'url(' + options.src + ')',
                     backgroundSize: 'cover'
                 },
-                origin: [.5, .5],
+                origin: [.5, 0],
                 proportions: [1.3, 1.3]
             });
 
@@ -50,7 +50,7 @@ define(function(require, exports, module) {
                     )
                 })
                 .add({
-                    align: [.5, .5],
+                    align: [.5, 0],
                     transform: parallaxTransform
                 })
                 .add(cat);

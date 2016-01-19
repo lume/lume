@@ -22,7 +22,7 @@ define(function (require, exports, module) {
             var cats = [];
             for (var i = 0; i < options.cats; i++) {
                 var parallaxCat = new ParallaxCat({
-                    proportions: [1, 2/3],
+                    proportions: [1, 1/2],
                     skew: options.skew,
                     src: './assets/cat' + (i + 1) + '.jpg',
                     parallaxAmount: options.parallaxAmount,

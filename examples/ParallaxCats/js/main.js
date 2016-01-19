@@ -4,7 +4,7 @@ define(function (require, exports, module) {
 
     // Create the parallaxCats view with specified options
     var parallaxCats = new ParallaxCats({
-        size : [400, undefined],
+        size : [Math.min(400, window.innerWidth), undefined],
         origin: [.5, 0],
         skew : Math.PI / 25,
         cats : 8,
