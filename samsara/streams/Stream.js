@@ -1,6 +1,6 @@
 /* Copyright © 2015 David Valdman */
 
-define(function(require, exports, module) {
+define(function(require, exports, module){
     var EventHandler = require('../events/EventHandler');
     var EventMapper = require('../events/EventMapper');
     var SimpleStream = require('../streams/SimpleStream');
@@ -73,6 +73,7 @@ define(function(require, exports, module) {
         var counter = 0;
         var isUpdating = false;
         var dirtyStart = false;
+        var dirtyUpdate = false;
         var dirtyEnd = false;
 
         function start(data){
@@ -84,6 +85,7 @@ define(function(require, exports, module) {
         function update(data){
             var payload = options && options.update ? options.update(data) : data;
             if (payload !== false) this.emit(EVENTS.UPDATE, payload);
+            dirtyUpdate = false;
         }
 
         function end(data){
@@ -101,12 +103,14 @@ define(function(require, exports, module) {
 
         this._eventInput.on(EVENTS.UPDATE, function(data){
             isUpdating = true;
+            if (dirtyUpdate) return false;
+            dirtyUpdate = true;
             postTickQueue.push(update.bind(this, data));
         }.bind(this));
 
         this._eventInput.on(EVENTS.END, function(data){
             counter--;
-            if (isUpdating && counter > 0) {
+            if (isUpdating && counter > 0){
                 update.call(this, data);
                 return false;
             }
