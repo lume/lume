@@ -13,6 +13,7 @@ define(function(require, exports, module) {
 
     var elementType = 'div';
     var rafStarted = false;
+    var isMobile = /Android|iPhone|iPad|iPod|IEMobile/i.test(navigator.userAgent);
 
     var layoutSpec = {
         transform : Transform.identity,
@@ -141,8 +142,13 @@ define(function(require, exports, module) {
         if (!node)
             document.body.appendChild(this.container);
 
-        if (!resizeListenFlag)
-            window.addEventListener('resize', handleResize.bind(this), false);
+        if (!resizeListenFlag) {
+            // If mobile device, only resize for orientation change to avoid
+            // resizing from the browser navigation bar
+            (isMobile)
+                ? window.addEventListener('deviceorientation', handleResize.bind(this), false)
+                : window.addEventListener('resize', handleResize.bind(this), false);
+        }
 
         preTickQueue.push(function (){
             handleResize.call(this);
