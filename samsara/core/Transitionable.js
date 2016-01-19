@@ -359,5 +359,12 @@ define(function (require, exports, module) {
             this.sources[i].update();
     };
 
+    NDTransitionable.prototype.reset = function (value) {
+        for (var i = 0; i < this.sources.length; i++) {
+            var source = this.sources[i];
+            source.reset(value[i]);
+        }
+    };
+
     module.exports = Transitionable;
 });
