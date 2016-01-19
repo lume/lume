@@ -52,9 +52,8 @@ define(function (require, exports, module) {
 
     // Create the safariTabs view with specified options
     var safariTabs = new SafariTabs({
-        proportions : [.9, 1],
-        origin: [.5, 0],
         tabData : tabData,
+        perspective: 1000,          // Perspective for the scrollview
         tab : {                     // Options for the tab
             titleHeight : 26,       // Height of the title bar
             angle : -Math.PI/5,     // Angle to rotate the tabs by
@@ -68,13 +67,8 @@ define(function (require, exports, module) {
     // Create a Samsara `Context` as the root of the render tree
     var context = new Context();
 
-    // Set the perspective for the `Context`
-    context.setPerspective(1000);
-
     // Add the safariTabs to the context and align the origin point to the top
-    context
-        .add({align : [.5,0]})
-        .add(safariTabs);
+    context.add(safariTabs);
 
     // Mount the context to a DOM node
     context.mount(document.body);

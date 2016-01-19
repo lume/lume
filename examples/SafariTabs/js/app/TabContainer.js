@@ -30,15 +30,17 @@ define(function(require, exports, module) {
             this.deleteShift = new Transitionable(0); // Translation to apply when removing a tab
             this.selected = false; // Boolean whether the tab is selected or not
 
-            this.parentSize = new Transitionable([undefined, options.spacing]); // Size of the view (read my the scrollview)
-            this.tabSize = new Transitionable([undefined, options.height]); // Size of the tab
+            this.parentSize = new Transitionable([false, options.spacing]); // Size of the view (read my the scrollview)
+            this.tabSize = new Transitionable([false, options.height]); // Size of the tab
 
             // Set the view's size
             this.setSize(this.parentSize);
 
             // Create a tab
             this.tab = new Tab({
+                origin : [.5,0],
                 size : this.tabSize,
+                proportions : [.9, false],
                 src : options.src,
                 title : options.title,
                 height : options.titleHeight
@@ -72,7 +74,10 @@ define(function(require, exports, module) {
             }.bind(this), [this.angle, this.input, this.deleteShift]);
 
             // Build the render subtree
-            this.add({transform : transform})
+            this.add({
+                transform : transform,
+                align : [.5,0]
+            })
                 .add(this.tab);
         },
         // Close the tab by shrinking the containing size, which brings the later tabs closer

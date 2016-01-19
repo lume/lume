@@ -18,6 +18,7 @@ define(function (require, exports, module) {
                 spacing: 150,
                 height: 700
             },
+            perspective : 1000,
             selectTransition: {duration: 200},
             deselectTransition: {duration: 200}
         },
@@ -25,9 +26,11 @@ define(function (require, exports, module) {
             // Create the scrollview
             var scrollview = new Scrollview({
                 direction: Scrollview.DIRECTION.Y,
-                clip : false,  // do not set {overflow:hidden} in CSS
                 marginBottom: 200 // leaves 200px of space at the bottom of the scrollview
             });
+
+            // Set a perspective on the scrollview
+            scrollview.setPerspective(options.perspective);
 
             // Create the tabs
             var tabs = [];
