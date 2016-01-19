@@ -17,7 +17,7 @@ define(function(require, exports, module) {
     var Timer = require('../core/Timer');
 
     var MINIMUM_TICK_TIME = 8;
-    var MAX_DIFFERENTIAL = 25; // caps mousewheel differentials
+    var MAX_DIFFERENTIAL = 50; // caps mousewheel differentials
 
     /**
      * Wrapper for DOM wheel/mousewheel events. Converts `scroll` events
