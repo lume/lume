@@ -28,10 +28,11 @@ define(function(require, exports, module) {
      *      `value`     - Displacement in pixels from `touchstart`
      *      `delta`     - Differential in pixels between successive mouse positions
      *      `velocity`  - Velocity of mouse movement in pixels per second
+     *      `cumulate`  - Accumulated displacement over successive displacements
      *      `clientX`   - DOM event clientX property
      *      `clientY`   - DOM event clientY property
      *      `count`     - DOM event for number of simultaneous touches
-     *      `touch`     - DOM touch event identifier
+     *      `touchId`     - DOM touch event identifier
      *
      * @example
      *
@@ -80,24 +81,26 @@ define(function(require, exports, module) {
         this._touchTracker.on('trackend', handleEnd.bind(this));
 
         this._payload = {
-            delta    : null,
-            value    : null,
+            delta : null,
+            value : null,
+            cumulate : null,
             velocity : null,
-            clientX  : undefined,
-            clientY  : undefined,
-            count    : 0,
-            touch    : undefined
+            clientX : undefined,
+            clientY : undefined,
+            count : 0,
+            touchId : undefined
         };
 
-        this._position = null;
+        this._cumulate = null;
+        this._value = null;
     }
 
     TouchInput.prototype = Object.create(SimpleStream.prototype);
     TouchInput.prototype.constructor = TouchInput;
 
     TouchInput.DEFAULT_OPTIONS = {
-        direction: undefined,
-        scale: 1
+        direction : undefined,
+        scale : 1
     };
 
     /**
@@ -116,25 +119,28 @@ define(function(require, exports, module) {
     function handleStart(data) {
         var velocity;
         var delta;
-        if (this.options.direction !== undefined){
-            this._position = 0;
+        if (this.options.direction !== undefined) {
+            if (this._cumulate === null) this._cumulate = 0;
+            this._value = 0;
             velocity = 0;
             delta = 0;
         }
         else {
-            this._position = [0, 0];
+            if (this._cumulate === null) this._cumulate = [0, 0];
+            this._value = [0, 0];
             velocity = [0, 0];
             delta = [0, 0];
         }
 
         var payload = this._payload;
         payload.delta = delta;
-        payload.value = this._position;
+        payload.value = this._value;
+        payload.cumulate = this._cumulate;
         payload.velocity = velocity;
         payload.clientX = data.x;
         payload.clientY = data.y;
         payload.count = data.count;
-        payload.touch = data.identifier;
+        payload.touchId = data.identifier;
 
         this._eventOutput.emit('start', payload);
     }
@@ -163,28 +169,33 @@ define(function(require, exports, module) {
         if (this.options.direction === TouchInput.DIRECTION.X) {
             nextDelta = diffX;
             nextVel = velX;
-            this._position += diffX;
+            this._value += nextDelta;
+            this._cumulate += nextDelta;
         }
         else if (this.options.direction === TouchInput.DIRECTION.Y) {
             nextDelta = diffY;
             nextVel = velY;
-            this._position += nextDelta;
+            this._value += nextDelta;
+            this._cumulate += nextDelta;
         }
         else {
             nextDelta = [diffX, diffY];
             nextVel = [velX, velY];
-            this._position[0] += nextDelta[0];
-            this._position[1] += nextDelta[1];
+            this._value[0] += nextDelta[0];
+            this._value[1] += nextDelta[1];
+            this._cumulate[0] += nextDelta[0];
+            this._cumulate[1] += nextDelta[1];
         }
 
         var payload = this._payload;
-        payload.delta      = nextDelta;
-        payload.velocity   = nextVel;
-        payload.value      = this._position;
-        payload.clientX    = data.x;
-        payload.clientY    = data.y;
-        payload.count      = data.count;
-        payload.touch      = data.identifier;
+        payload.delta = nextDelta;
+        payload.velocity = nextVel;
+        payload.value = this._value;
+        payload.cumulate = this._cumulate;
+        payload.clientX = data.x;
+        payload.clientY = data.y;
+        payload.count = data.count;
+        payload.touchId = data.identifier;
 
         this._eventOutput.emit('update', payload);
     }

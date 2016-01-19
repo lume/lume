@@ -28,6 +28,7 @@ define(function(require, exports, module) {
      *      `value`     - Displacement in pixels from `mousedown`
      *      `delta`     - Differential in pixels between successive mouse positions
      *      `velocity`  - Velocity of mouse movement in pixels per second
+     *      `cumulate`  - Accumulated value over successive displacements
      *      `clientX`   - DOM event clientX property
      *      `clientY`   - DOM event clientY property
      *      `offsetX`   - DOM event offsetX property
@@ -84,16 +85,18 @@ define(function(require, exports, module) {
         this._eventInput.on('mouseleave',   handleLeave.bind(this));
 
         this._payload = {
-            delta    : null,
-            value    : null,
+            delta : null,
+            value : null,
+            cumulate : null,
             velocity : null,
-            clientX  : 0,
-            clientY  : 0,
-            offsetX  : 0,
-            offsetY  : 0
+            clientX : 0,
+            clientY : 0,
+            offsetX : 0,
+            offsetY : 0
         };
 
-        this._position = null;      // to be deprecated
+        this._value = null;
+        this._cumulate = null;
         this._prevCoord = undefined;
         this._prevTime = undefined;
         this._down = false;
@@ -104,8 +107,8 @@ define(function(require, exports, module) {
     MouseInput.prototype.constructor = MouseInput;
 
     MouseInput.DEFAULT_OPTIONS = {
-        direction: undefined,
-        scale: 1
+        direction : undefined,
+        scale : 1
     };
 
     /**
@@ -135,20 +138,23 @@ define(function(require, exports, module) {
         this._down = true;
         this._move = false;
 
-        if (this.options.direction !== undefined){
-            this._position = 0;
+        if (this.options.direction !== undefined) {
+            if (this._cumulate === null) this._cumulate = 0;
+            this._value = 0;
             delta = 0;
             velocity = 0;
         }
         else {
-            this._position = [0, 0];
+            if (this._cumulate === null) this._cumulate = [0, 0];
+            this._value = [0, 0];
             delta = [0, 0];
             velocity = [0, 0];
         }
 
         var payload = this._payload;
         payload.delta = delta;
-        payload.value = this._position;
+        payload.value = this._value;
+        payload.cumulate = this._cumulate;
         payload.velocity = velocity;
         payload.clientX = x;
         payload.clientY = y;
@@ -158,7 +164,7 @@ define(function(require, exports, module) {
         this._eventOutput.emit('start', payload);
     }
 
-    function handleMove(event) {
+    function handleMove(event){
         if (!this._down) return false;
 
         var scale = this.options.scale;
@@ -186,28 +192,33 @@ define(function(require, exports, module) {
         if (this.options.direction === MouseInput.DIRECTION.X) {
             nextDelta = diffX;
             nextVel = velX;
-            this._position += nextDelta;
+            this._value += nextDelta;
+            this._cumulate += nextDelta;
         }
         else if (this.options.direction === MouseInput.DIRECTION.Y) {
             nextDelta = diffY;
             nextVel = velY;
-            this._position += nextDelta;
+            this._value += nextDelta;
+            this._cumulate += nextDelta;
         }
         else {
             nextDelta = [diffX, diffY];
             nextVel = [velX, velY];
-            this._position[0] += nextDelta[0];
-            this._position[1] += nextDelta[1];
+            this._value[0] += nextDelta[0];
+            this._value[1] += nextDelta[1];
+            this._cumulate[0] += nextDelta[0];
+            this._cumulate[1] += nextDelta[1];
         }
 
-        var payload      = this._payload;
-        payload.delta    = nextDelta;
-        payload.value    = this._position;
+        var payload = this._payload;
+        payload.delta = nextDelta;
+        payload.value = this._value;
+        payload.cumulate = this._cumulate;
         payload.velocity = nextVel;
-        payload.clientX  = x;
-        payload.clientY  = y;
-        payload.offsetX  = event.offsetX;
-        payload.offsetY  = event.offsetY;
+        payload.clientX = x;
+        payload.clientY = y;
+        payload.offsetX = event.offsetX;
+        payload.offsetY = event.offsetY;
 
         this._eventOutput.emit('update', payload);
 
