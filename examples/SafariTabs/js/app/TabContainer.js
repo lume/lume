@@ -32,6 +32,7 @@ define(function(require, exports, module) {
 
             this.parentSize = new Transitionable([false, options.spacing]); // Size of the view (read my the scrollview)
             this.tabSize = new Transitionable([false, options.height]); // Size of the tab
+            this.proportions = new Transitionable([.9, false]);
 
             // Set the view's size
             this.setSize(this.parentSize);
@@ -40,7 +41,7 @@ define(function(require, exports, module) {
             this.tab = new Tab({
                 origin : [.5,0],
                 size : this.tabSize,
-                proportions : [.9, false],
+                proportions : this.proportions,
                 src : options.src,
                 title : options.title,
                 height : options.titleHeight
@@ -66,10 +67,14 @@ define(function(require, exports, module) {
                 var topShift = Math.exp(scrollData.index - options.index + scrollData.progress) - 1;
                 topShift = Math.max(Math.min(topShift, 2), -0.2);
 
+                var x = deleteShift;
+                var y = 20 * topShift;
+                var z = this.selected ? 0 : -100 * topShift;
+
                 // Rotate the tab, then translate based on the receding effect and the deletion shift
                 return Transform.thenMove(
                     Transform.rotateX(angle),
-                    [deleteShift, 20*topShift, -100*topShift]
+                    [x, y, z]
                 );
             }.bind(this), [this.angle, this.input, this.deleteShift]);
 
@@ -94,6 +99,7 @@ define(function(require, exports, module) {
             transition = transition || this.options.selectTransition;
             this.angle.set(0, transition);
             this.parentSize.set([undefined, window.innerHeight], transition);
+            this.proportions.set([1, false], transition);
             this.tabSize.set([undefined, window.innerHeight], transition, callback);
             this.emit('goto', this.options.index);
             this.selected = true;
@@ -103,6 +109,7 @@ define(function(require, exports, module) {
             transition = transition || this.options.deselectTransition;
             this.parentSize.set([undefined, this.options.spacing], transition);
             this.tabSize.set([undefined, this.options.height], transition);
+            this.proportions.set([.9, false], transition);
             this.angle.set(this.options.angle, transition, callback);
             this.selected = false;
         },
