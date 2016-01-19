@@ -20,7 +20,7 @@ define(function(require, exports, module) {
      *      `delta`         - Differential of successive angles
      *      `velocity`      - Velocity of rotation
      *      `center`        - Midpoint between the two touches
-     *      `touches`       - Array of DOM event touch identifiers
+     *      `touchIds`       - Array of DOM event touch identifiers
      *
      * @example
      *
@@ -73,7 +73,7 @@ define(function(require, exports, module) {
             count: event.touches.length,
             value: this._angle,
             center: center,
-            touches: [this.touchAId, this.touchBId]
+            touchIds: [this.touchAId, this.touchBId]
         });
     };
 
@@ -93,7 +93,7 @@ define(function(require, exports, module) {
             velocity: velTheta,
             value: this._angle,
             center: center,
-            touches: [this.touchAId, this.touchBId]
+            touchIds: [this.touchAId, this.touchBId]
         });
 
         this._previousAngle = currAngle;

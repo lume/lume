@@ -21,7 +21,7 @@ define(function(require, exports, module) {
      *      `velocity`      - Relative velocity between two touches
      *      `displacement`  - Total accumulated displacement
      *      `center`        - Midpoint between the two touches
-     *      `touches`       - Array of DOM event touch identifiers
+     *      `touchIds`      - Array of DOM event touch identifiers
      *
      * @example
      *
@@ -72,7 +72,7 @@ define(function(require, exports, module) {
 
         this._eventOutput.emit('start', {
             count: event.touches.length,
-            touches: [this.touchAId, this.touchBId],
+            touchIds: [this.touchAId, this.touchBId],
             value: this._previousDistance,
             center: center
         });
@@ -94,7 +94,7 @@ define(function(require, exports, module) {
             value: currDist,
             displacement: this._displacement,
             center: center,
-            touches: [this.touchAId, this.touchBId]
+            touchIds: [this.touchAId, this.touchBId]
         });
 
         this._previousDistance = currDist;

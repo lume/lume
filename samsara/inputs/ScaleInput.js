@@ -21,7 +21,7 @@ define(function(require, exports, module) {
      *      `velocity`      - Relative velocity between two touches
      *      `displacement`  - Total accumulated displacement
      *      `center`        - Midpoint between the two touches
-     *      `touches`       - Array of DOM event touch identifiers
+     *      `touchIds`       - Array of DOM event touch identifiers
      *
      *  Note: Unlike PinchInput, which produces pixel values of displacement
      *  between two touches, ScaleInput produces dimensionless values corresponding
@@ -77,7 +77,7 @@ define(function(require, exports, module) {
 
         this._eventOutput.emit('start', {
             count: event.touches.length,
-            touches: [this.touchAId, this.touchBId],
+            touchIds: [this.touchAId, this.touchBId],
             distance: this._startDist,
             center: center
         });
@@ -100,7 +100,7 @@ define(function(require, exports, module) {
             velocity: veloScale,
             distance: currDist,
             center : center,
-            touches: [this.touchAId, this.touchBId]
+            touchIds: [this.touchAId, this.touchBId]
         });
 
         this._scaleFactor = newScaleFactor;
