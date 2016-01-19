@@ -1,4 +1,13 @@
-<p align="center"><a href="http://vuejs.org" target="_blank"><img width="200"src="http://i.imgur.com/MCcLoYk.png"></a></p>
+<p align="center"><img src="http://i.imgur.com/VOiEqxD.png"></p>
+
+<p align="center">
+  <a href="https://travis-ci.org/dmvaldman/samsara">
+    <img src="https://travis-ci.org/dmvaldman/samsara.svg?branch=master" alt="Build Status">
+  </a>
+  <a href="https://gitter.im/dmvaldman/samsara">
+    <img src="https://badges.gitter.im/dmvaldman/samsara.svg" alt="Gitter Chat">
+  </a>
+</p>
 
 SamsaraJS is a functional reactive library for animating layout. It provides a language for positioning,
 orienting and sizing DOM elements and animating these properties over time. Everything in SamsaraJS — from 
