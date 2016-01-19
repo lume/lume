@@ -53,7 +53,8 @@ define(function(require, exports, module) {
      * @param data {Object} Payload
      */
     EventFilter.prototype.emit = function emit(type, data) {
-        if (!this._condition(type, data)) return;
+        //TODO: add start/update/end logic
+        if (!this._condition(data)) return;
         EventHandler.prototype.emit.apply(this, arguments);
     };
 
