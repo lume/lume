@@ -25,7 +25,11 @@ define(function(require, exports, module) {
      *
      *      `value`     - Scroll displacement in pixels from start
      *      `delta`     - Scroll differential in pixels between subsequent events
-     *      `velocity`  - Velocity of scroll
+     *      `velocity`  - Velocity of scroll,
+     *      `clientX`   - DOM event clientX property
+     *      `clientY`   - DOM event clientY property
+     *      `offsetX`   - DOM event offsetX property
+     *      `offsetY`   - DOM event offsetY property
      *
      * @example
      *
@@ -59,9 +63,13 @@ define(function(require, exports, module) {
         this.options = OptionsManager.setOptions(this, options);
 
         this._payload = {
-            delta    : null,
-            value    : null,
-            velocity : null
+            delta : null,
+            value : null,
+            velocity : null,
+            clientX : undefined,
+            clientY : undefined,
+            offsetX : undefined,
+            offsetY : undefined
         };
 
         this._eventInput = new EventHandler();
