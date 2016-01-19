@@ -13,7 +13,7 @@ define(function (require, exports, module) {
             this.swivel = new Transitionable(0);
 
             // Save a reference for a centered node
-            var centerNode = this.add({align : [.5,.5]});
+            var centerNode = this.add({align: [.5, .5]});
 
             // Create wedges to form the logo and
             // add them to the centered node
@@ -35,11 +35,15 @@ define(function (require, exports, module) {
             }
         },
         // Animate the logo
-        loop : function(){
+        play: function () {
             this.swivel.loop([
-                [4 * Math.PI, {duration : 30000, curve : 'easeInOut'}],
+                [4 * Math.PI, {duration: 30000, curve: 'easeInOut'}],
                 [0, {duration: 30000, curve: 'easeInOut'}]
             ]);
+        },
+        // Pause the animation
+        pause: function () {
+            this.swivel.halt();
         }
     });
 
