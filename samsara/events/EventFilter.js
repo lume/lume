@@ -14,11 +14,11 @@ define(function(require, exports, module) {
     /**
      * EventFilter regulates the broadcasting of events based on
      *  a specified condition prescribed by a provided function
-     *  with the signature `(type, data) -> Boolean`
+     *  with the signature `(data) -> Boolean`
      *
      *  @example
      *
-     *      var eventFilter = new EventFilter(function(type, payload){
+     *      var eventFilter = new EventFilter(function(payload){
      *          return (payload.value == 0);
      *      });
      *
