@@ -56,6 +56,8 @@ class Scene extends Node {
         await documentReady()
 
         // if no mountPoint was provided, just mount onto the <body> element.
+        // XXX: Maybe we should just not mount the scene if no mountPoint is
+        // provided, and expose a mount method.
         if (!mountPoint) {
             mountPoint = document.body
         }

@@ -1,3 +1,4 @@
+import 'geometry-interfaces'
 import jss from '../jss-configured'
 import {epsilon} from './Utility'
 
@@ -6,7 +7,12 @@ const CSS_CLASS_NODE = 'motor-dom-node';
 let stylesheet = jss.createStyleSheet({
     motorDomNode: {
         position:        'absolute',
-        transformOrigin: 'left top 0px',
+
+        // TODO: this will be set via JavaScript, defaults to [0.5,0.5,0.5] (the
+        // Z axis doesn't apply for DOM elements, but will for 3D objects in
+        // WebGL.)
+        transformOrigin: '50% 50% 50%', // TODO: fix, invalid
+
         transformStyle:  'preserve-3d',
     },
 }).attach()
@@ -36,36 +42,72 @@ class Node {
     constructor (properties = {}) {
 
         // DOM representation of Node
+        // TODO: remove this and handle it in the "DOMRenderer"
         this._element = document.createElement('div');
         this._element.classList.add(stylesheet.classes.motorDomNode)
 
         this._mounted = false;
         this._removedChildren = [] // FIFO
 
-        this.parent = null // default to no parent.
+        this._parent = null // default to no parent.
 
         // Property Cache, with default values
         this._properties = {
+
+            // TODO: remove these in favor of storing them directly in the
+            // DOMMatrix?
             position: [0,0,0],
+            rotation: [0,0,0],
+
+            origin: [0.5,0.5,0.5], // TODO, handle origin.
+            align: [0,0,0],
+            mountPoint: [0,0,0],
             size: {
                 modes: ['absolute', 'absolute', 'absolute'],
                 absolute: [0,0,0],
                 proportional: [1,1,1]
             },
-            align: [0,0,0],
-            mountPoint: [0,0,0],
         };
 
         // Style Cache
         this._style = _.extend({
-            transform:{
-                matrix3d: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+            transform: {
+                domMatrix: new DOMMatrix
             }
         }, properties.style);
 
         this._children = [];
 
         this.setProperties(properties);
+    }
+
+    /**
+     * Publicly, the user can only read the parent parent property.
+     * this._parent is protected (node's can access other node._parent). The
+     * user should use the addChild methods, which automatically handles
+     * setting a parent.
+     *
+     * @readonly
+     */
+    get parent() {
+        return this._parent
+    }
+
+    /**
+     * @readonly
+     */
+    get children() {
+        // return a new array, so that the user modifying it doesn't affect
+        // this node's actual children.
+        return [...this._children]
+    }
+
+    /**
+     * @readonly
+     * XXX Should we let the element be set?
+     */
+    get element() {
+        return this._element
     }
 
     /**
@@ -97,20 +139,41 @@ class Node {
      * @method
      * @private
      * @memberOf Node
+     *
+     * TODO: instead of calculating the whole matrix here all at once (which
+     * gets called each render()), apply rotation, translation, etc, directly
+     * to the matrix right when the user gives us those values. This will be
+     * more performant. It will also let the user apply x,y,z rotation in their
+     * order of choice instead of always x,y,z order as we do here.
      */
     _calculateMatrix () {
+        let matrix = new DOMMatrix
+
+        // TODO: move by negative origin before rotating.
+        // XXX Should we calculate origin here, or should we leave that to the
+        // DOM renderer (in the style property)? WebGL renderer will need
+        // manual calculations. Maybe we don't do it here, and delegate it to
+        // DOM and WebGL renderers.
+
+        // apply each axis rotation, in the x,y,z order. TODO: This is
+        // restrictive, and we should let the user apply any axis rotation in
+        // any order.
+        let rotation = this._properties.rotation
+        matrix.rotateAxisAngleSelf(1,0,0, rotation[0]) // x-axis rotation
+        matrix.rotateAxisAngleSelf(0,1,0, rotation[1]) // y-axis rotation
+        matrix.rotateAxisAngleSelf(0,0,1, rotation[2]) // z-axis rotation
+
+        // TODO: move by positive origin after rotating.
 
         let alignAdjustment = [0,0,0]
-
-        if (this.parent) { // The root Scene doesn't have a parent.
-            let parentSize = this.parent.getActualSize()
+        if (this._parent) { // The root Scene doesn't have a parent.
+            let parentSize = this._parent.getActualSize()
             alignAdjustment[0] = parentSize[0] * this._properties.align[0]
             alignAdjustment[1] = parentSize[1] * this._properties.align[1]
             alignAdjustment[2] = parentSize[2] * this._properties.align[2]
         }
 
         let mountPointAdjustment = [0,0,0]
-
         let thisSize = this.getActualSize()
         mountPointAdjustment[0] = thisSize[0] * this._properties.mountPoint[0]
         mountPointAdjustment[1] = thisSize[1] * this._properties.mountPoint[1]
@@ -121,46 +184,40 @@ class Node {
         appliedPosition[1] = this._properties.position[1] + alignAdjustment[1] - mountPointAdjustment[1] || 0
         appliedPosition[2] = this._properties.position[2] + alignAdjustment[2] - mountPointAdjustment[2] || 0
 
-        // put together a 4x4 matrix (3D).
-        return [
+        matrix.translateSelf(appliedPosition[0], appliedPosition[1], appliedPosition[2])
 
-            1, 0, 0, 0,
-            0, 1, 0, 0,
-            0, 0, 1, 0,
-
-            // translation
-            appliedPosition[0], appliedPosition[1], appliedPosition[2], 1
-
-        ];
+        return matrix
     }
 
     /**
-     * [applyTransform description]
+     * Apply the DOMMatrix value to the style of this Node's element.
      *
-     * @method
      * @private
-     * @memberOf Node
+     *
+     * TODO We'll eventually apply the DOMMatrix directly instead of
+     * converting to a string here.
      */
-    _applyTransform (){
-        var matrix3d = this._style.transform.matrix3d;
+    _applyTransform () {
+        var matrix = this._style.transform.domMatrix;
 
+        // XXX: is this in the right order?
         var transform = `matrix3d(
-            ${ epsilon(  matrix3d[0]  ) },
-            ${ epsilon(  matrix3d[1]  ) },
-            ${ epsilon(  matrix3d[2]  ) },
-            ${ epsilon(  matrix3d[3]  ) },
-            ${ epsilon(  matrix3d[4]  ) },
-            ${ epsilon(  matrix3d[5]  ) },
-            ${ epsilon(  matrix3d[6]  ) },
-            ${ epsilon(  matrix3d[7]  ) },
-            ${ epsilon(  matrix3d[8]  ) },
-            ${ epsilon(  matrix3d[9]  ) },
-            ${ epsilon(  matrix3d[10] ) },
-            ${ epsilon(  matrix3d[11] ) },
-            ${ epsilon(  matrix3d[12] ) },
-            ${ epsilon(  matrix3d[13] ) },
-            ${ epsilon(  matrix3d[14] ) },
-            ${ epsilon(  matrix3d[15] ) }
+            ${ matrix.m11 },
+            ${ matrix.m12 },
+            ${ matrix.m13 },
+            ${ matrix.m14 },
+            ${ matrix.m21 },
+            ${ matrix.m22 },
+            ${ matrix.m23 },
+            ${ matrix.m24 },
+            ${ matrix.m31 },
+            ${ matrix.m32 },
+            ${ matrix.m33 },
+            ${ matrix.m34 },
+            ${ matrix.m41 },
+            ${ matrix.m42 },
+            ${ matrix.m43 },
+            ${ matrix.m44 }
         )`;
 
         this._applyStyle('transform', transform);
@@ -183,13 +240,13 @@ class Node {
     }
 
     /**
-     * [applyStyle description]
+     * Apply a style property to this node's element.
      *
-     * @method
+     * TODO: this will be moved into DOMRenderer.
+     *
      * @private
-     * @memberOf Node
-     * @param  {String} property [description]
-     * @param  {String} value    [description]
+     * @param  {string} property The CSS property we will a apply.
+     * @param  {string} value    The value the CSS property wil have.
      */
     _applyStyle (property, value) {
         this._element.style[property] = value;
@@ -198,14 +255,18 @@ class Node {
     /**
      * [setMatrix3d description]
      *
-     * @method
      * @private
-     * @memberOf Node
-     * @param {Array} matrix [description]
+     * @param {DOMMatrix} matrix A DOMMatrix instance to set as this node's
+     * matrix. See "W3C Geometry Interfaces".
      */
-    _setMatrix3d (matrix){
-        if (true || ! _.isEqual(this._style.transform.matrix3d, matrix)) {
-            this._style.transform.matrix3d = matrix;
+    _setMatrix3d (matrix) {
+        if (true || ! _.isEqual(this._style.transform.domMatrix, matrix)) {
+
+            this._style.transform.domMatrix = matrix
+            // ^ TODO: What's faster? Setting a new DOMMatrix (as we do here
+            // currently, the result of _calculateMatrix) or applying all
+            // transform values to the existing DOMMatrix?
+
             this._applyTransform();
         }
     }
@@ -235,7 +296,10 @@ class Node {
     }
 
     /**
-     * @param {Array.number} rotation [description]
+     * @param {Array.number} rotation A 3-item array, each item the rotation about each axis X, Y, Z, respectively.
+     *
+     * TODO: We should also provide a setRotationAxis method to rotate about a
+     * particular axis.
      */
     setRotation (rotation) {
         this._properties.rotation = rotation;
@@ -253,7 +317,7 @@ class Node {
     /**
      * Set this Node's opacity.
      *
-     * @param {Number} opacity A number between 0 and 1 (inclusive). 0 is fully transparent, 1 is fully opaque.
+     * @param {number} opacity A number between 0 and 1 (inclusive). 0 is fully transparent, 1 is fully opaque.
      */
     setOpacity (opacity) {
         this._style.opacity = opacity;
@@ -456,11 +520,11 @@ class Node {
      */
     addChild (node) {
 
-        if (node.parent)
-            node.parent.removeChild(node)
+        if (node._parent)
+            node._parent.removeChild(node)
 
         // Add parent
-        node.parent = this;
+        node._parent = this;
 
         // Add to children array
         this._children.push(node);
@@ -494,7 +558,7 @@ class Node {
             this._removedChildren.push(node)
 
             // Remove parent
-            node.parent = null
+            node._parent = null
 
             // unmount
             node._mounted = false
@@ -524,18 +588,21 @@ class Node {
     }
 
     /**
-    */
-    render () {
+     */
+    render() {
+
+        // applies the transform matrix to the element's style property.
+        // TODO: We shouldn't need to re-calculate the matrix every render?
         this._setMatrix3d(this._calculateMatrix());
 
         this._applyStyles()
 
         //If Node isn't mounted.. mount it to the camera element
         if (! this._mounted) {
-            if (this.parent) {
+            if (this._parent) {
                 // Mount to parent if parent is a Node
-                // if (this.parent instanceof Node) {
-                this.parent._element.appendChild(this._element);
+                // if (this._parent instanceof Node) {
+                this._parent._element.appendChild(this._element);
                 this._mounted = true;
 
                 // Mount to camera if top level Node
@@ -546,6 +613,7 @@ class Node {
             }
         }
 
+        // TODO: move this out, into DOMRenderer
         while (this._removedChildren.length) {
             let child = this._removedChildren.shift()
 
@@ -563,7 +631,7 @@ class Node {
         }
 
         // Render Children
-        for (let child of this._children){
+        for (let child of this._children) {
             child.render();
         }
 
