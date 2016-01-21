@@ -1,6 +1,6 @@
 {
   "name": "infamous",
-  "version": "0.1.0",
+  "version": "1.0.0",
   "description": "A famo.us UI library.",
   "format": "es6",
   "main": false,
@@ -31,10 +31,8 @@
     "geometry-interfaces": "^1.0.0",
     "tween.js": "^16.3.1",
     "army-knife": "^0.2.1",
-
     "famous": "trusktr/famous#commonjs",
     "famousify": "^0.1.5",
-
     "jss": "^3.0.0",
     "jss-camel-case": "^1.0.0",
     "jss-extend": "^1.0.0",
