@@ -8,10 +8,9 @@ let stylesheet = jss.createStyleSheet({
     motorDomNode: {
         position:        'absolute',
 
-        // TODO: this will be set via JavaScript, defaults to [0.5,0.5,0.5] (the
-        // Z axis doesn't apply for DOM elements, but will for 3D objects in
-        // WebGL.)
-        transformOrigin: '50% 50% 50%', // TODO: fix, invalid
+        // TODO: set via JavaScript. Defaults to [0.5,0.5,0.5] (the Z axis
+        // doesn't apply for DOM elements, but will for 3D objects in WebGL.)
+        transformOrigin: '50% 50% 0', // default
 
         transformStyle:  'preserve-3d',
     },
@@ -149,24 +148,8 @@ class Node {
     _calculateMatrix () {
         let matrix = new DOMMatrix
 
-        // TODO: move by negative origin before rotating.
-        // XXX Should we calculate origin here, or should we leave that to the
-        // DOM renderer (in the style property)? WebGL renderer will need
-        // manual calculations. Maybe we don't do it here, and delegate it to
-        // DOM and WebGL renderers.
-
-        // apply each axis rotation, in the x,y,z order. TODO: This is
-        // restrictive, and we should let the user apply any axis rotation in
-        // any order.
-        let rotation = this._properties.rotation
-        matrix.rotateAxisAngleSelf(1,0,0, rotation[0]) // x-axis rotation
-        matrix.rotateAxisAngleSelf(0,1,0, rotation[1]) // y-axis rotation
-        matrix.rotateAxisAngleSelf(0,0,1, rotation[2]) // z-axis rotation
-
-        // TODO: move by positive origin after rotating.
-
         let alignAdjustment = [0,0,0]
-        if (this._parent) { // The root Scene doesn't have a parent.
+        if (this._parent) { // The root Scene doesn't have a parent, for example.
             let parentSize = this._parent.getActualSize()
             alignAdjustment[0] = parentSize[0] * this._properties.align[0]
             alignAdjustment[1] = parentSize[1] * this._properties.align[1]
@@ -185,6 +168,22 @@ class Node {
         appliedPosition[2] = this._properties.position[2] + alignAdjustment[2] - mountPointAdjustment[2] || 0
 
         matrix.translateSelf(appliedPosition[0], appliedPosition[1], appliedPosition[2])
+
+        // TODO: move by negative origin before rotating.
+        // XXX Should we calculate origin here, or should we leave that to the
+        // DOM renderer (in the style property)? WebGL renderer will need
+        // manual calculations. Maybe we don't do it here, and delegate it to
+        // DOM and WebGL renderers.
+
+        // apply each axis rotation, in the x,y,z order. TODO: This is
+        // restrictive, and we should let the user apply any axis rotation in
+        // any order.
+        let rotation = this._properties.rotation
+        matrix.rotateAxisAngleSelf(1,0,0, rotation[0]) // x-axis rotation
+        matrix.rotateAxisAngleSelf(0,1,0, rotation[1]) // y-axis rotation
+        matrix.rotateAxisAngleSelf(0,0,1, rotation[2]) // z-axis rotation
+
+        // TODO: move by positive origin after rotating.
 
         return matrix
     }
@@ -296,7 +295,8 @@ class Node {
     }
 
     /**
-     * @param {Array.number} rotation A 3-item array, each item the rotation about each axis X, Y, Z, respectively.
+     * @param {Array.number} rotation A 3-item array, each item the rotation
+     * about each axis X, Y, Z, respectively, in degrees.
      *
      * TODO: We should also provide a setRotationAxis method to rotate about a
      * particular axis.
@@ -304,6 +304,16 @@ class Node {
     setRotation (rotation) {
         this._properties.rotation = rotation;
         return this
+    }
+
+    /**
+     * Get the rotation of the Node.
+     *
+     * @return {Array.number} An array of 3 numbers, each number representing the X,
+     * Y, and Z rotation of the Node (in that order) in degrees.
+     */
+    getRotation() {
+        return this._properties.rotation
     }
 
     /**
