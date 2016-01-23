@@ -65,13 +65,26 @@ define(function(require, exports, module) {
         this._node._layout.subscribe(this._layout);
 
         this._perspective = new Transitionable();
+        this._perspectiveOrigin = new Transitionable();
 
         this._perspective.on('update', function(perspective){
+            if (!this.container) return;
             setPerspective(this.container, perspective);
         }.bind(this));
 
         this._perspective.on('end', function(perspective){
+            if (!this.container) return;
             setPerspective(this.container, perspective);
+        }.bind(this));
+
+        this._perspectiveOrigin.on('update', function(origin) {
+            if (!this.container) return;
+            setPerspectiveOrigin(this.container, origin);
+        }.bind(this));
+
+        this._perspectiveOrigin.on('end', function(origin) {
+            if (!this.container) return;
+            setPerspectiveOrigin(this.container, origin);
         }.bind(this));
 
         this._eventOutput = new EventHandler();
@@ -122,6 +135,18 @@ define(function(require, exports, module) {
      */
     Context.prototype.setPerspective = function setPerspective(perspective, transition, callback) {
         this._perspective.set(perspective, transition, callback);
+    };
+
+    /**
+     * Set current perspective of the `context` in pixels.
+     *
+     * @method setPerspective
+     * @param perspective {Number}  Perspective in pixels
+     * @param [transition] {Object} Transition definition
+     * @param [callback] {Function} Callback executed on completion of transition
+     */
+    Context.prototype.setPerspectiveOrigin = function setPerspectiveOrigin(origin, transition, callback) {
+        this._perspectiveOrigin.set(origin, transition, callback);
     };
 
     /**
@@ -216,6 +241,18 @@ define(function(require, exports, module) {
         }
         : function setPerspective(element, perspective) {
             element.style.perspective = perspective ? (perspective | 0) + 'px' : '0px';
+        };
+
+    function _formatCSSOrigin(origin) {
+        return (100 * origin[0]) + '% ' + (100 * origin[1]) + '%';
+    }
+
+    var setPerspectiveOrigin = usePrefix
+        ? function setPerspectiveOrigin(element, origin) {
+            element.style.webkitPerspectiveOrigin = origin ? _formatCSSOrigin(origin) : '50% 50%';
+        }
+        : function setPerspectiveOrigin(element, origin) {
+            element.style.perspectiveOrigin = origin ? _formatCSSOrigin(origin) : '50% 50%';
         };
 
     function handleResize() {
