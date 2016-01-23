@@ -113,6 +113,7 @@ async function getBodySize() {
 export {
   startTween,
   startLoop,
+  stopLoop,
   epsilon,
   applyCSSLabel,
   documentReady,
