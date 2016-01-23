@@ -13,6 +13,17 @@ define(function(require, exports, module) {
     var FastClick = require('./lib/fastClick');
     FastClick.attach(document.body);
 
+    var imgURLs = {
+        statusBar : './assets/status-bar.png',
+        mic : './assets/mic.png',
+        topNav : './assets/top.png',
+        mountains : './assets/background.png',
+        googleColor : './assets/google-color.png',
+        googleWhite : './assets/google-white.png',
+        trafficCard : './assets/traffic-card.png',
+        movieCard : './assets/movie-card.png'
+    };
+
     // Create the application
     var app = new App({
         origin : [.5,.5],
@@ -26,7 +37,8 @@ define(function(require, exports, module) {
             duration: 200
         },
         cardOffset : 5,     // Offset that staggers the cards
-        cardPadding : 10    // Spacing between the cards when expanded
+        cardPadding : 10,   // Spacing between the cards when expanded
+        imgURLs : imgURLs
     });
 
     // Create a Samsara Context as the root of the render tree

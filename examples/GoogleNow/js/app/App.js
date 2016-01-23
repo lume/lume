@@ -20,10 +20,11 @@ define(function (require, exports, module) {
                 duration : 200
             },
             cardOffset : 5,
-            cardPadding : 10
+            cardPadding : 10,
+            imgURLs : {}
         },
         initialize: function (options) {
-            // Define the Transitionables which will control the animation
+            // Define the `Transitionables` which will control the animation
             // One takes an easing curve, the other a spring
             this.easingTransition = new Transitionable(0);
             this.springTransition = new Transitionable(0);
@@ -31,11 +32,11 @@ define(function (require, exports, module) {
             this.toggle = false; // Boolean indicating the state of the animation
 
             // Add all the elements to the render subtree
-            this.addTopNav();
-            this.addSearchBar();
-            this.addStatusBar();
-            this.addMountains();
-            this.addGoogleLogo();
+            this.addTopNav(options);
+            this.addSearchBar(options);
+            this.addStatusBar(options);
+            this.addMountains(options);
+            this.addGoogleLogo(options);
             this.addCards(options);
         },
         // Toggle the animation
@@ -45,7 +46,7 @@ define(function (require, exports, module) {
             this.springTransition.set(target, this.options.springTransition);
             this.toggle = !this.toggle;
         },
-        addTopNav : function(){
+        addTopNav : function(options){
             // The opacity goes from 1 to 0 with the easing animation
             var opacity = this.easingTransition.map(function (value) {
                 return 1 - value;
@@ -61,7 +62,7 @@ define(function (require, exports, module) {
                 tagName: 'img',
                 size: [undefined, true],
                 classes: ['topNav'],
-                attributes: {src: './assets/top.png'},
+                attributes: {src: options.imgURLs.topNav},
                 opacity: opacity,
                 origin: origin
             });
@@ -69,9 +70,9 @@ define(function (require, exports, module) {
             this.add(topNav);
         },
         // The search bar will raise and scale slightly in the `x`-direction as the animation progresses
-        addSearchBar : function(){
+        addSearchBar : function(options){
             var search = new Surface({
-                content: '<img class="mic" src="./assets/mic.png"/>',
+                content: '<img class="mic" src="' + options.imgURLs.mic + '"/>',
                 classes: ['searchBar'],
                 proportions: [1, 1 / 10],
                 origin: [.5, .5]
@@ -86,26 +87,26 @@ define(function (require, exports, module) {
                 })
             }).add(search);
         },
-        addStatusBar : function(){
+        addStatusBar : function(options){
             // The opacity of the status bar begins at 0, and becomes visible with the easing animation.
             var statusBar = new Surface({
                 tagName: 'img',
                 size: [undefined, true],
-                attributes: {src: './assets/status-bar.png'},
+                attributes: {src: options.imgURLs.statusBar},
                 classes: ['statusBar'],
                 opacity: this.easingTransition
             });
 
             this.add(statusBar);
         },
-        addMountains : function(){
+        addMountains : function(options){
             // The mountain `Surface` begins slightly scaled in `x`, and shrinks
             // with the easing animation.
             // We align it so that it is centered and scales from the center.
             var mountains = new Surface({
                 tagName: 'img',
                 proportions: [1, 1 / 3],
-                attributes: {src: './assets/background.png'},
+                attributes: {src: options.imgURLs.mountains},
                 origin: [0.5, 0],
                 opacity: this.springTransition
             });
@@ -118,7 +119,7 @@ define(function (require, exports, module) {
                 })
             }).add(mountains);
         },
-        addGoogleLogo : function(){
+        addGoogleLogo : function(options){
             // We define the Google logos so that they remain the same
             // aspect ratio even when rescaled. We then cross fade between
             // a colored, and white version as the animation progresses. This
@@ -127,7 +128,7 @@ define(function (require, exports, module) {
                 tagName: 'img',
                 proportions: [false, .1],
                 aspectRatio: 3,
-                attributes: {src: './assets/google-color.png'},
+                attributes: {src: options.imgURLs.googleColor},
                 origin: [.5, .5],
                 opacity: this.easingTransition.map(function (value) {
                     return 1 - value;
@@ -138,7 +139,7 @@ define(function (require, exports, module) {
                 tagName: 'img',
                 proportions: [false, .1],
                 aspectRatio: 3,
-                attributes: {src: './assets/google-white.png'},
+                attributes : {src : options.imgURLs.googleWhite},
                 origin: [.5, .5],
                 opacity: this.easingTransition
             });
@@ -147,7 +148,7 @@ define(function (require, exports, module) {
             // node for the movement and add both surfaces to it.
             var googleNode = this.add({
                 align: this.springTransition.map(function (value) {
-                    return [.5, .38 - value / 4];
+                    return [.5, .4 - value / 4];
                 }),
                 transform: this.springTransition.map(function (value) {
                     var scale = .25 * (1 - value) + .75;
@@ -167,7 +168,7 @@ define(function (require, exports, module) {
                 proportions: [1, false],
                 aspectRatio: 1 / 1.4,
                 classes: ['card', 'traffic-card'],
-                attributes: {src: './assets/traffic-card.png'},
+                attributes : {src : options.imgURLs.trafficCard},
                 origin: [.5, 0]
             });
 
@@ -175,7 +176,7 @@ define(function (require, exports, module) {
                 tagName: 'img',
                 proportions: [1, false],
                 aspectRatio: .58,
-                attributes: {src: './assets/movie-card.png'},
+                attributes : {src : options.imgURLs.movieCard},
                 classes: ['card', 'movie-card'],
                 origin: [.5, 0]
             });
