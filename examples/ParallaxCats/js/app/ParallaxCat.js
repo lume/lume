@@ -22,16 +22,13 @@ define(function(require, exports, module) {
                 properties: {overflow: 'hidden'}
             });
 
-            // Create the cat photo. To scale appropriately
-            // we use the `background-image` CSS property set to `cover` instead
-            // of using an `<img>` tag
+            // Create the cat photo
             var cat = new Surface({
-                properties: {
-                    backgroundImage: 'url(' + options.src + ')',
-                    backgroundSize: 'cover'
-                },
-                origin: [.5, 0],
-                proportions: [1.3, 1.3]
+                tagName : 'img',
+                origin : [0.5,0.2],
+                proportions : [1, false],
+                aspectRatio : 4/3,
+                attributes : {src : options.src}
             });
 
             // Transform the image inside of the container by
@@ -44,13 +41,13 @@ define(function(require, exports, module) {
             // Build the render subtree inside the container
             container
                 .add({
+                    align : [.5, 0.2],
                     transform: Transform.compose(
-                        Transform.skewY(options.skew),
-                        Transform.translateY(-options.index * options.parallaxAmount)
+                        Transform.translateY(-options.index * options.parallaxAmount),
+                        Transform.skewY(options.skew)
                     )
                 })
                 .add({
-                    align: [.5, 0],
                     transform: parallaxTransform
                 })
                 .add(cat);

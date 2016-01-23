@@ -7,9 +7,9 @@ define(function (require, exports, module) {
     // ParallaxCats is a scrollview of ParallaxCat images
     var ParallaxCats = View.extend({
         defaults: {
-            cats : 0,
             skew : 0,
-            parallaxAmount : 0
+            parallaxAmount : 0,
+            urls : []
         },
         initialize: function (options) {
             // Create the scrollview
@@ -20,11 +20,11 @@ define(function (require, exports, module) {
 
             // Create the parallaxCat images
             var cats = [];
-            for (var i = 0; i < options.cats; i++) {
+            for (var i = 0; i < options.urls.length; i++) {
                 var parallaxCat = new ParallaxCat({
-                    proportions: [1, 1/2],
+                    proportions : [1, 1/2],
                     skew: options.skew,
-                    src: './assets/cat' + (i + 1) + '.jpg',
+                    src: options.urls[i],
                     parallaxAmount: options.parallaxAmount,
                     index: i
                 });

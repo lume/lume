@@ -2,13 +2,25 @@ define(function (require, exports, module) {
     var Context = require('samsara/dom/Context');
     var ParallaxCats = require('./app/ParallaxCats');
 
+    // Location of cat images
+    var urls = [
+        './assets/cat1.jpg',
+        './assets/cat2.jpg',
+        './assets/cat3.jpg',
+        './assets/cat4.jpg',
+        './assets/cat5.jpg',
+        './assets/cat6.jpg',
+        './assets/cat7.jpg',
+        './assets/cat8.jpg'
+    ];
+
     // Create the parallaxCats view with specified options
     var parallaxCats = new ParallaxCats({
         size : [Math.min(400, window.innerWidth), undefined],
         origin: [.5, 0],
         skew : Math.PI / 25,
-        cats : 8,
-        parallaxAmount : 70
+        parallaxAmount : 70,
+        urls : urls
     });
 
     // Create a Samsara Context as the root of the render tree
