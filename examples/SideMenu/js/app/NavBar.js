@@ -96,7 +96,7 @@ define(function(require, exports, module) {
             // Create a "middle" surface
             var middle = new Surface({
                 size: [true, undefined],
-                content: 'goo.gl/nhRGeg',
+                content: 'saṃsāra',
                 classes: ['nav', 'middle', 'center'],
                 origin: middleAlignAndOrigin,
                 opacity: fadeOut
