@@ -12,27 +12,22 @@ define(function (require, exports, module) {
         defaults: {
             src: '',
             title: '',
-            height: 26
+            titleHeightRatio: 0.06
         },
         initialize: function (options) {
             // Create the title bar
             this.title = new Surface({
-                size: [undefined, options.height],
+                proportions : [1, options.titleHeightRatio],
                 content: options.title,
-                classes: ['title'],
-                properties: {
-                    lineHeight: options.height + 'px'
-                }
+                classes: ['title']
             });
 
             // Create the `close` button
             this.close = new Surface({
-                size: [40, options.height],
+                proportions : [1, options.titleHeightRatio],
+                size: [40, false],
                 content: '×',
-                classes: ['close'],
-                properties: {
-                    lineHeight: options.height - 2 + 'px'
-                }
+                classes: ['close']
             });
 
             // On `click` emit a `close` event that the `TabContainer` will respond to
@@ -40,15 +35,13 @@ define(function (require, exports, module) {
                 this.emit('close');
             }.bind(this));
 
-            // Create the tab content from the provided URL source as a `<div>` with background image
+            // Create the tab from an image
             this.content = new Surface({
-                classes: ['tab'],
-                margins: [0, options.height/2],
-                properties: {
-                    backgroundImage: 'url(' + options.src + ')',
-                    backgroundSize: 'cover',
-                    backgroundPosition: 'center top'
-                }
+                proportions : [1, 1 - options.titleHeightRatio],
+                classes : ['tab'],
+                origin : [0,1],
+                attributes : {src : options.src},
+                tagName : 'img'
             });
 
             // On `click` emit a `select` event that the `TabContainer` will respond to
@@ -56,11 +49,10 @@ define(function (require, exports, module) {
                 this.emit('select');
             }.bind(this));
 
-            // Build the render subtree
+            // Build the render sub tree, aligning the content to the bottom
             this.add(this.title);
             this.add(this.close);
-            this.add({transform : Transform.translateY(options.height)})
-                .add(this.content);
+            this.add({align : [0,1]}).add(this.content);
         },
         // Remove the tab. This will remove the DOM content for later reuse.
         // Note: this API is currently experimental and will be fleshed out in a later version.

@@ -18,10 +18,10 @@ define(function(require, exports, module) {
             src : '',
             title : '',
             index : 0,
-            titleHeight: 26,
+            titleHeightRatio: 0.06,
             angle : -Math.PI / 5,
             spacing : 150,
-            height : 700,
+            height : 400,
             selectTransition : {duration : 200},
             deselectTransition : {duration : 200}
         },
@@ -30,9 +30,15 @@ define(function(require, exports, module) {
             this.deleteShift = new Transitionable(0); // Translation to apply when removing a tab
             this.selected = false; // Boolean whether the tab is selected or not
 
-            this.parentSize = new Transitionable([false, options.spacing]); // Size of the view (read my the scrollview)
+            this.parentSize = new Transitionable([undefined, options.spacing]); // Size of the view (read my the scrollview)
             this.tabSize = new Transitionable([false, options.height]); // Size of the tab
             this.proportions = new Transitionable([.9, false]);
+
+
+            this.parentHeight = options.spacing;
+            this._size.on('resize', function(size){
+                this.parentHeight = size[1];
+            }.bind(this));
 
             // Set the view's size
             this.setSize(this.parentSize);
@@ -44,7 +50,7 @@ define(function(require, exports, module) {
                 proportions : this.proportions,
                 src : options.src,
                 title : options.title,
-                height : options.titleHeight
+                titleHeightRatio : options.titleHeightRatio
             });
 
             // On `close`, call the `close` method
@@ -98,9 +104,9 @@ define(function(require, exports, module) {
         select : function(transition, callback){
             transition = transition || this.options.selectTransition;
             this.angle.set(0, transition);
-            this.parentSize.set([undefined, window.innerHeight], transition);
+            this.parentSize.set([undefined, this.parentHeight], transition);
             this.proportions.set([1, false], transition);
-            this.tabSize.set([undefined, window.innerHeight], transition, callback);
+            this.tabSize.set([undefined, this.parentHeight], transition, callback);
             this.emit('goto', this.options.index);
             this.selected = true;
         },

@@ -13,10 +13,10 @@ define(function (require, exports, module) {
         defaults: {
             tabData : [],
             tab : {
-                titleHeight: 26,
+                titleHeightRatio: 0.06,
                 angle: -Math.PI / 5,
                 spacing: 150,
-                height: 700
+                height: 400
             },
             perspective : 1000,
             selectTransition: {duration: 200},
@@ -39,7 +39,7 @@ define(function (require, exports, module) {
                     src: options.tabData[i].src,
                     title: options.tabData[i].title,
                     index: i,
-                    titleHeight: options.tab.titleHeight,
+                    titleHeightRatio: options.tab.titleHeightRatio,
                     angle: options.tab.angle,
                     spacing : options.tab.spacing,
                     height : options.tab.height,

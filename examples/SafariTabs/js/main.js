@@ -55,10 +55,10 @@ define(function (require, exports, module) {
         tabData : tabData,
         perspective: 1000,          // Perspective for the scrollview
         tab : {                     // Options for the tab
-            titleHeight : 26,       // Height of the title bar
+            titleHeightRatio : .06, // Height of the title bar as a ratio of page height
             angle : -Math.PI/5,     // Angle to rotate the tabs by
             spacing : 150,          // Vertical spacing between tabs
-            height : 700            // Total height of the tab
+            height : 400            // Total height of the tab
         },
         selectTransition : {duration : 200},    // Animation for selection
         deselectTransition : {duration : 200}   // Animation for deselection

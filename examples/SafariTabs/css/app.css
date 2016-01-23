@@ -11,6 +11,13 @@ body {
     font-family : Helvetica;
     font-size : 14px;
     font-weight: 600;
+    -webkit-font-smoothing: subpixel-antialiased;
+    display: flex;
+    display: -webkit-flex;
+    align-items : center;
+    -webkit-align-items : center;
+    justify-content : center;
+    -webkit-justify-content: center;
 }
 
 .close {
@@ -20,4 +27,11 @@ body {
     font-size : 20px;
     padding-left: 4px;
     cursor: pointer;
+    -webkit-font-smoothing: subpixel-antialiased;
+    display: flex;
+    display: -webkit-flex;
+    align-items: center;
+    -webkit-align-items: center;
+    justify-content: flex-start;
+    -webkit-justify-content: flex-start;
 }
