@@ -13,7 +13,10 @@ define(function(require, exports, module) {
 
     var elementType = 'div';
     var rafStarted = false;
-    var isMobile = /Android|iPhone|iPad|iPod|IEMobile/i.test(navigator.userAgent);
+    var isMobile = /mobi/i.test(navigator.userAgent);
+    var orientation = Number.NaN;
+    var windowWidth = Number.NaN;
+    var windowHeight = Number.NaN;
 
     var layoutSpec = {
         transform : Transform.identity,
@@ -167,13 +170,8 @@ define(function(require, exports, module) {
         if (!node)
             document.body.appendChild(this.container);
 
-        if (!resizeListenFlag) {
-            // If mobile device, only resize for orientation change to avoid
-            // resizing from the browser navigation bar
-            (isMobile)
-                ? window.addEventListener('deviceorientation', handleResize.bind(this), false)
-                : window.addEventListener('resize', handleResize.bind(this), false);
-        }
+        if (!resizeListenFlag)
+            window.addEventListener('resize', handleResize.bind(this), false);
 
         preTickQueue.push(function (){
             handleResize.call(this);
@@ -256,6 +254,20 @@ define(function(require, exports, module) {
         };
 
     function handleResize() {
+        var newHeight = window.innerHeight;
+        var newWidth = window.innerWidth;
+
+        if (isMobile){
+            var newOrientation = newHeight > newWidth;
+            if (orientation === newOrientation) return false;
+            orientation = newOrientation;
+        }
+        else {
+            if (newWidth === windowWidth && newHeight === windowHeight) return false;
+            windowWidth = newWidth;
+            windowHeight = newHeight;
+        }
+
         this._size.emit('resize');
         dirtyQueue.push(function(){
             this._size.emit('resize');
