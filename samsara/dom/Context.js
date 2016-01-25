@@ -174,7 +174,7 @@ define(function(require, exports, module) {
             window.addEventListener('resize', handleResize.bind(this), false);
 
         preTickQueue.push(function (){
-            handleResize.call(this);
+            if (!resizeListenFlag) handleResize.call(this);
             this._layout.trigger('start', layoutSpec);
             dirtyQueue.push(function(){
                 this._layout.trigger('end', layoutSpec);
