@@ -6,6 +6,7 @@ define(function(require, exports, module) {
     var Transform = require('../core/Transform');
     var ElementAllocator = require('../core/ElementAllocator');
     var Transitionable = require('../core/Transitionable');
+    var OptionsManager = require('../core/OptionsManager');
     var SimpleStream = require('../streams/SimpleStream');
     var EventHandler = require('../events/EventHandler');
     var preTickQueue = require('../core/queues/preTickQueue');
@@ -51,8 +52,12 @@ define(function(require, exports, module) {
      * @constructor
      * @namespace DOM
      * @uses Core.RootNode
+     *
+     * @param [options] {Object}                        Options
+     * @param [options.enableScroll=false] {Boolean}    Allow scrolling on mobile devices
      */
-    function Context() {
+    function Context(options) {
+        this.options = OptionsManager.setOptions(this, options, Context.DEFAULT_OPTIONS);
         this._node = new RootNode();
 
         this._size = new SimpleStream();
@@ -96,14 +101,20 @@ define(function(require, exports, module) {
         }.bind(this);
 
         // Prevents dragging of entire page
-        this.on('deploy', function(target){
-            target.addEventListener('touchmove', function (event) {
-                event.preventDefault();
-            }, false);
-        })
+        if (this.options.enableScroll === false){
+            this.on('deploy', function(target) {
+                target.addEventListener('touchmove', function(event) {
+                    event.preventDefault();
+                }, false);
+            });
+        }
     }
 
     Context.prototype.elementClass = 'samsara-context';
+
+    Context.DEFAULT_OPTIONS = {
+        enableScroll : false
+    };
 
     /**
      * Extends the render tree beginning with the Context's RootNode with a new node.
