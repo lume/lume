@@ -94,6 +94,7 @@ define(function(require, exports, module) {
     }
 
     function _handleMove(event) {
+        event.preventDefault(); // prevents scrolling on mobile
         for (var i = 0; i < event.changedTouches.length; i++) {
             var touch = event.changedTouches[i];
             var history = this.touchHistory[touch.identifier];
