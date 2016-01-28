@@ -58,7 +58,6 @@ define(function(require, exports, module) {
      */
     EventEmitter.prototype.trigger = EventEmitter.prototype.emit;
 
-
     /**
      * Adds a handler to the `type` channel which will be executed on `emit`.
      *
@@ -75,7 +74,7 @@ define(function(require, exports, module) {
      * Behaves like `EventEmitter.prototype.on`, except the handler is only executed once.
      *
      * @method once
-     * @param type {String}         Event type key (for example, 'click')
+     * @param type {String}         Channel name (e.g., 'click')
      * @param handler {Function}    Callback
      */
     EventEmitter.prototype.once = function once(type, handler){
@@ -86,13 +85,14 @@ define(function(require, exports, module) {
         this.on(type, onceHandler);
     };
 
-   /**
-     * Removes the `handler` from the `type` channel.
-     *   This undoes the work of `on`.
+    /**
+     * Removes the `handler` from the `type` channel. This undoes the work of `on`.
+     *  If no type is provided, then all event listeners are removed.
+     *  If a type is provided but no handler, then all listeners of that type are removed.
      *
      * @method off
-     * @param type {String}         Channel name
-     * @param handler {Function}    Callback
+     * @param [type] {String}         Channel name
+     * @param [handler] {Function}    Callback
      */
     EventEmitter.prototype.off = function off(type, handler) {
         if (!type) {
