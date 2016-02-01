@@ -65,6 +65,7 @@ define(function(require, exports, module) {
         this._payload = {
             delta : null,
             value : null,
+            cumulate : null,
             velocity : null,
             clientX : undefined,
             clientY : undefined,
@@ -81,6 +82,7 @@ define(function(require, exports, module) {
         this._eventInput.on('wheel', handleMove.bind(this));
 
         this._value = (this.options.direction === undefined) ? [0,0] : 0;
+        this._cumulate = (this.options.direction === undefined) ? [0, 0] : 0;
         this._prevTime = undefined;
         this._inProgress = false;
 
@@ -126,6 +128,7 @@ define(function(require, exports, module) {
             this._value = (this.options.direction === undefined) ? [0,0] : 0;
             payload = this._payload;
             payload.value = this._value;
+            payload.cumulate = this._cumulate;
             payload.clientX = event.clientX;
             payload.clientY = event.clientY;
             payload.offsetX = event.offsetX;
@@ -161,23 +164,28 @@ define(function(require, exports, module) {
             nextDelta = scale * diffX;
             nextVel = scale * velX;
             this._value += nextDelta;
+            this._cumulate += nextDelta;
         }
         else if (this.options.direction === ScrollInput.DIRECTION.Y) {
             nextDelta = scale * diffY;
             nextVel = scale * velY;
             this._value += nextDelta;
+            this._cumulate += nextDelta;
         }
         else {
             nextDelta = [scale * diffX, scale * diffY];
             nextVel = [scale * velX, scale * velY];
             this._value[0] += nextDelta[0];
             this._value[1] += nextDelta[1];
+            this._cumulate[0] += nextDelta[0];
+            this._cumulate[1] += nextDelta[1];
         }
 
         var payload = this._payload;
         payload.delta    = nextDelta;
         payload.velocity = nextVel;
         payload.value = this._value;
+        payload.cumulate = this._cumulate;
 
         this._eventOutput.emit('update', payload);
 
