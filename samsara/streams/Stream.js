@@ -139,10 +139,26 @@ define(function(require, exports, module){
     Stream.prototype.constructor = Stream;
 
     /**
-     * Extends SimpleStream.lift
+     * Lift is like map, except it maps several event sources,
+     *  not only one.
      *
+     *  @example
+     *
+     *      var liftedStream = Stream.lift(function(payload1, payload2){
+     *          return payload1 + payload2;
+     *      }, [stream2, stream2]);
+     *
+     *      liftedStream.on('name'), function(data){
+     *          // data = 3;
+     *      });
+     *
+     *      stream2.emit('name', 1);
+     *      stream2.emit('name', 2);
+     *
+     * @method lift
      * @static
-     * @return
+     * @param map {Function}            Function to map stream payloads
+     * @param streams {Array|Object}    Stream sources
      */
     Stream.lift = SimpleStream.lift;
 
