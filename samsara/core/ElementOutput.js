@@ -142,10 +142,10 @@ define(function(require, exports, module) {
 
     var _setSize = function _setSize(target, size){
         if (size[0] === true) size[0] = target.offsetWidth;
-        else target.style.width = Math.ceil(size[0] * devicePixelRatio) * invDevicePixelRatio + 'px';
+        else target.style.width = size[0] + 'px';
 
         if (size[1] === true) size[1] = target.offsetHeight;
-        else target.style.height = Math.ceil(size[1] * devicePixelRatio) * invDevicePixelRatio + 'px';
+        else target.style.height = size[1] + 'px';
     };
 
     // {Visibility : hidden} allows for DOM events to pass through the element
@@ -273,6 +273,11 @@ define(function(require, exports, module) {
     function commitSize(size){
         var target = this._currentTarget;
         if (!target) return;
+
+        if (size[0] !== true)
+            size[0] = Math.ceil(size[0] * devicePixelRatio) * invDevicePixelRatio;
+        if (size[1] !== true)
+            size[1] = Math.ceil(size[1] * devicePixelRatio) * invDevicePixelRatio;
 
         if (_xyNotEquals(this._cachedSpec.size, size)){
             this._cachedSpec.size = size;
