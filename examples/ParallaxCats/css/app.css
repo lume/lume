@@ -5,19 +5,5 @@ body {
 }
 
 .cat {
-    border: 2px solid black;
-}
-
-.dot {
-    border : 1px solid white;
-    border-radius: 50%;
-    box-shadow: 0 0 2px 0 rgba(0,0,0,0.7);
-    cursor: pointer;
-    z-index: 1;
-}
-
-.main-dot {
-    background: white;
-    border-radius: 50%;
-    cursor: pointer;
+    border: 4px solid black;
 }
