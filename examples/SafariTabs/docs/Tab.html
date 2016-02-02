@@ -100,7 +100,7 @@ it from the <code>Scrollview</code>, and selecting a tab toggles a fullscreen mo
         defaults: {
             src: <span class="hljs-string">''</span>,
             title: <span class="hljs-string">''</span>,
-            height: <span class="hljs-number">26</span>
+            titleHeightRatio: <span class="hljs-number">0.06</span>
         },
         initialize: <span class="hljs-function"><span class="hljs-keyword">function</span> (<span class="hljs-params">options</span>) </span>{</pre></div></div>
             
@@ -118,12 +118,9 @@ it from the <code>Scrollview</code>, and selecting a tab toggles a fullscreen mo
             </div>
             
             <div class="content"><div class='highlight'><pre>            <span class="hljs-keyword">this</span>.title = <span class="hljs-keyword">new</span> Surface({
-                size: [<span class="hljs-literal">undefined</span>, options.height],
+                proportions : [<span class="hljs-number">1</span>, options.titleHeightRatio],
                 content: options.title,
-                classes: [<span class="hljs-string">'title'</span>],
-                properties: {
-                    lineHeight: options.height + <span class="hljs-string">'px'</span>
-                }
+                classes: [<span class="hljs-string">'title'</span>]
             });</pre></div></div>
             
         </li>
@@ -140,12 +137,10 @@ it from the <code>Scrollview</code>, and selecting a tab toggles a fullscreen mo
             </div>
             
             <div class="content"><div class='highlight'><pre>            <span class="hljs-keyword">this</span>.close = <span class="hljs-keyword">new</span> Surface({
-                size: [<span class="hljs-number">40</span>, options.height],
+                proportions : [<span class="hljs-number">1</span>, options.titleHeightRatio],
+                size: [<span class="hljs-number">40</span>, <span class="hljs-literal">false</span>],
                 content: <span class="hljs-string">'×'</span>,
-                classes: [<span class="hljs-string">'close'</span>],
-                properties: {
-                    lineHeight: options.height - <span class="hljs-number">2</span> + <span class="hljs-string">'px'</span>
-                }
+                classes: [<span class="hljs-string">'close'</span>]
             });</pre></div></div>
             
         </li>
@@ -174,18 +169,16 @@ it from the <code>Scrollview</code>, and selecting a tab toggles a fullscreen mo
               <div class="pilwrap ">
                 <a class="pilcrow" href="#section-7">&#182;</a>
               </div>
-              <p>Create the tab content from the provided URL source as a <code>&lt;div&gt;</code> with background image</p>
+              <p>Create the tab from an image</p>
 
             </div>
             
             <div class="content"><div class='highlight'><pre>            <span class="hljs-keyword">this</span>.content = <span class="hljs-keyword">new</span> Surface({
-                classes: [<span class="hljs-string">'tab'</span>],
-                margins: [<span class="hljs-number">0</span>, options.height/<span class="hljs-number">2</span>],
-                properties: {
-                    backgroundImage: <span class="hljs-string">'url('</span> + options.src + <span class="hljs-string">')'</span>,
-                    backgroundSize: <span class="hljs-string">'cover'</span>,
-                    backgroundPosition: <span class="hljs-string">'center top'</span>
-                }
+                proportions : [<span class="hljs-number">1</span>, <span class="hljs-number">1</span> - options.titleHeightRatio],
+                classes : [<span class="hljs-string">'tab'</span>],
+                origin : [<span class="hljs-number">0</span>,<span class="hljs-number">1</span>],
+                attributes : {src : options.src},
+                tagName : <span class="hljs-string">'img'</span>
             });</pre></div></div>
             
         </li>
@@ -214,14 +207,13 @@ it from the <code>Scrollview</code>, and selecting a tab toggles a fullscreen mo
               <div class="pilwrap ">
                 <a class="pilcrow" href="#section-9">&#182;</a>
               </div>
-              <p>Build the render subtree</p>
+              <p>Build the render sub tree, aligning the content to the bottom</p>
 
             </div>
             
             <div class="content"><div class='highlight'><pre>            <span class="hljs-keyword">this</span>.add(<span class="hljs-keyword">this</span>.title);
             <span class="hljs-keyword">this</span>.add(<span class="hljs-keyword">this</span>.close);
-            <span class="hljs-keyword">this</span>.add({transform : Transform.translateY(options.height)})
-                .add(<span class="hljs-keyword">this</span>.content);
+            <span class="hljs-keyword">this</span>.add({align : [<span class="hljs-number">0</span>,<span class="hljs-number">1</span>]}).add(<span class="hljs-keyword">this</span>.content);
         },</pre></div></div>
             
         </li>

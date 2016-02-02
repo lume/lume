@@ -106,10 +106,10 @@ size is shrunk, while the <code>Tab&#39;s</code> size remains unchanged.</p>
             src : <span class="hljs-string">''</span>,
             title : <span class="hljs-string">''</span>,
             index : <span class="hljs-number">0</span>,
-            titleHeight: <span class="hljs-number">26</span>,
+            titleHeightRatio: <span class="hljs-number">0.06</span>,
             angle : -<span class="hljs-built_in">Math</span>.PI / <span class="hljs-number">5</span>,
             spacing : <span class="hljs-number">150</span>,
-            height : <span class="hljs-number">700</span>,
+            height : <span class="hljs-number">400</span>,
             selectTransition : {duration : <span class="hljs-number">200</span>},
             deselectTransition : {duration : <span class="hljs-number">200</span>}
         },
@@ -119,7 +119,14 @@ size is shrunk, while the <code>Tab&#39;s</code> size remains unchanged.</p>
             <span class="hljs-keyword">this</span>.selected = <span class="hljs-literal">false</span>; <span class="hljs-comment">// Boolean whether the tab is selected or not</span>
 
             <span class="hljs-keyword">this</span>.parentSize = <span class="hljs-keyword">new</span> Transitionable([<span class="hljs-literal">undefined</span>, options.spacing]); <span class="hljs-comment">// Size of the view (read my the scrollview)</span>
-            <span class="hljs-keyword">this</span>.tabSize = <span class="hljs-keyword">new</span> Transitionable([<span class="hljs-literal">undefined</span>, options.height]); <span class="hljs-comment">// Size of the tab</span></pre></div></div>
+            <span class="hljs-keyword">this</span>.tabSize = <span class="hljs-keyword">new</span> Transitionable([<span class="hljs-literal">false</span>, options.height]); <span class="hljs-comment">// Size of the tab</span>
+            <span class="hljs-keyword">this</span>.proportions = <span class="hljs-keyword">new</span> Transitionable([<span class="hljs-number">.9</span>, <span class="hljs-literal">false</span>]);
+
+
+            <span class="hljs-keyword">this</span>.parentHeight = options.spacing;
+            <span class="hljs-keyword">this</span>._size.on(<span class="hljs-string">'resize'</span>, <span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params">size</span>)</span>{
+                <span class="hljs-keyword">this</span>.parentHeight = size[<span class="hljs-number">1</span>];
+            }.bind(<span class="hljs-keyword">this</span>));</pre></div></div>
             
         </li>
         
@@ -150,10 +157,12 @@ size is shrunk, while the <code>Tab&#39;s</code> size remains unchanged.</p>
             </div>
             
             <div class="content"><div class='highlight'><pre>            <span class="hljs-keyword">this</span>.tab = <span class="hljs-keyword">new</span> Tab({
+                origin : [<span class="hljs-number">.5</span>,<span class="hljs-number">0</span>],
                 size : <span class="hljs-keyword">this</span>.tabSize,
+                proportions : <span class="hljs-keyword">this</span>.proportions,
                 src : options.src,
                 title : options.title,
-                height : options.titleHeight
+                titleHeightRatio : options.titleHeightRatio
             });</pre></div></div>
             
         </li>
@@ -222,7 +231,11 @@ On scroll we create a “receding” effect for the top tabs.</p>
             </div>
             
             <div class="content"><div class='highlight'><pre>                <span class="hljs-keyword">var</span> topShift = <span class="hljs-built_in">Math</span>.exp(scrollData.index - options.index + scrollData.progress) - <span class="hljs-number">1</span>;
-                topShift = <span class="hljs-built_in">Math</span>.max(<span class="hljs-built_in">Math</span>.min(topShift, <span class="hljs-number">2</span>), <span class="hljs-number">-0.2</span>);</pre></div></div>
+                topShift = <span class="hljs-built_in">Math</span>.max(<span class="hljs-built_in">Math</span>.min(topShift, <span class="hljs-number">2</span>), -<span class="hljs-number">0.2</span>);
+
+                <span class="hljs-keyword">var</span> x = deleteShift;
+                <span class="hljs-keyword">var</span> y = <span class="hljs-number">20</span> * topShift;
+                <span class="hljs-keyword">var</span> z = <span class="hljs-keyword">this</span>.selected ? <span class="hljs-number">0</span> : -<span class="hljs-number">100</span> * topShift;</pre></div></div>
             
         </li>
         
@@ -239,7 +252,7 @@ On scroll we create a “receding” effect for the top tabs.</p>
             
             <div class="content"><div class='highlight'><pre>                <span class="hljs-keyword">return</span> Transform.thenMove(
                     Transform.rotateX(angle),
-                    [deleteShift, <span class="hljs-number">20</span>*topShift, <span class="hljs-number">-100</span>*topShift]
+                    [x, y, z]
                 );
             }.bind(<span class="hljs-keyword">this</span>), [<span class="hljs-keyword">this</span>.angle, <span class="hljs-keyword">this</span>.input, <span class="hljs-keyword">this</span>.deleteShift]);</pre></div></div>
             
@@ -256,7 +269,10 @@ On scroll we create a “receding” effect for the top tabs.</p>
 
             </div>
             
-            <div class="content"><div class='highlight'><pre>            <span class="hljs-keyword">this</span>.add({transform : transform})
+            <div class="content"><div class='highlight'><pre>            <span class="hljs-keyword">this</span>.add({
+                transform : transform,
+                align : [<span class="hljs-number">.5</span>,<span class="hljs-number">0</span>]
+            })
                 .add(<span class="hljs-keyword">this</span>.tab);
         },</pre></div></div>
             
@@ -276,7 +292,7 @@ and translate the tab to the left, out of view, before removing it from the DOM.
             
             <div class="content"><div class='highlight'><pre>        close : <span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params"></span>)</span>{
             <span class="hljs-keyword">this</span>.parentSize.set([<span class="hljs-literal">undefined</span>, <span class="hljs-number">0</span>], {duration: <span class="hljs-number">300</span>});
-            <span class="hljs-keyword">this</span>.deleteShift.set(<span class="hljs-number">-2000</span>, {duration: <span class="hljs-number">1500</span>}, <span class="hljs-function"><span class="hljs-keyword">function</span> (<span class="hljs-params"></span>) </span>{
+            <span class="hljs-keyword">this</span>.deleteShift.set(-<span class="hljs-number">2000</span>, {duration: <span class="hljs-number">1500</span>}, <span class="hljs-function"><span class="hljs-keyword">function</span> (<span class="hljs-params"></span>) </span>{
                 <span class="hljs-keyword">this</span>.tab.remove();
             }.bind(<span class="hljs-keyword">this</span>));
         },</pre></div></div>
@@ -298,8 +314,9 @@ Emit a <code>goto</code> event to animate the scrollview to the current tab’s 
             <div class="content"><div class='highlight'><pre>        select : <span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params">transition, callback</span>)</span>{
             transition = transition || <span class="hljs-keyword">this</span>.options.selectTransition;
             <span class="hljs-keyword">this</span>.angle.set(<span class="hljs-number">0</span>, transition);
-            <span class="hljs-keyword">this</span>.parentSize.set([<span class="hljs-literal">undefined</span>, <span class="hljs-built_in">window</span>.innerHeight], transition);
-            <span class="hljs-keyword">this</span>.tabSize.set([<span class="hljs-literal">undefined</span>, <span class="hljs-built_in">window</span>.innerHeight], transition, callback);
+            <span class="hljs-keyword">this</span>.parentSize.set([<span class="hljs-literal">undefined</span>, <span class="hljs-keyword">this</span>.parentHeight], transition);
+            <span class="hljs-keyword">this</span>.proportions.set([<span class="hljs-number">1</span>, <span class="hljs-literal">false</span>], transition);
+            <span class="hljs-keyword">this</span>.tabSize.set([<span class="hljs-literal">undefined</span>, <span class="hljs-keyword">this</span>.parentHeight], transition, callback);
             <span class="hljs-keyword">this</span>.emit(<span class="hljs-string">'goto'</span>, <span class="hljs-keyword">this</span>.options.index);
             <span class="hljs-keyword">this</span>.selected = <span class="hljs-literal">true</span>;
         },</pre></div></div>
@@ -321,6 +338,7 @@ Emit a <code>goto</code> event to animate the scrollview to the current tab’s 
             transition = transition || <span class="hljs-keyword">this</span>.options.deselectTransition;
             <span class="hljs-keyword">this</span>.parentSize.set([<span class="hljs-literal">undefined</span>, <span class="hljs-keyword">this</span>.options.spacing], transition);
             <span class="hljs-keyword">this</span>.tabSize.set([<span class="hljs-literal">undefined</span>, <span class="hljs-keyword">this</span>.options.height], transition);
+            <span class="hljs-keyword">this</span>.proportions.set([<span class="hljs-number">.9</span>, <span class="hljs-literal">false</span>], transition);
             <span class="hljs-keyword">this</span>.angle.set(<span class="hljs-keyword">this</span>.options.angle, transition, callback);
             <span class="hljs-keyword">this</span>.selected = <span class="hljs-literal">false</span>;
         },</pre></div></div>

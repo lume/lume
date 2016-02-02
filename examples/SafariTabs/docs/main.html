@@ -112,40 +112,40 @@ for a nice perspective effect as the user scrolls.</p>
             
             <div class="content"><div class='highlight'><pre>    <span class="hljs-keyword">var</span> tabData = [
         {
-            src: <span class="hljs-string">'./assets/google.png'</span>,
+            src: <span class="hljs-string">'./assets/google.jpg'</span>,
             title: <span class="hljs-string">'Google'</span>
         },
         {
-            src: <span class="hljs-string">'./assets/twitter.png'</span>,
+            src: <span class="hljs-string">'./assets/twitter.jpg'</span>,
             title: <span class="hljs-string">'Twitter'</span>
         },
         {
-            src: <span class="hljs-string">'./assets/js-weekly.png'</span>,
+            src: <span class="hljs-string">'./assets/js-weekly.jpg'</span>,
             title: <span class="hljs-string">'JS Weekly'</span>
         },
         {
-            src: <span class="hljs-string">'./assets/reddit.png'</span>,
+            src: <span class="hljs-string">'./assets/reddit.jpg'</span>,
             title: <span class="hljs-string">'Reddit'</span>
         },
         {
-            src: <span class="hljs-string">'./assets/nytimes.png'</span>,
+            src: <span class="hljs-string">'./assets/nytimes.jpg'</span>,
             title: <span class="hljs-string">'NY Times'</span>
         },
         {
-            src: <span class="hljs-string">'./assets/samsara-site.png'</span>,
-            title: <span class="hljs-string">'SamsaraJS'</span>
-        },
-        {
-            src: <span class="hljs-string">'./assets/apple.png'</span>,
+            src: <span class="hljs-string">'./assets/apple.jpg'</span>,
             title: <span class="hljs-string">'Apple'</span>
         },
         {
-            src: <span class="hljs-string">'./assets/wiki.png'</span>,
+            src: <span class="hljs-string">'./assets/wiki.jpg'</span>,
             title: <span class="hljs-string">'Wikipedia'</span>
         },
         {
-            src: <span class="hljs-string">'./assets/hn.png'</span>,
+            src: <span class="hljs-string">'./assets/hn.jpg'</span>,
             title: <span class="hljs-string">'Hacker News'</span>
+        },
+        {
+            src : <span class="hljs-string">'./assets/fb.jpg'</span>,
+            title : <span class="hljs-string">'Facebook'</span>
         }
     ];</pre></div></div>
             
@@ -163,14 +163,13 @@ for a nice perspective effect as the user scrolls.</p>
             </div>
             
             <div class="content"><div class='highlight'><pre>    <span class="hljs-keyword">var</span> safariTabs = <span class="hljs-keyword">new</span> SafariTabs({
-        proportions : [<span class="hljs-number">.9</span>, <span class="hljs-number">1</span>],
-        origin: [<span class="hljs-number">.5</span>, <span class="hljs-number">0</span>],
         tabData : tabData,
+        perspective: <span class="hljs-number">1000</span>,          <span class="hljs-comment">// Perspective for the scrollview</span>
         tab : {                     <span class="hljs-comment">// Options for the tab</span>
-            titleHeight : <span class="hljs-number">26</span>,       <span class="hljs-comment">// Height of the title bar</span>
+            titleHeightRatio : <span class="hljs-number">.06</span>, <span class="hljs-comment">// Height of the title bar as a ratio of page height</span>
             angle : -<span class="hljs-built_in">Math</span>.PI/<span class="hljs-number">5</span>,     <span class="hljs-comment">// Angle to rotate the tabs by</span>
             spacing : <span class="hljs-number">150</span>,          <span class="hljs-comment">// Vertical spacing between tabs</span>
-            height : <span class="hljs-number">700</span>            <span class="hljs-comment">// Total height of the tab</span>
+            height : <span class="hljs-number">400</span>            <span class="hljs-comment">// Total height of the tab</span>
         },
         selectTransition : {duration : <span class="hljs-number">200</span>},    <span class="hljs-comment">// Animation for selection</span>
         deselectTransition : {duration : <span class="hljs-number">200</span>}   <span class="hljs-comment">// Animation for deselection</span>
@@ -200,11 +199,11 @@ for a nice perspective effect as the user scrolls.</p>
               <div class="pilwrap ">
                 <a class="pilcrow" href="#section-7">&#182;</a>
               </div>
-              <p>Set the perspective for the <code>Context</code></p>
+              <p>Add the safariTabs to the context and align the origin point to the top</p>
 
             </div>
             
-            <div class="content"><div class='highlight'><pre>    context.setPerspective(<span class="hljs-number">1000</span>);</pre></div></div>
+            <div class="content"><div class='highlight'><pre>    context.add(safariTabs);</pre></div></div>
             
         </li>
         
@@ -214,23 +213,6 @@ for a nice perspective effect as the user scrolls.</p>
               
               <div class="pilwrap ">
                 <a class="pilcrow" href="#section-8">&#182;</a>
-              </div>
-              <p>Add the safariTabs to the context and align the origin point to the top</p>
-
-            </div>
-            
-            <div class="content"><div class='highlight'><pre>    context
-        .add({align : [<span class="hljs-number">.5</span>,<span class="hljs-number">0</span>]})
-        .add(safariTabs);</pre></div></div>
-            
-        </li>
-        
-        
-        <li id="section-9">
-            <div class="annotation">
-              
-              <div class="pilwrap ">
-                <a class="pilcrow" href="#section-9">&#182;</a>
               </div>
               <p>Mount the context to a DOM node</p>
 

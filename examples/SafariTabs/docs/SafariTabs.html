@@ -90,11 +90,12 @@ is handled automatically by animating the tabs’ size streams.</p>
         defaults: {
             tabData : [],
             tab : {
-                titleHeight: <span class="hljs-number">26</span>,
+                titleHeightRatio: <span class="hljs-number">0.06</span>,
                 angle: -<span class="hljs-built_in">Math</span>.PI / <span class="hljs-number">5</span>,
                 spacing: <span class="hljs-number">150</span>,
-                height: <span class="hljs-number">700</span>
+                height: <span class="hljs-number">400</span>
             },
+            perspective : <span class="hljs-number">1000</span>,
             selectTransition: {duration: <span class="hljs-number">200</span>},
             deselectTransition: {duration: <span class="hljs-number">200</span>}
         },
@@ -115,7 +116,6 @@ is handled automatically by animating the tabs’ size streams.</p>
             
             <div class="content"><div class='highlight'><pre>            <span class="hljs-keyword">var</span> scrollview = <span class="hljs-keyword">new</span> Scrollview({
                 direction: Scrollview.DIRECTION.Y,
-                clip : <span class="hljs-literal">false</span>,  <span class="hljs-comment">// do not set {overflow:hidden} in CSS</span>
                 marginBottom: <span class="hljs-number">200</span> <span class="hljs-comment">// leaves 200px of space at the bottom of the scrollview</span>
             });</pre></div></div>
             
@@ -128,6 +128,21 @@ is handled automatically by animating the tabs’ size streams.</p>
               <div class="pilwrap ">
                 <a class="pilcrow" href="#section-4">&#182;</a>
               </div>
+              <p>Set a perspective on the scrollview</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>            scrollview.setPerspective(options.perspective);</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-5">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-5">&#182;</a>
+              </div>
               <p>Create the tabs</p>
 
             </div>
@@ -138,7 +153,7 @@ is handled automatically by animating the tabs’ size streams.</p>
                     src: options.tabData[i].src,
                     title: options.tabData[i].title,
                     index: i,
-                    titleHeight: options.tab.titleHeight,
+                    titleHeightRatio: options.tab.titleHeightRatio,
                     angle: options.tab.angle,
                     spacing : options.tab.spacing,
                     height : options.tab.height,
@@ -149,11 +164,11 @@ is handled automatically by animating the tabs’ size streams.</p>
         </li>
         
         
-        <li id="section-5">
+        <li id="section-6">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-5">&#182;</a>
+                <a class="pilcrow" href="#section-6">&#182;</a>
               </div>
               <p>Tabs must listen to the scrollview to create a
 <code>receding</code> effect as the scrollview is scrolled.</p>
@@ -165,11 +180,11 @@ is handled automatically by animating the tabs’ size streams.</p>
         </li>
         
         
-        <li id="section-6">
+        <li id="section-7">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-6">&#182;</a>
+                <a class="pilcrow" href="#section-7">&#182;</a>
               </div>
               <p>The scrollview listens to the <code>goto</code> event from the tabs
 to animate the scrollview to the currently selected tab</p>
@@ -184,11 +199,11 @@ to animate the scrollview to the currently selected tab</p>
         </li>
         
         
-        <li id="section-7">
+        <li id="section-8">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-7">&#182;</a>
+                <a class="pilcrow" href="#section-8">&#182;</a>
               </div>
               <p>Add the tabs to the scrollview</p>
 
@@ -199,11 +214,11 @@ to animate the scrollview to the currently selected tab</p>
         </li>
         
         
-        <li id="section-8">
+        <li id="section-9">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-8">&#182;</a>
+                <a class="pilcrow" href="#section-9">&#182;</a>
               </div>
               <p>Animate the scrollview to the currently selected tab when a
 tab is clicked</p>
@@ -217,11 +232,11 @@ tab is clicked</p>
         </li>
         
         
-        <li id="section-9">
+        <li id="section-10">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-9">&#182;</a>
+                <a class="pilcrow" href="#section-10">&#182;</a>
               </div>
               <p>Build the render subtree consisting of only the scrollview</p>
 
