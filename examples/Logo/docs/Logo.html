@@ -98,7 +98,7 @@
 
             </div>
             
-            <div class="content"><div class='highlight'><pre>            <span class="hljs-keyword">var</span> centerNode = <span class="hljs-keyword">this</span>.add({align : [<span class="hljs-number">.5</span>,<span class="hljs-number">.5</span>]});</pre></div></div>
+            <div class="content"><div class='highlight'><pre>            <span class="hljs-keyword">var</span> centerNode = <span class="hljs-keyword">this</span>.add({align: [<span class="hljs-number">.5</span>, <span class="hljs-number">.5</span>]});</pre></div></div>
             
         </li>
         
@@ -169,23 +169,28 @@ add them to the centered node</p>
 
             </div>
             
-            <div class="content"><div class='highlight'><pre>        loop : <span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params"></span>)</span>{
+            <div class="content"><div class='highlight'><pre>        play: <span class="hljs-function"><span class="hljs-keyword">function</span> (<span class="hljs-params"></span>) </span>{
             <span class="hljs-keyword">this</span>.swivel.loop([
-                {
-                    value: <span class="hljs-number">4</span> * <span class="hljs-built_in">Math</span>.PI,
-                    transition: {
-                        duration: <span class="hljs-number">30000</span>,
-                        curve: <span class="hljs-string">'easeInOut'</span>
-                    }
-                },
-                {
-                    value: <span class="hljs-number">0</span>,
-                    transition: {
-                        duration: <span class="hljs-number">30000</span>,
-                        curve: <span class="hljs-string">'easeInOut'</span>
-                    }
-                }
+                [<span class="hljs-number">4</span> * <span class="hljs-built_in">Math</span>.PI, {duration: <span class="hljs-number">30000</span>, curve: <span class="hljs-string">'easeInOut'</span>}],
+                [<span class="hljs-number">0</span>, {duration: <span class="hljs-number">30000</span>, curve: <span class="hljs-string">'easeInOut'</span>}]
             ]);
+        },</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-8">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-8">&#182;</a>
+              </div>
+              <p>Pause the animation</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>        pause: <span class="hljs-function"><span class="hljs-keyword">function</span> (<span class="hljs-params"></span>) </span>{
+            <span class="hljs-keyword">this</span>.swivel.halt();
         }
     });
 

@@ -58,7 +58,7 @@
               
             </div>
             
-            <div class="content"><div class='highlight'><pre>define(<span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params">require, exports, module</span>) </span>{
+            <div class="content"><div class='highlight'><pre>define(<span class="hljs-function"><span class="hljs-keyword">function</span> (<span class="hljs-params">require, exports, module</span>) </span>{
     <span class="hljs-keyword">var</span> Context = <span class="hljs-built_in">require</span>(<span class="hljs-string">'samsara/dom/Context'</span>);
     <span class="hljs-keyword">var</span> Logo = <span class="hljs-built_in">require</span>(<span class="hljs-string">'./app/Logo'</span>);</pre></div></div>
             
@@ -76,10 +76,10 @@
             </div>
             
             <div class="content"><div class='highlight'><pre>    <span class="hljs-keyword">var</span> logo = <span class="hljs-keyword">new</span> Logo({
-        proportions : [<span class="hljs-number">1</span>/<span class="hljs-number">3</span>, <span class="hljs-literal">false</span>], <span class="hljs-comment">// The logo's width will be 1/2 the screen</span>
-        aspectRatio : <span class="hljs-number">1</span>,            <span class="hljs-comment">// Forces logo's height = width</span>
-        origin : [<span class="hljs-number">.5</span>,<span class="hljs-number">.5</span>],           <span class="hljs-comment">// Origin point of the logo for centering</span>
-        sides : <span class="hljs-number">6</span>                   <span class="hljs-comment">// Number of sides</span>
+        proportions: [<span class="hljs-number">1</span> / <span class="hljs-number">3</span>, <span class="hljs-literal">false</span>], <span class="hljs-comment">// The logo's width will be 1/2 the screen</span>
+        aspectRatio: <span class="hljs-number">1</span>,              <span class="hljs-comment">// Forces logo's height = width</span>
+        origin: [<span class="hljs-number">.5</span>, <span class="hljs-number">.5</span>],            <span class="hljs-comment">// Origin point of the logo for centering</span>
+        sides: <span class="hljs-number">6</span>                     <span class="hljs-comment">// Number of wedges</span>
     });</pre></div></div>
             
         </li>
@@ -106,11 +106,13 @@
               <div class="pilwrap ">
                 <a class="pilcrow" href="#section-4">&#182;</a>
               </div>
-              <p>Set a perspective on the context</p>
+              <p>Add the logo and center its origin point</p>
 
             </div>
             
-            <div class="content"><div class='highlight'><pre>    context.setPerspective(<span class="hljs-number">10000</span>);</pre></div></div>
+            <div class="content"><div class='highlight'><pre>    context
+        .add({align: [<span class="hljs-number">.5</span>, <span class="hljs-number">.5</span>]})
+        .add(logo);</pre></div></div>
             
         </li>
         
@@ -121,13 +123,11 @@
               <div class="pilwrap ">
                 <a class="pilcrow" href="#section-5">&#182;</a>
               </div>
-              <p>Add the logo and center the origin point</p>
+              <p>Mount the context to a DOM element</p>
 
             </div>
             
-            <div class="content"><div class='highlight'><pre>    context
-        .add({align : [<span class="hljs-number">.5</span>,<span class="hljs-number">.5</span>]})
-        .add(logo);</pre></div></div>
+            <div class="content"><div class='highlight'><pre>    context.mount(<span class="hljs-built_in">document</span>.body);</pre></div></div>
             
         </li>
         
@@ -138,26 +138,11 @@
               <div class="pilwrap ">
                 <a class="pilcrow" href="#section-6">&#182;</a>
               </div>
-              <p>Mount the context to a DOM element</p>
-
-            </div>
-            
-            <div class="content"><div class='highlight'><pre>    context.mount(<span class="hljs-built_in">document</span>.body);</pre></div></div>
-            
-        </li>
-        
-        
-        <li id="section-7">
-            <div class="annotation">
-              
-              <div class="pilwrap ">
-                <a class="pilcrow" href="#section-7">&#182;</a>
-              </div>
               <p>Begin the animation</p>
 
             </div>
             
-            <div class="content"><div class='highlight'><pre>    logo.loop();
+            <div class="content"><div class='highlight'><pre>    logo.play();
 });</pre></div></div>
             
         </li>
