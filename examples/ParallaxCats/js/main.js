@@ -10,8 +10,7 @@ define(function (require, exports, module) {
         './assets/cat4.jpg',
         './assets/cat5.jpg',
         './assets/cat6.jpg',
-        './assets/cat7.jpg',
-        './assets/cat8.jpg'
+        './assets/cat7.jpg'
     ];
 
     // Create the parallaxCats view with specified options
