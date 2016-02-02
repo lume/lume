@@ -1,4 +1,4 @@
-/* Copyright © 2015 David Valdman */
+/* Copyright © 2015-2016 David Valdman */
 
 define(function(require, exports, module) {
     var ElementOutput = require('../core/ElementOutput');

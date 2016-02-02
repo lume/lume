@@ -1,4 +1,4 @@
-/* Copyright © 2015 David Valdman */
+/* Copyright © 2015-2016 David Valdman */
 // TODO: cancel RAF when asleep
 define(function(require, exports, module) {
     var State = require('./SUE');

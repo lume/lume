@@ -6,9 +6,7 @@
  * @copyright Famous Industries, Inc. 2014
  */
 
-/* Modified work copyright © 2015 David Valdman */
-
-/* Documentation in progress. May be outdated. */
+/* Modified work copyright © 2015-2016 David Valdman */
 
 define(function(require, exports, module) {
     var EventHandler = require('../events/EventHandler');
