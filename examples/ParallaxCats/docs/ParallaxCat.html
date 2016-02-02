@@ -116,19 +116,16 @@ to create a parallax effect</p>
               <div class="pilwrap ">
                 <a class="pilcrow" href="#section-4">&#182;</a>
               </div>
-              <p>Create the cat photo. To scale appropriately
-we use the <code>background-image</code> CSS property set to <code>cover</code> instead
-of using an <code>&lt;img&gt;</code> tag</p>
+              <p>Create the cat photo</p>
 
             </div>
             
             <div class="content"><div class='highlight'><pre>            <span class="hljs-keyword">var</span> cat = <span class="hljs-keyword">new</span> Surface({
-                properties: {
-                    backgroundImage: <span class="hljs-string">'url('</span> + options.src + <span class="hljs-string">')'</span>,
-                    backgroundSize: <span class="hljs-string">'cover'</span>
-                },
-                origin: [<span class="hljs-number">.5</span>, <span class="hljs-number">.5</span>],
-                proportions: [<span class="hljs-number">1.3</span>, <span class="hljs-number">1.3</span>]
+                tagName : <span class="hljs-string">'img'</span>,
+                origin : [<span class="hljs-number">0.5</span>,<span class="hljs-number">0.2</span>],
+                proportions : [<span class="hljs-number">1</span>, <span class="hljs-literal">false</span>],
+                aspectRatio : <span class="hljs-number">4</span>/<span class="hljs-number">3</span>,
+                attributes : {src : options.src}
             });</pre></div></div>
             
         </li>
@@ -165,13 +162,13 @@ mapping the input (provided by the scrollview) to a translation</p>
             
             <div class="content"><div class='highlight'><pre>            container
                 .add({
+                    align : [<span class="hljs-number">.5</span>, <span class="hljs-number">0.2</span>],
                     transform: Transform.compose(
-                        Transform.skewY(options.skew),
-                        Transform.translateY(-options.index * options.parallaxAmount)
+                        Transform.translateY(-options.index * options.parallaxAmount),
+                        Transform.skewY(options.skew)
                     )
                 })
                 .add({
-                    align: [<span class="hljs-number">.5</span>, <span class="hljs-number">.5</span>],
                     transform: parallaxTransform
                 })
                 .add(cat);</pre></div></div>

@@ -71,17 +71,19 @@
               <div class="pilwrap ">
                 <a class="pilcrow" href="#section-2">&#182;</a>
               </div>
-              <p>Create the parallaxCats view with specified options</p>
+              <p>Location of cat images</p>
 
             </div>
             
-            <div class="content"><div class='highlight'><pre>    <span class="hljs-keyword">var</span> parallaxCats = <span class="hljs-keyword">new</span> ParallaxCats({
-        size : [<span class="hljs-number">400</span>, <span class="hljs-literal">undefined</span>],
-        origin: [<span class="hljs-number">.5</span>, <span class="hljs-number">0</span>],
-        skew : <span class="hljs-built_in">Math</span>.PI / <span class="hljs-number">25</span>,
-        cats : <span class="hljs-number">8</span>,
-        parallaxAmount : <span class="hljs-number">70</span>
-    });</pre></div></div>
+            <div class="content"><div class='highlight'><pre>    <span class="hljs-keyword">var</span> urls = [
+        <span class="hljs-string">'./assets/cat1.jpg'</span>,
+        <span class="hljs-string">'./assets/cat2.jpg'</span>,
+        <span class="hljs-string">'./assets/cat3.jpg'</span>,
+        <span class="hljs-string">'./assets/cat4.jpg'</span>,
+        <span class="hljs-string">'./assets/cat5.jpg'</span>,
+        <span class="hljs-string">'./assets/cat6.jpg'</span>,
+        <span class="hljs-string">'./assets/cat7.jpg'</span>
+    ];</pre></div></div>
             
         </li>
         
@@ -92,11 +94,17 @@
               <div class="pilwrap ">
                 <a class="pilcrow" href="#section-3">&#182;</a>
               </div>
-              <p>Create a Samsara Context as the root of the render tree</p>
+              <p>Create the parallaxCats view with specified options</p>
 
             </div>
             
-            <div class="content"><div class='highlight'><pre>    <span class="hljs-keyword">var</span> context = <span class="hljs-keyword">new</span> Context();</pre></div></div>
+            <div class="content"><div class='highlight'><pre>    <span class="hljs-keyword">var</span> parallaxCats = <span class="hljs-keyword">new</span> ParallaxCats({
+        size : [<span class="hljs-built_in">Math</span>.min(<span class="hljs-number">400</span>, <span class="hljs-built_in">window</span>.innerWidth), <span class="hljs-literal">undefined</span>],
+        origin: [<span class="hljs-number">.5</span>, <span class="hljs-number">0</span>],
+        skew : <span class="hljs-built_in">Math</span>.PI / <span class="hljs-number">25</span>,
+        parallaxAmount : <span class="hljs-number">70</span>,
+        urls : urls
+    });</pre></div></div>
             
         </li>
         
@@ -106,6 +114,21 @@
               
               <div class="pilwrap ">
                 <a class="pilcrow" href="#section-4">&#182;</a>
+              </div>
+              <p>Create a Samsara Context as the root of the render tree</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>    <span class="hljs-keyword">var</span> context = <span class="hljs-keyword">new</span> Context();</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-5">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-5">&#182;</a>
               </div>
               <p>Add the parallaxCats to the context and center the origin point</p>
 
@@ -118,11 +141,11 @@
         </li>
         
         
-        <li id="section-5">
+        <li id="section-6">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-5">&#182;</a>
+                <a class="pilcrow" href="#section-6">&#182;</a>
               </div>
               <p>Mount the context to a DOM node</p>
 

@@ -79,9 +79,9 @@
             
             <div class="content"><div class='highlight'><pre>    <span class="hljs-keyword">var</span> ParallaxCats = View.extend({
         defaults: {
-            cats : <span class="hljs-number">0</span>,
             skew : <span class="hljs-number">0</span>,
-            parallaxAmount : <span class="hljs-number">0</span>
+            parallaxAmount : <span class="hljs-number">0</span>,
+            urls : []
         },
         initialize: <span class="hljs-function"><span class="hljs-keyword">function</span> (<span class="hljs-params">options</span>) </span>{</pre></div></div>
             
@@ -117,11 +117,11 @@
             </div>
             
             <div class="content"><div class='highlight'><pre>            <span class="hljs-keyword">var</span> cats = [];
-            <span class="hljs-keyword">for</span> (<span class="hljs-keyword">var</span> i = <span class="hljs-number">0</span>; i &lt; options.cats; i++) {
+            <span class="hljs-keyword">for</span> (<span class="hljs-keyword">var</span> i = <span class="hljs-number">0</span>; i &lt; options.urls.length; i++) {
                 <span class="hljs-keyword">var</span> parallaxCat = <span class="hljs-keyword">new</span> ParallaxCat({
-                    proportions: [<span class="hljs-number">1</span>, <span class="hljs-number">2</span>/<span class="hljs-number">3</span>],
+                    proportions : [<span class="hljs-number">1</span>, <span class="hljs-number">1</span>/<span class="hljs-number">2</span>],
                     skew: options.skew,
-                    src: <span class="hljs-string">'./assets/cat'</span> + (i + <span class="hljs-number">1</span>) + <span class="hljs-string">'.jpg'</span>,
+                    src: options.urls[i],
                     parallaxAmount: options.parallaxAmount,
                     index: i
                 });</pre></div></div>
