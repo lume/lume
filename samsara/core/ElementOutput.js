@@ -11,7 +11,7 @@ define(function(require, exports, module) {
     var layoutAlgebra = require('./algebras/layout');
 
     var usePrefix = !('transform' in document.documentElement.style);
-    var devicePixelRatio = window.devicePixelRatio || 1;
+    var devicePixelRatio = 2 * (window.devicePixelRatio || 1);
     var invDevicePixelRatio = 1 / devicePixelRatio;
     var MIN_OPACITY = 0.0001;
     var MAX_OPACITY = 0.9999;
