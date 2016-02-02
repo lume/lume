@@ -16,12 +16,12 @@ define(function(require, exports, module) {
     var imgURLs = {
         statusBar : './assets/status-bar.png',
         mic : './assets/mic.png',
-        topNav : './assets/top.png',
-        mountains : './assets/background.png',
-        googleColor : './assets/google-color.png',
-        googleWhite : './assets/google-white.png',
-        trafficCard : './assets/traffic-card.png',
-        movieCard : './assets/movie-card.png'
+        topNav : './assets/topNav.png',
+        mountains : './assets/mountains.jpg',
+        googleColor : './assets/google-color.svg',
+        googleWhite : './assets/google-white.svg',
+        trafficCard : './assets/traffic-card.jpg',
+        movieCard : './assets/movie-card.jpg'
     };
 
     // Create the application
