@@ -176,9 +176,6 @@ define(function (require, exports, module) {
             ? transitionMethods[curve]
             : Tween;
 
-        // TODO: This line necessary due to SUE bug
-        if (this.isActive()) this.halt();
-
         if (this._method !== method) {
             if (this._engineInstance){
                 if (this.updateMethod){
