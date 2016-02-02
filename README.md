@@ -30,10 +30,20 @@ responds to a user's swipe gesture, then you might want to clone this repo.
 
 | Resources      ||
 | -------------- | ------------- |
-| Walkthrough    | [samsaraJS.org/docs](http://www.samsaraJS.org/docs)  |
-| Examples       | [samsaraJS.org/examples](http://www.samsaraJS.org/examples)  |
+| Guide          | [samsaraJS.org/docs](http://www.samsaraJS.org/docs)  |
 | API docs       | [samsaraJS.org/reference_docs](http://www.samsaraJS.org/reference_docs)  |
 | Questions      | [SamsaraJS Google Group](https://groups.google.com/forum/#!forum/samsarajs) |
+
+### Examples
+
+| Example  | Link (fullscreen) | Difficulty | Description |
+| -------- | ----------------- | ---------- | ----------- |
+| Logo | [demo](http://samsarajs.org/demos/Logo) | Simple | The SamsaraJS logo |
+| Cube | [demo](http://samsarajs.org/demos/Cube) | Simple | 3D spinning cube with animated size |
+| ParallaxCats | [demo](http://samsarajs.org/demos/ParallaxCats) | Moderate | Scrollview of cat images that parallax with the scroll |
+| Carousel | [demo](http://samsarajs.org/demos/Carousel) | Moderate | A paginated scrollview converted into a slideshow with previous/next buttons |
+| SideMenu | [demo](http://samsarajs.org/demos/SideMenu) | Moderate | A navigation UI with an exposed side drawer |
+| Safari Tabs | [demo](http://samsarajs.org/demos/SafariTabs) | Moderate | A scrollview imitating the mobile Safari tab viewer |
 
 ## Installation
 
@@ -69,19 +79,6 @@ The `samsara.css` file will also be included in `samsarajs/samsara.css`.
 Copy `dist/samsara.js` and include it as a source file. `Samsara` will then be accessible
 through `window.Samsara`. This is particularly useful for sharing on sites like jsFiddle, CodePen, etc.
 
-## Examples:
-
-1. [**examples/SideMenu**](https://github.com/dmvaldman/samsara/tree/master/examples/SideMenu)
-A simple demo with a side-drawer. This example incorporates gestures, physics transitions, native scrolling, transforms 
-in 3D space and coordinated animations.
-[[demo]](http://goo.gl/nhRGeg)
-
-2. [**examples/Logo**](https://github.com/dmvaldman/samsara/tree/master/examples/Logo)
-The SamsaraJS logo. This example showcases responsive design and animation.
-[[demo]](http://goo.gl/p4HQiv)
-
-More examples can be found at [samsaraJS.org/examples](http://www.samsaraJS.org/examples).
-
 ## Talks
 [![Talk](http://i.imgur.com/tGbmVk4.png)](https://www.youtube.com/watch?v=biJXpv-6XVY)
 [JSConf EU 2015 Berlin, Germany](https://www.youtube.com/watch?v=biJXpv-6XVY)
@@ -89,6 +86,6 @@ More examples can be found at [samsaraJS.org/examples](http://www.samsaraJS.org/
 ## Roadmap
 - [ ] Ability to remove render tree nodes (surface.remove(), node.remove(), etc)
 - [ ] Backbone.js & React.js integration
-- [ ] Scrollview
+- [ ] Improved Scrollview
 - [ ] 3D Camera
 - [ ] More layouts
