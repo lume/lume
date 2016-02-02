@@ -100,7 +100,18 @@ created by <a href="https://twitter.com/nlevin">Noah Levin</a>.</p>
             </div>
             
             <div class="content"><div class='highlight'><pre>    <span class="hljs-keyword">var</span> FastClick = <span class="hljs-built_in">require</span>(<span class="hljs-string">'./lib/fastClick'</span>);
-    FastClick.attach(<span class="hljs-built_in">document</span>.body);</pre></div></div>
+    FastClick.attach(<span class="hljs-built_in">document</span>.body);
+
+    <span class="hljs-keyword">var</span> imgURLs = {
+        statusBar : <span class="hljs-string">'./assets/status-bar.png'</span>,
+        mic : <span class="hljs-string">'./assets/mic.png'</span>,
+        topNav : <span class="hljs-string">'./assets/topNav.png'</span>,
+        mountains : <span class="hljs-string">'./assets/mountains.jpg'</span>,
+        googleColor : <span class="hljs-string">'./assets/google-color.svg'</span>,
+        googleWhite : <span class="hljs-string">'./assets/google-white.svg'</span>,
+        trafficCard : <span class="hljs-string">'./assets/traffic-card.jpg'</span>,
+        movieCard : <span class="hljs-string">'./assets/movie-card.jpg'</span>
+    };</pre></div></div>
             
         </li>
         
@@ -127,7 +138,8 @@ created by <a href="https://twitter.com/nlevin">Noah Levin</a>.</p>
             duration: <span class="hljs-number">200</span>
         },
         cardOffset : <span class="hljs-number">5</span>,     <span class="hljs-comment">// Offset that staggers the cards</span>
-        cardPadding : <span class="hljs-number">10</span>    <span class="hljs-comment">// Spacing between the cards when expanded</span>
+        cardPadding : <span class="hljs-number">10</span>,   <span class="hljs-comment">// Spacing between the cards when expanded</span>
+        imgURLs : imgURLs
     });</pre></div></div>
             
         </li>

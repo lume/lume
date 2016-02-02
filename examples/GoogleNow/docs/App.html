@@ -87,7 +87,8 @@ animations to create a fun user interface transition.</p>
                 duration : <span class="hljs-number">200</span>
             },
             cardOffset : <span class="hljs-number">5</span>,
-            cardPadding : <span class="hljs-number">10</span>
+            cardPadding : <span class="hljs-number">10</span>,
+            imgURLs : {}
         },
         initialize: <span class="hljs-function"><span class="hljs-keyword">function</span> (<span class="hljs-params">options</span>) </span>{</pre></div></div>
             
@@ -100,7 +101,7 @@ animations to create a fun user interface transition.</p>
               <div class="pilwrap ">
                 <a class="pilcrow" href="#section-3">&#182;</a>
               </div>
-              <p>Define the Transitionables which will control the animation
+              <p>Define the <code>Transitionables</code> which will control the animation
 One takes an easing curve, the other a spring</p>
 
             </div>
@@ -123,11 +124,11 @@ One takes an easing curve, the other a spring</p>
 
             </div>
             
-            <div class="content"><div class='highlight'><pre>            <span class="hljs-keyword">this</span>.addTopNav();
-            <span class="hljs-keyword">this</span>.addSearchBar();
-            <span class="hljs-keyword">this</span>.addStatusBar();
-            <span class="hljs-keyword">this</span>.addMountains();
-            <span class="hljs-keyword">this</span>.addGoogleLogo();
+            <div class="content"><div class='highlight'><pre>            <span class="hljs-keyword">this</span>.addTopNav(options);
+            <span class="hljs-keyword">this</span>.addSearchBar(options);
+            <span class="hljs-keyword">this</span>.addStatusBar(options);
+            <span class="hljs-keyword">this</span>.addMountains(options);
+            <span class="hljs-keyword">this</span>.addGoogleLogo(options);
             <span class="hljs-keyword">this</span>.addCards(options);
         },</pre></div></div>
             
@@ -150,7 +151,7 @@ One takes an easing curve, the other a spring</p>
             <span class="hljs-keyword">this</span>.springTransition.set(target, <span class="hljs-keyword">this</span>.options.springTransition);
             <span class="hljs-keyword">this</span>.toggle = !<span class="hljs-keyword">this</span>.toggle;
         },
-        addTopNav : <span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params"></span>)</span>{</pre></div></div>
+        addTopNav : <span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params">options</span>)</span>{</pre></div></div>
             
         </li>
         
@@ -191,7 +192,7 @@ This has the effect of “raising” the <code>Surface</code></p>
                 tagName: <span class="hljs-string">'img'</span>,
                 size: [<span class="hljs-literal">undefined</span>, <span class="hljs-literal">true</span>],
                 classes: [<span class="hljs-string">'topNav'</span>],
-                attributes: {src: <span class="hljs-string">'./assets/top.png'</span>},
+                attributes: {src: options.imgURLs.topNav},
                 opacity: opacity,
                 origin: origin
             });
@@ -212,9 +213,9 @@ This has the effect of “raising” the <code>Surface</code></p>
 
             </div>
             
-            <div class="content"><div class='highlight'><pre>        addSearchBar : <span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params"></span>)</span>{
+            <div class="content"><div class='highlight'><pre>        addSearchBar : <span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params">options</span>)</span>{
             <span class="hljs-keyword">var</span> search = <span class="hljs-keyword">new</span> Surface({
-                content: <span class="hljs-string">'&lt;img class="mic" src="./assets/mic.png"/&gt;'</span>,
+                content: <span class="hljs-string">'&lt;img class="mic" src="'</span> + options.imgURLs.mic + <span class="hljs-string">'"/&gt;'</span>,
                 classes: [<span class="hljs-string">'searchBar'</span>],
                 proportions: [<span class="hljs-number">1</span>, <span class="hljs-number">1</span> / <span class="hljs-number">10</span>],
                 origin: [<span class="hljs-number">.5</span>, <span class="hljs-number">.5</span>]
@@ -229,7 +230,7 @@ This has the effect of “raising” the <code>Surface</code></p>
                 })
             }).add(search);
         },
-        addStatusBar : <span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params"></span>)</span>{</pre></div></div>
+        addStatusBar : <span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params">options</span>)</span>{</pre></div></div>
             
         </li>
         
@@ -247,14 +248,14 @@ This has the effect of “raising” the <code>Surface</code></p>
             <div class="content"><div class='highlight'><pre>            <span class="hljs-keyword">var</span> statusBar = <span class="hljs-keyword">new</span> Surface({
                 tagName: <span class="hljs-string">'img'</span>,
                 size: [<span class="hljs-literal">undefined</span>, <span class="hljs-literal">true</span>],
-                attributes: {src: <span class="hljs-string">'./assets/status-bar.png'</span>},
+                attributes: {src: options.imgURLs.statusBar},
                 classes: [<span class="hljs-string">'statusBar'</span>],
                 opacity: <span class="hljs-keyword">this</span>.easingTransition
             });
 
             <span class="hljs-keyword">this</span>.add(statusBar);
         },
-        addMountains : <span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params"></span>)</span>{</pre></div></div>
+        addMountains : <span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params">options</span>)</span>{</pre></div></div>
             
         </li>
         
@@ -274,7 +275,7 @@ We align it so that it is centered and scales from the center.</p>
             <div class="content"><div class='highlight'><pre>            <span class="hljs-keyword">var</span> mountains = <span class="hljs-keyword">new</span> Surface({
                 tagName: <span class="hljs-string">'img'</span>,
                 proportions: [<span class="hljs-number">1</span>, <span class="hljs-number">1</span> / <span class="hljs-number">3</span>],
-                attributes: {src: <span class="hljs-string">'./assets/background.png'</span>},
+                attributes: {src: options.imgURLs.mountains},
                 origin: [<span class="hljs-number">0.5</span>, <span class="hljs-number">0</span>],
                 opacity: <span class="hljs-keyword">this</span>.springTransition
             });
@@ -287,7 +288,7 @@ We align it so that it is centered and scales from the center.</p>
                 })
             }).add(mountains);
         },
-        addGoogleLogo : <span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params"></span>)</span>{</pre></div></div>
+        addGoogleLogo : <span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params">options</span>)</span>{</pre></div></div>
             
         </li>
         
@@ -309,7 +310,7 @@ gives the effect that it is changing colors.</p>
                 tagName: <span class="hljs-string">'img'</span>,
                 proportions: [<span class="hljs-literal">false</span>, <span class="hljs-number">.1</span>],
                 aspectRatio: <span class="hljs-number">3</span>,
-                attributes: {src: <span class="hljs-string">'./assets/google-color.png'</span>},
+                attributes: {src: options.imgURLs.googleColor},
                 origin: [<span class="hljs-number">.5</span>, <span class="hljs-number">.5</span>],
                 opacity: <span class="hljs-keyword">this</span>.easingTransition.map(<span class="hljs-function"><span class="hljs-keyword">function</span> (<span class="hljs-params">value</span>) </span>{
                     <span class="hljs-keyword">return</span> <span class="hljs-number">1</span> - value;
@@ -320,7 +321,7 @@ gives the effect that it is changing colors.</p>
                 tagName: <span class="hljs-string">'img'</span>,
                 proportions: [<span class="hljs-literal">false</span>, <span class="hljs-number">.1</span>],
                 aspectRatio: <span class="hljs-number">3</span>,
-                attributes: {src: <span class="hljs-string">'./assets/google-white.png'</span>},
+                attributes : {src : options.imgURLs.googleWhite},
                 origin: [<span class="hljs-number">.5</span>, <span class="hljs-number">.5</span>],
                 opacity: <span class="hljs-keyword">this</span>.easingTransition
             });</pre></div></div>
@@ -341,7 +342,7 @@ node for the movement and add both surfaces to it.</p>
             
             <div class="content"><div class='highlight'><pre>            <span class="hljs-keyword">var</span> googleNode = <span class="hljs-keyword">this</span>.add({
                 align: <span class="hljs-keyword">this</span>.springTransition.map(<span class="hljs-function"><span class="hljs-keyword">function</span> (<span class="hljs-params">value</span>) </span>{
-                    <span class="hljs-keyword">return</span> [<span class="hljs-number">.5</span>, <span class="hljs-number">.38</span> - value / <span class="hljs-number">4</span>];
+                    <span class="hljs-keyword">return</span> [<span class="hljs-number">.5</span>, <span class="hljs-number">.4</span> - value / <span class="hljs-number">4</span>];
                 }),
                 transform: <span class="hljs-keyword">this</span>.springTransition.map(<span class="hljs-function"><span class="hljs-keyword">function</span> (<span class="hljs-params">value</span>) </span>{
                     <span class="hljs-keyword">var</span> scale = <span class="hljs-number">.25</span> * (<span class="hljs-number">1</span> - value) + <span class="hljs-number">.75</span>;
@@ -374,7 +375,7 @@ slightly in the x-direction.</p>
                 proportions: [<span class="hljs-number">1</span>, <span class="hljs-literal">false</span>],
                 aspectRatio: <span class="hljs-number">1</span> / <span class="hljs-number">1.4</span>,
                 classes: [<span class="hljs-string">'card'</span>, <span class="hljs-string">'traffic-card'</span>],
-                attributes: {src: <span class="hljs-string">'./assets/traffic-card.png'</span>},
+                attributes : {src : options.imgURLs.trafficCard},
                 origin: [<span class="hljs-number">.5</span>, <span class="hljs-number">0</span>]
             });
 
@@ -382,7 +383,7 @@ slightly in the x-direction.</p>
                 tagName: <span class="hljs-string">'img'</span>,
                 proportions: [<span class="hljs-number">1</span>, <span class="hljs-literal">false</span>],
                 aspectRatio: <span class="hljs-number">.58</span>,
-                attributes: {src: <span class="hljs-string">'./assets/movie-card.png'</span>},
+                attributes : {src : options.imgURLs.movieCard},
                 classes: [<span class="hljs-string">'card'</span>, <span class="hljs-string">'movie-card'</span>],
                 origin: [<span class="hljs-number">.5</span>, <span class="hljs-number">0</span>]
             });
