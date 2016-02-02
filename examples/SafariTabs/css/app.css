@@ -10,8 +10,8 @@ body {
     background : rgb(220, 220, 220);
     font-family : Helvetica;
     font-size : 14px;
-    font-weight: 600;
-    -webkit-font-smoothing: subpixel-antialiased;
+    font-weight: 500;
+    -webkit-font-smoothing: antialiased;
     display: flex;
     display: -webkit-flex;
     align-items : center;

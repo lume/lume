@@ -13,40 +13,40 @@ define(function (require, exports, module) {
     // Data for the creation of the tabs
     var tabData = [
         {
-            src: './assets/google.png',
+            src: './assets/google.jpg',
             title: 'Google'
         },
         {
-            src: './assets/twitter.png',
+            src: './assets/twitter.jpg',
             title: 'Twitter'
         },
         {
-            src: './assets/js-weekly.png',
+            src: './assets/js-weekly.jpg',
             title: 'JS Weekly'
         },
         {
-            src: './assets/reddit.png',
+            src: './assets/reddit.jpg',
             title: 'Reddit'
         },
         {
-            src: './assets/nytimes.png',
+            src: './assets/nytimes.jpg',
             title: 'NY Times'
         },
         {
-            src: './assets/samsara-site.png',
-            title: 'SamsaraJS'
-        },
-        {
-            src: './assets/apple.png',
+            src: './assets/apple.jpg',
             title: 'Apple'
         },
         {
-            src: './assets/wiki.png',
+            src: './assets/wiki.jpg',
             title: 'Wikipedia'
         },
         {
-            src: './assets/hn.png',
+            src: './assets/hn.jpg',
             title: 'Hacker News'
+        },
+        {
+            src : './assets/fb.jpg',
+            title : 'Facebook'
         }
     ];
 
