@@ -260,11 +260,11 @@ it by scrolling</p>
             </div>
             
             <div class="content"><div class='highlight'><pre>            <span class="hljs-keyword">this</span>.scrollview.on(<span class="hljs-string">'update'</span>, <span class="hljs-function"><span class="hljs-keyword">function</span> (<span class="hljs-params">data</span>) </span>{
-                (data.index == <span class="hljs-number">0</span>)
+                (data.index == <span class="hljs-number">0</span> &amp;&amp; data.progress &lt; <span class="hljs-number">.5</span>)
                     ? <span class="hljs-keyword">this</span>.arrows.hideLeft()
                     : <span class="hljs-keyword">this</span>.arrows.showLeft();
 
-                (data.index == <span class="hljs-keyword">this</span>.options.pages - <span class="hljs-number">1</span>)
+                (data.index == <span class="hljs-keyword">this</span>.options.pages - <span class="hljs-number">1</span> &amp;&amp; data.progress &gt; <span class="hljs-number">.5</span>)
                     ? <span class="hljs-keyword">this</span>.arrows.hideRight()
                     : <span class="hljs-keyword">this</span>.arrows.showRight();
             }.bind(<span class="hljs-keyword">this</span>));
