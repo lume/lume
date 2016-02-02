@@ -176,6 +176,9 @@ define(function (require, exports, module) {
             ? transitionMethods[curve]
             : Tween;
 
+        // TODO: This line necessary due to SUE bug
+        if (this.isActive()) this.halt();
+
         if (this._method !== method) {
             if (this._engineInstance){
                 if (this.updateMethod){
@@ -343,8 +346,11 @@ define(function (require, exports, module) {
     }
 
     NDTransitionable.prototype.set = function (value, transition) {
-        for (var i = 0; i < value.length; i++)
+        var velocity = transition.velocity ? transition.velocity.slice() : undefined;
+        for (var i = 0; i < value.length; i++){
+            if (velocity) transition.velocity = velocity[i];
             this.sources[i].set(value[i], transition);
+        }
     };
 
     NDTransitionable.prototype.getVelocity = function () {
