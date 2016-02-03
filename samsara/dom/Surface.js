@@ -34,11 +34,11 @@ define(function(require, exports, module) {
      *
      *      // same as above but create an image instead
      *      var surface = new Surface({
+     *          tagName : 'img',
      *          attributes : {
      *              src : 'cat.jpg'
      *          },
-     *          size : [100,100],
-     *          tagName : 'img'
+     *          size : [100,100]
      *      });
      *
      * @class Surface
@@ -58,6 +58,7 @@ define(function(require, exports, module) {
      * @param [options.opacity=1] {Number}      Opacity
      * @param [options.tagName="div"] {String}  HTML tagName
      * @param [options.enableScroll] {Boolean}  Allows a Surface to support native scroll behavior
+     * @param [options.roundToPixel] {Boolean}  Prevents text-blurring if set to true, at the cost to jittery animation
      */
     function Surface(options) {
         this.properties = {};
@@ -348,6 +349,7 @@ define(function(require, exports, module) {
         if (options.content !== undefined) this.setContent(options.content);
         if (options.aspectRatio !== undefined) this.setAspectRatio(options.aspectRatio);
         if (options.enableScroll) enableScroll.call(this);
+        if (options.roundToPixel) this.roundToPixel = options.roundToPixel;
     };
 
     /**

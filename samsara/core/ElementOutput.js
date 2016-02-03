@@ -12,7 +12,6 @@ define(function(require, exports, module) {
 
     var usePrefix = !('transform' in document.documentElement.style);
     var devicePixelRatio = 2 * (window.devicePixelRatio || 1);
-    var invDevicePixelRatio = 1 / devicePixelRatio;
     var MIN_OPACITY = 0.0001;
     var MAX_OPACITY = 0.9999;
     var EPSILON = 1e-5;
@@ -105,12 +104,18 @@ define(function(require, exports, module) {
             target.removeEventListener(i, this._eventForwarder);
     }
 
-    function _formatCSSTransform(transform) {
+    function _round(value, unit){
+        return (unit === 1)
+            ? Math.round(value)
+            : Math.round(value * unit) / unit
+    }
+
+    function _formatCSSTransform(transform, unit) {
         var result = 'matrix3d(';
         for (var i = 0; i < 15; i++) {
             if (Math.abs(transform[i]) < EPSILON) transform[i] = 0;
             result += (i === 12 || i === 13)
-                ? Math.round(transform[i] * devicePixelRatio) * invDevicePixelRatio + ','
+                ? _round(transform[i], unit) + ','
                 : transform[i] + ',';
         }
         return result + transform[15] + ')';
@@ -126,19 +131,19 @@ define(function(require, exports, module) {
 
     var _setOrigin = usePrefix
         ? function _setOrigin(element, origin) {
-        element.style.webkitTransformOrigin = _formatCSSOrigin(origin);
-    }
+            element.style.webkitTransformOrigin = _formatCSSOrigin(origin);
+        }
         : function _setOrigin(element, origin) {
-        element.style.transformOrigin = _formatCSSOrigin(origin);
-    };
+            element.style.transformOrigin = _formatCSSOrigin(origin);
+        };
 
     var _setTransform = (usePrefix)
-        ? function _setTransform(element, transform) {
-        element.style.webkitTransform = _formatCSSTransform(transform);
-    }
-        : function _setTransform(element, matrix) {
-        element.style.transform = _formatCSSTransform(matrix);
-    };
+        ? function _setTransform(element, transform, unit) {
+            element.style.webkitTransform = _formatCSSTransform(transform, unit);
+        }
+        : function _setTransform(element, transform, unit) {
+            element.style.transform = _formatCSSTransform(transform, unit);
+        };
 
     var _setSize = function _setSize(target, size){
         if (size[0] === true) size[0] = target.offsetWidth;
@@ -262,7 +267,7 @@ define(function(require, exports, module) {
 
         if (this._transformDirty) {
             cache.transform = transform;
-            _setTransform(target, transform);
+            _setTransform(target, transform, this.roundToPixel ? 1 : devicePixelRatio);
         }
 
         this._originDirty = false;
@@ -274,10 +279,8 @@ define(function(require, exports, module) {
         var target = this._currentTarget;
         if (!target) return;
 
-        if (size[0] !== true)
-            size[0] = Math.ceil(size[0] * devicePixelRatio) * invDevicePixelRatio;
-        if (size[1] !== true)
-            size[1] = Math.ceil(size[1] * devicePixelRatio) * invDevicePixelRatio;
+        if (size[0] !== true) size[0] = _round(size[0], devicePixelRatio);
+        if (size[1] !== true) size[1] = _round(size[1], devicePixelRatio);
 
         if (_xyNotEquals(this._cachedSpec.size, size)){
             this._cachedSpec.size = size;
