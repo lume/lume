@@ -36,14 +36,14 @@ responds to a user's swipe gesture, then you might want to clone this repo.
 
 ### Examples
 
-| Example  | Demo (fullscreen) | Difficulty | Description |
-| -------- | ----------------- | ---------- | ----------- |
-| Logo | [demo](http://samsarajs.org/demos/Logo) • [docs](http://samsarajs.org/demos/Logo/docs/main.html) | Simple | The SamsaraJS logo |
-| Cube | [demo](http://samsarajs.org/demos/Cube) • [docs](http://samsarajs.org/demos/Cube/docs/main.html) | Simple | 3D spinning cube with animated size |
-| ParallaxCats | [demo](http://samsarajs.org/demos/ParallaxCats) • [docs](http://samsarajs.org/ParallaxCats/Logo/docs/main.html) | Moderate | Scrollview of cat images that parallax with the scroll |
-| Carousel | [demo](http://samsarajs.org/demos/Carousel) • [docs](http://samsarajs.org/demos/Carousel/docs/main.html) | Moderate | A paginated scrollview converted into a slideshow with previous/next buttons |
-| SideMenu | [demo](http://samsarajs.org/demos/SideMenu) • [docs](http://samsarajs.org/demos/SideMenu/docs/main.html) | Moderate | A navigation UI with an exposed side drawer |
-| Safari Tabs | [demo](http://samsarajs.org/demos/SafariTabs) • [docs](http://samsarajs.org/demos/SafariTabs/docs/main.html) | Moderate | A scrollview imitating the mobile Safari tab viewer |
+| Example  | Demo (fullscreen) | Description |
+| -------- | ----------------- | ----------- |
+| Logo | [demo](http://samsarajs.org/demos/Logo) • [docs](http://samsarajs.org/demos/Logo/docs/main.html) | The SamsaraJS logo |
+| Cube | [demo](http://samsarajs.org/demos/Cube) • [docs](http://samsarajs.org/demos/Cube/docs/main.html) | 3D spinning cube with animated size |
+| ParallaxCats | [demo](http://samsarajs.org/demos/ParallaxCats) • [docs](http://samsarajs.org/ParallaxCats/Logo/docs/main.html) | Scrollview of cat images that parallax with the scroll |
+| Carousel | [demo](http://samsarajs.org/demos/Carousel) • [docs](http://samsarajs.org/demos/Carousel/docs/main.html) | A paginated scrollview converted into a slideshow with previous/next buttons |
+| SideMenu | [demo](http://samsarajs.org/demos/SideMenu) • [docs](http://samsarajs.org/demos/SideMenu/docs/main.html) | A navigation UI with an exposed side drawer |
+| Safari Tabs | [demo](http://samsarajs.org/demos/SafariTabs) • [docs](http://samsarajs.org/demos/SafariTabs/docs/main.html) | A scrollview imitating the mobile Safari tab viewer |
 
 ## Installation
 
