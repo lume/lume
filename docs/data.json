@@ -1,7 +1,7 @@
 {
     "project": {
         "name": "SamsaraJS",
-        "version": "0.1.1",
+        "version": "0.2.0",
         "url": "http://www.samsaraJS.org",
         "exclude": "samsara.js,samsara.min.js",
         "description": "Streaming layout for the web"
@@ -567,7 +567,7 @@
             "extension_for": [],
             "namespace": "Core",
             "file": "samsara/core/Controller.js",
-            "line": 10,
+            "line": 8,
             "description": "A utility class which can be extended by custom classes. These classes will then\n include event input and output streams, a optionsManager for handling optional\n parameters with defaults, and take an event dictionary.\n\n Specifically, instantiations will have an `options` dictionary property,\n `input`, `output` stream properties, and\n `on`, `off`, `emit`, `trigger`, `subscribe`, `unsubscribe` methods.",
             "example": [
                 "\n\n     var MyClass = Controller.extend({\n         defaults : {\n             defaultOption1 : value1,\n             defaultOption2 : value2\n         },\n         events : {\n             'change' : myUpdateOptionsFunction\n         },\n         initialize : function(options){\n             // this method called on instantiation\n             // options are passed in after being patched by the specified defaults\n\n             this.input.on('test', function(){\n                 console.log('test fired');\n             });\n         }\n     });\n\n     var myInstance = new MyClass({\n         defaultOption1 : value3\n     });\n\n     // myInstance.options = {\n     //     defaultOption1 : value3,\n     //     defaultOption2 : value2\n     // }\n\n     myInstance.subscribe(anotherStream);\n\n     anotherStream.emit('test'); // \"test fired\" in console"
@@ -619,7 +619,7 @@
             "extension_for": [],
             "namespace": "Core",
             "file": "samsara/core/ElementOutput.js",
-            "line": 29,
+            "line": 20,
             "description": "Responsible for committing CSS3 properties to the DOM and providing DOM event hooks\n from a provided DOM element. Where Surface's API handles inputs from the developer\n from within Samsara, ElementOutput handles the DOM interaction layer.",
             "is_constructor": 1,
             "uses": [
@@ -909,7 +909,7 @@
             "extension_for": [],
             "namespace": "DOM",
             "file": "samsara/dom/ContainerSurface.js",
-            "line": 15,
+            "line": 7,
             "description": "ContainerSurface enables nesting of DOM. A ContainerSurface manages\n its own render tree that it inserts inside a DOM node. Typically\n this is used for clipping by settings `{overflow : hidden}` as a CSS\n property.",
             "example": [
                 "\n\n     var myContainer = new ContainerSurface({\n         size : [100,100],\n         properties : {overflow : hidden}\n     });\n\n     var surface = new Surface({\n         size : [200,200],\n         properties : {background : 'red'}\n     });\n\n     myContainer.add(surface);\n\n     context.add(myContainer);"
@@ -952,19 +952,12 @@
                         },
                         {
                             "name": "content",
-                            "description": "InnerHTML content",
-                            "type": "String",
+                            "description": "Sstring}              InnerHTML content",
                             "optional": true
                         },
                         {
                             "name": "origin",
                             "description": "Origin (x,y), with values between 0 and 1",
-                            "type": "Number[]",
-                            "optional": true
-                        },
-                        {
-                            "name": "proportions",
-                            "description": "Proportions (x,y) with values between 0 and 1",
                             "type": "Number[]",
                             "optional": true
                         },
@@ -975,10 +968,44 @@
                             "optional": true
                         },
                         {
+                            "name": "proportions",
+                            "description": "Proportions (x,y) with values between 0 and 1",
+                            "type": "Number[]",
+                            "optional": true
+                        },
+                        {
+                            "name": "aspectRatio",
+                            "description": "Aspect ratio",
+                            "type": "Number",
+                            "optional": true
+                        },
+                        {
                             "name": "opacity",
                             "description": "Opacity",
                             "type": "Number",
-                            "optional": true
+                            "optional": true,
+                            "optdefault": "1"
+                        },
+                        {
+                            "name": "tagName",
+                            "description": "HTML tagName",
+                            "type": "String",
+                            "optional": true,
+                            "optdefault": "\"div\""
+                        },
+                        {
+                            "name": "enableScroll",
+                            "description": "Allows a Surface to support native scroll behavior",
+                            "type": "Boolean",
+                            "optional": true,
+                            "optdefault": "false"
+                        },
+                        {
+                            "name": "roundToPixel",
+                            "description": "Prevents text-blurring if set to true, at the cost to jittery animation",
+                            "type": "Boolean",
+                            "optional": true,
+                            "optdefault": "false"
                         }
                     ]
                 }
@@ -996,7 +1023,7 @@
             ],
             "namespace": "DOM",
             "file": "samsara/dom/Context.js",
-            "line": 26,
+            "line": 30,
             "description": "A Context defines a top-level DOM element inside which other nodes (like Surfaces) are rendered.\n\n The CSS class `samsara-context` is applied, which provides the minimal CSS necessary\n to create a performant 3D context (specifically `preserve-3d`).\n\n The Context must be mounted to a DOM node via the `mount` method. If no node is specified\n it is mounted to `document.body`.",
             "example": [
                 "\n\n     var context = Context();\n\n     var surface = new Surface({\n         size : [100,100],\n         properties : {background : 'red'}\n     });\n\n     context.add(surface);\n     context.mount(document.body)"
@@ -1004,6 +1031,23 @@
             "is_constructor": 1,
             "uses": [
                 "Core.RootNode"
+            ],
+            "params": [
+                {
+                    "name": "options",
+                    "description": "Options",
+                    "type": "Object",
+                    "optional": true,
+                    "props": [
+                        {
+                            "name": "enableScroll",
+                            "description": "Allow scrolling on mobile devices",
+                            "type": "Boolean",
+                            "optional": true,
+                            "optdefault": "false"
+                        }
+                    ]
+                }
             ]
         },
         "DOM.Surface": {
@@ -1016,11 +1060,11 @@
             "extension_for": [],
             "namespace": "DOM",
             "file": "samsara/dom/Surface.js",
-            "line": 17,
+            "line": 11,
             "description": "Surface is a wrapper for a DOM element animated by Samsara.\n Samsara will commit opacity, size and CSS3 `transform` properties into the Surface.\n CSS classes, properties and DOM attributes can also be added and dynamically changed.\n Surfaces also act as sources for DOM events such as `click`.",
             "example": [
                 "\n\n     var context = new Context()\n\n     var surface = new Surface({\n         content : 'Hello world!',\n         size : [true,100],\n         opacity : .5,\n         classes : ['myClass1', 'myClass2'],\n         properties : {background : 'red'}\n     });\n\n     context.add(surface);\n\n     context.mount(document.body);",
-                "\n\n     // same as above but create an image instead\n     var surface = new Surface({\n         attributes : {\n             src : 'cat.jpg'\n         },\n         size : [100,100],\n         tagName : 'img'\n     });"
+                "\n\n     // same as above but create an image instead\n     var surface = new Surface({\n         tagName : 'img',\n         attributes : {\n             src : 'cat.jpg'\n         },\n         size : [100,100]\n     });"
             ],
             "is_constructor": 1,
             "extends": "Core.ElementOutput",
@@ -1103,6 +1147,12 @@
                             "description": "Allows a Surface to support native scroll behavior",
                             "type": "Boolean",
                             "optional": true
+                        },
+                        {
+                            "name": "roundToPixel",
+                            "description": "Prevents text-blurring if set to true, at the cost to jittery animation",
+                            "type": "Boolean",
+                            "optional": true
                         }
                     ]
                 }
@@ -1136,9 +1186,9 @@
             "namespace": "Events",
             "file": "samsara/events/EventFilter.js",
             "line": 14,
-            "description": "EventFilter regulates the broadcasting of events based on\n a specified condition prescribed by a provided function\n with the signature `(type, data) -> Boolean`",
+            "description": "EventFilter regulates the broadcasting of events based on\n a specified condition prescribed by a provided function\n with the signature `(data) -> Boolean`",
             "example": [
-                "\n\n     var eventFilter = new EventFilter(function(type, payload){\n         return (payload.value == 0);\n     });\n\n     var eventEmitter = new EventEmitter();\n\n     eventFilter.subscribe(eventEmitter);\n\n     eventFilter.on('click', function(data){\n         alert('fired');\n     });\n\n     eventEmitter.emit('click', {value : 0}); // fired\n     eventEmitter.emit('click', {value : 1}); // doesn't fire"
+                "\n\n     var eventFilter = new EventFilter(function(payload){\n         return (payload.value == 0);\n     });\n\n     var eventEmitter = new EventEmitter();\n\n     eventFilter.subscribe(eventEmitter);\n\n     eventFilter.on('click', function(data){\n         alert('fired');\n     });\n\n     eventEmitter.emit('click', {value : 0}); // fired\n     eventEmitter.emit('click', {value : 1}); // doesn't fire"
             ],
             "is_constructor": 1,
             "params": [
@@ -1259,7 +1309,7 @@
             "namespace": "Inputs",
             "file": "samsara/inputs/MouseInput.js",
             "line": 19,
-            "description": "Wrapper for DOM mouse events. Converts\n\n     `mousedown` -> `start`\n     `mousemove` -> `update`\n     `mouseup`   -> `end`\n\nMouseInput emits these events with the following payload data:\n\n     `value`     - Displacement in pixels from `mousedown`\n     `delta`     - Differential in pixels between successive mouse positions\n     `velocity`  - Velocity of mouse movement in pixels per second\n     `clientX`   - DOM event clientX property\n     `clientY`   - DOM event clientY property\n     `offsetX`   - DOM event offsetX property\n     `offsetY`   - DOM event offsetY property",
+            "description": "Wrapper for DOM mouse events. Converts\n\n     `mousedown` -> `start`\n     `mousemove` -> `update`\n     `mouseup`   -> `end`\n\nMouseInput emits these events with the following payload data:\n\n     `value`     - Displacement in pixels from `mousedown`\n     `delta`     - Differential in pixels between successive mouse positions\n     `velocity`  - Velocity of mouse movement in pixels per second\n     `cumulate`  - Accumulated value over successive displacements\n     `clientX`   - DOM event clientX property\n     `clientY`   - DOM event clientY property\n     `offsetX`   - DOM event offsetX property\n     `offsetY`   - DOM event offsetY property",
             "example": [
                 "\n\n     var surface = new Surface({\n         size : [100,100],\n         properties : {background : 'red'}\n     });\n\n     var mouseInput = new MouseInput({\n         direction : MouseInput.DIRECTION.X\n     });\n\n     mouseInput.subscribe(surface);\n\n     mouseInput.on('start', function(payload){\n         // fired on mouse down\n         console.log('start', payload);\n     });\n\n     mouseInput.on('update', function(payload){\n         // fired on mouse move\n         console.log('update', payload);\n     });\n\n     mouseInput.on('end', function(payload){\n         // fired on mouse up\n         console.log('end', payload);\n     });"
             ],
@@ -1300,7 +1350,7 @@
             "namespace": "Inputs",
             "file": "samsara/inputs/PinchInput.js",
             "line": 15,
-            "description": "Detects two-finger pinching motion and emits `start`, `update` and\n `end` events with the payload data:\n\n     `value`         - Distance between the two touches\n     `delta`         - Differential in successive distances\n     `velocity`      - Relative velocity between two touches\n     `displacement`  - Total accumulated displacement\n     `center`        - Midpoint between the two touches\n     `touches`       - Array of DOM event touch identifiers",
+            "description": "Detects two-finger pinching motion and emits `start`, `update` and\n `end` events with the payload data:\n\n     `value`         - Distance between the two touches\n     `delta`         - Differential in successive distances\n     `velocity`      - Relative velocity between two touches\n     `displacement`  - Total accumulated displacement\n     `center`        - Midpoint between the two touches\n     `touchIds`      - Array of DOM event touch identifiers",
             "example": [
                 "\n\n     var pinchInput = new PinchInput();\n\n     pinchInput.subscribe(Engine) // listens on `window` events\n\n     pinchInput.on('start', function(payload){\n         console.log('start', payload);\n     });\n\n     pinchInput.on('update', function(payload){\n         console.log('update', payload);\n     });\n\n     pinchInput.on('end', function(payload){\n         console.log('end', payload);\n     });"
             ],
@@ -1337,7 +1387,7 @@
             "namespace": "Inputs",
             "file": "samsara/inputs/RotateInput.js",
             "line": 15,
-            "description": "Detects two-finger rotational motion and emits `start`, `update` and\n `end` events with the payload data:\n\n     `value`         - Angle of rotation\n     `delta`         - Differential of successive angles\n     `velocity`      - Velocity of rotation\n     `center`        - Midpoint between the two touches\n     `touches`       - Array of DOM event touch identifiers",
+            "description": "Detects two-finger rotational motion and emits `start`, `update` and\n `end` events with the payload data:\n\n     `value`         - Angle of rotation\n     `delta`         - Differential of successive angles\n     `velocity`      - Velocity of rotation\n     `center`        - Midpoint between the two touches\n     `touchIds`       - Array of DOM event touch identifiers",
             "example": [
                 "\n\n     var rotateInput = new RotateInput();\n\n     rotateInput.subscribe(Engine) // listens on `window` events\n\n     rotateInput.on('start', function(payload){\n         console.log('start', payload);\n     });\n\n     rotateInput.on('update', function(payload){\n         console.log('update', payload);\n     });\n\n     rotateInput.on('end', function(payload){\n         console.log('end', payload);\n     });"
             ],
@@ -1374,7 +1424,7 @@
             "namespace": "Inputs",
             "file": "samsara/inputs/ScaleInput.js",
             "line": 15,
-            "description": "Detects two-finger pinching motion and emits `start`, `update` and\n `end` events with the payload data:\n\n     `value`         - Distance between the two touches\n     `delta`         - Differential in successive distances\n     `velocity`      - Relative velocity between two touches\n     `displacement`  - Total accumulated displacement\n     `center`        - Midpoint between the two touches\n     `touches`       - Array of DOM event touch identifiers\n\n Note: Unlike PinchInput, which produces pixel values of displacement\n between two touches, ScaleInput produces dimensionless values corresponding\n to scaling of the initial distance between the touches. For example, if two\n touches begin at 100 px apart, and move to 200 px apart, ScaleInput will emit\n a value of 2 (for 2x magnification), while PinchInput will emit a value of 100.",
+            "description": "Detects two-finger pinching motion and emits `start`, `update` and\n `end` events with the payload data:\n\n     `value`         - Distance between the two touches\n     `delta`         - Differential in successive distances\n     `velocity`      - Relative velocity between two touches\n     `displacement`  - Total accumulated displacement\n     `center`        - Midpoint between the two touches\n     `touchIds`       - Array of DOM event touch identifiers\n\n Note: Unlike PinchInput, which produces pixel values of displacement\n between two touches, ScaleInput produces dimensionless values corresponding\n to scaling of the initial distance between the touches. For example, if two\n touches begin at 100 px apart, and move to 200 px apart, ScaleInput will emit\n a value of 2 (for 2x magnification), while PinchInput will emit a value of 100.",
             "example": [
                 "\n\n     var scaleInput = new ScaleInput();\n\n     scaleInput.subscribe(Engine) // listens on `window` events\n\n     scaleInput.on('start', function(payload){\n         console.log('start', payload);\n     });\n\n     scaleInput.on('update', function(payload){\n         console.log('update', payload);\n     });\n\n     scaleInput.on('end', function(payload){\n         console.log('end', payload);\n     });"
             ],
@@ -1410,8 +1460,8 @@
             "extension_for": [],
             "namespace": "Inputs",
             "file": "samsara/inputs/ScrollInput.js",
-            "line": 21,
-            "description": "Wrapper for DOM wheel/mousewheel events. Converts `scroll` events\n to `start`, `update` and `end` events and emits them with the payload:\n\n     `value`     - Scroll displacement in pixels from start\n     `delta`     - Scroll differential in pixels between subsequent events\n     `velocity`  - Velocity of scroll",
+            "line": 20,
+            "description": "Wrapper for DOM wheel/mousewheel events. Converts `scroll` events\n to `start`, `update` and `end` events and emits them with the payload:\n\n     `value`     - Scroll displacement in pixels from start\n     `delta`     - Scroll differential in pixels between subsequent events\n     `velocity`  - Velocity of scroll,\n     `clientX`   - DOM event clientX property\n     `clientY`   - DOM event clientY property\n     `offsetX`   - DOM event offsetX property\n     `offsetY`   - DOM event offsetY property",
             "example": [
                 "\n\n     var scrollInput = new ScrollInput();\n\n     scrollInput.subscribe(Engine) // listens on `window` events\n\n     scrollInput.on('start', function(payload){\n         console.log('start', payload);\n     });\n\n     scrollInput.on('update', function(payload){\n         console.log('update', payload);\n     });\n\n     scrollInput.on('end', function(payload){\n         console.log('end', payload);\n     });"
             ],
@@ -1456,7 +1506,7 @@
             "namespace": "Inputs",
             "file": "samsara/inputs/TouchInput.js",
             "line": 19,
-            "description": "Wrapper for DOM touch events. Converts\n\n     `touchstart` -> `start`\n     `touchmove`  -> `update`\n     `touchend`   -> `end`\n\nTouchInput emits these events with the following payload data:\n\n     `value`     - Displacement in pixels from `touchstart`\n     `delta`     - Differential in pixels between successive mouse positions\n     `velocity`  - Velocity of mouse movement in pixels per second\n     `clientX`   - DOM event clientX property\n     `clientY`   - DOM event clientY property\n     `count`     - DOM event for number of simultaneous touches\n     `touch`     - DOM touch event identifier",
+            "description": "Wrapper for DOM touch events. Converts\n\n     `touchstart` -> `start`\n     `touchmove`  -> `update`\n     `touchend`   -> `end`\n\nTouchInput emits these events with the following payload data:\n\n     `value`     - Displacement in pixels from `touchstart`\n     `delta`     - Differential in pixels between successive mouse positions\n     `velocity`  - Velocity of mouse movement in pixels per second\n     `cumulate`  - Accumulated displacement over successive displacements\n     `clientX`   - DOM event clientX property\n     `clientY`   - DOM event clientY property\n     `count`     - DOM event for number of simultaneous touches\n     `touchId`     - DOM touch event identifier",
             "example": [
                 "\n\n     var touchInput = new TouchInput({\n         direction : TouchInput.DIRECTION.Y\n     });\n\n     touchInput.subscribe(Engine);\n\n     touchInput.on('start', function(payload){\n         // fired on mouse down\n         console.log('start', payload);\n     });\n\n     touchInput.on('update', function(payload){\n         // fired on mouse move\n         console.log('update', payload);\n     });\n\n     touchInput.on('end', function(payload){\n         // fired on mouse up\n         console.log('end', payload);\n     });"
             ],
@@ -1810,7 +1860,7 @@
             "extension_for": [],
             "namespace": "Streams",
             "file": "samsara/streams/SizeObservable.js",
-            "line": 10,
+            "line": 8,
             "description": "A SizeObservable is a stream for resize events set discretely in time, as opposed to continuously.\n It emits appropriate `resize` events upon calling the `set` method.",
             "is_constructor": 1,
             "access": "private",
@@ -2131,7 +2181,7 @@
         },
         {
             "file": "samsara/core/Controller.js",
-            "line": 76,
+            "line": 74,
             "description": "Overwrite the DEFAULT_OPTIONS dictionary on the constructor of the class you wish to extend\n with the Controller to patch any options that are not prescribed on instantiation.",
             "itemtype": "attribute",
             "name": "DEFAULT_OPTIONS",
@@ -2141,7 +2191,7 @@
         },
         {
             "file": "samsara/core/Controller.js",
-            "line": 85,
+            "line": 83,
             "description": "Overwrite the EVENTS dictionary on the constructor of the class you wish to extend\n with the Controller to include events in {key : value} pairs where the keys are\n event channel names and the values are functions to be executed.",
             "itemtype": "attribute",
             "name": "EVENTS",
@@ -2151,7 +2201,7 @@
         },
         {
             "file": "samsara/core/Controller.js",
-            "line": 95,
+            "line": 93,
             "description": "Options getter.",
             "itemtype": "method",
             "name": "getOptions",
@@ -2171,7 +2221,7 @@
         },
         {
             "file": "samsara/core/Controller.js",
-            "line": 106,
+            "line": 104,
             "description": "Options setter.",
             "itemtype": "method",
             "name": "setOptions",
@@ -2187,7 +2237,7 @@
         },
         {
             "file": "samsara/core/Controller.js",
-            "line": 178,
+            "line": 176,
             "description": "Allows a class to extend Controller.\n Note: this is a method defined on the Controller constructor",
             "itemtype": "method",
             "name": "extend",
@@ -2260,7 +2310,7 @@
         },
         {
             "file": "samsara/core/ElementOutput.js",
-            "line": 182,
+            "line": 179,
             "description": "Adds a handler to the `type` channel which will be executed on `emit`.",
             "itemtype": "method",
             "name": "on",
@@ -2281,7 +2331,7 @@
         },
         {
             "file": "samsara/core/ElementOutput.js",
-            "line": 196,
+            "line": 193,
             "description": "Removes a previously added handler to the `type` channel.\n Undoes the work of `on`.",
             "itemtype": "method",
             "name": "removeListener",
@@ -2302,7 +2352,7 @@
         },
         {
             "file": "samsara/core/ElementOutput.js",
-            "line": 208,
+            "line": 205,
             "description": "Emit an event with optional data payload. This will execute all listening\n to the channel name with the payload as only argument.",
             "itemtype": "method",
             "name": "emit",
@@ -2324,7 +2374,7 @@
         },
         {
             "file": "samsara/core/ElementOutput.js",
-            "line": 220,
+            "line": 217,
             "description": "Assigns the DOM element for committing and to and attaches event listeners.",
             "access": "private",
             "tagname": "",
@@ -2342,7 +2392,7 @@
         },
         {
             "file": "samsara/core/ElementOutput.js",
-            "line": 232,
+            "line": 229,
             "description": "Removes the associated DOM element in memory and detached event listeners.",
             "access": "private",
             "tagname": "",
@@ -2368,6 +2418,16 @@
             "description": "Initiate the Engine's request animation frame loop.",
             "itemtype": "method",
             "name": "start",
+            "static": 1,
+            "class": "Core.Engine",
+            "namespace": "Core"
+        },
+        {
+            "file": "samsara/core/Engine.js",
+            "line": 67,
+            "description": "Stop the Engine's request animation frame loop.",
+            "itemtype": "method",
+            "name": "stop",
             "static": 1,
             "class": "Core.Engine",
             "namespace": "Core"
@@ -3529,7 +3589,7 @@
         },
         {
             "file": "samsara/core/Transitionable.js",
-            "line": 205,
+            "line": 208,
             "description": "Return the current state of the transition.",
             "itemtype": "method",
             "name": "get",
@@ -3542,7 +3602,7 @@
         },
         {
             "file": "samsara/core/Transitionable.js",
-            "line": 215,
+            "line": 218,
             "description": "Return the current velocity of the transition.",
             "itemtype": "method",
             "name": "getVelocity",
@@ -3555,7 +3615,7 @@
         },
         {
             "file": "samsara/core/Transitionable.js",
-            "line": 225,
+            "line": 228,
             "description": "Sets the value and velocity of the transition without firing any events.",
             "itemtype": "method",
             "name": "reset",
@@ -3577,7 +3637,7 @@
         },
         {
             "file": "samsara/core/Transitionable.js",
-            "line": 240,
+            "line": 243,
             "description": "Ends the transition in place.",
             "itemtype": "method",
             "name": "halt",
@@ -3586,7 +3646,7 @@
         },
         {
             "file": "samsara/core/Transitionable.js",
-            "line": 250,
+            "line": 263,
             "description": "Determine is the transition is ongoing, or has completed.",
             "itemtype": "method",
             "name": "isActive",
@@ -3599,20 +3659,18 @@
         },
         {
             "file": "samsara/core/Transitionable.js",
-            "line": 260,
-            "description": "Iterate through the provided values with the provided transitions. Firing an\n optional callback when the series of transitions completes.\n One transition may be provided as opposed to an array when you want all the\n transitions to behave the same way.",
+            "line": 273,
+            "description": "Combine multiple transitions to be executed sequentially. Pass an optional\n callback to fire on completion. Provide the transitions as an array of\n transition definition pairs: [value, method]",
+            "example": [
+                "\n\n transitionable.setMany([\n     [0, {curve : 'easeOut', duration : 500}],\n     [1, {curve : 'spring', period : 100, damping : 0.5}]\n ]);"
+            ],
             "itemtype": "method",
-            "name": "iterate",
+            "name": "setMany",
             "params": [
-                {
-                    "name": "values",
-                    "description": "Array of values",
-                    "type": "Array"
-                },
                 {
                     "name": "transitions",
                     "description": "Array of transitions",
-                    "type": "Object|Object[]"
+                    "type": "Array"
                 },
                 {
                     "name": "callback",
@@ -3626,29 +3684,10 @@
         },
         {
             "file": "samsara/core/Transitionable.js",
-            "line": 287,
-            "description": "Combine multiple transitions to be executed sequentially. Provide the\n transitions as an array of transition definitions.",
-            "example": [
-                "\n\n transitionable.setMany([\n     {value : 0, transition : {curve : 'easeOut', duration : 500}},\n     {value : 1, transition : {curve : 'spring', period : 100, damping : 0.5}}\n ]);"
-            ],
-            "itemtype": "method",
-            "name": "setMany",
-            "params": [
-                {
-                    "name": "transitions",
-                    "description": "Array of transitions",
-                    "type": "Array"
-                }
-            ],
-            "class": "Core.Transitionable",
-            "namespace": "Core"
-        },
-        {
-            "file": "samsara/core/Transitionable.js",
-            "line": 313,
+            "line": 297,
             "description": "Loop indefinitely between values with provided transitions array.",
             "example": [
-                "\n\n transitionable.loop([\n     {value : 0, transition : {curve : 'easeOut', duration : 500}},\n     {value : 1, transition : {curve : 'spring', period : 100, damping : 0.5}}\n ]);"
+                "\n\n transitionable.loop([\n     [0, {curve : 'easeOut', duration : 500}],\n     [1, {curve : 'spring', period : 100, damping : 0.5}]\n ]);"
             ],
             "itemtype": "method",
             "name": "loop",
@@ -3664,7 +3703,7 @@
         },
         {
             "file": "samsara/core/Transitionable.js",
-            "line": 333,
+            "line": 315,
             "description": "Postpone a transition, and fire it by providing it in the callback parameter.",
             "itemtype": "method",
             "name": "delay",
@@ -3685,7 +3724,7 @@
         },
         {
             "file": "samsara/core/View.js",
-            "line": 114,
+            "line": 115,
             "description": "Extends the render tree subtree with a new node.",
             "itemtype": "method",
             "name": "add",
@@ -3705,7 +3744,7 @@
         },
         {
             "file": "samsara/core/View.js",
-            "line": 124,
+            "line": 125,
             "description": "Getter for size.",
             "itemtype": "method",
             "name": "getSize",
@@ -3718,7 +3757,7 @@
         },
         {
             "file": "samsara/core/View.js",
-            "line": 133,
+            "line": 134,
             "description": "Setter for size.",
             "itemtype": "method",
             "name": "setSize",
@@ -3734,7 +3773,7 @@
         },
         {
             "file": "samsara/core/View.js",
-            "line": 142,
+            "line": 143,
             "description": "Setter for proportions.",
             "itemtype": "method",
             "name": "setProportions",
@@ -3750,7 +3789,23 @@
         },
         {
             "file": "samsara/core/View.js",
-            "line": 151,
+            "line": 152,
+            "description": "Setter for proportions.",
+            "itemtype": "method",
+            "name": "setProportions",
+            "params": [
+                {
+                    "name": "proportions",
+                    "description": "Proportions as [x,y], or a stream.",
+                    "type": "Number[]|Stream"
+                }
+            ],
+            "class": "Core.View",
+            "namespace": "Core"
+        },
+        {
+            "file": "samsara/core/View.js",
+            "line": 161,
             "description": "Setter for origin.",
             "itemtype": "method",
             "name": "setOrigin",
@@ -3766,7 +3821,7 @@
         },
         {
             "file": "samsara/core/View.js",
-            "line": 160,
+            "line": 170,
             "description": "Setter for opacity.",
             "itemtype": "method",
             "name": "setOpacity",
@@ -3782,7 +3837,7 @@
         },
         {
             "file": "samsara/dom/ContainerSurface.js",
-            "line": 69,
+            "line": 65,
             "description": "Get current perspective in pixels.",
             "itemtype": "method",
             "name": "getPerspective",
@@ -3795,7 +3850,7 @@
         },
         {
             "file": "samsara/dom/ContainerSurface.js",
-            "line": 79,
+            "line": 75,
             "description": "Set current perspective in pixels.",
             "itemtype": "method",
             "name": "setPerspective",
@@ -3823,7 +3878,7 @@
         },
         {
             "file": "samsara/dom/ContainerSurface.js",
-            "line": 91,
+            "line": 87,
             "description": "Extends the render tree with a provided node.",
             "itemtype": "method",
             "name": "add",
@@ -3843,7 +3898,7 @@
         },
         {
             "file": "samsara/dom/Context.js",
-            "line": 83,
+            "line": 119,
             "description": "Extends the render tree beginning with the Context's RootNode with a new node.\n Delegates to RootNode's `add` method.",
             "itemtype": "method",
             "name": "add",
@@ -3863,7 +3918,7 @@
         },
         {
             "file": "samsara/dom/Context.js",
-            "line": 96,
+            "line": 132,
             "description": "Get current perspective of this Context in pixels.",
             "itemtype": "method",
             "name": "getPerspective",
@@ -3876,7 +3931,7 @@
         },
         {
             "file": "samsara/dom/Context.js",
-            "line": 106,
+            "line": 142,
             "description": "Set current perspective of the `context` in pixels.",
             "itemtype": "method",
             "name": "setPerspective",
@@ -3904,7 +3959,35 @@
         },
         {
             "file": "samsara/dom/Context.js",
-            "line": 118,
+            "line": 154,
+            "description": "Set current perspective of the `context` in pixels.",
+            "itemtype": "method",
+            "name": "setPerspective",
+            "params": [
+                {
+                    "name": "perspective",
+                    "description": "Perspective in pixels",
+                    "type": "Number"
+                },
+                {
+                    "name": "transition",
+                    "description": "Transition definition",
+                    "type": "Object",
+                    "optional": true
+                },
+                {
+                    "name": "callback",
+                    "description": "Callback executed on completion of transition",
+                    "type": "Function",
+                    "optional": true
+                }
+            ],
+            "class": "DOM.Context",
+            "namespace": "DOM"
+        },
+        {
+            "file": "samsara/dom/Context.js",
+            "line": 166,
             "description": "Allocate contents of the `context` to a DOM node.",
             "itemtype": "method",
             "name": "mount",
@@ -3920,7 +4003,7 @@
         },
         {
             "file": "samsara/dom/Context.js",
-            "line": 153,
+            "line": 201,
             "description": "Adds a handler to the `type` channel which will be executed on `emit`.\n These events should be DOM events that occur on the DOM node the\n context has been mounted to.",
             "itemtype": "method",
             "name": "on",
@@ -3941,7 +4024,7 @@
         },
         {
             "file": "samsara/dom/Context.js",
-            "line": 173,
+            "line": 221,
             "description": "Removes the `handler` from the `type`.\n Undoes the work of `on`.",
             "itemtype": "method",
             "name": "on",
@@ -3962,7 +4045,7 @@
         },
         {
             "file": "samsara/dom/Context.js",
-            "line": 185,
+            "line": 233,
             "description": "Used internally when context is subscribed to.",
             "itemtype": "method",
             "name": "emit",
@@ -3985,7 +4068,7 @@
         },
         {
             "file": "samsara/dom/Surface.js",
-            "line": 173,
+            "line": 181,
             "description": "Setter for HTML attributes.",
             "itemtype": "method",
             "name": "setAttributes",
@@ -4002,7 +4085,7 @@
         },
         {
             "file": "samsara/dom/Surface.js",
-            "line": 190,
+            "line": 198,
             "description": "Getter for HTML attributes.",
             "itemtype": "method",
             "name": "getAttributes",
@@ -4015,7 +4098,7 @@
         },
         {
             "file": "samsara/dom/Surface.js",
-            "line": 200,
+            "line": 208,
             "description": "Setter for CSS properties.\n Note: properties are camelCased, not hyphenated.",
             "itemtype": "method",
             "name": "setProperties",
@@ -4032,7 +4115,7 @@
         },
         {
             "file": "samsara/dom/Surface.js",
-            "line": 216,
+            "line": 224,
             "description": "Getter for CSS properties.",
             "itemtype": "method",
             "name": "getProperties",
@@ -4045,7 +4128,7 @@
         },
         {
             "file": "samsara/dom/Surface.js",
-            "line": 226,
+            "line": 234,
             "description": "Add CSS class to the list of classes on this Surface.",
             "itemtype": "method",
             "name": "addClass",
@@ -4062,7 +4145,7 @@
         },
         {
             "file": "samsara/dom/Surface.js",
-            "line": 242,
+            "line": 250,
             "description": "Remove CSS class from the list of classes on this Surface.",
             "itemtype": "method",
             "name": "removeClass",
@@ -4078,7 +4161,7 @@
         },
         {
             "file": "samsara/dom/Surface.js",
-            "line": 257,
+            "line": 265,
             "description": "Toggle CSS class for this Surface.",
             "itemtype": "method",
             "name": "toggleClass",
@@ -4094,7 +4177,7 @@
         },
         {
             "file": "samsara/dom/Surface.js",
-            "line": 270,
+            "line": 278,
             "description": "Reset classlist.",
             "itemtype": "method",
             "name": "setClasses",
@@ -4111,7 +4194,7 @@
         },
         {
             "file": "samsara/dom/Surface.js",
-            "line": 289,
+            "line": 297,
             "description": "Get array of CSS classes attached to this Surface.",
             "itemtype": "method",
             "name": "getClasslist",
@@ -4124,7 +4207,7 @@
         },
         {
             "file": "samsara/dom/Surface.js",
-            "line": 299,
+            "line": 307,
             "description": "Set or overwrite innerHTML content of this Surface.",
             "itemtype": "method",
             "name": "setContent",
@@ -4141,7 +4224,7 @@
         },
         {
             "file": "samsara/dom/Surface.js",
-            "line": 315,
+            "line": 323,
             "description": "Return innerHTML content of this Surface.",
             "itemtype": "method",
             "name": "getContent",
@@ -4154,7 +4237,7 @@
         },
         {
             "file": "samsara/dom/Surface.js",
-            "line": 325,
+            "line": 333,
             "description": "Set options for this surface",
             "itemtype": "method",
             "name": "setOptions",
@@ -4170,7 +4253,7 @@
         },
         {
             "file": "samsara/dom/Surface.js",
-            "line": 347,
+            "line": 355,
             "description": "Allocates the element-type associated with the Surface, adds its given\n element classes, and prepares it for future committing.\n\n This method is called upon the first `start` or `resize`\n event the Surface gets.",
             "access": "private",
             "tagname": "",
@@ -4188,7 +4271,7 @@
         },
         {
             "file": "samsara/dom/Surface.js",
-            "line": 379,
+            "line": 389,
             "description": "Remove all Samsara-relevant data from the Surface.",
             "access": "private",
             "tagname": "",
@@ -4206,7 +4289,7 @@
         },
         {
             "file": "samsara/dom/Surface.js",
-            "line": 410,
+            "line": 434,
             "description": "Insert the Surface's content into the currentTarget.",
             "access": "private",
             "tagname": "",
@@ -4224,7 +4307,7 @@
         },
         {
             "file": "samsara/dom/Surface.js",
-            "line": 431,
+            "line": 455,
             "description": "Cache the content of the Surface in a document fragment for future deployment.",
             "access": "private",
             "tagname": "",
@@ -4242,7 +4325,7 @@
         },
         {
             "file": "samsara/dom/Surface.js",
-            "line": 445,
+            "line": 469,
             "description": "Getter for size.",
             "itemtype": "method",
             "name": "getSize",
@@ -4255,7 +4338,7 @@
         },
         {
             "file": "samsara/dom/Surface.js",
-            "line": 456,
+            "line": 480,
             "description": "Setter for size.",
             "itemtype": "method",
             "name": "setSize",
@@ -4271,7 +4354,7 @@
         },
         {
             "file": "samsara/dom/Surface.js",
-            "line": 468,
+            "line": 492,
             "description": "Setter for proportions.",
             "itemtype": "method",
             "name": "setProportions",
@@ -4287,7 +4370,7 @@
         },
         {
             "file": "samsara/dom/Surface.js",
-            "line": 479,
+            "line": 503,
             "description": "Setter for margins.",
             "itemtype": "method",
             "name": "setMargins",
@@ -4303,7 +4386,7 @@
         },
         {
             "file": "samsara/dom/Surface.js",
-            "line": 490,
+            "line": 514,
             "description": "Setter for aspect ratio. If only one of width or height is specified,\n the aspect ratio will replace the unspecified dimension by scaling\n the specified dimension by the value provided.",
             "itemtype": "method",
             "name": "setAspectRatio",
@@ -4319,7 +4402,7 @@
         },
         {
             "file": "samsara/dom/Surface.js",
-            "line": 503,
+            "line": 527,
             "description": "Setter for origin.",
             "itemtype": "method",
             "name": "setOrigin",
@@ -4335,7 +4418,7 @@
         },
         {
             "file": "samsara/dom/Surface.js",
-            "line": 515,
+            "line": 539,
             "description": "Setter for opacity.",
             "itemtype": "method",
             "name": "setOpacity",
@@ -4381,7 +4464,7 @@
         },
         {
             "file": "samsara/events/EventEmitter.js",
-            "line": 62,
+            "line": 61,
             "description": "Adds a handler to the `type` channel which will be executed on `emit`.",
             "itemtype": "method",
             "name": "on",
@@ -4402,14 +4485,14 @@
         },
         {
             "file": "samsara/events/EventEmitter.js",
-            "line": 74,
+            "line": 73,
             "description": "Behaves like `EventEmitter.prototype.on`, except the handler is only executed once.",
             "itemtype": "method",
             "name": "once",
             "params": [
                 {
                     "name": "type",
-                    "description": "Event type key (for example, 'click')",
+                    "description": "Channel name (e.g., 'click')",
                     "type": "String"
                 },
                 {
@@ -4423,20 +4506,22 @@
         },
         {
             "file": "samsara/events/EventEmitter.js",
-            "line": 89,
-            "description": "Removes the `handler` from the `type` channel.\n  This undoes the work of `on`.",
+            "line": 88,
+            "description": "Removes the `handler` from the `type` channel. This undoes the work of `on`.\n If no type is provided, then all event listeners are removed.\n If a type is provided but no handler, then all listeners of that type are removed.",
             "itemtype": "method",
             "name": "off",
             "params": [
                 {
                     "name": "type",
                     "description": "Channel name",
-                    "type": "String"
+                    "type": "String",
+                    "optional": true
                 },
                 {
                     "name": "handler",
                     "description": "Callback",
-                    "type": "Function"
+                    "type": "Function",
+                    "optional": true
                 }
             ],
             "class": "Events.EventEmitter",
@@ -4481,7 +4566,7 @@
         },
         {
             "file": "samsara/events/EventFilter.js",
-            "line": 60,
+            "line": 61,
             "description": "Alias of emit.",
             "itemtype": "method",
             "name": "trigger",
@@ -4795,7 +4880,27 @@
         },
         {
             "file": "samsara/inputs/GenericInput.js",
-            "line": 128,
+            "line": 122,
+            "description": "Get a registered input by key",
+            "itemtype": "method",
+            "name": "getInput",
+            "params": [
+                {
+                    "name": "key",
+                    "description": "Identifier for input class",
+                    "type": "String"
+                }
+            ],
+            "return": {
+                "description": "",
+                "type": "Input"
+            },
+            "class": "Inputs.GenericInput",
+            "namespace": "Inputs"
+        },
+        {
+            "file": "samsara/inputs/GenericInput.js",
+            "line": 139,
             "description": "Add an input class to from the registered classes",
             "itemtype": "method",
             "name": "addInput",
@@ -4811,7 +4916,7 @@
         },
         {
             "file": "samsara/inputs/MouseInput.js",
-            "line": 111,
+            "line": 114,
             "description": "Constrain the input along a specific axis.",
             "itemtype": "property",
             "name": "DIRECTION",
@@ -4834,7 +4939,7 @@
         },
         {
             "file": "samsara/inputs/ScrollInput.js",
-            "line": 94,
+            "line": 107,
             "description": "Constrain the input along a specific axis.",
             "itemtype": "property",
             "name": "DIRECTION",
@@ -4857,7 +4962,7 @@
         },
         {
             "file": "samsara/inputs/TouchInput.js",
-            "line": 103,
+            "line": 106,
             "description": "Constrain the input along a specific axis.",
             "itemtype": "property",
             "name": "DIRECTION",
@@ -5201,7 +5306,7 @@
         },
         {
             "file": "samsara/streams/Observable.js",
-            "line": 30,
+            "line": 28,
             "description": "Getter for the provided value.",
             "itemtype": "method",
             "name": "get",
@@ -5214,7 +5319,7 @@
         },
         {
             "file": "samsara/streams/Observable.js",
-            "line": 40,
+            "line": 38,
             "description": "Setter for the provided value.",
             "itemtype": "method",
             "name": "set",
@@ -5348,7 +5453,7 @@
         },
         {
             "file": "samsara/streams/SizeObservable.js",
-            "line": 30,
+            "line": 28,
             "description": "Getter for the provided size.",
             "itemtype": "method",
             "name": "get",
@@ -5361,7 +5466,7 @@
         },
         {
             "file": "samsara/streams/SizeObservable.js",
-            "line": 40,
+            "line": 38,
             "description": "Setter for the provided size.",
             "itemtype": "method",
             "name": "set",
@@ -5377,18 +5482,32 @@
         },
         {
             "file": "samsara/streams/Stream.js",
-            "line": 137,
-            "description": "Extends SimpleStream.lift",
+            "line": 141,
+            "description": "Lift is like map, except it maps several event sources,\n not only one.",
+            "example": [
+                "\n\n     var liftedStream = Stream.lift(function(payload1, payload2){\n         return payload1 + payload2;\n     }, [stream2, stream2]);\n\n     liftedStream.on('name'), function(data){\n         // data = 3;\n     });\n\n     stream2.emit('name', 1);\n     stream2.emit('name', 2);"
+            ],
+            "itemtype": "method",
+            "name": "lift",
             "static": 1,
-            "return": {
-                "description": ""
-            },
+            "params": [
+                {
+                    "name": "map",
+                    "description": "Function to map stream payloads",
+                    "type": "Function"
+                },
+                {
+                    "name": "streams",
+                    "description": "Stream sources",
+                    "type": "Array|Object"
+                }
+            ],
             "class": "Streams.Stream",
             "namespace": "Streams"
         },
         {
             "file": "samsara/streams/Stream.js",
-            "line": 145,
+            "line": 165,
             "description": "Batches events for provided object of streams in\n {key : stream} pairs. Emits one event per Engine cycle.",
             "itemtype": "method",
             "name": "merge",
@@ -5484,7 +5603,20 @@
         },
         {
             "file": "samsara/transitions/Inertia.js",
-            "line": 111,
+            "line": 112,
+            "description": "Check to see if Inertia is actively transitioning",
+            "itemtype": "method",
+            "name": "isActive",
+            "return": {
+                "description": "",
+                "type": "Boolean"
+            },
+            "class": "Transitions.Inertia",
+            "namespace": "Transitions"
+        },
+        {
+            "file": "samsara/transitions/Inertia.js",
+            "line": 122,
             "description": "Update the transition in time.",
             "itemtype": "method",
             "name": "update",
@@ -5572,7 +5704,20 @@
         },
         {
             "file": "samsara/transitions/Spring.js",
-            "line": 123,
+            "line": 124,
+            "description": "Check to see if Spring is actively transitioning",
+            "itemtype": "method",
+            "name": "isActive",
+            "return": {
+                "description": "",
+                "type": "Boolean"
+            },
+            "class": "Transitions.Spring",
+            "namespace": "Transitions"
+        },
+        {
+            "file": "samsara/transitions/Spring.js",
+            "line": 134,
             "description": "Update the transition in time.",
             "itemtype": "method",
             "name": "update",
@@ -5792,7 +5937,15 @@
         },
         {
             "message": "replacing incorrect tag: returns with return",
+            "line": " samsara/transitions/Inertia.js:112"
+        },
+        {
+            "message": "replacing incorrect tag: returns with return",
             "line": " samsara/transitions/Spring.js:89"
+        },
+        {
+            "message": "replacing incorrect tag: returns with return",
+            "line": " samsara/transitions/Spring.js:124"
         },
         {
             "message": "replacing incorrect tag: returns with return",
@@ -5813,10 +5966,6 @@
         {
             "message": "Missing item type\nThis queue is executed before the postTickQueue and after the preTickQueue.\n however, it differs in that the Engine does not clear the queue.\n This must be done manually.",
             "line": " samsara/core/queues/tickQueue.js:4"
-        },
-        {
-            "message": "Missing item type\nExtends SimpleStream.lift",
-            "line": " samsara/streams/Stream.js:137"
         }
     ]
 }

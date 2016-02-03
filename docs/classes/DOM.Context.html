@@ -23,12 +23,12 @@
             <li class="divider-vertical"></li>
             <li>
                 <p class="navbar-text">
-                    API Docs for Version: <b>0.1.1</b>
+                    API Docs for Version: <b>0.2.0</b>
                 </p>
             </li>
         </div>
         <form class="navbar-form pull-right" style="line-height: 40px; height: 40px;">
-            <input style="margin-top: 0;" type="text" class="search-query" placeholder="Search for classes/modules..." data-obj='["classes/Core.Controller", "classes/Core.ElementAllocator", "classes/Core.ElementOutput", "classes/Core.Engine", "classes/Core.LayoutNode", "classes/Core.OptionsManager", "classes/Core.SizeNode", "classes/Core.SUE", "classes/Core.Timer", "classes/Core.Transform", "classes/Core.Transitionable", "classes/Core.View", "classes/DOM.ContainerSurface", "classes/DOM.Context", "classes/DOM.Surface", "classes/Events.EventEmitter", "classes/Events.EventFilter", "classes/Events.EventHandler", "classes/Events.EventMapper", "classes/Events.EventSplitter", "classes/Inputs.GenericInput", "classes/Inputs.MouseInput", "classes/Inputs.PinchInput", "classes/Inputs.RotateInput", "classes/Inputs.ScaleInput", "classes/Inputs.ScrollInput", "classes/Inputs.TouchInput", "classes/Inputs.TouchTracker", "classes/Inputs.TwoFingerInput", "classes/Layouts.DrawerLayout", "classes/Layouts.FlexibleLayout", "classes/Layouts.GridLayout", "classes/Layouts.SequentialLayout", "classes/RenderTreeNode", "classes/RootNode", "classes/Streams.Accumulator", "classes/Streams.Differential", "classes/Streams.Observable", "classes/Streams.ResizeStream", "classes/Streams.SimpleStream", "classes/Streams.Stream", "classes/Transitions.Inertia", "classes/Transitions.Spring", "classes/Transitions.Tween"]'>
+            <input style="margin-top: 0;" type="text" class="search-query" placeholder="Search for classes..." data-obj='["classes/Core.Controller", "classes/Core.ElementAllocator", "classes/Core.ElementOutput", "classes/Core.Engine", "classes/Core.LayoutNode", "classes/Core.OptionsManager", "classes/Core.SizeNode", "classes/Core.SUE", "classes/Core.Timer", "classes/Core.Transform", "classes/Core.Transitionable", "classes/Core.View", "classes/DOM.ContainerSurface", "classes/DOM.Context", "classes/DOM.Surface", "classes/Events.EventEmitter", "classes/Events.EventFilter", "classes/Events.EventHandler", "classes/Events.EventMapper", "classes/Events.EventSplitter", "classes/Inputs.GenericInput", "classes/Inputs.MouseInput", "classes/Inputs.PinchInput", "classes/Inputs.RotateInput", "classes/Inputs.ScaleInput", "classes/Inputs.ScrollInput", "classes/Inputs.TouchInput", "classes/Inputs.TouchTracker", "classes/Inputs.TwoFingerInput", "classes/Layouts.DrawerLayout", "classes/Layouts.FlexibleLayout", "classes/Layouts.GridLayout", "classes/Layouts.SequentialLayout", "classes/RenderTreeNode", "classes/RootNode", "classes/Streams.Accumulator", "classes/Streams.Differential", "classes/Streams.Observable", "classes/Streams.ResizeStream", "classes/Streams.SimpleStream", "classes/Streams.Stream", "classes/Transitions.Inertia", "classes/Transitions.Spring", "classes/Transitions.Tween"]'>
         </form>
     </div>
 </div>
@@ -130,7 +130,7 @@
 
     <!---->
         <div class="foundat">
-            Defined in: <a href="../files/samsara_dom_Context.js.html#l26"><code>samsara&#x2F;dom&#x2F;Context.js:26</code></a>
+            Defined in: <a href="../files/samsara_dom_Context.js.html#l30"><code>samsara&#x2F;dom&#x2F;Context.js:30</code></a>
         </div>
     <!---->
 
@@ -152,7 +152,13 @@ it is mounted to <code>document.body</code>.</p>
         <div id="method_DOM.Context" class="method item">
             <h3 class="name"><code>DOM.Context</code></h3>
         
-                <span class="paren">()</span>
+                <div class="args">
+                    <span class="paren">(</span><ul class="args-list inline commas">
+                        <li class="arg">
+                                <code class="optional">[options]</code>
+                        </li>
+                    </ul><span class="paren">)</span>
+                </div>
         
         
         
@@ -167,7 +173,7 @@ it is mounted to <code>document.body</code>.</p>
                         <!--Defined in-->
                         <!---->
                 <!---->
-                <!--<a href="../files/samsara_dom_Context.js.html#l26"><code>samsara&#x2F;dom&#x2F;Context.js:26</code></a>-->
+                <!--<a href="../files/samsara_dom_Context.js.html#l30"><code>samsara&#x2F;dom&#x2F;Context.js:30</code></a>-->
                 <!---->
                 </p>
         
@@ -179,6 +185,37 @@ it is mounted to <code>document.body</code>.</p>
                 
             </div>
         
+                <div class="params">
+                    <h4>Parameters:</h4>
+        
+                    <ul class="params-list">
+                        <li class="param">
+                                <code class="param-name optional">[options]</code>
+                                <span class="type"><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object" class="crosslink external" target="_blank">Object</a></span>
+                                <span class="flag optional" title="This parameter is optional.">optional</span>
+        
+        
+                            <div class="param-description">
+                                <p>Options</p>
+        
+                            </div>
+        
+                                <ul class="params-list">
+                                    <li class="param">
+                                            <code class="param-name optional">[enableScroll=false]</code>
+                                            <span class="type"><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Boolean" class="crosslink external" target="_blank">Boolean</a></span>
+                                            <span class="flag optional" title="This parameter is optional.">optional</span>
+        
+                                        <div class="param-description">
+                                            <p>Allow scrolling on mobile devices</p>
+        
+                                        </div>
+        
+                                    </li>
+                                </ul>
+                        </li>
+                    </ul>
+                </div>
         
         
                 <div class="example">
@@ -243,6 +280,10 @@ it is mounted to <code>document.body</code>.</p>
                                 <a href="#" data-tabid="#methods" data-anchor="#method_setPerspective" data-tablink="setPerspective">setPerspective</a>
 
                             </li>
+                            <li class="index-item method">
+                                <a href="#" data-tabid="#methods" data-anchor="#method_setPerspective" data-tablink="setPerspective">setPerspective</a>
+
+                            </li>
                     </ul>
                 </div>
 
@@ -280,7 +321,7 @@ it is mounted to <code>document.body</code>.</p>
                                     <!--Defined in-->
                                     <!---->
                             <!---->
-                            <!--<a href="../files/samsara_dom_Context.js.html#l83"><code>samsara&#x2F;dom&#x2F;Context.js:83</code></a>-->
+                            <!--<a href="../files/samsara_dom_Context.js.html#l119"><code>samsara&#x2F;dom&#x2F;Context.js:119</code></a>-->
                             <!---->
                             </p>
                     
@@ -350,7 +391,7 @@ it is mounted to <code>document.body</code>.</p>
                                     <!--Defined in-->
                                     <!---->
                             <!---->
-                            <!--<a href="../files/samsara_dom_Context.js.html#l185"><code>samsara&#x2F;dom&#x2F;Context.js:185</code></a>-->
+                            <!--<a href="../files/samsara_dom_Context.js.html#l233"><code>samsara&#x2F;dom&#x2F;Context.js:233</code></a>-->
                             <!---->
                             </p>
                     
@@ -415,7 +456,7 @@ it is mounted to <code>document.body</code>.</p>
                                     <!--Defined in-->
                                     <!---->
                             <!---->
-                            <!--<a href="../files/samsara_dom_Context.js.html#l96"><code>samsara&#x2F;dom&#x2F;Context.js:96</code></a>-->
+                            <!--<a href="../files/samsara_dom_Context.js.html#l132"><code>samsara&#x2F;dom&#x2F;Context.js:132</code></a>-->
                             <!---->
                             </p>
                     
@@ -464,7 +505,7 @@ it is mounted to <code>document.body</code>.</p>
                                     <!--Defined in-->
                                     <!---->
                             <!---->
-                            <!--<a href="../files/samsara_dom_Context.js.html#l118"><code>samsara&#x2F;dom&#x2F;Context.js:118</code></a>-->
+                            <!--<a href="../files/samsara_dom_Context.js.html#l166"><code>samsara&#x2F;dom&#x2F;Context.js:166</code></a>-->
                             <!---->
                             </p>
                     
@@ -524,7 +565,7 @@ it is mounted to <code>document.body</code>.</p>
                                     <!--Defined in-->
                                     <!---->
                             <!---->
-                            <!--<a href="../files/samsara_dom_Context.js.html#l153"><code>samsara&#x2F;dom&#x2F;Context.js:153</code></a>-->
+                            <!--<a href="../files/samsara_dom_Context.js.html#l201"><code>samsara&#x2F;dom&#x2F;Context.js:201</code></a>-->
                             <!---->
                             </p>
                     
@@ -597,7 +638,7 @@ it is mounted to <code>document.body</code>.</p>
                                     <!--Defined in-->
                                     <!---->
                             <!---->
-                            <!--<a href="../files/samsara_dom_Context.js.html#l173"><code>samsara&#x2F;dom&#x2F;Context.js:173</code></a>-->
+                            <!--<a href="../files/samsara_dom_Context.js.html#l221"><code>samsara&#x2F;dom&#x2F;Context.js:221</code></a>-->
                             <!---->
                             </p>
                     
@@ -672,7 +713,94 @@ it is mounted to <code>document.body</code>.</p>
                                     <!--Defined in-->
                                     <!---->
                             <!---->
-                            <!--<a href="../files/samsara_dom_Context.js.html#l106"><code>samsara&#x2F;dom&#x2F;Context.js:106</code></a>-->
+                            <!--<a href="../files/samsara_dom_Context.js.html#l142"><code>samsara&#x2F;dom&#x2F;Context.js:142</code></a>-->
+                            <!---->
+                            </p>
+                    
+                    
+                    
+                        </div>
+                    
+                        <div class="description">
+                            <p>Set current perspective of the <code>context</code> in pixels.</p>
+                    
+                        </div>
+                    
+                            <div class="params">
+                                <h4>Parameters:</h4>
+                    
+                                <ul class="params-list">
+                                    <li class="param">
+                                            <code class="param-name">perspective</code>
+                                            <span class="type"><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Number" class="crosslink external" target="_blank">Number</a></span>
+                    
+                    
+                                        <div class="param-description">
+                                            <p>Perspective in pixels</p>
+                    
+                                        </div>
+                    
+                                    </li>
+                                    <li class="param">
+                                            <code class="param-name optional">[transition]</code>
+                                            <span class="type"><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object" class="crosslink external" target="_blank">Object</a></span>
+                                            <span class="flag optional" title="This parameter is optional.">optional</span>
+                    
+                    
+                                        <div class="param-description">
+                                            <p>Transition definition</p>
+                    
+                                        </div>
+                    
+                                    </li>
+                                    <li class="param">
+                                            <code class="param-name optional">[callback]</code>
+                                            <span class="type"><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Function" class="crosslink external" target="_blank">Function</a></span>
+                                            <span class="flag optional" title="This parameter is optional.">optional</span>
+                    
+                    
+                                        <div class="param-description">
+                                            <p>Callback executed on completion of transition</p>
+                    
+                                        </div>
+                    
+                                    </li>
+                                </ul>
+                            </div>
+                    
+                    
+                    </div>
+                    <div id="method_setPerspective" class="method item">
+                        <h3 class="name"><code>setPerspective</code></h3>
+                    
+                            <div class="args">
+                                <span class="paren">(</span><ul class="args-list inline commas">
+                                    <li class="arg">
+                                            <code>perspective</code>
+                                    </li>
+                                    <li class="arg">
+                                            <code class="optional">[transition]</code>
+                                    </li>
+                                    <li class="arg">
+                                            <code class="optional">[callback]</code>
+                                    </li>
+                                </ul><span class="paren">)</span>
+                            </div>
+                    
+                    
+                    
+                    
+                    
+                    
+                    
+                    
+                        <div class="meta">
+                                    <p>
+                                    <!---->
+                                    <!--Defined in-->
+                                    <!---->
+                            <!---->
+                            <!--<a href="../files/samsara_dom_Context.js.html#l154"><code>samsara&#x2F;dom&#x2F;Context.js:154</code></a>-->
                             <!---->
                             </p>
                     

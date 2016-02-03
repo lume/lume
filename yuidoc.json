@@ -1,6 +1,6 @@
 {
   "name": "SamsaraJS",
-  "version": "0.1.1",
+  "version": "0.2.0",
   "url": "http://www.samsaraJS.org",
   "exclude": "samsara.js,samsara.min.js",
   "options": {
