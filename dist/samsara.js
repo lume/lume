@@ -88,7 +88,7 @@ return /******/ (function(modules) { // webpackBootstrap
 /* 2 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var __WEBPACK_AMD_DEFINE_RESULT__;/* Modified work copyright © 2015 David Valdman */
+	var __WEBPACK_AMD_DEFINE_RESULT__;/* Copyright © 2015-2016 David Valdman */
 	// TODO: cancel RAF when asleep
 	!(__WEBPACK_AMD_DEFINE_RESULT__ = function(require, exports, module) {
 	    var State = __webpack_require__(3);
@@ -154,6 +154,16 @@ return /******/ (function(modules) { // webpackBootstrap
 	        rafId = window.requestAnimationFrame(start);
 	    };
 
+	    /**
+	     * Stop the Engine's request animation frame loop.
+	     *
+	     * @method stop
+	     * @static
+	     */
+	    Engine.stop = function(){
+	        window.cancelAnimationFrame(rafId);
+	    };
+
 	    module.exports = Engine;
 	}.call(exports, __webpack_require__, exports, module), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
 
@@ -162,7 +172,7 @@ return /******/ (function(modules) { // webpackBootstrap
 /* 3 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var __WEBPACK_AMD_DEFINE_RESULT__;/* Copyright © 2015 David Valdman */
+	var __WEBPACK_AMD_DEFINE_RESULT__;/* Copyright © 2015-2016 David Valdman */
 
 	!(__WEBPACK_AMD_DEFINE_RESULT__ = function(require, exports, module) {
 	    var STATE = {
@@ -203,7 +213,7 @@ return /******/ (function(modules) { // webpackBootstrap
 /* 4 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var __WEBPACK_AMD_DEFINE_RESULT__;/* copyright © 2015 David Valdman */
+	var __WEBPACK_AMD_DEFINE_RESULT__;/* Copyright © 2015 David Valdman */
 
 	!(__WEBPACK_AMD_DEFINE_RESULT__ = function(require, exports, module) {
 	    /**
@@ -221,7 +231,7 @@ return /******/ (function(modules) { // webpackBootstrap
 /* 5 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var __WEBPACK_AMD_DEFINE_RESULT__;/* copyright © 2015 David Valdman */
+	var __WEBPACK_AMD_DEFINE_RESULT__;/* Copyright © 2015 David Valdman */
 
 	!(__WEBPACK_AMD_DEFINE_RESULT__ = function(require, exports, module) {
 	    /**
@@ -238,7 +248,7 @@ return /******/ (function(modules) { // webpackBootstrap
 /* 6 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var __WEBPACK_AMD_DEFINE_RESULT__;/* copyright © 2015 David Valdman */
+	var __WEBPACK_AMD_DEFINE_RESULT__;/* Copyright © 2015 David Valdman */
 
 	!(__WEBPACK_AMD_DEFINE_RESULT__ = function(require, exports, module) {
 	    /**
@@ -255,7 +265,7 @@ return /******/ (function(modules) { // webpackBootstrap
 /* 7 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var __WEBPACK_AMD_DEFINE_RESULT__;/* copyright © 2015 David Valdman */
+	var __WEBPACK_AMD_DEFINE_RESULT__;/* Copyright © 2015 David Valdman */
 
 	!(__WEBPACK_AMD_DEFINE_RESULT__ = function(require, exports, module) {
 	    /**
@@ -273,7 +283,7 @@ return /******/ (function(modules) { // webpackBootstrap
 /* 8 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var __WEBPACK_AMD_DEFINE_RESULT__;/* Copyright © 2015 David Valdman */
+	var __WEBPACK_AMD_DEFINE_RESULT__;/* Copyright © 2015-2016 David Valdman */
 
 	!(__WEBPACK_AMD_DEFINE_RESULT__ = function(require, exports, module) {
 	    var EventHandler = __webpack_require__(9);
@@ -379,7 +389,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	 * @copyright Famous Industries, Inc. 2014
 	 */
 
-	/* Modified work copyright © 2015 David Valdman */
+	/* Modified work copyright © 2015-2016 David Valdman */
 
 	!(__WEBPACK_AMD_DEFINE_RESULT__ = function(require, exports, module) {
 	    var EventEmitter = __webpack_require__(10);
@@ -538,7 +548,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	 * @copyright Famous Industries, Inc. 2014
 	 */
 
-	/* Modified work copyright © 2015 David Valdman */
+	/* Modified work copyright © 2015-2016 David Valdman */
 
 	!(__WEBPACK_AMD_DEFINE_RESULT__ = function(require, exports, module) {
 	    /**
@@ -590,7 +600,6 @@ return /******/ (function(modules) { // webpackBootstrap
 	     */
 	    EventEmitter.prototype.trigger = EventEmitter.prototype.emit;
 
-
 	    /**
 	     * Adds a handler to the `type` channel which will be executed on `emit`.
 	     *
@@ -607,24 +616,25 @@ return /******/ (function(modules) { // webpackBootstrap
 	     * Behaves like `EventEmitter.prototype.on`, except the handler is only executed once.
 	     *
 	     * @method once
-	     * @param type {String}         Event type key (for example, 'click')
+	     * @param type {String}         Channel name (e.g., 'click')
 	     * @param handler {Function}    Callback
 	     */
 	    EventEmitter.prototype.once = function once(type, handler){
 	        var onceHandler = function(){
-	            handler.apply(this, arguments);
 	            EventEmitter.prototype.off.call(this, type, onceHandler);
+	            handler.apply(this, arguments);
 	        }.bind(this);
 	        this.on(type, onceHandler);
 	    };
 
-	   /**
-	     * Removes the `handler` from the `type` channel.
-	     *   This undoes the work of `on`.
+	    /**
+	     * Removes the `handler` from the `type` channel. This undoes the work of `on`.
+	     *  If no type is provided, then all event listeners are removed.
+	     *  If a type is provided but no handler, then all listeners of that type are removed.
 	     *
 	     * @method off
-	     * @param type {String}         Channel name
-	     * @param handler {Function}    Callback
+	     * @param [type] {String}         Channel name
+	     * @param [handler] {Function}    Callback
 	     */
 	    EventEmitter.prototype.off = function off(type, handler) {
 	        if (!type) {
@@ -660,7 +670,7 @@ return /******/ (function(modules) { // webpackBootstrap
 /* 11 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var __WEBPACK_AMD_DEFINE_RESULT__;/* Copyright © 2015 David Valdman */
+	var __WEBPACK_AMD_DEFINE_RESULT__;/* Copyright © 2015-2016 David Valdman */
 
 	!(__WEBPACK_AMD_DEFINE_RESULT__ = function(require, exports, module) {
 	    var EventHandler = __webpack_require__(9);
@@ -795,7 +805,7 @@ return /******/ (function(modules) { // webpackBootstrap
 /* 12 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var __WEBPACK_AMD_DEFINE_RESULT__;/* copyright © 2015 David Valdman */
+	var __WEBPACK_AMD_DEFINE_RESULT__;/* Copyright © 2015-2016 David Valdman */
 
 	!(__WEBPACK_AMD_DEFINE_RESULT__ = function(require, exports, module) {
 	    var EventHandler = __webpack_require__(9);
@@ -872,7 +882,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	 * @copyright Famous Industries, Inc. 2014
 	 */
 
-	/* Modified work copyright © 2015 David Valdman */
+	/* Modified work copyright © 2015-2016 David Valdman */
 
 	!(__WEBPACK_AMD_DEFINE_RESULT__ = function(require, exports, module) {
 	    var EventHandler = __webpack_require__(9);
@@ -880,11 +890,11 @@ return /******/ (function(modules) { // webpackBootstrap
 	    /**
 	     * EventFilter regulates the broadcasting of events based on
 	     *  a specified condition prescribed by a provided function
-	     *  with the signature `(type, data) -> Boolean`
+	     *  with the signature `(data) -> Boolean`
 	     *
 	     *  @example
 	     *
-	     *      var eventFilter = new EventFilter(function(type, payload){
+	     *      var eventFilter = new EventFilter(function(payload){
 	     *          return (payload.value == 0);
 	     *      });
 	     *
@@ -919,7 +929,8 @@ return /******/ (function(modules) { // webpackBootstrap
 	     * @param data {Object} Payload
 	     */
 	    EventFilter.prototype.emit = function emit(type, data) {
-	        if (!this._condition(type, data)) return;
+	        //TODO: add start/update/end logic
+	        if (!this._condition(data)) return;
 	        EventHandler.prototype.emit.apply(this, arguments);
 	    };
 
@@ -948,7 +959,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	 * @copyright Famous Industries, Inc. 2014
 	 */
 
-	/* Modified work copyright © 2015 David Valdman */
+	/* Modified work copyright © 2015-2016 David Valdman */
 
 	!(__WEBPACK_AMD_DEFINE_RESULT__ = function(require, exports, module) {
 	    var EventHandler = __webpack_require__(9);
@@ -983,6 +994,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	     *      eventEmitter.emit('move', {x : 3, y : 2}); // x is bigger
 	     *
 	     * @class EventSplitter
+	     * @private
 	     * @namespace Events
 	     * @constructor
 	     * @param splitter {Function}
@@ -1024,9 +1036,9 @@ return /******/ (function(modules) { // webpackBootstrap
 /* 15 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var __WEBPACK_AMD_DEFINE_RESULT__;/* Copyright © 2015 David Valdman */
+	var __WEBPACK_AMD_DEFINE_RESULT__;/* Copyright © 2015-2016 David Valdman */
 
-	!(__WEBPACK_AMD_DEFINE_RESULT__ = function(require, exports, module) {
+	!(__WEBPACK_AMD_DEFINE_RESULT__ = function(require, exports, module){
 	    var EventHandler = __webpack_require__(9);
 	    var EventMapper = __webpack_require__(12);
 	    var SimpleStream = __webpack_require__(11);
@@ -1099,6 +1111,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	        var counter = 0;
 	        var isUpdating = false;
 	        var dirtyStart = false;
+	        var dirtyUpdate = false;
 	        var dirtyEnd = false;
 
 	        function start(data){
@@ -1110,6 +1123,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	        function update(data){
 	            var payload = options && options.update ? options.update(data) : data;
 	            if (payload !== false) this.emit(EVENTS.UPDATE, payload);
+	            dirtyUpdate = false;
 	        }
 
 	        function end(data){
@@ -1127,12 +1141,14 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	        this._eventInput.on(EVENTS.UPDATE, function(data){
 	            isUpdating = true;
+	            if (dirtyUpdate) return false;
+	            dirtyUpdate = true;
 	            postTickQueue.push(update.bind(this, data));
 	        }.bind(this));
 
 	        this._eventInput.on(EVENTS.END, function(data){
 	            counter--;
-	            if (isUpdating && counter > 0) {
+	            if (isUpdating && counter > 0){
 	                update.call(this, data);
 	                return false;
 	            }
@@ -1161,10 +1177,26 @@ return /******/ (function(modules) { // webpackBootstrap
 	    Stream.prototype.constructor = Stream;
 
 	    /**
-	     * Extends SimpleStream.lift
+	     * Lift is like map, except it maps several event sources,
+	     *  not only one.
 	     *
+	     *  @example
+	     *
+	     *      var liftedStream = Stream.lift(function(payload1, payload2){
+	     *          return payload1 + payload2;
+	     *      }, [stream2, stream2]);
+	     *
+	     *      liftedStream.on('name'), function(data){
+	     *          // data = 3;
+	     *      });
+	     *
+	     *      stream2.emit('name', 1);
+	     *      stream2.emit('name', 2);
+	     *
+	     * @method lift
 	     * @static
-	     * @return
+	     * @param map {Function}            Function to map stream payloads
+	     * @param streams {Array|Object}    Stream sources
 	     */
 	    Stream.lift = SimpleStream.lift;
 
@@ -1207,9 +1239,7 @@ return /******/ (function(modules) { // webpackBootstrap
 /* 16 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var __WEBPACK_AMD_DEFINE_RESULT__;/* Copyright © 2015 David Valdman */
-
-	/* Documentation in progress. May be outdated. */
+	var __WEBPACK_AMD_DEFINE_RESULT__;/* Copyright © 2015-2016 David Valdman */
 
 	!(__WEBPACK_AMD_DEFINE_RESULT__ = function(require, exports, module) {
 	    var SimpleStream = __webpack_require__(11);
@@ -1272,7 +1302,7 @@ return /******/ (function(modules) { // webpackBootstrap
 /* 17 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var __WEBPACK_AMD_DEFINE_RESULT__;/* Copyright © 2015 David Valdman */
+	var __WEBPACK_AMD_DEFINE_RESULT__;/* Copyright © 2015-2016 David Valdman */
 
 	!(__WEBPACK_AMD_DEFINE_RESULT__ = function(require, exports, module) {
 	    var EventHandler = __webpack_require__(9);
@@ -1387,7 +1417,7 @@ return /******/ (function(modules) { // webpackBootstrap
 /* 18 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var __WEBPACK_AMD_DEFINE_RESULT__;/* Copyright © 2015 David Valdman */
+	var __WEBPACK_AMD_DEFINE_RESULT__;/* Copyright © 2015-2016 David Valdman */
 
 	!(__WEBPACK_AMD_DEFINE_RESULT__ = function(require, exports, module) {
 	    var SimpleStream = __webpack_require__(11);
@@ -1501,9 +1531,7 @@ return /******/ (function(modules) { // webpackBootstrap
 /* 19 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var __WEBPACK_AMD_DEFINE_RESULT__;/* Copyright © 2015 David Valdman */
-
-	/* Documentation in progress. May be outdated. */
+	var __WEBPACK_AMD_DEFINE_RESULT__;/* Copyright © 2015-2016 David Valdman */
 
 	!(__WEBPACK_AMD_DEFINE_RESULT__ = function(require, exports, module) {
 	    var SimpleStream = __webpack_require__(11);
@@ -1573,7 +1601,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	 * @copyright Famous Industries, Inc. 2014
 	 */
 
-	/* Modified work copyright © 2015 David Valdman */
+	/* Modified work copyright © 2015-2016 David Valdman */
 
 	!(__WEBPACK_AMD_DEFINE_RESULT__ = function(require, exports, module) {
 	    var tickQueue = __webpack_require__(7);
@@ -1784,7 +1812,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	 * @copyright Famous Industries, Inc. 2014
 	 */
 
-	/* Modified work copyright © 2015 David Valdman */
+	/* Modified work copyright © 2015-2016 David Valdman */
 
 	!(__WEBPACK_AMD_DEFINE_RESULT__ = function(require, exports, module) {
 
@@ -2013,7 +2041,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	     * @param x {Number}        Scale amount
 	     */
 	    Transform.scaleX = function scaleX(x) {
-	        return [1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, x, 0, 0, 1];
+	        return [x, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1];
 	    };
 
 	    /**
@@ -2024,7 +2052,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	     * @param y {Number}        Scale amount
 	     */
 	    Transform.scaleY = function scaleY(y) {
-	        return [1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, y, 0, 1];
+	        return [1, 0, 0, 0, 0, y, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1];
 	    };
 
 	    /**
@@ -2035,7 +2063,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	     * @param z {Number}        Scale amount
 	     */
 	    Transform.scaleZ = function scaleZ(z) {
-	        return [1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, z, 1];
+	        return [1, 0, 0, 0, 0, 1, 0, 0, 0, 0, z, 0, 0, 0, 0, 1];
 	    };
 
 	    /**
@@ -2454,7 +2482,7 @@ return /******/ (function(modules) { // webpackBootstrap
 /* 22 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var __WEBPACK_AMD_DEFINE_RESULT__;/* Copyright © 2015 David Valdman */
+	var __WEBPACK_AMD_DEFINE_RESULT__;/* Copyright © 2015-2016 David Valdman */
 
 	!(__WEBPACK_AMD_DEFINE_RESULT__ = function (require, exports, module) {
 	    var dirtyQueue = __webpack_require__(6);
@@ -2613,11 +2641,14 @@ return /******/ (function(modules) { // webpackBootstrap
 	    Transitionable.prototype.set = function set(value, transition, callback) {
 	        if (!transition) {
 	            this.value = value;
-	            this.trigger('start', value);
+	            if (callback) callback();
+	            if (!this.isActive()){
+	                this.trigger('start', value);
 
-	            dirtyQueue.push(function () {
-	                this.trigger('end', value);
-	            }.bind(this));
+	                dirtyQueue.push(function () {
+	                    this.trigger('end', value);
+	                }.bind(this));
+	            }
 	            return;
 	        }
 
@@ -2699,8 +2730,18 @@ return /******/ (function(modules) { // webpackBootstrap
 	     * @method halt
 	     */
 	    Transitionable.prototype.halt = function () {
+	        if (!this._active) return;
 	        this.reset(this.get());
 	        this.trigger('end', this.value);
+
+	        //TODO: refactor this
+	        if (this._engineInstance) {
+	            if (this.updateMethod) {
+	                var index = tickQueue.indexOf(this.updateMethod);
+	                if (index >= 0) tickQueue.splice(index, 1);
+	            }
+	            this.unsubscribe(this._engineInstance);
+	        }
 	    };
 
 	    /**
@@ -2714,56 +2755,27 @@ return /******/ (function(modules) { // webpackBootstrap
 	    };
 
 	    /**
-	     * Iterate through the provided values with the provided transitions. Firing an
-	     *  optional callback when the series of transitions completes.
-	     *  One transition may be provided as opposed to an array when you want all the
-	     *  transitions to behave the same way.
-	     *
-	     * @method iterate
-	     * @param values {Array}                    Array of values
-	     * @param transitions {Object|Object[]}     Array of transitions
-	     * @param [callback] {Function}             Callback
-	     */
-	    Transitionable.prototype.iterate = function iterate(values, transitions, callback) {
-	        if (values.length === 0) {
-	            if (callback) callback();
-	            return;
-	        }
-
-	        // sugar for same transition across value changes
-	        var transition = (transitions instanceof Array)
-	            ? transitions.shift()
-	            : transitions;
-
-	        this.set(values.shift(), transition, function () {
-	            this.iterate(values, transitions, callback);
-	        }.bind(this));
-	    };
-
-	    /**
-	     * Combine multiple transitions to be executed sequentially. Provide the
-	     *  transitions as an array of transition definitions.
+	     * Combine multiple transitions to be executed sequentially. Pass an optional
+	     *  callback to fire on completion. Provide the transitions as an array of
+	     *  transition definition pairs: [value, method]
 	     *
 	     *  @example
 	     *
 	     *  transitionable.setMany([
-	     *      {value : 0, transition : {curve : 'easeOut', duration : 500}},
-	     *      {value : 1, transition : {curve : 'spring', period : 100, damping : 0.5}}
+	     *      [0, {curve : 'easeOut', duration : 500}],
+	     *      [1, {curve : 'spring', period : 100, damping : 0.5}]
 	     *  ]);
 	     *
 	     * @method setMany
 	     * @param transitions {Array}   Array of transitions
+	     * @param [callback] {Function} Callback
 	     */
-	    Transitionable.prototype.setMany = function (transitions) {
-	        var first = transitions.shift();
+	    Transitionable.prototype.setMany = function (transitions, callback) {
+	        var transition = transitions.shift();
 	        if (transitions.length === 0) {
-	            this.set(first.value, first.transition, first.callback)
+	            this.set(transition[0], transition[1], callback);
 	        }
-	        else {
-	            this.set(first.value, first.transition, function () {
-	                this.setMany(transitions);
-	            }.bind(this));
-	        }
+	        else this.set(transition[0], transition[1], this.setMany.bind(this, transitions, callback));
 	    };
 
 	    /**
@@ -2772,8 +2784,8 @@ return /******/ (function(modules) { // webpackBootstrap
 	     *  @example
 	     *
 	     *  transitionable.loop([
-	     *      {value : 0, transition : {curve : 'easeOut', duration : 500}},
-	     *      {value : 1, transition : {curve : 'spring', period : 100, damping : 0.5}}
+	     *      [0, {curve : 'easeOut', duration : 500}],
+	     *      [1, {curve : 'spring', period : 100, damping : 0.5}]
 	     *  ]);
 	     *
 	     * @method loop
@@ -2781,9 +2793,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	     */
 	    Transitionable.prototype.loop = function (transitions) {
 	        var arrayClone = transitions.slice(0);
-	        this.setMany(transitions, function () {
-	            this.loop(arrayClone);
-	        }.bind(this));
+	        this.setMany(transitions, this.loop.bind(this, arrayClone));
 	    };
 
 	    /**
@@ -2796,9 +2806,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	    Transitionable.prototype.delay = function delay(callback, duration) {
 	        this.set(this.get(), {
 	                duration: duration,
-	                curve: function () {
-	                    return 0;
-	                }
+	                curve: function () { return 0; }
 	            },
 	            callback
 	        );
@@ -2819,8 +2827,11 @@ return /******/ (function(modules) { // webpackBootstrap
 	    }
 
 	    NDTransitionable.prototype.set = function (value, transition) {
-	        for (var i = 0; i < value.length; i++)
+	        var velocity = transition.velocity ? transition.velocity.slice() : undefined;
+	        for (var i = 0; i < value.length; i++){
+	            if (velocity) transition.velocity = velocity[i];
 	            this.sources[i].set(value[i], transition);
+	        }
 	    };
 
 	    NDTransitionable.prototype.getVelocity = function () {
@@ -2835,6 +2846,13 @@ return /******/ (function(modules) { // webpackBootstrap
 	            this.sources[i].update();
 	    };
 
+	    NDTransitionable.prototype.reset = function (value) {
+	        for (var i = 0; i < this.sources.length; i++) {
+	            var source = this.sources[i];
+	            source.reset(value[i]);
+	        }
+	    };
+
 	    module.exports = Transitionable;
 	}.call(exports, __webpack_require__, exports, module), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
 
@@ -2843,7 +2861,7 @@ return /******/ (function(modules) { // webpackBootstrap
 /* 23 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var __WEBPACK_AMD_DEFINE_RESULT__;/* Copyright © 2015 David Valdman */
+	var __WEBPACK_AMD_DEFINE_RESULT__;/* Copyright © 2015-2016 David Valdman */
 
 	!(__WEBPACK_AMD_DEFINE_RESULT__ = function(require, exports, module) {
 	    var EventHandler = __webpack_require__(9);
@@ -3143,7 +3161,7 @@ return /******/ (function(modules) { // webpackBootstrap
 /* 24 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var __WEBPACK_AMD_DEFINE_RESULT__;/* Copyright © 2015 David Valdman */
+	var __WEBPACK_AMD_DEFINE_RESULT__;/* Copyright © 2015-2016 David Valdman */
 
 	!(__WEBPACK_AMD_DEFINE_RESULT__ = function (require, exports, module) {
 	    var EventHandler = __webpack_require__(9);
@@ -3157,7 +3175,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	     * A method of interpolating between start and end values with
 	     *  a spring transition.
 	     *
-	     * @class Tween
+	     * @class Spring
 	     * @private
 	     * @namespace Transitions
 	     * @constructor
@@ -3248,7 +3266,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	     * @param value {Number}       Value
 	     * @param [velocity] {Number}  Velocity
 	     */
-	    Spring.prototype.reset = function (value, velocity) {
+	    Spring.prototype.reset = function reset(value, velocity) {
 	        this.value = value;
 	        this.velocity = velocity || 0;
 	    };
@@ -3258,11 +3276,22 @@ return /******/ (function(modules) { // webpackBootstrap
 	     *
 	     * @method halt
 	     */
-	    Spring.prototype.halt = function () {
+	    Spring.prototype.halt = function halt() {
+	        if (!this._active) return;
 	        var value = this.get();
 	        this.reset(value);
 	        this._active = false;
 	        this.emit('end', value);
+	    };
+
+	    /**
+	     * Check to see if Spring is actively transitioning
+	     *
+	     * @method isActive
+	     * @returns {Boolean}
+	     */
+	    Spring.prototype.isActive = function isActive(){
+	        return this._active;
 	    };
 
 	    /**
@@ -3361,19 +3390,19 @@ return /******/ (function(modules) { // webpackBootstrap
 /* 25 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var __WEBPACK_AMD_DEFINE_RESULT__;/* Copyright © 2015 David Valdman */
+	var __WEBPACK_AMD_DEFINE_RESULT__;/* Copyright © 2015-2016 David Valdman */
 
 	!(__WEBPACK_AMD_DEFINE_RESULT__ = function (require, exports, module) {
 	    var EventHandler = __webpack_require__(9);
 	    var SimpleStream = __webpack_require__(11);
 
 	    var now = Date.now;
-	    var tolerance = 1e-2; // energy minimum
+	    var tolerance = 1e-4; // energy minimum
 
 	    /**
 	     * Defines an inertial transition, which decreases
 	     *
-	     * @class Tween
+	     * @class Inertia
 	     * @private
 	     * @namespace Transitions
 	     * @constructor
@@ -3385,7 +3414,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	        this.value = value || 0;
 	        this.velocity = velocity || 0;
-	        this.damping = 0;
+	        this.drag = 0;
 
 	        this.energy = null;
 	        this._active = false;
@@ -3399,7 +3428,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	    Inertia.DEFAULT_OPTIONS = {
 	        velocity: 0,
-	        damping: 0.1
+	        drag: 0.1
 	    };
 
 	    Inertia.prototype = Object.create(SimpleStream.prototype);
@@ -3420,9 +3449,9 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	        this.value = value;
 
-	        this.damping = (transition.damping == undefined)
-	            ? Inertia.DEFAULT_OPTIONS.damping
-	            : Math.pow(Math.min(transition.damping, 1), 3);
+	        this.drag = (transition.drag == undefined)
+	            ? Inertia.DEFAULT_OPTIONS.drag
+	            : Math.pow(Math.min(transition.drag, 1), 3);
 
 	        this.velocity = transition.velocity || this.velocity;
 	    };
@@ -3456,7 +3485,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	     */
 	    Inertia.prototype.reset = function (value, velocity) {
 	        this.value = value;
-	        //this.velocity = velocity || 0;
+	        this.velocity = velocity || 0;
 	    };
 
 	    /**
@@ -3465,10 +3494,21 @@ return /******/ (function(modules) { // webpackBootstrap
 	     * @method halt
 	     */
 	    Inertia.prototype.halt = function () {
+	        if (!this._active) return;
 	        var value = this.get();
 	        this.reset(value);
 	        this._active = false;
 	        this.emit('end', value);
+	    };
+
+	    /**
+	     * Check to see if Inertia is actively transitioning
+	     *
+	     * @method isActive
+	     * @returns {Boolean}
+	     */
+	    Inertia.prototype.isActive = function isActive() {
+	        return this._active;
 	    };
 
 	    /**
@@ -3483,7 +3523,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	        var dt = currentTime - this._previousTime;
 	        this._previousTime = currentTime;
 
-	        this.velocity *= (1 - this.damping);
+	        this.velocity *= (1 - this.drag);
 	        this.value += dt * this.velocity;
 
 	        var energy = 0.5 * this.velocity * this.velocity;
@@ -3507,7 +3547,7 @@ return /******/ (function(modules) { // webpackBootstrap
 /* 26 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var __WEBPACK_AMD_DEFINE_RESULT__;/* Copyright © 2015 David Valdman */
+	var __WEBPACK_AMD_DEFINE_RESULT__;/* Copyright © 2015-2016 David Valdman */
 
 	!(__WEBPACK_AMD_DEFINE_RESULT__ = function(require, exports, module) {
 	    var RenderTreeNode = __webpack_require__(27);
@@ -3601,6 +3641,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	            this._cachedSize = [0,0];
 	            this.size.on('resize', function(size){
+	                if (size === this._cachedSize) return false;
 	                this._cachedSize = size;
 	            }.bind(this));
 
@@ -3658,6 +3699,15 @@ return /******/ (function(modules) { // webpackBootstrap
 	            this._sizeNode.set({proportions : proportions});
 	        },
 	        /**
+	         * Setter for proportions.
+	         *
+	         * @method setProportions
+	         * @param proportions {Number[]|Stream} Proportions as [x,y], or a stream.
+	         */
+	        setAspectRatio: function setProportions(aspectRatio) {
+	            this._sizeNode.set({aspectRatio: aspectRatio});
+	        },
+	        /**
 	         * Setter for origin.
 	         *
 	         * @method setOrigin
@@ -3687,6 +3737,9 @@ return /******/ (function(modules) { // webpackBootstrap
 	                case 'proportions':
 	                    this.setProportions(value);
 	                    break;
+	                case 'aspectRatio':
+	                    this.setAspectRatio(value);
+	                    break;
 	                case 'origin':
 	                    this.setOrigin(value);
 	                    break;
@@ -3705,7 +3758,7 @@ return /******/ (function(modules) { // webpackBootstrap
 /* 27 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var __WEBPACK_AMD_DEFINE_RESULT__;/* Copyright © 2015 David Valdman */
+	var __WEBPACK_AMD_DEFINE_RESULT__;/* Copyright © 2015-2016 David Valdman */
 
 	!(__WEBPACK_AMD_DEFINE_RESULT__ = function(require, exports, module) {
 	    var EventHandler = __webpack_require__(9);
@@ -3866,7 +3919,7 @@ return /******/ (function(modules) { // webpackBootstrap
 /* 28 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var __WEBPACK_AMD_DEFINE_RESULT__;/* copyright © 2015 David Valdman */
+	var __WEBPACK_AMD_DEFINE_RESULT__;/* Copyright © 2015-2016 David Valdman */
 
 	!(__WEBPACK_AMD_DEFINE_RESULT__ = function(require, exports, module) {
 	    var Transform = __webpack_require__(21);
@@ -3954,7 +4007,7 @@ return /******/ (function(modules) { // webpackBootstrap
 /* 29 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var __WEBPACK_AMD_DEFINE_RESULT__;/* copyright © 2015 David Valdman */
+	var __WEBPACK_AMD_DEFINE_RESULT__;/* Copyright © 2015-2016 David Valdman */
 
 	!(__WEBPACK_AMD_DEFINE_RESULT__ = function(require, exports, module) {
 
@@ -3992,12 +4045,6 @@ return /******/ (function(modules) { // webpackBootstrap
 	            if (spec.size[1] === true) size[1] = true;
 	        }
 
-	        //TODO: what is parentSize isn't numeric? Compose margin/proportions?
-	        if (spec.margins){
-	            size[0] = parentSize[0] - (2 * spec.margins[0]);
-	            size[1] = parentSize[1] - (2 * spec.margins[1]);
-	        }
-
 	        if (spec.proportions) {
 	            if (typeof spec.proportions[0] === 'number') size[0] = spec.proportions[0] * parentSize[0];
 	            if (typeof spec.proportions[1] === 'number') size[1] = spec.proportions[1] * parentSize[1];
@@ -4011,6 +4058,11 @@ return /******/ (function(modules) { // webpackBootstrap
 	        if (size[0] === undefined) size[0] = parentSize[0];
 	        if (size[1] === undefined) size[1] = parentSize[1];
 
+	        if (spec.margins) {
+	            size[0] -= 2 * spec.margins[0];
+	            size[1] -= 2 * spec.margins[1];
+	        }
+
 	        return size;
 	    }
 
@@ -4022,9 +4074,7 @@ return /******/ (function(modules) { // webpackBootstrap
 /* 30 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var __WEBPACK_AMD_DEFINE_RESULT__;/*
-	 * copyright © 2015 David Valdman
-	 */
+	var __WEBPACK_AMD_DEFINE_RESULT__;/* Copyright © 2015-2016 David Valdman */
 
 	!(__WEBPACK_AMD_DEFINE_RESULT__ = function(require, exports, module) {
 	    var OptionsManager = __webpack_require__(31);
@@ -4074,6 +4124,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	     *      anotherStream.emit('test'); // "test fired" in console
 	     *
 	     * @class Controller
+	     * @private
 	     * @constructor
 	     * @namespace Core
 	     * @uses Core.OptionsManager
@@ -4224,7 +4275,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	 * @copyright Famous Industries, Inc. 2014
 	 */
 
-	/* Modified work copyright © 2015 David Valdman */
+	/* Modified work copyright © 2015-2016 David Valdman */
 
 	!(__WEBPACK_AMD_DEFINE_RESULT__ = function(require, exports, module) {
 	    var EventHandler = __webpack_require__(9);
@@ -4424,21 +4475,15 @@ return /******/ (function(modules) { // webpackBootstrap
 /* 33 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var __WEBPACK_AMD_DEFINE_RESULT__;/* This Source Code Form is subject to the terms of the Mozilla Public
-	 * License, v. 2.0. If a copy of the MPL was not distributed with this
-	 * file, You can obtain one at http://mozilla.org/MPL/2.0/.
-	 *
-	 * @license MPL 2.0
-	 * @copyright Samsara Industries, Inc. 2014
-	 */
-
-	/* Modified work copyright © 2015 David Valdman */
+	var __WEBPACK_AMD_DEFINE_RESULT__;/* Copyright © 2015-2016 David Valdman */
 
 	!(__WEBPACK_AMD_DEFINE_RESULT__ = function(require, exports, module) {
 	    var ElementOutput = __webpack_require__(34);
 	    var dirtyQueue = __webpack_require__(6);
 
 	    var isTouchEnabled = "ontouchstart" in window;
+	    var usePrefix = !('transform' in document.documentElement.style);
+	    var isIOS = /iPad|iPhone|iPod/.test(navigator.platform);
 
 	    /**
 	     * Surface is a wrapper for a DOM element animated by Samsara.
@@ -4466,11 +4511,11 @@ return /******/ (function(modules) { // webpackBootstrap
 	     *
 	     *      // same as above but create an image instead
 	     *      var surface = new Surface({
+	     *          tagName : 'img',
 	     *          attributes : {
 	     *              src : 'cat.jpg'
 	     *          },
-	     *          size : [100,100],
-	     *          tagName : 'img'
+	     *          size : [100,100]
 	     *      });
 	     *
 	     * @class Surface
@@ -4490,6 +4535,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	     * @param [options.opacity=1] {Number}      Opacity
 	     * @param [options.tagName="div"] {String}  HTML tagName
 	     * @param [options.enableScroll] {Boolean}  Allows a Surface to support native scroll behavior
+	     * @param [options.roundToPixel] {Boolean}  Prevents text-blurring if set to true, at the cost to jittery animation
 	     */
 	    function Surface(options) {
 	        this.properties = {};
@@ -4504,6 +4550,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	        this._attributesDirty = true;
 	        this._dirty = false;
 	        this._cachedSize = null;
+	        this._allocator = null;
 
 	        if (options) {
 	            // default to DOM size for provided elements
@@ -4528,6 +4575,8 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	        dirtyQueue.push(function(){
 	            var target = this._currentTarget;
+
+	            if (!target) return;
 
 	            if (this._classesDirty) {
 	                _removeClasses.call(this, target);
@@ -4563,7 +4612,8 @@ return /******/ (function(modules) { // webpackBootstrap
 	    }
 
 	    function _removeClasses(target) {
-	        for (var i = 0; i < this._dirtyClasses.length; i++) target.classList.remove(this._dirtyClasses[i]);
+	        for (var i = 0; i < this._dirtyClasses.length; i++)
+	            target.classList.remove(this._dirtyClasses[i]);
 	        this._dirtyClasses = [];
 	    }
 
@@ -4577,23 +4627,32 @@ return /******/ (function(modules) { // webpackBootstrap
 	            target.removeAttribute(key);
 	    }
 
-	    function preventDrag(){
-	        if (this._currentTarget){
-	            this._currentTarget.addEventListener('touchmove', function (event) {
-	                event.preventDefault();
-	            }, false);
-	        }
-	        else {
-	            this.on('deploy', function (target) {
-	                target.addEventListener('touchmove', function (event) {
-	                    event.preventDefault();
-	                }, false);
-	            }.bind(this));
-	        }
-	    }
-
 	    function enableScroll(){
 	        this.addClass('samsara-scrollable');
+
+	        if (!isTouchEnabled) return;
+
+	        this.on('deploy', function(target){
+	            // Hack to prevent page scrolling for iOS when scroll starts at extremes
+	            if (isIOS) {
+	                target.addEventListener('touchstart', function () {
+	                    var top = target.scrollTop;
+	                    var height = target.offsetHeight;
+	                    var scrollHeight = target.scrollHeight;
+
+	                    if (top == 0)
+	                        target.scrollTop = 1;
+	                    else if (top + height == scrollHeight)
+	                        target.scrollTop = scrollHeight - height - 1;
+
+	                }, false);
+	            }
+
+	            // Prevent bubbling to capture phase of window's touchmove event which prevents default.
+	            target.addEventListener('touchmove', function(event){
+	                event.stopPropagation();
+	            }, false);
+	        });
 	    }
 	    
 	    /**
@@ -4767,7 +4826,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	        if (options.content !== undefined) this.setContent(options.content);
 	        if (options.aspectRatio !== undefined) this.setAspectRatio(options.aspectRatio);
 	        if (options.enableScroll) enableScroll.call(this);
-	        else if (isTouchEnabled) preventDrag.call(this);
+	        if (options.roundToPixel) this.roundToPixel = options.roundToPixel;
 	    };
 
 	    /**
@@ -4782,6 +4841,8 @@ return /******/ (function(modules) { // webpackBootstrap
 	     * @param allocator {ElementAllocator} Allocator
 	     */
 	    Surface.prototype.setup = function setup(allocator) {
+	        this._allocator = allocator;
+
 	        // create element of specific type
 	        var target = allocator.allocate(this.elementType);
 
@@ -4810,6 +4871,8 @@ return /******/ (function(modules) { // webpackBootstrap
 	     * @param allocator {ElementAllocator} Allocator
 	     */
 	    Surface.prototype.remove = function remove(allocator) {
+	        //TODO: don't reference allocator in state
+	        allocator = allocator || this._allocator;
 	        var target = this._currentTarget;
 
 	        // cache the target's contents for later deployment
@@ -4820,6 +4883,18 @@ return /******/ (function(modules) { // webpackBootstrap
 	        target.style.opacity = '';
 	        target.style.width = '';
 	        target.style.height = '';
+
+	        if (usePrefix){
+	            target.style.webkitTransform = 'scale3d(0.0001,0.0001,0.0001)';
+	            target.style.webkitTransformOrigin = '';
+	        }
+	        else {
+	            target.style.transform = 'scale3d(0.0001,0.0001,0.0001)';
+	            target.style.transformOrigin = '';
+	        }
+
+	        for (var i = 0; i < this.classList.length; i++)
+	            this.removeClass(this.classList[i]);
 
 	        // clear all styles, classes and attributes
 	        _removeProperties.call(this, target);
@@ -4958,15 +5033,7 @@ return /******/ (function(modules) { // webpackBootstrap
 /* 34 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var __WEBPACK_AMD_DEFINE_RESULT__;/* This Source Code Form is subject to the terms of the Mozilla Public
-	 * License, v. 2.0. If a copy of the MPL was not distributed with this
-	 * file, You can obtain one at http://mozilla.org/MPL/2.0/.
-	 *
-	 * @license MPL 2.0
-	 * @copyright Famous Industries, Inc. 2014
-	 */
-
-	/* Modified work copyright © 2015 David Valdman */
+	var __WEBPACK_AMD_DEFINE_RESULT__;/* Copyright © 2015-2016 David Valdman */
 
 	!(__WEBPACK_AMD_DEFINE_RESULT__ = function(require, exports, module) {
 	    var EventHandler = __webpack_require__(9);
@@ -4979,8 +5046,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	    var layoutAlgebra = __webpack_require__(28);
 
 	    var usePrefix = !('transform' in document.documentElement.style);
-	    var devicePixelRatio = window.devicePixelRatio || 1;
-	    var invDevicePixelRatio = 1 / devicePixelRatio;
+	    var devicePixelRatio = 2 * (window.devicePixelRatio || 1);
 	    var MIN_OPACITY = 0.0001;
 	    var MAX_OPACITY = 0.9999;
 	    var EPSILON = 1e-5;
@@ -5073,12 +5139,18 @@ return /******/ (function(modules) { // webpackBootstrap
 	            target.removeEventListener(i, this._eventForwarder);
 	    }
 
-	    function _formatCSSTransform(transform) {
+	    function _round(value, unit){
+	        return (unit === 1)
+	            ? Math.round(value)
+	            : Math.round(value * unit) / unit
+	    }
+
+	    function _formatCSSTransform(transform, unit) {
 	        var result = 'matrix3d(';
 	        for (var i = 0; i < 15; i++) {
 	            if (Math.abs(transform[i]) < EPSILON) transform[i] = 0;
 	            result += (i === 12 || i === 13)
-	                ? Math.round(transform[i] * devicePixelRatio) * invDevicePixelRatio + ','
+	                ? _round(transform[i], unit) + ','
 	                : transform[i] + ',';
 	        }
 	        return result + transform[15] + ')';
@@ -5094,26 +5166,26 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	    var _setOrigin = usePrefix
 	        ? function _setOrigin(element, origin) {
-	        element.style.webkitTransformOrigin = _formatCSSOrigin(origin);
-	    }
+	            element.style.webkitTransformOrigin = _formatCSSOrigin(origin);
+	        }
 	        : function _setOrigin(element, origin) {
-	        element.style.transformOrigin = _formatCSSOrigin(origin);
-	    };
+	            element.style.transformOrigin = _formatCSSOrigin(origin);
+	        };
 
 	    var _setTransform = (usePrefix)
-	        ? function _setTransform(element, transform) {
-	        element.style.webkitTransform = _formatCSSTransform(transform);
-	    }
-	        : function _setTransform(element, matrix) {
-	        element.style.transform = _formatCSSTransform(matrix);
-	    };
+	        ? function _setTransform(element, transform, unit) {
+	            element.style.webkitTransform = _formatCSSTransform(transform, unit);
+	        }
+	        : function _setTransform(element, transform, unit) {
+	            element.style.transform = _formatCSSTransform(transform, unit);
+	        };
 
 	    var _setSize = function _setSize(target, size){
 	        if (size[0] === true) size[0] = target.offsetWidth;
-	        else target.style.width = Math.ceil(size[0] * devicePixelRatio) * invDevicePixelRatio + 'px';
+	        else target.style.width = size[0] + 'px';
 
 	        if (size[1] === true) size[1] = target.offsetHeight;
-	        else target.style.height = Math.ceil(size[1] * devicePixelRatio) * invDevicePixelRatio + 'px';
+	        else target.style.height = size[1] + 'px';
 	    };
 
 	    // {Visibility : hidden} allows for DOM events to pass through the element
@@ -5230,7 +5302,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	        if (this._transformDirty) {
 	            cache.transform = transform;
-	            _setTransform(target, transform);
+	            _setTransform(target, transform, this.roundToPixel ? 1 : devicePixelRatio);
 	        }
 
 	        this._originDirty = false;
@@ -5241,6 +5313,9 @@ return /******/ (function(modules) { // webpackBootstrap
 	    function commitSize(size){
 	        var target = this._currentTarget;
 	        if (!target) return;
+
+	        if (size[0] !== true) size[0] = _round(size[0], devicePixelRatio);
+	        if (size[1] !== true) size[1] = _round(size[1], devicePixelRatio);
 
 	        if (_xyNotEquals(this._cachedSpec.size, size)){
 	            this._cachedSpec.size = size;
@@ -5257,15 +5332,7 @@ return /******/ (function(modules) { // webpackBootstrap
 /* 35 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var __WEBPACK_AMD_DEFINE_RESULT__;/* This Source Code Form is subject to the terms of the Mozilla Public
-	 * License, v. 2.0. If a copy of the MPL was not distributed with this
-	 * file, You can obtain one at http://mozilla.org/MPL/2.0/.
-	 *
-	 * @license MPL 2.0
-	 * @copyright Famous Industries, Inc. 2014
-	 */
-
-	/* Modified work copyright © 2015 David Valdman */
+	var __WEBPACK_AMD_DEFINE_RESULT__;/* Copyright © 2015-2016 David Valdman */
 
 	!(__WEBPACK_AMD_DEFINE_RESULT__ = function(require, exports, module) {
 	    var Surface = __webpack_require__(33);
@@ -5299,31 +5366,35 @@ return /******/ (function(modules) { // webpackBootstrap
 	     * @uses DOM.Context
 	     * @constructor
 	     *
-	     * @param [options] {Object}                Options
-	     * @param [options.size] {Number[]}         Size (width, height) in pixels. These can also be `true` or `undefined`.
-	     * @param [options.classes] {String[]}      CSS classes
-	     * @param [options.properties] {Object}     Dictionary of CSS properties
-	     * @param [options.attributes] {Object}     Dictionary of HTML attributes
-	     * @param [options.content] {String}        InnerHTML content
-	     * @param [options.origin] {Number[]}       Origin (x,y), with values between 0 and 1
-	     * @param [options.proportions] {Number[]}  Proportions (x,y) with values between 0 and 1
-	     * @param [options.margins] {Number[]}      Margins (x,y) in pixels
-	     * @param [options.opacity] {Number}        Opacity
+	     * @param [options] {Object}                      Options
+	     * @param [options.size] {Number[]}               Size (width, height) in pixels. These can also be `true` or `undefined`.
+	     * @param [options.classes] {String[]}            CSS classes
+	     * @param [options.properties] {Object}           Dictionary of CSS properties
+	     * @param [options.attributes] {Object}           Dictionary of HTML attributes
+	     * @param [options.content] Sstring}              InnerHTML content
+	     * @param [options.origin] {Number[]}             Origin (x,y), with values between 0 and 1
+	     * @param [options.margins] {Number[]}            Margins (x,y) in pixels
+	     * @param [options.proportions] {Number[]}        Proportions (x,y) with values between 0 and 1
+	     * @param [options.aspectRatio] {Number}          Aspect ratio
+	     * @param [options.opacity=1] {Number}            Opacity
+	     * @param [options.tagName="div"] {String}        HTML tagName
+	     * @param [options.enableScroll=false] {Boolean}  Allows a Surface to support native scroll behavior
+	     * @param [options.roundToPixel=false] {Boolean}  Prevents text-blurring if set to true, at the cost to jittery animation
 	     */
 	    function ContainerSurface(options) {
 	        Surface.call(this, options);
 	        this.context = new Context();
 	        this.context._size.subscribe(this.size);
 
-	        this.on('deploy', function(){
-	            this.context.mount(this._currentTarget, true);
+	        this.on('deploy', function(target){
+	            this.context.mount(target, true);
 	        }.bind(this));
 	    }
 
 	    ContainerSurface.prototype = Object.create(Surface.prototype);
 	    ContainerSurface.prototype.constructor = ContainerSurface;
 	    ContainerSurface.prototype.elementType = 'div';
-	    ContainerSurface.prototype.elementClass = ['samsara-surface', 'samsara-container'];
+	    ContainerSurface.prototype.elementClass = ['samsara-container', 'samsara-surface'];
 
 	    /**
 	     * Get current perspective in pixels.
@@ -5366,7 +5437,7 @@ return /******/ (function(modules) { // webpackBootstrap
 /* 36 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var __WEBPACK_AMD_DEFINE_RESULT__;/* Modified work copyright © 2015 David Valdman */
+	var __WEBPACK_AMD_DEFINE_RESULT__;/* Copyright © 2015-2016 David Valdman */
 	// TODO: Enable CSS properties on Context
 	!(__WEBPACK_AMD_DEFINE_RESULT__ = function(require, exports, module) {
 	    var Engine = __webpack_require__(2);
@@ -5374,14 +5445,18 @@ return /******/ (function(modules) { // webpackBootstrap
 	    var Transform = __webpack_require__(21);
 	    var ElementAllocator = __webpack_require__(38);
 	    var Transitionable = __webpack_require__(22);
+	    var OptionsManager = __webpack_require__(31);
 	    var SimpleStream = __webpack_require__(11);
 	    var EventHandler = __webpack_require__(9);
 	    var preTickQueue = __webpack_require__(5);
 	    var dirtyQueue = __webpack_require__(6);
 
 	    var elementType = 'div';
-	    var elementClass = 'samsara-context';
 	    var rafStarted = false;
+	    var isMobile = /mobi/i.test(navigator.userAgent);
+	    var orientation = Number.NaN;
+	    var windowWidth = Number.NaN;
+	    var windowHeight = Number.NaN;
 
 	    var layoutSpec = {
 	        transform : Transform.identity,
@@ -5416,8 +5491,12 @@ return /******/ (function(modules) { // webpackBootstrap
 	     * @constructor
 	     * @namespace DOM
 	     * @uses Core.RootNode
+	     *
+	     * @param [options] {Object}                        Options
+	     * @param [options.enableScroll=false] {Boolean}    Allow scrolling on mobile devices
 	     */
-	    function Context() {
+	    function Context(options) {
+	        this.options = OptionsManager.setOptions(this, options, Context.DEFAULT_OPTIONS);
 	        this._node = new RootNode();
 
 	        this._size = new SimpleStream();
@@ -5433,20 +5512,48 @@ return /******/ (function(modules) { // webpackBootstrap
 	        this._node._layout.subscribe(this._layout);
 
 	        this._perspective = new Transitionable();
+	        this._perspectiveOrigin = new Transitionable();
 
 	        this._perspective.on('update', function(perspective){
+	            if (!this.container) return;
 	            setPerspective(this.container, perspective);
 	        }.bind(this));
 
 	        this._perspective.on('end', function(perspective){
+	            if (!this.container) return;
 	            setPerspective(this.container, perspective);
+	        }.bind(this));
+
+	        this._perspectiveOrigin.on('update', function(origin) {
+	            if (!this.container) return;
+	            setPerspectiveOrigin(this.container, origin);
+	        }.bind(this));
+
+	        this._perspectiveOrigin.on('end', function(origin) {
+	            if (!this.container) return;
+	            setPerspectiveOrigin(this.container, origin);
 	        }.bind(this));
 
 	        this._eventOutput = new EventHandler();
 	        this._eventForwarder = function _eventForwarder(event) {
 	            this._eventOutput.emit(event.type, event);
 	        }.bind(this);
+
+	        // Prevents dragging of entire page
+	        if (this.options.enableScroll === false){
+	            this.on('deploy', function(target) {
+	                target.addEventListener('touchmove', function(event) {
+	                    event.preventDefault();
+	                }, false);
+	            });
+	        }
 	    }
+
+	    Context.prototype.elementClass = 'samsara-context';
+
+	    Context.DEFAULT_OPTIONS = {
+	        enableScroll : false
+	    };
 
 	    /**
 	     * Extends the render tree beginning with the Context's RootNode with a new node.
@@ -5484,6 +5591,18 @@ return /******/ (function(modules) { // webpackBootstrap
 	    };
 
 	    /**
+	     * Set current perspective of the `context` in pixels.
+	     *
+	     * @method setPerspective
+	     * @param perspective {Number}  Perspective in pixels
+	     * @param [transition] {Object} Transition definition
+	     * @param [callback] {Function} Callback executed on completion of transition
+	     */
+	    Context.prototype.setPerspectiveOrigin = function setPerspectiveOrigin(origin, transition, callback) {
+	        this._perspectiveOrigin.set(origin, transition, callback);
+	    };
+
+	    /**
 	     * Allocate contents of the `context` to a DOM node.
 	     *
 	     * @method mount
@@ -5491,7 +5610,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	     */
 	    Context.prototype.mount = function mount(node, resizeListenFlag){
 	        this.container = node || document.createElement(elementType);
-	        this.container.classList.add(elementClass);
+	        this.container.classList.add(this.elementClass);
 
 	        var allocator = new ElementAllocator(this.container);
 	        this._node.setAllocator(allocator);
@@ -5505,7 +5624,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	            window.addEventListener('resize', handleResize.bind(this), false);
 
 	        preTickQueue.push(function (){
-	            handleResize.call(this);
+	            if (!resizeListenFlag) handleResize.call(this);
 	            this._layout.trigger('start', layoutSpec);
 	            dirtyQueue.push(function(){
 	                this._layout.trigger('end', layoutSpec);
@@ -5572,7 +5691,33 @@ return /******/ (function(modules) { // webpackBootstrap
 	            element.style.perspective = perspective ? (perspective | 0) + 'px' : '0px';
 	        };
 
+	    function _formatCSSOrigin(origin) {
+	        return (100 * origin[0]) + '% ' + (100 * origin[1]) + '%';
+	    }
+
+	    var setPerspectiveOrigin = usePrefix
+	        ? function setPerspectiveOrigin(element, origin) {
+	            element.style.webkitPerspectiveOrigin = origin ? _formatCSSOrigin(origin) : '50% 50%';
+	        }
+	        : function setPerspectiveOrigin(element, origin) {
+	            element.style.perspectiveOrigin = origin ? _formatCSSOrigin(origin) : '50% 50%';
+	        };
+
 	    function handleResize() {
+	        var newHeight = window.innerHeight;
+	        var newWidth = window.innerWidth;
+
+	        if (isMobile){
+	            var newOrientation = newHeight > newWidth;
+	            if (orientation === newOrientation) return false;
+	            orientation = newOrientation;
+	        }
+	        else {
+	            if (newWidth === windowWidth && newHeight === windowHeight) return false;
+	            windowWidth = newWidth;
+	            windowHeight = newHeight;
+	        }
+
 	        this._size.emit('resize');
 	        dirtyQueue.push(function(){
 	            this._size.emit('resize');
@@ -5587,7 +5732,7 @@ return /******/ (function(modules) { // webpackBootstrap
 /* 37 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var __WEBPACK_AMD_DEFINE_RESULT__;/* Copyright © 2015 David Valdman */
+	var __WEBPACK_AMD_DEFINE_RESULT__;/* Copyright © 2015-2016 David Valdman */
 
 	!(__WEBPACK_AMD_DEFINE_RESULT__ = function(require, exports, module) {
 	    var RenderTreeNode = __webpack_require__(27);
@@ -5638,7 +5783,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	 * @copyright Famous Industries, Inc. 2014
 	 */
 
-	/* Modified work copyright © 2015 David Valdman */
+	/* Modified work copyright © 2015-2016 David Valdman */
 
 	!(__WEBPACK_AMD_DEFINE_RESULT__ = function(require, exports, module) {
 
@@ -5760,7 +5905,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	 * @copyright Famous Industries, Inc. 2014
 	 */
 
-	/* Modified work copyright © 2015 David Valdman */
+	/* Modified work copyright © 2015-2016 David Valdman */
 
 	!(__WEBPACK_AMD_DEFINE_RESULT__ = function(require, exports, module) {
 	    var EventHandler = __webpack_require__(9);
@@ -5873,6 +6018,17 @@ return /******/ (function(modules) { // webpackBootstrap
 	        this._eventOutput.unsubscribe(input);
 	    };
 
+	    /**
+	     * Get a registered input by key
+	     *
+	     * @method getInput
+	     * @param key {String} Identifier for input class
+	     * @return {Input}
+	     */
+	    GenericInput.prototype.getInput = function getInput(key){
+	        return this._inputs[key];
+	    };
+
 	    function _addSingleInput(key, options) {
 	        if (!registry[key]) return;
 	        this._inputs[key] = new (registry[key])(options);
@@ -5911,7 +6067,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	 * @copyright Famous Industries, Inc. 2014
 	 */
 
-	/* Modified work copyright © 2015 David Valdman */
+	/* Modified work copyright © 2015-2016 David Valdman */
 
 	!(__WEBPACK_AMD_DEFINE_RESULT__ = function(require, exports, module) {
 	    var EventHandler = __webpack_require__(9);
@@ -5933,6 +6089,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	     *      `value`     - Displacement in pixels from `mousedown`
 	     *      `delta`     - Differential in pixels between successive mouse positions
 	     *      `velocity`  - Velocity of mouse movement in pixels per second
+	     *      `cumulate`  - Accumulated value over successive displacements
 	     *      `clientX`   - DOM event clientX property
 	     *      `clientY`   - DOM event clientY property
 	     *      `offsetX`   - DOM event offsetX property
@@ -5989,16 +6146,18 @@ return /******/ (function(modules) { // webpackBootstrap
 	        this._eventInput.on('mouseleave',   handleLeave.bind(this));
 
 	        this._payload = {
-	            delta    : null,
-	            value    : null,
+	            delta : null,
+	            value : null,
+	            cumulate : null,
 	            velocity : null,
-	            clientX  : 0,
-	            clientY  : 0,
-	            offsetX  : 0,
-	            offsetY  : 0
+	            clientX : 0,
+	            clientY : 0,
+	            offsetX : 0,
+	            offsetY : 0
 	        };
 
-	        this._position = null;      // to be deprecated
+	        this._value = null;
+	        this._cumulate = null;
 	        this._prevCoord = undefined;
 	        this._prevTime = undefined;
 	        this._down = false;
@@ -6009,8 +6168,8 @@ return /******/ (function(modules) { // webpackBootstrap
 	    MouseInput.prototype.constructor = MouseInput;
 
 	    MouseInput.DEFAULT_OPTIONS = {
-	        direction: undefined,
-	        scale: 1
+	        direction : undefined,
+	        scale : 1
 	    };
 
 	    /**
@@ -6040,20 +6199,23 @@ return /******/ (function(modules) { // webpackBootstrap
 	        this._down = true;
 	        this._move = false;
 
-	        if (this.options.direction !== undefined){
-	            this._position = 0;
+	        if (this.options.direction !== undefined) {
+	            if (this._cumulate === null) this._cumulate = 0;
+	            this._value = 0;
 	            delta = 0;
 	            velocity = 0;
 	        }
 	        else {
-	            this._position = [0, 0];
+	            if (this._cumulate === null) this._cumulate = [0, 0];
+	            this._value = [0, 0];
 	            delta = [0, 0];
 	            velocity = [0, 0];
 	        }
 
 	        var payload = this._payload;
 	        payload.delta = delta;
-	        payload.value = this._position;
+	        payload.value = this._value;
+	        payload.cumulate = this._cumulate;
 	        payload.velocity = velocity;
 	        payload.clientX = x;
 	        payload.clientY = y;
@@ -6063,7 +6225,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	        this._eventOutput.emit('start', payload);
 	    }
 
-	    function handleMove(event) {
+	    function handleMove(event){
 	        if (!this._down) return false;
 
 	        var scale = this.options.scale;
@@ -6091,28 +6253,33 @@ return /******/ (function(modules) { // webpackBootstrap
 	        if (this.options.direction === MouseInput.DIRECTION.X) {
 	            nextDelta = diffX;
 	            nextVel = velX;
-	            this._position += nextDelta;
+	            this._value += nextDelta;
+	            this._cumulate += nextDelta;
 	        }
 	        else if (this.options.direction === MouseInput.DIRECTION.Y) {
 	            nextDelta = diffY;
 	            nextVel = velY;
-	            this._position += nextDelta;
+	            this._value += nextDelta;
+	            this._cumulate += nextDelta;
 	        }
 	        else {
 	            nextDelta = [diffX, diffY];
 	            nextVel = [velX, velY];
-	            this._position[0] += nextDelta[0];
-	            this._position[1] += nextDelta[1];
+	            this._value[0] += nextDelta[0];
+	            this._value[1] += nextDelta[1];
+	            this._cumulate[0] += nextDelta[0];
+	            this._cumulate[1] += nextDelta[1];
 	        }
 
-	        var payload      = this._payload;
-	        payload.delta    = nextDelta;
-	        payload.value    = this._position;
+	        var payload = this._payload;
+	        payload.delta = nextDelta;
+	        payload.value = this._value;
+	        payload.cumulate = this._cumulate;
 	        payload.velocity = nextVel;
-	        payload.clientX  = x;
-	        payload.clientY  = y;
-	        payload.offsetX  = event.offsetX;
-	        payload.offsetY  = event.offsetY;
+	        payload.clientX = x;
+	        payload.clientY = y;
+	        payload.offsetX = event.offsetX;
+	        payload.offsetY = event.offsetY;
 
 	        this._eventOutput.emit('update', payload);
 
@@ -6160,7 +6327,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	 * @copyright Famous Industries, Inc. 2014
 	 */
 
-	/* Modified work copyright © 2015 David Valdman */
+	/* Modified work copyright © 2015-2016 David Valdman */
 
 	!(__WEBPACK_AMD_DEFINE_RESULT__ = function(require, exports, module) {
 	    var TouchTracker = __webpack_require__(44);
@@ -6182,10 +6349,11 @@ return /******/ (function(modules) { // webpackBootstrap
 	     *      `value`     - Displacement in pixels from `touchstart`
 	     *      `delta`     - Differential in pixels between successive mouse positions
 	     *      `velocity`  - Velocity of mouse movement in pixels per second
+	     *      `cumulate`  - Accumulated displacement over successive displacements
 	     *      `clientX`   - DOM event clientX property
 	     *      `clientY`   - DOM event clientY property
 	     *      `count`     - DOM event for number of simultaneous touches
-	     *      `touch`     - DOM touch event identifier
+	     *      `touchId`     - DOM touch event identifier
 	     *
 	     * @example
 	     *
@@ -6234,24 +6402,26 @@ return /******/ (function(modules) { // webpackBootstrap
 	        this._touchTracker.on('trackend', handleEnd.bind(this));
 
 	        this._payload = {
-	            delta    : null,
-	            value    : null,
+	            delta : null,
+	            value : null,
+	            cumulate : null,
 	            velocity : null,
-	            clientX  : undefined,
-	            clientY  : undefined,
-	            count    : 0,
-	            touch    : undefined
+	            clientX : undefined,
+	            clientY : undefined,
+	            count : 0,
+	            touchId : undefined
 	        };
 
-	        this._position = null;
+	        this._cumulate = null;
+	        this._value = null;
 	    }
 
 	    TouchInput.prototype = Object.create(SimpleStream.prototype);
 	    TouchInput.prototype.constructor = TouchInput;
 
 	    TouchInput.DEFAULT_OPTIONS = {
-	        direction: undefined,
-	        scale: 1
+	        direction : undefined,
+	        scale : 1
 	    };
 
 	    /**
@@ -6270,25 +6440,28 @@ return /******/ (function(modules) { // webpackBootstrap
 	    function handleStart(data) {
 	        var velocity;
 	        var delta;
-	        if (this.options.direction !== undefined){
-	            this._position = 0;
+	        if (this.options.direction !== undefined) {
+	            if (this._cumulate === null) this._cumulate = 0;
+	            this._value = 0;
 	            velocity = 0;
 	            delta = 0;
 	        }
 	        else {
-	            this._position = [0, 0];
+	            if (this._cumulate === null) this._cumulate = [0, 0];
+	            this._value = [0, 0];
 	            velocity = [0, 0];
 	            delta = [0, 0];
 	        }
 
 	        var payload = this._payload;
 	        payload.delta = delta;
-	        payload.value = this._position;
+	        payload.value = this._value;
+	        payload.cumulate = this._cumulate;
 	        payload.velocity = velocity;
 	        payload.clientX = data.x;
 	        payload.clientY = data.y;
 	        payload.count = data.count;
-	        payload.touch = data.identifier;
+	        payload.touchId = data.identifier;
 
 	        this._eventOutput.emit('start', payload);
 	    }
@@ -6317,28 +6490,33 @@ return /******/ (function(modules) { // webpackBootstrap
 	        if (this.options.direction === TouchInput.DIRECTION.X) {
 	            nextDelta = diffX;
 	            nextVel = velX;
-	            this._position += diffX;
+	            this._value += nextDelta;
+	            this._cumulate += nextDelta;
 	        }
 	        else if (this.options.direction === TouchInput.DIRECTION.Y) {
 	            nextDelta = diffY;
 	            nextVel = velY;
-	            this._position += nextDelta;
+	            this._value += nextDelta;
+	            this._cumulate += nextDelta;
 	        }
 	        else {
 	            nextDelta = [diffX, diffY];
 	            nextVel = [velX, velY];
-	            this._position[0] += nextDelta[0];
-	            this._position[1] += nextDelta[1];
+	            this._value[0] += nextDelta[0];
+	            this._value[1] += nextDelta[1];
+	            this._cumulate[0] += nextDelta[0];
+	            this._cumulate[1] += nextDelta[1];
 	        }
 
 	        var payload = this._payload;
-	        payload.delta      = nextDelta;
-	        payload.velocity   = nextVel;
-	        payload.value      = this._position;
-	        payload.clientX    = data.x;
-	        payload.clientY    = data.y;
-	        payload.count      = data.count;
-	        payload.touch      = data.identifier;
+	        payload.delta = nextDelta;
+	        payload.velocity = nextVel;
+	        payload.value = this._value;
+	        payload.cumulate = this._cumulate;
+	        payload.clientX = data.x;
+	        payload.clientY = data.y;
+	        payload.count = data.count;
+	        payload.touchId = data.identifier;
 
 	        this._eventOutput.emit('update', payload);
 	    }
@@ -6364,7 +6542,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	 * @copyright Famous Industries, Inc. 2014
 	 */
 
-	/* Modified work copyright © 2015 David Valdman */
+	/* Modified work copyright © 2015-2016 David Valdman */
 
 	//TODO: deprecate in favor of generic history stream
 
@@ -6452,6 +6630,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	    }
 
 	    function _handleMove(event) {
+	        event.preventDefault(); // prevents scrolling on mobile
 	        for (var i = 0; i < event.changedTouches.length; i++) {
 	            var touch = event.changedTouches[i];
 	            var history = this.touchHistory[touch.identifier];
@@ -6495,9 +6674,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	 * @copyright Famous Industries, Inc. 2014
 	 */
 
-	/* Modified work copyright © 2015 David Valdman */
-
-	/* Documentation in progress. May be outdated. */
+	/* Modified work copyright © 2015-2016 David Valdman */
 
 	!(__WEBPACK_AMD_DEFINE_RESULT__ = function(require, exports, module) {
 	    var EventHandler = __webpack_require__(9);
@@ -6506,6 +6683,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	    var Timer = __webpack_require__(20);
 
 	    var MINIMUM_TICK_TIME = 8;
+	    var MAX_DIFFERENTIAL = 50; // caps mousewheel differentials
 
 	    /**
 	     * Wrapper for DOM wheel/mousewheel events. Converts `scroll` events
@@ -6513,7 +6691,11 @@ return /******/ (function(modules) { // webpackBootstrap
 	     *
 	     *      `value`     - Scroll displacement in pixels from start
 	     *      `delta`     - Scroll differential in pixels between subsequent events
-	     *      `velocity`  - Velocity of scroll
+	     *      `velocity`  - Velocity of scroll,
+	     *      `clientX`   - DOM event clientX property
+	     *      `clientY`   - DOM event clientY property
+	     *      `offsetX`   - DOM event offsetX property
+	     *      `offsetY`   - DOM event offsetY property
 	     *
 	     * @example
 	     *
@@ -6547,9 +6729,14 @@ return /******/ (function(modules) { // webpackBootstrap
 	        this.options = OptionsManager.setOptions(this, options);
 
 	        this._payload = {
-	            delta    : null,
-	            value    : null,
-	            velocity : null
+	            delta : null,
+	            value : null,
+	            cumulate : null,
+	            velocity : null,
+	            clientX : undefined,
+	            clientY : undefined,
+	            offsetX : undefined,
+	            offsetY : undefined
 	        };
 
 	        this._eventInput = new EventHandler();
@@ -6558,16 +6745,21 @@ return /******/ (function(modules) { // webpackBootstrap
 	        EventHandler.setInputHandler(this, this._eventInput);
 	        EventHandler.setOutputHandler(this, this._eventOutput);
 
-	        this._eventInput.on('mousewheel', handleMove.bind(this));
 	        this._eventInput.on('wheel', handleMove.bind(this));
 
 	        this._value = (this.options.direction === undefined) ? [0,0] : 0;
+	        this._cumulate = (this.options.direction === undefined) ? [0, 0] : 0;
 	        this._prevTime = undefined;
 	        this._inProgress = false;
 
 	        var self = this;
 	        this._scrollEnd = Timer.debounce(function(){
 	            self._inProgress = false;
+	            // this prevents velocities for mousewheel events vs trackpad ones
+	            if (self._payload.delta !== 0){
+	                self._payload.velocity = 0;
+	            }
+
 	            self._eventOutput.emit('end', self._payload);
 	        }, 100);
 	    }
@@ -6596,13 +6788,13 @@ return /******/ (function(modules) { // webpackBootstrap
 	    var _now = Date.now;
 
 	    function handleMove(event) {
-	        // prevent scrolling of page simultaneously
-	        event.preventDefault();
+	        event.preventDefault(); // Disable default scrolling behavior
 
 	        if (!this._inProgress) {
 	            this._value = (this.options.direction === undefined) ? [0,0] : 0;
 	            payload = this._payload;
 	            payload.value = this._value;
+	            payload.cumulate = this._cumulate;
 	            payload.clientX = event.clientX;
 	            payload.clientY = event.clientY;
 	            payload.offsetX = event.offsetX;
@@ -6616,8 +6808,13 @@ return /******/ (function(modules) { // webpackBootstrap
 	        var currTime = _now();
 	        var prevTime = this._prevTime || currTime;
 
-	        var diffX = (event.wheelDeltaX !== undefined) ? event.wheelDeltaX : -event.deltaX;
-	        var diffY = (event.wheelDeltaY !== undefined) ? event.wheelDeltaY : -event.deltaY;
+	        var diffX = -event.deltaX;
+	        var diffY = -event.deltaY;
+
+	        if (diffX > MAX_DIFFERENTIAL) diffX = MAX_DIFFERENTIAL;
+	        if (diffY > MAX_DIFFERENTIAL) diffY = MAX_DIFFERENTIAL;
+	        if (diffX < -MAX_DIFFERENTIAL) diffX = -MAX_DIFFERENTIAL;
+	        if (diffY < -MAX_DIFFERENTIAL) diffY = -MAX_DIFFERENTIAL;
 
 	        var invDeltaT = 1 / Math.max(currTime - prevTime, MINIMUM_TICK_TIME); // minimum tick time
 	        this._prevTime = currTime;
@@ -6633,23 +6830,28 @@ return /******/ (function(modules) { // webpackBootstrap
 	            nextDelta = scale * diffX;
 	            nextVel = scale * velX;
 	            this._value += nextDelta;
+	            this._cumulate += nextDelta;
 	        }
 	        else if (this.options.direction === ScrollInput.DIRECTION.Y) {
 	            nextDelta = scale * diffY;
 	            nextVel = scale * velY;
 	            this._value += nextDelta;
+	            this._cumulate += nextDelta;
 	        }
 	        else {
 	            nextDelta = [scale * diffX, scale * diffY];
 	            nextVel = [scale * velX, scale * velY];
 	            this._value[0] += nextDelta[0];
 	            this._value[1] += nextDelta[1];
+	            this._cumulate[0] += nextDelta[0];
+	            this._cumulate[1] += nextDelta[1];
 	        }
 
 	        var payload = this._payload;
 	        payload.delta    = nextDelta;
 	        payload.velocity = nextVel;
 	        payload.value = this._value;
+	        payload.cumulate = this._cumulate;
 
 	        this._eventOutput.emit('update', payload);
 
@@ -6673,7 +6875,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	 * @copyright Famous Industries, Inc. 2014
 	 */
 
-	/* Modified work copyright © 2015 David Valdman */
+	/* Modified work copyright © 2015-2016 David Valdman */
 
 	!(__WEBPACK_AMD_DEFINE_RESULT__ = function(require, exports, module) {
 	    var TwoFingerInput = __webpack_require__(47);
@@ -6688,7 +6890,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	     *      `velocity`      - Relative velocity between two touches
 	     *      `displacement`  - Total accumulated displacement
 	     *      `center`        - Midpoint between the two touches
-	     *      `touches`       - Array of DOM event touch identifiers
+	     *      `touchIds`       - Array of DOM event touch identifiers
 	     *
 	     *  Note: Unlike PinchInput, which produces pixel values of displacement
 	     *  between two touches, ScaleInput produces dimensionless values corresponding
@@ -6744,7 +6946,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	        this._eventOutput.emit('start', {
 	            count: event.touches.length,
-	            touches: [this.touchAId, this.touchBId],
+	            touchIds: [this.touchAId, this.touchBId],
 	            distance: this._startDist,
 	            center: center
 	        });
@@ -6767,7 +6969,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	            velocity: veloScale,
 	            distance: currDist,
 	            center : center,
-	            touches: [this.touchAId, this.touchBId]
+	            touchIds: [this.touchAId, this.touchBId]
 	        });
 
 	        this._scaleFactor = newScaleFactor;
@@ -6789,7 +6991,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	 * @copyright Famous Industries, Inc. 2014
 	 */
 
-	/* Modified work copyright © 2015 David Valdman */
+	/* Modified work copyright © 2015-2016 David Valdman */
 
 	// TODO: emit start, update, end events instead
 	// of calling protected _startUpdate etc methods
@@ -6955,7 +7157,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	 * @copyright Famous Industries, Inc. 2014
 	 */
 
-	/* Modified work copyright © 2015 David Valdman */
+	/* Modified work copyright © 2015-2016 David Valdman */
 
 	!(__WEBPACK_AMD_DEFINE_RESULT__ = function(require, exports, module) {
 	    var TwoFingerInput = __webpack_require__(47);
@@ -6969,7 +7171,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	     *      `delta`         - Differential of successive angles
 	     *      `velocity`      - Velocity of rotation
 	     *      `center`        - Midpoint between the two touches
-	     *      `touches`       - Array of DOM event touch identifiers
+	     *      `touchIds`       - Array of DOM event touch identifiers
 	     *
 	     * @example
 	     *
@@ -7022,7 +7224,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	            count: event.touches.length,
 	            value: this._angle,
 	            center: center,
-	            touches: [this.touchAId, this.touchBId]
+	            touchIds: [this.touchAId, this.touchBId]
 	        });
 	    };
 
@@ -7042,7 +7244,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	            velocity: velTheta,
 	            value: this._angle,
 	            center: center,
-	            touches: [this.touchAId, this.touchBId]
+	            touchIds: [this.touchAId, this.touchBId]
 	        });
 
 	        this._previousAngle = currAngle;
@@ -7064,7 +7266,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	 * @copyright Famous Industries, Inc. 2014
 	 */
 
-	/* Modified work copyright © 2015 David Valdman */
+	/* Modified work copyright © 2015-2016 David Valdman */
 
 	!(__WEBPACK_AMD_DEFINE_RESULT__ = function(require, exports, module) {
 	    var TwoFingerInput = __webpack_require__(47);
@@ -7079,7 +7281,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	     *      `velocity`      - Relative velocity between two touches
 	     *      `displacement`  - Total accumulated displacement
 	     *      `center`        - Midpoint between the two touches
-	     *      `touches`       - Array of DOM event touch identifiers
+	     *      `touchIds`      - Array of DOM event touch identifiers
 	     *
 	     * @example
 	     *
@@ -7130,7 +7332,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	        this._eventOutput.emit('start', {
 	            count: event.touches.length,
-	            touches: [this.touchAId, this.touchBId],
+	            touchIds: [this.touchAId, this.touchBId],
 	            value: this._previousDistance,
 	            center: center
 	        });
@@ -7152,7 +7354,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	            value: currDist,
 	            displacement: this._displacement,
 	            center: center,
-	            touches: [this.touchAId, this.touchBId]
+	            touchIds: [this.touchAId, this.touchBId]
 	        });
 
 	        this._previousDistance = currDist;
@@ -7181,7 +7383,7 @@ return /******/ (function(modules) { // webpackBootstrap
 /* 51 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var __WEBPACK_AMD_DEFINE_RESULT__;/* Copyright © 2015 David Valdman */
+	var __WEBPACK_AMD_DEFINE_RESULT__;/* Copyright © 2015-2016 David Valdman */
 
 	!(__WEBPACK_AMD_DEFINE_RESULT__ = function(require, exports, module) {
 	    var Transform = __webpack_require__(21);
@@ -7495,7 +7697,7 @@ return /******/ (function(modules) { // webpackBootstrap
 /* 52 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var __WEBPACK_AMD_DEFINE_RESULT__;/* Copyright © 2015 David Valdman */
+	var __WEBPACK_AMD_DEFINE_RESULT__;/* Copyright © 2015-2016 David Valdman */
 
 	!(__WEBPACK_AMD_DEFINE_RESULT__ = function(require, exports, module){
 	    var Stream = __webpack_require__(15);
@@ -7532,16 +7734,25 @@ return /******/ (function(modules) { // webpackBootstrap
 	            update: function () { return delta; }
 	        });
 
-	        this._eventInput.on('start', function(value){ previous = value; });
-	        this._eventInput.on('update', function(value){
+	        this._eventInput.on('start', function (value) {
+	            if (value instanceof Array)
+	                previous = value.slice();
+	            else previous = value;
+	        });
+
+	        this._eventInput.on('update', function (value) {
 	            var scale = this.options.scale;
 	            if (previous instanceof Array) {
 	                delta = [];
-	                for (var i = 0; i < previous.length; i++)
+	                for (var i = 0; i < previous.length; i++) {
 	                    delta[i] = scale * (value[i] - previous[i]);
+	                    previous[i] = value[i];
+	                }
 	            }
-	            else delta = scale * (value - previous);
-	            previous = value;
+	            else {
+	                delta = scale * (value - previous);
+	                previous = value;
+	            }
 	        }.bind(this));
 	    }
 
@@ -7560,7 +7771,7 @@ return /******/ (function(modules) { // webpackBootstrap
 /* 53 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var __WEBPACK_AMD_DEFINE_RESULT__;/* Copyright © 2015 David Valdman */
+	var __WEBPACK_AMD_DEFINE_RESULT__;/* Copyright © 2015-2016 David Valdman */
 
 	!(__WEBPACK_AMD_DEFINE_RESULT__ = function(require, exports, module){
 	    var OptionsManager = __webpack_require__(31);
@@ -7679,7 +7890,7 @@ return /******/ (function(modules) { // webpackBootstrap
 /* 54 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var __WEBPACK_AMD_DEFINE_RESULT__;/* Copyright © 2015 David Valdman */
+	var __WEBPACK_AMD_DEFINE_RESULT__;/* Copyright © 2015-2016 David Valdman */
 
 	!(__WEBPACK_AMD_DEFINE_RESULT__ = function(require, exports, module) {
 	    var Transform = __webpack_require__(21);
@@ -7805,7 +8016,7 @@ return /******/ (function(modules) { // webpackBootstrap
 /* 55 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var __WEBPACK_AMD_DEFINE_RESULT__;/* Copyright © 2015 David Valdman */
+	var __WEBPACK_AMD_DEFINE_RESULT__;/* Copyright © 2015-2016 David Valdman */
 
 	!(__WEBPACK_AMD_DEFINE_RESULT__ = function(require, exports, module) {
 	    var Transform = __webpack_require__(21);
@@ -7925,7 +8136,7 @@ return /******/ (function(modules) { // webpackBootstrap
 /* 56 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var __WEBPACK_AMD_DEFINE_RESULT__;/* Copyright © 2015 David Valdman */
+	var __WEBPACK_AMD_DEFINE_RESULT__;/* Copyright © 2015-2016 David Valdman */
 
 	!(__WEBPACK_AMD_DEFINE_RESULT__ = function(require, exports, module) {
 	    var Transform = __webpack_require__(21);
@@ -7950,7 +8161,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	     * @extends Core.View
 	     * @param [options] {Object}                        Options
 	     * @param [options.direction]{Number}               Direction to lay out items
-	     * @param [options.spacing] {Transitionable|Array}  Gutter spacing between items
+	     * @param [options.spacing] {Transitionable|Number} Gutter spacing between items
 	     */
 	    var SequentialLayout = View.extend({
 	        defaults : {
@@ -8015,9 +8226,11 @@ return /******/ (function(modules) { // webpackBootstrap
 /* 57 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var __WEBPACK_AMD_DEFINE_RESULT__;/* Copyright © 2015 David Valdman */
+	var __WEBPACK_AMD_DEFINE_RESULT__;/* Copyright © 2015-2016 David Valdman */
 
-	!(__WEBPACK_AMD_DEFINE_RESULT__ = function(require, exports, module) {
+	// This code is still in beta. Documentation forthcoming.
+
+	!(__WEBPACK_AMD_DEFINE_RESULT__ = function (require, exports, module) {
 	    var Transform = __webpack_require__(21);
 	    var Transitionable = __webpack_require__(22);
 	    var View = __webpack_require__(26);
@@ -8035,36 +8248,66 @@ return /******/ (function(modules) { // webpackBootstrap
 	    var TouchInput = __webpack_require__(43);
 
 	    GenericInput.register({
-	        touch : TouchInput,
-	        scroll : ScrollInput
+	        touch: TouchInput,
+	        scroll: ScrollInput
 	    });
 
 	    var CONSTANTS = {
-	        DIRECTION : {
-	            X : 0,
-	            Y : 1
+	        DIRECTION: {
+	            X: 0,
+	            Y: 1
 	        }
 	    };
 
+	    var EDGE = {
+	        TOP: -1,
+	        BOTTOM : 1,
+	        NONE: 0
+	    };
+
 	    var Scrollview = View.extend({
-	        defaults : {
-	            direction : CONSTANTS.DIRECTION.Y,
-	            pageTransition : false
+	        defaults: {
+	            direction: CONSTANTS.DIRECTION.Y,
+	            drag: 0.3,
+	            paginated: false,
+	            pageChangeSpeed: 0.5,
+	            startPosition: 0,
+	            marginTop: 0,
+	            marginBottom: 0,
+	            clip: true,
+	            pageTransition: {
+	                curve : 'spring',
+	                period : 100,
+	                damping : 0.8
+	            },
+	            edgeTransition: {
+	                curve: 'spring',
+	                period: 100,
+	                damping: 1
+	            },
+	            edgeGrip: 0.5
 	        },
-	        initialize : function(options){
+	        initialize: function (options) {
 	            this._currentIndex = 0;
 	            this._previousIndex = 0;
 	            this.itemOffset = 0;
 	            this.items = [];
+	            this.velocity = 0;
+	            var isTouching = false;
+	            this.overflow = 0;
+
+	            var edge = EDGE.NONE;
+	            var isMobile = (window.ontouchstart !== undefined);
+
 	            this.layout = new SequentialLayout({
-	                direction : options.direction
+	                direction: options.direction
 	            });
 
 	            var genericInput = new GenericInput(['touch', 'scroll'], {
-	                direction : options.direction
+	                direction: options.direction
 	            });
 
-	            var position = new Accumulator(0);
+	            var position = new Accumulator(-options.startPosition);
 
 	            this.drag = new Transitionable(0);
 	            this.spring = new Transitionable(0);
@@ -8078,117 +8321,165 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	            position.subscribe(gestureDifferential);
 	            position.subscribe(dragDifferential);
-	            //position.subscribe(springDifferential);
+	            position.subscribe(springDifferential);
 
-	            if (options.pageTransition){
-	                genericInput.on('end', function(data){
-	                    if (!shouldBounce) return;
-	                    this.drag.reset(0);
-	                    this.spring.reset(0);
-	                    options.pageTransition.velocity = data.velocity + this.drag.getVelocity();
-	                    this.drag.set(0, options.pageTransition);
-	                }.bind(this));
-
-	                genericInput.on('start', function(){
-	                    this.drag.halt();
-	                    this.spring.halt();
-	                }.bind(this));
-
-	                this.spring.on('start', function () {
-	                    this.drag.velocity = 0;
-	                }.bind(this));
-
-	                this.spring.on('end', function(){
-	                    changePage.call(this, this._currentIndex);
-	                }.bind(this));
-	            }
-
-	            this.drag.on('end', function(data){
-	                this.spring.set(this.itemOffset, {
-	                    curve: 'spring',
-	                    period: 70,
-	                    damping: 0.7,
-	                    velocity : data.velocity
-	                })
+	            genericInput.on('start', function () {
+	                isTouching = true;
+	                this.drag.halt();
+	                this.spring.halt();
 	            }.bind(this));
 
-	            var overflowStream = ResizeStream.lift(function(contentLength, viewportSize){
+	            genericInput.on('update', function (data) {
+	                this.velocity = data.velocity;
+	            }.bind(this));
+
+	            genericInput.on('end', function (data) {
+	                isTouching = false;
+
+	                switch (edge){
+	                    case EDGE.NONE:
+	                        (this.options.paginated)
+	                            ? handlePagination.call(this, data.velocity)
+	                            : handleDrag.call(this, data.velocity);
+	                        break;
+	                    case EDGE.TOP:
+	                        handleEdge.call(this, this.overflow, data.velocity);
+	                        break;
+	                    case EDGE.BOTTOM:
+	                        handleEdge.call(this, this.overflow, data.velocity);
+	                        break;
+	                }
+	            }.bind(this));
+
+	            this.drag.on('update', function(){
+	                this.velocity = this.drag.getVelocity();
+	            }.bind(this));
+
+	            this.spring.on('update', function(){
+	                this.velocity = this.spring.getVelocity();
+	            }.bind(this));
+
+	            position.on('end', function () {
+	                if (!this.spring.isActive())
+	                    changePage.call(this, this._currentIndex);
+	            }.bind(this));
+
+	            // overflow is a measure of how much of the content
+	            // extends past the viewport
+	            var overflowStream = ResizeStream.lift(function (contentLength, viewportSize) {
 	                if (!contentLength) return false;
-	                return viewportSize[options.direction] - contentLength;
+	                var overflow = viewportSize[options.direction] - options.marginBottom - contentLength;
+	                return (overflow >= 0) ? false : overflow;
 	            }, [this.layout, this.size]);
 
-
-	            var shouldBounce = true;
-	            this.offset = Stream.lift(function(top, overflow){
-	                shouldBounce = true;
+	            this.offset = Stream.lift(function (top, overflow) {
 	                if (!overflow) return false;
 
-	                if (this.drag.isActive() || this.spring.isActive())
-	                    return Math.round(top);
+	                if (this.spring.isActive()) return Math.round(top);
 
-	                if (top <= overflow) {
-	                    shouldBounce = false;
-	                    position.set(overflow, true);
-	                    changePage.call(this, this._currentIndex);
-	                    return overflow;
+	                if (top > 0) { // reached top of scrollview
+	                    if (!isMobile){
+	                        edge = EDGE.TOP;
+	                        position.set(0, true);
+	                        changePage.call(this, this._currentIndex);
+	                        return 0;
+	                    }
+
+	                    this.overflow = top;
+
+	                    if (edge !== EDGE.TOP){
+	                        genericInput.setOptions({scale: this.options.edgeGrip});
+
+	                        edge = EDGE.TOP;
+	                        if (!isTouching)
+	                            handleEdge.call(this, this.overflow, this.velocity);
+	                    }
 	                }
-	                else if(top >= 0){
-	                    shouldBounce = false;
-	                    position.set(0, true);
-	                    changePage.call(this, this._currentIndex);
-	                    return 0;
+	                else if(top < overflow) { // reached bottom of scrollview
+	                    if (!isMobile) {
+	                        edge = EDGE.BOTTOM;
+	                        position.set(overflow, true);
+	                        changePage.call(this, this._currentIndex);
+	                        return overflow;
+	                    }
+
+	                    this.overflow = top - overflow;
+
+	                    if (edge !== EDGE.BOTTOM){
+	                        genericInput.setOptions({scale: .5});
+
+	                        edge = EDGE.BOTTOM;
+
+	                        if (!isTouching)
+	                            handleEdge.call(this, this.overflow, this.velocity);
+	                    }
 	                }
-	                else
-	                    return Math.round(top);
+	                else if(top > overflow && top < 0 && edge !== EDGE.NONE){
+	                    this.overflow = 0;
+	                    genericInput.setOptions({scale: 1});
+	                    edge = EDGE.NONE;
+	                }
+
+	                return Math.round(top);
 	            }.bind(this), [position, overflowStream]);
 
 	            var displacementNode = new LayoutNode({
-	                transform : this.offset.map(function(position){
+	                transform: this.offset.map(function (position) {
+	                    position += options.marginTop;
 	                    return options.direction == CONSTANTS.DIRECTION.Y
 	                        ? Transform.translateY(position)
 	                        : Transform.translateX(position);
 	                })
 	            });
 
-	            var container = new ContainerSurface({
-	                properties : {
-	                    overflow : 'hidden'
-	                }
+	            this.container = new ContainerSurface({
+	                properties: {overflow : 'hidden'}
 	            });
 
-	            genericInput.subscribe(container);
+	            genericInput.subscribe(this.container);
 
-	            container.add(displacementNode).add(this.layout);
-	            this.add(container);
+	            this.container.add(displacementNode).add(this.layout);
+	            this.add(this.container);
 	        },
-	        goto : function(index, transition, callback){
-	            transition = transition || this.options.transition;
+	        setPerspective: function(){
+	            ContainerSurface.prototype.setPerspective.apply(this.container, arguments);
+	        },
+	        getVelocity: function(){
+	            return this.velocity;
+	        },
+	        goTo: function (index, transition, callback) {
+	            transition = transition || this.options.pageTransition;
 	            var position = this.itemOffset;
-	            if (index > this._currentIndex){
+
+	            if (index > this._currentIndex && index < this.items.length) {
 	                for (var i = this._currentIndex; i < index; i++)
 	                    position -= this.items[i].getSize()[this.options.direction];
 	            }
-	            else if (index < this._currentIndex){
+	            else if (index < this._currentIndex && index >= 0) {
 	                for (var i = this._currentIndex; i > index; i--)
 	                    position += this.items[i].getSize()[this.options.direction];
 	            }
-	            else return;
 
-	            this.spring.set(0);
+	            this.spring.halt();
+	            this.spring.reset(0);
 	            this.spring.set(Math.ceil(position), transition, callback);
 	        },
-	        addItems : function(items){
+	        getCurrentIndex: function(){
+	            return this._currentIndex;
+	        },
+	        addItems: function (items) {
 	            this.layout.addItems(items);
 	            this.items = items;
 
 	            var args = [this.offset];
-	            for (var i = 0; i < items.length; i++){
+	            for (var i = 0; i < items.length; i++) {
 	                args.push(items[i].size);
 	            }
 
 	            var accumLength = 0;
-	            var itemOffsetStream = Stream.lift(function(){
-	                if (arguments[1] === undefined) return false;
+	            var itemOffsetStream = Stream.lift(function () {
+	                if (arguments[0] === undefined || arguments[1] === undefined)
+	                    return false;
 
 	                var offset = arguments[0];
 	                var direction = this.options.direction;
@@ -8201,15 +8492,14 @@ return /******/ (function(modules) { // webpackBootstrap
 	                var itemOffset = -offset - accumLength;
 	                var currentLength = currentSize[direction];
 
-	                if (itemOffset >= currentLength){
+	                if (itemOffset >= currentLength && this._currentIndex !== items.length - 1) {
 	                    // pass currentNode forwards
 	                    this._currentIndex++;
 	                    progress = 0;
 	                    accumLength += currentLength;
 	                }
-	                else if (itemOffset < 0){
+	                else if (itemOffset < 0 && this._currentIndex !== 0) {
 	                    // pass currentNode backwards
-	                    if (this._currentIndex == 0) return false;
 	                    this._currentIndex--;
 	                    progress = 1;
 	                    currentLength = arguments[this._currentIndex + 1][direction];
@@ -8219,34 +8509,73 @@ return /******/ (function(modules) { // webpackBootstrap
 	                    progress = itemOffset / currentLength;
 	                }
 
-	                this.itemOffset = (itemOffset < currentLength / 2)
-	                    ? itemOffset
-	                    : itemOffset - currentLength;
+	                this.itemOffset = itemOffset;
 
 	                return {
-	                    index : this._currentIndex,
-	                    progress : progress
+	                    index: this._currentIndex,
+	                    progress: progress
 	                };
 	            }.bind(this), args);
 
 	            this.output.subscribe(itemOffsetStream);
 
-	            itemOffsetStream.on('start', function(value){
-	            }.bind(this));
-
-	            itemOffsetStream.on('update', function(value){
-	            }.bind(this));
-
-	            itemOffsetStream.on('end', function(value){
-	            }.bind(this));
+	            itemOffsetStream.on('start', function () {});
+	            itemOffsetStream.on('update', function () {});
+	            itemOffsetStream.on('end', function () {});
 	        }
-	    });
+	    }, CONSTANTS);
 
-	    function changePage(index){
-	        console.log(index, this._previousIndex)
+	    function changePage(index) {
 	        if (index == this._previousIndex) return;
-	        this.output.emit('page', index);
+	        this.emit('page', index);
 	        this._previousIndex = index;
+	    }
+
+	    function handleEdge(overflow, velocity){
+	        this.drag.halt();
+	        this.spring.reset(overflow);
+	        this.options.edgeTransition.velocity = velocity;
+	        this.spring.set(0, this.options.edgeTransition);
+	    }
+
+	    function handlePagination(velocity){
+	        var pageChangeSpeed = this.options.pageChangeSpeed;
+	        var currentLength = this.items[this._currentIndex].getSize()[this.options.direction];
+
+	        var backLength = this.itemOffset;
+	        var forwardLength = this.itemOffset - currentLength;
+
+	        var position = this.itemOffset;
+	        var positionThreshold = currentLength / 2;
+
+	        var target;
+	        if (velocity < 0){
+	            // moving forward
+	            target = (position > positionThreshold || velocity < -pageChangeSpeed)
+	                ? forwardLength
+	                : backLength;
+	        }
+	        else {
+	            // moving backward
+	            target = (position < positionThreshold || velocity > pageChangeSpeed)
+	                ? backLength
+	                : forwardLength;
+	        }
+
+	        this.options.pageTransition.velocity = velocity;
+	        this.spring.halt();
+	        this.spring.reset(-target);
+	        this.spring.set(0, this.options.pageTransition);
+	    }
+
+	    function handleDrag(velocity){
+	        this.drag.halt();
+	        this.drag.reset(0);
+	        this.drag.set(0, {
+	            curve: 'inertia',
+	            velocity: velocity,
+	            drag: this.options.drag
+	        });
 	    }
 
 	    module.exports = Scrollview;

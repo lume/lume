@@ -13,7 +13,7 @@
     "docs-example-sidemenu": "docco -l parallel examples/SideMenu/js/main.js examples/SideMenu/js/app/*.js -o examples/SideMenu/docs",
     "build": "npm run build-bundle && npm run build-min",
     "build-bundle": "webpack --entry ./samsara/index.js --output-filename samsara.js --output-path ./dist --output-library Samsara --output-library-target umd",
-    "build-min": "uglifyjs --entry dist/samsara.js -o dist/samsara.min.js --mangle --compress warnings=false"
+    "build-min": "uglifyjs dist/samsara.js -o dist/samsara.min.js --mangle --compress warnings=false"
   },
   "repository": {
     "type": "git",
