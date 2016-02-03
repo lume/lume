@@ -28,7 +28,7 @@ responds to a user's swipe gesture, then you might want to clone this repo.
 
 ### Getting Started
 
-| Resources      ||
+| Resources      |               |
 | -------------- | ------------- |
 | Guide          | [samsaraJS.org/docs](http://www.samsaraJS.org/docs)  |
 | API docs       | [samsaraJS.org/reference_docs](http://www.samsaraJS.org/reference_docs)  |
@@ -36,29 +36,34 @@ responds to a user's swipe gesture, then you might want to clone this repo.
 
 ### Examples
 
-| Example  | Link (fullscreen) | Difficulty | Description |
+| Example  | Demo (fullscreen) | Difficulty | Description |
 | -------- | ----------------- | ---------- | ----------- |
-| Logo | [demo](http://samsarajs.org/demos/Logo) | Simple | The SamsaraJS logo |
-| Cube | [demo](http://samsarajs.org/demos/Cube) | Simple | 3D spinning cube with animated size |
-| ParallaxCats | [demo](http://samsarajs.org/demos/ParallaxCats) | Moderate | Scrollview of cat images that parallax with the scroll |
-| Carousel | [demo](http://samsarajs.org/demos/Carousel) | Moderate | A paginated scrollview converted into a slideshow with previous/next buttons |
-| SideMenu | [demo](http://samsarajs.org/demos/SideMenu) | Moderate | A navigation UI with an exposed side drawer |
-| Safari Tabs | [demo](http://samsarajs.org/demos/SafariTabs) | Moderate | A scrollview imitating the mobile Safari tab viewer |
+| Logo | [demo](http://samsarajs.org/demos/Logo) • [docs](http://samsarajs.org/demos/Logo/docs/main.html) | Simple | The SamsaraJS logo |
+| Cube | [demo](http://samsarajs.org/demos/Cube) • [docs](http://samsarajs.org/demos/Cube/docs/main.html) | Simple | 3D spinning cube with animated size |
+| ParallaxCats | [demo](http://samsarajs.org/demos/ParallaxCats) • [docs](http://samsarajs.org/ParallaxCats/Logo/docs/main.html) | Moderate | Scrollview of cat images that parallax with the scroll |
+| Carousel | [demo](http://samsarajs.org/demos/Carousel) • [docs](http://samsarajs.org/demos/Carousel/docs/main.html) | Moderate | A paginated scrollview converted into a slideshow with previous/next buttons |
+| SideMenu | [demo](http://samsarajs.org/demos/SideMenu) • [docs](http://samsarajs.org/demos/SideMenu/docs/main.html) | Moderate | A navigation UI with an exposed side drawer |
+| Safari Tabs | [demo](http://samsarajs.org/demos/SafariTabs) • [docs](http://samsarajs.org/demos/SafariTabs/docs/main.html) | Moderate | A scrollview imitating the mobile Safari tab viewer |
 
 ## Installation
 
-SamsaraJS requires a small CSS file located at `dist/samsara.css`. For all of the installation methods
+SamsaraJS requires a small CSS file located at `dist/samsara.css` or `samsara/samsara.css`. For all of the installation methods
 below, you will also need to include this CSS file for SamsaraJS to work properly.
 
-### AMD
+#### Git
 
-AMD modules loaded with require.js is currently the recommended way of installing SamsaraJS.
-Simply clone this repo and put the `samsara` sub-directory into your project. The `samsara.css` file
-is also located in this sub-directory for convenience.
+Clone this repo
 
-### CommonJS
+```
+	git clone git@github.com:dmvaldman/samsara.git
+```
 
-Installing with npm will provide a CommonJS module containing all of SamsaraJS.
+You'll find AMD modules in the `samsara` directory, CommonJS bundles in the `dist` directory, examples in the 
+`examples` directory and reference documentation in the `docs` directory.
+
+#### NPM
+
+Install the CommonJS build of Samsara with
 
 ```
 	npm install samsarajs
@@ -72,9 +77,9 @@ capitalized for CommonJS but lowercase for AMD.
 	var Surface = require('samsarajs').DOM.Surface; // CommonJS
 ```
 
-The `samsara.css` file will also be included in `samsarajs/samsara.css`.
+The `samsara.css` file will also be included in `node_modules/samsarajs/dist/samsara.css`.
 
-### Window Object
+#### Window Object
 
 Copy `dist/samsara.js` and include it as a source file. `Samsara` will then be accessible
 through `window.Samsara`. This is particularly useful for sharing on sites like jsFiddle, CodePen, etc.
@@ -84,8 +89,9 @@ through `window.Samsara`. This is particularly useful for sharing on sites like 
 [JSConf EU 2015 Berlin, Germany](https://www.youtube.com/watch?v=biJXpv-6XVY)
 
 ## Roadmap
-- [ ] Ability to remove render tree nodes (surface.remove(), node.remove(), etc)
-- [ ] Backbone.js & React.js integration
+- [ ] Node removal and recycling (surface.remove(), node.remove(), view.remove())
+- [ ] More Tests
+- [ ] Backbone.js, React.js, Vue.js integrations
 - [ ] Improved Scrollview
 - [ ] 3D Camera
 - [ ] More layouts
