@@ -3,7 +3,7 @@ clicking the `x` button removes the tab.
 
 This demo features, physics, scrollview, size animation and 3D transforms.
 
-See a version on your mobile device by visiting [http://goo.gl/BjDWCi](http://goo.gl/BjDWCi)
+To view this demo fullscreen on a mobile device, [click here](http://samsarajs.org/demos/SafariTabs)
 
 ## Installation
 

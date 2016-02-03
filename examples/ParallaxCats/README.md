@@ -4,6 +4,8 @@ A scrollview example with parallax.
 
 Open `index.html` in your browser. That's it!
 
+To view this demo fullscreen on a mobile device, [click here](http://samsarajs.org/demos/ParallaxCats)
+
 ## Documentation
 
 If you open `docs/main.html` in your browser you will see pretty documentation, rendered with [docco](https://jashkenas.github.io/docco/).

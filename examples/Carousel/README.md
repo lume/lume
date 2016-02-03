@@ -1,14 +1,16 @@
-A scrollview example with parallax.
+A demo of a carousel. Scroll with your mouse wheel/trackpad or by clicking the previous and next buttons. 
 
 ## Installation
 
 Open `index.html` in your browser. That's it!
 
+To view this demo fullscreen on a mobile device, [click here](http://samsarajs.org/demos/Carousel)
+
 ## Documentation
 
 If you open `docs/main.html` in your browser you will see pretty documentation, rendered with [docco](https://jashkenas.github.io/docco/).
 
-##Bundling
+## Bundling
 
 If you'd like to bundle the application into a single JavaScript file, run the following:
  

@@ -1,13 +1,10 @@
-This is the logo for [SamsaraJS](http://samsaraJS.org). 
-
-Try resizing the page, you'll notice the logo itself resizes while still animating. 
-Behold the power of streams!
+A rotating and scaling cube.
 
 ## Installation
 
 Open `index.html` in your browser. That's it!
 
-To view this demo on a mobile device, go to [goo.gl/Qz3wcw](https://goo.gl/Qz3wcw)
+To view this demo fullscreen on a mobile device, [click here](http://samsarajs.org/demos/Cube)
 
 ## Documentation
 

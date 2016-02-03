@@ -1,11 +1,11 @@
 This showcases a side menu demo. It incorporates gestures, physics transitions, native scrolling, transforms in 3D space
-and coordinated animations.
+and coordinated animations. Drag the blue area, or click the Back and Hide buttons.
 
 ## Installation
 
 Open `index.html` in your browser. That's it!
 
-To view this demo on a mobile device, go to [goo.gl/nhRGeg](http://goo.gl/nhRGeg)
+To view this demo fullscreen on a mobile device, [click here](http://samsarajs.org/demos/SideMenu)
 
 ## Documentation
 

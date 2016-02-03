@@ -7,7 +7,7 @@ Behold the power of streams!
 
 Open `index.html` in your browser. That's it!
 
-To view this demo on a mobile device, go to [goo.gl/p4HQiv](http://goo.gl/p4HQiv)
+To view this demo fullscreen on a mobile device, [click here](http://samsarajs.org/demos/Logo)
 
 ## Documentation
 

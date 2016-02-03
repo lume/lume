@@ -1,13 +1,10 @@
-This is the logo for [SamsaraJS](http://samsaraJS.org). 
-
-Try resizing the page, you'll notice the logo itself resizes while still animating. 
-Behold the power of streams!
+A demo showcasing coordination of animations. Click anywhere to animate.
 
 ## Installation
 
 Open `index.html` in your browser. That's it!
 
-To view this demo on a mobile device, go to [goo.gl/p4HQiv](http://goo.gl/p4HQiv)
+To view this demo fullscreen on a mobile device, [click here](http://samsarajs.org/demos/GoogleNow)
 
 ## Documentation
 
