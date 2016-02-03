@@ -94,4 +94,5 @@ through `window.Samsara`. This is particularly useful for sharing on sites like 
 - [ ] Backbone.js, React.js, Vue.js integrations
 - [ ] Improved Scrollview
 - [ ] 3D Camera
+- [ ] Migrate to es6
 - [ ] More layouts
