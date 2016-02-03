@@ -1,6 +1,12 @@
-I bet you're looking for tests and documentation.
+I bet you're looking for more tests! We're working on them :-)
 
-We're working on them :-)
+If you're brave enough to contribute still, please make sure to 
 
-If you're brave enough to contribute still, please make sure to rebase off master.
-Squashing commits and leaving well-formed commit messages is also nice.
+* Use the same coding style as the rest of the codebase.
+
+* Make your pull request to the `master` branch. So please
+rebase your pull request on `master` if `master` has changed. 
+
+* Please squash your commits and leave a well-formed commit messages.
+
+* Ask the [mailing list](https://groups.google.com/forum/#!forum/samsarajs) if you have any questions.
