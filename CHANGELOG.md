@@ -1,3 +1,51 @@
+## 0.2.0
+
+**General**
+- Update copyright year to 2016
+- Update all examples and provide demos and docs on website
+- Add Carousel, ParallaxCats, GoogleNow and SafariTabs examples
+- Smoother animations by scaling deviceRatio
+- Better `resize` event handling for dealing with animating URL bars on mobile devices
+- Add `Transitionable` test
+
+**Core**
+
+- `Transitionable` fix `set` and `reset` methods for multi-dimensional velocity transitions
+- `Transitionable` fix `halt` method
+- Element size is not commited unless changed
+
+**DOM**
+
+- `Surface` and `ContainerSurface` have `enableScroll` parameter to use native scrolling
+- `Surface` and `ContainerSurface` have `roundToPixel` to prevent font aliasing effects
+- `Context` can take a `perspectiveOrigin` attribute
+- `Surface` has `remove` method to clear its DOM contents for later reuse
+
+**Events**
+
+- `EventFilter` only takes `data` argument. Removed `type` argument.
+
+**Inputs**
+
+- Update `MouseInput`, `TouchInput` and `ScrollInput` with `cumulate` property
+- PreventDefault on `TouchInput` and `ScrollInput` to prevent native scrolling behavior
+- `ScrollInput` sets velocity to 0 for `end` event when trackpad is used
+
+**Streams**
+
+- `Stream` now batches `update` events
+
+**Transitions**
+
+- Rename `damping` to `drag` in `Inertia`
+
+**Views**
+
+- `Scrollview` now has `marginTop` and `marginBottom` options
+- `Scrollview` rename `goto` method to `goTo`
+- `Scrollview` has support for inertia
+- `View` supports `aspectRatio` setting
+
 ## 0.1.3
 
 **General**
