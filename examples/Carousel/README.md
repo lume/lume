@@ -4,7 +4,7 @@ A demo of a carousel. Scroll with your mouse wheel/trackpad or by clicking the p
 
 Open `index.html` in your browser. That's it!
 
-To view this demo fullscreen on a mobile device, [click here](http://samsarajs.org/demos/Carousel)
+To view this demo fullscreen on a mobile device, [click here](http://samsarajs.org/demos/Carousel/index.html)
 
 ## Documentation
 
