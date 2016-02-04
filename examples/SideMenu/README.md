@@ -5,7 +5,7 @@ and coordinated animations. Drag the blue area, or click the Back and Hide butto
 
 Open `index.html` in your browser. That's it!
 
-To view this demo fullscreen on a mobile device, [click here](http://samsarajs.org/demos/SideMenu)
+To view this demo fullscreen on a mobile device, [click here](http://samsarajs.org/demos/SideMenu/index.html)
 
 ## Documentation
 
