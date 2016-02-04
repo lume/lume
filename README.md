@@ -30,8 +30,8 @@ responds to a user's swipe gesture, then you might want to clone this repo.
 
 | Resources      |               |
 | -------------- | ------------- |
-| Guide          | [samsaraJS.org/docs](http://www.samsaraJS.org/docs)  |
-| API docs       | [samsaraJS.org/reference_docs](http://www.samsaraJS.org/reference_docs)  |
+| Guide          | [samsaraJS.org/docs](http://www.samsaraJS.org/docs/index.html)  |
+| API docs       | [samsaraJS.org/reference_docs](http://www.samsaraJS.org/reference_docs/index.html)  |
 | Questions      | [SamsaraJS Google Group](https://groups.google.com/forum/#!forum/samsarajs) |
 
 ### Examples
