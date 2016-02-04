@@ -4,7 +4,7 @@ A demo showcasing coordination of animations. Click anywhere to animate.
 
 Open `index.html` in your browser. That's it!
 
-To view this demo fullscreen on a mobile device, [click here](http://samsarajs.org/demos/GoogleNow)
+To view this demo fullscreen on a mobile device, [click here](http://samsarajs.org/demos/GoogleNow/index.html)
 
 ## Documentation
 
