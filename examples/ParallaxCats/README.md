@@ -4,7 +4,7 @@ A scrollview example with parallax.
 
 Open `index.html` in your browser. That's it!
 
-To view this demo fullscreen on a mobile device, [click here](http://samsarajs.org/demos/ParallaxCats)
+To view this demo fullscreen on a mobile device, [click here](http://samsarajs.org/demos/ParallaxCats/index.html)
 
 ## Documentation
 
