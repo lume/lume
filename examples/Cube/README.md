@@ -4,7 +4,7 @@ A rotating and scaling cube.
 
 Open `index.html` in your browser. That's it!
 
-To view this demo fullscreen on a mobile device, [click here](http://samsarajs.org/demos/Cube)
+To view this demo fullscreen on a mobile device, [click here](http://samsarajs.org/demos/Cube/index.html)
 
 ## Documentation
 
