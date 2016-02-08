@@ -25,8 +25,6 @@ let stylesheet = jss.createStyleSheet({
  */
 class ElManager {
     constructor(element) {
-        console.log('new elM', element)
-
         this.element = element
     }
 
@@ -38,7 +36,6 @@ class ElManager {
      * layout. See: http://www.html5rocks.com/en/tutorials/speed/animations
      */
     setClasses (...classes) {
-        console.log('classes length', classes.length)
         if (classes.length) this.element.classList.add(...classes)
         return this
     }
@@ -106,7 +103,6 @@ class Node {
         this._children = [];
 
         this.setProperties(properties);
-        console.log('%%%%%%%%%%%%%% position?', this._properties.position)
     }
 
     /**
@@ -630,14 +626,11 @@ class Node {
         mountPointAdjustment[1] = thisSize[1] * this._properties.mountPoint[1]
         mountPointAdjustment[2] = thisSize[2] * this._properties.mountPoint[2]
 
-        console.log(' ^^^^^^^^^^ Motor/Node. properties????:', this._properties)
         let appliedPosition = []
         appliedPosition[0] = this._properties.position[0] + alignAdjustment[0] - mountPointAdjustment[0]
         appliedPosition[1] = this._properties.position[1] + alignAdjustment[1] - mountPointAdjustment[1]
-        console.log('mount align adjust:', thisSize, alignAdjustment, mountPointAdjustment)
         appliedPosition[2] = this._properties.position[2] + alignAdjustment[2] - mountPointAdjustment[2]
 
-        console.log(' ---- Motor/Node. applying position:', appliedPosition, this._properties.position)
         matrix.translateSelf(appliedPosition[0], appliedPosition[1], appliedPosition[2])
 
         // TODO: move by negative origin before rotating.
