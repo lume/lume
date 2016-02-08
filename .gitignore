@@ -3,7 +3,11 @@ npm-debug.log
 
 docs
 
+# ignore build files
 /*.js
 /*.js.map
 !/infamous.js
-motor
+
+# ignore build folders
+/motor
+/jss

@@ -1,6 +1,9 @@
 import 'geometry-interfaces'
-import jss from '../jss-configured'
-import {epsilon} from './Utility'
+import jss from '../jss'
+import {
+    epsilon,
+    makeLowercaseSetterAliases,
+} from './Utility'
 
 const CSS_CLASS_NODE = 'motor-dom-node';
 
@@ -15,6 +18,31 @@ let stylesheet = jss.createStyleSheet({
         transformStyle:  'preserve-3d',
     },
 }).attach()
+
+/**
+ * Manages a DOM element. Exposes a set of recommended APIs for working with
+ * DOM efficiently.
+ */
+class ElManager {
+    constructor(element) {
+        console.log('new elM', element)
+
+        this.element = element
+    }
+
+    /**
+     * @param {Array.string} classes An array of class names to add to the
+     * managed element.
+     *
+     * Note: updating class names with `el.classList.add()` won't thrash the
+     * layout. See: http://www.html5rocks.com/en/tutorials/speed/animations
+     */
+    setClasses (...classes) {
+        console.log('classes length', classes.length)
+        if (classes.length) this.element.classList.add(...classes)
+        return this
+    }
+}
 
 export default
 class Node {
@@ -42,8 +70,8 @@ class Node {
 
         // DOM representation of Node
         // TODO: remove this and handle it in the "DOMRenderer"
-        this._element = document.createElement('div');
-        this._element.classList.add(stylesheet.classes.motorDomNode)
+        this._el = new ElManager(document.createElement('div'))
+        this._el.setClasses(stylesheet.classes.motorDomNode)
 
         this._mounted = false;
         this._removedChildren = [] // FIFO
@@ -78,6 +106,7 @@ class Node {
         this._children = [];
 
         this.setProperties(properties);
+        console.log('%%%%%%%%%%%%%% position?', this._properties.position)
     }
 
     /**
@@ -107,177 +136,14 @@ class Node {
      * transforms to arbitrary elements?
      */
     get element() {
-        return this._element
-    }
-
-    /**
-     * [applySize description]
-     *
-     * @method
-     * @private
-     * @memberOf Node
-     */
-    _applySize () {
-        var mode = this._properties.size.mode;
-        var absolute = this._properties.size.absolute;
-        var proportional = this._properties.size.proportional;
-
-        if (mode[0] === 'absolute')
-            this._applyStyle('width', `${absolute[0]}px`);
-        else if (mode[0] === 'proportional')
-            this._applyStyle('width', `${proportional[0] * 100}%`);
-
-        if (mode[1] === 'absolute')
-            this._applyStyle('height', `${absolute[1]}px`);
-        else if (mode[1] === 'proportional')
-            this._applyStyle('height', `${proportional[1] * 100}%`);
-    }
-
-    /**
-     * [applyTransform description]
-     *
-     * @method
-     * @private
-     * @memberOf Node
-     *
-     * TODO: instead of calculating the whole matrix here all at once (which
-     * gets called each render()), apply rotation, translation, etc, directly
-     * to the matrix right when the user gives us those values. This will be
-     * more performant. It will also let the user apply x,y,z rotation in their
-     * order of choice instead of always x,y,z order as we do here.
-     */
-    _calculateMatrix () {
-        let matrix = new DOMMatrix
-
-        let alignAdjustment = [0,0,0]
-        if (this._parent) { // The root Scene doesn't have a parent, for example.
-            let parentSize = this._parent.actualSize
-            alignAdjustment[0] = parentSize[0] * this._properties.align[0]
-            alignAdjustment[1] = parentSize[1] * this._properties.align[1]
-            alignAdjustment[2] = parentSize[2] * this._properties.align[2]
-        }
-
-        let mountPointAdjustment = [0,0,0]
-        let thisSize = this.actualSize
-        mountPointAdjustment[0] = thisSize[0] * this._properties.mountPoint[0]
-        mountPointAdjustment[1] = thisSize[1] * this._properties.mountPoint[1]
-        mountPointAdjustment[2] = thisSize[2] * this._properties.mountPoint[2]
-
-        let appliedPosition = []
-        appliedPosition[0] = this._properties.position[0] + alignAdjustment[0] - mountPointAdjustment[0] || 0
-        appliedPosition[1] = this._properties.position[1] + alignAdjustment[1] - mountPointAdjustment[1] || 0
-        appliedPosition[2] = this._properties.position[2] + alignAdjustment[2] - mountPointAdjustment[2] || 0
-
-        matrix.translateSelf(appliedPosition[0], appliedPosition[1], appliedPosition[2])
-
-        // TODO: move by negative origin before rotating.
-        // XXX Should we calculate origin here, or should we leave that to the
-        // DOM renderer (in the style property)? WebGL renderer will need
-        // manual calculations. Maybe we don't do it here, and delegate it to
-        // DOM and WebGL renderers.
-
-        // apply each axis rotation, in the x,y,z order. TODO: This is
-        // restrictive, and we should let the user apply any axis rotation in
-        // any order.
-        let rotation = this._properties.rotation
-        matrix.rotateAxisAngleSelf(1,0,0, rotation[0]) // x-axis rotation
-        matrix.rotateAxisAngleSelf(0,1,0, rotation[1]) // y-axis rotation
-        matrix.rotateAxisAngleSelf(0,0,1, rotation[2]) // z-axis rotation
-
-        // TODO: move by positive origin after rotating.
-
-        return matrix
-    }
-
-    /**
-     * Apply the DOMMatrix value to the style of this Node's element.
-     *
-     * @private
-     *
-     * TODO We'll eventually apply the DOMMatrix directly instead of
-     * converting to a string here.
-     */
-    _applyTransform () {
-        var matrix = this._style.transform.domMatrix;
-
-        // XXX: is this in the right order? UPDATE: It is.
-        // TODO: Apply DOMMatrix directly to the Element once browser APIs
-        // support it.
-        var transform = `matrix3d(
-            ${ matrix.m11 },
-            ${ matrix.m12 },
-            ${ matrix.m13 },
-            ${ matrix.m14 },
-            ${ matrix.m21 },
-            ${ matrix.m22 },
-            ${ matrix.m23 },
-            ${ matrix.m24 },
-            ${ matrix.m31 },
-            ${ matrix.m32 },
-            ${ matrix.m33 },
-            ${ matrix.m34 },
-            ${ matrix.m41 },
-            ${ matrix.m42 },
-            ${ matrix.m43 },
-            ${ matrix.m44 }
-        )`;
-
-        this._applyStyle('transform', transform);
-    }
-
-    /**
-     * [applyStyle description]
-     *
-     * @method
-     * @private
-     * @memberOf Node
-     * @param  {String} property [description]
-     * @param  {String} value    [description]
-     */
-    _applyStyles () {
-        for (let key of Object.keys(this._style)) {
-            if (key != 'transform')
-                this._applyStyle(key, this._style[key]);
-        }
-    }
-
-    /**
-     * Apply a style property to this node's element.
-     *
-     * TODO: this will be moved into DOMRenderer.
-     *
-     * @private
-     * @param  {string} property The CSS property we will a apply.
-     * @param  {string} value    The value the CSS property wil have.
-     */
-    _applyStyle (property, value) {
-        this._element.style[property] = value;
-    }
-
-    /**
-     * [setMatrix3d description]
-     *
-     * @private
-     * @param {DOMMatrix} matrix A DOMMatrix instance to set as this node's
-     * matrix. See "W3C Geometry Interfaces".
-     */
-    _setMatrix3d (matrix) {
-        if (true || ! _.isEqual(this._style.transform.domMatrix, matrix)) {
-
-            this._style.transform.domMatrix = matrix
-            // ^ TODO: What's faster? Setting a new DOMMatrix (as we do here
-            // currently, the result of _calculateMatrix) or applying all
-            // transform values to the existing DOMMatrix?
-
-            this._applyTransform();
-        }
+        return this._el
     }
 
     /**
      * Set the position of the Node.
      *
      * @param {Array.number} position An array of three numbers which are the X,
-     * Y, and Z positions to apply.
+     * Y, and Z positions (translations) to apply.
      * @chainable
      */
     setPosition (position) {
@@ -285,8 +151,9 @@ class Node {
         return this
     }
     set position(position) {
-        if (! _.isEqual(position, this._properties.position))
-            this._properties.position = position
+        if (!(position instanceof Array)) throw new Error('Expected an array for the Node.position property.')
+        if (! _.isEqual(position, this._properties.position)) // TODO: test array values against each other instead of checking array references?
+            this._properties.position = defaultZeros(position)
     }
 
     /**
@@ -355,6 +222,7 @@ class Node {
         return this
     }
     set opacity(opacity) {
+        if (!isRealNumber(opacity)) throw new Error('Expected a real number.')
         this._style.opacity = opacity;
     }
 
@@ -434,23 +302,29 @@ class Node {
             actualSize[0] = this._properties.size.absolute[0]
         }
         else if (this._properties.size.mode[0] === 'proportional') {
-            actualSize[0] = parseInt(getComputedStyle(this._element).getPropertyValue('width'))
+            actualSize[0] = parseInt(getComputedStyle(this._el.element).getPropertyValue('width'))
         }
 
         if (this._properties.size.mode[1] === 'absolute') {
             actualSize[1] = this._properties.size.absolute[1]
         }
         else if (this._properties.size.mode[1] === 'proportional') {
-            actualSize[1] = parseInt(getComputedStyle(this._element).getPropertyValue('height'))
+            actualSize[1] = parseInt(getComputedStyle(this._el.element).getPropertyValue('height'))
         }
 
         // TODO: handle Z axis for 3D objects (i.e. WebGL objects)
+        actualSize[2] = 0
 
         return actualSize
     }
 
     /**
      * Set the size of a Node proportional to the size of it's parent Node.
+     *
+     * ```
+     * node.proportionalSize = [100,100,100]
+     * console.log(node.proportionalSize)
+     * ```
      *
      * @param {Array.number} size A three-item array of numbers, each item
      * representing the proprtional size of the x, y, and z axes respectively.
@@ -482,8 +356,9 @@ class Node {
         return this
     }
     set align(alignment) {
+        if (!(alignment instanceof Array)) throw new Error('Expected an array for the Node.align property.')
         if (! _.isEqual(alignment, this._properties.align))
-            this._properties.align = alignment;
+            this._properties.align = defaultZeros(alignment)
     }
 
     get align() {
@@ -501,25 +376,13 @@ class Node {
         return this
     }
     set mountPoint(mountPoint) {
+        if (!(mountPoint instanceof Array)) throw new Error('Expected an array for the Node.mountPoint property.')
         if (! _.isEqual(mountPoint, this._properties.mountPoint))
-            this._properties.mountPoint = mountPoint;
+            this._properties.mountPoint = defaultZeros(mountPoint)
     }
 
     get mountPoint() {
         return this._properties.mountPoint
-    }
-
-    /**
-     * @param {Array.string} classes An array of class names to add to this
-     * Node's _element.
-     *
-     * Note: updating class names with `el.classList.add()` won't thrash the
-     * layout. See: http://www.html5rocks.com/en/tutorials/speed/animations
-     */
-    setClasses (classes = []) {
-        if (typeof classes !== 'array') classes = [classes]
-            if (classes.length) this._element.classList.add(...classes);
-        return this
     }
 
     /**
@@ -678,12 +541,12 @@ class Node {
             if (this._parent) {
                 // Mount to parent if parent is a Node
                 // if (this._parent instanceof Node) {
-                this._parent._element.appendChild(this._element);
+                this._parent._el.element.appendChild(this._el.element);
                 this._mounted = true;
 
                 // Mount to camera if top level Node
                 // } else {
-                //   //scene.camera.element.appendChild(this._element);
+                //   //scene.camera.element.appendChild(this._el);
                 //   this._mounted = true;
                 // }
             }
@@ -694,15 +557,15 @@ class Node {
             let child = this._removedChildren.shift()
 
             // the removeChild methods set this._mounted to false, and we use
-            // it as a hint that the child _element needs to be removed.
+            // it as a hint that the child _el needs to be removed.
             if (!child._mounted) {
 
-                // XXX Only remove the child _element if it has an actual parent
+                // XXX Only remove the child _el if it has an actual parent
                 // (it's possible for it not to have one if removeChild was
                 // called before the child was ever rendered, in which case
-                // it's _element will never have been mounted in the previous).
-                if (child._element.parentNode)
-                    child._element.parentNode.removeChild(child._element)
+                // it's _el will never have been mounted in the previous).
+                if (child._el.element.parentNode)
+                    child._el.element.parentNode.removeChild(child._el.element)
             }
         }
 
@@ -713,4 +576,190 @@ class Node {
 
         return this
     }
+
+    /**
+     * [applySize description]
+     *
+     * @method
+     * @private
+     * @memberOf Node
+     */
+    _applySize () {
+        var mode = this._properties.size.mode;
+        var absolute = this._properties.size.absolute;
+        var proportional = this._properties.size.proportional;
+
+        if (mode[0] === 'absolute')
+            this._applyStyle('width', `${absolute[0]}px`);
+        else if (mode[0] === 'proportional')
+            this._applyStyle('width', `${proportional[0] * 100}%`);
+
+        if (mode[1] === 'absolute')
+            this._applyStyle('height', `${absolute[1]}px`);
+        else if (mode[1] === 'proportional')
+            this._applyStyle('height', `${proportional[1] * 100}%`);
+    }
+
+    /**
+     * [applyTransform description]
+     *
+     * @method
+     * @private
+     * @memberOf Node
+     *
+     * TODO: instead of calculating the whole matrix here all at once (which
+     * gets called each render()), apply rotation, translation, etc, directly
+     * to the matrix right when the user gives us those values. This will be
+     * more performant. It will also let the user apply x,y,z rotation in their
+     * order of choice instead of always x,y,z order as we do here.
+     */
+    _calculateMatrix () {
+        let matrix = new DOMMatrix
+
+        let alignAdjustment = [0,0,0]
+        if (this._parent) { // The root Scene doesn't have a parent, for example.
+            let parentSize = this._parent.actualSize
+            alignAdjustment[0] = parentSize[0] * this._properties.align[0]
+            alignAdjustment[1] = parentSize[1] * this._properties.align[1]
+            alignAdjustment[2] = parentSize[2] * this._properties.align[2]
+        }
+
+        let mountPointAdjustment = [0,0,0]
+        let thisSize = this.actualSize
+        mountPointAdjustment[0] = thisSize[0] * this._properties.mountPoint[0]
+        mountPointAdjustment[1] = thisSize[1] * this._properties.mountPoint[1]
+        mountPointAdjustment[2] = thisSize[2] * this._properties.mountPoint[2]
+
+        console.log(' ^^^^^^^^^^ Motor/Node. properties????:', this._properties)
+        let appliedPosition = []
+        appliedPosition[0] = this._properties.position[0] + alignAdjustment[0] - mountPointAdjustment[0]
+        appliedPosition[1] = this._properties.position[1] + alignAdjustment[1] - mountPointAdjustment[1]
+        console.log('mount align adjust:', thisSize, alignAdjustment, mountPointAdjustment)
+        appliedPosition[2] = this._properties.position[2] + alignAdjustment[2] - mountPointAdjustment[2]
+
+        console.log(' ---- Motor/Node. applying position:', appliedPosition, this._properties.position)
+        matrix.translateSelf(appliedPosition[0], appliedPosition[1], appliedPosition[2])
+
+        // TODO: move by negative origin before rotating.
+        // XXX Should we calculate origin here, or should we leave that to the
+        // DOM renderer (in the style property)? WebGL renderer will need
+        // manual calculations. Maybe we don't do it here, and delegate it to
+        // DOM and WebGL renderers.
+
+        // apply each axis rotation, in the x,y,z order. TODO: This is
+        // restrictive, and we should let the user apply any axis rotation in
+        // any order.
+        let rotation = this._properties.rotation
+        matrix.rotateAxisAngleSelf(1,0,0, rotation[0]) // x-axis rotation
+        matrix.rotateAxisAngleSelf(0,1,0, rotation[1]) // y-axis rotation
+        matrix.rotateAxisAngleSelf(0,0,1, rotation[2]) // z-axis rotation
+
+        // TODO: move by positive origin after rotating.
+
+        return matrix
+    }
+
+    /**
+     * Apply the DOMMatrix value to the style of this Node's element.
+     *
+     * @private
+     *
+     * TODO We'll eventually apply the DOMMatrix directly instead of
+     * converting to a string here.
+     */
+    _applyTransform () {
+        var matrix = this._style.transform.domMatrix;
+
+        // XXX: is this in the right order? UPDATE: It is.
+        // TODO: Apply DOMMatrix directly to the Element once browser APIs
+        // support it.
+        var transform = `matrix3d(
+            ${ matrix.m11 },
+            ${ matrix.m12 },
+            ${ matrix.m13 },
+            ${ matrix.m14 },
+            ${ matrix.m21 },
+            ${ matrix.m22 },
+            ${ matrix.m23 },
+            ${ matrix.m24 },
+            ${ matrix.m31 },
+            ${ matrix.m32 },
+            ${ matrix.m33 },
+            ${ matrix.m34 },
+            ${ matrix.m41 },
+            ${ matrix.m42 },
+            ${ matrix.m43 },
+            ${ matrix.m44 }
+        )`;
+
+        this._applyStyle('transform', transform);
+    }
+
+    /**
+     * [applyStyle description]
+     *
+     * @method
+     * @private
+     * @memberOf Node
+     * @param  {String} property [description]
+     * @param  {String} value    [description]
+     */
+    _applyStyles () {
+        for (let key of Object.keys(this._style)) {
+            if (key != 'transform')
+                this._applyStyle(key, this._style[key]);
+        }
+    }
+
+    /**
+     * Apply a style property to this node's element.
+     *
+     * TODO: this will be moved into DOMRenderer.
+     *
+     * @private
+     * @param  {string} property The CSS property we will a apply.
+     * @param  {string} value    The value the CSS property wil have.
+     */
+    _applyStyle (property, value) {
+        this._el.element.style[property] = value;
+    }
+
+    /**
+     * [setMatrix3d description]
+     *
+     * @private
+     * @param {DOMMatrix} matrix A DOMMatrix instance to set as this node's
+     * matrix. See "W3C Geometry Interfaces".
+     */
+    _setMatrix3d (matrix) {
+        if (true || ! _.isEqual(this._style.transform.domMatrix, matrix)) {
+
+            this._style.transform.domMatrix = matrix
+            // ^ TODO: What's faster? Setting a new DOMMatrix (as we do here
+            // currently, the result of _calculateMatrix) or applying all
+            // transform values to the existing DOMMatrix?
+
+            this._applyTransform();
+        }
+    }
+}
+
+// for use by MotorHTML, convenient since HTMLElement attributes are all
+// converted to lowercase by default.
+makeLowercaseSetterAliases(Node.prototype)
+
+function defaultZeros(array) {
+    array[0] = array[0] || 0
+    array[1] = array[1] || 0
+    array[2] = array[2] || 0
+    return array
+}
+
+function isRealNumber(num) {
+    if (
+        typeof num != 'number'
+        || Object.is(num, NaN)
+        || Object.is(num, Infinity)
+    ) return false
+    return true
 }

@@ -110,6 +110,20 @@ async function getBodySize() {
     return { width, height }
 }
 
+// Create lowercase versions of each setter property.
+function makeLowercaseSetterAliases(object) {
+    const props = Object.getOwnPropertyNames(object)
+    for (let prop of props) {
+        const lowercaseProp = prop.toLowerCase()
+        if (lowercaseProp != prop) {
+            const descriptor = Object.getOwnPropertyDescriptor(object, prop)
+            if (Object.getOwnPropertyNames(descriptor).includes('set')) { // we care only about the setters.
+                Object.defineProperty(object, lowercaseProp, descriptor)
+            }
+        }
+    }
+}
+
 export {
   startTween,
   startLoop,
@@ -120,4 +134,5 @@ export {
   windowLoaded,
   documentLoaded,
   getBodySize,
+  makeLowercaseSetterAliases,
 }

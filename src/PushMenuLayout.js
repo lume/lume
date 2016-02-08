@@ -7,7 +7,7 @@
  *
  */
 
-import jss from 'jss';
+import jss from './jss';
 
 import Surface from 'famous/src/core/Surface';
 import RenderNode from 'famous/src/core/RenderNode';

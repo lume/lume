@@ -1,11 +1,13 @@
-import jss from '../jss-configured'
+import jss from '../jss'
 
 import Node from './Node'
-import {documentReady} from './Utility'
+import {
+    documentReady,
+} from './Utility'
 
 let stylesheet = jss.createStyleSheet({
     motorDomSceneContainer: {
-        position: 'absolute',
+        position: 'relative',
         overflow: 'hidden',
         width:    '100%',
         height:   '100%',
@@ -22,11 +24,11 @@ class Scene extends Node {
     constructor(mountPoint) {
         super()
 
-        this._element.classList.add('motor-dom-scene')
+        this._el.setClasses('motor-dom-scene')
 
         this._sceneContainer = document.createElement('div')
         this._sceneContainer.classList.add(stylesheet.classes.motorDomSceneContainer)
-        this._sceneContainer.appendChild(this._element)
+        this._sceneContainer.appendChild(this._el.element)
 
         // For now, Scenes are always proportionally sized by default.
         this._properties.size.modes = ['proportional', 'proportional', 'proportional']
@@ -38,12 +40,12 @@ class Scene extends Node {
         // TODO: Why doesn't this work (setting perspective so that things
         // translated in Z axis move backward/forward)???????????????????????
         // See SO question: http://stackoverflow.com/questions/33110424
-        this._element.style.webkitPerspective = '1000px'
-        this._element.style.mozPerspective    = '1000px'
-        this._element.style.perspective       = '1000px'
-        //this._element.style.webkitPerspectiveOrigin = '25%'
-        //this._element.style.mozPerspectiveOrigin = '25%'
-        //this._element.style.perspectiveOrigin = '25%'
+        this._el.element.style.webkitPerspective = '1000px'
+        this._el.element.style.mozPerspective    = '1000px'
+        this._el.element.style.perspective       = '1000px'
+        //this._el.element.style.webkitPerspectiveOrigin = '25%'
+        //this._el.element.style.mozPerspectiveOrigin = '25%'
+        //this._el.element.style.perspectiveOrigin = '25%'
 
         // mount the scene into the target container, then provide a promise
         // that the user can use to do something once the scene is mounted.
