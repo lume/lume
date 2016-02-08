@@ -10,4 +10,5 @@ docs
 
 # ignore build folders
 /motor
+/motor-html
 /jss
