@@ -37,7 +37,7 @@ Install infamous along with famous, famousify, and cssify into your project.
 npm install infamous famous famousify cssify --save
 ```
 
-Add the the famousify and cssify transforms to your package.json so it looks
+Add the famousify and cssify transforms to your package.json so it looks
 similar to the following.
 
 ```json
