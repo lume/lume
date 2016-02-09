@@ -174,7 +174,6 @@ class Node {
         return this
     }
     set rotation(rotation) {
-        console.log(' % setting rotation')
         this._properties.rotation = rotation
     }
 

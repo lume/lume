@@ -3,23 +3,20 @@ import Node from '../motor/Node'
 
 import jss from '../jss'
 
-// needed, for now, if using generators or async functions.
-import regeneratorRuntime from 'babel-runtime/regenerator'
-if (!Object.keys(window).includes('regeneratorRuntime'))
-    window.regeneratorRuntime = regeneratorRuntime
-
 /**
  * @class MotorHTMLNode
  */
 const MotorHTMLNode = document.registerElement('motor-node', {
     prototype: Object.assign(Object.create(HTMLElement.prototype), {
-        async createdCallback() {
+        createdCallback() {
             this._attached = false
             this.attachPromise = null
             this._cleanedUp = true
 
             this.node = this.makeNode()
             this.createChildObserver()
+
+            this.childObserver.observe(this, { childList: true })
         },
 
         makeNode() {
@@ -28,7 +25,6 @@ const MotorHTMLNode = document.registerElement('motor-node', {
 
         createChildObserver() {
             this.childObserver = new MutationObserver(mutations => {
-                console.log(' --- mutations', mutations)
                 mutations.forEach(mutation => {
                     let nodes = Array.from(mutation.addedNodes)
 
@@ -59,25 +55,20 @@ const MotorHTMLNode = document.registerElement('motor-node', {
                     })
 
                     nodes.forEach(node => {
-                        console.log('addedNode:', node, node.nodeName)
 
                         // this is kind of a hack: we remove the content
                         // from the motor-node in the actual DOM and put
                         // it in the node-controlled element, which may
                         // make it a little harder to debug, but at least
                         // for now it works.
-                        console.log(' ### node?', this.node, node)
                         this.node.element.element.appendChild(node)
                     })
                 })
             })
-
-            this.childObserver.observe(this, { childList: true })
         },
 
         async attachedCallback() {
             this._attached = true
-            console.log('attached')
 
             // If the node is currently being attached, wait for that to finish
             // before attaching again, to avoid a race condition. This will
@@ -91,6 +82,8 @@ const MotorHTMLNode = document.registerElement('motor-node', {
 
                 if (this._cleanedUp) {
                     this._cleanedUp = false
+
+                    this.childObserver.observe(this, { childList: true })
 
                     // the document has to be loaded for before things will render properly.
                     // scene.mountPromise is a promise we can await, at which point the
@@ -123,14 +116,13 @@ const MotorHTMLNode = document.registerElement('motor-node', {
 
         async detachedCallback() {
             this._attached = false
-            console.log('detached')
 
             // If the node is currently being attached, wait for that to finish
             // before starting the detach process (to avoid a race condition).
             // if this.attachPromise is null, excution continues without
             // going to the next tick (TODO: is this something we can rely on
             // in the language spec?).
-            await this.attachPromise
+            if (this.attachPromise) await this.attachPromise
             this.attachPromise = null
 
             // XXX For performance, deferr to the next tick before cleaning up
@@ -153,15 +145,14 @@ const MotorHTMLNode = document.registerElement('motor-node', {
 
         cleanUp() {
             cancelAnimationFrame(this.rAF)
+            this.childObserver.disconnect()
         },
 
         attributeChangedCallback(attribute, oldValue, newValue) {
-            console.log('new attribute', attribute, newValue)
             this.updateNodeProperty(attribute, oldValue, newValue)
         },
 
         updateNodeProperty(attribute, oldValue, newValue) {
-            console.log('about to update property', this)
             // attributes on our HTML elements are the same name as those on
             // the Node class (the setters).
             if (newValue !== oldValue) {
@@ -185,14 +176,12 @@ function parseNumberArray(str) {
     let numbers = str.split('[')[1].split(']')[0].split(',')
 
     numbers = numbers.map(num => window.parseFloat(num))
-    console.log('numbers', numbers)
     return numbers
 }
 
 function parseStringArray(str) {
     let strings = str.split('[')[1].split(']')[0].split(',')
     strings = strings.map(str => str.trim())
-    console.log('strings', strings)
     return strings
 }
 

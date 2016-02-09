@@ -5,11 +5,6 @@ import MotorHTMLNode from './node'
 
 import jss from '../jss'
 
-// needed, for now, if using generators or async functions.
-import regeneratorRuntime from 'babel-runtime/regenerator'
-if (!Object.keys(window).includes('regeneratorRuntime'))
-    window.regeneratorRuntime = regeneratorRuntime
-
 const sceneList = []
 let style = null
 
@@ -59,12 +54,6 @@ const MotorHTMLScene = document.registerElement('motor-scene', {
                 style = null
             }
         },
-
-        //async attachedCallback() {
-        //},
-
-        //detachedCallback() {
-        //},
 
         attributeChangedCallback(attribute, oldValue, newValue) {
             MotorHTMLNode.prototype.attributeChangedCallback.call(this)

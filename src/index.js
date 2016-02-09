@@ -1,4 +1,3 @@
-
 import Calendar from './Calendar'
 import Cube from './Cube'
 import DoubleSidedPlane from './DoubleSidedPlane'
@@ -16,3 +15,6 @@ export {
     Plane,
     PushMenuLayout,
 }
+
+export * from './motor'
+export * from './motor-html'
