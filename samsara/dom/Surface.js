@@ -391,18 +391,15 @@ define(function(require, exports, module) {
      *
      * @private
      * @method remove
-     * @param allocator {ElementAllocator} Allocator
      */
-    Surface.prototype.remove = function remove(allocator) {
-        //TODO: don't reference allocator in state
-        allocator = allocator || this._allocator;
+    Surface.prototype.remove = function remove() {
         var target = this._currentTarget;
 
         // cache the target's contents for later deployment
         this.recall(target);
 
         // hide the element
-        target.style.display = 'none';
+        target.style.display = '';
         target.style.opacity = '';
         target.style.width = '';
         target.style.height = '';
@@ -428,7 +425,8 @@ define(function(require, exports, module) {
         this.detach();
 
         // store allocated node in cache for recycling
-        allocator.deallocate(target);
+        this._allocator.deallocate(target);
+        this._allocator = null;
     };
 
     /**

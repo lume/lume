@@ -233,12 +233,15 @@ define(function(require, exports, module) {
      * @method detach
      */
     ElementOutput.prototype.detach = function detach() {
-        var target = this._currentTarget;
-        if (target) {
-            _removeEventListeners.call(this, target);
-            target.style.display = '';
-        }
+        _removeEventListeners.call(this, this._currentTarget);
         this._currentTarget = null;
+
+        this._cachedSpec = {
+            transform : null,
+            opacity : 1,
+            origin : null,
+            size : null
+        };
     };
 
     function commitLayout(layout) {

@@ -8,6 +8,8 @@ define(function(require, exports, module) {
     var LayoutNode = require('../LayoutNode');
     var layoutAlgebra = require('../algebras/layout');
     var sizeAlgebra = require('../algebras/size');
+    var preTickQueue = require('../../core/queues/preTickQueue');
+    var dirtyQueue = require('../../core/queues/dirtyQueue');
 
     var SIZE_KEYS = SizeNode.KEYS;
     var LAYOUT_KEYS = LayoutNode.KEYS;
@@ -26,14 +28,40 @@ define(function(require, exports, module) {
         // layout and size inputs
         this._layout = new EventHandler();
         this._size = new EventHandler();
+        this._logic = new EventHandler();
 
         // layout and size streams
-        this.size = null;
-        this.layout = null;
+        this.size = new EventHandler();
+        this.layout = new EventHandler();
+
+        this._cachedSpec = {
+            layout : null,
+            size : null
+        };
+
+        this.layout.on('start', function(data) {
+            this._cachedSpec.layout = data;
+        }.bind(this));
+
+        this.layout.on('update', function(data) {
+            this._cachedSpec.layout = data;
+        }.bind(this));
+
+        this.layout.on('end', function(data) {
+            this._cachedSpec.layout = data;
+        }.bind(this));
+
+        this.size.on('resize', function(size) {
+            this._cachedSpec.size = size;
+        }.bind(this));
 
         this.root = null;
 
         if (object) _set.call(this, object);
+        else {
+            this.layout.subscribe(this._layout);
+            this.size.subscribe(this._size);
+        }
     }
 
     /**
@@ -66,6 +94,10 @@ define(function(require, exports, module) {
                 node._node.tempRoot = this.tempRoot;
             childNode = node;
         }
+        else if (node instanceof RenderTreeNode){
+            node.root = this.root;
+            childNode = node;
+        }
         else {
             // Node case
             childNode = new RenderTreeNode(node);
@@ -74,10 +106,30 @@ define(function(require, exports, module) {
             else childNode.root = _getRootNode.call(this);
         }
 
-        childNode._layout.subscribe(this.layout || this._layout);
-        childNode._size.subscribe(this.size || this._size);
+        childNode._layout.subscribe(this.layout);
+        childNode._size.subscribe(this.size);
+        childNode._logic.subscribe(this._logic);
+
+        var self = this;
+        preTickQueue.push(function() {
+            self.size.trigger('resize', self._cachedSpec.size);
+            self.layout.trigger('start', self._cachedSpec.layout);
+            dirtyQueue.push(function() {
+                self.layout.trigger('end', self._cachedSpec.layout);
+            });
+        });
+
+        this._logic.trigger('attach');
 
         return childNode;
+    };
+
+    RenderTreeNode.prototype.remove = function (){
+        this.root = null;
+        this._logic.trigger('detach');
+        this._layout.off();
+        this._size.off();
+        this._logic.off();
     };
 
     function _createNodeFromObjectLiteral(object){
@@ -121,7 +173,7 @@ define(function(require, exports, module) {
 
     function _set(object) {
         if (object instanceof SizeNode){
-            this.size = ResizeStream.lift(
+            var size = ResizeStream.lift(
                 function SGSizeAlgebra (objectSpec, parentSize){
                     if (!parentSize) return false;
                     return (objectSpec)
@@ -130,10 +182,12 @@ define(function(require, exports, module) {
                 },
                 [object, this._size]
             );
+            this.size.subscribe(size);
+            this.layout.subscribe(this._layout);
             return;
         }
         else if (object instanceof LayoutNode){
-            this.layout = Stream.lift(
+            var layout = Stream.lift(
                 function SGLayoutAlgebra (objectSpec, parentSpec, size){
                     if (!parentSpec || !size) return false;
                     return (objectSpec)
@@ -142,6 +196,8 @@ define(function(require, exports, module) {
                 },
                 [object, this._layout, this._size]
             );
+            this.layout.subscribe(layout);
+            this.size.subscribe(this._size);
             return;
         }
 
@@ -149,6 +205,17 @@ define(function(require, exports, module) {
         object._size.subscribe(this._size);
         object._layout.subscribe(this._layout);
         object._getRoot = _getRootNode.bind(this);
+
+        this._logic.on('detach', function(){
+            object.remove();
+            object._size.unsubscribe(this._size);
+            object._layout.unsubscribe(this._layout);
+        }.bind(this));
+
+        this._logic.on('attach', function(){
+            object._size.subscribe(this._size);
+            object._layout.subscribe(this._layout);
+        }.bind(this));
     }
 
     module.exports = RenderTreeNode;

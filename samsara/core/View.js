@@ -73,6 +73,7 @@ define(function(require, exports, module) {
         constructor : function View(options){
             this._size = new EventHandler();
             this._layout = new EventHandler();
+            this._logic = new EventHandler();
 
             this._sizeNode = new SizeNode();
             this._layoutNode = new LayoutNode();
@@ -108,6 +109,7 @@ define(function(require, exports, module) {
 
             this._node._size.subscribe(this.size);
             this._node._layout.subscribe(layout);
+            this._node._logic.subscribe(this._logic);
 
             Controller.apply(this, arguments);
             if (this.options) setOptions.call(this, this.options);
