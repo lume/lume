@@ -94,7 +94,7 @@ class Node {
         };
 
         // Style Cache
-        this._style = _.extend({
+        this._style = Object.assign({
             transform: {
                 domMatrix: new DOMMatrix
             }
@@ -148,7 +148,7 @@ class Node {
     }
     set position(position) {
         if (!(position instanceof Array)) throw new Error('Expected an array for the Node.position property.')
-        if (! _.isEqual(position, this._properties.position)) // TODO: test array values against each other instead of checking array references?
+        if (! Object.is(position, this._properties.position)) // TODO: test array values against each other instead of checking array references?
             this._properties.position = defaultZeros(position)
     }
 
@@ -174,6 +174,7 @@ class Node {
         return this
     }
     set rotation(rotation) {
+        console.log(' % setting rotation')
         this._properties.rotation = rotation
     }
 
@@ -242,7 +243,7 @@ class Node {
         return this
     }
     set sizeMode(mode) {
-        if (! _.isEqual(mode, this._properties.size.mode)) {
+        if (! Object.is(mode, this._properties.size.mode)) {
             this._properties.size.mode = mode
             this._applySize()
         }
@@ -264,7 +265,7 @@ class Node {
         return this
     }
     set absoluteSize(size) {
-        if (! _.isEqual(size, this._properties.size.absolute)) {
+        if (! Object.is(size, this._properties.size.absolute)) {
             this._properties.size.absolute = size;
 
             if (this._properties.size.mode.indexOf('absolute') > -1)
@@ -330,7 +331,7 @@ class Node {
         return this
     }
     set proportionalSize(size) {
-        if (! _.isEqual(size, this._properties.size.proportional)) {
+        if (! Object.is(size, this._properties.size.proportional)) {
             this._properties.size.proportional = size
 
             if (this._properties.size.mode.indexOf('proportional') > -1)
@@ -353,7 +354,7 @@ class Node {
     }
     set align(alignment) {
         if (!(alignment instanceof Array)) throw new Error('Expected an array for the Node.align property.')
-        if (! _.isEqual(alignment, this._properties.align))
+        if (! Object.is(alignment, this._properties.align))
             this._properties.align = defaultZeros(alignment)
     }
 
@@ -373,7 +374,7 @@ class Node {
     }
     set mountPoint(mountPoint) {
         if (!(mountPoint instanceof Array)) throw new Error('Expected an array for the Node.mountPoint property.')
-        if (! _.isEqual(mountPoint, this._properties.mountPoint))
+        if (! Object.is(mountPoint, this._properties.mountPoint))
             this._properties.mountPoint = defaultZeros(mountPoint)
     }
 
@@ -725,7 +726,7 @@ class Node {
      * matrix. See "W3C Geometry Interfaces".
      */
     _setMatrix3d (matrix) {
-        if (true || ! _.isEqual(this._style.transform.domMatrix, matrix)) {
+        if (true || ! Object.is(this._style.transform.domMatrix, matrix)) {
 
             this._style.transform.domMatrix = matrix
             // ^ TODO: What's faster? Setting a new DOMMatrix (as we do here

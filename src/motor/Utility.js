@@ -112,6 +112,7 @@ async function getBodySize() {
 
 // Create lowercase versions of each setter property.
 function makeLowercaseSetterAliases(object) {
+    console.log('making lowercase aliases.')
     const props = Object.getOwnPropertyNames(object)
     for (let prop of props) {
         const lowercaseProp = prop.toLowerCase()
