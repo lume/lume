@@ -135,18 +135,25 @@ define(function(require, exports, module) {
      * Stop listening to events from an upstream source.
      *  Undoes work of `subscribe`.
      *
+     *  If no source is provided, all subscribed sources are unsubscribed from.
+     *
      * @method unsubscribe
-     * @param source {EventEmitter} Event source
+     * @param [source] {EventEmitter} Event source
      */
     EventHandler.prototype.unsubscribe = function unsubscribe(source) {
-        var index = this.upstream.indexOf(source);
-        if (index >= 0) {
-            this.upstream.splice(index, 1);
-            for (var type in this.upstreamListeners) {
-                source.off(type, this.upstreamListeners[type]);
+        if (!source) {
+            for (var i = 0; i < this.upstream.length; i++)
+                this.unsubscribe(this.upstream[i]);
+        }
+        else {
+            var index = this.upstream.indexOf(source);
+            if (index >= 0) {
+                this.upstream.splice(index, 1);
+                for (var type in this.upstreamListeners) {
+                    source.off(type, this.upstreamListeners[type]);
+                }
             }
         }
-        return source;
     };
 
     module.exports = EventHandler;
