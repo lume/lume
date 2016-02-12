@@ -7,6 +7,7 @@ define(function(require, exports, module) {
     var isTouchEnabled = "ontouchstart" in window;
     var usePrefix = !('transform' in document.documentElement.style);
     var isIOS = /iPad|iPhone|iPod/.test(navigator.platform);
+    var zeroScale = 'scale3d(0.0001,0.0001,0.0001)';
 
     /**
      * Surface is a wrapper for a DOM element animated by Samsara.
@@ -67,7 +68,6 @@ define(function(require, exports, module) {
         this.classList = [];
 
         this._contentDirty = true;
-        this._dirtyClasses = [];
         this._classesDirty = true;
         this._stylesDirty = true;
         this._attributesDirty = true;
@@ -101,10 +101,7 @@ define(function(require, exports, module) {
 
             if (!target) return;
 
-            if (this._classesDirty) {
-                _removeClasses.call(this, target);
-                _applyClasses.call(this, target);
-            }
+            if (this._classesDirty) _applyClasses.call(this, target);
 
             if (this._stylesDirty) _applyProperties.call(this, target);
 
@@ -135,9 +132,8 @@ define(function(require, exports, module) {
     }
 
     function _removeClasses(target) {
-        for (var i = 0; i < this._dirtyClasses.length; i++)
-            target.classList.remove(this._dirtyClasses[i]);
-        this._dirtyClasses = [];
+        for (var i = 0; i < this.classList.length; i++)
+            target.classList.remove(this.classList[i]);
     }
 
     function _removeProperties(target) {
@@ -256,7 +252,7 @@ define(function(require, exports, module) {
     Surface.prototype.removeClass = function removeClass(className) {
         var i = this.classList.indexOf(className);
         if (i >= 0) {
-            this._dirtyClasses.push(this.classList.splice(i, 1)[0]);
+            this.classList.splice(i, 1);
             this._classesDirty = true;
             _setDirty.call(this);
         }
@@ -283,14 +279,9 @@ define(function(require, exports, module) {
      * @param classlist {String[]}  ClassList
      */
     Surface.prototype.setClasses = function setClasses(classList) {
-        var removal = [];
-        for (var i = 0; i < this.classList.length; i++) {
-            if (classList.indexOf(this.classList[i]) < 0) removal.push(this.classList[i]);
+        for (var i = 0; i < classList.length; i++) {
+            this.addClass(classList[i]);
         }
-        for (i = 0; i < removal.length; i++) this.removeClass(removal[i]);
-        // duplicates are already checked by addClass()
-        for (i = 0; i < classList.length; i++) this.addClass(classList[i]);
-        _setDirty.call(this);
         return this;
     };
 
@@ -369,6 +360,12 @@ define(function(require, exports, module) {
         // create element of specific type
         var target = allocator.allocate(this.elementType);
 
+        // for true-sized elements, reset height and width
+        if (this._cachedSize){
+            if (this._cachedSize[0] === true) target.style.width = 'auto';
+            if (this._cachedSize[1] === true) target.style.height = 'auto';
+        }
+
         // add any element classes
         if (this.elementClass) {
             if (this.elementClass instanceof Array)
@@ -383,6 +380,7 @@ define(function(require, exports, module) {
         _applyClasses.call(this, target);
         _applyProperties.call(this, target);
         _applyAttributes.call(this, target);
+
         this.deploy(target);
     };
 
@@ -405,16 +403,13 @@ define(function(require, exports, module) {
         target.style.height = '';
 
         if (usePrefix){
-            target.style.webkitTransform = 'scale3d(0.0001,0.0001,0.0001)';
+            target.style.webkitTransform = zeroScale;
             target.style.webkitTransformOrigin = '';
         }
         else {
-            target.style.transform = 'scale3d(0.0001,0.0001,0.0001)';
+            target.style.transform = zeroScale;
             target.style.transformOrigin = '';
         }
-
-        for (var i = 0; i < this.classList.length; i++)
-            this.removeClass(this.classList[i]);
 
         // clear all styles, classes and attributes
         _removeProperties.call(this, target);
