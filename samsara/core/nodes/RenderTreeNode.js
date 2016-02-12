@@ -34,6 +34,16 @@ define(function(require, exports, module) {
         this.size = new EventHandler();
         this.layout = new EventHandler();
 
+        this.root = null;
+        this.tempRoot = null;
+
+        if (object) _set.call(this, object);
+        else {
+            this.layout.subscribe(this._layout);
+            this.size.subscribe(this._size);
+        }
+
+        // save last spec if node is removed and later added
         this._cachedSpec = {
             layout : null,
             size : null
@@ -54,14 +64,6 @@ define(function(require, exports, module) {
         this.size.on('resize', function(size) {
             this._cachedSpec.size = size;
         }.bind(this));
-
-        this.root = null;
-
-        if (object) _set.call(this, object);
-        else {
-            this.layout.subscribe(this._layout);
-            this.size.subscribe(this._size);
-        }
     }
 
     /**
@@ -110,6 +112,9 @@ define(function(require, exports, module) {
         childNode._size.subscribe(this.size);
         childNode._logic.subscribe(this._logic);
 
+        // blow life upstream
+        this._logic.trigger('attach');
+
         var self = this;
         preTickQueue.push(function() {
             self.size.trigger('resize', self._cachedSpec.size);
@@ -119,17 +124,16 @@ define(function(require, exports, module) {
             });
         });
 
-        this._logic.trigger('attach');
-
         return childNode;
     };
 
     RenderTreeNode.prototype.remove = function (){
         this.root = null;
+        this.tempRoot = this;
         this._logic.trigger('detach');
-        this._layout.off();
-        this._size.off();
-        this._logic.off();
+        this._layout.unsubscribe();
+        this._size.unsubscribe();
+        this._logic.unsubscribe();
     };
 
     function _createNodeFromObjectLiteral(object){
