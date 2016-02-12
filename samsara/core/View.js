@@ -107,9 +107,11 @@ define(function(require, exports, module) {
                 [this._layout, this._layoutNode, this.size]
             );
 
-            this._node._size.subscribe(this.size);
-            this._node._layout.subscribe(layout);
-            this._node._logic.subscribe(this._logic);
+            this._logic.on('attach', function() {
+                this._node._size.subscribe(this.size);
+                this._node._layout.subscribe(layout);
+                this._node._logic.subscribe(this._logic);
+            }.bind(this));
 
             Controller.apply(this, arguments);
             if (this.options) setOptions.call(this, this.options);
@@ -123,6 +125,10 @@ define(function(require, exports, module) {
          */
         add : function add(){
             return RenderTreeNode.prototype.add.apply(this._node, arguments);
+        },
+        remove : function remove(){
+            this._cachedSize = [0,0];
+            return RenderTreeNode.prototype.remove.apply(this._node, arguments);
         },
         /**
          * Getter for size.
