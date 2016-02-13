@@ -64,7 +64,7 @@ define(function(require, exports, module) {
             result = document.createElement(type);
             this.container.appendChild(result);
         }
-        else result = nodeStore.pop();
+        else result = nodeStore.shift();
         return result;
     };
 
