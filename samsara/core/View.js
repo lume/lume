@@ -107,7 +107,14 @@ define(function(require, exports, module) {
                 [this._layout, this._layoutNode, this.size]
             );
 
+            this._node._size.subscribe(this.size);
+            this._node._layout.subscribe(layout);
+            this._node._logic.subscribe(this._logic);
+
+            this.attached = true;
             this._logic.on('attach', function() {
+                if (this.attached) return;
+                this.attached = true;
                 this._node._size.subscribe(this.size);
                 this._node._layout.subscribe(layout);
                 this._node._logic.subscribe(this._logic);
@@ -127,6 +134,7 @@ define(function(require, exports, module) {
             return RenderTreeNode.prototype.add.apply(this._node, arguments);
         },
         remove : function remove(){
+            this.attached = false;
             this._cachedSize = [0,0];
             return RenderTreeNode.prototype.remove.apply(this._node, arguments);
         },
