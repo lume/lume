@@ -159,7 +159,7 @@ define(function(require, exports, module) {
     var _setOpacity = function _setOpacity(element, opacity) {
         if (!this._isVisible && opacity > MIN_OPACITY) {
             //element.style.pointerEvents = 'auto';
-            element.style.visibility = 'visible';
+            this.setProperties({visibility : 'visible'});
             this._isVisible = true;
         }
 
@@ -168,7 +168,7 @@ define(function(require, exports, module) {
             opacity = MIN_OPACITY;
             if (this._isVisible) {
                 //element.style.pointerEvents = 'none';
-                element.style.visibility = 'hidden';
+                this.setProperties({visibility : 'hidden'});
                 this._isVisible = false;
             }
         }
