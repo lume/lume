@@ -35,7 +35,6 @@ define(function(require, exports, module) {
         this.layout = new EventHandler();
 
         this.root = null;
-        this.tempRoot = null;
 
         if (object) _set.call(this, object);
         else {
@@ -64,6 +63,14 @@ define(function(require, exports, module) {
         this.size.on('resize', function(size) {
             this._cachedSpec.size = size;
         }.bind(this));
+
+        this._logic.on('mount', function(node){
+            this.root = node;
+        }.bind(this));
+
+        this._logic.on('unmount', function() {
+            this.root = null;
+        }.bind(this));
     }
 
     /**
@@ -84,39 +91,9 @@ define(function(require, exports, module) {
     RenderTreeNode.prototype.add = function add(node) {
         var childNode;
 
-        if (node.constructor === Object){
-            // Object literal case
-            return _createNodeFromObjectLiteral.call(this, node);
-        }
-        else if (node._isView){
-            // View case
-            if (this.root)
-                node._node.root = this.root;
-            else if (this.tempRoot)
-                node._node.tempRoot = this.tempRoot;
-            childNode = node;
-        }
-        else if (node instanceof RenderTreeNode){
-            node.root = this.root;
-            childNode = node;
-        }
-        else {
-            // Node case
-            childNode = new RenderTreeNode(node);
-            if (this.tempRoot)
-                childNode.tempRoot = this.tempRoot;
-            else childNode.root = _getRootNode.call(this);
-        }
-
-        childNode._layout.subscribe(this.layout);
-        childNode._size.subscribe(this.size);
-        childNode._logic.subscribe(this._logic);
-
-        // blow life upstream
-        this._logic.trigger('attach');
-
         var self = this;
         preTickQueue.push(function() {
+            if (!self._cachedSpec.size) return;
             self.size.trigger('resize', self._cachedSpec.size);
             self.layout.trigger('start', self._cachedSpec.layout);
             dirtyQueue.push(function() {
@@ -124,13 +101,39 @@ define(function(require, exports, module) {
             });
         });
 
+        if (node.constructor === Object){
+            // Object literal case
+            return _createNodeFromObjectLiteral.call(this, node);
+        }
+        else if (node._isView){
+            // View case
+            return this.add(node._node);
+        }
+        else if (node instanceof RenderTreeNode){
+            // RenderTree Node
+            childNode = node;
+        }
+        else {
+            // LayoutNode or SizeNode or Surface
+            childNode = new RenderTreeNode(node);
+        }
+
+        childNode._layout.subscribe(this.layout);
+        childNode._size.subscribe(this.size);
+        childNode._logic.subscribe(this._logic);
+
+        // Called when node is removed and later added
+        if (this.root && !childNode.root)
+            childNode._logic.trigger('mount', this.root);
+
+        this._logic.emit('attach');
+
         return childNode;
     };
 
     RenderTreeNode.prototype.remove = function (){
-        this.root = null;
-        this.tempRoot = this;
         this._logic.trigger('detach');
+        this._logic.trigger('unmount');
         this._layout.unsubscribe();
         this._size.unsubscribe();
         this._logic.unsubscribe();
@@ -170,9 +173,7 @@ define(function(require, exports, module) {
     }
 
     function _getRootNode(){
-        if (this.root) return this.root;
-        if (this.tempRoot) return _getRootNode.call(this.tempRoot);
-        return this;
+        return this.root;
     }
 
     function _set(object) {

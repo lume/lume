@@ -184,6 +184,8 @@ define(function(require, exports, module) {
         if (!resizeListenFlag)
             window.addEventListener('resize', handleResize.bind(this), false);
 
+        this._node._logic.trigger('mount', this._node);
+
         preTickQueue.push(function (){
             if (!resizeListenFlag) handleResize.call(this);
             this._layout.trigger('start', layoutSpec);

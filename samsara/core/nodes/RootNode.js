@@ -16,7 +16,6 @@ define(function(require, exports, module) {
      */
     function RootNode(allocator) {
         RenderTreeNode.call(this);
-        this.root = this;
         if (allocator) this.setAllocator(allocator);
     }
 
