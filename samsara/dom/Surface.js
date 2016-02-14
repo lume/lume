@@ -7,7 +7,6 @@ define(function(require, exports, module) {
     var isTouchEnabled = "ontouchstart" in window;
     var usePrefix = !('transform' in document.documentElement.style);
     var isIOS = /iPad|iPhone|iPod/.test(navigator.platform);
-    var zeroScale = 'scale3d(0.0001,0.0001,0.0001)';
 
     /**
      * Surface is a wrapper for a DOM element animated by Samsara.
@@ -360,6 +359,8 @@ define(function(require, exports, module) {
         // create element of specific type
         var target = allocator.allocate(this.elementType);
 
+        target.style.display = '';
+
         // for true-sized elements, reset height and width
         if (this._cachedSize){
             if (this._cachedSize[0] === true) target.style.width = 'auto';
@@ -397,17 +398,17 @@ define(function(require, exports, module) {
         this.recall(target);
 
         // hide the element
-        target.style.display = '';
+        target.style.display = 'none';
         target.style.opacity = '';
         target.style.width = '';
         target.style.height = '';
 
         if (usePrefix){
-            target.style.webkitTransform = zeroScale;
+            target.style.webkitTransform = '';
             target.style.webkitTransformOrigin = '';
         }
         else {
-            target.style.transform = zeroScale;
+            target.style.transform = '';
             target.style.transformOrigin = '';
         }
 
