@@ -7,11 +7,6 @@ define(function(require, exports, module) {
     var LayoutNode = require('./LayoutNode');
     var Transitionable = require('./Transitionable');
     var EventHandler = require('../events/EventHandler');
-    var Stream = require('../streams/Stream');
-    var ResizeStream = require('../streams/ResizeStream');
-    var SizeObservable = require('../streams/SizeObservable');
-    var layoutAlgebra = require('./algebras/layout');
-    var sizeAlgebra = require('./algebras/size');
 
     /**
      * A View provides encapsulation for a subtree of the render tree. You can build
@@ -71,53 +66,19 @@ define(function(require, exports, module) {
             change : setOptions
         },
         constructor : function View(options){
-            this._size = new EventHandler();
-            this._layout = new EventHandler();
-            this._logic = new EventHandler();
-
             this._sizeNode = new SizeNode();
             this._layoutNode = new LayoutNode();
 
             this._node = new RenderTreeNode();
-            this._node.tempRoot = this._node;
 
-            this.size = ResizeStream.lift(
-                function ViewSizeAlgebra (sizeSpec, parentSize){
-                    if (!parentSize) return false;
-                    return (sizeSpec)
-                        ? sizeAlgebra(sizeSpec, parentSize)
-                        : parentSize;
-                },
-                [this._sizeNode, this._size]
-            );
+            this._addNode = this._node.add(this._sizeNode).add(this._layoutNode);
+
+            this.size = this._addNode.size;
 
             this._cachedSize = [0,0];
-            this.size.on('resize', function(size){
+            this._sizeNode.on('resize', function(size){
                 if (size === this._cachedSize) return false;
                 this._cachedSize = size;
-            }.bind(this));
-
-            var layout = Stream.lift(
-                function ViewLayoutAlgebra (parentSpec, objectSpec, size){
-                    if (!parentSpec || !size) return false;
-                    return (objectSpec)
-                        ? layoutAlgebra(objectSpec, parentSpec, size)
-                        : parentSpec;
-                }.bind(this),
-                [this._layout, this._layoutNode, this.size]
-            );
-
-            this._node._size.subscribe(this.size);
-            this._node._layout.subscribe(layout);
-            this._node._logic.subscribe(this._logic);
-
-            this.attached = true;
-            this._logic.on('attach', function() {
-                if (this.attached) return;
-                this.attached = true;
-                this._node._size.subscribe(this.size);
-                this._node._layout.subscribe(layout);
-                this._node._logic.subscribe(this._logic);
             }.bind(this));
 
             Controller.apply(this, arguments);
@@ -131,12 +92,11 @@ define(function(require, exports, module) {
          * @return {RenderTreeNode}
          */
         add : function add(){
-            return RenderTreeNode.prototype.add.apply(this._node, arguments);
+            return RenderTreeNode.prototype.add.apply(this._addNode, arguments);
         },
         remove : function remove(){
-            this.attached = false;
             this._cachedSize = [0,0];
-            return RenderTreeNode.prototype.remove.apply(this._node, arguments);
+            RenderTreeNode.prototype.remove.apply(this._node, arguments);
         },
         /**
          * Getter for size.
@@ -154,6 +114,7 @@ define(function(require, exports, module) {
          * @param size {Number[]|Stream} Size as [width, height] in pixels, or a stream.
          */
         setSize : function setSize(size){
+            this._cachedSize = size;
             this._sizeNode.set({size : size});
         },
         /**
@@ -169,7 +130,7 @@ define(function(require, exports, module) {
          * Setter for proportions.
          *
          * @method setProportions
-         * @param proportions {Number[]|Stream} Proportions as [x,y], or a stream.
+         * @param aspectRatio {Number[]|Stream} Proportions as [x,y], or a stream.
          */
         setAspectRatio: function setProportions(aspectRatio) {
             this._sizeNode.set({aspectRatio: aspectRatio});
