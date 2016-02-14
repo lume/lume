@@ -69,7 +69,7 @@ define(function(require, exports, module) {
         this.layout.on('start', function(){
             if (!this._currentTarget){
                 var root = this._getRoot();
-                this.setup(root.allocator);
+                if (root) this.setup(root.allocator);
             }
         }.bind(this));
 
@@ -79,7 +79,8 @@ define(function(require, exports, module) {
         this.size.on('resize', function(size){
             if (!this._currentTarget){
                 var root = this._getRoot();
-                this.setup(root.allocator);
+                if (root) this.setup(root.allocator);
+                else return;
             }
             commitSize.call(this, size);
         }.bind(this));
