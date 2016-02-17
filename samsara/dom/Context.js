@@ -69,9 +69,6 @@ define(function(require, exports, module) {
             return size;
         }.bind(this));
 
-        this._node._size.subscribe(this.size);
-        this._node._layout.subscribe(this._layout);
-
         this._perspective = new Transitionable();
         this._perspectiveOrigin = new Transitionable();
 
@@ -129,6 +126,12 @@ define(function(require, exports, module) {
         return RootNode.prototype.add.apply(this._node, arguments);
     };
 
+    Context.prototype.remove = function remove(){
+        this.container.classList.remove(this.elementClass);
+        this._node._size.unsubscribe();
+        this._node._layout.unsubscribe();
+    };
+
     /**
      * Get current perspective of this Context in pixels.
      *
@@ -175,6 +178,9 @@ define(function(require, exports, module) {
 
         var allocator = new ElementAllocator(this.container);
         this._node.setAllocator(allocator);
+
+        this._node._size.subscribe(this.size);
+        this._node._layout.subscribe(this._layout);
 
         this.emit('deploy', this.container);
 

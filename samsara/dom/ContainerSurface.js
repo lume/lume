@@ -95,5 +95,17 @@ define(function(require, exports, module) {
         return Context.prototype.add.apply(this.context, arguments);
     };
 
+    /**
+     * Extends the render tree with a provided node.
+     *
+     * @method add
+     * @param node {Object}     Node, Surface, or View
+     * @return {RenderTreeNode}
+     */
+    ContainerSurface.prototype.remove = function remove() {
+        Context.prototype.remove.apply(this.context, arguments);
+        Surface.prototype.remove.apply(this, arguments);
+    };
+
     module.exports = ContainerSurface;
 });
