@@ -3,7 +3,7 @@ define(function(require, exports, module) {
     var Transform = require('samsara/core/Transform');
     var Surface = require('samsara/dom/Surface');
     var Transitionable = require('samsara/core/Transitionable');
-    var Stream = require('samsara/Streams/Stream');
+    var Stream = require('samsara/streams/Stream');
     var Tab = require('./Tab');
 
     // The `TabContainer` handles the communication between the `Tab`
