@@ -9,6 +9,7 @@ import jss from '../jss'
 const MotorHTMLNode = document.registerElement('motor-node', {
     prototype: Object.assign(Object.create(HTMLElement.prototype), {
         createdCallback() {
+            console.log('<motor-node> createdCallback()')
             this._attached = false
             this.attachPromise = null
             this._cleanedUp = true
@@ -68,6 +69,7 @@ const MotorHTMLNode = document.registerElement('motor-node', {
         },
 
         async attachedCallback() {
+            console.log('<motor-node> attachedCallback()')
             this._attached = true
 
             // If the node is currently being attached, wait for that to finish
@@ -115,6 +117,7 @@ const MotorHTMLNode = document.registerElement('motor-node', {
         },
 
         async detachedCallback() {
+            console.log('<motor-node> detachedCallback()')
             this._attached = false
 
             // If the node is currently being attached, wait for that to finish
@@ -149,6 +152,7 @@ const MotorHTMLNode = document.registerElement('motor-node', {
         },
 
         attributeChangedCallback(attribute, oldValue, newValue) {
+            console.log('<motor-node> attributeChangedCallback()')
             this.updateNodeProperty(attribute, oldValue, newValue)
         },
 

@@ -16,6 +16,7 @@ const MotorHTMLScene = document.registerElement('motor-scene', {
     prototype: Object.assign(Object.create(MotorHTMLNode.prototype), {
         createdCallback() {
             MotorHTMLNode.prototype.createdCallback.call(this)
+            console.log('<motor-scene> createdCallback()')
 
             sceneList.push(this)
 
@@ -57,6 +58,7 @@ const MotorHTMLScene = document.registerElement('motor-scene', {
 
         attributeChangedCallback(attribute, oldValue, newValue) {
             MotorHTMLNode.prototype.attributeChangedCallback.call(this)
+            console.log('<motor-scene> attributeChangedCallback()')
             this.updateSceneProperty(attribute, oldValue, newValue)
         },
 
