@@ -172,10 +172,6 @@ define(function(require, exports, module) {
         return node;
     }
 
-    function _getRootNode(){
-        return this.root;
-    }
-
     function _set(object) {
         if (object instanceof SizeNode){
             var size = ResizeStream.lift(
@@ -209,7 +205,6 @@ define(function(require, exports, module) {
         // object is a leaf node
         object._size.subscribe(this._size);
         object._layout.subscribe(this._layout);
-        object._getRoot = _getRootNode.bind(this);
 
         this._logic.on('detach', function(){
             object.remove();
@@ -218,6 +213,8 @@ define(function(require, exports, module) {
         }.bind(this));
 
         this._logic.on('attach', function(){
+            if (this.root && !object._currentTarget)
+                object.setup(this.root.allocator);
             object._size.subscribe(this._size);
             object._layout.subscribe(this._layout);
         }.bind(this));

@@ -66,22 +66,11 @@ define(function(require, exports, module) {
                 : parentSpec;
         }, [this._layout, this._layoutNode, this.size]);
 
-        this.layout.on('start', function(){
-            if (!this._currentTarget){
-                var root = this._getRoot();
-                if (root) this.setup(root.allocator);
-            }
-        }.bind(this));
-
+        this.layout.on('start', commitLayout.bind(this));
         this.layout.on('update', commitLayout.bind(this));
         this.layout.on('end', commitLayout.bind(this));
 
         this.size.on('resize', function(size){
-            if (!this._currentTarget){
-                var root = this._getRoot();
-                if (root) this.setup(root.allocator);
-                else return;
-            }
             commitSize.call(this, size);
         }.bind(this));
 
