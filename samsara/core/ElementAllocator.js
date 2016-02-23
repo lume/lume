@@ -24,10 +24,20 @@ define(function(require, exports, module) {
      * @param container {Node} DOM element
      */
     function ElementAllocator(container) {
-        if (!container) container = document.createDocumentFragment();
-        this.container = container;
+        this.set(container);
         this.detachedNodes = {};
     }
+
+    /**
+     * Set containing element to insert allocated content into
+     *
+     * @method set
+     * @param container {Node} DOM element
+     */
+    ElementAllocator.prototype.set = function(container){
+        if (!container) container = document.createDocumentFragment();
+        this.container = container;
+    };
 
     /**
      * Move the DOM elements from their original container to a new one.
