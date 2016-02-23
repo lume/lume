@@ -50,17 +50,22 @@ define(function(require, exports, module) {
     function ContainerSurface(options) {
         Surface.call(this, options);
         this.context = new Context();
+        this.context.elementClass = ContainerSurface.prototype.elementClass;
         this.context._size.subscribe(this.size);
 
         this.on('deploy', function(target){
             this.context.mount(target, true);
+        }.bind(this));
+
+        this.on('recall', function() {
+            this.context.remove();
         }.bind(this));
     }
 
     ContainerSurface.prototype = Object.create(Surface.prototype);
     ContainerSurface.prototype.constructor = ContainerSurface;
     ContainerSurface.prototype.elementType = 'div';
-    ContainerSurface.prototype.elementClass = ['samsara-container', 'samsara-surface'];
+    ContainerSurface.prototype.elementClass = 'samsara-container';
 
     /**
      * Get current perspective in pixels.
@@ -95,15 +100,7 @@ define(function(require, exports, module) {
         return Context.prototype.add.apply(this.context, arguments);
     };
 
-    /**
-     * Extends the render tree with a provided node.
-     *
-     * @method add
-     * @param node {Object}     Node, Surface, or View
-     * @return {RenderTreeNode}
-     */
     ContainerSurface.prototype.remove = function remove() {
-        Context.prototype.remove.apply(this.context, arguments);
         Surface.prototype.remove.apply(this, arguments);
     };
 

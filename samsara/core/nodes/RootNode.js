@@ -15,6 +15,7 @@ define(function(require, exports, module) {
      * @param [allocator] {ElementAllocator} ElementAllocator
      */
     function RootNode(allocator) {
+        this.allocator = null;
         RenderTreeNode.call(this);
         if (allocator) this.setAllocator(allocator);
     }
@@ -30,6 +31,13 @@ define(function(require, exports, module) {
      */
     RootNode.prototype.setAllocator = function setAllocator(allocator){
         this.allocator = allocator;
+        this._logic.trigger('mount', this);
+        this._logic.trigger('attach');
+    };
+
+    RootNode.prototype.remove = function remove() {
+        this.allocator = null;
+        RenderTreeNode.prototype.remove.apply(this, arguments);
     };
 
     module.exports = RootNode;
