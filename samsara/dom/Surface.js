@@ -1,11 +1,17 @@
 /* Copyright © 2015-2016 David Valdman */
 
 define(function(require, exports, module) {
+    var EventHandler = require('../events/EventHandler');
+    var Stream = require('../streams/Stream');
+    var ResizeStream = require('../streams/ResizeStream');
+    var SizeNode = require('../core/SizeNode');
+    var LayoutNode = require('../core/LayoutNode');
+    var sizeAlgebra = require('../core/algebras/size');
+    var layoutAlgebra = require('../core/algebras/layout');
     var ElementOutput = require('../core/ElementOutput');
     var dirtyQueue = require('../core/queues/dirtyQueue');
 
     var isTouchEnabled = "ontouchstart" in window;
-    var usePrefix = !('transform' in document.documentElement.style);
     var isIOS = /iPad|iPhone|iPod/.test(navigator.platform);
 
     /**
@@ -63,28 +69,43 @@ define(function(require, exports, module) {
     function Surface(options) {
         this.properties = {};
         this.attributes = {};
-        this.content = '';
         this.classList = [];
-
-        this._contentDirty = true;
-        this._classesDirty = true;
-        this._stylesDirty = true;
-        this._attributesDirty = true;
-        this._dirty = false;
+        this.content = '';
         this._cachedSize = null;
         this._allocator = null;
 
-        if (options) {
-            // default to DOM size for provided elements
-            if (options.el && !options.size){
-                this._contentDirty = false;
-                options.size = [true, true];
-            }
+        this._elementOutput = new ElementOutput();
 
-            ElementOutput.call(this, options.el);
-            this.setOptions(options);
-        }
-        else ElementOutput.call(this);
+        this._eventOutput = new EventHandler();
+        EventHandler.setOutputHandler(this, this._eventOutput);
+
+        this._eventForwarder = function _eventForwarder(event) {
+            this._eventOutput.emit(event.type, event);
+        }.bind(this);
+
+        this._sizeNode = new SizeNode();
+        this._layoutNode = new LayoutNode();
+
+        this._size = new EventHandler();
+        this._layout = new EventHandler();
+
+        this.size = ResizeStream.lift(function elementSizeLift(sizeSpec, parentSize) {
+            if (!parentSize) return false; // occurs when surface is never added
+            return sizeAlgebra(sizeSpec, parentSize);
+        }, [this._sizeNode, this._size]);
+
+        this.layout = Stream.lift(function(parentSpec, objectSpec, size) {
+            if (!parentSpec || !size) return false;
+            return (objectSpec)
+                ? layoutAlgebra(objectSpec, parentSpec, size)
+                : parentSpec;
+        }, [this._layout, this._layoutNode, this.size]);
+
+        this.layout.on('update', commitLayout.bind(this));
+        this.layout.on('end', commitLayout.bind(this));
+        this.size.on('resize', commitSize.bind(this));
+
+        if (options) this.setOptions(options);
     }
 
     Surface.prototype = Object.create(ElementOutput.prototype);
@@ -92,57 +113,16 @@ define(function(require, exports, module) {
     Surface.prototype.elementType = 'div'; // Default tagName. Can be overridden in options.
     Surface.prototype.elementClass = 'samsara-surface';
 
-    function _setDirty(){
-        if (this._dirty || !this._currentTarget) return;
-
-        dirtyQueue.push(function(){
-            var target = this._currentTarget;
-
-            if (!target) return;
-
-            if (this._classesDirty) _applyClasses.call(this, target);
-
-            if (this._stylesDirty) _applyProperties.call(this, target);
-
-            if (this._attributesDirty) _applyAttributes.call(this, target);
-
-            if (this._contentDirty) this.deploy(target);
-
-            this._dirty = false;
-        }.bind(this))
+    function commitLayout(layout) {
+        if (this._currentTarget)
+            this._elementOutput.commitLayout(this._currentTarget, layout);
     }
 
-    function _applyClasses(target) {
-        for (var i = 0; i < this.classList.length; i++)
-            target.classList.add(this.classList[i]);
-        this._classesDirty = false;
-    }
-
-    function _applyProperties(target) {
-        for (var key in this.properties)
-            target.style[key] = this.properties[key];
-        this._stylesDirty = false;
-    }
-
-    function _applyAttributes(target) {
-        for (var key in this.attributes)
-            target.setAttribute(key, this.attributes[key]);
-        this._attributesDirty = false;
-    }
-
-    function _removeClasses(target) {
-        for (var i = 0; i < this.classList.length; i++)
-            target.classList.remove(this.classList[i]);
-    }
-
-    function _removeProperties(target) {
-        for (var key in this.properties)
-            target.style[key] = '';
-    }
-
-    function _removeAttributes(target) {
-        for (var key in this.attributes)
-            target.removeAttribute(key);
+    function commitSize(size) {
+        if (this._currentTarget){
+            var shouldResize = this._elementOutput.commitSize(this._currentTarget, size);
+            if (shouldResize) this.emit('resize', size);
+        }
     }
 
     function enableScroll(){
@@ -185,8 +165,12 @@ define(function(require, exports, module) {
             var value = attributes[key];
             if (value != undefined) this.attributes[key] = attributes[key];
         }
-        this._attributesDirty = true;
-        _setDirty.call(this);
+
+        dirtyQueue.push(function(){
+            if (this._currentTarget)
+                this._elementOutput.applyAttributes(this._currentTarget, attributes);
+        }.bind(this));
+
         return this;
     };
 
@@ -211,8 +195,12 @@ define(function(require, exports, module) {
     Surface.prototype.setProperties = function setProperties(properties) {
         for (var key in properties)
             this.properties[key] = properties[key];
-        this._stylesDirty = true;
-        _setDirty.call(this);
+
+        dirtyQueue.push(function() {
+            if (this._currentTarget)
+                this._elementOutput.applyProperties(this._currentTarget, properties);
+        }.bind(this));
+
         return this;
     };
 
@@ -236,8 +224,11 @@ define(function(require, exports, module) {
     Surface.prototype.addClass = function addClass(className) {
         if (this.classList.indexOf(className) < 0) {
             this.classList.push(className);
-            this._classesDirty = true;
-            _setDirty.call(this);
+
+            dirtyQueue.push(function() {
+                if (this._currentTarget)
+                    this._elementOutput.applyClasses(this._currentTarget, this.classList);
+            }.bind(this));
         }
         return this;
     };
@@ -252,8 +243,9 @@ define(function(require, exports, module) {
         var i = this.classList.indexOf(className);
         if (i >= 0) {
             this.classList.splice(i, 1);
-            this._classesDirty = true;
-            _setDirty.call(this);
+            dirtyQueue.push(function() {
+                this._elementOutput.removeClasses(this._currentTarget, this.classList);
+            }.bind(this));
         }
     };
 
@@ -304,8 +296,10 @@ define(function(require, exports, module) {
     Surface.prototype.setContent = function setContent(content) {
         if (this.content !== content) {
             this.content = content;
-            this._contentDirty = true;
-            _setDirty.call(this);
+
+            dirtyQueue.push(function() {
+                this._elementOutput.deploy(this._currentTarget, content);
+            }.bind(this));
         }
         return this;
     };
@@ -343,6 +337,34 @@ define(function(require, exports, module) {
     };
 
     /**
+     * Adds a handler to the `type` channel which will be executed on `emit`.
+     *
+     * @method on
+     *
+     * @param type {String}         DOM event channel name, e.g., "click", "touchmove"
+     * @param handler {Function}    Handler. It's only argument will be an emitted data payload.
+     */
+    Surface.prototype.on = function on(type, handler) {
+        if (this._currentTarget)
+            this._elementOutput.on(this._currentTarget, type, this._eventForwarder);
+        EventHandler.prototype.on.apply(this._eventOutput, arguments);
+    };
+
+    /**
+     * Removes a previously added handler to the `type` channel.
+     *  Undoes the work of `on`.
+     *
+     * @method off
+     * @param type {String}         DOM event channel name e.g., "click", "touchmove"
+     * @param handler {Function}    Handler
+     */
+    Surface.prototype.off = function off(type, handler) {
+        if (this._currentTarget)
+            this._elementOutput.off(this._currentTarget, type, this._eventForwarder);
+        EventHandler.prototype.off.apply(this._eventOutput, arguments);
+    };
+
+    /**
      * Allocates the element-type associated with the Surface, adds its given
      *  element classes, and prepares it for future committing.
      *
@@ -360,14 +382,6 @@ define(function(require, exports, module) {
         var target = allocator.allocate(this.elementType);
         this._currentTarget = target;
 
-        target.style.display = '';
-
-        // for true-sized elements, reset height and width
-        if (this._cachedSize){
-            if (this._cachedSize[0] === true) target.style.width = 'auto';
-            if (this._cachedSize[1] === true) target.style.height = 'auto';
-        }
-
         // add any element classes
         if (this.elementClass) {
             if (this.elementClass instanceof Array)
@@ -376,13 +390,13 @@ define(function(require, exports, module) {
             else this.addClass(this.elementClass);
         }
 
-        // set the currentTarget and any bound listeners
+        for (var type in this._eventOutput.listeners)
+            this._elementOutput.on(target, type, this._eventForwarder);
 
-        this.addEventListeners(target);
-
-        _applyClasses.call(this, target);
-        _applyProperties.call(this, target);
-        _applyAttributes.call(this, target);
+        this._elementOutput.set(target);
+        this._elementOutput.applyClasses(target, this.classList);
+        this._elementOutput.applyProperties(target, this.properties);
+        this._elementOutput.applyAttributes(target, this.attributes);
 
         this.deploy(target);
     };
@@ -396,33 +410,16 @@ define(function(require, exports, module) {
     Surface.prototype.remove = function remove() {
         var target = this._currentTarget;
 
+        this._elementOutput.removeClasses(target, this.classList);
+        this._elementOutput.removeProperties(target, this.properties);
+        this._elementOutput.removeAttributes(target, this.attributes);
+        this._elementOutput.reset(target);
+
+        for (var type in this._eventOutput.listeners)
+            this._elementOutput.off(target, type, this._eventForwarder);
+
         // cache the target's contents for later deployment
         this.recall(target);
-
-        // hide the element
-        target.style.display = 'none';
-        target.style.opacity = '';
-        target.style.width = '';
-        target.style.height = '';
-
-        if (usePrefix){
-            target.style.webkitTransform = '';
-            target.style.webkitTransformOrigin = '';
-        }
-        else {
-            target.style.transform = '';
-            target.style.transformOrigin = '';
-        }
-
-        // clear all styles, classes and attributes
-        _removeProperties.call(this, target);
-        _removeAttributes.call(this, target);
-        _removeClasses.call(this, target);
-
-        this.removeEventListeners(target);
-
-        //TODO: move this to ElementOutput
-        this._cachedSpec = {};
 
         this._allocator.deallocate(target);
         this._allocator = null;
@@ -438,15 +435,8 @@ define(function(require, exports, module) {
      * @param target {Node} DOM element to set content into
      */
     Surface.prototype.deploy = function deploy(target) {
-        if (!target) return;
         var content = this.getContent();
-        if (content instanceof Node) {
-            while (target.hasChildNodes()) target.removeChild(target.firstChild);
-            target.appendChild(content);
-        }
-        else target.innerHTML = content;
-
-        this._contentDirty = false;
+        this._elementOutput.deploy(target, content);
         this._eventOutput.emit('deploy', target);
     };
 
@@ -459,9 +449,7 @@ define(function(require, exports, module) {
      */
     Surface.prototype.recall = function recall(target) {
         this._eventOutput.emit('recall');
-        var df = document.createDocumentFragment();
-        while (target.hasChildNodes()) df.appendChild(target.firstChild);
-        this.setContent(df);
+        this.content = this._elementOutput.recall(target);
     };
 
     /**
@@ -484,7 +472,6 @@ define(function(require, exports, module) {
     Surface.prototype.setSize = function setSize(size) {
         this._cachedSize = size;
         this._sizeNode.set({size : size});
-        _setDirty.call(this);
     };
 
     /**
@@ -495,7 +482,6 @@ define(function(require, exports, module) {
      */
     Surface.prototype.setProportions = function setProportions(proportions) {
         this._sizeNode.set({proportions : proportions});
-        _setDirty.call(this);
     };
 
     /**
@@ -506,7 +492,6 @@ define(function(require, exports, module) {
      */
     Surface.prototype.setMargins = function setMargins(margins) {
         this._sizeNode.set({margins : margins});
-        _setDirty.call(this);
     };
 
     /**
@@ -519,7 +504,6 @@ define(function(require, exports, module) {
      */
     Surface.prototype.setAspectRatio = function setAspectRatio(aspectRatio) {
         this._sizeNode.set({aspectRatio : aspectRatio});
-        _setDirty.call(this);
     };
 
     /**
@@ -530,8 +514,7 @@ define(function(require, exports, module) {
      */
     Surface.prototype.setOrigin = function setOrigin(origin){
         this._layoutNode.set({origin : origin});
-        this._originDirty = true;
-        _setDirty.call(this);
+        this._elementOutput._originDirty = true;
     };
 
     /**
@@ -542,8 +525,7 @@ define(function(require, exports, module) {
      */
     Surface.prototype.setOpacity = function setOpacity(opacity){
         this._layoutNode.set({opacity : opacity});
-        this._opacityDirty = true;
-        _setDirty.call(this);
+        this._elementOutput._opacityDirty = true;
     };
 
     module.exports = Surface;

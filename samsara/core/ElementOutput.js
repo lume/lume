@@ -1,14 +1,7 @@
 /* Copyright © 2015-2016 David Valdman */
 
 define(function(require, exports, module) {
-    var EventHandler = require('../events/EventHandler');
     var Transform = require('./Transform');
-    var Stream = require('../streams/Stream');
-    var ResizeStream = require('../streams/ResizeStream');
-    var SizeNode = require('./SizeNode');
-    var LayoutNode = require('./LayoutNode');
-    var sizeAlgebra = require('./algebras/size');
-    var layoutAlgebra = require('./algebras/layout');
 
     var usePrefix = !('transform' in document.documentElement.style);
     var devicePixelRatio = 2 * (window.devicePixelRatio || 1);
@@ -31,57 +24,12 @@ define(function(require, exports, module) {
      * @private
      * @param {Node} element document parent of this container
      */
-    function ElementOutput(element) {
-        this._currentTarget = null;
-
-        this._cachedSpec = {
-            transform : null,
-            opacity : 1,
-            origin : null,
-            size : null
-        };
-
-        this._eventOutput = new EventHandler();
-        EventHandler.setOutputHandler(this, this._eventOutput);
-
-        this._eventForwarder = function _eventForwarder(event) {
-            this._eventOutput.emit(event.type, event);
-        }.bind(this);
-
-        this._sizeNode = new SizeNode();
-        this._layoutNode = new LayoutNode();
-
-        this._size = new EventHandler();
-        this._layout = new EventHandler();
-
-        this.size = ResizeStream.lift(function elementSizeLift(sizeSpec, parentSize){
-            if (!parentSize) return false; // occurs when surface is never added
-            return sizeAlgebra(sizeSpec, parentSize);
-        }, [this._sizeNode, this._size]);
-
-        this.layout = Stream.lift(function(parentSpec, objectSpec, size){
-            if (!parentSpec || !size) return false;
-            return (objectSpec)
-                ? layoutAlgebra(objectSpec, parentSpec, size)
-                : parentSpec;
-        }, [this._layout, this._layoutNode, this.size]);
-
-        this.layout.on('start', commitLayout.bind(this));
-        this.layout.on('update', commitLayout.bind(this));
-        this.layout.on('end', commitLayout.bind(this));
-
-        this.size.on('resize', function(size){
-            commitSize.call(this, size);
-        }.bind(this));
-
-        this._currentTarget = null;
-
+    function ElementOutput() {
+        this._cachedSpec = {};
         this._opacityDirty = true;
         this._originDirty = true;
         this._transformDirty = true;
         this._isVisible = true;
-
-        if (element) this.attach(element);
     }
 
     function _round(value, unit){
@@ -139,7 +87,7 @@ define(function(require, exports, module) {
     var _setOpacity = function _setOpacity(element, opacity) {
         if (!this._isVisible && opacity > MIN_OPACITY) {
             //element.style.pointerEvents = 'auto';
-            this.setProperties({visibility : 'visible'});
+            element.style.visibility = 'visible';
             this._isVisible = true;
         }
 
@@ -148,7 +96,7 @@ define(function(require, exports, module) {
             opacity = MIN_OPACITY;
             if (this._isVisible) {
                 //element.style.pointerEvents = 'none';
-                this.setProperties({visibility : 'hidden'});
+                element.style.visibility = 'hidden';
                 this._isVisible = false;
             }
         }
@@ -156,60 +104,88 @@ define(function(require, exports, module) {
         if (this._isVisible) element.style.opacity = opacity;
     };
 
-    /**
-     * Adds a handler to the `type` channel which will be executed on `emit`.
-     *
-     * @method on
-     *
-     * @param type {String}         DOM event channel name, e.g., "click", "touchmove"
-     * @param handler {Function}    Handler. It's only argument will be an emitted data payload.
-     */
-    ElementOutput.prototype.on = function on(type, handler) {
-        if (this._currentTarget)
-            this._currentTarget.addEventListener(type, this._eventForwarder);
-        EventHandler.prototype.on.apply(this._eventOutput, arguments);
+    ElementOutput.prototype.applyClasses = function applyClasses(target, classList) {
+        for (var i = 0; i < classList.length; i++)
+            target.classList.add(classList[i]);
     };
 
-    /**
-     * Removes a previously added handler to the `type` channel.
-     *  Undoes the work of `on`.
-     *
-     * @method removeListener
-     * @param type {String}         DOM event channel name e.g., "click", "touchmove"
-     * @param handler {Function}    Handler
-     */
-    ElementOutput.prototype.off = function off(type, handler) {
-        if (this._currentTarget)
-            this._currentTarget.removeEventListener(type, this._eventForwarder);
-        EventHandler.prototype.off.apply(this._eventOutput, arguments);
+    ElementOutput.prototype.applyProperties = function applyProperties(target, properties) {
+        for (var key in properties)
+            target.style[key] = properties[key];
     };
 
-    /**
-     * Emit an event with optional data payload. This will execute all listening
-     *  to the channel name with the payload as only argument.
-     *
-     * @method emit
-     * @param type {string}         Event channel name
-     * @param [payload] {Object}    User defined data payload
-     */
-    ElementOutput.prototype.emit = function emit(type, payload) {
-        EventHandler.prototype.emit.apply(this._eventOutput, arguments);
+    ElementOutput.prototype.applyAttributes = function applyAttributes(target, attributes) {
+        for (var key in attributes)
+            target.setAttribute(key, attributes[key]);
     };
 
-    ElementOutput.prototype.addEventListeners = function addEventListeners(target) {
-        for (var type in this._eventOutput.listeners)
-            target.addEventListener(type, this._eventForwarder);
+    ElementOutput.prototype.removeClasses = function removeClasses(target, classList) {
+        for (var i = 0; i < classList.length; i++)
+            target.classList.remove(classList[i]);
     };
 
-    ElementOutput.prototype.removeEventListeners = function removeEventListeners(target) {
-        for (var type in this._eventOutput.listeners)
-            target.removeEventListener(type, this._eventForwarder);
+    ElementOutput.prototype.removeProperties = function removeProperties(target, properties) {
+        for (var key in properties)
+            target.style[key] = '';
     };
 
-    function commitLayout(layout) {
-        var target = this._currentTarget;
-        if (!target) return;
+    ElementOutput.prototype.removeAttributes = function removeAttributes(target, attributes) {
+        for (var key in attributes)
+            target.removeAttribute(key);
+    };
 
+    ElementOutput.prototype.on = function on(target, type, handler) {
+        target.addEventListener(type, handler);
+    };
+
+    ElementOutput.prototype.off = function off(target, type, handler) {
+        target.removeEventListener(type, handler);
+    };
+
+    ElementOutput.prototype.deploy = function deploy(target, content) {
+        if (content instanceof Node) {
+            while (target.hasChildNodes()) target.removeChild(target.firstChild);
+            target.appendChild(content);
+        }
+        else target.innerHTML = content;
+    };
+
+    ElementOutput.prototype.recall = function deploy(target) {
+        var df = document.createDocumentFragment();
+        while (target.hasChildNodes()) df.appendChild(target.firstChild);
+        return df;
+    };
+
+    ElementOutput.prototype.set = function set(target){
+        target.style.display = '';
+        target.style.visibility = '';
+
+        // for true-sized elements, reset height and width
+        if (this._cachedSize) {
+            if (this._cachedSize[0] === true) target.style.width = 'auto';
+            if (this._cachedSize[1] === true) target.style.height = 'auto';
+        }
+    };
+
+    ElementOutput.prototype.reset = function reset(target){
+        target.style.display = 'none';
+        target.style.opacity = '';
+        target.style.width = '';
+        target.style.height = '';
+
+        if (usePrefix) {
+            target.style.webkitTransform = '';
+            target.style.webkitTransformOrigin = '';
+        }
+        else {
+            target.style.transform = '';
+            target.style.transformOrigin = '';
+        }
+
+        this._cachedSpec = {};
+    };
+
+    ElementOutput.prototype.commitLayout = function commitLayout(target, layout) {
         var cache = this._cachedSpec;
 
         var transform = layout.transform || Transform.identity;
@@ -238,21 +214,19 @@ define(function(require, exports, module) {
         this._originDirty = false;
         this._transformDirty = false;
         this._opacityDirty = false;
-    }
+    };
 
-    function commitSize(size){
-        var target = this._currentTarget;
-        if (!target) return;
-
+    ElementOutput.prototype.commitSize = function commitSize(target, size){
         if (size[0] !== true) size[0] = _round(size[0], devicePixelRatio);
         if (size[1] !== true) size[1] = _round(size[1], devicePixelRatio);
 
         if (_xyNotEquals(this._cachedSpec.size, size)){
             this._cachedSpec.size = size;
             _setSize(target, size);
-            this.emit('resize', size);
+            return true;
         }
-    }
+        else return false;
+    };
 
     module.exports = ElementOutput;
 });
