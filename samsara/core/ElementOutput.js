@@ -84,16 +84,6 @@ define(function(require, exports, module) {
         if (element) this.attach(element);
     }
 
-    function _addEventListeners(target) {
-        for (var i in this._eventOutput.listeners)
-            target.addEventListener(i, this._eventForwarder);
-    }
-
-    function _removeEventListeners(target) {
-        for (var i in this._eventOutput.listeners)
-            target.removeEventListener(i, this._eventForwarder);
-    }
-
     function _round(value, unit){
         return (unit === 1)
             ? Math.round(value)
@@ -189,6 +179,8 @@ define(function(require, exports, module) {
      * @param handler {Function}    Handler
      */
     ElementOutput.prototype.off = function off(type, handler) {
+        if (this._currentTarget)
+            this._currentTarget.removeEventListener(type, this._eventForwarder);
         EventHandler.prototype.off.apply(this._eventOutput, arguments);
     };
 
@@ -204,34 +196,14 @@ define(function(require, exports, module) {
         EventHandler.prototype.emit.apply(this._eventOutput, arguments);
     };
 
-    /**
-     * Assigns the DOM element for committing and to and attaches event listeners.
-     *
-     * @private
-     * @method attach
-     * @param {Node} target document parent of this container
-     */
-    ElementOutput.prototype.attach = function attach(target) {
-        this._currentTarget = target;
-        _addEventListeners.call(this, target);
+    ElementOutput.prototype.addEventListeners = function addEventListeners(target) {
+        for (var type in this._eventOutput.listeners)
+            target.addEventListener(type, this._eventForwarder);
     };
 
-    /**
-     * Removes the associated DOM element in memory and detached event listeners.
-     *
-     * @private
-     * @method detach
-     */
-    ElementOutput.prototype.detach = function detach() {
-        _removeEventListeners.call(this, this._currentTarget);
-        this._currentTarget = null;
-
-        this._cachedSpec = {
-            transform : null,
-            opacity : 1,
-            origin : null,
-            size : null
-        };
+    ElementOutput.prototype.removeEventListeners = function removeEventListeners(target) {
+        for (var type in this._eventOutput.listeners)
+            target.removeEventListener(type, this._eventForwarder);
     };
 
     function commitLayout(layout) {

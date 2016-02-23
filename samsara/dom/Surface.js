@@ -358,6 +358,7 @@ define(function(require, exports, module) {
 
         // create element of specific type
         var target = allocator.allocate(this.elementType);
+        this._currentTarget = target;
 
         target.style.display = '';
 
@@ -376,7 +377,8 @@ define(function(require, exports, module) {
         }
 
         // set the currentTarget and any bound listeners
-        this.attach(target);
+
+        this.addEventListeners(target);
 
         _applyClasses.call(this, target);
         _applyProperties.call(this, target);
@@ -417,11 +419,15 @@ define(function(require, exports, module) {
         _removeAttributes.call(this, target);
         _removeClasses.call(this, target);
 
-        // garbage collect current target and remove bound event listeners
-        this.detach();
+        this.removeEventListeners(target);
+
+        //TODO: move this to ElementOutput
+        this._cachedSpec = {};
 
         this._allocator.deallocate(target);
         this._allocator = null;
+
+        this._currentTarget = null;
     };
 
     /**
