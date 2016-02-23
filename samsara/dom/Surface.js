@@ -420,7 +420,6 @@ define(function(require, exports, module) {
         // garbage collect current target and remove bound event listeners
         this.detach();
 
-        // store allocated node in cache for recycling
         this._allocator.deallocate(target);
         this._allocator = null;
     };
@@ -433,7 +432,6 @@ define(function(require, exports, module) {
      * @param target {Node} DOM element to set content into
      */
     Surface.prototype.deploy = function deploy(target) {
-        //TODO: make sure target.tagName is of correct type! Tag pools must be implemented.
         if (!target) return;
         var content = this.getContent();
         if (content instanceof Node) {
