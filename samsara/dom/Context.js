@@ -189,6 +189,8 @@ define(function(require, exports, module) {
         this._node._size.subscribe(this.size);
         this._node._layout.subscribe(this._layout);
 
+        this.emit('deploy', this.container);
+
         if (!resizeListenFlag)
             window.addEventListener('resize', handleResize.bind(this), false);
 
