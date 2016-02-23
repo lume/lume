@@ -12,7 +12,6 @@ define(function(require, exports, module) {
     var preTickQueue = require('../core/queues/preTickQueue');
     var dirtyQueue = require('../core/queues/dirtyQueue');
 
-    var elementType = 'div';
     var rafStarted = false;
     var isMobile = /mobi/i.test(navigator.userAgent);
     var orientation = Number.NaN;
@@ -62,9 +61,6 @@ define(function(require, exports, module) {
 
         this._size = new SimpleStream();
         this._layout = new SimpleStream();
-
-        this._allocator = new ElementAllocator();
-        this.contentCache = null;
 
         this.size = this._size.map(function(){
             var size = [this.container.clientWidth, this.container.clientHeight];
@@ -131,31 +127,14 @@ define(function(require, exports, module) {
 
     Context.prototype.remove = function remove(){
         this.container.classList.remove(this.elementClass);
-        this._allocator.deallocate(this.container);
 
         windowWidth = Number.NaN;
         windowHeight = Number.NaN;
 
-        this._node._logic.trigger('detach');
+        this._node.remove();
 
-        this._node._logic.unsubscribe();
-        this._node._size.unsubscribe(this.size);
-        this._node._layout.unsubscribe(this._layout);
-
-        this.recall();
-    };
-
-    Context.prototype.recall = function(){
-        this._eventOutput.emit('recall');
-        this.contentCache = document.createDocumentFragment();
         while (this.container.hasChildNodes())
-            this.contentCache.appendChild(this.container.firstChild);
-    };
-
-    Context.prototype.deploy = function(target) {
-        if (!this.contentCache) return;
-        target.appendChild(this.contentCache);
-        this._eventOutput.emit('deploy', target);
+            this.container.removeChild(this.container.firstChild);
     };
 
     /**
@@ -201,29 +180,17 @@ define(function(require, exports, module) {
     Context.prototype.mount = function mount(node, resizeListenFlag){
         node = node || document.body;
 
-        this._allocator.set(node);
-        var container = this._allocator.allocate(elementType);
-
-        if (this.contentCache){
-            this.deploy(this.container);
-        }
-        else {
-            var allocator = new ElementAllocator(container);
-            this._node.setAllocator(allocator);
-            this.container = container;
-            this._eventOutput.emit('deploy', container);
-        }
-
+        this.container = node;
         this.container.classList.add(this.elementClass);
+
+        var allocator = new ElementAllocator(this.container);
+        this._node.setAllocator(allocator);
 
         this._node._size.subscribe(this.size);
         this._node._layout.subscribe(this._layout);
 
         if (!resizeListenFlag)
             window.addEventListener('resize', handleResize.bind(this), false);
-
-        this._node._logic.trigger('mount', this._node);
-        this._node._logic.trigger('attach');
 
         preTickQueue.push(function (){
             if (!resizeListenFlag) handleResize.call(this);
