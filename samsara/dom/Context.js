@@ -63,6 +63,9 @@ define(function(require, exports, module) {
         this._size = new SimpleStream();
         this._layout = new SimpleStream();
 
+        this._allocator = new ElementAllocator();
+        this.contentCache = null;
+
         this.size = this._size.map(function(){
             var size = [this.container.clientWidth, this.container.clientHeight];
             this.emit('resize', size);
@@ -128,8 +131,31 @@ define(function(require, exports, module) {
 
     Context.prototype.remove = function remove(){
         this.container.classList.remove(this.elementClass);
-        this._node._size.unsubscribe();
-        this._node._layout.unsubscribe();
+        this._allocator.deallocate(this.container);
+
+        windowWidth = Number.NaN;
+        windowHeight = Number.NaN;
+
+        this._node._logic.trigger('detach');
+
+        this._node._logic.unsubscribe();
+        this._node._size.unsubscribe(this.size);
+        this._node._layout.unsubscribe(this._layout);
+
+        this.recall();
+    };
+
+    Context.prototype.recall = function(){
+        this._eventOutput.emit('recall');
+        this.contentCache = document.createDocumentFragment();
+        while (this.container.hasChildNodes())
+            this.contentCache.appendChild(this.container.firstChild);
+    };
+
+    Context.prototype.deploy = function(target) {
+        if (!this.contentCache) return;
+        target.appendChild(this.contentCache);
+        this._eventOutput.emit('deploy', target);
     };
 
     /**
@@ -173,24 +199,31 @@ define(function(require, exports, module) {
      * @param node {Node}  DOM element
      */
     Context.prototype.mount = function mount(node, resizeListenFlag){
-        this.container = node || document.createElement(elementType);
-        this.container.classList.add(this.elementClass);
+        node = node || document.body;
 
-        var allocator = new ElementAllocator(this.container);
-        this._node.setAllocator(allocator);
+        this._allocator.set(node);
+        var container = this._allocator.allocate(elementType);
+
+        if (this.contentCache){
+            this.deploy(this.container);
+        }
+        else {
+            var allocator = new ElementAllocator(container);
+            this._node.setAllocator(allocator);
+            this.container = container;
+            this._eventOutput.emit('deploy', container);
+        }
+
+        this.container.classList.add(this.elementClass);
 
         this._node._size.subscribe(this.size);
         this._node._layout.subscribe(this._layout);
-
-        this.emit('deploy', this.container);
-
-        if (!node)
-            document.body.appendChild(this.container);
 
         if (!resizeListenFlag)
             window.addEventListener('resize', handleResize.bind(this), false);
 
         this._node._logic.trigger('mount', this._node);
+        this._node._logic.trigger('attach');
 
         preTickQueue.push(function (){
             if (!resizeListenFlag) handleResize.call(this);
