@@ -65,7 +65,7 @@ define(function(require, exports, module) {
     ContainerSurface.prototype = Object.create(Surface.prototype);
     ContainerSurface.prototype.constructor = ContainerSurface;
     ContainerSurface.prototype.elementType = 'div';
-    ContainerSurface.prototype.elementClass = 'samsara-container';
+    ContainerSurface.prototype.elementClass = ['samsara-surface', 'samsara-container'];
 
     /**
      * Get current perspective in pixels.
