@@ -53,13 +53,6 @@ define(function (require, exports, module) {
             this.add(this.title);
             this.add(this.close);
             this.add({align : [0,1]}).add(this.content);
-        },
-        // Remove the tab. This will remove the DOM content for later reuse.
-        // Note: this API is currently experimental and will be fleshed out in a later version.
-        remove : function(){
-            this.content.remove();
-            this.title.remove();
-            this.close.remove();
         }
     });
 
