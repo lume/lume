@@ -73,11 +73,11 @@ define(function(require, exports, module) {
 
             this._addNode = this._node.add(this._sizeNode).add(this._layoutNode);
 
-            this.size = this._addNode.size;
+            this.size = this._addNode.size; // actual size
+            this._size = this._node.size; // incoming parent size
 
             this._cachedSize = [0,0];
-            this._sizeNode.on('resize', function(size){
-                if (size === this._cachedSize) return false;
+            this.size.on('resize', function(size){
                 this._cachedSize = size;
             }.bind(this));
 
