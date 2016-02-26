@@ -132,10 +132,10 @@ define(function(require, exports, module) {
             this._sizeNode.set({proportions : proportions});
         },
         /**
-         * Setter for proportions.
+         * Setter for margins.
          *
-         * @method setProportions
-         * @param margins {Number[]|Stream} Proportions as [x,y], or a stream.
+         * @method setMargins
+         * @param margins {Number[]|Stream} Margins as [x,y], or a stream.
          */
         setMargins : function setMargins(margins){
             this._sizeNode.set({margins : margins});
@@ -144,7 +144,8 @@ define(function(require, exports, module) {
          * Setter for aspect ratio.
          *
          * @method setAspectRatio
-         * @param aspectRatio {Number[]|Stream} Proportions as [x,y], or a stream.
+         * @deprecated Use size functions instead
+         * @param aspectRatio {Number|Stream} Aspect ratio, or a stream.
          */
         setAspectRatio: function setAspectRatio(aspectRatio) {
             this._sizeNode.set({aspectRatio: aspectRatio});
