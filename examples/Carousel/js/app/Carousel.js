@@ -17,7 +17,7 @@ define(function (require, exports, module) {
             // Create the arrows, dots and scrollview
             this.createArrows(options.arrows);
             this.createDots(options.dots);
-            this.createScrollview();
+            this.createScrollview(options.scrollview);
 
             // Create the surfaces with uniformly graded hues
             var hue = 0;
