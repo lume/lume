@@ -36,7 +36,6 @@ define(function (require) {
             });
 
             stream.on('resize', function(mergedData){
-                console.log(mergedData);
                 loop.stop();
             });
 
