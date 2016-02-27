@@ -3,7 +3,7 @@
 define(function(require, exports, module) {
     var Transform = require('./Transform');
 
-    var usePrefix = !('transform' in document.documentElement.style);
+    var usePrefix = !('transform' in window.document.documentElement.style);
     var devicePixelRatio = 2 * (window.devicePixelRatio || 1);
     var MIN_OPACITY = 0.0001;
     var MAX_OPACITY = 0.9999;

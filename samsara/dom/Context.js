@@ -13,7 +13,7 @@ define(function(require, exports, module) {
     var dirtyQueue = require('../core/queues/dirtyQueue');
 
     var rafStarted = false;
-    var isMobile = /mobi/i.test(navigator.userAgent);
+    var isMobile = /mobi/i.test(window.navigator.userAgent);
     var orientation = Number.NaN;
     var windowWidth = Number.NaN;
     var windowHeight = Number.NaN;
@@ -178,7 +178,7 @@ define(function(require, exports, module) {
      * @param node {Node}  DOM element
      */
     Context.prototype.mount = function mount(node, resizeListenFlag){
-        node = node || document.body;
+        node = node || window.document.body;
 
         this.container = node;
         this.container.classList.add(this.elementClass);
@@ -252,7 +252,7 @@ define(function(require, exports, module) {
         EventHandler.prototype.emit.apply(this._eventOutput, arguments);
     };
 
-    var usePrefix = !('perspective' in document.documentElement.style);
+    var usePrefix = !('perspective' in window.document.documentElement.style);
 
     var setPerspective = usePrefix
         ? function setPerspective(element, perspective) {
