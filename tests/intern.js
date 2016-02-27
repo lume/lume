@@ -45,7 +45,7 @@ define({
 		'tests/unit/events/EventEmitter',
 		'tests/unit/streams/ResizeStream',
         'tests/unit/core/Transitionable',
-        'tests/unit/dom/Removal'
+        //'tests/unit/dom/Removal'
 	],
 
 	// Functional test suite(s) to execute against each browser once non-functional tests are completed
