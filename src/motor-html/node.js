@@ -105,16 +105,6 @@ const MotorHTMLNode = document.registerElement('motor-node', {
                     this._cleanedUp = false
 
                     this.childObserver.observe(this, { childList: true })
-
-                    // the document has to be loaded for before things will render properly.
-                    // scene.mountPromise is a promise we can await, at which point the
-                    // document is ready and the scene is mounted (although not rendered, as in
-                    // matrix transforms and styling are not yet applied).
-                    //
-                    // TODO mountPromise for Nodes so that we don't have to
-                    // check for the scene node specifically.
-                    if (this.nodeName == 'MOTOR-SCENE')
-                        await this.node.mountPromise
                 }
 
                 // The scene doesn't have a parent to attach to.
