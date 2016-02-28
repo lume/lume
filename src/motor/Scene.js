@@ -50,6 +50,26 @@ class Scene extends Node {
         // mount the scene into the target container, then provide a promise
         // that the user can use to do something once the scene is mounted.
         this.mountPromise = this._mount(mountPoint)
+        this._renderWhenMounted()
+    }
+
+    // This currently starts a simple render loop.
+    //
+    // TODO: We don't want to have a naive render loop. We only want to render
+    // once here, then we will have a mechanism that renders only parts of the
+    // scene graph as needed (instead of the entire thing like currently).
+    async _renderWhenMounted() {
+        await this.mountPromise
+
+        // So now we can render after the scene is mounted.
+        // TODO: Move the loop into Motor core, and request frames
+        // for specific nodes only when they update.
+        const loop = () => {
+            this.render()
+            this._rAF = requestAnimationFrame(loop)
+        }
+
+        this._rAF = requestAnimationFrame(loop)
     }
 
     async _mount(mountPoint) {

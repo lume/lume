@@ -18,6 +18,25 @@ const MotorHTMLNode = document.registerElement('motor-node', {
             this.createChildObserver()
 
             this.childObserver.observe(this, { childList: true })
+
+            // TODO: mountPromise for Node, not just Scene.
+            if (this.nodeName == 'MOTOR-SCENE') {
+
+                // XXX: "mountPromise" vs "ready":
+                //
+                // "ready" seems to be more intuitive on the HTML side because
+                // if the user has a reference to a motor-node or a motor-scene
+                // and it exists in DOM, then it is already "mounted" from the
+                // HTML API perspective. Maybe we can use "mountPromise" for
+                // the imperative API, and "ready" for the HTML API. For example:
+                //
+                // await $('motor-scene')[0].ready // When using the HTML API
+                // await node.mountPromise // When using the imperative API
+                //
+                // Or, maybe we can just use "ready" for both cases?...
+                this.mountPromise = this.node.mountPromise
+                this.ready = this.mountPromise
+            }
         },
 
         makeNode() {
@@ -96,16 +115,6 @@ const MotorHTMLNode = document.registerElement('motor-node', {
                     // check for the scene node specifically.
                     if (this.nodeName == 'MOTOR-SCENE')
                         await this.node.mountPromise
-
-                    // So now we can render after the scene is mounted.
-                    // TODO: Move the loop into Motor core, and request frames
-                    // for specific nodes only when they update.
-                    const loop = () => {
-                        this.node.render()
-                        this.rAF = requestAnimationFrame(loop)
-                    }
-
-                    this.rAF = requestAnimationFrame(loop)
                 }
 
                 // The scene doesn't have a parent to attach to.
@@ -157,15 +166,30 @@ const MotorHTMLNode = document.registerElement('motor-node', {
         },
 
         updateNodeProperty(attribute, oldValue, newValue) {
+            // TODO: Handle actual values (not just string property values as
+            // follows) for performance; especially when DOMMatrix is supported
+            // by browsers.
+
             // attributes on our HTML elements are the same name as those on
             // the Node class (the setters).
             if (newValue !== oldValue) {
-                if (['opacity'].includes(attribute))
+                if (attribute.match(/opacity/i))
                     this.node[attribute] = parseFloat(newValue)
                 else if (attribute.match(/sizemode/i))
                     this.node[attribute] = parseStringArray(newValue)
-                else
+                else if (
+                    attribute.match(/rotation/i)
+                    || attribute.match(/scale/i)
+                    || attribute.match(/position/i)
+                    || attribute.match(/absoluteSize/i)
+                    || attribute.match(/proportionalSize/i)
+                    || attribute.match(/align/i)
+                    || attribute.match(/mountPoint/i)
+                    || attribute.match(/origin/i) // TODO on imperative side.
+                ) {
                     this.node[attribute] = parseNumberArray(newValue)
+                }
+                else { /* crickets */ }
             }
         },
     }),

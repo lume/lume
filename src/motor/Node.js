@@ -532,13 +532,15 @@ class Node {
 
         this._applyStyles()
 
-        //If Node isn't mounted.. mount it to the camera element
+        // If Node isn't mounted.. mount it
         if (! this._mounted) {
             if (this._parent) {
+
+                // TODO: camera
                 // Mount to parent if parent is a Node
                 // if (this._parent instanceof Node) {
-                this._parent._el.element.appendChild(this._el.element);
-                this._mounted = true;
+                    this._parent._el.element.appendChild(this._el.element);
+                    this._mounted = true;
 
                 // Mount to camera if top level Node
                 // } else {
