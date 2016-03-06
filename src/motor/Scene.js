@@ -24,6 +24,9 @@ class Scene extends Node {
     constructor(mountPoint) {
         super()
 
+        this._scene = this
+        this._resolveScenePromise(this)
+
         this._el.setClasses('motor-dom-scene')
 
         this._sceneContainer = document.createElement('div')
@@ -47,9 +50,10 @@ class Scene extends Node {
         //this._el.element.style.mozPerspectiveOrigin = '25%'
         //this._el.element.style.perspectiveOrigin = '25%'
 
-        // mount the scene into the target container, then provide a promise
-        // that the user can use to do something once the scene is mounted.
-        this.mountPromise = this._mount(mountPoint)
+        // Resolves this.mountPromise, that the user can use to do something
+        // once the scene is mounted.
+        this._mount(mountPoint)
+
         this._renderWhenMounted()
     }
 
@@ -100,6 +104,7 @@ class Scene extends Node {
             return false
         }
 
+        this._resolveMountPromise(this._mounted)
         return this._mounted
     }
 

@@ -1,4 +1,3 @@
-import Scene from '../motor/Scene'
 import Node from '../motor/Node'
 
 import jss from '../jss'
@@ -11,7 +10,7 @@ const MotorHTMLNode = document.registerElement('motor-node', {
         createdCallback() {
             console.log('<motor-node> createdCallback()')
             this._attached = false
-            this.attachPromise = null
+            this._attachPromise = null
             this._cleanedUp = true
 
             this.node = this.makeNode()
@@ -19,24 +18,23 @@ const MotorHTMLNode = document.registerElement('motor-node', {
 
             this.childObserver.observe(this, { childList: true })
 
-            // TODO: mountPromise for Node, not just Scene.
-            if (this.nodeName == 'MOTOR-SCENE') {
+            // XXX: "this.mountPromise" vs "this.ready":
+            //
+            // "ready" seems to be more intuitive on the HTML side because
+            // if the user has a reference to a motor-node or a motor-scene
+            // and it exists in DOM, then it is already "mounted" from the
+            // HTML API perspective. Maybe we can use "mountPromise" for
+            // the imperative API, and "ready" for the HTML API. For example:
+            //
+            // await $('motor-scene')[0].ready // When using the HTML API
+            // await node.mountPromise // When using the imperative API
+            //
+            // Or, maybe we can just use ".ready" for in both APIs?...
+            this.ready = this.node.mountPromise
+            //console.log(' -- mount promise?', this.node.constructor.name, this.ready)
 
-                // XXX: "mountPromise" vs "ready":
-                //
-                // "ready" seems to be more intuitive on the HTML side because
-                // if the user has a reference to a motor-node or a motor-scene
-                // and it exists in DOM, then it is already "mounted" from the
-                // HTML API perspective. Maybe we can use "mountPromise" for
-                // the imperative API, and "ready" for the HTML API. For example:
-                //
-                // await $('motor-scene')[0].ready // When using the HTML API
-                // await node.mountPromise // When using the imperative API
-                //
-                // Or, maybe we can just use "ready" for both cases?...
-                this.mountPromise = this.node.mountPromise
-                this.ready = this.mountPromise
-            }
+            //console.log(' -- node scene?', this.node.constructor.name, this.node.scene)
+            setTimeout(() => console.log(' -- node scene (after timeout)?', this.node.constructor.name, this.node.scene), 5000)
         },
 
         makeNode() {
@@ -81,6 +79,13 @@ const MotorHTMLNode = document.registerElement('motor-node', {
                         // it in the node-controlled element, which may
                         // make it a little harder to debug, but at least
                         // for now it works.
+                        //
+                        // TODO TODO: When using the HTML API, make Nodes use
+                        // the custom element itself instead of creating a
+                        // parallel DOM representation. I.e. Node.element holds
+                        // a ref to the actual motor-node or motor-scene
+                        // elements instead of other elements that are
+                        // currently created in the Node class.
                         this.node.element.element.appendChild(node)
                     })
                 })
@@ -88,7 +93,7 @@ const MotorHTMLNode = document.registerElement('motor-node', {
         },
 
         async attachedCallback() {
-            console.log('<motor-node> attachedCallback()')
+            console.log('<motor-node> attachedCallback()', this.id)
             this._attached = true
 
             // If the node is currently being attached, wait for that to finish
@@ -97,9 +102,9 @@ const MotorHTMLNode = document.registerElement('motor-node', {
             // naive programming on the end-user's side (f.e., if they attach
             // the motor-node element to the DOM then move it to a new element
             // within the same tick.
-            await this.attachPromise
+            if (this._attachPromise) await this._attachPromise
 
-            this.attachPromise = new Promise(async (resolve) => {
+            this._attachPromise = new Promise(resolve => {
 
                 if (this._cleanedUp) {
                     this._cleanedUp = false
@@ -107,7 +112,9 @@ const MotorHTMLNode = document.registerElement('motor-node', {
                     this.childObserver.observe(this, { childList: true })
                 }
 
-                // The scene doesn't have a parent to attach to.
+                // Attach this motor-node's Node to the parent motor-node's
+                // Node (doesn't apply to motor-scene, which doesn't have a
+                // parent to attach to).
                 if (this.nodeName.toLowerCase() != 'motor-scene')
                     this.parentNode.node.addChild(this.node)
 
@@ -121,11 +128,10 @@ const MotorHTMLNode = document.registerElement('motor-node', {
 
             // If the node is currently being attached, wait for that to finish
             // before starting the detach process (to avoid a race condition).
-            // if this.attachPromise is null, excution continues without
-            // going to the next tick (TODO: is this something we can rely on
-            // in the language spec?).
-            if (this.attachPromise) await this.attachPromise
-            this.attachPromise = null
+            // if this._attachPromise is null, excution continues without
+            // going to the next tick
+            if (this._attachPromise) await this._attachPromise
+            this._attachPromise = null
 
             // XXX For performance, deferr to the next tick before cleaning up
             // in case the element is actually being re-attached somewhere else
@@ -140,18 +146,20 @@ const MotorHTMLNode = document.registerElement('motor-node', {
             // that Garabage Collection doesn't make the frames stutter?
             if (!this._attached) {
                 this.cleanUp()
-                this._cleanedUp = true
             }
             // }}
         },
 
         cleanUp() {
-            cancelAnimationFrame(this.rAF)
             this.childObserver.disconnect()
+
+            // TODO: anything else?
+
+            this._cleanedUp = true
         },
 
         attributeChangedCallback(attribute, oldValue, newValue) {
-            console.log('<motor-node> attributeChangedCallback()')
+            //console.log('<motor-node> attribute')
             this.updateNodeProperty(attribute, oldValue, newValue)
         },
 
@@ -175,7 +183,7 @@ const MotorHTMLNode = document.registerElement('motor-node', {
                     || attribute.match(/proportionalSize/i)
                     || attribute.match(/align/i)
                     || attribute.match(/mountPoint/i)
-                    || attribute.match(/origin/i) // TODO on imperative side.
+                    || attribute.match(/origin/i) // origin is TODO on imperative side.
                 ) {
                     this.node[attribute] = parseNumberArray(newValue)
                 }

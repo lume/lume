@@ -1,4 +1,3 @@
-import Node from '../motor/Node'
 import Scene from '../motor/Scene'
 
 import MotorHTMLNode from './node'
@@ -58,7 +57,6 @@ const MotorHTMLScene = document.registerElement('motor-scene', {
 
         attributeChangedCallback(attribute, oldValue, newValue) {
             MotorHTMLNode.prototype.attributeChangedCallback.call(this)
-            console.log('<motor-scene> attributeChangedCallback()')
             this.updateSceneProperty(attribute, oldValue, newValue)
         },
 

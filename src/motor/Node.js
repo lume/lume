@@ -104,6 +104,59 @@ class Node {
         this._children = [];
 
         this.setProperties(properties);
+
+        // an internal promise that resolves when this Node finally belongs to
+        // a scene graph with a root Scene. The resolved value is the root
+        // Scene.
+        //
+        // TODO: Reset this._scenePromise when the node is removed from it's
+        // scene, or instead make _scenePromise a function that returns a
+        // promise waiting for the next scene that the node will belong to, and
+        // returns the existing promise if currently attached on a scene. For
+        // now, this only works for the first scene that this Node is attached
+        // to (which is not ultimately what we want).
+        this._resolveScenePromise = null
+        this._scenePromise = new Promise(r => this._resolveScenePromise = r)
+
+        // Provide the user a promise that resolves when this Node is attached
+        // to a tree and when this Node's eventual root Scene is mounted.
+        // Users can await this in order to do something after this Node is
+        // mounted in a scene graph that is live in the DOM.
+        //
+        // TODO: Maybe we should rename this to `.ready`, matching with the
+        // HTML API. See motor-html/node createdCallback.
+        // TODO: We need to reset this when a Node is removed, as it will be
+        // mounted again if it is ever added back into a scene graph. For now,
+        // this only work on this Node's first mount.
+        this._resolveMountPromise = null
+        this.mountPromise = new Promise(r => this._resolveMountPromise = r)
+
+        // TODO: this conditional check should work with child classes who's
+        // constructor is no longer named "Node". This should not fire for
+        // Scene or child classes of Scene.
+        if (this.constructor.name == 'Node')
+            this.waitForSceneThenResolveMountPromise()
+    }
+
+    async waitForSceneThenResolveMountPromise() {
+        await this._scenePromise
+        await this._scene.mountPromise
+
+        // TODO TODO: also wait for this._mounted so this.element is actually
+        // mounted in the DOM. For now, the Scene._renderWhenMounted method
+        // will make this.element automatically mount into DOM with a call to
+        // this node's render() method.
+        // Or, better yet, instead of waiting for this._mounted which happens
+        // in render(), maybe we should just mount this Node's element to a
+        // parent Node as soon as this Node is added to a parent, not in
+        // render() (but also using rAF), so rendering is simply a matter of
+        // existence without an extra need for a render() call (just like in
+        // traditional HTML when we append an element into DOM it is
+        // immediately rendered based on it's type and styles). Applying
+        // rotation, position, etc, would simply modify the existence of the
+        // element (just like modifying inline styles of a traditional
+        // element).
+        this._resolveMountPromise(true)
     }
 
     /**
@@ -493,6 +546,23 @@ class Node {
      */
     addChild (node) {
 
+        // We cannot add Scenes to Nodes, for now.
+        //
+        // TODO: If someone extends Scene, constructor.name is different. We
+        // need to catch those cases too, without using instanceof Scene in
+        // order to avoid a circular dependency in this module.
+        if (node.constructor.name == 'Scene') {
+            throw new Error(`
+                A Scene cannot currently be added to another Node.
+                This may change in the future. For now, just mount
+                a new Scene onto an HTMLElement (which can be the
+                element held by a Node).
+            `)
+        }
+
+        // do nothing if the child Node is already added to this Node.
+        if (node._parent === this) return
+
         if (node._parent)
             node._parent.removeChild(node)
 
@@ -502,7 +572,28 @@ class Node {
         // Add to children array
         this._children.push(node);
 
+        // Pass the child node's Scene reference (if any, checking it's cache
+        // first) to the new child and sub children.
+        //
+        // Order is important: this needs to happen after previous stuff in
+        // this method, so that the node.scene getter works.
+        if (node._scene || node.scene) {
+            node._resolveScenePromise(node._scene)
+            node._giveSceneRefToChildren()
+        }
+
         return this
+    }
+
+    // @private
+    // This method to be called only when this Node has this.scene.
+    // Resolves the _scenePromise for all children of the tree of this Node.
+    _giveSceneRefToChildren() {
+        for (let child of this._children) {
+            child._scene = this._scene
+            child._resolveScenePromise(child._scene)
+            child._giveSceneRefToChildren();
+        }
     }
 
     /**
@@ -609,6 +700,15 @@ class Node {
         }
 
         // Render Children
+        // TODO: move this out, into DOMRenderer/WebGLRenderer:
+        // We don't need to render children explicitly because the DOMRenderer
+        // or WebGLRenderer will know what to do with nodes in the scene graph.
+        // For example, in the case of the DOMRenderer, we only need to update
+        // this Node's transform matrix, then the renderer figures out the rest
+        // (i.e. the browser uses it's nested-DOM matrix caching). DOMRenderer
+        // or WebGLRenderer can decide how most efficiently to update child
+        // transforms and how to update the scene. Node.render here will be
+        // just a way of updating the state of this Node only.
         for (let child of this._children) {
             child.render();
         }
