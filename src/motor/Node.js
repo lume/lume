@@ -74,6 +74,7 @@ class Node {
         this._removedChildren = [] // FIFO
 
         this._parent = null // default to no parent.
+        this._scene = null // stores a ref to this Node's root Scene.
 
         // Property Cache, with default values
         this._properties = {
@@ -133,6 +134,43 @@ class Node {
      */
     get element() {
         return this._el
+    }
+
+    /**
+     * Get the Scene that this Node is in, null if no Scene. This is recursive
+     * at first, then cached.
+     *
+     * This traverses up the scene graph tree starting at this Node and finds
+     * the root Scene, if any. It caches the value for performance. If this
+     * Node is removed from a parent node with parent.removeChild(), then the
+     * cache is invalidated so the traversal can happen again when this Node is
+     * eventually added to a new tree. This way, if the scene is cached on a
+     * parent Node that we're adding this Node to then we can get that cached
+     * value instead of traversing the tree.
+     *
+     * @readonly
+     */
+    get scene() {
+        // NOTE: this._scene is initally null, created in the constructor.
+
+        // if already cached, return it.
+        if (this._scene) return this._scene
+
+        if (this._parent && this._parent._scene) {
+            this._scene = this._parent._scene
+
+            //console.log(' -- scene from parent cache:', this.constructor.name, this._parent.constructor.name, this._scene)
+
+            return this._scene
+        }
+        else {
+            if (this.constructor.name == 'Scene') this._scene = this
+            else if (this._parent) this._scene = this._parent.scene
+
+            //console.log(' -- scene from traversal:', this.constructor.name, this._parent ? this._parent.constructor.name: 'no-parent', this._scene)
+
+            return this._scene
+        }
     }
 
     /**
@@ -494,6 +532,9 @@ class Node {
 
             // Remove parent
             node._parent = null
+
+            // not part of a scene anymore.
+            node._scene = null
 
             // unmount
             node._mounted = false
