@@ -6,7 +6,7 @@
   "version": "0.2.0",
   "main": "dist/samsara.js",
   "scripts": {
-    "test": "node_modules/.bin/intern-client config=tests/intern reporters=Pretty",
+    "test": "phantomjs test/vendor/runner.js test/index.html",
     "docs": "yuidoc ./samsara -t ./node_modules/yuidoc-bootstrap-theme -H ./node_modules/yuidoc-bootstrap-theme/helpers/helpers.js -o ./docs",
     "docs-examples": "npm run docs-example-logo && npm run docs-example-sidemenu",
     "docs-example-logo": "docco -l parallel examples/Logo/js/main.js examples/Logo/js/app/*.js -o examples/Logo/docs",
