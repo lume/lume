@@ -7,63 +7,58 @@ import jss from '../jss'
 const sceneList = []
 let style = null
 
-/**
- * @class MotorHTMLScene
- * @extends MotorHTMLNode
- */
-const MotorHTMLScene = document.registerElement('motor-scene', {
-    prototype: Object.assign(Object.create(MotorHTMLNode.prototype), {
-        createdCallback() {
-            MotorHTMLNode.prototype.createdCallback.call(this)
-            console.log('<motor-scene> createdCallback()')
+class MotorHTMLScene extends MotorHTMLNode {
+    createdCallback() {
+        super.createdCallback()
+        console.log('<motor-scene> createdCallback()')
 
-            sceneList.push(this)
+        sceneList.push(this)
 
-            if (!style) {
-                style = jss.createStyleSheet({
-                    motorSceneElement: {
-                        boxSizing: 'border-box',
-                        display:   'block',
-                        overflow:  'hidden',
-                    },
-                })
-            }
+        if (!style) {
+            style = jss.createStyleSheet({
+                motorSceneElement: {
+                    boxSizing: 'border-box',
+                    display:   'block',
+                    overflow:  'hidden',
+                },
+            })
+        }
 
-            style.attach()
-            this.classList.add(style.classes.motorSceneElement)
-        },
+        style.attach()
+        this.classList.add(style.classes.motorSceneElement)
+    }
 
-        makeNode() {
-            return new Scene(this)
-        },
+    makeNode() {
+        return new Scene(this)
+    }
 
-        cleanUp() {
-            MotorHTMLNode.prototype.cleanUp.call(this)
+    cleanUp() {
+        super.cleanUp()
 
-            sceneList.pop(this)
+        sceneList.pop(this)
 
-            // TODO: unmount the scene
+        // TODO: unmount the scene
 
-            // dispose of the scene style if we no longer have any scenes
-            // attached anywhere.
-            // TODO (performance): Would requesting an animation frame when
-            // detaching or attaching a stylesheet make things perform
-            // better?
-            if (sceneList.length == 0) {
-                style.detach()
-                style = null
-            }
-        },
+        // dispose of the scene style if we no longer have any scenes
+        // attached anywhere.
+        // TODO (performance): Would requesting an animation frame when
+        // detaching or attaching a stylesheet make things perform
+        // better?
+        if (sceneList.length == 0) {
+            style.detach()
+            style = null
+        }
+    }
 
-        attributeChangedCallback(attribute, oldValue, newValue) {
-            MotorHTMLNode.prototype.attributeChangedCallback.call(this)
-            this.updateSceneProperty(attribute, oldValue, newValue)
-        },
+    attributeChangedCallback(attribute, oldValue, newValue) {
+        super.attributeChangedCallback(attribute, oldValue, newValue)
+        this.updateSceneProperty(attribute, oldValue, newValue)
+    }
 
-        updateSceneProperty(attribute, oldValue, newValue) {
-            // ...
-        },
-    }),
-})
+    updateSceneProperty(attribute, oldValue, newValue) {
+        // ...
+    }
+}
+MotorHTMLScene = document.registerElement('motor-scene', MotorHTMLScene)
 
 export default MotorHTMLScene
