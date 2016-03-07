@@ -655,70 +655,78 @@ class Node {
         return this._children.length
     }
 
-    /**
-     */
+    // TODO: separate stuff out of here into different parts, so we can
+    // eventually progress to having a separate DOMRenderer and have a dynamic
+    // rAF loop. Tracking at https://github.com/infamous/infamous/issues/3
+    //
+    // XXX: this render() method is currently called repeatedly from an rAF
+    // loop in Scene, so it always renders a frame behind from the frame where
+    // render() is called. Child render() calls are a frame behind that, etc,
+    // all the way down the graph. This isn't what we want. For now, we'll see
+    // a cascade effect, where nodes further down the tree render later in the
+    // future compared to the root node. WIP, hang tight...
     render() {
+        requestAnimationFrame(timestamp => {
 
-        // applies the transform matrix to the element's style property.
-        // TODO: We shouldn't need to re-calculate the matrix every render?
-        this._setMatrix3d(this._calculateMatrix());
+            // applies the transform matrix to the element's style property.
+            // TODO: We shouldn't need to re-calculate the matrix every render?
+            this._setMatrix3d(this._calculateMatrix());
 
-        // TODO move to DOMRenderer
-        this._applyStyles()
+            // TODO move to DOMRenderer
+            this._applyStyles()
 
-        // If Node's HTML element isn't mounted.. mount it. If the Node's HTML
-        // element is a MotorHTMLNode, then there's not need to mount it
-        // because it already exists in the DOM.
-        // TODO move to DOMRenderer
-        if (! this._mounted) {
-            if (this._parent) {
+            // If Node's HTML element isn't mounted.. mount it.
+            // TODO move to DOMRenderer
+            if (! this._mounted) {
+                if (this._parent) {
 
-                // TODO: camera
-                // Mount to parent if parent is a Node
-                // if (this._parent instanceof Node) {
-                    if (this._el.element.parentNode !== this._parent._el.element)
-                        this._parent._el.element.appendChild(this._el.element);
-                    this._mounted = true;
+                    // TODO: camera
+                    // Mount to parent if parent is a Node
+                    // if (this._parent instanceof Node) {
+                        if (this._el.element.parentNode !== this._parent._el.element)
+                            this._parent._el.element.appendChild(this._el.element);
+                        this._mounted = true;
 
-                // Mount to camera if top level Node
-                // } else {
-                //   //scene.camera.element.appendChild(this._el);
-                //   this._mounted = true;
-                // }
+                    // Mount to camera if top level Node
+                    // } else {
+                    //   //scene.camera.element.appendChild(this._el);
+                    //   this._mounted = true;
+                    // }
+                }
             }
-        }
 
-        // TODO: move this out, into DOMRenderer
-        while (this._removedChildren.length) {
-            let child = this._removedChildren.shift()
+            // TODO: move this out, into DOMRenderer
+            while (this._removedChildren.length) {
+                let child = this._removedChildren.shift()
 
-            // the removeChild methods set this._mounted to false, and we use
-            // it as a hint that the child _el needs to be removed.
-            if (!child._mounted) {
+                // the removeChild methods set this._mounted to false, and we use
+                // it as a hint that the child _el needs to be removed.
+                if (!child._mounted) {
 
-                // XXX Only remove the child _el if it has an actual parent
-                // (it's possible for it not to have one if removeChild was
-                // called before the child was ever rendered, in which case
-                // it's _el will never have been mounted in the previous
-                // section).
-                if (child._el.element.parentNode)
-                    child._el.element.parentNode.removeChild(child._el.element)
+                    // XXX Only remove the child _el if it has an actual parent
+                    // (it's possible for it not to have one if removeChild was
+                    // called before the child was ever rendered, in which case
+                    // it's _el will never have been mounted in the previous
+                    // section).
+                    if (child._el.element.parentNode)
+                        child._el.element.parentNode.removeChild(child._el.element)
+                }
             }
-        }
 
-        // Render Children
-        // TODO: move this out, into DOMRenderer/WebGLRenderer:
-        // We don't need to render children explicitly because the DOMRenderer
-        // or WebGLRenderer will know what to do with nodes in the scene graph.
-        // For example, in the case of the DOMRenderer, we only need to update
-        // this Node's transform matrix, then the renderer figures out the rest
-        // (i.e. the browser uses it's nested-DOM matrix caching). DOMRenderer
-        // or WebGLRenderer can decide how to most efficiently update child
-        // transforms and how to update the scene. Node.render here will be
-        // just a way of updating the state of this Node only.
-        for (let child of this._children) {
-            child.render();
-        }
+            // Render Children
+            // TODO: move this out, into DOMRenderer/WebGLRenderer:
+            // We don't need to render children explicitly because the DOMRenderer
+            // or WebGLRenderer will know what to do with nodes in the scene graph.
+            // For example, in the case of the DOMRenderer, we only need to update
+            // this Node's transform matrix, then the renderer figures out the rest
+            // (i.e. the browser uses it's nested-DOM matrix caching). DOMRenderer
+            // or WebGLRenderer can decide how to most efficiently update child
+            // transforms and how to update the scene. Node.render here will be
+            // just a way of updating the state of this Node only.
+            for (let child of this._children) {
+                child.render();
+            }
+        })
 
         return this
     }
