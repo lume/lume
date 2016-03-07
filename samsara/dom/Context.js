@@ -126,7 +126,11 @@ define(function(require, exports, module) {
     };
 
     Context.prototype.remove = function remove(){
-        this.container.classList.remove(this.elementClass);
+        if (this.elementClass instanceof Array){
+            for (var i = 0; i < this.elementClass.length; i++)
+                this.container.classList.remove(this.elementClass[i])
+        }
+        else this.container.classList.remove(this.elementClass);
 
         windowWidth = Number.NaN;
         windowHeight = Number.NaN;
@@ -181,7 +185,12 @@ define(function(require, exports, module) {
         node = node || window.document.body;
 
         this.container = node;
-        this.container.classList.add(this.elementClass);
+
+        if (this.elementClass instanceof Array) {
+            for (var i = 0; i < this.elementClass.length; i++)
+                this.container.classList.add(this.elementClass[i])
+        }
+        else this.container.classList.add(this.elementClass);
 
         var allocator = new ElementAllocator(this.container);
         this._node.setAllocator(allocator);
