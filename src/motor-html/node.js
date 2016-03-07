@@ -1,3 +1,5 @@
+import 'document-register-element'
+
 import Node from '../motor/Node'
 
 import jss from '../jss'

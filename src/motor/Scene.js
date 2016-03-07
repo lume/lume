@@ -60,8 +60,9 @@ class Scene extends Node {
     // This currently starts a simple render loop.
     //
     // TODO: We don't want to have a naive render loop. We only want to render
-    // once here, then we will have a mechanism that renders only parts of the
-    // scene graph as needed (instead of the entire thing like currently).
+    // once here (for now, in order to mount all Node.elements into DOM), then
+    // we will have a mechanism that renders only parts of the scene graph as
+    // needed (instead of the entire thing like currently).
     async _renderWhenMounted() {
         await this.mountPromise
 

@@ -1,3 +1,5 @@
+import 'document-register-element'
+
 import Scene from '../motor/Scene'
 
 import MotorHTMLNode from './node'
