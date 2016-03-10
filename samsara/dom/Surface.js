@@ -121,6 +121,7 @@ define(function(require, exports, module) {
     function commitSize(size) {
         if (this._currentTarget){
             var shouldResize = this._elementOutput.commitSize(this._currentTarget, size);
+            this._cachedSize = size;
             if (shouldResize) this.emit('resize', size);
         }
     }
@@ -460,7 +461,7 @@ define(function(require, exports, module) {
      */
     Surface.prototype.getSize = function getSize() {
         // TODO: remove cachedSize
-        return this._cachedSpec.size || this._cachedSize;
+        return this._cachedSize;
     };
 
     /**
