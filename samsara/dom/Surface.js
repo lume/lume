@@ -245,7 +245,8 @@ define(function(require, exports, module) {
         if (i >= 0) {
             this.classList.splice(i, 1);
             dirtyQueue.push(function() {
-                this._elementOutput.removeClasses(this._currentTarget, this.classList);
+                if (this._currentTarget)
+                    this._elementOutput.removeClasses(this._currentTarget, this.classList);
             }.bind(this));
         }
     };
@@ -299,7 +300,8 @@ define(function(require, exports, module) {
             this.content = content;
 
             dirtyQueue.push(function() {
-                this._elementOutput.deploy(this._currentTarget, content);
+                if (this._currentTarget)
+                    this._elementOutput.deploy(this._currentTarget, content);
             }.bind(this));
         }
         return this;
