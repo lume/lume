@@ -823,7 +823,7 @@ class Node {
 
         // XXX: is this in the right order? UPDATE: It is.
         // TODO: Apply DOMMatrix directly to the Element once browser APIs
-        // support it.
+        // support it. Maybe we can polyfill this?
         var transform = `matrix3d(
             ${ matrix.m11 },
             ${ matrix.m12 },
