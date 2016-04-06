@@ -31,7 +31,7 @@ class MotorHTMLNode extends HTMLElement {
         this.ready = this.node.mountPromise
         //console.log(' -- mount promise?', this.node.constructor.name, this.ready)
 
-        //console.log(' -- node scene?', this.node.constructor.name, this.node.scene)
+        console.log(' -- node scene?', this.node.constructor.name, this.node.scene)
         setTimeout(() => console.log(' -- node scene (after timeout)?', this.node.constructor.name, this.node.scene), 5000)
     }
 
@@ -42,13 +42,13 @@ class MotorHTMLNode extends HTMLElement {
     createChildObserver() {
         this.childObserver = new MutationObserver(mutations => {
             mutations.forEach(mutation => {
-                let nodes = Array.from(mutation.addedNodes)
+                let domNodes = Array.from(mutation.addedNodes)
 
-                nodes = nodes.filter(node => {
+                domNodes = domNodes.filter(domNode => {
                     let keep = true
 
                     if (
-                        node.nodeName.match(/^MOTOR-/)
+                        domNode.nodeName.match(/^MOTOR-/)
                         || (
 
                             // Ignore the motorDomSceneContainer because we
@@ -60,8 +60,8 @@ class MotorHTMLNode extends HTMLElement {
                             // scene graph DOM tree which is rooted in the
                             // <motor-scene>. You'll understand what this means
                             // now if you take a look in the element inspector.
-                            node.className // some nodes don't have a class name (#text, #comment, #document).
-                            && node.className.match(/^motorDomSceneContainer/)
+                            domNode.className // some domNodes don't have a class name (#text, #comment, #document).
+                            && domNode.className.match(/^motorDomSceneContainer/)
                         )
                     ) {
                         keep = false
@@ -70,7 +70,7 @@ class MotorHTMLNode extends HTMLElement {
                     return keep
                 })
 
-                nodes.forEach(node => {
+                domNodes.forEach(domNode => {
 
                     // this is kind of a hack: we remove the content
                     // from the motor-node in the actual DOM and put
@@ -84,7 +84,7 @@ class MotorHTMLNode extends HTMLElement {
                     // a ref to the actual motor-node or motor-scene
                     // elements instead of other elements that are
                     // currently created in the Node class.
-                    this.node.element.element.appendChild(node)
+                    this.node.element.element.appendChild(domNode)
                 })
             })
         })
