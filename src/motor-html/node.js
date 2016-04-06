@@ -118,11 +118,8 @@ class MotorHTMLNode extends HTMLElement {
         if (this.nodeName.toLowerCase() != 'motor-scene')
             this.parentNode.node.addChild(this.node)
 
-        // There's currently no asynchronous behavior in this function, so the
-        // _attachPromise is resolved synchronously. Otherwise (if we add async
-        // behavior) then some other block of code will nullify
-        // this._attachPromise instead of here (either detachedCallback, or
-        // another simultaneous call to attachedCallback).
+        // There's currently no asynchronous behavior in this attachedCallback,
+        // so the _attachPromise is resolved synchronously here.
         resolve()
         this._attachPromise = null
     }
@@ -136,7 +133,6 @@ class MotorHTMLNode extends HTMLElement {
         // if this._attachPromise is null, excution continues without
         // going to the next tick
         if (this._attachPromise) await this._attachPromise
-        this._attachPromise = null
 
         // XXX For performance, deferr to the next tick before cleaning up
         // in case the element is actually being re-attached somewhere else
