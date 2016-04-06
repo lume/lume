@@ -95,29 +95,36 @@ class MotorHTMLNode extends HTMLElement {
         this._attached = true
 
         // If the node is currently being attached, wait for that to finish
-        // before attaching again, to avoid a race condition. This will
-        // almost never happen, but just in case, it'll protect against
-        // naive programming on the end-user's side (f.e., if they attach
-        // the motor-node element to the DOM then move it to a new element
-        // within the same tick.
+        // before attaching again, to avoid a race condition. This will almost
+        // never happen, but just in case, it'll protect against naive
+        // programming on the end-user's side (which is fine, we want to make
+        // programming easy on their side, f.e., if they attach the motor-node
+        // element to the DOM then move it to a new element within the same
+        // tick.
         if (this._attachPromise) await this._attachPromise
 
-        this._attachPromise = new Promise(resolve => {
+        let resolve = null
+        this._attachPromise = new Promise(r => resolve = r)
 
-            if (this._cleanedUp) {
-                this._cleanedUp = false
+        if (this._cleanedUp) {
+            this._cleanedUp = false
 
-                this.childObserver.observe(this, { childList: true })
-            }
+            this.childObserver.observe(this, { childList: true })
+        }
 
-            // Attach this motor-node's Node to the parent motor-node's
-            // Node (doesn't apply to motor-scene, which doesn't have a
-            // parent to attach to).
-            if (this.nodeName.toLowerCase() != 'motor-scene')
-                this.parentNode.node.addChild(this.node)
+        // Attach this motor-node's Node to the parent motor-node's
+        // Node (doesn't apply to motor-scene, which doesn't have a
+        // parent to attach to).
+        if (this.nodeName.toLowerCase() != 'motor-scene')
+            this.parentNode.node.addChild(this.node)
 
-            resolve()
-        })
+        // There's currently no asynchronous behavior in this function, so the
+        // _attachPromise is resolved synchronously. Otherwise (if we add async
+        // behavior) then some other block of code will nullify
+        // this._attachPromise instead of here (either detachedCallback, or
+        // another simultaneous call to attachedCallback).
+        resolve()
+        this._attachPromise = null
     }
 
     async detachedCallback() {
