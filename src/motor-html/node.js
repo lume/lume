@@ -129,32 +129,40 @@ class MotorHTMLNode extends HTMLElement {
         this._attached = false
 
         // If the node is currently being attached, wait for that to finish
-        // before starting the detach process (to avoid a race condition).
-        // if this._attachPromise is null, excution continues without
-        // going to the next tick
+        // before starting the detach process (to avoid a race condition).  If
+        // this._attachPromise is null, excution continues without going to the
+        // next tick. This currently does nothing. It will come into effect if
+        // any async behavior is awaited on in attachedCallback (like before).
+        //
+        // XXX Possibly remove the _attachedPromise guard entirely, since it's
+        // not needed at the moment. Just kept it just in case, but we could
+        // always re-implement if the need arrises.
         if (this._attachPromise) await this._attachPromise
 
-        // XXX For performance, deferr to the next tick before cleaning up
-        // in case the element is actually being re-attached somewhere else
-        // within this same tick (detaching and attaching is synchronous,
-        // so by deferring to the next tick we'll be able to know if the
-        // element was re-attached or not in order to clean up or not), in
-        // which case we want to preserve the style sheet, preserve the
-        // animation frame, and keep the scene in the sceneList. {{
+        // XXX Deferr to the next tick before cleaning up in case the element
+        // is actually being re-attached somewhere else within this same tick
+        // (detaching and attaching is synchronous, so by deferring to the next
+        // tick we'll be able to know if the element was re-attached or not in
+        // order to clean up or not). If the element was re-attached, then we
+        // want to preserve the style sheet, preserve the animation frame, and
+        // keep the scene in the sceneList by not running the following
+        // this.cleanUp() call. {{
         await Promise.resolve() // deferr to the next tick.
-        // If the scene wasn't re-attached, clean up.  TODO (performance):
-        // How can we coordinate this with currently running animations so
-        // that Garabage Collection doesn't make the frames stutter?
+
+        // If the scene wasn't re-attached, clean up.  TODO (performance): How
+        // can we coordinate this.cleanUp() with animation loop to prevent
+        // jank?
         if (!this._attached) {
             this.cleanUp()
         }
+
         // }}
     }
 
     cleanUp() {
         this.childObserver.disconnect()
 
-        // TODO: anything else?
+        // XXX: anything else?
 
         this._cleanedUp = true
     }
