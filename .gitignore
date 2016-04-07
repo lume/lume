@@ -6,7 +6,6 @@ docs
 # ignore build files
 /*.js
 /*.js.map
-!/infamous.js
 !/webpack.config.js
 
 # ignore build folders

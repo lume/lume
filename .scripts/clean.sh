@@ -1,4 +1,4 @@
-# Save needed .js files, .js.map files, and directories before cleaning. Feel
+# Save needed .js files and directories before cleaning. Feel
 # free to add to the list. This section is all you need to modify.
 echo saving important files.
 mkdir save
