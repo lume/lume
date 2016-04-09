@@ -187,8 +187,7 @@ MotorHTMLNode = document.registerElement('motor-node', MotorHTMLNode)
 export default MotorHTMLNode
 
 function parseNumberArray(str) {
-    if (!isNumberArrayString(str))
-        throw new Error(`Invalid array. Must be an array of numbers of length 3, for example "1, 2.5,3" without brackets. Yours was ${str}.`)
+    checkIsNumberArrayString(str)
 
     let numbers = str.split(',')
 
@@ -202,6 +201,7 @@ function parseStringArray(str) {
     return strings
 }
 
-function isNumberArrayString(str) {
-    return !!str.match(/^\s*(-?((\d+\.\d+)|(\d+))(\s*,\s*)?){3}\s*$/g)
+function checkIsNumberArrayString(str) {
+    if (!str.match(/^\s*(-?((\d+\.\d+)|(\d+))(\s*,\s*)?){3}\s*$/g))
+        throw new Error(`Invalid array. Must be an array of numbers of length 3, for example "1, 2.5,3" without brackets. Yours was ${str}.`)
 }
