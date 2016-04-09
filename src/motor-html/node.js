@@ -4,20 +4,32 @@ import Node from '../motor/Node'
 
 import jss from '../jss'
 
+const nodeList = []
+let stylesheet = null
+
+const style = {
+    motorNodeElement: {
+        display:         'block',
+        position:        'absolute',
+        top:             '0',
+        left:            '0',
+
+        // TODO: set via JavaScript. Defaults to [0.5,0.5,0.5] (the Z axis
+        // doesn't apply for DOM elements, but will for 3D objects in WebGL.)
+        transformOrigin: '50% 50% 0', // default
+
+        transformStyle:  'preserve-3d',
+    },
+}
+
 class MotorHTMLNode extends HTMLElement {
     createdCallback() {
-        console.log('<motor-node> createdCallback()')
+        //console.log('<motor-node> createdCallback()', this.id)
         this._attached = false
-        this._attachPromise = null
         this._cleanedUp = true
-
-        this.node = this.makeNode()
-        this.createChildObserver()
-
-        this.childObserver.observe(this, { childList: true })
+        this.node = null // to hold the imperative API Node instance.
 
         // XXX: "this.mountPromise" vs "this.ready":
-        //
         // "ready" seems to be more intuitive on the HTML side because
         // if the user has a reference to a motor-node or a motor-scene
         // and it exists in DOM, then it is already "mounted" from the
@@ -27,132 +39,95 @@ class MotorHTMLNode extends HTMLElement {
         // await $('motor-scene')[0].ready // When using the HTML API
         // await node.mountPromise // When using the imperative API
         //
-        // Or, maybe we can just use ".ready" for in both APIs?...
-        this.ready = this.node.mountPromise
-        //console.log(' -- mount promise?', this.node.constructor.name, this.ready)
+        // Or, maybe we can just use ".ready" in both APIs?...
+        this._resolveReadyPromise = null
+        this.ready = new Promise(r => this._resolveReadyPromise = r)
 
-        console.log(' -- node scene?', this.node.constructor.name, this.node.scene)
-        setTimeout(() => console.log(' -- node scene (after timeout)?', this.node.constructor.name, this.node.scene), 5000)
+        nodeList.push(this)
+        if (!stylesheet) {
+            //console.log('Creating Node style.')
+            // XXX create stylesheet inside animation frame?
+            stylesheet = jss.createStyleSheet(style).attach()
+        }
+        this.classList.add(stylesheet.classes.motorNodeElement)
     }
 
-    makeNode() {
-        return new Node
+    makeImperativeNode() {
+        return new Node({}, this)
     }
 
-    createChildObserver() {
-        this.childObserver = new MutationObserver(mutations => {
-            mutations.forEach(mutation => {
-                let domNodes = Array.from(mutation.addedNodes)
+    /**
+     * Either this gets called by the imperative API when the imperative API
+     * makes one of these elements, or it gets called when this element gets
+     * appended to another motor-node.
+     * @private
+     */
+    _init(imperativeMotorNode) {
+        if (imperativeMotorNode && imperativeMotorNode instanceof Node)
+            this.node = imperativeMotorNode
+        else
+            this.node = this.makeImperativeNode()
 
-                domNodes = domNodes.filter(domNode => {
-                    let keep = true
-
-                    if (
-                        domNode.nodeName.match(/^MOTOR-/)
-                        || (
-
-                            // Ignore the motorDomSceneContainer because we
-                            // won't move it (that should stay in place inside
-                            // of the <motor-scene> element). Other elements
-                            // get moved into the scene graph (for example, if
-                            // you put a <div> inside of a <motor-node>, then
-                            // that <div> gets transplanted into the Motor
-                            // scene graph DOM tree which is rooted in the
-                            // <motor-scene>. You'll understand what this means
-                            // now if you take a look in the element inspector.
-                            domNode.className // some domNodes don't have a class name (#text, #comment, #document).
-                            && domNode.className.match(/^motorDomSceneContainer/)
-                        )
-                    ) {
-                        keep = false
-                    }
-
-                    return keep
-                })
-
-                domNodes.forEach(domNode => {
-
-                    // this is kind of a hack: we remove the content
-                    // from the motor-node in the actual DOM and put
-                    // it in the node-controlled element, which may
-                    // make it a little harder to debug, but at least
-                    // for now it works.
-                    //
-                    // TODO TODO: When using the HTML API, make Nodes use
-                    // the custom element itself instead of creating a
-                    // parallel DOM representation. I.e. Node.element holds
-                    // a ref to the actual motor-node or motor-scene
-                    // elements instead of other elements that are
-                    // currently created in the Node class.
-                    this.node.element.element.appendChild(domNode)
-                })
-            })
-        })
+        this.signalWhenReady()
     }
 
-    async attachedCallback() {
-        console.log('<motor-node> attachedCallback()', this.id)
+    async signalWhenReady() {
+        await this.node.mountPromise
+        this._resolveReadyPromise()
+    }
+
+    attachedCallback() {
+        //console.log('<motor-node> attachedCallback()', this.id)
+
+        // Check that motor-nodes are mounted to motor-scenes or motor-nodes.
+        // Scene can be mounted to any element. In the future we could inspect
+        // the scene mount point, and advise about posisble styling issues
+        // (f.e. making the scene container have a height).
+        // TODO: different check needed when using is="" attributes.
+        if (this.nodeName == 'MOTOR-NODE')
+            if (! (this.parentNode.nodeName == 'MOTOR-NODE' || this.parentNode.nodeName == 'MOTOR-SCENE') )
+                throw new Error('A <motor-node> element must be appended only to <motor-scene> or other <motor-node> elements.')
+
+        if (!this.node)
+            this._init()
+
         this._attached = true
-
-        // If the node is currently being attached, wait for that to finish
-        // before attaching again, to avoid a race condition. This will almost
-        // never happen, but just in case, it'll protect against naive
-        // programming on the end-user's side (which is fine, we want to make
-        // programming easy on their side, f.e., if they attach the motor-node
-        // element to the DOM then move it to a new element within the same
-        // tick.
-        if (this._attachPromise) await this._attachPromise
-
-        let resolve = null
-        this._attachPromise = new Promise(r => resolve = r)
 
         if (this._cleanedUp) {
             this._cleanedUp = false
 
-            this.childObserver.observe(this, { childList: true })
+            // make stuff here if needed.
         }
 
         // Attach this motor-node's Node to the parent motor-node's
         // Node (doesn't apply to motor-scene, which doesn't have a
         // parent to attach to).
-        if (this.nodeName.toLowerCase() != 'motor-scene')
-            this.parentNode.node.addChild(this.node)
-
-        // There's currently no asynchronous behavior in this attachedCallback,
-        // so the _attachPromise is resolved synchronously here.
-        resolve()
-        this._attachPromise = null
+        // TODO: prevent this call if attachedCallback happened to to call to
+        // addChild on the imperative side.
+        if (this.nodeName != 'MOTOR-SCENE')
+            this.parentNode.node.addChild(this.node, true)
     }
 
+    // TODO XXX: remove corresponding imperative Node from it's parent.
     async detachedCallback() {
-        console.log('<motor-node> detachedCallback()')
+        //console.log('<motor-node> detachedCallback()')
         this._attached = false
-
-        // If the node is currently being attached, wait for that to finish
-        // before starting the detach process (to avoid a race condition).  If
-        // this._attachPromise is null, excution continues without going to the
-        // next tick. This currently does nothing. It will come into effect if
-        // any async behavior is awaited on in attachedCallback (like before).
-        //
-        // XXX Possibly remove the _attachedPromise guard entirely, since it's
-        // not needed at the moment. Just kept it just in case, but we could
-        // always re-implement if the need arrises.
-        if (this._attachPromise) await this._attachPromise
 
         // XXX Deferr to the next tick before cleaning up in case the element
         // is actually being re-attached somewhere else within this same tick
         // (detaching and attaching is synchronous, so by deferring to the next
         // tick we'll be able to know if the element was re-attached or not in
-        // order to clean up or not). If the element was re-attached, then we
-        // want to preserve the style sheet, preserve the animation frame, and
-        // keep the scene in the sceneList by not running the following
-        // this.cleanUp() call. {{
+        // order to clean up or not). If the element gets re-attached before
+        // the next tick, then we want to preserve the style sheet, preserve
+        // the animation frame, and keep the scene in the sceneList by not
+        // running the following this.cleanUp() call. {{
         await Promise.resolve() // deferr to the next tick.
 
-        // If the scene wasn't re-attached, clean up.  TODO (performance): How
-        // can we coordinate this.cleanUp() with animation loop to prevent
-        // jank?
-        if (!this._attached) {
+        // If the scene wasn't re-attached in the last tick, clean up.
+        // TODO (performance): Should we coordinate this.cleanUp() with
+        // animation loop to prevent jank? MotorHTMLScene.cleanUp may remove a
+        // JSS stylesheet. Is that something we want to do in a frame?
+        if (!this._attached && !this._cleanedUp) {
             this.cleanUp()
         }
 
@@ -160,22 +135,27 @@ class MotorHTMLNode extends HTMLElement {
     }
 
     cleanUp() {
-        this.childObserver.disconnect()
-
-        // XXX: anything else?
+        nodeList.pop(this)
+        if (nodeList.length == 0) {
+            stylesheet.detach()
+            stylesheet = null
+        }
 
         this._cleanedUp = true
     }
 
     attributeChangedCallback(attribute, oldValue, newValue) {
-        //console.log('<motor-node> attribute')
+        //console.log('<motor-node> attributeChangedCallback', this.id, attribute, this.node)
         this.updateNodeProperty(attribute, oldValue, newValue)
     }
 
-    updateNodeProperty(attribute, oldValue, newValue) {
+    async updateNodeProperty(attribute, oldValue, newValue) {
         // TODO: Handle actual values (not just string property values as
         // follows) for performance; especially when DOMMatrix is supported
         // by browsers.
+
+        // if not initialized yet, wait.
+        if (!this.node) await this.ready
 
         // attributes on our HTML elements are the same name as those on
         // the Node class (the setters).
@@ -196,7 +176,9 @@ class MotorHTMLNode extends HTMLElement {
             ) {
                 this.node[attribute] = parseNumberArray(newValue)
             }
-            else { /* crickets */ }
+            else {
+                /* nothing, ignore other attributes */
+            }
         }
     }
 }
@@ -206,20 +188,20 @@ export default MotorHTMLNode
 
 function parseNumberArray(str) {
     if (!isNumberArrayString(str))
-        throw new Error(`Invalid array. Must be an array of numbers of length 3.`)
+        throw new Error(`Invalid array. Must be an array of numbers of length 3, for example "1, 2.5,3" without brackets. Yours was ${str}.`)
 
-    let numbers = str.split('[')[1].split(']')[0].split(',')
+    let numbers = str.split(',')
 
     numbers = numbers.map(num => window.parseFloat(num))
     return numbers
 }
 
 function parseStringArray(str) {
-    let strings = str.split('[')[1].split(']')[0].split(',')
+    let strings = str.split(',')
     strings = strings.map(str => str.trim())
     return strings
 }
 
 function isNumberArrayString(str) {
-    return !!str.match(/^\s*\[\s*(-?((\d+\.\d+)|(\d+))(\s*,\s*)?){3}\s*\]\s*$/g)
+    return !!str.match(/^\s*(-?((\d+\.\d+)|(\d+))(\s*,\s*)?){3}\s*$/g)
 }

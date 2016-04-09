@@ -7,53 +7,64 @@ import MotorHTMLNode from './node'
 import jss from '../jss'
 
 const sceneList = []
-let style = null
+let stylesheet = null
+
+const style = {
+    motorSceneElement: {
+        //display:   'block',
+        //boxSizing: 'border-box',
+        position: 'relative',
+        overflow: 'hidden',
+        width:    '100%',
+        height:   '100%',
+
+        // Constant perspective for now.
+        // TODO: make settable.
+        //
+        // XXX: Maybe enable a feature where perspective adapts based on
+        // viewport size and aspect ratio, and the user can turn it off. This
+        // would cover most use cases so the user doesn't have to worry about
+        // it.
+        perspective: '1000px',
+
+        // XXX: Do we need this? Make it configurable?
+        //perspectiveOrigin: '25%',
+    },
+}
 
 class MotorHTMLScene extends MotorHTMLNode {
     createdCallback() {
         super.createdCallback()
-        console.log('<motor-scene> createdCallback()')
+        //console.log('<motor-scene> createdCallback()', this.id)
 
         sceneList.push(this)
-
-        if (!style) {
-            style = jss.createStyleSheet({
-                motorSceneElement: {
-                    boxSizing: 'border-box',
-                    display:   'block',
-                    overflow:  'hidden',
-                },
-            })
+        if (!stylesheet) {
+            //console.log('Creating Scene style.')
+            // XXX create stylesheet inside animation frame?
+            stylesheet = jss.createStyleSheet(style).attach()
         }
-
-        style.attach()
-        this.classList.add(style.classes.motorSceneElement)
+        this.classList.add(stylesheet.classes.motorSceneElement)
     }
 
-    makeNode() {
-        return new Scene(this)
+    makeImperativeNode() {
+        return new Scene(this.parentNode, this)
     }
 
     cleanUp() {
         super.cleanUp()
 
-        sceneList.pop(this)
-
         // TODO: unmount the scene
 
-        // dispose of the scene style if we no longer have any scenes
-        // attached anywhere.
-        // TODO (performance): Would requesting an animation frame when
-        // detaching or attaching a stylesheet make things perform
-        // better?
+        sceneList.pop(this)
         if (sceneList.length == 0) {
-            style.detach()
-            style = null
+            stylesheet.detach()
+            stylesheet = null
         }
     }
 
     attributeChangedCallback(attribute, oldValue, newValue) {
         super.attributeChangedCallback(attribute, oldValue, newValue)
+        //console.log('<motor-scene> attributeChangedCallback', this.id, attribute, this.node)
         this.updateSceneProperty(attribute, oldValue, newValue)
     }
 

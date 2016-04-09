@@ -1,23 +1,11 @@
 import 'geometry-interfaces'
-import jss from '../jss'
+
 import {
     epsilon,
     makeLowercaseSetterAliases,
 } from './Utility'
 
-const CSS_CLASS_NODE = 'motor-dom-node';
-
-let stylesheet = jss.createStyleSheet({
-    motorDomNode: {
-        position:        'absolute',
-
-        // TODO: set via JavaScript. Defaults to [0.5,0.5,0.5] (the Z axis
-        // doesn't apply for DOM elements, but will for 3D objects in WebGL.)
-        transformOrigin: '50% 50% 0', // default
-
-        transformStyle:  'preserve-3d',
-    },
-}).attach()
+import '../motor-html/node'
 
 /**
  * Manages a DOM element. Exposes a set of recommended APIs for working with
@@ -63,12 +51,18 @@ class Node {
      *   opacity: .9
      * })
      */
-    constructor (properties = {}) {
+    constructor (properties = {}, _motorHtmlNode) {
+        // The presence of the _motorHtmlNode signifies that the HTML interface
+        // is being used, otherwise the imperative interface here is being
+        // used.
 
         // DOM representation of Node
         // TODO: remove this and handle it in the "DOMRenderer"
-        this._el = new ElManager(document.createElement('div'))
-        this._el.setClasses(stylesheet.classes.motorDomNode)
+        this._el = new ElManager(
+            _motorHtmlNode || this.makeElement()
+        )
+        this._el.element._init(this)
+        //this._el.setClasses(stylesheet.classes.motorDomNode)
 
         this._mounted = false;
         this._removedChildren = [] // FIFO
@@ -79,7 +73,7 @@ class Node {
         // Property Cache, with default values
         this._properties = {
 
-            // TODO: remove these in favor of storing them directly in the
+            // XXX: remove these in favor of storing them directly in the
             // DOMMatrix?
             position: [0,0,0],
             rotation: [0,0,0],
@@ -92,6 +86,7 @@ class Node {
                 absolute: [0,0,0],
                 proportional: [1,1,1]
             },
+            opacity: 1,
         };
 
         // Style Cache
@@ -138,6 +133,10 @@ class Node {
             this.waitForSceneThenResolveMountPromise()
     }
 
+    makeElement() {
+        return document.createElement('motor-node')
+    }
+
     async waitForSceneThenResolveMountPromise() {
         await this._scenePromise
         await this._scene.mountPromise
@@ -160,9 +159,8 @@ class Node {
     }
 
     /**
-     * Publicly, the user can only read the parent parent property.
-     * this._parent is protected (node's can access other node._parent). The
-     * user should use the addChild methods, which automatically handles
+     * this._parent is protected (node's can access other node._parent).
+     * The user should use the addChild methods, which automatically handles
      * setting a parent.
      *
      * @readonly
@@ -542,16 +540,16 @@ class Node {
     /**
      * Add Child
      *
-     * @param {[type]} node [description]
+     * @param {[type]} childNode [description]
      */
-    addChild (node) {
+    addChild (childNode) {
 
         // We cannot add Scenes to Nodes, for now.
         //
         // TODO: If someone extends Scene, constructor.name is different. We
         // need to catch those cases too, without using instanceof Scene in
         // order to avoid a circular dependency in this module.
-        if (node.constructor.name == 'Scene') {
+        if (childNode.constructor.name == 'Scene') {
             throw new Error(`
                 A Scene cannot currently be added to another Node.
                 This may change in the future. For now, just mount
@@ -560,26 +558,32 @@ class Node {
             `)
         }
 
-        // do nothing if the child Node is already added to this Node.
-        if (node._parent === this) return
+        // Do nothing if the child Node is already added to this Node.
+        //
+        // After adding a Node to a parent using this imperative API, the
+        // MotorHTMLNode ends up calling addChild on this Node's parent a second time
+        // in the element's attachedCallback, but the code stops at this line (which is
+        // good).
+        // TODO: prevent the second call altogether.
+        if (childNode._parent === this) return
 
-        if (node._parent)
-            node._parent.removeChild(node)
+        if (childNode._parent)
+            childNode._parent.removeChild(childNode)
 
         // Add parent
-        node._parent = this;
+        childNode._parent = this;
 
         // Add to children array
-        this._children.push(node);
+        this._children.push(childNode);
 
         // Pass the child node's Scene reference (if any, checking it's cache
         // first) to the new child and sub children.
         //
         // Order is important: this needs to happen after previous stuff in
-        // this method, so that the node.scene getter works.
-        if (node._scene || node.scene) {
-            node._resolveScenePromise(node._scene)
-            node._giveSceneRefToChildren()
+        // this method, so that the childNode.scene getter works.
+        if (childNode._scene || childNode.scene) {
+            childNode._resolveScenePromise(childNode._scene)
+            childNode._giveSceneRefToChildren()
         }
 
         return this
@@ -589,10 +593,10 @@ class Node {
     // This method to be called only when this Node has this.scene.
     // Resolves the _scenePromise for all children of the tree of this Node.
     _giveSceneRefToChildren() {
-        for (let child of this._children) {
-            child._scene = this._scene
-            child._resolveScenePromise(child._scene)
-            child._giveSceneRefToChildren();
+        for (let childNode of this._children) {
+            childNode._scene = this._scene
+            childNode._resolveScenePromise(childNode._scene)
+            childNode._giveSceneRefToChildren();
         }
     }
 
@@ -648,6 +652,7 @@ class Node {
     }
 
     /**
+     * @readonly
      * @return {number} How many children this Node has.
      */
     get childCount() {
@@ -662,16 +667,21 @@ class Node {
         // TODO: We shouldn't need to re-calculate the matrix every render?
         this._setMatrix3d(this._calculateMatrix());
 
+        // TODO move to DOMRenderer
         this._applyStyles()
 
-        // If Node isn't mounted.. mount it
+        // If Node's HTML element isn't mounted.. mount it. If the Node's HTML
+        // element is a MotorHTMLNode, then there's not need to mount it
+        // because it already exists in the DOM.
+        // TODO move to DOMRenderer
         if (! this._mounted) {
             if (this._parent) {
 
                 // TODO: camera
                 // Mount to parent if parent is a Node
                 // if (this._parent instanceof Node) {
-                    this._parent._el.element.appendChild(this._el.element);
+                    if (this._el.element.parentNode !== this._parent._el.element)
+                        this._parent._el.element.appendChild(this._el.element);
                     this._mounted = true;
 
                 // Mount to camera if top level Node
@@ -693,7 +703,8 @@ class Node {
                 // XXX Only remove the child _el if it has an actual parent
                 // (it's possible for it not to have one if removeChild was
                 // called before the child was ever rendered, in which case
-                // it's _el will never have been mounted in the previous).
+                // it's _el will never have been mounted in the previous
+                // section).
                 if (child._el.element.parentNode)
                     child._el.element.parentNode.removeChild(child._el.element)
             }
@@ -706,7 +717,7 @@ class Node {
         // For example, in the case of the DOMRenderer, we only need to update
         // this Node's transform matrix, then the renderer figures out the rest
         // (i.e. the browser uses it's nested-DOM matrix caching). DOMRenderer
-        // or WebGLRenderer can decide how most efficiently to update child
+        // or WebGLRenderer can decide how to most efficiently update child
         // transforms and how to update the scene. Node.render here will be
         // just a way of updating the state of this Node only.
         for (let child of this._children) {

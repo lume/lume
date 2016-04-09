@@ -1,60 +1,30 @@
-import jss from '../jss'
-
 import Node from './Node'
 import {
     documentReady,
 } from './Utility'
 
-let stylesheet = jss.createStyleSheet({
-    motorDomSceneContainer: {
-        position: 'relative',
-        overflow: 'hidden',
-        width:    '100%',
-        height:   '100%',
-
-        '& .motor-dom-scene': {
-            width:    '100%',
-            height:   '100%',
-        },
-    },
-}).attach()
+import '../motor-html/scene'
 
 export default
 class Scene extends Node {
-    constructor(mountPoint) {
-        super()
+    constructor(mountPoint, _motorHtmlScene) {
+        super({}, _motorHtmlScene)
 
         this._scene = this
         this._resolveScenePromise(this)
 
-        this._el.setClasses('motor-dom-scene')
-
-        this._sceneContainer = document.createElement('div')
-        this._sceneContainer.classList.add(stylesheet.classes.motorDomSceneContainer)
-        this._sceneContainer.appendChild(this._el.element)
-
         // For now, Scenes are always proportionally sized by default.
         this._properties.size.modes = ['proportional', 'proportional', 'proportional']
-
-        // set a manual perspective, since our dumbed down version of Motor doesn't have that:
-        //
-        // TODO: calculate perspective based on viewport size and aspect ratio.
-        //
-        // TODO: Why doesn't this work (setting perspective so that things
-        // translated in Z axis move backward/forward)???????????????????????
-        // See SO question: http://stackoverflow.com/questions/33110424
-        this._el.element.style.webkitPerspective = '1000px'
-        this._el.element.style.mozPerspective    = '1000px'
-        this._el.element.style.perspective       = '1000px'
-        //this._el.element.style.webkitPerspectiveOrigin = '25%'
-        //this._el.element.style.mozPerspectiveOrigin = '25%'
-        //this._el.element.style.perspectiveOrigin = '25%'
 
         // Resolves this.mountPromise, that the user can use to do something
         // once the scene is mounted.
         this._mount(mountPoint)
 
         this._renderWhenMounted()
+    }
+
+    makeElement() {
+        return document.createElement('motor-scene')
     }
 
     // This currently starts a simple render loop.
@@ -90,18 +60,20 @@ class Scene extends Node {
         }
 
         // if the user supplied a selector, mount there.
-        else if(typeof mountPoint === 'string') {
+        else if (typeof mountPoint === 'string') {
             let selector = mountPoint
             mountPoint = document.querySelector(selector)
         }
 
         // if we have an actual mount point (the user may have supplied one)
         if (mountPoint instanceof window.HTMLElement) {
-            mountPoint.appendChild(this._sceneContainer)
+            if (mountPoint !== this._el.element.parentNode)
+                mountPoint.appendChild(this._el.element)
+
             this._mounted = true
         }
         else {
-            throw new Error('Invalid mount point specified. Specify a selector, or pass an actual HTMLElement.')
+            throw new Error('Invalid mount point specified in Scene constructor. Specify a selector, or pass an actual HTMLElement.')
             return false
         }
 
