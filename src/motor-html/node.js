@@ -22,7 +22,15 @@ const style = {
     },
 }
 
-class MotorHTMLNode extends HTMLElement {
+// Very very stupid hack needed for Safari. See
+// https://github.com/google/traceur-compiler/issues/1709
+if (typeof window.HTMLElement != 'function') {
+    const _HTMLElement = function HTMLElement(){}
+    _HTMLElement.prototype = window.HTMLElement.prototype
+    window.HTMLElement = _HTMLElement
+}
+
+class MotorHTMLNode extends window.HTMLElement {
     createdCallback() {
         //console.log('<motor-node> createdCallback()', this.id)
         this._attached = false
