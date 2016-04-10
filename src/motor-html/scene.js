@@ -39,7 +39,7 @@ class MotorHTMLScene extends MotorHTMLNode {
 
         sceneList.push(this)
         if (!stylesheet) {
-            //console.log('Creating Scene style.')
+            //console.log('Creating Scene style.', this.id)
             // XXX create stylesheet inside animation frame?
             stylesheet = jss.createStyleSheet(style).attach()
         }

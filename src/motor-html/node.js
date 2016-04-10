@@ -32,7 +32,7 @@ if (typeof window.HTMLElement != 'function') {
 
 class MotorHTMLNode extends window.HTMLElement {
     createdCallback() {
-        //console.log('<motor-node> createdCallback()', this.id)
+        //console.log('<motor-node> createdCallback() with ID', this.id)
         this._attached = false
         this._cleanedUp = true
         this.node = null // to hold the imperative API Node instance.
@@ -53,7 +53,7 @@ class MotorHTMLNode extends window.HTMLElement {
 
         nodeList.push(this)
         if (!stylesheet) {
-            //console.log('Creating Node style.')
+            //console.log('Creating Node style.', this.id)
             // XXX create stylesheet inside animation frame?
             stylesheet = jss.createStyleSheet(style).attach()
         }
@@ -118,7 +118,7 @@ class MotorHTMLNode extends window.HTMLElement {
 
     // TODO XXX: remove corresponding imperative Node from it's parent.
     async detachedCallback() {
-        //console.log('<motor-node> detachedCallback()')
+        //console.log('<motor-node> detachedCallback()', this.id)
         this._attached = false
 
         // XXX Deferr to the next tick before cleaning up in case the element
@@ -153,11 +153,16 @@ class MotorHTMLNode extends window.HTMLElement {
     }
 
     attributeChangedCallback(attribute, oldValue, newValue) {
-        //console.log('<motor-node> attributeChangedCallback', this.id, attribute, this.node)
+
+        if (!this.blah) this.blah = 0
+        if (this.blah < 10) {
+            this.blah += 1
+            //console.log('<motor-node> attributeChangedCallback', this.id, attribute, newValue)
+        }
         this.updateNodeProperty(attribute, oldValue, newValue)
     }
 
-    async updateNodeProperty(attribute, oldValue, newValue) {
+    updateNodeProperty(attribute, oldValue, newValue) {
         // TODO: Handle actual values (not just string property values as
         // follows) for performance; especially when DOMMatrix is supported
         // by browsers.
