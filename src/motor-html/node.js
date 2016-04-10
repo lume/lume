@@ -162,7 +162,7 @@ class MotorHTMLNode extends window.HTMLElement {
         this.updateNodeProperty(attribute, oldValue, newValue)
     }
 
-    updateNodeProperty(attribute, oldValue, newValue) {
+    async updateNodeProperty(attribute, oldValue, newValue) {
         // TODO: Handle actual values (not just string property values as
         // follows) for performance; especially when DOMMatrix is supported
         // by browsers.
