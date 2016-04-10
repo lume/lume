@@ -118,7 +118,7 @@ function makeLowercaseSetterAliases(object) {
         const lowercaseProp = prop.toLowerCase()
         if (lowercaseProp != prop) {
             const descriptor = Object.getOwnPropertyDescriptor(object, prop)
-            if (Object.getOwnPropertyNames(descriptor).includes('set')) { // we care only about the setters.
+            if (Object.getOwnPropertyNames(descriptor).indexOf('set') >= 0) { // we care only about the setters.
                 Object.defineProperty(object, lowercaseProp, descriptor)
             }
         }

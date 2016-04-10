@@ -619,7 +619,7 @@ class Node {
      * @param {Node} node The node to remove.
      */
     removeChild(node) {
-        let hasNode = this._children.includes(node)
+        let hasNode = this._children.indexOf(node) >= 0
 
         if (node instanceof Node && hasNode) {
 
