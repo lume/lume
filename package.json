@@ -1,6 +1,6 @@
 {
   "name": "infamous",
-  "version": "4.0.3",
+  "version": "5.0.0",
   "description": "A famo.us UI library.",
   "format": "es6",
   "main": "index.js",
