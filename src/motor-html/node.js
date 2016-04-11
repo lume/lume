@@ -172,6 +172,8 @@ class MotorHTMLNode extends window.HTMLElement {
 
         // attributes on our HTML elements are the same name as those on
         // the Node class (the setters).
+        // TODO: make a list of the properties (or get them dynamically) then
+        // assign them dynamically.
         if (newValue !== oldValue) {
             if (attribute.match(/opacity/i))
                 this.node[attribute] = parseFloat(newValue)

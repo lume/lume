@@ -52,7 +52,6 @@ class Node {
      * })
      */
     constructor (properties = {}, _motorHtmlNode) {
-        this.blah = 0
         // The presence of the _motorHtmlNode signifies that the HTML interface
         // is being used, otherwise the imperative interface here is being
         // used.
@@ -211,15 +210,11 @@ class Node {
         if (this._parent && this._parent._scene) {
             this._scene = this._parent._scene
 
-            //console.log(' -- scene from parent cache:', this.constructor.name, this._parent.constructor.name, this._scene)
-
             return this._scene
         }
         else {
             if (this.constructor.name == 'Scene') this._scene = this
             else if (this._parent) this._scene = this._parent.scene
-
-            //console.log(' -- scene from traversal:', this.constructor.name, this._parent ? this._parent.constructor.name: 'no-parent', this._scene)
 
             return this._scene
         }
@@ -663,7 +658,6 @@ class Node {
     /**
      */
     render() {
-        this.blah++
 
         // applies the transform matrix to the element's style property.
         // TODO: We shouldn't need to re-calculate the matrix every render?
@@ -870,9 +864,7 @@ class Node {
      * @param  {string} value    The value the CSS property wil have.
      */
     _applyStyle (property, value) {
-        //if (this.blah < 10 && property == 'transform') console.log(' -- applying transform on element: ', this._el.element, value)
         this._el.element.style[property] = value;
-        //if (this.blah < 10 && property == 'transform') console.log(' -- verified style: ', this._el.element.style[property])
     }
 
     /**
