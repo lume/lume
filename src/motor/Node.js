@@ -65,7 +65,6 @@ class Node {
         //this._el.setClasses(stylesheet.classes.motorDomNode)
 
         this._mounted = false;
-        this._removedChildren = [] // FIFO
 
         this._parent = null // default to no parent.
         this._scene = null // stores a ref to this Node's root Scene.
@@ -142,19 +141,7 @@ class Node {
         await this._scene.mountPromise
 
         // TODO TODO: also wait for this._mounted so this.element is actually
-        // mounted in the DOM. For now, the Scene._renderWhenMounted method
-        // will make this.element automatically mount into DOM with a call to
-        // this node's render() method.
-        // Or, better yet, instead of waiting for this._mounted which happens
-        // in render(), maybe we should just mount this Node's element to a
-        // parent Node as soon as this Node is added to a parent, not in
-        // render() (but also using rAF), so rendering is simply a matter of
-        // existence without an extra need for a render() call (just like in
-        // traditional HTML when we append an element into DOM it is
-        // immediately rendered based on it's type and styles). Applying
-        // rotation, position, etc, would simply modify the existence of the
-        // element (just like modifying inline styles of a traditional
-        // element).
+        // mounted in the DOM.
         this._resolveMountPromise(true)
     }
 
@@ -582,6 +569,9 @@ class Node {
             childNode._giveSceneRefToChildren()
         }
 
+        console.log('Mounting child element!')
+        this._mountChildElement(childNode)
+
         return this
     }
 
@@ -612,26 +602,20 @@ class Node {
      *
      * XXX Should this be silent? Or should we throw?
      *
-     * @param {Node} node The node to remove.
+     * @param {Node} childNode The node to remove.
      */
-    removeChild(node) {
-        let hasNode = this._children.indexOf(node) >= 0
+    removeChild(childNode) {
+        let thisHasChild = this._children.indexOf(childNode) >= 0
 
-        if (node instanceof Node && hasNode) {
-
-            this._removedChildren.push(node)
-
-            // Remove parent
-            node._parent = null
-
-            // not part of a scene anymore.
-            node._scene = null
-
-            // unmount
-            node._mounted = false
+        if (childNode instanceof Node && thisHasChild) {
+            childNode._parent = null
+            childNode._scene = null // not part of a scene anymore.
+            childNode._mounted = false
 
             // Remove from children array
-            this._children.splice(this._children.indexOf(node), 1);
+            this._children.splice(this._children.indexOf(childNode), 1);
+
+            this._removeChildElement(childNode)
         }
 
         return this
@@ -666,7 +650,7 @@ class Node {
     // a cascade effect, where nodes further down the tree render later in the
     // future compared to the root node. WIP, hang tight...
     render() {
-        requestAnimationFrame(timestamp => {
+        //requestAnimationFrame(timestamp => {
 
             // applies the transform matrix to the element's style property.
             // TODO: We shouldn't need to re-calculate the matrix every render?
@@ -675,60 +659,60 @@ class Node {
             // TODO move to DOMRenderer
             this._applyStyles()
 
-            // If Node's HTML element isn't mounted.. mount it.
-            // TODO move to DOMRenderer
-            if (! this._mounted) {
-                if (this._parent) {
-
-                    // TODO: camera
-                    // Mount to parent if parent is a Node
-                    // if (this._parent instanceof Node) {
-                        if (this._el.element.parentNode !== this._parent._el.element)
-                            this._parent._el.element.appendChild(this._el.element);
-                        this._mounted = true;
-
-                    // Mount to camera if top level Node
-                    // } else {
-                    //   //scene.camera.element.appendChild(this._el);
-                    //   this._mounted = true;
-                    // }
-                }
-            }
-
-            // TODO: move this out, into DOMRenderer
-            while (this._removedChildren.length) {
-                let child = this._removedChildren.shift()
-
-                // the removeChild methods set this._mounted to false, and we use
-                // it as a hint that the child _el needs to be removed.
-                if (!child._mounted) {
-
-                    // XXX Only remove the child _el if it has an actual parent
-                    // (it's possible for it not to have one if removeChild was
-                    // called before the child was ever rendered, in which case
-                    // it's _el will never have been mounted in the previous
-                    // section).
-                    if (child._el.element.parentNode)
-                        child._el.element.parentNode.removeChild(child._el.element)
-                }
-            }
-
-            // Render Children
-            // TODO: move this out, into DOMRenderer/WebGLRenderer:
-            // We don't need to render children explicitly because the DOMRenderer
-            // or WebGLRenderer will know what to do with nodes in the scene graph.
-            // For example, in the case of the DOMRenderer, we only need to update
-            // this Node's transform matrix, then the renderer figures out the rest
-            // (i.e. the browser uses it's nested-DOM matrix caching). DOMRenderer
-            // or WebGLRenderer can decide how to most efficiently update child
-            // transforms and how to update the scene. Node.render here will be
-            // just a way of updating the state of this Node only.
-            for (let child of this._children) {
-                child.render();
-            }
-        })
+            this._renderChildren()
+        //})
 
         return this
+    }
+
+    _mountChildElement(childNode) {
+        // If Node's HTML element isn't mounted.. mount it.
+        // TODO move to DOMRenderer
+        if (! childNode._mounted) {
+            if (childNode._parent) {
+
+                // TODO: camera
+                // Mount to parent if parent is a Node
+                // if (childNode._parent instanceof Node) {
+                    if (childNode._el.element.parentNode !== childNode._parent._el.element)
+                        childNode._parent._el.element.appendChild(childNode._el.element);
+                    childNode._mounted = true;
+
+                // Mount to camera if top level Node
+                // } else {
+                //   //scene.camera.element.appendChild(childNode._el);
+                //   childNode._mounted = true;
+                // }
+            }
+        }
+    }
+
+    _removeChildElement(childNode) {
+        // TODO: move this out, into DOMRenderer
+
+        if (!childNode._mounted) {
+
+            // XXX Only remove the childNode _el if it has an actual parent
+            if (childNode._el.element.parentNode)
+                childNode._el.element.parentNode.removeChild(childNode._el.element)
+        }
+    }
+
+    _renderChildren() {
+        // Render Children
+        // TODO: move this out, into DOMRenderer/WebGLRenderer:
+        // We don't need to render children explicitly (recursing through the
+        // tree) because the DOMRenderer or WebGLRenderer will know what to do
+        // with nodes in the scene graph.
+        // For example, in the case of the DOMRenderer, we only need to update
+        // this Node's transform matrix, then the renderer figures out the rest
+        // (i.e. the browser uses it's nested-DOM matrix caching). DOMRenderer
+        // or WebGLRenderer can decide how to most efficiently update child
+        // transforms and how to update the scene. Node.render here will be
+        // just a way of updating the state of this Node only.
+        for (let child of this._children) {
+            child.render();
+        }
     }
 
     /**
@@ -763,7 +747,7 @@ class Node {
      *
      * TODO: instead of calculating the whole matrix here all at once (which
      * gets called each render()), apply rotation, translation, etc, directly
-     * to the matrix right when the user gives us those values. This will be
+     * to the matrix individually when the user gives us those values. It might be
      * more performant. It will also let the user apply x,y,z rotation in their
      * order of choice instead of always x,y,z order as we do here.
      */

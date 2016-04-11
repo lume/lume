@@ -113,7 +113,7 @@ class MotorHTMLNode extends window.HTMLElement {
         // TODO: prevent this call if attachedCallback happened to to call to
         // addChild on the imperative side.
         if (this.nodeName != 'MOTOR-SCENE')
-            this.parentNode.node.addChild(this.node, true)
+            this.parentNode.node.addChild(this.node)
     }
 
     // TODO XXX: remove corresponding imperative Node from it's parent.
