@@ -35,9 +35,6 @@ class Scene extends Node {
 
     async _startAnimationLoopWhenMounted() {
         this._animationLoopStarted = true
-        console.log('# starting new animation loop')
-
-        console.log = function() {}
 
         if (!this._mounted) await this.mountPromise
 
@@ -45,16 +42,12 @@ class Scene extends Node {
         const loop = timestamp => {
             this._inFrame = true
 
-            console.log(' --- animation frame')
             this._runRenderTasks(timestamp)
 
             // If any tasks are left to run, continue the animation loop.
-            if (this._allRenderTasks.length) {
-                console.log('  -- requesting a new frame')
+            if (this._allRenderTasks.length)
                 this._rAF = requestAnimationFrame(loop)
-            }
             else {
-                console.log('  -- NOT request a new frame')
                 this._rAF = null
                 this._animationLoopStarted = false
             }
@@ -63,11 +56,9 @@ class Scene extends Node {
         }
 
         this._rAF = requestAnimationFrame(loop)
-        console.log(' ---------- _rAF', this._rAF)
     }
 
     _addRenderTask(fn) {
-        console.log('   - adding render task')
         if (typeof fn != 'function')
             throw new Error('Render task must be a function.')
 
@@ -84,7 +75,6 @@ class Scene extends Node {
 
     _runRenderTasks(timestamp) {
         for (let task of this._allRenderTasks) {
-            console.log('  -- running task.')
             task(timestamp)
         }
     }

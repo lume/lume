@@ -142,7 +142,6 @@ class Node {
         await this._scene.mountPromise
 
         // render a node one time initially, once it's mounted.
-        console.log('  -- initial update request')
         let initialRender = timestamp => this.removeRenderTask(initialRender)
         this.addRenderTask(initialRender)
     }
@@ -584,7 +583,6 @@ class Node {
             childNode._giveSceneRefToChildren()
         }
 
-        console.log('Mounting child element!')
         this._mountChildElement(childNode)
 
         return this
@@ -688,8 +686,6 @@ class Node {
 
         // TODO move to DOMRenderer
         this._applyStyles()
-
-        console.log('  -- rendered')
 
         //this._renderChildren()
 
