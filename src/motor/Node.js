@@ -136,12 +136,15 @@ class Node {
     }
 
     async _init() {
+        this._renderTasks = new Map
+
         await this._scenePromise
         await this._scene.mountPromise
 
-        // render initial state
+        // render a node one time initially, once it's mounted.
         console.log('  -- initial update request')
-        this.requestUpdate() // XXX TODO: Um, what does this do on the Scene class?
+        let initialRender = timestamp => this.removeRenderTask(initialRender)
+        this.addRenderTask(initialRender)
     }
 
     makeElement() {
@@ -651,13 +654,21 @@ class Node {
         return this._children.length
     }
 
-    requestUpdate(fn) {
-        this._scene._queueUpdate(timestamp => {
+    addRenderTask(fn) {
+        this._renderTasks.set(fn, timestamp => {
             if (fn && typeof fn == 'function') fn.call(this, timestamp)
 
-            //TODO if (certain criteria indicating render is needed) then:
+            //TODO if (certain criteria indicating render is needed) {
             this.render(timestamp)
+            //}
         })
+
+        this._scene._addRenderTask(this._renderTasks.get(fn))
+    }
+
+    removeRenderTask(fn) {
+        this._scene._removeRenderTask(this._renderTasks.get(fn))
+        this._renderTasks.delete(fn)
     }
 
     // TODO: separate stuff out of here into different parts, so we can

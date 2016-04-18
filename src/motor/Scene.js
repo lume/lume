@@ -22,9 +22,8 @@ class Scene extends Node {
     }
 
     _init() {
-        this._updateQueue = []
-        this._nextUpdateQueue = []
-        this._inFrame = false
+        this._allRenderTasks = []
+        this._inFrame = false // currently not used, true when inside a requested animation frame.
         this._rAF = null // the current animation frame, or null.
         this._animationLoopStarted = false
         super._init()
@@ -47,19 +46,18 @@ class Scene extends Node {
             this._inFrame = true
 
             console.log(' --- animation frame')
-            this._fireUpdates(timestamp)
+            this._runRenderTasks(timestamp)
 
-            // If there are more updates requested from the updates we just
-            // fired, continue the animation loop.
-            if (this._nextUpdateQueue.length)
+            // If any tasks are left to run, continue the animation loop.
+            if (this._allRenderTasks.length) {
+                console.log('  -- requesting a new frame')
                 this._rAF = requestAnimationFrame(loop)
+            }
             else {
+                console.log('  -- NOT request a new frame')
                 this._rAF = null
                 this._animationLoopStarted = false
             }
-
-            while (this._nextUpdateQueue.length)
-                this._updateQueue.push(this._nextUpdateQueue.shift())
 
             this._inFrame = false
         }
@@ -68,24 +66,26 @@ class Scene extends Node {
         console.log(' ---------- _rAF', this._rAF)
     }
 
-    _queueUpdate(fn) {
-        console.log('   - update request')
+    _addRenderTask(fn) {
+        console.log('   - adding render task')
         if (typeof fn != 'function')
-            throw new Error('Update must be a function.')
+            throw new Error('Render task must be a function.')
 
-        if (!this._inFrame) this._updateQueue.push(fn)
-        else this._nextUpdateQueue.push(fn)
+        this._allRenderTasks.push(fn)
 
         // If the render loop isn't started, start it.
         if (!this._animationLoopStarted)
             this._startAnimationLoopWhenMounted()
     }
 
-    _fireUpdates(timestamp) {
-        while (this._updateQueue.length) {
-            let update = this._updateQueue.shift()
-            console.log('  -- processing update', this._updateQueue.length, update)
-            update(timestamp)
+    _removeRenderTask(fn) {
+        this._allRenderTasks.splice(this._allRenderTasks.indexOf(fn), 1)
+    }
+
+    _runRenderTasks(timestamp) {
+        for (let task of this._allRenderTasks) {
+            console.log('  -- running task.')
+            task(timestamp)
         }
     }
 
