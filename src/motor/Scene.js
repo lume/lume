@@ -19,32 +19,74 @@ class Scene extends Node {
         // Resolves this.mountPromise, that the user can use to do something
         // once the scene is mounted.
         this._mount(mountPoint)
+    }
 
-        this._renderWhenMounted()
+    _init() {
+        this._updateQueue = []
+        this._nextUpdateQueue = []
+        this._inFrame = false
+        this._rAF = null // the current animation frame, or null.
+        this._animationLoopStarted = false
+        super._init()
     }
 
     makeElement() {
         return document.createElement('motor-scene')
     }
 
-    // This currently starts a simple render loop.
-    //
-    // TODO: We don't want to have a naive render loop. We only want to render
-    // once here (for now, in order to mount all Node.elements into DOM), then
-    // we will have a mechanism that renders only parts of the scene graph as
-    // needed (instead of the entire thing like currently).
-    async _renderWhenMounted() {
-        await this.mountPromise
+    async _startAnimationLoopWhenMounted() {
+        this._animationLoopStarted = true
+        console.log('# starting new animation loop')
+
+        console.log = function() {}
+
+        if (!this._mounted) await this.mountPromise
 
         // So now we can render after the scene is mounted.
-        // TODO: Move the loop into Motor core, and request frames
-        // for specific nodes only when they update.
-        const loop = () => {
-            this.render()
-            this._rAF = requestAnimationFrame(loop)
+        const loop = timestamp => {
+            this._inFrame = true
+
+            console.log(' --- animation frame')
+            this._fireUpdates(timestamp)
+
+            // If there are more updates requested from the updates we just
+            // fired, continue the animation loop.
+            if (this._nextUpdateQueue.length)
+                this._rAF = requestAnimationFrame(loop)
+            else {
+                this._rAF = null
+                this._animationLoopStarted = false
+            }
+
+            while (this._nextUpdateQueue.length)
+                this._updateQueue.push(this._nextUpdateQueue.shift())
+
+            this._inFrame = false
         }
 
         this._rAF = requestAnimationFrame(loop)
+        console.log(' ---------- _rAF', this._rAF)
+    }
+
+    _queueUpdate(fn) {
+        console.log('   - update request')
+        if (typeof fn != 'function')
+            throw new Error('Update must be a function.')
+
+        if (!this._inFrame) this._updateQueue.push(fn)
+        else this._nextUpdateQueue.push(fn)
+
+        // If the render loop isn't started, start it.
+        if (!this._animationLoopStarted)
+            this._startAnimationLoopWhenMounted()
+    }
+
+    _fireUpdates(timestamp) {
+        while (this._updateQueue.length) {
+            let update = this._updateQueue.shift()
+            console.log('  -- processing update', this._updateQueue.length, update)
+            update(timestamp)
+        }
     }
 
     async _mount(mountPoint) {

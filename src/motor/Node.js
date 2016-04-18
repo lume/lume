@@ -128,8 +128,20 @@ class Node {
         // TODO: this conditional check should work with child classes who's
         // constructor is no longer named "Node". This should not fire for
         // Scene or child classes of Scene.
-        if (this.constructor.name == 'Node')
+        if (this.constructor.name == 'Node') {
             this.waitForSceneThenResolveMountPromise()
+        }
+
+        this._init()
+    }
+
+    async _init() {
+        await this._scenePromise
+        await this._scene.mountPromise
+
+        // render initial state
+        console.log('  -- initial update request')
+        this.requestUpdate() // XXX TODO: Um, what does this do on the Scene class?
     }
 
     makeElement() {
@@ -639,6 +651,15 @@ class Node {
         return this._children.length
     }
 
+    requestUpdate(fn) {
+        this._scene._queueUpdate(timestamp => {
+            if (fn && typeof fn == 'function') fn.call(this, timestamp)
+
+            //TODO if (certain criteria indicating render is needed) then:
+            this.render(timestamp)
+        })
+    }
+
     // TODO: separate stuff out of here into different parts, so we can
     // eventually progress to having a separate DOMRenderer and have a dynamic
     // rAF loop. Tracking at https://github.com/infamous/infamous/issues/3
@@ -649,18 +670,17 @@ class Node {
     // all the way down the graph. This isn't what we want. For now, we'll see
     // a cascade effect, where nodes further down the tree render later in the
     // future compared to the root node. WIP, hang tight...
-    render() {
-        //requestAnimationFrame(timestamp => {
+    render(timestamp) {
+        // applies the transform matrix to the element's style property.
+        // TODO: We shouldn't need to re-calculate the matrix every render?
+        this._setMatrix3d(this._calculateMatrix());
 
-            // applies the transform matrix to the element's style property.
-            // TODO: We shouldn't need to re-calculate the matrix every render?
-            this._setMatrix3d(this._calculateMatrix());
+        // TODO move to DOMRenderer
+        this._applyStyles()
 
-            // TODO move to DOMRenderer
-            this._applyStyles()
+        console.log('  -- rendered')
 
-            this._renderChildren()
-        //})
+        //this._renderChildren()
 
         return this
     }
