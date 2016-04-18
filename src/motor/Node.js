@@ -234,8 +234,7 @@ class Node {
     }
     set position(position) {
         if (!(position instanceof Array)) throw new Error('Expected an array for the Node.position property.')
-        if (! Object.is(position, this._properties.position)) // TODO: test array values against each other instead of checking array references?
-            this._properties.position = defaultZeros(position)
+        this._properties.position = defaultZeros(position)
         this._renderIfNotInFrame()
     }
 
@@ -261,6 +260,7 @@ class Node {
         return this
     }
     set rotation(rotation) {
+        console.log('setting rotation.')
         this._properties.rotation = rotation
         this._renderIfNotInFrame()
     }
@@ -332,10 +332,7 @@ class Node {
         return this
     }
     set sizeMode(mode) {
-        if (! Object.is(mode, this._properties.size.mode)) {
-            this._properties.size.mode = mode
-            this._applySize()
-        }
+        this._properties.size.mode = mode
         this._renderIfNotInFrame()
     }
 
@@ -355,12 +352,7 @@ class Node {
         return this
     }
     set absoluteSize(size) {
-        if (! Object.is(size, this._properties.size.absolute)) {
-            this._properties.size.absolute = size;
-
-            if (this._properties.size.mode.indexOf('absolute') > -1)
-                this._applySize();
-        }
+        this._properties.size.absolute = size;
         this._renderIfNotInFrame()
     }
 
@@ -422,12 +414,7 @@ class Node {
         return this
     }
     set proportionalSize(size) {
-        if (! Object.is(size, this._properties.size.proportional)) {
-            this._properties.size.proportional = size
-
-            if (this._properties.size.mode.indexOf('proportional') > -1)
-                this._applySize()
-        }
+        this._properties.size.proportional = size
         this._renderIfNotInFrame()
     }
 
@@ -446,8 +433,7 @@ class Node {
     }
     set align(alignment) {
         if (!(alignment instanceof Array)) throw new Error('Expected an array for the Node.align property.')
-        if (! Object.is(alignment, this._properties.align))
-            this._properties.align = defaultZeros(alignment)
+        this._properties.align = defaultZeros(alignment)
         this._renderIfNotInFrame()
     }
 
@@ -467,8 +453,7 @@ class Node {
     }
     set mountPoint(mountPoint) {
         if (!(mountPoint instanceof Array)) throw new Error('Expected an array for the Node.mountPoint property.')
-        if (! Object.is(mountPoint, this._properties.mountPoint))
-            this._properties.mountPoint = defaultZeros(mountPoint)
+        this._properties.mountPoint = defaultZeros(mountPoint)
         this._renderIfNotInFrame()
     }
 
@@ -498,7 +483,7 @@ class Node {
     setProperties (properties) {
         // Classes
         if (properties.classes)
-            this.setClasses(properties.classes);
+            this._el.setClasses(properties.classes);
 
         // Position
         if (properties.position && properties.position.length === 3)
@@ -537,8 +522,7 @@ class Node {
         if (typeof properties.opacity != 'undefined')
             this.opacity = properties.opacity
 
-        // Apply Styles
-        this._applyStyles();
+        this._renderIfNotInFrame()
 
         return this
     }
@@ -693,6 +677,7 @@ class Node {
         this._setMatrix3d(this._calculateMatrix());
 
         // TODO move to DOMRenderer
+        this._applySize()
         this._applyStyles()
 
         //this._renderChildren()
