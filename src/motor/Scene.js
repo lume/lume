@@ -23,6 +23,7 @@ class Scene extends Node {
 
     _init() {
         this._allRenderTasks = []
+        this._nodesToBeRendered = []
         this._inFrame = false // true when inside a requested animation frame.
         this._rAF = null // the current animation frame, or null.
         this._animationLoopStarted = false
@@ -43,6 +44,7 @@ class Scene extends Node {
             this._inFrame = true
 
             this._runRenderTasks(timestamp)
+            this._renderNodes(timestamp)
 
             // If any tasks are left to run, continue the animation loop.
             if (this._allRenderTasks.length)
@@ -77,6 +79,20 @@ class Scene extends Node {
         for (let task of this._allRenderTasks) {
             task(timestamp)
         }
+    }
+
+    _renderNodes(timestamp) {
+        for (let node of this._nodesToBeRendered) {
+            node._render(timestamp)
+        }
+    }
+
+    _setNodeToBeRendered(node) {
+        this._nodesToBeRendered.push(node)
+    }
+
+    _unsetNodeToBeRendered(node) {
+        this._nodesToBeRendered.splice(this._nodesToBeRendered.indexOf(node), 1)
     }
 
     async _mount(mountPoint) {

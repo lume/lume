@@ -137,6 +137,7 @@ class Node {
 
     async _init() {
         this._renderTasks = new Map
+        this._needsRender = false
 
         await this._scenePromise
         await this._scene.mountPromise
@@ -260,7 +261,6 @@ class Node {
         return this
     }
     set rotation(rotation) {
-        console.log('setting rotation.')
         this._properties.rotation = rotation
         this._renderIfNotInFrame()
     }
@@ -655,12 +655,13 @@ class Node {
     }
 
     addRenderTask(fn) {
+        if (typeof fn != 'function') return
+
+        if (this._renderTasks.size == 0)
+            this._scene._setNodeToBeRendered(this)
+
         this._renderTasks.set(fn, timestamp => {
             if (fn && typeof fn == 'function') fn.call(this, timestamp)
-
-            //TODO if (certain criteria indicating render is needed) {
-            this._render(timestamp)
-            //}
         })
 
         this._scene._addRenderTask(this._renderTasks.get(fn))
@@ -669,9 +670,12 @@ class Node {
     removeRenderTask(fn) {
         this._scene._removeRenderTask(this._renderTasks.get(fn))
         this._renderTasks.delete(fn)
+        if (this._renderTasks.size == 0)
+            this._scene._unsetNodeToBeRendered(this)
     }
 
     _render(timestamp) {
+        console.log('Node#render')
         // applies the transform matrix to the element's style property.
         // TODO: We shouldn't need to re-calculate the matrix every render?
         this._setMatrix3d(this._calculateMatrix());
@@ -728,7 +732,7 @@ class Node {
         // this Node's transform matrix, then the renderer figures out the rest
         // (i.e. the browser uses it's nested-DOM matrix caching). DOMRenderer
         // or WebGLRenderer can decide how to most efficiently update child
-        // transforms and how to update the scene. Node.render here will be
+        // transforms and how to update the scene. Node._render here will be
         // just a way of updating the state of this Node only.
         for (let child of this._children) {
             child._render();
