@@ -675,7 +675,6 @@ class Node {
     }
 
     _render(timestamp) {
-        console.log('Node#render')
         // applies the transform matrix to the element's style property.
         // TODO: We shouldn't need to re-calculate the matrix every render?
         this._setMatrix3d(this._calculateMatrix());
