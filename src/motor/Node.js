@@ -675,7 +675,7 @@ class Node {
             if (fn && typeof fn == 'function') fn.call(this, timestamp)
 
             //TODO if (certain criteria indicating render is needed) {
-            this.render(timestamp)
+            this._render(timestamp)
             //}
         })
 
@@ -690,14 +690,7 @@ class Node {
     // TODO: separate stuff out of here into different parts, so we can
     // eventually progress to having a separate DOMRenderer and have a dynamic
     // rAF loop. Tracking at https://github.com/infamous/infamous/issues/3
-    //
-    // XXX: this render() method is currently called repeatedly from an rAF
-    // loop in Scene, so it always renders a frame behind from the frame where
-    // render() is called. Child render() calls are a frame behind that, etc,
-    // all the way down the graph. This isn't what we want. For now, we'll see
-    // a cascade effect, where nodes further down the tree render later in the
-    // future compared to the root node. WIP, hang tight...
-    render(timestamp) {
+    _render(timestamp) {
         // applies the transform matrix to the element's style property.
         // TODO: We shouldn't need to re-calculate the matrix every render?
         this._setMatrix3d(this._calculateMatrix());
@@ -756,7 +749,7 @@ class Node {
         // transforms and how to update the scene. Node.render here will be
         // just a way of updating the state of this Node only.
         for (let child of this._children) {
-            child.render();
+            child._render();
         }
     }
 
@@ -791,7 +784,7 @@ class Node {
      * @memberOf Node
      *
      * TODO: instead of calculating the whole matrix here all at once (which
-     * gets called each render()), apply rotation, translation, etc, directly
+     * gets called each _render()), apply rotation, translation, etc, directly
      * to the matrix individually when the user gives us those values. It might be
      * more performant. It will also let the user apply x,y,z rotation in their
      * order of choice instead of always x,y,z order as we do here.
