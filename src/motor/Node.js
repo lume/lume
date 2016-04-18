@@ -236,6 +236,7 @@ class Node {
         if (!(position instanceof Array)) throw new Error('Expected an array for the Node.position property.')
         if (! Object.is(position, this._properties.position)) // TODO: test array values against each other instead of checking array references?
             this._properties.position = defaultZeros(position)
+        this._renderIfNotInFrame()
     }
 
     /**
@@ -261,6 +262,7 @@ class Node {
     }
     set rotation(rotation) {
         this._properties.rotation = rotation
+        this._renderIfNotInFrame()
     }
 
     /**
@@ -283,6 +285,7 @@ class Node {
     }
     set scale(scale) {
         this._properties.scale = scale
+        this._renderIfNotInFrame()
     }
 
     /**
@@ -306,6 +309,7 @@ class Node {
     set opacity(opacity) {
         if (!isRealNumber(opacity)) throw new Error('Expected a real number.')
         this._style.opacity = opacity;
+        this._renderIfNotInFrame()
     }
 
     /**
@@ -332,6 +336,7 @@ class Node {
             this._properties.size.mode = mode
             this._applySize()
         }
+        this._renderIfNotInFrame()
     }
 
     /**
@@ -356,6 +361,7 @@ class Node {
             if (this._properties.size.mode.indexOf('absolute') > -1)
                 this._applySize();
         }
+        this._renderIfNotInFrame()
     }
 
     /**
@@ -422,6 +428,7 @@ class Node {
             if (this._properties.size.mode.indexOf('proportional') > -1)
                 this._applySize()
         }
+        this._renderIfNotInFrame()
     }
 
     get proportionalSize() {
@@ -441,6 +448,7 @@ class Node {
         if (!(alignment instanceof Array)) throw new Error('Expected an array for the Node.align property.')
         if (! Object.is(alignment, this._properties.align))
             this._properties.align = defaultZeros(alignment)
+        this._renderIfNotInFrame()
     }
 
     get align() {
@@ -461,6 +469,7 @@ class Node {
         if (!(mountPoint instanceof Array)) throw new Error('Expected an array for the Node.mountPoint property.')
         if (! Object.is(mountPoint, this._properties.mountPoint))
             this._properties.mountPoint = defaultZeros(mountPoint)
+        this._renderIfNotInFrame()
     }
 
     get mountPoint() {
@@ -532,6 +541,15 @@ class Node {
         this._applyStyles();
 
         return this
+    }
+
+    async _renderIfNotInFrame() {
+        if (!this._mounted) await this.mountPromise
+
+        if (!this._scene._inFrame) {
+            let render = timestamp => this.removeRenderTask(render)
+            this.addRenderTask(render)
+        }
     }
 
     /**

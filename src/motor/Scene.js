@@ -23,7 +23,7 @@ class Scene extends Node {
 
     _init() {
         this._allRenderTasks = []
-        this._inFrame = false // currently not used, true when inside a requested animation frame.
+        this._inFrame = false // true when inside a requested animation frame.
         this._rAF = null // the current animation frame, or null.
         this._animationLoopStarted = false
         super._init()
