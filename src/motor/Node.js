@@ -687,9 +687,6 @@ class Node {
         this._renderTasks.delete(fn)
     }
 
-    // TODO: separate stuff out of here into different parts, so we can
-    // eventually progress to having a separate DOMRenderer and have a dynamic
-    // rAF loop. Tracking at https://github.com/infamous/infamous/issues/3
     _render(timestamp) {
         // applies the transform matrix to the element's style property.
         // TODO: We shouldn't need to re-calculate the matrix every render?
