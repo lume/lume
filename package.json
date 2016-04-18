@@ -1,7 +1,7 @@
 {
   "name": "infamous",
   "version": "5.1.1",
-  "description": "A famo.us UI library.",
+  "description": "A UI library.",
   "format": "es6",
   "main": "index.js",
   "browser": "global.js",
