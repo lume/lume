@@ -1,4 +1,6 @@
 import TWEEN from 'tween.js'
+import windowLoaded from 'awaitbox/dom/windowLoaded'
+import documentReady from 'awaitbox/dom/documentReady'
 
 let rAF = null // reference to the rAF loop used for animating everything.
 
@@ -62,31 +64,6 @@ function applyCSSLabel(value, label) {
         return value + 'px'
     }
 }
-
-/**
- * Await for this to run code after the DOM has been parsed and loaded (but not
- * sub-resources like images, scripts, etc).
- */
-async function documentReady() {
-    if (document.readyState === 'loading') {
-        await new Promise(function(resolve) {
-            document.addEventListener('DOMContentLoaded', resolve)
-        })
-    }
-}
-
-/**
- * Await for this to run code after the DOM's sub-resources have been loaded
- * (images, scripts, etc).
- */
-async function windowLoaded() {
-    if (document.readyState !== 'complete') {
-        await new Promise(function(resolve) {
-            window.addEventListener('load', resolve)
-        })
-    }
-}
-
 
 /**
  * Alias to windowLoaded.
