@@ -1,6 +1,7 @@
 import Node from './Node'
 import {
     documentReady,
+    //animationFrame,
 } from './Utility'
 
 import '../motor-html/scene'
@@ -34,11 +35,18 @@ class Scene extends Node {
         return document.createElement('motor-scene')
     }
 
+    /**
+     * Starts an rAF loop and runs the render tasks in the _renderTasks stack.
+     * As long as there are tasks in the stack, the loop continues. When the
+     * stack becomes empty due to removal of tasks, the rAF stops and the app
+     * sits there doing nothing -- silence, crickets.
+     */
     async _startAnimationLoopWhenMounted() {
         this._animationLoopStarted = true
 
         if (!this._mounted) await this.mountPromise
 
+        // DIRECT ANIMATION LOOP ///////////////////////////////////
         // So now we can render after the scene is mounted.
         const loop = timestamp => {
             this._inFrame = true
@@ -58,8 +66,31 @@ class Scene extends Node {
         }
 
         this._rAF = requestAnimationFrame(loop)
+
+        // ANIMATION LOOP USING WHILE AND AWAIT ///////////////////////////////////
+        //this._rAF = true
+        //let timestamp = null
+        //while (this._rAF) {
+            //timestamp = await animationFrame()
+            //this._inFrame = true
+
+            //this._runRenderTasks(timestamp)
+            //this._renderNodes(timestamp)
+
+            //// If any tasks are left to run, continue the animation loop.
+            //if (!this._allRenderTasks.length) {
+                //this._rAF = null
+                //this._animationLoopStarted = false
+            //}
+
+            //this._inFrame = false
+        //}
     }
 
+    /**
+     * When a render tasks is added (via Node#addRenderTask) a new rAF loop
+     * will be started if there isn't one currently.
+     */
     _addRenderTask(fn) {
         if (typeof fn != 'function')
             throw new Error('Render task must be a function.')

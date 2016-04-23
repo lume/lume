@@ -87,6 +87,13 @@ async function getBodySize() {
     return { width, height }
 }
 
+function animationFrame() {
+    let resolve = null
+    const promise = new Promise(r => resolve = r)
+    window.requestAnimationFrame(resolve)
+    return promise
+}
+
 // Create lowercase versions of each setter property.
 function makeLowercaseSetterAliases(object) {
     console.log('making lowercase aliases.')
@@ -112,5 +119,6 @@ export {
   windowLoaded,
   documentLoaded,
   getBodySize,
+  animationFrame,
   makeLowercaseSetterAliases,
 }
