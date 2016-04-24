@@ -54,7 +54,7 @@ define(function(require, exports, module) {
         this.context._size.subscribe(this.size);
 
         this.on('deploy', function(target){
-            this.context.mount(target, true);
+            this.context.mount(target);
         }.bind(this));
 
         this.on('recall', function() {
