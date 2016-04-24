@@ -66,22 +66,18 @@ define(function(require, exports, module) {
         this._perspectiveOrigin = new Transitionable();
 
         this._perspective.on('update', function(perspective){
-            if (!this.container) return;
             setPerspective(this.container, perspective);
         }.bind(this));
 
         this._perspective.on('end', function(perspective){
-            if (!this.container) return;
             setPerspective(this.container, perspective);
         }.bind(this));
 
         this._perspectiveOrigin.on('update', function(origin) {
-            if (!this.container) return;
             setPerspectiveOrigin(this.container, origin);
         }.bind(this));
 
         this._perspectiveOrigin.on('end', function(origin) {
-            if (!this.container) return;
             setPerspectiveOrigin(this.container, origin);
         }.bind(this));
 
@@ -153,7 +149,13 @@ define(function(require, exports, module) {
      * @param [callback] {Function} Callback executed on completion of transition
      */
     Context.prototype.setPerspective = function setPerspective(perspective, transition, callback) {
-        this._perspective.set(perspective, transition, callback);
+        if (this.container)
+            this._perspective.set(perspective, transition, callback);
+        else {
+            this.on('deploy', function(){
+                this._perspective.set(perspective, transition, callback);
+            }.bind(this));
+        }
     };
 
     /**
@@ -165,7 +167,13 @@ define(function(require, exports, module) {
      * @param [callback] {Function} Callback executed on completion of transition
      */
     Context.prototype.setPerspectiveOrigin = function setPerspectiveOrigin(origin, transition, callback) {
-        this._perspectiveOrigin.set(origin, transition, callback);
+        if (this.container)
+            this._perspectiveOrigin.set(origin, transition, callback);
+        else {
+            this.on('deploy', function() {
+                this._perspectiveOrigin.set(origin, transition, callback);
+            }.bind(this));
+        }
     };
 
     /**
