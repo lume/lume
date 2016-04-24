@@ -1,3 +1,20 @@
+## 0.2.1
+
+**General**
+- Move test suite to QUnit
+
+**Core**
+- View removal API
+
+**DOM**
+- Node removal API
+- Context emits a `deploy` event
+- Clean separation between `Surface` and `ElementOutput`
+- `Engine` handles window resizing instead of `Context`
+
+**Inputs**
+- Fix GenericInput bug
+
 ## 0.2.0
 
 **General**

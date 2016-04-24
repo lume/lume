@@ -74,7 +74,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	var __WEBPACK_AMD_DEFINE_RESULT__;!(__WEBPACK_AMD_DEFINE_RESULT__ = function(require, exports, module) {
 	    module.exports = {
 	        Engine: __webpack_require__(2),
-	        LayoutNode: __webpack_require__(8),
+	        LayoutNode: __webpack_require__(10),
 	        SizeNode: __webpack_require__(17),
 	        Timer: __webpack_require__(20),
 	        Transform: __webpack_require__(21),
@@ -91,13 +91,21 @@ return /******/ (function(modules) { // webpackBootstrap
 	var __WEBPACK_AMD_DEFINE_RESULT__;/* Copyright © 2015-2016 David Valdman */
 	// TODO: cancel RAF when asleep
 	!(__WEBPACK_AMD_DEFINE_RESULT__ = function(require, exports, module) {
-	    var State = __webpack_require__(3);
-	    var postTickQueue = __webpack_require__(4);
-	    var preTickQueue = __webpack_require__(5);
-	    var dirtyQueue = __webpack_require__(6);
-	    var tickQueue = __webpack_require__(7);
+	    var EventHandler = __webpack_require__(3);
+	    var State = __webpack_require__(5);
+	    var postTickQueue = __webpack_require__(6);
+	    var preTickQueue = __webpack_require__(7);
+	    var dirtyQueue = __webpack_require__(8);
+	    var tickQueue = __webpack_require__(9);
 
-	    var rafId = 0;
+	    var rafId = Number.NaN;
+	    var isMobile = /mobi/i.test(window.navigator.userAgent);
+	    var orientation = Number.NaN;
+	    var windowWidth = Number.NaN;
+	    var windowHeight = Number.NaN;
+
+	    // Listen to window resize events
+	    window.addEventListener('resize', handleResize, false);
 
 	    /**
 	     * Engine is a singleton object that is required to run a Samsara application.
@@ -114,6 +122,11 @@ return /******/ (function(modules) { // webpackBootstrap
 	     * @uses Core.EventHandler
 	     */
 	    var Engine = {};
+
+	    /*
+	    * Emitter for resize events when window resizes
+	    */
+	    Engine.size = new EventHandler();
 
 	    /**
 	     * Updates by a single frame of the application by looping through all function queues.
@@ -149,7 +162,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	     * @method start
 	     * @static
 	     */
-	    Engine.start = function start(){
+	    Engine.start = function start() {
 	        Engine.step();
 	        rafId = window.requestAnimationFrame(start);
 	    };
@@ -160,9 +173,55 @@ return /******/ (function(modules) { // webpackBootstrap
 	     * @method stop
 	     * @static
 	     */
-	    Engine.stop = function(){
+	    Engine.stop = function() {
 	        window.cancelAnimationFrame(rafId);
 	    };
+
+	    /**
+	     * Subscribe context to resize events and start the render loop if not running
+	     *
+	     * @method registerContext
+	     * @static
+	     */
+	    Engine.registerContext = function(context) {
+	        context._size.subscribe(this.size);
+	        if (!rafId) Engine.start();
+	        handleResize();
+	    };
+
+	    /**
+	     * Unsubscribe context from resize events
+	     *
+	     * @method deregisterContext
+	     * @static
+	     */
+	    Engine.deregisterContext = function(context){
+	        context._size.unsubscribe(this.size);
+	    };
+
+	    // Emit a resize event if the window's height or width has changed
+	    function handleResize() {
+	        var newHeight = window.innerHeight;
+	        var newWidth = window.innerWidth;
+
+	        if (isMobile) {
+	            var newOrientation = newHeight > newWidth;
+	            if (orientation === newOrientation) return false;
+	            orientation = newOrientation;
+	        }
+	        else {
+	            if (newWidth === windowWidth && newHeight === windowHeight) return false;
+	            windowWidth = newWidth;
+	            windowHeight = newHeight;
+	        }
+
+	        preTickQueue.push(function() {
+	            Engine.size.emit('resize');
+	            dirtyQueue.push(function() {
+	                Engine.size.emit('resize');
+	            });
+	        });
+	    }
 
 	    module.exports = Engine;
 	}.call(exports, __webpack_require__, exports, module), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
@@ -170,215 +229,6 @@ return /******/ (function(modules) { // webpackBootstrap
 
 /***/ },
 /* 3 */
-/***/ function(module, exports, __webpack_require__) {
-
-	var __WEBPACK_AMD_DEFINE_RESULT__;/* Copyright © 2015-2016 David Valdman */
-
-	!(__WEBPACK_AMD_DEFINE_RESULT__ = function(require, exports, module) {
-	    var STATE = {
-	        NONE : -1,
-	        START : 0,
-	        UPDATE : 1,
-	        END : 2
-	    };
-
-	    var currentState = STATE.START;
-
-	    /**
-	     * SUE specified the global state of the application, whether it is in a
-	     *  `start`, `update` or `end` state. This is necessary for coordinating
-	     *  `resize` events with `start`, `update`, `end` states in stream.
-	     *
-	     * @class SUE
-	     * @namespace Core
-	     * @static
-	     * @private
-	     */
-	    var SUE = {};
-
-	    SUE.STATES = STATE;
-
-	    SUE.set = function set(state){
-	        currentState = state;
-	    };
-
-	    SUE.get = function get(){
-	        return currentState;
-	    };
-
-	    module.exports = SUE;
-	}.call(exports, __webpack_require__, exports, module), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
-
-/***/ },
-/* 4 */
-/***/ function(module, exports, __webpack_require__) {
-
-	var __WEBPACK_AMD_DEFINE_RESULT__;/* Copyright © 2015 David Valdman */
-
-	!(__WEBPACK_AMD_DEFINE_RESULT__ = function(require, exports, module) {
-	    /**
-	     * Queue that batches `update` events.
-	     *  This queue is traversed after the `preTickQueue` but before `dirtQueue`
-	     *  by the Engine.
-	     *
-	     *  @private
-	     */
-
-	    module.exports = [];
-	}.call(exports, __webpack_require__, exports, module), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
-
-/***/ },
-/* 5 */
-/***/ function(module, exports, __webpack_require__) {
-
-	var __WEBPACK_AMD_DEFINE_RESULT__;/* Copyright © 2015 David Valdman */
-
-	!(__WEBPACK_AMD_DEFINE_RESULT__ = function(require, exports, module) {
-	    /**
-	     * Queue that batches `start` events.
-	     *  This queue is traversed first (but after DOM events are executed) by the Engine.
-	     *
-	     *  @private
-	     */
-
-	    module.exports = [];
-	}.call(exports, __webpack_require__, exports, module), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
-
-/***/ },
-/* 6 */
-/***/ function(module, exports, __webpack_require__) {
-
-	var __WEBPACK_AMD_DEFINE_RESULT__;/* Copyright © 2015 David Valdman */
-
-	!(__WEBPACK_AMD_DEFINE_RESULT__ = function(require, exports, module) {
-	    /**
-	     * Queue that batches `end` and `dirty` events.
-	     *  This queue is traversed after the `postTickQueue` by the Engine.
-	     *
-	     *  @private
-	     */
-
-	    module.exports = [];
-	}.call(exports, __webpack_require__, exports, module), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
-
-/***/ },
-/* 7 */
-/***/ function(module, exports, __webpack_require__) {
-
-	var __WEBPACK_AMD_DEFINE_RESULT__;/* Copyright © 2015 David Valdman */
-
-	!(__WEBPACK_AMD_DEFINE_RESULT__ = function(require, exports, module) {
-	    /**
-	     * This queue is executed before the postTickQueue and after the preTickQueue.
-	     *  however, it differs in that the Engine does not clear the queue.
-	     *  This must be done manually.
-	     *
-	     *  @private
-	     */
-
-	    module.exports = [];
-	}.call(exports, __webpack_require__, exports, module), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
-
-/***/ },
-/* 8 */
-/***/ function(module, exports, __webpack_require__) {
-
-	var __WEBPACK_AMD_DEFINE_RESULT__;/* Copyright © 2015-2016 David Valdman */
-
-	!(__WEBPACK_AMD_DEFINE_RESULT__ = function(require, exports, module) {
-	    var EventHandler = __webpack_require__(9);
-	    var SimpleStream = __webpack_require__(11);
-	    var Stream = __webpack_require__(15);
-	    var Observable = __webpack_require__(16);
-
-	    /**
-	     * Encapsulates a stream of layout data (transform, origin, align, opacity).
-	     *  Listens on start/update/end events, batches them, and emits them downstream
-	     *  to descendant layout nodes.
-	     *
-	     *  @example
-	     *
-	     *      var context = Context();
-	     *
-	     *      var surface = new Surface({
-	     *          size : [100,100],
-	     *          properties : {background : 'red'}
-	     *      });
-	     *
-	     *      var opacity = new Transitionable(1);
-	     *
-	     *      var layout = new LayoutNode({
-	     *          transform : Transform.translateX(100),
-	     *          opacity : opacity
-	     *      });
-	     *
-	     *      context.add(layout).add(surface);
-	     *      context.mount(document.body)
-	     *
-	     *      opacity.set(0, {duration : 1000});
-	     *
-	     * @class LayoutNode
-	     * @constructor
-	     * @namespace Core
-	     * @private
-	     * @param sources {Object}                          Object of layout sources
-	     * @param [sources.transform] {Stream|Transform}    Transform source
-	     * @param [sources.align] {Stream|Array}            Align source
-	     * @param [sources.origin] {Stream|Array}           Origin source
-	     * @param [sources.opacity] {Stream|Number}         Opacity source
-	     */
-	    function LayoutNode(sources) {
-	        this.stream = _createStream(sources);
-	        EventHandler.setOutputHandler(this, this.stream);
-	    }
-
-	    // Enumeration of types of layout properties
-	    LayoutNode.KEYS = {
-	        transform : 'transform',
-	        origin : 'origin',
-	        align : 'align',
-	        opacity : 'opacity'
-	    };
-
-	    /**
-	     * Introduce new data streams to the layout node in {key : value} pairs.
-	     *  Here the `key` is one of "transform", "origin", "align" or "opacity".
-	     *  The `value` is either a stream, or a simple type like a `Number` or `Array`.
-	     *  Simple types will be wrapped in an `Observerable` to emit appropriate events.
-	     *
-	     * @method set
-	     * @param sources {Object}      Object of data sources
-	     */
-	    LayoutNode.prototype.set = function(sources){
-	        // TODO: be able to overwrite streams. Not only add
-	        for (var key in sources){
-	            var value = sources[key];
-
-	            var source = (value instanceof SimpleStream)
-	                ? value
-	                : new Observable(value);
-
-	            this.stream.addStream(key, source);
-	        }
-	    };
-
-	    function _createStream(sources){
-	        for (var key in sources){
-	            var value = sources[key];
-	            if (typeof value === 'number' || value instanceof Array){
-	                var source = new Observable(value);
-	                sources[key] = source;
-	            }
-	        }
-	        return Stream.merge(sources);
-	    }
-
-	    module.exports = LayoutNode;
-	}.call(exports, __webpack_require__, exports, module), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
-
-
-/***/ },
-/* 9 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_RESULT__;/* This Source Code Form is subject to the terms of the Mozilla Public
@@ -392,7 +242,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	/* Modified work copyright © 2015-2016 David Valdman */
 
 	!(__WEBPACK_AMD_DEFINE_RESULT__ = function(require, exports, module) {
-	    var EventEmitter = __webpack_require__(10);
+	    var EventEmitter = __webpack_require__(4);
 
 	    /**
 	     * EventHandler extends EventEmitter to provide subscription methods.
@@ -518,18 +368,25 @@ return /******/ (function(modules) { // webpackBootstrap
 	     * Stop listening to events from an upstream source.
 	     *  Undoes work of `subscribe`.
 	     *
+	     *  If no source is provided, all subscribed sources are unsubscribed from.
+	     *
 	     * @method unsubscribe
-	     * @param source {EventEmitter} Event source
+	     * @param [source] {EventEmitter} Event source
 	     */
 	    EventHandler.prototype.unsubscribe = function unsubscribe(source) {
-	        var index = this.upstream.indexOf(source);
-	        if (index >= 0) {
-	            this.upstream.splice(index, 1);
-	            for (var type in this.upstreamListeners) {
-	                source.off(type, this.upstreamListeners[type]);
+	        if (!source) {
+	            for (var i = 0; i < this.upstream.length; i++)
+	                this.unsubscribe(this.upstream[i]);
+	        }
+	        else {
+	            var index = this.upstream.indexOf(source);
+	            if (index >= 0) {
+	                this.upstream.splice(index, 1);
+	                for (var type in this.upstreamListeners) {
+	                    source.off(type, this.upstreamListeners[type]);
+	                }
 	            }
 	        }
-	        return source;
 	    };
 
 	    module.exports = EventHandler;
@@ -537,7 +394,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 10 */
+/* 4 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_RESULT__;/* This Source Code Form is subject to the terms of the Mozilla Public
@@ -667,13 +524,222 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
+/* 5 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var __WEBPACK_AMD_DEFINE_RESULT__;/* Copyright © 2015-2016 David Valdman */
+
+	!(__WEBPACK_AMD_DEFINE_RESULT__ = function(require, exports, module) {
+	    var STATE = {
+	        NONE : -1,
+	        START : 0,
+	        UPDATE : 1,
+	        END : 2
+	    };
+
+	    var currentState = STATE.START;
+
+	    /**
+	     * SUE specified the global state of the application, whether it is in a
+	     *  `start`, `update` or `end` state. This is necessary for coordinating
+	     *  `resize` events with `start`, `update`, `end` states in stream.
+	     *
+	     * @class SUE
+	     * @namespace Core
+	     * @static
+	     * @private
+	     */
+	    var SUE = {};
+
+	    SUE.STATES = STATE;
+
+	    SUE.set = function set(state){
+	        currentState = state;
+	    };
+
+	    SUE.get = function get(){
+	        return currentState;
+	    };
+
+	    module.exports = SUE;
+	}.call(exports, __webpack_require__, exports, module), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
+
+/***/ },
+/* 6 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var __WEBPACK_AMD_DEFINE_RESULT__;/* Copyright © 2015 David Valdman */
+
+	!(__WEBPACK_AMD_DEFINE_RESULT__ = function(require, exports, module) {
+	    /**
+	     * Queue that batches `update` events.
+	     *  This queue is traversed after the `preTickQueue` but before `dirtQueue`
+	     *  by the Engine.
+	     *
+	     *  @private
+	     */
+
+	    module.exports = [];
+	}.call(exports, __webpack_require__, exports, module), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
+
+/***/ },
+/* 7 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var __WEBPACK_AMD_DEFINE_RESULT__;/* Copyright © 2015 David Valdman */
+
+	!(__WEBPACK_AMD_DEFINE_RESULT__ = function(require, exports, module) {
+	    /**
+	     * Queue that batches `start` events.
+	     *  This queue is traversed first (but after DOM events are executed) by the Engine.
+	     *
+	     *  @private
+	     */
+
+	    module.exports = [];
+	}.call(exports, __webpack_require__, exports, module), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
+
+/***/ },
+/* 8 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var __WEBPACK_AMD_DEFINE_RESULT__;/* Copyright © 2015 David Valdman */
+
+	!(__WEBPACK_AMD_DEFINE_RESULT__ = function(require, exports, module) {
+	    /**
+	     * Queue that batches `end` and `dirty` events.
+	     *  This queue is traversed after the `postTickQueue` by the Engine.
+	     *
+	     *  @private
+	     */
+
+	    module.exports = [];
+	}.call(exports, __webpack_require__, exports, module), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
+
+/***/ },
+/* 9 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var __WEBPACK_AMD_DEFINE_RESULT__;/* Copyright © 2015 David Valdman */
+
+	!(__WEBPACK_AMD_DEFINE_RESULT__ = function(require, exports, module) {
+	    /**
+	     * This queue is executed before the postTickQueue and after the preTickQueue.
+	     *  however, it differs in that the Engine does not clear the queue.
+	     *  This must be done manually.
+	     *
+	     *  @private
+	     */
+
+	    module.exports = [];
+	}.call(exports, __webpack_require__, exports, module), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
+
+/***/ },
+/* 10 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var __WEBPACK_AMD_DEFINE_RESULT__;/* Copyright © 2015-2016 David Valdman */
+
+	!(__WEBPACK_AMD_DEFINE_RESULT__ = function(require, exports, module) {
+	    var EventHandler = __webpack_require__(3);
+	    var SimpleStream = __webpack_require__(11);
+	    var Stream = __webpack_require__(15);
+	    var Observable = __webpack_require__(16);
+
+	    /**
+	     * Encapsulates a stream of layout data (transform, origin, align, opacity).
+	     *  Listens on start/update/end events, batches them, and emits them downstream
+	     *  to descendant layout nodes.
+	     *
+	     *  @example
+	     *
+	     *      var context = Context();
+	     *
+	     *      var surface = new Surface({
+	     *          size : [100,100],
+	     *          properties : {background : 'red'}
+	     *      });
+	     *
+	     *      var opacity = new Transitionable(1);
+	     *
+	     *      var layout = new LayoutNode({
+	     *          transform : Transform.translateX(100),
+	     *          opacity : opacity
+	     *      });
+	     *
+	     *      context.add(layout).add(surface);
+	     *      context.mount(document.body)
+	     *
+	     *      opacity.set(0, {duration : 1000});
+	     *
+	     * @class LayoutNode
+	     * @constructor
+	     * @namespace Core
+	     * @private
+	     * @param sources {Object}                          Object of layout sources
+	     * @param [sources.transform] {Stream|Transform}    Transform source
+	     * @param [sources.align] {Stream|Array}            Align source
+	     * @param [sources.origin] {Stream|Array}           Origin source
+	     * @param [sources.opacity] {Stream|Number}         Opacity source
+	     */
+	    function LayoutNode(sources) {
+	        this.stream = _createStream(sources);
+	        EventHandler.setOutputHandler(this, this.stream);
+	    }
+
+	    // Enumeration of types of layout properties
+	    LayoutNode.KEYS = {
+	        transform : 'transform',
+	        origin : 'origin',
+	        align : 'align',
+	        opacity : 'opacity'
+	    };
+
+	    /**
+	     * Introduce new data streams to the layout node in {key : value} pairs.
+	     *  Here the `key` is one of "transform", "origin", "align" or "opacity".
+	     *  The `value` is either a stream, or a simple type like a `Number` or `Array`.
+	     *  Simple types will be wrapped in an `Observerable` to emit appropriate events.
+	     *
+	     * @method set
+	     * @param sources {Object}      Object of data sources
+	     */
+	    LayoutNode.prototype.set = function(sources){
+	        // TODO: be able to overwrite streams. Not only add
+	        for (var key in sources){
+	            var value = sources[key];
+
+	            var source = (value instanceof SimpleStream)
+	                ? value
+	                : new Observable(value);
+
+	            this.stream.addStream(key, source);
+	        }
+	    };
+
+	    function _createStream(sources){
+	        for (var key in sources){
+	            var value = sources[key];
+	            if (typeof value === 'number' || value instanceof Array){
+	                var source = new Observable(value);
+	                sources[key] = source;
+	            }
+	        }
+	        return Stream.merge(sources);
+	    }
+
+	    module.exports = LayoutNode;
+	}.call(exports, __webpack_require__, exports, module), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
+
+
+/***/ },
 /* 11 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_RESULT__;/* Copyright © 2015-2016 David Valdman */
 
 	!(__WEBPACK_AMD_DEFINE_RESULT__ = function(require, exports, module) {
-	    var EventHandler = __webpack_require__(9);
+	    var EventHandler = __webpack_require__(3);
 	    var EventMapper = __webpack_require__(12);
 	    var EventFilter = __webpack_require__(13);
 	    var EventSplitter = __webpack_require__(14);
@@ -808,7 +874,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	var __WEBPACK_AMD_DEFINE_RESULT__;/* Copyright © 2015-2016 David Valdman */
 
 	!(__WEBPACK_AMD_DEFINE_RESULT__ = function(require, exports, module) {
-	    var EventHandler = __webpack_require__(9);
+	    var EventHandler = __webpack_require__(3);
 
 	    /**
 	     * EventMapper modifies the data payload of an event based on
@@ -885,7 +951,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	/* Modified work copyright © 2015-2016 David Valdman */
 
 	!(__WEBPACK_AMD_DEFINE_RESULT__ = function(require, exports, module) {
-	    var EventHandler = __webpack_require__(9);
+	    var EventHandler = __webpack_require__(3);
 
 	    /**
 	     * EventFilter regulates the broadcasting of events based on
@@ -962,7 +1028,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	/* Modified work copyright © 2015-2016 David Valdman */
 
 	!(__WEBPACK_AMD_DEFINE_RESULT__ = function(require, exports, module) {
-	    var EventHandler = __webpack_require__(9);
+	    var EventHandler = __webpack_require__(3);
 
 	    /**
 	     * EventSplitter routes events to various event destinations
@@ -1039,14 +1105,14 @@ return /******/ (function(modules) { // webpackBootstrap
 	var __WEBPACK_AMD_DEFINE_RESULT__;/* Copyright © 2015-2016 David Valdman */
 
 	!(__WEBPACK_AMD_DEFINE_RESULT__ = function(require, exports, module){
-	    var EventHandler = __webpack_require__(9);
+	    var EventHandler = __webpack_require__(3);
 	    var EventMapper = __webpack_require__(12);
 	    var SimpleStream = __webpack_require__(11);
 
-	    var preTickQueue = __webpack_require__(5);
-	    var postTickQueue = __webpack_require__(4);
-	    var dirtyQueue = __webpack_require__(6);
-	    var State = __webpack_require__(3);
+	    var preTickQueue = __webpack_require__(7);
+	    var postTickQueue = __webpack_require__(6);
+	    var dirtyQueue = __webpack_require__(8);
+	    var State = __webpack_require__(5);
 
 	    var EVENTS = {
 	        START : 'start',
@@ -1243,8 +1309,8 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	!(__WEBPACK_AMD_DEFINE_RESULT__ = function(require, exports, module) {
 	    var SimpleStream = __webpack_require__(11);
-	    var preTickQueue = __webpack_require__(5);
-	    var dirtyQueue = __webpack_require__(6);
+	    var preTickQueue = __webpack_require__(7);
+	    var dirtyQueue = __webpack_require__(8);
 
 	    /**
 	     * An Observable is a stream for events set discretely in time, as opposed to continuously.
@@ -1305,7 +1371,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	var __WEBPACK_AMD_DEFINE_RESULT__;/* Copyright © 2015-2016 David Valdman */
 
 	!(__WEBPACK_AMD_DEFINE_RESULT__ = function(require, exports, module) {
-	    var EventHandler = __webpack_require__(9);
+	    var EventHandler = __webpack_require__(3);
 	    var SimpleStream = __webpack_require__(11);
 	    var ResizeStream = __webpack_require__(18);
 	    var SizeObservable = __webpack_require__(19);
@@ -1422,12 +1488,12 @@ return /******/ (function(modules) { // webpackBootstrap
 	!(__WEBPACK_AMD_DEFINE_RESULT__ = function(require, exports, module) {
 	    var SimpleStream = __webpack_require__(11);
 	    var EventMapper = __webpack_require__(12);
-	    var EventHandler = __webpack_require__(9);
+	    var EventHandler = __webpack_require__(3);
 
-	    var preTickQueue = __webpack_require__(5);
-	    var postTickQueue = __webpack_require__(4);
-	    var dirtyQueue = __webpack_require__(6);
-	    var State = __webpack_require__(3);
+	    var preTickQueue = __webpack_require__(7);
+	    var postTickQueue = __webpack_require__(6);
+	    var dirtyQueue = __webpack_require__(8);
+	    var State = __webpack_require__(5);
 
 	    var EVENTS = {
 	        RESIZE : 'resize'
@@ -1535,8 +1601,8 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	!(__WEBPACK_AMD_DEFINE_RESULT__ = function(require, exports, module) {
 	    var SimpleStream = __webpack_require__(11);
-	    var preTickQueue = __webpack_require__(5);
-	    var dirtyQueue = __webpack_require__(6);
+	    var preTickQueue = __webpack_require__(7);
+	    var dirtyQueue = __webpack_require__(8);
 
 	    /**
 	     * A SizeObservable is a stream for resize events set discretely in time, as opposed to continuously.
@@ -1604,7 +1670,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	/* Modified work copyright © 2015-2016 David Valdman */
 
 	!(__WEBPACK_AMD_DEFINE_RESULT__ = function(require, exports, module) {
-	    var tickQueue = __webpack_require__(7);
+	    var tickQueue = __webpack_require__(9);
 
 	    /**
 	     * A collection of timing utilities meant to translate the familiar setInterval, setTimeout
@@ -2485,10 +2551,10 @@ return /******/ (function(modules) { // webpackBootstrap
 	var __WEBPACK_AMD_DEFINE_RESULT__;/* Copyright © 2015-2016 David Valdman */
 
 	!(__WEBPACK_AMD_DEFINE_RESULT__ = function (require, exports, module) {
-	    var dirtyQueue = __webpack_require__(6);
-	    var preTickQueue = __webpack_require__(5);
-	    var tickQueue = __webpack_require__(7);
-	    var EventHandler = __webpack_require__(9);
+	    var dirtyQueue = __webpack_require__(8);
+	    var preTickQueue = __webpack_require__(7);
+	    var tickQueue = __webpack_require__(9);
+	    var EventHandler = __webpack_require__(3);
 	    var SimpleStream = __webpack_require__(11);
 	    var Stream = __webpack_require__(15);
 
@@ -2864,7 +2930,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	var __WEBPACK_AMD_DEFINE_RESULT__;/* Copyright © 2015-2016 David Valdman */
 
 	!(__WEBPACK_AMD_DEFINE_RESULT__ = function(require, exports, module) {
-	    var EventHandler = __webpack_require__(9);
+	    var EventHandler = __webpack_require__(3);
 	    var SimpleStream = __webpack_require__(11);
 
 	    var now = Date.now;
@@ -3164,7 +3230,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	var __WEBPACK_AMD_DEFINE_RESULT__;/* Copyright © 2015-2016 David Valdman */
 
 	!(__WEBPACK_AMD_DEFINE_RESULT__ = function (require, exports, module) {
-	    var EventHandler = __webpack_require__(9);
+	    var EventHandler = __webpack_require__(3);
 	    var SimpleStream = __webpack_require__(11);
 
 	    var now = Date.now;
@@ -3393,7 +3459,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	var __WEBPACK_AMD_DEFINE_RESULT__;/* Copyright © 2015-2016 David Valdman */
 
 	!(__WEBPACK_AMD_DEFINE_RESULT__ = function (require, exports, module) {
-	    var EventHandler = __webpack_require__(9);
+	    var EventHandler = __webpack_require__(3);
 	    var SimpleStream = __webpack_require__(11);
 
 	    var now = Date.now;
@@ -3553,14 +3619,9 @@ return /******/ (function(modules) { // webpackBootstrap
 	    var RenderTreeNode = __webpack_require__(27);
 	    var Controller = __webpack_require__(30);
 	    var SizeNode = __webpack_require__(17);
-	    var LayoutNode = __webpack_require__(8);
+	    var LayoutNode = __webpack_require__(10);
 	    var Transitionable = __webpack_require__(22);
-	    var EventHandler = __webpack_require__(9);
-	    var Stream = __webpack_require__(15);
-	    var ResizeStream = __webpack_require__(18);
-	    var SizeObservable = __webpack_require__(19);
-	    var layoutAlgebra = __webpack_require__(28);
-	    var sizeAlgebra = __webpack_require__(29);
+	    var EventHandler = __webpack_require__(3);
 
 	    /**
 	     * A View provides encapsulation for a subtree of the render tree. You can build
@@ -3620,43 +3681,20 @@ return /******/ (function(modules) { // webpackBootstrap
 	            change : setOptions
 	        },
 	        constructor : function View(options){
-	            this._size = new EventHandler();
-	            this._layout = new EventHandler();
-
 	            this._sizeNode = new SizeNode();
 	            this._layoutNode = new LayoutNode();
 
 	            this._node = new RenderTreeNode();
-	            this._node.tempRoot = this._node;
 
-	            this.size = ResizeStream.lift(
-	                function ViewSizeAlgebra (sizeSpec, parentSize){
-	                    if (!parentSize) return false;
-	                    return (sizeSpec)
-	                        ? sizeAlgebra(sizeSpec, parentSize)
-	                        : parentSize;
-	                },
-	                [this._sizeNode, this._size]
-	            );
+	            this._addNode = this._node.add(this._sizeNode).add(this._layoutNode);
+
+	            this.size = this._addNode.size; // actual size
+	            this._size = this._node.size; // incoming parent size
 
 	            this._cachedSize = [0,0];
 	            this.size.on('resize', function(size){
-	                if (size === this._cachedSize) return false;
 	                this._cachedSize = size;
 	            }.bind(this));
-
-	            var layout = Stream.lift(
-	                function ViewLayoutAlgebra (parentSpec, objectSpec, size){
-	                    if (!parentSpec || !size) return false;
-	                    return (objectSpec)
-	                        ? layoutAlgebra(objectSpec, parentSpec, size)
-	                        : parentSpec;
-	                }.bind(this),
-	                [this._layout, this._layoutNode, this.size]
-	            );
-
-	            this._node._size.subscribe(this.size);
-	            this._node._layout.subscribe(layout);
 
 	            Controller.apply(this, arguments);
 	            if (this.options) setOptions.call(this, this.options);
@@ -3669,7 +3707,11 @@ return /******/ (function(modules) { // webpackBootstrap
 	         * @return {RenderTreeNode}
 	         */
 	        add : function add(){
-	            return RenderTreeNode.prototype.add.apply(this._node, arguments);
+	            return RenderTreeNode.prototype.add.apply(this._addNode, arguments);
+	        },
+	        remove : function remove(){
+	            this._cachedSize = [0,0];
+	            RenderTreeNode.prototype.remove.apply(this._node, arguments);
 	        },
 	        /**
 	         * Getter for size.
@@ -3687,6 +3729,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	         * @param size {Number[]|Stream} Size as [width, height] in pixels, or a stream.
 	         */
 	        setSize : function setSize(size){
+	            this._cachedSize = size;
 	            this._sizeNode.set({size : size});
 	        },
 	        /**
@@ -3702,7 +3745,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	         * Setter for proportions.
 	         *
 	         * @method setProportions
-	         * @param proportions {Number[]|Stream} Proportions as [x,y], or a stream.
+	         * @param aspectRatio {Number[]|Stream} Proportions as [x,y], or a stream.
 	         */
 	        setAspectRatio: function setProportions(aspectRatio) {
 	            this._sizeNode.set({aspectRatio: aspectRatio});
@@ -3761,13 +3804,15 @@ return /******/ (function(modules) { // webpackBootstrap
 	var __WEBPACK_AMD_DEFINE_RESULT__;/* Copyright © 2015-2016 David Valdman */
 
 	!(__WEBPACK_AMD_DEFINE_RESULT__ = function(require, exports, module) {
-	    var EventHandler = __webpack_require__(9);
+	    var EventHandler = __webpack_require__(3);
 	    var Stream = __webpack_require__(15);
 	    var ResizeStream = __webpack_require__(18);
 	    var SizeNode = __webpack_require__(17);
-	    var LayoutNode = __webpack_require__(8);
+	    var LayoutNode = __webpack_require__(10);
 	    var layoutAlgebra = __webpack_require__(28);
 	    var sizeAlgebra = __webpack_require__(29);
+	    var preTickQueue = __webpack_require__(7);
+	    var dirtyQueue = __webpack_require__(8);
 
 	    var SIZE_KEYS = SizeNode.KEYS;
 	    var LAYOUT_KEYS = LayoutNode.KEYS;
@@ -3786,14 +3831,49 @@ return /******/ (function(modules) { // webpackBootstrap
 	        // layout and size inputs
 	        this._layout = new EventHandler();
 	        this._size = new EventHandler();
+	        this._logic = new EventHandler();
 
 	        // layout and size streams
-	        this.size = null;
-	        this.layout = null;
+	        this.size = new EventHandler();
+	        this.layout = new EventHandler();
 
 	        this.root = null;
 
 	        if (object) _set.call(this, object);
+	        else {
+	            this.layout.subscribe(this._layout);
+	            this.size.subscribe(this._size);
+	        }
+
+	        // save last spec if node is removed and later added
+	        this._cachedSpec = {
+	            layout : null,
+	            size : null
+	        };
+
+	        this.layout.on('start', function(data) {
+	            this._cachedSpec.layout = data;
+	        }.bind(this));
+
+	        this.layout.on('update', function(data) {
+	            this._cachedSpec.layout = data;
+	        }.bind(this));
+
+	        this.layout.on('end', function(data) {
+	            this._cachedSpec.layout = data;
+	        }.bind(this));
+
+	        this.size.on('resize', function(size) {
+	            this._cachedSpec.size = size;
+	        }.bind(this));
+
+	        this._logic.on('mount', function(node){
+	            this.root = node;
+	        }.bind(this));
+
+	        this._logic.on('unmount', function() {
+	            this.root = null;
+	        }.bind(this));
 	    }
 
 	    /**
@@ -3814,30 +3894,52 @@ return /******/ (function(modules) { // webpackBootstrap
 	    RenderTreeNode.prototype.add = function add(node) {
 	        var childNode;
 
+	        var self = this;
+	        preTickQueue.push(function() {
+	            if (!self._cachedSpec.size) return;
+	            self.size.trigger('resize', self._cachedSpec.size);
+	            self.layout.trigger('start', self._cachedSpec.layout);
+	            dirtyQueue.push(function() {
+	                self.layout.trigger('end', self._cachedSpec.layout);
+	            });
+	        });
+
 	        if (node.constructor === Object){
 	            // Object literal case
 	            return _createNodeFromObjectLiteral.call(this, node);
 	        }
 	        else if (node._isView){
 	            // View case
-	            if (this.root)
-	                node._node.root = this.root;
-	            else if (this.tempRoot)
-	                node._node.tempRoot = this.tempRoot;
+	            return this.add(node._node);
+	        }
+	        else if (node instanceof RenderTreeNode){
+	            // RenderTree Node
 	            childNode = node;
 	        }
 	        else {
-	            // Node case
+	            // LayoutNode or SizeNode or Surface
 	            childNode = new RenderTreeNode(node);
-	            if (this.tempRoot)
-	                childNode.tempRoot = this.tempRoot;
-	            else childNode.root = _getRootNode.call(this);
 	        }
 
-	        childNode._layout.subscribe(this.layout || this._layout);
-	        childNode._size.subscribe(this.size || this._size);
+	        childNode._layout.subscribe(this.layout);
+	        childNode._size.subscribe(this.size);
+	        childNode._logic.subscribe(this._logic);
+
+	        // Called when node is removed and later added
+	        if (this.root && !childNode.root)
+	            childNode._logic.trigger('mount', this.root);
+
+	        this._logic.emit('attach');
 
 	        return childNode;
+	    };
+
+	    RenderTreeNode.prototype.remove = function (){
+	        this._logic.trigger('detach');
+	        this._logic.trigger('unmount');
+	        this._layout.unsubscribe();
+	        this._size.unsubscribe();
+	        this._logic.unsubscribe();
 	    };
 
 	    function _createNodeFromObjectLiteral(object){
@@ -3873,15 +3975,9 @@ return /******/ (function(modules) { // webpackBootstrap
 	        return node;
 	    }
 
-	    function _getRootNode(){
-	        if (this.root) return this.root;
-	        if (this.tempRoot) return _getRootNode.call(this.tempRoot);
-	        return this;
-	    }
-
 	    function _set(object) {
 	        if (object instanceof SizeNode){
-	            this.size = ResizeStream.lift(
+	            var size = ResizeStream.lift(
 	                function SGSizeAlgebra (objectSpec, parentSize){
 	                    if (!parentSize) return false;
 	                    return (objectSpec)
@@ -3890,10 +3986,12 @@ return /******/ (function(modules) { // webpackBootstrap
 	                },
 	                [object, this._size]
 	            );
+	            this.size.subscribe(size);
+	            this.layout.subscribe(this._layout);
 	            return;
 	        }
 	        else if (object instanceof LayoutNode){
-	            this.layout = Stream.lift(
+	            var layout = Stream.lift(
 	                function SGLayoutAlgebra (objectSpec, parentSpec, size){
 	                    if (!parentSpec || !size) return false;
 	                    return (objectSpec)
@@ -3902,13 +4000,27 @@ return /******/ (function(modules) { // webpackBootstrap
 	                },
 	                [object, this._layout, this._size]
 	            );
+	            this.layout.subscribe(layout);
+	            this.size.subscribe(this._size);
 	            return;
 	        }
 
 	        // object is a leaf node
 	        object._size.subscribe(this._size);
 	        object._layout.subscribe(this._layout);
-	        object._getRoot = _getRootNode.bind(this);
+
+	        this._logic.on('detach', function(){
+	            object.remove();
+	            object._size.unsubscribe(this._size);
+	            object._layout.unsubscribe(this._layout);
+	        }.bind(this));
+
+	        this._logic.on('attach', function(){
+	            if (this.root && !object._currentTarget)
+	                object.setup(this.root.allocator);
+	            object._size.subscribe(this._size);
+	            object._layout.subscribe(this._layout);
+	        }.bind(this));
 	    }
 
 	    module.exports = RenderTreeNode;
@@ -4078,7 +4190,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	!(__WEBPACK_AMD_DEFINE_RESULT__ = function(require, exports, module) {
 	    var OptionsManager = __webpack_require__(31);
-	    var EventHandler = __webpack_require__(9);
+	    var EventHandler = __webpack_require__(3);
 	    var SimpleStream = __webpack_require__(11);
 
 	    /**
@@ -4278,7 +4390,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	/* Modified work copyright © 2015-2016 David Valdman */
 
 	!(__WEBPACK_AMD_DEFINE_RESULT__ = function(require, exports, module) {
-	    var EventHandler = __webpack_require__(9);
+	    var EventHandler = __webpack_require__(3);
 
 	    /**
 	     *  A utility for setting options in a class that enables patching options
@@ -4478,11 +4590,17 @@ return /******/ (function(modules) { // webpackBootstrap
 	var __WEBPACK_AMD_DEFINE_RESULT__;/* Copyright © 2015-2016 David Valdman */
 
 	!(__WEBPACK_AMD_DEFINE_RESULT__ = function(require, exports, module) {
+	    var EventHandler = __webpack_require__(3);
+	    var Stream = __webpack_require__(15);
+	    var ResizeStream = __webpack_require__(18);
+	    var SizeNode = __webpack_require__(17);
+	    var LayoutNode = __webpack_require__(10);
+	    var sizeAlgebra = __webpack_require__(29);
+	    var layoutAlgebra = __webpack_require__(28);
 	    var ElementOutput = __webpack_require__(34);
-	    var dirtyQueue = __webpack_require__(6);
+	    var dirtyQueue = __webpack_require__(8);
 
 	    var isTouchEnabled = "ontouchstart" in window;
-	    var usePrefix = !('transform' in document.documentElement.style);
 	    var isIOS = /iPad|iPhone|iPod/.test(navigator.platform);
 
 	    /**
@@ -4540,29 +4658,43 @@ return /******/ (function(modules) { // webpackBootstrap
 	    function Surface(options) {
 	        this.properties = {};
 	        this.attributes = {};
-	        this.content = '';
 	        this.classList = [];
-
-	        this._contentDirty = true;
-	        this._dirtyClasses = [];
-	        this._classesDirty = true;
-	        this._stylesDirty = true;
-	        this._attributesDirty = true;
-	        this._dirty = false;
+	        this.content = '';
 	        this._cachedSize = null;
 	        this._allocator = null;
 
-	        if (options) {
-	            // default to DOM size for provided elements
-	            if (options.el && !options.size){
-	                this._contentDirty = false;
-	                options.size = [true, true];
-	            }
+	        this._elementOutput = new ElementOutput();
 
-	            ElementOutput.call(this, options.el);
-	            this.setOptions(options);
-	        }
-	        else ElementOutput.call(this);
+	        this._eventOutput = new EventHandler();
+	        EventHandler.setOutputHandler(this, this._eventOutput);
+
+	        this._eventForwarder = function _eventForwarder(event) {
+	            this._eventOutput.emit(event.type, event);
+	        }.bind(this);
+
+	        this._sizeNode = new SizeNode();
+	        this._layoutNode = new LayoutNode();
+
+	        this._size = new EventHandler();
+	        this._layout = new EventHandler();
+
+	        this.size = ResizeStream.lift(function elementSizeLift(sizeSpec, parentSize) {
+	            if (!parentSize) return false; // occurs when surface is never added
+	            return sizeAlgebra(sizeSpec, parentSize);
+	        }, [this._sizeNode, this._size]);
+
+	        this.layout = Stream.lift(function(parentSpec, objectSpec, size) {
+	            if (!parentSpec || !size) return false;
+	            return (objectSpec)
+	                ? layoutAlgebra(objectSpec, parentSpec, size)
+	                : parentSpec;
+	        }, [this._layout, this._layoutNode, this.size]);
+
+	        this.layout.on('update', commitLayout.bind(this));
+	        this.layout.on('end', commitLayout.bind(this));
+	        this.size.on('resize', commitSize.bind(this));
+
+	        if (options) this.setOptions(options);
 	    }
 
 	    Surface.prototype = Object.create(ElementOutput.prototype);
@@ -4570,61 +4702,17 @@ return /******/ (function(modules) { // webpackBootstrap
 	    Surface.prototype.elementType = 'div'; // Default tagName. Can be overridden in options.
 	    Surface.prototype.elementClass = 'samsara-surface';
 
-	    function _setDirty(){
-	        if (this._dirty || !this._currentTarget) return;
-
-	        dirtyQueue.push(function(){
-	            var target = this._currentTarget;
-
-	            if (!target) return;
-
-	            if (this._classesDirty) {
-	                _removeClasses.call(this, target);
-	                _applyClasses.call(this, target);
-	            }
-
-	            if (this._stylesDirty) _applyProperties.call(this, target);
-
-	            if (this._attributesDirty) _applyAttributes.call(this, target);
-
-	            if (this._contentDirty) this.deploy(target);
-
-	            this._dirty = false;
-	        }.bind(this))
+	    function commitLayout(layout) {
+	        if (this._currentTarget)
+	            this._elementOutput.commitLayout(this._currentTarget, layout);
 	    }
 
-	    function _applyClasses(target) {
-	        for (var i = 0; i < this.classList.length; i++)
-	            target.classList.add(this.classList[i]);
-	        this._classesDirty = false;
-	    }
-
-	    function _applyProperties(target) {
-	        for (var key in this.properties)
-	            target.style[key] = this.properties[key];
-	        this._stylesDirty = false;
-	    }
-
-	    function _applyAttributes(target) {
-	        for (var key in this.attributes)
-	            target.setAttribute(key, this.attributes[key]);
-	        this._attributesDirty = false;
-	    }
-
-	    function _removeClasses(target) {
-	        for (var i = 0; i < this._dirtyClasses.length; i++)
-	            target.classList.remove(this._dirtyClasses[i]);
-	        this._dirtyClasses = [];
-	    }
-
-	    function _removeProperties(target) {
-	        for (var key in this.properties)
-	            target.style[key] = '';
-	    }
-
-	    function _removeAttributes(target) {
-	        for (var key in this.attributes)
-	            target.removeAttribute(key);
+	    function commitSize(size) {
+	        if (this._currentTarget){
+	            var shouldResize = this._elementOutput.commitSize(this._currentTarget, size);
+	            this._cachedSize = size;
+	            if (shouldResize) this.emit('resize', size);
+	        }
 	    }
 
 	    function enableScroll(){
@@ -4667,8 +4755,12 @@ return /******/ (function(modules) { // webpackBootstrap
 	            var value = attributes[key];
 	            if (value != undefined) this.attributes[key] = attributes[key];
 	        }
-	        this._attributesDirty = true;
-	        _setDirty.call(this);
+
+	        dirtyQueue.push(function(){
+	            if (this._currentTarget)
+	                this._elementOutput.applyAttributes(this._currentTarget, attributes);
+	        }.bind(this));
+
 	        return this;
 	    };
 
@@ -4693,8 +4785,12 @@ return /******/ (function(modules) { // webpackBootstrap
 	    Surface.prototype.setProperties = function setProperties(properties) {
 	        for (var key in properties)
 	            this.properties[key] = properties[key];
-	        this._stylesDirty = true;
-	        _setDirty.call(this);
+
+	        dirtyQueue.push(function() {
+	            if (this._currentTarget)
+	                this._elementOutput.applyProperties(this._currentTarget, properties);
+	        }.bind(this));
+
 	        return this;
 	    };
 
@@ -4718,8 +4814,11 @@ return /******/ (function(modules) { // webpackBootstrap
 	    Surface.prototype.addClass = function addClass(className) {
 	        if (this.classList.indexOf(className) < 0) {
 	            this.classList.push(className);
-	            this._classesDirty = true;
-	            _setDirty.call(this);
+
+	            dirtyQueue.push(function() {
+	                if (this._currentTarget)
+	                    this._elementOutput.applyClasses(this._currentTarget, this.classList);
+	            }.bind(this));
 	        }
 	        return this;
 	    };
@@ -4733,9 +4832,11 @@ return /******/ (function(modules) { // webpackBootstrap
 	    Surface.prototype.removeClass = function removeClass(className) {
 	        var i = this.classList.indexOf(className);
 	        if (i >= 0) {
-	            this._dirtyClasses.push(this.classList.splice(i, 1)[0]);
-	            this._classesDirty = true;
-	            _setDirty.call(this);
+	            this.classList.splice(i, 1);
+	            dirtyQueue.push(function() {
+	                if (this._currentTarget)
+	                    this._elementOutput.removeClasses(this._currentTarget, this.classList);
+	            }.bind(this));
 	        }
 	    };
 
@@ -4760,14 +4861,9 @@ return /******/ (function(modules) { // webpackBootstrap
 	     * @param classlist {String[]}  ClassList
 	     */
 	    Surface.prototype.setClasses = function setClasses(classList) {
-	        var removal = [];
-	        for (var i = 0; i < this.classList.length; i++) {
-	            if (classList.indexOf(this.classList[i]) < 0) removal.push(this.classList[i]);
+	        for (var i = 0; i < classList.length; i++) {
+	            this.addClass(classList[i]);
 	        }
-	        for (i = 0; i < removal.length; i++) this.removeClass(removal[i]);
-	        // duplicates are already checked by addClass()
-	        for (i = 0; i < classList.length; i++) this.addClass(classList[i]);
-	        _setDirty.call(this);
 	        return this;
 	    };
 
@@ -4791,8 +4887,11 @@ return /******/ (function(modules) { // webpackBootstrap
 	    Surface.prototype.setContent = function setContent(content) {
 	        if (this.content !== content) {
 	            this.content = content;
-	            this._contentDirty = true;
-	            _setDirty.call(this);
+
+	            dirtyQueue.push(function() {
+	                if (this._currentTarget)
+	                    this._elementOutput.deploy(this._currentTarget, content);
+	            }.bind(this));
 	        }
 	        return this;
 	    };
@@ -4830,6 +4929,34 @@ return /******/ (function(modules) { // webpackBootstrap
 	    };
 
 	    /**
+	     * Adds a handler to the `type` channel which will be executed on `emit`.
+	     *
+	     * @method on
+	     *
+	     * @param type {String}         DOM event channel name, e.g., "click", "touchmove"
+	     * @param handler {Function}    Handler. It's only argument will be an emitted data payload.
+	     */
+	    Surface.prototype.on = function on(type, handler) {
+	        if (this._currentTarget)
+	            this._elementOutput.on(this._currentTarget, type, this._eventForwarder);
+	        EventHandler.prototype.on.apply(this._eventOutput, arguments);
+	    };
+
+	    /**
+	     * Removes a previously added handler to the `type` channel.
+	     *  Undoes the work of `on`.
+	     *
+	     * @method off
+	     * @param type {String}         DOM event channel name e.g., "click", "touchmove"
+	     * @param handler {Function}    Handler
+	     */
+	    Surface.prototype.off = function off(type, handler) {
+	        if (this._currentTarget)
+	            this._elementOutput.off(this._currentTarget, type, this._eventForwarder);
+	        EventHandler.prototype.off.apply(this._eventOutput, arguments);
+	    };
+
+	    /**
 	     * Allocates the element-type associated with the Surface, adds its given
 	     *  element classes, and prepares it for future committing.
 	     *
@@ -4845,6 +4972,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	        // create element of specific type
 	        var target = allocator.allocate(this.elementType);
+	        this._currentTarget = target;
 
 	        // add any element classes
 	        if (this.elementClass) {
@@ -4854,12 +4982,14 @@ return /******/ (function(modules) { // webpackBootstrap
 	            else this.addClass(this.elementClass);
 	        }
 
-	        // set the currentTarget and any bound listeners
-	        this.attach(target);
+	        for (var type in this._eventOutput.listeners)
+	            this._elementOutput.on(target, type, this._eventForwarder);
 
-	        _applyClasses.call(this, target);
-	        _applyProperties.call(this, target);
-	        _applyAttributes.call(this, target);
+	        this._elementOutput.set(target);
+	        this._elementOutput.applyClasses(target, this.classList);
+	        this._elementOutput.applyProperties(target, this.properties);
+	        this._elementOutput.applyAttributes(target, this.attributes);
+
 	        this.deploy(target);
 	    };
 
@@ -4868,44 +4998,25 @@ return /******/ (function(modules) { // webpackBootstrap
 	     *
 	     * @private
 	     * @method remove
-	     * @param allocator {ElementAllocator} Allocator
 	     */
-	    Surface.prototype.remove = function remove(allocator) {
-	        //TODO: don't reference allocator in state
-	        allocator = allocator || this._allocator;
+	    Surface.prototype.remove = function remove() {
 	        var target = this._currentTarget;
+
+	        this._elementOutput.removeClasses(target, this.classList);
+	        this._elementOutput.removeProperties(target, this.properties);
+	        this._elementOutput.removeAttributes(target, this.attributes);
+	        this._elementOutput.reset(target);
+
+	        for (var type in this._eventOutput.listeners)
+	            this._elementOutput.off(target, type, this._eventForwarder);
 
 	        // cache the target's contents for later deployment
 	        this.recall(target);
 
-	        // hide the element
-	        target.style.display = 'none';
-	        target.style.opacity = '';
-	        target.style.width = '';
-	        target.style.height = '';
+	        this._allocator.deallocate(target);
+	        this._allocator = null;
 
-	        if (usePrefix){
-	            target.style.webkitTransform = 'scale3d(0.0001,0.0001,0.0001)';
-	            target.style.webkitTransformOrigin = '';
-	        }
-	        else {
-	            target.style.transform = 'scale3d(0.0001,0.0001,0.0001)';
-	            target.style.transformOrigin = '';
-	        }
-
-	        for (var i = 0; i < this.classList.length; i++)
-	            this.removeClass(this.classList[i]);
-
-	        // clear all styles, classes and attributes
-	        _removeProperties.call(this, target);
-	        _removeAttributes.call(this, target);
-	        _removeClasses.call(this, target);
-
-	        // garbage collect current target and remove bound event listeners
-	        this.detach();
-
-	        // store allocated node in cache for recycling
-	        allocator.deallocate(target);
+	        this._currentTarget = null;
 	    };
 
 	    /**
@@ -4916,16 +5027,8 @@ return /******/ (function(modules) { // webpackBootstrap
 	     * @param target {Node} DOM element to set content into
 	     */
 	    Surface.prototype.deploy = function deploy(target) {
-	        //TODO: make sure target.tagName is of correct type! Tag pools must be implemented.
-	        if (!target) return;
 	        var content = this.getContent();
-	        if (content instanceof Node) {
-	            while (target.hasChildNodes()) target.removeChild(target.firstChild);
-	            target.appendChild(content);
-	        }
-	        else target.innerHTML = content;
-
-	        this._contentDirty = false;
+	        this._elementOutput.deploy(target, content);
 	        this._eventOutput.emit('deploy', target);
 	    };
 
@@ -4938,9 +5041,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	     */
 	    Surface.prototype.recall = function recall(target) {
 	        this._eventOutput.emit('recall');
-	        var df = document.createDocumentFragment();
-	        while (target.hasChildNodes()) df.appendChild(target.firstChild);
-	        this.setContent(df);
+	        this.content = this._elementOutput.recall(target);
 	    };
 
 	    /**
@@ -4951,7 +5052,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	     */
 	    Surface.prototype.getSize = function getSize() {
 	        // TODO: remove cachedSize
-	        return this._cachedSpec.size || this._cachedSize;
+	        return this._cachedSize;
 	    };
 
 	    /**
@@ -4963,7 +5064,6 @@ return /******/ (function(modules) { // webpackBootstrap
 	    Surface.prototype.setSize = function setSize(size) {
 	        this._cachedSize = size;
 	        this._sizeNode.set({size : size});
-	        _setDirty.call(this);
 	    };
 
 	    /**
@@ -4974,7 +5074,6 @@ return /******/ (function(modules) { // webpackBootstrap
 	     */
 	    Surface.prototype.setProportions = function setProportions(proportions) {
 	        this._sizeNode.set({proportions : proportions});
-	        _setDirty.call(this);
 	    };
 
 	    /**
@@ -4985,7 +5084,6 @@ return /******/ (function(modules) { // webpackBootstrap
 	     */
 	    Surface.prototype.setMargins = function setMargins(margins) {
 	        this._sizeNode.set({margins : margins});
-	        _setDirty.call(this);
 	    };
 
 	    /**
@@ -4998,7 +5096,6 @@ return /******/ (function(modules) { // webpackBootstrap
 	     */
 	    Surface.prototype.setAspectRatio = function setAspectRatio(aspectRatio) {
 	        this._sizeNode.set({aspectRatio : aspectRatio});
-	        _setDirty.call(this);
 	    };
 
 	    /**
@@ -5009,8 +5106,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	     */
 	    Surface.prototype.setOrigin = function setOrigin(origin){
 	        this._layoutNode.set({origin : origin});
-	        this._originDirty = true;
-	        _setDirty.call(this);
+	        this._elementOutput._originDirty = true;
 	    };
 
 	    /**
@@ -5021,8 +5117,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	     */
 	    Surface.prototype.setOpacity = function setOpacity(opacity){
 	        this._layoutNode.set({opacity : opacity});
-	        this._opacityDirty = true;
-	        _setDirty.call(this);
+	        this._elementOutput._opacityDirty = true;
 	    };
 
 	    module.exports = Surface;
@@ -5036,16 +5131,9 @@ return /******/ (function(modules) { // webpackBootstrap
 	var __WEBPACK_AMD_DEFINE_RESULT__;/* Copyright © 2015-2016 David Valdman */
 
 	!(__WEBPACK_AMD_DEFINE_RESULT__ = function(require, exports, module) {
-	    var EventHandler = __webpack_require__(9);
 	    var Transform = __webpack_require__(21);
-	    var Stream = __webpack_require__(15);
-	    var ResizeStream = __webpack_require__(18);
-	    var SizeNode = __webpack_require__(17);
-	    var LayoutNode = __webpack_require__(8);
-	    var sizeAlgebra = __webpack_require__(29);
-	    var layoutAlgebra = __webpack_require__(28);
 
-	    var usePrefix = !('transform' in document.documentElement.style);
+	    var usePrefix = !('transform' in window.document.documentElement.style);
 	    var devicePixelRatio = 2 * (window.devicePixelRatio || 1);
 	    var MIN_OPACITY = 0.0001;
 	    var MAX_OPACITY = 0.9999;
@@ -5066,77 +5154,12 @@ return /******/ (function(modules) { // webpackBootstrap
 	     * @private
 	     * @param {Node} element document parent of this container
 	     */
-	    function ElementOutput(element) {
-	        this._currentTarget = null;
-
-	        this._cachedSpec = {
-	            transform : null,
-	            opacity : 1,
-	            origin : null,
-	            size : null
-	        };
-
-	        this._eventOutput = new EventHandler();
-	        EventHandler.setOutputHandler(this, this._eventOutput);
-
-	        this._eventForwarder = function _eventForwarder(event) {
-	            this._eventOutput.emit(event.type, event);
-	        }.bind(this);
-
-	        this._sizeNode = new SizeNode();
-	        this._layoutNode = new LayoutNode();
-
-	        this._size = new EventHandler();
-	        this._layout = new EventHandler();
-
-	        this.size = ResizeStream.lift(function elementSizeLift(sizeSpec, parentSize){
-	            if (!parentSize) return false; // occurs when surface is never added
-	            return sizeAlgebra(sizeSpec, parentSize);
-	        }, [this._sizeNode, this._size]);
-
-	        this.layout = Stream.lift(function(parentSpec, objectSpec, size){
-	            if (!parentSpec || !size) return false;
-	            return (objectSpec)
-	                ? layoutAlgebra(objectSpec, parentSpec, size)
-	                : parentSpec;
-	        }, [this._layout, this._layoutNode, this.size]);
-
-	        this.layout.on('start', function(){
-	            if (!this._currentTarget){
-	                var root = this._getRoot();
-	                this.setup(root.allocator);
-	            }
-	        }.bind(this));
-
-	        this.layout.on('update', commitLayout.bind(this));
-	        this.layout.on('end', commitLayout.bind(this));
-
-	        this.size.on('resize', function(size){
-	            if (!this._currentTarget){
-	                var root = this._getRoot();
-	                this.setup(root.allocator);
-	            }
-	            commitSize.call(this, size);
-	        }.bind(this));
-
-	        this._currentTarget = null;
-
+	    function ElementOutput() {
+	        this._cachedSpec = {};
 	        this._opacityDirty = true;
 	        this._originDirty = true;
 	        this._transformDirty = true;
 	        this._isVisible = true;
-
-	        if (element) this.attach(element);
-	    }
-
-	    function _addEventListeners(target) {
-	        for (var i in this._eventOutput.listeners)
-	            target.addEventListener(i, this._eventForwarder);
-	    }
-
-	    function _removeEventListeners(target) {
-	        for (var i in this._eventOutput.listeners)
-	            target.removeEventListener(i, this._eventForwarder);
 	    }
 
 	    function _round(value, unit){
@@ -5211,75 +5234,88 @@ return /******/ (function(modules) { // webpackBootstrap
 	        if (this._isVisible) element.style.opacity = opacity;
 	    };
 
-	    /**
-	     * Adds a handler to the `type` channel which will be executed on `emit`.
-	     *
-	     * @method on
-	     *
-	     * @param type {String}         DOM event channel name, e.g., "click", "touchmove"
-	     * @param handler {Function}    Handler. It's only argument will be an emitted data payload.
-	     */
-	    ElementOutput.prototype.on = function on(type, handler) {
-	        if (this._currentTarget)
-	            this._currentTarget.addEventListener(type, this._eventForwarder);
-	        EventHandler.prototype.on.apply(this._eventOutput, arguments);
+	    ElementOutput.prototype.applyClasses = function applyClasses(target, classList) {
+	        for (var i = 0; i < classList.length; i++)
+	            target.classList.add(classList[i]);
 	    };
 
-	    /**
-	     * Removes a previously added handler to the `type` channel.
-	     *  Undoes the work of `on`.
-	     *
-	     * @method removeListener
-	     * @param type {String}         DOM event channel name e.g., "click", "touchmove"
-	     * @param handler {Function}    Handler
-	     */
-	    ElementOutput.prototype.off = function off(type, handler) {
-	        EventHandler.prototype.off.apply(this._eventOutput, arguments);
+	    ElementOutput.prototype.applyProperties = function applyProperties(target, properties) {
+	        for (var key in properties)
+	            target.style[key] = properties[key];
 	    };
 
-	    /**
-	     * Emit an event with optional data payload. This will execute all listening
-	     *  to the channel name with the payload as only argument.
-	     *
-	     * @method emit
-	     * @param type {string}         Event channel name
-	     * @param [payload] {Object}    User defined data payload
-	     */
-	    ElementOutput.prototype.emit = function emit(type, payload) {
-	        EventHandler.prototype.emit.apply(this._eventOutput, arguments);
+	    ElementOutput.prototype.applyAttributes = function applyAttributes(target, attributes) {
+	        for (var key in attributes)
+	            target.setAttribute(key, attributes[key]);
 	    };
 
-	    /**
-	     * Assigns the DOM element for committing and to and attaches event listeners.
-	     *
-	     * @private
-	     * @method attach
-	     * @param {Node} target document parent of this container
-	     */
-	    ElementOutput.prototype.attach = function attach(target) {
-	        this._currentTarget = target;
-	        _addEventListeners.call(this, target);
+	    ElementOutput.prototype.removeClasses = function removeClasses(target, classList) {
+	        for (var i = 0; i < classList.length; i++)
+	            target.classList.remove(classList[i]);
 	    };
 
-	    /**
-	     * Removes the associated DOM element in memory and detached event listeners.
-	     *
-	     * @private
-	     * @method detach
-	     */
-	    ElementOutput.prototype.detach = function detach() {
-	        var target = this._currentTarget;
-	        if (target) {
-	            _removeEventListeners.call(this, target);
-	            target.style.display = '';
+	    ElementOutput.prototype.removeProperties = function removeProperties(target, properties) {
+	        for (var key in properties)
+	            target.style[key] = '';
+	    };
+
+	    ElementOutput.prototype.removeAttributes = function removeAttributes(target, attributes) {
+	        for (var key in attributes)
+	            target.removeAttribute(key);
+	    };
+
+	    ElementOutput.prototype.on = function on(target, type, handler) {
+	        target.addEventListener(type, handler);
+	    };
+
+	    ElementOutput.prototype.off = function off(target, type, handler) {
+	        target.removeEventListener(type, handler);
+	    };
+
+	    ElementOutput.prototype.deploy = function deploy(target, content) {
+	        if (content instanceof Node) {
+	            while (target.hasChildNodes()) target.removeChild(target.firstChild);
+	            target.appendChild(content);
 	        }
-	        this._currentTarget = null;
+	        else target.innerHTML = content;
 	    };
 
-	    function commitLayout(layout) {
-	        var target = this._currentTarget;
-	        if (!target) return;
+	    ElementOutput.prototype.recall = function deploy(target) {
+	        var df = document.createDocumentFragment();
+	        while (target.hasChildNodes()) df.appendChild(target.firstChild);
+	        return df;
+	    };
 
+	    ElementOutput.prototype.set = function set(target){
+	        target.style.display = '';
+	        target.style.visibility = '';
+
+	        // for true-sized elements, reset height and width
+	        if (this._cachedSize) {
+	            if (this._cachedSize[0] === true) target.style.width = 'auto';
+	            if (this._cachedSize[1] === true) target.style.height = 'auto';
+	        }
+	    };
+
+	    ElementOutput.prototype.reset = function reset(target){
+	        target.style.display = 'none';
+	        target.style.opacity = '';
+	        target.style.width = '';
+	        target.style.height = '';
+
+	        if (usePrefix) {
+	            target.style.webkitTransform = '';
+	            target.style.webkitTransformOrigin = '';
+	        }
+	        else {
+	            target.style.transform = '';
+	            target.style.transformOrigin = '';
+	        }
+
+	        this._cachedSpec = {};
+	    };
+
+	    ElementOutput.prototype.commitLayout = function commitLayout(target, layout) {
 	        var cache = this._cachedSpec;
 
 	        var transform = layout.transform || Transform.identity;
@@ -5308,21 +5344,19 @@ return /******/ (function(modules) { // webpackBootstrap
 	        this._originDirty = false;
 	        this._transformDirty = false;
 	        this._opacityDirty = false;
-	    }
+	    };
 
-	    function commitSize(size){
-	        var target = this._currentTarget;
-	        if (!target) return;
-
+	    ElementOutput.prototype.commitSize = function commitSize(target, size){
 	        if (size[0] !== true) size[0] = _round(size[0], devicePixelRatio);
 	        if (size[1] !== true) size[1] = _round(size[1], devicePixelRatio);
 
 	        if (_xyNotEquals(this._cachedSpec.size, size)){
 	            this._cachedSpec.size = size;
 	            _setSize(target, size);
-	            this.emit('resize', size);
+	            return true;
 	        }
-	    }
+	        else return false;
+	    };
 
 	    module.exports = ElementOutput;
 	}.call(exports, __webpack_require__, exports, module), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
@@ -5384,17 +5418,22 @@ return /******/ (function(modules) { // webpackBootstrap
 	    function ContainerSurface(options) {
 	        Surface.call(this, options);
 	        this.context = new Context();
+	        this.context.elementClass = ContainerSurface.prototype.elementClass;
 	        this.context._size.subscribe(this.size);
 
 	        this.on('deploy', function(target){
-	            this.context.mount(target, true);
+	            this.context.mount(target);
+	        }.bind(this));
+
+	        this.on('recall', function() {
+	            this.context.remove();
 	        }.bind(this));
 	    }
 
 	    ContainerSurface.prototype = Object.create(Surface.prototype);
 	    ContainerSurface.prototype.constructor = ContainerSurface;
 	    ContainerSurface.prototype.elementType = 'div';
-	    ContainerSurface.prototype.elementClass = ['samsara-container', 'samsara-surface'];
+	    ContainerSurface.prototype.elementClass = ['samsara-surface', 'samsara-container'];
 
 	    /**
 	     * Get current perspective in pixels.
@@ -5429,6 +5468,10 @@ return /******/ (function(modules) { // webpackBootstrap
 	        return Context.prototype.add.apply(this.context, arguments);
 	    };
 
+	    ContainerSurface.prototype.remove = function remove() {
+	        Surface.prototype.remove.apply(this, arguments);
+	    };
+
 	    module.exports = ContainerSurface;
 	}.call(exports, __webpack_require__, exports, module), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
 
@@ -5447,16 +5490,9 @@ return /******/ (function(modules) { // webpackBootstrap
 	    var Transitionable = __webpack_require__(22);
 	    var OptionsManager = __webpack_require__(31);
 	    var SimpleStream = __webpack_require__(11);
-	    var EventHandler = __webpack_require__(9);
-	    var preTickQueue = __webpack_require__(5);
-	    var dirtyQueue = __webpack_require__(6);
-
-	    var elementType = 'div';
-	    var rafStarted = false;
-	    var isMobile = /mobi/i.test(navigator.userAgent);
-	    var orientation = Number.NaN;
-	    var windowWidth = Number.NaN;
-	    var windowHeight = Number.NaN;
+	    var EventHandler = __webpack_require__(3);
+	    var preTickQueue = __webpack_require__(7);
+	    var dirtyQueue = __webpack_require__(8);
 
 	    var layoutSpec = {
 	        transform : Transform.identity,
@@ -5507,9 +5543,6 @@ return /******/ (function(modules) { // webpackBootstrap
 	            this.emit('resize', size);
 	            return size;
 	        }.bind(this));
-
-	        this._node._size.subscribe(this.size);
-	        this._node._layout.subscribe(this._layout);
 
 	        this._perspective = new Transitionable();
 	        this._perspectiveOrigin = new Transitionable();
@@ -5568,6 +5601,21 @@ return /******/ (function(modules) { // webpackBootstrap
 	        return RootNode.prototype.add.apply(this._node, arguments);
 	    };
 
+	    Context.prototype.remove = function remove(){
+	        if (this.elementClass instanceof Array){
+	            for (var i = 0; i < this.elementClass.length; i++)
+	                this.container.classList.remove(this.elementClass[i])
+	        }
+	        else this.container.classList.remove(this.elementClass);
+
+	        this._node.remove();
+
+	        while (this.container.hasChildNodes())
+	            this.container.removeChild(this.container.firstChild);
+
+	        Engine.deregisterContext(this);
+	    };
+
 	    /**
 	     * Get current perspective of this Context in pixels.
 	     *
@@ -5608,33 +5656,33 @@ return /******/ (function(modules) { // webpackBootstrap
 	     * @method mount
 	     * @param node {Node}  DOM element
 	     */
-	    Context.prototype.mount = function mount(node, resizeListenFlag){
-	        this.container = node || document.createElement(elementType);
-	        this.container.classList.add(this.elementClass);
+	    Context.prototype.mount = function mount(node){
+	        node = node || window.document.body;
+
+	        this.container = node;
+
+	        if (this.elementClass instanceof Array) {
+	            for (var i = 0; i < this.elementClass.length; i++)
+	                this.container.classList.add(this.elementClass[i])
+	        }
+	        else this.container.classList.add(this.elementClass);
 
 	        var allocator = new ElementAllocator(this.container);
 	        this._node.setAllocator(allocator);
 
+	        this._node._size.subscribe(this.size);
+	        this._node._layout.subscribe(this._layout);
+
 	        this.emit('deploy', this.container);
 
-	        if (!node)
-	            document.body.appendChild(this.container);
-
-	        if (!resizeListenFlag)
-	            window.addEventListener('resize', handleResize.bind(this), false);
-
 	        preTickQueue.push(function (){
-	            if (!resizeListenFlag) handleResize.call(this);
 	            this._layout.trigger('start', layoutSpec);
 	            dirtyQueue.push(function(){
 	                this._layout.trigger('end', layoutSpec);
 	            }.bind(this));
 	        }.bind(this));
 
-	        if (!rafStarted) {
-	            rafStarted = true;
-	            Engine.start();
-	        }
+	        Engine.registerContext(this);
 	    };
 
 	    /**
@@ -5681,7 +5729,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	        EventHandler.prototype.emit.apply(this._eventOutput, arguments);
 	    };
 
-	    var usePrefix = !('perspective' in document.documentElement.style);
+	    var usePrefix = !('perspective' in window.document.documentElement.style);
 
 	    var setPerspective = usePrefix
 	        ? function setPerspective(element, perspective) {
@@ -5702,27 +5750,6 @@ return /******/ (function(modules) { // webpackBootstrap
 	        : function setPerspectiveOrigin(element, origin) {
 	            element.style.perspectiveOrigin = origin ? _formatCSSOrigin(origin) : '50% 50%';
 	        };
-
-	    function handleResize() {
-	        var newHeight = window.innerHeight;
-	        var newWidth = window.innerWidth;
-
-	        if (isMobile){
-	            var newOrientation = newHeight > newWidth;
-	            if (orientation === newOrientation) return false;
-	            orientation = newOrientation;
-	        }
-	        else {
-	            if (newWidth === windowWidth && newHeight === windowHeight) return false;
-	            windowWidth = newWidth;
-	            windowHeight = newHeight;
-	        }
-
-	        this._size.emit('resize');
-	        dirtyQueue.push(function(){
-	            this._size.emit('resize');
-	        }.bind(this));
-	    }
 
 	    module.exports = Context;
 	}.call(exports, __webpack_require__, exports, module), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
@@ -5749,8 +5776,8 @@ return /******/ (function(modules) { // webpackBootstrap
 	     * @param [allocator] {ElementAllocator} ElementAllocator
 	     */
 	    function RootNode(allocator) {
+	        this.allocator = null;
 	        RenderTreeNode.call(this);
-	        this.root = this;
 	        if (allocator) this.setAllocator(allocator);
 	    }
 
@@ -5765,6 +5792,13 @@ return /******/ (function(modules) { // webpackBootstrap
 	     */
 	    RootNode.prototype.setAllocator = function setAllocator(allocator){
 	        this.allocator = allocator;
+	        this._logic.trigger('mount', this);
+	        this._logic.trigger('attach');
+	    };
+
+	    RootNode.prototype.remove = function remove() {
+	        this.allocator = null;
+	        RenderTreeNode.prototype.remove.apply(this, arguments);
 	    };
 
 	    module.exports = RootNode;
@@ -5801,10 +5835,20 @@ return /******/ (function(modules) { // webpackBootstrap
 	     * @param container {Node} DOM element
 	     */
 	    function ElementAllocator(container) {
-	        if (!container) container = document.createDocumentFragment();
-	        this.container = container;
+	        this.set(container);
 	        this.detachedNodes = {};
 	    }
+
+	    /**
+	     * Set containing element to insert allocated content into
+	     *
+	     * @method set
+	     * @param container {Node} DOM element
+	     */
+	    ElementAllocator.prototype.set = function(container){
+	        if (!container) container = document.createDocumentFragment();
+	        this.container = container;
+	    };
 
 	    /**
 	     * Move the DOM elements from their original container to a new one.
@@ -5841,7 +5885,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	            result = document.createElement(type);
 	            this.container.appendChild(result);
 	        }
-	        else result = nodeStore.pop();
+	        else result = nodeStore.shift();
 	        return result;
 	    };
 
@@ -5867,8 +5911,8 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	var __WEBPACK_AMD_DEFINE_RESULT__;!(__WEBPACK_AMD_DEFINE_RESULT__ = function(require, exports, module) {
 	    module.exports = {
-	        EventEmitter: __webpack_require__(10),
-	        EventHandler: __webpack_require__(9),
+	        EventEmitter: __webpack_require__(4),
+	        EventHandler: __webpack_require__(3),
 	        EventMapper: __webpack_require__(12),
 	        EventFilter: __webpack_require__(13),
 	        EventSplitter: __webpack_require__(14)
@@ -5908,7 +5952,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	/* Modified work copyright © 2015-2016 David Valdman */
 
 	!(__WEBPACK_AMD_DEFINE_RESULT__ = function(require, exports, module) {
-	    var EventHandler = __webpack_require__(9);
+	    var EventHandler = __webpack_require__(3);
 	    var SimpleStream = __webpack_require__(11);
 
 	    // Global registry of input constructors. Append only.
@@ -5976,7 +6020,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	    GenericInput.register = function register(inputObject) {
 	        for (var key in inputObject){
 	            if (registry[key]){
-	                if (registry[key] === inputObject[key]) return; // redundant registration
+	                if (registry[key] === inputObject[key]) continue; // redundant registration
 	                else throw new Error('this key is registered to a different input class');
 	            }
 	            else registry[key] = inputObject[key];
@@ -6070,7 +6114,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	/* Modified work copyright © 2015-2016 David Valdman */
 
 	!(__WEBPACK_AMD_DEFINE_RESULT__ = function(require, exports, module) {
-	    var EventHandler = __webpack_require__(9);
+	    var EventHandler = __webpack_require__(3);
 	    var OptionsManager = __webpack_require__(31);
 	    var SimpleStream = __webpack_require__(11);
 
@@ -6331,7 +6375,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	!(__WEBPACK_AMD_DEFINE_RESULT__ = function(require, exports, module) {
 	    var TouchTracker = __webpack_require__(44);
-	    var EventHandler = __webpack_require__(9);
+	    var EventHandler = __webpack_require__(3);
 	    var SimpleStream = __webpack_require__(11);
 	    var OptionsManager = __webpack_require__(31);
 
@@ -6548,7 +6592,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	!(__WEBPACK_AMD_DEFINE_RESULT__ = function(require, exports, module) {
 	    var OptionsManager = __webpack_require__(31);
-	    var EventHandler = __webpack_require__(9);
+	    var EventHandler = __webpack_require__(3);
 
 	    var _now = Date.now;
 
@@ -6677,7 +6721,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	/* Modified work copyright © 2015-2016 David Valdman */
 
 	!(__WEBPACK_AMD_DEFINE_RESULT__ = function(require, exports, module) {
-	    var EventHandler = __webpack_require__(9);
+	    var EventHandler = __webpack_require__(3);
 	    var OptionsManager = __webpack_require__(31);
 	    var SimpleStream = __webpack_require__(11);
 	    var Timer = __webpack_require__(20);
@@ -6997,7 +7041,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	// of calling protected _startUpdate etc methods
 
 	!(__WEBPACK_AMD_DEFINE_RESULT__ = function(require, exports, module) {
-	    var EventHandler = __webpack_require__(9);
+	    var EventHandler = __webpack_require__(3);
 	    var SimpleStream = __webpack_require__(11);
 
 	    var _now = Date.now;
@@ -7389,7 +7433,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	    var Transform = __webpack_require__(21);
 	    var Transitionable = __webpack_require__(22);
 	    var View = __webpack_require__(26);
-	    var LayoutNode = __webpack_require__(8);
+	    var LayoutNode = __webpack_require__(10);
 	    var Stream = __webpack_require__(15);
 	    var Differential = __webpack_require__(52);
 	    var Accumulator = __webpack_require__(53);
@@ -7776,8 +7820,8 @@ return /******/ (function(modules) { // webpackBootstrap
 	!(__WEBPACK_AMD_DEFINE_RESULT__ = function(require, exports, module){
 	    var OptionsManager = __webpack_require__(31);
 	    var Stream = __webpack_require__(15);
-	    var preTickQueue = __webpack_require__(5);
-	    var dirtyQueue = __webpack_require__(6);
+	    var preTickQueue = __webpack_require__(7);
+	    var dirtyQueue = __webpack_require__(8);
 
 	    /**
 	     * Accumulator is a Stream that accumulates a value given by a
@@ -7897,7 +7941,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	    var Transitionable = __webpack_require__(22);
 	    var View = __webpack_require__(26);
 	    var Stream = __webpack_require__(15);
-	    var LayoutNode = __webpack_require__(8);
+	    var LayoutNode = __webpack_require__(10);
 	    var SizeNode = __webpack_require__(17);
 
 	    var CONSTANTS = {
@@ -8022,7 +8066,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	    var Transform = __webpack_require__(21);
 	    var View = __webpack_require__(26);
 	    var Stream = __webpack_require__(15);
-	    var LayoutNode = __webpack_require__(8);
+	    var LayoutNode = __webpack_require__(10);
 	    var SizeNode = __webpack_require__(17);
 	    var Transitionable = __webpack_require__(22);
 
@@ -8040,7 +8084,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	     *  @constructor
 	     *  @extends Core.View
 	     *  @param [options] {Object}                           Options
-	     *  @param options.itemsByRow {Array|Object}            Number of items per row, or an object of {width : itemsByRow} pairs
+	     *  @param options.itemsPerRow {Array|Object}            Number of items per row, or an object of {width : itemsPerRow} pairs
 	     *  @param [options.gutter=0] {Transitionable|Number}   Gap space between successive items
 	     */
 	    var GridLayout = View.extend({
@@ -8142,7 +8186,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	    var Transform = __webpack_require__(21);
 	    var View = __webpack_require__(26);
 	    var ResizeStream = __webpack_require__(18);
-	    var LayoutNode = __webpack_require__(8);
+	    var LayoutNode = __webpack_require__(10);
 
 	    var CONSTANTS = {
 	        DIRECTION : {
@@ -8234,7 +8278,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	    var Transform = __webpack_require__(21);
 	    var Transitionable = __webpack_require__(22);
 	    var View = __webpack_require__(26);
-	    var LayoutNode = __webpack_require__(8);
+	    var LayoutNode = __webpack_require__(10);
 	    var Stream = __webpack_require__(15);
 	    var ResizeStream = __webpack_require__(18);
 	    var Accumulator = __webpack_require__(53);

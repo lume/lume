@@ -3,7 +3,7 @@
   "description": "Streaming layout for the web",
   "url": "http://samsaraJS.org",
   "author": "David Valdman <dmvaldman@gmail.com>",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "main": "dist/samsara.js",
   "scripts": {
     "test": "phantomjs test/vendor/runner.js test/index.html",
