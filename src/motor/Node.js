@@ -1,11 +1,12 @@
 import 'geometry-interfaces'
 
+import Motor from './Motor'
+import '../motor-html/node'
+
 import {
     epsilon,
     makeLowercaseSetterAliases,
 } from './Utility'
-
-import '../motor-html/node'
 
 /**
  * Manages a DOM element. Exposes a set of recommended APIs for working with
@@ -139,10 +140,9 @@ class Node {
         this._renderTasks = new Map
         this._needsRender = false
 
-        await this._scenePromise
-        await this._scene.mountPromise
+        await this.mountPromise
 
-        // render a node one time initially, once it's mounted.
+        // render this Node one time initially, once it's mounted.
         let initialRender = timestamp => this.removeRenderTask(initialRender)
         this.addRenderTask(initialRender)
     }
@@ -654,24 +654,28 @@ class Node {
         return this._children.length
     }
 
-    addRenderTask(fn) {
-        if (typeof fn != 'function') return
+    async addRenderTask(fn) {
+        if (typeof fn != 'function')
+            throw new Error('Render task must be a function.')
+
+        // We don't need to render this Node's tasks until it is mounted in the DOM.
+        // TODO #10, we'll need new mount promises each time Scene is unmounted.
+        if (!this._mounted) await this.mountPromise
 
         if (this._renderTasks.size == 0)
-            this._scene._setNodeToBeRendered(this)
+            Motor._setNodeToBeRendered(this)
 
-        this._renderTasks.set(fn, timestamp => {
-            if (fn && typeof fn == 'function') fn.call(this, timestamp)
-        })
-
-        this._scene._addRenderTask(this._renderTasks.get(fn))
+        let boundTask = fn.bind(this)
+        this._renderTasks.set(fn, boundTask)
+        Motor._addRenderTask(boundTask)
     }
 
     removeRenderTask(fn) {
-        this._scene._removeRenderTask(this._renderTasks.get(fn))
+        Motor._removeRenderTask(this._renderTasks.get(fn))
         this._renderTasks.delete(fn)
+
         if (this._renderTasks.size == 0)
-            this._scene._unsetNodeToBeRendered(this)
+            Motor._unsetNodeToBeRendered(this)
     }
 
     _render(timestamp) {
