@@ -228,5 +228,13 @@ define(function(require, exports, module) {
         else return false;
     };
 
+    ElementOutput.prototype.promoteLayer = function (target){
+        target.style.willChange = 'transform, opacity';
+    };
+
+    ElementOutput.prototype.demoteLayer = function(target) {
+        target.style.willChange = 'auto';
+    };
+
     module.exports = ElementOutput;
 });

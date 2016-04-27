@@ -101,9 +101,28 @@ define(function(require, exports, module) {
                 : parentSpec;
         }, [this._layout, this._layoutNode, this.size]);
 
-        this.layout.on('update', commitLayout.bind(this));
-        this.layout.on('end', commitLayout.bind(this));
-        this.size.on('resize', commitSize.bind(this));
+        this.layout.on('start', function(){
+            if (!this._currentTarget) return;
+            this._elementOutput.promoteLayer(this._currentTarget);
+        }.bind(this));
+
+        this.layout.on('update', function(layout){
+            if (!this._currentTarget) return;
+            this._elementOutput.commitLayout(this._currentTarget, layout);
+        }.bind(this));
+
+        this.layout.on('end', function(layout){
+            if (!this._currentTarget) return;
+            this._elementOutput.commitLayout(this._currentTarget, layout);
+            this._elementOutput.demoteLayer(this._currentTarget);
+        }.bind(this));
+
+        this.size.on('resize', function(size){
+            if (!this._currentTarget) return;
+            var shouldResize = this._elementOutput.commitSize(this._currentTarget, size);
+            this._cachedSize = size;
+            if (shouldResize) this.emit('resize', size);
+        }.bind(this));
 
         if (options) this.setOptions(options);
     }
@@ -112,19 +131,6 @@ define(function(require, exports, module) {
     Surface.prototype.constructor = Surface;
     Surface.prototype.elementType = 'div'; // Default tagName. Can be overridden in options.
     Surface.prototype.elementClass = 'samsara-surface';
-
-    function commitLayout(layout) {
-        if (this._currentTarget)
-            this._elementOutput.commitLayout(this._currentTarget, layout);
-    }
-
-    function commitSize(size) {
-        if (this._currentTarget){
-            var shouldResize = this._elementOutput.commitSize(this._currentTarget, size);
-            this._cachedSize = size;
-            if (shouldResize) this.emit('resize', size);
-        }
-    }
 
     function enableScroll(){
         this.addClass('samsara-scrollable');
