@@ -1,13 +1,13 @@
 /* Copyright © 2015-2016 David Valdman */
 
 define(function(require, exports, module) {
+    var DOMOutput = require('./_DOMOutput');
     var EventHandler = require('../events/EventHandler');
     var Stream = require('../streams/Stream');
     var SizeNode = require('../core/nodes/SizeNode');
     var LayoutNode = require('../core/nodes/LayoutNode');
     var sizeAlgebra = require('../core/algebras/size');
     var layoutAlgebra = require('../core/algebras/layout');
-    var ElementOutput = require('../core/ElementOutput');
     var dirtyQueue = require('../core/queues/dirtyQueue');
 
     var isTouchEnabled = "ontouchstart" in window;
@@ -73,7 +73,7 @@ define(function(require, exports, module) {
         this._cachedSize = null;
         this._allocator = null;
 
-        this._elementOutput = new ElementOutput();
+        this._elementOutput = new DOMOutput();
 
         this._eventOutput = new EventHandler();
         EventHandler.setOutputHandler(this, this._eventOutput);
@@ -123,7 +123,7 @@ define(function(require, exports, module) {
         if (options) this.setOptions(options);
     }
 
-    Surface.prototype = Object.create(ElementOutput.prototype);
+    Surface.prototype = Object.create(DOMOutput.prototype);
     Surface.prototype.constructor = Surface;
     Surface.prototype.elementType = 'div'; // Default tagName. Can be overridden in options.
     Surface.prototype.elementClass = 'samsara-surface';

@@ -1,10 +1,10 @@
 /* Copyright © 2015-2016 David Valdman */
 // TODO: Enable CSS properties on Context
 define(function(require, exports, module) {
+    var DOMAllocator = require('./_DOMAllocator');
     var Engine = require('../core/Engine');
     var RootNode = require('../core/nodes/RootNode');
     var Transform = require('../core/Transform');
-    var ElementAllocator = require('../core/ElementAllocator');
     var Transitionable = require('../core/Transitionable');
     var OptionsManager = require('../core/OptionsManager');
     var SimpleStream = require('../streams/SimpleStream');
@@ -193,7 +193,7 @@ define(function(require, exports, module) {
         }
         else this.container.classList.add(this.elementClass);
 
-        var allocator = new ElementAllocator(this.container);
+        var allocator = new DOMAllocator(this.container);
         this._node.setAllocator(allocator);
 
         this._node._size.subscribe(this.size);

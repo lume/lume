@@ -1,7 +1,7 @@
 /* Copyright © 2015-2016 David Valdman */
 
 define(function(require, exports, module) {
-    var Transform = require('./Transform');
+    var Transform = require('../core/Transform');
 
     var usePrefix = !('transform' in window.document.documentElement.style);
     var devicePixelRatio = 2 * (window.devicePixelRatio || 1);
@@ -16,7 +16,7 @@ define(function(require, exports, module) {
      *  from within Samsara, ElementOutput handles the DOM interaction layer.
      *
      *
-     * @class ElementOutput
+     * @class DOMOutput
      * @constructor
      * @namespace Core
      * @uses Core.LayoutNode
@@ -24,7 +24,7 @@ define(function(require, exports, module) {
      * @private
      * @param {Node} element document parent of this container
      */
-    function ElementOutput() {
+    function DOMOutput() {
         this._cachedSpec = {};
         this._opacityDirty = true;
         this._originDirty = true;
@@ -104,45 +104,45 @@ define(function(require, exports, module) {
         if (this._isVisible) element.style.opacity = opacity;
     };
 
-    ElementOutput.prototype.applyClasses = function applyClasses(target, classList) {
+    DOMOutput.prototype.applyClasses = function applyClasses(target, classList) {
         for (var i = 0; i < classList.length; i++)
             target.classList.add(classList[i]);
     };
 
-    ElementOutput.prototype.applyProperties = function applyProperties(target, properties) {
+    DOMOutput.prototype.applyProperties = function applyProperties(target, properties) {
         for (var key in properties)
             target.style[key] = properties[key];
     };
 
-    ElementOutput.prototype.applyAttributes = function applyAttributes(target, attributes) {
+    DOMOutput.prototype.applyAttributes = function applyAttributes(target, attributes) {
         for (var key in attributes)
             target.setAttribute(key, attributes[key]);
     };
 
-    ElementOutput.prototype.removeClasses = function removeClasses(target, classList) {
+    DOMOutput.prototype.removeClasses = function removeClasses(target, classList) {
         for (var i = 0; i < classList.length; i++)
             target.classList.remove(classList[i]);
     };
 
-    ElementOutput.prototype.removeProperties = function removeProperties(target, properties) {
+    DOMOutput.prototype.removeProperties = function removeProperties(target, properties) {
         for (var key in properties)
             target.style[key] = '';
     };
 
-    ElementOutput.prototype.removeAttributes = function removeAttributes(target, attributes) {
+    DOMOutput.prototype.removeAttributes = function removeAttributes(target, attributes) {
         for (var key in attributes)
             target.removeAttribute(key);
     };
 
-    ElementOutput.prototype.on = function on(target, type, handler) {
+    DOMOutput.prototype.on = function on(target, type, handler) {
         target.addEventListener(type, handler);
     };
 
-    ElementOutput.prototype.off = function off(target, type, handler) {
+    DOMOutput.prototype.off = function off(target, type, handler) {
         target.removeEventListener(type, handler);
     };
 
-    ElementOutput.prototype.deploy = function deploy(target, content) {
+    DOMOutput.prototype.deploy = function deploy(target, content) {
         if (content instanceof Node) {
             while (target.hasChildNodes()) target.removeChild(target.firstChild);
             target.appendChild(content);
@@ -150,13 +150,13 @@ define(function(require, exports, module) {
         else target.innerHTML = content;
     };
 
-    ElementOutput.prototype.recall = function deploy(target) {
+    DOMOutput.prototype.recall = function deploy(target) {
         var df = document.createDocumentFragment();
         while (target.hasChildNodes()) df.appendChild(target.firstChild);
         return df;
     };
 
-    ElementOutput.prototype.set = function set(target){
+    DOMOutput.prototype.set = function set(target){
         target.style.display = '';
         target.style.visibility = '';
 
@@ -167,7 +167,7 @@ define(function(require, exports, module) {
         }
     };
 
-    ElementOutput.prototype.reset = function reset(target){
+    DOMOutput.prototype.reset = function reset(target){
         target.style.display = 'none';
         target.style.opacity = '';
         target.style.width = '';
@@ -185,7 +185,7 @@ define(function(require, exports, module) {
         this._cachedSpec = {};
     };
 
-    ElementOutput.prototype.commitLayout = function commitLayout(target, layout) {
+    DOMOutput.prototype.commitLayout = function commitLayout(target, layout) {
         var cache = this._cachedSpec;
 
         var transform = layout.transform || Transform.identity;
@@ -216,7 +216,7 @@ define(function(require, exports, module) {
         this._opacityDirty = false;
     };
 
-    ElementOutput.prototype.commitSize = function commitSize(target, size){
+    DOMOutput.prototype.commitSize = function commitSize(target, size){
         if (size[0] !== true) size[0] = _round(size[0], devicePixelRatio);
         if (size[1] !== true) size[1] = _round(size[1], devicePixelRatio);
 
@@ -228,13 +228,13 @@ define(function(require, exports, module) {
         else return false;
     };
 
-    ElementOutput.prototype.promoteLayer = function (target){
+    DOMOutput.prototype.promoteLayer = function (target){
         target.style.willChange = 'transform, opacity';
     };
 
-    ElementOutput.prototype.demoteLayer = function(target) {
+    DOMOutput.prototype.demoteLayer = function(target) {
         target.style.willChange = 'auto';
     };
 
-    module.exports = ElementOutput;
+    module.exports = DOMOutput;
 });
