@@ -3,7 +3,6 @@
 define(function(require, exports, module) {
     var EventHandler = require('../events/EventHandler');
     var Stream = require('../streams/Stream');
-    var ResizeStream = require('../streams/ResizeStream');
     var SizeNode = require('../core/SizeNode');
     var LayoutNode = require('../core/LayoutNode');
     var sizeAlgebra = require('../core/algebras/size');
@@ -89,7 +88,7 @@ define(function(require, exports, module) {
         this._size = new EventHandler();
         this._layout = new EventHandler();
 
-        this.size = ResizeStream.lift(function elementSizeLift(sizeSpec, parentSize) {
+        this.size = Stream.lift(function elementSizeLift(sizeSpec, parentSize) {
             if (!parentSize) return false; // occurs when surface is never added
             return sizeAlgebra(sizeSpec, parentSize);
         }, [this._sizeNode, this._size]);
@@ -117,12 +116,9 @@ define(function(require, exports, module) {
             this._elementOutput.demoteLayer(this._currentTarget);
         }.bind(this));
 
-        this.size.on('resize', function(size){
-            if (!this._currentTarget) return;
-            var shouldResize = this._elementOutput.commitSize(this._currentTarget, size);
-            this._cachedSize = size;
-            if (shouldResize) this.emit('resize', size);
-        }.bind(this));
+        this.size.on('start', commitSize.bind(this));
+        this.size.on('update', commitSize.bind(this));
+        this.size.on('end', commitSize.bind(this));
 
         if (options) this.setOptions(options);
     }
@@ -131,6 +127,13 @@ define(function(require, exports, module) {
     Surface.prototype.constructor = Surface;
     Surface.prototype.elementType = 'div'; // Default tagName. Can be overridden in options.
     Surface.prototype.elementClass = 'samsara-surface';
+
+    function commitSize(size){
+        if (!this._currentTarget) return;
+        var shouldResize = this._elementOutput.commitSize(this._currentTarget, size);
+        this._cachedSize = size;
+        if (shouldResize) this.emit('resize', size);
+    }
 
     function enableScroll(){
         this.addClass('samsara-scrollable');

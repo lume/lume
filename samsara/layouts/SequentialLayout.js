@@ -3,7 +3,7 @@
 define(function(require, exports, module) {
     var Transform = require('../core/Transform');
     var View = require('../core/View');
-    var ResizeStream = require('../streams/ResizeStream');
+    var Stream = require('../streams/Stream');
     var LayoutNode = require('../core/LayoutNode');
 
     var CONSTANTS = {
@@ -42,7 +42,7 @@ define(function(require, exports, module) {
             for (var i = 0; i < items.length; i++)
                 sizes.push(items[i].size);
 
-            var stream = ResizeStream.lift(function(){
+            var stream = Stream.lift(function(){
                 var sizes = arguments;
                 var direction = this.options.direction;
                 var transforms = [];

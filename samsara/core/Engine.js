@@ -2,11 +2,11 @@
 // TODO: cancel RAF when asleep
 define(function(require, exports, module) {
     var EventHandler = require('../events/EventHandler');
-    var State = require('./SUE');
     var postTickQueue = require('./queues/postTickQueue');
     var preTickQueue = require('./queues/preTickQueue');
     var dirtyQueue = require('./queues/dirtyQueue');
     var tickQueue = require('./queues/tickQueue');
+    var Timer = require('./Timer');
 
     var rafId = Number.NaN;
     var isMobile = /mobi/i.test(window.navigator.userAgent);
@@ -51,19 +51,12 @@ define(function(require, exports, module) {
         // browser events and their handlers happen before rendering begins
         while (preTickQueue.length) (preTickQueue.shift())();
 
-        // tick signals base event flow coming in
-        State.set(State.STATES.UPDATE);
-
         for (var i = 0; i < tickQueue.length; i++) tickQueue[i]();
 
         // post tick is for resolving larger components from their incoming signals
         while (postTickQueue.length) (postTickQueue.shift())();
 
-        State.set(State.STATES.END);
-
         while (dirtyQueue.length) (dirtyQueue.shift())();
-
-        State.set(State.STATES.START);
     };
 
     /**
@@ -110,6 +103,16 @@ define(function(require, exports, module) {
     };
 
     // Emit a resize event if the window's height or width has changed
+    var isResizing = false;
+    var resizeDebounceTime = 200;
+
+    var resizeEnd = Timer.debounce(function() {
+        dirtyQueue.push(function(){
+            Engine.size.emit('end');
+            isResizing = false;
+        });
+    }, resizeDebounceTime);
+
     function handleResize() {
         var newHeight = window.innerHeight;
         var newWidth = window.innerWidth;
@@ -125,12 +128,19 @@ define(function(require, exports, module) {
             windowHeight = newHeight;
         }
 
-        preTickQueue.push(function() {
-            Engine.size.emit('resize');
-            dirtyQueue.push(function() {
-                Engine.size.emit('resize');
+        if (!isResizing) {
+            preTickQueue.push(function(){
+                Engine.size.emit('start');
             });
-        });
+            isResizing = true;
+            resizeEnd();
+        }
+        else {
+            postTickQueue.push(function(){
+                Engine.size.emit('update');
+            });
+            resizeEnd();
+        }
     }
 
     module.exports = Engine;

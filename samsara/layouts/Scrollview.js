@@ -8,7 +8,6 @@ define(function (require, exports, module) {
     var View = require('../core/View');
     var LayoutNode = require('../core/LayoutNode');
     var Stream = require('../streams/Stream');
-    var ResizeStream = require('../streams/ResizeStream');
     var Accumulator = require('../streams/Accumulator');
     var Differential = require('../streams/Differential');
 
@@ -138,7 +137,7 @@ define(function (require, exports, module) {
 
             // overflow is a measure of how much of the content
             // extends past the viewport
-            var overflowStream = ResizeStream.lift(function (contentLength, viewportSize) {
+            var overflowStream = Stream.lift(function (contentLength, viewportSize) {
                 if (!contentLength) return false;
                 var overflow = viewportSize[options.direction] - options.marginBottom - contentLength;
                 return (overflow >= 0) ? false : overflow;

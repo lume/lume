@@ -3,16 +3,12 @@
 define(function(require, exports, module) {
     var EventHandler = require('../../events/EventHandler');
     var Stream = require('../../streams/Stream');
-    var ResizeStream = require('../../streams/ResizeStream');
-    var SizeNode = require('../SizeNode');
     var LayoutNode = require('../LayoutNode');
+    var SizeNode = require('../SizeNode');
     var layoutAlgebra = require('../algebras/layout');
     var sizeAlgebra = require('../algebras/size');
     var preTickQueue = require('../../core/queues/preTickQueue');
     var dirtyQueue = require('../../core/queues/dirtyQueue');
-
-    var SIZE_KEYS = SizeNode.KEYS;
-    var LAYOUT_KEYS = LayoutNode.KEYS;
 
     /**
      * A node in the render tree. As such, it wraps a layout or size node,
@@ -60,7 +56,15 @@ define(function(require, exports, module) {
             this._cachedSpec.layout = data;
         }.bind(this));
 
-        this.size.on('resize', function(size) {
+        this.size.on('start', function(size) {
+            this._cachedSpec.size = size;
+        }.bind(this));
+
+        this.size.on('update', function(size) {
+            this._cachedSpec.size = size;
+        }.bind(this));
+
+        this.size.on('end', function(size) {
             this._cachedSpec.size = size;
         }.bind(this));
 
@@ -94,9 +98,10 @@ define(function(require, exports, module) {
         var self = this;
         preTickQueue.push(function() {
             if (!self._cachedSpec.size) return;
-            self.size.trigger('resize', self._cachedSpec.size);
+            self.size.trigger('start', self._cachedSpec.size);
             self.layout.trigger('start', self._cachedSpec.layout);
             dirtyQueue.push(function() {
+                self.size.trigger('end', self._cachedSpec.size);
                 self.layout.trigger('end', self._cachedSpec.layout);
             });
         });
@@ -143,14 +148,21 @@ define(function(require, exports, module) {
         var sizeKeys = {};
         var layoutKeys = {};
 
-        for (var key in object){
-            if (SIZE_KEYS[key]) sizeKeys[key] = object[key];
-            else if (LAYOUT_KEYS[key]) layoutKeys[key] = object[key];
-        }
+        var needsSize = false;
+        var needsLayout = false;
 
         var node = this;
-        var needsSize = Object.keys(sizeKeys).length > 0;
-        var needsLayout = Object.keys(layoutKeys).length > 0;
+
+        for (var key in object){
+            if (SizeNode.KEYS[key]){
+                sizeKeys[key] = object[key];
+                needsSize = true;
+            }
+            else if (LayoutNode.KEYS[key]){
+                layoutKeys[key] = object[key];
+                needsLayout = true;
+            }
+        }
 
         // create extra align node if needed
         if (needsSize && layoutKeys.align){
@@ -174,7 +186,7 @@ define(function(require, exports, module) {
 
     function _set(object) {
         if (object instanceof SizeNode){
-            var size = ResizeStream.lift(
+            var size = Stream.lift(
                 function SGSizeAlgebra (objectSpec, parentSize){
                     if (!parentSize) return false;
                     return (objectSpec)
@@ -185,7 +197,6 @@ define(function(require, exports, module) {
             );
             this.size.subscribe(size);
             this.layout.subscribe(this._layout);
-            return;
         }
         else if (object instanceof LayoutNode){
             var layout = Stream.lift(
@@ -199,25 +210,25 @@ define(function(require, exports, module) {
             );
             this.layout.subscribe(layout);
             this.size.subscribe(this._size);
-            return;
         }
-
-        // object is a leaf node
-        object._size.subscribe(this._size);
-        object._layout.subscribe(this._layout);
-
-        this._logic.on('detach', function(){
-            object.remove();
-            object._size.unsubscribe(this._size);
-            object._layout.unsubscribe(this._layout);
-        }.bind(this));
-
-        this._logic.on('attach', function(){
-            if (this.root && !object._currentTarget)
-                object.setup(this.root.allocator);
+        else {
+            // object is a leaf node
             object._size.subscribe(this._size);
             object._layout.subscribe(this._layout);
-        }.bind(this));
+
+            this._logic.on('detach', function() {
+                object.remove();
+                object._size.unsubscribe(this._size);
+                object._layout.unsubscribe(this._layout);
+            }.bind(this));
+
+            this._logic.on('attach', function() {
+                if (this.root && !object._currentTarget)
+                    object.setup(this.root.allocator);
+                object._size.subscribe(this._size);
+                object._layout.subscribe(this._layout);
+            }.bind(this));
+        }
     }
 
     module.exports = RenderTreeNode;

@@ -201,14 +201,14 @@ define(function(require, exports, module) {
 
         this.emit('deploy', this.container);
 
+        Engine.registerContext(this);
+
         preTickQueue.push(function (){
             this._layout.trigger('start', layoutSpec);
             dirtyQueue.push(function(){
                 this._layout.trigger('end', layoutSpec);
             }.bind(this));
         }.bind(this));
-
-        Engine.registerContext(this);
     };
 
     /**

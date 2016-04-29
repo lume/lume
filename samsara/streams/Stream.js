@@ -8,20 +8,16 @@ define(function(require, exports, module){
     var preTickQueue = require('../core/queues/preTickQueue');
     var postTickQueue = require('../core/queues/postTickQueue');
     var dirtyQueue = require('../core/queues/dirtyQueue');
-    var State = require('../core/SUE');
 
     var EVENTS = {
         START : 'start',
         UPDATE : 'update',
-        END : 'end',
-        RESIZE : 'resize'
+        END : 'end'
     };
 
     /**
-     * Stream listens to `resize`, `start`, `update` and `end` events and
-     *  emits `start`, `update` and `end` events. `Resize` events get
-     *  unified with `start`, `update`, and `end` events depending on
-     *  when they are fired within Samsara's engine cycle.
+     * Stream listens to `start`, `update` and `end` events and
+     *  emits `start`, `update` and `end` events.
      *
      *  If listening to multiple sources, Stream emits a single event per
      *  Engine cycle.
@@ -53,7 +49,6 @@ define(function(require, exports, module){
      *      });
      *
      *      position.set([100, 50], {duration : 500});
-     *      size.emit('resize', [100,100]);
      *
      * @class Stream
      * @extends Streams.SimpleStream
@@ -118,20 +113,6 @@ define(function(require, exports, module){
             if (dirtyEnd) return;
             dirtyEnd = true;
             dirtyQueue.push(end.bind(this, data));
-        }.bind(this));
-
-        this._eventInput.on(EVENTS.RESIZE, function(data){
-            switch (State.get()){
-                case State.STATES.START:
-                    this.trigger(EVENTS.START, data);
-                    break;
-                case State.STATES.UPDATE:
-                    this.trigger(EVENTS.UPDATE, data);
-                    break;
-                case State.STATES.END:
-                    this.trigger(EVENTS.END, data);
-                    break;
-            }
         }.bind(this));
     }
 
