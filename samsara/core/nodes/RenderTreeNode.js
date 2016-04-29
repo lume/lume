@@ -3,8 +3,8 @@
 define(function(require, exports, module) {
     var EventHandler = require('../../events/EventHandler');
     var Stream = require('../../streams/Stream');
-    var LayoutNode = require('../LayoutNode');
-    var SizeNode = require('../SizeNode');
+    var LayoutNode = require('./LayoutNode');
+    var SizeNode = require('./SizeNode');
     var layoutAlgebra = require('../algebras/layout');
     var sizeAlgebra = require('../algebras/size');
     var preTickQueue = require('../../core/queues/preTickQueue');

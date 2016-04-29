@@ -2,9 +2,9 @@
 
 define(function(require, exports, module) {
     var RenderTreeNode = require('./nodes/RenderTreeNode');
+    var SizeNode = require('./nodes/SizeNode');
+    var LayoutNode = require('./nodes/LayoutNode');
     var Controller = require('./Controller');
-    var SizeNode = require('./SizeNode');
-    var LayoutNode = require('./LayoutNode');
     var Transitionable = require('./Transitionable');
     var EventHandler = require('../events/EventHandler');
 

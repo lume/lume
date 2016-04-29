@@ -4,7 +4,6 @@ define(function(require, exports, module) {
     var Transform = require('../core/Transform');
     var Transitionable = require('../core/Transitionable');
     var View = require('../core/View');
-    var LayoutNode = require('../core/LayoutNode');
     var Stream = require('../streams/Stream');
     var Differential = require('../streams/Differential');
     var Accumulator = require('../streams/Accumulator');
@@ -193,8 +192,7 @@ define(function(require, exports, module) {
                 this.options.revealLength = drawer.getSize()[this.direction];
 
             this.drawer = drawer;
-            var layout = new LayoutNode({transform : Transform.behind});
-            this.add(layout).add(this.drawer);
+            this.add({transform : Transform.behind}).add(this.drawer);
         },
         /**
          * Set the content component with a Surface or View.
@@ -209,9 +207,7 @@ define(function(require, exports, module) {
                     : Transform.translateY(position)
             }.bind(this));
 
-            var layout = new LayoutNode({transform : transform});
-
-            this.add(layout).add(content);
+            this.add({transform : transform}).add(content);
         },
         /**
          * Reveals the drawer with a transition.

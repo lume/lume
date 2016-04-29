@@ -4,8 +4,6 @@ define(function(require, exports, module) {
     var Transform = require('../core/Transform');
     var View = require('../core/View');
     var Stream = require('../streams/Stream');
-    var LayoutNode = require('../core/LayoutNode');
-    var SizeNode = require('../core/SizeNode');
     var Transitionable = require('../core/Transitionable');
 
     /**
@@ -97,7 +95,9 @@ define(function(require, exports, module) {
                 var size = new SizeNode({size : size});
                 var layout = new LayoutNode({transform : transform});
 
-                this.add(size).add(layout).add(node);
+                this.add({size : size, transform : transform})
+                    .add(layout)
+                    .add(node);
             }
         }
     });

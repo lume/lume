@@ -5,8 +5,6 @@ define(function(require, exports, module) {
     var Transitionable = require('../core/Transitionable');
     var View = require('../core/View');
     var Stream = require('../streams/Stream');
-    var LayoutNode = require('../core/LayoutNode');
-    var SizeNode = require('../core/SizeNode');
 
     var CONSTANTS = {
         DIRECTION : {
@@ -103,15 +101,10 @@ define(function(require, exports, module) {
             for (var i = 0; i < this.nodes.length; i++){
                 var node = this.nodes[i];
 
-                var layoutNode = new LayoutNode({
+                this.add({
+                    size : this.sizes.pluck(i),
                     transform : this.transforms.pluck(i)
-                });
-
-                var sizeNode = new SizeNode({
-                    size : this.sizes.pluck(i)
-                });
-
-                this.add(layoutNode).add(sizeNode).add(node);
+                }).add(node);
             }
         }
     }, CONSTANTS);

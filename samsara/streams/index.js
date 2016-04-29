@@ -4,7 +4,6 @@ define(function(require, exports, module) {
         Differential: require('./Differential'),
         SimpleStream: require('./SimpleStream'),
         Stream: require('./Stream'),
-        Observable: require('./Observable'),
-        SizeObservable: require('./SizeObservable')
+        Observable: require('./Observable')
     };
 });

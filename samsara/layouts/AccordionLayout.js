@@ -4,7 +4,6 @@ define(function(require, exports, module) {
     var Transform = require('../core/Transform');
     var Transitionable = require('../core/Transitionable');
     var View = require('../core/View');
-    var LayoutNode = require('../core/LayoutNode');
     var Stream = require('../streams/Stream');
 
     var CONSTANTS = {
@@ -137,11 +136,7 @@ define(function(require, exports, module) {
 
                 var transform = transforms.pluck('transforms').pluck(i);
 
-                var layout = new LayoutNode({
-                    transform : transform
-                });
-
-                this.add(layout).add(nodes[i]);
+                this.add({transform : transform}).add(nodes[i]);
 
                 this.maxLength += nodes[i].getSize()[this.options.direction];
             }

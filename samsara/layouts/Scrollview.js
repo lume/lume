@@ -6,7 +6,6 @@ define(function (require, exports, module) {
     var Transform = require('../core/Transform');
     var Transitionable = require('../core/Transitionable');
     var View = require('../core/View');
-    var LayoutNode = require('../core/LayoutNode');
     var Stream = require('../streams/Stream');
     var Accumulator = require('../streams/Accumulator');
     var Differential = require('../streams/Differential');
@@ -194,13 +193,11 @@ define(function (require, exports, module) {
                 return Math.round(top);
             }.bind(this), [position, overflowStream]);
 
-            var displacementNode = new LayoutNode({
-                transform: this.offset.map(function (position) {
-                    position += options.marginTop;
-                    return options.direction == CONSTANTS.DIRECTION.Y
-                        ? Transform.translateY(position)
-                        : Transform.translateX(position);
-                })
+            var transform = this.offset.map(function (position) {
+                position += options.marginTop;
+                return options.direction == CONSTANTS.DIRECTION.Y
+                    ? Transform.translateY(position)
+                    : Transform.translateX(position);
             });
 
             this.container = new ContainerSurface({
@@ -209,7 +206,7 @@ define(function (require, exports, module) {
 
             genericInput.subscribe(this.container);
 
-            this.container.add(displacementNode).add(this.layout);
+            this.container.add({transform : transform}).add(this.layout);
             this.add(this.container);
         },
         setPerspective: function(){

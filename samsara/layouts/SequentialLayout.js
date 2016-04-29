@@ -4,7 +4,6 @@ define(function(require, exports, module) {
     var Transform = require('../core/Transform');
     var View = require('../core/View');
     var Stream = require('../streams/Stream');
-    var LayoutNode = require('../core/LayoutNode');
 
     var CONSTANTS = {
         DIRECTION : {
@@ -74,8 +73,7 @@ define(function(require, exports, module) {
             for (var i = 0; i < items.length; i++){
                 var node = items[i];
                 var transform = transforms.pluck(i);
-                var layout = new LayoutNode({transform : transform});
-                this.add(layout).add(node);
+                this.add({transform : transform}).add(node);
             }
         }
     }, CONSTANTS);
