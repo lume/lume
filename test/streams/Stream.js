@@ -1,29 +1,29 @@
 define(function (require) {
     var loop = require('loop');
-    var ResizeStream = require('samsara/streams/ResizeStream');
+    var Stream = require('samsara/streams/Stream');
     var EventEmitter = require('samsara/events/EventEmitter');
 
     loop.start();
 
-    QUnit.module('Resize Stream');
+    QUnit.module('Stream');
 
-    QUnit.test('resize', function(assert){
+    QUnit.test('start', function(assert){
         expect(1);
         QUnit.async();
 
-        var stream = new ResizeStream();
+        var stream = new Stream();
         var emitter = new EventEmitter();
         var emitSize = [0, 0];
 
         stream.subscribe(emitter);
 
-        stream.on('resize', function(size) {
+        stream.on('start', function(size) {
             assert.ok(size == emitSize);
             loop.stop();
             QUnit.start();
         });
 
-        emitter.emit('resize', emitSize);
+        emitter.emit('start', emitSize);
     });
 
     QUnit.test('merge', function(assert){
@@ -34,13 +34,13 @@ define(function (require) {
         var size2 = new EventEmitter();
         var size3 = new EventEmitter();
 
-        var stream = ResizeStream.merge({
+        var stream = Stream.merge({
             size1 : size1,
             size2 : size2,
             size3 : size3
         });
 
-        stream.on('resize', function(mergedData) {
+        stream.on('start', function(mergedData) {
             assert.ok(mergedData.size1 === true);
             assert.ok(mergedData.size2 === 4);
             assert.ok(mergedData.size3 === undefined);
@@ -48,8 +48,8 @@ define(function (require) {
             QUnit.start();
         });
 
-        size1.emit('resize', true);
-        size2.emit('resize', 4);
+        size1.emit('start', true);
+        size2.emit('start', 4);
     });
 
     QUnit.test('lift', function(assert) {
@@ -64,7 +64,7 @@ define(function (require) {
         }
 
         var timesFired = 0;
-        var stream = ResizeStream.lift(function() {
+        var stream = Stream.lift(function() {
             timesFired++;
             var sum = 0;
             for (var i = 0; i < N; i++) {
@@ -76,14 +76,14 @@ define(function (require) {
             return sum;
         }, emitters);
 
-        stream.on('resize', function(sum) {
+        stream.on('start', function(sum) {
             assert.ok(sum == N * (N - 1) / 2);
             loop.stop();
             QUnit.start();
         });
 
         for (var i = 0; i < N; i++)
-            emitters[i].emit('resize', [i, i]);
+            emitters[i].emit('start', [i, i]);
     });
 
 });
