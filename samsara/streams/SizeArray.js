@@ -1,6 +1,6 @@
 /* Copyright © 2015-2016 David Valdman */
 define(function(require, exports, module) {
-    var ResizeStream = require('./ResizeStream');
+    var Stream = require('./Stream');
     var EventHandler = require('../events/EventHandler');
 
     function SizeArray(reducer, value) {
@@ -13,12 +13,12 @@ define(function(require, exports, module) {
         if (value) {
             this.value = value;
             this.input = new EventHandler();
-            this.output = ResizeStream.lift(this.reducer, [this.input, this.value]);
+            this.output = Stream.lift(this.reducer, [this.input, this.value]);
         }
         else this.value = null;
     }
 
-    SizeArray.prototype = Object.create(ResizeStream.prototype);
+    SizeArray.prototype = Object.create(Stream.prototype);
     SizeArray.prototype.constructor = SizeArray;
 
     SizeArray.prototype.addStream = function(stream) {
