@@ -83,47 +83,6 @@ define(function(require, exports, module) {
             return value[key];
         });
     };
-
-    //TODO: can this be inherited by other streams?
-    SimpleStream.merge = function(){};
-
-    /**
-     * Lift is like map, except it maps several event sources,
-     *  not only one.
-     *
-     *  @example
-     *
-     *      var liftedStream = SimpleStream.lift(function(payload1, payload2){
-     *          return payload1 + payload2;
-     *      }, [stream2, stream2]);
-     *
-     *      liftedStream.on('name'), function(data){
-     *          // data = 3;
-     *      });
-     *
-     *      stream2.emit('name', 1);
-     *      stream2.emit('name', 2);
-     *
-     * @method lift
-     * @static
-     * @param map {Function}            Function to map stream payloads
-     * @param streams {Array|Object}    Stream sources
-     */
-    SimpleStream.lift = function(map, streams){
-        //TODO: fix comma separated arguments
-        var mergedStream = (streams instanceof Array)
-            ? this.merge(streams)
-            : this.merge.apply(null, Array.prototype.splice.call(arguments, 1));
-
-        var mappedStream = new EventMapper(function liftMap(data){
-            return map.apply(null, data);
-        });
-
-        var liftedStream = new SimpleStream();
-        liftedStream.subscribe(mappedStream).subscribe(mergedStream);
-
-        return liftedStream;
-    };
-
+    
     module.exports = SimpleStream;
 });

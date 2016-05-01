@@ -1,6 +1,8 @@
 /* Copyright © 2015-2016 David Valdman */
 
 define(function(require, exports, module){
+    var MergedStream = require('./MergedStream');
+    var LiftedStream = require('./LiftedStream');
     var EventHandler = require('../events/EventHandler');
     var EventMapper = require('../events/EventMapper');
     var SimpleStream = require('../streams/SimpleStream');
@@ -120,6 +122,18 @@ define(function(require, exports, module){
     Stream.prototype.constructor = Stream;
 
     /**
+     * Batches events for provided object of streams in
+     *  {key : stream} pairs. Emits one event per Engine cycle.
+     *
+     * @method merge
+     * @static
+     * @param streams {Object}  Dictionary of `resize` streams
+     */
+    Stream.merge = function(streams) {
+        return new MergedStream(streams);
+    };
+
+    /**
      * Lift is like map, except it maps several event sources,
      *  not only one.
      *
@@ -141,37 +155,8 @@ define(function(require, exports, module){
      * @param map {Function}            Function to map stream payloads
      * @param streams {Array|Object}    Stream sources
      */
-    Stream.lift = SimpleStream.lift;
-
-    /**
-     * Batches events for provided object of streams in
-     *  {key : stream} pairs. Emits one event per Engine cycle.
-     *
-     * @method merge
-     * @static
-     * @param streams {Object}  Dictionary of `resize` streams
-     */
-    Stream.merge = function(streamObj){
-        var mergedStream = new Stream();
-        var mergedData = (streamObj instanceof Array) ? [] : {};
-
-        mergedStream.addStream = function(key, stream){
-            var mapper = (function(key){
-                return new EventMapper(function(data){
-                    mergedData[key] = data;
-                    return mergedData;
-                });
-            })(key);
-
-            mergedStream.subscribe(mapper).subscribe(stream);
-        };
-
-        for (var key in streamObj){
-            var stream = streamObj[key];
-            mergedStream.addStream(key, stream);
-        }
-
-        return mergedStream;
+    Stream.lift = function(maps, streams){
+        return new LiftedStream(maps, new MergedStream(streams));
     };
 
     module.exports = Stream;
