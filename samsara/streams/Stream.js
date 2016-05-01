@@ -1,8 +1,8 @@
 /* Copyright © 2015-2016 David Valdman */
 
 define(function(require, exports, module){
-    var MergedStream = require('./MergedStream');
-    var LiftedStream = require('./LiftedStream');
+    var MergedStream = require('./_MergedStream');
+    var LiftedStream = require('./_LiftedStream');
     var EventHandler = require('../events/EventHandler');
     var EventMapper = require('../events/EventMapper');
     var SimpleStream = require('../streams/SimpleStream');
