@@ -137,14 +137,11 @@ class Node {
     }
 
     async _init() {
-        this._renderTasks = new Map
-        this._needsRender = false
-
         await this.mountPromise
 
         // render this Node one time initially, once it's mounted.
-        let initialRender = timestamp => this.removeRenderTask(initialRender)
-        this.addRenderTask(initialRender)
+        let initialRender = timestamp => Motor.removeRenderTask(initialRender)
+        Motor.addRenderTask(initialRender)
     }
 
     makeElement() {
@@ -236,7 +233,7 @@ class Node {
     set position(position) {
         if (!(position instanceof Array)) throw new Error('Expected an array for the Node.position property.')
         this._properties.position = defaultZeros(position)
-        this._renderIfNotInFrame()
+        this._needsToBeRendered()
     }
 
     /**
@@ -262,7 +259,7 @@ class Node {
     }
     set rotation(rotation) {
         this._properties.rotation = rotation
-        this._renderIfNotInFrame()
+        this._needsToBeRendered()
     }
 
     /**
@@ -285,7 +282,7 @@ class Node {
     }
     set scale(scale) {
         this._properties.scale = scale
-        this._renderIfNotInFrame()
+        this._needsToBeRendered()
     }
 
     /**
@@ -309,7 +306,7 @@ class Node {
     set opacity(opacity) {
         if (!isRealNumber(opacity)) throw new Error('Expected a real number.')
         this._style.opacity = opacity;
-        this._renderIfNotInFrame()
+        this._needsToBeRendered()
     }
 
     /**
@@ -333,7 +330,7 @@ class Node {
     }
     set sizeMode(mode) {
         this._properties.size.mode = mode
-        this._renderIfNotInFrame()
+        this._needsToBeRendered()
     }
 
     /**
@@ -353,7 +350,7 @@ class Node {
     }
     set absoluteSize(size) {
         this._properties.size.absolute = size;
-        this._renderIfNotInFrame()
+        this._needsToBeRendered()
     }
 
     /**
@@ -415,7 +412,7 @@ class Node {
     }
     set proportionalSize(size) {
         this._properties.size.proportional = size
-        this._renderIfNotInFrame()
+        this._needsToBeRendered()
     }
 
     get proportionalSize() {
@@ -434,7 +431,7 @@ class Node {
     set align(alignment) {
         if (!(alignment instanceof Array)) throw new Error('Expected an array for the Node.align property.')
         this._properties.align = defaultZeros(alignment)
-        this._renderIfNotInFrame()
+        this._needsToBeRendered()
     }
 
     get align() {
@@ -454,7 +451,7 @@ class Node {
     set mountPoint(mountPoint) {
         if (!(mountPoint instanceof Array)) throw new Error('Expected an array for the Node.mountPoint property.')
         this._properties.mountPoint = defaultZeros(mountPoint)
-        this._renderIfNotInFrame()
+        this._needsToBeRendered()
     }
 
     get mountPoint() {
@@ -522,18 +519,24 @@ class Node {
         if (typeof properties.opacity != 'undefined')
             this.opacity = properties.opacity
 
-        this._renderIfNotInFrame()
+        this._needsToBeRendered()
 
         return this
     }
 
-    async _renderIfNotInFrame() {
+    // XXX If a setter is called over and over in a render task before the node
+    // is mounted, then each tick will cause an await this.mountPromise, and
+    // eventually all the bodies will fire all at once. I don't think we want
+    // this to happen.
+    async _needsToBeRendered() {
         if (!this._mounted) await this.mountPromise
 
-        if (!this._scene._inFrame) {
-            let render = timestamp => this.removeRenderTask(render)
-            this.addRenderTask(render)
+        if (!Motor._inFrame) {
+            let render = timestamp => Motor.removeRenderTask(render)
+            Motor.addRenderTask(render)
         }
+
+        Motor._setNodeToBeRendered(this)
     }
 
     /**
@@ -652,30 +655,6 @@ class Node {
      */
     get childCount() {
         return this._children.length
-    }
-
-    async addRenderTask(fn) {
-        if (typeof fn != 'function')
-            throw new Error('Render task must be a function.')
-
-        // We don't need to render this Node's tasks until it is mounted in the DOM.
-        // TODO #10, we'll need new mount promises each time Scene is unmounted.
-        if (!this._mounted) await this.mountPromise
-
-        if (this._renderTasks.size == 0)
-            Motor._setNodeToBeRendered(this)
-
-        let boundTask = fn.bind(this)
-        this._renderTasks.set(fn, boundTask)
-        Motor._addRenderTask(boundTask)
-    }
-
-    removeRenderTask(fn) {
-        Motor._removeRenderTask(this._renderTasks.get(fn))
-        this._renderTasks.delete(fn)
-
-        if (this._renderTasks.size == 0)
-            Motor._unsetNodeToBeRendered(this)
     }
 
     _render(timestamp) {

@@ -9,7 +9,7 @@ class Motor {
         this._rAF = null // the current animation frame, or null.
         this._animationLoopStarted = false
         this._allRenderTasks = []
-        this._nodesToBeRendered = []
+        this._nodesToBeRendered = new Map
     }
 
     /**
@@ -68,7 +68,10 @@ class Motor {
      * When a render tasks is added (via Node#addRenderTask) a new rAF loop
      * will be started if there isn't one currently.
      */
-    _addRenderTask(fn) {
+    addRenderTask(fn) {
+        if (typeof fn != 'function')
+            throw new Error('Render task must be a function.')
+
         this._allRenderTasks.push(fn)
 
         // If the render loop isn't started, start it.
@@ -76,7 +79,7 @@ class Motor {
             this._startAnimationLoop()
     }
 
-    _removeRenderTask(fn) {
+    removeRenderTask(fn) {
         this._allRenderTasks.splice(this._allRenderTasks.indexOf(fn), 1)
     }
 
@@ -87,17 +90,19 @@ class Motor {
     }
 
     _setNodeToBeRendered(node) {
-        this._nodesToBeRendered.push(node)
+        if (!this._nodesToBeRendered.has(node))
+            this._nodesToBeRendered.set(node)
     }
 
     _unsetNodeToBeRendered(node) {
-        this._nodesToBeRendered.splice(this._nodesToBeRendered.indexOf(node), 1)
+        this._nodesToBeRendered.delete(node)
     }
 
     _renderNodes(timestamp) {
-        for (let node of this._nodesToBeRendered) {
+        for (let [node] of this._nodesToBeRendered) {
             node._render(timestamp)
         }
+        this._nodesToBeRendered.clear()
     }
 }
 
