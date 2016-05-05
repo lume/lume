@@ -44,30 +44,6 @@ define(function(require, exports, module) {
             size : null
         };
 
-        this.layout.on('start', function(data) {
-            this._cachedSpec.layout = data;
-        }.bind(this));
-
-        this.layout.on('update', function(data) {
-            this._cachedSpec.layout = data;
-        }.bind(this));
-
-        this.layout.on('end', function(data) {
-            this._cachedSpec.layout = data;
-        }.bind(this));
-
-        this.size.on('start', function(size) {
-            this._cachedSpec.size = size;
-        }.bind(this));
-
-        this.size.on('update', function(size) {
-            this._cachedSpec.size = size;
-        }.bind(this));
-
-        this.size.on('end', function(size) {
-            this._cachedSpec.size = size;
-        }.bind(this));
-
         this._logic.on('mount', function(node){
             this.root = node;
         }.bind(this));
@@ -189,10 +165,12 @@ define(function(require, exports, module) {
             var size = Stream.lift(
                 function SGSizeAlgebra (objectSpec, parentSize){
                     if (!parentSize) return false;
-                    return (objectSpec)
+                    var size = (objectSpec)
                         ? sizeAlgebra(objectSpec, parentSize)
                         : parentSize;
-                },
+                    this._cachedSpec.size = size;
+                    return size;
+                }.bind(this),
                 [object, this._size]
             );
             this.size.subscribe(size);
@@ -202,10 +180,12 @@ define(function(require, exports, module) {
             var layout = Stream.lift(
                 function SGLayoutAlgebra (objectSpec, parentSpec, size){
                     if (!parentSpec || !size) return false;
-                    return (objectSpec)
+                    var layout = (objectSpec)
                         ? layoutAlgebra(objectSpec, parentSpec, size)
                         : parentSpec;
-                },
+                    this._cachedSpec.layout = layout;
+                    return layout;
+                }.bind(this),
                 [object, this._layout, this._size]
             );
             this.layout.subscribe(layout);
