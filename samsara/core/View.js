@@ -77,7 +77,17 @@ define(function(require, exports, module) {
             this._size = this._node.size; // incoming parent size
 
             this._cachedSize = [0,0];
-            this.size.on('resize', function(size){
+
+            // TODO: clean this up?
+            this.size.on('start', function(size){
+                this._cachedSize = size;
+            }.bind(this));
+
+            this.size.on('update', function(size){
+                this._cachedSize = size;
+            }.bind(this));
+
+            this.size.on('end', function(size){
                 this._cachedSize = size;
             }.bind(this));
 
