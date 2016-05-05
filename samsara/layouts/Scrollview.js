@@ -16,10 +16,12 @@ define(function (require, exports, module) {
     var GenericInput = require('../inputs/GenericInput');
     var ScrollInput = require('../inputs/ScrollInput');
     var TouchInput = require('../inputs/TouchInput');
+    var MouseInput = require('../inputs/MouseInput');
 
     GenericInput.register({
         touch: TouchInput,
-        scroll: ScrollInput
+        scroll: ScrollInput,
+        mouse: MouseInput
     });
 
     var CONSTANTS = {
@@ -68,12 +70,13 @@ define(function (require, exports, module) {
 
             var edge = EDGE.NONE;
             var isMobile = (window.ontouchstart !== undefined);
+            var isMouseWheelActive = false;
 
             this.layout = new SequentialLayout({
                 direction: options.direction
             });
 
-            var genericInput = new GenericInput(['touch', 'scroll'], {
+            var genericInput = new GenericInput(['touch', 'scroll', 'mouse'], {
                 direction: options.direction
             });
 
@@ -92,6 +95,15 @@ define(function (require, exports, module) {
             position.subscribe(gestureDifferential);
             position.subscribe(dragDifferential);
             position.subscribe(springDifferential);
+
+            var scrollInput = genericInput.getInput('scroll');
+            scrollInput.on('start', function(){
+                isMouseWheelActive = true;
+            });
+
+            scrollInput.on('end', function() {
+                isMouseWheelActive = false;
+            });
 
             genericInput.on('start', function () {
                 isTouching = true;
@@ -148,7 +160,7 @@ define(function (require, exports, module) {
                 if (this.spring.isActive()) return Math.round(top);
 
                 if (top > 0) { // reached top of scrollview
-                    if (!isMobile){
+                    if (!isMobile && isMouseWheelActive){
                         edge = EDGE.TOP;
                         position.set(0, true);
                         changePage.call(this, this._currentIndex);
@@ -166,7 +178,7 @@ define(function (require, exports, module) {
                     }
                 }
                 else if(top < overflow) { // reached bottom of scrollview
-                    if (!isMobile) {
+                    if (!isMobile && isMouseWheelActive) {
                         edge = EDGE.BOTTOM;
                         position.set(overflow, true);
                         changePage.call(this, this._currentIndex);
