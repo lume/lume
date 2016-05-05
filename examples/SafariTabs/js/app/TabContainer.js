@@ -34,9 +34,9 @@ define(function(require, exports, module) {
             this.tabSize = new Transitionable([false, options.height]); // Size of the tab
             this.proportions = new Transitionable([.9, false]);
 
-
             this.parentHeight = options.spacing;
-            this._size.on('resize', function(size){
+
+            this._size.on('end', function(size){
                 this.parentHeight = size[1];
             }.bind(this));
 
