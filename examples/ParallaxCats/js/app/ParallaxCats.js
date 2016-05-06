@@ -1,6 +1,5 @@
 define(function (require, exports, module) {
     var View = require('samsara/core/View');
-    var Surface = require('samsara/dom/Surface');
     var Scrollview = require('samsara/layouts/Scrollview');
     var ParallaxCat = require('./ParallaxCat');
 
@@ -14,6 +13,7 @@ define(function (require, exports, module) {
         initialize: function (options) {
             // Create the scrollview
             var scrollview = new Scrollview({
+                enableMouseDrag: true,
                 direction: Scrollview.DIRECTION.Y,
                 drag: 0.3
             });
