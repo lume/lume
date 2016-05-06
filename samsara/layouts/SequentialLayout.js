@@ -29,8 +29,6 @@ define(function(require, exports, module) {
             spacing : 0
         }, 
         initialize : function initialize(options) {
-            this.items = [];
-            
             this.stream = new SizeArray(function(prev, size) {
                 return prev + size[options.direction] + options.spacing;
             });
@@ -47,7 +45,10 @@ define(function(require, exports, module) {
             this.stream.removeStream(item.size);
             item.remove();
         }, 
-        insertItem : function(index) {
+        insertAfter : function(prevItem, item) {
+            var transform = this.stream.insertAfterStream(prevItem.size, item.size)
+                .map(this.transformMap);
+            this.add({transform : transform}).add(item);
         }
     }, CONSTANTS);
     
