@@ -67,7 +67,7 @@ class MotorHTMLNode extends window.HTMLElement {
     /**
      * Either this gets called by the imperative API when the imperative API
      * makes one of these elements, or it gets called when this element gets
-     * appended to another motor-node.
+     * appended to another motor-node in attachedCallback.
      * @private
      */
     _init(imperativeMotorNode) {

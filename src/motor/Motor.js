@@ -25,7 +25,7 @@ class Motor {
 
         // DIRECT ANIMATION LOOP ///////////////////////////////////
         // So now we can render after the scene is mounted.
-        const loop = timestamp => {
+        const motorLoop = timestamp => {
             this._inFrame = true
 
             this._runRenderTasks(timestamp)
@@ -33,7 +33,7 @@ class Motor {
 
             // If any tasks are left to run, continue the animation loop.
             if (this._allRenderTasks.length)
-                this._rAF = requestAnimationFrame(loop)
+                this._rAF = requestAnimationFrame(motorLoop)
             else {
                 this._rAF = null
                 this._animationLoopStarted = false
@@ -42,7 +42,7 @@ class Motor {
             this._inFrame = false
         }
 
-        this._rAF = requestAnimationFrame(loop)
+        this._rAF = requestAnimationFrame(motorLoop)
 
         // ANIMATION LOOP USING WHILE AND AWAIT ///////////////////////////////////
         //this._rAF = true
