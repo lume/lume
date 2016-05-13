@@ -16,7 +16,8 @@
     "build-umd": "./.scripts/build-umd.sh",
     "build-cjs": "./.scripts/build-cjs.sh",
     "build-amd": "./.scripts/build-amd.sh",
-    "build-global": "./.scripts/build-global.sh"
+    "build-global": "./.scripts/build-global.sh",
+    "watch": "./.scripts/build-cjs.sh --watch & ./.scripts/build-global.sh --watch &"
   },
   "dependencies": {
     "geometry-interfaces": "^1.0.0",

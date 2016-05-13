@@ -7,4 +7,4 @@
 # browser).
 package_name='infamous'
 
-webpack --progress --colors --output-library-target umd src/index.js global.js --output-library $package_name
+webpack --progress --colors --output-library-target umd src/index.js global.js --output-library $package_name $1
