@@ -167,7 +167,7 @@ class Node {
         // Scene or child classes of Scene.
         if (this.constructor.name == 'Node') {
             await this._getScenePromise()
-            await this._scene.getMountPromise()
+            await this._scene.mountPromise
 
             // TODO TODO: also wait for this._mounted so this.element is actually
             // mounted in the DOM.
@@ -182,7 +182,7 @@ class Node {
      * TODO: needs to be overriden for Scene, because Scene mounts/unmounts
      * differently.
      */
-    getMountPromise() {
+    get mountPromise() {
         if (!this._mounted && !this._mountPromise) {
             this._mountPromise = new Promise(r => this._resolveMountPromise = r)
 
@@ -580,7 +580,7 @@ class Node {
      */
     async _needsToBeRendered() {
         if (!this._mounted) {
-            await this.getMountPromise()
+            await this.mountPromise
         }
         Motor._setNodeToBeRendered(this)
         if (!Motor._inFrame) Motor._startAnimationLoop()

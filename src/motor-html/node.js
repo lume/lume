@@ -72,7 +72,7 @@ class MotorHTMLNode extends window.HTMLElement {
     }
 
     async signalWhenReady() {
-        await this.node.getMountPromise()
+        await this.node.mountPromise
         this._resolveReadyPromise()
     }
 
