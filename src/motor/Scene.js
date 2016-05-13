@@ -30,6 +30,9 @@ class Scene extends Node {
         return document.createElement('motor-scene')
     }
 
+    // TODO: remove selector from constructor, make this method public
+    // (scene.mount(selector)), and also provide unmount() method. Then we also
+    // need to reset the Scene's mountPromise.
     async _mount(mountPoint) {
         // Wait for the document to be ready before mounting, otherwise the
         // target mount point might not exist yet when this function is called.

@@ -4,7 +4,7 @@ import Node from '../motor/Node'
 
 import jss from '../jss'
 
-const nodeList = []
+let attachedNodeCount = 0
 let stylesheet = null
 
 const style = {
@@ -50,14 +50,6 @@ class MotorHTMLNode extends window.HTMLElement {
         // Or, maybe we can just use ".ready" in both APIs?...
         this._resolveReadyPromise = null
         this.ready = new Promise(r => this._resolveReadyPromise = r)
-
-        nodeList.push(this)
-        if (!stylesheet) {
-            //console.log('Creating Node style.', this.id)
-            // XXX create stylesheet inside animation frame?
-            stylesheet = jss.createStyleSheet(style).attach()
-        }
-        this.classList.add(stylesheet.classes.motorNodeElement)
     }
 
     makeImperativeNode() {
@@ -80,12 +72,19 @@ class MotorHTMLNode extends window.HTMLElement {
     }
 
     async signalWhenReady() {
-        await this.node.mountPromise
+        await this.node.getMountPromise()
         this._resolveReadyPromise()
     }
 
     attachedCallback() {
         //console.log('<motor-node> attachedCallback()', this.id)
+
+        attachedNodeCount += 1
+        if (!stylesheet) {
+            // XXX create stylesheet inside animation frame?
+            stylesheet = jss.createStyleSheet(style).attach()
+        }
+        this.classList.add(stylesheet.classes.motorNodeElement)
 
         // Check that motor-nodes are mounted to motor-scenes or motor-nodes.
         // Scene can be mounted to any element. In the future we could inspect
@@ -143,8 +142,11 @@ class MotorHTMLNode extends window.HTMLElement {
     }
 
     cleanUp() {
-        nodeList.pop(this)
-        if (nodeList.length == 0) {
+
+        // TODO: We can clean up the style after some time, for example like 1
+        // minute, or something, instead of instantly.
+        attachedNodeCount -= 1
+        if (attachedNodeCount == 0) {
             stylesheet.detach()
             stylesheet = null
         }

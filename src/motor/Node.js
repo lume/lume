@@ -8,6 +8,14 @@ import {
     makeLowercaseSetterAliases,
 } from './Utility'
 
+let debug = true
+function log(...args) {
+    if (debug) {
+        if (!Motor._inFrame)
+            console.log(...args)
+    }
+}
+
 /**
  * Manages a DOM element. Exposes a set of recommended APIs for working with
  * DOM efficiently.
@@ -117,44 +125,74 @@ class Node {
         // to a tree and when this Node's eventual root Scene is mounted.
         // Users can await this in order to do something after this Node is
         // mounted in a scene graph that is live in the DOM.
+        // _resolveMountPromise holds the current _mountPromise's resolve
+        // method.
         //
         // TODO: Maybe we should rename this to `.ready`, matching with the
         // HTML API. See motor-html/node createdCallback.
         // TODO: We need to reset this when a Node is removed, as it will be
         // mounted again if it is ever added back into a scene graph. For now,
-        // this only work on this Node's first mount.
+        // this only works on this Node's first mount.
         this._resolveMountPromise = null
-        this.mountPromise = new Promise(r => this._resolveMountPromise = r)
+        this._mountPromise = new Promise(r => this._resolveMountPromise = r)
 
-        // TODO: this conditional check should work with child classes who's
-        // constructor is no longer named "Node". This should not fire for
-        // Scene or child classes of Scene.
-        if (this.constructor.name == 'Node') {
-            this.waitForSceneThenResolveMountPromise()
-        }
+        this.waitForSceneThenResolveMountPromise()
 
         this._init()
     }
 
-    async _init() {
-        await this.mountPromise
-
-        // render this Node one time initially, once it's mounted.
-        let initialRender = timestamp => Motor.removeRenderTask(initialRender)
-        Motor.addRenderTask(initialRender)
+    _init() {
+        this._needsToBeRendered()
     }
 
     makeElement() {
         return document.createElement('motor-node')
     }
 
-    async waitForSceneThenResolveMountPromise() {
-        await this._scenePromise
-        await this._scene.mountPromise
+    /**
+     * @private
+     * Get a promise for the node's eventual scene.
+     */
+    _getScenePromise() {
+        if (!this._scene && !this._scenePromise)
+            this._scenePromise = new Promise(r => this._resolveScenePromise = r)
 
-        // TODO TODO: also wait for this._mounted so this.element is actually
-        // mounted in the DOM.
-        this._resolveMountPromise(true)
+        return this._scenePromise
+    }
+
+    async waitForSceneThenResolveMountPromise() {
+
+        // TODO: this conditional check should work with child classes who's
+        // constructor is no longer named "Node". This should not fire for
+        // Scene or child classes of Scene.
+        if (this.constructor.name == 'Node') {
+            await this._getScenePromise()
+            await this._scene.getMountPromise()
+
+            // TODO TODO: also wait for this._mounted so this.element is actually
+            // mounted in the DOM.
+            this._resolveMountPromise(true)
+        }
+
+    }
+
+    /**
+     * @readonly
+     *
+     * TODO: needs to be overriden for Scene, because Scene mounts/unmounts
+     * differently.
+     */
+    getMountPromise() {
+        if (!this._mounted && !this._mountPromise) {
+            this._mountPromise = new Promise(r => this._resolveMountPromise = r)
+
+            // TODO: this conditional check should work with child classes who's
+            // constructor is no longer named "Node". This should not fire for
+            // Scene or child classes of Scene.
+            this.waitForSceneThenResolveMountPromise()
+        }
+
+        return this._mountPromise
     }
 
     /**
@@ -206,11 +244,16 @@ class Node {
         // if already cached, return it.
         if (this._scene) return this._scene
 
+        // if the parent node already has a ref to the scene, use that.
         if (this._parent && this._parent._scene) {
             this._scene = this._parent._scene
 
             return this._scene
         }
+
+        // otherwise call the scene getter on the parent, which triggers
+        // traversal up the scene graph in order to find the root scene (null
+        // if none).
         else {
             if (this.constructor.name == 'Scene') this._scene = this
             else if (this._parent) this._scene = this._parent.scene
@@ -400,7 +443,6 @@ class Node {
      *
      * ```
      * node.proportionalSize = [100,100,100]
-     * console.log(node.proportionalSize)
      * ```
      *
      * @param {Array.number} size A three-item array of numbers, each item
@@ -524,19 +566,24 @@ class Node {
         return this
     }
 
-    // XXX If a setter is called over and over in a render task before the node
-    // is mounted, then each tick will cause an await this.mountPromise, and
-    // eventually all the bodies will fire all at once. I don't think we want
-    // this to happen.
+    /*
+     * Trigger a re-render for this node (wait until mounted if not nounted
+     * yet).
+     *
+     * TODO: We need to render one time each time mountPromise is resolved, not
+     * just this one time as currently in constructor's call to this._init.
+     *
+     * XXX If a setter is called over and over in a render task before the node
+     * is mounted, then each tick will cause an await this.mountPromise, and
+     * eventually all the bodies will fire all at once. I don't think we want
+     * this to happen.
+     */
     async _needsToBeRendered() {
-        if (!this._mounted) await this.mountPromise
-
-        if (!Motor._inFrame) {
-            let render = timestamp => Motor.removeRenderTask(render)
-            Motor.addRenderTask(render)
+        if (!this._mounted) {
+            await this.getMountPromise()
         }
-
         Motor._setNodeToBeRendered(this)
+        if (!Motor._inFrame) Motor._startAnimationLoop()
     }
 
     /**
@@ -578,11 +625,11 @@ class Node {
         // Add to children array
         this._children.push(childNode);
 
-        // Pass the child node's Scene reference (if any, checking it's cache
-        // first) to the new child and sub children.
+        // Pass this parent node's Scene reference (if any, checking this cache
+        // first) to the new child and the child's children.
         //
-        // Order is important: this needs to happen after previous stuff in
-        // this method, so that the childNode.scene getter works.
+        // NOTE: Order is important: this needs to happen after previous stuff
+        // in this method, so that the childNode.scene getter works.
         if (childNode._scene || childNode.scene) {
             childNode._resolveScenePromise(childNode._scene)
             childNode._giveSceneRefToChildren()
@@ -593,9 +640,11 @@ class Node {
         return this
     }
 
-    // @private
-    // This method to be called only when this Node has this.scene.
-    // Resolves the _scenePromise for all children of the tree of this Node.
+    /**
+     * @private
+     * This method to be called only when this Node has this.scene.
+     * Resolves the _scenePromise for all children of the tree of this Node.
+     */
     _giveSceneRefToChildren() {
         for (let childNode of this._children) {
             childNode._scene = this._scene
@@ -628,12 +677,14 @@ class Node {
         if (childNode instanceof Node && thisHasChild) {
             childNode._parent = null
             childNode._scene = null // not part of a scene anymore.
+            childNode._scenePromise = null // reset so that it can be awaited again for when the node is re-mounted.
             childNode._mounted = false
+            childNode._mountPromise = null // reset so that it can be awaited again for when the node is re-mounted.
 
             // Remove from children array
             this._children.splice(this._children.indexOf(childNode), 1);
 
-            this._removeChildElement(childNode)
+            this._detachElement(childNode)
         }
 
         return this
@@ -693,15 +744,12 @@ class Node {
         }
     }
 
-    _removeChildElement(childNode) {
+    _detachElement(childNode) {
         // TODO: move this out, into DOMRenderer
 
-        if (!childNode._mounted) {
-
-            // XXX Only remove the childNode _el if it has an actual parent
-            if (childNode._el.element.parentNode)
-                childNode._el.element.parentNode.removeChild(childNode._el.element)
-        }
+        // XXX Only remove the childNode _el if it has an actual parent
+        if (childNode._el.element.parentNode)
+            childNode._el.element.parentNode.removeChild(childNode._el.element)
     }
 
     _renderChildren() {

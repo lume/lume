@@ -3,6 +3,8 @@ import {
     animationFrame,
 } from './Utility'
 
+let documentIsReady = false
+
 class Motor {
     constructor() {
         this._inFrame = false // true when inside a requested animation frame.
@@ -19,9 +21,14 @@ class Motor {
      * sits there doing nothing -- silence, crickets.
      */
     async _startAnimationLoop() {
+        if (this._animationLoopStarted) return
+
         this._animationLoopStarted = true
 
-        await documentReady()
+        if (!documentIsReady) {
+            await documentReady()
+            documentIsReady = true
+        }
 
         // DIRECT ANIMATION LOOP ///////////////////////////////////
         // So now we can render after the scene is mounted.
@@ -67,6 +74,18 @@ class Motor {
     /**
      * When a render tasks is added (via Node#addRenderTask) a new rAF loop
      * will be started if there isn't one currently.
+     *
+     * A render task is simply a function that will be called over and over
+     * again, in the Motor's animation loop. That's all, nothing special.
+     * However, if a Node setter is used inside of a render task, then the Node
+     * will tell that engine that it needs to be re-rendered, and that will
+     * happen at the end of the current frame. If a Node setter is used outside
+     * of a render task (i.e. outside of the Motor's animation loop), then an
+     * empty render task is added which causes the Node to be re-rendered on
+     * the next animation loop tick, and the Node also tells the Motor that it
+     * needs to be re-rendered. This way, regardless of where the Node's
+     * setters are used (inside or outside of the Motor's animation loop),
+     * rendering always happens inside the loop.
      */
     addRenderTask(fn) {
         if (typeof fn != 'function')
@@ -94,6 +113,8 @@ class Motor {
             this._nodesToBeRendered.set(node)
     }
 
+    // currently unused, as the list is cleared after each frame.
+    // TODO: prevent GC by clearing a linked list instead of Array, Set or Map?
     _unsetNodeToBeRendered(node) {
         this._nodesToBeRendered.delete(node)
     }
