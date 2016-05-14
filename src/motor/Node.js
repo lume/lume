@@ -1,12 +1,7 @@
 import 'geometry-interfaces'
-
 import Motor from './Motor'
 import '../motor-html/node'
-
-import {
-    epsilon,
-    makeLowercaseSetterAliases,
-} from './Utility'
+import { epsilon } from './Utility'
 
 let debug = true
 function log(...args) {
@@ -910,10 +905,6 @@ class Node {
         }
     }
 }
-
-// for use by MotorHTML, convenient since HTMLElement attributes are all
-// converted to lowercase by default.
-makeLowercaseSetterAliases(Node.prototype)
 
 function defaultZeros(array) {
     array[0] = array[0] || 0

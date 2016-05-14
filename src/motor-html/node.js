@@ -7,6 +7,7 @@
 import 'document-register-element'
 import Node from '../motor/Node'
 import stylesheet from './node-style'
+import { makeLowercaseSetterAliases } from '../motor/Utility'
 
 let attachedNodeCount = 0
 
@@ -240,9 +241,16 @@ function proxyNodeMethods() {
 
         Object.defineProperty(MotorHTMLNode.prototype, prop, proxyDescriptor)
     }
+
+    console.log('------- ', MotorHTMLNode.prototype)
 }
 
 proxyNodeMethods()
+
+// for use by MotorHTML, convenient since HTMLElement attributes are all
+// converted to lowercase by default, so if we don't do this then we won't be
+// able to map attributes to Node setters.
+makeLowercaseSetterAliases(Node.prototype)
 
 export default MotorHTMLNode
 
