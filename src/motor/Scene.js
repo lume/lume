@@ -12,7 +12,7 @@ class Scene extends Node {
         this._resolveScenePromise(this)
 
         // For now, Scenes are always proportionally sized by default.
-        this._properties.size.modes = ['proportional', 'proportional', 'proportional']
+        this._properties.size.mode = ['proportional', 'proportional', 'proportional']
     }
 
     _init() {
@@ -23,10 +23,16 @@ class Scene extends Node {
         return document.createElement('motor-scene')
     }
 
-    // Resolves this.mountPromise, that the user can use to do something once
-    // the scene is mounted.
-    //
-    // TODO We also need to reset the Scene's mountPromise.
+    /**
+     * Mount the scene into the given target.
+     * Resolves the Scene's mountPromise, which can be use to do something once
+     * the scene is mounted.
+     *
+     * @param {string|HTMLElement} [mountPoint=document.body] If a string selector is provided,
+     * the mount point will be selected from the DOM. If an HTMLElement is
+     * provided, that will be the mount point. If no mount point is provided,
+     * the scene will be mounted into document.body.
+     */
     async mount(mountPoint) {
         // Wait for the document to be ready before mounting, otherwise the
         // target mount point might not exist yet when this function is called.
@@ -53,14 +59,16 @@ class Scene extends Node {
             this._mounted = true
         }
         else {
-            throw new Error('Invalid mount point specified in Scene constructor. Specify a selector, or pass an actual HTMLElement.')
-            return false
+            throw new Error('Invalid mount point specified in Scene.mount() call. Specify a selector, or pass an actual HTMLElement.')
         }
 
         this._resolveMountPromise(this._mounted)
-        return this._mounted
     }
 
+    /**
+     * Unmount the scene from it's mount point. Resets the Scene's
+     * mountPromise.
+     */
     unmount() {
         this._el.element.parentNode.removeChild(this._el.element)
         this._mounted = false

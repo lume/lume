@@ -241,8 +241,6 @@ function proxyNodeMethods() {
 
         Object.defineProperty(MotorHTMLNode.prototype, prop, proxyDescriptor)
     }
-
-    console.log('------- ', MotorHTMLNode.prototype)
 }
 
 proxyNodeMethods()
