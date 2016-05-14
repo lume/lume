@@ -1,53 +1,30 @@
 import 'document-register-element'
-
 import Scene from '../motor/Scene'
-
 import MotorHTMLNode from './node'
+import stylesheet from './scene-style'
 
-import jss from '../jss'
-
-const sceneList = []
-let stylesheet = null
-
-const style = {
-    motorSceneElement: {
-        //display:   'block',
-        //boxSizing: 'border-box',
-        position: 'relative',
-        overflow: 'hidden',
-        width:    '100%',
-        height:   '100%',
-
-        // Constant perspective for now.
-        // TODO: make settable.
-        //
-        // XXX: Maybe enable a feature where perspective adapts based on
-        // viewport size and aspect ratio, and the user can turn it off. This
-        // would cover most use cases so the user doesn't have to worry about
-        // it.
-        perspective: '1000px',
-
-        // XXX: Do we need this? Make it configurable?
-        //perspectiveOrigin: '25%',
-    },
-}
+let attachedSceneCount = 0
 
 class MotorHTMLScene extends MotorHTMLNode {
-    createdCallback() {
-        super.createdCallback()
-        //console.log('<motor-scene> createdCallback()', this.id)
+    makeImperativeNode() {
+        return new Scene(this.parentNode, this)
+    }
 
-        sceneList.push(this)
-        if (!stylesheet) {
-            //console.log('Creating Scene style.', this.id)
-            // XXX create stylesheet inside animation frame?
-            stylesheet = jss.createStyleSheet(style).attach()
-        }
+    attachedCallback() {
+        super.attachedCallback()
+        console.log('attached scene:', this.id)
+
+        attachedSceneCount += 1
+        if (!attachedSceneCount === 1) this.attachStyle()
         this.classList.add(stylesheet.classes.motorSceneElement)
     }
 
-    makeImperativeNode() {
-        return new Scene(this.parentNode, this)
+    attachStyle() {
+        super.attachStyle() // attach node style first.
+
+        // XXX create stylesheet inside animation frame?
+        console.log('attaching scene style')
+        stylesheet.attach()
     }
 
     cleanUp() {
@@ -55,16 +32,14 @@ class MotorHTMLScene extends MotorHTMLNode {
 
         // TODO: unmount the scene
 
-        sceneList.pop(this)
-        if (sceneList.length == 0) {
+        attachedSceneCount -= 1
+        if (attachedSceneCount === 0) {
             stylesheet.detach()
-            stylesheet = null
         }
     }
 
     attributeChangedCallback(attribute, oldValue, newValue) {
         super.attributeChangedCallback(attribute, oldValue, newValue)
-        //console.log('<motor-scene> attributeChangedCallback', this.id, attribute, this.node)
         this.updateSceneProperty(attribute, oldValue, newValue)
     }
 

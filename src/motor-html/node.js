@@ -1,28 +1,11 @@
 import 'document-register-element'
-
 import Node from '../motor/Node'
-
-import jss from '../jss'
+import stylesheet from './node-style'
 
 let attachedNodeCount = 0
-let stylesheet = null
 
-const style = {
-    motorNodeElement: {
-        display:         'block',
-        position:        'absolute',
-        top:             '0',
-        left:            '0',
-
-        // TODO: set via JavaScript. Defaults to [0.5,0.5,0.5] (the Z axis
-        // doesn't apply for DOM elements, but will for 3D objects in WebGL.)
-        transformOrigin: '50% 50% 0', // default
-
-        transformStyle:  'preserve-3d',
-    },
-}
-
-// Very very stupid hack needed for Safari. See
+// Very very stupid hack needed for Safari in order for us to be able to extend
+// the HTMLElement class. See:
 // https://github.com/google/traceur-compiler/issues/1709
 if (typeof window.HTMLElement != 'function') {
     const _HTMLElement = function HTMLElement(){}
@@ -32,7 +15,10 @@ if (typeof window.HTMLElement != 'function') {
 
 class MotorHTMLNode extends window.HTMLElement {
     createdCallback() {
-        //console.log('<motor-node> createdCallback() with ID', this.id)
+
+        // true if motor-node is mounted improperly (not mounted in motor-node or motor-scene)
+        this._mountError = false
+
         this._attached = false
         this._cleanedUp = true
         this.node = null // to hold the imperative API Node instance.
@@ -77,23 +63,23 @@ class MotorHTMLNode extends window.HTMLElement {
     }
 
     attachedCallback() {
-        //console.log('<motor-node> attachedCallback()', this.id)
-
-        attachedNodeCount += 1
-        if (!stylesheet) {
-            // XXX create stylesheet inside animation frame?
-            stylesheet = jss.createStyleSheet(style).attach()
-        }
-        this.classList.add(stylesheet.classes.motorNodeElement)
+        console.log('attached node:', this.id)
 
         // Check that motor-nodes are mounted to motor-scenes or motor-nodes.
         // Scene can be mounted to any element. In the future we could inspect
         // the scene mount point, and advise about posisble styling issues
         // (f.e. making the scene container have a height).
         // TODO: different check needed when using is="" attributes.
-        if (this.nodeName == 'MOTOR-NODE')
-            if (! (this.parentNode.nodeName == 'MOTOR-NODE' || this.parentNode.nodeName == 'MOTOR-SCENE') )
-                throw new Error('A <motor-node> element must be appended only to <motor-scene> or other <motor-node> elements.')
+        if (this.nodeName == 'MOTOR-NODE') {
+            if (! (this.parentNode.nodeName == 'MOTOR-NODE' || this.parentNode.nodeName == 'MOTOR-SCENE') || this.parentNode._mountError) {
+                this._mountError = true
+                throw new Error('<motor-node> elements must be appended only to <motor-scene> or other <motor-node> elements.')
+            }
+        }
+
+        attachedNodeCount += 1
+        if (attachedNodeCount === 1) this.attachStyle()
+        this.classList.add(stylesheet.classes.motorNodeElement)
 
         if (!this.node)
             this._init()
@@ -115,9 +101,19 @@ class MotorHTMLNode extends window.HTMLElement {
             this.parentNode.node.addChild(this.node)
     }
 
+    attachStyle() {
+        // XXX create stylesheet inside animation frame?
+        console.log('attaching node style')
+        stylesheet.attach()
+    }
+
     // TODO XXX: remove corresponding imperative Node from it's parent.
     async detachedCallback() {
-        //console.log('<motor-node> detachedCallback()', this.id)
+        if (this.nodeName == 'MOTOR-NODE' && this._mountError) {
+            this._mountError = false
+            return
+        }
+
         this._attached = false
 
         // XXX Deferr to the next tick before cleaning up in case the element
@@ -132,8 +128,7 @@ class MotorHTMLNode extends window.HTMLElement {
 
         // If the scene wasn't re-attached in the last tick, clean up.
         // TODO (performance): Should we coordinate this.cleanUp() with
-        // animation loop to prevent jank? MotorHTMLScene.cleanUp may remove a
-        // JSS stylesheet. Is that something we want to do in a frame?
+        // animation loop to prevent jank?
         if (!this._attached && !this._cleanedUp) {
             this.cleanUp()
         }
@@ -146,21 +141,14 @@ class MotorHTMLNode extends window.HTMLElement {
         // TODO: We can clean up the style after some time, for example like 1
         // minute, or something, instead of instantly.
         attachedNodeCount -= 1
-        if (attachedNodeCount == 0) {
+        if (attachedNodeCount === 0) {
             stylesheet.detach()
-            stylesheet = null
         }
 
         this._cleanedUp = true
     }
 
     attributeChangedCallback(attribute, oldValue, newValue) {
-
-        if (!this.blah) this.blah = 0
-        if (this.blah < 10) {
-            this.blah += 1
-            //console.log('<motor-node> attributeChangedCallback', this.id, attribute, newValue)
-        }
         this.updateNodeProperty(attribute, oldValue, newValue)
     }
 
