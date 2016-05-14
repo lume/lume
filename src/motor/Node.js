@@ -592,12 +592,16 @@ class Node {
      * @param {[type]} childNode [description]
      */
     addChild (childNode) {
+        if (! (childNode instanceof Node))
+            throw new Error('Node.addChild expects the childNode argument to be a Node instance.')
 
         // We cannot add Scenes to Nodes, for now.
         //
         // TODO: If someone extends Scene, constructor.name is different. We
         // need to catch those cases too, without using instanceof Scene in
         // order to avoid a circular dependency in this module.
+        // Idea: maybe we can traverse the prototype chain looking for each
+        // constructor.name.
         if (childNode.constructor.name == 'Scene') {
             throw new Error(`
                 A Scene cannot currently be added to another Node.
