@@ -384,9 +384,13 @@ class Node {
      * proportional, as the actual size of the Node depends on querying the DOM
      * for the size of the Node's DOM element relative to it's parent.
      *
+     * @readonly
+     *
      * @return {Array.number} A three-item array of numbers, each number
      * representing the computed size of the x, y, and z axes respectively.
-     * @readonly
+     *
+     * TODO: traverse up the tree to find parent size when this Node's size is
+     * proportional?
      */
     get actualSize() {
         let actualSize = []
@@ -405,8 +409,13 @@ class Node {
             actualSize[1] = parseInt(getComputedStyle(this._el.element).getPropertyValue('height'))
         }
 
-        // TODO: handle Z axis for 3D objects (i.e. WebGL objects)
-        actualSize[2] = 0
+        if (this._properties.size.mode[2] === 'absolute') {
+            actualSize[2] = this._properties.size.absolute[2]
+        }
+        else if (this._properties.size.mode[2] === 'proportional') {
+            //actualSize[2] = parseInt(getComputedStyle(this._el.element).getPropertyValue('height'))
+            actualSize[2] = 0 // TODO
+        }
 
         return actualSize
     }
@@ -447,6 +456,9 @@ class Node {
 
     /**
      * Set the mount point of the Node. TODO: put "mount point" into words.
+     *
+     * XXX possiblyrename to "anchor" to avoid confusion with Scene.mount?
+     * Could also segway to anchors system like Qt QML.
      *
      * @param {Array.number} mountPoint Array of three mount point values, one
      * for each axis.
@@ -757,6 +769,12 @@ class Node {
             this._applyStyle('height', `${absolute[1]}px`);
         else if (mode[1] === 'proportional')
             this._applyStyle('height', `${proportional[1] * 100}%`);
+
+        //TODO z axis
+        //if (mode[2] === 'absolute')
+            //this._applyStyle('height', `${absolute[2]}px`);
+        //else if (mode[2] === 'proportional')
+            //this._applyStyle('height', `${proportional[2] * 100}%`);
     }
 
     /**
@@ -802,9 +820,10 @@ class Node {
         // manual calculations. Maybe we don't do it here, and delegate it to
         // DOM and WebGL renderers.
 
-        // apply each axis rotation, in the x,y,z order. TODO: This is
-        // restrictive, and we should let the user apply any axis rotation in
-        // any order.
+        // apply each axis rotation, in the x,y,z order.
+        // XXX: Does order in which axis rotations are applied matter? If so,
+        // which order is best? Maybe we let the user decide (with our
+        // recommendation)?
         let rotation = this._properties.rotation
         matrix.rotateAxisAngleSelf(1,0,0, rotation[0]) // x-axis rotation
         matrix.rotateAxisAngleSelf(0,1,0, rotation[1]) // y-axis rotation
@@ -888,15 +907,12 @@ class Node {
      * matrix. See "W3C Geometry Interfaces".
      */
     _setMatrix3d (matrix) {
-        if (true || ! Object.is(this._style.transform.domMatrix, matrix)) {
+        this._style.transform.domMatrix = matrix
+        // ^ TODO: What's faster? Setting a new DOMMatrix (as we do here
+        // currently, the result of _calculateMatrix) or applying all
+        // transform values to the existing DOMMatrix?
 
-            this._style.transform.domMatrix = matrix
-            // ^ TODO: What's faster? Setting a new DOMMatrix (as we do here
-            // currently, the result of _calculateMatrix) or applying all
-            // transform values to the existing DOMMatrix?
-
-            this._applyTransform();
-        }
+        this._applyTransform();
     }
 }
 
