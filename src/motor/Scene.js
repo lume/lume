@@ -23,7 +23,7 @@ class Scene extends Node {
         super._init()
     }
 
-    makeElement() {
+    _makeElement() {
         return document.createElement('motor-scene')
     }
 

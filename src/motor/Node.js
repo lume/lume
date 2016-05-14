@@ -68,7 +68,7 @@ class Node {
         // DOM representation of Node
         // TODO: remove this and handle it in the "DOMRenderer"
         this._el = new ElManager(
-            _motorHtmlNode || this.makeElement()
+            _motorHtmlNode || this._makeElement()
         )
         this._el.element._init(this)
         //this._el.setClasses(stylesheet.classes.motorDomNode)
@@ -136,16 +136,22 @@ class Node {
         this._resolveMountPromise = null
         this._mountPromise = new Promise(r => this._resolveMountPromise = r)
 
-        this.waitForSceneThenResolveMountPromise()
+        this._waitForSceneThenResolveMountPromise()
 
         this._init()
     }
 
+    /**
+     * @private
+     */
     _init() {
         this._needsToBeRendered()
     }
 
-    makeElement() {
+    /**
+     * @private
+     */
+    _makeElement() {
         return document.createElement('motor-node')
     }
 
@@ -160,7 +166,10 @@ class Node {
         return this._scenePromise
     }
 
-    async waitForSceneThenResolveMountPromise() {
+    /**
+     * @private
+     */
+    async _waitForSceneThenResolveMountPromise() {
 
         // TODO: this conditional check should work with child classes who's
         // constructor is no longer named "Node". This should not fire for
@@ -189,7 +198,7 @@ class Node {
             // TODO: this conditional check should work with child classes who's
             // constructor is no longer named "Node". This should not fire for
             // Scene or child classes of Scene.
-            this.waitForSceneThenResolveMountPromise()
+            this._waitForSceneThenResolveMountPromise()
         }
 
         return this._mountPromise
