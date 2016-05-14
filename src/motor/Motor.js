@@ -1,6 +1,7 @@
+import documentReady from 'awaitbox/dom/documentReady'
+
 import {
-    documentReady,
-    animationFrame,
+    //animationFrame,
 } from './Utility'
 
 let documentIsReady = false

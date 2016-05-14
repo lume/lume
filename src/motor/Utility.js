@@ -1,6 +1,5 @@
 import TWEEN from 'tween.js'
 import windowLoaded from 'awaitbox/dom/windowLoaded'
-import documentReady from 'awaitbox/dom/documentReady'
 
 let rAF = null // reference to the rAF loop used for animating everything.
 
@@ -66,19 +65,12 @@ function applyCSSLabel(value, label) {
 }
 
 /**
- * Alias to windowLoaded.
- */
-async function documentLoaded() {
-    await windowLoaded()
-}
-
-/**
  * Get the dimensions of the body element.
  * @async
  * @return {Object} An object containing `width` and `height` properties.
  */
 async function getBodySize() {
-    await documentLoaded()
+    await windowLoaded()
 
     let body = document.body
     let width = window.parseInt(window.getComputedStyle(body).getPropertyValue('width'))
@@ -115,9 +107,6 @@ export {
   stopLoop,
   epsilon,
   applyCSSLabel,
-  documentReady,
-  windowLoaded,
-  documentLoaded,
   getBodySize,
   animationFrame,
   makeLowercaseSetterAliases,

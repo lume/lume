@@ -1,8 +1,5 @@
 import Node from './Node'
-import {
-    documentReady,
-    //animationFrame,
-} from './Utility'
+import documentReady from 'awaitbox/dom/documentReady'
 
 import '../motor-html/scene'
 
