@@ -6,29 +6,27 @@ import stylesheet from './scene-style'
 let attachedSceneCount = 0
 
 class MotorHTMLScene extends MotorHTMLNode {
-    makeImperativeNode() {
+    _makeImperativeNode() {
         return new Scene(this.parentNode, this)
     }
 
     attachedCallback() {
         super.attachedCallback()
-        console.log('attached scene:', this.id)
 
         attachedSceneCount += 1
-        if (!attachedSceneCount === 1) this.attachStyle()
+        if (!attachedSceneCount === 1) this._attachStyle()
         this.classList.add(stylesheet.classes.motorSceneElement)
     }
 
-    attachStyle() {
-        super.attachStyle() // attach node style first.
+    _attachStyle() {
+        super._attachStyle() // attach node style first.
 
         // XXX create stylesheet inside animation frame?
-        console.log('attaching scene style')
         stylesheet.attach()
     }
 
-    cleanUp() {
-        super.cleanUp()
+    _cleanUp() {
+        super._cleanUp()
 
         // TODO: unmount the scene
 
@@ -40,10 +38,10 @@ class MotorHTMLScene extends MotorHTMLNode {
 
     attributeChangedCallback(attribute, oldValue, newValue) {
         super.attributeChangedCallback(attribute, oldValue, newValue)
-        this.updateSceneProperty(attribute, oldValue, newValue)
+        this._updateSceneProperty(attribute, oldValue, newValue)
     }
 
-    updateSceneProperty(attribute, oldValue, newValue) {
+    _updateSceneProperty(attribute, oldValue, newValue) {
         // ...
     }
 }

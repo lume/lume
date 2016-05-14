@@ -1,3 +1,9 @@
+// TODO Make a Node pool and re-use Nodes instead of creating new ones when
+// possible. This is good, for example, when using React and switching
+// motor-html nodes in and out of view because React may destroy the motor-html
+// instances and instantiate new ones, in which case we can re-use Node
+// instances. We'd have to reset the Node properties.
+
 import 'document-register-element'
 import Node from '../motor/Node'
 import stylesheet from './node-style'
@@ -38,7 +44,7 @@ class MotorHTMLNode extends window.HTMLElement {
         this.ready = new Promise(r => this._resolveReadyPromise = r)
     }
 
-    makeImperativeNode() {
+    _makeImperativeNode() {
         return new Node({}, this)
     }
 
@@ -52,18 +58,17 @@ class MotorHTMLNode extends window.HTMLElement {
         if (imperativeMotorNode && imperativeMotorNode instanceof Node)
             this.node = imperativeMotorNode
         else
-            this.node = this.makeImperativeNode()
+            this.node = this._makeImperativeNode()
 
-        this.signalWhenReady()
+        this._signalWhenReady()
     }
 
-    async signalWhenReady() {
+    async _signalWhenReady() {
         await this.node.mountPromise
         this._resolveReadyPromise()
     }
 
     attachedCallback() {
-        console.log('attached node:', this.id)
 
         // Check that motor-nodes are mounted to motor-scenes or motor-nodes.
         // Scene can be mounted to any element. In the future we could inspect
@@ -78,7 +83,7 @@ class MotorHTMLNode extends window.HTMLElement {
         }
 
         attachedNodeCount += 1
-        if (attachedNodeCount === 1) this.attachStyle()
+        if (attachedNodeCount === 1) this._attachStyle()
         this.classList.add(stylesheet.classes.motorNodeElement)
 
         if (!this.node)
@@ -101,9 +106,8 @@ class MotorHTMLNode extends window.HTMLElement {
             this.parentNode.node.addChild(this.node)
     }
 
-    attachStyle() {
+    _attachStyle() {
         // XXX create stylesheet inside animation frame?
-        console.log('attaching node style')
         stylesheet.attach()
     }
 
@@ -123,20 +127,20 @@ class MotorHTMLNode extends window.HTMLElement {
         // order to clean up or not). If the element gets re-attached before
         // the next tick, then we want to preserve the style sheet, preserve
         // the animation frame, and keep the scene in the sceneList by not
-        // running the following this.cleanUp() call. {{
+        // running the following this._cleanUp() call. {{
         await Promise.resolve() // deferr to the next tick.
 
         // If the scene wasn't re-attached in the last tick, clean up.
-        // TODO (performance): Should we coordinate this.cleanUp() with
+        // TODO (performance): Should we coordinate this._cleanUp() with
         // animation loop to prevent jank?
         if (!this._attached && !this._cleanedUp) {
-            this.cleanUp()
+            this._cleanUp()
         }
 
         // }}
     }
 
-    cleanUp() {
+    _cleanUp() {
 
         // TODO: We can clean up the style after some time, for example like 1
         // minute, or something, instead of instantly.
@@ -149,10 +153,10 @@ class MotorHTMLNode extends window.HTMLElement {
     }
 
     attributeChangedCallback(attribute, oldValue, newValue) {
-        this.updateNodeProperty(attribute, oldValue, newValue)
+        this._updateNodeProperty(attribute, oldValue, newValue)
     }
 
-    async updateNodeProperty(attribute, oldValue, newValue) {
+    async _updateNodeProperty(attribute, oldValue, newValue) {
         // TODO: Handle actual values (not just string property values as
         // follows) for performance; especially when DOMMatrix is supported
         // by browsers.
@@ -188,6 +192,57 @@ class MotorHTMLNode extends window.HTMLElement {
     }
 }
 MotorHTMLNode = document.registerElement('motor-node', MotorHTMLNode)
+
+// Node methods not to proxy (private underscored methods are detected and
+// ignored).
+const methodProxyBlacklist = [
+    'constructor',
+    'parent',
+    'children', // proxying this one would really break stuff (f.e. React)
+    'element',
+    'scene',
+    'addChild',
+    'addChildren',
+    'removeChild',
+    'removeChildren',
+]
+
+function proxyNodeMethods() {
+    const nodeProps = Object.getOwnPropertyNames(Node.prototype)
+
+    for (let prop of nodeProps) {
+        // skip the blacklisted properties
+        if (methodProxyBlacklist.includes(prop)) continue
+
+        // skip the private underscored properties
+        if (prop.indexOf('_') == 0) continue
+
+        const proxyDescriptor = {}
+        const actualDescriptor = Object.getOwnPropertyDescriptor(Node.prototype, prop)
+
+        // if the property has a setter
+        if (actualDescriptor.set) {
+            Object.assign(proxyDescriptor, {
+                set(value) {
+                    this.node[prop] = value
+                }
+            })
+        }
+
+        // if the property has a getter
+        if (actualDescriptor.get) {
+            Object.assign(proxyDescriptor, {
+                get() {
+                    return this.node[prop]
+                }
+            })
+        }
+
+        Object.defineProperty(MotorHTMLNode.prototype, prop, proxyDescriptor)
+    }
+}
+
+proxyNodeMethods()
 
 export default MotorHTMLNode
 
