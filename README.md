@@ -5,7 +5,7 @@ A famous UI library.
 
 [![NPM](https://nodei.co/npm/infamous.png)](https://nodei.co/npm/infamous/)
 
-[![Gitter](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/infamous/infamous?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge)
+Visit the [site](http://infamous.io), discuss in the [forums](http://forums.infamous.io).
 
 Getting Started
 ---------------
