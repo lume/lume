@@ -71,7 +71,6 @@ class Node {
             _motorHtmlNode || this._makeElement()
         )
         this._el.element._init(this)
-        //this._el.setClasses(stylesheet.classes.motorDomNode)
 
         this._mounted = false;
 
@@ -106,7 +105,7 @@ class Node {
 
         this._children = [];
 
-        this.setProperties(properties);
+        this.properties = properties
 
         // an internal promise that resolves when this Node finally belongs to
         // a scene graph with a root Scene. The resolved value is the root
@@ -278,10 +277,6 @@ class Node {
      * Y, and Z positions (translations) to apply.
      * @chainable
      */
-    setPosition (position) {
-        this.position = position
-        return this
-    }
     set position(position) {
         if (!(position instanceof Array)) throw new Error('Expected an array for the Node.position property.')
         this._properties.position = defaultZeros(position)
@@ -305,10 +300,6 @@ class Node {
      * TODO: We should also provide a setRotationAxis method to rotate about a
      * particular axis.
      */
-    setRotation (rotation) {
-        this.rotation = rotation
-        return this
-    }
     set rotation(rotation) {
         this._properties.rotation = rotation
         this._needsToBeRendered()
@@ -328,10 +319,6 @@ class Node {
      * @return {Array.number} An array of 3 numbers, each number representing
      * the X, Y, and Z scale of the Node (in that order).
      */
-    setScale (scale) {
-        this.scale = scale
-        return this
-    }
     set scale(scale) {
         this._properties.scale = scale
         this._needsToBeRendered()
@@ -351,10 +338,6 @@ class Node {
      * @param {number} opacity A floating point number between 0 and 1
      * (inclusive). 0 is fully transparent, 1 is fully opaque.
      */
-    setOpacity (opacity) {
-        this.opacity = opacity
-        return this
-    }
     set opacity(opacity) {
         if (!isRealNumber(opacity)) throw new Error('Expected a real number.')
         this._style.opacity = opacity;
@@ -376,10 +359,6 @@ class Node {
      * @param {Array.string} mode A three-item array of strings, each item
      * corresponding to the x, y, and z axes respectively.
      */
-    setSizeMode (mode) {
-        this.sizeMode = mode
-        return this
-    }
     set sizeMode(mode) {
         this._properties.size.mode = mode
         this._needsToBeRendered()
@@ -396,10 +375,6 @@ class Node {
     /**
      * @param {Array} size [description]
      */
-    setAbsoluteSize (size) {
-        this.absoluteSize = size
-        return this
-    }
     set absoluteSize(size) {
         this._properties.size.absolute = size;
         this._needsToBeRendered()
@@ -457,10 +432,6 @@ class Node {
      * @param {Array.number} size A three-item array of numbers, each item
      * representing the proprtional size of the x, y, and z axes respectively.
      */
-    setProportionalSize (size) {
-        this.proportionalSize = size
-        return this
-    }
     set proportionalSize(size) {
         this._properties.size.proportional = size
         this._needsToBeRendered()
@@ -475,10 +446,6 @@ class Node {
      * Node's parent that this Node is mounted.
      * @param {Array.number} alignment Array of three alignment values, one for each axis.
      */
-    setAlign (alignment) {
-        this.align = alignment
-        return this
-    }
     set align(alignment) {
         if (!(alignment instanceof Array)) throw new Error('Expected an array for the Node.align property.')
         this._properties.align = defaultZeros(alignment)
@@ -495,10 +462,6 @@ class Node {
      * @param {Array.number} mountPoint Array of three mount point values, one
      * for each axis.
      */
-    setMountPoint (mountPoint) {
-        this.mountPoint = mountPoint
-        return this
-    }
     set mountPoint(mountPoint) {
         if (!(mountPoint instanceof Array)) throw new Error('Expected an array for the Node.mountPoint property.')
         this._properties.mountPoint = defaultZeros(mountPoint)
@@ -512,10 +475,12 @@ class Node {
     /**
      * Set all properties of the Node in one method.
      *
+     * XXX: Should we change size so it matches structure here and on the node?
+     *
      * @param {Object} properties Properties object - see example
      *
      * @example
-     * node.setProperties({
+     * node.properties = {
      *   classes: ['open'],
      *   position: [200, 300, 0],
      *   rotation: [3, 0, 0],
@@ -526,9 +491,9 @@ class Node {
      *     proportional: [null, .5]
      *   },
      *   opacity: .9
-     * })
+     * }
      */
-    setProperties (properties) {
+    set properties (properties = {}) {
         // Classes
         if (properties.classes)
             this._el.setClasses(properties.classes);
