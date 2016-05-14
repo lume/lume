@@ -7,7 +7,9 @@ let attachedSceneCount = 0
 
 class MotorHTMLScene extends MotorHTMLNode {
     _makeImperativeNode() {
-        return new Scene(this.parentNode, this)
+        let scene = new Scene(this)
+        scene.mount(this.parentNode)
+        return scene
     }
 
     attachedCallback() {

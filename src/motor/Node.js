@@ -188,10 +188,6 @@ class Node {
     get mountPromise() {
         if (!this._mounted && !this._mountPromise) {
             this._mountPromise = new Promise(r => this._resolveMountPromise = r)
-
-            // TODO: this conditional check should work with child classes who's
-            // constructor is no longer named "Node". This should not fire for
-            // Scene or child classes of Scene.
             this._waitForSceneThenResolveMountPromise()
         }
 
@@ -220,11 +216,9 @@ class Node {
 
     /**
      * @readonly
-     * XXX Should we let the element be set, so that it's possible to apply
-     * transforms to arbitrary elements?
      */
     get element() {
-        return this._el
+        return this._el.element
     }
 
     /**

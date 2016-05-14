@@ -5,7 +5,7 @@ import '../motor-html/scene'
 
 export default
 class Scene extends Node {
-    constructor(mountPoint, _motorHtmlScene) {
+    constructor(_motorHtmlScene) {
         super({}, _motorHtmlScene)
 
         this._scene = this
@@ -13,10 +13,6 @@ class Scene extends Node {
 
         // For now, Scenes are always proportionally sized by default.
         this._properties.size.modes = ['proportional', 'proportional', 'proportional']
-
-        // Resolves this.mountPromise, that the user can use to do something
-        // once the scene is mounted.
-        this._mount(mountPoint)
     }
 
     _init() {
@@ -27,10 +23,11 @@ class Scene extends Node {
         return document.createElement('motor-scene')
     }
 
-    // TODO: remove selector from constructor, make this method public
-    // (scene.mount(selector)), and also provide unmount() method. Then we also
-    // need to reset the Scene's mountPromise.
-    async _mount(mountPoint) {
+    // Resolves this.mountPromise, that the user can use to do something once
+    // the scene is mounted.
+    //
+    // TODO We also need to reset the Scene's mountPromise.
+    async mount(mountPoint) {
         // Wait for the document to be ready before mounting, otherwise the
         // target mount point might not exist yet when this function is called.
         await documentReady()
@@ -62,6 +59,14 @@ class Scene extends Node {
 
         this._resolveMountPromise(this._mounted)
         return this._mounted
+    }
+
+    unmount() {
+        this._el.element.parentNode.removeChild(this._el.element)
+        this._mounted = false
+
+        // a new promise to be resolved on the next mount.
+        this._mountPromise = new Promise(r => this._resolveMountPromise = r)
     }
 
 }
