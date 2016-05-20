@@ -73,20 +73,23 @@ class Motor {
     }
 
     /**
-     * When a render tasks is added (via Node#addRenderTask) a new rAF loop
-     * will be started if there isn't one currently.
+     * When a render tasks is added a new rAF loop will be started if there
+     * isn't one currently.
      *
      * A render task is simply a function that will be called over and over
      * again, in the Motor's animation loop. That's all, nothing special.
      * However, if a Node setter is used inside of a render task, then the Node
-     * will tell that engine that it needs to be re-rendered, and that will
-     * happen at the end of the current frame. If a Node setter is used outside
-     * of a render task (i.e. outside of the Motor's animation loop), then an
-     * empty render task is added which causes the Node to be re-rendered on
-     * the next animation loop tick, and the Node also tells the Motor that it
-     * needs to be re-rendered. This way, regardless of where the Node's
-     * setters are used (inside or outside of the Motor's animation loop),
-     * rendering always happens inside the loop.
+     * will tell Motor that it needs to be re-rendered, which will happen at
+     * the end of the current frame. If a Node setter is used outside of a
+     * render task (i.e. outside of the Motor's animation loop), then the Node
+     * tells Motor to re-render the Node on the next animation loop tick.
+     * Basically, regardless of where the Node's setters are used (inside or
+     * outside of the Motor's animation loop), rendering always happens inside
+     * the loop.
+     *
+     * @param {Function} fn The render task to add.
+     * @return {Function} A reference to the render task. Useful for saving to
+     * a variable so that it can later be passed to Motor.removeRenderTask().
      */
     addRenderTask(fn) {
         if (typeof fn != 'function')
@@ -97,6 +100,8 @@ class Motor {
         // If the render loop isn't started, start it.
         if (!this._animationLoopStarted)
             this._startAnimationLoop()
+
+        return fn
     }
 
     removeRenderTask(fn) {
