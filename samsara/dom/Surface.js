@@ -363,6 +363,20 @@ define(function(require, exports, module) {
     };
 
     /**
+     * Adds a handler to the `type` channel which will be executed on `emit` once and then removed.
+     *
+     * @method once
+     *
+     * @param type {String}         DOM event channel name, e.g., "click", "touchmove"
+     * @param handler {Function}    Handler. It's only argument will be an emitted data payload.
+     */
+    Surface.prototype.once = function on(type, handler){
+        if (this._currentTarget)
+            this._elementOutput.once(this._currentTarget, type, this._eventForwarder);
+        EventHandler.prototype.once.apply(this._eventOutput, arguments);
+    };
+
+    /**
      * Removes a previously added handler to the `type` channel.
      *  Undoes the work of `on`.
      *
