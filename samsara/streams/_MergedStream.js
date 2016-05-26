@@ -4,20 +4,22 @@ define(function(require, exports, module) {
     var SimpleStream = require('./SimpleStream');
 
     function MergedStream(streams) {
+        this.mergedData = streams instanceof Array ? [] : {};
+        this.streamCache = {};
+
         var Stream = require('./Stream');
 
         Stream.call(this, {
             start : function() {
                 return this.mergedData;
-            }.bind(this), update : function() {
+            }.bind(this),
+            update : function() {
                 return this.mergedData;
-            }.bind(this), end : function() {
+            }.bind(this),
+            end : function() {
                 return this.mergedData;
             }.bind(this)
         });
-
-        this.mergedData = streams instanceof Array ? [] : {};
-        this.streamCache = {};
 
         for (var key in streams)
             this.addStream(key, streams[key]);
@@ -27,17 +29,27 @@ define(function(require, exports, module) {
     MergedStream.prototype.constructor = MergedStream;
 
     MergedStream.prototype.addStream = function(key, stream) {
-        stream.on('start', function(size) {
-            this.mergedData[key] = size;
-        }.bind(this));
-        stream.on('update', function(size) {
-            this.mergedData[key] = size;
-        }.bind(this));
-        stream.on('end', function(size) {
-            this.mergedData[key] = size;
-        }.bind(this));
-        this.subscribe(stream);
-        this.mergedData[key] = null;
+        var mergedData = this.mergedData;
+
+        if (stream instanceof Object){
+            mergedData[key] = null;
+
+            stream.on('start', function(data){
+                mergedData[key] = data;
+            });
+
+            stream.on('update', function(data){
+                mergedData[key] = data;
+            });
+
+            stream.on('end', function(data){
+                mergedData[key] = data;
+            });
+
+            this.subscribe(stream);
+        }
+        else mergedData[key] = stream;
+
         this.streamCache[key] = stream;
     };
 
@@ -45,8 +57,15 @@ define(function(require, exports, module) {
         // TODO : remove off('start', 'update', 'end', 'resize') 
         var stream = this.streamCache[key];
         this.unsubscribe(stream);
-        delete this.mergedData[key];
+
         delete this.streamCache[key];
+
+        if (this.mergedData instanceof Array){
+            var index = this.mergedData.indexOf(key);
+            this.mergedData.splice(index, 1);
+        }
+        else
+            delete this.mergedData[key];
     };
 
     MergedStream.prototype.replaceStream = function(key, stream) {
