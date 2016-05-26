@@ -388,6 +388,8 @@ define(function(require, exports, module) {
      * @param allocator {ElementAllocator} Allocator
      */
     Surface.prototype.setup = function setup(allocator) {
+        if (this._currentTarget) return;
+
         this._allocator = allocator;
 
         // create element of specific type
