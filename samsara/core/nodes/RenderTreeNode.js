@@ -44,6 +44,14 @@ define(function(require, exports, module) {
             size : null
         };
 
+        this.size.on('start', updateSizeCache.bind(this));
+        this.size.on('update', updateSizeCache.bind(this));
+        this.size.on('end', updateSizeCache.bind(this));
+
+        this.layout.on('start', updateLayoutCache.bind(this));
+        this.layout.on('update', updateLayoutCache.bind(this));
+        this.layout.on('end', updateLayoutCache.bind(this));
+
         this._logic.on('mount', function(node){
             this.root = node;
         }.bind(this));
@@ -51,6 +59,14 @@ define(function(require, exports, module) {
         this._logic.on('unmount', function() {
             this.root = null;
         }.bind(this));
+    }
+
+    function updateLayoutCache(layout){
+        this._cachedSpec.layout = layout;
+    }
+
+    function updateSizeCache(size){
+        this._cachedSpec.size = size;
     }
 
     /**
@@ -165,11 +181,9 @@ define(function(require, exports, module) {
             var size = Stream.lift(
                 function SGSizeAlgebra (objectSpec, parentSize){
                     if (!parentSize) return false;
-                    var size = (objectSpec)
+                    return(objectSpec)
                         ? sizeAlgebra(objectSpec, parentSize)
                         : parentSize;
-                    this._cachedSpec.size = size;
-                    return size;
                 }.bind(this),
                 [object, this._size]
             );
@@ -180,11 +194,9 @@ define(function(require, exports, module) {
             var layout = Stream.lift(
                 function SGLayoutAlgebra (objectSpec, parentSpec, size){
                     if (!parentSpec || !size) return false;
-                    var layout = (objectSpec)
+                    return (objectSpec)
                         ? layoutAlgebra(objectSpec, parentSpec, size)
                         : parentSpec;
-                    this._cachedSpec.layout = layout;
-                    return layout;
                 }.bind(this),
                 [object, this._layout, this._size]
             );
@@ -192,19 +204,21 @@ define(function(require, exports, module) {
             this.size.subscribe(this._size);
         }
         else {
-            // object is a leaf node
-            object._size.subscribe(this._size);
-            object._layout.subscribe(this._layout);
-
             this._logic.on('detach', function() {
                 object.remove();
+            }.bind(this));
+
+            this._logic.on('attach', function() {
+                if (this.root) object.setup(this.root.allocator);
+            }.bind(this));
+
+            object.on('recall', function(){
+                this._logic.unsubscribe();
                 object._size.unsubscribe(this._size);
                 object._layout.unsubscribe(this._layout);
             }.bind(this));
 
-            this._logic.on('attach', function() {
-                if (this.root && !object._currentTarget)
-                    object.setup(this.root.allocator);
+            object.on('deploy', function(){
                 object._size.subscribe(this._size);
                 object._layout.subscribe(this._layout);
             }.bind(this));
