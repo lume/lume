@@ -213,7 +213,7 @@ define(function(require, exports, module) {
             }.bind(this));
 
             object.on('recall', function(){
-                this._logic.unsubscribe();
+                // this._logic.unsubscribe();
                 object._size.unsubscribe(this._size);
                 object._layout.unsubscribe(this._layout);
             }.bind(this));
