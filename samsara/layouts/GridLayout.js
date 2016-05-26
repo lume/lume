@@ -92,12 +92,7 @@ define(function(require, exports, module) {
                     return Transform.translate(position);
                 });
 
-                var size = new SizeNode({size : size});
-                var layout = new LayoutNode({transform : transform});
-
-                this.add({size : size, transform : transform})
-                    .add(layout)
-                    .add(node);
+                this.add({size : size, transform : transform}).add(node);
             }
         }
     });
