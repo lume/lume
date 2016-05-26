@@ -252,7 +252,9 @@ define(function (require, exports, module) {
             return this._currentIndex;
         },
         addItems: function (items) {
-            this.layout.addItems(items);
+            for (var i = 0; i < items.length; i++) 
+                this.layout.push(items[i]);
+            
             this.items = items;
 
             var args = [this.offset];
