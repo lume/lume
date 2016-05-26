@@ -16,6 +16,7 @@ define(function (require, exports, module) {
         var size = new Transitionable([100, 50 + 100 * Math.random()]);
 
         var surf = new Surface({
+            content : 'click to remove',
             size : size,
             properties : {
                 background : 'red',
@@ -25,11 +26,11 @@ define(function (require, exports, module) {
 
         surf.on('click', function() {
             size.set([100, -spacing], {duration : 1000}, function() {
-                layout.removeItem(surf);
+                layout.remove(surf);
             });
         });
 
-        layout.addItem(surf);
+        layout.push(surf);
     }
 
     for (var i = 0; i < 5; i++) {
@@ -39,7 +40,7 @@ define(function (require, exports, module) {
     var addSurface = new Surface({
         size : [100, 100],
         origin : [1, 0],
-        content : 'add',
+        content : 'click to add',
         properties : {
             background : 'green'
         }
