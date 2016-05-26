@@ -1,12 +1,10 @@
 /* Copyright © 2015-2016 David Valdman */
 
 define(function(require, exports, module) {
+    var Controller = require('./Controller');
     var RenderTreeNode = require('./nodes/RenderTreeNode');
     var SizeNode = require('./nodes/SizeNode');
     var LayoutNode = require('./nodes/LayoutNode');
-    var Controller = require('./Controller');
-    var Transitionable = require('./Transitionable');
-    var EventHandler = require('../events/EventHandler');
 
     /**
      * A View provides encapsulation for a subtree of the render tree. You can build
@@ -77,19 +75,10 @@ define(function(require, exports, module) {
             this._size = this._node.size; // incoming parent size
 
             this._cachedSize = [0,0];
-
-            // TODO: clean this up?
-            this.size.on('start', function(size){
-                this._cachedSize = size;
-            }.bind(this));
-
-            this.size.on('update', function(size){
-                this._cachedSize = size;
-            }.bind(this));
-
-            this.size.on('end', function(size){
-                this._cachedSize = size;
-            }.bind(this));
+            
+            this.size.on('start', updateSize.bind(this));
+            this.size.on('update', updateSize.bind(this));
+            this.size.on('end', updateSize.bind(this));
 
             Controller.apply(this, arguments);
             if (this.options) setOptions.call(this, this.options);
@@ -105,7 +94,6 @@ define(function(require, exports, module) {
             return RenderTreeNode.prototype.add.apply(this._addNode, arguments);
         },
         remove : function remove(){
-            this._cachedSize = [0,0];
             RenderTreeNode.prototype.remove.apply(this._node, arguments);
         },
         /**
@@ -164,6 +152,12 @@ define(function(require, exports, module) {
             this._layoutNode.set({opacity : opacity});
         }
     });
+
+    function updateSize(size){
+        if (this._cachedSize[0] === size[0] && this._cachedSize[1] === size[1]) return;
+        this._cachedSize = size;
+        this.emit('resize', size);
+    }
 
     function setOptions(options){
         for (var key in options){
