@@ -32,7 +32,7 @@ define(function(require, exports, module) {
         var mergedData = this.mergedData;
 
         if (stream instanceof Object){
-            mergedData[key] = null;
+            mergedData[key] = undefined;
 
             stream.on('start', function(data){
                 mergedData[key] = data;
