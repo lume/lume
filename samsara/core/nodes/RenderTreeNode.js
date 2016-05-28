@@ -30,8 +30,6 @@ define(function(require, exports, module) {
         this.size = new EventHandler();
         this.layout = new EventHandler();
 
-        this.root = null;
-
         if (object) _set.call(this, object);
         else {
             this.layout.subscribe(this._layout);
@@ -51,6 +49,8 @@ define(function(require, exports, module) {
         this.layout.on('start', updateLayoutCache.bind(this));
         this.layout.on('update', updateLayoutCache.bind(this));
         this.layout.on('end', updateLayoutCache.bind(this));
+
+        this.root = null;
 
         this._logic.on('mount', function(node){
             this.root = node;
@@ -123,13 +123,10 @@ define(function(require, exports, module) {
         if (this.root && !childNode.root)
             childNode._logic.trigger('mount', this.root);
 
-        this._logic.emit('attach');
-
         return childNode;
     };
 
     RenderTreeNode.prototype.remove = function (){
-        this._logic.trigger('detach');
         this._logic.trigger('unmount');
         this._layout.unsubscribe();
         this._size.unsubscribe();
@@ -204,16 +201,15 @@ define(function(require, exports, module) {
             this.size.subscribe(this._size);
         }
         else {
-            this._logic.on('detach', function() {
+            this._logic.on('unmount', function() {
                 object.remove();
             }.bind(this));
 
-            this._logic.on('attach', function() {
-                if (this.root) object.setup(this.root.allocator);
+            this._logic.on('mount', function(root) {
+                object.setup(root.allocator);
             }.bind(this));
 
             object.on('recall', function(){
-                // this._logic.unsubscribe();
                 object._size.unsubscribe(this._size);
                 object._layout.unsubscribe(this._layout);
             }.bind(this));

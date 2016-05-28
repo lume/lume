@@ -32,7 +32,6 @@ define(function(require, exports, module) {
     RootNode.prototype.setAllocator = function setAllocator(allocator){
         this.allocator = allocator;
         this._logic.trigger('mount', this);
-        this._logic.trigger('attach');
     };
 
     RootNode.prototype.remove = function remove() {
