@@ -8,6 +8,8 @@ define(function(require, exports, module) {
         this.reducer = reducer;
         this.prev = null;
         this.next = null;
+
+        this.head = this;
         this.headOutput = new SimpleStream();
 
         if (value) {
@@ -20,36 +22,46 @@ define(function(require, exports, module) {
             this.output = new Observable(0);
         }
 
-        setHeadOutput.call(this, this.output);
+        setHeadOutput.call(this, this.head.output);
     }
 
     ReduceStream.prototype = Object.create(Stream.prototype);
     ReduceStream.prototype.constructor = ReduceStream;
 
     ReduceStream.prototype.push = function(stream) {
+        // refire the initial value if adding to an empty list
+        if (this.head === this) this.output.set(0);
+
         var sizeArray = new ReduceStream(this.reducer, stream);
+        connect(this.head, sizeArray);
 
-        var head = getHead.call(this);
-        connect(head, sizeArray);
-
-        setHeadOutput.call(this, sizeArray.output);
+        this.head = sizeArray;
+        setHeadOutput.call(this, this.head.output);
 
         return sizeArray.input;
     };
 
-    ReduceStream.prototype.unshift = function(value) {
-        var newNode = new ReduceStream(this.reducer, value);
+    ReduceStream.prototype.pop = function() {
+        this.head = this.head;
+        var prev = this.head.prev;
 
+        sever(prev, this.head);
+        this.head = prev;
+
+        setHeadOutput.call(this, this.head.output);
+    };
+
+    ReduceStream.prototype.unshift = function(value) {
         var curr = this;
         var next = curr.next;
 
-        if (!next) {
-            setHeadOutput.call(this, curr.output);
-            sever(curr, next);
-            connect(newNode, next);
-        }
+        if (!next) return this.push(value);
 
+        var newNode = new ReduceStream(this.reducer, value);
+
+        sever(curr, next);
         connect(curr, newNode);
+        connect(newNode, next);
         
         return newNode.input;
     };
@@ -64,12 +76,7 @@ define(function(require, exports, module) {
             sever(prev, curr);
             connect(prev, next);
         }
-        else {
-            sever(prev, curr);
-            setHeadOutput.call(this, prev.output);
-        }
-
-        curr = null;
+        else this.pop();
     };
 
     ReduceStream.prototype.insertAfter = function(target, value) {
@@ -108,12 +115,6 @@ define(function(require, exports, module) {
             node = node.next;
 
         return node;
-    }
-
-    function getHead(){
-        var head = this;
-        while (head.next) head = head.next;
-        return head;
     }
 
     function sever(node1, node2){
