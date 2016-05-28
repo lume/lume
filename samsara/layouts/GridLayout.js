@@ -1,10 +1,9 @@
 /* Copyright © 2015-2016 David Valdman */
 
-define(function(require, exports, module) {
+define(function(require, exports, module){
     var Transform = require('../core/Transform');
     var View = require('../core/View');
     var Stream = require('../streams/Stream');
-    var Transitionable = require('../core/Transitionable');
 
     /**
      * A layout that arranges items in a grid and can rearrange the grid responsively.
@@ -20,8 +19,8 @@ define(function(require, exports, module) {
      *  @constructor
      *  @extends Core.View
      *  @param [options] {Object}                           Options
-     *  @param options.itemsPerRow {Array|Object}            Number of items per row, or an object of {width : itemsPerRow} pairs
-     *  @param [options.gutter=0] {Transitionable|Number}   Gap space between successive items
+     *  @param options.itemsPerRow {Array|Object}           Number of items per row, or an object of {width : itemsPerRow} pairs
+     *  @param [options.gutter=0] {Number}                  Gap space between successive items
      */
     var GridLayout = View.extend({
         defaults : {
@@ -30,11 +29,7 @@ define(function(require, exports, module) {
         },
         events : {},
         initialize : function initialize(options){
-            var gutter = (options.gutter instanceof Transitionable)
-                ? options.gutter
-                : new Transitionable(options.gutter);
-
-            this.stream = Stream.lift(function(size, gutter){
+            this.stream = Stream.lift(function(size){
                 if (!size) return false; // TODO: fix bug
 
                 var width = size[0];
@@ -45,32 +40,32 @@ define(function(require, exports, module) {
                     : selectRows(options.itemsPerRow, width);
 
                 var numRows = rows.length;
-                var rowHeight = (height - ((numRows - 1) * gutter)) / numRows;
+                var rowHeight = (height - ((numRows - 1) * options.gutter)) / numRows;
 
                 var sizes = [];
                 var positions = [];
 
                 var y = 0;
-                for (var row = 0; row < numRows; row++){
+                for (var row = 0; row < numRows; row++) {
                     var numCols = rows[row];
-                    var colWidth = (width - ((numCols - 1) * gutter)) / numCols;
+                    var colWidth = (width - ((numCols - 1) * options.gutter)) / numCols;
 
                     var x = 0;
-                    for (var col = 0; col < numCols; col++){
+                    for (var col = 0; col < numCols; col++) {
                         var size = [colWidth, rowHeight];
                         sizes.push(size);
-                        positions.push([x,y]);
-                        x += colWidth + gutter;
+                        positions.push([x, y]);
+                        x += colWidth + options.gutter;
                     }
 
-                    y += rowHeight + gutter;
+                    y += rowHeight + options.gutter;
                 }
 
                 return {
                     sizes : sizes,
                     positions : positions
                 };
-            }, [this.size, gutter])
+            }, [this.size])
         },
         /**
          * Add items to the layout.
@@ -82,7 +77,7 @@ define(function(require, exports, module) {
             var sizes = this.stream.pluck('sizes');
             var positions = this.stream.pluck('positions');
 
-            for (var i = 0; i < items.length; i++){
+            for (var i = 0; i < items.length; i++) {
                 var node = items[i];
 
                 var size = sizes.pluck(i);

@@ -1,5 +1,5 @@
 /* Copyright © 2015-2016 David Valdman */
-
+// TODO: allow spacing to be a stream
 define(function(require, exports, module) {
     var Transform = require('../core/Transform');
     var View = require('../core/View');
