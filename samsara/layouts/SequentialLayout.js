@@ -40,6 +40,8 @@ define(function(require, exports, module) {
                     ? Transform.translateX(length) 
                     : Transform.translateY(length);
             };
+            
+            this.output.subscribe(this.stream.headOutput);
         }, 
         push : function(item) {
             var transform = this.stream.push(item.size).map(this.transformMap);

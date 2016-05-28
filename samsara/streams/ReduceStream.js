@@ -8,6 +8,7 @@ define(function(require, exports, module) {
         this.reducer = reducer;
         this.prev = null;
         this.next = null;
+        this.headOutput = new SimpleStream();
 
         if (value) {
             this.value = value;
@@ -18,6 +19,8 @@ define(function(require, exports, module) {
             this.value = null;
             this.output = new Observable(0);
         }
+
+        setHeadOutput.call(this, this.output);
     }
 
     ReduceStream.prototype = Object.create(Stream.prototype);
@@ -28,6 +31,9 @@ define(function(require, exports, module) {
 
         var head = getHead.call(this);
         connect(head, sizeArray);
+
+        setHeadOutput.call(this, sizeArray.output);
+
         return sizeArray.input;
     };
 
@@ -37,8 +43,12 @@ define(function(require, exports, module) {
         var curr = this;
         var next = curr.next;
 
-        sever(curr, next);
-        connect(newNode, next);
+        if (!next) {
+            setHeadOutput.call(this, curr.output);
+            sever(curr, next);
+            connect(newNode, next);
+        }
+
         connect(curr, newNode);
         
         return newNode.input;
@@ -56,6 +66,7 @@ define(function(require, exports, module) {
         }
         else {
             sever(prev, curr);
+            setHeadOutput.call(this, prev.output);
         }
 
         curr = null;
@@ -115,6 +126,11 @@ define(function(require, exports, module) {
         node1.next = node2;
         node2.prev = node1;
         node2.input.subscribe(node1.output);
+    }
+
+    function setHeadOutput(output){
+        this.headOutput.unsubscribe();
+        this.headOutput.subscribe(output);
     }
 
     module.exports = ReduceStream;
