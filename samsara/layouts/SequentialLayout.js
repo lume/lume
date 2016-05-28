@@ -4,12 +4,19 @@ define(function(require, exports, module) {
     var Transform = require('../core/Transform');
     var View = require('../core/View');
     var ReduceStream = require('../streams/ReduceStream');
+    var Stream = require('../streams/Stream');
 
     var CONSTANTS = {
         DIRECTION : {
             X : 0, 
             Y : 1
         }
+    };
+
+    var DEFAULT_LENGTH_MAP = function(length){
+        return (this.options.direction === CONSTANTS.DIRECTION.X)
+            ? Transform.translateX(length)
+            : Transform.translateY(length);
     };
 
     /**
@@ -34,39 +41,49 @@ define(function(require, exports, module) {
                 if (!size) return false;
                 return prev + size[options.direction] + options.spacing;
             });
+
+            this.setLengthMap(DEFAULT_LENGTH_MAP);
             
-            this.transformMap = function(length) {
-                return (options.direction === CONSTANTS.DIRECTION.X) 
-                    ? Transform.translateX(length) 
-                    : Transform.translateY(length);
-            };
-            
-            this.output.subscribe(this.stream.headOutput);
-        }, 
-        push : function(item) {
-            var transform = this.stream.push(item.size).map(this.transformMap);
+            this.output.subscribe(this.stream.head.output);
+        },
+        setLengthMap : function(map){
+            this.transformMap = map.bind(this);
+        },
+        push : function(item, sources) {
+            var length = this.stream.push(item.size);
+            var transform = createTransformFromLength.call(this, length, sources);
             this.add({transform : transform}).add(item);
         },
-        unshift : function(item){
-            var transform = this.stream.unshift(item.size).map(this.transformMap);
+        unshift : function(item, sources){
+            var length = this.stream.unshift(item.size);
+            var transform = createTransformFromLength.call(this, length, sources);
             this.add({transform : transform}).add(item);
         },
-        remove : function(item) {
+        insertAfter : function(prevItem, item, sources) {
+            var length = this.stream.insertAfter(prevItem.size, item.size);
+            var transform = createTransformFromLength.call(this, length, sources);
+            this.add({transform : transform}).add(item);
+        },
+        insertBefore : function(postItem, item, sources){
+            if (!postItem) return;
+            var length = this.stream.insertBefore(postItem.size, item.size);
+            var transform = createTransformFromLength.call(this, length, sources);
+            this.add({transform : transform}).add(item);
+        },
+        remove : function(item){
             this.stream.remove(item.size);
             item.remove();
-        }, 
-        insertAfter : function(prevItem, item) {
-            var transform = this.stream.insertAfter(prevItem.size, item.size)
-                .map(this.transformMap);
-            this.add({transform : transform}).add(item);
-        },
-        insertBefore : function(postItem, item){
-            if (!postItem) return;
-            var transform = this.stream.insertBefore(postItem.size, item.size)
-                .map(this.transformMap);
-            this.add({transform : transform}).add(item);
         }
     }, CONSTANTS);
+
+    function createTransformFromLength(length, sources){
+        if (sources){
+            sources = sources.slice();
+            sources.unshift(length);
+            return Stream.lift(this.transformMap, sources);
+        }
+        else return length.map(this.transformMap);
+    }
     
     module.exports = SequentialLayout;
 }); 
