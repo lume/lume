@@ -30,8 +30,10 @@ define(function(require, exports, module) {
         this.size = new EventHandler();
         this.layout = new EventHandler();
 
+        // set node middleware
         if (object) _set.call(this, object);
         else {
+            // if no middleware specified, connect input to output
             this.layout.subscribe(this._layout);
             this.size.subscribe(this._size);
         }
@@ -42,14 +44,17 @@ define(function(require, exports, module) {
             size : null
         };
 
+        // update size cache
         this.size.on('start', updateSizeCache.bind(this));
         this.size.on('update', updateSizeCache.bind(this));
         this.size.on('end', updateSizeCache.bind(this));
 
+        // update layout spec
         this.layout.on('start', updateLayoutCache.bind(this));
         this.layout.on('update', updateLayoutCache.bind(this));
         this.layout.on('end', updateLayoutCache.bind(this));
 
+        // reference to RootNode if a node is removed and later added
         this.root = null;
 
         this._logic.on('mount', function(node){
@@ -81,22 +86,11 @@ define(function(require, exports, module) {
      *
      * @method add
      * @chainable
-     * @param node {Object|SizeNode|LayoutNode|Surface|View} Node
+     * @param node {Object|Node|Surface|View} Node
      * @return {RenderTreeNode}
      */
     RenderTreeNode.prototype.add = function add(node) {
         var childNode;
-
-        var self = this;
-        preTickQueue.push(function() {
-            if (!self._cachedSpec.size) return;
-            self.size.trigger('start', self._cachedSpec.size);
-            self.layout.trigger('start', self._cachedSpec.layout);
-            dirtyQueue.push(function() {
-                self.size.trigger('end', self._cachedSpec.size);
-                self.layout.trigger('end', self._cachedSpec.layout);
-            });
-        });
 
         if (node.constructor === Object){
             // Object literal case
@@ -123,9 +117,28 @@ define(function(require, exports, module) {
         if (this.root && !childNode.root)
             childNode._logic.trigger('mount', this.root);
 
+        // Emit previously cached values if node was removed
+        if (!node.root){
+            var self = this;
+            preTickQueue.push(function(){
+                if (!self._cachedSpec.size) return;
+                self.size.trigger('start', self._cachedSpec.size);
+                self.layout.trigger('start', self._cachedSpec.layout);
+                dirtyQueue.push(function(){
+                    self.size.trigger('end', self._cachedSpec.size);
+                    self.layout.trigger('end', self._cachedSpec.layout);
+                });
+            });
+        }
+
         return childNode;
     };
 
+    /**
+     * Remove the node from the Render Tree
+     *
+     * @method remove
+     */
     RenderTreeNode.prototype.remove = function (){
         this._logic.trigger('unmount');
         this._layout.unsubscribe();
@@ -133,6 +146,8 @@ define(function(require, exports, module) {
         this._logic.unsubscribe();
     };
 
+    // Creates a combination of Size/Layout nodes from an object literal
+    // depending on its keys
     function _createNodeFromObjectLiteral(object){
         var sizeKeys = {};
         var layoutKeys = {};
@@ -173,6 +188,7 @@ define(function(require, exports, module) {
         return node;
     }
 
+    // Set node middleware. Can be an object, SizeNode, LayoutNode, or Surface
     function _set(object) {
         if (object instanceof SizeNode){
             var size = Stream.lift(
