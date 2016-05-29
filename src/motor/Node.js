@@ -65,7 +65,7 @@ class Node {
         this._el = new ElManager(
             _motorHtmlNode || this._makeElement()
         )
-        this._el.element._init(this)
+        this._el.element._associateImperativeNode(this)
 
         this._mounted = false;
 

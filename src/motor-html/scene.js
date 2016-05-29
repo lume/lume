@@ -16,12 +16,12 @@ class MotorHTMLScene extends MotorHTMLNode {
         return scene
     }
 
-    _getStyles() {
+    getStyles() {
         return styles
     }
 
-    //_cleanUp() {
-        //super._cleanUp()
+    //_deinit() {
+        //super._deinit()
 
         //// TODO: unmount the scene
     //}

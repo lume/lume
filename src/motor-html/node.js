@@ -5,13 +5,10 @@
 // instances. We'd have to reset the Node properties.
 
 import 'document-register-element'
-import jss from '../jss'
 import styles from './node-style'
 import Node from '../motor/Node'
+import makeWebComponentBaseClass from './web-component'
 import { makeLowercaseSetterAliases } from '../motor/Utility'
-
-let stylesheets = {}
-let instanceCountByConstructor = {}
 
 // Very very stupid hack needed for Safari in order for us to be able to extend
 // the HTMLElement class. See:
@@ -22,15 +19,15 @@ if (typeof window.HTMLElement != 'function') {
     window.HTMLElement = _HTMLElement
 }
 
+const WebComponent = makeWebComponentBaseClass(window.HTMLElement)
 export default
-class MotorHTMLNode extends window.HTMLElement {
+class MotorHTMLNode extends WebComponent {
     createdCallback() {
+        super.createdCallback()
 
         // true if motor-node is mounted improperly (not mounted in motor-node or motor-scene)
         this._attachError = false
 
-        this._attached = false
-        this._cleanedUp = true
         this.node = null // to hold the imperative API Node instance.
 
         // XXX: "this.mountPromise" vs "this.ready":
@@ -49,7 +46,6 @@ class MotorHTMLNode extends window.HTMLElement {
     }
 
     attachedCallback() {
-
         // Check that motor-nodes are mounted to motor-scenes or motor-nodes.
         // Scene can be mounted to any element. In the future we could inspect
         // the scene mount point, and advise about posisble styling issues
@@ -67,63 +63,53 @@ class MotorHTMLNode extends window.HTMLElement {
             }
         }
 
-        const sheet = this._createStylesheet()
-        this.classList.add(sheet.classes[this.constructor.name])
+        super.attachedCallback()
+    }
 
-        if (!this.node)
-            this._init()
+    getStyles() {
+        return styles
+    }
 
-        this._attached = true
-
-        if (this._cleanedUp) {
-            this._cleanedUp = false
-
-            // make stuff here if needed.
-        }
+    init() {
+        this._associateImperativeNode()
 
         // Attach this motor-node's Node to the parent motor-node's
         // Node (doesn't apply to motor-scene, which doesn't have a
         // parent to attach to).
-        // TODO: prevent this call if attachedCallback happened to to call to
+        //
+        // TODO: prevent this call if attachedCallback happened to call to
         // addChild on the imperative side.
         if (this.nodeName != 'MOTOR-SCENE')
             this.parentNode.node.addChild(this.node)
     }
 
-    _createStylesheet() {
-
-        if (!instanceCountByConstructor[this.constructor.name])
-            instanceCountByConstructor[this.constructor.name] = 0
-
-        instanceCountByConstructor[this.constructor.name] += 1
-
-        if (instanceCountByConstructor[this.constructor.name] === 1) {
-
-            // XXX create stylesheet inside animation frame?
-            stylesheets[this.constructor.name] =
-                jss.createStyleSheet(this._getStyles()).attach()
-        }
-
-        return stylesheets[this.constructor.name]
-    }
-
-    _getStyles() {
-        return styles
-    }
-
     /**
-     * Either this gets called by the imperative API when the imperative API
-     * makes one of these elements, or it gets called when this element gets
-     * appended to another motor-node in attachedCallback.
+     * This method creates the association between this MotorHTMLNode instance
+     * and the imperative Node instance.
+     *
+     * This method may get called by this.init, but can also be called by
+     * the Node class if Node is used imperatively. See Node#constructor.
+     *
      * @private
+     *
+     * @param {Node} imperativeMotorNode The Node to associate with this
+     * MotorHTMLNode. This parameter is only used in Node#constructor, and this
+     * happens when using the imperative form infamous instead of the HTML
+     * interface of infamous. When the HTML interface is used, this gets called
+     * first without an imperativeMotorNode argument and the call to this in
+     * Node#constructor will then be a noop. Basically, either this gets called
+     * first by MotorHTMLNode, or first by Node, depending on which API is used
+     * first.
      */
-    _init(imperativeMotorNode) {
-        if (imperativeMotorNode && imperativeMotorNode instanceof Node)
-            this.node = imperativeMotorNode
-        else
-            this.node = this._makeImperativeNode()
+    _associateImperativeNode(imperativeMotorNode) {
+        if (!this.node) {
+            if (imperativeMotorNode && imperativeMotorNode instanceof Node)
+                this.node = imperativeMotorNode
+            else
+                this.node = this._makeImperativeNode()
 
-        this._signalWhenReady()
+            this._signalWhenReady()
+        }
     }
 
     // this is called in attachedCallback, at which point this element hasa
@@ -138,50 +124,16 @@ class MotorHTMLNode extends window.HTMLElement {
     }
 
     // TODO XXX: remove corresponding imperative Node from it's parent.
-    async detachedCallback() {
+    detachedCallback() {
         if (this.nodeName == 'MOTOR-NODE' && this._attachError) {
             this._attachError = false
             return
         }
 
-        this._attached = false
-
-        // XXX Deferr to the next tick before cleaning up in case the element
-        // is actually being re-attached somewhere else within this same tick
-        // (detaching and attaching is synchronous, so by deferring to the next
-        // tick we'll be able to know if the element was re-attached or not in
-        // order to clean up or not). If the element gets re-attached before
-        // the next tick, then we want to preserve the style sheet, preserve
-        // the animation frame, and keep the scene in the sceneList by not
-        // running the following this._cleanUp() call. {{
-        await Promise.resolve() // deferr to the next tick.
-
-        // If the scene wasn't re-attached in the last tick, clean up.
-        // TODO (performance): Should we coordinate this._cleanUp() with
-        // animation loop to prevent jank?
-        if (!this._attached && !this._cleanedUp) {
-            this._cleanUp()
-        }
-
-        // }}
+        super.detachedCallback()
     }
 
-    _cleanUp() {
-
-        // TODO: We can clean up the style after some time, for example like 1
-        // minute, or something, instead of instantly.
-        this._destroyStylesheet()
-
-        this._cleanedUp = true
-    }
-
-    _destroyStylesheet() {
-        instanceCountByConstructor[this.constructor.name] -= 1
-        if (instanceCountByConstructor[this.constructor.name] === 0) {
-            stylesheets[this.constructor.name].detach()
-            delete stylesheets[this.constructor.name]
-            delete instanceCountByConstructor[this.constructor.name]
-        }
+    deinit() {
     }
 
     attributeChangedCallback(attribute, oldValue, newValue) {
