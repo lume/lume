@@ -20,8 +20,8 @@ class MotorHTMLScene extends MotorHTMLNode {
         return styles
     }
 
-    //_deinit() {
-        //super._deinit()
+    //deinit() {
+        //super.deinit()
 
         //// TODO: unmount the scene
     //}

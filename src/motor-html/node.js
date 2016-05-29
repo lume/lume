@@ -1,23 +1,8 @@
-// TODO Make a Node pool and re-use Nodes instead of creating new ones when
-// possible. This is good, for example, when using React and switching
-// motor-html nodes in and out of view because React may destroy the motor-html
-// instances and instantiate new ones, in which case we can re-use Node
-// instances. We'd have to reset the Node properties.
-
 import 'document-register-element'
 import styles from './node-style'
 import Node from '../motor/Node'
 import makeWebComponentBaseClass from './web-component'
 import { makeLowercaseSetterAliases } from '../motor/Utility'
-
-// Very very stupid hack needed for Safari in order for us to be able to extend
-// the HTMLElement class. See:
-// https://github.com/google/traceur-compiler/issues/1709
-if (typeof window.HTMLElement != 'function') {
-    const _HTMLElement = function HTMLElement(){}
-    _HTMLElement.prototype = window.HTMLElement.prototype
-    window.HTMLElement = _HTMLElement
-}
 
 const WebComponent = makeWebComponentBaseClass(window.HTMLElement)
 export default
@@ -46,11 +31,14 @@ class MotorHTMLNode extends WebComponent {
     }
 
     attachedCallback() {
+
         // Check that motor-nodes are mounted to motor-scenes or motor-nodes.
         // Scene can be mounted to any element. In the future we could inspect
         // the scene mount point, and advise about posisble styling issues
         // (f.e. making the scene container have a height).
-        // TODO: different check needed when using is="" attributes.
+        //
+        // TODO: different check needed when using is="" attributes. For now,
+        // we'll discourage use of the awkward is="" attribute.
         if (this.nodeName == 'MOTOR-NODE') {
             if (
                 !( this.parentNode.nodeName == 'MOTOR-NODE'

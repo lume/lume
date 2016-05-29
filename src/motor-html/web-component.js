@@ -1,5 +1,14 @@
 import jss from '../jss'
 
+// Very very stupid hack needed for Safari in order for us to be able to extend
+// the HTMLElement class. See:
+// https://github.com/google/traceur-compiler/issues/1709
+if (typeof window.HTMLElement != 'function') {
+    const _HTMLElement = function HTMLElement(){}
+    _HTMLElement.prototype = window.HTMLElement.prototype
+    window.HTMLElement = _HTMLElement
+}
+
 // XXX: we can improve by clearing items after X amount of time.
 const classCache = new Map
 
@@ -72,7 +81,7 @@ function makeWebComponentBaseClass(elementClass) {
             // re-attached in the last tick (for example, it was moved to
             // another element), then clean up.
             //
-            // TODO (performance): Should we coordinate this._deinit() with the
+            // XXX (performance): Should we coordinate this._deinit() with the
             // animation loop to prevent jank?
             if (!this._attached && this._initialized) {
                 this._deinit()
@@ -103,7 +112,7 @@ function makeWebComponentBaseClass(elementClass) {
         }
 
         _deinit() {
-            // TODO: We can clean up the style after some time, for example like 1
+            // XXX: We can clean up the style after some time, for example like 1
             // minute, or something, instead of instantly.
             this._destroyStylesheet()
             this._initialized = false
