@@ -43,10 +43,9 @@ define(function(require, exports, module) {
      */
     Observable.prototype.set = function(value){
         var self = this;
+        self.value = value;
         preTickQueue.push(function(){
-            self.value = value;
             self.emit('start', value);
-
             dirtyQueue.push(function(){
                 self.emit('end', value);
             });
