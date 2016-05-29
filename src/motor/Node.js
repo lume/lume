@@ -1,15 +1,6 @@
 import 'geometry-interfaces'
 import Motor from './Motor'
 import '../motor-html/node'
-import { epsilon } from './Utility'
-
-let debug = true
-function log(...args) {
-    if (debug) {
-        if (!Motor._inFrame)
-            console.log(...args)
-    }
-}
 
 /**
  * Manages a DOM element. Exposes a set of recommended APIs for working with
