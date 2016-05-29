@@ -1,7 +1,6 @@
-import jss from '../jss'
 
-export default jss.createStyleSheet({
-    motorNodeElement: {
+export default {
+    'motor-node': {
         display:         'block',
         position:        'absolute',
         top:             0,
@@ -13,4 +12,4 @@ export default jss.createStyleSheet({
 
         transformStyle:  'preserve-3d',
     },
-})
+}

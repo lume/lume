@@ -5,11 +5,13 @@
 // instances. We'd have to reset the Node properties.
 
 import 'document-register-element'
+import jss from '../jss'
+import styles from './node-style'
 import Node from '../motor/Node'
-import stylesheet from './node-style'
 import { makeLowercaseSetterAliases } from '../motor/Utility'
 
-let attachedNodeCount = 0
+let stylesheets = {}
+let instanceCountByConstructor = {}
 
 // Very very stupid hack needed for Safari in order for us to be able to extend
 // the HTMLElement class. See:
@@ -20,6 +22,7 @@ if (typeof window.HTMLElement != 'function') {
     window.HTMLElement = _HTMLElement
 }
 
+export default
 class MotorHTMLNode extends window.HTMLElement {
     createdCallback() {
 
@@ -83,9 +86,8 @@ class MotorHTMLNode extends window.HTMLElement {
             }
         }
 
-        attachedNodeCount += 1
-        if (attachedNodeCount === 1) this._attachStyle()
-        this.classList.add(stylesheet.classes.motorNodeElement)
+        const sheet = this._createStylesheet()
+        this.classList.add(sheet.classes[this.constructor.name])
 
         if (!this.node)
             this._init()
@@ -107,9 +109,20 @@ class MotorHTMLNode extends window.HTMLElement {
             this.parentNode.node.addChild(this.node)
     }
 
-    _attachStyle() {
-        // XXX create stylesheet inside animation frame?
-        stylesheet.attach()
+    _createStylesheet() {
+
+        if (!instanceCountByConstructor[this.constructor.name]) instanceCountByConstructor[this.constructor.name] = 0
+        instanceCountByConstructor[this.constructor.name] += 1
+        if (instanceCountByConstructor[this.constructor.name] === 1) {
+            // XXX create stylesheet inside animation frame?
+            stylesheets[this.constructor.name] = jss.createStyleSheet(this._getStyles()).attach()
+        }
+
+        return stylesheets[this.constructor.name]
+    }
+
+    _getStyles() {
+        return styles
     }
 
     // TODO XXX: remove corresponding imperative Node from it's parent.
@@ -145,12 +158,18 @@ class MotorHTMLNode extends window.HTMLElement {
 
         // TODO: We can clean up the style after some time, for example like 1
         // minute, or something, instead of instantly.
-        attachedNodeCount -= 1
-        if (attachedNodeCount === 0) {
-            stylesheet.detach()
-        }
+        this._destroyStylesheet()
 
         this._cleanedUp = true
+    }
+
+    _destroyStylesheet() {
+        instanceCountByConstructor[this.constructor.name] -= 1
+        if (instanceCountByConstructor[this.constructor.name] === 0) {
+            stylesheets[this.constructor.name].detach()
+            delete stylesheets[this.constructor.name]
+            delete instanceCountByConstructor[this.constructor.name]
+        }
     }
 
     attributeChangedCallback(attribute, oldValue, newValue) {
@@ -192,7 +211,6 @@ class MotorHTMLNode extends window.HTMLElement {
         }
     }
 }
-MotorHTMLNode = document.registerElement('motor-node', MotorHTMLNode)
 
 // Node methods not to proxy (private underscored methods are detected and
 // ignored).
@@ -245,12 +263,13 @@ function proxyNodeMethods() {
 
 proxyNodeMethods()
 
+MotorHTMLNode = document.registerElement('motor-node', MotorHTMLNode)
+export default MotorHTMLNode
+
 // for use by MotorHTML, convenient since HTMLElement attributes are all
 // converted to lowercase by default, so if we don't do this then we won't be
 // able to map attributes to Node setters.
 makeLowercaseSetterAliases(Node.prototype)
-
-export default MotorHTMLNode
 
 function parseNumberArray(str) {
     checkIsNumberArrayString(str)

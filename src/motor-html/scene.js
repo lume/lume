@@ -1,10 +1,11 @@
 import 'document-register-element'
+import jss from '../jss'
+import styles from './scene-style'
 import Scene from '../motor/Scene'
 import MotorHTMLNode from './node'
-import stylesheet from './scene-style'
 
-let attachedSceneCount = 0
-
+export default
+document.registerElement('motor-scene', 
 class MotorHTMLScene extends MotorHTMLNode {
     _makeImperativeNode() {
         let scene = new Scene(this)
@@ -14,28 +15,16 @@ class MotorHTMLScene extends MotorHTMLNode {
 
     attachedCallback() {
         super.attachedCallback()
-
-        attachedSceneCount += 1
-        if (!attachedSceneCount === 1) this._attachStyle()
-        this.classList.add(stylesheet.classes.motorSceneElement)
     }
 
-    _attachStyle() {
-        super._attachStyle() // attach node style first.
-
-        // XXX create stylesheet inside animation frame?
-        stylesheet.attach()
+    _getStyles() {
+        return styles
     }
 
     _cleanUp() {
         super._cleanUp()
 
         // TODO: unmount the scene
-
-        attachedSceneCount -= 1
-        if (attachedSceneCount === 0) {
-            stylesheet.detach()
-        }
     }
 
     attributeChangedCallback(attribute, oldValue, newValue) {
@@ -46,7 +35,4 @@ class MotorHTMLScene extends MotorHTMLNode {
     _updateSceneProperty(attribute, oldValue, newValue) {
         // ...
     }
-}
-MotorHTMLScene = document.registerElement('motor-scene', MotorHTMLScene)
-
-export default MotorHTMLScene
+})

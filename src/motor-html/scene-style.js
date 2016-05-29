@@ -1,7 +1,7 @@
-import jss from '../jss'
+import nodeStyles from './node-style'
 
-export default jss.createStyleSheet({
-    motorSceneElement: {
+export default {
+    'motor-scene': Object.assign({}, nodeStyles['motor-node'], {
         //display:   'block',
         //boxSizing: 'border-box',
         position: 'relative',
@@ -15,5 +15,5 @@ export default jss.createStyleSheet({
 
         // XXX: Do we need this? Make it configurable?
         //perspectiveOrigin: '25%',
-    },
-})
+    })
+}
