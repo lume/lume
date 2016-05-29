@@ -1,38 +1,28 @@
 import 'document-register-element'
-import jss from '../jss'
 import styles from './scene-style'
 import Scene from '../motor/Scene'
 import MotorHTMLNode from './node'
 
 export default
-document.registerElement('motor-scene', 
+document.registerElement('motor-scene',
 class MotorHTMLScene extends MotorHTMLNode {
+
+    // this is called in attachedCallback, at which point this element hasa
+    // parentNode.
     _makeImperativeNode() {
         let scene = new Scene(this)
+        console.log('motor-scene parentNode', this.id, this.parentNode)
         scene.mount(this.parentNode)
         return scene
-    }
-
-    attachedCallback() {
-        super.attachedCallback()
     }
 
     _getStyles() {
         return styles
     }
 
-    _cleanUp() {
-        super._cleanUp()
+    //_cleanUp() {
+        //super._cleanUp()
 
-        // TODO: unmount the scene
-    }
-
-    attributeChangedCallback(attribute, oldValue, newValue) {
-        super.attributeChangedCallback(attribute, oldValue, newValue)
-        this._updateSceneProperty(attribute, oldValue, newValue)
-    }
-
-    _updateSceneProperty(attribute, oldValue, newValue) {
-        // ...
-    }
+        //// TODO: unmount the scene
+    //}
 })

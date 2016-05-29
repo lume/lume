@@ -27,7 +27,7 @@ class MotorHTMLNode extends window.HTMLElement {
     createdCallback() {
 
         // true if motor-node is mounted improperly (not mounted in motor-node or motor-scene)
-        this._mountError = false
+        this._attachError = false
 
         this._attached = false
         this._cleanedUp = true
@@ -48,30 +48,6 @@ class MotorHTMLNode extends window.HTMLElement {
         this.ready = new Promise(r => this._resolveReadyPromise = r)
     }
 
-    _makeImperativeNode() {
-        return new Node({}, this)
-    }
-
-    /**
-     * Either this gets called by the imperative API when the imperative API
-     * makes one of these elements, or it gets called when this element gets
-     * appended to another motor-node in attachedCallback.
-     * @private
-     */
-    _init(imperativeMotorNode) {
-        if (imperativeMotorNode && imperativeMotorNode instanceof Node)
-            this.node = imperativeMotorNode
-        else
-            this.node = this._makeImperativeNode()
-
-        this._signalWhenReady()
-    }
-
-    async _signalWhenReady() {
-        await this.node.mountPromise
-        this._resolveReadyPromise()
-    }
-
     attachedCallback() {
 
         // Check that motor-nodes are mounted to motor-scenes or motor-nodes.
@@ -80,8 +56,13 @@ class MotorHTMLNode extends window.HTMLElement {
         // (f.e. making the scene container have a height).
         // TODO: different check needed when using is="" attributes.
         if (this.nodeName == 'MOTOR-NODE') {
-            if (! (this.parentNode.nodeName == 'MOTOR-NODE' || this.parentNode.nodeName == 'MOTOR-SCENE') || this.parentNode._mountError) {
-                this._mountError = true
+            if (
+                !( this.parentNode.nodeName == 'MOTOR-NODE'
+                    || this.parentNode.nodeName == 'MOTOR-SCENE')
+                || this.parentNode._attachError
+            ) {
+
+                this._attachError = true
                 throw new Error('<motor-node> elements must be appended only to <motor-scene> or other <motor-node> elements.')
             }
         }
@@ -111,11 +92,16 @@ class MotorHTMLNode extends window.HTMLElement {
 
     _createStylesheet() {
 
-        if (!instanceCountByConstructor[this.constructor.name]) instanceCountByConstructor[this.constructor.name] = 0
+        if (!instanceCountByConstructor[this.constructor.name])
+            instanceCountByConstructor[this.constructor.name] = 0
+
         instanceCountByConstructor[this.constructor.name] += 1
+
         if (instanceCountByConstructor[this.constructor.name] === 1) {
+
             // XXX create stylesheet inside animation frame?
-            stylesheets[this.constructor.name] = jss.createStyleSheet(this._getStyles()).attach()
+            stylesheets[this.constructor.name] =
+                jss.createStyleSheet(this._getStyles()).attach()
         }
 
         return stylesheets[this.constructor.name]
@@ -125,10 +111,36 @@ class MotorHTMLNode extends window.HTMLElement {
         return styles
     }
 
+    /**
+     * Either this gets called by the imperative API when the imperative API
+     * makes one of these elements, or it gets called when this element gets
+     * appended to another motor-node in attachedCallback.
+     * @private
+     */
+    _init(imperativeMotorNode) {
+        if (imperativeMotorNode && imperativeMotorNode instanceof Node)
+            this.node = imperativeMotorNode
+        else
+            this.node = this._makeImperativeNode()
+
+        this._signalWhenReady()
+    }
+
+    // this is called in attachedCallback, at which point this element hasa
+    // parentNode.
+    _makeImperativeNode() {
+        return new Node({}, this)
+    }
+
+    async _signalWhenReady() {
+        await this.node.mountPromise
+        this._resolveReadyPromise()
+    }
+
     // TODO XXX: remove corresponding imperative Node from it's parent.
     async detachedCallback() {
-        if (this.nodeName == 'MOTOR-NODE' && this._mountError) {
-            this._mountError = false
+        if (this.nodeName == 'MOTOR-NODE' && this._attachError) {
+            this._attachError = false
             return
         }
 
