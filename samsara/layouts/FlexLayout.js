@@ -68,31 +68,57 @@ define(function(require, exports, module){
         },
         push : function(item, flex){
             var length = this.lengthStream.push(item.size);
-            var transform = length.map(this.transformMap);
-
-            var node;
-            if (flex !== undefined){
-                this.totalFlex.set(this.totalFlex.get() + flex);
-                // Flexible sized item: layout defines the size and transform
-                var size = Stream.lift(function(availableLength, totalFlex){
-                    if (!availableLength) return false;
-                    var itemLength = availableLength * (flex / totalFlex);
-                    return (this.options.direction === CONSTANTS.DIRECTION.X)
-                        ? [itemLength, undefined]
-                        : [undefined, itemLength];
-                }.bind(this), [this.availableLength, this.totalFlex]);
-
-                node = {transform : transform, size : size};
-            }
-            else {
-                // Fixed size item: layout only defines the transform
-                this.usedLength.push(item.size);
-                node = {transform : transform};
-            }
-
+            var node = createNodeFromLength.call(this, length, flex);
             this.add(node).add(item);
+        },
+        unshift : function(item, flex){
+            var length = this.lengthStream.unshift(item.size);
+            var node = createNodeFromLength.call(this, length, flex);
+            this.add(node).add(item);
+        },
+        insertAfter : function(prevItem, item, flex){
+            var length = this.lengthStream.insertAfter(prevItem.size, item.size);
+            var node = createNodeFromLength.call(this, length, flex);
+            this.add(node).add(item);
+        },
+        insertBefore : function(postItem, item, flex){
+            if (!postItem) return;
+            var length = this.stream.insertBefore(postItem.size, item.size);
+            var node = createNodeFromLength.call(this, length, flex);
+            this.add(node).add(item);
+        },
+        removeItem : function(item){
+            this.lengthStream.remove(item.size);
+            item.remove();
+        },
+        shift : function(){
+            this.lengthStream.shift();
+            item.remove();
         }
     }, CONSTANTS);
+
+    function createNodeFromLength(length, flex){
+        var transform = length.map(this.transformMap);
+
+        if (flex !== undefined){
+            this.totalFlex.set(this.totalFlex.get() + flex);
+            // Flexible sized item: layout defines the size and transform
+            var size = Stream.lift(function(availableLength, totalFlex){
+                if (!availableLength) return false;
+                var itemLength = availableLength * (flex / totalFlex);
+                return (this.options.direction === CONSTANTS.DIRECTION.X)
+                    ? [itemLength, undefined]
+                    : [undefined, itemLength];
+            }.bind(this), [this.availableLength, this.totalFlex]);
+
+            return {transform : transform, size : size};
+        }
+        else {
+            // Fixed size item: layout only defines the transform
+            this.usedLength.push(item.size);
+            return {transform : transform};
+        }
+    }
 
     module.exports = FlexLayout;
 });
