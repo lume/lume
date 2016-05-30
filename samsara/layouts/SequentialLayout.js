@@ -70,8 +70,12 @@ define(function(require, exports, module) {
             var transform = createTransformFromLength.call(this, length, sources);
             this.add({transform : transform}).add(item);
         },
-        remove : function(item){
+        removeItem : function(item){
             this.stream.remove(item.size);
+            item.remove();
+        },
+        shift : function(){
+            this.stream.shift();
             item.remove();
         }
     }, CONSTANTS);
