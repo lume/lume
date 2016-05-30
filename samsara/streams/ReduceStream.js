@@ -79,6 +79,10 @@ define(function(require, exports, module) {
         else this.pop();
     };
 
+    ReduceStream.prototype.shift = function() {
+        this.remove(this.next);
+    };
+
     ReduceStream.prototype.insertAfter = function(target, value) {
         var curr = getNode.call(this, target);
         var next = curr.next;
