@@ -60,22 +60,20 @@ define(function(require, exports, module) {
             this.add({transform : transform}).add(item);
         },
         insertAfter : function(prevItem, item, sources) {
+            if (!prevItem) return this.push(item, sources);
             var length = this.stream.insertAfter(prevItem.size, item.size);
             var transform = createTransformFromLength.call(this, length, sources);
             this.add({transform : transform}).add(item);
         },
         insertBefore : function(postItem, item, sources){
-            if (!postItem) return;
+            if (!postItem) return this.unshift(item, sources);
             var length = this.stream.insertBefore(postItem.size, item.size);
             var transform = createTransformFromLength.call(this, length, sources);
             this.add({transform : transform}).add(item);
         },
         removeItem : function(item){
+            if (!item || !item.size) return;
             this.stream.remove(item.size);
-            item.remove();
-        },
-        shift : function(){
-            this.stream.shift();
             item.remove();
         }
     }, CONSTANTS);
