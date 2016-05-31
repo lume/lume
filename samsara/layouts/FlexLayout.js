@@ -94,10 +94,6 @@ define(function(require, exports, module){
         removeItem : function(item){
             this.lengthStream.remove(item.size);
             item.remove();
-        },
-        shift : function(){
-            this.lengthStream.shift();
-            item.remove();
         }
     }, CONSTANTS);
 
