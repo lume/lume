@@ -4,7 +4,6 @@ define(function(require, exports, module) {
     var Transform = require('../core/Transform');
     var View = require('../core/View');
     var ReduceStream = require('../streams/ReduceStream');
-    var Stream = require('../streams/Stream');
 
     var CONSTANTS = {
         DIRECTION : {
@@ -13,6 +12,7 @@ define(function(require, exports, module) {
         }
     };
 
+    // Default map to convert displacement to transform
     var DEFAULT_LENGTH_MAP = function(length){
         return (this.options.direction === CONSTANTS.DIRECTION.X)
             ? Transform.translateX(length)
@@ -46,31 +46,71 @@ define(function(require, exports, module) {
             
             this.output.subscribe(this.stream.head.output);
         },
+        /*
+        * Set a custom map from length displacements to transforms.
+        * `this` will automatically be bound to the instance.
+        *
+        * @method setLengthMap
+        * @param map [Function] Map `(length) -> transform`
+        */
         setLengthMap : function(map){
             this.transformMap = map.bind(this);
         },
-        push : function(item, sources) {
+        /*
+         * Set a custom map from length displacements to transforms.
+         * Within the map function, `this` will automatically be bound to the instance.
+         *
+         * @method push
+         * @param map [Function] Map `(length) -> transform`
+         */
+        push : function(item) {
             var length = this.stream.push(item.size);
-            var transform = createTransformFromLength.call(this, length, sources);
+            var transform = length.map(this.transformMap);
             this.add({transform : transform}).add(item);
         },
-        unshift : function(item, sources){
+        /*
+         * Add a renderable to the beginning of the layout
+         *
+         * @method unshift
+         * @param item {Surface|View} Renderable
+         */
+        unshift : function(item){
             var length = this.stream.unshift(item.size);
-            var transform = createTransformFromLength.call(this, length, sources);
+            var transform = length.map(this.transformMap);
             this.add({transform : transform}).add(item);
         },
-        insertAfter : function(prevItem, item, sources) {
-            if (!prevItem) return this.push(item, sources);
+        /*
+         * Add a renderable after a specified renderable
+         *
+         * @method insertAfter
+         * @param prevItem {Surface|View} Renderable to insert after
+         * @param item {Surface|View}     Renderable to insert
+         */
+        insertAfter : function(prevItem, item) {
+            if (!prevItem) return this.push(item);
             var length = this.stream.insertAfter(prevItem.size, item.size);
-            var transform = createTransformFromLength.call(this, length, sources);
+            var transform = length.map(this.transformMap);
             this.add({transform : transform}).add(item);
         },
-        insertBefore : function(postItem, item, sources){
-            if (!postItem) return this.unshift(item, sources);
+        /*
+         * Add a renderable before a specified renderable
+         *
+         * @method insertAfter
+         * @param prevItem {Surface|View} Renderable to insert before
+         * @param item {Surface|View}     Renderable to insert
+         */
+        insertBefore : function(postItem, item){
+            if (!postItem) return this.unshift(item);
             var length = this.stream.insertBefore(postItem.size, item.size);
-            var transform = createTransformFromLength.call(this, length, sources);
+            var transform = length.map(this.transformMap);
             this.add({transform : transform}).add(item);
         },
+        /*
+         * Remove a renderable
+         *
+         * @method removeItem
+         * @param item {Surface|View} Item to remove
+         */
         removeItem : function(item){
             if (!item || !item.size) return;
             this.stream.remove(item.size);
@@ -78,14 +118,5 @@ define(function(require, exports, module) {
         }
     }, CONSTANTS);
 
-    function createTransformFromLength(length, sources){
-        if (sources){
-            sources = sources.slice();
-            sources.unshift(length);
-            return Stream.lift(this.transformMap, sources);
-        }
-        else return length.map(this.transformMap);
-    }
-    
     module.exports = SequentialLayout;
 }); 
