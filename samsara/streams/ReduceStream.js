@@ -42,7 +42,6 @@ define(function(require, exports, module) {
     };
 
     ReduceStream.prototype.pop = function() {
-        this.head = this.head;
         var prev = this.head.prev;
 
         sever(prev, this.head);
@@ -62,6 +61,8 @@ define(function(require, exports, module) {
         sever(curr, next);
         connect(curr, newNode);
         connect(newNode, next);
+
+        this.output.set(0);
         
         return newNode.input;
     };
@@ -75,12 +76,14 @@ define(function(require, exports, module) {
             sever(curr, next);
             sever(prev, curr);
             connect(prev, next);
+
+            this.output.set(0);
         }
         else this.pop();
     };
 
-    ReduceStream.prototype.shift = function() {
-        this.remove(this.next);
+    ReduceStream.prototype.shift = function(){
+        this.remove(this.next.value);
     };
 
     ReduceStream.prototype.insertAfter = function(target, value) {
