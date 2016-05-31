@@ -14,7 +14,7 @@ define(function(require, exports, module){
         }
     };
 
-    // Map to convert displacement to transform
+    // Default map to convert displacement to transform
     var DEFAULT_LENGTH_MAP = function(length){
         return (this.options.direction === CONSTANTS.DIRECTION.X)
             ? Transform.translateX(length)
@@ -22,9 +22,10 @@ define(function(require, exports, module){
     };
 
     /**
-     * A layout which arranges items vertically or horizontally and
-     *  with sizes prescribed by ratios of a containing size. These
-     *  ratios can be animated.
+     * A layout which arranges items vertically or horizontally within a containing size.
+     *  Items with a definite size in the specified direction keep their size, where
+     *  items with an `undefined` size in the specified direction have a flexible size.
+     *  Flexible sized items split up the left over size relative to their flex value.
      *
      * @class FlexLayout
      * @constructor
@@ -32,7 +33,6 @@ define(function(require, exports, module){
      * @extends Core.View
      * @param [options] {Object}                        Options
      * @param [options.direction]{Number}               Direction to lay out items
-     * @param [options.ratios] {Transitionable|Array}   The proportions
      */
     var FlexLayout = View.extend({
         defaults : {
@@ -63,27 +63,64 @@ define(function(require, exports, module){
             // Map to convert displacement to transform
             this.setLengthMap(DEFAULT_LENGTH_MAP);
         },
+        /*
+         * Set a custom map from length displacements to transforms.
+         * `this` will automatically be bound to the instance.
+         *
+         * @method setLengthMap
+         * @param map [Function] Map `(length) -> transform`
+         */
         setLengthMap : function(map){
             this.transformMap = map.bind(this);
         },
+        /*
+         * Set a custom map from length displacements to transforms.
+         * Within the map function, `this` will automatically be bound to the instance.
+         *
+         * @method push
+         * @param map [Function] Map `(length) -> transform`
+         */
         push : function(item, flex){
             if (flex === undefined) this.usedLength.push(item.size);
             var length = this.lengthStream.push(item.size);
             var node = createNodeFromLength.call(this, length, flex);
             this.add(node).add(item);
         },
+        /*
+         * Add a renderable to the beginning of the layout
+         *
+         * @method unshift
+         * @param item {Surface|View} Renderable
+         * @param flex {Number}       Flex amount
+         */
         unshift : function(item, flex){
             if (flex === undefined) this.usedLength.push(item.size);
             var length = this.lengthStream.unshift(item.size);
             var node = createNodeFromLength.call(this, length, flex);
             this.add(node).add(item);
         },
+        /*
+         * Add a renderable after a specified renderable
+         *
+         * @method insertAfter
+         * @param prevItem {Surface|View} Renderable to insert after
+         * @param item {Surface|View}     Renderable to insert
+         * @param flex {Number}           Flex amount
+         */
         insertAfter : function(prevItem, item, flex){
             if (flex === undefined) this.usedLength.push(item.size);
             var length = this.lengthStream.insertAfter(prevItem.size, item.size);
             var node = createNodeFromLength.call(this, length, flex);
             this.add(node).add(item);
         },
+        /*
+         * Add a renderable before a specified renderable
+         *
+         * @method insertAfter
+         * @param prevItem {Surface|View} Renderable to insert before
+         * @param item {Surface|View}     Renderable to insert
+         * @param flex {Number}           Flex amount
+         */
         insertBefore : function(postItem, item, flex){
             if (!postItem) return;
             if (flex === undefined) this.usedLength.push(item.size);
@@ -91,6 +128,12 @@ define(function(require, exports, module){
             var node = createNodeFromLength.call(this, length, flex);
             this.add(node).add(item);
         },
+        /*
+         * Remove a renderable
+         *
+         * @method removeItem
+         * @param item {Surface|View} Item to remove
+         */
         removeItem : function(item){
             this.lengthStream.remove(item.size);
             item.remove();
