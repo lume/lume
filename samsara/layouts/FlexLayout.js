@@ -67,22 +67,26 @@ define(function(require, exports, module){
             this.transformMap = map.bind(this);
         },
         push : function(item, flex){
+            if (flex === undefined) this.usedLength.push(item.size);
             var length = this.lengthStream.push(item.size);
             var node = createNodeFromLength.call(this, length, flex);
             this.add(node).add(item);
         },
         unshift : function(item, flex){
+            if (flex === undefined) this.usedLength.push(item.size);
             var length = this.lengthStream.unshift(item.size);
             var node = createNodeFromLength.call(this, length, flex);
             this.add(node).add(item);
         },
         insertAfter : function(prevItem, item, flex){
+            if (flex === undefined) this.usedLength.push(item.size);
             var length = this.lengthStream.insertAfter(prevItem.size, item.size);
             var node = createNodeFromLength.call(this, length, flex);
             this.add(node).add(item);
         },
         insertBefore : function(postItem, item, flex){
             if (!postItem) return;
+            if (flex === undefined) this.usedLength.push(item.size);
             var length = this.stream.insertBefore(postItem.size, item.size);
             var node = createNodeFromLength.call(this, length, flex);
             this.add(node).add(item);
@@ -115,7 +119,6 @@ define(function(require, exports, module){
         }
         else {
             // Fixed size item: layout only defines the transform
-            this.usedLength.push(item.size);
             return {transform : transform};
         }
     }
