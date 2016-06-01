@@ -4,8 +4,10 @@ define(function(require, exports, module) {
     var SimpleStream = require('./SimpleStream');
     var Observable = require('./Observable');
 
-    function ReduceStream(reducer, value) {
+    function ReduceStream(reducer, value, extras) {
         this.reducer = reducer;
+        this.extras = extras;
+
         this.prev = null;
         this.next = null;
 
@@ -15,7 +17,9 @@ define(function(require, exports, module) {
         if (value) {
             this.value = value;
             this.input = new SimpleStream();
-            this.output = Stream.lift(this.reducer, [this.input, this.value]);
+            this.output = (extras)
+                ? Stream.lift(this.reducer, [this.input, this.value].concat(extras))
+                : Stream.lift(this.reducer, [this.input, this.value]);
         }
         else {
             this.value = null;
@@ -32,7 +36,7 @@ define(function(require, exports, module) {
         // refire the initial value if adding to an empty list
         if (this.head === this) this.output.set(0);
 
-        var sizeArray = new ReduceStream(this.reducer, stream);
+        var sizeArray = new ReduceStream(this.reducer, stream, this.extras);
         connect(this.head, sizeArray);
 
         this.head = sizeArray;
@@ -56,7 +60,7 @@ define(function(require, exports, module) {
 
         if (!next) return this.push(value);
 
-        var newNode = new ReduceStream(this.reducer, value);
+        var newNode = new ReduceStream(this.reducer, value, this.extras);
 
         sever(curr, next);
         connect(curr, newNode);
@@ -65,21 +69,6 @@ define(function(require, exports, module) {
         this.output.set(0);
         
         return newNode.input;
-    };
-
-    ReduceStream.prototype.remove = function(value) {
-        var curr = getNode.call(this, value);
-        var prev = curr.prev;
-        var next = curr.next;
-
-        if (next) {
-            sever(curr, next);
-            sever(prev, curr);
-            connect(prev, next);
-
-            this.output.set(0);
-        }
-        else this.pop();
     };
 
     ReduceStream.prototype.shift = function(){
@@ -91,7 +80,7 @@ define(function(require, exports, module) {
         var next = curr.next;
 
         if (next) {
-            var newNode = new ReduceStream(this.reducer, value);
+            var newNode = new ReduceStream(this.reducer, value, this.extras);
 
             sever(curr, next);
             connect(newNode, next);
@@ -107,13 +96,28 @@ define(function(require, exports, module) {
         var prev = curr.prev;
 
         if (prev != this){
-            var newNode = new ReduceStream(this.reducer, value);
+            var newNode = new ReduceStream(this.reducer, value, this.extras);
             sever(prev, curr);
             connect(newNode, curr);
             connect(prev, newNode);
             return newNode.input;
         }
         else return this.unshift(value);
+    };
+
+    ReduceStream.prototype.remove = function(value){
+        var curr = getNode.call(this, value);
+        var prev = curr.prev;
+        var next = curr.next;
+
+        if (next){
+            sever(curr, next);
+            sever(prev, curr);
+            connect(prev, next);
+
+            this.output.set(0);
+        }
+        else this.pop();
     };
 
     function getNode(value){
