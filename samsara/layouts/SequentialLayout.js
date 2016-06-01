@@ -37,10 +37,18 @@ define(function(require, exports, module) {
             spacing : 0
         }, 
         initialize : function initialize(options) {
-            this.stream = new ReduceStream(function(prev, size) {
-                if (!size) return false;
-                return prev + size[options.direction] + options.spacing;
-            });
+            if (typeof options.spacing === 'number'){
+                this.stream = new ReduceStream(function(prev, size){
+                    if (!size) return false;
+                    return prev + size[options.direction] + options.spacing;
+                }.bind(this));
+            }
+            else {
+                this.stream = new ReduceStream(function(prev, size, spacing){
+                    if (!size) return false;
+                    return prev + size[options.direction] + spacing;
+                }, undefined, options.spacing);
+            }
 
             this.setLengthMap(DEFAULT_LENGTH_MAP);
             
