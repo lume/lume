@@ -5,7 +5,8 @@ define(function(require, exports, module){
     var View = require('../core/View');
     var Stream = require('../streams/Stream');
     var ReduceStream = require('../streams/ReduceStream');
-    var Observable = require('../streams/Observable');
+    var Accumulator = require('../streams/Accumulator');
+    var Differential = require('../streams/Differential');
 
     var CONSTANTS = {
         DIRECTION : {
@@ -58,7 +59,7 @@ define(function(require, exports, module){
             }, [this.size, this.usedLength.headOutput]);
 
             // Total amount of flex
-            this.totalFlex = new Observable(0);
+            this.totalFlex = new Accumulator(0);
 
             // Map to convert displacement to transform
             this.setLengthMap(DEFAULT_LENGTH_MAP);
@@ -134,7 +135,14 @@ define(function(require, exports, module){
          * @method removeItem
          * @param item {Surface|View} Item to remove
          */
-        removeItem : function(item){
+        removeItem : function(item, flex){
+            if (flex === undefined) this.usedLength.remove(item.size);
+            else {
+                if (typeof flex === 'number')
+                    this.totalFlex.set(this.totalFlex.get() - flex);
+                else
+                    this.totalFlex.set(this.totalFlex.get() - flex.get());
+            }
             this.lengthStream.remove(item.size);
             item.remove();
         }
@@ -144,15 +152,32 @@ define(function(require, exports, module){
         var transform = length.map(this.transformMap);
 
         if (flex !== undefined){
-            this.totalFlex.set(this.totalFlex.get() + flex);
-            // Flexible sized item: layout defines the size and transform
-            var size = Stream.lift(function(availableLength, totalFlex){
-                if (!availableLength) return false;
-                var itemLength = availableLength * (flex / totalFlex);
-                return (this.options.direction === CONSTANTS.DIRECTION.X)
-                    ? [itemLength, undefined]
-                    : [undefined, itemLength];
-            }.bind(this), [this.availableLength, this.totalFlex]);
+            if (typeof flex === 'number'){
+                this.totalFlex.set(this.totalFlex.get() + flex);
+                // Flexible sized item: layout defines the size and transform
+                var size = Stream.lift(function(availableLength, totalFlex){
+                    if (!availableLength) return false;
+                    var itemLength = availableLength * (flex / totalFlex);
+                    return (this.options.direction === CONSTANTS.DIRECTION.X)
+                        ? [itemLength, undefined]
+                        : [undefined, itemLength];
+                }.bind(this), [this.availableLength, this.totalFlex]);
+            }
+            else {
+                this.totalFlex.set(this.totalFlex.get() + flex.get());
+
+                var flexDelta = new Differential();
+                flexDelta.subscribe(flex);
+                this.totalFlex.subscribe(flexDelta);
+
+                var size = Stream.lift(function(availableLength, flex, totalFlex){
+                    if (!availableLength) return false;
+                    var itemLength = availableLength * (flex / totalFlex);
+                    return (this.options.direction === CONSTANTS.DIRECTION.X)
+                        ? [itemLength, undefined]
+                        : [undefined, itemLength];
+                }.bind(this), [this.availableLength, flex, this.totalFlex]);
+            }
 
             return {transform : transform, size : size};
         }
