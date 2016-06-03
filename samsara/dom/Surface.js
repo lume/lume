@@ -72,7 +72,6 @@ define(function(require, exports, module) {
         this.content = '';
         this._cachedSize = null;
         this._allocator = null;
-
         this._currentTarget = null;
         this._elementOutput = new DOMOutput();
 
@@ -163,6 +162,35 @@ define(function(require, exports, module) {
             }, false);
         });
     }
+
+    /**
+     * Set or overwrite innerHTML content of this Surface.
+     *
+     * @method setContent
+     * @chainable
+     * @param content {String|DocumentFragment} HTML content
+     */
+    Surface.prototype.setContent = function setContent(content){
+        if (this.content !== content){
+            this.content = content;
+
+            dirtyQueue.push(function(){
+                if (this._currentTarget)
+                    this._elementOutput.applyContent(this._currentTarget, content);
+            }.bind(this));
+        }
+        return this;
+    };
+
+    /**
+     * Return innerHTML content of this Surface.
+     *
+     * @method getContent
+     * @return {String}
+     */
+    Surface.prototype.getContent = function getContent(){
+        return this.content;
+    };
     
     /**
      * Setter for HTML attributes.
@@ -299,35 +327,6 @@ define(function(require, exports, module) {
     };
 
     /**
-     * Set or overwrite innerHTML content of this Surface.
-     *
-     * @method setContent
-     * @chainable
-     * @param content {String|DocumentFragment} HTML content
-     */
-    Surface.prototype.setContent = function setContent(content) {
-        if (this.content !== content) {
-            this.content = content;
-
-            dirtyQueue.push(function() {
-                if (this._currentTarget)
-                    this._elementOutput.deploy(this._currentTarget, content);
-            }.bind(this));
-        }
-        return this;
-    };
-
-    /**
-     * Return innerHTML content of this Surface.
-     *
-     * @method getContent
-     * @return {String}
-     */
-    Surface.prototype.getContent = function getContent() {
-        return this.content;
-    };
-
-    /**
      * Apply the DOM's Element.querySelector to the Surface's current DOM target.
      *  Returns the first node matching the selector within the Surface's content.
      *
@@ -424,7 +423,7 @@ define(function(require, exports, module) {
      *
      * @private
      * @method setup
-     * @param allocator {ElementAllocator} Allocator
+     * @param allocator {DOMAllocator} Allocator
      */
     Surface.prototype.setup = function setup(allocator) {
         if (this._currentTarget) return;
@@ -446,12 +445,7 @@ define(function(require, exports, module) {
         for (var type in this._eventOutput.listeners)
             this._elementOutput.on(target, type, this._eventForwarder);
 
-        this._elementOutput.set(target);
-        this._elementOutput.applyClasses(target, this.classList);
-        this._elementOutput.applyProperties(target, this.properties);
-        this._elementOutput.applyAttributes(target, this.attributes);
-
-        this.deploy(target);
+        this.deploy(this._currentTarget);
     };
 
     /**
@@ -462,11 +456,6 @@ define(function(require, exports, module) {
      */
     Surface.prototype.remove = function remove() {
         var target = this._currentTarget;
-
-        this._elementOutput.removeClasses(target, this.classList);
-        this._elementOutput.removeProperties(target, this.properties);
-        this._elementOutput.removeAttributes(target, this.attributes);
-        this._elementOutput.reset(target);
 
         for (var type in this._eventOutput.listeners)
             this._elementOutput.off(target, type, this._eventForwarder);
@@ -489,7 +478,13 @@ define(function(require, exports, module) {
      */
     Surface.prototype.deploy = function deploy(target) {
         var content = this.getContent();
-        this._elementOutput.deploy(target, content);
+
+        this._elementOutput.makeVisible(target);
+        this._elementOutput.applyClasses(target, this.classList);
+        this._elementOutput.applyProperties(target, this.properties);
+        this._elementOutput.applyAttributes(target, this.attributes);
+        this._elementOutput.applyContent(target, content);
+
         this._eventOutput.emit('deploy', target);
     };
 
@@ -502,7 +497,13 @@ define(function(require, exports, module) {
      */
     Surface.prototype.recall = function recall(target) {
         this._eventOutput.emit('recall');
-        this.content = this._elementOutput.recall(target);
+
+        this._elementOutput.removeClasses(target, this.classList);
+        this._elementOutput.removeProperties(target, this.properties);
+        this._elementOutput.removeAttributes(target, this.attributes);
+        this._elementOutput.makeInvisible(target);
+
+        this.content = this._elementOutput.recallContent(target);
     };
 
     /**

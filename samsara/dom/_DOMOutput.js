@@ -150,7 +150,7 @@ define(function(require, exports, module) {
         target.removeEventListener(type, handler);
     };
 
-    DOMOutput.prototype.deploy = function deploy(target, content) {
+    DOMOutput.prototype.applyContent = function applyContent(target, content) {
         if (content instanceof Node) {
             while (target.hasChildNodes()) target.removeChild(target.firstChild);
             target.appendChild(content);
@@ -158,13 +158,13 @@ define(function(require, exports, module) {
         else target.innerHTML = content;
     };
 
-    DOMOutput.prototype.recall = function deploy(target) {
+    DOMOutput.prototype.recallContent = function recallContent(target) {
         var df = document.createDocumentFragment();
         while (target.hasChildNodes()) df.appendChild(target.firstChild);
         return df;
     };
 
-    DOMOutput.prototype.set = function set(target){
+    DOMOutput.prototype.makeVisible = function makeVisible(target){
         target.style.display = '';
         target.style.visibility = '';
 
@@ -175,7 +175,7 @@ define(function(require, exports, module) {
         }
     };
 
-    DOMOutput.prototype.reset = function reset(target){
+    DOMOutput.prototype.makeInvisible = function makeInvisible(target){
         target.style.display = 'none';
         target.style.opacity = '';
         target.style.width = '';
