@@ -52,7 +52,7 @@ define(function(require, exports, module) {
 
             this.setLengthMap(DEFAULT_LENGTH_MAP);
             
-            this.output.subscribe(this.stream.head.output);
+            this.output.subscribe(this.stream.headOutput);
         },
         /*
         * Set a custom map from length displacements to transforms.
