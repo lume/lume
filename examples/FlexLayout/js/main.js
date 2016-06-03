@@ -20,7 +20,8 @@ define(function(require, exports, module){
     var flexes = [];
     for (var i = 0; i < numSurfaces; i++) {
         var surface = createSurface();
-        var flex = new Transitionable(Math.random());
+        var flex = new Transitionable(getRandomValue());
+        bindFlex(surface, flex);
         layout.push(surface, flex);
 
         flexes.push(flex);
@@ -43,7 +44,7 @@ define(function(require, exports, module){
     ];
 
     for (var i = 0; i < actions.length; i++) {
-        var navSurface = new Surface({
+        navSurface = new Surface({
             content : actions[i],
             proportions : [1 / actions.length, false],
             classes : ['navItem', 'center', 'noselect'],
@@ -56,7 +57,8 @@ define(function(require, exports, module){
                 switch (actions[i]) {
                     case 'PUSH':
                         var surface = createSurface();
-                        var flex = new Transitionable(Math.random());
+                        var flex = new Transitionable(getRandomValue());
+                        bindFlex(surface, flex);
 
                         surfaces.push(surface);
                         flexes.push(flex);
@@ -71,7 +73,8 @@ define(function(require, exports, module){
                         break;
                     case 'UNSHIFT':
                         var surface = createSurface();
-                        var flex = new Transitionable(Math.random());
+                        var flex = new Transitionable(getRandomValue());
+                        bindFlex(surface, flex);
 
                         surfaces.unshift(surface);
                         flexes.unshift(flex);
@@ -86,7 +89,8 @@ define(function(require, exports, module){
                         break;
                     case 'INSERT':
                         var surface = createSurface();
-                        var flex = new Transitionable(Math.random());
+                        var flex = new Transitionable(getRandomValue());
+                        bindFlex(surface, flex);
 
                         var randomIndex = Math.floor(Math.random() * surfaces.length);
                         var randomSurface = surfaces[randomIndex];
@@ -98,7 +102,7 @@ define(function(require, exports, module){
                         break;
                     case 'ANIMATE':
                         flexes.forEach(function(flex){
-                            flex.set(Math.random(), {duration : 1000, curve : 'easeOutBounce'})
+                            flex.set(getRandomValue(), {duration : 1000, curve : 'easeOutBounce'})
                         });
                 }
             });
@@ -111,20 +115,43 @@ define(function(require, exports, module){
     // Add a click handler to remove surface on click
     function createSurface(){
         var surface = new Surface({
-            content : 'click to remove',
+            content : '<div><div class="title center">click to flex</div> <div class="flex-value center"></div></div>',
             size : [undefined, undefined],
-            classes : ['listItem', 'center'],
+            classes : ['listItem', 'vertical-center'],
             roundToPixel : true
         });
 
         surface.on('click', function(){
             var index = surfaces.indexOf(surface);
-            surfaces.splice(index, 1);
-            var flex = flexes.splice(index, 1);
-            layout.removeItem(surface, flex[0]);
+            var flex = flexes[index];
+
+            var currentValue = flex.get();
+            var randomValue = getRandomValue();
+            while (randomValue == currentValue)
+                randomValue = getRandomValue();
+
+            flex.set(randomValue, {duration : 500});
         });
 
         return surface;
+    }
+
+    function bindFlex(surface, flex){
+        surface.on('deploy', function(target){
+            var flexEl = target.querySelector('.flex-value');
+
+            flex.on('update', function(value){
+                flexEl.textContent = 'flex value: ' + value.toFixed(2);
+            });
+
+            flex.on('end', function(value){
+                flexEl.textContent = 'flex value: ' + value.toFixed(0);
+            });
+        })
+    }
+
+    function getRandomValue(){
+        return Math.ceil(5 * Math.random())
     }
 
     // Build Render Tree

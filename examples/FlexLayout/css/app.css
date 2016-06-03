@@ -38,6 +38,15 @@ body {
     -webkit-justify-content: center;
 }
 
+.vertical-center {
+    display: flex;
+    display: -webkit-flex;
+    align-items: center;
+    -webkit-align-items: center;
+    justify-content: center;
+    -webkit-justify-content: center;
+}
+
 .noselect {
     -webkit-touch-callout: none;
     -webkit-user-select: none;
