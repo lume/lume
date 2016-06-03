@@ -104,6 +104,14 @@ define(function(require, exports, module) {
         if (this._isVisible) element.style.opacity = opacity;
     };
 
+    DOMOutput.prototype.querySelector = function querySelector(target, selector){
+        return target.querySelector(selector);
+    };
+
+    DOMOutput.prototype.querySelectorAll = function querySelectorAll(target, selector){
+        return target.querySelectorAll(selector);
+    };
+
     DOMOutput.prototype.applyClasses = function applyClasses(target, classList) {
         for (var i = 0; i < classList.length; i++)
             target.classList.add(classList[i]);

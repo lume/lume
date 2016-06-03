@@ -327,6 +327,30 @@ define(function(require, exports, module) {
     };
 
     /**
+     * Apply the DOM's Element.querySelector to the Surface's current DOM target.
+     *  Returns the first node matching the selector within the Surface's content.
+     *
+     * @method querySelector
+     * @return {Element}
+     */
+    Surface.prototype.querySelector = function querySelector(selector){
+        if (this._currentTarget)
+            return this._elementOutput.querySelector(this._currentTarget, selector);
+    };
+
+    /**
+     * Apply the DOM's Element.querySelectorAll to the Surface's current DOM target.
+     *  Returns a list of nodes matching the selector within the Surface's content.
+     *
+     * @method querySelector
+     * @return {NodeList}
+     */
+    Surface.prototype.querySelectorAll = function querySelectorAll(selector){
+        if (this._currentTarget)
+            return this._elementOutput.querySelectorAll(this._currentTarget, selector);
+    };
+
+    /**
      * Set options for this surface
      *
      * @method setOptions
