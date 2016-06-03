@@ -73,6 +73,7 @@ define(function(require, exports, module) {
         this._cachedSize = null;
         this._allocator = null;
 
+        this._currentTarget = null;
         this._elementOutput = new DOMOutput();
 
         this._eventOutput = new EventHandler();
