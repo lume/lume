@@ -167,19 +167,18 @@ define(function(require, exports, module) {
      * Set or overwrite innerHTML content of this Surface.
      *
      * @method setContent
-     * @chainable
      * @param content {String|DocumentFragment} HTML content
      */
     Surface.prototype.setContent = function setContent(content){
         if (this.content !== content){
             this.content = content;
 
-            dirtyQueue.push(function(){
-                if (this._currentTarget)
+            if (this._currentTarget){
+                dirtyQueue.push(function(){
                     this._elementOutput.applyContent(this._currentTarget, content);
-            }.bind(this));
+                }.bind(this));
+            }
         }
-        return this;
     };
 
     /**
@@ -196,7 +195,6 @@ define(function(require, exports, module) {
      * Setter for HTML attributes.
      *
      * @method setAttributes
-     * @chainable
      * @param attributes {Object}   HTML Attributes
      */
     Surface.prototype.setAttributes = function setAttributes(attributes) {
@@ -205,12 +203,11 @@ define(function(require, exports, module) {
             if (value != undefined) this.attributes[key] = attributes[key];
         }
 
-        dirtyQueue.push(function(){
-            if (this._currentTarget)
+        if (this._currentTarget){
+            dirtyQueue.push(function(){
                 this._elementOutput.applyAttributes(this._currentTarget, attributes);
-        }.bind(this));
-
-        return this;
+            }.bind(this));
+        }
     };
 
     /**
@@ -228,19 +225,17 @@ define(function(require, exports, module) {
      *  Note: properties are camelCased, not hyphenated.
      *
      * @method setProperties
-     * @chainable
      * @param properties {Object}   CSS properties
      */
     Surface.prototype.setProperties = function setProperties(properties) {
         for (var key in properties)
             this.properties[key] = properties[key];
 
-        dirtyQueue.push(function() {
-            if (this._currentTarget)
+        if (this._currentTarget){
+            dirtyQueue.push(function(){
                 this._elementOutput.applyProperties(this._currentTarget, properties);
-        }.bind(this));
-
-        return this;
+            }.bind(this));
+        }
     };
 
     /**
@@ -257,19 +252,18 @@ define(function(require, exports, module) {
      * Add CSS class to the list of classes on this Surface.
      *
      * @method addClass
-     * @chainable
      * @param className {String}    Class name
      */
     Surface.prototype.addClass = function addClass(className) {
         if (this.classList.indexOf(className) < 0) {
             this.classList.push(className);
 
-            dirtyQueue.push(function() {
-                if (this._currentTarget)
+            if (this._currentTarget){
+                dirtyQueue.push(function(){
                     this._elementOutput.applyClasses(this._currentTarget, this.classList);
-            }.bind(this));
+                }.bind(this));
+            }
         }
-        return this;
     };
 
     /**
@@ -282,10 +276,11 @@ define(function(require, exports, module) {
         var i = this.classList.indexOf(className);
         if (i >= 0) {
             this.classList.splice(i, 1);
-            dirtyQueue.push(function() {
-                if (this._currentTarget)
+            if (this._currentTarget){
+                dirtyQueue.push(function(){
                     this._elementOutput.removeClasses(this._currentTarget, this.classList);
-            }.bind(this));
+                }.bind(this));
+            }
         }
     };
 
@@ -306,14 +301,12 @@ define(function(require, exports, module) {
      * Reset classlist.
      *
      * @method setClasses
-     * @chainable
      * @param classlist {String[]}  ClassList
      */
     Surface.prototype.setClasses = function setClasses(classList) {
         for (var i = 0; i < classList.length; i++) {
             this.addClass(classList[i]);
         }
-        return this;
     };
 
     /**
@@ -477,13 +470,11 @@ define(function(require, exports, module) {
      * @param target {Node} DOM element to set content into
      */
     Surface.prototype.deploy = function deploy(target) {
-        var content = this.getContent();
-
         this._elementOutput.makeVisible(target);
         this._elementOutput.applyClasses(target, this.classList);
         this._elementOutput.applyProperties(target, this.properties);
         this._elementOutput.applyAttributes(target, this.attributes);
-        this._elementOutput.applyContent(target, content);
+        this._elementOutput.applyContent(target, this.content);
 
         this._eventOutput.emit('deploy', target);
     };
@@ -501,9 +492,8 @@ define(function(require, exports, module) {
         this._elementOutput.removeClasses(target, this.classList);
         this._elementOutput.removeProperties(target, this.properties);
         this._elementOutput.removeAttributes(target, this.attributes);
-        this._elementOutput.makeInvisible(target);
-
         this.content = this._elementOutput.recallContent(target);
+        this._elementOutput.makeInvisible(target);
     };
 
     /**
