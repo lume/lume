@@ -27,16 +27,13 @@ define(function (require, exports, module) {
             });
 
             // Create the dots and add to the layout
-            var dots = [];
             for (var i = 0; i < options.numDots; i++){
                 var dot = new Surface({
                     size: [options.diameter, options.diameter],
                     classes : ['dot']
                 });
-                dots.push(dot);
+                dotLayout.push(dot);
             }
-
-            dotLayout.addItems(dots);
 
             // Create the main dot
             var mainDot = new Surface({
