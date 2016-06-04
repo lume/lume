@@ -16,14 +16,12 @@ define(function (require, exports, module) {
     });
 
     // Build the layout
-    var surfaces = [];
     var sizes = [];
     for (var i = 0; i < numSurfaces; i++) {
         var size = new Transitionable([undefined, 100]);
         var surface = createSurface(size);
 
         layout.push(surface);
-        surfaces.push(surface);
         sizes.push(size);
     }
 
@@ -57,54 +55,58 @@ define(function (require, exports, module) {
                         var size = new Transitionable([undefined, 0]);
                         var surface = createSurface(size);
 
-                        surfaces.push(surface);
                         sizes.push(size);
                         layout.push(surface);
 
                         size.set([undefined, 100], {duration : 200});
+                        numSurfaces++;
                         break;
                     case 'POP':
-                        if (surfaces.length === 0) return;
+                        if (numSurfaces === 0) return;
 
-                        var surface = surfaces.pop();
                         var size = sizes.pop();
 
                         size.set([undefined, 0], {duration : 200}, function(){
-                            layout.removeItem(surface);
+                            var surface = layout.pop();
+                            surface.remove();
                         });
+
+                        numSurfaces--;
                         break;
                     case 'UNSHIFT':
                         var size = new Transitionable([undefined, 0]);
                         var surface = createSurface(size);
 
-                        surfaces.unshift(surface);
                         sizes.unshift(size);
                         layout.unshift(surface);
 
                         size.set([undefined, 100], {duration : 200});
+
+                        numSurfaces++;
                         break;
                     case 'SHIFT':
-                        if (surfaces.length === 0) return;
+                        if (numSurfaces === 0) return;
 
-                        var surface = surfaces.shift();
                         var size = sizes.shift();
 
                         size.set([undefined, 0], {duration : 200}, function(){
-                            layout.removeItem(surface);
+                            var surface = layout.shift();
+                            surface.remove();
                         });
+
+                        numSurfaces--;
                         break;
                     case 'INSERT':
                         var size = new Transitionable([undefined, 0]);
                         var surface = createSurface(size);
 
-                        var randomIndex = Math.floor(Math.random() * surfaces.length);
-                        var randomSurface = surfaces[randomIndex];
+                        var randomIndex = Math.floor(Math.random() * numSurfaces);
 
-                        surfaces.splice(randomIndex, 0, surface);
                         sizes.splice(randomIndex, 0, size);
-                        layout.insertAfter(randomSurface, surface);
+                        layout.insertAfter(randomIndex, surface);
 
                         size.set([undefined, 100], {duration : 200});
+                        numSurfaces++;
                         break;
                 }
             });
@@ -124,8 +126,7 @@ define(function (require, exports, module) {
         });
 
         surface.on('click', function() {
-            var index = surfaces.indexOf(surface);
-            surfaces.splice(index, 1);
+            var index = sizes.indexOf(size);
             sizes.splice(index, 1);
 
             size.set([undefined, -spacing], {duration : 300}, function() {

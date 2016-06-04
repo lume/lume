@@ -86,7 +86,7 @@ define(function(require, exports, module) {
          * @return item
          */
         pop : function(){
-            return this.unlink(0);
+            return this.unlink(this.nodes.length - 1);
         },
         /*
          * Add a renderable to the beginning of the layout
@@ -107,7 +107,7 @@ define(function(require, exports, module) {
          * @return item
          */
         shift : function(){
-            return this.unlink(this.nodes.length - 1);
+            return this.unlink(0);
         },
         /*
          * Add a renderable after a specified renderable
@@ -162,8 +162,17 @@ define(function(require, exports, module) {
          * @return item
          */
         unlink : function(item){
+            var index;
+            if (typeof item === 'number'){
+                index = item;
+                item = this.nodes[item];
+            }
+            else index = this.nodes.indexOf(item);
+
             if (!item || !item.size) return;
+            this.nodes.splice(index, 1);
             this.stream.remove(item.size);
+
             return item;
         }
     }, CONSTANTS);
