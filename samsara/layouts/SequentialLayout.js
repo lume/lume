@@ -1,5 +1,5 @@
 /* Copyright © 2015-2016 David Valdman */
-// TODO: allow spacing to be a stream
+
 define(function(require, exports, module) {
     var Transform = require('../core/Transform');
     var View = require('../core/View');
@@ -37,6 +37,9 @@ define(function(require, exports, module) {
             spacing : 0
         }, 
         initialize : function initialize(options) {
+            // Store nodes and flex values
+            this.nodes = [];
+
             if (typeof options.spacing === 'number'){
                 this.stream = new ReduceStream(function(prev, size){
                     if (!size) return false;
@@ -65,16 +68,25 @@ define(function(require, exports, module) {
             this.transformMap = map.bind(this);
         },
         /*
-         * Set a custom map from length displacements to transforms.
-         * Within the map function, `this` will automatically be bound to the instance.
+         * Add a renderable to the end of the layout
          *
          * @method push
          * @param map [Function] Map `(length) -> transform`
          */
         push : function(item) {
+            this.nodes.push(item);
             var length = this.stream.push(item.size);
             var transform = length.map(this.transformMap);
             this.add({transform : transform}).add(item);
+        },
+        /*
+         * Unlink the last renderable in the layout
+         *
+         * @method pop
+         * @return item
+         */
+        pop : function(){
+            return this.unlink(0);
         },
         /*
          * Add a renderable to the beginning of the layout
@@ -83,20 +95,39 @@ define(function(require, exports, module) {
          * @param item {Surface|View} Renderable
          */
         unshift : function(item){
+            this.nodes.unshift(item);
             var length = this.stream.unshift(item.size);
             var transform = length.map(this.transformMap);
             this.add({transform : transform}).add(item);
         },
         /*
+         * Unlink the first renderable in the layout
+         *
+         * @method shift
+         * @return item
+         */
+        shift : function(){
+            return this.unlink(this.nodes.length - 1);
+        },
+        /*
          * Add a renderable after a specified renderable
          *
          * @method insertAfter
-         * @param prevItem {Surface|View} Renderable to insert after
-         * @param item {Surface|View}     Renderable to insert
+         * @param prevItem {NumberSurface|View} Index or renderable to insert after
+         * @param item {Surface|View}           Renderable to insert
          */
         insertAfter : function(prevItem, item) {
-            if (!prevItem) return this.push(item);
-            var length = this.stream.insertAfter(prevItem.size, item.size);
+            var index;
+            if (typeof postItem === 'number'){
+                index = postItem + 1;
+                postItem = this.nodes[postItem];
+            }
+            else index = this.nodes.indexOf(postItem) + 1;
+
+            this.nodes.splice(index, 0, item);
+
+            if (!postItem) return this.push(item);
+            var length = this.stream.insertAfter(postItem.size, item.size);
             var transform = length.map(this.transformMap);
             this.add({transform : transform}).add(item);
         },
@@ -104,25 +135,36 @@ define(function(require, exports, module) {
          * Add a renderable before a specified renderable
          *
          * @method insertAfter
-         * @param prevItem {Surface|View} Renderable to insert before
-         * @param item {Surface|View}     Renderable to insert
+         * @param prevItem {Number|Surface|View} Index or renderable to insert before
+         * @param item {Surface|View}            Renderable to insert
          */
         insertBefore : function(postItem, item){
+            var index;
+            if (typeof postItem === 'number'){
+                index = postItem - 1;
+                postItem = this.nodes[postItem];
+            }
+            else index = this.nodes.indexOf(postItem) - 1;
+
+            this.nodes.splice(index, 0, item);
+            
             if (!postItem) return this.unshift(item);
             var length = this.stream.insertBefore(postItem.size, item.size);
             var transform = length.map(this.transformMap);
             this.add({transform : transform}).add(item);
         },
         /*
-         * Remove a renderable
+         * Unlink the renderable.
+         *  To remove the renderable, call the `.remove` method on it after unlinking.
          *
-         * @method removeItem
+         * @method unlink
          * @param item {Surface|View} Item to remove
+         * @return item
          */
-        removeItem : function(item){
+        unlink : function(item){
             if (!item || !item.size) return;
             this.stream.remove(item.size);
-            item.remove();
+            return item;
         }
     }, CONSTANTS);
 
