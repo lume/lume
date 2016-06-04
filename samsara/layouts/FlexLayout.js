@@ -217,7 +217,7 @@ define(function(require, exports, module){
             if (item === undefined) return this.getFlexes();
             return (typeof item === 'number')
                 ? this.flexs[index]
-                : this.flexs[this.surfaces.indexOf(item)];
+                : this.flexs[this.nodes.indexOf(item)];
         },
         /*
          * Returns flexes of all current renderables
