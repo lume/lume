@@ -118,16 +118,16 @@ define(function(require, exports, module) {
          */
         insertAfter : function(prevItem, item) {
             var index;
-            if (typeof postItem === 'number'){
-                index = postItem + 1;
-                postItem = this.nodes[postItem];
+            if (typeof prevItem === 'number'){
+                index = prevItem + 1;
+                prevItem = this.nodes[prevItem];
             }
-            else index = this.nodes.indexOf(postItem) + 1;
+            else index = this.nodes.indexOf(prevItem) + 1;
 
             this.nodes.splice(index, 0, item);
 
-            if (!postItem) return this.push(item);
-            var length = this.stream.insertAfter(postItem.size, item.size);
+            if (!prevItem) return this.push(item);
+            var length = this.stream.insertAfter(prevItem.size, item.size);
             var transform = length.map(this.transformMap);
             this.add({transform : transform}).add(item);
         },
