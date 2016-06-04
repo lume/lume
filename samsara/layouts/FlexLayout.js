@@ -63,6 +63,10 @@ define(function(require, exports, module){
 
             // Map to convert displacement to transform
             this.setLengthMap(DEFAULT_LENGTH_MAP);
+
+            // Cached arrays for reference
+            this.nodes = [];
+            this.flexs = [];
         },
         /*
          * Set a custom map from length displacements to transforms.
@@ -82,6 +86,9 @@ define(function(require, exports, module){
          * @param map [Function] Map `(length) -> transform`
          */
         push : function(item, flex){
+            this.nodes.push(item);
+            this.flexs.push(flex);
+
             if (flex === undefined) this.usedLength.push(item.size);
             var length = this.lengthStream.push(item.size);
             var node = createNodeFromLength.call(this, length, flex);
@@ -95,6 +102,9 @@ define(function(require, exports, module){
          * @param flex {Number}       Flex amount
          */
         unshift : function(item, flex){
+            this.nodes.unshift(item);
+            this.flexs.unshift(flex);
+
             if (flex === undefined) this.usedLength.push(item.size);
             var length = this.lengthStream.unshift(item.size);
             var node = createNodeFromLength.call(this, length, flex);
@@ -104,11 +114,18 @@ define(function(require, exports, module){
          * Add a renderable after a specified renderable
          *
          * @method insertAfter
-         * @param prevItem {Surface|View} Renderable to insert after
-         * @param item {Surface|View}     Renderable to insert
-         * @param flex {Number}           Flex amount
+         * @param prevItem {Number|Surface|View}    Renderable to insert after
+         * @param item {Surface|View}               Renderable to insert
+         * @param flex {Number}                     Flex amount
          */
         insertAfter : function(prevItem, item, flex){
+            var index = (typeof prevItem === 'number')
+                ? prevItem + 1
+                : this.nodes.indexOf(prevItem) + 1;
+
+            this.nodes.splice(index, 0, item);
+            this.flexs.splice(index, 0, flex);
+
             if (flex === undefined) this.usedLength.push(item.size);
             var length = this.lengthStream.insertAfter(prevItem.size, item.size);
             var node = createNodeFromLength.call(this, length, flex);
@@ -118,12 +135,20 @@ define(function(require, exports, module){
          * Add a renderable before a specified renderable
          *
          * @method insertAfter
-         * @param prevItem {Surface|View} Renderable to insert before
-         * @param item {Surface|View}     Renderable to insert
-         * @param flex {Number}           Flex amount
+         * @param prevItem {Number|Surface|View}    Renderable to insert before
+         * @param item {Surface|View}               Renderable to insert
+         * @param flex {Number}                     Flex amount
          */
         insertBefore : function(postItem, item, flex){
             if (!postItem) return;
+
+            var index = (typeof postItem === 'number')
+                ? postItem - 1
+                : this.nodes.indexOf(postItem) - 1;
+
+            this.nodes.splice(index, 0, item);
+            this.flexs.splice(index, 0, flex);
+
             if (flex === undefined) this.usedLength.push(item.size);
             var length = this.stream.insertBefore(postItem.size, item.size);
             var node = createNodeFromLength.call(this, length, flex);
@@ -133,9 +158,16 @@ define(function(require, exports, module){
          * Remove a renderable
          *
          * @method removeItem
-         * @param item {Surface|View} Item to remove
+         * @param item {Number|Surface|View} Item to remove
          */
-        removeItem : function(item, flex){
+        removeItem : function(item){
+            var index = (typeof item === 'number')
+                ? item
+                : this.nodes.indexOf(item);
+
+            item = this.nodes.splice(index, 1)[0];
+            var flex = this.flexs.splice(index, 1)[0];
+
             if (flex === undefined) this.usedLength.remove(item.size);
             else {
                 if (typeof flex === 'number')
@@ -145,6 +177,15 @@ define(function(require, exports, module){
             }
             this.lengthStream.remove(item.size);
             item.remove();
+        },
+        getFlexFor : function(item){
+            if (item === undefined) return this.getFlexes();
+            return (typeof item === 'number')
+                ? this.flexs[index]
+                : this.flexs[this.surfaces.indexOf(item)];
+        },
+        getFlexes : function(){
+            return this.flexs;
         }
     }, CONSTANTS);
 
