@@ -64,7 +64,7 @@ define(function(require, exports, module){
             // Map to convert displacement to transform
             this.setLengthMap(DEFAULT_LENGTH_MAP);
 
-            // Cached arrays for reference
+            // Stored arrays for reference
             this.nodes = [];
             this.flexs = [];
         },
@@ -79,11 +79,11 @@ define(function(require, exports, module){
             this.transformMap = map.bind(this);
         },
         /*
-         * Set a custom map from length displacements to transforms.
-         * Within the map function, `this` will automatically be bound to the instance.
+         * Add a renderable to the end of the layout
          *
          * @method push
-         * @param map [Function] Map `(length) -> transform`
+         * @param item {Surface|View}           Renderable
+         * @param flex {Number|Transitionable}  Flex amount
          */
         push : function(item, flex){
             this.nodes.push(item);
@@ -95,11 +95,19 @@ define(function(require, exports, module){
             this.add(node).add(item);
         },
         /*
+         * Remove the last renderable in the layout
+         *
+         * @method pop
+         */
+        pop : function(){
+            this.removeItem(0);
+        },
+        /*
          * Add a renderable to the beginning of the layout
          *
          * @method unshift
-         * @param item {Surface|View} Renderable
-         * @param flex {Number}       Flex amount
+         * @param item {Surface|View}           Renderable
+         * @param flex {Number|Transitionable}  Flex amount
          */
         unshift : function(item, flex){
             this.nodes.unshift(item);
@@ -111,12 +119,20 @@ define(function(require, exports, module){
             this.add(node).add(item);
         },
         /*
+         * Remove the first renderable in the layout
+         *
+         * @method shift
+         */
+        shift : function(){
+            this.removeItem(this.nodes.length - 1);
+        },
+        /*
          * Add a renderable after a specified renderable
          *
          * @method insertAfter
-         * @param prevItem {Number|Surface|View}    Renderable to insert after
+         * @param prevItem {Number|Surface|View}    Index or renderable to insert after
          * @param item {Surface|View}               Renderable to insert
-         * @param flex {Number}                     Flex amount
+         * @param flex {Number|Transitionable}      Flex amount
          */
         insertAfter : function(prevItem, item, flex){
             var index = (typeof prevItem === 'number')
@@ -135,9 +151,9 @@ define(function(require, exports, module){
          * Add a renderable before a specified renderable
          *
          * @method insertAfter
-         * @param prevItem {Number|Surface|View}    Renderable to insert before
+         * @param prevItem {Number|Surface|View}    Index or renderable to insert before
          * @param item {Surface|View}               Renderable to insert
-         * @param flex {Number}                     Flex amount
+         * @param flex {Number|Transitionable}      Flex amount
          */
         insertBefore : function(postItem, item, flex){
             if (!postItem) return;
@@ -158,7 +174,7 @@ define(function(require, exports, module){
          * Remove a renderable
          *
          * @method removeItem
-         * @param item {Number|Surface|View} Item to remove
+         * @param item {Number|Surface|View}        Index or item to remove
          */
         removeItem : function(item){
             var index = (typeof item === 'number')
@@ -178,12 +194,25 @@ define(function(require, exports, module){
             this.lengthStream.remove(item.size);
             item.remove();
         },
+        /*
+         * Returns flex for an item or index
+         *
+         * @method getFlexFor
+         * @param item {Index|Surface|View} Index or item to get flex for
+         * @return flex {Number|Transitionable}
+         */
         getFlexFor : function(item){
             if (item === undefined) return this.getFlexes();
             return (typeof item === 'number')
                 ? this.flexs[index]
                 : this.flexs[this.surfaces.indexOf(item)];
         },
+        /*
+         * Returns flexes of all current renderables
+         *
+         * @method getFlexes
+         * @return flexes {Array}
+         */
         getFlexes : function(){
             return this.flexs;
         }
