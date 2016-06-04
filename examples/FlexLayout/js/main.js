@@ -8,11 +8,13 @@ define(function(require, exports, module){
 
     // FLEX LAYOUT
     var numSurfaces = 5;    // initial population
+    var spacing = 5;        // spacing between surfaces
 
     // Create the layout with options
     var layout = new FlexLayout({
         origin : [0.5, 1],
-        direction : SequentialLayout.DIRECTION.Y
+        direction : SequentialLayout.DIRECTION.Y,
+        spacing : spacing
     });
 
     // Build the layout
