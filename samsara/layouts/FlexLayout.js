@@ -3,6 +3,7 @@
 define(function(require, exports, module){
     var Transform = require('../core/Transform');
     var View = require('../core/View');
+    var Transitionable = require('../core/Transitionable');
     var Stream = require('../streams/Stream');
     var ReduceStream = require('../streams/ReduceStream');
     var Accumulator = require('../streams/Accumulator');
@@ -34,16 +35,22 @@ define(function(require, exports, module){
      * @extends Core.View
      * @param [options] {Object}                        Options
      * @param [options.direction]{Number}               Direction to lay out items
+     * @param [options.spacing]{Number}                 Spacing between items
      */
     var FlexLayout = View.extend({
         defaults : {
-            direction : CONSTANTS.DIRECTION.X
+            direction : CONSTANTS.DIRECTION.X,
+            spacing : 0
         },
         initialize : function initialize(options){
+            // Store nodes and flex values
+            this.nodes = [];
+            this.flexs = [];
+
             // Displacement for each item
             this.lengthStream = new ReduceStream(function(prev, size){
                 if (!size) return false;
-                return prev + size[options.direction];
+                return prev + size[options.direction] + options.spacing;
             });
 
             // Amount of length used by fixed sized items
@@ -63,10 +70,6 @@ define(function(require, exports, module){
 
             // Map to convert displacement to transform
             this.setLengthMap(DEFAULT_LENGTH_MAP);
-
-            // Stored arrays for reference
-            this.nodes = [];
-            this.flexs = [];
         },
         /*
          * Set a custom map from length displacements to transforms.
@@ -135,9 +138,12 @@ define(function(require, exports, module){
          * @param flex {Number|Transitionable}      Flex amount
          */
         insertAfter : function(prevItem, item, flex){
-            var index = (typeof prevItem === 'number')
-                ? prevItem + 1
-                : this.nodes.indexOf(prevItem) + 1;
+            var index;
+            if (typeof prevItem === 'number'){
+                index = prevItem + 1;
+                prevItem = this.nodes[prevItem];
+            }
+            else index = this.nodes.indexOf(prevItem) + 1;
 
             this.nodes.splice(index, 0, item);
             this.flexs.splice(index, 0, flex);
@@ -156,13 +162,14 @@ define(function(require, exports, module){
          * @param flex {Number|Transitionable}      Flex amount
          */
         insertBefore : function(postItem, item, flex){
-            if (!postItem) return;
+            var index;
+            if (typeof prevItem === 'number'){
+                index = prevItem - 1;
+                prevItem = this.nodes[prevItem];
+            }
+            else index = this.nodes.indexOf(prevItem) - 1;
 
-            var index = (typeof postItem === 'number')
-                ? postItem - 1
-                : this.nodes.indexOf(postItem) - 1;
-
-            this.nodes.splice(index, 0, item);
+            postItem = this.nodes.splice(index, 0, item);
             this.flexs.splice(index, 0, flex);
 
             if (flex === undefined) this.usedLength.push(item.size);
@@ -227,7 +234,7 @@ define(function(require, exports, module){
                 // Flexible sized item: layout defines the size and transform
                 var size = Stream.lift(function(availableLength, totalFlex){
                     if (!availableLength) return false;
-                    var itemLength = availableLength * (flex / totalFlex);
+                    var itemLength = (availableLength - (this.nodes.length - 1) * this.options.spacing) * (flex / totalFlex);
                     return (this.options.direction === CONSTANTS.DIRECTION.X)
                         ? [itemLength, undefined]
                         : [undefined, itemLength];
@@ -242,7 +249,7 @@ define(function(require, exports, module){
 
                 var size = Stream.lift(function(availableLength, flex, totalFlex){
                     if (!availableLength) return false;
-                    var itemLength = availableLength * (flex / totalFlex);
+                    var itemLength = (availableLength - (this.nodes.length - 1) * this.options.spacing) * (flex / totalFlex);
                     return (this.options.direction === CONSTANTS.DIRECTION.X)
                         ? [itemLength, undefined]
                         : [undefined, itemLength];
