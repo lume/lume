@@ -104,7 +104,7 @@ define(function(require, exports, module){
          * @return item
          */
         pop : function(){
-            return this.unlink(0);
+            return this.unlink(this.nodes.length - 1);
         },
         /*
          * Add a renderable to the beginning of the layout
@@ -129,7 +129,7 @@ define(function(require, exports, module){
          * @return item
          */
         shift : function(){
-            return this.unlink(this.nodes.length - 1);
+            return this.unlink(0);
         },
         /*
          * Add a renderable after a specified renderable
