@@ -62,7 +62,8 @@ define(function(require, exports, module){
                         break;
                     case 'POP':
                         if (numSurfaces === 0) return;
-                        layout.pop();
+                        var surface = layout.pop();
+                        surface.remove();
                         numSurfaces--;
                         break;
                     case 'UNSHIFT':
@@ -74,7 +75,8 @@ define(function(require, exports, module){
                         numSurfaces++;
                         break;
                     case 'SHIFT':
-                        layout.shift();
+                        var surface = layout.shift();
+                        surface.remove();
                         numSurfaces--;
                         break;
                     case 'INSERT':

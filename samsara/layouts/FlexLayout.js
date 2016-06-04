@@ -98,12 +98,13 @@ define(function(require, exports, module){
             this.add(node).add(item);
         },
         /*
-         * Remove the last renderable in the layout
+         * Unlink the last renderable in the layout
          *
          * @method pop
+         * @return item
          */
         pop : function(){
-            this.removeItem(0);
+            return this.unlink(0);
         },
         /*
          * Add a renderable to the beginning of the layout
@@ -122,12 +123,13 @@ define(function(require, exports, module){
             this.add(node).add(item);
         },
         /*
-         * Remove the first renderable in the layout
+         * Unlink the first renderable in the layout
          *
          * @method shift
+         * @return item
          */
         shift : function(){
-            this.removeItem(this.nodes.length - 1);
+            return this.unlink(this.nodes.length - 1);
         },
         /*
          * Add a renderable after a specified renderable
@@ -139,17 +141,17 @@ define(function(require, exports, module){
          */
         insertAfter : function(prevItem, item, flex){
             var index;
-            if (typeof prevItem === 'number'){
-                index = prevItem + 1;
-                prevItem = this.nodes[prevItem];
+            if (typeof postItem === 'number'){
+                index = postItem + 1;
+                postItem = this.nodes[postItem];
             }
-            else index = this.nodes.indexOf(prevItem) + 1;
+            else index = this.nodes.indexOf(postItem) + 1;
 
             this.nodes.splice(index, 0, item);
             this.flexs.splice(index, 0, flex);
 
             if (flex === undefined) this.usedLength.push(item.size);
-            var length = this.lengthStream.insertAfter(prevItem.size, item.size);
+            var length = this.lengthStream.insertAfter(postItem.size, item.size);
             var node = createNodeFromLength.call(this, length, flex);
             this.add(node).add(item);
         },
@@ -163,13 +165,13 @@ define(function(require, exports, module){
          */
         insertBefore : function(postItem, item, flex){
             var index;
-            if (typeof prevItem === 'number'){
-                index = prevItem - 1;
-                prevItem = this.nodes[prevItem];
+            if (typeof postItem === 'number'){
+                index = postItem - 1;
+                postItem = this.nodes[postItem];
             }
-            else index = this.nodes.indexOf(prevItem) - 1;
+            else index = this.nodes.indexOf(postItem) - 1;
 
-            postItem = this.nodes.splice(index, 0, item);
+            this.nodes.splice(index, 0, item);
             this.flexs.splice(index, 0, flex);
 
             if (flex === undefined) this.usedLength.push(item.size);
@@ -178,12 +180,14 @@ define(function(require, exports, module){
             this.add(node).add(item);
         },
         /*
-         * Remove a renderable
+         * Unlink the renderable.
+         *  To remove the renderable, call the `.remove` method on it after unlinking.
          *
-         * @method removeItem
+         * @method unlink
          * @param item {Number|Surface|View}        Index or item to remove
+         * @return item
          */
-        removeItem : function(item){
+        unlink : function(item){
             var index = (typeof item === 'number')
                 ? item
                 : this.nodes.indexOf(item);
@@ -199,7 +203,8 @@ define(function(require, exports, module){
                     this.totalFlex.set(this.totalFlex.get() - flex.get());
             }
             this.lengthStream.remove(item.size);
-            item.remove();
+
+            return item;
         },
         /*
          * Returns flex for an item or index
