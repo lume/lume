@@ -11,21 +11,16 @@ define(function(require, exports, module){
 
     // Create the layout with options
     var layout = new FlexLayout({
-        origin : [.5,1],
+        origin : [0.5, 1],
         direction : SequentialLayout.DIRECTION.Y
     });
 
     // Build the layout
-    var surfaces = [];
-    var flexes = [];
     for (var i = 0; i < numSurfaces; i++) {
         var surface = createSurface();
         var flex = new Transitionable(getRandomValue());
         bindFlex(surface, flex);
         layout.push(surface, flex);
-
-        flexes.push(flex);
-        surfaces.push(surface);
     }
 
     // NAVIGATION
@@ -60,50 +55,42 @@ define(function(require, exports, module){
                         var flex = new Transitionable(getRandomValue());
                         bindFlex(surface, flex);
 
-                        surfaces.push(surface);
-                        flexes.push(flex);
-
                         layout.push(surface, flex);
+                        numSurfaces++;
                         break;
                     case 'POP':
-                        if (surfaces.length === 0) return;
-                        var surface = surfaces.pop();
-                        var flex = flexes.pop();
-                        layout.removeItem(surface, flex);
+                        if (numSurfaces === 0) return;
+                        layout.removeItem(numSurfaces - 1);
+                        numSurfaces--;
                         break;
                     case 'UNSHIFT':
                         var surface = createSurface();
                         var flex = new Transitionable(getRandomValue());
                         bindFlex(surface, flex);
 
-                        surfaces.unshift(surface);
-                        flexes.unshift(flex);
-
                         layout.unshift(surface, flex);
+                        numSurfaces++;
                         break;
                     case 'SHIFT':
-                        if (surfaces.length === 0) return;
-                        var surface = surfaces.shift();
-                        var flex = flexes.shift();
-                        layout.removeItem(surface, flex);
+                        layout.removeItem(0);
+                        numSurfaces--;
                         break;
                     case 'INSERT':
                         var surface = createSurface();
                         var flex = new Transitionable(getRandomValue());
                         bindFlex(surface, flex);
 
-                        var randomIndex = Math.floor(Math.random() * surfaces.length);
-                        var randomSurface = surfaces[randomIndex];
+                        var randomIndex = Math.floor(Math.random() * numSurfaces);
+                        layout.insertAfter(randomIndex, surface, flex);
 
-                        surfaces.splice(randomIndex, 0, surface);
-                        flexes.splice(randomIndex, 0, flex);
-
-                        layout.insertAfter(randomSurface, surface, flex);
+                        numSurfaces++;
                         break;
                     case 'ANIMATE':
+                        var flexes = layout.getFlexes();
                         flexes.forEach(function(flex){
                             flex.set(getRandomValue(), {duration : 1000, curve : 'easeOutBounce'})
                         });
+                        break;
                 }
             });
         })(i);
@@ -121,18 +108,6 @@ define(function(require, exports, module){
             roundToPixel : true
         });
 
-        surface.on('click', function(){
-            var index = surfaces.indexOf(surface);
-            var flex = flexes[index];
-
-            var currentValue = flex.get();
-            var randomValue = getRandomValue();
-            while (randomValue == currentValue)
-                randomValue = getRandomValue();
-
-            flex.set(randomValue, {duration : 500});
-        });
-
         return surface;
     }
 
@@ -147,7 +122,16 @@ define(function(require, exports, module){
             flex.on('end', function(value){
                 flexEl.textContent = 'flex value: ' + value.toFixed(0);
             });
-        })
+        });
+
+        surface.on('click', function(){
+            var currentValue = flex.get();
+            var randomValue = getRandomValue();
+            while (randomValue == currentValue)
+                randomValue = getRandomValue();
+
+            flex.set(randomValue, {duration : 500});
+        });
     }
 
     function getRandomValue(){
