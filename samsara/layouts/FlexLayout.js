@@ -206,6 +206,9 @@ define(function(require, exports, module){
 
             return item;
         },
+        length : function(){
+            return this.nodes.length;
+        },
         /*
          * Returns flex for an item or index
          *
