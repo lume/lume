@@ -141,17 +141,17 @@ define(function(require, exports, module){
          */
         insertAfter : function(prevItem, item, flex){
             var index;
-            if (typeof postItem === 'number'){
-                index = postItem + 1;
-                postItem = this.nodes[postItem];
+            if (typeof prevItem === 'number'){
+                index = prevItem + 1;
+                prevItem = this.nodes[prevItem];
             }
-            else index = this.nodes.indexOf(postItem) + 1;
+            else index = this.nodes.indexOf(prevItem) + 1;
 
             this.nodes.splice(index, 0, item);
             this.flexs.splice(index, 0, flex);
 
             if (flex === undefined) this.usedLength.push(item.size);
-            var length = this.lengthStream.insertAfter(postItem.size, item.size);
+            var length = this.lengthStream.insertAfter(prevItem.size, item.size);
             var node = createNodeFromLength.call(this, length, flex);
             this.add(node).add(item);
         },
@@ -219,7 +219,7 @@ define(function(require, exports, module){
         getFlexFor : function(item){
             if (item === undefined) return this.getFlexes();
             return (typeof item === 'number')
-                ? this.flexs[index]
+                ? this.flexs[item]
                 : this.flexs[this.nodes.indexOf(item)];
         },
         /*
