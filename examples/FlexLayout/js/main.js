@@ -9,6 +9,7 @@ define(function(require, exports, module){
     // FLEX LAYOUT
     var numSurfaces = 5;    // initial population
     var spacing = 5;        // spacing between surfaces
+    var transition = {duration : 200};
 
     // Create the layout with options
     var layout = new FlexLayout({
@@ -51,41 +52,58 @@ define(function(require, exports, module){
         // Add click handler for each action
         (function(i){
             navSurface.on('click', function(){
+                var flex, surface;
                 switch (actions[i]) {
                     case 'PUSH':
-                        var surface = createSurface();
-                        var flex = new Transitionable(getRandomValue());
+                        surface = createSurface();
+                        flex = new Transitionable(0);
                         bindFlex(surface, flex);
 
                         layout.push(surface, flex);
+                        flex.set(getRandomValue(), transition);
+
                         numSurfaces++;
                         break;
                     case 'POP':
-                        if (numSurfaces === 0) return;
-                        var surface = layout.pop();
-                        surface.remove();
+                        if (numSurfaces <= 1) return;
+
+                        flex = layout.getFlexFor(numSurfaces - 1);
+                        flex.set(0, transition, function(){
+                            surface = layout.pop();
+                            surface.remove();
+                        });
+
                         numSurfaces--;
                         break;
                     case 'UNSHIFT':
-                        var surface = createSurface();
-                        var flex = new Transitionable(getRandomValue());
+                        surface = createSurface();
+                        flex = new Transitionable(0);
                         bindFlex(surface, flex);
 
                         layout.unshift(surface, flex);
+                        flex.set(getRandomValue(), transition);
+
                         numSurfaces++;
                         break;
                     case 'SHIFT':
-                        var surface = layout.shift();
-                        surface.remove();
+                        if (numSurfaces <= 1) return;
+
+                        flex = layout.getFlexFor(0);
+                        flex.set(0, transition, function(){
+                            surface = layout.shift();
+                            surface.remove();
+                        });
+
                         numSurfaces--;
                         break;
                     case 'INSERT':
-                        var surface = createSurface();
-                        var flex = new Transitionable(getRandomValue());
+                        surface = createSurface();
+                        flex = new Transitionable(0);
                         bindFlex(surface, flex);
 
                         var randomIndex = Math.floor(Math.random() * numSurfaces);
                         layout.insertAfter(randomIndex, surface, flex);
+                        flex.set(getRandomValue(), transition);
 
                         numSurfaces++;
                         break;
@@ -134,7 +152,7 @@ define(function(require, exports, module){
             while (randomValue == currentValue)
                 randomValue = getRandomValue();
 
-            flex.set(randomValue, {duration : 500});
+            flex.set(randomValue, transition);
         });
     }
 
