@@ -449,6 +449,7 @@ define(function(require, exports, module) {
      */
     Surface.prototype.remove = function remove() {
         var target = this._currentTarget;
+        if (!target) return;
 
         for (var type in this._eventOutput.listeners)
             this._elementOutput.off(target, type, this._eventForwarder);
