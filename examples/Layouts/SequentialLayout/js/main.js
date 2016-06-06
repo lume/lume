@@ -5,9 +5,9 @@ define(function (require, exports, module) {
     var Transitionable = require('samsara/core/Transitionable');
     var SequentialLayout = require('samsara/layouts/SequentialLayout');
 
-    // SEQUENTIAL LAYOUT
-    var spacing = 5;        // spacing between items
-    var numSurfaces = 5;    // initial population
+    var spacing = 5;                    // spacing between items
+    var numSurfaces = 5;                // initial population
+    var transition = {duration : 200};  // animation transition
 
     // Create the layout with options
     var layout = new SequentialLayout({
@@ -58,7 +58,7 @@ define(function (require, exports, module) {
                         sizes.push(size);
                         layout.push(surface);
 
-                        size.set([undefined, 100], {duration : 200});
+                        size.set([undefined, 100], transition);
                         numSurfaces++;
                         break;
                     case 'POP':
@@ -66,7 +66,7 @@ define(function (require, exports, module) {
 
                         var size = sizes.pop();
 
-                        size.set([undefined, 0], {duration : 200}, function(){
+                        size.set([undefined, 0], transition, function(){
                             var surface = layout.pop();
                             surface.remove();
                         });
@@ -80,7 +80,7 @@ define(function (require, exports, module) {
                         sizes.unshift(size);
                         layout.unshift(surface);
 
-                        size.set([undefined, 100], {duration : 200});
+                        size.set([undefined, 100], transition);
 
                         numSurfaces++;
                         break;
@@ -89,7 +89,7 @@ define(function (require, exports, module) {
 
                         var size = sizes.shift();
 
-                        size.set([undefined, 0], {duration : 200}, function(){
+                        size.set([undefined, 0], transition, function(){
                             var surface = layout.shift();
                             surface.remove();
                         });
@@ -105,7 +105,7 @@ define(function (require, exports, module) {
                         sizes.splice(randomIndex, 0, size);
                         layout.insertAfter(randomIndex, surface);
 
-                        size.set([undefined, 100], {duration : 200});
+                        size.set([undefined, 100], transition);
                         numSurfaces++;
                         break;
                 }
@@ -129,8 +129,9 @@ define(function (require, exports, module) {
             var index = sizes.indexOf(size);
             sizes.splice(index, 1);
 
-            size.set([undefined, -spacing], {duration : 300}, function() {
-                layout.removeItem(surface);
+            size.set([undefined, -spacing], transition, function() {
+                layout.unlink(surface);
+                surface.remove();
             });
         });
 
