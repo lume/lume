@@ -93,6 +93,13 @@ define(function(require, exports, module) {
         add : function add(){
             return RenderTreeNode.prototype.add.apply(this._addNode, arguments);
         },
+        /**
+         * Remove the View from the RenderTree. All Surfaces added to the View
+         *  will also be removed. The View can be added back at a later time and
+         *  all of its data and Surfaces will be restored.
+         *
+         * @method remove
+         */
         remove : function remove(){
             RenderTreeNode.prototype.remove.apply(this._node, arguments);
         },

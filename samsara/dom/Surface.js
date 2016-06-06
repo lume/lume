@@ -442,9 +442,11 @@ define(function(require, exports, module) {
     };
 
     /**
-     * Remove all Samsara-relevant data from the Surface.
+     * Clear the HTML contents of the Surface and remove it from the Render Tree.
+     *  The DOM node the Surface occupied will be freed to a pool and can be used by another Surface.
+     *  The Surface can be added to the render tree again and all its data (properties, event listeners, etc)
+     *  will be restored.
      *
-     * @private
      * @method remove
      */
     Surface.prototype.remove = function remove() {
