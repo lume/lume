@@ -76,7 +76,7 @@ define(function(require, exports, module){
          * `this` will automatically be bound to the instance.
          *
          * @method setLengthMap
-         * @param map [Function] Map `(length) -> transform`
+         * @param map {Function} Map `(length) -> transform`
          */
         setLengthMap : function(map){
             this.transformMap = map.bind(this);
