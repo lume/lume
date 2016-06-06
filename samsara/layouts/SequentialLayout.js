@@ -4,6 +4,7 @@ define(function(require, exports, module) {
     var Transform = require('../core/Transform');
     var View = require('../core/View');
     var ReduceStream = require('../streams/ReduceStream');
+    var Stream = require('../streams/Stream');
 
     var CONSTANTS = {
         DIRECTION : {
@@ -56,6 +57,15 @@ define(function(require, exports, module) {
             this.setLengthMap(DEFAULT_LENGTH_MAP);
             
             this.output.subscribe(this.stream.headOutput);
+
+            // SequentialLayout derives its size from its content
+            var size = [];
+            this.size = Stream.lift(function(parentSize, length){
+                if (!parentSize || !length) return;
+                size[options.direction] = length;
+                size[1 - options.direction] = parentSize[1 - options.direction];
+                return size;
+            }, [this._size, this.stream.headOutput]);
         },
         /*
         * Set a custom map from length displacements to transforms.
