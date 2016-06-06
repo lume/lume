@@ -5,8 +5,10 @@ define(function (require, exports, module) {
     var Transitionable = require('samsara/core/Transitionable');
     var SequentialLayout = require('samsara/layouts/SequentialLayout');
 
+    // Parameters
     var spacing = 5;                    // spacing between items
     var numSurfaces = 5;                // initial population
+    var navHeight = 50;                 // nav height
     var transition = {duration : 200};  // animation transition
 
     // Create the layout with options
@@ -27,10 +29,12 @@ define(function (require, exports, module) {
 
     // NAVIGATION
     var nav = new SequentialLayout({
+        size : [undefined, navHeight],
         direction: SequentialLayout.DIRECTION.X,
         spacing : 0
     });
 
+    // List all actions in the nav bar
     var actions = [
         'PUSH',         // add at the end
         'POP',          // remove from the end
@@ -39,6 +43,7 @@ define(function (require, exports, module) {
         'INSERT'        // insert at a random index
     ];
 
+    // Build the actions
     for (var i = 0; i < actions.length; i++){
         var navSurface = new Surface({
             content : actions[i],
@@ -66,7 +71,7 @@ define(function (require, exports, module) {
 
                         var size = sizes.pop();
 
-                        size.set([undefined, 0], transition, function(){
+                        size.set([undefined, -spacing], transition, function(){
                             var surface = layout.pop();
                             surface.remove();
                         });
@@ -89,7 +94,7 @@ define(function (require, exports, module) {
 
                         var size = sizes.shift();
 
-                        size.set([undefined, 0], transition, function(){
+                        size.set([undefined, -spacing], transition, function(){
                             var surface = layout.shift();
                             surface.remove();
                         });
@@ -138,9 +143,22 @@ define(function (require, exports, module) {
         return surface;
     }
 
+    // Add a footer to show dynamic sizing.
+    var footer = new Surface({
+        content: 'footer',
+        size : [undefined, 50],
+        classes : ['footer', 'center']
+    });
+
+    var footerTransform = layout.size.map(function(size){
+        if (!size) return;
+        return Transform.translateY(size[1] + navHeight);
+    });
+
     // Build Render Tree
     var context = new Context();
-    context.add({size : [undefined, 60]}).add(nav);
-    context.add({transform : Transform.translateY(60)}).add(layout);
+    context.add(nav);
+    context.add({transform : Transform.translateY(navHeight)}).add(layout);
+    context.add({transform : footerTransform}).add(footer);
     context.mount(document.body);
 });
