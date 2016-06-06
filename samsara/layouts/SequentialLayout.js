@@ -41,31 +41,40 @@ define(function(require, exports, module) {
             // Store nodes and flex values
             this.nodes = [];
 
+            var length;
             if (typeof options.spacing === 'number'){
                 this.stream = new ReduceStream(function(prev, size){
                     if (!size) return false;
                     return prev + size[options.direction] + options.spacing;
                 }.bind(this));
+
+                length = this.stream.headOutput.map(function(length){
+                    return Math.max(length - options.spacing, 0);
+                });
             }
             else {
                 this.stream = new ReduceStream(function(prev, size, spacing){
                     if (!size) return false;
                     return prev + size[options.direction] + spacing;
                 }, undefined, options.spacing);
+
+                length = Stream.lift(function(length, spacing){
+                    return Math.max(length - spacing, 0);
+                }, [this.stream.headOutput, options.spacing]);
             }
 
             this.setLengthMap(DEFAULT_LENGTH_MAP);
             
-            this.output.subscribe(this.stream.headOutput);
+            this.output.subscribe(length);
 
             // SequentialLayout derives its size from its content
             var size = [];
             this.size = Stream.lift(function(parentSize, length){
-                if (!parentSize || !length) return;
+                if (!parentSize || length === undefined) return;
                 size[options.direction] = length;
                 size[1 - options.direction] = parentSize[1 - options.direction];
                 return size;
-            }, [this._size, this.stream.headOutput]);
+            }, [this._size, length]);
         },
         /*
         * Set a custom map from length displacements to transforms.
