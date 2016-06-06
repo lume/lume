@@ -32,6 +32,7 @@ define(function(require, exports, module){
 
             if (options.header) {
                 transform = options.header.size.map(function(size){
+                    if (!size) return false;
                     return Transform.translateY(size[1]);
                 });
 
