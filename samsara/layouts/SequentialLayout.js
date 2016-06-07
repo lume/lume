@@ -165,7 +165,7 @@ define(function(require, exports, module) {
             }
             else index = this.nodes.indexOf(postItem) - 1;
 
-            this.nodes.splice(index, 0, item);
+            this.nodes.splice(index + 1, 0, item);
             
             if (!postItem) return this.unshift(item);
             var length = this.stream.insertBefore(postItem.size, item.size);
