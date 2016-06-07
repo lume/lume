@@ -171,11 +171,11 @@ define(function(require, exports, module){
             }
             else index = this.nodes.indexOf(postItem) - 1;
 
-            this.nodes.splice(index, 0, item);
-            this.flexs.splice(index, 0, flex);
+            this.nodes.splice(index + 1, 0, item);
+            this.flexs.splice(index + 1, 0, flex);
 
             if (flex === undefined) this.usedLength.push(item.size);
-            var length = this.stream.insertBefore(postItem.size, item.size);
+            var length = this.lengthStream.insertBefore(postItem.size, item.size);
             var node = createNodeFromLength.call(this, length, flex);
             this.add(node).add(item);
         },
