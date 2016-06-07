@@ -106,9 +106,8 @@ define(function (require, exports, module) {
                         var surface = createSurface(size);
 
                         var randomIndex = Math.floor(Math.random() * numSurfaces);
-
                         sizes.splice(randomIndex, 0, size);
-                        layout.insertAfter(randomIndex, surface);
+                        layout.insertBefore(randomIndex, surface);
 
                         size.set([undefined, 100], transition);
                         numSurfaces++;
@@ -138,6 +137,8 @@ define(function (require, exports, module) {
                 layout.unlink(surface);
                 surface.remove();
             });
+
+            numSurfaces--;
         });
 
         return surface;
@@ -150,6 +151,7 @@ define(function (require, exports, module) {
         classes : ['footer', 'center']
     });
 
+    // Translate the footer beneath the content
     var footerTransform = layout.size.map(function(size){
         if (!size) return;
         return Transform.translateY(size[1] + navHeight);

@@ -6,14 +6,18 @@ define(function(require, exports, module){
     var SequentialLayout = require('samsara/layouts/SequentialLayout');
     var FlexLayout = require('samsara/layouts/FlexLayout');
 
-    // FLEX LAYOUT
-    var numSurfaces = 5;    // initial population
-    var spacing = 5;        // spacing between surfaces
-    var transition = {duration : 200};
+    // Parameters
+    var numSurfaces = 5;                // initial population
+    var spacing = 5;                    // spacing between surfaces
+    var transition = {duration : 200};  // show and hide transition
+    var animationTransition = {         // animation transition
+        duration : 600,
+        curve : 'easeOutBounce'
+    };
 
-    // Create the layout with options
+    // Create the flex layout with options
     var layout = new FlexLayout({
-        origin : [0.5, 1],
+        origin : [0, 1],
         direction : SequentialLayout.DIRECTION.Y,
         spacing : spacing
     });
@@ -102,7 +106,7 @@ define(function(require, exports, module){
                         bindFlex(surface, flex);
 
                         var randomIndex = Math.floor(Math.random() * numSurfaces);
-                        layout.insertAfter(randomIndex, surface, flex);
+                        layout.insertBefore(randomIndex, surface, flex);
                         flex.set(getRandomValue(), transition);
 
                         numSurfaces++;
@@ -110,7 +114,7 @@ define(function(require, exports, module){
                     case 'ANIMATE':
                         var flexes = layout.getFlexes();
                         flexes.forEach(function(flex){
-                            flex.set(getRandomValue(), {duration : 1000, curve : 'easeOutBounce'})
+                            flex.set(getRandomValue(), animationTransition)
                         });
                         break;
                 }
@@ -133,7 +137,9 @@ define(function(require, exports, module){
         return surface;
     }
 
+    // Update the surface's content on flex animation. Create a click event to trigger the flex.
     function bindFlex(surface, flex){
+        // Update Surface's content based on flex updates
         surface.on('deploy', function(target){
             var flexEl = target.querySelector('.flex-value');
 
@@ -146,6 +152,7 @@ define(function(require, exports, module){
             });
         });
 
+        // Create a click handler to animate the flex value
         surface.on('click', function(){
             var currentValue = flex.get();
             var randomValue = getRandomValue();
@@ -156,6 +163,7 @@ define(function(require, exports, module){
         });
     }
 
+    // Generate random integer between 1 and 5
     function getRandomValue(){
         return Math.ceil(5 * Math.random())
     }
@@ -167,7 +175,7 @@ define(function(require, exports, module){
     }).add(nav);
 
     context.add({
-        align : [.5,1],
+        align : [0, 1],
         proportions : [1, 14/15]
     }).add(layout);
 
