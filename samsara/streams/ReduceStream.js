@@ -77,6 +77,8 @@ define(function(require, exports, module) {
 
     ReduceStream.prototype.insertAfter = function(target, value) {
         var curr = getNode.call(this, target);
+        if (!curr) return;
+
         var next = curr.next;
 
         if (next) {
@@ -93,6 +95,8 @@ define(function(require, exports, module) {
 
     ReduceStream.prototype.insertBefore = function(target, value){
         var curr = getNode.call(this, target);
+        if (!curr) return;
+
         var prev = curr.prev;
 
         if (prev != this){
@@ -107,6 +111,8 @@ define(function(require, exports, module) {
 
     ReduceStream.prototype.remove = function(value){
         var curr = getNode.call(this, value);
+        if (!curr) return;
+
         var prev = curr.prev;
         var next = curr.next;
 
