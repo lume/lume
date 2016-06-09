@@ -1,12 +1,17 @@
 import 'document-register-element'
+//import 'webcomponents.js-v1/src/CustomElements/v1/native-shim'
+//import 'webcomponents.js-v1/src/CustomElements/v1/CustomElements'
+
 import styles from './node-style'
 import Node from '../motor/Node'
 import makeWebComponentBaseClass from './web-component'
 import { makeLowercaseSetterAliases } from '../motor/Utility'
 
 const WebComponent = makeWebComponentBaseClass(window.HTMLElement)
-export default
+//export default
 class MotorHTMLNode extends WebComponent {
+    constructor() { super() }
+
     createdCallback() {
         super.createdCallback()
 
@@ -142,18 +147,19 @@ class MotorHTMLNode extends WebComponent {
         // assign them dynamically.
         if (newValue !== oldValue) {
             if (attribute.match(/opacity/i))
-                this.node[attribute] = parseFloat(newValue)
-            else if (attribute.match(/sizemode/i))
+                this.node[attribute] = window.parseFloat(newValue)
+            else if (attribute.match(/sizeMode/i))
                 this.node[attribute] = parseStringArray(newValue)
             else if (
                 attribute.match(/rotation/i)
-                || attribute.match(/scale/i)
+                || attribute.match(/scale/i) // scale is TODO on imperative side.
                 || attribute.match(/position/i)
                 || attribute.match(/absoluteSize/i)
                 || attribute.match(/proportionalSize/i)
                 || attribute.match(/align/i)
                 || attribute.match(/mountPoint/i)
                 || attribute.match(/origin/i) // origin is TODO on imperative side.
+                || attribute.match(/skew/i) // skew is TODO on imperative side.
             ) {
                 this.node[attribute] = parseNumberArray(newValue)
             }
@@ -164,8 +170,10 @@ class MotorHTMLNode extends WebComponent {
     }
 }
 
-// Node methods not to proxy (private underscored methods are detected and
+// Node methods not to proxy (private underscored methods are also detected and
 // ignored).
+//
+// XXX Should use a whitelist instead of a blacklist?
 const methodProxyBlacklist = [
     'constructor',
     'parent',
@@ -178,6 +186,8 @@ const methodProxyBlacklist = [
     'removeChildren',
 ]
 
+// Creates setters/getters on the MotorHTMLNode which proxy to the
+// setters/getters on Node.
 function proxyNodeMethods() {
     const nodeProps = Object.getOwnPropertyNames(Node.prototype)
 
@@ -215,8 +225,9 @@ function proxyNodeMethods() {
 
 proxyNodeMethods()
 
-MotorHTMLNode = document.registerElement('motor-node', MotorHTMLNode)
-export default MotorHTMLNode
+//customElements.define('motor-node', MotorHTMLNode)
+export default
+document.registerElement('motor-node', MotorHTMLNode)
 
 // for use by MotorHTML, convenient since HTMLElement attributes are all
 // converted to lowercase by default, so if we don't do this then we won't be
@@ -225,20 +236,30 @@ makeLowercaseSetterAliases(Node.prototype)
 
 function parseNumberArray(str) {
     checkIsNumberArrayString(str)
-
     let numbers = str.split(',')
-
-    numbers = numbers.map(num => window.parseFloat(num))
-    return numbers
+    return {
+        x: window.parseFloat(numbers[0]),
+        y: window.parseFloat(numbers[1]),
+        z: window.parseFloat(numbers[2]),
+    }
 }
 
 function parseStringArray(str) {
+    checkIsSizeArrayString(str)
     let strings = str.split(',')
-    strings = strings.map(str => str.trim())
-    return strings
+    return {
+        x: strings[0].trim(),
+        y: strings[1].trim(),
+        z: strings[2].trim(),
+    }
 }
 
 function checkIsNumberArrayString(str) {
     if (!str.match(/^\s*(-?((\d+\.\d+)|(\d+))(\s*,\s*)?){3}\s*$/g))
         throw new Error(`Invalid array. Must be an array of numbers of length 3, for example "1, 2.5,3" without brackets. Yours was ${str}.`)
+}
+
+function checkIsSizeArrayString(str) {
+    // TODO: throw error if str is not a valid array of size mode strings.
+    return
 }

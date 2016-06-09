@@ -3,11 +3,11 @@ import jss from '../jss'
 // Very very stupid hack needed for Safari in order for us to be able to extend
 // the HTMLElement class. See:
 // https://github.com/google/traceur-compiler/issues/1709
-if (typeof window.HTMLElement != 'function') {
-    const _HTMLElement = function HTMLElement(){}
-    _HTMLElement.prototype = window.HTMLElement.prototype
-    window.HTMLElement = _HTMLElement
-}
+//if (typeof window.HTMLElement != 'function') {
+    //const _HTMLElement = function HTMLElement(){}
+    //_HTMLElement.prototype = window.HTMLElement.prototype
+    //window.HTMLElement = _HTMLElement
+//}
 
 // XXX: we can improve by clearing items after X amount of time.
 const classCache = new Map
@@ -15,8 +15,33 @@ const classCache = new Map
 let stylesheets = {}
 let instanceCountByConstructor = {}
 
+function hasHTMLElementPrototype(constructor) {
+    if (!constructor) return false
+    if (constructor === HTMLElement) return true
+    else return hasHTMLElementPrototype(constructor.prototype)
+}
+
+/**
+ * Creates a WebComponent base class dynamically, depending on which
+ * HTMLElement class you want it to extend from. Extend from WebComponent when
+ * making a new Custom Element class.
+ *
+ * @example
+ * const WebComponent = makeWebComponentBaseClass(HTMLButtonElement)
+ * class AwesomeButton extends WebComponent { ... }
+ *
+ * @param {Function} elementClass The class to that the generated WebComponent
+ * base class will extend from.
+ */
 export default
 function makeWebComponentBaseClass(elementClass) {
+    if (!elementClass) elementClass = HTMLElement
+
+    if (!hasHTMLElementPrototype(elementClass)) {
+        throw new TypeError(
+            'The argument to makeWebComponentBaseClass must be a constructor that extends from or is HTMLElement.'
+        )
+    }
 
     // if a base class that extends the given `elementClass` has already been
     // created, return it.
@@ -26,11 +51,23 @@ function makeWebComponentBaseClass(elementClass) {
     // otherwise, create it.
 
     class WebComponent extends elementClass {
+        constructor() { super(); this.createdCallback() }
         createdCallback() {
             this._attached = false
             this._initialized = false
+
+            //this.root....addEventListener('slotchange', function() {
+                //let slot = ...
+                //for (el in slot) {
+                    //el.slottedCallback(slot)
+                //}
+            //})
         }
 
+        //slottedCallback(slot) {
+        //}
+
+        connectedCallback() { this.attachedCallback() }
         attachedCallback() {
             this._attached = true
 
@@ -59,6 +96,7 @@ function makeWebComponentBaseClass(elementClass) {
             return stylesheets[this.constructor.name]
         }
 
+        disconnectedCallback() { this.detachedCallback() }
         async detachedCallback() {
             this._attached = false
 

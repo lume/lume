@@ -1,4 +1,7 @@
 import 'document-register-element'
+//import 'webcomponents.js-v1/src/CustomElements/v1/native-shim'
+//import 'webcomponents.js-v1/src/CustomElements/v1/CustomElements'
+
 import styles from './scene-style'
 import Scene from '../motor/Scene'
 import MotorHTMLNode from './node'

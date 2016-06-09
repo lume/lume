@@ -12,7 +12,7 @@ class Scene extends Node {
         this._resolveScenePromise(this)
 
         // For now, Scenes are always proportionally sized by default.
-        this._properties.size.mode = ['proportional', 'proportional', 'proportional']
+        this._properties.sizeMode = { x: 'proportional', y: 'proportional', z: 'proportional' }
     }
 
     _init() {

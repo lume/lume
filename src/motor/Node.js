@@ -24,29 +24,45 @@ class ElManager {
     }
 }
 
+class XYZValues {
+    constructor(x = 0, y = 0, z = 0) {
+        this._x = x
+        this._y = y
+        this._z = z
+    }
+
+    set x(value) {
+        this._x = value
+        if (this.onChanged instanceof Function) this.onChanged()
+    }
+    get x() { return this._x }
+
+    set y(value) {
+        this._y = value
+        if (this.onChanged instanceof Function) this.onChanged()
+    }
+    get y() { return this._y }
+
+    set z(value) {
+        this._z = value
+        if (this.onChanged instanceof Function) this.onChanged()
+    }
+    get z() { return this._z }
+}
+
 export default
 class Node {
 
     /**
      * @constructor
      *
-     * @param {Object} properties Properties object -- see example
+     * @param {Object} initialProperties Properties object -- see example
      *
      * @example
      * var node = new Node({
-     *   classes: ['open'],
-     *   position: [200, 300, 0],
-     *   rotation: [3, 0, 0],
-     *   scale: [1, 1, 1],
-     *   size: {
-     *     mode: ['absolute', 'proportional'],
-     *     absolute: [300, null],
-     *     proportional: [null, .5]
-     *   },
-     *   opacity: .9
      * })
      */
-    constructor (properties = {}, _motorHtmlNode) {
+    constructor (initialProperties = {}, _motorHtmlNode) {
         // The presence of the _motorHtmlNode signifies that the HTML interface
         // is being used, otherwise the imperative interface here is being
         // used.
@@ -61,37 +77,49 @@ class Node {
         this._mounted = false;
 
         this._parent = null // default to no parent.
+        this._children = [];
         this._scene = null // stores a ref to this Node's root Scene.
 
         // Property Cache, with default values
+        const node = this
         this._properties = {
 
             // XXX: remove these in favor of storing them directly in the
             // DOMMatrix?
-            position: [0,0,0],
-            rotation: [0,0,0],
+            position: new XYZValues(0, 0, 0),
+            rotation: new XYZValues(0, 0, 0),
 
-            origin: [0.5,0.5,0.5], // TODO, handle origin.
-            align: [0,0,0],
-            mountPoint: [0,0,0],
-            size: {
-                mode: ['absolute', 'absolute', 'absolute'],
-                absolute: [0,0,0],
-                proportional: [1,1,1]
+            // TODO: handle scale
+            scale: new XYZValues(1, 1, 1),
+
+            // TODO, handle origin, needs a setter/getter pair.
+            origin: new XYZValues(0.5, 0.5, 0.5),
+
+            align: new XYZValues(0, 0, 0),
+            mountPoint: new XYZValues(0, 0, 0),
+            sizeMode: new XYZValues('absolute', 'absolute', 'absolute'),
+            absoluteSize: new XYZValues(0, 0, 0),
+            proportionalSize: new XYZValues(1, 1, 1),
+
+            transform: new window.DOMMatrix,
+
+            style: {
+                opacity: 1,
             },
-            opacity: 1,
         };
 
-        // Style Cache
-        this._style = Object.assign({
-            transform: {
-                domMatrix: new DOMMatrix
-            }
-        }, properties.style);
+        const propertyChange = () => this._needsToBeRendered()
+        this._properties.position.onChanged = propertyChange
+        this._properties.rotation.onChanged = propertyChange
+        this._properties.scale.onChanged = propertyChange
+        this._properties.origin.onChanged = propertyChange
+        this._properties.align.onChanged = propertyChange
+        this._properties.mountPoint.onChanged = propertyChange
+        this._properties.sizeMode.onChanged = propertyChange
+        this._properties.absoluteSize.onChanged = propertyChange
+        this._properties.proportionalSize.onChanged = propertyChange
 
-        this._children = [];
-
-        this.properties = properties
+        this.properties = initialProperties
 
         // an internal promise that resolves when this Node finally belongs to
         // a scene graph with a root Scene. The resolved value is the root
@@ -253,61 +281,67 @@ class Node {
     /**
      * Set the position of the Node.
      *
-     * @param {Array.number} position An array of three numbers which are the X,
-     * Y, and Z positions (translations) to apply.
-     * @chainable
+     * @param {Object} newValue
+     * @param {number} [newValue.x] The x-axis position to apply.
+     * @param {number} [newValue.y] The y-axis position to apply.
+     * @param {number} [newValue.z] The z-axis position to apply.
      */
-    set position(position) {
-        if (!(position instanceof Array)) throw new Error('Expected an array for the Node.position property.')
-        this._properties.position = defaultZeros(position)
+    set position(newValue) {
+        if (!(newValue instanceof Object))
+            throw new TypeError('Invalid value for Node#position.')
+
+        if (newValue.x) this._properties.position._x = newValue.x
+        if (newValue.y) this._properties.position._y = newValue.y
+        if (newValue.z) this._properties.position._z = newValue.z
+
         this._needsToBeRendered()
     }
-
-    /**
-     * Get the position of the Node.
-     *
-     * @return {Array.number} An array of 3 numbers, each one representing the X,
-     * Y, and Z position of the Node (in that order).
-     */
     get position() {
         return this._properties.position
     }
 
     /**
-     * @param {Array.number} rotation A 3-item array, each item the rotation
-     * about each axis X, Y, Z, respectively, in degrees.
+     * @param {Object} newValue
+     * @param {number} [newValue.x] The x-axis rotation to apply.
+     * @param {number} [newValue.y] The y-axis rotation to apply.
+     * @param {number} [newValue.z] The z-axis rotation to apply.
      *
-     * TODO: We should also provide a setRotationAxis method to rotate about a
-     * particular axis.
+     * XXX: We should we also provide a setRotationAxis method to rotate about
+     * a particular axis? Or, maybe if a fourth `w` property is specified then
+     * x, y, and z can define a rotation axis and w be the angle.
      */
-    set rotation(rotation) {
-        this._properties.rotation = rotation
+    set rotation(newValue) {
+        if (!(newValue instanceof Object))
+            throw new TypeError('Invalid value for Node#rotation.')
+
+        if (newValue.x) this._properties.rotation._x = newValue.x
+        if (newValue.y) this._properties.rotation._y = newValue.y
+        if (newValue.z) this._properties.rotation._z = newValue.z
+
         this._needsToBeRendered()
     }
-
-    /**
-     * Get the rotation of the Node.
-     *
-     * @return {Array.number} An array of 3 numbers, each number representing the X,
-     * Y, and Z rotation of the Node (in that order) in degrees.
-     */
     get rotation() {
         return this._properties.rotation
     }
 
     /**
-     * @return {Array.number} An array of 3 numbers, each number representing
-     * the X, Y, and Z scale of the Node (in that order).
+     * @param {Object} newValue
+     * @param {number} [newValue.x] The x-axis scale to apply.
+     * @param {number} [newValue.y] The y-axis scale to apply.
+     * @param {number} [newValue.z] The z-axis scale to apply.
+     *
+     * TODO: scale is not handled yet.
      */
-    set scale(scale) {
-        this._properties.scale = scale
+    set scale(newValue) {
+        if (!(newValue instanceof Object))
+            throw new TypeError('Invalid value for Node#scale.')
+
+        if (newValue.x) this._properties.scale._x = newValue.x
+        if (newValue.y) this._properties.scale._y = newValue.y
+        if (newValue.z) this._properties.scale._z = newValue.z
+
         this._needsToBeRendered()
     }
-
-    /**
-     * @return {Array.number} An array of 3 numbers, each number representing the X,
-     * Y, and Z scale of the Node (in that order).
-     */
     get scale() {
         return this._properties.scale
     }
@@ -319,55 +353,54 @@ class Node {
      * (inclusive). 0 is fully transparent, 1 is fully opaque.
      */
     set opacity(opacity) {
-        if (!isRealNumber(opacity)) throw new Error('Expected a real number.')
-        this._style.opacity = opacity;
+        if (!isRealNumber(opacity)) throw new Error('Expected a real number for Node#opacity.')
+        this._properties.style.opacity = opacity;
         this._needsToBeRendered()
     }
-
-    /**
-     * Get this Node's opacity.
-     *
-     * @return {number} The opacity of the Node, a floating point number between 0 and 1.
-     */
     get opacity() {
-        return this._style.opacity
+        return this._properties.style.opacity
     }
 
     /**
      * Set the size mode for each axis. Possible size modes are "absolute" and "proportional".
      *
-     * @param {Array.string} mode A three-item array of strings, each item
-     * corresponding to the x, y, and z axes respectively.
+     * @param {Object} newValue
+     * @param {number} [newValue.x] The x-axis sizeMode to apply.
+     * @param {number} [newValue.y] The y-axis sizeMode to apply.
+     * @param {number} [newValue.z] The z-axis sizeMode to apply.
      */
-    set sizeMode(mode) {
-        this._properties.size.mode = mode
+    set sizeMode(newValue) {
+        if (!(newValue instanceof Object))
+            throw new TypeError('Invalid value for Node#sizeMode.')
+
+        if (newValue.x) this._properties.sizeMode._x = newValue.x
+        if (newValue.y) this._properties.sizeMode._y = newValue.y
+        if (newValue.z) this._properties.sizeMode._z = newValue.z
+
         this._needsToBeRendered()
     }
-
-    /**
-     * @return {Array.number} An array of 3 numbers, each number representing the X,
-     * Y, and Z scale of the Node (in that order).
-     */
     get sizeMode() {
-        return this._properties.size.mode
+        return this._properties.sizeMode
     }
 
     /**
-     * @param {Array} size [description]
+     * @param {Object} newValue
+     * @param {number} [newValue.x] The x-axis absoluteSize to apply.
+     * @param {number} [newValue.y] The y-axis absoluteSize to apply.
+     * @param {number} [newValue.z] The z-axis absoluteSize to apply.
      */
-    set absoluteSize(size) {
-        this._properties.size.absolute = size;
+    set absoluteSize(newValue) {
+        if (!(newValue instanceof Object))
+            throw new TypeError('Invalid value for Node#absoluteSize.')
+
+        if (newValue.x) this._properties.absoluteSize._x = newValue.x
+        if (newValue.y) this._properties.absoluteSize._y = newValue.y
+        if (newValue.z) this._properties.absoluteSize._z = newValue.z
+
         this._needsToBeRendered()
     }
-
-    /**
-     * Get an array containing the size of each axis of this node.
-     * @return {Array.number} A three-item array of numbers, each number
-     * representing the absolute size of the x, y, and z axes respectively.
-     * @readonly
-     */
     get absoluteSize() {
-        return this._properties.size.absolute
+        return this._properties.absoluteSize
     }
 
     /**
@@ -377,70 +410,85 @@ class Node {
      *
      * @readonly
      *
-     * @return {Array.number} A three-item array of numbers, each number
-     * representing the computed size of the x, y, and z axes respectively.
+     * @return {Array.number} An Oject with x, y, and z properties, each
+     * property representing the computed size of the x, y, and z axes
+     * respectively.
      *
      * TODO: traverse up the tree to find parent size when this Node's size is
      * proportional?
      */
     get actualSize() {
-        let actualSize = []
+        let actualSize = {}
 
-        if (this._properties.size.mode[0] === 'absolute') {
-            actualSize[0] = this._properties.size.absolute[0]
+        if (this._properties.sizeMode.x === 'absolute') {
+            actualSize.x = this._properties.absoluteSize.x
         }
-        else if (this._properties.size.mode[0] === 'proportional') {
-            actualSize[0] = parseInt(getComputedStyle(this._el.element).getPropertyValue('width'))
-        }
-
-        if (this._properties.size.mode[1] === 'absolute') {
-            actualSize[1] = this._properties.size.absolute[1]
-        }
-        else if (this._properties.size.mode[1] === 'proportional') {
-            actualSize[1] = parseInt(getComputedStyle(this._el.element).getPropertyValue('height'))
+        else if (this._properties.sizeMode.x === 'proportional') {
+            // TODO: avoid getComputedStyle as it causes a layout thrash.
+            actualSize.x = parseInt(getComputedStyle(this._el.element).getPropertyValue('width'))
         }
 
-        if (this._properties.size.mode[2] === 'absolute') {
-            actualSize[2] = this._properties.size.absolute[2]
+        if (this._properties.sizeMode.y === 'absolute') {
+            actualSize.y = this._properties.absoluteSize.y
         }
-        else if (this._properties.size.mode[2] === 'proportional') {
-            //actualSize[2] = parseInt(getComputedStyle(this._el.element).getPropertyValue('height'))
-            actualSize[2] = 0 // TODO
+        else if (this._properties.sizeMode.y === 'proportional') {
+            actualSize.y = parseInt(getComputedStyle(this._el.element).getPropertyValue('height'))
+        }
+
+        if (this._properties.sizeMode.z === 'absolute') {
+            actualSize.z = this._properties.absoluteSize.z
+        }
+        else if (this._properties.sizeMode.z === 'proportional') {
+            //actualSize.z = parseInt(getComputedStyle(this._el.element).getPropertyValue('height'))
+            actualSize.z = 0 // TODO
         }
 
         return actualSize
     }
 
     /**
-     * Set the size of a Node proportional to the size of it's parent Node.
+     * Set the size of a Node proportional to the size of it's parent Node. The
+     * values are a real number between 0 and 1 inclusive where 0 means 0% of
+     * the parent size and 1 means 100% of the parent size.
      *
-     * ```
-     * node.proportionalSize = [100,100,100]
-     * ```
-     *
-     * @param {Array.number} size A three-item array of numbers, each item
-     * representing the proprtional size of the x, y, and z axes respectively.
+     * @param {Object} newValue
+     * @param {number} [newValue.x] The x-axis proportionalSize to apply.
+     * @param {number} [newValue.y] The y-axis proportionalSize to apply.
+     * @param {number} [newValue.z] The z-axis proportionalSize to apply.
      */
-    set proportionalSize(size) {
-        this._properties.size.proportional = size
+    set proportionalSize(newValue) {
+        if (!(newValue instanceof Object))
+            throw new TypeError('Invalid value for Node#proportionalSize.')
+
+        if (newValue.x) this._properties.proportionalSize._x = newValue.x
+        if (newValue.y) this._properties.proportionalSize._y = newValue.y
+        if (newValue.z) this._properties.proportionalSize._z = newValue.z
+
         this._needsToBeRendered()
     }
-
     get proportionalSize() {
-        return this._properties.size.proportional
+        return this._properties.proportionalSize
     }
 
     /**
      * Set the alignment of the Node. This determines at which point in this
      * Node's parent that this Node is mounted.
-     * @param {Array.number} alignment Array of three alignment values, one for each axis.
+     *
+     * @param {Object} newValue
+     * @param {number} [newValue.x] The x-axis align to apply.
+     * @param {number} [newValue.y] The y-axis align to apply.
+     * @param {number} [newValue.z] The z-axis align to apply.
      */
-    set align(alignment) {
-        if (!(alignment instanceof Array)) throw new Error('Expected an array for the Node.align property.')
-        this._properties.align = defaultZeros(alignment)
+    set align(newValue) {
+        if (!(newValue instanceof Object))
+            throw new TypeError('Invalid value for Node#align.')
+
+        if (newValue.x) this._properties.align._x = newValue.x
+        if (newValue.y) this._properties.align._y = newValue.y
+        if (newValue.z) this._properties.align._z = newValue.z
+
         this._needsToBeRendered()
     }
-
     get align() {
         return this._properties.align
     }
@@ -448,18 +496,24 @@ class Node {
     /**
      * Set the mount point of the Node. TODO: put "mount point" into words.
      *
-     * XXX possiblyrename to "anchor" to avoid confusion with Scene.mount?
+     * XXX possibly rename to "anchor" to avoid confusion with Scene.mount?
      * Could also segway to anchors system like Qt QML.
      *
-     * @param {Array.number} mountPoint Array of three mount point values, one
-     * for each axis.
+     * @param {Object} newValue
+     * @param {number} [newValue.x] The x-axis mountPoint to apply.
+     * @param {number} [newValue.y] The y-axis mountPoint to apply.
+     * @param {number} [newValue.z] The z-axis mountPoint to apply.
      */
-    set mountPoint(mountPoint) {
-        if (!(mountPoint instanceof Array)) throw new Error('Expected an array for the Node.mountPoint property.')
-        this._properties.mountPoint = defaultZeros(mountPoint)
+    set mountPoint(newValue) {
+        if (!(newValue instanceof Object))
+            throw new TypeError('Invalid value for Node#mountPoint.')
+
+        if (newValue.x) this._properties.mountPoint._x = newValue.x
+        if (newValue.y) this._properties.mountPoint._y = newValue.y
+        if (newValue.z) this._properties.mountPoint._z = newValue.z
+
         this._needsToBeRendered()
     }
-
     get mountPoint() {
         return this._properties.mountPoint
     }
@@ -491,46 +545,42 @@ class Node {
             this._el.setClasses(properties.classes);
 
         // Position
-        if (properties.position && properties.position.length === 3)
+        if (properties.position)
             this.position = properties.position
 
         // Rotation
-        if (properties.rotation && properties.rotation.length === 3)
+        if (properties.rotation)
             this.rotation = properties.rotation
 
         // Scale
-        if (properties.scale && properties.scale.length === 3)
+        if (properties.scale)
             this.scale = properties.scale
 
         // Align
-        if (properties.align && properties.align.length === 3)
+        if (properties.align)
             this.align = properties.align
 
-        // Size
-        if (properties.size) {
+        // Size Modes
+        if (properties.sizeMode)
+            this.sizeMode = properties.sizeMode
 
-            // Size Modes
-            if (properties.size.mode && properties.size.mode.length === 2)
-                this.sizeMode = properties.size.mode
+        // Absolute Size
+        if (properties.absoluteSize)
+            this.absoluteSize = properties.absoluteSize
 
-            // Absolute Size
-            if (properties.size.absolute && properties.size.absolute.length === 2)
-                this.absoluteSize = properties.size.absolute
-
-            // Proportional Size
-            if (properties.size.proportional && properties.size.proportional.length === 2)
-                this.proportionalSize = properties.size.proportional
-
-        }
+        // Proportional Size
+        if (properties.proportionalSize)
+            this.proportionalSize = properties.proportionalSize
 
         // Opacity
-        if (typeof properties.opacity != 'undefined')
-            this.opacity = properties.opacity
+        if (properties.style) {
+            if (typeof properties.style.opacity != 'undefined')
+                this.opacity = properties.opacity
+        }
 
         this._needsToBeRendered()
-
-        return this
     }
+    // no need for a properties getter.
 
     /*
      * Trigger a re-render for this node (wait until mounted if not nounted
@@ -553,9 +603,9 @@ class Node {
     }
 
     /**
-     * Add Child
+     * Add a child node to this Node.
      *
-     * @param {[type]} childNode [description]
+     * @param {Node} childNode The child node to add.
      */
     addChild (childNode) {
         if (! (childNode instanceof Node))
@@ -680,7 +730,7 @@ class Node {
 
     _render(timestamp) {
         // applies the transform matrix to the element's style property.
-        // TODO: We shouldn't need to re-calculate the matrix every render?
+        // TODO: We shouldn't need to re-calculate the whole matrix every render?
         this._setMatrix3d(this._calculateMatrix());
 
         // TODO move to DOMRenderer
@@ -747,25 +797,25 @@ class Node {
      * @memberOf Node
      */
     _applySize () {
-        var mode = this._properties.size.mode;
-        var absolute = this._properties.size.absolute;
-        var proportional = this._properties.size.proportional;
+        var mode = this._properties.sizeMode;
+        var absolute = this._properties.absoluteSize;
+        var proportional = this._properties.proportionalSize;
 
-        if (mode[0] === 'absolute')
-            this._applyStyle('width', `${absolute[0]}px`);
-        else if (mode[0] === 'proportional')
-            this._applyStyle('width', `${proportional[0] * 100}%`);
+        if (mode.x === 'absolute')
+            this._applyStyle('width', `${absolute.x}px`);
+        else if (mode.x === 'proportional')
+            this._applyStyle('width', `${proportional.x * 100}%`);
 
-        if (mode[1] === 'absolute')
-            this._applyStyle('height', `${absolute[1]}px`);
-        else if (mode[1] === 'proportional')
-            this._applyStyle('height', `${proportional[1] * 100}%`);
+        if (mode.y === 'absolute')
+            this._applyStyle('height', `${absolute.y}px`);
+        else if (mode.y === 'proportional')
+            this._applyStyle('height', `${proportional.y * 100}%`);
 
         //TODO z axis
-        //if (mode[2] === 'absolute')
-            //this._applyStyle('height', `${absolute[2]}px`);
-        //else if (mode[2] === 'proportional')
-            //this._applyStyle('height', `${proportional[2] * 100}%`);
+        //if (mode.z === 'absolute')
+            //this._applyStyle('height', `${absolute.z}px`);
+        //else if (mode.z === 'proportional')
+            //this._applyStyle('height', `${proportional.z * 100}%`);
     }
 
     /**
@@ -782,26 +832,26 @@ class Node {
      * order of choice instead of always x,y,z order as we do here.
      */
     _calculateMatrix () {
-        let matrix = new DOMMatrix
+        let matrix = new window.DOMMatrix
 
         let alignAdjustment = [0,0,0]
         if (this._parent) { // The root Scene doesn't have a parent, for example.
             let parentSize = this._parent.actualSize
-            alignAdjustment[0] = parentSize[0] * this._properties.align[0]
-            alignAdjustment[1] = parentSize[1] * this._properties.align[1]
-            alignAdjustment[2] = parentSize[2] * this._properties.align[2]
+            alignAdjustment[0] = parentSize.x * this._properties.align.x
+            alignAdjustment[1] = parentSize.y * this._properties.align.y
+            alignAdjustment[2] = parentSize.z * this._properties.align.z
         }
 
         let mountPointAdjustment = [0,0,0]
         let thisSize = this.actualSize
-        mountPointAdjustment[0] = thisSize[0] * this._properties.mountPoint[0]
-        mountPointAdjustment[1] = thisSize[1] * this._properties.mountPoint[1]
-        mountPointAdjustment[2] = thisSize[2] * this._properties.mountPoint[2]
+        mountPointAdjustment[0] = thisSize.x * this._properties.mountPoint.x
+        mountPointAdjustment[1] = thisSize.y * this._properties.mountPoint.y
+        mountPointAdjustment[2] = thisSize.z * this._properties.mountPoint.z
 
         let appliedPosition = []
-        appliedPosition[0] = this._properties.position[0] + alignAdjustment[0] - mountPointAdjustment[0]
-        appliedPosition[1] = this._properties.position[1] + alignAdjustment[1] - mountPointAdjustment[1]
-        appliedPosition[2] = this._properties.position[2] + alignAdjustment[2] - mountPointAdjustment[2]
+        appliedPosition[0] = this._properties.position.x + alignAdjustment[0] - mountPointAdjustment[0]
+        appliedPosition[1] = this._properties.position.y + alignAdjustment[1] - mountPointAdjustment[1]
+        appliedPosition[2] = this._properties.position.z + alignAdjustment[2] - mountPointAdjustment[2]
 
         matrix.translateSelf(appliedPosition[0], appliedPosition[1], appliedPosition[2])
 
@@ -816,9 +866,9 @@ class Node {
         // which order is best? Maybe we let the user decide (with our
         // recommendation)?
         let rotation = this._properties.rotation
-        matrix.rotateAxisAngleSelf(1,0,0, rotation[0]) // x-axis rotation
-        matrix.rotateAxisAngleSelf(0,1,0, rotation[1]) // y-axis rotation
-        matrix.rotateAxisAngleSelf(0,0,1, rotation[2]) // z-axis rotation
+        matrix.rotateAxisAngleSelf(1,0,0, rotation.x)
+        matrix.rotateAxisAngleSelf(0,1,0, rotation.y)
+        matrix.rotateAxisAngleSelf(0,0,1, rotation.z)
 
         // TODO: move by positive origin after rotating.
 
@@ -834,12 +884,12 @@ class Node {
      * converting to a string here.
      */
     _applyTransform () {
-        var matrix = this._style.transform.domMatrix;
+        var matrix = this._properties.transform;
 
         // XXX: is this in the right order? UPDATE: It is.
         // TODO: Apply DOMMatrix directly to the Element once browser APIs
         // support it. Maybe we can polyfill this?
-        var transform = `matrix3d(
+        var cssMatrixString = `matrix3d(
             ${ matrix.m11 },
             ${ matrix.m12 },
             ${ matrix.m13 },
@@ -858,7 +908,7 @@ class Node {
             ${ matrix.m44 }
         )`;
 
-        this._applyStyle('transform', transform);
+        this._applyStyle('transform', cssMatrixString);
     }
 
     /**
@@ -871,9 +921,8 @@ class Node {
      * @param  {String} value    [description]
      */
     _applyStyles () {
-        for (let key of Object.keys(this._style)) {
-            if (key != 'transform')
-                this._applyStyle(key, this._style[key]);
+        for (let key of Object.keys(this._properties.style)) {
+            this._applyStyle(key, this._properties.style[key]);
         }
     }
 
@@ -895,11 +944,11 @@ class Node {
      *
      * @private
      * @param {DOMMatrix} matrix A DOMMatrix instance to set as this node's
-     * matrix. See "W3C Geometry Interfaces".
+     * transform. See "W3C Geometry Interfaces".
      */
     _setMatrix3d (matrix) {
-        this._style.transform.domMatrix = matrix
-        // ^ TODO: What's faster? Setting a new DOMMatrix (as we do here
+        this._properties.transform = matrix
+        // ^ TODO PERFORMANCE: What's faster? Setting a new DOMMatrix (as we do here
         // currently, the result of _calculateMatrix) or applying all
         // transform values to the existing DOMMatrix?
 
