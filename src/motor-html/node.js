@@ -5,7 +5,7 @@ import 'document-register-element'
 import styles from './node-style'
 import Node from '../motor/Node'
 import makeWebComponentBaseClass from './web-component'
-import { makeLowercaseSetterAliases } from '../motor/Utility'
+import { makeLowercaseSetterAliases, proxyMethods } from '../motor/Utility'
 
 const WebComponent = makeWebComponentBaseClass(window.HTMLElement)
 //export default
@@ -170,60 +170,7 @@ class MotorHTMLNode extends WebComponent {
     }
 }
 
-// Node methods not to proxy (private underscored methods are also detected and
-// ignored).
-//
-// XXX Should use a whitelist instead of a blacklist?
-const methodProxyBlacklist = [
-    'constructor',
-    'parent',
-    'children', // proxying this one would really break stuff (f.e. React)
-    'element',
-    'scene',
-    'addChild',
-    'addChildren',
-    'removeChild',
-    'removeChildren',
-]
-
-// Creates setters/getters on the MotorHTMLNode which proxy to the
-// setters/getters on Node.
-function proxyNodeMethods() {
-    const nodeProps = Object.getOwnPropertyNames(Node.prototype)
-
-    for (let prop of nodeProps) {
-        // skip the blacklisted properties
-        if (methodProxyBlacklist.includes(prop)) continue
-
-        // skip the private underscored properties
-        if (prop.indexOf('_') == 0) continue
-
-        const proxyDescriptor = {}
-        const actualDescriptor = Object.getOwnPropertyDescriptor(Node.prototype, prop)
-
-        // if the property has a setter
-        if (actualDescriptor.set) {
-            Object.assign(proxyDescriptor, {
-                set(value) {
-                    this.node[prop] = value
-                }
-            })
-        }
-
-        // if the property has a getter
-        if (actualDescriptor.get) {
-            Object.assign(proxyDescriptor, {
-                get() {
-                    return this.node[prop]
-                }
-            })
-        }
-
-        Object.defineProperty(MotorHTMLNode.prototype, prop, proxyDescriptor)
-    }
-}
-
-proxyNodeMethods()
+proxyMethods(Node, MotorHTMLNode)
 
 //customElements.define('motor-node', MotorHTMLNode)
 export default

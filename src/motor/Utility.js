@@ -51,10 +51,65 @@ function makeLowercaseSetterAliases(object) {
     }
 }
 
+// Node methods not to proxy (private underscored methods are also detected and
+// ignored).
+//
+// XXX Should use a whitelist instead of a blacklist?
+const methodProxyBlacklist = [
+    'constructor',
+    'parent',
+    'children', // proxying this one would really break stuff (f.e. React)
+    'element',
+    'scene',
+    'addChild',
+    'addChildren',
+    'removeChild',
+    'removeChildren',
+]
+
+// Creates setters/getters on the MotorHTMLNode which proxy to the
+// setters/getters on Node.
+function proxyMethods(SourceClass, TargetClass) {
+    const props = Object.getOwnPropertyNames(SourceClass.prototype)
+
+    for (let prop of props) {
+        // skip the blacklisted properties
+        if (methodProxyBlacklist.includes(prop)) continue
+
+        // skip the private underscored properties
+        if (prop.indexOf('_') == 0) continue
+
+        const proxyDescriptor = {}
+        const actualDescriptor = Object.getOwnPropertyDescriptor(SourceClass.prototype, prop)
+
+        // if the property has a setter
+        if (actualDescriptor.set) {
+            Object.assign(proxyDescriptor, {
+                set(value) {
+                    this.node[prop] = value
+                }
+            })
+        }
+
+        // if the property has a getter
+        if (actualDescriptor.get) {
+            Object.assign(proxyDescriptor, {
+                get() {
+                    return this.node[prop]
+                }
+            })
+        }
+
+        Object.defineProperty(TargetClass.prototype, prop, proxyDescriptor)
+    }
+    console.log(' -- fuck yeah!!!!!!!!!!!')
+}
+
 export {
   epsilon,
   applyCSSLabel,
   getBodySize,
   animationFrame,
   makeLowercaseSetterAliases,
+  proxyMethods,
 }
