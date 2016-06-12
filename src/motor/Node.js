@@ -31,21 +31,24 @@ class XYZValues {
         this._z = z
     }
 
+    // override this on the instance to run logic on a property change.
+    onChanged() {}
+
     set x(value) {
         this._x = value
-        if (this.onChanged instanceof Function) this.onChanged()
+        this.onChanged()
     }
     get x() { return this._x }
 
     set y(value) {
         this._y = value
-        if (this.onChanged instanceof Function) this.onChanged()
+        this.onChanged()
     }
     get y() { return this._y }
 
     set z(value) {
         this._z = value
-        if (this.onChanged instanceof Function) this.onChanged()
+        this.onChanged()
     }
     get z() { return this._z }
 }
@@ -108,7 +111,10 @@ class Node {
             },
         };
 
-        const propertyChange = () => this._needsToBeRendered()
+        const self = this
+        const propertyChange = function() {
+            self._needsToBeRendered()
+        }
         this._properties.position.onChanged = propertyChange
         this._properties.rotation.onChanged = propertyChange
         this._properties.scale.onChanged = propertyChange
@@ -290,9 +296,9 @@ class Node {
         if (!(newValue instanceof Object))
             throw new TypeError('Invalid value for Node#position.')
 
-        if (newValue.x) this._properties.position._x = newValue.x
-        if (newValue.y) this._properties.position._y = newValue.y
-        if (newValue.z) this._properties.position._z = newValue.z
+        if (typeof newValue.x != 'undefined') this._properties.position._x = newValue.x
+        if (typeof newValue.y != 'undefined') this._properties.position._y = newValue.y
+        if (typeof newValue.z != 'undefined') this._properties.position._z = newValue.z
 
         this._needsToBeRendered()
     }
@@ -314,9 +320,9 @@ class Node {
         if (!(newValue instanceof Object))
             throw new TypeError('Invalid value for Node#rotation.')
 
-        if (newValue.x) this._properties.rotation._x = newValue.x
-        if (newValue.y) this._properties.rotation._y = newValue.y
-        if (newValue.z) this._properties.rotation._z = newValue.z
+        if (typeof newValue.x != 'undefined') this._properties.rotation._x = newValue.x
+        if (typeof newValue.y != 'undefined') this._properties.rotation._y = newValue.y
+        if (typeof newValue.z != 'undefined') this._properties.rotation._z = newValue.z
 
         this._needsToBeRendered()
     }
@@ -336,9 +342,9 @@ class Node {
         if (!(newValue instanceof Object))
             throw new TypeError('Invalid value for Node#scale.')
 
-        if (newValue.x) this._properties.scale._x = newValue.x
-        if (newValue.y) this._properties.scale._y = newValue.y
-        if (newValue.z) this._properties.scale._z = newValue.z
+        if (typeof newValue.x != 'undefined') this._properties.scale._x = newValue.x
+        if (typeof newValue.y != 'undefined') this._properties.scale._y = newValue.y
+        if (typeof newValue.z != 'undefined') this._properties.scale._z = newValue.z
 
         this._needsToBeRendered()
     }
@@ -373,9 +379,9 @@ class Node {
         if (!(newValue instanceof Object))
             throw new TypeError('Invalid value for Node#sizeMode.')
 
-        if (newValue.x) this._properties.sizeMode._x = newValue.x
-        if (newValue.y) this._properties.sizeMode._y = newValue.y
-        if (newValue.z) this._properties.sizeMode._z = newValue.z
+        if (typeof newValue.x != 'undefined') this._properties.sizeMode._x = newValue.x
+        if (typeof newValue.y != 'undefined') this._properties.sizeMode._y = newValue.y
+        if (typeof newValue.z != 'undefined') this._properties.sizeMode._z = newValue.z
 
         this._needsToBeRendered()
     }
@@ -393,9 +399,9 @@ class Node {
         if (!(newValue instanceof Object))
             throw new TypeError('Invalid value for Node#absoluteSize.')
 
-        if (newValue.x) this._properties.absoluteSize._x = newValue.x
-        if (newValue.y) this._properties.absoluteSize._y = newValue.y
-        if (newValue.z) this._properties.absoluteSize._z = newValue.z
+        if (typeof newValue.x != 'undefined') this._properties.absoluteSize._x = newValue.x
+        if (typeof newValue.y != 'undefined') this._properties.absoluteSize._y = newValue.y
+        if (typeof newValue.z != 'undefined') this._properties.absoluteSize._z = newValue.z
 
         this._needsToBeRendered()
     }
@@ -460,9 +466,9 @@ class Node {
         if (!(newValue instanceof Object))
             throw new TypeError('Invalid value for Node#proportionalSize.')
 
-        if (newValue.x) this._properties.proportionalSize._x = newValue.x
-        if (newValue.y) this._properties.proportionalSize._y = newValue.y
-        if (newValue.z) this._properties.proportionalSize._z = newValue.z
+        if (typeof newValue.x != 'undefined') this._properties.proportionalSize._x = newValue.x
+        if (typeof newValue.y != 'undefined') this._properties.proportionalSize._y = newValue.y
+        if (typeof newValue.z != 'undefined') this._properties.proportionalSize._z = newValue.z
 
         this._needsToBeRendered()
     }
@@ -483,9 +489,9 @@ class Node {
         if (!(newValue instanceof Object))
             throw new TypeError('Invalid value for Node#align.')
 
-        if (newValue.x) this._properties.align._x = newValue.x
-        if (newValue.y) this._properties.align._y = newValue.y
-        if (newValue.z) this._properties.align._z = newValue.z
+        if (typeof newValue.x != 'undefined') this._properties.align._x = newValue.x
+        if (typeof newValue.y != 'undefined') this._properties.align._y = newValue.y
+        if (typeof newValue.z != 'undefined') this._properties.align._z = newValue.z
 
         this._needsToBeRendered()
     }
@@ -508,9 +514,9 @@ class Node {
         if (!(newValue instanceof Object))
             throw new TypeError('Invalid value for Node#mountPoint.')
 
-        if (newValue.x) this._properties.mountPoint._x = newValue.x
-        if (newValue.y) this._properties.mountPoint._y = newValue.y
-        if (newValue.z) this._properties.mountPoint._z = newValue.z
+        if (typeof newValue.x != 'undefined') this._properties.mountPoint._x = newValue.x
+        if (typeof newValue.y != 'undefined') this._properties.mountPoint._y = newValue.y
+        if (typeof newValue.z != 'undefined') this._properties.mountPoint._z = newValue.z
 
         this._needsToBeRendered()
     }

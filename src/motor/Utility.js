@@ -102,7 +102,6 @@ function proxyMethods(SourceClass, TargetClass) {
 
         Object.defineProperty(TargetClass.prototype, prop, proxyDescriptor)
     }
-    console.log(' -- fuck yeah!!!!!!!!!!!')
 }
 
 export {

@@ -10,11 +10,10 @@ export default
 document.registerElement('motor-scene',
 class MotorHTMLScene extends MotorHTMLNode {
 
-    // this is called in attachedCallback, at which point this element hasa
+    // this is called in attachedCallback, at which point this element has a
     // parentNode.
     _makeImperativeNode() {
         let scene = new Scene(this)
-        console.log('motor-scene parentNode', this.id, this.parentNode)
         scene.mount(this.parentNode)
         return scene
     }
