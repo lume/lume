@@ -79,9 +79,15 @@ define(function(require, exports, module) {
         EventHandler.setInputHandler(this, this._eventInput);
         EventHandler.setOutputHandler(this, this._eventOutput);
 
+        // references for event listeners put on document when
+        // mouse is quickly moved off of target DOM element
+        this.boundMove = null;
+        this.boundUp = null;
+
         this._eventInput.on('mousedown',    handleStart.bind(this));
         this._eventInput.on('mousemove',    handleMove.bind(this));
         this._eventInput.on('mouseup',      handleEnd.bind(this));
+        this._eventInput.on('mouseenter',   handleEnter.bind(this));
         this._eventInput.on('mouseleave',   handleLeave.bind(this));
 
         this._payload = {
@@ -237,18 +243,32 @@ define(function(require, exports, module) {
         this._move = false;
     }
 
+    function handleEnter(event){
+        if (!this._down || !this._move) return;
+
+        this._eventInput.off('mousemove', handleMove.bind(this));
+        this._eventInput.off('mouseup', handleEnd.bind(this));
+
+        document.removeEventListener('mousemove', this.boundMove);
+        document.removeEventListener('mouseup', this.boundUp);
+    }
+
     function handleLeave(event) {
         if (!this._down || !this._move) return;
 
-        var boundMove = handleMove.bind(this);
-        var boundEnd = function(event) {
+        this.boundMove = handleMove.bind(this);
+        this.boundUp = function(event) {
             handleEnd.call(this, event);
-            document.removeEventListener('mousemove', boundMove);
-            document.removeEventListener('mouseup', boundEnd);
+            document.removeEventListener('mousemove', this.boundMove);
+            document.removeEventListener('mouseup', this.boundUp);
         }.bind(this, event);
 
-        document.addEventListener('mousemove', boundMove);
-        document.addEventListener('mouseup', boundEnd);
+
+        this._eventInput.off('mousemove', handleMove.bind(this));
+        this._eventInput.off('mouseup', handleEnd.bind(this));
+
+        document.addEventListener('mousemove', this.boundMove);
+        document.addEventListener('mouseup', this.boundUp);
     }
 
     module.exports = MouseInput;
