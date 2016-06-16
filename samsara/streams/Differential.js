@@ -30,18 +30,33 @@ define(function(require, exports, module){
 
         var previous = undefined;
         var delta = undefined;
+        var tempDelta = undefined;
+        var hasUpdated = false;
 
         Stream.call(this, {
             update: function () { return delta; }
         });
 
         this._eventInput.on('start', function (value) {
-            if (value instanceof Array)
+            hasUpdated = false;
+            var scale = this.options.scale;
+            if (value instanceof Array){
+                if (previous !== undefined){
+                    tempDelta = [];
+                    for (var i = 0; i < value.length; i++)
+                        tempDelta[i] = scale * (value[i] - previous[i]);
+                }
                 previous = value.slice();
-            else previous = value;
-        });
+            }
+            else {
+                if (previous !== undefined)
+                    tempDelta = scale * (value - previous);
+                previous = value;
+            }
+        }.bind(this));
 
         this._eventInput.on('update', function (value) {
+            hasUpdated = true;
             var scale = this.options.scale;
             if (previous instanceof Array) {
                 delta = [];
@@ -52,6 +67,14 @@ define(function(require, exports, module){
             }
             else {
                 delta = scale * (value - previous);
+                previous = value;
+            }
+        }.bind(this));
+
+        this._eventInput.on('end', function(value){
+            // Emit update if immediate set called
+            if (!hasUpdated && tempDelta !== undefined) {
+                this.emit('update', tempDelta);
                 previous = value;
             }
         }.bind(this));
