@@ -155,9 +155,9 @@ define(function (require, exports, module) {
      * @param [callback] {Function}             Callback
      */
     Transitionable.prototype.set = function set(value, transition, callback) {
-        if (!transition) {
+        if (!transition || transition.duration === 0) {
             this.value = value;
-            if (callback) callback();
+            if (callback) dirtyQueue.push(callback);
             if (!this.isActive()){
                 this.trigger('start', value);
 
