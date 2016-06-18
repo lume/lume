@@ -1,0 +1,36 @@
+/* Copyright © 2015-2016 David Valdman */
+
+/* For use with the Slider.js Samsara UI component */
+
+.samsara-slider-label {
+    color: white;
+    font-family: Avenir Next, Helvetica;
+}
+
+.samsara-slider-label .label {
+    font-size: 15px;
+}
+
+.samsara-slider-label .range {
+    color: gray;
+    font-size: 12px;
+    padding-left: 3px;
+}
+
+.samsara-slider-label .value {
+    float: right;
+    font-size: 14px;
+}
+
+.samsara-slider-background {
+    background: black;
+    border: 1px solid white;
+    cursor: ew-resize;
+    z-index: 0;
+}
+
+.samsara-slider-foreground {
+    background: white;
+    pointer-events: none;
+    z-index: 1;
+}

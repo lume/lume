@@ -1,3 +1,5 @@
+/* Copyright © 2015-2016 David Valdman */
+
 define(function(require, exports, module){
     var View = require('samsara/core/View');
     var Surface = require('samsara/dom/Surface');
@@ -22,6 +24,8 @@ define(function(require, exports, module){
      *  A starting value and range is provided, and the user can change the value within
      *  the range by dragging and clicking on the slider.
      *  The slider has a `.value` property that defines its value as a stream.
+     *
+     *  This file comes with an associated CSS file slider.css
      *
      *  @example
      *
