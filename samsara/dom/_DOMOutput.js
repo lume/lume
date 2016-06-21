@@ -75,10 +75,10 @@ define(function(require, exports, module) {
 
     var _setSize = function _setSize(target, size){
         if (size[0] === true) size[0] = target.offsetWidth;
-        else target.style.width = size[0] + 'px';
+        else if (size[0] >= 0) target.style.width = size[0] + 'px';
 
         if (size[1] === true) size[1] = target.offsetHeight;
-        else target.style.height = size[1] + 'px';
+        else if (size[1] >= 0) target.style.height = size[1] + 'px';
     };
 
     // {Visibility : hidden} allows for DOM events to pass through the element
