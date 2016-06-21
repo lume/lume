@@ -150,8 +150,6 @@ define(function (require, exports, module) {
      * @method set
      * @param value {Number|Number[]}           End value
      * @param [transition] {Object}             Transition definition
-     * @param [transition.curve] {string}       Easing curve name, e.g., "easeIn"
-     * @param [transition.duration] {string}    Duration of transition
      * @param [callback] {Function}             Callback
      */
     Transitionable.prototype.set = function set(value, transition, callback) {
