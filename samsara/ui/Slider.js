@@ -83,7 +83,7 @@ define(function(require, exports, module){
          */
         set : function set(value, transition, callback){
             var ratio = value2ratio.call(this, value);
-            transition = transition || this.options.transition;
+            if (transition === undefined) transition = this.options.transition;
             if (transition){
                 this.transition.reset(this.ratio.get());
                 this.transition.set(ratio, transition, callback);

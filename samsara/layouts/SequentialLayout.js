@@ -24,7 +24,7 @@ define(function(require, exports, module) {
      * A layout which arranges items in series based on their size.
      *  Items can be arranged vertically or horizontally.
      *
-     * @class SequentialLayout
+     * @class SequentialLayout_length
      * @constructor
      * @namespace Layouts
      * @extends Core.View
@@ -32,39 +32,27 @@ define(function(require, exports, module) {
      * @param [options.direction]{Number}               Direction to lay out items
      * @param [options.spacing] {Transitionable|Number} Gutter spacing between items
      */
-    var SequentialLayout = View.extend({
+    var SequentialLayout_length = View.extend({
         defaults : {
             direction : CONSTANTS.DIRECTION.X,
-            spacing : 0
+            spacing : 0,
+            offset : 0
         }, 
         initialize : function initialize(options) {
             // Store nodes and flex values
             this.nodes = [];
 
-            var length;
-            if (typeof options.spacing === 'number'){
-                this.stream = new ReduceStream(function(prev, size){
-                    if (!size) return false;
-                    return prev + size[options.direction] + options.spacing;
-                }.bind(this));
-
-                length = this.stream.headOutput.map(function(length){
-                    return Math.max(length - options.spacing, 0);
-                });
-            }
-            else {
-                this.stream = new ReduceStream(function(prev, size, spacing){
-                    if (!size) return false;
-                    return prev + size[options.direction] + spacing;
-                }, undefined, options.spacing);
-
-                length = Stream.lift(function(length, spacing){
-                    return Math.max(length - spacing, 0);
-                }, [this.stream.headOutput, options.spacing]);
-            }
+            this.stream = new ReduceStream(function(prev, size, spacing){
+                if (!size) return false;
+                return prev + size[options.direction] + spacing;
+            }, undefined, {sources : [options.spacing], offset : options.offset});
 
             this.setLengthMap(DEFAULT_LENGTH_MAP);
-            
+
+            var length = Stream.lift(function(length, spacing){
+                return Math.max(length - spacing, options.offset);
+            }, [this.stream.headOutput, options.spacing]);
+
             this.output.subscribe(length);
 
             // SequentialLayout derives its size from its content
@@ -83,8 +71,12 @@ define(function(require, exports, module) {
         * @method setLengthMap
         * @param map [Function] Map `(length) -> transform`
         */
-        setLengthMap : function(map){
+        setLengthMap : function(map, sources){
             this.transformMap = map.bind(this);
+            if (sources) this.setSources(sources);
+        },
+        setSources : function(sources){
+            this.sources = sources;
         },
         /*
          * Add a renderable to the end of the layout
@@ -95,7 +87,11 @@ define(function(require, exports, module) {
         push : function(item) {
             this.nodes.push(item);
             var length = this.stream.push(item.size);
-            var transform = length.map(this.transformMap);
+
+            var transform = (this.sources)
+                ? Stream.lift(this.transformMap, [length].concat(this.sources))
+                : length.map(this.transformMap);
+
             this.add({transform : transform}).add(item);
         },
         /*
@@ -196,5 +192,5 @@ define(function(require, exports, module) {
         }
     }, CONSTANTS);
 
-    module.exports = SequentialLayout;
+    module.exports = SequentialLayout_length;
 }); 
