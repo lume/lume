@@ -78,6 +78,7 @@ define(function(require, exports, module) {
      */
     Engine.stop = function() {
         window.cancelAnimationFrame(rafId);
+        rafId = Number.NaN;
     };
 
     /**
@@ -88,8 +89,12 @@ define(function(require, exports, module) {
      */
     Engine.registerContext = function(context) {
         context._size.subscribe(this.size);
-        if (!rafId) Engine.start();
-        handleResize();
+        window.requestAnimationFrame(function(){
+            if (!rafId) {
+                handleResize();
+                Engine.start();
+            }
+        });
     };
 
     /**
