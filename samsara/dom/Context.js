@@ -65,21 +65,8 @@ define(function(require, exports, module) {
         this._perspective = new Transitionable();
         this._perspectiveOrigin = new Transitionable();
 
-        this._perspective.on('update', function(perspective){
-            setPerspective(this.container, perspective);
-        }.bind(this));
-
-        this._perspective.on('end', function(perspective){
-            setPerspective(this.container, perspective);
-        }.bind(this));
-
-        this._perspectiveOrigin.on('update', function(origin) {
-            setPerspectiveOrigin(this.container, origin);
-        }.bind(this));
-
-        this._perspectiveOrigin.on('end', function(origin) {
-            setPerspectiveOrigin(this.container, origin);
-        }.bind(this));
+        this.perspectiveFrom(this._perspective);
+        this.perspectiveOriginFrom(this._perspectiveOrigin);
 
         this._eventOutput = new EventHandler();
         this._eventForwarder = function _eventForwarder(event) {
@@ -128,6 +115,42 @@ define(function(require, exports, module) {
             this.container.removeChild(this.container.firstChild);
 
         Engine.deregisterContext(this);
+    };
+
+    /**
+     * Pull the perspective value from a transitionable.
+     *
+     * @method perspectiveFrom
+     * @param perspective {Transitionable}    Perspective transitionable
+     */
+    Context.prototype.perspectiveFrom = function perspectiveFrom(perspective){
+        this._perspective = perspective;
+
+        this._perspective.on('update', function(perspective){
+            setPerspective(this.container, perspective);
+        }.bind(this));
+
+        this._perspective.on('end', function(perspective){
+            setPerspective(this.container, perspective);
+        }.bind(this));
+    };
+
+    /**
+     * Pull the perspective-origin value from a transitionable.
+     *
+     * @method perspectiveOriginFrom
+     * @param perspectiveOrigin {Transitionable}    Perspective-origin transitionable
+     */
+    Context.prototype.perspectiveOriginFrom = function perspectiveOriginFrom(perspectiveOrigin){
+        this._perspectiveOrigin = perspectiveOrigin;
+
+        this._perspectiveOrigin.on('update', function(origin){
+            setPerspectiveOrigin(this.container, origin);
+        }.bind(this));
+
+        this._perspectiveOrigin.on('end', function(origin){
+            setPerspectiveOrigin(this.container, origin);
+        }.bind(this));
     };
 
     /**
