@@ -24,7 +24,7 @@ define(function(require, exports, module) {
      * A layout which arranges items in series based on their size.
      *  Items can be arranged vertically or horizontally.
      *
-     * @class SequentialLayout_length
+     * @class SequentialLayout
      * @constructor
      * @namespace Layouts
      * @extends Core.View
@@ -32,7 +32,7 @@ define(function(require, exports, module) {
      * @param [options.direction]{Number}               Direction to lay out items
      * @param [options.spacing] {Transitionable|Number} Gutter spacing between items
      */
-    var SequentialLayout_length = View.extend({
+    var SequentialLayout = View.extend({
         defaults : {
             direction : CONSTANTS.DIRECTION.X,
             spacing : 0,
@@ -192,5 +192,5 @@ define(function(require, exports, module) {
         }
     }, CONSTANTS);
 
-    module.exports = SequentialLayout_length;
+    module.exports = SequentialLayout;
 }); 
