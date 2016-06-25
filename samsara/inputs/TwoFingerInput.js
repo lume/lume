@@ -1,15 +1,4 @@
-/* This Source Code Form is subject to the terms of the Mozilla Public
- * License, v. 2.0. If a copy of the MPL was not distributed with this
- * file, You can obtain one at http://mozilla.org/MPL/2.0/.
- *
- * @license MPL 2.0
- * @copyright Famous Industries, Inc. 2014
- */
-
-/* Modified work copyright © 2015-2016 David Valdman */
-
-// TODO: emit start, update, end events instead
-// of calling protected _startUpdate etc methods
+/* Copyright © 2015-2016 David Valdman */
 
 define(function(require, exports, module) {
     var EventHandler = require('../events/EventHandler');
@@ -19,7 +8,7 @@ define(function(require, exports, module) {
 
     /**
      * Generalizes handling of two-finger touch events.
-     *  Helper to PinchInput, RotateInput, and ScaleInput.
+     *  Helper to PinchInput and RotateInput.
      *  This class is meant to be overridden and not used directly.
      *
      * @class TwoFingerInput
@@ -35,18 +24,18 @@ define(function(require, exports, module) {
         EventHandler.setOutputHandler(this, this._eventOutput);
 
         this.touchAEnabled = false;
-        this.touchAId = 0;
-        this.posA = null;
-        this.timestampA = 0;
         this.touchBEnabled = false;
-        this.touchBId = 0;
-        this.posB = null;
+        this.timestampA = 0;
         this.timestampB = 0;
+        this.touchAId = 0;
+        this.touchBId = 0;
+        this.posA = null;
+        this.posB = null;
 
-        this._eventInput.on('touchstart', this.handleStart.bind(this));
-        this._eventInput.on('touchmove', this.handleMove.bind(this));
-        this._eventInput.on('touchend', this.handleEnd.bind(this));
-        this._eventInput.on('touchcancel', this.handleEnd.bind(this));
+        this._eventInput.on('touchstart', handleStart.bind(this));
+        this._eventInput.on('touchmove', handleMove.bind(this));
+        this._eventInput.on('touchend', handleEnd.bind(this));
+        this._eventInput.on('touchcancel', handleEnd.bind(this));
     }
 
     TwoFingerInput.prototype = Object.create(SimpleStream.prototype);
@@ -95,8 +84,7 @@ define(function(require, exports, module) {
         return [(posA[0] + posB[0]) / 2.0, (posA[1] + posB[1]) / 2.0];
     };
 
-    // private
-    TwoFingerInput.prototype.handleStart = function handleStart(event) {
+    function handleStart(event) {
         for (var i = 0; i < event.changedTouches.length; i++) {
             var touch = event.changedTouches[i];
             if (!this.touchAEnabled) {
@@ -110,13 +98,12 @@ define(function(require, exports, module) {
                 this.touchBEnabled = true;
                 this.posB = [touch.pageX, touch.pageY];
                 this.timestampB = _now();
-                this._startUpdate(event);
+                this.trigger('start', event);
             }
         }
-    };
+    }
 
-    // private
-    TwoFingerInput.prototype.handleMove = function handleMove(event) {
+    function handleMove(event) {
         if (!(this.touchAEnabled && this.touchBEnabled)) return;
         var prevTimeA = this.timestampA;
         var prevTimeB = this.timestampB;
@@ -134,27 +121,22 @@ define(function(require, exports, module) {
                 diffTime = this.timestampB - prevTimeB;
             }
         }
-        if (diffTime) this._moveUpdate(diffTime);
-    };
 
-    // private
-    TwoFingerInput.prototype.handleEnd = function handleEnd(event) {
+        this.trigger('update', diffTime);
+    }
+
+    function handleEnd(event) {
         for (var i = 0; i < event.changedTouches.length; i++) {
             var touch = event.changedTouches[i];
             if (touch.identifier === this.touchAId || touch.identifier === this.touchBId) {
-                if (this.touchAEnabled && this.touchBEnabled) {
-                    this._eventOutput.emit('end', {
-                        touches : [this.touchAId, this.touchBId],
-                        angle   : this._angle
-                    });
-                }
+                this.trigger('end', event);
                 this.touchAEnabled = false;
-                this.touchAId = 0;
                 this.touchBEnabled = false;
+                this.touchAId = 0;
                 this.touchBId = 0;
             }
         }
-    };
+    }
 
     module.exports = TwoFingerInput;
 });
