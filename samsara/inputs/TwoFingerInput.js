@@ -41,6 +41,11 @@ define(function(require, exports, module) {
     TwoFingerInput.prototype = Object.create(SimpleStream.prototype);
     TwoFingerInput.prototype.constructor = TwoFingerInput;
 
+    TwoFingerInput.DIRECTION = {
+        X : 0,
+        Y : 1
+    };
+
     /**
      * Calculates the angle between two touches relative to [0,1].
      *
@@ -65,10 +70,18 @@ define(function(require, exports, module) {
      * @param posB {Array}  Second touch location (x,y)
      * @return {Number}
      */
-    TwoFingerInput.calculateDistance = function(posA, posB) {
-        var diffX = posB[0] - posA[0];
-        var diffY = posB[1] - posA[1];
-        return Math.sqrt(diffX * diffX + diffY * diffY);
+    TwoFingerInput.calculateDistance = function(posA, posB, direction) {
+        if (direction === TwoFingerInput.DIRECTION.X){
+            return Math.abs(posB[0] - posA[0]);
+        }
+        else if (direction === TwoFingerInput.DIRECTION.Y){
+            return Math.abs(posB[1] - posA[1]);
+        }
+        else {
+            var diffX = posB[0] - posA[0];
+            var diffY = posB[1] - posA[1];
+            return Math.sqrt(diffX * diffX + diffY * diffY);
+        }
     };
 
     /**

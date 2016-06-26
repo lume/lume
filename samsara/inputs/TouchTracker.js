@@ -37,7 +37,6 @@ define(function(require, exports, module) {
      * @param [options] {Object}                Options
      * @param [options.limit] {Number}          Number of touches to record
      */
-
     function TouchTracker(options) {
         this.options = OptionsManager.setOptions(this, options);
 

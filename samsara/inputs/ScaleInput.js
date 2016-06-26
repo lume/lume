@@ -1,6 +1,6 @@
 /* Copyright © 2015-2016 David Valdman */
 
-define(function(require, exports, module){
+define(function(require, exports, module) {
     var TwoFingerInput = require('../inputs/TwoFingerInput');
     var OptionsManager = require('../core/OptionsManager');
 
@@ -8,39 +8,45 @@ define(function(require, exports, module){
      * Detects two-finger pinching motion and emits `start`, `update` and
      *  `end` events with the payload data:
      *
-     *      `value`         - Distance between the two touches
-     *      `delta`         - Differential in successive distances
-     *      `velocity`      - Relative velocity between two touches
-     *      `displacement`  - Total accumulated displacement
+     *      `count`         - Number of simultaneous touches
+     *      `value`         - Amount of scaling from starting placement
+     *      `delta`         - Difference in scaling
+     *      `velocity`      - Relative velocity of the scale
+     *      `cumulate`      - Total accumulated scaling
      *      `center`        - Midpoint between the two touches
      *      `touchIds`      - Array of DOM event touch identifiers
      *
+     *  The value is the ratio of the current displacement between two fingers
+     *  with the initial displacement. For example, a value of 1 indicates the fingers
+     *  are at the same displacement from where they began. A value of 2 indicates the fingers
+     *  are twice as far away as they originally began. A value of 1/2 indicates the fingers
+     *  are twice as close as they originally began, etc.
+     *
      * @example
      *
-     *      var pinchInput = new PinchInput();
+     *      var scaleInput = new ScaleInput();
+     *      scaleInput.subscribe(surface)
      *
-     *      pinchInput.subscribe(Engine) // listens on `window` events
-     *
-     *      pinchInput.on('start', function(payload){
+     *      scaleInput.on('start', function(payload){
      *          console.log('start', payload);
      *      });
      *
-     *      pinchInput.on('update', function(payload){
+     *      scaleInput.on('update', function(payload){
      *          console.log('update', payload);
      *      });
      *
-     *      pinchInput.on('end', function(payload){
+     *      scaleInput.on('end', function(payload){
      *          console.log('end', payload);
      *      });
      *
-     * @class PinchInput
+     * @class ScaleInput
      * @extends Inputs.TwoFingerInput
      * @uses Core.OptionsManager
      * @constructor
      * @param options {Object}              Options
      * @param [options.scale=1] {Number}    Scale the response to pinch
      */
-    function PinchInput(options){
+    function ScaleInput(options) {
         TwoFingerInput.call(this);
 
         this.options = OptionsManager.setOptions(this, options);
@@ -50,34 +56,41 @@ define(function(require, exports, module){
         this._eventInput.on('end', end.bind(this));
 
         this.payload = {
-            count : 0,
-            delta : null,
-            velocity : null,
-            value : null,
-            cumulate : null,
+            count: 0,
+            delta : 0,
+            velocity : 0,
+            value : 1,
+            cumulate : 0,
             center : [],
             touchIds : []
         };
 
-        this.cumulate = 0;
-        this.value = 0;
+        this.startDist = 0;
+        this.prevDist = 0;
+        this.value = 1;
+        this.cumulate = 1;
     }
 
-    PinchInput.prototype = Object.create(TwoFingerInput.prototype);
-    PinchInput.prototype.constructor = PinchInput;
+    ScaleInput.prototype = Object.create(TwoFingerInput.prototype);
+    ScaleInput.prototype.constructor = ScaleInput;
 
-    PinchInput.DIRECTION = {
+    ScaleInput.DEFAULT_OPTIONS = {
+        direction : undefined,
+        scale : 1
+    };
+
+    ScaleInput.DIRECTION = {
         X : 0,
         Y : 1
     };
 
-    PinchInput.DEFAULT_OPTIONS = {
-        scale : 1
-    };
-
     function start(event){
+        var currDist = TwoFingerInput.calculateDistance(this.posA, this.posB, this.options.direction);
         var center = TwoFingerInput.calculateCenter(this.posA, this.posB);
-        this.value = TwoFingerInput.calculateDistance(this.posA, this.posB);
+
+        this.startDist = currDist;
+        this.prevDist = currDist;
+        this.value = 1;
 
         var payload = this.payload;
         payload.count = event.touches.length;
@@ -89,15 +102,16 @@ define(function(require, exports, module){
         this._eventOutput.emit('start', payload);
     }
 
-    function update(diffTime){
-        var distance = TwoFingerInput.calculateDistance(this.posA, this.posB);
+    function update(diffTime) {
+        var currDist = TwoFingerInput.calculateDistance(this.posA, this.posB, this.options.direction);
         var center = TwoFingerInput.calculateCenter(this.posA, this.posB);
 
         var scale = this.options.scale;
-        var delta = scale * (distance - this.value);
-        var velocity = delta / diffTime;
 
-        this._displacement += delta;
+        var delta = scale * (currDist - this.prevDist) / this.startDist;
+        var velocity = delta / diffTime;
+        this.value += delta;
+        this.cumulate += delta;
 
         var payload = this.payload;
         payload.delta = delta;
@@ -110,7 +124,7 @@ define(function(require, exports, module){
 
         this._eventOutput.emit('update', payload);
 
-        this.value = distance;
+        this.prevDist = currDist;
     }
 
     function end(){
@@ -118,5 +132,5 @@ define(function(require, exports, module){
         this._eventOutput.emit('end', this.payload);
     }
 
-    module.exports = PinchInput;
+    module.exports = ScaleInput;
 });

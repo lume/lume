@@ -33,7 +33,7 @@ define(function(require, exports, module) {
      *
      *      var scrollInput = new ScrollInput();
      *
-     *      scrollInput.subscribe(Engine) // listens on `window` events
+     *      scrollInput.subscribe(surface)
      *
      *      scrollInput.on('start', function(payload){
      *          console.log('start', payload);

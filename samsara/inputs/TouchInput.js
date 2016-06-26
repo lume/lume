@@ -40,7 +40,7 @@ define(function(require, exports, module) {
      *          direction : TouchInput.DIRECTION.Y
      *      });
      *
-     *      touchInput.subscribe(Engine);
+     *      touchInput.subscribe(surface);
      *
      *      touchInput.on('start', function(payload){
      *          // fired on mouse down
