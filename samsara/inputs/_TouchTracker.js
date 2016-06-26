@@ -1,7 +1,5 @@
 /* Copyright © 2015-2016 David Valdman */
 
-//TODO: deprecate in favor of generic history stream
-
 define(function(require, exports, module) {
     var OptionsManager = require('../core/OptionsManager');
     var EventHandler = require('../events/EventHandler');
@@ -27,12 +25,14 @@ define(function(require, exports, module) {
      * @private
      * @uses Core.OptionsManager
      * @param [options] {Object}                Options
-     * @param [options.memory] {Number}         Number of touches to record to history
+     * @param [options.memory] {Number}         Number of past touches to record in history
+     * @param [options.count] {Number}          Max simultaneous touches to record
      */
     function TouchTracker(options) {
         this.options = OptionsManager.setOptions(this, options);
 
         this.history = {};
+        this.numTouches = 0;
 
         this._eventInput = new EventHandler();
         this._eventOutput = new EventHandler();
@@ -47,17 +47,31 @@ define(function(require, exports, module) {
     }
 
     TouchTracker.DEFAULT_OPTIONS = {
-        memory : 1, // length of recorded history
+        count : 1,      // number of simultaneous touches
+        memory : 1      // length of recorded history
     };
 
     /**
-     * Record touch data, if selective is false.
-     * @private
+     * Record touch data
+     *
      * @method track
-     * @param {Object} data touch data
+     * @param id {Number}   touch identifier
+     * @param data {Object} touch data
      */
-    TouchTracker.prototype.track = function track(data) {
-        this.history[data.identifier] = [data];
+    TouchTracker.prototype.track = function track(id, data) {
+        this.numTouches++;
+        this.history[id] = [data];
+    };
+
+    /**
+     * Remove record of touch data
+     *
+     * @method untrack
+     * @param id {Number}   touch identifier
+     */
+    TouchTracker.prototype.untrack = function track(id){
+        this.numTouches--;
+        delete this.history[id];
     };
 
     function getData(touch, event, history) {
@@ -73,15 +87,21 @@ define(function(require, exports, module) {
     }
 
     function handleStart(event) {
+        if (this.numTouches > this.options.count) return;
+
         for (var i = 0; i < event.changedTouches.length; i++) {
             var touch = event.changedTouches[i];
+            var touchId = touch.identifier;
             var data = getData(touch, event, null);
             this._eventOutput.emit('trackstart', data);
-            if (!this.history[touch.identifier]) this.track(data);
+            if (!this.history[touchId])
+                this.track(touchId, data);
         }
     }
 
     function handleMove(event) {
+        if (this.numTouches > this.options.count) return;
+
         event.preventDefault(); // prevents scrolling on mobile
 
         for (var i = 0; i < event.changedTouches.length; i++) {
@@ -98,13 +118,16 @@ define(function(require, exports, module) {
     }
 
     function handleEnd(event) {
+        if (this.numTouches > this.options.count) return;
+
         for (var i = 0; i < event.changedTouches.length; i++) {
             var touch = event.changedTouches[i];
-            var history = this.history[touch.identifier];
+            var touchId = touch.identifier;
+            var history = this.history[touchId];
             if (history) {
                 var data = getData(touch, event, history);
                 this._eventOutput.emit('trackend', data);
-                delete this.history[touch.identifier];
+                this.untrack(touchId);
             }
         }
     }

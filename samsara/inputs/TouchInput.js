@@ -64,7 +64,7 @@ define(function(require, exports, module) {
         this.options = OptionsManager.setOptions(this, options);
 
         this._eventOutput = new EventHandler();
-        this._touchTracker = new TouchTracker({memory : 1});
+        this._touchTracker = new TouchTracker({memory : 1, count : 1});
 
         EventHandler.setOutputHandler(this, this._eventOutput);
         EventHandler.setInputHandler(this, this._touchTracker);
