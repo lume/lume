@@ -65,7 +65,7 @@ define(function(require, exports, module) {
         this.options = OptionsManager.setOptions(this, options);
 
         this._eventOutput = new EventHandler();
-        this._touchTracker = new TouchTracker();
+        this._touchTracker = new TouchTracker({memory : 1});
 
         EventHandler.setOutputHandler(this, this._eventOutput);
         EventHandler.setInputHandler(this, this._touchTracker);
@@ -141,19 +141,16 @@ define(function(require, exports, module) {
     }
 
     function handleMove(data) {
-        var direction = this.options.direction
+        var direction = this.options.direction;
 
         var scale = this.options.scale;
-        var history = data.history;
+        var prevData = data.history[0];
 
-        var currHistory = history[history.length - 1];
-        var prevHistory = history[history.length - 2];
+        var prevTime = prevData.timestamp;
+        var currTime = data.timestamp;
 
-        var prevTime = prevHistory.timestamp;
-        var currTime = currHistory.timestamp;
-
-        var diffX = scale * (currHistory.x - prevHistory.x);
-        var diffY = scale * (currHistory.y - prevHistory.y);
+        var diffX = scale * (data.x - prevData.x);
+        var diffY = scale * (data.y - prevData.y);
 
         if (this.options.rails && direction !== undefined){
             var activateRails =

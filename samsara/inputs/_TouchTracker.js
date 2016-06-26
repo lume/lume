@@ -27,7 +27,7 @@ define(function(require, exports, module) {
      * @private
      * @uses Core.OptionsManager
      * @param [options] {Object}                Options
-     * @param [options.limit] {Number}          Number of touches to record
+     * @param [options.memory] {Number}         Number of touches to record to history
      */
     function TouchTracker(options) {
         this.options = OptionsManager.setOptions(this, options);
@@ -47,8 +47,7 @@ define(function(require, exports, module) {
     }
 
     TouchTracker.DEFAULT_OPTIONS = {
-        length : 2, // length of recorded history
-        limit : 1 // number of simultaneous touches
+        memory : 1, // length of recorded history
     };
 
     /**
@@ -89,8 +88,10 @@ define(function(require, exports, module) {
             var history = this.history[touch.identifier];
             if (history) {
                 var data = getData(touch, event, history);
-                this.history[touch.identifier].push(data);
                 this._eventOutput.emit('trackmove', data);
+                if (history.length >= this.options.memory)
+                    history.shift();
+                history.push(data);
             }
         }
     }
