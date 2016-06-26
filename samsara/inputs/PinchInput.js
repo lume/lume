@@ -1,7 +1,7 @@
 /* Copyright © 2015-2016 David Valdman */
 
 define(function(require, exports, module){
-    var TwoFingerInput = require('../inputs/TwoFingerInput');
+    var TwoFingerInput = require('./_TwoFingerInput');
     var OptionsManager = require('../core/OptionsManager');
 
     /**
@@ -72,12 +72,13 @@ define(function(require, exports, module){
     };
 
     PinchInput.DEFAULT_OPTIONS = {
-        scale : 1
+        scale : 1,
+        direction : undefined
     };
 
     function start(event){
         var center = TwoFingerInput.calculateCenter(this.posA, this.posB);
-        this.value = TwoFingerInput.calculateDistance(this.posA, this.posB);
+        this.value = TwoFingerInput.calculateDistance(this.posA, this.posB, this.options.direction);
 
         var payload = this.payload;
         payload.count = event.touches.length;
@@ -90,8 +91,8 @@ define(function(require, exports, module){
     }
 
     function update(diffTime){
-        var distance = TwoFingerInput.calculateDistance(this.posA, this.posB);
         var center = TwoFingerInput.calculateCenter(this.posA, this.posB);
+        var distance = TwoFingerInput.calculateDistance(this.posA, this.posB, this.options.direction);
 
         var scale = this.options.scale;
         var delta = scale * (distance - this.value);

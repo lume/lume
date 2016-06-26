@@ -1,7 +1,7 @@
 /* Copyright © 2015-2016 David Valdman */
 
 define(function(require, exports, module) {
-    var TwoFingerInput = require('../inputs/TwoFingerInput');
+    var TwoFingerInput = require('./_TwoFingerInput');
     var OptionsManager = require('../core/OptionsManager');
 
     /**

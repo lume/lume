@@ -71,12 +71,10 @@ define(function(require, exports, module) {
      * @return {Number}
      */
     TwoFingerInput.calculateDistance = function(posA, posB, direction) {
-        if (direction === TwoFingerInput.DIRECTION.X){
+        if (direction === TwoFingerInput.DIRECTION.X)
             return Math.abs(posB[0] - posA[0]);
-        }
-        else if (direction === TwoFingerInput.DIRECTION.Y){
+        else if (direction === TwoFingerInput.DIRECTION.Y)
             return Math.abs(posB[1] - posA[1]);
-        }
         else {
             var diffX = posB[0] - posA[0];
             var diffY = posB[1] - posA[1];
