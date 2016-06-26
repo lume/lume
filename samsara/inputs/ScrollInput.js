@@ -15,11 +15,8 @@ define(function(require, exports, module) {
      *
      *      `value`     - Scroll displacement in pixels from start
      *      `delta`     - Scroll differential in pixels between subsequent events
-     *      `velocity`  - Velocity of scroll,
-     *      `clientX`   - DOM event clientX property
-     *      `clientY`   - DOM event clientY property
-     *      `offsetX`   - DOM event offsetX property
-     *      `offsetY`   - DOM event offsetY property
+     *      `velocity`  - Velocity of scroll
+     *      `event`     - Original DOM event
      *
      * @example
      *
@@ -57,10 +54,7 @@ define(function(require, exports, module) {
             value : null,
             cumulate : null,
             velocity : null,
-            clientX : undefined,
-            clientY : undefined,
-            offsetX : undefined,
-            offsetY : undefined
+            event : null
         };
 
         this._eventInput = new EventHandler();
@@ -77,12 +71,13 @@ define(function(require, exports, module) {
         this._inProgress = false;
 
         var self = this;
-        this._scrollEnd = Timer.debounce(function(){
+        this._scrollEnd = Timer.debounce(function(event){
             self._inProgress = false;
             // this prevents velocities for mousewheel events vs trackpad ones
             if (self._payload.delta !== 0){
                 self._payload.velocity = 0;
             }
+            self._payload.event = event;
 
             self._eventOutput.emit('end', self._payload);
         }, 100);
@@ -119,10 +114,7 @@ define(function(require, exports, module) {
             payload = this._payload;
             payload.value = this._value;
             payload.cumulate = this._cumulate;
-            payload.clientX = event.clientX;
-            payload.clientY = event.clientY;
-            payload.offsetX = event.offsetX;
-            payload.offsetY = event.offsetY;
+            payload.event = event;
 
             this._eventOutput.emit('start', payload);
             this._inProgress = true;
@@ -176,11 +168,12 @@ define(function(require, exports, module) {
         payload.velocity = nextVel;
         payload.value = this._value;
         payload.cumulate = this._cumulate;
+        payload.event = event;
 
         this._eventOutput.emit('update', payload);
 
         // debounce `end` event
-        this._scrollEnd();
+        this._scrollEnd(event);
     }
 
     module.exports = ScrollInput;
