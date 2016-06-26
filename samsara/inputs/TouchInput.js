@@ -21,10 +21,9 @@ define(function(require, exports, module) {
      *      `delta`     - Differential in pixels between successive mouse positions
      *      `velocity`  - Velocity of mouse movement in pixels per second
      *      `cumulate`  - Accumulated displacement over successive displacements
-     *      `clientX`   - DOM event clientX property
-     *      `clientY`   - DOM event clientY property
      *      `count`     - DOM event for number of simultaneous touches
-     *      `touchId`     - DOM touch event identifier
+     *      `touchId`   - DOM touch event identifier
+     *      `event`     - Original DOM event
      *
      * @example
      *
@@ -79,10 +78,9 @@ define(function(require, exports, module) {
             value : null,
             cumulate : null,
             velocity : null,
-            clientX : undefined,
-            clientY : undefined,
             count : 0,
-            touchId : undefined
+            touchId : undefined,
+            event : null
         };
 
         this._cumulate = null;
@@ -132,10 +130,9 @@ define(function(require, exports, module) {
         payload.value = this._value;
         payload.cumulate = this._cumulate;
         payload.velocity = velocity;
-        payload.clientX = data.x;
-        payload.clientY = data.y;
         payload.count = data.count;
         payload.touchId = data.identifier;
+        payload.event = data.event;
 
         this._eventOutput.emit('start', payload);
     }
@@ -194,16 +191,16 @@ define(function(require, exports, module) {
         payload.velocity = nextVel;
         payload.value = this._value;
         payload.cumulate = this._cumulate;
-        payload.clientX = data.x;
-        payload.clientY = data.y;
         payload.count = data.count;
         payload.touchId = data.identifier;
+        payload.event = data.event;
 
         this._eventOutput.emit('update', payload);
     }
 
     function handleEnd(data) {
         this._payload.count = data.count;
+        this._payload.event = data.event;
         this._eventOutput.emit('end', this._payload);
     }
 

@@ -67,6 +67,7 @@ define(function(require, exports, module) {
             identifier : touch.identifier,
             timestamp: now(),
             count: event.touches.length,
+            event: event,
             history: history
         };
     }

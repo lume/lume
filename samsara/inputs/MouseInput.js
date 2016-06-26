@@ -21,10 +21,7 @@ define(function(require, exports, module) {
      *      `delta`     - Differential in pixels between successive mouse positions
      *      `velocity`  - Velocity of mouse movement in pixels per second
      *      `cumulate`  - Accumulated value over successive displacements
-     *      `clientX`   - DOM event clientX property
-     *      `clientY`   - DOM event clientY property
-     *      `offsetX`   - DOM event offsetX property
-     *      `offsetY`   - DOM event offsetY property
+     *      `event`     - Original DOM event
      *
      * @example
      *
@@ -88,11 +85,7 @@ define(function(require, exports, module) {
             delta : null,
             value : null,
             cumulate : null,
-            velocity : null,
-            clientX : 0,
-            clientY : 0,
-            offsetX : 0,
-            offsetY : 0
+            velocity : null
         };
 
         this._value = null;
@@ -157,10 +150,7 @@ define(function(require, exports, module) {
         payload.value = this._value;
         payload.cumulate = this._cumulate;
         payload.velocity = velocity;
-        payload.clientX = x;
-        payload.clientY = y;
-        payload.offsetX = event.offsetX;
-        payload.offsetY = event.offsetY;
+        payload.event = event;
 
         this._eventOutput.emit('start', payload);
     }
@@ -225,10 +215,7 @@ define(function(require, exports, module) {
         payload.value = this._value;
         payload.cumulate = this._cumulate;
         payload.velocity = nextVel;
-        payload.clientX = x;
-        payload.clientY = y;
-        payload.offsetX = event.offsetX;
-        payload.offsetY = event.offsetY;
+        payload.event = event;
 
         this._eventOutput.emit('update', payload);
 
@@ -237,10 +224,12 @@ define(function(require, exports, module) {
         this._move = true;
     }
 
-    function handleEnd() {
+    function handleEnd(event) {
         if (!this._down) return false;
 
+        this._payload.event = event;
         this._eventOutput.emit('end', this._payload);
+
         this._prevCoord = undefined;
         this._prevTime = undefined;
         this._down = false;
