@@ -66,9 +66,11 @@ define(function(require, exports, module) {
      * @constructor
      * @extend SimpleStream
      * @param [options] {Object}                Options
+     * @param [options.scale=1] {Number}        Scale the response to the mouse
      * @param [options.direction] {Number}      Direction to project movement onto.
      *                                          Options found in MouseInput.DIRECTION.
-     * @param [options.scale=1] {Number}        Scale the response to the mouse
+     * @param [options.rails=false] {Boolean}   If a direction is specified, movement in the
+     *                                          orthogonal direction is suppressed
      */
     function MouseInput(options) {
         this.options = OptionsManager.setOptions(this, options);
@@ -114,7 +116,8 @@ define(function(require, exports, module) {
 
     MouseInput.DEFAULT_OPTIONS = {
         direction : undefined,
-        scale : 1
+        scale : 1,
+        rails : false
     };
 
     /**
@@ -173,6 +176,7 @@ define(function(require, exports, module) {
     function handleMove(event){
         if (!this._down) return false;
 
+        var direction = this.options.direction;
         var scale = this.options.scale;
 
         var prevCoord = this._prevCoord;
@@ -186,6 +190,14 @@ define(function(require, exports, module) {
         var diffX = scale * (x - prevCoord[0]);
         var diffY = scale * (y - prevCoord[1]);
 
+        if (this.options.rails && direction !== undefined){
+            var activateRails =
+                (direction === MouseInput.DIRECTION.X && Math.abs(diffX) < Math.abs(0.5 * diffY)) ||
+                (direction === MouseInput.DIRECTION.Y && Math.abs(diffY) < Math.abs(0.5 * diffX));
+
+            if (activateRails) return false;
+        }
+
         var dt = Math.max(currTime - prevTime, MINIMUM_TICK_TIME); // minimum tick time
         var inv_dt = 1 / dt;
 
@@ -195,13 +207,13 @@ define(function(require, exports, module) {
         var nextVel;
         var nextDelta;
 
-        if (this.options.direction === MouseInput.DIRECTION.X) {
+        if (direction === MouseInput.DIRECTION.X) {
             nextDelta = diffX;
             nextVel = velX;
             this._value += nextDelta;
             this._cumulate += nextDelta;
         }
-        else if (this.options.direction === MouseInput.DIRECTION.Y) {
+        else if (direction === MouseInput.DIRECTION.Y) {
             nextDelta = diffY;
             nextVel = velY;
             this._value += nextDelta;
