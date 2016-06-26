@@ -6,7 +6,7 @@ define(function(require, exports, module) {
     var OptionsManager = require('../core/OptionsManager');
     var EventHandler = require('../events/EventHandler');
 
-    var _now = Date.now;
+    var now = Date.now;
 
     /**
      * Catalogues a history of touch events. Useful for creating more complex
@@ -32,8 +32,7 @@ define(function(require, exports, module) {
     function TouchTracker(options) {
         this.options = OptionsManager.setOptions(this, options);
 
-        this.touchHistory = {};
-        this._isTouched = false;
+        this.history = {};
 
         this._eventInput = new EventHandler();
         this._eventOutput = new EventHandler();
@@ -41,13 +40,14 @@ define(function(require, exports, module) {
         EventHandler.setInputHandler(this, this._eventInput);
         EventHandler.setOutputHandler(this, this._eventOutput);
 
-        this._eventInput.on('touchstart', _handleStart.bind(this));
-        this._eventInput.on('touchmove', _handleMove.bind(this));
-        this._eventInput.on('touchend', _handleEnd.bind(this));
-        this._eventInput.on('touchcancel', _handleEnd.bind(this));
+        this._eventInput.on('touchstart', handleStart.bind(this));
+        this._eventInput.on('touchmove', handleMove.bind(this));
+        this._eventInput.on('touchend', handleEnd.bind(this));
+        this._eventInput.on('touchcancel', handleEnd.bind(this));
     }
 
     TouchTracker.DEFAULT_OPTIONS = {
+        length : 2, // length of recorded history
         limit : 1 // number of simultaneous touches
     };
 
@@ -58,59 +58,53 @@ define(function(require, exports, module) {
      * @param {Object} data touch data
      */
     TouchTracker.prototype.track = function track(data) {
-        this.touchHistory[data.identifier] = [data];
+        this.history[data.identifier] = [data];
     };
 
-    function _timestampTouch(touch, event, history) {
+    function getData(touch, event, history) {
         return {
             x: touch.clientX,
             y: touch.clientY,
             identifier : touch.identifier,
-            timestamp: _now(),
+            timestamp: now(),
             count: event.touches.length,
             history: history
         };
     }
 
-    function _handleStart(event) {
-        if (event.touches.length > this.options.limit) return;
-        this._isTouched = true;
-
+    function handleStart(event) {
         for (var i = 0; i < event.changedTouches.length; i++) {
             var touch = event.changedTouches[i];
-            var data = _timestampTouch(touch, event, null);
+            var data = getData(touch, event, null);
             this._eventOutput.emit('trackstart', data);
-            if (!this.touchHistory[touch.identifier]) this.track(data);
+            if (!this.history[touch.identifier]) this.track(data);
         }
     }
 
-    function _handleMove(event) {
+    function handleMove(event) {
         event.preventDefault(); // prevents scrolling on mobile
+
         for (var i = 0; i < event.changedTouches.length; i++) {
             var touch = event.changedTouches[i];
-            var history = this.touchHistory[touch.identifier];
+            var history = this.history[touch.identifier];
             if (history) {
-                var data = _timestampTouch(touch, event, history);
-                this.touchHistory[touch.identifier].push(data);
+                var data = getData(touch, event, history);
+                this.history[touch.identifier].push(data);
                 this._eventOutput.emit('trackmove', data);
             }
         }
     }
 
-    function _handleEnd(event) {
-        if (!this._isTouched) return;
-
+    function handleEnd(event) {
         for (var i = 0; i < event.changedTouches.length; i++) {
             var touch = event.changedTouches[i];
-            var history = this.touchHistory[touch.identifier];
+            var history = this.history[touch.identifier];
             if (history) {
-                var data = _timestampTouch(touch, event, history);
+                var data = getData(touch, event, history);
                 this._eventOutput.emit('trackend', data);
-                delete this.touchHistory[touch.identifier];
+                delete this.history[touch.identifier];
             }
         }
-
-        this._isTouched = false;
     }
 
     module.exports = TouchTracker;
