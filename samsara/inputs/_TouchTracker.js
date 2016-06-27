@@ -19,6 +19,7 @@ define(function(require, exports, module) {
      *      `timestamp`     - Timestamp
      *      `count`         - DOM event for number of simultaneous touches
      *      `history`       - History of touches for the gesture
+     *      `event`         - Original DOM event
      *
      * @class TouchTracker
      * @constructor
@@ -78,10 +79,10 @@ define(function(require, exports, module) {
         return {
             x: touch.clientX,
             y: touch.clientY,
-            identifier : touch.identifier,
+            touchId : touch.identifier,
             timestamp: now(),
             count: event.touches.length,
-            event: event,
+            event: touch,
             history: history
         };
     }
