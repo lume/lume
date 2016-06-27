@@ -114,7 +114,6 @@ define(function(require, exports, module) {
     }
 
     function end(data){
-        this.payload.count = 0;
         this._eventOutput.emit('update', this.payload);
     }
 
