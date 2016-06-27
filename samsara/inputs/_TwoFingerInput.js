@@ -139,6 +139,10 @@ define(function(require, exports, module) {
     function handleStart(data) {
         data.position = getPosition.call(this, data.event);
 
+        if (this.touchIdA === data.touchId){
+            this.payload[0] = data;
+        }
+
         if (this.touchIdA === undefined){
             this.touchIdA = data.touchId;
             this.payload[0] = data;
@@ -165,8 +169,7 @@ define(function(require, exports, module) {
     }
 
     function handleEnd(data) {
-        if (this.touchIdA === undefined || this.touchIdB === undefined)
-            return false;
+        if (this.touchIdA === undefined && this.touchIdB === undefined) return false;
 
         this.emit('twoFingerEnd', this.payload);
         this.touchIdA = undefined;
