@@ -22,6 +22,7 @@ define(function(require, exports, module) {
      *      `velocity`  - Velocity of mouse movement in pixels per second
      *      `cumulate`  - Accumulated value over successive displacements
      *      `event`     - Original DOM event
+     *      `dt`        - Time since last update
      *
      * @example
      *
@@ -216,6 +217,7 @@ define(function(require, exports, module) {
         payload.cumulate = this._cumulate;
         payload.velocity = nextVel;
         payload.event = event;
+        payload.dt = dt;
 
         this._eventOutput.emit('update', payload);
 

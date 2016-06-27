@@ -3,8 +3,8 @@
 define(function(require, exports, module) {
     var EventHandler = require('../events/EventHandler');
     var SimpleStream = require('../streams/SimpleStream');
-
-    var _now = Date.now;
+    var OptionsManager = require('../core/OptionsManager');
+    var TouchInput = require('./TouchInput');
 
     /**
      * Generalizes handling of two-finger touch events.
@@ -16,26 +16,24 @@ define(function(require, exports, module) {
      * @private
      * @constructor
      */
-    function TwoFingerInput() {
-        this._eventInput = new EventHandler();
+    function TwoFingerInput(options) {
+        this.options = OptionsManager.setOptions(this, options);
+
+        this._eventInput = new TouchInput(this.options);
         this._eventOutput = new EventHandler();
 
         EventHandler.setInputHandler(this, this._eventInput);
         EventHandler.setOutputHandler(this, this._eventOutput);
 
-        this.touchAEnabled = false;
-        this.touchBEnabled = false;
-        this.timestampA = 0;
-        this.timestampB = 0;
-        this.touchAId = 0;
-        this.touchBId = 0;
+        this.payload = [];
+        this.touchIdA = undefined;
+        this.touchIdB = undefined;
         this.posA = null;
         this.posB = null;
 
-        this._eventInput.on('touchstart', handleStart.bind(this));
-        this._eventInput.on('touchmove', handleMove.bind(this));
-        this._eventInput.on('touchend', handleEnd.bind(this));
-        this._eventInput.on('touchcancel', handleEnd.bind(this));
+        this._eventInput.on('start', handleStart.bind(this));
+        this._eventInput.on('update', handleMove.bind(this));
+        this._eventInput.on('end', handleEnd.bind(this));
     }
 
     TwoFingerInput.prototype = Object.create(SimpleStream.prototype);
@@ -46,18 +44,26 @@ define(function(require, exports, module) {
         Y : 1
     };
 
+    TwoFingerInput.DEFAULT_OPTIONS = {
+        direction : undefined,
+        rails : false,
+        count : 2
+    };
+
     /**
      * Calculates the angle between two touches relative to [0,1].
+     *  Direction option must not be set to x- or y- axes, otherwise 0 is returned.
      *
      * @method calculateAngle
      * @static
-     * @param posA {Array}  First touch location (x,y)
-     * @param posB {Array}  Second touch location (x,y)
+     * @param value1 {Array}  First touch location (x,y)
+     * @param value2 {Array}  Second touch location (x,y)
      * @return {Number}
      */
-    TwoFingerInput.calculateAngle = function(posA, posB) {
-        var diffX = posB[0] - posA[0];
-        var diffY = posB[1] - posA[1];
+    TwoFingerInput.calculateAngle = function(value1, value2) {
+        if (this.options.direction !== undefined) return 0;
+        var diffX = value2[0] - value1[0];
+        var diffY = value2[1] - value1[1];
         return Math.atan2(diffY, diffX);
     };
 
@@ -66,20 +72,19 @@ define(function(require, exports, module) {
      *
      * @method calculateDistance
      * @static
-     * @param posA {Array}  First touch location (x,y)
-     * @param posB {Array}  Second touch location (x,y)
+     * @param value1 {Number|Array}  First touch location (x,y)
+     * @param value2 {Number|Array}  Second touch location (x,y)
      * @return {Number}
      */
-    TwoFingerInput.calculateDistance = function(posA, posB, direction) {
-        if (direction === TwoFingerInput.DIRECTION.X)
-            return Math.abs(posB[0] - posA[0]);
-        else if (direction === TwoFingerInput.DIRECTION.Y)
-            return Math.abs(posB[1] - posA[1]);
-        else {
-            var diffX = posB[0] - posA[0];
-            var diffY = posB[1] - posA[1];
+    TwoFingerInput.calculateDistance = function(value1, value2) {
+        var direction = this.options.direction;
+        
+        if (direction === undefined){
+            var diffX = value2[0] - value1[0];
+            var diffY = value2[1] - value1[1];
             return Math.sqrt(diffX * diffX + diffY * diffY);
         }
+        else return Math.abs(value2 - value1);
     };
 
     /**
@@ -87,66 +92,86 @@ define(function(require, exports, module) {
      *
      * @method calculateCenter
      * @static
-     * @param posA {Array}  First touch location (x,y)
-     * @param posB {Array}  Second touch location (x,y)
-     * @return {Array}
+     * @param value1 {Number|Array}  First touch location
+     * @param value2 {Number|Array}  Second touch location
+     * @return {Number|Array}
      */
-    TwoFingerInput.calculateCenter = function(posA, posB) {
-        return [(posA[0] + posB[0]) / 2.0, (posA[1] + posB[1]) / 2.0];
+    TwoFingerInput.calculateCenter = function(value1, value2) {
+        if (this.options.direction === undefined)
+            return [
+                0.5 * (value1[0] + value2[0]),
+                0.5 * (value1[1] + value2[1])
+            ];
+        else return 0.5 * (value1 + value2);
     };
 
-    function handleStart(event) {
-        for (var i = 0; i < event.changedTouches.length; i++) {
-            var touch = event.changedTouches[i];
-            if (!this.touchAEnabled) {
-                this.touchAId = touch.identifier;
-                this.touchAEnabled = true;
-                this.posA = [touch.pageX, touch.pageY];
-                this.timestampA = _now();
-            }
-            else if (!this.touchBEnabled) {
-                this.touchBId = touch.identifier;
-                this.touchBEnabled = true;
-                this.posB = [touch.pageX, touch.pageY];
-                this.timestampB = _now();
-                this.trigger('start', event);
-            }
+    /**
+     * Calculates the combined velocity of the two touches.
+     *
+     * @method calculateCenter
+     * @static
+     * @param velocity1 {Number|Array}  First velocity
+     * @param velocity2 {Number|Array}  Second velocity
+     * @return {Number|Array}
+     */
+    TwoFingerInput.calculateVelocity = function(velocity1, velocity2){
+        if (this.options.direction === undefined)
+            return [
+                0.5 * (velocity1[0] + velocity2[0]),
+                0.5 * (velocity1[1] + velocity2[1])
+            ];
+        else return 0.5 * (velocity1 + velocity2);
+    };
+
+    function getPosition(event){
+        var direction = this.options.direction;
+        var position;
+        if (direction === TwoFingerInput.DIRECTION.X)
+            position = event.pageX;
+        else if (direction === TwoFingerInput.DIRECTION.Y)
+            position = event.pageY;
+        else
+            position = [event.pageX, event.pageY];
+
+        return position;
+    }
+
+    function handleStart(data) {
+        data.position = getPosition.call(this, data.event);
+
+        if (this.touchIdA === undefined){
+            this.touchIdA = data.touchId;
+            this.payload[0] = data;
+        }
+        else if (this.touchIdB === undefined){
+            this.touchIdB = data.touchId;
+            this.payload[1] = data;
+            this.emit('twoFingerStart', this.payload);
         }
     }
 
-    function handleMove(event) {
-        if (!(this.touchAEnabled && this.touchBEnabled)) return;
-        var prevTimeA = this.timestampA;
-        var prevTimeB = this.timestampB;
-        var diffTime;
-        for (var i = 0; i < event.changedTouches.length; i++) {
-            var touch = event.changedTouches[i];
-            if (touch.identifier === this.touchAId) {
-                this.posA = [touch.pageX, touch.pageY];
-                this.timestampA = _now();
-                diffTime = this.timestampA - prevTimeA;
-            }
-            else if (touch.identifier === this.touchBId) {
-                this.posB = [touch.pageX, touch.pageY];
-                this.timestampB = _now();
-                diffTime = this.timestampB - prevTimeB;
-            }
-        }
+    function handleMove(data) {
+        if (this.touchIdA === undefined || this.touchIdB === undefined)
+            return false;
 
-        this.trigger('update', diffTime);
+        data.position = getPosition.call(this, data.event);
+
+        if (data.touchId === this.touchIdA)
+            this.payload[0] = data;
+        else if (data.touchId === this.touchIdB)
+            this.payload[1] = data;
+
+        this.emit('twoFingerUpdate', this.payload);
     }
 
-    function handleEnd(event) {
-        for (var i = 0; i < event.changedTouches.length; i++) {
-            var touch = event.changedTouches[i];
-            if (touch.identifier === this.touchAId || touch.identifier === this.touchBId) {
-                this.trigger('end', event);
-                this.touchAEnabled = false;
-                this.touchBEnabled = false;
-                this.touchAId = 0;
-                this.touchBId = 0;
-            }
-        }
+    function handleEnd(data) {
+        if (this.touchIdA === undefined || this.touchIdB === undefined)
+            return false;
+
+        this.emit('twoFingerEnd', this.payload);
+        this.touchIdA = undefined;
+        this.touchIdB = undefined;
+        this.payload = [];
     }
 
     module.exports = TwoFingerInput;

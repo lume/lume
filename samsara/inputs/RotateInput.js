@@ -3,6 +3,7 @@
 define(function(require, exports, module) {
     var TwoFingerInput = require('./_TwoFingerInput');
     var OptionsManager = require('../core/OptionsManager');
+    var EventHandler = require('../events/EventHandler');
 
     /**
      * Detects two-finger rotational motion and emits `start`, `update` and
@@ -14,7 +15,6 @@ define(function(require, exports, module) {
      *      `cumulate`      - Total accumulated rotation
      *      `velocity`      - Velocity of rotation
      *      `center`        - Midpoint between the two touches
-     *      `touchIds`      - Array of DOM event touch identifiers
      *
      * @example
      *
@@ -41,13 +41,17 @@ define(function(require, exports, module) {
      * @param [options.scale=1] {Number}    Scale the response to pinch
      */
     function RotateInput(options) {
-        TwoFingerInput.call(this);
-
         this.options = OptionsManager.setOptions(this, options);
 
-        this._eventInput.on('start', start.bind(this));
-        this._eventInput.on('update', update.bind(this));
-        this._eventInput.on('end', end.bind(this));
+        this._eventInput = new TwoFingerInput(this.options);
+        this._eventOutput = new EventHandler();
+
+        EventHandler.setInputHandler(this, this._eventInput);
+        EventHandler.setOutputHandler(this, this._eventOutput);
+
+        this._eventInput.on('twoFingerStart', start.bind(this));
+        this._eventInput.on('twoFingerUpdate', update.bind(this));
+        this._eventInput.on('twoFingerEnd', end.bind(this));
 
         this.payload = {
             count : 0,
@@ -55,8 +59,7 @@ define(function(require, exports, module) {
             velocity : 0,
             value : 1,
             cumulate : 0,
-            center : [],
-            touchIds : []
+            center : []
         };
 
         this._angle = 0;
@@ -71,16 +74,14 @@ define(function(require, exports, module) {
         scale : 1
     };
 
-    function start(event) {
-        this._previousAngle = TwoFingerInput.calculateAngle(this.posA, this.posB);
-        var center = TwoFingerInput.calculateCenter(this.posA, this.posB);
+    function start(data) {
+        this._previousAngle = TwoFingerInput.calculateAngle.call(this, data[0].position, data[1].position);
+        var center = TwoFingerInput.calculateCenter.call(this, data[0].position, data[1].position);
 
         this._angle = 0;
 
         var payload = this.payload;
         payload.count = event.touches.length;
-        payload.touchIds[0] = this.touchAId;
-        payload.touchIds[1] = this.touchBId;
         payload.value = this._angle;
         payload.cumulate = this.cumulate;
         payload.center = center;
@@ -88,14 +89,14 @@ define(function(require, exports, module) {
         this._eventOutput.emit('start', this.payload);
     }
 
-    function update(diffTime) {
-        var currAngle = TwoFingerInput.calculateAngle(this.posA, this.posB);
-        var center = TwoFingerInput.calculateCenter(this.posA, this.posB);
+    function update(data) {
+        var currAngle = TwoFingerInput.calculateAngle.call(this, data[0].position, data[1].position);
+        var center = TwoFingerInput.calculateCenter.call(this, data[0].position, data[1].position);
 
         var scale = this.options.scale;
 
         var delta = scale * (currAngle - this._previousAngle);
-        var velocity = delta / diffTime;
+        var velocity = delta / data.dt;
 
         this._angle += delta;
         this.cumulate += delta;
@@ -106,15 +107,13 @@ define(function(require, exports, module) {
         payload.velocity = velocity;
         payload.value = this._angle;
         payload.center = center;
-        payload.touchIds[0] = this.touchAId;
-        payload.touchIds[1] = this.touchBId;
 
         this._eventOutput.emit('update', payload);
 
         this._previousAngle = currAngle;
     }
 
-    function end(){
+    function end(data){
         this.payload.count = 0;
         this._eventOutput.emit('update', this.payload);
     }

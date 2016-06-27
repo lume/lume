@@ -1,6 +1,7 @@
 /* Copyright © 2015-2016 David Valdman */
 
 define(function(require, exports, module){
+    var EventHandler = require('../events/EventHandler');
     var TwoFingerInput = require('./_TwoFingerInput');
     var OptionsManager = require('../core/OptionsManager');
 
@@ -13,7 +14,6 @@ define(function(require, exports, module){
      *      `velocity`      - Relative velocity between two touches
      *      `displacement`  - Total accumulated displacement
      *      `center`        - Midpoint between the two touches
-     *      `touchIds`      - Array of DOM event touch identifiers
      *
      * @example
      *
@@ -37,26 +37,32 @@ define(function(require, exports, module){
      * @extends Inputs.TwoFingerInput
      * @uses Core.OptionsManager
      * @constructor
-     * @param options {Object}              Options
-     * @param [options.scale=1] {Number}    Scale the response to pinch
+     * @param options {Object}                  Options
+     * @param [options.scale=1] {Number}        Scale the response to pinch
+     * @param [options.direction] {Number}      Direction to project movement onto.
+     *                                          Options found in TouchInput.DIRECTION.
+     * @param [options.rails=false] {Boolean}   If a direction is specified, movement in the
+     *                                          orthogonal direction is suppressed
      */
     function PinchInput(options){
-        TwoFingerInput.call(this);
-
         this.options = OptionsManager.setOptions(this, options);
 
-        this._eventInput.on('start', start.bind(this));
-        this._eventInput.on('update', update.bind(this));
-        this._eventInput.on('end', end.bind(this));
+        this._eventInput = new TwoFingerInput(this.options);
+        this._eventOutput = new EventHandler();
+
+        EventHandler.setInputHandler(this, this._eventInput);
+        EventHandler.setOutputHandler(this, this._eventOutput);
+        
+        this._eventInput.on('twoFingerStart', start.bind(this));
+        this._eventInput.on('twoFingerUpdate', update.bind(this));
+        this._eventInput.on('twoFingerEnd', end.bind(this));
 
         this.payload = {
-            count : 0,
             delta : null,
             velocity : null,
             value : null,
             cumulate : null,
-            center : [],
-            touchIds : []
+            center : null
         };
 
         this.cumulate = 0;
@@ -73,41 +79,33 @@ define(function(require, exports, module){
 
     PinchInput.DEFAULT_OPTIONS = {
         scale : 1,
-        direction : undefined
+        direction : undefined,
+        rails : true
     };
 
-    function start(event){
-        var center = TwoFingerInput.calculateCenter(this.posA, this.posB);
-        this.value = TwoFingerInput.calculateDistance(this.posA, this.posB, this.options.direction);
+    function start(data){
+        var center = TwoFingerInput.calculateCenter.call(this, data[0].position, data[1].position);
+        var distance = TwoFingerInput.calculateDistance.call(this, data[0].position, data[1].position);
 
         var payload = this.payload;
-        payload.count = event.touches.length;
-        payload.touchIds[0] = this.touchAId;
-        payload.touchIds[1] = this.touchBId;
-        payload.value = this.value;
+        payload.value = distance;
         payload.center = center;
 
         this._eventOutput.emit('start', payload);
+
+        this.value = distance;
     }
 
-    function update(diffTime){
-        var center = TwoFingerInput.calculateCenter(this.posA, this.posB);
-        var distance = TwoFingerInput.calculateDistance(this.posA, this.posB, this.options.direction);
-
-        var scale = this.options.scale;
-        var delta = scale * (distance - this.value);
-        var velocity = delta / diffTime;
-
-        this._displacement += delta;
+    function update(data){
+        var center = TwoFingerInput.calculateCenter.call(this, data[0].position, data[1].position);
+        var distance = TwoFingerInput.calculateDistance.call(this, data[0].position, data[1].position);
+        var velocity = TwoFingerInput.calculateVelocity.call(this, data[0].velocity, data[1].velocity);
 
         var payload = this.payload;
-        payload.delta = delta;
         payload.cumulate = this.cumulate;
         payload.velocity = velocity;
         payload.value = this.value;
         payload.center = center;
-        payload.touchIds[0] = this.touchAId;
-        payload.touchIds[1] = this.touchBId;
 
         this._eventOutput.emit('update', payload);
 

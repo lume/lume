@@ -24,6 +24,7 @@ define(function(require, exports, module) {
      *      `count`     - DOM event for number of simultaneous touches
      *      `touchId`   - DOM touch event identifier
      *      `event`     - Original DOM event
+     *      `dt`        - Time since last update
      *
      * @example
      *
@@ -55,6 +56,7 @@ define(function(require, exports, module) {
      * @uses Core.OptionsManager
      * @param [options] {Object}                Options
      * @param [options.scale=1] {Number}        Scale the response to the mouse
+     * @param [options.count=1] {Number}        Number of simultaneous touches
      * @param [options.direction] {Number}      Direction to project movement onto.
      *                                          Options found in TouchInput.DIRECTION.
      * @param [options.rails=false] {Boolean}   If a direction is specified, movement in the
@@ -64,7 +66,7 @@ define(function(require, exports, module) {
         this.options = OptionsManager.setOptions(this, options);
 
         this._eventOutput = new EventHandler();
-        this._touchTracker = new TouchTracker({memory : 1, count : 1});
+        this._touchTracker = new TouchTracker({memory : 1, count : this.options.count});
 
         EventHandler.setOutputHandler(this, this._eventOutput);
         EventHandler.setInputHandler(this, this._touchTracker);
@@ -73,18 +75,9 @@ define(function(require, exports, module) {
         this._touchTracker.on('trackmove', handleMove.bind(this));
         this._touchTracker.on('trackend', handleEnd.bind(this));
 
-        this._payload = {
-            delta : null,
-            value : null,
-            cumulate : null,
-            velocity : null,
-            count : 0,
-            touchId : undefined,
-            event : null
-        };
-
-        this._cumulate = null;
-        this._value = null;
+        this._payload = {};
+        this._cumulate = {};
+        this._value = {};
     }
 
     TouchInput.prototype = Object.create(SimpleStream.prototype);
@@ -93,7 +86,8 @@ define(function(require, exports, module) {
     TouchInput.DEFAULT_OPTIONS = {
         direction : undefined,
         scale : 1,
-        rails : false
+        rails : false,
+        count : 1
     };
 
     /**
@@ -110,35 +104,41 @@ define(function(require, exports, module) {
     };
 
     function handleStart(data) {
+        var touchId = data.touchId;
         var velocity;
         var delta;
+
         if (this.options.direction !== undefined) {
-            if (this._cumulate === null) this._cumulate = 0;
-            this._value = 0;
+            if (!this._cumulate[touchId]) this._cumulate[touchId] = 0;
+            this._value[touchId] = 0;
             velocity = 0;
             delta = 0;
         }
         else {
-            if (this._cumulate === null) this._cumulate = [0, 0];
-            this._value = [0, 0];
+            if (!this._cumulate[touchId]) this._cumulate[touchId] = [0, 0];
+            this._value[touchId] = [0, 0];
             velocity = [0, 0];
             delta = [0, 0];
         }
 
-        var payload = this._payload;
+        var payload = {};
+        this._payload[data.touchId] = payload;
+
         payload.delta = delta;
-        payload.value = this._value;
-        payload.cumulate = this._cumulate;
+        payload.value = this._value[touchId];
+        payload.cumulate = this._cumulate[touchId];
         payload.velocity = velocity;
         payload.count = data.count;
-        payload.touchId = data.identifier;
+        payload.touchId = data.touchId;
         payload.event = data.event;
+        payload.timestamp = data.timestamp;
 
         this._eventOutput.emit('start', payload);
     }
 
     function handleMove(data) {
         var direction = this.options.direction;
+        var touchId = data.touchId;
 
         var scale = this.options.scale;
         var prevData = data.history[0];
@@ -168,40 +168,51 @@ define(function(require, exports, module) {
         if (direction === TouchInput.DIRECTION.X) {
             nextDelta = diffX;
             nextVel = velX;
-            this._value += nextDelta;
-            this._cumulate += nextDelta;
+            this._value[touchId] += nextDelta;
+            this._cumulate[touchId] += nextDelta;
         }
         else if (direction === TouchInput.DIRECTION.Y) {
             nextDelta = diffY;
             nextVel = velY;
-            this._value += nextDelta;
-            this._cumulate += nextDelta;
+            this._value[touchId] += nextDelta;
+            this._cumulate[touchId] += nextDelta;
         }
         else {
             nextDelta = [diffX, diffY];
             nextVel = [velX, velY];
-            this._value[0] += nextDelta[0];
-            this._value[1] += nextDelta[1];
-            this._cumulate[0] += nextDelta[0];
-            this._cumulate[1] += nextDelta[1];
+            this._value[touchId][0] += nextDelta[0];
+            this._value[touchId][1] += nextDelta[1];
+            this._cumulate[touchId][0] += nextDelta[0];
+            this._cumulate[touchId][1] += nextDelta[1];
         }
 
-        var payload = this._payload;
+        var payload = this._payload[data.touchId];
         payload.delta = nextDelta;
         payload.velocity = nextVel;
-        payload.value = this._value;
-        payload.cumulate = this._cumulate;
+        payload.value = this._value[touchId];
+        payload.cumulate = this._cumulate[touchId];
         payload.count = data.count;
-        payload.touchId = data.identifier;
+        payload.touchId = data.touchId;
         payload.event = data.event;
+        payload.timestamp = data.timestamp;
+        payload.dt = dt;
 
         this._eventOutput.emit('update', payload);
     }
 
     function handleEnd(data) {
-        this._payload.count = data.count;
-        this._payload.event = data.event;
-        this._eventOutput.emit('end', this._payload);
+        var touchId = data.touchId;
+
+        var payload = this._payload[touchId];
+        payload.count = data.count;
+        payload.event = data.event;
+        payload.timestamp = data.timestamp;
+
+        this._eventOutput.emit('end', payload);
+
+        delete this._payload[touchId];
+        delete this._value[touchId];
+        delete this._cumulate[touchId];
     }
 
     module.exports = TouchInput;

@@ -47,9 +47,9 @@ define(function(require, exports, module) {
      * @param [options.scale=1] {Number}    Scale the response to pinch
      */
     function ScaleInput(options) {
-        TwoFingerInput.call(this);
-
         this.options = OptionsManager.setOptions(this, options);
+        
+        TwoFingerInput.call(this, this.options);
 
         this._eventInput.on('start', start.bind(this));
         this._eventInput.on('update', update.bind(this));
@@ -85,7 +85,7 @@ define(function(require, exports, module) {
     };
 
     function start(event){
-        var currDist = TwoFingerInput.calculateDistance(this.posA, this.posB, this.options.direction);
+        var currDist = TwoFingerInput.calculateDistance(this.posA, this.posB);
         var center = TwoFingerInput.calculateCenter(this.posA, this.posB);
 
         this.startDist = currDist;
@@ -103,11 +103,12 @@ define(function(require, exports, module) {
     }
 
     function update(diffTime) {
-        var currDist = TwoFingerInput.calculateDistance(this.posA, this.posB, this.options.direction);
+        var currDist = TwoFingerInput.calculateDistance(this.posA, this.posB);
         var center = TwoFingerInput.calculateCenter(this.posA, this.posB);
 
         var scale = this.options.scale;
-
+        var direction = this.options.direction;
+        
         var delta = scale * (currDist - this.prevDist) / this.startDist;
         var velocity = delta / diffTime;
         this.value += delta;
