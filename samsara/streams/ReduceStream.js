@@ -6,7 +6,7 @@ define(function(require, exports, module) {
 
     function ReduceStream(reducer, value, options) {
         this.reducer = reducer;
-        this.options = options || {};
+        this.options = options || {offset : 0};
 
         this.prev = null;
         this.next = null;
