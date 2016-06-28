@@ -214,7 +214,7 @@ define(function(require, exports, module){
 
     var prevValue = undefined;
     function renderValue(value){
-        if (this.options.precision < 0) return;
+        if (this.options.precision < 0 || !this.labelContent) return;
         var currValue = value.toFixed(this.options.precision);
         if (currValue !== prevValue)
             this.labelContent.textContent = currValue;
