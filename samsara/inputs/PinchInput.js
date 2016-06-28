@@ -1,5 +1,5 @@
 /* Copyright © 2015-2016 David Valdman */
-// TODO: add delta
+
 define(function(require, exports, module){
     var EventHandler = require('../events/EventHandler');
     var TwoFingerInput = require('./_TwoFingerInput');
@@ -10,6 +10,7 @@ define(function(require, exports, module){
      *  `end` events with the payload data:
      *
      *      `value`         - Distance between the two touches
+     *      `delta`         - Differential in successive distances
      *      `velocity`      - Relative velocity between two touches
      *      `displacement`  - Total accumulated displacement
      *      `center`        - Midpoint between the two touches
@@ -39,7 +40,7 @@ define(function(require, exports, module){
      * @param options {Object}                  Options
      * @param [options.scale=1] {Number}        Scale the response to pinch
      * @param [options.direction] {Number}      Direction to project movement onto.
-     *                                          Options found in PinchInput.DIRECTION.
+     *                                          Options found in TouchInput.DIRECTION.
      * @param [options.rails=false] {Boolean}   If a direction is specified, movement in the
      *                                          orthogonal direction is suppressed
      */
@@ -57,10 +58,11 @@ define(function(require, exports, module){
         this._eventInput.on('twoFingerEnd', end.bind(this));
 
         this.payload = {
+            delta : null,
             velocity : null,
             value : null,
             cumulate : null,
-            center : null
+            center : []
         };
 
         this.cumulate = 0;
@@ -99,7 +101,11 @@ define(function(require, exports, module){
         var distance = TwoFingerInput.calculateDistance.call(this, data[0].position, data[1].position);
         var velocity = TwoFingerInput.calculateVelocity.call(this, data[0].velocity, data[1].velocity);
 
+        var scale = this.options.scale;
+        var delta = scale * (distance - this.value);
+
         var payload = this.payload;
+        payload.delta = delta;
         payload.cumulate = this.cumulate;
         payload.velocity = velocity;
         payload.value = this.value;
@@ -110,7 +116,7 @@ define(function(require, exports, module){
         this.value = distance;
     }
 
-    function end(data){
+    function end(){
         this._eventOutput.emit('end', this.payload);
     }
 
