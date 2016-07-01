@@ -31,7 +31,7 @@ define(function(require, exports, module) {
     MergedStream.prototype.addStream = function(key, stream) {
         var mergedData = this.mergedData;
 
-        if (stream instanceof Object){
+        if (stream instanceof Object && stream.on){
             mergedData[key] = undefined;
 
             stream.on('start', function(data){
@@ -54,7 +54,6 @@ define(function(require, exports, module) {
     };
 
     MergedStream.prototype.removeStream = function(key) {
-        // TODO : remove off('start', 'update', 'end', 'resize') 
         var stream = this.streamCache[key];
         this.unsubscribe(stream);
 
