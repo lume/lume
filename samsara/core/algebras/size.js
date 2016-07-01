@@ -23,7 +23,10 @@ define(function(require, exports, module) {
 
         var size = new Array(2);
 
-        if (spec.size) {
+        if (spec.size instanceof Function) {
+            size = spec.size(parentSize);
+        }
+        else if (spec.size instanceof Array) {
             // inheritance
             if (spec.size[0] === undefined) size[0] = parentSize[0];
             if (spec.size[1] === undefined) size[1] = parentSize[1];

@@ -72,7 +72,7 @@ define(function(require, exports, module) {
     function _createStream(sources) {
         for (var key in sources) {
             var value = sources[key];
-            if (typeof value === 'number' || value instanceof Array) {
+            if (!(value instanceof SimpleStream)) {
                 var source = new Observable(value);
                 sources[key] = source;
             }
