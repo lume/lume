@@ -56,17 +56,18 @@ define(function(require, exports, module) {
      * @uses Core.OptionsManager
      * @param [options] {Object}                Options
      * @param [options.scale=1] {Number}        Scale the response to the mouse
-     * @param [options.count=1] {Number}        Number of simultaneous touches
+     * @param [options.track=1] {Number}        Max simultaneous touches to record
+     * @param [options.limit=Infinity] {Number} Limit number of touches. If reached, no events are emitted
      * @param [options.direction] {Number}      Direction to project movement onto.
      *                                          Options found in TouchInput.DIRECTION.
-     * @param [options.rails=false] {Boolean}   If a direction is specified, movement in the
-     *                                          orthogonal direction is suppressed
+     * @param [options.rails=false] {Boolean}   If a direction is unspecified, movement in the
+     *                                          orthogonal to the principal direction is suppressed
      */
     function TouchInput(options) {
         this.options = OptionsManager.setOptions(this, options);
 
         this._eventOutput = new EventHandler();
-        this._touchTracker = new TouchTracker({memory : 1, count : this.options.count});
+        this._touchTracker = new TouchTracker(this.options);
 
         EventHandler.setOutputHandler(this, this._eventOutput);
         EventHandler.setInputHandler(this, this._touchTracker);
@@ -87,7 +88,8 @@ define(function(require, exports, module) {
         direction : undefined,
         scale : 1,
         rails : false,
-        count : 1
+        track : 1,
+        limit : Infinity
     };
 
     /**
@@ -149,12 +151,12 @@ define(function(require, exports, module) {
         var diffX = scale * (data.x - prevData.x);
         var diffY = scale * (data.y - prevData.y);
 
-        if (this.options.rails && direction !== undefined){
-            var activateRails =
-                (direction === TouchInput.DIRECTION.X && Math.abs(diffX) < Math.abs(0.5 * diffY)) ||
-                (direction === TouchInput.DIRECTION.Y && Math.abs(diffY) < Math.abs(0.5 * diffX));
+        if (this.options.rails){
+            if ((direction === TouchInput.DIRECTION.X && Math.abs(diffY) > Math.abs(diffX)))
+                diffY = 0;
 
-            if (activateRails) return false;
+            if (direction === TouchInput.DIRECTION.Y && Math.abs(diffX) > Math.abs(diffY))
+                diffX = 0;
         }
 
         var dt = Math.max(currTime - prevTime, MINIMUM_TICK_TIME);

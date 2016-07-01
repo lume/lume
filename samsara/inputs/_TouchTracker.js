@@ -27,7 +27,8 @@ define(function(require, exports, module) {
      * @uses Core.OptionsManager
      * @param [options] {Object}                Options
      * @param [options.memory] {Number}         Number of past touches to record in history
-     * @param [options.count] {Number}          Max simultaneous touches to record
+     * @param [options.track] {Number}          Max simultaneous touches to record
+     * @param [options.limit] {Number}          Limit number of touches. If reached, no events are emitted
      */
     function TouchTracker(options) {
         this.options = OptionsManager.setOptions(this, options);
@@ -48,8 +49,9 @@ define(function(require, exports, module) {
     }
 
     TouchTracker.DEFAULT_OPTIONS = {
-        count : 1,      // number of simultaneous touches
-        memory : 1      // length of recorded history
+        track : 1,
+        limit : Infinity,  // number of simultaneous touches
+        memory : 1          // length of recorded history
     };
 
     /**
@@ -88,7 +90,8 @@ define(function(require, exports, module) {
     }
 
     function handleStart(event) {
-        if (this.numTouches > this.options.count) return;
+        if (event.touches.length >= this.options.limit) return false;
+        if (this.numTouches >= this.options.track) return false;
 
         for (var i = 0; i < event.changedTouches.length; i++) {
             var touch = event.changedTouches[i];
@@ -101,7 +104,8 @@ define(function(require, exports, module) {
     }
 
     function handleMove(event) {
-        if (this.numTouches > this.options.count) return;
+        if (event.touches.length >= this.options.limit) return false;
+        if (this.numTouches > this.options.track) return false;
 
         event.preventDefault(); // prevents scrolling on mobile
 
@@ -119,7 +123,8 @@ define(function(require, exports, module) {
     }
 
     function handleEnd(event) {
-        if (this.numTouches > this.options.count) return;
+        if (event.touches.length >= this.options.limit) return false;
+        if (this.numTouches > this.options.track) return false;
 
         for (var i = 0; i < event.changedTouches.length; i++) {
             var touch = event.changedTouches[i];

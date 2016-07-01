@@ -47,7 +47,7 @@ define(function(require, exports, module) {
     TwoFingerInput.DEFAULT_OPTIONS = {
         direction : undefined,
         rails : false,
-        count : 2
+        track : 2
     };
 
     /**
