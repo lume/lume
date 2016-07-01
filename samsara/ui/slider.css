@@ -26,6 +26,7 @@
     background: black;
     border: 1px solid white;
     cursor: ew-resize;
+    pointer-events: all;
     z-index: 0;
 }
 
