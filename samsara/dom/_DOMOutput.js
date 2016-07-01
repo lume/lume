@@ -81,13 +81,10 @@ define(function(require, exports, module) {
         else if (size[1] >= 0) target.style.height = size[1] + 'px';
     };
 
-    // {Visibility : hidden} allows for DOM events to pass through the element
-    // TODO: use pointerEvents instead. However, there is a bug in Chrome for Android
-    // ticket here: https://code.google.com/p/chromium/issues/detail?id=569654
+    // pointerEvents logic allows for DOM events to pass through the element when invisible
     var _setOpacity = function _setOpacity(element, opacity) {
         if (!this._isVisible && opacity > MIN_OPACITY) {
-            //element.style.pointerEvents = 'auto';
-            element.style.visibility = 'visible';
+            element.style.pointerEvents = 'auto';
             this._isVisible = true;
         }
 
@@ -95,13 +92,12 @@ define(function(require, exports, module) {
         else if (opacity < MIN_OPACITY) {
             opacity = MIN_OPACITY;
             if (this._isVisible) {
-                //element.style.pointerEvents = 'none';
-                element.style.visibility = 'hidden';
+                element.style.pointerEvents = 'none';
                 this._isVisible = false;
             }
         }
 
-        if (this._isVisible) element.style.opacity = opacity;
+        element.style.opacity = opacity;
     };
 
     DOMOutput.prototype.querySelector = function querySelector(target, selector){
@@ -166,7 +162,6 @@ define(function(require, exports, module) {
 
     DOMOutput.prototype.makeVisible = function makeVisible(target){
         target.style.display = '';
-        target.style.visibility = '';
 
         // for true-sized elements, reset height and width
         if (this._cachedSize) {
