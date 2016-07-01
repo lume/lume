@@ -97,12 +97,9 @@ define(function(require, exports, module) {
      * @return {Number|Array}
      */
     TwoFingerInput.calculateCenter = function(value1, value2) {
-        if (this.options.direction === undefined)
-            return [
-                0.5 * (value1[0] + value2[0]),
-                0.5 * (value1[1] + value2[1])
-            ];
-        else return 0.5 * (value1 + value2);
+        return (this.options.direction === undefined)
+            ? [0.5 * (value1[0] + value2[0]), 0.5 * (value1[1] + value2[1])]
+            : (value1 + value2);
     };
 
     /**
@@ -115,12 +112,39 @@ define(function(require, exports, module) {
      * @return {Number|Array}
      */
     TwoFingerInput.calculateVelocity = function(velocity1, velocity2){
-        if (this.options.direction === undefined)
-            return [
-                0.5 * (velocity1[0] + velocity2[0]),
-                0.5 * (velocity1[1] + velocity2[1])
-            ];
-        else return 0.5 * (velocity1 + velocity2);
+        return (this.options.direction === undefined)
+            ? [0.5 * (velocity1[0] + velocity2[0]), 0.5 * (velocity1[1] + velocity2[1])]
+            : 0.5 * (velocity1 + velocity2);
+    };
+
+    /**
+     * Calculates the direction of the touch.
+     *
+     * @method calculateOrientation
+     * @static
+     * @param value1 {Number|Array}  First velocity
+     * @param value2 {Number|Array}  Second velocity
+     * @return {Number|Array}
+     */
+    TwoFingerInput.calculateOrientation = function(value1, value2){
+        return (this.options.direction === undefined)
+            ? [(value2[0] - value1[0]), (value2[1] - value1[1])]
+            : value2 - value1;
+    };
+
+    /**
+     * Detects if orientation has changed.
+     *
+     * @method detectOrientationChange
+     * @static
+     * @param dir2 {Number|Array}  First direction
+     * @param dir1 {Number|Array}  Second direction
+     * @return {Boolean}
+     */
+    TwoFingerInput.detectOrientationChange = function(dir1, dir2){
+        return (this.options.direction === undefined)
+            ? dir1[0] * dir2[0] + dir1[1] * dir2[1] <= 0
+            : dir1 * dir2 <= 0;
     };
 
     function getPosition(event){

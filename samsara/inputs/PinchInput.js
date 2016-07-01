@@ -61,12 +61,11 @@ define(function(require, exports, module){
             delta : null,
             velocity : null,
             value : null,
-            cumulate : null,
             center : []
         };
 
-        this.cumulate = 0;
         this.value = 0;
+        this.direction = [];
     }
 
     PinchInput.prototype = Object.create(TwoFingerInput.prototype);
@@ -86,6 +85,7 @@ define(function(require, exports, module){
     function start(data){
         var center = TwoFingerInput.calculateCenter.call(this, data[0].position, data[1].position);
         var distance = TwoFingerInput.calculateDistance.call(this, data[0].position, data[1].position);
+        this.direction = TwoFingerInput.calculateOrientation.call(this, data[0].position, data[1].position);
 
         var payload = this.payload;
         payload.value = distance;
@@ -100,13 +100,22 @@ define(function(require, exports, module){
         var center = TwoFingerInput.calculateCenter.call(this, data[0].position, data[1].position);
         var distance = TwoFingerInput.calculateDistance.call(this, data[0].position, data[1].position);
         var velocity = TwoFingerInput.calculateVelocity.call(this, data[0].velocity, data[1].velocity);
+        var currDirection = TwoFingerInput.calculateOrientation.call(this, data[0].position, data[1].position);
+
+        var changedDirection = TwoFingerInput.detectOrientationChange.call(this, currDirection, this.direction);
+        if (changedDirection) {
+            if (this.options.direction === undefined){
+                distance[0] *= -1;
+                distance[1] *= -1;
+            }
+            else distance *= -1;
+        }
 
         var scale = this.options.scale;
         var delta = scale * (distance - this.value);
 
         var payload = this.payload;
         payload.delta = delta;
-        payload.cumulate = this.cumulate;
         payload.velocity = velocity;
         payload.value = this.value;
         payload.center = center;
