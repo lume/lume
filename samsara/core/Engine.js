@@ -107,9 +107,8 @@ define(function(require, exports, module) {
         context._size.unsubscribe(this.size);
     };
 
-    // Emit a resize event if the window's height or width has changed
     var isResizing = false;
-    var resizeDebounceTime = 200;
+    var resizeDebounceTime = 150; // introduce lag to detect resize end event. see https://github.com/dmvaldman/samsara/issues/49
 
     var resizeEnd = Timer.debounce(function() {
         dirtyQueue.push(function(){
@@ -118,33 +117,43 @@ define(function(require, exports, module) {
         });
     }, resizeDebounceTime);
 
+    // Emit a resize event if the window's height or width has changed
     function handleResize() {
         var newHeight = window.innerHeight;
         var newWidth = window.innerWidth;
 
         if (isMobile) {
             var newOrientation = newHeight > newWidth;
-            if (orientation === newOrientation) return false;
+            if (orientation === newOrientation)
+                return false;
+
             orientation = newOrientation;
+
+            // Landscape/Portrait resize events are discrete on mobile
+            // so don't fire updates
+            Engine.size.emit('start');
+            dirtyQueue.push(function(){
+                Engine.size.emit('end');
+            });
         }
         else {
-            if (newWidth === windowWidth && newHeight === windowHeight) return false;
+            if (newWidth === windowWidth && newHeight === windowHeight)
+                return false;
+
             windowWidth = newWidth;
             windowHeight = newHeight;
-        }
 
-        if (!isResizing) {
-            preTickQueue.push(function(){
+            if (!isResizing){
                 Engine.size.emit('start');
-            });
-            isResizing = true;
-            resizeEnd();
-        }
-        else {
-            postTickQueue.push(function(){
-                Engine.size.emit('update');
-            });
-            resizeEnd();
+                isResizing = true;
+                resizeEnd();
+            }
+            else {
+                postTickQueue.push(function(){
+                    Engine.size.emit('update');
+                    resizeEnd();
+                });
+            }
         }
     }
 
