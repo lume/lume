@@ -23,9 +23,14 @@ define(function(require, exports, module) {
         }
         else {
             this.value = null;
-            this.output = (typeof this.options.offset === 'number')
-                ? new Observable(this.options.offset || 0)
-                : this.options.offset;
+
+            if (typeof this.options.offset === 'number'){
+                this.output = new Observable(this.options.offset);
+            }
+            else {
+                this.output = new SimpleStream();
+                this.output.subscribe(this.options.offset);
+            }
         }
 
         setHeadOutput.call(this, this.head.output);
