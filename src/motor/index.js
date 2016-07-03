@@ -1,12 +1,6 @@
 
-import Curves from './Curves'
-import Node from './Node'
-import Scene from './Scene'
-
-export {
-    Curves,
-    Node,
-    Scene,
-}
+export Curves from './Curves'
+export Node from './Node'
+export Scene from './Scene'
 
 export * from './Utility'

@@ -1,20 +1,10 @@
-import Calendar from './Calendar'
-import Cube from './Cube'
-import DoubleSidedPlane from './DoubleSidedPlane'
-import Grid from './Grid'
-import Molecule from './Molecule'
-import Plane from './Plane'
-import PushMenuLayout from './PushMenuLayout'
-
-export {
-    Calendar,
-    Cube,
-    DoubleSidedPlane,
-    Grid,
-    Molecule,
-    Plane,
-    PushMenuLayout,
-}
+export Calendar from './Calendar'
+export Cube from './Cube'
+export DoubleSidedPlane from './DoubleSidedPlane'
+export Grid from './Grid'
+export Molecule from './Molecule'
+export Plane from './Plane'
+export PushMenuLayout from './PushMenuLayout'
 
 export * from './motor'
 export * from './motor-html'
