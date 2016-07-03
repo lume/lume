@@ -4,51 +4,38 @@ import 'document-register-element'
 
 import styles from './node-style'
 import Node from '../motor/Node'
-import makeWebComponentBaseClass from './web-component'
+import MotorHTMLBase from './base'
+import MotorHTMLScene from './scene'
 import { makeLowercaseSetterAliases, proxyMethods } from '../motor/Utility'
 
-const WebComponent = makeWebComponentBaseClass(window.HTMLElement)
-//export default
-class MotorHTMLNode extends WebComponent {
-    constructor() { super() }
+class MotorHTMLNode extends MotorHTMLBase {
+
+    // Use constructor() in v1 Custom Elements instead of createdCallback.
+    //constructor() {
 
     createdCallback() {
         super.createdCallback()
 
         // true if motor-node is mounted improperly (not mounted in motor-node or motor-scene)
         this._attachError = false
-
-        this.node = null // to hold the imperative API Node instance.
-
-        // XXX: "this.mountPromise" vs "this.ready":
-        // "ready" seems to be more intuitive on the HTML side because
-        // if the user has a reference to a motor-node or a motor-scene
-        // and it exists in DOM, then it is already "mounted" from the
-        // HTML API perspective. Maybe we can use "mountPromise" for
-        // the imperative API, and "ready" for the HTML API. For example:
-        //
-        // await $('motor-scene')[0].ready // When using the HTML API
-        // await node.mountPromise // When using the imperative API
-        //
-        // Or, maybe we can just use ".ready" in both APIs?...
-        this._resolveReadyPromise = null
-        this.ready = new Promise(r => this._resolveReadyPromise = r)
     }
 
     attachedCallback() {
 
-        // Check that motor-nodes are mounted to motor-scenes or motor-nodes.
-        // Scene can be mounted to any element. In the future we could inspect
-        // the scene mount point, and advise about posisble styling issues
-        // (f.e. making the scene container have a height).
+        // Check that motor-nodes are mounted to motor-scenes or
+        // motor-nodes. Scene can be mounted to any element. In the future
+        // we could inspect the scene mount point, and advise about posisble
+        // styling issues (f.e. making the scene container have a height).
         //
-        // TODO: different check needed when using is="" attributes. For now,
+        // XXX: different check needed when using is="" attributes. For now,
         // we'll discourage use of the awkward is="" attribute.
-        if (this.nodeName == 'MOTOR-NODE') {
+        if ( !(this instanceof MotorHTMLScene) ) {
             if (
-                !( this.parentNode.nodeName == 'MOTOR-NODE'
-                    || this.parentNode.nodeName == 'MOTOR-SCENE')
-                || this.parentNode._attachError
+                !(
+                    this.parentNode instanceof MotorHTMLNode
+                    || this.parentNode instanceof MotorHTMLScene
+                )
+                || this.parentNode._attachError // TODO, #40
             ) {
 
                 this._attachError = true
@@ -64,7 +51,7 @@ class MotorHTMLNode extends WebComponent {
     }
 
     init() {
-        this._associateImperativeNode()
+        super.init()
 
         // Attach this motor-node's Node to the parent motor-node's
         // Node (doesn't apply to motor-scene, which doesn't have a
@@ -72,61 +59,25 @@ class MotorHTMLNode extends WebComponent {
         //
         // TODO: prevent this call if attachedCallback happened to call to
         // addChild on the imperative side.
-        if (this.nodeName != 'MOTOR-SCENE')
+        if ( !(this instanceof MotorHTMLScene) )
             this.parentNode.node.addChild(this.node)
-    }
-
-    /**
-     * This method creates the association between this MotorHTMLNode instance
-     * and the imperative Node instance.
-     *
-     * This method may get called by this.init, but can also be called by
-     * the Node class if Node is used imperatively. See Node#constructor.
-     *
-     * @private
-     *
-     * @param {Node} imperativeMotorNode The Node to associate with this
-     * MotorHTMLNode. This parameter is only used in Node#constructor, and this
-     * happens when using the imperative form infamous instead of the HTML
-     * interface of infamous. When the HTML interface is used, this gets called
-     * first without an imperativeMotorNode argument and the call to this in
-     * Node#constructor will then be a noop. Basically, either this gets called
-     * first by MotorHTMLNode, or first by Node, depending on which API is used
-     * first.
-     */
-    _associateImperativeNode(imperativeMotorNode) {
-        if (!this.node) {
-            if (imperativeMotorNode && imperativeMotorNode instanceof Node)
-                this.node = imperativeMotorNode
-            else
-                this.node = this._makeImperativeNode()
-
-            this._signalWhenReady()
-        }
     }
 
     // this is called in attachedCallback, at which point this element hasa
     // parentNode.
+    // @override
     _makeImperativeNode() {
         return new Node({}, this)
     }
 
-    async _signalWhenReady() {
-        await this.node.mountPromise
-        this._resolveReadyPromise()
-    }
-
     // TODO XXX: remove corresponding imperative Node from it's parent.
     detachedCallback() {
-        if (this.nodeName == 'MOTOR-NODE' && this._attachError) {
+        if (!(this instanceof MotorHTMLScene) && this._attachError) {
             this._attachError = false
             return
         }
 
         super.detachedCallback()
-    }
-
-    deinit() {
     }
 
     attributeChangedCallback(attribute, oldValue, newValue) {
@@ -138,8 +89,10 @@ class MotorHTMLNode extends WebComponent {
         // follows) for performance; especially when DOMMatrix is supported
         // by browsers.
 
+        console.log('motor-node not ready yet.')
         // if not initialized yet, wait.
         if (!this.node) await this.ready
+        console.log('motor-node ready!')
 
         // attributes on our HTML elements are the same name as those on
         // the Node class (the setters).
@@ -172,13 +125,15 @@ class MotorHTMLNode extends WebComponent {
 
 proxyMethods(Node, MotorHTMLNode)
 
-//customElements.define('motor-node', MotorHTMLNode)
+// XXX we'll export the class directly for v1 Custom Elements, and encourage
+// end users to define the name of the element as they see fit. We won't
+// define the name ourselves like we do here.
 export default
 document.registerElement('motor-node', MotorHTMLNode)
 
 // for use by MotorHTML, convenient since HTMLElement attributes are all
 // converted to lowercase by default, so if we don't do this then we won't be
-// able to map attributes to Node setters.
+// able to map attributes to Node setters as easily.
 makeLowercaseSetterAliases(Node.prototype)
 
 function parseNumberArray(str) {

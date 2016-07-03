@@ -4,11 +4,11 @@ import 'document-register-element'
 
 import styles from './scene-style'
 import Scene from '../motor/Scene'
-import MotorHTMLNode from './node'
+import MotorHTMLBase from './base'
 
 export default
 document.registerElement('motor-scene',
-class MotorHTMLScene extends MotorHTMLNode {
+class MotorHTMLScene extends MotorHTMLBase {
 
     // this is called in attachedCallback, at which point this element has a
     // parentNode.

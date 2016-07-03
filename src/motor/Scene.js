@@ -1,7 +1,7 @@
 import Node from './Node'
 import documentReady from 'awaitbox/dom/documentReady'
 
-import '../motor-html/scene'
+import MotorHTMLScene from '../motor-html/scene'
 
 export default
 class Scene extends Node {
@@ -20,7 +20,7 @@ class Scene extends Node {
     }
 
     _makeElement() {
-        return document.createElement('motor-scene')
+        return new MotorHTMLScene
     }
 
     /**

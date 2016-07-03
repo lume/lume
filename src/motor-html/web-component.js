@@ -148,6 +148,7 @@ function makeWebComponentBaseClass(elementClass) {
             this.classList.add(this.stylesheet.classes[this.constructor.name])
             this.init()
         }
+        init() { /* to be defined by child class */ }
 
         _deinit() {
             // XXX: We can clean up the style after some time, for example like 1
@@ -156,6 +157,7 @@ function makeWebComponentBaseClass(elementClass) {
             this._initialized = false
             this.deinit()
         }
+        deinit() { /* to be defined by child class */ }
     }
 
     classCache.set(elementClass, WebComponent)

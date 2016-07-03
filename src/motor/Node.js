@@ -1,6 +1,6 @@
 import 'geometry-interfaces'
 import Motor from './Motor'
-import '../motor-html/node'
+import MotorHTMLNode from '../motor-html/node'
 
 /**
  * Manages a DOM element. Exposes a set of recommended APIs for working with
@@ -84,7 +84,6 @@ class Node {
         this._scene = null // stores a ref to this Node's root Scene.
 
         // Property Cache, with default values
-        const node = this
         this._properties = {
 
             // XXX: remove these in favor of storing them directly in the
@@ -171,7 +170,7 @@ class Node {
      * @private
      */
     _makeElement() {
-        return document.createElement('motor-node')
+        return new MotorHTMLNode
     }
 
     /**
