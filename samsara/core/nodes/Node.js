@@ -49,7 +49,7 @@ define(function(require, exports, module) {
 
     /**
      * Introduce new data streams to the layout node in {key : value} pairs.
-     *  Here the `key` is one of "transform", "origin", "align" or "opacity".
+     *  Here the `key` is a value from one of `SizeNode.KEYS` or `LayoutNode.KEYS`.
      *  The `value` is either a stream, or a simple type like a `Number` or `Array`.
      *  Simple types will be wrapped in an `Observerable` to emit appropriate events.
      *
