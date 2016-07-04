@@ -9,7 +9,7 @@ define(function (require) {
 
     QUnit.test('start', function(assert){
         expect(1);
-        QUnit.async();
+        var done = assert.async();
 
         var stream = new Stream();
         var emitter = new EventEmitter();
@@ -20,7 +20,7 @@ define(function (require) {
         stream.on('start', function(size) {
             assert.ok(size == emitSize);
             loop.stop();
-            QUnit.start();
+            done()
         });
 
         emitter.emit('start', emitSize);
@@ -28,7 +28,7 @@ define(function (require) {
 
     QUnit.test('merge', function(assert){
         expect(3);
-        QUnit.async();
+        var done = assert.async();
 
         var size1 = new EventEmitter();
         var size2 = new EventEmitter();
@@ -45,7 +45,7 @@ define(function (require) {
             assert.ok(mergedData.size2 === 4);
             assert.ok(mergedData.size3 === undefined);
             loop.stop();
-            QUnit.start();
+            done();
         });
 
         size1.emit('start', true);
@@ -54,7 +54,7 @@ define(function (require) {
 
     QUnit.test('lift', function(assert) {
         expect(7);
-        QUnit.async();
+        var done = assert.async();
         var N = 5;
 
         var emitters = [];
@@ -79,7 +79,7 @@ define(function (require) {
         stream.on('start', function(sum) {
             assert.ok(sum == N * (N - 1) / 2);
             loop.stop();
-            QUnit.start();
+            done();
         });
 
         for (var i = 0; i < N; i++)
