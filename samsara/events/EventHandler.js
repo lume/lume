@@ -115,6 +115,26 @@ define(function(require, exports, module) {
     };
 
     /**
+     * Removes the handler from the `type` channel.
+     *  If a handler is not specified or if there are no remaining handlers of the `type`,
+     *  the EventHandler removes itself from the upstream sources.
+     *
+     * @method off
+     * @param type {String}           Event channel name
+     * @param [handler] {Function}    Handler
+     */
+    EventHandler.prototype.off = function off(type, handler) {
+        var empty = EventEmitter.prototype.off.apply(this, arguments);
+        if (empty && this.upstreamListeners[type]) {
+            var oldUpstreamListener = this.upstreamListeners[type];
+            delete this.upstreamListeners[type];
+            for (var i = 0; i < this.upstream.length; i++) {
+                this.upstream[i].off(type, oldUpstreamListener);
+            }
+        }
+    };
+
+    /**
      * Listen for events from an an upstream source.
      *
      * @method subscribe

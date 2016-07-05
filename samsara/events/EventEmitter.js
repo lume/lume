@@ -89,6 +89,7 @@ define(function(require, exports, module) {
      * Removes the `handler` from the `type` channel. This undoes the work of `on`.
      *  If no type is provided, then all event listeners are removed.
      *  If a type is provided but no handler, then all listeners of that type are removed.
+     *  If no handlers are left for the specified type returns true, otherwise false.
      *
      * @method off
      * @param [type] {String}         Channel name
@@ -97,7 +98,7 @@ define(function(require, exports, module) {
     EventEmitter.prototype.off = function off(type, handler) {
         if (!type) {
             this.listeners = {};
-            return;
+            return true;
         }
 
         var listener = this.listeners[type];
@@ -108,6 +109,7 @@ define(function(require, exports, module) {
                 if (index >= 0) listener.splice(index, 1);
             }
         }
+        return this.listeners[type].length === 0;
     };
 
     /**
