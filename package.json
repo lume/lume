@@ -4,7 +4,7 @@
   "description": "A UI library.",
   "format": "es6",
   "main": "index.js",
-  "browser": "global.js",
+  "browser": "index.js",
   "global": "global.js",
   "license": "MPL",
   "homepage": "http://infamous.io",
