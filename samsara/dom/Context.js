@@ -56,10 +56,18 @@ define(function(require, exports, module) {
         this._size = new SimpleStream();
         this._layout = new SimpleStream();
 
+        this._cachedSize = [];
         this.size = this._size.map(function(){
-            var size = [this.container.clientWidth, this.container.clientHeight];
-            this.emit('resize', size);
-            return size;
+            var width = this.container.clientWidth;
+            var height = this.container.clientHeight;
+            if (width !== this._cachedSize[0] || height !== this._cachedSize[1]){
+                this._cachedSize[0] = width;
+                this._cachedSize[1] = height;
+                this.emit('resize', this._cachedSize);
+                // TODO: shouldn't need to create new array - DOMOutput bug
+                return [width, height];
+            }
+            else return false;
         }.bind(this));
 
         this._perspective = new Transitionable();
