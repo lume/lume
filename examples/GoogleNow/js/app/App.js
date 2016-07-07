@@ -91,7 +91,8 @@ define(function (require, exports, module) {
             // The opacity of the status bar begins at 0, and becomes visible with the easing animation.
             var statusBar = new Surface({
                 tagName: 'img',
-                size: [undefined, true],
+                size: [false, true],
+                proportions: [1, false],
                 attributes: {src: options.imgURLs.statusBar},
                 classes: ['statusBar'],
                 opacity: this.easingTransition
@@ -126,8 +127,7 @@ define(function (require, exports, module) {
             // gives the effect that it is changing colors.
             var googleColor = new Surface({
                 tagName: 'img',
-                proportions: [false, .1],
-                aspectRatio: 3,
+                proportions: [.3, .1],
                 attributes: {src: options.imgURLs.googleColor},
                 origin: [.5, .5],
                 opacity: this.easingTransition.map(function (value) {
@@ -137,8 +137,7 @@ define(function (require, exports, module) {
 
             var googleWhite = new Surface({
                 tagName: 'img',
-                proportions: [false, .1],
-                aspectRatio: 3,
+                proportions : [.3, .1],
                 attributes : {src : options.imgURLs.googleWhite},
                 origin: [.5, .5],
                 opacity: this.easingTransition
@@ -165,8 +164,9 @@ define(function (require, exports, module) {
         addCards : function(options){
             var trafficCard = new Surface({
                 tagName: 'img',
-                proportions: [1, false],
-                aspectRatio: 1 / 1.4,
+                size: function(parentSize){
+                    return [parentSize[0], .72 * parentSize[0]];
+                },
                 classes: ['card', 'traffic-card'],
                 attributes : {src : options.imgURLs.trafficCard},
                 origin: [.5, 0]
@@ -174,8 +174,9 @@ define(function (require, exports, module) {
 
             var movieCard = new Surface({
                 tagName: 'img',
-                proportions: [1, false],
-                aspectRatio: .58,
+                size : function(parentSize){
+                    return [parentSize[0], .58 * parentSize[0]];
+                },
                 attributes : {src : options.imgURLs.movieCard},
                 classes: ['card', 'movie-card'],
                 origin: [.5, 0]
@@ -187,8 +188,9 @@ define(function (require, exports, module) {
 
             var timeCard = new Surface({
                 content: timeContent,
-                proportions: [1, false],
-                aspectRatio: 1 / 5,
+                size : function(parentSize){
+                    return [parentSize[0], .2 * parentSize[0]];
+                },
                 classes: ['card', 'time-card'],
                 origin: [.5, 0]
             });
