@@ -56,7 +56,8 @@ define(function(require, exports, module) {
 
             // Create a "messages" surface
             var messages = new Surface({
-                size: [true, undefined],
+                size: [true, false],
+                proportions: [false, 1],
                 content: 'Messages',
                 classes: ['nav', 'center'],
                 origin: leftAlignAndOrigin,
@@ -82,7 +83,8 @@ define(function(require, exports, module) {
 
             // Create a "hide" surface
             var hide = new Surface({
-                size: [true, undefined],
+                size : [true, false],
+                proportions : [false, 1],
                 content: 'Hide',
                 classes: ['nav', 'hide', 'center'],
                 opacity: fadeIn
@@ -95,7 +97,8 @@ define(function(require, exports, module) {
 
             // Create a "middle" surface
             var middle = new Surface({
-                size: [true, undefined],
+                size : [true, false],
+                proportions : [false, 1],
                 content: 'saṃsāra',
                 classes: ['nav', 'middle', 'center'],
                 origin: middleAlignAndOrigin,

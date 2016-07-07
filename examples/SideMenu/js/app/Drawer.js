@@ -25,7 +25,8 @@ define(function(require, exports, module) {
 
             // Create the drawer
             var drawer = new Surface({
-                size : [options.length, undefined],
+                size : [options.length, false],
+                proportions : [false, 1],
                 origin : [1,0],
                 content : content,
                 classes : ['drawer'],
