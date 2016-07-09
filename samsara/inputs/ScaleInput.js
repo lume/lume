@@ -40,7 +40,7 @@ define(function(require, exports, module) {
      *      });
      *
      * @class ScaleInput
-     * @extends Inputs.TwoFingerInput
+     * @extends Inputs._TwoFingerInput
      * @uses Core._OptionsManager
      * @constructor
      * @param options {Object}                  Options

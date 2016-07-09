@@ -52,7 +52,7 @@ define(function(require, exports, module) {
      * @class TouchInput
      * @constructor
      * @extends Streams.SimpleStream
-     * @uses Inputs.TouchTracker
+     * @uses Inputs._TouchTracker
      * @uses Core._OptionsManager
      * @param [options] {Object}                Options
      * @param [options.scale=1] {Number}        Scale the response to the mouse

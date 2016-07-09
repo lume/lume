@@ -34,7 +34,7 @@ define(function(require, exports, module) {
      *      });
      *
      * @class RotateInput
-     * @extends Inputs.TwoFingerInput
+     * @extends Inputs._TwoFingerInput
      * @uses Core._OptionsManager
      * @constructor
      * @param options {Object}              Options
