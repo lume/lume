@@ -2,7 +2,7 @@
 
 define(function(require, exports, module){
     var Stream = require('../streams/Stream');
-    var OptionsManager = require('../core/OptionsManager');
+    var OptionsManager = require('../core/_OptionsManager');
 
     /**
      * Differential is a Stream that emits differentials of consecutive
@@ -19,7 +19,7 @@ define(function(require, exports, module){
      *
      * @class Differential
      * @extends Streams.Stream
-     * @uses Core.OptionsManager
+     * @uses Core._OptionsManager
      * @namespace Streams
      * @constructor
      * @param [options] {Object}        Options

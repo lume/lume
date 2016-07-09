@@ -3,7 +3,7 @@
 define(function(require, exports, module){
     var EventHandler = require('../events/EventHandler');
     var TwoFingerInput = require('./_TwoFingerInput');
-    var OptionsManager = require('../core/OptionsManager');
+    var OptionsManager = require('../core/_OptionsManager');
 
     /**
      * Detects two-finger pinching motion and emits `start`, `update` and
@@ -35,7 +35,7 @@ define(function(require, exports, module){
      *
      * @class PinchInput
      * @extends Inputs.TwoFingerInput
-     * @uses Core.OptionsManager
+     * @uses Core._OptionsManager
      * @constructor
      * @param options {Object}                  Options
      * @param [options.scale=1] {Number}        Scale the response to pinch

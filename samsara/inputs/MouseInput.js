@@ -2,7 +2,7 @@
 
 define(function(require, exports, module) {
     var EventHandler = require('../events/EventHandler');
-    var OptionsManager = require('../core/OptionsManager');
+    var OptionsManager = require('../core/_OptionsManager');
     var SimpleStream = require('../streams/SimpleStream');
 
     var MINIMUM_TICK_TIME = 8;
@@ -55,6 +55,7 @@ define(function(require, exports, module) {
      * @class MouseInput
      * @constructor
      * @extend SimpleStream
+     * @uses Core._OptionsManager
      * @param [options] {Object}                Options
      * @param [options.scale=1] {Number}        Scale the response to the mouse
      * @param [options.direction] {Number}      Direction to project movement onto.

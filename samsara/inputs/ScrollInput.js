@@ -2,7 +2,7 @@
 
 define(function(require, exports, module) {
     var EventHandler = require('../events/EventHandler');
-    var OptionsManager = require('../core/OptionsManager');
+    var OptionsManager = require('../core/_OptionsManager');
     var SimpleStream = require('../streams/SimpleStream');
     var Timer = require('../core/Timer');
 
@@ -39,8 +39,7 @@ define(function(require, exports, module) {
      * @class ScrollInput
      * @constructor
      * @extends Streams.SimpleStream
-     * @uses Inputs.TouchTracker
-     * @uses Core.OptionsManager
+     * @uses Core._OptionsManager
      * @param [options] {Object}                Options
      * @param [options.direction] {Number}      Direction to project movement onto.
      *                                          Options found in TouchInput.DIRECTION.

@@ -6,7 +6,7 @@ define(function(require, exports, module) {
     var RootNode = require('../core/nodes/RootNode');
     var Transform = require('../core/Transform');
     var Transitionable = require('../core/Transitionable');
-    var OptionsManager = require('../core/OptionsManager');
+    var OptionsManager = require('../core/_OptionsManager');
     var SimpleStream = require('../streams/SimpleStream');
     var EventHandler = require('../events/EventHandler');
     var preTickQueue = require('../core/queues/preTickQueue');

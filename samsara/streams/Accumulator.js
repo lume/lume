@@ -1,7 +1,7 @@
 /* Copyright © 2015-2016 David Valdman */
 
 define(function(require, exports, module){
-    var OptionsManager = require('../core/OptionsManager');
+    var OptionsManager = require('../core/_OptionsManager');
     var Stream = require('../streams/Stream');
     var preTickQueue = require('../core/queues/preTickQueue');
     var dirtyQueue = require('../core/queues/dirtyQueue');
@@ -22,6 +22,7 @@ define(function(require, exports, module){
      *
      * @class Accumulator
      * @extends Streams.Stream
+     * @uses Core._OptionsManager
      * @namespace Streams
      * @constructor
      * @param [sum] {Number|Array}    Initial value

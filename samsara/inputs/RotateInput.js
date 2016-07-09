@@ -2,7 +2,7 @@
 
 define(function(require, exports, module) {
     var TwoFingerInput = require('./_TwoFingerInput');
-    var OptionsManager = require('../core/OptionsManager');
+    var OptionsManager = require('../core/_OptionsManager');
     var EventHandler = require('../events/EventHandler');
 
     /**
@@ -35,7 +35,7 @@ define(function(require, exports, module) {
      *
      * @class RotateInput
      * @extends Inputs.TwoFingerInput
-     * @uses Core.OptionsManager
+     * @uses Core._OptionsManager
      * @constructor
      * @param options {Object}              Options
      * @param [options.scale=1] {Number}    Scale the response to pinch

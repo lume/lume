@@ -3,7 +3,7 @@
 define(function(require, exports, module) {
     var EventHandler = require('../events/EventHandler');
     var SimpleStream = require('../streams/SimpleStream');
-    var OptionsManager = require('../core/OptionsManager');
+    var OptionsManager = require('../core/_OptionsManager');
     var TouchInput = require('./TouchInput');
 
     /**
@@ -13,6 +13,7 @@ define(function(require, exports, module) {
      *
      * @class TwoFingerInput
      * @extends Streams.SimpleStream
+     * @uses Core._OptionsManager
      * @private
      * @constructor
      */

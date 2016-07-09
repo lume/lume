@@ -1,7 +1,7 @@
 /* Copyright © 2015-2016 David Valdman */
 
 define(function(require, exports, module) {
-    var OptionsManager = require('../core/OptionsManager');
+    var OptionsManager = require('../core/_OptionsManager');
     var EventHandler = require('../events/EventHandler');
 
     var now = Date.now;
@@ -24,7 +24,7 @@ define(function(require, exports, module) {
      * @class TouchTracker
      * @constructor
      * @private
-     * @uses Core.OptionsManager
+     * @uses Core._OptionsManager
      * @param [options] {Object}                Options
      * @param [options.memory] {Number}         Number of past touches to record in history
      * @param [options.track] {Number}          Max simultaneous touches to record
