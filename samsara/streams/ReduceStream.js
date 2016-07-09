@@ -107,7 +107,7 @@ define(function(require, exports, module) {
 
         var prev = curr.prev;
 
-        if (prev != this){
+        if (prev !== this){
             var newNode = new ReduceStream(this.reducer, value, this.options);
             sever(prev, curr);
             connect(newNode, curr);
@@ -160,4 +160,4 @@ define(function(require, exports, module) {
     }
 
     module.exports = ReduceStream;
-}); 
+});

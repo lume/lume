@@ -8,7 +8,7 @@ define(function(require, exports, module) {
     var MIN_OPACITY = 0.0001;
     var MAX_OPACITY = 0.9999;
     var EPSILON = 1e-5;
-    var _zeroZero = [0,0];
+    var _zeroZero = [0, 0];
 
     /**
      * Responsible for committing CSS3 properties to the DOM and providing DOM event hooks
@@ -73,16 +73,16 @@ define(function(require, exports, module) {
             element.style.transform = _formatCSSTransform(transform, unit);
         };
 
-    var _setSize = function _setSize(target, size){
+    function _setSize(target, size){
         if (size[0] === true) size[0] = target.offsetWidth;
         else if (size[0] >= 0) target.style.width = size[0] + 'px';
 
         if (size[1] === true) size[1] = target.offsetHeight;
         else if (size[1] >= 0) target.style.height = size[1] + 'px';
-    };
+    }
 
     // pointerEvents logic allows for DOM events to pass through the element when invisible
-    var _setOpacity = function _setOpacity(element, opacity) {
+    function _setOpacity(element, opacity) {
         if (!this._isVisible && opacity > MIN_OPACITY) {
             element.style.pointerEvents = 'auto';
             this._isVisible = true;
@@ -98,7 +98,7 @@ define(function(require, exports, module) {
         }
 
         element.style.opacity = opacity;
-    };
+    }
 
     DOMOutput.prototype.querySelector = function querySelector(target, selector){
         return target.querySelector(selector);

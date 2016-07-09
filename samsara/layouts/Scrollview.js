@@ -211,7 +211,7 @@ define(function (require, exports, module) {
 
             var transform = this.offset.map(function (position) {
                 position += options.marginTop;
-                return options.direction == CONSTANTS.DIRECTION.Y
+                return options.direction === CONSTANTS.DIRECTION.Y
                     ? Transform.translateY(position)
                     : Transform.translateX(position);
             });
@@ -234,13 +234,14 @@ define(function (require, exports, module) {
         goTo: function (index, transition, callback) {
             transition = transition || this.options.pageTransition;
             var position = this.itemOffset;
+            var i;
 
             if (index > this._currentIndex && index < this.items.length) {
-                for (var i = this._currentIndex; i < index; i++)
+                for (i = this._currentIndex; i < index; i++)
                     position -= this.items[i].getSize()[this.options.direction];
             }
             else if (index < this._currentIndex && index >= 0) {
-                for (var i = this._currentIndex; i > index; i--)
+                for (i = this._currentIndex; i > index; i--)
                     position += this.items[i].getSize()[this.options.direction];
             }
 
@@ -258,7 +259,7 @@ define(function (require, exports, module) {
             this.items = items;
 
             var args = [this.offset];
-            for (var i = 0; i < items.length; i++) {
+            for (i = 0; i < items.length; i++) {
                 args.push(items[i].size);
             }
 
@@ -312,7 +313,7 @@ define(function (require, exports, module) {
     }, CONSTANTS);
 
     function changePage(index) {
-        if (index == this._previousIndex) return;
+        if (index === this._previousIndex) return;
         this.emit('page', index);
         this._previousIndex = index;
     }

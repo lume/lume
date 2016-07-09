@@ -158,8 +158,8 @@ define(function(require, exports, module) {
                 case RESERVED_KEYS.EVENTS:
                     if (!child.EVENTS) child.EVENTS = value;
                     else
-                        for (var key in value)
-                            child.EVENTS[key] = value[key];
+                        for (var type in value)
+                            child.EVENTS[type] = value[type];
                     break;
                 default:
                     child.prototype[key] = value;
@@ -167,7 +167,7 @@ define(function(require, exports, module) {
         }
 
 
-        for (var key in constants)
+        for (key in constants)
             child[key] = constants[key];
 
         return child;

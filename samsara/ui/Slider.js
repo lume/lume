@@ -122,11 +122,12 @@ define(function(require, exports, module){
             classes : ['samsara-slider-foreground']
         });
 
-        var template = '' +
+        var template = String(
             '<span class="label">' + options.label +
                 '<span class="range">' + '[' + options.range[0] + '|' + options.range[1] + ']</span>' +
             '</span>' +
-            '<span class="value"></span>';
+            '<span class="value"></span>'
+        );
 
         this.label = new Surface({
             size : [undefined, true],

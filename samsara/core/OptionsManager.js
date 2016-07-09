@@ -1,12 +1,4 @@
-/* This Source Code Form is subject to the terms of the Mozilla Public
- * License, v. 2.0. If a copy of the MPL was not distributed with this
- * file, You can obtain one at http://mozilla.org/MPL/2.0/.
- *
- * @license MPL 2.0
- * @copyright Famous Industries, Inc. 2014
- */
-
-/* Modified work copyright © 2015-2016 David Valdman */
+/* Copyright © 2015-2016 David Valdman */
 
 define(function(require, exports, module) {
     var EventHandler = require('../events/EventHandler');
@@ -31,11 +23,11 @@ define(function(require, exports, module) {
     }
 
     /**
-     * Constructor method. Create OptionsManager from source dictionary with arguments overriden by patch dictionary.
+     * Constructor method. Create OptionsManager from source dictionary with arguments overridden by patch dictionary.
      *
      * @method OptionsManager.patch
      * @param options {Object}          Options to be patched
-     * @param patch {...Object}         Options to overwrite
+     * @param patch {...Object}         Options to override
      * @return source {Object}
      */
     OptionsManager.patch = function patch(options, patch) {
@@ -47,10 +39,11 @@ define(function(require, exports, module) {
     /**
      * Constructor method. Convenience method to set options with defaults on an object instance.
      *
-     * @method OptionsManager.patch
-     * @param options {Object}          Options to be patched
-     * @param overrides {...Object}     Options to overwrite
-     * @return source {Object}
+     * @method OptionsManager.setOptions
+     * @param instance {Function}    Constructor
+     * @param options {Object}       Overriding options
+     * @param defaults {Object}      Default options
+     * @return {Object}              Patched options
      */
     OptionsManager.setOptions = function(instance, options, defaults){
         defaults = defaults || _clone(instance.constructor.DEFAULT_OPTIONS) || {};
@@ -72,15 +65,15 @@ define(function(require, exports, module) {
      * @param options {Object}          Patch options
      * @return this {OptionsManager}
      */
-    OptionsManager.prototype.patch = function patch(options, clone) {
+    OptionsManager.prototype.patch = function patch(options) {
         var myState = this._value;
-        for (var k in options) {
-            if ((k in myState) && (options[k] && options[k].constructor === Object) && (myState[k] && myState[k].constructor === Object)) {
-                if (!myState.hasOwnProperty(k)) myState[k] = Object.create(myState[k]);
-                this.key(k).patch(options[k]);
-                if (this._eventHandler) this._eventHandler.emit('change', {key: k, value: this.key(k).value()});
+        for (var key in options) {
+            if ((key in myState) && (options[key] && options[key].constructor === Object) && (myState[key] && myState[key].constructor === Object)) {
+                if (!myState.hasOwnProperty(key)) myState[key] = Object.create(myState[key]);
+                this.key(key).patch(options[key]);
+                if (this._eventHandler) this._eventHandler.emit('change', {key: key, value: this.key(key).value()});
             }
-            else this.set(k, options[k]);
+            else this.set(key, options[key]);
         }
         return this;
     };

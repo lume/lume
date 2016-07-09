@@ -188,7 +188,7 @@ define(function(require, exports, module) {
          * @param drawer {Surface|View}
          */
         addDrawer : function addDrawer(drawer){
-            if (this.options.revealLength == undefined)
+            if (this.options.revealLength === undefined)
                 this.options.revealLength = drawer.getSize()[this.direction];
 
             this.drawer = drawer;

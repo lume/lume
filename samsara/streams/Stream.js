@@ -4,7 +4,6 @@ define(function(require, exports, module){
     var MergedStream = require('./_MergedStream');
     var LiftedStream = require('./_LiftedStream');
     var EventHandler = require('../events/EventHandler');
-    var EventMapper = require('../events/EventMapper');
     var SimpleStream = require('../streams/SimpleStream');
 
     var preTickQueue = require('../core/queues/preTickQueue');

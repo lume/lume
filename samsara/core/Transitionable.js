@@ -170,11 +170,11 @@ define(function (require, exports, module) {
 
         var curve = transition.curve;
 
-        var method = (curve && transitionMethods[curve])
+        var Method = (curve && transitionMethods[curve])
             ? transitionMethods[curve]
             : Tween;
 
-        if (this._method !== method) {
+        if (this._method !== Method) {
             if (this._engineInstance){
                 if (this.updateMethod){
                     var index = tickQueue.indexOf(this.updateMethod);
@@ -185,17 +185,17 @@ define(function (require, exports, module) {
 
             if (this.value instanceof Array) {
                 var dimensions = this.value.length;
-                this._engineInstance = (dimensions < method.DIMENSIONS)
-                    ? new method(this.value)
-                    : new NDTransitionable(this.value, method);
+                this._engineInstance = (dimensions < Method.DIMENSIONS)
+                    ? new Method(this.value)
+                    : new NDTransitionable(this.value, Method);
             }
-            else this._engineInstance = new method(this.value);
+            else this._engineInstance = new Method(this.value);
 
             this.subscribe(this._engineInstance);
             this.updateMethod = this._engineInstance.update.bind(this._engineInstance);
             tickQueue.push(this.updateMethod);
 
-            this._method = method;
+            this._method = Method;
         }
 
         if (!transition.velocity) transition.velocity = this.velocity;
@@ -319,20 +319,18 @@ define(function (require, exports, module) {
      */
     Transitionable.prototype.delay = function delay(callback, duration) {
         this.set(this.get(), {
-                duration: duration,
-                curve: function () { return 0; }
-            },
-            callback
-        );
+            duration: duration,
+            curve: function () { return 0; }
+        }, callback);
     };
 
-    function NDTransitionable(value, method) {
+    function NDTransitionable(value, Method) {
         this._eventOutput = new EventHandler();
         EventHandler.setOutputHandler(this, this._eventOutput);
 
         this.sources = [];
         for (var i = 0; i < value.length; i++) {
-            var source = new method(value[i]);
+            var source = new Method(value[i]);
             this.sources.push(source);
         }
 

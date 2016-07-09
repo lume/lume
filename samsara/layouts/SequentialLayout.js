@@ -14,11 +14,11 @@ define(function(require, exports, module) {
     };
 
     // Default map to convert displacement to transform
-    var DEFAULT_LENGTH_MAP = function(length){
+    function DEFAULT_LENGTH_MAP(length){
         return (this.options.direction === CONSTANTS.DIRECTION.X)
             ? Transform.translateX(length)
             : Transform.translateY(length);
-    };
+    }
 
     /**
      * A layout which arranges items in series based on their size.
@@ -50,7 +50,7 @@ define(function(require, exports, module) {
             this.setLengthMap(DEFAULT_LENGTH_MAP);
 
             var length = Stream.lift(function(length, spacing){
-                return Math.max(length - spacing, options.offset);
+                return Math.max(length - spacing, 0);
             }, [this.stream.headOutput, options.spacing]);
 
             this.output.subscribe(length);
@@ -193,4 +193,4 @@ define(function(require, exports, module) {
     }, CONSTANTS);
 
     module.exports = SequentialLayout;
-}); 
+});

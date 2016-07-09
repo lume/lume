@@ -3,7 +3,6 @@
 define(function(require, exports, module){
     var Transform = require('../core/Transform');
     var View = require('../core/View');
-    var Transitionable = require('../core/Transitionable');
     var Stream = require('../streams/Stream');
     var ReduceStream = require('../streams/ReduceStream');
     var Accumulator = require('../streams/Accumulator');
@@ -17,11 +16,11 @@ define(function(require, exports, module){
     };
 
     // Default map to convert displacement to transform
-    var DEFAULT_LENGTH_MAP = function(length){
+    function DEFAULT_LENGTH_MAP(length){
         return (this.options.direction === CONSTANTS.DIRECTION.X)
             ? Transform.translateX(length)
             : Transform.translateY(length);
-    };
+    }
 
     /**
      * A layout which arranges items vertically or horizontally within a containing size.
@@ -237,10 +236,11 @@ define(function(require, exports, module){
         var transform = length.map(this.transformMap);
 
         if (flex !== undefined){
+            var size;
             if (typeof flex === 'number'){
                 this.totalFlex.set(this.totalFlex.get() + flex);
                 // Flexible sized item: layout defines the size and transform
-                var size = Stream.lift(function(availableLength, totalFlex){
+                size = Stream.lift(function(availableLength, totalFlex){
                     if (!availableLength) return false;
                     var itemLength = (availableLength - (this.nodes.length - 1) * this.options.spacing) * (flex / totalFlex);
                     return (this.options.direction === CONSTANTS.DIRECTION.X)
@@ -255,7 +255,7 @@ define(function(require, exports, module){
                 flexDelta.subscribe(flex);
                 this.totalFlex.subscribe(flexDelta);
 
-                var size = Stream.lift(function(availableLength, flex, totalFlex){
+                size = Stream.lift(function(availableLength, flex, totalFlex){
                     if (!availableLength) return false;
                     var itemLength = (availableLength - (this.nodes.length - 1) * this.options.spacing) * (flex / totalFlex);
                     return (this.options.direction === CONSTANTS.DIRECTION.X)

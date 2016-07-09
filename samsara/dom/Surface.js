@@ -10,7 +10,7 @@ define(function(require, exports, module) {
     var layoutAlgebra = require('../core/algebras/layout');
     var dirtyQueue = require('../core/queues/dirtyQueue');
 
-    var isTouchEnabled = "ontouchstart" in window;
+    var isTouchEnabled = 'ontouchstart' in window;
     var isIOS = /iPad|iPhone|iPod/.test(navigator.platform);
 
     /**
@@ -49,7 +49,7 @@ define(function(require, exports, module) {
      * @class Surface
      * @namespace DOM
      * @constructor
-     * @extends Core.ElementOutput
+     * @uses DOM._DOMOutput
      * @param [options] {Object}                Options
      * @param [options.size] {Number[]}         Size (width, height) in pixels. These can also be `true` or `undefined`.
      * @param [options.classes] {String[]}      CSS classes
@@ -148,9 +148,9 @@ define(function(require, exports, module) {
                     var height = target.offsetHeight;
                     var scrollHeight = target.scrollHeight;
 
-                    if (top == 0)
+                    if (top === 0)
                         target.scrollTop = 1;
-                    else if (top + height == scrollHeight)
+                    else if (top + height === scrollHeight)
                         target.scrollTop = scrollHeight - height - 1;
 
                 }, false);
@@ -200,7 +200,7 @@ define(function(require, exports, module) {
     Surface.prototype.setAttributes = function setAttributes(attributes) {
         for (var key in attributes) {
             var value = attributes[key];
-            if (value != undefined) this.attributes[key] = attributes[key];
+            if (value !== undefined) this.attributes[key] = attributes[key];
         }
 
         if (this._currentTarget){
@@ -292,7 +292,7 @@ define(function(require, exports, module) {
      */
     Surface.prototype.toggleClass = function toggleClass(className) {
         var i = this.classList.indexOf(className);
-        (i == -1)
+        (i === -1)
             ? this.addClass(className)
             : this.removeClass(className);
     };

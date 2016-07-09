@@ -58,7 +58,7 @@ define(function (require, exports, module) {
 
         this.value = value;
 
-        this.drag = (transition.drag == undefined)
+        this.drag = (transition.drag === undefined)
             ? Inertia.DEFAULT_OPTIONS.drag
             : Math.pow(Math.min(transition.drag, 1), 3);
 

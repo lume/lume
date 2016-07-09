@@ -74,13 +74,13 @@ define(function(require, exports, module) {
             this.size = this._addNode.size; // actual size
             this._size = this._node.size; // incoming parent size
 
-            this._cachedSize = [0,0];
+            this._cachedSize = [0, 0];
             
             this.size.on('start', updateSize.bind(this));
             this.size.on('update', updateSize.bind(this));
             this.size.on('end', updateSize.bind(this));
 
-            Controller.apply(this, arguments);
+            Controller.call(this, options);
             if (this.options) setOptions.call(this, this.options);
         },
         /**

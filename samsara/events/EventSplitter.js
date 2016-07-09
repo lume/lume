@@ -61,7 +61,7 @@ define(function(require, exports, module) {
      * @param data {Object} Payload
      */
     EventSplitter.prototype.emit = function emit(type, data) {
-        var target = this._splitter.apply(this, arguments);
+        var target = this._splitter.call(this, data);
         if (target && target.emit instanceof Function)
             target.emit(type, data);
     };

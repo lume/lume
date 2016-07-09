@@ -65,7 +65,7 @@ define(function(require, exports, module) {
 
         this._eventInput.on('wheel', handleMove.bind(this));
 
-        this._value = (this.options.direction === undefined) ? [0,0] : 0;
+        this._value = (this.options.direction === undefined) ? [0, 0] : 0;
         this._cumulate = (this.options.direction === undefined) ? [0, 0] : 0;
         this._prevTime = undefined;
         this._inProgress = false;
@@ -110,7 +110,7 @@ define(function(require, exports, module) {
         event.preventDefault(); // Disable default scrolling behavior
 
         if (!this._inProgress) {
-            this._value = (this.options.direction === undefined) ? [0,0] : 0;
+            this._value = (this.options.direction === undefined) ? [0, 0] : 0;
             payload = this._payload;
             payload.value = this._value;
             payload.cumulate = this._cumulate;

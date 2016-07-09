@@ -67,13 +67,13 @@ define(function(require, exports, module) {
      */
     Timer.setTimeout = function setTimeout(handler, duration) {
         var t = getTime();
-        var callback = function() {
+        function callback() {
             var t2 = getTime();
             if (t2 - t >= duration) {
                 handler.apply(this, arguments);
                 Timer.clear(callback);
             }
-        };
+        }
         return _addTimerFunction(callback);
     };
 
@@ -88,13 +88,13 @@ define(function(require, exports, module) {
      */
     Timer.setInterval = function setInterval(handler, duration) {
         var t = getTime();
-        var callback = function() {
+        function callback() {
             var t2 = getTime();
             if (t2 - t >= duration) {
                 handler.apply(this, arguments);
                 t = getTime();
             }
-        };
+        }
         return _addTimerFunction(callback);
     };
 
@@ -109,13 +109,13 @@ define(function(require, exports, module) {
      */
     Timer.after = function after(handler, numTicks) {
         if (numTicks === undefined) return undefined;
-        var callback = function() {
+        function callback() {
             numTicks--;
             if (numTicks <= 0) { //in case numTicks is fraction or negative
                 handler.apply(this, arguments);
                 Timer.clear(callback);
             }
-        };
+        }
         return _addTimerFunction(callback);
     };
 
@@ -131,13 +131,13 @@ define(function(require, exports, module) {
     Timer.every = function every(handler, numTicks) {
         numTicks = numTicks || 1;
         var initial = numTicks;
-        var callback = function() {
+        function callback() {
             numTicks--;
             if (numTicks <= 0) {
                 handler.apply(this, arguments);
                 numTicks = initial;
             }
-        };
+        }
         return _addTimerFunction(callback);
     };
 

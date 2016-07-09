@@ -182,10 +182,10 @@ define(function(require, exports, module) {
         }
 
         var dt = Math.max(currTime - prevTime, MINIMUM_TICK_TIME); // minimum tick time
-        var inv_dt = 1 / dt;
+        var invDt = 1 / dt;
 
-        var velX = diffX * inv_dt;
-        var velY = diffY * inv_dt;
+        var velX = diffX * invDt;
+        var velY = diffY * invDt;
 
         var nextVel;
         var nextDelta;

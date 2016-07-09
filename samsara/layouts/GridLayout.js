@@ -1,9 +1,8 @@
 /* Copyright © 2015-2016 David Valdman */
 
 define(function(require, exports, module){
-    var Transform = require('../core/Transform');
     var View = require('../core/View');
-    var Stream = require('../streams/Stream');
+    var FlexLayout = require('./FlexLayout');
 
     /**
      * A layout that arranges items in a grid and can rearrange the grid responsively.
@@ -11,93 +10,154 @@ define(function(require, exports, module){
      *  The user provides the number of items per row in an array or a dictionary
      *  with keys that are pixel values. The items will be sized to fill the available space.
      *
-     *  Let itemsPerRow be a dictionary if you want the grid to rearrange responsively. The
-     *  keys should be pixel values. The row arrangement will be one of the entries of
-     *  the dictionary whose key value is closest to the parent width without exceeding it.
-     *
      *  @class GridLayout
      *  @constructor
      *  @extends Core.View
      *  @param [options] {Object}                           Options
-     *  @param options.itemsPerRow {Array|Object}           Number of items per row, or an object of {width : itemsPerRow} pairs
-     *  @param [options.gutter=0] {Number}                  Gap space between successive items
+     *  @param [options.spacing=0] {Array}                  Gap space between successive rows and columns
      */
     var GridLayout = View.extend({
         defaults : {
-            itemsPerRow : [],
-            gutter : 0
+            spacing : [0, 0]
         },
-        events : {},
         initialize : function initialize(options){
-            this.stream = Stream.lift(function(size){
-                if (!size) return false; // TODO: fix bug
+            this.rows = [];
+            this.col = new FlexLayout({
+                direction: FlexLayout.DIRECTION.Y,
+                spacing: options.spacing[1]
+            });
 
-                var width = size[0];
-                var height = size[1];
-
-                var rows = ((options.itemsPerRow instanceof Array))
-                    ? options.itemsPerRow
-                    : selectRows(options.itemsPerRow, width);
-
-                var numRows = rows.length;
-                var rowHeight = (height - ((numRows - 1) * options.gutter)) / numRows;
-
-                var sizes = [];
-                var positions = [];
-
-                var y = 0;
-                for (var row = 0; row < numRows; row++) {
-                    var numCols = rows[row];
-                    var colWidth = (width - ((numCols - 1) * options.gutter)) / numCols;
-
-                    var x = 0;
-                    for (var col = 0; col < numCols; col++) {
-                        var size = [colWidth, rowHeight];
-                        sizes.push(size);
-                        positions.push([x, y]);
-                        x += colWidth + options.gutter;
-                    }
-
-                    y += rowHeight + options.gutter;
-                }
-
-                return {
-                    sizes : sizes,
-                    positions : positions
-                };
-            }, [this.size])
+            this.add(this.col);
         },
-        /**
-         * Add items to the layout.
-         *
-         * @method addItems
-         * @param [items] {Array}   Array of Surfaces or Views
-         */
-        addItems : function addItems(items){
-            var sizes = this.stream.pluck('sizes');
-            var positions = this.stream.pluck('positions');
+        push : function(item, flex, row){
+            if (row > this.rows.length) return;
 
-            for (var i = 0; i < items.length; i++) {
-                var node = items[i];
+            if (row === -1){
+                this.unshift(item, flex, row);
+                return;
+            }
 
-                var size = sizes.pluck(i);
-                var position = positions.pluck(i);
+            if (row === undefined) row = this.rows.length;
 
-                var transform = position.map(function(position){
-                    return Transform.translate(position);
+            var flexRow;
+            if (row === this.rows.length){
+                // append a new row
+                flexRow = new FlexLayout({
+                    direction: FlexLayout.DIRECTION.X,
+                    spacing: this.options.spacing[0]
                 });
 
-                this.add({size : size, transform : transform}).add(node);
+                this.rows.push(flexRow);
+                this.col.push(flexRow, 1);
+            }
+            else flexRow = this.rows[row];
+
+            flexRow.push(item, flex);
+        },
+        pop : function(row){
+            if (row === undefined) row = this.rows.length - 1;
+
+            var flexRow = this.rows[row];
+
+            var item = flexRow.pop();
+
+            if (flexRow.length() === 0)
+                removeRow.call(this, row);
+
+            return item;
+        },
+        unshift : function(item, flex, row){
+            if (row < -1) return;
+
+            if (row === this.rows.length){
+                this.push(item, flex, row);
+                return;
+            }
+
+            if (row === undefined) row = -1;
+
+            var flexRow;
+            if (row === -1){
+                // prepend a new row
+                flexRow = new FlexLayout({
+                    direction : FlexLayout.DIRECTION.X,
+                    spacing : this.options.spacing[0]
+                });
+
+                this.rows.unshift(flexRow);
+                this.col.unshift(flexRow, 1);
+            }
+            else flexRow = this.rows[row];
+
+            flexRow.unshift(item, flex);
+        },
+        shift : function(row){
+            if (row === undefined) row = 0;
+            var flexRow = this.rows[row];
+
+            var item = flexRow.shift();
+
+            if (this.rows[row].length() === 0)
+                removeRow.call(this, row);
+
+            return item;
+        },
+        insertAfter : function(row, col, item, flex){
+            var flexRow = this.rows[row];
+            flexRow.insertAfter(col, item, flex);
+        },
+        insertBefore : function(row, col, item, flex){
+            var flexRow = this.rows[row];
+            flexRow.insertBefore(col, item, flex);
+        },
+        unlink : function(row, col){
+            var flexRow = this.rows[row];
+            flexRow.unlink(col);
+        },
+        advance : function(row){
+            var nextRow = row + 1;
+
+            var numRows = this.rows.length;
+
+            var surface = this.pop(row);
+            surface.remove();
+
+            nextRow -= (numRows - this.rows.length);
+
+            var flex = 1;
+            this.unshift(surface, flex, nextRow);
+        },
+        retreat : function(row){
+            var prevRow = row - 1;
+
+            var surface = this.shift(row);
+            surface.remove();
+
+            var flex = 1;
+            this.push(surface, flex, prevRow);
+        },
+        resize : function(colsPerRow){
+            for (var row = 0; row < colsPerRow.length; row++){
+                var nCols = colsPerRow[row];
+                var count = this.rows[row].nodes.length;
+
+                while (count > nCols) {
+                    this.advance(row);
+                    count--;
+                }
+
+                while (count < nCols) {
+                    this.retreat(row + 1);
+                    count++;
+                }
             }
         }
     });
 
-    function selectRows(rows, width){
-        for (var cutoff in rows) {
-            if (width <= parseInt(cutoff))
-                break;
-        }
-        return rows[cutoff];
+    function removeRow(rowIndex){
+        var emptyRow = this.col.unlink(this.rows[rowIndex]);
+        emptyRow.remove();
+        this.rows.splice(rowIndex, 1);
     }
 
     module.exports = GridLayout;

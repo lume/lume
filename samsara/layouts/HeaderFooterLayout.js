@@ -60,7 +60,7 @@ define(function(require, exports, module){
 
             if (options.footer){
                 transform = options.footer.size.map(function(size){
-                   return Transform.translateY(-size[1]);
+                    return Transform.translateY(-size[1]);
                 });
 
                 this.add({align : [0, 1], transform : transform}).add(options.footer);
@@ -81,4 +81,4 @@ define(function(require, exports, module){
     });
 
     module.exports = HeaderFooterLayout;
-}); 
+});
