@@ -1,12 +1,4 @@
-/* This Source Code Form is subject to the terms of the Mozilla Public
- * License, v. 2.0. If a copy of the MPL was not distributed with this
- * file, You can obtain one at http://mozilla.org/MPL/2.0/.
- *
- * @license MPL 2.0
- * @copyright Famous Industries, Inc. 2014
- */
-
-/* Modified work copyright © 2015-2016 David Valdman */
+/* Copyright © 2015-2016 David Valdman */
 
 define(function(require, exports, module) {
     var EventHandler = require('./EventHandler');
@@ -49,6 +41,10 @@ define(function(require, exports, module) {
     function EventSplitter(splitter) {
         EventHandler.call(this);
         this._splitter = splitter;
+
+        this.on('start', function(){});
+        this.on('update', function(){});
+        this.on('end', function(){});
     }
     EventSplitter.prototype = Object.create(EventHandler.prototype);
     EventSplitter.prototype.constructor = EventSplitter;

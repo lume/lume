@@ -31,9 +31,10 @@ define(function(require, exports, module) {
      *  with a modified (mapped) data payload.
      *
      * @method map
-     * @param mapperFn {Function}   Function to map event payload
+     * @param mapperFn {Function}    Function to map event payload
+     * @return stream {SimpleStream} Mapped stream
      */
-    SimpleStream.prototype.map = function(mapperFn){
+    SimpleStream.prototype.map = function map(mapperFn){
         var stream = new SimpleStream();
         var mapper = new EventMapper(mapperFn);
         stream.subscribe(mapper).subscribe(this);
@@ -43,12 +44,13 @@ define(function(require, exports, module) {
     /**
      * Filter converts the current stream into a new stream
      *  that only emits if the filter condition is satisfied.
-     *  The function should return a Boolean.
+     *  The filter function should return a Boolean value.
      *
      * @method filter
-     * @param filterFn {Function}   Function to filter event payload
+     * @param filterFn {Function}    Function to filter event payload
+     * @return stream {SimpleStream} Filtered stream
      */
-    SimpleStream.prototype.filter = function(filterFn){
+    SimpleStream.prototype.filter = function filter(filterFn){
         var filter = new EventFilter(filterFn);
         var filteredStream = new SimpleStream();
         filteredStream.subscribe(filter).subscribe(this);
@@ -57,28 +59,27 @@ define(function(require, exports, module) {
 
     /**
      * Split maps one of several streams based on custom logic.
-     *  The function should return an EventEmitter.
+     *  The splitter function should return an EventEmitter type.
      *
      * @method split
      * @param splitterFn {Function}  Splitter function
      */
-    SimpleStream.prototype.split = function(splitterFn){
+    SimpleStream.prototype.split = function split(splitterFn){
         var splitter = new EventSplitter(splitterFn);
-        var splitStream = new SimpleStream();
-        splitStream.subscribe(splitter).subscribe(this);
-        return splitStream;
+        splitter.subscribe(this);
     };
 
     /**
      * Pluck is an opinionated mapper. It projects a Stream
      *  onto one of its return values.
      *
-     *  Useful if a Stream returns an array or an object.
+     *  Useful if a Stream returns an array or object.
      *
      * @method pluck
-     * @param key {String|Number}   Key to project event payload onto
+     * @param key {String|Number}    Key to project event payload onto
+     * @return stream {SimpleStream} Plucked stream
      */
-    SimpleStream.prototype.pluck = function(key){
+    SimpleStream.prototype.pluck = function pluck(key){
         return this.map(function(value){
             return value[key];
         });
