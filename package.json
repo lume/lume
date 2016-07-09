@@ -6,14 +6,15 @@
   "version": "0.2.1",
   "main": "dist/samsara.js",
   "scripts": {
-    "test": "phantomjs test/vendor/runner.js test/index.html",
-    "docs": "yuidoc ./samsara -t ./node_modules/yuidoc-bootstrap-theme -H ./node_modules/yuidoc-bootstrap-theme/helpers/helpers.js -o ./docs",
+    "test": "npm run lint && phantomjs test/vendor/runner.js test/index.html",
+    "lint": "$(npm bin)/eslint samsara/",
+    "docs": "$(npm bin)/yuidoc ./samsara -t ./node_modules/yuidoc-bootstrap-theme -H ./node_modules/yuidoc-bootstrap-theme/helpers/helpers.js -o ./docs",
     "docs-examples": "npm run docs-example-logo && npm run docs-example-sidemenu",
-    "docs-example-logo": "docco -l parallel examples/Logo/js/main.js examples/Logo/js/app/*.js -o examples/Logo/docs",
-    "docs-example-sidemenu": "docco -l parallel examples/SideMenu/js/main.js examples/SideMenu/js/app/*.js -o examples/SideMenu/docs",
+    "docs-example-logo": "$(npm bin)/docco -l parallel examples/Logo/js/main.js examples/Logo/js/app/*.js -o examples/Logo/docs",
+    "docs-example-sidemenu": "$(npm bin)/docco -l parallel examples/SideMenu/js/main.js examples/SideMenu/js/app/*.js -o examples/SideMenu/docs",
     "build": "npm run build-bundle && npm run build-min",
-    "build-bundle": "webpack --entry ./samsara/index.js --output-filename samsara.js --output-path ./dist --output-library Samsara --output-library-target umd",
-    "build-min": "uglifyjs dist/samsara.js -o dist/samsara.min.js --mangle --compress warnings=false"
+    "build-bundle": "$(npm bin)/webpack --entry ./samsara/index.js --output-filename samsara.js --output-path ./dist --output-library Samsara --output-library-target umd",
+    "build-min": "$(npm bin)/uglifyjs dist/samsara.js -o dist/samsara.min.js --mangle --compress warnings=false"
   },
   "repository": {
     "type": "git",
@@ -43,6 +44,7 @@
   "homepage": "https://github.com/dmvaldman/samsara#readme",
   "devDependencies": {
     "docco": "^0.7.0",
+    "eslint": "^3.0.1",
     "phantomjs": "^2.1.3",
     "uglify-js": "^2.6.1",
     "webpack": "^1.12.9",

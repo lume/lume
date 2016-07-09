@@ -1,0 +1,77 @@
+{
+  "env": {
+    "browser": true,
+    "amd": true
+  },
+  "rules": {
+    "no-console": 1,
+    "no-debugger": 1,
+    "no-alert": 1,
+    "valid-typeof": 1,
+    "no-irregular-whitespace": 1,
+    "no-extra-semi": 1,
+    "no-inner-declarations": 1,
+    "no-implicit-coercion": 1,
+    "no-implicit-globals": 1,
+    "no-redeclare": 1,
+    "key-spacing": 0,
+    "comma-spacing": 1,
+    "array-bracket-spacing": [
+      1,
+      "never"
+    ],
+    "block-spacing": [
+      1,
+      "always"
+    ],
+    "curly": [
+      0,
+      "multi-line"
+    ],
+    "brace-style": [
+      0,
+      "stroustrup"
+    ],
+    "camelcase": 1,
+    "comma-dangle": [
+      "error",
+      "never"
+    ],
+    "comma-style": [
+      "error",
+      "last"
+    ],
+    "computed-property-spacing": 1,
+    "indent": [
+      "error",
+      4,
+      {
+        "SwitchCase" : 1
+      }
+    ],
+    "eol-last": 2,
+    "no-constant-condition": 1,
+    "no-use-before-define": 0,
+    "no-mixed-spaces-and-tabs": 1,
+    "func-style": [
+      "error",
+      "declaration"
+    ],
+    "new-cap": 1,
+    "new-parens": 2,
+    "no-unused-vars": [
+      "warn",
+      {
+        "vars": "local",
+        "args": "none"
+      }
+    ],
+    "quotes": [
+      "error",
+      "single"
+    ],
+    "space-infix-ops": 1,
+    "strict": 0,
+    "eqeqeq": 1
+  }
+}
