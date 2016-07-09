@@ -1,12 +1,4 @@
-/* This Source Code Form is subject to the terms of the Mozilla Public
- * License, v. 2.0. If a copy of the MPL was not distributed with this
- * file, You can obtain one at http://mozilla.org/MPL/2.0/.
- *
- * @license MPL 2.0
- * @copyright Famous Industries, Inc. 2014
- */
-
-/* Modified work copyright © 2015-2016 David Valdman */
+/* Copyright © 2015-2016 David Valdman */
 
 define(function(require, exports, module) {
 
@@ -402,11 +394,11 @@ define(function(require, exports, module) {
      *
      * @method perspective
      * @static
-     * @param focusZ {Number}       z-depth of focal point
+     * @param w {Number}       z-depth of focal point
      * @return {Array}
      */
-    Transform.perspective = function perspective(focusZ) {
-        return [1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, -1 / focusZ, 0, 0, 0, 1];
+    Transform.perspective = function perspective(w) {
+        return [1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, -1 / w, 0, 0, 0, 1];
     };
 
     /**
@@ -434,19 +426,19 @@ define(function(require, exports, module) {
         // only need to consider 3x3 section for affine
         var c0 = t[5] * t[10] - t[6] * t[9];
         var c1 = t[4] * t[10] - t[6] * t[8];
-        var c2 = t[4] * t[9] - t[5] * t[8];
+        var c2 = t[4] * t[9]  - t[5] * t[8];
         var c4 = t[1] * t[10] - t[2] * t[9];
         var c5 = t[0] * t[10] - t[2] * t[8];
-        var c6 = t[0] * t[9] - t[1] * t[8];
-        var c8 = t[1] * t[6] - t[2] * t[5];
-        var c9 = t[0] * t[6] - t[2] * t[4];
+        var c6 = t[0] * t[9]  - t[1] * t[8];
+        var c8 = t[1] * t[6]  - t[2] * t[5];
+        var c9 = t[0] * t[6]  - t[2] * t[4];
         var c10 = t[0] * t[5] - t[1] * t[4];
         var detM = t[0] * c0 - t[1] * c1 + t[2] * c2;
         var invD = 1 / detM;
         var result = [
-            invD * c0, -invD * c4, invD * c8, 0,
-            -invD * c1, invD * c5, -invD * c9, 0,
-            invD * c2, -invD * c6, invD * c10, 0,
+            invD  * c0, -invD * c4,  invD * c8,  0,
+            -invD * c1,  invD * c5, -invD * c9,  0,
+            invD  * c2, -invD * c6,  invD * c10, 0,
             0, 0, 0, 1
         ];
         result[12] = -t[12] * result[0] - t[13] * result[4] - t[14] * result[8];
@@ -467,15 +459,13 @@ define(function(require, exports, module) {
         return [t[0], t[4], t[8], t[12], t[1], t[5], t[9], t[13], t[2], t[6], t[10], t[14], t[3], t[7], t[11], t[15]];
     };
 
-    function _normSquared(v) {
-        return (v.length === 2)
-            ? v[0] * v[0] + v[1] * v[1]
-            : v[0] * v[0] + v[1] * v[1] + v[2] * v[2];
+    function normSquared(v) {
+        return v[0] * v[0] + v[1] * v[1] + v[2] * v[2];
     }
-    function _norm(v) {
-        return Math.sqrt(_normSquared(v));
+    function norm(v) {
+        return Math.sqrt(normSquared(v));
     }
-    function _sign(n) {
+    function sign(n) {
         return (n < 0) ? -1 : 1;
     }
 
@@ -494,10 +484,10 @@ define(function(require, exports, module) {
 
         //default Q1 to the identity matrix;
         var x = [t[0], t[1], t[2]];                // first column vector
-        var sgn = _sign(x[0]);                     // sign of first component of x (for stability)
-        var xNorm = _norm(x);                      // norm of first column vector
+        var sgn = sign(x[0]);                      // sign of first component of x (for stability)
+        var xNorm = norm(x);                       // norm of first column vector
         var v = [x[0] + sgn * xNorm, x[1], x[2]];  // v = x + sign(x[0])|x|e1
-        var mult = 2 / _normSquared(v);            // mult = 2/v'v
+        var mult = 2 / normSquared(v);             // mult = 2/v'v
 
         //bail out if our Matrix is singular
         if (mult >= Infinity) {
@@ -532,10 +522,10 @@ define(function(require, exports, module) {
 
         // SECOND ITERATION on (1,1) minor
         var x2 = [MQ1[5], MQ1[6]];
-        var sgn2 = _sign(x2[0]);                    // sign of first component of x (for stability)
-        var x2Norm = _norm(x2);                     // norm of first column vector
-        var v2 = [x2[0] + sgn2 * x2Norm, x2[1]];    // v = x + sign(x[0])|x|e1
-        var mult2 = 2 / _normSquared(v2);           // mult = 2/v'v
+        var sgn2 = sign(x2[0]);                    // sign of first component of x (for stability)
+        var x2Norm = norm(x2);                     // norm of first column vector
+        var v2 = [x2[0] + sgn2 * x2Norm, x2[1]];   // v = x + sign(x[0])|x|e1
+        var mult2 = 2 / normSquared(v2);           // mult = 2/v'v
 
         //evaluate Q2 = I - 2vv'/v'v
         var Q2 = [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1];
@@ -557,7 +547,7 @@ define(function(require, exports, module) {
         R = Transform.compose(R, remover);
         Q = Transform.compose(remover, Q);
 
-        //decompose into rotate/scale/skew matrices
+        // decompose into rotate/scale/skew matrices
         var result = {};
         result.translate = Transform.getTranslate(t);
         result.rotate = [Math.atan2(-Q[6], Q[10]), Math.asin(Q[2]), Math.atan2(-Q[1], Q[0])];
@@ -568,13 +558,16 @@ define(function(require, exports, module) {
         result.scale = [R[0], R[5], R[10]];
         result.skew = [Math.atan2(R[9], result.scale[2]), Math.atan2(R[8], result.scale[2]), Math.atan2(R[4], result.scale[0])];
 
-        //double rotation workaround
+        // double rotation workaround
         if (Math.abs(result.rotate[0]) + Math.abs(result.rotate[2]) > 1.5 * Math.PI) {
             result.rotate[1] = Math.PI - result.rotate[1];
+
             if (result.rotate[1] > Math.PI) result.rotate[1] -= 2 * Math.PI;
-            if (result.rotate[1] < -Math.PI) result.rotate[1] += 2 * Math.PI;
+            else if (result.rotate[1] < -Math.PI) result.rotate[1] += 2 * Math.PI;
+
             if (result.rotate[0] < 0) result.rotate[0] += Math.PI;
             else result.rotate[0] -= Math.PI;
+
             if (result.rotate[2] < 0) result.rotate[2] += Math.PI;
             else result.rotate[2] -= Math.PI;
         }
@@ -663,9 +656,9 @@ define(function(require, exports, module) {
 
         return !(a && b) ||
             a[12] !== b[12] || a[13] !== b[13] || a[14] !== b[14] ||
-            a[0] !== b[0] || a[1] !== b[1] || a[2] !== b[2] ||
-            a[4] !== b[4] || a[5] !== b[5] || a[6] !== b[6] ||
-            a[8] !== b[8] || a[9] !== b[9] || a[10] !== b[10];
+            a[0]  !== b[0]  || a[1]  !== b[1]  || a[2]  !== b[2]  ||
+            a[4]  !== b[4]  || a[5]  !== b[5]  || a[6]  !== b[6]  ||
+            a[8]  !== b[8]  || a[9]  !== b[9]  || a[10] !== b[10];
     };
 
     module.exports = Transform;

@@ -1,6 +1,6 @@
 {
   "name": "samsarajs",
-  "description": "Streaming layout for the web",
+  "description": "Reactive layout for user interfaces",
   "url": "http://samsaraJS.org",
   "author": "David Valdman <dmvaldman@gmail.com>",
   "version": "0.2.1",
@@ -34,10 +34,7 @@
     "layout",
     "samsara"
   ],
-  "license": [
-    "MIT",
-    "MPL V2"
-  ],
+  "license": "MIT",
   "bugs": {
     "url": "https://github.com/dmvaldman/samsara/issues"
   },
