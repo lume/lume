@@ -124,7 +124,9 @@ define(function(require, exports, module) {
 
         if (isMobile) {
             var newOrientation = newHeight > newWidth;
-            if (orientation === newOrientation)
+            // if width hasn't changed, this indicated "split-screen" view on some iOS devices,
+            // which should trigger a `resize` event
+            if (orientation === newOrientation && newWidth === windowWidth)
                 return false;
 
             orientation = newOrientation;
