@@ -1,0 +1,10 @@
+/* Copyright © 2015-2016 David Valdman */
+
+/* For use with the Fingers.js Samsara UI component */
+
+.samsara-fingers {
+    background: rgba(255,255,255,.3);
+    border: 1px solid rgba(255,255,255,.4);
+    border-radius: 50%;
+    z-index: 1
+}
