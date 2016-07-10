@@ -8,9 +8,9 @@ define(function (require, exports, module) {
     var SimpleStream = require('../streams/SimpleStream');
     var Stream = require('../streams/Stream');
 
-    var Tween = require('../transitions/Tween');
-    var Spring = require('../transitions/Spring');
-    var Inertia = require('../transitions/Inertia');
+    var Tween = require('../transitions/_Tween');
+    var Spring = require('../transitions/_Spring');
+    var Inertia = require('../transitions/_Inertia');
 
     var transitionMethods = {
         tween: Tween,
