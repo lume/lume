@@ -3,6 +3,138 @@ define(function(require, exports, module) {
     var Stream = require('./Stream');
     var SimpleStream = require('./SimpleStream');
     var Observable = require('./Observable');
+    var EventHandler = require('../events/EventHandler');
+
+    function ReduceNode(reducer, stream, extras){
+        this.input = new SimpleStream();
+
+        var sources = [this.input, stream];
+        if (extras) sources = sources.concat(extras);
+
+        this.output = Stream.lift(reducer, sources);
+
+        EventHandler.setInputHandler(this, this.input);
+        EventHandler.setOutputHandler(this, this.output);
+    }
+
+    function Node(value){
+        this.prev = null;
+        this.next = null;
+        this.value = null;
+        
+        if (value) this.set(value);
+    }
+
+    Node.prototype.set = function(value){
+        this.value = value;
+    };
+
+    Node.prototype.get = function(){
+        return this.value;
+    };
+
+    Node.prototype.is = function(value){
+        return this.get() === value;
+    };
+
+    function LinkedList(reducer, offset, extras){
+        this.reducer = reducer;
+        this.offset = new Observable(offset || 0);
+        this.extras = extras;
+
+        this.head = null;
+        this.tail = null;
+
+        this.headOutput = new SimpleStream();
+        this.headOutput.subscribe(this.offset);
+    }
+
+    LinkedList.prototype.push = function(stream){
+        var reduceNode = new ReduceNode(this.reducer, stream, this.extras);
+        var node = new Node(reduceNode);
+
+        if (this.head === null) {
+            node.get().subscribe(this.offset);
+            this.tail = node;
+            this.offset.set(this.offset.get());
+        }
+        else connectLL(this.head, node);
+
+        this.head = node;
+        setHeadOutputLL.call(this, this.head);
+
+        return reduceNode.input;
+    };
+
+    LinkedList.prototype.pop = function(){
+        if (!this.head) return;
+
+        var prev = this.head.prev;
+
+        if (prev){
+            severLL(prev, this.head);
+            this.head = prev;
+            setHeadOutputLL.call(this, this.head);
+        }
+        else reset.call(this);
+    };
+
+    LinkedList.prototype.unshift = function(stream){
+        var reduceNode = new ReduceNode(this.reducer, stream, this.extras);
+        var node = new Node(reduceNode);
+
+        if (this.tail){
+            this.tail.get().unsubscribe();
+            connectLL(node, this.tail);
+        }
+        else {
+            this.head = node;
+            setHeadOutputLL.call(this, this.head);
+        }
+
+        node.get().subscribe(this.offset);
+        this.tail = node;
+        this.offset.set(this.offset.get());
+
+        return reduceNode.input;
+    };
+
+    LinkedList.prototype.shift = function(){
+        if (!this.tail) return;
+
+        var next = this.tail.next;
+
+        if (next){
+            severLL(this.tail, next);
+            this.tail = next;
+        }
+        else reset.call(this);
+    };
+
+    function reset(){
+        this.head = null;
+        this.tail = null;
+
+        this.headOutput.unsubscribe();
+        this.headOutput.subscribe(this.offset);
+    }
+
+    function severLL(node1, node2){
+        node1.next = null;
+        node2.prev = null;
+        node2.get().unsubscribe(node1.get());
+    }
+
+    function connectLL(node1, node2){
+        node1.next = node2;
+        node2.prev = node1;
+        node2.get().subscribe(node1.get());
+    }
+
+    function setHeadOutputLL(node){
+        this.headOutput.unsubscribe();
+        this.headOutput.subscribe(node.get());
+    }
 
     function ReduceStream(reducer, value, options) {
         this.reducer = reducer;
@@ -159,5 +291,5 @@ define(function(require, exports, module) {
         this.headOutput.subscribe(output);
     }
 
-    module.exports = ReduceStream;
+    module.exports = LinkedList;
 });
