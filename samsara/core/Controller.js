@@ -55,15 +55,19 @@ define(function(require, exports, module) {
      * @param options {Object} Instance options
      */
     function Controller(options) {
+        // set options
         this.options = _clone(this.constructor.DEFAULT_OPTIONS || Controller.DEFAULT_OPTIONS);
         this._optionsManager = new OptionsManager(this.options);
         if (options) this.setOptions(options);
 
+        // set input and output streams
         this.input = new SimpleStream();
         this.output = new SimpleStream();
         EventHandler.setInputHandler(this, this.input);
         EventHandler.setOutputHandler(this, this.output);
-        EventHandler.setInputEvents(this, this.constructor.EVENTS || Controller.EVENTS, this.input);
+
+        // bind events defined in the constructor's EVENTS dictionary to the input
+        setInputEvents.call(this, this.constructor.EVENTS || Controller.EVENTS, this.input);
 
         this.input.bindThis(this);
         this.input.subscribe(this._optionsManager);
@@ -111,11 +115,6 @@ define(function(require, exports, module) {
         OptionsManager.prototype.setOptions.apply(this._optionsManager, arguments);
     };
 
-    var RESERVED_KEYS = {
-        DEFAULTS : 'defaults',
-        EVENTS : 'events'
-    };
-
     function _clone(obj) {
         var copy;
         if (typeof obj === 'object') {
@@ -138,19 +137,39 @@ define(function(require, exports, module) {
         return copy;
     }
 
-    function extend(protoObj, constants){
+    /**
+     * Constructor helper method. Given an events dictionary of {eventName : handler} pairs, attach them to
+     *  a provided input handler for an object. The `handler` can be a string, in which case the string resolves
+     *  to a method with the string's name defined on the object.
+     */
+    function setInputEvents(events, inputHandler){
+        for (var key in events) {
+            var handlerName = events[key];
+            var handler = (typeof handlerName === 'string')
+                ? this[handlerName]
+                : handlerName;
+            if (handler) inputHandler.on(key, handler.bind(this));
+        }
+    }
+    
+    var RESERVED_KEYS = {
+        DEFAULTS : 'defaults',
+        EVENTS : 'events'
+    };
+
+    function extend(properties, constructorProperties){
         var parent = this;
 
-        var child = (protoObj.hasOwnProperty('constructor'))
-            ? function(){ protoObj.constructor.apply(this, arguments); }
+        var child = (properties.hasOwnProperty('constructor'))
+            ? function(){ properties.constructor.apply(this, arguments); }
             : function(){ parent.apply(this, arguments); };
 
         child.extend = extend;
         child.prototype = Object.create(parent.prototype);
         child.prototype.constructor = child;
 
-        for (var key in protoObj){
-            var value = protoObj[key];
+        for (var key in properties){
+            var value = properties[key];
             switch (key) {
                 case RESERVED_KEYS.DEFAULTS:
                     child.DEFAULT_OPTIONS = value;
@@ -166,20 +185,21 @@ define(function(require, exports, module) {
             }
         }
 
-
-        for (key in constants)
-            child[key] = constants[key];
+        for (key in constructorProperties)
+            child[key] = constructorProperties[key];
 
         return child;
     }
 
     /**
-     * Allows a class to extend Controller.
-     *  Note: this is a method defined on the Controller constructor
+     * Extend the Controller class with user-defined instance properties, as well as constructor
+     *  properties.
      *
      * @method extend
-     * @param protoObj {Object}     Prototype properties of the extended class
-     * @param constants {Object}    Constants to be added to the extended class's constructor
+     * @static
+     * @private
+     * @param properties {Object}               User-defined instance methods and properties
+     * @param [constructorProperties] {Object}  Constructor properties
      */
     Controller.extend = extend;
 

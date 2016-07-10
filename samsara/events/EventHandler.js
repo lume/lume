@@ -68,26 +68,6 @@ define(function(require, exports, module) {
     };
 
     /**
-     * Constructor helper method. Given an events dictionary of {eventName : handler} pairs, attach them to
-     *  a provided input handler for an object.
-     *
-     * @method setInputEvents
-     * @static
-     * @private
-     * @param object {Object}           Object to provide on, off and emit methods
-     * @param handler {EventHandler}    Handler assigned event handler
-     */
-    EventHandler.setInputEvents = function setInputEvents(object, events, handlerIn){
-        for (var key in events) {
-            var handlerName = events[key];
-            var handler = (typeof handlerName === 'string')
-                ? object[handlerName]
-                : handlerName;
-            if (handler) handlerIn.on(key, handler.bind(object));
-        }
-    };
-
-    /**
      * Adds a handler to the `type` channel which will be executed on `emit`.
      *  Extends EventEmitter's `on` method.
      *
