@@ -375,7 +375,6 @@ define(function(require, exports, module) {
         if (options.properties !== undefined) this.setProperties(options.properties);
         if (options.attributes !== undefined) this.setAttributes(options.attributes);
         if (options.content !== undefined) this.setContent(options.content);
-        if (options.aspectRatio !== undefined) this.setAspectRatio(options.aspectRatio);
         if (options.enableScroll) enableScroll.call(this);
         if (options.roundToPixel) this._elementOutput._roundToPixel = options.roundToPixel;
     };
@@ -554,18 +553,6 @@ define(function(require, exports, module) {
      */
     Surface.prototype.setMargins = function setMargins(margins) {
         this._sizeNode.set({margins : margins});
-    };
-
-    /**
-     * Setter for aspect ratio. If only one of width or height is specified,
-     *  the aspect ratio will replace the unspecified dimension by scaling
-     *  the specified dimension by the value provided.
-     *
-     * @method setAspectRatio
-     * @param aspectRatio {Number|Stream} Aspect ratio.
-     */
-    Surface.prototype.setAspectRatio = function setAspectRatio(aspectRatio) {
-        this._sizeNode.set({aspectRatio : aspectRatio});
     };
 
     /**

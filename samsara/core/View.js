@@ -143,16 +143,6 @@ define(function(require, exports, module) {
             this._sizeNode.set({margins : margins});
         },
         /**
-         * Setter for aspect ratio.
-         *
-         * @method setAspectRatio
-         * @deprecated Use size functions instead
-         * @param aspectRatio {Number|Stream} Aspect ratio, or a stream.
-         */
-        setAspectRatio: function setAspectRatio(aspectRatio) {
-            this._sizeNode.set({aspectRatio: aspectRatio});
-        },
-        /**
          * Setter for origin.
          *
          * @method setOrigin
@@ -190,9 +180,6 @@ define(function(require, exports, module) {
                     break;
                 case 'margins':
                     this.setMargins(value);
-                    break;
-                case 'aspectRatio':
-                    this.setAspectRatio(value);
                     break;
                 case 'origin':
                     this.setOrigin(value);
