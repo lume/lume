@@ -1,19 +1,19 @@
-import ImperativeBase from './ImperativeBase'
+import TreeNode from './TreeNode'
 import XYZValues from './XYZValues'
 import Motor from './Motor'
 import { makeLowercaseSetterAliases } from './Utility'
 
-// Transformable doesn't need to extend my ImperativeBase class, but there isn't
-// multiple inheritance in JavaSript out of the box, and Node needs to have the
-// properties of ImperativeBase and Transformable, while Scene will extend from
-// ImperativeBase.
+// Transformable doesn't need to extend from a class, but there isn't multiple
+// inheritance in JavaSript out of the box, and Node needs to have the
+// properties of Transformable and other classes, while Scene will branch from
+// an ancestor class of Node.
 //
 // TODO: Make a multiple-inheritance tool so that Node can extend from both
-// ImperativeBase and Transformable.
+// TreeNode and Transformable.
 //
 // TODO: Is this the best name? Maybe Renderable? How to organize the DOM and
 // WebGL components?
-class Transformable extends ImperativeBase {
+class Transformable extends TreeNode {
     constructor(initialProperties = {}, _motorHtmlNode) {
         super()
 

@@ -4,8 +4,6 @@ import Transformable from './Transformable'
 import MotorHTMLNode from '../motor-html/node'
 import { proxyGettersSetters } from './Utility'
 
-import MultiClass from './MultiClass'
-
 class Node extends Transformable {
 
     /**
@@ -40,8 +38,6 @@ class Node extends Transformable {
 
         this._mounted = false;
 
-        this._parent = null // default to no parent.
-        this._children = [];
         this._scene = null // stores a ref to this Node's root Scene.
 
         // an internal promise that resolves when this Node finally belongs to
@@ -137,26 +133,6 @@ class Node extends Transformable {
     }
 
     /**
-     * this._parent is protected (node's can access other node._parent).
-     * The user should use the addChild methods, which automatically handles
-     * setting a parent.
-     *
-     * @readonly
-     */
-    get parent() {
-        return this._parent
-    }
-
-    /**
-     * @readonly
-     */
-    get children() {
-        // return a new array, so that the user modifying it doesn't affect
-        // this node's actual children.
-        return [...this._children]
-    }
-
-    /**
      * @readonly
      */
     get element() {
@@ -225,14 +201,9 @@ class Node extends Transformable {
         super._needsToBeRendered() // currently calls Transformable._needsToBeRendered
     }
 
-    /**
-     * Add a child node to this Node.
-     *
-     * @param {Node} childNode The child node to add.
-     */
-    addChild (childNode) {
-        if (! (childNode instanceof Node))
-            throw new Error('Node.addChild expects the childNode argument to be a Node instance.')
+
+    /** @override */
+    addChild(childNode) {
 
         // We cannot add Scenes to Nodes, for now.
         //
@@ -241,32 +212,17 @@ class Node extends Transformable {
         // order to avoid a circular dependency in this module.
         // Idea: maybe we can traverse the prototype chain looking for each
         // constructor.name.
+        //
+        // TODO: How do we handle mounting a Scene inside a Node when using only WebGL?
         if (childNode.constructor.name == 'Scene') {
             throw new Error(`
-                A Scene cannot currently be added to another Node.
-                This may change in the future. For now, just mount
-                a new Scene onto an HTMLElement (which can be the
-                element held by a Node).
+                A Scene cannot be added to another Node. To place a Scene in a
+                Node, just mount a new Scene onto a MotorHTMLNode with
+                Scene.mount().
             `)
         }
 
-        // Do nothing if the child Node is already added to this Node.
-        //
-        // After adding a Node to a parent using this imperative API, the
-        // MotorHTMLNode ends up calling addChild on this Node's parent a second time
-        // in the element's attachedCallback, but the code stops at this line (which is
-        // good).
-        // TODO: prevent the second call altogether.
-        if (childNode._parent === this) return
-
-        if (childNode._parent)
-            childNode._parent.removeChild(childNode)
-
-        // Add parent
-        childNode._parent = this;
-
-        // Add to children array
-        this._children.push(childNode);
+        super.addChild(childNode)
 
         // Pass this parent node's Scene reference (if any, checking this cache
         // first) to the new child and the child's children.
@@ -294,61 +250,6 @@ class Node extends Transformable {
             childNode._resolveScenePromise(childNode._scene)
             childNode._giveSceneRefToChildren();
         }
-    }
-
-    /**
-     * Add all the child nodes in the given array to this node.
-     *
-     * @param {Array.Node} nodes The nodes to add.
-     */
-    addChildren(nodes) {
-        nodes.forEach(node => this.addChild(node))
-        return this
-    }
-
-    /**
-     * Remove a child node from this node. Silently fails if the node doesn't
-     * exist, etc.
-     *
-     * XXX Should this be silent? Or should we throw?
-     *
-     * @param {Node} childNode The node to remove.
-     */
-    removeChild(childNode) {
-        let thisHasChild = this._children.indexOf(childNode) >= 0
-
-        if (childNode instanceof Node && thisHasChild) {
-            childNode._parent = null
-            childNode._scene = null // not part of a scene anymore.
-            childNode._scenePromise = null // reset so that it can be awaited again for when the node is re-mounted.
-            childNode._mounted = false
-            childNode._mountPromise = null // reset so that it can be awaited again for when the node is re-mounted.
-
-            // Remove from children array
-            this._children.splice(this._children.indexOf(childNode), 1);
-
-            this._detachElement(childNode)
-        }
-
-        return this
-    }
-
-    /**
-     * Remove all the child nodes in the given array from this node.
-     *
-     * @param {Array.Node} nodes The nodes to remove.
-     */
-    removeChildren(nodes) {
-        nodes.forEach(node => this.removeChild(node))
-        return this
-    }
-
-    /**
-     * @readonly
-     * @return {number} How many children this Node has.
-     */
-    get childCount() {
-        return this._children.length
     }
 
     _mountChildElement(childNode) {
