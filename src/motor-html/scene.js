@@ -6,20 +6,32 @@ import styles from './scene-style'
 import Scene from '../motor/Scene'
 import MotorHTMLBase from './base'
 
-export default
-document.registerElement('motor-scene',
+let MotorHTMLScene = document.registerElement('motor-scene',
 class MotorHTMLScene extends MotorHTMLBase {
 
-    // this is called in attachedCallback, at which point this element has a
-    // parentNode.
-    _makeImperativeNode() {
-        let scene = new Scene(this)
+    createdCallback() {
+        super.createdCallback()
+    }
+
+    // NOTE This is triggered by the _init() call in WebComponent's
+    // attachedCallback, at which point this element has a parentNode.
+    _makeImperativeCounterpart() {
+        const scene = new Scene({}, this)
+
+        // TODO: needs unmount cleanup (in deinit, which is called in
+        // WebComponent's detachedCallback).
         scene.mount(this.parentNode)
+
         return scene
     }
 
+    /** @override */
     getStyles() {
         return styles
+    }
+
+    attachedCallback() {
+        super.attachedCallback()
     }
 
     //deinit() {
@@ -28,3 +40,5 @@ class MotorHTMLScene extends MotorHTMLBase {
         //// TODO: unmount the scene
     //}
 })
+
+export {MotorHTMLScene as default}

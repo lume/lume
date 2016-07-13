@@ -1,10 +1,8 @@
 import 'document-register-element'
 import makeWebComponentBaseClass from './web-component'
-import Node from '../motor/Node'
 
 const WebComponent = makeWebComponentBaseClass(window.HTMLElement)
 
-export default
 class MotorHTMLBase extends WebComponent {
     createdCallback() {
         super.createdCallback()
@@ -39,30 +37,33 @@ class MotorHTMLBase extends WebComponent {
      *
      * @private
      *
-     * @param {Node} imperativeMotorNode The Node to associate with this
-     * MotorHTMLNode. This parameter is only used in Node#constructor, and this
-     * happens when using the imperative form infamous instead of the HTML
-     * interface of infamous. When the HTML interface is used, this gets called
-     * first without an imperativeMotorNode argument and the call to this in
-     * Node#constructor will then be a noop. Basically, either this gets called
-     * first by MotorHTMLNode, or first by Node, depending on which API is used
-     * first.
+     * @param {Object} imperativeCounterPart The impoerative counterpart to
+     * associate with this MotorHTML element. This parameter is only used in the
+     * imperative API constructors, and this happens when using the imperative
+     * form of infamous instead of the HTML interface to infamous. When the HTML
+     * interface is used, this gets called first without an
+     * imperativeCounterPart argument and the call to this in an imperative
+     * constructor will be a noop. Basically, either this gets called first by a
+     * MotorHTML element, or first by an imperative instance, depending on which
+     * API is used first.
      */
-    _associateImperativeNode(imperativeMotorNode) {
-        // console.log(' -- associating imperative node')
-        if (!this.node) {
-            if (imperativeMotorNode && imperativeMotorNode instanceof Node)
-                this.node = imperativeMotorNode
-            else
-                this.node = this._makeImperativeNode()
+    _associateImperativeNode(imperativeCounterPart) {
+        // if the association is made already, noop
+        if (this.node) return
 
-            this._signalWhenReady()
-        }
+        // if called from an imperative-side class' constructor, associate
+        // the passed instance.
+        if (imperativeCounterPart) this.node = imperativeCounterPart
+
+        // otherwise if called from a MotorHTML class without an argument
+        else this.node = this._makeImperativeCounterpart()
+
+        this._signalWhenReady()
     }
 
     // This method should be overriden by child classes. It should return the
     // imperative-side instance that the HTML-side class (this) corresponds to.
-    _makeImperativeNode() {
+    _makeImperativeCounterpart() {
         throw new TypeError('This method should be implemented by class extening MotorHTMLBase.')
     }
 
@@ -71,3 +72,5 @@ class MotorHTMLBase extends WebComponent {
         this._resolveReadyPromise()
     }
 }
+
+export {MotorHTMLBase as default}

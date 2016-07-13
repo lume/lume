@@ -3,10 +3,9 @@ import documentReady from 'awaitbox/dom/documentReady'
 
 import MotorHTMLScene from '../motor-html/scene'
 
-export default
 class Scene extends Node {
-    constructor(_motorHtmlScene) {
-        super({}, _motorHtmlScene)
+    constructor(options, _motorHtmlScene) {
+        super(options, _motorHtmlScene)
 
         this._scene = this
         this._resolveScenePromise(this)
@@ -78,3 +77,5 @@ class Scene extends Node {
     }
 
 }
+
+export {Scene as default}

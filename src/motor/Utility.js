@@ -67,9 +67,9 @@ const methodProxyBlacklist = [
     'removeChildren',
 ]
 
-// Creates setters/getters on the MotorHTMLNode which proxy to the
-// setters/getters on Node.
-function proxyMethods(SourceClass, TargetClass) {
+// Creates setters/getters on the TargetClass which proxy to the
+// setters/getters on SourceClass.
+function proxyGettersSetters(SourceClass, TargetClass) {
     const props = Object.getOwnPropertyNames(SourceClass.prototype)
 
     for (let prop of props) {
@@ -110,5 +110,5 @@ export {
   getBodySize,
   animationFrame,
   makeLowercaseSetterAliases,
-  proxyMethods,
+  proxyGettersSetters,
 }
