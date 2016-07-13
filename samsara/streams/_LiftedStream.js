@@ -5,11 +5,11 @@ define(function(require, exports, module) {
 
     function LiftedStream(map, mergedStream) {
         SimpleStream.call(this);
-        var mappedStream = new EventMapper(function liftMap(data) {
+        this.mappedStream = new EventMapper(function liftMap(data) {
             return map.apply(null, data);
         });
         this.mergedStream = mergedStream;
-        this.subscribe(mappedStream).subscribe(mergedStream);
+        this.subscribe(this.mappedStream).subscribe(mergedStream);
     }
 
     LiftedStream.prototype = Object.create(SimpleStream.prototype);
@@ -17,6 +17,16 @@ define(function(require, exports, module) {
 
     LiftedStream.prototype.replaceStream = function() {
         this.mergedStream.replaceStream.apply(this.mergedStream, arguments);
+    };
+
+    /**
+     * Set a mapping function.
+     *
+     * @method setMap
+     * @param map {Function} Mapping function
+     */
+    LiftedStream.prototype.setMap = function(map) {
+        EventMapper.prototype.set.apply(this.mappedStream, arguments);
     };
     
     module.exports = LiftedStream;

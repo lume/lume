@@ -32,7 +32,7 @@ define(function(require, exports, module) {
      */
     function EventMapper(map) {
         EventHandler.call(this);
-        this._mappingFunction = map;
+        this.set(map);
     }
 
     EventMapper.prototype = Object.create(EventHandler.prototype);
@@ -46,7 +46,7 @@ define(function(require, exports, module) {
      * @param data {Object} Payload
      */
     EventMapper.prototype.emit = function emit(type, data) {
-        var mappedData = this._mappingFunction(data);
+        var mappedData = this._map(data);
         EventHandler.prototype.emit.call(this, type, mappedData);
     };
 
@@ -58,6 +58,16 @@ define(function(require, exports, module) {
      * @param data {Object} Payload
      */
     EventMapper.prototype.trigger = EventMapper.prototype.emit;
+
+    /**
+     * Set a mapping function.
+     *
+     * @method set
+     * @param map {Function} Mapping function
+     */
+    EventMapper.prototype.set = function(map){
+        this._map = map;
+    };
 
     module.exports = EventMapper;
 });
