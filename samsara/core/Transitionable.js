@@ -119,8 +119,8 @@ define(function (require, exports, module) {
      *  between start and end values. For instance, a physics engine.
      *
      *  @method register
-     *  @param name {string}    Identifier for the engine
-     *  @param constructor      Constructor for the engine
+     *  @param name {string}    Identifier for the transition
+     *  @param constructor      Constructor for the transition
      */
     Transitionable.register = function register(name, constructor) {
         if (!(name in transitionMethods))
@@ -132,7 +132,7 @@ define(function (require, exports, module) {
      *  Undoes work of `register`.
      *
      *  @method unregister
-     *  @param name {string}    Identifier for the engine
+     *  @param name {string}    Identifier for the transition
      */
     Transitionable.unregister = function unregister(name) {
         if (name in transitionMethods) {

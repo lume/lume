@@ -80,7 +80,7 @@ define(function(require, exports, module) {
      *  with the Controller to patch any options that are not prescribed on instantiation.
      *
      * @attribute DEFAULT_OPTIONS
-     * @readOnly
+     * @private
      */
     Controller.DEFAULT_OPTIONS = {};
 
@@ -90,7 +90,7 @@ define(function(require, exports, module) {
      *  event channel names and the values are functions to be executed.
      *
      * @attribute EVENTS
-     * @readOnly
+     * @private
      */
     Controller.EVENTS = {};
 
@@ -151,7 +151,7 @@ define(function(require, exports, module) {
             if (handler) inputHandler.on(key, handler.bind(this));
         }
     }
-    
+
     var RESERVED_KEYS = {
         DEFAULTS : 'defaults',
         EVENTS : 'events'
