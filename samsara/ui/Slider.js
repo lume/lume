@@ -23,7 +23,7 @@ define(function(require, exports, module){
      * A UI element that creates a slider controllable by mouse and touch events.
      *  A starting value and range is provided, and the user can change the value within
      *  the range by dragging and clicking on the slider.
-     *  The slider has a `.value` property that defines its value as a stream.
+     *  The slider has a `value` property that defines its value as a stream.
      *
      *  This file comes with an associated CSS file slider.css
      *
@@ -48,7 +48,7 @@ define(function(require, exports, module){
      * @constructor
      * @param [options] {Object}                    Options
      * @param [options.value=0.5] {Number}          Starting value
-     * @param [options.range=[0,1]] {Array}         Range of values ([min, max])
+     * @param [options.range] {Array}               Range of values ([min, max])
      * @param [options.label] {String}              Name of label
      * @param [options.precision=1] {Number}        Number of decimal points to display
      * @param [options.transition=false] {Object}   Default transition to animate values
