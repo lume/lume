@@ -44,6 +44,7 @@ define(function(require, exports, module) {
 
             this.stream = new ReduceStream(function(prev, size, spacing){
                 if (!size) return false;
+                console.log(arguments)
                 return prev + size[options.direction] + spacing;
             }, options.offset, [options.spacing]);
 
