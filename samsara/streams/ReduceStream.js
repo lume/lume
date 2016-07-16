@@ -45,6 +45,9 @@ define(function(require, exports, module) {
         this.head = null;
         this.tail = null;
 
+        this.tailOutput = new SimpleStream();
+        this.tailOutput.subscribe(this.offset);
+
         this.headOutput = new SimpleStream();
         this.headOutput.subscribe(this.offset);
     }
@@ -53,7 +56,10 @@ define(function(require, exports, module) {
         var reduceNode = new ReduceNode(this.reducer, stream, this.extras);
         var node = new Node(reduceNode);
 
-        if (this.head === null) createFirstNode.call(this, node);
+        if (this.head === null) {
+            createFirstNode.call(this, node);
+            setTailOutputLL.call(this, this.head);
+        }
         else connectLL(this.head, node);
 
         this.head = node;
@@ -71,13 +77,17 @@ define(function(require, exports, module) {
             setHeadOutputLL.call(this, this.head);
         }
         else {
+            // remove previous tail from offset
+            // add new tail to offset
             this.tail.get().unsubscribe(this.offset);
             node.get().subscribe(this.offset);
+
             connectLL(node, this.tail);
             this.offset.set(this.offset.get())
         }
 
         this.tail = node;
+        setTailOutputLL.call(this, this.tail);
 
         return reduceNode.input;
     };
@@ -136,9 +146,14 @@ define(function(require, exports, module) {
         node2.get().subscribe(node1.get());
     }
 
-    function setHeadOutputLL(node){
+    function setHeadOutputLL(head){
         this.headOutput.unsubscribe();
-        this.headOutput.subscribe(node.get());
+        this.headOutput.subscribe(head.get());
+    }
+
+    function setTailOutputLL(tail){
+        this.tailOutput.unsubscribe();
+        this.tailOutput.subscribe(tail.get());
     }
 
     // function ReduceStream(reducer, value, options) {
