@@ -94,6 +94,7 @@ define(function(require, exports, module) {
      * @method off
      * @param type {String}           Event channel name
      * @param [handler] {Function}    Handler
+     * @return {Boolean}              True if no more listeners remain. False otherwise.
      */
     EventHandler.prototype.off = function off(type, handler) {
         var empty = EventEmitter.prototype.off.apply(this, arguments);
@@ -104,6 +105,7 @@ define(function(require, exports, module) {
                 this.upstream[i].off(type, oldUpstreamListener);
             }
         }
+        return empty;
     };
 
     /**
@@ -131,11 +133,13 @@ define(function(require, exports, module) {
      *
      * @method unsubscribe
      * @param [source] {EventEmitter} Event source
+     * @return {Boolean}              True if no source was unsubscribed. False if none found.
      */
     EventHandler.prototype.unsubscribe = function unsubscribe(source) {
         if (!source) {
             for (var i = 0; i < this.upstream.length; i++)
                 this.unsubscribe(this.upstream[i]);
+            return true;
         }
         else {
             var index = this.upstream.indexOf(source);
@@ -144,7 +148,9 @@ define(function(require, exports, module) {
                 for (var type in this.upstreamListeners) {
                     source.off(type, this.upstreamListeners[type]);
                 }
+                return true;
             }
+            else return false;
         }
     };
 

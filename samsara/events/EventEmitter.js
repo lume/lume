@@ -86,6 +86,7 @@ define(function(require, exports, module) {
      * @method off
      * @param [type] {String}         Channel name
      * @param [handler] {Function}    Callback
+     * @return {Boolean}              True if no more listeners remain. False otherwise.
      */
     EventEmitter.prototype.off = function off(type, handler) {
         if (!type) {
