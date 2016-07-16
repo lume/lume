@@ -45,7 +45,7 @@ define(function(require, exports, module) {
             this.stream = new ReduceStream(function(prev, size, spacing){
                 if (!size) return false;
                 return prev + size[options.direction] + spacing;
-            }, undefined, {sources : [options.spacing], offset : options.offset});
+            }, options.offset, [options.spacing]);
 
             this.setLengthMap(DEFAULT_LENGTH_MAP);
 
@@ -185,8 +185,16 @@ define(function(require, exports, module) {
             else index = this.nodes.indexOf(item);
 
             if (!item || !item.size) return;
+
+            if (index === 0){
+                this.stream.shift()
+            }
+            else if (index === this.nodes.length - 1){
+                this.stream.pop();
+            }
+            else this.stream.remove(item.size);
+
             this.nodes.splice(index, 1);
-            this.stream.remove(item.size);
 
             return item;
         }
