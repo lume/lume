@@ -44,7 +44,6 @@ define(function(require, exports, module) {
 
             this.stream = new ReduceStream(function(prev, size, spacing){
                 if (!size) return false;
-                console.log(arguments)
                 return prev + size[options.direction] + spacing;
             }, options.offset, [options.spacing]);
 
@@ -198,6 +197,10 @@ define(function(require, exports, module) {
             this.nodes.splice(index, 1);
 
             return item;
+        },
+        setPivot : function(item){
+            if (typeof item === 'number') item = this.nodes[item];
+            if (item) this.stream.setPivot(item.size);
         }
     }, CONSTANTS);
 
