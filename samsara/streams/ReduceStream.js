@@ -77,7 +77,7 @@ define(function(require, exports, module) {
                 this.head.next = node;
                 node.prev = this.head;
 
-                node.get().subscribe(this.pivot.get().input);
+                node.get().subscribe(this.pivot.get());
                 this.offset.set(this.offset.get());
                 this.head = node;
             }
