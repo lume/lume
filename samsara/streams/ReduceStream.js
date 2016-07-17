@@ -6,20 +6,23 @@ define(function(require, exports, module) {
     var EventHandler = require('../events/EventHandler');
 
     function ReduceNode(reducer, stream, extras){
-        this.input = new SimpleStream();
+        this._input = new SimpleStream();
 
-        var sources = [this.input, stream];
+        var sources = [this._input, stream];
         if (extras) sources = sources.concat(extras);
 
-        this.output = Stream.lift(reducer, sources);
+        this._output = Stream.lift(reducer, sources);
+
+        this.output = new SimpleStream();
+
         this.stream = stream;
 
-        EventHandler.setInputHandler(this, this.input);
-        EventHandler.setOutputHandler(this, this.output);
+        EventHandler.setInputHandler(this, this._input);
+        EventHandler.setOutputHandler(this, this._output);
     }
 
     ReduceNode.prototype.setMap = function(map){
-        this.output.setMap(map);
+        this._output.setMap(map);
     };
 
     function Node(value){
@@ -66,6 +69,8 @@ define(function(require, exports, module) {
 
     LinkedList.prototype.push = function(stream){
         var reduceNode = new ReduceNode(this.reducer, stream, this.extras);
+        reduceNode.output.subscribe(reduceNode._input);
+
         var node = new Node(reduceNode);
 
         if (this.head === null) {
@@ -79,22 +84,21 @@ define(function(require, exports, module) {
 
                 node.get().subscribe(this.pivot.get());
                 this.offset.set(this.offset.get());
-                this.head = node;
             }
-            else {
+            else
                 connect(this.head, node, 1);
-                this.head = node;
-            }
-
+            this.head = node;
         }
 
         setHeadOutput.call(this, this.head);
 
-        return reduceNode.input;
+        return reduceNode.output;
     };
 
     LinkedList.prototype.unshift = function(stream){
         var reduceNode = new ReduceNode(this.prevReducer, stream, this.extras);
+        reduceNode.output.subscribe(reduceNode._output);
+
         var node = new Node(reduceNode);
 
         if (this.tail === null) {
@@ -106,11 +110,11 @@ define(function(require, exports, module) {
                 node.next = this.tail;
                 this.tail.prev = node;
 
-                node.get().subscribe(this.pivot.get().input);
+                node.get().subscribe(this.pivot.get().output);
+                this.offset.set(this.offset.get());
             }
-            else {
+            else
                 connect(node, this.tail, -1);
-            }
             this.tail = node;
         }
 
@@ -195,11 +199,13 @@ define(function(require, exports, module) {
             if (newPivot === next){
                 while (curr !== newPivot){
                     curr.get().setMap(this.prevReducer);
+                    curr.get().output.unsubscribe();
+                    curr.get().output.subscribe(curr.get()._output);
 
                     curr.next.get().unsubscribe(curr.get());
 
                     if (curr.next === newPivot){
-                        curr.get().subscribe(newPivot.get().input);
+                        curr.get().subscribe(newPivot.get()._input);
                     }
                     else {
                         curr.get().subscribe(curr.next.get());
@@ -212,6 +218,8 @@ define(function(require, exports, module) {
                 // new pivot is behind previous pivot
                 while (curr !== newPivot) {
                     curr.get().setMap(this.reducer);
+                    curr.get().output.unsubscribe();
+                    curr.get().output.subscribe(curr.get()._input);
 
                     curr.prev.get().unsubscribe(curr.get());
                     curr.get().subscribe(curr.prev.get());
