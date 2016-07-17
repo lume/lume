@@ -112,7 +112,7 @@ define(function(require, exports, module) {
 
     var resizeEnd = Timer.debounce(function() {
         dirtyQueue.push(function(){
-            Engine.size.emit('end');
+            Engine.size.emit('end', 'end');
             isResizing = false;
         });
     }, resizeDebounceTime);
@@ -135,7 +135,7 @@ define(function(require, exports, module) {
             // so don't fire updates
             Engine.size.emit('start');
             dirtyQueue.push(function(){
-                Engine.size.emit('end');
+                Engine.size.emit('end', 'end');
             });
         }
         else {

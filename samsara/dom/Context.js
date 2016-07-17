@@ -57,9 +57,16 @@ define(function(require, exports, module) {
         this._layout = new SimpleStream();
 
         this._cachedSize = [];
-        this.size = this._size.map(function(){
+        this.size = this._size.map(function(type){
+            // If `end` event, simply return cache. Otherwise cache busting fails
+            // as the `end` size is the same as the `start` size for immediate sets
+            if (type === 'end'){
+                return this._cachedSize;
+            }
+
             var width = this.container.clientWidth;
             var height = this.container.clientHeight;
+
             if (width !== this._cachedSize[0] || height !== this._cachedSize[1]){
                 this._cachedSize[0] = width;
                 this._cachedSize[1] = height;
