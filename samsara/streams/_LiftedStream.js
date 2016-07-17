@@ -5,9 +5,10 @@ define(function(require, exports, module) {
 
     function LiftedStream(map, mergedStream) {
         SimpleStream.call(this);
+        this._map = map;
         this.mappedStream = new EventMapper(function liftMap(data) {
-            return map.apply(null, data);
-        });
+            return this._map.apply(null, data);
+        }.bind(this));
         this.mergedStream = mergedStream;
         this.subscribe(this.mappedStream).subscribe(mergedStream);
     }
@@ -26,7 +27,7 @@ define(function(require, exports, module) {
      * @param map {Function} Mapping function
      */
     LiftedStream.prototype.setMap = function(map) {
-        EventMapper.prototype.set.apply(this.mappedStream, arguments);
+        this._map = map;
     };
     
     module.exports = LiftedStream;
