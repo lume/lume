@@ -6,6 +6,7 @@ define(function(require, exports, module) {
     var preTickQueue = require('./queues/preTickQueue');
     var dirtyQueue = require('./queues/dirtyQueue');
     var tickQueue = require('./queues/tickQueue');
+    var Transform = require('./Transform');
     var Timer = require('./Timer');
 
     var rafId = Number.NaN;
@@ -37,6 +38,11 @@ define(function(require, exports, module) {
     * Emitter for resize events when window resizes
     */
     Engine.size = new EventHandler();
+
+    /*
+     * Emitter for layout events when RAF loop starts
+     */
+    Engine.layout = new EventHandler();
 
     /**
      * Updates by a single frame of the application by looping through all function queues.
@@ -81,6 +87,12 @@ define(function(require, exports, module) {
         rafId = Number.NaN;
     };
 
+    function firstStart(){
+        handleResize();
+        handleLayout();
+        if (isNaN(rafId)) Engine.start();
+    }
+
     /**
      * Subscribe context to resize events and start the render loop if not running
      *
@@ -88,13 +100,11 @@ define(function(require, exports, module) {
      * @static
      */
     Engine.registerContext = function(context) {
-        context._size.subscribe(this.size);
-        window.requestAnimationFrame(function(){
-            if (!rafId) {
-                handleResize();
-                Engine.start();
-            }
-        });
+        context._size.subscribe(Engine.size);
+        context._layout.subscribe(Engine.layout);
+
+        if (window.Promise) window.Promise.resolve().then(firstStart);
+        else window.requestAnimationFrame(firstStart);
     };
 
     /**
@@ -104,7 +114,8 @@ define(function(require, exports, module) {
      * @static
      */
     Engine.deregisterContext = function(context){
-        context._size.unsubscribe(this.size);
+        context._size.unsubscribe(Engine.size);
+        context._layout.unsubscribe(Engine.layout);
     };
 
     var isResizing = false;
@@ -157,6 +168,21 @@ define(function(require, exports, module) {
                 });
             }
         }
+    }
+
+    var layoutSpec = {
+        transform : Transform.identity,
+        opacity : 1,
+        origin : null,
+        align : null,
+        nextSizeTransform : Transform.identity
+    };
+
+    function handleLayout(){
+        Engine.layout.trigger('start', layoutSpec);
+        dirtyQueue.push(function(){
+            Engine.layout.trigger('end', layoutSpec);
+        });
     }
 
     module.exports = Engine;

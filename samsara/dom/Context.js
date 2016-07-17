@@ -4,21 +4,10 @@ define(function(require, exports, module) {
     var DOMAllocator = require('./_DOMAllocator');
     var Engine = require('../core/Engine');
     var RootNode = require('../core/nodes/RootNode');
-    var Transform = require('../core/Transform');
     var Transitionable = require('../core/Transitionable');
     var OptionsManager = require('../core/_OptionsManager');
     var SimpleStream = require('../streams/SimpleStream');
     var EventHandler = require('../events/EventHandler');
-    var preTickQueue = require('../core/queues/preTickQueue');
-    var dirtyQueue = require('../core/queues/dirtyQueue');
-
-    var layoutSpec = {
-        transform : Transform.identity,
-        opacity : 1,
-        origin : null,
-        align : null,
-        nextSizeTransform : Transform.identity
-    };
 
     /**
      * A Context defines a top-level DOM element inside which other nodes (like Surfaces) are rendered.
@@ -240,13 +229,6 @@ define(function(require, exports, module) {
         this.emit('deploy', this.container);
 
         Engine.registerContext(this);
-
-        preTickQueue.push(function (){
-            this._layout.trigger('start', layoutSpec);
-            dirtyQueue.push(function(){
-                this._layout.trigger('end', layoutSpec);
-            }.bind(this));
-        }.bind(this));
     };
 
     /**
