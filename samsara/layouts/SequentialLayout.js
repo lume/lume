@@ -41,6 +41,7 @@ define(function(require, exports, module) {
         initialize : function initialize(options) {
             // Store nodes and flex values
             this.nodes = [];
+            this.pivotIndex = 0;
 
             this.stream = new ReduceStream(function(prev, size, spacing){
                 if (!size) return false;
@@ -85,7 +86,11 @@ define(function(require, exports, module) {
          * @param map [Function] Map `(length) -> transform`
          */
         push : function(item) {
-            this.nodes.push(item);
+            if (this.pivotIndex === 0)
+                this.nodes.push(item);
+            else
+                this.nodes.splice(this.pivotIndex, 0, item);
+
             var length = this.stream.push(item.size);
 
             var transform = (this.sources)
@@ -110,7 +115,11 @@ define(function(require, exports, module) {
          * @param item {Surface|View} Renderable
          */
         unshift : function(item){
-            this.nodes.unshift(item);
+            if (this.pivotIndex === 0)
+                this.nodes.unshift(item);
+            else
+                this.nodes.splice(this.pivotIndex - 1, 0, item);
+
             var length = this.stream.unshift(item.size);
             var transform = length.map(this.transformMap);
             this.add({transform : transform}).add(item);
@@ -187,19 +196,25 @@ define(function(require, exports, module) {
             if (!item || !item.size) return;
 
             if (index === 0){
-                this.stream.shift()
+                if (this.pivotIndex === index && this.nodes.length > 0) this.pivotIndex++;
+                this.stream.shift();
+                this.nodes.shift();
             }
             else if (index === this.nodes.length - 1){
+                if (this.pivotIndex === index && this.nodes.length > 0) this.pivotIndex--;
                 this.stream.pop();
+                this.nodes.pop();
             }
-            else this.stream.remove(item.size);
-
-            this.nodes.splice(index, 1);
+            else {
+                this.stream.remove(item.size);
+                this.nodes.splice(index, 1);
+            }
 
             return item;
         },
-        setPivot : function(item){
-            if (typeof item === 'number') item = this.nodes[item];
+        setPivot : function(index){
+            this.pivotIndex += index;
+            var item = this.nodes[this.pivotIndex];
             if (item) this.stream.setPivot(item.size);
         }
     }, CONSTANTS);
