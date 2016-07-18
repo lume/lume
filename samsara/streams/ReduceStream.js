@@ -82,6 +82,9 @@ define(function(require, exports, module) {
 
         this.headOutput = new SimpleStream();
         this.headOutput.subscribe(this.offset);
+
+        this.pivotOutput = new SimpleStream();
+        this.pivotOutput.subscribe(this.offset);
     }
 
     function fireOffset(){
@@ -108,7 +111,6 @@ define(function(require, exports, module) {
 
         if (this.head === null) {
             createFirstNode.call(this, node);
-            setTailOutput.call(this, this.tail);
         }
         else {
             if (this.head === this.pivot){
@@ -121,9 +123,8 @@ define(function(require, exports, module) {
             else
                 connect(this.head, node, 1);
             this.head = node;
+            setHeadOutput.call(this, this.head);
         }
-
-        setHeadOutput.call(this, this.head);
 
         return reduceNode.output;
     };
@@ -137,7 +138,6 @@ define(function(require, exports, module) {
 
         if (this.tail === null) {
             createFirstNode.call(this, node);
-            setHeadOutput.call(this, this.head);
         }
         else {
             if (this.tail === this.pivot){
@@ -150,9 +150,8 @@ define(function(require, exports, module) {
             else
                 connect(node, this.tail, -1);
             this.tail = node;
+            setTailOutput.call(this, this.tail);
         }
-
-        setTailOutput.call(this, this.tail);
 
         return reduceNode.output;
     };
@@ -288,10 +287,11 @@ define(function(require, exports, module) {
         this.headOutput.subscribe(this.offset);
     }
 
-    function setNewPivot(node){
-        this.pivot = node;
-        node.get().unsubscribe();
+    function setNewPivot(pivot){
+        this.pivot = pivot;
+        pivot.get().unsubscribe();
         this.pivot.get().subscribe(this.offset);
+        setPivotOutput(pivot);
         fireOffset.call(this);
     }
 
@@ -301,6 +301,11 @@ define(function(require, exports, module) {
         this.pivot = node;
 
         this.pivot.get().subscribe(this.offset);
+
+        setTailOutput.call(this, node);
+        setHeadOutput.call(this, node);
+        setPivotOutput.call(this, node);
+
         fireOffset.call(this);
     }
 
@@ -328,6 +333,11 @@ define(function(require, exports, module) {
     function setTailOutput(tail){
         this.tailOutput.unsubscribe();
         this.tailOutput.subscribe(tail.get());
+    }
+
+    function setPivotOutput(pivot){
+        this.pivotOutput.unsubscribe();
+        this.pivotOutput.subscribe(pivot.get());
     }
 
     module.exports = LinkedList;
