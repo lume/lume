@@ -86,10 +86,7 @@ define(function(require, exports, module) {
          * @param map [Function] Map `(length) -> transform`
          */
         push : function(item) {
-            if (this.pivotIndex === 0)
-                this.nodes.push(item);
-            else
-                this.nodes.splice(this.pivotIndex, 0, item);
+            this.nodes.push(item);
 
             var length = this.stream.push(item.size);
 
@@ -115,10 +112,8 @@ define(function(require, exports, module) {
          * @param item {Surface|View} Renderable
          */
         unshift : function(item){
-            if (this.pivotIndex === 0)
-                this.nodes.unshift(item);
-            else
-                this.nodes.splice(this.pivotIndex - 1, 0, item);
+            this.nodes.unshift(item);
+            this.pivotIndex++;
 
             var length = this.stream.unshift(item.size);
             var transform = length.map(this.transformMap);
