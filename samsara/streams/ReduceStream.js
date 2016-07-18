@@ -13,6 +13,7 @@ define(function(require, exports, module) {
 
         this._output = Stream.lift(reducer, sources);
 
+        this.input = new SimpleStream();
         this.output = new SimpleStream();
 
         this.stream = stream;
@@ -69,6 +70,7 @@ define(function(require, exports, module) {
 
     LinkedList.prototype.push = function(stream){
         var reduceNode = new ReduceNode(this.reducer, stream, this.extras);
+        reduceNode.input.subscribe(reduceNode._output);
         reduceNode.output.subscribe(reduceNode._input);
 
         var node = new Node(reduceNode);
@@ -82,7 +84,7 @@ define(function(require, exports, module) {
                 this.head.next = node;
                 node.prev = this.head;
 
-                node.get().subscribe(this.pivot.get());
+                node.get().subscribe(this.pivot.get().input);
                 this.offset.set(this.offset.get());
             }
             else
@@ -97,6 +99,7 @@ define(function(require, exports, module) {
 
     LinkedList.prototype.unshift = function(stream){
         var reduceNode = new ReduceNode(this.prevReducer, stream, this.extras);
+        reduceNode.input.subscribe(reduceNode._input);
         reduceNode.output.subscribe(reduceNode._output);
 
         var node = new Node(reduceNode);
@@ -199,13 +202,17 @@ define(function(require, exports, module) {
             if (newPivot === next){
                 while (curr !== newPivot){
                     curr.get().setMap(this.prevReducer);
+
                     curr.get().output.unsubscribe();
                     curr.get().output.subscribe(curr.get()._output);
+
+                    curr.get().input.unsubscribe();
+                    curr.get().input.subscribe(curr.get()._input);
 
                     curr.next.get().unsubscribe(curr.get());
 
                     if (curr.next === newPivot){
-                        curr.get().subscribe(newPivot.get()._input);
+                        curr.get().subscribe(newPivot.get().output);
                     }
                     else {
                         curr.get().subscribe(curr.next.get());
@@ -218,11 +225,21 @@ define(function(require, exports, module) {
                 // new pivot is behind previous pivot
                 while (curr !== newPivot) {
                     curr.get().setMap(this.reducer);
+
                     curr.get().output.unsubscribe();
                     curr.get().output.subscribe(curr.get()._input);
 
+                    curr.get().input.unsubscribe();
+                    curr.get().input.subscribe(curr.get()._output);
+
                     curr.prev.get().unsubscribe(curr.get());
-                    curr.get().subscribe(curr.prev.get());
+
+                    if (curr.prev === newPivot){
+                        curr.get().subscribe(newPivot.get().input);
+                    }
+                    else {
+                        curr.get().subscribe(curr.prev.get());
+                    }
 
                     curr = curr.prev;
                 }
