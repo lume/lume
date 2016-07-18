@@ -5,6 +5,9 @@ define(function(require, exports, module) {
     var Observable = require('./Observable');
     var EventHandler = require('../events/EventHandler');
 
+    var preTickQueue = require('../core/queues/preTickQueue');
+    var dirtyQueue = require('../core/queues/dirtyQueue');
+
     function ReduceNode(reducer, stream, extras){
         this._input = new SimpleStream();
 
@@ -54,7 +57,20 @@ define(function(require, exports, module) {
             return -reducer.apply(null, arguments);
         };
 
-        this.offset = new Observable(offset || 0);
+        if (offset === undefined || typeof offset === 'number')
+            this.offset = new Observable(offset || 0);
+        else
+            this.offset = offset;
+
+        this.cachedOffset = 0;
+        this.offset.on('start', function(value){
+            this.cachedOffset = value;
+        }.bind(this));
+
+        this.offset.on('end', function(value){
+            this.cachedOffset = value;
+        }.bind(this));
+
         this.extras = extras;
 
         this.head = null;
@@ -66,6 +82,21 @@ define(function(require, exports, module) {
 
         this.headOutput = new SimpleStream();
         this.headOutput.subscribe(this.offset);
+    }
+
+    function fireOffset(){
+        if (this.offset instanceof Observable){
+            this.offset.set(this.offset.get());
+        }
+        else {
+            var self = this;
+            preTickQueue.push(function(){
+                self.offset.emit('start', self.cachedOffset);
+                dirtyQueue.push(function(){
+                    self.offset.emit('end', self.cachedOffset);
+                });
+            });
+        }
     }
 
     LinkedList.prototype.push = function(stream){
@@ -85,7 +116,7 @@ define(function(require, exports, module) {
                 node.prev = this.head;
 
                 node.get().subscribe(this.pivot.get().input);
-                this.offset.set(this.offset.get());
+                fireOffset.call(this);
             }
             else
                 connect(this.head, node, 1);
@@ -114,7 +145,7 @@ define(function(require, exports, module) {
                 this.tail.prev = node;
 
                 node.get().subscribe(this.pivot.get().output);
-                this.offset.set(this.offset.get());
+                fireOffset.call(this);
             }
             else
                 connect(node, this.tail, -1);
@@ -261,7 +292,7 @@ define(function(require, exports, module) {
         this.pivot = node;
         node.get().unsubscribe();
         this.pivot.get().subscribe(this.offset);
-        this.offset.set(this.offset.get());
+        fireOffset.call(this);
     }
 
     function createFirstNode(node){
@@ -270,7 +301,7 @@ define(function(require, exports, module) {
         this.pivot = node;
 
         this.pivot.get().subscribe(this.offset);
-        this.offset.set(this.offset.get());
+        fireOffset.call(this);
     }
 
     function sever(node1, node2){
