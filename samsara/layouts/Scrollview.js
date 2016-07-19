@@ -66,8 +66,8 @@ define(function (require, exports, module) {
             this.itemOffset = 0;
             this.items = [];
             this.velocity = 0;
-            this.overflow = 0;
 
+            var edgeOverflow = 0;
             var isTouching = false;
             var isMouseWheelActive = false;
             var edge = EDGE.NONE;
@@ -129,10 +129,10 @@ define(function (require, exports, module) {
                             : handleDrag.call(this, data.velocity);
                         break;
                     case EDGE.TOP:
-                        handleEdge.call(this, this.overflow, data.velocity);
+                        handleEdge.call(this, edgeOverflow, data.velocity);
                         break;
                     case EDGE.BOTTOM:
-                        handleEdge.call(this, this.overflow, data.velocity);
+                        handleEdge.call(this, edgeOverflow, data.velocity);
                         break;
                 }
             }.bind(this));
@@ -150,66 +150,48 @@ define(function (require, exports, module) {
                     changePage.call(this, this._currentIndex);
             }.bind(this));
 
+            this.position = position;
+
             // overflow is a measure of how much of the content
             // extends past the viewport
-            var overflowStream = Stream.lift(function (contentLength, viewportSize) {
+            var viewportOverflow = Stream.lift(function (contentLength, viewportSize) {
                 if (!contentLength) return false;
                 var overflow = viewportSize[options.direction] - options.marginBottom - contentLength;
                 return (overflow >= 0) ? false : overflow;
             }, [this.layout, this.size]);
 
-            this.offset = Stream.lift(function (top, overflow) {
+            // responsible for setting edgeGrip
+            var setEdgeGrip = Stream.lift(function (top, overflow) {
                 if (!overflow) return false;
 
-                if (this.spring.isActive()) return Math.round(top);
-
                 if (top > 0) { // reached top of scrollview
-                    if (isMouseWheelActive){
-                        edge = EDGE.TOP;
-                        position.set(0, true);
-                        changePage.call(this, this._currentIndex);
-                        return 0;
-                    }
-
-                    this.overflow = top;
-
+                    edgeOverflow = top;
                     if (edge !== EDGE.TOP){
                         genericInput.setOptions({scale: this.options.edgeGrip});
-
                         edge = EDGE.TOP;
-                        if (!isTouching)
-                            handleEdge.call(this, this.overflow, this.velocity);
+                        if (!isTouching) handleEdge.call(this, overflow, this.velocity);
                     }
                 }
                 else if(top < overflow) { // reached bottom of scrollview
-                    if (isMouseWheelActive) {
-                        edge = EDGE.BOTTOM;
-                        position.set(overflow, true);
-                        changePage.call(this, this._currentIndex);
-                        return overflow;
-                    }
-
-                    this.overflow = top - overflow;
-
+                    edgeOverflow = top - overflow;
                     if (edge !== EDGE.BOTTOM){
-                        genericInput.setOptions({scale: .5});
-
+                        genericInput.setOptions({scale: this.options.edgeGrip});
                         edge = EDGE.BOTTOM;
-
-                        if (!isTouching)
-                            handleEdge.call(this, this.overflow, this.velocity);
+                        if (!isTouching) handleEdge.call(this, overflow, this.velocity);
                     }
                 }
                 else if(top > overflow && top < 0 && edge !== EDGE.NONE){
-                    this.overflow = 0;
-                    genericInput.setOptions({scale: 1});
+                    edgeOverflow = 0;
+                    genericInput.setOptions({scale : 1});
                     edge = EDGE.NONE;
                 }
+            }.bind(this), [position, viewportOverflow]);
 
-                return Math.round(top);
-            }.bind(this), [position, overflowStream]);
+            setEdgeGrip.on('start', function(){});
+            setEdgeGrip.on('update', function(){});
+            setEdgeGrip.on('end', function(){});
 
-            var transform = this.offset.map(function (position) {
+            var transform = this.position.map(function (position) {
                 position += options.marginTop;
                 return options.direction === CONSTANTS.DIRECTION.Y
                     ? Transform.translateY(position)
@@ -252,13 +234,16 @@ define(function (require, exports, module) {
         getCurrentIndex: function(){
             return this._currentIndex;
         },
+        push: function(item) {
+            this.layout.push(item);
+        },
         addItems: function (items) {
             for (var i = 0; i < items.length; i++) 
-                this.layout.push(items[i]);
+                this.push(items[i]);
             
             this.items = items;
 
-            var args = [this.offset];
+            var args = [this.position];
             for (i = 0; i < items.length; i++) {
                 args.push(items[i].size);
             }
@@ -279,7 +264,7 @@ define(function (require, exports, module) {
                 var itemOffset = -offset - accumLength;
                 var currentLength = currentSize[direction];
 
-                if (itemOffset >= currentLength && this._currentIndex !== items.length - 1) {
+                if (itemOffset > currentLength && this._currentIndex !== items.length - 1) {
                     // pass currentNode forwards
                     this._currentIndex++;
                     progress = 0;
