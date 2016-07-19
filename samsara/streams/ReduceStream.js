@@ -156,6 +156,9 @@ define(function(require, exports, module) {
         return reduceNode.output;
     };
 
+    LinkedList.prototype.getPivot = function(){
+        return this.pivot.get().stream;
+    };
 
     LinkedList.prototype.pop = function(){
         if (!this.head) return;
@@ -291,7 +294,7 @@ define(function(require, exports, module) {
         this.pivot = pivot;
         pivot.get().unsubscribe();
         this.pivot.get().subscribe(this.offset);
-        setPivotOutput(pivot);
+        setPivotOutput.call(this, pivot);
         fireOffset.call(this);
     }
 
