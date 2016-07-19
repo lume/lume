@@ -4,6 +4,7 @@ define(function(require, exports, module) {
     var Transform = require('../core/Transform');
     var View = require('../core/View');
     var ReduceStream = require('../streams/ReduceStream');
+    var SimpleStream = require('../streams/SimpleStream');
     var Stream = require('../streams/Stream');
 
     var CONSTANTS = {
@@ -55,6 +56,8 @@ define(function(require, exports, module) {
             }, [this.stream.headOutput, options.spacing]);
 
             this.output.subscribe(length);
+            this.pivot = new SimpleStream();
+            this.pivot.subscribe(this.stream.pivotOutput);
 
             // SequentialLayout derives its size from its content
             var size = [];
