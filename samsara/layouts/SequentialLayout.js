@@ -3,7 +3,8 @@
 define(function(require, exports, module) {
     var Transform = require('../core/Transform');
     var View = require('../core/View');
-    var ReduceStream = require('../streams/ReduceStream');
+    // var ReduceStream = require('../streams/ReduceStream');
+    var ReduceStream = require('../streams/LinkedStream');
     var SimpleStream = require('../streams/SimpleStream');
     var Stream = require('../streams/Stream');
 
@@ -42,11 +43,10 @@ define(function(require, exports, module) {
         initialize : function initialize(options) {
             // Store nodes and flex values
             this.nodes = [];
-            this.pivotIndex = 0;
 
-            this.stream = new ReduceStream(function(prev, size, spacing){
-                if (!size) return false;
-                return prev + size[options.direction] + spacing;
+            this.stream = new ReduceStream(function(prev, length, spacing){
+                if (length === undefined) return false;
+                return prev + length + spacing;
             }, options.offset, [options.spacing]);
 
             this.setLengthMap(DEFAULT_LENGTH_MAP);
@@ -89,9 +89,13 @@ define(function(require, exports, module) {
          * @param map [Function] Map `(length) -> transform`
          */
         push : function(item) {
-            this.nodes.push(item);
+            var stream = item.size.map(function(size){
+                return size[this.options.direction];
+            }.bind(this));
 
-            var length = this.stream.push(item.size);
+            var length = this.stream.push(stream);
+
+            this.nodes.push(item);
 
             var transform = (this.sources)
                 ? Stream.lift(this.transformMap, [length].concat(this.sources))
@@ -106,7 +110,8 @@ define(function(require, exports, module) {
          * @return item
          */
         pop : function(){
-            return this.unlink(this.nodes.length - 1);
+            this.stream.pop();
+            return this.nodes.pop();
         },
         /*
          * Add a renderable to the beginning of the layout
@@ -115,10 +120,14 @@ define(function(require, exports, module) {
          * @param item {Surface|View} Renderable
          */
         unshift : function(item){
-            this.nodes.unshift(item);
-            this.pivotIndex++;
+            var stream = item.size.map(function(size){
+                return size[this.options.direction];
+            }.bind(this));
 
-            var length = this.stream.unshift(item.size);
+            var length = this.stream.unshift(stream);
+
+            this.nodes.unshift(item);
+
             var transform = length.map(this.transformMap);
             this.add({transform : transform}).add(item);
         },
@@ -129,51 +138,8 @@ define(function(require, exports, module) {
          * @return item
          */
         shift : function(){
-            return this.unlink(0);
-        },
-        /*
-         * Add a renderable after a specified renderable
-         *
-         * @method insertAfter
-         * @param prevItem {NumberSurface|View} Index or renderable to insert after
-         * @param item {Surface|View}           Renderable to insert
-         */
-        insertAfter : function(prevItem, item) {
-            var index;
-            if (typeof prevItem === 'number'){
-                index = prevItem + 1;
-                prevItem = this.nodes[prevItem];
-            }
-            else index = this.nodes.indexOf(prevItem) + 1;
-
-            this.nodes.splice(index, 0, item);
-
-            if (!prevItem) return this.push(item);
-            var length = this.stream.insertAfter(prevItem.size, item.size);
-            var transform = length.map(this.transformMap);
-            this.add({transform : transform}).add(item);
-        },
-        /*
-         * Add a renderable before a specified renderable
-         *
-         * @method insertAfter
-         * @param prevItem {Number|Surface|View} Index or renderable to insert before
-         * @param item {Surface|View}            Renderable to insert
-         */
-        insertBefore : function(postItem, item){
-            var index;
-            if (typeof postItem === 'number'){
-                index = postItem - 1;
-                postItem = this.nodes[postItem];
-            }
-            else index = this.nodes.indexOf(postItem) - 1;
-
-            this.nodes.splice(index + 1, 0, item);
-            
-            if (!postItem) return this.unshift(item);
-            var length = this.stream.insertBefore(postItem.size, item.size);
-            var transform = length.map(this.transformMap);
-            this.add({transform : transform}).add(item);
+            this.stream.shift();
+            return this.nodes.shift();
         },
         /*
          * Unlink the renderable.
@@ -191,29 +157,21 @@ define(function(require, exports, module) {
             }
             else index = this.nodes.indexOf(item);
 
-            if (!item || !item.size) return;
+            if (!item) return;
 
             if (index === 0){
-                if (this.pivotIndex === index && this.nodes.length > 0) this.pivotIndex++;
-                this.stream.shift();
-                this.nodes.shift();
+                return this.shift();
             }
             else if (index === this.nodes.length - 1){
-                if (this.pivotIndex === index && this.nodes.length > 0) this.pivotIndex--;
-                this.stream.pop();
-                this.nodes.pop();
+                return this.pop();
             }
             else {
                 this.stream.remove(item.size);
                 this.nodes.splice(index, 1);
             }
-
-            return item;
         },
         setPivot : function(index){
-            this.pivotIndex += index;
-            var item = this.nodes[this.pivotIndex];
-            if (item) this.stream.setPivot(item.size);
+            this.stream.setPivot(index);
         }
     }, CONSTANTS);
 

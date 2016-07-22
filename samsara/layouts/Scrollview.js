@@ -19,6 +19,9 @@ define(function (require, exports, module) {
     var TouchInput = require('../inputs/TouchInput');
     var MouseInput = require('../inputs/MouseInput');
 
+    var preTickQueue = require('../core/queues/preTickQueue');
+    var dirtyQueue = require('../core/queues/dirtyQueue');
+
     GenericInput.register({
         touch: TouchInput,
         scroll: ScrollInput,
@@ -149,6 +152,30 @@ define(function (require, exports, module) {
             setEdgeGrip.on('update', function(){});
             setEdgeGrip.on('end', function(){});
 
+
+            var offset = Stream.lift(function(offset, pivotLength){
+                if (offset === undefined || !pivotLength) return;
+
+                dirtyQueue.push(function(){
+                    if (-offset > pivotLength){
+                        this.position.set(pivotLength + offset);
+                        this.layout.setPivot(1);
+                    }
+                    else if (offset > 0){
+                        this.position.set(-pivotLength + offset);
+                        this.layout.setPivot(-1);
+                    }
+                }.bind(this));
+            }.bind(this), [this.position, this.layout.pivot]);
+
+            offset.on('start', function(){
+            });
+            offset.on('update', function(){
+            });
+            offset.on('end', function(){
+            });
+            
+
             this.container = new ContainerSurface({
                 properties: {overflow : 'hidden'}
             });
@@ -167,25 +194,6 @@ define(function (require, exports, module) {
         addItems: function (items) {
             for (var i = 0; i < items.length; i++) 
                 this.push(items[i]);
-
-            var offset = Stream.lift(function(offset, pivotLength){
-                if (offset === undefined || !pivotLength) return;
-
-                var length = pivotLength - offset;
-
-                if (pivotLength < 0){
-                    this.position.set(pivotLength);
-                    this.layout.setPivot(1);
-                }
-                else if (pivotLength > length){
-                    this.position.set(length + offset);
-                    this.layout.setPivot(-1);
-                }
-            }.bind(this), [this.position, this.layout.pivot]);
-
-            offset.on('start', function(){});
-            offset.on('update', function(){});
-            offset.on('end', function(){});
         }
     }, CONSTANTS);
 
