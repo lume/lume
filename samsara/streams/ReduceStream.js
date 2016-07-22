@@ -67,6 +67,10 @@ define(function(require, exports, module) {
             this.cachedOffset = value;
         }.bind(this));
 
+        this.offset.on('update', function(value){
+            this.cachedOffset = value;
+        }.bind(this));
+
         this.offset.on('end', function(value){
             this.cachedOffset = value;
         }.bind(this));
@@ -154,10 +158,6 @@ define(function(require, exports, module) {
         }
 
         return reduceNode.output;
-    };
-
-    LinkedList.prototype.getPivot = function(){
-        return this.pivot.get().stream;
     };
 
     LinkedList.prototype.pop = function(){
@@ -340,7 +340,7 @@ define(function(require, exports, module) {
 
     function setPivotOutput(pivot){
         this.pivotOutput.unsubscribe();
-        this.pivotOutput.subscribe(pivot.get());
+        this.pivotOutput.subscribe(pivot.get().stream);
     }
 
     module.exports = LinkedList;
