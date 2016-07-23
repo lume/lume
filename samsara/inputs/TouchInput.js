@@ -5,6 +5,7 @@ define(function(require, exports, module) {
     var EventHandler = require('../events/EventHandler');
     var SimpleStream = require('../streams/SimpleStream');
     var OptionsManager = require('../core/_OptionsManager');
+    var dirtyQueue = require('../core/queues/dirtyQueue');
 
     var MINIMUM_TICK_TIME = 8;
 
@@ -225,11 +226,12 @@ define(function(require, exports, module) {
         payload.event = data.event;
         payload.timestamp = data.timestamp;
 
-        this._eventOutput.emit('end', payload);
-
-        delete this._payload[touchId];
-        delete this._value[touchId];
-        delete this._cumulate[touchId];
+        dirtyQueue.push(function(){
+            this._eventOutput.emit('end', payload);
+            delete this._payload[touchId];
+            delete this._value[touchId];
+            delete this._cumulate[touchId];
+        }.bind(this));
     }
 
     module.exports = TouchInput;
