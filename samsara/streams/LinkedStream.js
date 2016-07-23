@@ -42,7 +42,6 @@ define(function(require, exports, module){
 
         this.cachedOffset = 0;
         this.offset.on('start', function(value){
-            console.log('hello start', value)
             this.cachedOffset = value;
         }.bind(this));
 
@@ -51,7 +50,6 @@ define(function(require, exports, module){
         }.bind(this));
 
         this.offset.on('end', function(value){
-            console.log('hello end', value)
             this.cachedOffset = value;
         }.bind(this));
 
@@ -189,9 +187,14 @@ define(function(require, exports, module){
             }
         }
 
-        if (this.prev[0]) this.prev[0].subscribe(this.offset);
+        if (this.prev[0]) {
+            this.prev[0].subscribe(this.offset);
+            setTailOutput.call(this, this.prev[this.prev.length - 1]);
+        }
+
         if (this.next[0]) {
             this.next[0].subscribe(this.offset);
+            setHeadOutput.call(this, this.next[this.next.length - 1]);
             setPivotOutput.call(this, this.next[0]);
         }
 

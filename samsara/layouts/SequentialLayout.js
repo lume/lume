@@ -55,7 +55,13 @@ define(function(require, exports, module) {
                 return Math.max(length - spacing, 0);
             }, [this.stream.headOutput, options.spacing]);
 
-            this.output.subscribe(length);
+            this.output.subscribe(
+                Stream.lift(function(prevLength, nextLength){
+                    if (prevLength === undefined || nextLength === undefined) return false;
+                    return [prevLength, nextLength];
+                }, [this.stream.tailOutput, this.stream.headOutput])
+            );
+
             this.pivot = new SimpleStream();
             this.pivot.subscribe(this.stream.pivotOutput);
 
