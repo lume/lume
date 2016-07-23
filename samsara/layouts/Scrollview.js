@@ -145,6 +145,7 @@ define(function (require, exports, module) {
             this.edgeOverflow = 0;
             var overflow = Stream.lift(function (lengths, viewportSize) {
                 if (!lengths || !viewportSize) return false;
+                if (lengths[0] === 0) return false;
 
                 var overflowPrev = lengths[0] - options.marginTop;
                 var overflowNext = lengths[1] - viewportSize[options.direction] + options.marginBottom;
@@ -154,6 +155,9 @@ define(function (require, exports, module) {
                     if (edge !== EDGE.TOP){
                         genericInput.setOptions({scale : options.edgeGrip});
                         edge = EDGE.TOP;
+
+                        if (this.drag.isActive())
+                            handleEdge.call(this, this.edgeOverflow, this.velocity);
                     }
                 }
                 else if (overflowNext < 0){ // reached bottom of scrollview
@@ -161,6 +165,9 @@ define(function (require, exports, module) {
                     if (edge !== EDGE.BOTTOM){
                         genericInput.setOptions({scale : options.edgeGrip});
                         edge = EDGE.BOTTOM;
+
+                        if (this.drag.isActive())
+                            handleEdge.call(this, this.edgeOverflow, this.velocity);
                     }
                 }
                 else if (edge !== EDGE.NONE){
@@ -174,36 +181,29 @@ define(function (require, exports, module) {
             overflow.on('update', function(){});
             overflow.on('end', function(){});
 
-            var offset = Stream.lift(function(offset, pivotLength){
+            var pivot = Stream.lift(function(offset, pivotLength){
                 if (offset === undefined || !pivotLength) return;
                 if (edge === EDGE.TOP || edge === EDGE.BOTTOM) return;
 
                 // TODO: why isn't edge detection enough?
                 if (offset > 0) return;
 
-                dirtyQueue.push(function(){
-                    if (-offset > pivotLength){
-                        this.position.set(pivotLength + offset);
-                        this.layout.setPivot(1);
-                    }
-                    else if (offset > 0){
-                        this.position.set(-pivotLength + offset);
-                        this.layout.setPivot(-1);
-                    }
-                }.bind(this));
+                if (-offset > pivotLength){
+                    this.position.set(pivotLength + offset);
+                    this.layout.setPivot(1);
+                }
+                else if (offset > 0){
+                    this.position.set(-pivotLength + offset);
+                    this.layout.setPivot(-1);
+                }
             }.bind(this), [this.position, this.layout.pivot]);
 
-            offset.on('start', function(){
-            });
-            offset.on('update', function(){
-            });
-            offset.on('end', function(){
-            });
+            pivot.on('start', function(){});
+            pivot.on('update', function(){});
+            pivot.on('end', function(){});
 
-
-            this.container = new ContainerSurface({
-                properties: {overflow : 'hidden'}
-            });
+            var properties = (this.options.clip) ? {overflow : 'hidden'} : {};
+            this.container = new ContainerSurface(properties);
 
             genericInput.subscribe(this.container);
 
