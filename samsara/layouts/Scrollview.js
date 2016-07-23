@@ -71,7 +71,6 @@ define(function (require, exports, module) {
             this.items = [];
             this.velocity = 0;
 
-            var edgeOverflow = 0;
             var isTouching = false;
             var isMouseWheelActive = false;
             var edge = EDGE.NONE;
@@ -84,10 +83,20 @@ define(function (require, exports, module) {
                 direction: options.direction
             });
 
+            this.position = new Accumulator(-options.startPosition);
+            this.drag = new Transitionable(0);
+            this.spring = new Transitionable(0);
+
+            var dragDifferential = new Differential();
+            var springDifferential = new Differential();
             var gestureDifferential = genericInput.pluck('delta');
 
-            var position = new Accumulator(-options.startPosition);
-            position.subscribe(gestureDifferential);
+            dragDifferential.subscribe(this.drag);
+            springDifferential.subscribe(this.spring);
+
+            this.position.subscribe(gestureDifferential);
+            this.position.subscribe(dragDifferential);
+            this.position.subscribe(springDifferential);
 
             var scrollInput = genericInput.getInput('scroll');
             scrollInput.on('start', function(){
@@ -98,15 +107,32 @@ define(function (require, exports, module) {
                 isMouseWheelActive = false;
             });
 
+            this.spring.on('end', function(){
+                edge = EDGE.NONE;
+            });
+
             genericInput.on('start', function () {
                 isTouching = true;
+                this.spring.halt();
             }.bind(this));
 
-            genericInput.on('end', function () {
+            genericInput.on('end', function (data) {
                 isTouching = false;
-            }.bind(this));
 
-            this.position = position;
+                switch (edge) {
+                    case EDGE.NONE:
+                        (this.options.paginated)
+                            ? handlePagination.call(this, data.velocity)
+                            : handleDrag.call(this, data.velocity);
+                        break;
+                    case EDGE.TOP:
+                        handleEdge.call(this, this.edgeOverflow, data.velocity);
+                        break;
+                    case EDGE.BOTTOM:
+                        handleEdge.call(this, this.edgeOverflow, data.velocity);
+                        break;
+                }
+            }.bind(this));
 
             this.layout = new SequentialLayout({
                 direction : options.direction,
@@ -115,46 +141,45 @@ define(function (require, exports, module) {
 
             // overflow is a measure of how much of the content
             // extends past the viewport
-            var viewportOverflow = Stream.lift(function (contentLength, viewportSize) {
-                if (!contentLength) return false;
-                var overflow = viewportSize[options.direction] - options.marginBottom - contentLength;
-                return (overflow >= 0) ? false : overflow;
-            }, [this.layout, this.size]);
-
             // responsible for setting edgeGrip
-            var setEdgeGrip = Stream.lift(function (top, overflow) {
-                if (!overflow) return false;
+            this.edgeOverflow = 0;
+            var overflow = Stream.lift(function (lengths, viewportSize) {
+                if (!lengths || !viewportSize) return false;
 
-                if (top > 0) { // reached top of scrollview
-                    edgeOverflow = top;
+                var overflowPrev = lengths[0] - options.marginTop;
+                var overflowNext = lengths[1] - viewportSize[options.direction] + options.marginBottom;
+
+                if (overflowPrev > 0){ // reached top of scrollview
+                    this.edgeOverflow = overflowPrev;
                     if (edge !== EDGE.TOP){
-                        genericInput.setOptions({scale: options.edgeGrip});
+                        genericInput.setOptions({scale : options.edgeGrip});
                         edge = EDGE.TOP;
-                        if (!isTouching) handleEdge.call(this, overflow, this.velocity);
                     }
                 }
-                else if(top < overflow) { // reached bottom of scrollview
-                    edgeOverflow = top - overflow;
+                else if (overflowNext < 0){ // reached bottom of scrollview
+                    this.edgeOverflow = overflowNext;
                     if (edge !== EDGE.BOTTOM){
-                        genericInput.setOptions({scale: options.edgeGrip});
+                        genericInput.setOptions({scale : options.edgeGrip});
                         edge = EDGE.BOTTOM;
-                        if (!isTouching) handleEdge.call(this, overflow, this.velocity);
                     }
                 }
-                else if(top > overflow && top < 0 && edge !== EDGE.NONE){
-                    edgeOverflow = 0;
+                else if (edge !== EDGE.NONE){
+                    this.edgeOverflow = 0;
                     genericInput.setOptions({scale : 1});
                     edge = EDGE.NONE;
                 }
-            }.bind(this), [position, viewportOverflow]);
+            }.bind(this), [this.layout, this.size]);
 
-            setEdgeGrip.on('start', function(){});
-            setEdgeGrip.on('update', function(){});
-            setEdgeGrip.on('end', function(){});
-
+            overflow.on('start', function(){});
+            overflow.on('update', function(){});
+            overflow.on('end', function(){});
 
             var offset = Stream.lift(function(offset, pivotLength){
                 if (offset === undefined || !pivotLength) return;
+                if (edge === EDGE.TOP || edge === EDGE.BOTTOM) return;
+
+                // TODO: why isn't edge detection enough?
+                if (offset > 0) return;
 
                 dirtyQueue.push(function(){
                     if (-offset > pivotLength){
@@ -174,7 +199,7 @@ define(function (require, exports, module) {
             });
             offset.on('end', function(){
             });
-            
+
 
             this.container = new ContainerSurface({
                 properties: {overflow : 'hidden'}
@@ -191,11 +216,41 @@ define(function (require, exports, module) {
         push: function(item) {
             this.layout.push(item);
         },
+        unshift: function(item) {
+            this.layout.unshift(item);
+        },
+        pop: function (){
+            return this.layout.pop();
+        },
+        shift : function(){
+            return this.layout.shift();
+        },
         addItems: function (items) {
             for (var i = 0; i < items.length; i++) 
                 this.push(items[i]);
         }
     }, CONSTANTS);
+
+    function handleEdge(overflow, velocity){
+        this.drag.halt();
+        this.spring.reset(overflow);
+        this.options.edgeTransition.velocity = velocity;
+        this.spring.set(0, this.options.edgeTransition);
+    }
+
+    function handlePagination(){
+
+    }
+
+    function handleDrag(velocity){
+        this.drag.halt();
+        this.drag.reset(0);
+        this.drag.set(0, {
+            curve : 'inertia',
+            velocity : velocity,
+            drag : this.options.drag
+        });
+    }
 
     module.exports = Scrollview;
 });
