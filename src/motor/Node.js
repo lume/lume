@@ -1,15 +1,17 @@
 import 'geometry-interfaces'
 import ElementManager from './ElementManager'
 import Transformable from './Transformable'
+import ImperativeBase from './ImperativeBase'
+import TreeNode from './TreeNode'
 import MotorHTMLNode from '../motor-html/node'
 import { proxyGettersSetters } from './Utility'
 
-class Node extends Transformable {
+class Node extends TreeNode.mixin(Transformable.mixin(ImperativeBase)) {
 
     /**
      * @constructor
      *
-     * @param {Object} initialProperties Initial properties that the node will
+     * @param {Object} options Initial properties that the node will
      * have. This can be used when creating a node, alternatively to using the
      * setters/getters for position, rotation, etc.
      *
@@ -19,14 +21,26 @@ class Node extends Transformable {
      *   rotation: {x:30, y:20, z:25}
      * })
      */
-    constructor (initialProperties = {}, _motorHtmlNode) {
+    constructor (options = {}, _motorHtmlNode) {
         // XXX The presence of a _motorHtmlNode argument signifies that the HTML interface
         // is being used, otherwise the imperative interface here is being
         // used. See MotorHTMLNode. This means the Node and MotorHTMLNode classes are
         // coupled together, but it's in the name of the API that we're supporting. We've
         // gotta make sure it's well documented.
 
-        super(initialProperties, _motorHtmlNode)
+        // console.log('zero')
+        super(options)
+        // console.log('one')
+        // this.callSuperConstructor(Transformable, options)
+        // console.log('two')
+        // this.callSuperConstructor(TreeNode)
+        // console.log('three')
+        // this.callSuperConstructor(ImperativeBase)
+
+        if (!window.blah) {
+            window.blah = 9
+            console.log(' --- Node instance:', this)
+        }
 
         // DOM representation of Node
         // TODO: remove this and handle it in the "DOMRenderer". The DOMRender

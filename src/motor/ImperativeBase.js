@@ -11,6 +11,9 @@
  * at least one of those to render with.
  */
 class ImperativeBase {
+    constructor() {
+        console.log('ImperativeBase constructor')
+    }
 }
 
 export {ImperativeBase as default}
