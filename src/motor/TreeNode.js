@@ -34,8 +34,8 @@ const TreeNodeMixin = base => {
          * @param {TreeNode} childNode The child node to add.
          */
         addChild (childNode) {
-            // if (! isInstanceOf(childNode, TreeNode))
-            //     throw new Error('TreeNode.addChild expects the childNode argument to be a TreeNode instance.')
+
+            // TODO: make sure instanceof works using Symbol.hasInstance
             if (! (childNode instanceof TreeNode))
                 throw new Error('TreeNode.addChild expects the childNode argument to be a TreeNode instance.')
 
@@ -82,7 +82,8 @@ const TreeNodeMixin = base => {
         removeChild(childNode) {
             let thisHasChild = this._children.indexOf(childNode) >= 0
 
-            if (isInstanceOf(childNode, TreeNode) && thisHasChild) {
+            // TODO: make sure instanceof works using Symbol.hasInstance
+            if (childNode instanceof TreeNode && thisHasChild) {
                 childNode._parent = null
                 childNode._scene = null // not part of a scene anymore.
                 childNode._scenePromise = null // reset so that it can be awaited again for when the node is re-mounted.

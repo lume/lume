@@ -71,7 +71,9 @@ class MotorHTMLNode extends MotorHTMLBase {
     // parentNode.
     // @override
     _makeImperativeCounterpart() {
-        return new Node({}, this)
+        return new Node({
+            _motorHtmlCounterpart: this
+        })
     }
 
     // TODO XXX: remove corresponding imperative Node from it's parent.

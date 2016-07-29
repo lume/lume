@@ -4,8 +4,8 @@ import documentReady from 'awaitbox/dom/documentReady'
 import MotorHTMLScene from '../motor-html/scene'
 
 class Scene extends Node {
-    constructor(options, _motorHtmlScene) {
-        super(options, _motorHtmlScene)
+    constructor(options = {}) {
+        super(options)
 
         this._scene = this
         this._resolveScenePromise(this)

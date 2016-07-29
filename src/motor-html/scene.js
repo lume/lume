@@ -16,7 +16,9 @@ class MotorHTMLScene extends MotorHTMLBase {
     // NOTE This is triggered by the _init() call in WebComponent's
     // attachedCallback, at which point this element has a parentNode.
     _makeImperativeCounterpart() {
-        const scene = new Scene({}, this)
+        const scene = new Scene({
+            _motorHtmlCounterpart: this
+        })
 
         // TODO: needs unmount cleanup (in deinit, which is called in
         // WebComponent's detachedCallback).

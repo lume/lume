@@ -21,12 +21,13 @@ class Node extends TreeNode.mixin(Transformable.mixin(ImperativeBase)) {
      *   rotation: {x:30, y:20, z:25}
      * })
      */
-    constructor (options = {}, _motorHtmlNode) {
-        // XXX The presence of a _motorHtmlNode argument signifies that the HTML interface
+    constructor (options = {}) {
+        // XXX The presence of a _motorHtmlCounterpart argument signifies that the HTML interface
         // is being used, otherwise the imperative interface here is being
         // used. See MotorHTMLNode. This means the Node and MotorHTMLNode classes are
         // coupled together, but it's in the name of the API that we're supporting. We've
         // gotta make sure it's well documented.
+        const {_motorHtmlCounterpart} = options
 
         // console.log('zero')
         super(options)
@@ -46,7 +47,7 @@ class Node extends TreeNode.mixin(Transformable.mixin(ImperativeBase)) {
         // TODO: remove this and handle it in the "DOMRenderer". The DOMRender
         // will handle the HTML-side of the API, but for now it is here.
         this._el = new ElementManager(
-            _motorHtmlNode || this._makeElement()
+            _motorHtmlCounterpart || this._makeElement()
         )
         this._el.element._associateImperativeNode(this)
 
