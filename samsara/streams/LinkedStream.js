@@ -16,7 +16,6 @@ define(function(require, exports, module){
 
         this._output = Stream.lift(reducer, sources);
 
-        this.input = new SimpleStream();
         this.output = new SimpleStream();
 
         this.stream = stream;
@@ -40,6 +39,10 @@ define(function(require, exports, module){
             ? new Observable(offset || 0)
             : offset;
 
+        this.offset.on('update', function(){
+            console.log('offset update')
+        })
+
         this.cachedOffset = 0;
         this.offset.on('start', function(value){
             this.cachedOffset = value;
@@ -55,8 +58,8 @@ define(function(require, exports, module){
 
         this.extras = extras;
 
-        this.prev = [];
-        this.next = [];
+        this.prev = []; // A list of items rendered before the offset, in order of distance from the offset
+        this.next = []; // A list of items rendered after the offset, in order of distance from the offset
 
         this.tailOutput = new SimpleStream();
         this.tailOutput.subscribe(this.offset);
@@ -85,12 +88,11 @@ define(function(require, exports, module){
 
     LinkedList.prototype.push = function(stream){
         var node = new ReduceNode(this.reducer, stream, this.extras);
-        node.input.subscribe(node._output);
         node.output.subscribe(node._input);
 
         if (this.next.length === 0){
             node.subscribe(this.offset);
-            setPivotOutput.call(this, node);
+            setPivotOutput.call(this, node.stream);
             fireOffset.call(this);
         }
         else {
@@ -105,7 +107,6 @@ define(function(require, exports, module){
 
     LinkedList.prototype.unshift = function(stream){
         var node = new ReduceNode(this.prevReducer, stream, this.extras);
-        node.input.subscribe(node._input);
         node.output.subscribe(node._output);
 
         if (this.prev.length === 0){
@@ -145,9 +146,11 @@ define(function(require, exports, module){
     };
 
     LinkedList.prototype.setPivot = function(index){
-        if (index === 0) return;
-        if (index > 0 && index > this.next.length) index = this.next.length;
-        if (index < 0 && -index > this.prev.length) index = -this.prev.length;
+        if (
+            index === 0 ||
+            index > 0 && index > this.next.length ||
+            index < 0 && index < -this.prev.length
+        ) return;
 
         if (this.next[0]) this.next[0].unsubscribe(this.offset);
         if (this.prev[0]) this.prev[0].unsubscribe(this.offset);
@@ -156,9 +159,6 @@ define(function(require, exports, module){
             for (var i = 0; i < index; i++){
                 var next = this.next.shift();
                 next.setMap(this.prevReducer);
-
-                next.input.unsubscribe();
-                next.input.subscribe(next._input);
 
                 next.output.unsubscribe();
                 next.output.subscribe(next._output);
@@ -174,9 +174,6 @@ define(function(require, exports, module){
                 var prev = this.prev.shift();
                 prev.setMap(this.reducer);
 
-                prev.input.unsubscribe();
-                prev.input.subscribe(prev._output);
-
                 prev.output.unsubscribe();
                 prev.output.subscribe(prev._input);
 
@@ -191,11 +188,16 @@ define(function(require, exports, module){
             this.prev[0].subscribe(this.offset);
             setTailOutput.call(this, this.prev[this.prev.length - 1]);
         }
+        else setTailOutput.call(this, this.offset);
 
         if (this.next[0]) {
             this.next[0].subscribe(this.offset);
             setHeadOutput.call(this, this.next[this.next.length - 1]);
-            setPivotOutput.call(this, this.next[0]);
+            setPivotOutput.call(this, this.next[0].stream);
+        }
+        else {
+            setHeadOutput.call(this, this.offset);
+            setPivotOutput.call(this, this.offset);
         }
 
         fireOffset.call(this);
@@ -211,9 +213,9 @@ define(function(require, exports, module){
         this.tailOutput.subscribe(tail);
     }
 
-    function setPivotOutput(pivot){
+    function setPivotOutput(pivotStream){
         this.pivotOutput.unsubscribe();
-        this.pivotOutput.subscribe(pivot.stream);
+        this.pivotOutput.subscribe(pivotStream);
     }
 
     module.exports = LinkedList;
