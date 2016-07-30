@@ -67,8 +67,6 @@ define(function (require, exports, module) {
         initialize: function (options) {
             this._currentIndex = 0;
             this._previousIndex = 0;
-            this.itemOffset = 0;
-            this.items = [];
             this.velocity = 0;
 
             var isTouching = false;
@@ -119,19 +117,19 @@ define(function (require, exports, module) {
             genericInput.on('end', function (data) {
                 isTouching = false;
 
-                switch (edge) {
-                    case EDGE.NONE:
-                        (this.options.paginated)
-                            ? handlePagination.call(this, data.velocity)
-                            : handleDrag.call(this, data.velocity);
-                        break;
-                    case EDGE.TOP:
-                        handleEdge.call(this, this.edgeOverflow, data.velocity);
-                        break;
-                    case EDGE.BOTTOM:
-                        handleEdge.call(this, this.edgeOverflow, data.velocity);
-                        break;
-                }
+                // switch (edge) {
+                //     case EDGE.NONE:
+                //         (this.options.paginated)
+                //             ? handlePagination.call(this, data.velocity)
+                //             : handleDrag.call(this, data.velocity);
+                //         break;
+                //     case EDGE.TOP:
+                //         handleEdge.call(this, this.edgeOverflow, data.velocity);
+                //         break;
+                //     case EDGE.BOTTOM:
+                //         handleEdge.call(this, this.edgeOverflow, data.velocity);
+                //         break;
+                // }
             }.bind(this));
 
             this.layout = new SequentialLayout({
@@ -143,9 +141,9 @@ define(function (require, exports, module) {
             // extends past the viewport
             // responsible for setting edgeGrip
             this.edgeOverflow = 0;
-            var overflow = Stream.lift(function (lengths, viewportSize) {
+            var overflow = Stream.lift(function (lengths, viewportSize, offset) {
                 if (!lengths || !viewportSize) return false;
-                if (lengths[0] === 0) return false;
+                if (lengths[1] === 0) return false;
 
                 var overflowPrev = lengths[0] - options.marginTop;
                 var overflowNext = lengths[1] - viewportSize[options.direction] + options.marginBottom;
@@ -175,28 +173,50 @@ define(function (require, exports, module) {
                     genericInput.setOptions({scale : 1});
                     edge = EDGE.NONE;
                 }
-            }.bind(this), [this.layout, this.size]);
+
+                return edge;
+            }.bind(this), [this.layout, this.size, this.position]);
 
             overflow.on('start', function(){});
             overflow.on('update', function(){});
             overflow.on('end', function(){});
 
-            var pivot = Stream.lift(function(offset, pivotLength){
-                if (offset === undefined || !pivotLength) return;
-                if (edge === EDGE.TOP || edge === EDGE.BOTTOM) return;
-
-                // TODO: why isn't edge detection enough?
-                if (offset > 0) return;
+            var pivot = Stream.lift(function(offset, pivotLength, edge){
+                if (offset === undefined || !pivotLength) return false;
 
                 if (-offset > pivotLength){
-                    this.position.set(pivotLength + offset);
-                    this.layout.setPivot(1);
+                    // next
+                    progress = 1;
+                    if (edge !== EDGE.BOTTOM) {
+                        dirtyQueue.push(function(){
+                            this.layout.setPivot(1);
+                            this.position.set(pivotLength + offset);
+                            this._currentIndex++;
+                        }.bind(this));
+                    }
                 }
                 else if (offset > 0){
-                    this.position.set(-pivotLength + offset);
-                    this.layout.setPivot(-1);
+                    // previous
+                    progress = 0;
+                    if (edge !== EDGE.TOP) {
+                        dirtyQueue.push(function(){
+                            this.layout.setPivot(-1);
+                            this.position.set(-pivotLength + offset);
+                            this._currentIndex--;
+                        }.bind(this))
+                    }
                 }
-            }.bind(this), [this.position, this.layout.pivot]);
+                else {
+                    progress = -offset / pivotLength;
+                }
+
+                return {
+                    index : this._currentIndex,
+                    progress : progress
+                }
+            }.bind(this), [this.position, this.layout.pivot, overflow]);
+
+            // this.output.subscribe(pivot);
 
             pivot.on('start', function(){});
             pivot.on('update', function(){});
@@ -226,7 +246,7 @@ define(function (require, exports, module) {
             return this.layout.shift();
         },
         addItems: function (items) {
-            for (var i = 0; i < items.length; i++) 
+            for (var i = 0; i < items.length; i++)
                 this.push(items[i]);
         }
     }, CONSTANTS);
