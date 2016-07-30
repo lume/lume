@@ -106,10 +106,10 @@ define(function(require, exports, module){
 
         this._eventInput.on(EVENTS.END, function(data){
             counter--;
-            if (isUpdating && counter > 0){
-                update.call(this, data);
-                return false;
-            }
+            // if (isUpdating && counter > 0){
+            //     update.call(this, data);
+            //     return;
+            // }
             isUpdating = false;
             if (dirtyEnd) return;
             dirtyEnd = true;
