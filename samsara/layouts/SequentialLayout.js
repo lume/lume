@@ -10,7 +10,7 @@ define(function(require, exports, module) {
 
     var CONSTANTS = {
         DIRECTION : {
-            X : 0, 
+            X : 0,
             Y : 1
         }
     };
@@ -39,7 +39,7 @@ define(function(require, exports, module) {
             direction : CONSTANTS.DIRECTION.X,
             spacing : 0,
             offset : 0
-        }, 
+        },
         initialize : function initialize(options) {
             // Store nodes and flex values
             this.nodes = [];
@@ -55,12 +55,7 @@ define(function(require, exports, module) {
                 return Math.max(length - spacing, 0);
             }, [this.stream.headOutput, options.spacing]);
 
-            this.output.subscribe(
-                Stream.lift(function(prevLength, nextLength){
-                    if (prevLength === undefined || nextLength === undefined) return false;
-                    return [prevLength, nextLength];
-                }, [this.stream.tailOutput, this.stream.headOutput])
-            );
+            this.output.subscribe(Stream.merge([this.stream.tailOutput, this.stream.headOutput]));
 
             this.pivot = new SimpleStream();
             this.pivot.subscribe(this.stream.pivotOutput);
