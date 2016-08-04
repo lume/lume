@@ -15,6 +15,7 @@ const SizeableMixin = base => {
                 proportionalSize: new XYZValues(1, 1, 1),
             };
 
+            // TODO: move this observation in Node. I don't think it belongs here.
             const self = this
             const propertyChange = function() {
                 self._needsToBeRendered()
@@ -23,7 +24,7 @@ const SizeableMixin = base => {
             this._properties.absoluteSize.onChanged = propertyChange
             this._properties.proportionalSize.onChanged = propertyChange
 
-            this.properties = options
+            Object.getOwnPropertyDescriptor(Sizeable.prototype, 'properties').set.call(this, options)
         }
 
         /**

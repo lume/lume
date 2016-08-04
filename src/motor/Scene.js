@@ -1,9 +1,10 @@
-import Node from './Node'
+import ImperativeBase from './ImperativeBase'
+import Sizeable from './Sizeable'
 import documentReady from 'awaitbox/dom/documentReady'
 
 import MotorHTMLScene from '../motor-html/scene'
 
-class Scene extends Node {
+class Scene extends Sizeable.mixin(ImperativeBase) {
     constructor(options = {}) {
         super(options)
 
@@ -11,13 +12,19 @@ class Scene extends Node {
         this._resolveScenePromise(this)
 
         // For now, Scenes are always proportionally sized by default.
+        // TODO: Scene is not Transformable, it contains all the Transformable Nodes, so set sizing by CSS.
         this._properties.sizeMode = { x: 'proportional', y: 'proportional', z: 'proportional' }
     }
 
-    _init() {
-        super._init()
-    }
+    /**
+     * @override
+     * XXX Does Scene need anything here?
+     */
+    _init() { }
 
+    /**
+     * @override
+     */
     _makeElement() {
         return new MotorHTMLScene
     }

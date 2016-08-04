@@ -80,21 +80,14 @@ const TreeNodeMixin = base => {
          * @param {TreeNode} childNode The node to remove.
          */
         removeChild(childNode) {
-            let thisHasChild = this._children.indexOf(childNode) >= 0
-
             // TODO: make sure instanceof works using Symbol.hasInstance
-            if (childNode instanceof TreeNode && thisHasChild) {
-                childNode._parent = null
-                childNode._scene = null // not part of a scene anymore.
-                childNode._scenePromise = null // reset so that it can be awaited again for when the node is re-mounted.
-                childNode._mounted = false
-                childNode._mountPromise = null // reset so that it can be awaited again for when the node is re-mounted.
+            if (! (childNode instanceof TreeNode)) return this
 
-                // Remove from children array
-                this._children.splice(this._children.indexOf(childNode), 1);
+            let thisHasChild = this._children.indexOf(childNode) >= 0
+            if (! thisHasChild) return this
 
-                this._detachElement(childNode)
-            }
+            childNode._parent = null
+            this._children.splice(this._children.indexOf(childNode), 1);
 
             return this
         }
