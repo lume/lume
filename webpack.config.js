@@ -20,7 +20,7 @@ module.exports = {
                     babelrc: false,
                     presets: [
                         'es2015',
-                        'stage-0',
+                        'stage-1',
                     ],
                     plugins: [
                         // broken in Webpack, doesn't work. Instead we load
