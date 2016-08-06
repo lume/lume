@@ -37,31 +37,20 @@ class ImperativeBase extends TreeNode.mixin(base) {
 
         this._scene = null // stores a ref to this Node's root Scene.
 
-        // an internal promise that resolves when this Node finally belongs to
-        // a scene graph with a root Scene. The resolved value is the root
-        // Scene.
-        //
-        // TODO: Reset this._scenePromise when the node is removed from it's
-        // scene, or instead make _scenePromise a function that returns a
-        // promise waiting for the next scene that the node will belong to, and
-        // returns the existing promise if currently attached on a scene. For
-        // now, this only works for the first scene that this Node is attached
-        // to (which is not ultimately what we want).
+        // This is an internal promise that resolves when this Node is added to
+        // to a scene graph that has a root Scene TreeNode. The resolved value
+        // is the root Scene.
         this._resolveScenePromise = null
         this._scenePromise = new Promise(r => this._resolveScenePromise = r)
 
         // Provide the user a promise that resolves when this Node is attached
-        // to a tree and when this Node's eventual root Scene is mounted.
-        // Users can await this in order to do something after this Node is
-        // mounted in a scene graph that is live in the DOM.
-        // _resolveMountPromise holds the current _mountPromise's resolve
-        // method.
+        // to a tree that has a root Scene TreeNode *and* when that root Scene
+        // has been mounted into the DOM (Note, the _scenePromise resolves only
+        // when the first condition is true and the root Scene hasn't
+        // necessarily been mounted).
         //
         // TODO: Maybe we should rename this to `.ready`, matching with the
         // HTML API. See motor-html/node createdCallback.
-        // TODO: We need to reset this when a Node is removed, as it will be
-        // mounted again if it is ever added back into a scene graph. For now,
-        // this only works on this Node's first mount.
         this._resolveMountPromise = null
         this._mountPromise = new Promise(r => this._resolveMountPromise = r)
 

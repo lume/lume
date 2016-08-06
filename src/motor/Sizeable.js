@@ -93,6 +93,10 @@ const SizeableMixin = base => {
             }
             else if (this._properties.sizeMode.x === 'proportional') {
                 // TODO: avoid getComputedStyle as it causes a layout thrash.
+                // Let's delegate to the computed style of the Scene, and not
+                // compute on the nodes. Then later we can finish the solution
+                // on the Scene class, which will hold the root size of the
+                // scene.
                 actualSize.x = parseInt(getComputedStyle(this._el.element).getPropertyValue('width'))
             }
 
@@ -224,7 +228,7 @@ const SizeableMixin = base => {
         /**
          * Apply a style property to this node's element.
          *
-         * TODO: this will be moved into DOMRenderer.
+         * TODO: move into DOMRenderer.
          *
          * @private
          * @param  {string} property The CSS property we will a apply.
@@ -252,6 +256,10 @@ const SizeableMixin = base => {
     // for use by MotorHTML, convenient since HTMLElement attributes are all
     // converted to lowercase by default, so if we don't do this then we won't be
     // able to map attributes to Node setters as easily.
+    //
+    // TODO: move this call out of here, run it in a motor-specific class so
+    // that Transformable and related classes are not necessarily
+    // motor-scpecific and can be used anywhere.
     makeLowercaseSetterAliases(Sizeable.prototype)
 
     return Sizeable

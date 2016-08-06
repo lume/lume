@@ -364,6 +364,10 @@ const TransformableMixin = base => {
     // for use by MotorHTML, convenient since HTMLElement attributes are all
     // converted to lowercase by default, so if we don't do this then we won't be
     // able to map attributes to Node setters as easily.
+    //
+    // TODO: move this call out of here, run it in a motor-specific class so
+    // that Transformable and related classes are not necessarily
+    // motor-scpecific and can be used anywhere.
     makeLowercaseSetterAliases(Transformable.prototype)
 
     return Transformable
