@@ -16,10 +16,7 @@ const SizeableMixin = base => {
             };
 
             // TODO: move this observation in Node. I don't think it belongs here.
-            const self = this
-            const propertyChange = function() {
-                self._needsToBeRendered()
-            }
+            const propertyChange = () => this._needsToBeRendered()
             this._properties.sizeMode.onChanged = propertyChange
             this._properties.absoluteSize.onChanged = propertyChange
             this._properties.proportionalSize.onChanged = propertyChange

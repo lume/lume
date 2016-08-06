@@ -41,10 +41,7 @@ const TransformableMixin = base => {
 
             // TODO: opacity needs onChanged handler like all the other
             // properties.
-            const self = this
-            const propertyChange = function() {
-                self._needsToBeRendered()
-            }
+            const propertyChange = () => this._needsToBeRendered()
             this._properties.position.onChanged = propertyChange
             this._properties.rotation.onChanged = propertyChange
             this._properties.scale.onChanged = propertyChange

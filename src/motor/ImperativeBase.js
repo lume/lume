@@ -109,14 +109,17 @@ class ImperativeBase extends TreeNode.mixin(base) {
     async _waitForSceneThenResolveMountPromise() {
 
         // TODO: this conditional check should work with child classes who's
-        // constructor is no longer named "Node". This should not fire for
-        // Scene or child classes of Scene.
+        // constructor is no longer named "Node".
+        // This should not fire for Scene or child classes of Scene because a
+        // Scene's mountPromise is resolved when it is mounted with the
+        // `Scene#mount` method.
         if (this.constructor.name == 'Node') {
             await this._getScenePromise()
             await this._scene.mountPromise
 
-            // TODO TODO: also wait for this._mounted so this.element is actually
-            // mounted in the DOM.
+            // TODO TODO: also wait for this._mounted so this.element is
+            // actually mounted in the DOM? Maybe not, as that will be moved to
+            // the DOMRenderer. Revisit later.
             this._resolveMountPromise(true)
         }
 
@@ -126,7 +129,7 @@ class ImperativeBase extends TreeNode.mixin(base) {
      * @readonly
      *
      * TODO: needs to be overriden for Scene, because Scene mounts/unmounts
-     * differently.
+     * differently, using `Scene#mount()`.
      */
     get mountPromise() {
         if (!this._mounted && !this._mountPromise) {
@@ -139,6 +142,7 @@ class ImperativeBase extends TreeNode.mixin(base) {
 
     /**
      * @readonly
+     * TODO: get from the DOMRenderer when that is implemented.
      */
     get element() {
         return this._el.element
@@ -175,10 +179,6 @@ class ImperativeBase extends TreeNode.mixin(base) {
         // traversal up the scene graph in order to find the root scene (null
         // if none).
         else {
-            // TODO: We shouldn't rely on constructor.name, as this is different for
-            // classes that extend Scene.
-            // if (this.constructor.name == 'Scene') this._scene = this
-            // else if (this._parent) this._scene = this._parent.scene
             if (this._parent) this._scene = this._parent.scene
 
             return this._scene
@@ -198,12 +198,12 @@ class ImperativeBase extends TreeNode.mixin(base) {
         // Idea: maybe we can traverse the prototype chain looking for each
         // constructor.name.
         //
-        // TODO: How do we handle mounting a Scene inside a Node when using only WebGL?
+        // XXX: How will we handle mounting a Scene inside a Node when using only WebGL?
         if (childNode.constructor.name == 'Scene') {
             throw new Error(`
-                A Scene cannot be added to another Node. To place a Scene in a
-                Node, just mount a new Scene onto a MotorHTMLNode with
-                Scene.mount().
+                A Scene cannot be added to another Node (at least for now). To
+                place a Scene in a Node, just mount a new Scene onto a
+                MotorHTMLNode with Scene.mount().
             `)
         }
 
@@ -265,7 +265,6 @@ class ImperativeBase extends TreeNode.mixin(base) {
         super.removeChild(childNode)
 
         if (childNode instanceof ImperativeBase) {
-            // TODO: move this non-generic TreeNode stuff to ImperativeBase.
             childNode._scene = null // not part of a scene anymore.
             childNode._scenePromise = null // reset so that it can be awaited again for when the node is re-mounted.
             childNode._mounted = false
