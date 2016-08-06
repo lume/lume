@@ -3,6 +3,10 @@ define(function (require) {
     var Stream = require('samsara/streams/Stream');
     var EventEmitter = require('samsara/events/EventEmitter');
 
+    var preTickQueue = require('samsara/core/queues/preTickQueue');
+    var dirtyTickQueue = require('samsara/core/queues/dirtyQueue');
+    var postTickQueue = require('samsara/core/queues/postTickQueue');
+
     loop.start();
 
     QUnit.module('Stream');
@@ -86,4 +90,130 @@ define(function (require) {
             emitters[i].emit('start', [i, i]);
     });
 
+    QUnit.test('SUE start start', function(assert){
+        expect(2);
+
+        var stream = Stream.merge(function(data1, data2){
+            return [data1, data2];
+        }, [source1, source2]);
+
+        stream.on('start', function(data){
+            console.log(data)
+            assert.ok(data[0]);
+            assert.ok(data[1]);
+            loop.end();
+        });
+
+        var source1 = new EventEmitter();
+        var source2 = new EventEmitter();
+
+        source1.emit('start', true);
+        source2.emit('start', true);
+    });
+
+    QUnit.test('SUE start update', function(assert){
+        expect(4);
+
+        var stream = Stream.merge(function(data1, data2){
+            return [data1, data2];
+        }, [source1, source2]);
+
+        stream.on('start', function(data){
+            assert.ok(data[0]);
+            assert.ok(data[1] === undefined);
+        });
+
+        stream.on('update', function(data){
+            assert.ok(data[0]);
+            assert.ok(data[1]);
+            loop.end();
+        });
+
+        var source1 = new EventEmitter();
+        var source2 = new EventEmitter();
+
+        source1.emit('start', true);
+        source2.emit('update', true);
+    });
+
+    QUnit.test('SUE start end', function(assert){
+        expect(4);
+
+        var stream = Stream.merge(function(data1, data2){
+            return [data1, data2];
+        }, [source1, source2]);
+
+        stream.on('start', function(data){
+            assert.ok(data[0]);
+            assert.ok(data[1] === undefined);
+        });
+
+        stream.on('end', function(data){
+            assert.ok(data[0]);
+            assert.ok(data[1]);
+            loop.end();
+        });
+
+        var source1 = new EventEmitter();
+        var source2 = new EventEmitter();
+
+        source1.emit('start', true);
+        source2.emit('end', true);
+    });
+
+    QUnit.test('SUE start update start update end end', function(assert){
+        expect(10);
+
+        var stream = Stream.merge(function(data1, data2){
+            return [data1, data2];
+        }, [source1, source2]);
+
+        var hasStarted = false;
+        var hasUpdated = false;
+
+        stream.on('start', function(data){
+            if (!hasStarted){
+                hasStarted = false;
+                assert.ok(data[0] && data[1] === undefined);
+            }
+            else {
+                assert.ok(data[0]);
+                assert.ok(data[1]);
+            }
+        });
+
+        stream.on('update', function(data){
+            if (!hasUpdated){
+                hasStarted = false;
+                assert.ok(data[0] && data[1] === undefined);
+            }
+            else {
+                assert.ok(data[0]);
+                assert.ok(data[1]);
+            }
+        });
+
+        stream.on('end', function(data){
+            assert.ok(data[0]);
+            assert.ok(data[1]);
+            loop.end();
+        });
+
+        var source1 = new EventEmitter();
+        var source2 = new EventEmitter();
+
+        // source1 gets interrupted by immediate set of source2
+        source1.emit('start', true);
+        dirtyTickQueue.push(function(){
+            source1.emit('update', true);
+            source2.emit('start', true);
+            postTickQueue.push(function(){
+                source1.emit('update', true);
+                preTickQueue.push(function(){
+                    source2.emit('end', true);
+                    source1.emit('end', true);
+                });
+            });
+        });
+    });
 });
