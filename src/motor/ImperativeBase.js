@@ -16,7 +16,7 @@ let ImperativeBaseMixin = base =>
 class ImperativeBase extends TreeNode.mixin(base) {
     constructor(options = {}) {
 
-        // XXX The presence of a _motorHtmlCounterpart argument signifies that
+        // The presence of a _motorHtmlCounterpart argument signifies that
         // the HTML interface is being used, otherwise the imperative interface
         // here is being used. For example, see MotorHTMLNode. This means the
         // Node and MotorHTMLNode classes are coupled together, but it's in the

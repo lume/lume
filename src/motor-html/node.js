@@ -61,7 +61,7 @@ class MotorHTMLNode extends MotorHTMLBase {
         //
         // TODO: prevent this call if connectedCallback happened to call to
         // addChild on the imperative side.
-        this.parentNode.node.addChild(this.node)
+        this.parentNode.imperativeCounterpart.addChild(this.imperativeCounterpart)
         // TODO: ^ Update when/if Scene no longer extends from Node, as API
         // might change.
     }
@@ -98,7 +98,7 @@ class MotorHTMLNode extends MotorHTMLBase {
         // XXX What happens if this is called many times before the Node is
         // ready? Will it set an attribute perhaps many times at once when the
         // node becomes ready?
-        if (!this.node) await this.ready
+        if (!this.imperativeCounterpart) await this.ready
 
         // attributes on our HTML elements are the same name as those on
         // the Node class (the setters).
@@ -106,9 +106,9 @@ class MotorHTMLNode extends MotorHTMLBase {
         // assign them dynamically.
         if (newValue !== oldValue) {
             if (attribute.match(/opacity/i))
-                this.node[attribute] = window.parseFloat(newValue)
+                this.imperativeCounterpart[attribute] = window.parseFloat(newValue)
             else if (attribute.match(/sizeMode/i))
-                this.node[attribute] = parseStringArray(newValue)
+                this.imperativeCounterpart[attribute] = parseStringArray(newValue)
             else if (
                 attribute.match(/rotation/i)
                 || attribute.match(/scale/i) // scale is TODO on imperative side.
@@ -120,7 +120,7 @@ class MotorHTMLNode extends MotorHTMLBase {
                 || attribute.match(/origin/i) // origin is TODO on imperative side.
                 || attribute.match(/skew/i) // skew is TODO on imperative side.
             ) {
-                this.node[attribute] = parseNumberArray(newValue)
+                this.imperativeCounterpart[attribute] = parseNumberArray(newValue)
             }
             else {
                 /* nothing, ignore other attributes */

@@ -9,7 +9,7 @@ class MotorHTMLBase extends makeWebComponentBaseClass(window.HTMLElement) {
     createdCallback() {
         super.createdCallback()
 
-        this.node = null // to hold the imperative API Node instance.
+        this.imperativeCounterpart = null // to hold the imperative API Node instance.
 
         // XXX: "this.mountPromise" vs "this.ready":
         // "ready" seems to be more intuitive on the HTML side because
@@ -39,26 +39,26 @@ class MotorHTMLBase extends makeWebComponentBaseClass(window.HTMLElement) {
      *
      * @private
      *
-     * @param {Object} imperativeCounterPart The imperative counterpart to
+     * @param {Object} imperativeCounterpart The imperative counterpart to
      * associate with this MotorHTML element. This parameter is only used in the
      * imperative API constructors, and this happens when using the imperative
      * form of infamous instead of the HTML interface to infamous. When the HTML
      * interface is used, this gets called first without an
-     * imperativeCounterPart argument and the call to this in an imperative
+     * imperativeCounterpart argument and the call to this in an imperative
      * constructor will be a noop. Basically, either this gets called first by a
      * MotorHTML element, or first by an imperative instance, depending on which
      * API is used first.
      */
-    _associateImperativeNode(imperativeCounterPart) {
+    _associateImperativeNode(imperativeCounterpart) {
         // if the association is made already, noop
-        if (this.node) return
+        if (this.imperativeCounterpart) return
 
         // if called from an imperative-side class' constructor, associate
         // the passed instance.
-        if (imperativeCounterPart) this.node = imperativeCounterPart
+        if (imperativeCounterpart) this.imperativeCounterpart = imperativeCounterpart
 
         // otherwise if called from a MotorHTML class without an argument
-        else this.node = this._makeImperativeCounterpart()
+        else this.imperativeCounterpart = this._makeImperativeCounterpart()
 
         this._signalWhenReady()
     }
@@ -70,7 +70,7 @@ class MotorHTMLBase extends makeWebComponentBaseClass(window.HTMLElement) {
     }
 
     async _signalWhenReady() {
-        await this.node.mountPromise
+        await this.imperativeCounterpart.mountPromise
         this._resolveReadyPromise()
     }
 }

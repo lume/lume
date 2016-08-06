@@ -86,7 +86,7 @@ function proxyGettersSetters(SourceClass, TargetClass) {
         if (actualDescriptor.set) {
             Object.assign(proxyDescriptor, {
                 set(value) {
-                    this.node[prop] = value
+                    this.imperativeCounterpart[prop] = value
                 }
             })
         }
@@ -95,7 +95,7 @@ function proxyGettersSetters(SourceClass, TargetClass) {
         if (actualDescriptor.get) {
             Object.assign(proxyDescriptor, {
                 get() {
-                    return this.node[prop]
+                    return this.imperativeCounterpart[prop]
                 }
             })
         }
