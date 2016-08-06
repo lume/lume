@@ -1,9 +1,11 @@
 import 'document-register-element'
 import makeWebComponentBaseClass from './web-component'
 
-const WebComponent = makeWebComponentBaseClass(window.HTMLElement)
+// ... Little did I know that the `makeWebComponentBaseClass` function I made is
+// considered a form of mixin. ...
+// TODO: follow the mixin pattern as with Node and Scene classes.
 
-class MotorHTMLBase extends WebComponent {
+class MotorHTMLBase extends makeWebComponentBaseClass(window.HTMLElement) {
     createdCallback() {
         super.createdCallback()
 
@@ -37,7 +39,7 @@ class MotorHTMLBase extends WebComponent {
      *
      * @private
      *
-     * @param {Object} imperativeCounterPart The impoerative counterpart to
+     * @param {Object} imperativeCounterPart The imperative counterpart to
      * associate with this MotorHTML element. This parameter is only used in the
      * imperative API constructors, and this happens when using the imperative
      * form of infamous instead of the HTML interface to infamous. When the HTML
@@ -64,7 +66,7 @@ class MotorHTMLBase extends WebComponent {
     // This method should be overriden by child classes. It should return the
     // imperative-side instance that the HTML-side class (this) corresponds to.
     _makeImperativeCounterpart() {
-        throw new TypeError('This method should be implemented by class extening MotorHTMLBase.')
+        throw new TypeError('This method should be implemented by classes extending MotorHTMLBase.')
     }
 
     async _signalWhenReady() {

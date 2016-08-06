@@ -1,3 +1,5 @@
+/* global customElements */
+
 import jss from '../jss'
 
 // Very very stupid hack needed for Safari in order for us to be able to extend
@@ -51,7 +53,46 @@ function makeWebComponentBaseClass(elementClass) {
     // otherwise, create it.
 
     class WebComponent extends elementClass {
-        constructor() { super(); this.createdCallback() }
+
+        // constructor() is used in v1 Custom Elements instead of
+        // createdCallback() as in v0.
+        constructor() {
+            super()
+
+            // If the following is true, then we know the user should be using
+            // `document.registerElement()` to define an element from this class.
+            // `document.registerElement()` creates a new constructor, so if the
+            // constructor here is being called then that means the user is not
+            // instantiating a DOM HTMLElement as expected because it is required
+            // that the constructor returned from `document.registerElement` be used
+            // instead (this is a flaw of Custom Elements v0 which is fixed in v1
+            // where class constructors can be used directly).
+            if (document.registerElement && !customElements.define) {
+
+                // TODO: link to docs.
+                throw new Error(`
+                    You cannot call this class directly without first registering it
+                    with \`document.registerElement(...)\`. See an example at http://....
+                `)
+
+            }
+
+            if (!document.registerElement && !customElements.define) {
+
+                throw new Error(`
+                    Your browser does not support the Custom Elements API. You'll
+                    need to install a polyfill. See how at http://....
+                `)
+
+            }
+
+            // otherwise the V1 API exists, so call the createdCallback, which
+            // is what Custom Elements v0 would call, and we're putting
+            // instantiation logic there instead of here in the constructor so
+            // that the API is backwards compatible.
+            this.createdCallback()
+        }
+
         createdCallback() {
             this._attached = false
             this._initialized = false
@@ -67,8 +108,7 @@ function makeWebComponentBaseClass(elementClass) {
         //slottedCallback(slot) {
         //}
 
-        connectedCallback() { this.attachedCallback() }
-        attachedCallback() {
+        connectedCallback() {
             this._attached = true
 
             if (!this._initialized) {
@@ -76,6 +116,7 @@ function makeWebComponentBaseClass(elementClass) {
                 this._initialized = true
             }
         }
+        attachedCallback() { this.connectedCallback() } // back-compat
 
         _createStylesheet() {
 
@@ -96,8 +137,7 @@ function makeWebComponentBaseClass(elementClass) {
             return stylesheets[this.constructor.name]
         }
 
-        disconnectedCallback() { this.detachedCallback() }
-        async detachedCallback() {
+        async disconnectedCallback() {
             this._attached = false
 
             // XXX Deferr to the next tick before cleaning up in case the
@@ -125,6 +165,7 @@ function makeWebComponentBaseClass(elementClass) {
                 this._deinit()
             }
         }
+        detachedCallback() { this.disconnectedCallback() } // back-compat
 
         _destroyStylesheet() {
             instanceCountByConstructor[this.constructor.name] -= 1

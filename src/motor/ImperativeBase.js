@@ -16,18 +16,18 @@ let ImperativeBaseMixin = base =>
 class ImperativeBase extends TreeNode.mixin(base) {
     constructor(options = {}) {
 
-        // XXX The presence of a _motorHtmlCounterpart argument signifies that the HTML interface
-        // is being used, otherwise the imperative interface here is being
-        // used. See MotorHTMLNode. This means the Node and MotorHTMLNode classes are
-        // coupled together, but it's in the name of the API that we're supporting. We've
-        // gotta make sure it's well documented.
+        // XXX The presence of a _motorHtmlCounterpart argument signifies that
+        // the HTML interface is being used, otherwise the imperative interface
+        // here is being used. For example, see MotorHTMLNode. This means the
+        // Node and MotorHTMLNode classes are coupled together, but it's in the
+        // name of the API that we're supporting.
         const {_motorHtmlCounterpart} = options
 
         super(options)
 
-        // DOM representation of Node
-        // TODO: remove this and handle it in the "DOMRenderer". The DOMRender
-        // will handle the HTML-side of the API, but for now it is here.
+        // Here we create the DOM HTMLElement associated with this
+        // Imperative-API Node.
+        // TODO: move to DOMRenderer
         this._el = new ElementManager(
             _motorHtmlCounterpart || this._makeElement()
         )

@@ -1,4 +1,6 @@
+// XXX should we import a polyfill? Or let the end user do that?
 import 'document-register-element'
+
 //import 'webcomponents.js-v1/src/CustomElements/v1/native-shim'
 //import 'webcomponents.js-v1/src/CustomElements/v1/CustomElements'
 
@@ -14,18 +16,15 @@ import { proxyGettersSetters } from '../motor/Utility'
 let MotorHTMLNode = document.registerElement('motor-node',
 class MotorHTMLNode extends MotorHTMLBase {
 
-    // Use constructor() in v1 Custom Elements instead of createdCallback.
-    //constructor() {
-
     createdCallback() {
         super.createdCallback()
 
-        // true if motor-node is mounted improperly (not mounted in another
-        // motor-node or motor-scene)
+        // true if MotorHTMLNode is mounted improperly (not mounted in another
+        // MotorHTMLNode or MotorHTMLScene element.)
         this._attachError = false
     }
 
-    attachedCallback() {
+    connectedCallback() {
 
         // Check that motor-nodes are mounted to motor-scenes or
         // motor-nodes. Scene can be mounted to any element. In the future
@@ -46,7 +45,7 @@ class MotorHTMLNode extends MotorHTMLBase {
             throw new Error('<motor-node> elements must be appended only to <motor-scene> or other <motor-node> elements.')
         }
 
-        super.attachedCallback()
+        super.connectedCallback()
     }
 
     getStyles() {
@@ -60,14 +59,14 @@ class MotorHTMLNode extends MotorHTMLBase {
         // Node (doesn't apply to motor-scene, which doesn't have a
         // parent to attach to).
         //
-        // TODO: prevent this call if attachedCallback happened to call to
+        // TODO: prevent this call if connectedCallback happened to call to
         // addChild on the imperative side.
         this.parentNode.node.addChild(this.node)
         // TODO: ^ Update when/if Scene no longer extends from Node, as API
         // might change.
     }
 
-    // this is called in attachedCallback, at which point this element hasa
+    // this is called in connectedCallback, at which point this element has a
     // parentNode.
     // @override
     _makeImperativeCounterpart() {
@@ -77,13 +76,13 @@ class MotorHTMLNode extends MotorHTMLBase {
     }
 
     // TODO XXX: remove corresponding imperative Node from it's parent.
-    detachedCallback() {
+    disconnectedCallback() {
         if (this._attachError) {
             this._attachError = false
             return
         }
 
-        super.detachedCallback()
+        super.disconnectedCallback()
     }
 
     attributeChangedCallback(attribute, oldValue, newValue) {
@@ -161,7 +160,7 @@ function checkIsSizeArrayString(str) {
 }
 
 // This associates the Transformable getters/setters with the HTML-API classes,
-// so that the same getters/setters can be called from that side of the API.
+// so that the same getters/setters can be called from HTML side of the API.
 if (Transformable && MotorHTMLNode)
     proxyGettersSetters(Transformable, MotorHTMLNode)
 

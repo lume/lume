@@ -4,6 +4,7 @@ import documentReady from 'awaitbox/dom/documentReady'
 
 import MotorHTMLScene from '../motor-html/scene'
 
+// Scene is Sizeable, which is currently a subset of Transformable.
 class Scene extends Sizeable.mixin(ImperativeBase) {
     constructor(options = {}) {
         super(options)

@@ -1,4 +1,8 @@
+/* global customElements */
+
+// XXX should we import a polyfill? Or let the end user do that?
 import 'document-register-element'
+
 //import 'webcomponents.js-v1/src/CustomElements/v1/native-shim'
 //import 'webcomponents.js-v1/src/CustomElements/v1/CustomElements'
 
@@ -9,12 +13,9 @@ import MotorHTMLBase from './base'
 let MotorHTMLScene = document.registerElement('motor-scene',
 class MotorHTMLScene extends MotorHTMLBase {
 
-    createdCallback() {
-        super.createdCallback()
-    }
-
     // NOTE This is triggered by the _init() call in WebComponent's
-    // attachedCallback, at which point this element has a parentNode.
+    // attachedCallback, at which point this element has a parentNode to
+    // reference in this method.
     _makeImperativeCounterpart() {
         const scene = new Scene({
             _motorHtmlCounterpart: this
@@ -30,10 +31,6 @@ class MotorHTMLScene extends MotorHTMLBase {
     /** @override */
     getStyles() {
         return styles
-    }
-
-    attachedCallback() {
-        super.attachedCallback()
     }
 
     //deinit() {
