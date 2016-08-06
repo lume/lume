@@ -40,6 +40,7 @@ class ImperativeBase extends TreeNode.mixin(base) {
         // This is an internal promise that resolves when this Node is added to
         // to a scene graph that has a root Scene TreeNode. The resolved value
         // is the root Scene.
+        // TODO: Move to Node, only Node needs scenePromise stuff.
         this._resolveScenePromise = null
         this._scenePromise = new Promise(r => this._resolveScenePromise = r)
 
@@ -84,6 +85,7 @@ class ImperativeBase extends TreeNode.mixin(base) {
     /**
      * @private
      * Get a promise for the node's eventual scene.
+     * TODO: Move to Node, only Node needs scenePromise stuff.
      */
     _getScenePromise() {
         if (!this._scene && !this._scenePromise)
@@ -108,7 +110,8 @@ class ImperativeBase extends TreeNode.mixin(base) {
 
             // TODO TODO: also wait for this._mounted so this.element is
             // actually mounted in the DOM? Maybe not, as that will be moved to
-            // the DOMRenderer. Revisit later.
+            // the DOMRenderer. Or possibly add that functionality in the HTML
+            // API. Revisit later.
             this._resolveMountPromise(true)
         }
 
@@ -116,14 +119,11 @@ class ImperativeBase extends TreeNode.mixin(base) {
 
     /**
      * @readonly
-     *
-     * TODO: needs to be overriden for Scene, because Scene mounts/unmounts
-     * differently, using `Scene#mount()`.
      */
     get mountPromise() {
         if (!this._mounted && !this._mountPromise) {
             this._mountPromise = new Promise(r => this._resolveMountPromise = r)
-            this._waitForSceneThenResolveMountPromise()
+            this._waitForSceneThenResolveMountPromise() // This is a noop if `this` is a `Scene`.
         }
 
         return this._mountPromise

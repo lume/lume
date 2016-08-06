@@ -9,6 +9,7 @@ class Scene extends Sizeable.mixin(ImperativeBase) {
     constructor(options = {}) {
         super(options)
 
+        // TODO: remove, only Node needs scenePromise stuff.
         this._scene = this
         this._resolveScenePromise(this)
 
