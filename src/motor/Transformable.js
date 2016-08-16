@@ -214,9 +214,17 @@ const TransformableMixin = base => {
             if (properties.scale)
                 this.scale = properties.scale
 
+            // Origin
+            if (properties.origin)
+                this.origin = properties.origin
+
             // Align
             if (properties.align)
                 this.align = properties.align
+
+            // Mount Point
+            if (properties.mountPoint)
+                this.mountPoint = properties.mountPoint
 
             // Opacity
             if (properties.style) {
