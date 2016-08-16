@@ -62,8 +62,6 @@ class MotorHTMLNode extends MotorHTMLBase {
         // TODO: prevent this call if connectedCallback happened to call to
         // addChild on the imperative side.
         this.parentNode.imperativeCounterpart.addChild(this.imperativeCounterpart)
-        // TODO: ^ Update when/if Scene no longer extends from Node, as API
-        // might change.
     }
 
     // this is called in connectedCallback, at which point this element has a

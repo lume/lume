@@ -1,8 +1,10 @@
 import 'geometry-interfaces'
 import Transformable from './Transformable'
-import ImperativeBase from './ImperativeBase'
+import ImperativeBase, {initImperativeBase} from './ImperativeBase'
 import MotorHTMLNode from '../motor-html/node'
 import { proxyGettersSetters } from './Utility'
+
+initImperativeBase()
 
 class Node extends Transformable.mixin(ImperativeBase) {
 
@@ -27,16 +29,9 @@ class Node extends Transformable.mixin(ImperativeBase) {
         // class-factory style mixins for now, so we don't have control over the
         // specific arguments we can pass to the constructors, so we're just
         // using a single `options` parameter in all the constructors.
-        //
         //this.callSuperConstructor(Transformable, options)
         //this.callSuperConstructor(TreeNode)
         //this.callSuperConstructor(ImperativeBase)
-
-        window.blah = 0
-        if (!window.blah === 5) {
-            window.blah++
-            console.log(' --- Node instance:', this)
-        }
     }
 
     /**

@@ -1,8 +1,9 @@
-import ImperativeBase from './ImperativeBase'
 import Sizeable from './Sizeable'
+import ImperativeBase, {initImperativeBase} from './ImperativeBase'
+import MotorHTMLScene from '../motor-html/scene'
 import documentReady from 'awaitbox/dom/documentReady'
 
-import MotorHTMLScene from '../motor-html/scene'
+initImperativeBase()
 
 // Scene is Sizeable, which is currently a subset of Transformable.
 class Scene extends Sizeable.mixin(ImperativeBase) {
