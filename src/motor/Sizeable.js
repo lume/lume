@@ -2,6 +2,8 @@ import XYZValues from './XYZValues'
 import Motor from './Motor'
 import { makeLowercaseSetterAliases } from './Utility'
 
+let instanceofSymbol = Symbol('instanceofSymbol')
+
 const SizeableMixin = base => {
     class Sizeable extends base {
 
@@ -251,7 +253,26 @@ const SizeableMixin = base => {
             // TODO: Move this logic into Motor? (Maybe in the _setNodeToBeRendered method).
             if (!Motor._inFrame) Motor._startAnimationLoop()
         }
+
+        static [Symbol.hasInstance](obj) {
+            if (this !== Sizeable) return super[Symbol.hasInstance](obj)
+
+            let currentProto = obj
+
+            while(currentProto) {
+                let desc = Object.getOwnPropertyDescriptor(currentProto, "constructor")
+
+                if (desc && desc.value && desc.value.hasOwnProperty(instanceofSymbol))
+                    return true
+
+                currentProto = Object.getPrototypeOf(currentProto)
+            }
+
+            return false
+        }
     }
+
+    Sizeable[instanceofSymbol] = true
 
     // for use by MotorHTML, convenient since HTMLElement attributes are all
     // converted to lowercase by default, so if we don't do this then we won't be

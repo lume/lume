@@ -2,6 +2,8 @@ import XYZValues from './XYZValues'
 import Sizeable from './Sizeable'
 import { makeLowercaseSetterAliases } from './Utility'
 
+let instanceofSymbol = Symbol('instanceofSymbol')
+
 // Transformable doesn't need to extend from a class, but there isn't multiple
 // inheritance in JavaSript out of the box, and Node needs to have the
 // properties of Transformable and other classes, while Scene will branch from
@@ -359,7 +361,26 @@ const TransformableMixin = base => {
                 this._applyStyle(key, this._properties.style[key]);
             }
         }
+
+        static [Symbol.hasInstance](obj) {
+            if (this !== Transformable) return super[Symbol.hasInstance](obj)
+
+            let currentProto = obj
+
+            while(currentProto) {
+                let desc = Object.getOwnPropertyDescriptor(currentProto, "constructor")
+
+                if (desc && desc.value && desc.value.hasOwnProperty(instanceofSymbol))
+                    return true
+
+                currentProto = Object.getPrototypeOf(currentProto)
+            }
+
+            return false
+        }
     }
+
+    Transformable[instanceofSymbol] = true
 
     // for use by MotorHTML, convenient since HTMLElement attributes are all
     // converted to lowercase by default, so if we don't do this then we won't be

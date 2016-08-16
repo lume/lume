@@ -1,4 +1,4 @@
-let treeNodeSymbol = Symbol('TreeNode')
+let instanceofSymbol = Symbol('instanceofSymbol')
 
 const TreeNodeMixin = base => {
     class TreeNode extends base {
@@ -119,7 +119,7 @@ const TreeNodeMixin = base => {
             while(currentProto) {
                 let desc = Object.getOwnPropertyDescriptor(currentProto, "constructor")
 
-                if (desc && desc.value && desc.value[treeNodeSymbol])
+                if (desc && desc.value && desc.value.hasOwnProperty(instanceofSymbol))
                     return true
 
                 currentProto = Object.getPrototypeOf(currentProto)
@@ -129,7 +129,7 @@ const TreeNodeMixin = base => {
         }
     }
 
-    TreeNode[treeNodeSymbol] = true
+    TreeNode[instanceofSymbol] = true
 
     return TreeNode
 }
