@@ -5,7 +5,9 @@ import 'document-register-element'
 //import 'webcomponents.js-v1/src/CustomElements/v1/CustomElements'
 
 import styles from './node-style'
-import Node, {Transformable} from '../motor/Node'
+import Node from '../motor/Node'
+import Transformable from '../motor/Transformable'
+import Sizeable from '../motor/Sizeable'
 import MotorHTMLBase from './base'
 import MotorHTMLScene from './scene'
 import { proxyGettersSetters } from '../motor/Utility'
@@ -159,7 +161,7 @@ function checkIsSizeArrayString(str) {
 
 // This associates the Transformable getters/setters with the HTML-API classes,
 // so that the same getters/setters can be called from HTML side of the API.
-if (Transformable && MotorHTMLNode)
-    proxyGettersSetters(Transformable, MotorHTMLNode)
+proxyGettersSetters(Transformable, MotorHTMLNode)
+proxyGettersSetters(Sizeable, MotorHTMLNode)
 
 export {MotorHTMLNode as default}

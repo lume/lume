@@ -2,7 +2,6 @@ import 'geometry-interfaces'
 import Transformable from './Transformable'
 import ImperativeBase, {initImperativeBase} from './ImperativeBase'
 import MotorHTMLNode from '../motor-html/node'
-import { proxyGettersSetters } from './Utility'
 
 initImperativeBase()
 
@@ -70,10 +69,4 @@ class Node extends Transformable.mixin(ImperativeBase) {
     }
 }
 
-// This associates the Transformable getters/setters with the HTML-API classes,
-// so that the same getters/setters can be called from that side of the API.
-if (Transformable && MotorHTMLNode)
-    proxyGettersSetters(Transformable, MotorHTMLNode)
-
-export {Transformable}
 export {Node as default}

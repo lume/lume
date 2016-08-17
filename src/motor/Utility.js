@@ -73,18 +73,23 @@ function proxyGettersSetters(SourceClass, TargetClass) {
     const props = Object.getOwnPropertyNames(SourceClass.prototype)
 
     for (let prop of props) {
-        // skip the blacklisted properties
-        if (methodProxyBlacklist.includes(prop)) continue
+        if (
+            // skip the blacklisted properties
+            methodProxyBlacklist.includes(prop)
 
-        // skip the private underscored properties
-        if (prop.indexOf('_') == 0) continue
+            // skip the private underscored properties
+            || prop.indexOf('_') == 0
 
-        const proxyDescriptor = {}
-        const actualDescriptor = Object.getOwnPropertyDescriptor(SourceClass.prototype, prop)
+            // skip properties that are already defined.
+            || TargetClass.prototype.hasOwnProperty(prop)
+        ) continue
+
+        const targetDescriptor = {}
+        const sourceDescriptor = Object.getOwnPropertyDescriptor(SourceClass.prototype, prop)
 
         // if the property has a setter
-        if (actualDescriptor.set) {
-            Object.assign(proxyDescriptor, {
+        if (sourceDescriptor.set) {
+            Object.assign(targetDescriptor, {
                 set(value) {
                     this.imperativeCounterpart[prop] = value
                 }
@@ -92,15 +97,15 @@ function proxyGettersSetters(SourceClass, TargetClass) {
         }
 
         // if the property has a getter
-        if (actualDescriptor.get) {
-            Object.assign(proxyDescriptor, {
+        if (sourceDescriptor.get) {
+            Object.assign(targetDescriptor, {
                 get() {
                     return this.imperativeCounterpart[prop]
                 }
             })
         }
 
-        Object.defineProperty(TargetClass.prototype, prop, proxyDescriptor)
+        Object.defineProperty(TargetClass.prototype, prop, targetDescriptor)
     }
 }
 
