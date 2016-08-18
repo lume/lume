@@ -195,13 +195,6 @@ export function initImperativeBase() {
             addChild(childNode) {
 
                 // We cannot add Scenes to Nodes, for now.
-                //
-                // TODO: If someone extends Scene, constructor.name is different. We
-                // need to catch those cases too, without using instanceof Scene in
-                // order to avoid a circular dependency in this module.
-                // Idea: maybe we can traverse the prototype chain looking for each
-                // constructor.name.
-                //
                 // XXX: How will we handle mounting a Scene inside a Node when using only WebGL?
                 if (childNode instanceof Scene) {
                     throw new Error(`

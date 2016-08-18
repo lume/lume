@@ -36,7 +36,6 @@ const TreeNodeMixin = base => {
          */
         addChild (childNode) {
 
-            // TODO: make sure instanceof works using Symbol.hasInstance
             if (! (childNode instanceof TreeNode))
                 throw new Error('TreeNode.addChild expects the childNode argument to be a TreeNode instance.')
 
@@ -81,7 +80,6 @@ const TreeNodeMixin = base => {
          * @param {TreeNode} childNode The node to remove.
          */
         removeChild(childNode) {
-            // TODO: make sure instanceof works using Symbol.hasInstance
             if (! (childNode instanceof TreeNode)) return this
 
             let thisHasChild = this._children.indexOf(childNode) >= 0
