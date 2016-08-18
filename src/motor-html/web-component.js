@@ -189,9 +189,8 @@ function makeWebComponentBaseClass(elementClass) {
         _init() {
             this._createStylesheet()
 
-            // TODO: needs better handling of class naming? Or something.
+            // TODO: Find a better pattern that doesn't rely on the class name.
             this.classList.add(this.stylesheet.classes[this.constructor.name])
-            console.log('classes?', this.stylesheet.classes, this.constructor.name)
 
             this.init()
         }
