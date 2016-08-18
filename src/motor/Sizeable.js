@@ -253,9 +253,11 @@ const SizeableMixin = base => {
             // TODO: Move this logic into Motor? (Maybe in the _setNodeToBeRendered method).
             if (!Motor._inFrame) Motor._startAnimationLoop()
         }
+    }
 
-        static [Symbol.hasInstance](obj) {
-            if (this !== Sizeable) return super[Symbol.hasInstance](obj)
+    Object.defineProperty(Sizeable, Symbol.hasInstance, {
+        value: function(obj) {
+            if (this !== Sizeable) return Object.getPrototypeOf(Sizeable)[Symbol.hasInstance].call(this, obj)
 
             let currentProto = obj
 
@@ -270,7 +272,7 @@ const SizeableMixin = base => {
 
             return false
         }
-    }
+    })
 
     Sizeable[instanceofSymbol] = true
 

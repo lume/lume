@@ -369,9 +369,11 @@ const TransformableMixin = base => {
                 this._applyStyle(key, this._properties.style[key]);
             }
         }
+    }
 
-        static [Symbol.hasInstance](obj) {
-            if (this !== Transformable) return super[Symbol.hasInstance](obj)
+    Object.defineProperty(Transformable, Symbol.hasInstance, {
+        value: function(obj) {
+            if (this !== Transformable) return Object.getPrototypeOf(Transformable)[Symbol.hasInstance].call(this, obj)
 
             let currentProto = obj
 
@@ -386,7 +388,7 @@ const TransformableMixin = base => {
 
             return false
         }
-    }
+    })
 
     Transformable[instanceofSymbol] = true
 

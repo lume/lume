@@ -279,9 +279,11 @@ export function initImperativeBase() {
                 if (childNode._el.element.parentNode)
                     childNode._el.element.parentNode.removeChild(childNode._el.element)
             }
+        }
 
-            static [Symbol.hasInstance](obj) {
-                if (this !== ImperativeBase) return super[Symbol.hasInstance](obj)
+        Object.defineProperty(ImperativeBase, Symbol.hasInstance, {
+            value: function(obj) {
+                if (this !== ImperativeBase) return Object.getPrototypeOf(ImperativeBase)[Symbol.hasInstance].call(this, obj)
 
                 let currentProto = obj
 
@@ -296,7 +298,7 @@ export function initImperativeBase() {
 
                 return false
             }
-        }
+        })
 
         ImperativeBase[instanceofSymbol] = true
 

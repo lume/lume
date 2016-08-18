@@ -108,9 +108,11 @@ const TreeNodeMixin = base => {
         get childCount() {
             return this._children.length
         }
+    }
 
-        static [Symbol.hasInstance](obj) {
-            if (this !== TreeNode) return super[Symbol.hasInstance](obj)
+    Object.defineProperty(TreeNode, Symbol.hasInstance, {
+        value: function(obj) {
+            if (this !== TreeNode) return Object.getPrototypeOf(TreeNode)[Symbol.hasInstance].call(this, obj)
 
             let currentProto = obj
 
@@ -125,7 +127,7 @@ const TreeNodeMixin = base => {
 
             return false
         }
-    }
+    })
 
     TreeNode[instanceofSymbol] = true
 
