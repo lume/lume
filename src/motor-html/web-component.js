@@ -14,8 +14,8 @@ import jss from '../jss'
 // XXX: we can improve by clearing items after X amount of time.
 const classCache = new Map
 
-let stylesheets = {}
-let instanceCountByConstructor = {}
+let stylesheets = new WeakMap
+let instanceCountByConstructor = new WeakMap
 
 function hasHTMLElementPrototype(constructor) {
     if (!constructor) return false
@@ -120,21 +120,22 @@ function makeWebComponentBaseClass(elementClass) {
 
         _createStylesheet() {
 
-            if (!instanceCountByConstructor[this.constructor.name])
-                instanceCountByConstructor[this.constructor.name] = 0
+            if (!instanceCountByConstructor.get(this.constructor))
+                instanceCountByConstructor.set(this.constructor, 0)
 
-            instanceCountByConstructor[this.constructor.name] += 1
+            instanceCountByConstructor.set(this.constructor,
+                instanceCountByConstructor.get(this.constructor) + 1)
 
-            if (instanceCountByConstructor[this.constructor.name] === 1) {
+            if (instanceCountByConstructor.get(this.constructor) === 1) {
 
                 // XXX create stylesheet inside animation frame?
-                stylesheets[this.constructor.name] =
-                    jss.createStyleSheet(this.getStyles()).attach()
+                stylesheets.set(this.constructor,
+                    jss.createStyleSheet(this.getStyles()).attach())
             }
         }
 
         get stylesheet() {
-            return stylesheets[this.constructor.name]
+            return stylesheets.get(this.constructor)
         }
 
         async disconnectedCallback() {
@@ -168,11 +169,12 @@ function makeWebComponentBaseClass(elementClass) {
         detachedCallback() { this.disconnectedCallback() } // back-compat
 
         _destroyStylesheet() {
-            instanceCountByConstructor[this.constructor.name] -= 1
-            if (instanceCountByConstructor[this.constructor.name] === 0) {
-                stylesheets[this.constructor.name].detach()
-                delete stylesheets[this.constructor.name]
-                delete instanceCountByConstructor[this.constructor.name]
+            instanceCountByConstructor.set(this.constructor,
+                instanceCountByConstructor.get(this.constructor) - 1)
+            if (instanceCountByConstructor.get(this.constructor) === 0) {
+                stylesheets.get(this.constructor).detach()
+                stylesheets.delete(this.constructor)
+                instanceCountByConstructor.delete(this.constructor)
             }
         }
 
@@ -186,7 +188,11 @@ function makeWebComponentBaseClass(elementClass) {
 
         _init() {
             this._createStylesheet()
+
+            // TODO: needs better handling of class naming? Or something.
             this.classList.add(this.stylesheet.classes[this.constructor.name])
+            console.log('classes?', this.stylesheet.classes, this.constructor.name)
+
             this.init()
         }
         init() { /* to be defined by child class */ }

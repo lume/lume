@@ -69,6 +69,9 @@ const methodProxyBlacklist = [
 
 // Creates setters/getters on the TargetClass which proxy to the
 // setters/getters on SourceClass.
+// TODO: Move this function somewhere else, as it is coupled to the
+// HTML API, and is not generic. Either that or make generic so it doesn't depend
+// on the HTML-API-specific imperativeCounterpart variable.
 function proxyGettersSetters(SourceClass, TargetClass) {
     const props = Object.getOwnPropertyNames(SourceClass.prototype)
 

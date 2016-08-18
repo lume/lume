@@ -1,7 +1,9 @@
 import nodeStyles from './node-style'
 
 export default {
-    'motor-scene': Object.assign({}, nodeStyles['motor-node'], {
+    // XXX: What is a better pattern that doesn't require hard coding the class
+    // names here?
+    MotorHTMLScene: Object.assign({}, nodeStyles['MotorHTMLNode'], {
         //display:   'block',
         //boxSizing: 'border-box',
         position: 'relative',

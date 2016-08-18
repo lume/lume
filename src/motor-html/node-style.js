@@ -1,6 +1,6 @@
 
 export default {
-    'motor-node': {
+    MotorHTMLNode: {
         display:         'block',
         position:        'absolute',
         top:             0,
