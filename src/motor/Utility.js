@@ -1,4 +1,3 @@
-import TWEEN from 'tween.js'
 import windowLoaded from 'awaitbox/dom/windowLoaded'
 
 function epsilon(value) {
@@ -51,72 +50,10 @@ function makeLowercaseSetterAliases(object) {
     }
 }
 
-// Node methods not to proxy (private underscored methods are also detected and
-// ignored).
-//
-// XXX Should use a whitelist instead of a blacklist?
-const methodProxyBlacklist = [
-    'constructor',
-    'parent',
-    'children', // proxying this one would really break stuff (f.e. React)
-    'element',
-    'scene',
-    'addChild',
-    'addChildren',
-    'removeChild',
-    'removeChildren',
-]
-
-// Creates setters/getters on the TargetClass which proxy to the
-// setters/getters on SourceClass.
-// TODO: Move this function somewhere else, as it is coupled to the
-// HTML API, and is not generic. Either that or make generic so it doesn't depend
-// on the HTML-API-specific imperativeCounterpart variable.
-function proxyGettersSetters(SourceClass, TargetClass) {
-    const props = Object.getOwnPropertyNames(SourceClass.prototype)
-
-    for (let prop of props) {
-        if (
-            // skip the blacklisted properties
-            methodProxyBlacklist.includes(prop)
-
-            // skip the private underscored properties
-            || prop.indexOf('_') == 0
-
-            // skip properties that are already defined.
-            || TargetClass.prototype.hasOwnProperty(prop)
-        ) continue
-
-        const targetDescriptor = {}
-        const sourceDescriptor = Object.getOwnPropertyDescriptor(SourceClass.prototype, prop)
-
-        // if the property has a setter
-        if (sourceDescriptor.set) {
-            Object.assign(targetDescriptor, {
-                set(value) {
-                    this.imperativeCounterpart[prop] = value
-                }
-            })
-        }
-
-        // if the property has a getter
-        if (sourceDescriptor.get) {
-            Object.assign(targetDescriptor, {
-                get() {
-                    return this.imperativeCounterpart[prop]
-                }
-            })
-        }
-
-        Object.defineProperty(TargetClass.prototype, prop, targetDescriptor)
-    }
-}
-
 export {
   epsilon,
   applyCSSLabel,
   getBodySize,
   animationFrame,
   makeLowercaseSetterAliases,
-  proxyGettersSetters,
 }

@@ -10,7 +10,6 @@ import Transformable from '../motor/Transformable'
 import Sizeable from '../motor/Sizeable'
 import MotorHTMLBase from './base'
 import MotorHTMLScene from './scene'
-import { proxyGettersSetters } from '../motor/Utility'
 
 // XXX we'll export the class directly for v1 Custom Elements, and encourage
 // end users to define the name of the element as they see fit. We won't
@@ -163,5 +162,64 @@ function checkIsSizeArrayString(str) {
 // so that the same getters/setters can be called from HTML side of the API.
 proxyGettersSetters(Transformable, MotorHTMLNode)
 proxyGettersSetters(Sizeable, MotorHTMLNode)
+
+// Creates setters/getters on the TargetClass which proxy to the
+// setters/getters on SourceClass.
+function proxyGettersSetters(SourceClass, TargetClass) {
+
+    // Node methods not to proxy (private underscored methods are also detected and
+    // ignored).
+    //
+    // XXX Should use a whitelist instead of a blacklist?
+    const methodProxyBlacklist = [
+        'constructor',
+        'parent',
+        'children', // proxying this one would really break stuff (f.e. React)
+        'element',
+        'scene',
+        'addChild',
+        'addChildren',
+        'removeChild',
+        'removeChildren',
+    ]
+
+    const props = Object.getOwnPropertyNames(SourceClass.prototype)
+
+    for (let prop of props) {
+        if (
+            // skip the blacklisted properties
+            methodProxyBlacklist.includes(prop)
+
+            // skip the private underscored properties
+            || prop.indexOf('_') == 0
+
+            // skip properties that are already defined.
+            || TargetClass.prototype.hasOwnProperty(prop)
+        ) continue
+
+        const targetDescriptor = {}
+        const sourceDescriptor = Object.getOwnPropertyDescriptor(SourceClass.prototype, prop)
+
+        // if the property has a setter
+        if (sourceDescriptor.set) {
+            Object.assign(targetDescriptor, {
+                set(value) {
+                    this.imperativeCounterpart[prop] = value
+                }
+            })
+        }
+
+        // if the property has a getter
+        if (sourceDescriptor.get) {
+            Object.assign(targetDescriptor, {
+                get() {
+                    return this.imperativeCounterpart[prop]
+                }
+            })
+        }
+
+        Object.defineProperty(TargetClass.prototype, prop, targetDescriptor)
+    }
+}
 
 export {MotorHTMLNode as default}
