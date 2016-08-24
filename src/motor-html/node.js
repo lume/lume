@@ -9,7 +9,6 @@ import Node from '../motor/Node'
 import Transformable from '../motor/Transformable'
 import Sizeable from '../motor/Sizeable'
 import MotorHTMLBase from './base'
-import MotorHTMLScene from './scene'
 
 // XXX we'll export the class directly for v1 Custom Elements, and encourage
 // end users to define the name of the element as they see fit. We won't
@@ -17,71 +16,18 @@ import MotorHTMLScene from './scene'
 let MotorHTMLNode = document.registerElement('motor-node',
 class MotorHTMLNode extends MotorHTMLBase {
 
-    createdCallback() {
-        super.createdCallback()
-
-        // true if MotorHTMLNode is mounted improperly (not mounted in another
-        // MotorHTMLNode or MotorHTMLScene element.)
-        this._attachError = false
-    }
-
-    connectedCallback() {
-
-        // Check that motor-nodes are mounted to motor-scenes or
-        // motor-nodes. Scene can be mounted to any element. In the future
-        // we could inspect the scene mount point, and advise about posisble
-        // styling issues (f.e. making the scene container have a height).
-        //
-        // XXX: different check needed when using is="" attributes. For now,
-        // we'll discourage use of the awkward is="" attribute.
-        if (
-            !(
-                this.parentNode instanceof MotorHTMLNode ||
-                this.parentNode instanceof MotorHTMLScene
-            )
-            || this.parentNode._attachError // TODO, #40
-        ) {
-
-            this._attachError = true
-            throw new Error('<motor-node> elements must be appended only to <motor-scene> or other <motor-node> elements.')
-        }
-
-        super.connectedCallback()
-    }
-
     getStyles() {
         return styles
     }
 
-    init() {
-        super.init()
-
-        // Attach this motor-node's Node to the parent motor-node's
-        // Node (doesn't apply to motor-scene, which doesn't have a
-        // parent to attach to).
-        //
-        // TODO: prevent this call if connectedCallback happened to call to
-        // addChild on the imperative side.
-        this.parentNode.imperativeCounterpart.addChild(this.imperativeCounterpart)
-    }
-
-    // this is called in connectedCallback, at which point this element has a
+    // this is called by DeclarativeBase#init, which is called by
+    // WebComponent#connectedCallback, at which point this element has a
     // parentNode.
     // @override
     _makeImperativeCounterpart() {
         return new Node({
             _motorHtmlCounterpart: this
         })
-    }
-
-    // TODO XXX: remove corresponding imperative Node from it's parent.
-    disconnectedCallback() {
-        if (this._attachError) {
-            this._attachError = false
-            return
-        }
-
-        super.disconnectedCallback()
     }
 
     attributeChangedCallback(attribute, oldValue, newValue) {
