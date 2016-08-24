@@ -1,0 +1,25 @@
+{
+  "name": "samsarajs",
+  "description": "Reactive layout for user interfaces",
+  "main": "dist/samsara.js",
+  "authors": [
+    "David Valdman <dmvaldman@gmail.com>"
+  ],
+  "license": "MIT",
+  "keywords": [
+    "UI",
+    "streams",
+    "FRP",
+    "reactive",
+    "layout",
+    "samsara"
+  ],
+  "homepage": "https://github.com/dmvaldman/samsara.git",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ]
+}
