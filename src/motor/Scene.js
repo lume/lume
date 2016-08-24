@@ -45,7 +45,7 @@ class Scene extends Sizeable.mixin(ImperativeBase) {
     async mount(mountPoint) {
         // Wait for the document to be ready before mounting, otherwise the
         // target mount point might not exist yet when this function is called.
-        await documentReady()
+        if (document.readyState == 'loading') await documentReady()
 
         // if no mountPoint was provided, just mount onto the <body> element.
         // XXX: Maybe we should just not mount the scene if no mountPoint is
@@ -79,7 +79,9 @@ class Scene extends Sizeable.mixin(ImperativeBase) {
      * mountPromise.
      */
     unmount() {
-        this._el.element.parentNode.removeChild(this._el.element)
+        if (this._el.element.parentNode)
+            this._el.element.parentNode.removeChild(this._el.element)
+
         this._mounted = false
 
         // a new promise to be resolved on the next mount.

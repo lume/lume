@@ -13,22 +13,17 @@ import MotorHTMLBase from './base'
 let MotorHTMLScene = document.registerElement('motor-scene',
 class MotorHTMLScene extends MotorHTMLBase {
 
-    // NOTE This is triggered by the _init() call in WebComponent's
-    // attachedCallback, at which point this element has a parentNode to
-    // reference in this method.
+    init() {
+        super.init() // indirectly triggers this._makeImperativeCounterpart...
+
+        // ... then we can reference it.
+        this.imperativeCounterpart.mount(this.parentNode)
+    }
+
     _makeImperativeCounterpart() {
-        const scene = new Scene({
+        return new Scene({
             _motorHtmlCounterpart: this
         })
-
-        // TODO: needs unmount cleanup (in deinit, which is called in
-        // WebComponent's disconnectedCallback).
-        // TODO: Maybe we shouldn't mount the scene here, and reserve this
-        // method strictly for making and returning the imperative counterpart.
-        // XXX should we mount to `this` instead?
-        scene.mount(this.parentNode)
-
-        return scene
     }
 
     /** @override */
@@ -36,11 +31,11 @@ class MotorHTMLScene extends MotorHTMLBase {
         return styles
     }
 
-    //deinit() {
-        //super.deinit()
+    deinit() {
+        super.deinit()
 
-        //// TODO: unmount the scene
-    //}
+        this.imperativeCounterpart.unmount()
+    }
 })
 
 export {MotorHTMLScene as default}
