@@ -3,7 +3,12 @@ import ElementManager from './ElementManager'
 import Node from './Node'
 import Scene from './Scene'
 
-let ImperativeBase = undefined
+// We explicitly use `var` instead of `let` here because it is hoisted for the
+// Node and Scene modules. This, along with the following initImperativeBase
+// function, allows the circular dependency between this module and the Node and
+// Scene modules to work. For details on why, see
+// https://esdiscuss.org/topic/how-to-solve-this-basic-es6-module-circular-dependency-problem.
+var ImperativeBase
 
 // Here we wrap the definition of the ImperativeBase class with this function in
 // order to solve the circular depdendency problem caused by the
