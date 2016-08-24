@@ -80,7 +80,12 @@ const TreeNodeMixin = base => {
          * @param {TreeNode} childNode The node to remove.
          */
         removeChild(childNode) {
-            if (! (childNode instanceof TreeNode)) return this
+            if (! (childNode instanceof TreeNode))
+                throw new Error(`
+                    TreeNode.removeChild expects the childNode argument to be an
+                    instance of TreeNode. There should only be TreeNodes in the
+                    tree.
+                `)
 
             let thisHasChild = this._children.indexOf(childNode) >= 0
             if (! thisHasChild) return this

@@ -1,22 +1,23 @@
 import 'document-register-element'
-import makeWebComponentBaseClass from './web-component'
+import WebComponent from './web-component'
+import MotorHTMLNode from './node'
 
-// ... Little did I know that the `makeWebComponentBaseClass` function I made is
+// ... Little did I know that the `WebComponent` function I made is
 // considered a form of mixin. ...
 // TODO: follow the mixin pattern as with Node and Scene classes.
 
-class MotorHTMLBase extends makeWebComponentBaseClass(window.HTMLElement) {
+class DeclarativeBase extends WebComponent(window.HTMLElement) {
     createdCallback() {
         super.createdCallback()
 
         this.imperativeCounterpart = null // to hold the imperative API Node instance.
 
-        // XXX: "this.mountPromise" vs "this.ready":
-        // "ready" seems to be more intuitive on the HTML side because
-        // if the user has a reference to a motor-node or a motor-scene
-        // and it exists in DOM, then it is already "mounted" from the
-        // HTML API perspective. Maybe we can use "mountPromise" for
-        // the imperative API, and "ready" for the HTML API. For example:
+        // XXX: "this.ready" seems to be more intuitive on the HTML side than
+        // "this.mountPromise" because if the user has a reference to a
+        // motor-node or a motor-scene and it exists in DOM, then it is already
+        // "mounted" from the HTML API perspective although not necessarily
+        // ready because `connectedCallback`. Maybe we can use "mountPromise"
+        // for the imperative API, and "ready" for the HTML API. For example:
         //
         // await $('motor-scene')[0].ready // When using the HTML API
         // await node.mountPromise // When using the imperative API
@@ -26,7 +27,9 @@ class MotorHTMLBase extends makeWebComponentBaseClass(window.HTMLElement) {
         this.ready = new Promise(r => this._resolveReadyPromise = r)
     }
 
+    // called on connectedCallback of WebComponent
     init() {
+        super.init()
         this._associateImperativeNode()
     }
 
@@ -63,16 +66,31 @@ class MotorHTMLBase extends makeWebComponentBaseClass(window.HTMLElement) {
         this._signalWhenReady()
     }
 
-    // This method should be overriden by child classes. It should return the
-    // imperative-side instance that the HTML-side class (this) corresponds to.
+    /**
+     * This method should be overriden by child classes. It should return the
+     * imperative-side instance that the HTML-side class (this) corresponds to.
+     * @abstract
+     */
     _makeImperativeCounterpart() {
-        throw new TypeError('This method should be implemented by classes extending MotorHTMLBase.')
+        throw new TypeError('This method should be implemented by classes extending DeclarativeBase.')
     }
 
     async _signalWhenReady() {
         await this.imperativeCounterpart.mountPromise
         this._resolveReadyPromise()
     }
+
+    childConnectedCallback(child) {
+        // mirror the connection in the imperative API's virtual scene graph.
+        if (child instanceof MotorHTMLNode)
+            this.imperativeCounterpart.addChild(child.imperativeCounterpart)
+    }
+
+    childDisconnectedCallback(child) {
+        // mirror the connection in the imperative API's virtual scene graph.
+        if (child instanceof MotorHTMLNode)
+            this.imperativeCounterpart.removeChild(child.imperativeCounterpart)
+    }
 }
 
-export {MotorHTMLBase as default}
+export {DeclarativeBase as default}
