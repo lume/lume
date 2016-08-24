@@ -22,7 +22,10 @@ class MotorHTMLScene extends MotorHTMLBase {
         })
 
         // TODO: needs unmount cleanup (in deinit, which is called in
-        // WebComponent's detachedCallback).
+        // WebComponent's disconnectedCallback).
+        // TODO: Maybe we shouldn't mount the scene here, and reserve this
+        // method strictly for making and returning the imperative counterpart.
+        // XXX should we mount to `this` instead?
         scene.mount(this.parentNode)
 
         return scene
