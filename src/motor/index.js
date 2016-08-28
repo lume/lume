@@ -1,7 +1,11 @@
-
 export Curves from './Curves'
+export ElementManager from './ElementManager'
+export Motor from './Motor'
 export Node from './Node'
-export Scene from './Scene'
 export PushPaneLayout from './PushPaneLayout'
-
-export * from './Utility'
+export Scene from './Scene'
+export Sizeable from './Sizeable'
+export Transformable from './Transformable'
+export TreeNode from './TreeNode'
+export * as Utility from './Utility'
+export XYZValues from './XYZValues'
