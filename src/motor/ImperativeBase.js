@@ -16,6 +16,7 @@ var ImperativeBase
 // modules call initImperativeBase to ensure that the ImperativeBase declaration
 // happens first, and then those modules can use the live binding in their
 // declarations.
+initImperativeBase()
 export function initImperativeBase() {
     if (ImperativeBase) return
 

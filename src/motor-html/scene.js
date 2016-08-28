@@ -8,7 +8,9 @@ import 'document-register-element'
 
 import styles from './scene-style'
 import Scene from '../motor/Scene'
-import MotorHTMLBase from './base'
+import MotorHTMLBase, {initMotorHTMLBase} from './base'
+
+initMotorHTMLBase()
 
 let MotorHTMLScene = document.registerElement('motor-scene',
 class MotorHTMLScene extends MotorHTMLBase {
@@ -37,5 +39,6 @@ class MotorHTMLScene extends MotorHTMLBase {
         this.imperativeCounterpart.unmount()
     }
 })
+
 
 export {MotorHTMLScene as default}

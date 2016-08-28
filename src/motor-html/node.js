@@ -8,7 +8,9 @@ import styles from './node-style'
 import Node from '../motor/Node'
 import Transformable from '../motor/Transformable'
 import Sizeable from '../motor/Sizeable'
-import MotorHTMLBase from './base'
+import MotorHTMLBase, {initMotorHTMLBase} from './base'
+
+initMotorHTMLBase()
 
 // XXX we'll export the class directly for v1 Custom Elements, and encourage
 // end users to define the name of the element as they see fit. We won't
@@ -74,6 +76,11 @@ class MotorHTMLNode extends MotorHTMLBase {
     }
 })
 
+// This associates the Transformable getters/setters with the HTML-API classes,
+// so that the same getters/setters can be called from HTML side of the API.
+proxyGettersSetters(Transformable, MotorHTMLNode)
+proxyGettersSetters(Sizeable, MotorHTMLNode)
+
 function parseNumberArray(str) {
     checkIsNumberArrayString(str)
     let numbers = str.split(',')
@@ -103,11 +110,6 @@ function checkIsSizeArrayString(str) {
     // TODO: throw error if str is not a valid array of size mode strings.
     return
 }
-
-// This associates the Transformable getters/setters with the HTML-API classes,
-// so that the same getters/setters can be called from HTML side of the API.
-proxyGettersSetters(Transformable, MotorHTMLNode)
-proxyGettersSetters(Sizeable, MotorHTMLNode)
 
 // Creates setters/getters on the TargetClass which proxy to the
 // setters/getters on SourceClass.
