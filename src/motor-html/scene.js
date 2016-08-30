@@ -1,10 +1,3 @@
-/* global customElements */
-
-// XXX should we import a polyfill? Or let the end user do that?
-import 'document-register-element'
-
-//import 'webcomponents.js-v1/src/CustomElements/v1/native-shim'
-//import 'webcomponents.js-v1/src/CustomElements/v1/CustomElements'
 
 import styles from './scene-style'
 import Scene from '../motor/Scene'
@@ -12,7 +5,6 @@ import MotorHTMLBase, {initMotorHTMLBase} from './base'
 
 initMotorHTMLBase()
 
-let MotorHTMLScene = document.registerElement('motor-scene',
 class MotorHTMLScene extends MotorHTMLBase {
 
     init() {
@@ -38,7 +30,7 @@ class MotorHTMLScene extends MotorHTMLBase {
 
         this.imperativeCounterpart.unmount()
     }
-})
+}
 
 
 export {MotorHTMLScene as default}

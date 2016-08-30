@@ -15,5 +15,4 @@ class MotorHTMLPushPaneLayout extends MotorHTMLNode {
     }
 }
 
-export default
-document.registerElement('motor-push-pane-layout', MotorHTMLPushPaneLayout)
+export {MotorHTMLPushPaneLayout as default}

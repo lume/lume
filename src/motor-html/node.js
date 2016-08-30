@@ -1,8 +1,3 @@
-// XXX should we import a polyfill? Or let the end user do that?
-import 'document-register-element'
-
-//import 'webcomponents.js-v1/src/CustomElements/v1/native-shim'
-//import 'webcomponents.js-v1/src/CustomElements/v1/CustomElements'
 
 import styles from './node-style'
 import Node from '../motor/Node'
@@ -15,7 +10,6 @@ initMotorHTMLBase()
 // XXX we'll export the class directly for v1 Custom Elements, and encourage
 // end users to define the name of the element as they see fit. We won't
 // define the name ourselves like we do here.
-let MotorHTMLNode = document.registerElement('motor-node',
 class MotorHTMLNode extends MotorHTMLBase {
 
     getStyles() {
@@ -74,7 +68,7 @@ class MotorHTMLNode extends MotorHTMLBase {
             }
         }
     }
-})
+}
 
 // This associates the Transformable getters/setters with the HTML-API classes,
 // so that the same getters/setters can be called from HTML side of the API.

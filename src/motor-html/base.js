@@ -1,6 +1,5 @@
 /* global HTMLSlotElement */
 
-import 'document-register-element'
 import WebComponent from './web-component'
 import MotorHTMLNode from './node'
 
