@@ -140,7 +140,7 @@ function WebComponentMixin(elementClass) {
 
                 // XXX create stylesheet inside animation frame?
                 stylesheets.set(this.constructor,
-                    jss.createStyleSheet(this.getStyles()).attach())
+                    jss.createStyleSheet({ MotorHTMLStyle: this.getStyles() }).attach())
             }
         }
 
@@ -226,9 +226,13 @@ function WebComponentMixin(elementClass) {
          * can be used directly instead.
          */
         deinit() {
+            // TODO: Find a better pattern for style rule naming.
+            this.classList.remove(this.stylesheet.classes['MotorHTMLStyle'])
+
             // XXX: We can clean up the style after some time, for example like 1
             // minute, or something, instead of instantly.
             this._destroyStylesheet()
+
             this._initialized = false
         }
     }
