@@ -205,7 +205,6 @@ function WebComponentMixin(elementClass) {
             // custom elements were registered and which would therefore not be
             // detected by the following MutationObserver).
             if (this.childNodes.length) {
-                console.log(` ------ ${this.nodeName} has children!!!`)
 
                 // Timeout needed in case the Custom Elements classes are
                 // registered after the elements are already defined in the DOM

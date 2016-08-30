@@ -17,8 +17,6 @@ export function initMotorHTMLBase() {
         createdCallback() {
             super.createdCallback()
 
-            console.log(' --- Created motor-html element!', this)
-
             this.imperativeCounterpart = null // to hold the imperative API Node instance.
 
             // XXX: "this.ready" seems to be more intuitive on the HTML side than
@@ -98,7 +96,6 @@ export function initMotorHTMLBase() {
             // mirror the DOM connections in the imperative API's virtual scene graph.
             if (child instanceof MotorHTMLNode) {
                 this.imperativeCounterpart.addChild(child.imperativeCounterpart)
-                console.log(' -- a motor-node child connected!')
             }
             else if (typeof HTMLSlotElement != 'undefined' && child instanceof HTMLSlotElement) {
                 console.log(' -- a slot child connected!')
@@ -112,7 +109,6 @@ export function initMotorHTMLBase() {
             // mirror the connection in the imperative API's virtual scene graph.
             if (child instanceof MotorHTMLNode) {
                 this.imperativeCounterpart.removeChild(child.imperativeCounterpart)
-                console.log(' -- a motor-node child disconnected!')
             }
             else if (typeof HTMLSlotElement != 'undefined' && child instanceof HTMLSlotElement) {
                 console.log(' -- a slot child disconnected!')
