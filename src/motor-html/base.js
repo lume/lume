@@ -37,10 +37,15 @@ export function initMotorHTMLBase() {
             this.ready = new Promise(r => this._resolveReadyPromise = r)
         }
 
-        // called on connectedCallback of WebComponent
+        // called by WebComponent#connectedCallback()
         init() {
-            super.init()
+
+            // call this._associateImperativeNode() before super.init() because
+            // super.init() may call this.childConnectedCallback() which depends
+            // on the imperative counterpart existing.
             this._associateImperativeNode()
+
+            super.init()
         }
 
         /**
@@ -91,7 +96,7 @@ export function initMotorHTMLBase() {
         }
 
         childConnectedCallback(child) {
-            // mirror the connection in the imperative API's virtual scene graph.
+            // mirror the DOM connections in the imperative API's virtual scene graph.
             if (child instanceof MotorHTMLNode) {
                 this.imperativeCounterpart.addChild(child.imperativeCounterpart)
                 console.log(' -- a motor-node child connected!')

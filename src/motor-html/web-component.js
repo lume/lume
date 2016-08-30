@@ -98,20 +98,6 @@ function WebComponentMixin(elementClass) {
         createdCallback() {
             this._attached = false
             this._initialized = false
-
-            // TODO issue #40
-            const observer = new MutationObserver(changes => {
-                for (let change of changes) {
-                    if (change.type != 'childList') continue
-
-                    for (let node of change.addedNodes)
-                        this.childConnectedCallback(node)
-
-                    for (let node of change.removedNodes)
-                        this.childDisconnectedCallback(node)
-                }
-            })
-            observer.observe(this, { childList: true })
         }
 
         // Subclasses can implement these.
@@ -211,8 +197,49 @@ function WebComponentMixin(elementClass) {
         init() {
             this._createStylesheet()
 
-            // TODO: Find a better pattern that doesn't rely on the class name.
-            this.classList.add(this.stylesheet.classes[this.constructor.name])
+            // TODO: Find a better pattern for style rule naming.
+            this.classList.add(this.stylesheet.classes['MotorHTMLStyle'])
+
+            // Handle any nodes that may have been connected before `this` node
+            // was created (f.e. child nodes that were connected before the
+            // custom elements were registered and which would therefore not be
+            // detected by the following MutationObserver).
+            if (this.childNodes.length) {
+                console.log(` ------ ${this.nodeName} has children!!!`)
+
+                // Timeout needed in case the Custom Elements classes are
+                // registered after the elements are already defined in the DOM
+                // but not yet upgraded.
+                setTimeout(() => {
+                    for (let node of this.childNodes) {
+                        this.childConnectedCallback(node)
+                    }
+                }, 5)
+            }
+
+            // TODO issue #40
+            // Observe nodes in the future.
+            // This one doesn't need a timeout since the observation is already
+            // async.
+            const observer = new MutationObserver(changes => {
+                for (let change of changes) {
+                    if (change.type != 'childList') continue
+
+                    for (let node of change.addedNodes)
+                        this.childConnectedCallback(node)
+
+                    for (let node of change.removedNodes)
+                        this.childDisconnectedCallback(node)
+                }
+            })
+            observer.observe(this, { childList: true })
+
+            // fire this.attributeChangedCallback in case some attributes have
+            // existed before the custom element was upgraded.
+            if (this.hasAttributes())
+                for (let attr of this.attributes)
+                    if (this.attributeChangedCallback)
+                        this.attributeChangedCallback(attr.name, null, attr.value)
         }
 
         /**
