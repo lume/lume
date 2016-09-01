@@ -36,6 +36,10 @@ function animationFrame() {
     return promise
 }
 
+function makeIterable(arrayLike) {
+    return Array.prototype.slice.call(arrayLike)
+}
+
 // Create lowercase versions of each setter property.
 function makeLowercaseSetterAliases(object) {
     const props = Object.getOwnPropertyNames(object)
@@ -55,5 +59,6 @@ export {
   applyCSSLabel,
   getBodySize,
   animationFrame,
+  makeIterable,
   makeLowercaseSetterAliases,
 }

@@ -2,6 +2,8 @@
 
 import jss from '../jss'
 
+import {makeIterable} from '../motor/Utility'
+
 // Very very stupid hack needed for Safari in order for us to be able to extend
 // the HTMLElement class. See:
 // https://github.com/google/traceur-compiler/issues/1709
@@ -235,10 +237,15 @@ function WebComponentMixin(elementClass) {
 
             // fire this.attributeChangedCallback in case some attributes have
             // existed before the custom element was upgraded.
-            if (this.hasAttributes())
-                for (let attr of this.attributes)
-                    if (this.attributeChangedCallback)
+            if (this.hasAttributes()) {
+
+                // HTMLElement#attributes is a NamedNodeMap which is not an
+                // iterable. See:
+                // https://github.com/zloirock/core-js/issues/234
+                for (let attr of makeIterable(this.attributes))
+                    if ('attributeChangedCallback' in this)
                         this.attributeChangedCallback(attr.name, null, attr.value)
+            }
         }
 
         /**
