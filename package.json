@@ -20,19 +20,20 @@
     "watch": "./.scripts/build-cjs.sh --watch & ./.scripts/build-global.sh --watch &"
   },
   "dependencies": {
-    "geometry-interfaces": "^1.0.0",
-    "tween.js": "^16.3.1",
     "army-knife": "^0.2.1",
     "awaitbox": "^1.0.0",
+    "document-register-element": "^0.6.1",
     "famous": "trusktr/famous#commonjs",
     "famousify": "^0.1.5",
+    "geometry-interfaces": "^1.0.0",
     "jss": "^3.0.0",
     "jss-camel-case": "^1.0.0",
     "jss-extend": "^1.0.0",
     "jss-nested": "^1.0.0",
     "jss-props-sort": "^1.0.0",
     "jss-px": "^1.0.0",
-    "jss-vendor-prefixer": "^1.0.0"
+    "jss-vendor-prefixer": "^1.0.0",
+    "tween.js": "^16.3.1"
   },
   "devDependencies": {
     "browserify": "^12.0.0",
