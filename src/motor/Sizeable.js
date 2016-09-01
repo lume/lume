@@ -4,6 +4,20 @@ import { makeLowercaseSetterAliases } from './Utility'
 
 let instanceofSymbol = Symbol('instanceofSymbol')
 
+// fallback to experimental CSS transform if browser doesn't have it (fix for Safari)
+if (typeof document.createElement('div').style.transform == 'undefined') {
+    Object.defineProperty(CSSStyleDeclaration.prototype, 'transform', {
+        set(value) {
+            // XXX Might need to proxy to ms for IE/Edge.
+            this.webkitTransform = value
+        },
+        get() {
+            return this.webkitTransform
+        },
+        enumerable: true,
+    })
+}
+
 const SizeableMixin = base => {
     class Sizeable extends base {
 

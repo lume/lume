@@ -332,6 +332,9 @@ const TransformableMixin = base => {
          * converting to a string here.
          *
          * TODO move to DOMRenderer
+         *
+         * TODO: Maybe this should not apply style directly, it should be batched
+         * into Motor._nodesToBeRendered, and same for other styles.
          */
         _applyTransform () {
             var matrix = this._properties.transform;
