@@ -31,12 +31,9 @@ class Node extends Transformable.mixin(ImperativeBase) {
         //this.callSuperConstructor(Transformable, options)
         //this.callSuperConstructor(TreeNode)
         //this.callSuperConstructor(ImperativeBase)
-    }
 
-    /**
-     * @override
-     */
-    _init() {
+        // TODO: We need to render one time each time mountPromise is resolved,
+        // not just this one time in the constructor.
         this._needsToBeRendered()
     }
 
@@ -52,9 +49,6 @@ class Node extends Transformable.mixin(ImperativeBase) {
      * yet).
      *
      * @override see Transformable#override
-     *
-     * TODO: We need to render one time each time mountPromise is resolved, not
-     * just this one time as currently in constructor's call to this._init.
      *
      * TODO If a setter is called over and over in a render task before the node
      * is mounted, then each tick will cause an await this.mountPromise, and

@@ -17,13 +17,12 @@ class Scene extends Sizeable.mixin(ImperativeBase) {
         // For now, Scenes are always proportionally sized by default.
         // TODO: Scene is not Transformable, it contains all the Transformable Nodes, so set sizing by CSS.
         this._properties.sizeMode = { x: 'proportional', y: 'proportional', z: 'proportional' }
-    }
 
-    /**
-     * @override
-     * XXX Does Scene need anything here?
-     */
-    _init() { }
+        // TODO: We need to render one time each time mountPromise is resolved,
+        // not just this one time in the constructor.
+        // TODO: Does Scene need this call?
+        this._needsToBeRendered()
+    }
 
     /**
      * @override

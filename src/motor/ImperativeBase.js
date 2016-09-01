@@ -77,8 +77,6 @@ export function initImperativeBase() {
                 this._mountPromise = new Promise(r => this._resolveMountPromise = r)
 
                 this._waitForSceneThenResolveMountPromise()
-
-                this._init()
             }
 
             /**
@@ -91,17 +89,6 @@ export function initImperativeBase() {
             _makeElement() {
                 throw new Error('Subclasses need to override ImperativeBase#_makeElement.')
             }
-
-            /**
-             * Subclasses can override this to provide extra behavior when constructed.
-             * The reason for it is because it is easy to override it and change the
-             * order of execution between the overriden method and the super method,
-             * unlike with constructors where `super()` must *always* be called before
-             * using this.
-             *
-             * @private
-             */
-            _init() {}
 
             /**
              * @private
