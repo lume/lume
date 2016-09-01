@@ -1,3 +1,5 @@
+import { makeAccessorsEnumerable } from './Utility'
+
 /**
  * Represents a set of values for the X, Y, and Z axes. For example, the
  * position of an object can be described using a set of 3 numbers, one for each
@@ -34,5 +36,8 @@ class XYZValues {
     }
     get z() { return this._z }
 }
+
+// So Tween.js can animate x, y, z
+makeAccessorsEnumerable(XYZValues.prototype)
 
 export {XYZValues as default}

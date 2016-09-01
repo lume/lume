@@ -1,6 +1,6 @@
 import XYZValues from './XYZValues'
 import Sizeable from './Sizeable'
-import { makeLowercaseSetterAliases } from './Utility'
+import { makeLowercaseSetterAliases, makeAccessorsEnumerable } from './Utility'
 
 let instanceofSymbol = Symbol('instanceofSymbol')
 
@@ -403,6 +403,10 @@ const TransformableMixin = base => {
     // that Transformable and related classes are not necessarily
     // motor-scpecific and can be used anywhere.
     makeLowercaseSetterAliases(Transformable.prototype)
+
+    // So Tween.js can animate opacity. Note, makes all accessors enumerable
+    // even though we don't need to animate them all, not a big deal.
+    makeAccessorsEnumerable(Transformable.prototype)
 
     return Transformable
 }

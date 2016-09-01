@@ -50,10 +50,22 @@ function makeLowercaseSetterAliases(object) {
     }
 }
 
+function makeAccessorsEnumerable(object) {
+    const props = Object.getOwnPropertyNames(object)
+    for (let prop of props) {
+        const descriptor = Object.getOwnPropertyDescriptor(object, prop)
+        if (descriptor && (descriptor.set || descriptor.get)) {
+            descriptor.enumerable = true
+            Object.defineProperty(object, prop, descriptor)
+        }
+    }
+}
+
 export {
   epsilon,
   applyCSSLabel,
   getBodySize,
   animationFrame,
   makeLowercaseSetterAliases,
+  makeAccessorsEnumerable,
 }
