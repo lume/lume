@@ -66,7 +66,7 @@ function WebComponentMixin(elementClass) {
             // that the constructor returned from `document.registerElement` be used
             // instead (this is a flaw of Custom Elements v0 which is fixed in v1
             // where class constructors can be used directly).
-            if (document.registerElement && !customElements.define) {
+            if ('registerElement' in document && !('customElements' in window)) {
 
                 // TODO: link to docs.
                 throw new Error(`
@@ -77,7 +77,7 @@ function WebComponentMixin(elementClass) {
             }
 
             // Throw an error if no Custom Elements API exists.
-            if (!document.registerElement && !customElements.define) {
+            if (!('registerElement' in document) && !('customElements' in window)) {
 
                 // TODO: link to docs.
                 throw new Error(`

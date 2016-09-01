@@ -32,5 +32,7 @@ class MotorHTMLScene extends MotorHTMLBase {
     }
 }
 
+import 'document-register-element'
+MotorHTMLScene = document.registerElement('motor-scene', MotorHTMLScene)
 
 export {MotorHTMLScene as default}

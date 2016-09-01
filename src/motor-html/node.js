@@ -164,4 +164,7 @@ function proxyGettersSetters(SourceClass, TargetClass) {
     }
 }
 
+import 'document-register-element'
+MotorHTMLNode = document.registerElement('motor-node', MotorHTMLNode)
+
 export {MotorHTMLNode as default}
