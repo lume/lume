@@ -130,7 +130,7 @@ function proxyGettersSetters(SourceClass, TargetClass) {
     for (let prop of props) {
         if (
             // skip the blacklisted properties
-            methodProxyBlacklist.includes(prop)
+            methodProxyBlacklist.indexOf(prop) >= 0
 
             // skip the private underscored properties
             || prop.indexOf('_') == 0
