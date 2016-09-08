@@ -72,12 +72,16 @@ define(function(require, exports, module) {
      *  Extends EventEmitter's `on` method.
      *
      * @method on
-     * @param type {String}             Event channel name
-     * @param handler {Function}        Handler
+     * @param type {String|Array}       Event channel name or array of names
+     * @param handler {Function}        Callback handler
      */
     EventHandler.prototype.on = function on(type, handler) {
         EventEmitter.prototype.on.apply(this, arguments);
-        if (!(type in this.upstreamListeners)) {
+        if (type instanceof Array) {
+            for (var i = 0; i < type.length; i++)
+                on.call(this, type[i], handler);
+        }
+        else if (!this.upstreamListeners[type]) {
             var upstreamListener = this.trigger.bind(this, type);
             this.upstreamListeners[type] = upstreamListener;
             for (var i = 0; i < this.upstream.length; i++) {
