@@ -4,7 +4,6 @@ define(function(require, exports, module) {
     var EventHandler = require('../events/EventHandler');
     var OptionsManager = require('../core/_OptionsManager');
     var SimpleStream = require('../streams/SimpleStream');
-    var dirtyQueue = require('../core/queues/dirtyQueue');
 
     var MINIMUM_TICK_TIME = 8;
     var _now = Date.now;
@@ -164,6 +163,7 @@ define(function(require, exports, module) {
         payload.velocity = velocity;
         payload.event = event;
 
+        console.log('mouse start')
         this._eventOutput.emit('start', payload);
     }
 
@@ -248,9 +248,7 @@ define(function(require, exports, module) {
 
         this._payload.event = event;
 
-        dirtyQueue.push(function(){
-            this._eventOutput.emit('end', this._payload);
-        }.bind(this));
+        this._eventOutput.emit('end', this._payload);
 
         this._prevCoord = undefined;
         this._prevTime = undefined;
