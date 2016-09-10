@@ -9,7 +9,10 @@ define(function(require, exports, module) {
 
         var Stream = require('./Stream');
 
-        Stream.call(this, {
+        Stream.call(this, {out : {
+            set : function(){
+                return this.mergedData;
+            }.bind(this),
             start : function() {
                 return this.mergedData;
             }.bind(this),
@@ -19,7 +22,7 @@ define(function(require, exports, module) {
             end : function() {
                 return this.mergedData;
             }.bind(this)
-        });
+        }});
 
         for (var key in streams)
             this.addStream(key, streams[key]);
@@ -34,15 +37,7 @@ define(function(require, exports, module) {
         if (stream instanceof Object && stream.on){
             mergedData[key] = undefined;
 
-            stream.on('start', function(data){
-                mergedData[key] = data;
-            });
-
-            stream.on('update', function(data){
-                mergedData[key] = data;
-            });
-
-            stream.on('end', function(data){
+            stream.on(['set', 'start', 'update', 'end'], function(data){
                 mergedData[key] = data;
             });
 
@@ -71,6 +66,6 @@ define(function(require, exports, module) {
         this.removeStream(key);
         this.addStream(key, stream);
     };
-    
+
     module.exports = MergedStream;
 });
