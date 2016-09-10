@@ -146,6 +146,10 @@ define(function(require, exports, module) {
     Context.prototype.perspectiveFrom = function perspectiveFrom(perspective){
         this._perspective = perspective;
 
+        this._perspective.on('set', function(perspective){
+            setPerspective(this.container, perspective);
+        }.bind(this));
+
         this._perspective.on('update', function(perspective){
             setPerspective(this.container, perspective);
         }.bind(this));

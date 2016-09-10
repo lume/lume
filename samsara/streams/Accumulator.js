@@ -4,7 +4,6 @@ define(function(require, exports, module){
     var OptionsManager = require('../core/_OptionsManager');
     var Stream = require('../streams/Stream');
     var preTickQueue = require('../core/queues/preTickQueue');
-    var dirtyQueue = require('../core/queues/dirtyQueue');
 
     /**
      * Accumulator is a Stream that accumulates a value given by a
@@ -38,14 +37,48 @@ define(function(require, exports, module){
 
         if (sum !== undefined) this.set(sum);
 
-        Stream.call(this, {
-            start : function(){ return this.sum || 0; }.bind(this),
-            update : function(){ return this.sum; }.bind(this),
-            end : function(){ return this.sum || 0; }.bind(this)
+        Stream.call(this,{
+            in : {
+                set: set.bind(this),
+                start: start.bind(this),
+                update: update.bind(this),
+                end: function(data){
+                    console.log('fuck')
+                    debugger
+                    return data;
+                }
+            },
+            out : {
+                set : function(){
+                    // console.log('set', this.sum)
+                    return this.sum || 0;
+                }.bind(this),
+                start : function(){
+                    // console.log('start', this.sum)
+                    return this.sum || 0;
+                }.bind(this),
+                update : function(){
+                    // console.log('update', this.sum)
+                    return this.sum;
+                }.bind(this),
+                end : function(){
+                    // console.log('end', this.sum)
+                    return this.sum || 0;
+                }.bind(this)
+            }
         });
 
         // TODO: is `start` event necessary?
-        this._eventInput.on('start', function(value){
+        function set(value){
+            if (value instanceof Array) {
+                this.sum = [];
+                for (var i = 0; i < value.length; i++)
+                    this.sum[i] = clamp(value[i], this.options.min, this.options.max);
+            }
+            else this.sum = clamp(value, this.options.min, this.options.max);
+        };
+
+        function start(value){
             if (this.sum !== undefined) return;
             if (value instanceof Array) {
                 this.sum = [];
@@ -53,9 +86,9 @@ define(function(require, exports, module){
                     this.sum[i] = clamp(value[i], this.options.min, this.options.max);
             }
             else this.sum = clamp(value, this.options.min, this.options.max);
-        }.bind(this));
+        };
 
-        this._eventInput.on('update', function(delta){
+        function update(delta){
             if (delta instanceof Array){
                 for (var i = 0; i < delta.length; i++){
                     this.sum[i] += delta[i];
@@ -66,7 +99,7 @@ define(function(require, exports, module){
                 this.sum += delta;
                 this.sum = clamp(this.sum, this.options.min, this.options.max);
             }
-        }.bind(this));
+        };
     }
 
     Accumulator.prototype = Object.create(Stream.prototype);
@@ -93,11 +126,8 @@ define(function(require, exports, module){
         if (silent === true) return;
         var self = this;
         preTickQueue.push(function(){
-            self.trigger('start', sum);
-            dirtyQueue.push(function(){
-                self.trigger('end', sum);
-            });
-        })
+            self.trigger('set', sum);
+        });
     };
 
     /**

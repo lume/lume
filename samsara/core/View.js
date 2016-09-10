@@ -75,6 +75,7 @@ define(function(require, exports, module) {
 
             this._cachedSize = [0, 0];
 
+            this.size.on('set', updateSize.bind(this));
             this.size.on('start', updateSize.bind(this));
             this.size.on('update', updateSize.bind(this));
             this.size.on('end', updateSize.bind(this));

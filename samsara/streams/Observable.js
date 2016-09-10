@@ -45,10 +45,7 @@ define(function(require, exports, module) {
         var self = this;
         self.value = value;
         preTickQueue.push(function(){
-            self.emit('start', value);
-            dirtyQueue.push(function(){
-                self.emit('end', value);
-            });
+            self.emit('set', value);
         });
     };
 

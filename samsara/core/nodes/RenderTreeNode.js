@@ -9,7 +9,8 @@ define(function(require, exports, module) {
     var layoutAlgebra = require('../algebras/layout');
     var sizeAlgebra = require('../algebras/size');
     var preTickQueue = require('../../core/queues/preTickQueue');
-    var dirtyQueue = require('../../core/queues/dirtyQueue');
+    window.preTickQueue = preTickQueue;
+    // var dirtyQueue = require('../../core/queues/dirtyQueue');
 
     /**
      * A node in the render tree. As such, it wraps a layout or size node,
@@ -49,11 +50,13 @@ define(function(require, exports, module) {
         this.size.on('start', updateSizeCache.bind(this));
         this.size.on('update', updateSizeCache.bind(this));
         this.size.on('end', updateSizeCache.bind(this));
+        this.size.on('set', updateSizeCache.bind(this));
 
         // update layout spec
         this.layout.on('start', updateLayoutCache.bind(this));
         this.layout.on('update', updateLayoutCache.bind(this));
         this.layout.on('end', updateLayoutCache.bind(this));
+        this.layout.on('set', updateLayoutCache.bind(this));
 
         // reference to RootNode if a node is removed and later added
         this.root = null;
@@ -123,12 +126,8 @@ define(function(require, exports, module) {
             var self = this;
             preTickQueue.push(function(){
                 if (!self._cachedSpec.size) return;
-                self.size.trigger('start', self._cachedSpec.size);
-                self.layout.trigger('start', self._cachedSpec.layout);
-                dirtyQueue.push(function(){
-                    self.size.trigger('end', self._cachedSpec.size);
-                    self.layout.trigger('end', self._cachedSpec.layout);
-                });
+                self.size.trigger('set', self._cachedSpec.size);
+                self.layout.trigger('set', self._cachedSpec.layout);
             });
         }
 
