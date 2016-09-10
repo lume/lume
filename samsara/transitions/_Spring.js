@@ -2,7 +2,8 @@
 
 define(function (require, exports, module) {
     var Transition = require('./_Transition');
-    var dirtyQueue = require('../core/queues/dirtyQueue');
+    var EventHandler = require('../events/EventHandler');
+    var SimpleStream = require('../streams/SimpleStream');
 
     var now = Date.now;
     var eps = 1e-6; // for calculating velocity using finite difference
@@ -74,17 +75,13 @@ define(function (require, exports, module) {
 
         var energy = this.energy(this.end, this.value, this.velocity);
 
-        if (energy >= this.energyTolerance) {
-            this.emit('update', this.value);
-        }
-        else {
-            this.emit('update', this.end);
+        this.value = value;
+        this.emit('update', value);
 
-            dirtyQueue.push(function(){
-                this.reset(this.end);
-                this._active = false;
-                this.emit('end', this.end);
-            }.bind(this));
+        if (energy < this.energyTolerance) {
+            this.reset(this.target);
+            this._active = false;
+            this.emit('end', this.target);
         }
     };
 
