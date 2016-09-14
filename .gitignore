@@ -8,6 +8,9 @@ docs
 /*.js.map
 !/webpack.config.js
 
+# but not the global file, to make it easy to get started with static files.
+!/global.js
+
 # ignore build folders
 /motor
 /motor-html
