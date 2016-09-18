@@ -9,20 +9,14 @@ define(function(require, exports, module) {
 
         var Stream = require('./Stream');
 
-        Stream.call(this, {out : {
-            set : function(){
-                return this.mergedData;
-            }.bind(this),
-            start : function() {
-                return this.mergedData;
-            }.bind(this),
-            update : function() {
-                return this.mergedData;
-            }.bind(this),
-            end : function() {
-                return this.mergedData;
-            }.bind(this)
-        }});
+        var boundEmit = function(){ return this.mergedData; }.bind(this);
+
+        Stream.call(this, {
+            set : boundEmit,
+            start : boundEmit,
+            update : boundEmit,
+            end : boundEmit
+        });
 
         for (var key in streams)
             this.addStream(key, streams[key]);

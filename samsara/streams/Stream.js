@@ -5,15 +5,13 @@ define(function(require, exports, module){
     var LiftedStream = require('./_LiftedStream');
     var EventHandler = require('../events/EventHandler');
     var SimpleStream = require('../streams/SimpleStream');
-
     var preTickQueue = require('../core/queues/preTickQueue');
-    var postTickQueue = require('../core/queues/postTickQueue');
-    var dirtyQueue = require('../core/queues/dirtyQueue');
 
     var EVENTS = {
         START : 'start',
         UPDATE : 'update',
-        END : 'end'
+        END : 'end',
+        SET : 'set'
     };
 
     /**
@@ -61,60 +59,130 @@ define(function(require, exports, module){
      * @constructor
      */
     function Stream(options){
+        options = options || {};
+
         this._eventInput = new EventHandler();
         this._eventOutput = new EventHandler();
         EventHandler.setInputHandler(this, this._eventInput);
         EventHandler.setOutputHandler(this, this._eventOutput);
 
-        var counter = 0;
-        var isUpdating = false;
-        var dirtyStart = false;
-        var dirtyUpdate = false;
-        var dirtyEnd = false;
+        var startCounter = 0;
+        var delayQueue = 0;
 
-        function start(data){
-            var payload = options && options.start ? options.start(data) : data;
-            if (payload !== false) this.emit(EVENTS.START, payload);
-            dirtyStart = false;
+        var locked = false;
+        var lockedAbove = false;
+        var lockCounter = 0;
+
+        var states = {
+            set: false,
+            start : false,
+            update : false,
+            end : false,
+            prev : ''
+        };
+
+        function resolve(data){
+            if (startCounter === 0 && states.update && states.end){
+                // update and end called in the same tick when tick should end
+                var payload = options.out && options.out.update ? options.out.update(data) : data;
+                this.emit(EVENTS.UPDATE, data);
+                states.prev = EVENTS.UPDATE;
+                states.update = false;
+            }
+            else if (states.prev !== EVENTS.UPDATE && states.start && states.update){
+                // start and update called in the same tick
+                var payload = options.out && options.out.start ? options.out.start(data) : data;
+                this.emit(EVENTS.START, data);
+                states.prev = EVENTS.START;
+            }
+
+            if (states.update || (states.start && states.end)){
+                // call update if updating or if both starting and stopping
+                var payload = options.out && options.out.update ? options.out.update(data) : data;
+                this.emit(EVENTS.UPDATE, data);
+                states.prev = EVENTS.UPDATE;
+            }
+            else if (states.prev !== EVENTS.UPDATE && states.start && !states.end){
+                // call start if all have started
+                var payload = options.out && options.out.start ? options.out.start(data) : data;
+                this.emit(EVENTS.START, data);
+                states.prev = EVENTS.START;
+            }
+            else if (startCounter === 0 && states.prev !== EVENTS.START && states.end && !states.start){
+                // call end if all have ended
+                var payload = options.out && options.out.end ? options.out.end(data) : data;
+                this.emit(EVENTS.END, data);
+                states.prev = EVENTS.END;
+            }
+            else if (states.prev !== EVENTS.UPDATE && states.set){
+                this.emit(EVENTS.SET, data);
+                states.prev = EVENTS.SET;
+            }
+
+            // reset
+            states.start = false;
+            states.update = false;
+            states.end = false;
+            states.set = false;
         }
 
-        function update(data){
-            var payload = options && options.update ? options.update(data) : data;
-            if (payload !== false) this.emit(EVENTS.UPDATE, payload);
-            dirtyUpdate = false;
+        var self = this;
+        function delay(data){
+            if (!locked) {
+                locked = true;
+                this.emit('lockBelow');
+            }
+
+            delayQueue++;
+            preTickQueue.push(function(){
+                delayQueue--;
+                if (delayQueue === 0){
+                    locked = false;
+                    if (!lockedAbove){
+                        self.emit('unlockBelow');
+                        resolve.call(self, data);
+                    }
+                }
+            });
         }
 
-        function end(data){
-            var payload = options && options.end ? options.end(data) : data;
-            if (payload !== false) this.emit(EVENTS.END, payload);
-            dirtyEnd = false;
-        }
-
-        this._eventInput.on(EVENTS.START, function(data){
-            counter++;
-            if (dirtyStart || isUpdating) return false;
-            dirtyStart = true;
-            preTickQueue.push(start.bind(this, data));
+        this._eventInput.on(EVENTS.SET, function(data){
+            if (options.set) data = options.set(data);
+            states.set = true;
+            delay.call(this, data);
         }.bind(this));
 
-        this._eventInput.on(EVENTS.UPDATE, function(data){
-            isUpdating = true;
-            if (dirtyUpdate) return false;
-            dirtyUpdate = true;
-            postTickQueue.push(update.bind(this, data));
+        this._eventInput.on(EVENTS.START, function(data){
+            if (options.start) data = options.start(data);
+            states.start = true;
+            startCounter++;
+            delay.call(this, data);
         }.bind(this));
 
         this._eventInput.on(EVENTS.END, function(data){
-            counter--;
-            // if (isUpdating && counter > 0){
-            //     update.call(this, data);
-            //     return;
-            // }
-            isUpdating = false;
-            if (dirtyEnd) return;
-            dirtyEnd = true;
-            dirtyQueue.push(end.bind(this, data));
+            if (options.end) data = options.end(data);
+            states.end = true;
+            startCounter--;
+            delay.call(this, data);
         }.bind(this));
+
+        this._eventInput.on(EVENTS.UPDATE, function(data){
+            if (options.update) data = options.update(data);
+            states.update = true;
+            delay.call(this, data);
+        }.bind(this));
+
+        this._eventInput.on('lockBelow', function(){
+            lockCounter++;
+            lockedAbove = true;
+        });
+
+        this._eventInput.on('unlockBelow', function(){
+            lockCounter--;
+            if (lockCounter === 0){
+                lockedAbove = false;
+            }
+        });
     }
 
     Stream.prototype = Object.create(SimpleStream.prototype);

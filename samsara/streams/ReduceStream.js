@@ -5,9 +5,6 @@ define(function(require, exports, module) {
     var Observable = require('./Observable');
     var EventHandler = require('../events/EventHandler');
 
-    var preTickQueue = require('../core/queues/preTickQueue');
-    var dirtyQueue = require('../core/queues/dirtyQueue');
-
     function ReduceNode(reducer, stream, extras){
         this._input = new SimpleStream();
 
@@ -33,7 +30,7 @@ define(function(require, exports, module) {
         this.prev = null;
         this.next = null;
         this.value = null;
-        
+
         if (value) this.set(value);
     }
 
@@ -98,10 +95,7 @@ define(function(require, exports, module) {
         else {
             var self = this;
             preTickQueue.push(function(){
-                self.offset.emit('start', self.cachedOffset);
-                dirtyQueue.push(function(){
-                    self.offset.emit('end', self.cachedOffset);
-                });
+                self.offset.emit('set', self.cachedOffset);
             });
         }
     }
