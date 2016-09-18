@@ -31,44 +31,15 @@ define(function(require, exports, module){
      */
     function Accumulator(sum, options){
         this.options = OptionsManager.setOptions(this, options);
-
-        // TODO: is this state necessary?
         this.sum = undefined;
-
         if (sum !== undefined) this.set(sum);
 
-        Stream.call(this,{
-            in : {
-                set: set.bind(this),
-                start: start.bind(this),
-                update: update.bind(this),
-                end: function(data){
-                    console.log('fuck')
-                    debugger
-                    return data;
-                }
-            },
-            out : {
-                set : function(){
-                    // console.log('set', this.sum)
-                    return this.sum || 0;
-                }.bind(this),
-                start : function(){
-                    // console.log('start', this.sum)
-                    return this.sum || 0;
-                }.bind(this),
-                update : function(){
-                    // console.log('update', this.sum)
-                    return this.sum;
-                }.bind(this),
-                end : function(){
-                    // console.log('end', this.sum)
-                    return this.sum || 0;
-                }.bind(this)
-            }
+        Stream.call(this, {
+            set: set.bind(this),
+            update: update.bind(this),
+            end: end.bind(this)
         });
 
-        // TODO: is `start` event necessary?
         function set(value){
             if (value instanceof Array) {
                 this.sum = [];
@@ -76,29 +47,22 @@ define(function(require, exports, module){
                     this.sum[i] = clamp(value[i], this.options.min, this.options.max);
             }
             else this.sum = clamp(value, this.options.min, this.options.max);
-        };
 
-        function start(value){
-            if (this.sum !== undefined) return;
-            if (value instanceof Array) {
-                this.sum = [];
-                for (var i = 0; i < value.length; i++)
-                    this.sum[i] = clamp(value[i], this.options.min, this.options.max);
-            }
-            else this.sum = clamp(value, this.options.min, this.options.max);
+            return this.sum;
         };
 
         function update(delta){
             if (delta instanceof Array){
-                for (var i = 0; i < delta.length; i++){
-                    this.sum[i] += delta[i];
-                    this.sum[i] = clamp(this.sum[i], this.options.min, this.options.max);
-                }
+                for (var i = 0; i < delta.length; i++)
+                    this.sum[i] = clamp(this.sum[i] + delta[i], this.options.min, this.options.max);
             }
-            else {
-                this.sum += delta;
-                this.sum = clamp(this.sum, this.options.min, this.options.max);
-            }
+            else this.sum = clamp(this.sum + delta, this.options.min, this.options.max);
+
+            return this.sum;
+        };
+
+        function end(delta){
+            return update.call(this, delta);
         };
     }
 
@@ -122,11 +86,11 @@ define(function(require, exports, module){
      * @param [silent=false] {Boolean}  Flag to suppress events
      */
     Accumulator.prototype.set = function(sum, silent){
-        this.sum = sum;
+        this.sum = clamp(sum, this.options.min, this.options.max);
         if (silent === true) return;
         var self = this;
         preTickQueue.push(function(){
-            self.trigger('set', sum);
+            self.trigger('set', self.sum);
         });
     };
 

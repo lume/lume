@@ -3,6 +3,7 @@
 define(function(require, exports, module){
     var Stream = require('../streams/Stream');
     var OptionsManager = require('../core/_OptionsManager');
+    var dirtyQueue = require('../core/queues/dirtyQueue');
 
     /**
      * Differential is a Stream that emits differentials of consecutive
@@ -34,29 +35,34 @@ define(function(require, exports, module){
         var hasUpdated = false;
 
         Stream.call(this, {
-            update: function () { return delta; }
+            set : set.bind(this),
+            start : set.bind(this),
+            update : update.bind(this),
+            end : end.bind(this)
         });
 
-        this._eventInput.on('start', function (value) {
-            hasUpdated = false;
+        // TODO: correct diff on set
+        function set (value){
             var scale = this.options.scale;
             if (value instanceof Array){
-                if (previous !== undefined){
-                    tempDelta = [];
+                if (previous === undefined){
+                    delta = value.map(function(val){ return 0; });
+                }
+                else {
                     for (var i = 0; i < value.length; i++)
-                        tempDelta[i] = scale * (value[i] - previous[i]);
+                        delta[i] = scale * (value[i] - previous[i]);
                 }
                 previous = value.slice();
             }
             else {
-                if (previous !== undefined)
-                    tempDelta = scale * (value - previous);
+                delta = (previous === undefined) ? 0 : scale * (value - previous);
                 previous = value;
             }
-        }.bind(this));
 
-        this._eventInput.on('update', function (value) {
-            hasUpdated = true;
+            return delta;
+        }
+
+        function update(value) {
             var scale = this.options.scale;
             if (previous instanceof Array) {
                 delta = [];
@@ -69,15 +75,19 @@ define(function(require, exports, module){
                 delta = scale * (value - previous);
                 previous = value;
             }
-        }.bind(this));
 
-        this._eventInput.on('end', function(value){
-            // Emit update if immediate set called
-            if (!hasUpdated && tempDelta !== undefined) {
-                this.emit('update', tempDelta);
-                previous = value;
-            }
-        }.bind(this));
+            return delta;
+        }
+
+        function end(value){
+            var tempDelta = delta;
+            this.trigger('update', value);
+            // TODO: switch to nextQueue
+            dirtyQueue.push(function(){
+                this.emit('end', tempDelta);
+            }.bind(this));
+            return false;
+        }
     }
 
     Differential.DEFAULT_OPTIONS = {
