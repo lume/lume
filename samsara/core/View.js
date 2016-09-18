@@ -74,11 +74,7 @@ define(function(require, exports, module) {
             this._size = this._node.size; // incoming parent size
 
             this._cachedSize = [0, 0];
-
-            this.size.on('set', updateSize.bind(this));
-            this.size.on('start', updateSize.bind(this));
-            this.size.on('update', updateSize.bind(this));
-            this.size.on('end', updateSize.bind(this));
+            this.size.on(['set', 'start', 'update', 'end'], updateSize.bind(this));
 
             Controller.call(this, options);
             if (this.options) setOptions.call(this, this.options);
