@@ -124,10 +124,8 @@ define(function(require, exports, module) {
     var resizeDebounceTime = 150; // introduce lag to detect resize end event. see https://github.com/dmvaldman/samsara/issues/49
 
     var resizeEnd = Timer.debounce(function() {
-        dirtyQueue.push(function(){
-            Engine.size.emit('end', 'end');
-            isResizing = false;
-        });
+        Engine.size.emit('end', 'end');
+        isResizing = false;
     }, resizeDebounceTime);
 
     // Emit a resize event if the window's height or width has changed
@@ -166,11 +164,8 @@ define(function(require, exports, module) {
                 }
             }
             else {
-                postTickQueue.push(function(){
-                    Engine.size.emit('update');
-                    // debounced resize`
-                    resizeEnd();
-                });
+                Engine.size.emit('update');
+                resizeEnd(); // debounced resize
             }
         }
     }
