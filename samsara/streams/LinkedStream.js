@@ -39,10 +39,6 @@ define(function(require, exports, module){
             ? new Observable(offset || 0)
             : offset;
 
-        this.offset.on('update', function(){
-            console.log('offset update')
-        })
-
         this.cachedOffset = 0;
         this.offset.on('start', function(value){
             this.cachedOffset = value;
@@ -78,7 +74,7 @@ define(function(require, exports, module){
         else {
             var self = this;
             preTickQueue.push(function(){
-                this.offset.emit('set', this.cachedOffset);
+                self.offset.emit('set', self.cachedOffset);
             });
         }
     }
