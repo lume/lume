@@ -84,7 +84,7 @@ define(function(require, exports, module) {
             this.isOpen = false;
 
             // STREAMS
-            
+
             // responsible for manually moving the content without user input
             this.transitionStream = new Transitionable(0);
 
@@ -160,6 +160,8 @@ define(function(require, exports, module) {
                             this.options.transitionClose.velocity = 0;
                         }.bind(this));
                     }
+
+                    return 0;
                 }.bind(this)
             });
 
