@@ -77,14 +77,15 @@ define(function(require, exports, module) {
      */
     EventHandler.prototype.on = function on(type, handler) {
         EventEmitter.prototype.on.apply(this, arguments);
+        var i;
         if (type instanceof Array) {
-            for (var i = 0; i < type.length; i++)
+            for (i = 0; i < type.length; i++)
                 on.call(this, type[i], handler);
         }
         else if (!this.upstreamListeners[type]) {
             var upstreamListener = this.trigger.bind(this, type);
             this.upstreamListeners[type] = upstreamListener;
-            for (var i = 0; i < this.upstream.length; i++) {
+            for (i = 0; i < this.upstream.length; i++) {
                 this.upstream[i].on(type, upstreamListener);
             }
         }

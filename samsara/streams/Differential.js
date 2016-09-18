@@ -31,8 +31,6 @@ define(function(require, exports, module){
 
         var previous = undefined;
         var delta = undefined;
-        var tempDelta = undefined;
-        var hasUpdated = false;
 
         Stream.call(this, {
             set : set.bind(this),

@@ -6,11 +6,11 @@ define(function(require, exports, module) {
     /**
      * EventFilter regulates the broadcasting of events based on
      *  a specified condition prescribed by a provided function
-     *  with the signature `(data) -> Boolean`
+     *  with the signature `(type, data) -> Boolean`
      *
      *  @example
      *
-     *      var eventFilter = new EventFilter(function(payload){
+     *      var eventFilter = new EventFilter(function(type, payload){
      *          return (payload.value == 0);
      *      });
      *
@@ -46,7 +46,7 @@ define(function(require, exports, module) {
      */
     EventFilter.prototype.emit = function emit(type, data) {
         //TODO: add start/update/end logic
-        if (!this._condition(data)) return;
+        if (!this._condition(type, data)) return;
         EventHandler.prototype.emit.apply(this, arguments);
     };
 

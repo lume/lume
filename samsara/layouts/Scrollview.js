@@ -188,22 +188,22 @@ define(function (require, exports, module) {
                     // next
                     progress = 1;
                     if (edge !== EDGE.BOTTOM) {
-                        dirtyQueue.push(function(){
-                            this.layout.setPivot(1);
-                            this.position.set(pivotLength + offset);
-                            this._currentIndex++;
-                        }.bind(this));
+                        // dirtyQueue.push(function(){
+                        this.layout.setPivot(1);
+                        this.position.set(pivotLength + offset);
+                        this._currentIndex++;
+                        // }.bind(this));
                     }
                 }
                 else if (offset > 0){
                     // previous
                     progress = 0;
                     if (edge !== EDGE.TOP) {
-                        dirtyQueue.push(function(){
-                            this.layout.setPivot(-1);
-                            this.position.set(-pivotLength + offset);
-                            this._currentIndex--;
-                        }.bind(this))
+                        // dirtyQueue.push(function(){
+                        this.layout.setPivot(-1);
+                        this.position.set(-pivotLength + offset);
+                        this._currentIndex--;
+                        // }.bind(this))
                     }
                 }
                 else {

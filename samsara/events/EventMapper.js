@@ -38,6 +38,11 @@ define(function(require, exports, module) {
     EventMapper.prototype = Object.create(EventHandler.prototype);
     EventMapper.prototype.constructor = EventMapper;
 
+    var FORBIDDEN_TYPES = {
+        lockBelow : true,
+        unlockBelow : true
+    };
+
     /**
      * Emit mapped event.
      *
@@ -46,6 +51,7 @@ define(function(require, exports, module) {
      * @param data {Object} Payload
      */
     EventMapper.prototype.emit = function emit(type, data) {
+        if (FORBIDDEN_TYPES[type]) return;
         var mappedData = this._map(data);
         EventHandler.prototype.emit.call(this, type, mappedData);
     };

@@ -4,9 +4,7 @@ define(function(require, exports, module){
     var SimpleStream = require('./SimpleStream');
     var Observable = require('./Observable');
     var EventHandler = require('../events/EventHandler');
-
     var preTickQueue = require('../core/queues/preTickQueue');
-    var dirtyQueue = require('../core/queues/dirtyQueue');
 
     function ReduceNode(reducer, stream, extras){
         this._input = new SimpleStream();
@@ -148,8 +146,9 @@ define(function(require, exports, module){
         if (this.next[0]) this.next[0].unsubscribe(this.offset);
         if (this.prev[0]) this.prev[0].unsubscribe(this.offset);
 
+        var i;
         if (index > 0){
-            for (var i = 0; i < index; i++){
+            for (i = 0; i < index; i++){
                 var next = this.next.shift();
                 next.setMap(this.prevReducer);
 
@@ -163,7 +162,7 @@ define(function(require, exports, module){
             }
         }
         else {
-            for (var i = 0; i < -index; i++) {
+            for (i = 0; i < -index; i++) {
                 var prev = this.prev.shift();
                 prev.setMap(this.reducer);
 

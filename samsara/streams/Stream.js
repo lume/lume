@@ -84,33 +84,28 @@ define(function(require, exports, module){
         function resolve(data){
             if (startCounter === 0 && states.update && states.end){
                 // update and end called in the same tick when tick should end
-                var payload = options.out && options.out.update ? options.out.update(data) : data;
                 this.emit(EVENTS.UPDATE, data);
                 states.prev = EVENTS.UPDATE;
                 states.update = false;
             }
             else if (states.prev !== EVENTS.UPDATE && states.start && states.update){
                 // start and update called in the same tick
-                var payload = options.out && options.out.start ? options.out.start(data) : data;
                 this.emit(EVENTS.START, data);
                 states.prev = EVENTS.START;
             }
 
             if (states.update || (states.start && states.end)){
                 // call update if updating or if both starting and stopping
-                var payload = options.out && options.out.update ? options.out.update(data) : data;
                 this.emit(EVENTS.UPDATE, data);
                 states.prev = EVENTS.UPDATE;
             }
             else if (states.prev !== EVENTS.UPDATE && states.start && !states.end){
                 // call start if all have started
-                var payload = options.out && options.out.start ? options.out.start(data) : data;
                 this.emit(EVENTS.START, data);
                 states.prev = EVENTS.START;
             }
             else if (startCounter === 0 && states.prev !== EVENTS.START && states.end && !states.start){
                 // call end if all have ended
-                var payload = options.out && options.out.end ? options.out.end(data) : data;
                 this.emit(EVENTS.END, data);
                 states.prev = EVENTS.END;
             }

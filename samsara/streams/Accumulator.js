@@ -49,7 +49,7 @@ define(function(require, exports, module){
             else this.sum = clamp(value, this.options.min, this.options.max);
 
             return this.sum;
-        };
+        }
 
         function update(delta){
             if (delta instanceof Array){
@@ -59,11 +59,11 @@ define(function(require, exports, module){
             else this.sum = clamp(this.sum + delta, this.options.min, this.options.max);
 
             return this.sum;
-        };
+        }
 
         function end(delta){
             return update.call(this, delta);
-        };
+        }
     }
 
     Accumulator.prototype = Object.create(Stream.prototype);
