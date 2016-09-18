@@ -38,15 +38,7 @@ define(function(require, exports, module){
             : offset;
 
         this.cachedOffset = 0;
-        this.offset.on('start', function(value){
-            this.cachedOffset = value;
-        }.bind(this));
-
-        this.offset.on('update', function(value){
-            this.cachedOffset = value;
-        }.bind(this));
-
-        this.offset.on('end', function(value){
+        this.offset.on(['set', 'start', 'update', 'end'], function(value){
             this.cachedOffset = value;
         }.bind(this));
 

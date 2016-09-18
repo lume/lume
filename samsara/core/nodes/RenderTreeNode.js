@@ -44,17 +44,9 @@ define(function(require, exports, module) {
             size : null
         };
 
-        // update size cache
-        this.size.on('start', updateSizeCache.bind(this));
-        this.size.on('update', updateSizeCache.bind(this));
-        this.size.on('end', updateSizeCache.bind(this));
-        this.size.on('set', updateSizeCache.bind(this));
-
-        // update layout spec
-        this.layout.on('start', updateLayoutCache.bind(this));
-        this.layout.on('update', updateLayoutCache.bind(this));
-        this.layout.on('end', updateLayoutCache.bind(this));
-        this.layout.on('set', updateLayoutCache.bind(this));
+        // update size and layout cache
+        this.size.on(['start', 'update', 'end', 'set'], updateSizeCache.bind(this));
+        this.layout.on(['start', 'update', 'end', 'set'], updateLayoutCache.bind(this));
 
         // reference to RootNode if a node is removed and later added
         this.root = null;
