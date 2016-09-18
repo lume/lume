@@ -78,10 +78,7 @@ define(function(require, exports, module){
         else {
             var self = this;
             preTickQueue.push(function(){
-                self.offset.emit('start', self.cachedOffset);
-                dirtyQueue.push(function(){
-                    self.offset.emit('end', self.cachedOffset);
-                });
+                this.offset.emit('set', this.cachedOffset);
             });
         }
     }
