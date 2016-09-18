@@ -59,7 +59,7 @@ define(function(require, exports, module){
                 previous = value;
             }
 
-            return delta;
+            return value;
         }
 
         function update(value) {

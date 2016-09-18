@@ -8,9 +8,7 @@ define(function(require, exports, module) {
     var SizeNode = require('./SizeNode');
     var layoutAlgebra = require('../algebras/layout');
     var sizeAlgebra = require('../algebras/size');
-    var preTickQueue = require('../../core/queues/preTickQueue');
-    window.preTickQueue = preTickQueue;
-    // var dirtyQueue = require('../../core/queues/dirtyQueue');
+    var dirtyQueue = require('../../core/queues/dirtyQueue');
 
     /**
      * A node in the render tree. As such, it wraps a layout or size node,
@@ -124,7 +122,8 @@ define(function(require, exports, module) {
         // Emit previously cached values if node was removed
         if (!node.root){
             var self = this;
-            preTickQueue.push(function(){
+            // TODO: switch to nextQueue
+            dirtyQueue.push(function(){
                 if (!self._cachedSpec.size) return;
                 self.size.trigger('set', self._cachedSpec.size);
                 self.layout.trigger('set', self._cachedSpec.layout);
