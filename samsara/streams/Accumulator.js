@@ -86,7 +86,13 @@ define(function(require, exports, module){
      * @param [silent=false] {Boolean}  Flag to suppress events
      */
     Accumulator.prototype.set = function(sum, silent){
-        this.sum = clamp(sum, this.options.min, this.options.max);
+        if (sum instanceof Array){
+            this.sum = [];
+            for (var i = 0; i < sum.length; i++)
+                this.sum[i] = clamp(sum[i], this.options.min, this.options.max);
+        }
+        else this.sum = clamp(sum, this.options.min, this.options.max);
+
         if (silent === true) return;
         var self = this;
         preTickQueue.push(function(){
