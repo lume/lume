@@ -121,10 +121,12 @@ define(function(require, exports, module) {
         }.bind(this));
 
         this.layout.on('update', function(layout){
+            if (!this._currentTarget) return;
             this._elementOutput.commitLayout(this._currentTarget, layout);
         }.bind(this));
 
         this.layout.on('end', function(layout){
+            if (!this._currentTarget) return;
             this._elementOutput.commitLayout(this._currentTarget, layout);
             this._elementOutput.demoteLayer(this._currentTarget);
         }.bind(this));
@@ -134,10 +136,7 @@ define(function(require, exports, module) {
             this._elementOutput.commitLayout(this._currentTarget, layout);
         }.bind(this));
 
-        this.size.on('set', commitSize.bind(this));
-        this.size.on('start', commitSize.bind(this));
-        this.size.on('update', commitSize.bind(this));
-        this.size.on('end', commitSize.bind(this));
+        this.size.on(['set', 'start', 'update', 'end'], commitSize.bind(this));
 
         if (options) this.setOptions(options);
     }
