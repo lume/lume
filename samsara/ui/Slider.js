@@ -208,9 +208,7 @@ define(function(require, exports, module){
         this.ratio.subscribe(gestureDelta);
         this.ratio.subscribe(this.transitionDelta);
 
-        this.value.on('start', renderValue.bind(this));
-        this.value.on('update', renderValue.bind(this));
-        this.value.on('end', renderValue.bind(this));
+        this.value.on(['start', 'update', 'end', 'set'], renderValue.bind(this));
     }
 
     var prevValue = undefined;
