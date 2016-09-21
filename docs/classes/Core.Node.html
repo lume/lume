@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="utf-8">
-    <title>RootNode - SamsaraJS</title>
+    <title>Core.Node - SamsaraJS</title>
     <link rel="stylesheet" href="">
     <link rel="stylesheet" href="../assets/vendor/prettify/prettify-min.css">
     <link rel="stylesheet" href="../assets/css/main.css" id="site_styles">
@@ -23,12 +23,12 @@
             <li class="divider-vertical"></li>
             <li>
                 <p class="navbar-text">
-                    API Docs for Version: <b>0.2.0</b>
+                    API Docs for Version: <b>0.2.2</b>
                 </p>
             </li>
         </div>
         <form class="navbar-form pull-right" style="line-height: 40px; height: 40px;">
-            <input style="margin-top: 0;" type="text" class="search-query" placeholder="Search for classes..." data-obj='["classes/Core.Controller", "classes/Core.ElementAllocator", "classes/Core.ElementOutput", "classes/Core.Engine", "classes/Core.LayoutNode", "classes/Core.OptionsManager", "classes/Core.SizeNode", "classes/Core.SUE", "classes/Core.Timer", "classes/Core.Transform", "classes/Core.Transitionable", "classes/Core.View", "classes/DOM.ContainerSurface", "classes/DOM.Context", "classes/DOM.Surface", "classes/Events.EventEmitter", "classes/Events.EventFilter", "classes/Events.EventHandler", "classes/Events.EventMapper", "classes/Events.EventSplitter", "classes/Inputs.GenericInput", "classes/Inputs.MouseInput", "classes/Inputs.PinchInput", "classes/Inputs.RotateInput", "classes/Inputs.ScaleInput", "classes/Inputs.ScrollInput", "classes/Inputs.TouchInput", "classes/Inputs.TouchTracker", "classes/Inputs.TwoFingerInput", "classes/Layouts.DrawerLayout", "classes/Layouts.FlexibleLayout", "classes/Layouts.GridLayout", "classes/Layouts.SequentialLayout", "classes/RenderTreeNode", "classes/RootNode", "classes/Streams.Accumulator", "classes/Streams.Differential", "classes/Streams.Observable", "classes/Streams.ResizeStream", "classes/Streams.SimpleStream", "classes/Streams.Stream", "classes/Transitions.Inertia", "classes/Transitions.Spring", "classes/Transitions.Tween"]'>
+            <input style="margin-top: 0;" type="text" class="search-query" placeholder="Search for classes..." data-obj='["classes/Core.Controller", "classes/Core.DOMAllocator", "classes/Core.DOMOutput", "classes/Core.Engine", "classes/Core.LayoutNode", "classes/Core.Node", "classes/Core.OptionsManager", "classes/Core.RenderTreeNode", "classes/Core.RootNode", "classes/Core.SizeNode", "classes/Core.Timer", "classes/Core.Transform", "classes/Core.Transitionable", "classes/Core.View", "classes/DOM.ContainerSurface", "classes/DOM.Context", "classes/DOM.Surface", "classes/Events.EventEmitter", "classes/Events.EventFilter", "classes/Events.EventHandler", "classes/Events.EventMapper", "classes/Events.EventSplitter", "classes/Inputs.GenericInput", "classes/Inputs.MouseInput", "classes/Inputs.PinchInput", "classes/Inputs.RotateInput", "classes/Inputs.ScaleInput", "classes/Inputs.ScrollInput", "classes/Inputs.TouchInput", "classes/Inputs.TouchTracker", "classes/Inputs.TwoFingerInput", "classes/Layouts.BidirectionalList", "classes/Layouts.DrawerLayout", "classes/Layouts.FlexLayout", "classes/Layouts.GridLayout", "classes/Layouts.HeaderFooterLayout", "classes/Layouts.SequentialLayout", "classes/Streams.Accumulator", "classes/Streams.Differential", "classes/Streams.Observable", "classes/Streams.SimpleStream", "classes/Streams.Stream", "classes/Transitions.Inertia", "classes/Transitions.Spring", "classes/Transitions.Tween", "classes/UI.Fingers", "classes/UI.Slider"]'>
         </form>
     </div>
 </div>
@@ -69,13 +69,17 @@
 	                            <li><a href="../classes/Inputs.ScaleInput.html">Inputs.ScaleInput</a></li>
 	                            <li><a href="../classes/Inputs.ScrollInput.html">Inputs.ScrollInput</a></li>
 	                            <li><a href="../classes/Inputs.TouchInput.html">Inputs.TouchInput</a></li>
+	                            <li><a href="../classes/Layouts.BidirectionalList.html">Layouts.BidirectionalList</a></li>
 	                            <li><a href="../classes/Layouts.DrawerLayout.html">Layouts.DrawerLayout</a></li>
-	                            <li><a href="../classes/Layouts.FlexibleLayout.html">Layouts.FlexibleLayout</a></li>
+	                            <li><a href="../classes/Layouts.FlexLayout.html">Layouts.FlexLayout</a></li>
 	                            <li><a href="../classes/Layouts.GridLayout.html">Layouts.GridLayout</a></li>
+	                            <li><a href="../classes/Layouts.HeaderFooterLayout.html">Layouts.HeaderFooterLayout</a></li>
 	                            <li><a href="../classes/Layouts.SequentialLayout.html">Layouts.SequentialLayout</a></li>
 	                            <li><a href="../classes/Streams.Accumulator.html">Streams.Accumulator</a></li>
 	                            <li><a href="../classes/Streams.Differential.html">Streams.Differential</a></li>
 	                            <li><a href="../classes/Streams.Stream.html">Streams.Stream</a></li>
+	                            <li><a href="../classes/UI.Fingers.html">UI.Fingers</a></li>
+	                            <li><a href="../classes/UI.Slider.html">UI.Slider</a></li>
 	                    </ul>
 	                </div>
 	    
@@ -116,18 +120,15 @@
                 <div id="docs-main">
                     <div class="content">
 <div class="page-header">
-    <h1>RootNode <small>Class</small></h1>
+    <h1>Core.Node <small>Class</small></h1>
 </div>
 
 <div class="well well-small">
 
-        <div class="extends">
-            Extends Core.RenderTreeNode
-        </div>
 
     <!---->
         <div class="foundat">
-            Defined in: <a href="../files/samsara_core_nodes_RootNode.js.html#l6"><code>samsara&#x2F;core&#x2F;nodes&#x2F;RootNode.js:6</code></a>
+            Defined in: <a href="../files/samsara_core_nodes_Node.js.html#l9"><code>samsara&#x2F;core&#x2F;nodes&#x2F;Node.js:9</code></a>
         </div>
     <!---->
 
@@ -136,21 +137,21 @@
 
 
 <div class="well well-small">
-    <p>A RootNode is a first node in the Render Tree. It is like any other
-RenderTreeNode but with the additional responsibility of defining
-an allocating DOM node to render to.</p>
+    <p>Encapsulates a stream of layout data (transform, origin, align, opacity).
+Listens on start/update/end events, batches them, and emits them downstream
+to descendant layout nodes.</p>
 
 </div>
 
     <div class="constructor">
         <h2>Constructor</h2>
-        <div id="method_RootNode" class="method item private">
-            <h3 class="name"><code>RootNode</code></h3>
+        <div id="method_Core.Node" class="method item private">
+            <h3 class="name"><code>Core.Node</code></h3>
         
                 <div class="args">
                     <span class="paren">(</span><ul class="args-list inline commas">
                         <li class="arg">
-                                <code class="optional">[allocator]</code>
+                                <code>sources</code>
                         </li>
                     </ul><span class="paren">)</span>
                 </div>
@@ -169,7 +170,7 @@ an allocating DOM node to render to.</p>
                         <!--Defined in-->
                         <!---->
                 <!---->
-                <!--<a href="../files/samsara_core_nodes_RootNode.js.html#l6"><code>samsara&#x2F;core&#x2F;nodes&#x2F;RootNode.js:6</code></a>-->
+                <!--<a href="../files/samsara_core_nodes_Node.js.html#l9"><code>samsara&#x2F;core&#x2F;nodes&#x2F;Node.js:9</code></a>-->
                 <!---->
                 </p>
         
@@ -186,21 +187,91 @@ an allocating DOM node to render to.</p>
         
                     <ul class="params-list">
                         <li class="param">
-                                <code class="param-name optional">[allocator]</code>
-                                <span class="type">ElementAllocator</span>
-                                <span class="flag optional" title="This parameter is optional.">optional</span>
+                                <code class="param-name">sources</code>
+                                <span class="type"><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object" class="crosslink external" target="_blank">Object</a></span>
         
         
                             <div class="param-description">
-                                <p>ElementAllocator</p>
+                                <p>Object of layout sources</p>
         
                             </div>
         
+                                <ul class="params-list">
+                                    <li class="param">
+                                            <code class="param-name optional">[transform]</code>
+                                            <span class="type">Stream | Transform</span>
+                                            <span class="flag optional" title="This parameter is optional.">optional</span>
+        
+                                        <div class="param-description">
+                                            <p>Transform source</p>
+        
+                                        </div>
+        
+                                    </li>
+                                    <li class="param">
+                                            <code class="param-name optional">[align]</code>
+                                            <span class="type">Stream | <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array" class="crosslink external" target="_blank">Array</a></span>
+                                            <span class="flag optional" title="This parameter is optional.">optional</span>
+        
+                                        <div class="param-description">
+                                            <p>Align source</p>
+        
+                                        </div>
+        
+                                    </li>
+                                    <li class="param">
+                                            <code class="param-name optional">[origin]</code>
+                                            <span class="type">Stream | <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array" class="crosslink external" target="_blank">Array</a></span>
+                                            <span class="flag optional" title="This parameter is optional.">optional</span>
+        
+                                        <div class="param-description">
+                                            <p>Origin source</p>
+        
+                                        </div>
+        
+                                    </li>
+                                    <li class="param">
+                                            <code class="param-name optional">[opacity]</code>
+                                            <span class="type">Stream | <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Number" class="crosslink external" target="_blank">Number</a></span>
+                                            <span class="flag optional" title="This parameter is optional.">optional</span>
+        
+                                        <div class="param-description">
+                                            <p>Opacity source</p>
+        
+                                        </div>
+        
+                                    </li>
+                                </ul>
                         </li>
                     </ul>
                 </div>
         
         
+                <div class="example">
+                    <h4>Example:</h4>
+        
+                    <div class="example-content">
+                        <pre class="code prettyprint"><code> var context = Context();
+        
+         var surface = new Surface({
+             size : [100,100],
+             properties : {background : 'red'}
+         });
+        
+         var opacity = new Transitionable(1);
+        
+         var layout = new LayoutNode({
+             transform : Transform.translateX(100),
+             opacity : opacity
+         });
+        
+         context.add(layout).add(surface);
+         context.mount(document.body)
+        
+         opacity.set(0, {duration : 1000});</code></pre>
+        
+                    </div>
+                </div>
         </div>
     </div>
 
@@ -218,9 +289,9 @@ an allocating DOM node to render to.</p>
                 <div class="index-section methods">
                     <h3>Methods</h3>
 
-                    <ul class="index-list methods extends">
+                    <ul class="index-list methods">
                             <li class="index-item method">
-                                <a href="#" data-tabid="#methods" data-anchor="#method_setAllocator" data-tablink="setAllocator">setAllocator</a>
+                                <a href="#" data-tabid="#methods" data-anchor="#method_set" data-tablink="set">set</a>
 
                             </li>
                     </ul>
@@ -233,13 +304,13 @@ an allocating DOM node to render to.</p>
             <div id="methods" class="tab-pane">
                 <h2 class="off-left">Methods</h2>
 
-                    <div id="method_setAllocator" class="method item">
-                        <h3 class="name"><code>setAllocator</code></h3>
+                    <div id="method_set" class="method item">
+                        <h3 class="name"><code>set</code></h3>
                     
                             <div class="args">
                                 <span class="paren">(</span><ul class="args-list inline commas">
                                     <li class="arg">
-                                            <code>allocator</code>
+                                            <code>sources</code>
                                     </li>
                                 </ul><span class="paren">)</span>
                             </div>
@@ -257,7 +328,7 @@ an allocating DOM node to render to.</p>
                                     <!--Defined in-->
                                     <!---->
                             <!---->
-                            <!--<a href="../files/samsara_core_nodes_RootNode.js.html#l26"><code>samsara&#x2F;core&#x2F;nodes&#x2F;RootNode.js:26</code></a>-->
+                            <!--<a href="../files/samsara_core_nodes_Node.js.html#l50"><code>samsara&#x2F;core&#x2F;nodes&#x2F;Node.js:50</code></a>-->
                             <!---->
                             </p>
                     
@@ -266,7 +337,10 @@ an allocating DOM node to render to.</p>
                         </div>
                     
                         <div class="description">
-                            <p>Define an allocator</p>
+                            <p>Introduce new data streams to the layout node in {key : value} pairs.
+                    Here the <code>key</code> is a value from one of <code>SizeNode.KEYS</code> or <code>LayoutNode.KEYS</code>.
+                    The <code>value</code> is either a stream, or a simple type like a <code>Number</code> or <code>Array</code>.
+                    Simple types will be wrapped in an <code>Observerable</code> to emit appropriate events.</p>
                     
                         </div>
                     
@@ -275,12 +349,12 @@ an allocating DOM node to render to.</p>
                     
                                 <ul class="params-list">
                                     <li class="param">
-                                            <code class="param-name">allocator</code>
-                                            <span class="type">Allocator</span>
+                                            <code class="param-name">sources</code>
+                                            <span class="type"><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object" class="crosslink external" target="_blank">Object</a></span>
                     
                     
                                         <div class="param-description">
-                                            <p>Allocator</p>
+                                            <p>Object of data sources</p>
                     
                                         </div>
                     

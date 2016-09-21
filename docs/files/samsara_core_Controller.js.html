@@ -23,12 +23,12 @@
             <li class="divider-vertical"></li>
             <li>
                 <p class="navbar-text">
-                    API Docs for Version: <b>0.2.0</b>
+                    API Docs for Version: <b>0.2.2</b>
                 </p>
             </li>
         </div>
         <form class="navbar-form pull-right" style="line-height: 40px; height: 40px;">
-            <input style="margin-top: 0;" type="text" class="search-query" placeholder="Search for classes..." data-obj='["classes/Core.Controller", "classes/Core.ElementAllocator", "classes/Core.ElementOutput", "classes/Core.Engine", "classes/Core.LayoutNode", "classes/Core.OptionsManager", "classes/Core.SizeNode", "classes/Core.SUE", "classes/Core.Timer", "classes/Core.Transform", "classes/Core.Transitionable", "classes/Core.View", "classes/DOM.ContainerSurface", "classes/DOM.Context", "classes/DOM.Surface", "classes/Events.EventEmitter", "classes/Events.EventFilter", "classes/Events.EventHandler", "classes/Events.EventMapper", "classes/Events.EventSplitter", "classes/Inputs.GenericInput", "classes/Inputs.MouseInput", "classes/Inputs.PinchInput", "classes/Inputs.RotateInput", "classes/Inputs.ScaleInput", "classes/Inputs.ScrollInput", "classes/Inputs.TouchInput", "classes/Inputs.TouchTracker", "classes/Inputs.TwoFingerInput", "classes/Layouts.DrawerLayout", "classes/Layouts.FlexibleLayout", "classes/Layouts.GridLayout", "classes/Layouts.SequentialLayout", "classes/RenderTreeNode", "classes/RootNode", "classes/Streams.Accumulator", "classes/Streams.Differential", "classes/Streams.Observable", "classes/Streams.ResizeStream", "classes/Streams.SimpleStream", "classes/Streams.Stream", "classes/Transitions.Inertia", "classes/Transitions.Spring", "classes/Transitions.Tween"]'>
+            <input style="margin-top: 0;" type="text" class="search-query" placeholder="Search for classes..." data-obj='["classes/Core.Controller", "classes/Core.DOMAllocator", "classes/Core.DOMOutput", "classes/Core.Engine", "classes/Core.LayoutNode", "classes/Core.Node", "classes/Core.OptionsManager", "classes/Core.RenderTreeNode", "classes/Core.RootNode", "classes/Core.SizeNode", "classes/Core.Timer", "classes/Core.Transform", "classes/Core.Transitionable", "classes/Core.View", "classes/DOM.ContainerSurface", "classes/DOM.Context", "classes/DOM.Surface", "classes/Events.EventEmitter", "classes/Events.EventFilter", "classes/Events.EventHandler", "classes/Events.EventMapper", "classes/Events.EventSplitter", "classes/Inputs.GenericInput", "classes/Inputs.MouseInput", "classes/Inputs.PinchInput", "classes/Inputs.RotateInput", "classes/Inputs.ScaleInput", "classes/Inputs.ScrollInput", "classes/Inputs.TouchInput", "classes/Inputs.TouchTracker", "classes/Inputs.TwoFingerInput", "classes/Layouts.BidirectionalList", "classes/Layouts.DrawerLayout", "classes/Layouts.FlexLayout", "classes/Layouts.GridLayout", "classes/Layouts.HeaderFooterLayout", "classes/Layouts.SequentialLayout", "classes/Streams.Accumulator", "classes/Streams.Differential", "classes/Streams.Observable", "classes/Streams.SimpleStream", "classes/Streams.Stream", "classes/Transitions.Inertia", "classes/Transitions.Spring", "classes/Transitions.Tween", "classes/UI.Fingers", "classes/UI.Slider"]'>
         </form>
     </div>
 </div>
@@ -69,13 +69,17 @@
 	                            <li><a href="../classes/Inputs.ScaleInput.html">Inputs.ScaleInput</a></li>
 	                            <li><a href="../classes/Inputs.ScrollInput.html">Inputs.ScrollInput</a></li>
 	                            <li><a href="../classes/Inputs.TouchInput.html">Inputs.TouchInput</a></li>
+	                            <li><a href="../classes/Layouts.BidirectionalList.html">Layouts.BidirectionalList</a></li>
 	                            <li><a href="../classes/Layouts.DrawerLayout.html">Layouts.DrawerLayout</a></li>
-	                            <li><a href="../classes/Layouts.FlexibleLayout.html">Layouts.FlexibleLayout</a></li>
+	                            <li><a href="../classes/Layouts.FlexLayout.html">Layouts.FlexLayout</a></li>
 	                            <li><a href="../classes/Layouts.GridLayout.html">Layouts.GridLayout</a></li>
+	                            <li><a href="../classes/Layouts.HeaderFooterLayout.html">Layouts.HeaderFooterLayout</a></li>
 	                            <li><a href="../classes/Layouts.SequentialLayout.html">Layouts.SequentialLayout</a></li>
 	                            <li><a href="../classes/Streams.Accumulator.html">Streams.Accumulator</a></li>
 	                            <li><a href="../classes/Streams.Differential.html">Streams.Differential</a></li>
 	                            <li><a href="../classes/Streams.Stream.html">Streams.Stream</a></li>
+	                            <li><a href="../classes/UI.Fingers.html">UI.Fingers</a></li>
+	                            <li><a href="../classes/UI.Slider.html">UI.Slider</a></li>
 	                    </ul>
 	                </div>
 	    
@@ -124,7 +128,7 @@
 /* Copyright © 2015-2016 David Valdman */
 
 define(function(require, exports, module) {
-    var OptionsManager = require(&#x27;./OptionsManager&#x27;);
+    var OptionsManager = require(&#x27;./_OptionsManager&#x27;);
     var EventHandler = require(&#x27;../events/EventHandler&#x27;);
     var SimpleStream = require(&#x27;../streams/SimpleStream&#x27;);
 
@@ -178,15 +182,19 @@ define(function(require, exports, module) {
      * @param options {Object} Instance options
      */
     function Controller(options) {
+        // set options
         this.options = _clone(this.constructor.DEFAULT_OPTIONS || Controller.DEFAULT_OPTIONS);
         this._optionsManager = new OptionsManager(this.options);
         if (options) this.setOptions(options);
 
+        // set input and output streams
         this.input = new SimpleStream();
         this.output = new SimpleStream();
         EventHandler.setInputHandler(this, this.input);
         EventHandler.setOutputHandler(this, this.output);
-        EventHandler.setInputEvents(this, this.constructor.EVENTS || Controller.EVENTS, this.input);
+
+        // bind events defined in the constructor&#x27;s EVENTS dictionary to the input
+        setInputEvents.call(this, this.constructor.EVENTS || Controller.EVENTS, this.input);
 
         this.input.bindThis(this);
         this.input.subscribe(this._optionsManager);
@@ -234,11 +242,6 @@ define(function(require, exports, module) {
         OptionsManager.prototype.setOptions.apply(this._optionsManager, arguments);
     };
 
-    var RESERVED_KEYS = {
-        DEFAULTS : &#x27;defaults&#x27;,
-        EVENTS : &#x27;events&#x27;
-    };
-
     function _clone(obj) {
         var copy;
         if (typeof obj === &#x27;object&#x27;) {
@@ -261,19 +264,39 @@ define(function(require, exports, module) {
         return copy;
     }
 
-    function extend(protoObj, constants){
+    /**
+     * Constructor helper method. Given an events dictionary of {eventName : handler} pairs, attach them to
+     *  a provided input handler for an object. The &#x60;handler&#x60; can be a string, in which case the string resolves
+     *  to a method with the string&#x27;s name defined on the object.
+     */
+    function setInputEvents(events, inputHandler){
+        for (var key in events) {
+            var handlerName = events[key];
+            var handler = (typeof handlerName === &#x27;string&#x27;)
+                ? this[handlerName]
+                : handlerName;
+            if (handler) inputHandler.on(key, handler.bind(this));
+        }
+    }
+    
+    var RESERVED_KEYS = {
+        DEFAULTS : &#x27;defaults&#x27;,
+        EVENTS : &#x27;events&#x27;
+    };
+
+    function extend(properties, constructorProperties){
         var parent = this;
 
-        var child = (protoObj.hasOwnProperty(&#x27;constructor&#x27;))
-            ? function(){ protoObj.constructor.apply(this, arguments); }
+        var child = (properties.hasOwnProperty(&#x27;constructor&#x27;))
+            ? function(){ properties.constructor.apply(this, arguments); }
             : function(){ parent.apply(this, arguments); };
 
         child.extend = extend;
         child.prototype = Object.create(parent.prototype);
         child.prototype.constructor = child;
 
-        for (var key in protoObj){
-            var value = protoObj[key];
+        for (var key in properties){
+            var value = properties[key];
             switch (key) {
                 case RESERVED_KEYS.DEFAULTS:
                     child.DEFAULT_OPTIONS = value;
@@ -281,28 +304,29 @@ define(function(require, exports, module) {
                 case RESERVED_KEYS.EVENTS:
                     if (!child.EVENTS) child.EVENTS = value;
                     else
-                        for (var key in value)
-                            child.EVENTS[key] = value[key];
+                        for (var type in value)
+                            child.EVENTS[type] = value[type];
                     break;
                 default:
                     child.prototype[key] = value;
             }
         }
 
-
-        for (var key in constants)
-            child[key] = constants[key];
+        for (key in constructorProperties)
+            child[key] = constructorProperties[key];
 
         return child;
     }
 
     /**
-     * Allows a class to extend Controller.
-     *  Note: this is a method defined on the Controller constructor
+     * Extend the Controller class with user-defined instance properties, as well as constructor
+     *  properties.
      *
      * @method extend
-     * @param protoObj {Object}     Prototype properties of the extended class
-     * @param constants {Object}    Constants to be added to the extended class&#x27;s constructor
+     * @static
+     * @private
+     * @param properties {Object}               User-defined instance methods and properties
+     * @param [constructorProperties] {Object}  Constructor properties
      */
     Controller.extend = extend;
 

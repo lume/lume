@@ -23,12 +23,12 @@
             <li class="divider-vertical"></li>
             <li>
                 <p class="navbar-text">
-                    API Docs for Version: <b>0.2.0</b>
+                    API Docs for Version: <b>0.2.2</b>
                 </p>
             </li>
         </div>
         <form class="navbar-form pull-right" style="line-height: 40px; height: 40px;">
-            <input style="margin-top: 0;" type="text" class="search-query" placeholder="Search for classes..." data-obj='["classes/Core.Controller", "classes/Core.ElementAllocator", "classes/Core.ElementOutput", "classes/Core.Engine", "classes/Core.LayoutNode", "classes/Core.OptionsManager", "classes/Core.SizeNode", "classes/Core.SUE", "classes/Core.Timer", "classes/Core.Transform", "classes/Core.Transitionable", "classes/Core.View", "classes/DOM.ContainerSurface", "classes/DOM.Context", "classes/DOM.Surface", "classes/Events.EventEmitter", "classes/Events.EventFilter", "classes/Events.EventHandler", "classes/Events.EventMapper", "classes/Events.EventSplitter", "classes/Inputs.GenericInput", "classes/Inputs.MouseInput", "classes/Inputs.PinchInput", "classes/Inputs.RotateInput", "classes/Inputs.ScaleInput", "classes/Inputs.ScrollInput", "classes/Inputs.TouchInput", "classes/Inputs.TouchTracker", "classes/Inputs.TwoFingerInput", "classes/Layouts.DrawerLayout", "classes/Layouts.FlexibleLayout", "classes/Layouts.GridLayout", "classes/Layouts.SequentialLayout", "classes/RenderTreeNode", "classes/RootNode", "classes/Streams.Accumulator", "classes/Streams.Differential", "classes/Streams.Observable", "classes/Streams.ResizeStream", "classes/Streams.SimpleStream", "classes/Streams.Stream", "classes/Transitions.Inertia", "classes/Transitions.Spring", "classes/Transitions.Tween"]'>
+            <input style="margin-top: 0;" type="text" class="search-query" placeholder="Search for classes..." data-obj='["classes/Core.Controller", "classes/Core.DOMAllocator", "classes/Core.DOMOutput", "classes/Core.Engine", "classes/Core.LayoutNode", "classes/Core.Node", "classes/Core.OptionsManager", "classes/Core.RenderTreeNode", "classes/Core.RootNode", "classes/Core.SizeNode", "classes/Core.Timer", "classes/Core.Transform", "classes/Core.Transitionable", "classes/Core.View", "classes/DOM.ContainerSurface", "classes/DOM.Context", "classes/DOM.Surface", "classes/Events.EventEmitter", "classes/Events.EventFilter", "classes/Events.EventHandler", "classes/Events.EventMapper", "classes/Events.EventSplitter", "classes/Inputs.GenericInput", "classes/Inputs.MouseInput", "classes/Inputs.PinchInput", "classes/Inputs.RotateInput", "classes/Inputs.ScaleInput", "classes/Inputs.ScrollInput", "classes/Inputs.TouchInput", "classes/Inputs.TouchTracker", "classes/Inputs.TwoFingerInput", "classes/Layouts.BidirectionalList", "classes/Layouts.DrawerLayout", "classes/Layouts.FlexLayout", "classes/Layouts.GridLayout", "classes/Layouts.HeaderFooterLayout", "classes/Layouts.SequentialLayout", "classes/Streams.Accumulator", "classes/Streams.Differential", "classes/Streams.Observable", "classes/Streams.SimpleStream", "classes/Streams.Stream", "classes/Transitions.Inertia", "classes/Transitions.Spring", "classes/Transitions.Tween", "classes/UI.Fingers", "classes/UI.Slider"]'>
         </form>
     </div>
 </div>
@@ -69,13 +69,17 @@
 	                            <li><a href="../classes/Inputs.ScaleInput.html">Inputs.ScaleInput</a></li>
 	                            <li><a href="../classes/Inputs.ScrollInput.html">Inputs.ScrollInput</a></li>
 	                            <li><a href="../classes/Inputs.TouchInput.html">Inputs.TouchInput</a></li>
+	                            <li><a href="../classes/Layouts.BidirectionalList.html">Layouts.BidirectionalList</a></li>
 	                            <li><a href="../classes/Layouts.DrawerLayout.html">Layouts.DrawerLayout</a></li>
-	                            <li><a href="../classes/Layouts.FlexibleLayout.html">Layouts.FlexibleLayout</a></li>
+	                            <li><a href="../classes/Layouts.FlexLayout.html">Layouts.FlexLayout</a></li>
 	                            <li><a href="../classes/Layouts.GridLayout.html">Layouts.GridLayout</a></li>
+	                            <li><a href="../classes/Layouts.HeaderFooterLayout.html">Layouts.HeaderFooterLayout</a></li>
 	                            <li><a href="../classes/Layouts.SequentialLayout.html">Layouts.SequentialLayout</a></li>
 	                            <li><a href="../classes/Streams.Accumulator.html">Streams.Accumulator</a></li>
 	                            <li><a href="../classes/Streams.Differential.html">Streams.Differential</a></li>
 	                            <li><a href="../classes/Streams.Stream.html">Streams.Stream</a></li>
+	                            <li><a href="../classes/UI.Fingers.html">UI.Fingers</a></li>
+	                            <li><a href="../classes/UI.Slider.html">UI.Slider</a></li>
 	                    </ul>
 	                </div>
 	    
@@ -121,19 +125,12 @@
 
 <div class="file">
     <pre class="prettyprint linenums">
-/* This Source Code Form is subject to the terms of the Mozilla Public
- * License, v. 2.0. If a copy of the MPL was not distributed with this
- * file, You can obtain one at http://mozilla.org/MPL/2.0/.
- *
- * @license MPL 2.0
- * @copyright Famous Industries, Inc. 2014
- */
+/* Copyright © 2015-2016 David Valdman */
 
-/* Modified work copyright © 2015-2016 David Valdman */
-
-define(function(require, exports, module) {
-    var TwoFingerInput = require(&#x27;../inputs/TwoFingerInput&#x27;);
-    var OptionsManager = require(&#x27;../core/OptionsManager&#x27;);
+define(function(require, exports, module){
+    var EventHandler = require(&#x27;../events/EventHandler&#x27;);
+    var TwoFingerInput = require(&#x27;./_TwoFingerInput&#x27;);
+    var OptionsManager = require(&#x27;../core/_OptionsManager&#x27;);
 
     /**
      * Detects two-finger pinching motion and emits &#x60;start&#x60;, &#x60;update&#x60; and
@@ -144,7 +141,6 @@ define(function(require, exports, module) {
      *      &#x60;velocity&#x60;      - Relative velocity between two touches
      *      &#x60;displacement&#x60;  - Total accumulated displacement
      *      &#x60;center&#x60;        - Midpoint between the two touches
-     *      &#x60;touchIds&#x60;      - Array of DOM event touch identifiers
      *
      * @example
      *
@@ -165,63 +161,108 @@ define(function(require, exports, module) {
      *      });
      *
      * @class PinchInput
-     * @extends Inputs.TwoFingerInput
-     * @uses Core.OptionsManager
+     * @extends Inputs._TwoFingerInput
+     * @uses Core._OptionsManager
      * @constructor
-     * @param options {Object}              Options
-     * @param [options.scale=1] {Number}    Scale the response to pinch
+     * @param options {Object}                  Options
+     * @param [options.scale=1] {Number}        Scale the response to pinch
+     * @param [options.direction] {Number}      Direction to project movement onto.
+     *                                          Options found in TouchInput.DIRECTION.
+     * @param [options.rails=false] {Boolean}   If a direction is specified, movement in the
+     *                                          orthogonal direction is suppressed
      */
-    function PinchInput(options) {
-        TwoFingerInput.call(this);
-
+    function PinchInput(options){
         this.options = OptionsManager.setOptions(this, options);
 
-        this._displacement = 0;
-        this._previousDistance = 0;
+        this._eventInput = new TwoFingerInput(this.options);
+        this._eventOutput = new EventHandler();
+
+        EventHandler.setInputHandler(this, this._eventInput);
+        EventHandler.setOutputHandler(this, this._eventOutput);
+        
+        this._eventInput.on(&#x27;twoFingerStart&#x27;, start.bind(this));
+        this._eventInput.on(&#x27;twoFingerUpdate&#x27;, update.bind(this));
+        this._eventInput.on(&#x27;twoFingerEnd&#x27;, end.bind(this));
+
+        this.payload = {
+            delta : null,
+            velocity : null,
+            value : null,
+            center : []
+        };
+
+        this.value = 0;
+        this.direction = [];
     }
 
     PinchInput.prototype = Object.create(TwoFingerInput.prototype);
     PinchInput.prototype.constructor = PinchInput;
 
+    PinchInput.DIRECTION = {
+        X : 0,
+        Y : 1
+    };
+
     PinchInput.DEFAULT_OPTIONS = {
-        scale : 1
+        scale : 1,
+        direction : undefined,
+        rails : true
     };
 
-    PinchInput.prototype._startUpdate = function _startUpdate(event) {
-        var center = TwoFingerInput.calculateCenter(this.posA, this.posB);
-        this._previousDistance = TwoFingerInput.calculateDistance(this.posA, this.posB);
+    function start(data){
+        var center = TwoFingerInput.calculateCenter.call(this, data[0].position, data[1].position);
+        var distance = TwoFingerInput.calculateDistance.call(this, data[0].position, data[1].position);
+        this.direction = TwoFingerInput.calculateOrientation.call(this, data[0].position, data[1].position);
 
-        this._displacement = 0;
+        var payload = this.payload;
+        payload.value = distance;
+        payload.center = center;
 
-        this._eventOutput.emit(&#x27;start&#x27;, {
-            count: event.touches.length,
-            touchIds: [this.touchAId, this.touchBId],
-            value: this._previousDistance,
-            center: center
-        });
-    };
+        this._eventOutput.emit(&#x27;start&#x27;, payload);
 
-    PinchInput.prototype._moveUpdate = function _moveUpdate(diffTime) {
-        var currDist = TwoFingerInput.calculateDistance(this.posA, this.posB);
-        var center = TwoFingerInput.calculateCenter(this.posA, this.posB);
+        this.value = distance;
+    }
 
+    function update(data){
+        var center = TwoFingerInput.calculateCenter.call(this, data[0].position, data[1].position);
+        var distance = TwoFingerInput.calculateDistance.call(this, data[0].position, data[1].position);
+        var velocity = TwoFingerInput.calculateVelocity.call(this, data[0].velocity, data[1].velocity);
+        var currDirection = TwoFingerInput.calculateOrientation.call(this, data[0].position, data[1].position);
+
+        var changedDirection = TwoFingerInput.detectOrientationChange.call(this, currDirection, this.direction);
         var scale = this.options.scale;
-        var delta = scale * (currDist - this._previousDistance);
-        var velocity = delta / diffTime;
+        var delta;
 
-        this._displacement += delta;
+        if (this.options.direction === undefined){
+            if (changedDirection){
+                distance[0] *= -1;
+                distance[1] *= -1;
+            }
 
-        this._eventOutput.emit(&#x27;update&#x27;, {
-            delta : delta,
-            velocity: velocity,
-            value: currDist,
-            displacement: this._displacement,
-            center: center,
-            touchIds: [this.touchAId, this.touchBId]
-        });
+            delta = [
+                scale * (distance[0] - this.value[0]),
+                scale * (distance[1] - this.value[1])
+            ];
+        }
+        else {
+            if (changedDirection) distance *= -1;
+            delta = scale * (distance - this.value);
+        }
 
-        this._previousDistance = currDist;
-    };
+        var payload = this.payload;
+        payload.delta = delta;
+        payload.velocity = velocity;
+        payload.value = this.value;
+        payload.center = center;
+
+        this._eventOutput.emit(&#x27;update&#x27;, payload);
+
+        this.value = distance;
+    }
+
+    function end(){
+        this._eventOutput.emit(&#x27;end&#x27;, this.payload);
+    }
 
     module.exports = PinchInput;
 });

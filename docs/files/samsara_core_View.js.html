@@ -23,12 +23,12 @@
             <li class="divider-vertical"></li>
             <li>
                 <p class="navbar-text">
-                    API Docs for Version: <b>0.2.0</b>
+                    API Docs for Version: <b>0.2.2</b>
                 </p>
             </li>
         </div>
         <form class="navbar-form pull-right" style="line-height: 40px; height: 40px;">
-            <input style="margin-top: 0;" type="text" class="search-query" placeholder="Search for classes..." data-obj='["classes/Core.Controller", "classes/Core.ElementAllocator", "classes/Core.ElementOutput", "classes/Core.Engine", "classes/Core.LayoutNode", "classes/Core.OptionsManager", "classes/Core.SizeNode", "classes/Core.SUE", "classes/Core.Timer", "classes/Core.Transform", "classes/Core.Transitionable", "classes/Core.View", "classes/DOM.ContainerSurface", "classes/DOM.Context", "classes/DOM.Surface", "classes/Events.EventEmitter", "classes/Events.EventFilter", "classes/Events.EventHandler", "classes/Events.EventMapper", "classes/Events.EventSplitter", "classes/Inputs.GenericInput", "classes/Inputs.MouseInput", "classes/Inputs.PinchInput", "classes/Inputs.RotateInput", "classes/Inputs.ScaleInput", "classes/Inputs.ScrollInput", "classes/Inputs.TouchInput", "classes/Inputs.TouchTracker", "classes/Inputs.TwoFingerInput", "classes/Layouts.DrawerLayout", "classes/Layouts.FlexibleLayout", "classes/Layouts.GridLayout", "classes/Layouts.SequentialLayout", "classes/RenderTreeNode", "classes/RootNode", "classes/Streams.Accumulator", "classes/Streams.Differential", "classes/Streams.Observable", "classes/Streams.ResizeStream", "classes/Streams.SimpleStream", "classes/Streams.Stream", "classes/Transitions.Inertia", "classes/Transitions.Spring", "classes/Transitions.Tween"]'>
+            <input style="margin-top: 0;" type="text" class="search-query" placeholder="Search for classes..." data-obj='["classes/Core.Controller", "classes/Core.DOMAllocator", "classes/Core.DOMOutput", "classes/Core.Engine", "classes/Core.LayoutNode", "classes/Core.Node", "classes/Core.OptionsManager", "classes/Core.RenderTreeNode", "classes/Core.RootNode", "classes/Core.SizeNode", "classes/Core.Timer", "classes/Core.Transform", "classes/Core.Transitionable", "classes/Core.View", "classes/DOM.ContainerSurface", "classes/DOM.Context", "classes/DOM.Surface", "classes/Events.EventEmitter", "classes/Events.EventFilter", "classes/Events.EventHandler", "classes/Events.EventMapper", "classes/Events.EventSplitter", "classes/Inputs.GenericInput", "classes/Inputs.MouseInput", "classes/Inputs.PinchInput", "classes/Inputs.RotateInput", "classes/Inputs.ScaleInput", "classes/Inputs.ScrollInput", "classes/Inputs.TouchInput", "classes/Inputs.TouchTracker", "classes/Inputs.TwoFingerInput", "classes/Layouts.BidirectionalList", "classes/Layouts.DrawerLayout", "classes/Layouts.FlexLayout", "classes/Layouts.GridLayout", "classes/Layouts.HeaderFooterLayout", "classes/Layouts.SequentialLayout", "classes/Streams.Accumulator", "classes/Streams.Differential", "classes/Streams.Observable", "classes/Streams.SimpleStream", "classes/Streams.Stream", "classes/Transitions.Inertia", "classes/Transitions.Spring", "classes/Transitions.Tween", "classes/UI.Fingers", "classes/UI.Slider"]'>
         </form>
     </div>
 </div>
@@ -69,13 +69,17 @@
 	                            <li><a href="../classes/Inputs.ScaleInput.html">Inputs.ScaleInput</a></li>
 	                            <li><a href="../classes/Inputs.ScrollInput.html">Inputs.ScrollInput</a></li>
 	                            <li><a href="../classes/Inputs.TouchInput.html">Inputs.TouchInput</a></li>
+	                            <li><a href="../classes/Layouts.BidirectionalList.html">Layouts.BidirectionalList</a></li>
 	                            <li><a href="../classes/Layouts.DrawerLayout.html">Layouts.DrawerLayout</a></li>
-	                            <li><a href="../classes/Layouts.FlexibleLayout.html">Layouts.FlexibleLayout</a></li>
+	                            <li><a href="../classes/Layouts.FlexLayout.html">Layouts.FlexLayout</a></li>
 	                            <li><a href="../classes/Layouts.GridLayout.html">Layouts.GridLayout</a></li>
+	                            <li><a href="../classes/Layouts.HeaderFooterLayout.html">Layouts.HeaderFooterLayout</a></li>
 	                            <li><a href="../classes/Layouts.SequentialLayout.html">Layouts.SequentialLayout</a></li>
 	                            <li><a href="../classes/Streams.Accumulator.html">Streams.Accumulator</a></li>
 	                            <li><a href="../classes/Streams.Differential.html">Streams.Differential</a></li>
 	                            <li><a href="../classes/Streams.Stream.html">Streams.Stream</a></li>
+	                            <li><a href="../classes/UI.Fingers.html">UI.Fingers</a></li>
+	                            <li><a href="../classes/UI.Slider.html">UI.Slider</a></li>
 	                    </ul>
 	                </div>
 	    
@@ -124,17 +128,10 @@
 /* Copyright © 2015-2016 David Valdman */
 
 define(function(require, exports, module) {
-    var RenderTreeNode = require(&#x27;./nodes/RenderTreeNode&#x27;);
     var Controller = require(&#x27;./Controller&#x27;);
-    var SizeNode = require(&#x27;./SizeNode&#x27;);
-    var LayoutNode = require(&#x27;./LayoutNode&#x27;);
-    var Transitionable = require(&#x27;./Transitionable&#x27;);
-    var EventHandler = require(&#x27;../events/EventHandler&#x27;);
-    var Stream = require(&#x27;../streams/Stream&#x27;);
-    var ResizeStream = require(&#x27;../streams/ResizeStream&#x27;);
-    var SizeObservable = require(&#x27;../streams/SizeObservable&#x27;);
-    var layoutAlgebra = require(&#x27;./algebras/layout&#x27;);
-    var sizeAlgebra = require(&#x27;./algebras/size&#x27;);
+    var RenderTreeNode = require(&#x27;./nodes/RenderTreeNode&#x27;);
+    var SizeNode = require(&#x27;./nodes/SizeNode&#x27;);
+    var LayoutNode = require(&#x27;./nodes/LayoutNode&#x27;);
 
     /**
      * A View provides encapsulation for a subtree of the render tree. You can build
@@ -194,45 +191,23 @@ define(function(require, exports, module) {
             change : setOptions
         },
         constructor : function View(options){
-            this._size = new EventHandler();
-            this._layout = new EventHandler();
-
             this._sizeNode = new SizeNode();
             this._layoutNode = new LayoutNode();
 
             this._node = new RenderTreeNode();
-            this._node.tempRoot = this._node;
 
-            this.size = ResizeStream.lift(
-                function ViewSizeAlgebra (sizeSpec, parentSize){
-                    if (!parentSize) return false;
-                    return (sizeSpec)
-                        ? sizeAlgebra(sizeSpec, parentSize)
-                        : parentSize;
-                },
-                [this._sizeNode, this._size]
-            );
+            this._addNode = this._node.add(this._sizeNode).add(this._layoutNode);
 
-            this._cachedSize = [0,0];
-            this.size.on(&#x27;resize&#x27;, function(size){
-                if (size === this._cachedSize) return false;
-                this._cachedSize = size;
-            }.bind(this));
+            this.size = this._addNode.size; // actual size
+            this._size = this._node.size; // incoming parent size
 
-            var layout = Stream.lift(
-                function ViewLayoutAlgebra (parentSpec, objectSpec, size){
-                    if (!parentSpec || !size) return false;
-                    return (objectSpec)
-                        ? layoutAlgebra(objectSpec, parentSpec, size)
-                        : parentSpec;
-                }.bind(this),
-                [this._layout, this._layoutNode, this.size]
-            );
+            this._cachedSize = [0, 0];
+            
+            this.size.on(&#x27;start&#x27;, updateSize.bind(this));
+            this.size.on(&#x27;update&#x27;, updateSize.bind(this));
+            this.size.on(&#x27;end&#x27;, updateSize.bind(this));
 
-            this._node._size.subscribe(this.size);
-            this._node._layout.subscribe(layout);
-
-            Controller.apply(this, arguments);
+            Controller.call(this, options);
             if (this.options) setOptions.call(this, this.options);
         },
         /**
@@ -243,7 +218,17 @@ define(function(require, exports, module) {
          * @return {RenderTreeNode}
          */
         add : function add(){
-            return RenderTreeNode.prototype.add.apply(this._node, arguments);
+            return RenderTreeNode.prototype.add.apply(this._addNode, arguments);
+        },
+        /**
+         * Remove the View from the RenderTree. All Surfaces added to the View
+         *  will also be removed. The View can be added back at a later time and
+         *  all of its data and Surfaces will be restored.
+         *
+         * @method remove
+         */
+        remove : function remove(){
+            RenderTreeNode.prototype.remove.apply(this._node, arguments);
         },
         /**
          * Getter for size.
@@ -261,6 +246,7 @@ define(function(require, exports, module) {
          * @param size {Number[]|Stream} Size as [width, height] in pixels, or a stream.
          */
         setSize : function setSize(size){
+            this._cachedSize = size;
             this._sizeNode.set({size : size});
         },
         /**
@@ -273,12 +259,22 @@ define(function(require, exports, module) {
             this._sizeNode.set({proportions : proportions});
         },
         /**
-         * Setter for proportions.
+         * Setter for margins.
          *
-         * @method setProportions
-         * @param proportions {Number[]|Stream} Proportions as [x,y], or a stream.
+         * @method setMargins
+         * @param margins {Number[]|Stream} Margins as [x,y], or a stream.
          */
-        setAspectRatio: function setProportions(aspectRatio) {
+        setMargins : function setMargins(margins){
+            this._sizeNode.set({margins : margins});
+        },
+        /**
+         * Setter for aspect ratio.
+         *
+         * @method setAspectRatio
+         * @deprecated Use size functions instead
+         * @param aspectRatio {Number|Stream} Aspect ratio, or a stream.
+         */
+        setAspectRatio: function setAspectRatio(aspectRatio) {
             this._sizeNode.set({aspectRatio: aspectRatio});
         },
         /**
@@ -301,6 +297,12 @@ define(function(require, exports, module) {
         }
     });
 
+    function updateSize(size){
+        if (this._cachedSize[0] === size[0] &amp;&amp; this._cachedSize[1] === size[1]) return;
+        this._cachedSize = size;
+        this.emit(&#x27;resize&#x27;, size);
+    }
+
     function setOptions(options){
         for (var key in options){
             var value = options[key];
@@ -310,6 +312,9 @@ define(function(require, exports, module) {
                     break;
                 case &#x27;proportions&#x27;:
                     this.setProportions(value);
+                    break;
+                case &#x27;margins&#x27;:
+                    this.setMargins(value);
                     break;
                 case &#x27;aspectRatio&#x27;:
                     this.setAspectRatio(value);

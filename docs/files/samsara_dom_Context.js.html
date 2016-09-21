@@ -23,12 +23,12 @@
             <li class="divider-vertical"></li>
             <li>
                 <p class="navbar-text">
-                    API Docs for Version: <b>0.2.0</b>
+                    API Docs for Version: <b>0.2.2</b>
                 </p>
             </li>
         </div>
         <form class="navbar-form pull-right" style="line-height: 40px; height: 40px;">
-            <input style="margin-top: 0;" type="text" class="search-query" placeholder="Search for classes..." data-obj='["classes/Core.Controller", "classes/Core.ElementAllocator", "classes/Core.ElementOutput", "classes/Core.Engine", "classes/Core.LayoutNode", "classes/Core.OptionsManager", "classes/Core.SizeNode", "classes/Core.SUE", "classes/Core.Timer", "classes/Core.Transform", "classes/Core.Transitionable", "classes/Core.View", "classes/DOM.ContainerSurface", "classes/DOM.Context", "classes/DOM.Surface", "classes/Events.EventEmitter", "classes/Events.EventFilter", "classes/Events.EventHandler", "classes/Events.EventMapper", "classes/Events.EventSplitter", "classes/Inputs.GenericInput", "classes/Inputs.MouseInput", "classes/Inputs.PinchInput", "classes/Inputs.RotateInput", "classes/Inputs.ScaleInput", "classes/Inputs.ScrollInput", "classes/Inputs.TouchInput", "classes/Inputs.TouchTracker", "classes/Inputs.TwoFingerInput", "classes/Layouts.DrawerLayout", "classes/Layouts.FlexibleLayout", "classes/Layouts.GridLayout", "classes/Layouts.SequentialLayout", "classes/RenderTreeNode", "classes/RootNode", "classes/Streams.Accumulator", "classes/Streams.Differential", "classes/Streams.Observable", "classes/Streams.ResizeStream", "classes/Streams.SimpleStream", "classes/Streams.Stream", "classes/Transitions.Inertia", "classes/Transitions.Spring", "classes/Transitions.Tween"]'>
+            <input style="margin-top: 0;" type="text" class="search-query" placeholder="Search for classes..." data-obj='["classes/Core.Controller", "classes/Core.DOMAllocator", "classes/Core.DOMOutput", "classes/Core.Engine", "classes/Core.LayoutNode", "classes/Core.Node", "classes/Core.OptionsManager", "classes/Core.RenderTreeNode", "classes/Core.RootNode", "classes/Core.SizeNode", "classes/Core.Timer", "classes/Core.Transform", "classes/Core.Transitionable", "classes/Core.View", "classes/DOM.ContainerSurface", "classes/DOM.Context", "classes/DOM.Surface", "classes/Events.EventEmitter", "classes/Events.EventFilter", "classes/Events.EventHandler", "classes/Events.EventMapper", "classes/Events.EventSplitter", "classes/Inputs.GenericInput", "classes/Inputs.MouseInput", "classes/Inputs.PinchInput", "classes/Inputs.RotateInput", "classes/Inputs.ScaleInput", "classes/Inputs.ScrollInput", "classes/Inputs.TouchInput", "classes/Inputs.TouchTracker", "classes/Inputs.TwoFingerInput", "classes/Layouts.BidirectionalList", "classes/Layouts.DrawerLayout", "classes/Layouts.FlexLayout", "classes/Layouts.GridLayout", "classes/Layouts.HeaderFooterLayout", "classes/Layouts.SequentialLayout", "classes/Streams.Accumulator", "classes/Streams.Differential", "classes/Streams.Observable", "classes/Streams.SimpleStream", "classes/Streams.Stream", "classes/Transitions.Inertia", "classes/Transitions.Spring", "classes/Transitions.Tween", "classes/UI.Fingers", "classes/UI.Slider"]'>
         </form>
     </div>
 </div>
@@ -69,13 +69,17 @@
 	                            <li><a href="../classes/Inputs.ScaleInput.html">Inputs.ScaleInput</a></li>
 	                            <li><a href="../classes/Inputs.ScrollInput.html">Inputs.ScrollInput</a></li>
 	                            <li><a href="../classes/Inputs.TouchInput.html">Inputs.TouchInput</a></li>
+	                            <li><a href="../classes/Layouts.BidirectionalList.html">Layouts.BidirectionalList</a></li>
 	                            <li><a href="../classes/Layouts.DrawerLayout.html">Layouts.DrawerLayout</a></li>
-	                            <li><a href="../classes/Layouts.FlexibleLayout.html">Layouts.FlexibleLayout</a></li>
+	                            <li><a href="../classes/Layouts.FlexLayout.html">Layouts.FlexLayout</a></li>
 	                            <li><a href="../classes/Layouts.GridLayout.html">Layouts.GridLayout</a></li>
+	                            <li><a href="../classes/Layouts.HeaderFooterLayout.html">Layouts.HeaderFooterLayout</a></li>
 	                            <li><a href="../classes/Layouts.SequentialLayout.html">Layouts.SequentialLayout</a></li>
 	                            <li><a href="../classes/Streams.Accumulator.html">Streams.Accumulator</a></li>
 	                            <li><a href="../classes/Streams.Differential.html">Streams.Differential</a></li>
 	                            <li><a href="../classes/Streams.Stream.html">Streams.Stream</a></li>
+	                            <li><a href="../classes/UI.Fingers.html">UI.Fingers</a></li>
+	                            <li><a href="../classes/UI.Slider.html">UI.Slider</a></li>
 	                    </ul>
 	                </div>
 	    
@@ -124,31 +128,13 @@
 /* Copyright © 2015-2016 David Valdman */
 // TODO: Enable CSS properties on Context
 define(function(require, exports, module) {
+    var DOMAllocator = require(&#x27;./_DOMAllocator&#x27;);
     var Engine = require(&#x27;../core/Engine&#x27;);
     var RootNode = require(&#x27;../core/nodes/RootNode&#x27;);
-    var Transform = require(&#x27;../core/Transform&#x27;);
-    var ElementAllocator = require(&#x27;../core/ElementAllocator&#x27;);
     var Transitionable = require(&#x27;../core/Transitionable&#x27;);
-    var OptionsManager = require(&#x27;../core/OptionsManager&#x27;);
+    var OptionsManager = require(&#x27;../core/_OptionsManager&#x27;);
     var SimpleStream = require(&#x27;../streams/SimpleStream&#x27;);
     var EventHandler = require(&#x27;../events/EventHandler&#x27;);
-    var preTickQueue = require(&#x27;../core/queues/preTickQueue&#x27;);
-    var dirtyQueue = require(&#x27;../core/queues/dirtyQueue&#x27;);
-
-    var elementType = &#x27;div&#x27;;
-    var rafStarted = false;
-    var isMobile = /mobi/i.test(navigator.userAgent);
-    var orientation = Number.NaN;
-    var windowWidth = Number.NaN;
-    var windowHeight = Number.NaN;
-
-    var layoutSpec = {
-        transform : Transform.identity,
-        opacity : 1,
-        origin : null,
-        align : null,
-        nextSizeTransform : Transform.identity
-    };
 
     /**
      * A Context defines a top-level DOM element inside which other nodes (like Surfaces) are rendered.
@@ -186,37 +172,32 @@ define(function(require, exports, module) {
         this._size = new SimpleStream();
         this._layout = new SimpleStream();
 
-        this.size = this._size.map(function(){
-            var size = [this.container.clientWidth, this.container.clientHeight];
-            this.emit(&#x27;resize&#x27;, size);
-            return size;
-        }.bind(this));
+        this._cachedSize = [];
+        this.size = this._size.map(function(type){
+            // If &#x60;end&#x60; event, simply return cache. Otherwise cache busting fails
+            // as the &#x60;end&#x60; size is the same as the &#x60;start&#x60; size for immediate sets
+            if (type === &#x27;end&#x27;){
+                return this._cachedSize;
+            }
 
-        this._node._size.subscribe(this.size);
-        this._node._layout.subscribe(this._layout);
+            var width = this.container.clientWidth;
+            var height = this.container.clientHeight;
+
+            if (width !== this._cachedSize[0] || height !== this._cachedSize[1]){
+                this._cachedSize[0] = width;
+                this._cachedSize[1] = height;
+                this.emit(&#x27;resize&#x27;, this._cachedSize);
+                // TODO: shouldn&#x27;t need to create new array - DOMOutput bug
+                return [width, height];
+            }
+            else return false;
+        }.bind(this));
 
         this._perspective = new Transitionable();
         this._perspectiveOrigin = new Transitionable();
 
-        this._perspective.on(&#x27;update&#x27;, function(perspective){
-            if (!this.container) return;
-            setPerspective(this.container, perspective);
-        }.bind(this));
-
-        this._perspective.on(&#x27;end&#x27;, function(perspective){
-            if (!this.container) return;
-            setPerspective(this.container, perspective);
-        }.bind(this));
-
-        this._perspectiveOrigin.on(&#x27;update&#x27;, function(origin) {
-            if (!this.container) return;
-            setPerspectiveOrigin(this.container, origin);
-        }.bind(this));
-
-        this._perspectiveOrigin.on(&#x27;end&#x27;, function(origin) {
-            if (!this.container) return;
-            setPerspectiveOrigin(this.container, origin);
-        }.bind(this));
+        this.perspectiveFrom(this._perspective);
+        this.perspectiveOriginFrom(this._perspectiveOrigin);
 
         this._eventOutput = new EventHandler();
         this._eventForwarder = function _eventForwarder(event) {
@@ -252,6 +233,57 @@ define(function(require, exports, module) {
         return RootNode.prototype.add.apply(this._node, arguments);
     };
 
+    Context.prototype.remove = function remove(){
+        if (this.elementClass instanceof Array){
+            for (var i = 0; i &lt; this.elementClass.length; i++)
+                this.container.classList.remove(this.elementClass[i])
+        }
+        else this.container.classList.remove(this.elementClass);
+
+        this._node.remove();
+
+        while (this.container.hasChildNodes())
+            this.container.removeChild(this.container.firstChild);
+
+        Engine.deregisterContext(this);
+    };
+
+    /**
+     * Pull the perspective value from a transitionable.
+     *
+     * @method perspectiveFrom
+     * @param perspective {Transitionable}    Perspective transitionable
+     */
+    Context.prototype.perspectiveFrom = function perspectiveFrom(perspective){
+        this._perspective = perspective;
+
+        this._perspective.on(&#x27;update&#x27;, function(perspective){
+            setPerspective(this.container, perspective);
+        }.bind(this));
+
+        this._perspective.on(&#x27;end&#x27;, function(perspective){
+            setPerspective(this.container, perspective);
+        }.bind(this));
+    };
+
+    /**
+     * Pull the perspective-origin value from a transitionable.
+     *
+     * @method perspectiveOriginFrom
+     * @param perspectiveOrigin {Transitionable}    Perspective-origin transitionable
+     */
+    Context.prototype.perspectiveOriginFrom = function perspectiveOriginFrom(perspectiveOrigin){
+        this._perspectiveOrigin = perspectiveOrigin;
+
+        this._perspectiveOrigin.on(&#x27;update&#x27;, function(origin){
+            setPerspectiveOrigin(this.container, origin);
+        }.bind(this));
+
+        this._perspectiveOrigin.on(&#x27;end&#x27;, function(origin){
+            setPerspectiveOrigin(this.container, origin);
+        }.bind(this));
+    };
+
     /**
      * Get current perspective of this Context in pixels.
      *
@@ -271,7 +303,13 @@ define(function(require, exports, module) {
      * @param [callback] {Function} Callback executed on completion of transition
      */
     Context.prototype.setPerspective = function setPerspective(perspective, transition, callback) {
-        this._perspective.set(perspective, transition, callback);
+        if (this.container)
+            this._perspective.set(perspective, transition, callback);
+        else {
+            this.on(&#x27;deploy&#x27;, function(){
+                this._perspective.set(perspective, transition, callback);
+            }.bind(this));
+        }
     };
 
     /**
@@ -283,7 +321,13 @@ define(function(require, exports, module) {
      * @param [callback] {Function} Callback executed on completion of transition
      */
     Context.prototype.setPerspectiveOrigin = function setPerspectiveOrigin(origin, transition, callback) {
-        this._perspectiveOrigin.set(origin, transition, callback);
+        if (this.container)
+            this._perspectiveOrigin.set(origin, transition, callback);
+        else {
+            this.on(&#x27;deploy&#x27;, function() {
+                this._perspectiveOrigin.set(origin, transition, callback);
+            }.bind(this));
+        }
     };
 
     /**
@@ -292,33 +336,26 @@ define(function(require, exports, module) {
      * @method mount
      * @param node {Node}  DOM element
      */
-    Context.prototype.mount = function mount(node, resizeListenFlag){
-        this.container = node || document.createElement(elementType);
-        this.container.classList.add(this.elementClass);
+    Context.prototype.mount = function mount(node){
+        node = node || window.document.body;
 
-        var allocator = new ElementAllocator(this.container);
+        this.container = node;
+
+        if (this.elementClass instanceof Array) {
+            for (var i = 0; i &lt; this.elementClass.length; i++)
+                this.container.classList.add(this.elementClass[i])
+        }
+        else this.container.classList.add(this.elementClass);
+
+        var allocator = new DOMAllocator(this.container);
         this._node.setAllocator(allocator);
+
+        this._node._size.subscribe(this.size);
+        this._node._layout.subscribe(this._layout);
 
         this.emit(&#x27;deploy&#x27;, this.container);
 
-        if (!node)
-            document.body.appendChild(this.container);
-
-        if (!resizeListenFlag)
-            window.addEventListener(&#x27;resize&#x27;, handleResize.bind(this), false);
-
-        preTickQueue.push(function (){
-            if (!resizeListenFlag) handleResize.call(this);
-            this._layout.trigger(&#x27;start&#x27;, layoutSpec);
-            dirtyQueue.push(function(){
-                this._layout.trigger(&#x27;end&#x27;, layoutSpec);
-            }.bind(this));
-        }.bind(this));
-
-        if (!rafStarted) {
-            rafStarted = true;
-            Engine.start();
-        }
+        Engine.registerContext(this);
     };
 
     /**
@@ -345,7 +382,7 @@ define(function(require, exports, module) {
      * Removes the &#x60;handler&#x60; from the &#x60;type&#x60;.
      *  Undoes the work of &#x60;on&#x60;.
      *
-     * @method on
+     * @method off
      * @param type {String}         Channel name
      * @param handler {Function}    Callback
      */
@@ -365,7 +402,7 @@ define(function(require, exports, module) {
         EventHandler.prototype.emit.apply(this._eventOutput, arguments);
     };
 
-    var usePrefix = !(&#x27;perspective&#x27; in document.documentElement.style);
+    var usePrefix = !(&#x27;perspective&#x27; in window.document.documentElement.style);
 
     var setPerspective = usePrefix
         ? function setPerspective(element, perspective) {
@@ -386,27 +423,6 @@ define(function(require, exports, module) {
         : function setPerspectiveOrigin(element, origin) {
             element.style.perspectiveOrigin = origin ? _formatCSSOrigin(origin) : &#x27;50% 50%&#x27;;
         };
-
-    function handleResize() {
-        var newHeight = window.innerHeight;
-        var newWidth = window.innerWidth;
-
-        if (isMobile){
-            var newOrientation = newHeight &gt; newWidth;
-            if (orientation === newOrientation) return false;
-            orientation = newOrientation;
-        }
-        else {
-            if (newWidth === windowWidth &amp;&amp; newHeight === windowHeight) return false;
-            windowWidth = newWidth;
-            windowHeight = newHeight;
-        }
-
-        this._size.emit(&#x27;resize&#x27;);
-        dirtyQueue.push(function(){
-            this._size.emit(&#x27;resize&#x27;);
-        }.bind(this));
-    }
 
     module.exports = Context;
 });

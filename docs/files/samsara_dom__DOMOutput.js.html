@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="utf-8">
-    <title>samsara/core/ElementOutput.js - SamsaraJS</title>
+    <title>samsara/dom/_DOMOutput.js - SamsaraJS</title>
     <link rel="stylesheet" href="">
     <link rel="stylesheet" href="../assets/vendor/prettify/prettify-min.css">
     <link rel="stylesheet" href="../assets/css/main.css" id="site_styles">
@@ -23,12 +23,12 @@
             <li class="divider-vertical"></li>
             <li>
                 <p class="navbar-text">
-                    API Docs for Version: <b>0.2.0</b>
+                    API Docs for Version: <b>0.2.2</b>
                 </p>
             </li>
         </div>
         <form class="navbar-form pull-right" style="line-height: 40px; height: 40px;">
-            <input style="margin-top: 0;" type="text" class="search-query" placeholder="Search for classes..." data-obj='["classes/Core.Controller", "classes/Core.ElementAllocator", "classes/Core.ElementOutput", "classes/Core.Engine", "classes/Core.LayoutNode", "classes/Core.OptionsManager", "classes/Core.SizeNode", "classes/Core.SUE", "classes/Core.Timer", "classes/Core.Transform", "classes/Core.Transitionable", "classes/Core.View", "classes/DOM.ContainerSurface", "classes/DOM.Context", "classes/DOM.Surface", "classes/Events.EventEmitter", "classes/Events.EventFilter", "classes/Events.EventHandler", "classes/Events.EventMapper", "classes/Events.EventSplitter", "classes/Inputs.GenericInput", "classes/Inputs.MouseInput", "classes/Inputs.PinchInput", "classes/Inputs.RotateInput", "classes/Inputs.ScaleInput", "classes/Inputs.ScrollInput", "classes/Inputs.TouchInput", "classes/Inputs.TouchTracker", "classes/Inputs.TwoFingerInput", "classes/Layouts.DrawerLayout", "classes/Layouts.FlexibleLayout", "classes/Layouts.GridLayout", "classes/Layouts.SequentialLayout", "classes/RenderTreeNode", "classes/RootNode", "classes/Streams.Accumulator", "classes/Streams.Differential", "classes/Streams.Observable", "classes/Streams.ResizeStream", "classes/Streams.SimpleStream", "classes/Streams.Stream", "classes/Transitions.Inertia", "classes/Transitions.Spring", "classes/Transitions.Tween"]'>
+            <input style="margin-top: 0;" type="text" class="search-query" placeholder="Search for classes..." data-obj='["classes/Core.Controller", "classes/Core.DOMAllocator", "classes/Core.DOMOutput", "classes/Core.Engine", "classes/Core.LayoutNode", "classes/Core.Node", "classes/Core.OptionsManager", "classes/Core.RenderTreeNode", "classes/Core.RootNode", "classes/Core.SizeNode", "classes/Core.Timer", "classes/Core.Transform", "classes/Core.Transitionable", "classes/Core.View", "classes/DOM.ContainerSurface", "classes/DOM.Context", "classes/DOM.Surface", "classes/Events.EventEmitter", "classes/Events.EventFilter", "classes/Events.EventHandler", "classes/Events.EventMapper", "classes/Events.EventSplitter", "classes/Inputs.GenericInput", "classes/Inputs.MouseInput", "classes/Inputs.PinchInput", "classes/Inputs.RotateInput", "classes/Inputs.ScaleInput", "classes/Inputs.ScrollInput", "classes/Inputs.TouchInput", "classes/Inputs.TouchTracker", "classes/Inputs.TwoFingerInput", "classes/Layouts.BidirectionalList", "classes/Layouts.DrawerLayout", "classes/Layouts.FlexLayout", "classes/Layouts.GridLayout", "classes/Layouts.HeaderFooterLayout", "classes/Layouts.SequentialLayout", "classes/Streams.Accumulator", "classes/Streams.Differential", "classes/Streams.Observable", "classes/Streams.SimpleStream", "classes/Streams.Stream", "classes/Transitions.Inertia", "classes/Transitions.Spring", "classes/Transitions.Tween", "classes/UI.Fingers", "classes/UI.Slider"]'>
         </form>
     </div>
 </div>
@@ -69,13 +69,17 @@
 	                            <li><a href="../classes/Inputs.ScaleInput.html">Inputs.ScaleInput</a></li>
 	                            <li><a href="../classes/Inputs.ScrollInput.html">Inputs.ScrollInput</a></li>
 	                            <li><a href="../classes/Inputs.TouchInput.html">Inputs.TouchInput</a></li>
+	                            <li><a href="../classes/Layouts.BidirectionalList.html">Layouts.BidirectionalList</a></li>
 	                            <li><a href="../classes/Layouts.DrawerLayout.html">Layouts.DrawerLayout</a></li>
-	                            <li><a href="../classes/Layouts.FlexibleLayout.html">Layouts.FlexibleLayout</a></li>
+	                            <li><a href="../classes/Layouts.FlexLayout.html">Layouts.FlexLayout</a></li>
 	                            <li><a href="../classes/Layouts.GridLayout.html">Layouts.GridLayout</a></li>
+	                            <li><a href="../classes/Layouts.HeaderFooterLayout.html">Layouts.HeaderFooterLayout</a></li>
 	                            <li><a href="../classes/Layouts.SequentialLayout.html">Layouts.SequentialLayout</a></li>
 	                            <li><a href="../classes/Streams.Accumulator.html">Streams.Accumulator</a></li>
 	                            <li><a href="../classes/Streams.Differential.html">Streams.Differential</a></li>
 	                            <li><a href="../classes/Streams.Stream.html">Streams.Stream</a></li>
+	                            <li><a href="../classes/UI.Fingers.html">UI.Fingers</a></li>
+	                            <li><a href="../classes/UI.Slider.html">UI.Slider</a></li>
 	                    </ul>
 	                </div>
 	    
@@ -116,7 +120,7 @@
                 <div id="docs-main">
                     <div class="content">
 <div class="page-header">
-    <h1>samsara/core/ElementOutput.js <small>File</small></h1>
+    <h1>samsara/dom/_DOMOutput.js <small>File</small></h1>
 </div>
 
 <div class="file">
@@ -124,21 +128,14 @@
 /* Copyright © 2015-2016 David Valdman */
 
 define(function(require, exports, module) {
-    var EventHandler = require(&#x27;../events/EventHandler&#x27;);
-    var Transform = require(&#x27;./Transform&#x27;);
-    var Stream = require(&#x27;../streams/Stream&#x27;);
-    var ResizeStream = require(&#x27;../streams/ResizeStream&#x27;);
-    var SizeNode = require(&#x27;./SizeNode&#x27;);
-    var LayoutNode = require(&#x27;./LayoutNode&#x27;);
-    var sizeAlgebra = require(&#x27;./algebras/size&#x27;);
-    var layoutAlgebra = require(&#x27;./algebras/layout&#x27;);
+    var Transform = require(&#x27;../core/Transform&#x27;);
 
-    var usePrefix = !(&#x27;transform&#x27; in document.documentElement.style);
+    var usePrefix = !(&#x27;transform&#x27; in window.document.documentElement.style);
     var devicePixelRatio = 2 * (window.devicePixelRatio || 1);
     var MIN_OPACITY = 0.0001;
     var MAX_OPACITY = 0.9999;
     var EPSILON = 1e-5;
-    var _zeroZero = [0,0];
+    var _zeroZero = [0, 0];
 
     /**
      * Responsible for committing CSS3 properties to the DOM and providing DOM event hooks
@@ -146,7 +143,7 @@ define(function(require, exports, module) {
      *  from within Samsara, ElementOutput handles the DOM interaction layer.
      *
      *
-     * @class ElementOutput
+     * @class DOMOutput
      * @constructor
      * @namespace Core
      * @uses Core.LayoutNode
@@ -154,77 +151,12 @@ define(function(require, exports, module) {
      * @private
      * @param {Node} element document parent of this container
      */
-    function ElementOutput(element) {
-        this._currentTarget = null;
-
-        this._cachedSpec = {
-            transform : null,
-            opacity : 1,
-            origin : null,
-            size : null
-        };
-
-        this._eventOutput = new EventHandler();
-        EventHandler.setOutputHandler(this, this._eventOutput);
-
-        this._eventForwarder = function _eventForwarder(event) {
-            this._eventOutput.emit(event.type, event);
-        }.bind(this);
-
-        this._sizeNode = new SizeNode();
-        this._layoutNode = new LayoutNode();
-
-        this._size = new EventHandler();
-        this._layout = new EventHandler();
-
-        this.size = ResizeStream.lift(function elementSizeLift(sizeSpec, parentSize){
-            if (!parentSize) return false; // occurs when surface is never added
-            return sizeAlgebra(sizeSpec, parentSize);
-        }, [this._sizeNode, this._size]);
-
-        this.layout = Stream.lift(function(parentSpec, objectSpec, size){
-            if (!parentSpec || !size) return false;
-            return (objectSpec)
-                ? layoutAlgebra(objectSpec, parentSpec, size)
-                : parentSpec;
-        }, [this._layout, this._layoutNode, this.size]);
-
-        this.layout.on(&#x27;start&#x27;, function(){
-            if (!this._currentTarget){
-                var root = this._getRoot();
-                this.setup(root.allocator);
-            }
-        }.bind(this));
-
-        this.layout.on(&#x27;update&#x27;, commitLayout.bind(this));
-        this.layout.on(&#x27;end&#x27;, commitLayout.bind(this));
-
-        this.size.on(&#x27;resize&#x27;, function(size){
-            if (!this._currentTarget){
-                var root = this._getRoot();
-                this.setup(root.allocator);
-            }
-            commitSize.call(this, size);
-        }.bind(this));
-
-        this._currentTarget = null;
-
+    function DOMOutput() {
+        this._cachedSpec = {};
         this._opacityDirty = true;
         this._originDirty = true;
         this._transformDirty = true;
         this._isVisible = true;
-
-        if (element) this.attach(element);
-    }
-
-    function _addEventListeners(target) {
-        for (var i in this._eventOutput.listeners)
-            target.addEventListener(i, this._eventForwarder);
-    }
-
-    function _removeEventListeners(target) {
-        for (var i in this._eventOutput.listeners)
-            target.removeEventListener(i, this._eventForwarder);
     }
 
     function _round(value, unit){
@@ -268,21 +200,18 @@ define(function(require, exports, module) {
             element.style.transform = _formatCSSTransform(transform, unit);
         };
 
-    var _setSize = function _setSize(target, size){
+    function _setSize(target, size){
         if (size[0] === true) size[0] = target.offsetWidth;
-        else target.style.width = size[0] + &#x27;px&#x27;;
+        else if (size[0] &gt;= 0) target.style.width = size[0] + &#x27;px&#x27;;
 
         if (size[1] === true) size[1] = target.offsetHeight;
-        else target.style.height = size[1] + &#x27;px&#x27;;
-    };
+        else if (size[1] &gt;= 0) target.style.height = size[1] + &#x27;px&#x27;;
+    }
 
-    // {Visibility : hidden} allows for DOM events to pass through the element
-    // TODO: use pointerEvents instead. However, there is a bug in Chrome for Android
-    // ticket here: https://code.google.com/p/chromium/issues/detail?id=569654
-    var _setOpacity = function _setOpacity(element, opacity) {
+    // pointerEvents logic allows for DOM events to pass through the element when invisible
+    function _setOpacity(element, opacity) {
         if (!this._isVisible &amp;&amp; opacity &gt; MIN_OPACITY) {
-            //element.style.pointerEvents = &#x27;auto&#x27;;
-            element.style.visibility = &#x27;visible&#x27;;
+            element.style.pointerEvents = &#x27;auto&#x27;;
             this._isVisible = true;
         }
 
@@ -290,84 +219,103 @@ define(function(require, exports, module) {
         else if (opacity &lt; MIN_OPACITY) {
             opacity = MIN_OPACITY;
             if (this._isVisible) {
-                //element.style.pointerEvents = &#x27;none&#x27;;
-                element.style.visibility = &#x27;hidden&#x27;;
+                element.style.pointerEvents = &#x27;none&#x27;;
                 this._isVisible = false;
             }
         }
 
-        if (this._isVisible) element.style.opacity = opacity;
+        element.style.opacity = opacity;
+    }
+
+    DOMOutput.prototype.querySelector = function querySelector(target, selector){
+        return target.querySelector(selector);
     };
 
-    /**
-     * Adds a handler to the &#x60;type&#x60; channel which will be executed on &#x60;emit&#x60;.
-     *
-     * @method on
-     *
-     * @param type {String}         DOM event channel name, e.g., &quot;click&quot;, &quot;touchmove&quot;
-     * @param handler {Function}    Handler. It&#x27;s only argument will be an emitted data payload.
-     */
-    ElementOutput.prototype.on = function on(type, handler) {
-        if (this._currentTarget)
-            this._currentTarget.addEventListener(type, this._eventForwarder);
-        EventHandler.prototype.on.apply(this._eventOutput, arguments);
+    DOMOutput.prototype.querySelectorAll = function querySelectorAll(target, selector){
+        return target.querySelectorAll(selector);
     };
 
-    /**
-     * Removes a previously added handler to the &#x60;type&#x60; channel.
-     *  Undoes the work of &#x60;on&#x60;.
-     *
-     * @method removeListener
-     * @param type {String}         DOM event channel name e.g., &quot;click&quot;, &quot;touchmove&quot;
-     * @param handler {Function}    Handler
-     */
-    ElementOutput.prototype.off = function off(type, handler) {
-        EventHandler.prototype.off.apply(this._eventOutput, arguments);
+    DOMOutput.prototype.applyClasses = function applyClasses(target, classList) {
+        for (var i = 0; i &lt; classList.length; i++)
+            target.classList.add(classList[i]);
     };
 
-    /**
-     * Emit an event with optional data payload. This will execute all listening
-     *  to the channel name with the payload as only argument.
-     *
-     * @method emit
-     * @param type {string}         Event channel name
-     * @param [payload] {Object}    User defined data payload
-     */
-    ElementOutput.prototype.emit = function emit(type, payload) {
-        EventHandler.prototype.emit.apply(this._eventOutput, arguments);
+    DOMOutput.prototype.applyProperties = function applyProperties(target, properties) {
+        for (var key in properties)
+            target.style[key] = properties[key];
     };
 
-    /**
-     * Assigns the DOM element for committing and to and attaches event listeners.
-     *
-     * @private
-     * @method attach
-     * @param {Node} target document parent of this container
-     */
-    ElementOutput.prototype.attach = function attach(target) {
-        this._currentTarget = target;
-        _addEventListeners.call(this, target);
+    DOMOutput.prototype.applyAttributes = function applyAttributes(target, attributes) {
+        for (var key in attributes)
+            target.setAttribute(key, attributes[key]);
     };
 
-    /**
-     * Removes the associated DOM element in memory and detached event listeners.
-     *
-     * @private
-     * @method detach
-     */
-    ElementOutput.prototype.detach = function detach() {
-        var target = this._currentTarget;
-        if (target) {
-            _removeEventListeners.call(this, target);
-            target.style.display = &#x27;&#x27;;
+    DOMOutput.prototype.removeClasses = function removeClasses(target, classList) {
+        for (var i = 0; i &lt; classList.length; i++)
+            target.classList.remove(classList[i]);
+    };
+
+    DOMOutput.prototype.removeProperties = function removeProperties(target, properties) {
+        for (var key in properties)
+            target.style[key] = &#x27;&#x27;;
+    };
+
+    DOMOutput.prototype.removeAttributes = function removeAttributes(target, attributes) {
+        for (var key in attributes)
+            target.removeAttribute(key);
+    };
+
+    DOMOutput.prototype.on = function on(target, type, handler) {
+        target.addEventListener(type, handler);
+    };
+
+    DOMOutput.prototype.off = function off(target, type, handler) {
+        target.removeEventListener(type, handler);
+    };
+
+    DOMOutput.prototype.applyContent = function applyContent(target, content) {
+        if (content instanceof Node) {
+            while (target.hasChildNodes()) target.removeChild(target.firstChild);
+            target.appendChild(content);
         }
-        this._currentTarget = null;
+        else target.innerHTML = content;
     };
 
-    function commitLayout(layout) {
-        var target = this._currentTarget;
-        if (!target) return;
+    DOMOutput.prototype.recallContent = function recallContent(target) {
+        var df = document.createDocumentFragment();
+        while (target.hasChildNodes()) df.appendChild(target.firstChild);
+        return df;
+    };
 
+    DOMOutput.prototype.makeVisible = function makeVisible(target){
+        target.style.display = &#x27;&#x27;;
+
+        // for true-sized elements, reset height and width
+        if (this._cachedSize) {
+            if (this._cachedSize[0] === true) target.style.width = &#x27;auto&#x27;;
+            if (this._cachedSize[1] === true) target.style.height = &#x27;auto&#x27;;
+        }
+    };
+
+    DOMOutput.prototype.makeInvisible = function makeInvisible(target){
+        target.style.display = &#x27;none&#x27;;
+        target.style.opacity = &#x27;&#x27;;
+        target.style.width = &#x27;&#x27;;
+        target.style.height = &#x27;&#x27;;
+
+        if (usePrefix) {
+            target.style.webkitTransform = &#x27;&#x27;;
+            target.style.webkitTransformOrigin = &#x27;&#x27;;
+        }
+        else {
+            target.style.transform = &#x27;&#x27;;
+            target.style.transformOrigin = &#x27;&#x27;;
+        }
+
+        this._cachedSpec = {};
+    };
+
+    DOMOutput.prototype.commitLayout = function commitLayout(target, layout) {
         var cache = this._cachedSpec;
 
         var transform = layout.transform || Transform.identity;
@@ -396,23 +344,29 @@ define(function(require, exports, module) {
         this._originDirty = false;
         this._transformDirty = false;
         this._opacityDirty = false;
-    }
+    };
 
-    function commitSize(size){
-        var target = this._currentTarget;
-        if (!target) return;
-
+    DOMOutput.prototype.commitSize = function commitSize(target, size){
         if (size[0] !== true) size[0] = _round(size[0], devicePixelRatio);
         if (size[1] !== true) size[1] = _round(size[1], devicePixelRatio);
 
         if (_xyNotEquals(this._cachedSpec.size, size)){
             this._cachedSpec.size = size;
             _setSize(target, size);
-            this.emit(&#x27;resize&#x27;, size);
+            return true;
         }
-    }
+        else return false;
+    };
 
-    module.exports = ElementOutput;
+    DOMOutput.prototype.promoteLayer = function (target){
+        target.style.willChange = &#x27;transform, opacity&#x27;;
+    };
+
+    DOMOutput.prototype.demoteLayer = function(target) {
+        target.style.willChange = &#x27;auto&#x27;;
+    };
+
+    module.exports = DOMOutput;
 });
 
     </pre>

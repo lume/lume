@@ -23,12 +23,12 @@
             <li class="divider-vertical"></li>
             <li>
                 <p class="navbar-text">
-                    API Docs for Version: <b>0.2.0</b>
+                    API Docs for Version: <b>0.2.2</b>
                 </p>
             </li>
         </div>
         <form class="navbar-form pull-right" style="line-height: 40px; height: 40px;">
-            <input style="margin-top: 0;" type="text" class="search-query" placeholder="Search for classes..." data-obj='["classes/Core.Controller", "classes/Core.ElementAllocator", "classes/Core.ElementOutput", "classes/Core.Engine", "classes/Core.LayoutNode", "classes/Core.OptionsManager", "classes/Core.SizeNode", "classes/Core.SUE", "classes/Core.Timer", "classes/Core.Transform", "classes/Core.Transitionable", "classes/Core.View", "classes/DOM.ContainerSurface", "classes/DOM.Context", "classes/DOM.Surface", "classes/Events.EventEmitter", "classes/Events.EventFilter", "classes/Events.EventHandler", "classes/Events.EventMapper", "classes/Events.EventSplitter", "classes/Inputs.GenericInput", "classes/Inputs.MouseInput", "classes/Inputs.PinchInput", "classes/Inputs.RotateInput", "classes/Inputs.ScaleInput", "classes/Inputs.ScrollInput", "classes/Inputs.TouchInput", "classes/Inputs.TouchTracker", "classes/Inputs.TwoFingerInput", "classes/Layouts.DrawerLayout", "classes/Layouts.FlexibleLayout", "classes/Layouts.GridLayout", "classes/Layouts.SequentialLayout", "classes/RenderTreeNode", "classes/RootNode", "classes/Streams.Accumulator", "classes/Streams.Differential", "classes/Streams.Observable", "classes/Streams.ResizeStream", "classes/Streams.SimpleStream", "classes/Streams.Stream", "classes/Transitions.Inertia", "classes/Transitions.Spring", "classes/Transitions.Tween"]'>
+            <input style="margin-top: 0;" type="text" class="search-query" placeholder="Search for classes..." data-obj='["classes/Core.Controller", "classes/Core.DOMAllocator", "classes/Core.DOMOutput", "classes/Core.Engine", "classes/Core.LayoutNode", "classes/Core.Node", "classes/Core.OptionsManager", "classes/Core.RenderTreeNode", "classes/Core.RootNode", "classes/Core.SizeNode", "classes/Core.Timer", "classes/Core.Transform", "classes/Core.Transitionable", "classes/Core.View", "classes/DOM.ContainerSurface", "classes/DOM.Context", "classes/DOM.Surface", "classes/Events.EventEmitter", "classes/Events.EventFilter", "classes/Events.EventHandler", "classes/Events.EventMapper", "classes/Events.EventSplitter", "classes/Inputs.GenericInput", "classes/Inputs.MouseInput", "classes/Inputs.PinchInput", "classes/Inputs.RotateInput", "classes/Inputs.ScaleInput", "classes/Inputs.ScrollInput", "classes/Inputs.TouchInput", "classes/Inputs.TouchTracker", "classes/Inputs.TwoFingerInput", "classes/Layouts.BidirectionalList", "classes/Layouts.DrawerLayout", "classes/Layouts.FlexLayout", "classes/Layouts.GridLayout", "classes/Layouts.HeaderFooterLayout", "classes/Layouts.SequentialLayout", "classes/Streams.Accumulator", "classes/Streams.Differential", "classes/Streams.Observable", "classes/Streams.SimpleStream", "classes/Streams.Stream", "classes/Transitions.Inertia", "classes/Transitions.Spring", "classes/Transitions.Tween", "classes/UI.Fingers", "classes/UI.Slider"]'>
         </form>
     </div>
 </div>
@@ -69,13 +69,17 @@
 	                            <li><a href="../classes/Inputs.ScaleInput.html">Inputs.ScaleInput</a></li>
 	                            <li><a href="../classes/Inputs.ScrollInput.html">Inputs.ScrollInput</a></li>
 	                            <li><a href="../classes/Inputs.TouchInput.html">Inputs.TouchInput</a></li>
+	                            <li><a href="../classes/Layouts.BidirectionalList.html">Layouts.BidirectionalList</a></li>
 	                            <li><a href="../classes/Layouts.DrawerLayout.html">Layouts.DrawerLayout</a></li>
-	                            <li><a href="../classes/Layouts.FlexibleLayout.html">Layouts.FlexibleLayout</a></li>
+	                            <li><a href="../classes/Layouts.FlexLayout.html">Layouts.FlexLayout</a></li>
 	                            <li><a href="../classes/Layouts.GridLayout.html">Layouts.GridLayout</a></li>
+	                            <li><a href="../classes/Layouts.HeaderFooterLayout.html">Layouts.HeaderFooterLayout</a></li>
 	                            <li><a href="../classes/Layouts.SequentialLayout.html">Layouts.SequentialLayout</a></li>
 	                            <li><a href="../classes/Streams.Accumulator.html">Streams.Accumulator</a></li>
 	                            <li><a href="../classes/Streams.Differential.html">Streams.Differential</a></li>
 	                            <li><a href="../classes/Streams.Stream.html">Streams.Stream</a></li>
+	                            <li><a href="../classes/UI.Fingers.html">UI.Fingers</a></li>
+	                            <li><a href="../classes/UI.Slider.html">UI.Slider</a></li>
 	                    </ul>
 	                </div>
 	    
@@ -130,7 +134,7 @@
 
     <!---->
         <div class="foundat">
-            Defined in: <a href="../files/samsara_core_Engine.js.html#l12"><code>samsara&#x2F;core&#x2F;Engine.js:12</code></a>
+            Defined in: <a href="../files/samsara_core_Engine.js.html#l21"><code>samsara&#x2F;core&#x2F;Engine.js:21</code></a>
         </div>
     <!---->
 
@@ -164,6 +168,24 @@ and <code>window</code> object. For instance the <code>resize</code> event.</p>
 
                     <ul class="index-list methods">
                             <li class="index-item method">
+                                <a href="#" data-tabid="#methods" data-anchor="#method_add" data-tablink="add">add</a>
+
+                            </li>
+                            <li class="index-item method">
+                                <a href="#" data-tabid="#methods" data-anchor="#method_deregisterContext" data-tablink="deregisterContext">deregisterContext</a>
+
+                                    <span class="flag static">static</span>
+                            </li>
+                            <li class="index-item method">
+                                <a href="#" data-tabid="#methods" data-anchor="#method_registerContext" data-tablink="registerContext">registerContext</a>
+
+                                    <span class="flag static">static</span>
+                            </li>
+                            <li class="index-item method">
+                                <a href="#" data-tabid="#methods" data-anchor="#method_remove" data-tablink="remove">remove</a>
+
+                            </li>
+                            <li class="index-item method">
                                 <a href="#" data-tabid="#methods" data-anchor="#method_start" data-tablink="start">start</a>
 
                                     <span class="flag static">static</span>
@@ -187,6 +209,179 @@ and <code>window</code> object. For instance the <code>resize</code> event.</p>
             <div id="methods" class="tab-pane">
                 <h2 class="off-left">Methods</h2>
 
+                    <div id="method_add" class="method item">
+                        <h3 class="name"><code>add</code></h3>
+                    
+                            <div class="args">
+                                <span class="paren">(</span><ul class="args-list inline commas">
+                                    <li class="arg">
+                                            <code>object</code>
+                                    </li>
+                                </ul><span class="paren">)</span>
+                            </div>
+                    
+                            <span class="returns-inline">
+                                <span class="type">RenderTreeNode</span>
+                            </span>
+                    
+                    
+                    
+                    
+                    
+                    
+                    
+                        <div class="meta">
+                                    <p>
+                                    <!---->
+                                    <!--Defined in-->
+                                    <!---->
+                            <!---->
+                            <!--<a href="../files/samsara_core_EmptyNode.js.html#l25"><code>samsara&#x2F;core&#x2F;EmptyNode.js:25</code></a>-->
+                            <!---->
+                            </p>
+                    
+                    
+                    
+                        </div>
+                    
+                        <div class="description">
+                            <p>Extends the render tree subtree with a new node.</p>
+                    
+                        </div>
+                    
+                            <div class="params">
+                                <h4>Parameters:</h4>
+                    
+                                <ul class="params-list">
+                                    <li class="param">
+                                            <code class="param-name">object</code>
+                                            <span class="type">SizeNode | LayoutNode | Surface</span>
+                    
+                    
+                                        <div class="param-description">
+                                            <p>Node</p>
+                    
+                                        </div>
+                    
+                                    </li>
+                                </ul>
+                            </div>
+                    
+                            <div class="returns">
+                                <h4>Returns:</h4>
+                    
+                                <div class="returns-description">
+                                            <span class="type">RenderTreeNode</span>:
+                                </div>
+                            </div>
+                    
+                    </div>
+                    <div id="method_deregisterContext" class="method item">
+                        <h3 class="name"><code>deregisterContext</code></h3>
+                    
+                            <span class="paren">()</span>
+                    
+                    
+                    
+                    
+                    
+                            <span class="flag static">static</span>
+                    
+                    
+                    
+                        <div class="meta">
+                                    <p>
+                                    <!---->
+                                    <!--Defined in-->
+                                    <!---->
+                            <!---->
+                            <!--<a href="../files/samsara_core_Engine.js.html#l110"><code>samsara&#x2F;core&#x2F;Engine.js:110</code></a>-->
+                            <!---->
+                            </p>
+                    
+                    
+                    
+                        </div>
+                    
+                        <div class="description">
+                            <p>Unsubscribe context from resize events</p>
+                    
+                        </div>
+                    
+                    
+                    
+                    </div>
+                    <div id="method_registerContext" class="method item">
+                        <h3 class="name"><code>registerContext</code></h3>
+                    
+                            <span class="paren">()</span>
+                    
+                    
+                    
+                    
+                    
+                            <span class="flag static">static</span>
+                    
+                    
+                    
+                        <div class="meta">
+                                    <p>
+                                    <!---->
+                                    <!--Defined in-->
+                                    <!---->
+                            <!---->
+                            <!--<a href="../files/samsara_core_Engine.js.html#l96"><code>samsara&#x2F;core&#x2F;Engine.js:96</code></a>-->
+                            <!---->
+                            </p>
+                    
+                    
+                    
+                        </div>
+                    
+                        <div class="description">
+                            <p>Subscribe context to resize events and start the render loop if not running</p>
+                    
+                        </div>
+                    
+                    
+                    
+                    </div>
+                    <div id="method_remove" class="method item">
+                        <h3 class="name"><code>remove</code></h3>
+                    
+                            <span class="paren">()</span>
+                    
+                    
+                    
+                    
+                    
+                    
+                    
+                    
+                        <div class="meta">
+                                    <p>
+                                    <!---->
+                                    <!--Defined in-->
+                                    <!---->
+                            <!---->
+                            <!--<a href="../files/samsara_core_EmptyNode.js.html#l36"><code>samsara&#x2F;core&#x2F;EmptyNode.js:36</code></a>-->
+                            <!---->
+                            </p>
+                    
+                    
+                    
+                        </div>
+                    
+                        <div class="description">
+                            <p>Remove the View from the RenderTree. All Surfaces added to the View
+                    will also be removed. The View can be added back at a later time and
+                    all of its data and Surfaces will be restored.</p>
+                    
+                        </div>
+                    
+                    
+                    
+                    </div>
                     <div id="method_start" class="method item">
                         <h3 class="name"><code>start</code></h3>
                     
@@ -206,7 +401,7 @@ and <code>window</code> object. For instance the <code>resize</code> event.</p>
                                     <!--Defined in-->
                                     <!---->
                             <!---->
-                            <!--<a href="../files/samsara_core_Engine.js.html#l56"><code>samsara&#x2F;core&#x2F;Engine.js:56</code></a>-->
+                            <!--<a href="../files/samsara_core_Engine.js.html#l68"><code>samsara&#x2F;core&#x2F;Engine.js:68</code></a>-->
                             <!---->
                             </p>
                     
@@ -241,7 +436,7 @@ and <code>window</code> object. For instance the <code>resize</code> event.</p>
                                     <!--Defined in-->
                                     <!---->
                             <!---->
-                            <!--<a href="../files/samsara_core_Engine.js.html#l28"><code>samsara&#x2F;core&#x2F;Engine.js:28</code></a>-->
+                            <!--<a href="../files/samsara_core_Engine.js.html#l47"><code>samsara&#x2F;core&#x2F;Engine.js:47</code></a>-->
                             <!---->
                             </p>
                     
@@ -279,7 +474,7 @@ and <code>window</code> object. For instance the <code>resize</code> event.</p>
                                     <!--Defined in-->
                                     <!---->
                             <!---->
-                            <!--<a href="../files/samsara_core_Engine.js.html#l67"><code>samsara&#x2F;core&#x2F;Engine.js:67</code></a>-->
+                            <!--<a href="../files/samsara_core_Engine.js.html#l79"><code>samsara&#x2F;core&#x2F;Engine.js:79</code></a>-->
                             <!---->
                             </p>
                     

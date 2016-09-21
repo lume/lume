@@ -23,12 +23,12 @@
             <li class="divider-vertical"></li>
             <li>
                 <p class="navbar-text">
-                    API Docs for Version: <b>0.2.0</b>
+                    API Docs for Version: <b>0.2.2</b>
                 </p>
             </li>
         </div>
         <form class="navbar-form pull-right" style="line-height: 40px; height: 40px;">
-            <input style="margin-top: 0;" type="text" class="search-query" placeholder="Search for classes..." data-obj='["classes/Core.Controller", "classes/Core.ElementAllocator", "classes/Core.ElementOutput", "classes/Core.Engine", "classes/Core.LayoutNode", "classes/Core.OptionsManager", "classes/Core.SizeNode", "classes/Core.SUE", "classes/Core.Timer", "classes/Core.Transform", "classes/Core.Transitionable", "classes/Core.View", "classes/DOM.ContainerSurface", "classes/DOM.Context", "classes/DOM.Surface", "classes/Events.EventEmitter", "classes/Events.EventFilter", "classes/Events.EventHandler", "classes/Events.EventMapper", "classes/Events.EventSplitter", "classes/Inputs.GenericInput", "classes/Inputs.MouseInput", "classes/Inputs.PinchInput", "classes/Inputs.RotateInput", "classes/Inputs.ScaleInput", "classes/Inputs.ScrollInput", "classes/Inputs.TouchInput", "classes/Inputs.TouchTracker", "classes/Inputs.TwoFingerInput", "classes/Layouts.DrawerLayout", "classes/Layouts.FlexibleLayout", "classes/Layouts.GridLayout", "classes/Layouts.SequentialLayout", "classes/RenderTreeNode", "classes/RootNode", "classes/Streams.Accumulator", "classes/Streams.Differential", "classes/Streams.Observable", "classes/Streams.ResizeStream", "classes/Streams.SimpleStream", "classes/Streams.Stream", "classes/Transitions.Inertia", "classes/Transitions.Spring", "classes/Transitions.Tween"]'>
+            <input style="margin-top: 0;" type="text" class="search-query" placeholder="Search for classes..." data-obj='["classes/Core.Controller", "classes/Core.DOMAllocator", "classes/Core.DOMOutput", "classes/Core.Engine", "classes/Core.LayoutNode", "classes/Core.Node", "classes/Core.OptionsManager", "classes/Core.RenderTreeNode", "classes/Core.RootNode", "classes/Core.SizeNode", "classes/Core.Timer", "classes/Core.Transform", "classes/Core.Transitionable", "classes/Core.View", "classes/DOM.ContainerSurface", "classes/DOM.Context", "classes/DOM.Surface", "classes/Events.EventEmitter", "classes/Events.EventFilter", "classes/Events.EventHandler", "classes/Events.EventMapper", "classes/Events.EventSplitter", "classes/Inputs.GenericInput", "classes/Inputs.MouseInput", "classes/Inputs.PinchInput", "classes/Inputs.RotateInput", "classes/Inputs.ScaleInput", "classes/Inputs.ScrollInput", "classes/Inputs.TouchInput", "classes/Inputs.TouchTracker", "classes/Inputs.TwoFingerInput", "classes/Layouts.BidirectionalList", "classes/Layouts.DrawerLayout", "classes/Layouts.FlexLayout", "classes/Layouts.GridLayout", "classes/Layouts.HeaderFooterLayout", "classes/Layouts.SequentialLayout", "classes/Streams.Accumulator", "classes/Streams.Differential", "classes/Streams.Observable", "classes/Streams.SimpleStream", "classes/Streams.Stream", "classes/Transitions.Inertia", "classes/Transitions.Spring", "classes/Transitions.Tween", "classes/UI.Fingers", "classes/UI.Slider"]'>
         </form>
     </div>
 </div>
@@ -69,13 +69,17 @@
 	                            <li><a href="../classes/Inputs.ScaleInput.html">Inputs.ScaleInput</a></li>
 	                            <li><a href="../classes/Inputs.ScrollInput.html">Inputs.ScrollInput</a></li>
 	                            <li><a href="../classes/Inputs.TouchInput.html">Inputs.TouchInput</a></li>
+	                            <li><a href="../classes/Layouts.BidirectionalList.html">Layouts.BidirectionalList</a></li>
 	                            <li><a href="../classes/Layouts.DrawerLayout.html">Layouts.DrawerLayout</a></li>
-	                            <li><a href="../classes/Layouts.FlexibleLayout.html">Layouts.FlexibleLayout</a></li>
+	                            <li><a href="../classes/Layouts.FlexLayout.html">Layouts.FlexLayout</a></li>
 	                            <li><a href="../classes/Layouts.GridLayout.html">Layouts.GridLayout</a></li>
+	                            <li><a href="../classes/Layouts.HeaderFooterLayout.html">Layouts.HeaderFooterLayout</a></li>
 	                            <li><a href="../classes/Layouts.SequentialLayout.html">Layouts.SequentialLayout</a></li>
 	                            <li><a href="../classes/Streams.Accumulator.html">Streams.Accumulator</a></li>
 	                            <li><a href="../classes/Streams.Differential.html">Streams.Differential</a></li>
 	                            <li><a href="../classes/Streams.Stream.html">Streams.Stream</a></li>
+	                            <li><a href="../classes/UI.Fingers.html">UI.Fingers</a></li>
+	                            <li><a href="../classes/UI.Slider.html">UI.Slider</a></li>
 	                    </ul>
 	                </div>
 	    
@@ -120,6 +124,12 @@
 </div>
 
 <div class="well well-small">
+        <div class="uses">
+            Uses
+            <ul class="inline commas">
+                    <li><a href="Core._OptionsManager.html">Core._OptionsManager</a></li>
+            </ul>
+        </div>
 
         <div class="extends">
             Extends <a href="../classes/Streams.Stream.html" class="crosslink">Streams.Stream</a>
@@ -313,6 +323,9 @@ number or array of numbers.</p>
                                 </ul><span class="paren">)</span>
                             </div>
                     
+                            <span class="returns-inline">
+                                <span class="type">SimpleStream</span>
+                            </span>
                     
                     
                     
@@ -324,7 +337,7 @@ number or array of numbers.</p>
                                     <p>Inherited from
                                     <a href="../classes/Streams.SimpleStream.html#method_filter">Streams.SimpleStream</a>:
                             <!---->
-                            <!--<a href="../files/samsara_streams_SimpleStream.js.html#l43"><code>samsara&#x2F;streams&#x2F;SimpleStream.js:43</code></a>-->
+                            <!--<a href="../files/samsara_streams_SimpleStream.js.html#l44"><code>samsara&#x2F;streams&#x2F;SimpleStream.js:44</code></a>-->
                             <!---->
                             </p>
                     
@@ -335,7 +348,7 @@ number or array of numbers.</p>
                         <div class="description">
                             Filter converts the current stream into a new stream
                      that only emits if the filter condition is satisfied.
-                     The function should return a Boolean.
+                     The filter function should return a Boolean value.
                         </div>
                     
                             <div class="params">
@@ -355,6 +368,14 @@ number or array of numbers.</p>
                                 </ul>
                             </div>
                     
+                            <div class="returns">
+                                <h4>Returns:</h4>
+                    
+                                <div class="returns-description">
+                                            <span class="type">SimpleStream</span>:
+                                        stream  Filtered stream
+                                </div>
+                            </div>
                     
                     </div>
                     <div id="method_get" class="method item">
@@ -378,7 +399,7 @@ number or array of numbers.</p>
                                     <!--Defined in-->
                                     <!---->
                             <!---->
-                            <!--<a href="../files/samsara_streams_Accumulator.js.html#l102"><code>samsara&#x2F;streams&#x2F;Accumulator.js:102</code></a>-->
+                            <!--<a href="../files/samsara_streams_Accumulator.js.html#l103"><code>samsara&#x2F;streams&#x2F;Accumulator.js:103</code></a>-->
                             <!---->
                             </p>
                     
@@ -412,6 +433,9 @@ number or array of numbers.</p>
                                 </ul><span class="paren">)</span>
                             </div>
                     
+                            <span class="returns-inline">
+                                <span class="type">SimpleStream</span>
+                            </span>
                     
                     
                     
@@ -453,6 +477,14 @@ number or array of numbers.</p>
                                 </ul>
                             </div>
                     
+                            <div class="returns">
+                                <h4>Returns:</h4>
+                    
+                                <div class="returns-description">
+                                            <span class="type">SimpleStream</span>:
+                                        stream  Mapped stream
+                                </div>
+                            </div>
                     
                     </div>
                     <div id="method_pluck" class="method item inherited">
@@ -466,6 +498,9 @@ number or array of numbers.</p>
                                 </ul><span class="paren">)</span>
                             </div>
                     
+                            <span class="returns-inline">
+                                <span class="type">SimpleStream</span>
+                            </span>
                     
                     
                     
@@ -489,7 +524,7 @@ number or array of numbers.</p>
                             Pluck is an opinionated mapper. It projects a Stream
                      onto one of its return values.
                     
-                     Useful if a Stream returns an array or an object.
+                     Useful if a Stream returns an array or object.
                         </div>
                     
                             <div class="params">
@@ -509,6 +544,14 @@ number or array of numbers.</p>
                                 </ul>
                             </div>
                     
+                            <div class="returns">
+                                <h4>Returns:</h4>
+                    
+                                <div class="returns-description">
+                                            <span class="type">SimpleStream</span>:
+                                        stream  Plucked stream
+                                </div>
+                            </div>
                     
                     </div>
                     <div id="method_set" class="method item">
@@ -538,7 +581,7 @@ number or array of numbers.</p>
                                     <!--Defined in-->
                                     <!---->
                             <!---->
-                            <!--<a href="../files/samsara_streams_Accumulator.js.html#l83"><code>samsara&#x2F;streams&#x2F;Accumulator.js:83</code></a>-->
+                            <!--<a href="../files/samsara_streams_Accumulator.js.html#l84"><code>samsara&#x2F;streams&#x2F;Accumulator.js:84</code></a>-->
                             <!---->
                             </p>
                     
@@ -605,7 +648,7 @@ number or array of numbers.</p>
                                     <p>Inherited from
                                     <a href="../classes/Streams.SimpleStream.html#method_split">Streams.SimpleStream</a>:
                             <!---->
-                            <!--<a href="../files/samsara_streams_SimpleStream.js.html#l58"><code>samsara&#x2F;streams&#x2F;SimpleStream.js:58</code></a>-->
+                            <!--<a href="../files/samsara_streams_SimpleStream.js.html#l60"><code>samsara&#x2F;streams&#x2F;SimpleStream.js:60</code></a>-->
                             <!---->
                             </p>
                     
@@ -615,7 +658,7 @@ number or array of numbers.</p>
                     
                         <div class="description">
                             Split maps one of several streams based on custom logic.
-                     The function should return an EventEmitter.
+                     The splitter function should return an EventEmitter type.
                         </div>
                     
                             <div class="params">

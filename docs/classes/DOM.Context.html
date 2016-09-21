@@ -23,12 +23,12 @@
             <li class="divider-vertical"></li>
             <li>
                 <p class="navbar-text">
-                    API Docs for Version: <b>0.2.0</b>
+                    API Docs for Version: <b>0.2.2</b>
                 </p>
             </li>
         </div>
         <form class="navbar-form pull-right" style="line-height: 40px; height: 40px;">
-            <input style="margin-top: 0;" type="text" class="search-query" placeholder="Search for classes..." data-obj='["classes/Core.Controller", "classes/Core.ElementAllocator", "classes/Core.ElementOutput", "classes/Core.Engine", "classes/Core.LayoutNode", "classes/Core.OptionsManager", "classes/Core.SizeNode", "classes/Core.SUE", "classes/Core.Timer", "classes/Core.Transform", "classes/Core.Transitionable", "classes/Core.View", "classes/DOM.ContainerSurface", "classes/DOM.Context", "classes/DOM.Surface", "classes/Events.EventEmitter", "classes/Events.EventFilter", "classes/Events.EventHandler", "classes/Events.EventMapper", "classes/Events.EventSplitter", "classes/Inputs.GenericInput", "classes/Inputs.MouseInput", "classes/Inputs.PinchInput", "classes/Inputs.RotateInput", "classes/Inputs.ScaleInput", "classes/Inputs.ScrollInput", "classes/Inputs.TouchInput", "classes/Inputs.TouchTracker", "classes/Inputs.TwoFingerInput", "classes/Layouts.DrawerLayout", "classes/Layouts.FlexibleLayout", "classes/Layouts.GridLayout", "classes/Layouts.SequentialLayout", "classes/RenderTreeNode", "classes/RootNode", "classes/Streams.Accumulator", "classes/Streams.Differential", "classes/Streams.Observable", "classes/Streams.ResizeStream", "classes/Streams.SimpleStream", "classes/Streams.Stream", "classes/Transitions.Inertia", "classes/Transitions.Spring", "classes/Transitions.Tween"]'>
+            <input style="margin-top: 0;" type="text" class="search-query" placeholder="Search for classes..." data-obj='["classes/Core.Controller", "classes/Core.DOMAllocator", "classes/Core.DOMOutput", "classes/Core.Engine", "classes/Core.LayoutNode", "classes/Core.Node", "classes/Core.OptionsManager", "classes/Core.RenderTreeNode", "classes/Core.RootNode", "classes/Core.SizeNode", "classes/Core.Timer", "classes/Core.Transform", "classes/Core.Transitionable", "classes/Core.View", "classes/DOM.ContainerSurface", "classes/DOM.Context", "classes/DOM.Surface", "classes/Events.EventEmitter", "classes/Events.EventFilter", "classes/Events.EventHandler", "classes/Events.EventMapper", "classes/Events.EventSplitter", "classes/Inputs.GenericInput", "classes/Inputs.MouseInput", "classes/Inputs.PinchInput", "classes/Inputs.RotateInput", "classes/Inputs.ScaleInput", "classes/Inputs.ScrollInput", "classes/Inputs.TouchInput", "classes/Inputs.TouchTracker", "classes/Inputs.TwoFingerInput", "classes/Layouts.BidirectionalList", "classes/Layouts.DrawerLayout", "classes/Layouts.FlexLayout", "classes/Layouts.GridLayout", "classes/Layouts.HeaderFooterLayout", "classes/Layouts.SequentialLayout", "classes/Streams.Accumulator", "classes/Streams.Differential", "classes/Streams.Observable", "classes/Streams.SimpleStream", "classes/Streams.Stream", "classes/Transitions.Inertia", "classes/Transitions.Spring", "classes/Transitions.Tween", "classes/UI.Fingers", "classes/UI.Slider"]'>
         </form>
     </div>
 </div>
@@ -69,13 +69,17 @@
 	                            <li><a href="../classes/Inputs.ScaleInput.html">Inputs.ScaleInput</a></li>
 	                            <li><a href="../classes/Inputs.ScrollInput.html">Inputs.ScrollInput</a></li>
 	                            <li><a href="../classes/Inputs.TouchInput.html">Inputs.TouchInput</a></li>
+	                            <li><a href="../classes/Layouts.BidirectionalList.html">Layouts.BidirectionalList</a></li>
 	                            <li><a href="../classes/Layouts.DrawerLayout.html">Layouts.DrawerLayout</a></li>
-	                            <li><a href="../classes/Layouts.FlexibleLayout.html">Layouts.FlexibleLayout</a></li>
+	                            <li><a href="../classes/Layouts.FlexLayout.html">Layouts.FlexLayout</a></li>
 	                            <li><a href="../classes/Layouts.GridLayout.html">Layouts.GridLayout</a></li>
+	                            <li><a href="../classes/Layouts.HeaderFooterLayout.html">Layouts.HeaderFooterLayout</a></li>
 	                            <li><a href="../classes/Layouts.SequentialLayout.html">Layouts.SequentialLayout</a></li>
 	                            <li><a href="../classes/Streams.Accumulator.html">Streams.Accumulator</a></li>
 	                            <li><a href="../classes/Streams.Differential.html">Streams.Differential</a></li>
 	                            <li><a href="../classes/Streams.Stream.html">Streams.Stream</a></li>
+	                            <li><a href="../classes/UI.Fingers.html">UI.Fingers</a></li>
+	                            <li><a href="../classes/UI.Slider.html">UI.Slider</a></li>
 	                    </ul>
 	                </div>
 	    
@@ -130,7 +134,7 @@
 
     <!---->
         <div class="foundat">
-            Defined in: <a href="../files/samsara_dom_Context.js.html#l30"><code>samsara&#x2F;dom&#x2F;Context.js:30</code></a>
+            Defined in: <a href="../files/samsara_dom_Context.js.html#l12"><code>samsara&#x2F;dom&#x2F;Context.js:12</code></a>
         </div>
     <!---->
 
@@ -173,7 +177,7 @@ it is mounted to <code>document.body</code>.</p>
                         <!--Defined in-->
                         <!---->
                 <!---->
-                <!--<a href="../files/samsara_dom_Context.js.html#l30"><code>samsara&#x2F;dom&#x2F;Context.js:30</code></a>-->
+                <!--<a href="../files/samsara_dom_Context.js.html#l12"><code>samsara&#x2F;dom&#x2F;Context.js:12</code></a>-->
                 <!---->
                 </p>
         
@@ -269,11 +273,23 @@ it is mounted to <code>document.body</code>.</p>
 
                             </li>
                             <li class="index-item method">
-                                <a href="#" data-tabid="#methods" data-anchor="#method_on" data-tablink="on">on</a>
+                                <a href="#" data-tabid="#methods" data-anchor="#method_off" data-tablink="off">off</a>
 
                             </li>
                             <li class="index-item method">
                                 <a href="#" data-tabid="#methods" data-anchor="#method_on" data-tablink="on">on</a>
+
+                            </li>
+                            <li class="index-item method">
+                                <a href="#" data-tabid="#methods" data-anchor="#method_perspectiveFrom" data-tablink="perspectiveFrom">perspectiveFrom</a>
+
+                            </li>
+                            <li class="index-item method">
+                                <a href="#" data-tabid="#methods" data-anchor="#method_perspectiveOriginFrom" data-tablink="perspectiveOriginFrom">perspectiveOriginFrom</a>
+
+                            </li>
+                            <li class="index-item method inherited">
+                                <a href="#" data-tabid="#methods" data-anchor="#method_setAllocator" data-tablink="setAllocator">setAllocator</a>
 
                             </li>
                             <li class="index-item method">
@@ -306,7 +322,7 @@ it is mounted to <code>document.body</code>.</p>
                             </div>
                     
                             <span class="returns-inline">
-                                <span class="type"><a href="../classes/RenderTreeNode.html" class="crosslink">RenderTreeNode</a></span>
+                                <span class="type">RenderTreeNode</span>
                             </span>
                     
                     
@@ -321,7 +337,7 @@ it is mounted to <code>document.body</code>.</p>
                                     <!--Defined in-->
                                     <!---->
                             <!---->
-                            <!--<a href="../files/samsara_dom_Context.js.html#l119"><code>samsara&#x2F;dom&#x2F;Context.js:119</code></a>-->
+                            <!--<a href="../files/samsara_dom_Context.js.html#l96"><code>samsara&#x2F;dom&#x2F;Context.js:96</code></a>-->
                             <!---->
                             </p>
                     
@@ -356,7 +372,7 @@ it is mounted to <code>document.body</code>.</p>
                                 <h4>Returns:</h4>
                     
                                 <div class="returns-description">
-                                            <span class="type"><a href="../classes/RenderTreeNode.html" class="crosslink">RenderTreeNode</a></span>:
+                                            <span class="type">RenderTreeNode</span>:
                                         <p>Wrapped node</p>
                     
                                 </div>
@@ -391,7 +407,7 @@ it is mounted to <code>document.body</code>.</p>
                                     <!--Defined in-->
                                     <!---->
                             <!---->
-                            <!--<a href="../files/samsara_dom_Context.js.html#l233"><code>samsara&#x2F;dom&#x2F;Context.js:233</code></a>-->
+                            <!--<a href="../files/samsara_dom_Context.js.html#l266"><code>samsara&#x2F;dom&#x2F;Context.js:266</code></a>-->
                             <!---->
                             </p>
                     
@@ -456,7 +472,7 @@ it is mounted to <code>document.body</code>.</p>
                                     <!--Defined in-->
                                     <!---->
                             <!---->
-                            <!--<a href="../files/samsara_dom_Context.js.html#l132"><code>samsara&#x2F;dom&#x2F;Context.js:132</code></a>-->
+                            <!--<a href="../files/samsara_dom_Context.js.html#l160"><code>samsara&#x2F;dom&#x2F;Context.js:160</code></a>-->
                             <!---->
                             </p>
                     
@@ -505,7 +521,7 @@ it is mounted to <code>document.body</code>.</p>
                                     <!--Defined in-->
                                     <!---->
                             <!---->
-                            <!--<a href="../files/samsara_dom_Context.js.html#l166"><code>samsara&#x2F;dom&#x2F;Context.js:166</code></a>-->
+                            <!--<a href="../files/samsara_dom_Context.js.html#l206"><code>samsara&#x2F;dom&#x2F;Context.js:206</code></a>-->
                             <!---->
                             </p>
                     
@@ -529,6 +545,78 @@ it is mounted to <code>document.body</code>.</p>
                     
                                         <div class="param-description">
                                             <p>DOM element</p>
+                    
+                                        </div>
+                    
+                                    </li>
+                                </ul>
+                            </div>
+                    
+                    
+                    </div>
+                    <div id="method_off" class="method item">
+                        <h3 class="name"><code>off</code></h3>
+                    
+                            <div class="args">
+                                <span class="paren">(</span><ul class="args-list inline commas">
+                                    <li class="arg">
+                                            <code>type</code>
+                                    </li>
+                                    <li class="arg">
+                                            <code>handler</code>
+                                    </li>
+                                </ul><span class="paren">)</span>
+                            </div>
+                    
+                    
+                    
+                    
+                    
+                    
+                    
+                    
+                        <div class="meta">
+                                    <p>
+                                    <!---->
+                                    <!--Defined in-->
+                                    <!---->
+                            <!---->
+                            <!--<a href="../files/samsara_dom_Context.js.html#l254"><code>samsara&#x2F;dom&#x2F;Context.js:254</code></a>-->
+                            <!---->
+                            </p>
+                    
+                    
+                    
+                        </div>
+                    
+                        <div class="description">
+                            <p>Removes the <code>handler</code> from the <code>type</code>.
+                    Undoes the work of <code>on</code>.</p>
+                    
+                        </div>
+                    
+                            <div class="params">
+                                <h4>Parameters:</h4>
+                    
+                                <ul class="params-list">
+                                    <li class="param">
+                                            <code class="param-name">type</code>
+                                            <span class="type"><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String" class="crosslink external" target="_blank">String</a></span>
+                    
+                    
+                                        <div class="param-description">
+                                            <p>Channel name</p>
+                    
+                                        </div>
+                    
+                                    </li>
+                                    <li class="param">
+                                            <code class="param-name">handler</code>
+                                            <span class="type"><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Function" class="crosslink external" target="_blank">Function</a></span>
+                    
+                    
+                                        <div class="param-description">
+                                            <p>Callback</p>
                     
                                         </div>
                     
@@ -565,7 +653,7 @@ it is mounted to <code>document.body</code>.</p>
                                     <!--Defined in-->
                                     <!---->
                             <!---->
-                            <!--<a href="../files/samsara_dom_Context.js.html#l201"><code>samsara&#x2F;dom&#x2F;Context.js:201</code></a>-->
+                            <!--<a href="../files/samsara_dom_Context.js.html#l234"><code>samsara&#x2F;dom&#x2F;Context.js:234</code></a>-->
                             <!---->
                             </p>
                     
@@ -611,16 +699,13 @@ it is mounted to <code>document.body</code>.</p>
                     
                     
                     </div>
-                    <div id="method_on" class="method item">
-                        <h3 class="name"><code>on</code></h3>
+                    <div id="method_perspectiveFrom" class="method item">
+                        <h3 class="name"><code>perspectiveFrom</code></h3>
                     
                             <div class="args">
                                 <span class="paren">(</span><ul class="args-list inline commas">
                                     <li class="arg">
-                                            <code>type</code>
-                                    </li>
-                                    <li class="arg">
-                                            <code>handler</code>
+                                            <code>perspective</code>
                                     </li>
                                 </ul><span class="paren">)</span>
                             </div>
@@ -638,7 +723,7 @@ it is mounted to <code>document.body</code>.</p>
                                     <!--Defined in-->
                                     <!---->
                             <!---->
-                            <!--<a href="../files/samsara_dom_Context.js.html#l221"><code>samsara&#x2F;dom&#x2F;Context.js:221</code></a>-->
+                            <!--<a href="../files/samsara_dom_Context.js.html#l124"><code>samsara&#x2F;dom&#x2F;Context.js:124</code></a>-->
                             <!---->
                             </p>
                     
@@ -647,8 +732,7 @@ it is mounted to <code>document.body</code>.</p>
                         </div>
                     
                         <div class="description">
-                            <p>Removes the <code>handler</code> from the <code>type</code>.
-                    Undoes the work of <code>on</code>.</p>
+                            <p>Pull the perspective value from a transitionable.</p>
                     
                         </div>
                     
@@ -657,23 +741,124 @@ it is mounted to <code>document.body</code>.</p>
                     
                                 <ul class="params-list">
                                     <li class="param">
-                                            <code class="param-name">type</code>
-                                            <span class="type"><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String" class="crosslink external" target="_blank">String</a></span>
+                                            <code class="param-name">perspective</code>
+                                            <span class="type">Transitionable</span>
                     
                     
                                         <div class="param-description">
-                                            <p>Channel name</p>
+                                            <p>Perspective transitionable</p>
                     
                                         </div>
                     
                                     </li>
+                                </ul>
+                            </div>
+                    
+                    
+                    </div>
+                    <div id="method_perspectiveOriginFrom" class="method item">
+                        <h3 class="name"><code>perspectiveOriginFrom</code></h3>
+                    
+                            <div class="args">
+                                <span class="paren">(</span><ul class="args-list inline commas">
+                                    <li class="arg">
+                                            <code>perspectiveOrigin</code>
+                                    </li>
+                                </ul><span class="paren">)</span>
+                            </div>
+                    
+                    
+                    
+                    
+                    
+                    
+                    
+                    
+                        <div class="meta">
+                                    <p>
+                                    <!---->
+                                    <!--Defined in-->
+                                    <!---->
+                            <!---->
+                            <!--<a href="../files/samsara_dom_Context.js.html#l142"><code>samsara&#x2F;dom&#x2F;Context.js:142</code></a>-->
+                            <!---->
+                            </p>
+                    
+                    
+                    
+                        </div>
+                    
+                        <div class="description">
+                            <p>Pull the perspective-origin value from a transitionable.</p>
+                    
+                        </div>
+                    
+                            <div class="params">
+                                <h4>Parameters:</h4>
+                    
+                                <ul class="params-list">
                                     <li class="param">
-                                            <code class="param-name">handler</code>
-                                            <span class="type"><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Function" class="crosslink external" target="_blank">Function</a></span>
+                                            <code class="param-name">perspectiveOrigin</code>
+                                            <span class="type">Transitionable</span>
                     
                     
                                         <div class="param-description">
-                                            <p>Callback</p>
+                                            <p>Perspective-origin transitionable</p>
+                    
+                                        </div>
+                    
+                                    </li>
+                                </ul>
+                            </div>
+                    
+                    
+                    </div>
+                    <div id="method_setAllocator" class="method item inherited">
+                        <h3 class="name"><code>setAllocator</code></h3>
+                    
+                            <div class="args">
+                                <span class="paren">(</span><ul class="args-list inline commas">
+                                    <li class="arg">
+                                            <code>allocator</code>
+                                    </li>
+                                </ul><span class="paren">)</span>
+                            </div>
+                    
+                    
+                    
+                    
+                    
+                    
+                    
+                    
+                        <div class="meta">
+                                    <p>Inherited from
+                                    <a href="../classes/Core.RootNode.html#method_setAllocator">Core.RootNode</a>:
+                            <!---->
+                            <!--<a href="../files/samsara_core_nodes_RootNode.js.html#l26"><code>samsara&#x2F;core&#x2F;nodes&#x2F;RootNode.js:26</code></a>-->
+                            <!---->
+                            </p>
+                    
+                    
+                    
+                        </div>
+                    
+                        <div class="description">
+                            <p>Define an allocator</p>
+                    
+                        </div>
+                    
+                            <div class="params">
+                                <h4>Parameters:</h4>
+                    
+                                <ul class="params-list">
+                                    <li class="param">
+                                            <code class="param-name">allocator</code>
+                                            <span class="type">Allocator</span>
+                    
+                    
+                                        <div class="param-description">
+                                            <p>Allocator</p>
                     
                                         </div>
                     
@@ -713,7 +898,7 @@ it is mounted to <code>document.body</code>.</p>
                                     <!--Defined in-->
                                     <!---->
                             <!---->
-                            <!--<a href="../files/samsara_dom_Context.js.html#l142"><code>samsara&#x2F;dom&#x2F;Context.js:142</code></a>-->
+                            <!--<a href="../files/samsara_dom_Context.js.html#l170"><code>samsara&#x2F;dom&#x2F;Context.js:170</code></a>-->
                             <!---->
                             </p>
                     
@@ -800,7 +985,7 @@ it is mounted to <code>document.body</code>.</p>
                                     <!--Defined in-->
                                     <!---->
                             <!---->
-                            <!--<a href="../files/samsara_dom_Context.js.html#l154"><code>samsara&#x2F;dom&#x2F;Context.js:154</code></a>-->
+                            <!--<a href="../files/samsara_dom_Context.js.html#l188"><code>samsara&#x2F;dom&#x2F;Context.js:188</code></a>-->
                             <!---->
                             </p>
                     

@@ -23,12 +23,12 @@
             <li class="divider-vertical"></li>
             <li>
                 <p class="navbar-text">
-                    API Docs for Version: <b>0.2.0</b>
+                    API Docs for Version: <b>0.2.2</b>
                 </p>
             </li>
         </div>
         <form class="navbar-form pull-right" style="line-height: 40px; height: 40px;">
-            <input style="margin-top: 0;" type="text" class="search-query" placeholder="Search for classes..." data-obj='["classes/Core.Controller", "classes/Core.ElementAllocator", "classes/Core.ElementOutput", "classes/Core.Engine", "classes/Core.LayoutNode", "classes/Core.OptionsManager", "classes/Core.SizeNode", "classes/Core.SUE", "classes/Core.Timer", "classes/Core.Transform", "classes/Core.Transitionable", "classes/Core.View", "classes/DOM.ContainerSurface", "classes/DOM.Context", "classes/DOM.Surface", "classes/Events.EventEmitter", "classes/Events.EventFilter", "classes/Events.EventHandler", "classes/Events.EventMapper", "classes/Events.EventSplitter", "classes/Inputs.GenericInput", "classes/Inputs.MouseInput", "classes/Inputs.PinchInput", "classes/Inputs.RotateInput", "classes/Inputs.ScaleInput", "classes/Inputs.ScrollInput", "classes/Inputs.TouchInput", "classes/Inputs.TouchTracker", "classes/Inputs.TwoFingerInput", "classes/Layouts.DrawerLayout", "classes/Layouts.FlexibleLayout", "classes/Layouts.GridLayout", "classes/Layouts.SequentialLayout", "classes/RenderTreeNode", "classes/RootNode", "classes/Streams.Accumulator", "classes/Streams.Differential", "classes/Streams.Observable", "classes/Streams.ResizeStream", "classes/Streams.SimpleStream", "classes/Streams.Stream", "classes/Transitions.Inertia", "classes/Transitions.Spring", "classes/Transitions.Tween"]'>
+            <input style="margin-top: 0;" type="text" class="search-query" placeholder="Search for classes..." data-obj='["classes/Core.Controller", "classes/Core.DOMAllocator", "classes/Core.DOMOutput", "classes/Core.Engine", "classes/Core.LayoutNode", "classes/Core.Node", "classes/Core.OptionsManager", "classes/Core.RenderTreeNode", "classes/Core.RootNode", "classes/Core.SizeNode", "classes/Core.Timer", "classes/Core.Transform", "classes/Core.Transitionable", "classes/Core.View", "classes/DOM.ContainerSurface", "classes/DOM.Context", "classes/DOM.Surface", "classes/Events.EventEmitter", "classes/Events.EventFilter", "classes/Events.EventHandler", "classes/Events.EventMapper", "classes/Events.EventSplitter", "classes/Inputs.GenericInput", "classes/Inputs.MouseInput", "classes/Inputs.PinchInput", "classes/Inputs.RotateInput", "classes/Inputs.ScaleInput", "classes/Inputs.ScrollInput", "classes/Inputs.TouchInput", "classes/Inputs.TouchTracker", "classes/Inputs.TwoFingerInput", "classes/Layouts.BidirectionalList", "classes/Layouts.DrawerLayout", "classes/Layouts.FlexLayout", "classes/Layouts.GridLayout", "classes/Layouts.HeaderFooterLayout", "classes/Layouts.SequentialLayout", "classes/Streams.Accumulator", "classes/Streams.Differential", "classes/Streams.Observable", "classes/Streams.SimpleStream", "classes/Streams.Stream", "classes/Transitions.Inertia", "classes/Transitions.Spring", "classes/Transitions.Tween", "classes/UI.Fingers", "classes/UI.Slider"]'>
         </form>
     </div>
 </div>
@@ -69,13 +69,17 @@
 	                            <li><a href="../classes/Inputs.ScaleInput.html">Inputs.ScaleInput</a></li>
 	                            <li><a href="../classes/Inputs.ScrollInput.html">Inputs.ScrollInput</a></li>
 	                            <li><a href="../classes/Inputs.TouchInput.html">Inputs.TouchInput</a></li>
+	                            <li><a href="../classes/Layouts.BidirectionalList.html">Layouts.BidirectionalList</a></li>
 	                            <li><a href="../classes/Layouts.DrawerLayout.html">Layouts.DrawerLayout</a></li>
-	                            <li><a href="../classes/Layouts.FlexibleLayout.html">Layouts.FlexibleLayout</a></li>
+	                            <li><a href="../classes/Layouts.FlexLayout.html">Layouts.FlexLayout</a></li>
 	                            <li><a href="../classes/Layouts.GridLayout.html">Layouts.GridLayout</a></li>
+	                            <li><a href="../classes/Layouts.HeaderFooterLayout.html">Layouts.HeaderFooterLayout</a></li>
 	                            <li><a href="../classes/Layouts.SequentialLayout.html">Layouts.SequentialLayout</a></li>
 	                            <li><a href="../classes/Streams.Accumulator.html">Streams.Accumulator</a></li>
 	                            <li><a href="../classes/Streams.Differential.html">Streams.Differential</a></li>
 	                            <li><a href="../classes/Streams.Stream.html">Streams.Stream</a></li>
+	                            <li><a href="../classes/UI.Fingers.html">UI.Fingers</a></li>
+	                            <li><a href="../classes/UI.Slider.html">UI.Slider</a></li>
 	                    </ul>
 	                </div>
 	    
@@ -127,7 +131,7 @@
 
     <!---->
         <div class="foundat">
-            Defined in: <a href="../files/samsara_layouts_GridLayout.js.html#l11"><code>samsara&#x2F;layouts&#x2F;GridLayout.js:11</code></a>
+            Defined in: <a href="../files/samsara_layouts_GridLayout.js.html#l7"><code>samsara&#x2F;layouts&#x2F;GridLayout.js:7</code></a>
         </div>
     <!---->
 
@@ -139,9 +143,6 @@
     <p>A layout that arranges items in a grid and can rearrange the grid responsively.</p>
 <p>The user provides the number of items per row in an array or a dictionary
 with keys that are pixel values. The items will be sized to fill the available space.</p>
-<p>Let itemsPerRow be a dictionary if you want the grid to rearrange responsively. The
-keys should be pixel values. The row arrangement will be one of the entries of
-the dictionary whose key value is closest to the parent width without exceeding it.</p>
 
 </div>
 
@@ -171,7 +172,7 @@ the dictionary whose key value is closest to the parent width without exceeding 
                         <!--Defined in-->
                         <!---->
                 <!---->
-                <!--<a href="../files/samsara_layouts_GridLayout.js.html#l11"><code>samsara&#x2F;layouts&#x2F;GridLayout.js:11</code></a>-->
+                <!--<a href="../files/samsara_layouts_GridLayout.js.html#l7"><code>samsara&#x2F;layouts&#x2F;GridLayout.js:7</code></a>-->
                 <!---->
                 </p>
         
@@ -200,22 +201,12 @@ the dictionary whose key value is closest to the parent width without exceeding 
         
                                 <ul class="params-list">
                                     <li class="param">
-                                            <code class="param-name">itemsByRow</code>
-                                            <span class="type"><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array" class="crosslink external" target="_blank">Array</a> | <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object" class="crosslink external" target="_blank">Object</a></span>
-        
-                                        <div class="param-description">
-                                            <p>Number of items per row, or an object of {width : itemsByRow} pairs</p>
-        
-                                        </div>
-        
-                                    </li>
-                                    <li class="param">
-                                            <code class="param-name optional">[gutter=0]</code>
-                                            <span class="type">Transitionable | <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Number" class="crosslink external" target="_blank">Number</a></span>
+                                            <code class="param-name optional">[spacing=0]</code>
+                                            <span class="type"><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array" class="crosslink external" target="_blank">Array</a></span>
                                             <span class="flag optional" title="This parameter is optional.">optional</span>
         
                                         <div class="param-description">
-                                            <p>Gap space between successive items</p>
+                                            <p>Gap space between successive rows and columns</p>
         
                                         </div>
         
@@ -253,12 +244,8 @@ the dictionary whose key value is closest to the parent width without exceeding 
                                 <a href="#" data-tabid="#methods" data-anchor="#method_add" data-tablink="add">add</a>
 
                             </li>
-                            <li class="index-item method">
-                                <a href="#" data-tabid="#methods" data-anchor="#method_addItems" data-tablink="addItems">addItems</a>
-
-                            </li>
-                            <li class="index-item method inherited">
-                                <a href="#" data-tabid="#methods" data-anchor="#method_extend" data-tablink="extend">extend</a>
+                            <li class="index-item method private inherited inherited">
+                                <a href="#" data-tabid="#methods" data-anchor="#method_compose" data-tablink="compose">compose</a>
 
                             </li>
                             <li class="index-item method inherited">
@@ -281,16 +268,33 @@ the dictionary whose key value is closest to the parent width without exceeding 
                                 <a href="#" data-tabid="#methods" data-anchor="#method_off" data-tablink="off">off</a>
 
                             </li>
-                            <li class="index-item method inherited inherited">
+                            <li class="index-item method inherited">
                                 <a href="#" data-tabid="#methods" data-anchor="#method_OptionsManager.patch" data-tablink="OptionsManager.patch">OptionsManager.patch</a>
+
+                            </li>
+                            <li class="index-item method inherited">
+                                <a href="#" data-tabid="#methods" data-anchor="#method_OptionsManager.setOptions" data-tablink="OptionsManager.setOptions">OptionsManager.setOptions</a>
 
                             </li>
                             <li class="index-item method inherited">
                                 <a href="#" data-tabid="#methods" data-anchor="#method_patch" data-tablink="patch">patch</a>
 
                             </li>
-                            <li class="index-item method inherited inherited">
+                            <li class="index-item method inherited">
+                                <a href="#" data-tabid="#methods" data-anchor="#method_remove" data-tablink="remove">remove</a>
+
+                            </li>
+                            <li class="index-item method inherited">
                                 <a href="#" data-tabid="#methods" data-anchor="#method_set" data-tablink="set">set</a>
+
+                            </li>
+                            <li class="index-item method deprecated inherited">
+                                <a href="#" data-tabid="#methods" data-anchor="#method_setAspectRatio" data-tablink="setAspectRatio">setAspectRatio</a>
+
+                                    <span class="flag deprecated">deprecated</span>
+                            </li>
+                            <li class="index-item method inherited">
+                                <a href="#" data-tabid="#methods" data-anchor="#method_setMargins" data-tablink="setMargins">setMargins</a>
 
                             </li>
                             <li class="index-item method inherited">
@@ -305,7 +309,7 @@ the dictionary whose key value is closest to the parent width without exceeding 
                                 <a href="#" data-tabid="#methods" data-anchor="#method_setOrigin" data-tablink="setOrigin">setOrigin</a>
 
                             </li>
-                            <li class="index-item method inherited inherited">
+                            <li class="index-item method inherited">
                                 <a href="#" data-tabid="#methods" data-anchor="#method_setProportions" data-tablink="setProportions">setProportions</a>
 
                             </li>
@@ -360,7 +364,7 @@ the dictionary whose key value is closest to the parent width without exceeding 
                                     <p>Inherited from
                                     <a href="../classes/Core.OptionsManager.html#method_&quot;on&quot;">Core.OptionsManager</a>:
                             <!---->
-                            <!--<a href="../files/samsara_core_OptionsManager.js.html#l141"><code>samsara&#x2F;core&#x2F;OptionsManager.js:141</code></a>-->
+                            <!--<a href="../files/samsara_core__OptionsManager.js.html#l134"><code>samsara&#x2F;core&#x2F;_OptionsManager.js:134</code></a>-->
                             <!---->
                             </p>
                     
@@ -416,7 +420,7 @@ the dictionary whose key value is closest to the parent width without exceeding 
                             </div>
                     
                             <span class="returns-inline">
-                                <span class="type"><a href="../classes/RenderTreeNode.html" class="crosslink">RenderTreeNode</a></span>
+                                <span class="type">RenderTreeNode</span>
                             </span>
                     
                     
@@ -429,7 +433,7 @@ the dictionary whose key value is closest to the parent width without exceeding 
                                     <p>Inherited from
                                     <a href="../classes/Core.View.html#method_add">Core.View</a>:
                             <!---->
-                            <!--<a href="../files/samsara_core_View.js.html#l115"><code>samsara&#x2F;core&#x2F;View.js:115</code></a>-->
+                            <!--<a href="../files/samsara_core_View.js.html#l86"><code>samsara&#x2F;core&#x2F;View.js:86</code></a>-->
                             <!---->
                             </p>
                     
@@ -464,36 +468,47 @@ the dictionary whose key value is closest to the parent width without exceeding 
                                 <h4>Returns:</h4>
                     
                                 <div class="returns-description">
-                                            <span class="type"><a href="../classes/RenderTreeNode.html" class="crosslink">RenderTreeNode</a></span>:
+                                            <span class="type">RenderTreeNode</span>:
                                 </div>
                             </div>
                     
                     </div>
-                    <div id="method_addItems" class="method item">
-                        <h3 class="name"><code>addItems</code></h3>
+                    <div id="method_compose" class="method item private inherited">
+                        <h3 class="name"><code>compose</code></h3>
                     
                             <div class="args">
                                 <span class="paren">(</span><ul class="args-list inline commas">
                                     <li class="arg">
-                                            <code class="optional">[items]</code>
+                                            <code>spec</code>
+                                    </li>
+                                    <li class="arg">
+                                            <code>parentSpec</code>
+                                    </li>
+                                    <li class="arg">
+                                            <code>size</code>
                                     </li>
                                 </ul><span class="paren">)</span>
                             </div>
                     
+                            <span class="returns-inline">
+                                <span class="type"><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object" class="crosslink external" target="_blank">Object</a></span>
+                            </span>
                     
                     
+                            <span class="flag private">private</span>
                     
                     
                     
                     
                     
                         <div class="meta">
-                                    <p>
-                                    <!---->
-                                    <!--Defined in-->
-                                    <!---->
+                                <p>Inherited from
+                                <a href="../classes/Core.LayoutNode.html#method_compose">
+                                    Core.LayoutNode
+                                </a>
+                                but overwritten in
                             <!---->
-                            <!--<a href="../files/samsara_layouts_GridLayout.js.html#l77"><code>samsara&#x2F;layouts&#x2F;GridLayout.js:77</code></a>-->
+                            <!--<a href="../files/samsara_core_algebras_layout.js.html#l13"><code>samsara&#x2F;core&#x2F;algebras&#x2F;layout.js:13</code></a>-->
                             <!---->
                             </p>
                     
@@ -502,7 +517,11 @@ the dictionary whose key value is closest to the parent width without exceeding 
                         </div>
                     
                         <div class="description">
-                            <p>Add items to the layout.</p>
+                            <p>Defines the rules for composing layout specs: transform, align, origin and opacity.
+                    Transform is multiplied by the parent's transform (matrix multiplication).
+                    Align is a proportional offset relative to the parent size.
+                    Origin is a proportional offset relative to the current size.
+                    Opacity is multiplied by the parent's opacity.</p>
                     
                         </div>
                     
@@ -511,13 +530,34 @@ the dictionary whose key value is closest to the parent width without exceeding 
                     
                                 <ul class="params-list">
                                     <li class="param">
-                                            <code class="param-name optional">[items]</code>
+                                            <code class="param-name">spec</code>
+                                            <span class="type"><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object" class="crosslink external" target="_blank">Object</a></span>
+                    
+                    
+                                        <div class="param-description">
+                                            <p>Object layout spec</p>
+                    
+                                        </div>
+                    
+                                    </li>
+                                    <li class="param">
+                                            <code class="param-name">parentSpec</code>
+                                            <span class="type"><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object" class="crosslink external" target="_blank">Object</a></span>
+                    
+                    
+                                        <div class="param-description">
+                                            <p>Parent layout spec</p>
+                    
+                                        </div>
+                    
+                                    </li>
+                                    <li class="param">
+                                            <code class="param-name">size</code>
                                             <span class="type"><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array" class="crosslink external" target="_blank">Array</a></span>
-                                            <span class="flag optional" title="This parameter is optional.">optional</span>
                     
                     
                                         <div class="param-description">
-                                            <p>Array of Surfaces or Views</p>
+                                            <p>Object size</p>
                     
                                         </div>
                     
@@ -525,76 +565,15 @@ the dictionary whose key value is closest to the parent width without exceeding 
                                 </ul>
                             </div>
                     
+                            <div class="returns">
+                                <h4>Returns:</h4>
                     
-                    </div>
-                    <div id="method_extend" class="method item inherited">
-                        <h3 class="name"><code>extend</code></h3>
+                                <div class="returns-description">
+                                            <span class="type"><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object" class="crosslink external" target="_blank">Object</a></span>:
+                                        <p>The composed layout spec</p>
                     
-                            <div class="args">
-                                <span class="paren">(</span><ul class="args-list inline commas">
-                                    <li class="arg">
-                                            <code>protoObj</code>
-                                    </li>
-                                    <li class="arg">
-                                            <code>constants</code>
-                                    </li>
-                                </ul><span class="paren">)</span>
+                                </div>
                             </div>
-                    
-                    
-                    
-                    
-                    
-                    
-                    
-                    
-                        <div class="meta">
-                                    <p>Inherited from
-                                    <a href="../classes/Core.Controller.html#method_extend">Core.Controller</a>:
-                            <!---->
-                            <!--<a href="../files/samsara_core_Controller.js.html#l176"><code>samsara&#x2F;core&#x2F;Controller.js:176</code></a>-->
-                            <!---->
-                            </p>
-                    
-                    
-                    
-                        </div>
-                    
-                        <div class="description">
-                            <p>Allows a class to extend Controller.
-                    Note: this is a method defined on the Controller constructor</p>
-                    
-                        </div>
-                    
-                            <div class="params">
-                                <h4>Parameters:</h4>
-                    
-                                <ul class="params-list">
-                                    <li class="param">
-                                            <code class="param-name">protoObj</code>
-                                            <span class="type"><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object" class="crosslink external" target="_blank">Object</a></span>
-                    
-                    
-                                        <div class="param-description">
-                                            <p>Prototype properties of the extended class</p>
-                    
-                                        </div>
-                    
-                                    </li>
-                                    <li class="param">
-                                            <code class="param-name">constants</code>
-                                            <span class="type"><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object" class="crosslink external" target="_blank">Object</a></span>
-                    
-                    
-                                        <div class="param-description">
-                                            <p>Constants to be added to the extended class's constructor</p>
-                    
-                                        </div>
-                    
-                                    </li>
-                                </ul>
-                            </div>
-                    
                     
                     </div>
                     <div id="method_get" class="method item inherited">
@@ -622,7 +601,7 @@ the dictionary whose key value is closest to the parent width without exceeding 
                                     <p>Inherited from
                                     <a href="../classes/Core.OptionsManager.html#method_get">Core.OptionsManager</a>:
                             <!---->
-                            <!--<a href="../files/samsara_core_OptionsManager.js.html#l108"><code>samsara&#x2F;core&#x2F;OptionsManager.js:108</code></a>-->
+                            <!--<a href="../files/samsara_core__OptionsManager.js.html#l101"><code>samsara&#x2F;core&#x2F;_OptionsManager.js:101</code></a>-->
                             <!---->
                             </p>
                     
@@ -692,7 +671,7 @@ the dictionary whose key value is closest to the parent width without exceeding 
                                 </a>
                                 but overwritten in
                             <!---->
-                            <!--<a href="../files/samsara_core_Controller.js.html#l93"><code>samsara&#x2F;core&#x2F;Controller.js:93</code></a>-->
+                            <!--<a href="../files/samsara_core_Controller.js.html#l97"><code>samsara&#x2F;core&#x2F;Controller.js:97</code></a>-->
                             <!---->
                             </p>
                     
@@ -753,7 +732,7 @@ the dictionary whose key value is closest to the parent width without exceeding 
                                     <p>Inherited from
                                     <a href="../classes/Core.View.html#method_getSize">Core.View</a>:
                             <!---->
-                            <!--<a href="../files/samsara_core_View.js.html#l125"><code>samsara&#x2F;core&#x2F;View.js:125</code></a>-->
+                            <!--<a href="../files/samsara_core_View.js.html#l106"><code>samsara&#x2F;core&#x2F;View.js:106</code></a>-->
                             <!---->
                             </p>
                     
@@ -803,7 +782,7 @@ the dictionary whose key value is closest to the parent width without exceeding 
                                     <p>Inherited from
                                     <a href="../classes/Core.OptionsManager.html#method_key">Core.OptionsManager</a>:
                             <!---->
-                            <!--<a href="../files/samsara_core_OptionsManager.js.html#l95"><code>samsara&#x2F;core&#x2F;OptionsManager.js:95</code></a>-->
+                            <!--<a href="../files/samsara_core__OptionsManager.js.html#l88"><code>samsara&#x2F;core&#x2F;_OptionsManager.js:88</code></a>-->
                             <!---->
                             </p>
                     
@@ -870,7 +849,7 @@ the dictionary whose key value is closest to the parent width without exceeding 
                                     <p>Inherited from
                                     <a href="../classes/Core.OptionsManager.html#method_off">Core.OptionsManager</a>:
                             <!---->
-                            <!--<a href="../files/samsara_core_OptionsManager.js.html#l153"><code>samsara&#x2F;core&#x2F;OptionsManager.js:153</code></a>-->
+                            <!--<a href="../files/samsara_core__OptionsManager.js.html#l146"><code>samsara&#x2F;core&#x2F;_OptionsManager.js:146</code></a>-->
                             <!---->
                             </p>
                     
@@ -940,13 +919,10 @@ the dictionary whose key value is closest to the parent width without exceeding 
                     
                     
                         <div class="meta">
-                                <p>Inherited from
-                                <a href="../classes/Core.OptionsManager.html#method_OptionsManager.patch">
-                                    Core.OptionsManager
-                                </a>
-                                but overwritten in
+                                    <p>Inherited from
+                                    <a href="../classes/Core.OptionsManager.html#method_OptionsManager.patch">Core.OptionsManager</a>:
                             <!---->
-                            <!--<a href="../files/samsara_core_OptionsManager.js.html#l33"><code>samsara&#x2F;core&#x2F;OptionsManager.js:33</code></a>-->
+                            <!--<a href="../files/samsara_core__OptionsManager.js.html#l25"><code>samsara&#x2F;core&#x2F;_OptionsManager.js:25</code></a>-->
                             <!---->
                             </p>
                     
@@ -955,7 +931,7 @@ the dictionary whose key value is closest to the parent width without exceeding 
                         </div>
                     
                         <div class="description">
-                            <p>Constructor method. Create OptionsManager from source dictionary with arguments overriden by patch dictionary.</p>
+                            <p>Constructor method. Create OptionsManager from source dictionary with arguments overridden by patch dictionary.</p>
                     
                         </div>
                     
@@ -980,7 +956,7 @@ the dictionary whose key value is closest to the parent width without exceeding 
                     
                     
                                         <div class="param-description">
-                                            <p>Options to overwrite</p>
+                                            <p>Options to override</p>
                     
                                         </div>
                     
@@ -994,6 +970,101 @@ the dictionary whose key value is closest to the parent width without exceeding 
                                 <div class="returns-description">
                                             <span class="type"><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object" class="crosslink external" target="_blank">Object</a></span>:
                                         <p>source</p>
+                    
+                                </div>
+                            </div>
+                    
+                    </div>
+                    <div id="method_OptionsManager.setOptions" class="method item inherited">
+                        <h3 class="name"><code>OptionsManager.setOptions</code></h3>
+                    
+                            <div class="args">
+                                <span class="paren">(</span><ul class="args-list inline commas">
+                                    <li class="arg">
+                                            <code>instance</code>
+                                    </li>
+                                    <li class="arg">
+                                            <code>options</code>
+                                    </li>
+                                    <li class="arg">
+                                            <code>defaults</code>
+                                    </li>
+                                </ul><span class="paren">)</span>
+                            </div>
+                    
+                            <span class="returns-inline">
+                                <span class="type"><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object" class="crosslink external" target="_blank">Object</a></span>
+                            </span>
+                    
+                    
+                    
+                    
+                    
+                    
+                    
+                        <div class="meta">
+                                    <p>Inherited from
+                                    <a href="../classes/Core.OptionsManager.html#method_OptionsManager.setOptions">Core.OptionsManager</a>:
+                            <!---->
+                            <!--<a href="../files/samsara_core__OptionsManager.js.html#l39"><code>samsara&#x2F;core&#x2F;_OptionsManager.js:39</code></a>-->
+                            <!---->
+                            </p>
+                    
+                    
+                    
+                        </div>
+                    
+                        <div class="description">
+                            <p>Constructor method. Convenience method to set options with defaults on an object instance.</p>
+                    
+                        </div>
+                    
+                            <div class="params">
+                                <h4>Parameters:</h4>
+                    
+                                <ul class="params-list">
+                                    <li class="param">
+                                            <code class="param-name">instance</code>
+                                            <span class="type"><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Function" class="crosslink external" target="_blank">Function</a></span>
+                    
+                    
+                                        <div class="param-description">
+                                            <p>Constructor</p>
+                    
+                                        </div>
+                    
+                                    </li>
+                                    <li class="param">
+                                            <code class="param-name">options</code>
+                                            <span class="type"><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object" class="crosslink external" target="_blank">Object</a></span>
+                    
+                    
+                                        <div class="param-description">
+                                            <p>Overriding options</p>
+                    
+                                        </div>
+                    
+                                    </li>
+                                    <li class="param">
+                                            <code class="param-name">defaults</code>
+                                            <span class="type"><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object" class="crosslink external" target="_blank">Object</a></span>
+                    
+                    
+                                        <div class="param-description">
+                                            <p>Default options</p>
+                    
+                                        </div>
+                    
+                                    </li>
+                                </ul>
+                            </div>
+                    
+                            <div class="returns">
+                                <h4>Returns:</h4>
+                    
+                                <div class="returns-description">
+                                            <span class="type"><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object" class="crosslink external" target="_blank">Object</a></span>:
+                                        <p>Patched options</p>
                     
                                 </div>
                             </div>
@@ -1024,7 +1095,7 @@ the dictionary whose key value is closest to the parent width without exceeding 
                                     <p>Inherited from
                                     <a href="../classes/Core.OptionsManager.html#method_patch">Core.OptionsManager</a>:
                             <!---->
-                            <!--<a href="../files/samsara_core_OptionsManager.js.html#l68"><code>samsara&#x2F;core&#x2F;OptionsManager.js:68</code></a>-->
+                            <!--<a href="../files/samsara_core__OptionsManager.js.html#l61"><code>samsara&#x2F;core&#x2F;_OptionsManager.js:61</code></a>-->
                             <!---->
                             </p>
                     
@@ -1066,13 +1137,185 @@ the dictionary whose key value is closest to the parent width without exceeding 
                             </div>
                     
                     </div>
+                    <div id="method_remove" class="method item inherited">
+                        <h3 class="name"><code>remove</code></h3>
+                    
+                            <span class="paren">()</span>
+                    
+                    
+                    
+                    
+                    
+                    
+                    
+                    
+                        <div class="meta">
+                                    <p>Inherited from
+                                    <a href="../classes/Core.View.html#method_remove">Core.View</a>:
+                            <!---->
+                            <!--<a href="../files/samsara_core_View.js.html#l96"><code>samsara&#x2F;core&#x2F;View.js:96</code></a>-->
+                            <!---->
+                            </p>
+                    
+                    
+                    
+                        </div>
+                    
+                        <div class="description">
+                            <p>Remove the View from the RenderTree. All Surfaces added to the View
+                    will also be removed. The View can be added back at a later time and
+                    all of its data and Surfaces will be restored.</p>
+                    
+                        </div>
+                    
+                    
+                    
+                    </div>
                     <div id="method_set" class="method item inherited">
                         <h3 class="name"><code>set</code></h3>
                     
                             <div class="args">
                                 <span class="paren">(</span><ul class="args-list inline commas">
                                     <li class="arg">
-                                            <code>sources</code>
+                                            <code>key</code>
+                                    </li>
+                                    <li class="arg">
+                                            <code>value</code>
+                                    </li>
+                                </ul><span class="paren">)</span>
+                            </div>
+                    
+                            <span class="returns-inline">
+                                <span class="type">OptionsManager</span>
+                            </span>
+                    
+                    
+                    
+                    
+                    
+                    
+                    
+                        <div class="meta">
+                                    <p>Inherited from
+                                    <a href="../classes/Core.OptionsManager.html#method_set">Core.OptionsManager</a>:
+                            <!---->
+                            <!--<a href="../files/samsara_core__OptionsManager.js.html#l119"><code>samsara&#x2F;core&#x2F;_OptionsManager.js:119</code></a>-->
+                            <!---->
+                            </p>
+                    
+                    
+                    
+                        </div>
+                    
+                        <div class="description">
+                            <p>Set key to value. Outputs <code>change</code> event if a value is overwritten.</p>
+                    
+                        </div>
+                    
+                            <div class="params">
+                                <h4>Parameters:</h4>
+                    
+                                <ul class="params-list">
+                                    <li class="param">
+                                            <code class="param-name">key</code>
+                                            <span class="type"><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String" class="crosslink external" target="_blank">String</a></span>
+                    
+                    
+                                        <div class="param-description">
+                                            <p>Key</p>
+                    
+                                        </div>
+                    
+                                    </li>
+                                    <li class="param">
+                                            <code class="param-name">value</code>
+                                            <span class="type"><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object" class="crosslink external" target="_blank">Object</a></span>
+                    
+                    
+                                        <div class="param-description">
+                                            <p>Value</p>
+                    
+                                        </div>
+                    
+                                    </li>
+                                </ul>
+                            </div>
+                    
+                            <div class="returns">
+                                <h4>Returns:</h4>
+                    
+                                <div class="returns-description">
+                                            <span class="type">OptionsManager</span>:
+                                        <p>Updated OptionsManager</p>
+                    
+                                </div>
+                            </div>
+                    
+                    </div>
+                    <div id="method_setAspectRatio" class="method item deprecated inherited">
+                        <h3 class="name"><code>setAspectRatio</code></h3>
+                    
+                            <div class="args">
+                                <span class="paren">(</span><ul class="args-list inline commas">
+                                    <li class="arg">
+                                            <code>aspectRatio</code>
+                                    </li>
+                                </ul><span class="paren">)</span>
+                            </div>
+                    
+                    
+                            <span class="flag deprecated" title="Use size functions instead">deprecated</span>
+                    
+                    
+                    
+                    
+                    
+                    
+                        <div class="meta">
+                                    <p>Inherited from
+                                    <a href="../classes/Core.View.html#method_setAspectRatio">Core.View</a>:
+                            <!---->
+                            <!--<a href="../files/samsara_core_View.js.html#l143"><code>samsara&#x2F;core&#x2F;View.js:143</code></a>-->
+                            <!---->
+                            </p>
+                    
+                    
+                                <p>Deprecated: Use size functions instead</p>
+                    
+                        </div>
+                    
+                        <div class="description">
+                            <p>Setter for aspect ratio.</p>
+                    
+                        </div>
+                    
+                            <div class="params">
+                                <h4>Parameters:</h4>
+                    
+                                <ul class="params-list">
+                                    <li class="param">
+                                            <code class="param-name">aspectRatio</code>
+                                            <span class="type"><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Number" class="crosslink external" target="_blank">Number</a> | Stream</span>
+                    
+                    
+                                        <div class="param-description">
+                                            <p>Aspect ratio, or a stream.</p>
+                    
+                                        </div>
+                    
+                                    </li>
+                                </ul>
+                            </div>
+                    
+                    
+                    </div>
+                    <div id="method_setMargins" class="method item inherited">
+                        <h3 class="name"><code>setMargins</code></h3>
+                    
+                            <div class="args">
+                                <span class="paren">(</span><ul class="args-list inline commas">
+                                    <li class="arg">
+                                            <code>margins</code>
                                     </li>
                                 </ul><span class="paren">)</span>
                             </div>
@@ -1085,13 +1328,10 @@ the dictionary whose key value is closest to the parent width without exceeding 
                     
                     
                         <div class="meta">
-                                <p>Inherited from
-                                <a href="../classes/Core.OptionsManager.html#method_set">
-                                    Core.OptionsManager
-                                </a>
-                                but overwritten in
+                                    <p>Inherited from
+                                    <a href="../classes/Core.View.html#method_setMargins">Core.View</a>:
                             <!---->
-                            <!--<a href="../files/samsara_core_LayoutNode.js.html#l58"><code>samsara&#x2F;core&#x2F;LayoutNode.js:58</code></a>-->
+                            <!--<a href="../files/samsara_core_View.js.html#l134"><code>samsara&#x2F;core&#x2F;View.js:134</code></a>-->
                             <!---->
                             </p>
                     
@@ -1100,10 +1340,7 @@ the dictionary whose key value is closest to the parent width without exceeding 
                         </div>
                     
                         <div class="description">
-                            <p>Introduce new data streams to the layout node in {key : value} pairs.
-                    Here the <code>key</code> is one of "transform", "origin", "align" or "opacity".
-                    The <code>value</code> is either a stream, or a simple type like a <code>Number</code> or <code>Array</code>.
-                    Simple types will be wrapped in an <code>Observerable</code> to emit appropriate events.</p>
+                            <p>Setter for margins.</p>
                     
                         </div>
                     
@@ -1112,12 +1349,12 @@ the dictionary whose key value is closest to the parent width without exceeding 
                     
                                 <ul class="params-list">
                                     <li class="param">
-                                            <code class="param-name">sources</code>
-                                            <span class="type"><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object" class="crosslink external" target="_blank">Object</a></span>
+                                            <code class="param-name">margins</code>
+                                            <span class="type"><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Number" class="crosslink external" target="_blank">Number[]</a> | Stream</span>
                     
                     
                                         <div class="param-description">
-                                            <p>Object of data sources</p>
+                                            <p>Margins as [x,y], or a stream.</p>
                     
                                         </div>
                     
@@ -1149,7 +1386,7 @@ the dictionary whose key value is closest to the parent width without exceeding 
                                     <p>Inherited from
                                     <a href="../classes/Core.View.html#method_setOpacity">Core.View</a>:
                             <!---->
-                            <!--<a href="../files/samsara_core_View.js.html#l170"><code>samsara&#x2F;core&#x2F;View.js:170</code></a>-->
+                            <!--<a href="../files/samsara_core_View.js.html#l162"><code>samsara&#x2F;core&#x2F;View.js:162</code></a>-->
                             <!---->
                             </p>
                     
@@ -1207,7 +1444,7 @@ the dictionary whose key value is closest to the parent width without exceeding 
                                 </a>
                                 but overwritten in
                             <!---->
-                            <!--<a href="../files/samsara_core_Controller.js.html#l104"><code>samsara&#x2F;core&#x2F;Controller.js:104</code></a>-->
+                            <!--<a href="../files/samsara_core_Controller.js.html#l108"><code>samsara&#x2F;core&#x2F;Controller.js:108</code></a>-->
                             <!---->
                             </p>
                     
@@ -1262,7 +1499,7 @@ the dictionary whose key value is closest to the parent width without exceeding 
                                     <p>Inherited from
                                     <a href="../classes/Core.View.html#method_setOrigin">Core.View</a>:
                             <!---->
-                            <!--<a href="../files/samsara_core_View.js.html#l161"><code>samsara&#x2F;core&#x2F;View.js:161</code></a>-->
+                            <!--<a href="../files/samsara_core_View.js.html#l153"><code>samsara&#x2F;core&#x2F;View.js:153</code></a>-->
                             <!---->
                             </p>
                     
@@ -1314,13 +1551,10 @@ the dictionary whose key value is closest to the parent width without exceeding 
                     
                     
                         <div class="meta">
-                                <p>Inherited from
-                                <a href="../classes/Core.View.html#method_setProportions">
-                                    Core.View
-                                </a>
-                                but overwritten in
+                                    <p>Inherited from
+                                    <a href="../classes/Core.View.html#method_setProportions">Core.View</a>:
                             <!---->
-                            <!--<a href="../files/samsara_core_View.js.html#l143"><code>samsara&#x2F;core&#x2F;View.js:143</code></a>-->
+                            <!--<a href="../files/samsara_core_View.js.html#l125"><code>samsara&#x2F;core&#x2F;View.js:125</code></a>-->
                             <!---->
                             </p>
                     
@@ -1375,7 +1609,7 @@ the dictionary whose key value is closest to the parent width without exceeding 
                                     <p>Inherited from
                                     <a href="../classes/Core.View.html#method_setSize">Core.View</a>:
                             <!---->
-                            <!--<a href="../files/samsara_core_View.js.html#l134"><code>samsara&#x2F;core&#x2F;View.js:134</code></a>-->
+                            <!--<a href="../files/samsara_core_View.js.html#l115"><code>samsara&#x2F;core&#x2F;View.js:115</code></a>-->
                             <!---->
                             </p>
                     
@@ -1430,7 +1664,7 @@ the dictionary whose key value is closest to the parent width without exceeding 
                         <div class="meta">
                                     <p>Inherited from
                                     <a href="../classes/Core.Controller.html#attr_DEFAULT_OPTIONS">Core.Controller</a>:
-                            <a href="../files/samsara_core_Controller.js.html#l74"><code>samsara&#x2F;core&#x2F;Controller.js:74</code></a>
+                            <a href="../files/samsara_core_Controller.js.html#l78"><code>samsara&#x2F;core&#x2F;Controller.js:78</code></a>
                             </p>
                     
                     
@@ -1461,7 +1695,7 @@ the dictionary whose key value is closest to the parent width without exceeding 
                         <div class="meta">
                                     <p>Inherited from
                                     <a href="../classes/Core.Controller.html#attr_EVENTS">Core.Controller</a>:
-                            <a href="../files/samsara_core_Controller.js.html#l83"><code>samsara&#x2F;core&#x2F;Controller.js:83</code></a>
+                            <a href="../files/samsara_core_Controller.js.html#l87"><code>samsara&#x2F;core&#x2F;Controller.js:87</code></a>
                             </p>
                     
                     

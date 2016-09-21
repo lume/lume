@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="utf-8">
-    <title>samsara/transitions/Inertia.js - SamsaraJS</title>
+    <title>samsara/transitions/_Spring.js - SamsaraJS</title>
     <link rel="stylesheet" href="">
     <link rel="stylesheet" href="../assets/vendor/prettify/prettify-min.css">
     <link rel="stylesheet" href="../assets/css/main.css" id="site_styles">
@@ -23,12 +23,12 @@
             <li class="divider-vertical"></li>
             <li>
                 <p class="navbar-text">
-                    API Docs for Version: <b>0.2.0</b>
+                    API Docs for Version: <b>0.2.2</b>
                 </p>
             </li>
         </div>
         <form class="navbar-form pull-right" style="line-height: 40px; height: 40px;">
-            <input style="margin-top: 0;" type="text" class="search-query" placeholder="Search for classes..." data-obj='["classes/Core.Controller", "classes/Core.ElementAllocator", "classes/Core.ElementOutput", "classes/Core.Engine", "classes/Core.LayoutNode", "classes/Core.OptionsManager", "classes/Core.SizeNode", "classes/Core.SUE", "classes/Core.Timer", "classes/Core.Transform", "classes/Core.Transitionable", "classes/Core.View", "classes/DOM.ContainerSurface", "classes/DOM.Context", "classes/DOM.Surface", "classes/Events.EventEmitter", "classes/Events.EventFilter", "classes/Events.EventHandler", "classes/Events.EventMapper", "classes/Events.EventSplitter", "classes/Inputs.GenericInput", "classes/Inputs.MouseInput", "classes/Inputs.PinchInput", "classes/Inputs.RotateInput", "classes/Inputs.ScaleInput", "classes/Inputs.ScrollInput", "classes/Inputs.TouchInput", "classes/Inputs.TouchTracker", "classes/Inputs.TwoFingerInput", "classes/Layouts.DrawerLayout", "classes/Layouts.FlexibleLayout", "classes/Layouts.GridLayout", "classes/Layouts.SequentialLayout", "classes/RenderTreeNode", "classes/RootNode", "classes/Streams.Accumulator", "classes/Streams.Differential", "classes/Streams.Observable", "classes/Streams.ResizeStream", "classes/Streams.SimpleStream", "classes/Streams.Stream", "classes/Transitions.Inertia", "classes/Transitions.Spring", "classes/Transitions.Tween"]'>
+            <input style="margin-top: 0;" type="text" class="search-query" placeholder="Search for classes..." data-obj='["classes/Core.Controller", "classes/Core.DOMAllocator", "classes/Core.DOMOutput", "classes/Core.Engine", "classes/Core.LayoutNode", "classes/Core.Node", "classes/Core.OptionsManager", "classes/Core.RenderTreeNode", "classes/Core.RootNode", "classes/Core.SizeNode", "classes/Core.Timer", "classes/Core.Transform", "classes/Core.Transitionable", "classes/Core.View", "classes/DOM.ContainerSurface", "classes/DOM.Context", "classes/DOM.Surface", "classes/Events.EventEmitter", "classes/Events.EventFilter", "classes/Events.EventHandler", "classes/Events.EventMapper", "classes/Events.EventSplitter", "classes/Inputs.GenericInput", "classes/Inputs.MouseInput", "classes/Inputs.PinchInput", "classes/Inputs.RotateInput", "classes/Inputs.ScaleInput", "classes/Inputs.ScrollInput", "classes/Inputs.TouchInput", "classes/Inputs.TouchTracker", "classes/Inputs.TwoFingerInput", "classes/Layouts.BidirectionalList", "classes/Layouts.DrawerLayout", "classes/Layouts.FlexLayout", "classes/Layouts.GridLayout", "classes/Layouts.HeaderFooterLayout", "classes/Layouts.SequentialLayout", "classes/Streams.Accumulator", "classes/Streams.Differential", "classes/Streams.Observable", "classes/Streams.SimpleStream", "classes/Streams.Stream", "classes/Transitions.Inertia", "classes/Transitions.Spring", "classes/Transitions.Tween", "classes/UI.Fingers", "classes/UI.Slider"]'>
         </form>
     </div>
 </div>
@@ -69,13 +69,17 @@
 	                            <li><a href="../classes/Inputs.ScaleInput.html">Inputs.ScaleInput</a></li>
 	                            <li><a href="../classes/Inputs.ScrollInput.html">Inputs.ScrollInput</a></li>
 	                            <li><a href="../classes/Inputs.TouchInput.html">Inputs.TouchInput</a></li>
+	                            <li><a href="../classes/Layouts.BidirectionalList.html">Layouts.BidirectionalList</a></li>
 	                            <li><a href="../classes/Layouts.DrawerLayout.html">Layouts.DrawerLayout</a></li>
-	                            <li><a href="../classes/Layouts.FlexibleLayout.html">Layouts.FlexibleLayout</a></li>
+	                            <li><a href="../classes/Layouts.FlexLayout.html">Layouts.FlexLayout</a></li>
 	                            <li><a href="../classes/Layouts.GridLayout.html">Layouts.GridLayout</a></li>
+	                            <li><a href="../classes/Layouts.HeaderFooterLayout.html">Layouts.HeaderFooterLayout</a></li>
 	                            <li><a href="../classes/Layouts.SequentialLayout.html">Layouts.SequentialLayout</a></li>
 	                            <li><a href="../classes/Streams.Accumulator.html">Streams.Accumulator</a></li>
 	                            <li><a href="../classes/Streams.Differential.html">Streams.Differential</a></li>
 	                            <li><a href="../classes/Streams.Stream.html">Streams.Stream</a></li>
+	                            <li><a href="../classes/UI.Fingers.html">UI.Fingers</a></li>
+	                            <li><a href="../classes/UI.Slider.html">UI.Slider</a></li>
 	                    </ul>
 	                </div>
 	    
@@ -116,7 +120,7 @@
                 <div id="docs-main">
                     <div class="content">
 <div class="page-header">
-    <h1>samsara/transitions/Inertia.js <small>File</small></h1>
+    <h1>samsara/transitions/_Spring.js <small>File</small></h1>
 </div>
 
 <div class="file">
@@ -126,65 +130,78 @@
 define(function (require, exports, module) {
     var EventHandler = require(&#x27;../events/EventHandler&#x27;);
     var SimpleStream = require(&#x27;../streams/SimpleStream&#x27;);
+    var dirtyQueue = require(&#x27;../core/queues/dirtyQueue&#x27;);
 
     var now = Date.now;
-    var tolerance = 1e-4; // energy minimum
+    var eps = 1e-6; // for calculating velocity using finite difference
+    var tolerance = 1e-9; // energy minimum
 
     /**
-     * Defines an inertial transition, which decreases
+     * A method of interpolating between start and end values with
+     *  a spring transition.
      *
-     * @class Inertia
+     * @class Spring
      * @private
      * @namespace Transitions
      * @constructor
      * @param value {Number}    Initial value
      * @param velocity {Number} Initial velocity
      */
-    function Inertia(value, velocity) {
+    function Spring(value, velocity) {
         SimpleStream.call(this);
 
         this.value = value || 0;
         this.velocity = velocity || 0;
-        this.drag = 0;
 
+        this.target = null;
+        this.startTime = now();
+        this.curve = null;
         this.energy = null;
+        this.energyTolerance = tolerance;
         this._active = false;
-        this._previousTime = now();
 
         this._eventOutput = new EventHandler();
         EventHandler.setOutputHandler(this, this._eventOutput);
     }
 
-    Inertia.DIMENSIONS = 1;
+    Spring.DIMENSIONS = 1;
 
-    Inertia.DEFAULT_OPTIONS = {
+    Spring.DEFAULT_OPTIONS = {
         velocity: 0,
-        drag: 0.1
+        damping: 0.5,
+        period : 100
     };
 
-    Inertia.prototype = Object.create(SimpleStream.prototype);
-    Inertia.prototype.constructor = Inertia;
+    Spring.prototype = Object.create(SimpleStream.prototype);
+    Spring.prototype.constructor = Spring;
 
     /**
-     * Set new value to transition to, with a transition definition.
+     * Set new value to transition to.
      *
      * @method set
-     * @param value {Number}                Starting value
+     * @param value {Number}                End value
      * @param [transition] {Object}         Transition definition
      */
-    Inertia.prototype.set = function (value, transition) {
-        if (!this._active) {
-            this.emit(&#x27;start&#x27;, value);
+    Spring.prototype.set = function (value, transition) {
+        var x0 = this.get();
+
+        if (!this._active){
+            this.emit(&#x27;start&#x27;, x0);
             this._active = true;
         }
 
-        this.value = value;
+        var damping = transition.damping || Spring.DEFAULT_OPTIONS.damping;
+        var period = transition.period || Spring.DEFAULT_OPTIONS.period;
+        var v0 = transition.velocity || this.velocity;
 
-        this.drag = (transition.drag == undefined)
-            ? Inertia.DEFAULT_OPTIONS.drag
-            : Math.pow(Math.min(transition.drag, 1), 3);
+        this.curve = getCurve(damping, period, x0, value, v0);
+        this.energy = calculateEnergy(period);
 
-        this.velocity = transition.velocity || this.velocity;
+        var spread = getSpread(value, x0);
+        this.energyTolerance = tolerance * Math.pow(spread, 2);
+
+        this.target = value;
+        this.startTime = now();
     };
 
     /**
@@ -193,7 +210,7 @@ define(function (require, exports, module) {
      * @method get
      * @return {Number}
      */
-    Inertia.prototype.get = function () {
+    Spring.prototype.get = function () {
         return this.value;
     };
 
@@ -203,7 +220,7 @@ define(function (require, exports, module) {
      * @method getVelocity
      * @returns {Number}
      */
-    Inertia.prototype.getVelocity = function () {
+    Spring.prototype.getVelocity = function () {
         return this.velocity;
     };
 
@@ -214,7 +231,7 @@ define(function (require, exports, module) {
      * @param value {Number}       Value
      * @param [velocity] {Number}  Velocity
      */
-    Inertia.prototype.reset = function (value, velocity) {
+    Spring.prototype.reset = function reset(value, velocity) {
         this.value = value;
         this.velocity = velocity || 0;
     };
@@ -224,7 +241,7 @@ define(function (require, exports, module) {
      *
      * @method halt
      */
-    Inertia.prototype.halt = function () {
+    Spring.prototype.halt = function halt() {
         if (!this._active) return;
         var value = this.get();
         this.reset(value);
@@ -233,12 +250,12 @@ define(function (require, exports, module) {
     };
 
     /**
-     * Check to see if Inertia is actively transitioning
+     * Check to see if Spring is actively transitioning
      *
      * @method isActive
      * @returns {Boolean}
      */
-    Inertia.prototype.isActive = function isActive() {
+    Spring.prototype.isActive = function isActive(){
         return this._active;
     };
 
@@ -247,32 +264,96 @@ define(function (require, exports, module) {
      *
      * @method update
      */
-    Inertia.prototype.update = function update() {
+    Spring.prototype.update = function update() {
         if (!this._active) return;
 
-        var currentTime = now();
-        var dt = currentTime - this._previousTime;
-        this._previousTime = currentTime;
+        var timeSinceStart = now() - this.startTime;
 
-        this.velocity *= (1 - this.drag);
-        this.value += dt * this.velocity;
+        var value = this.curve(timeSinceStart);
+        var next = this.curve(timeSinceStart + eps);
+        var prev = this.curve(timeSinceStart - eps);
 
-        var energy = 0.5 * this.velocity * this.velocity;
+        this.velocity = (next - prev) / (2 * eps);
 
-        if (energy &gt;= tolerance) {
-            this.emit(&#x27;update&#x27;, this.value);
+        var energy = this.energy(this.target, value, this.velocity);
+
+        if (energy &gt;= this.energyTolerance) {
+            this.value = value;
+            this.emit(&#x27;update&#x27;, value);
         }
         else {
-            this.emit(&#x27;update&#x27;, this.value);
+            this.emit(&#x27;update&#x27;, this.target);
 
-            this.reset(this.value);
-            this._active = false;
-            this.emit(&#x27;end&#x27;, this.value);
+            dirtyQueue.push(function(){
+                this.reset(this.target);
+                this._active = false;
+                this.emit(&#x27;end&#x27;, this.target);
+            }.bind(this));
+
         }
     };
 
-    module.exports = Inertia;
+    function getSpread(x0, value){
+        return Math.max(1, Math.abs(value - x0));
+    }
+
+    function getCurve(damping, period, x0, value, v0){
+        if (damping &lt; 1)
+            return createUnderDampedSpring(damping, period, x0, value, v0);
+        else if (damping === 1)
+            return createCriticallyDampedSpring(damping, period, x0, value, v0);
+        else
+            return createOverDampedSpring(damping, period, x0, value, v0);
+    }
+
+    function calculateEnergy(period){
+        var omega = 2 * Math.PI / period;
+
+        return function(origin, position, velocity){
+            var distance = origin - position;
+            var potentialEnergy = omega * omega * distance * distance;
+            var kineticEnergy = velocity * velocity;
+            return kineticEnergy + potentialEnergy;
+        }
+    }
+
+    function createUnderDampedSpring(damping, period, x0, x1, v0) {
+        var wD =  Math.sqrt(1 - damping * damping) / period; // damped frequency
+        var A = x0 - x1;
+        var B = (damping / period * A + v0) / (wD);
+
+        return function (t) {
+            return x1 + Math.exp(-damping * t / period) *
+                (A * Math.cos(wD * t) + B * Math.sin(wD * t));
+        }
+    }
+
+    function createCriticallyDampedSpring(damping, period, x0, x1, v0) {
+        var A = x0 - x1;
+        var B = v0 + A / period;
+
+        return function (t) {
+            return x1 + Math.exp(-damping * t / period) * (A + B * t);
+        }
+    }
+
+    function createOverDampedSpring(damping, period, x0, x1, v0) {
+        var wD = Math.sqrt(damping * damping - 1) / period; // damped frequency
+        var r1 = -damping / period + wD;
+        var r2 = -damping / period - wD;
+        var L = x0 - x1;
+        var const1 = (r1 * L - v0) / (r2 - r1);
+        var A = L + const1;
+        var B = -const1;
+
+        return function (t) {
+            return x1 + A * Math.exp(r1 * t) + B * Math.exp(r2 * t);
+        }
+    }
+
+    module.exports = Spring;
 });
+
     </pre>
 </div>
                     </div>

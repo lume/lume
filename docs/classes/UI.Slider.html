@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="utf-8">
-    <title>Streams.SimpleStream - SamsaraJS</title>
+    <title>UI.Slider - SamsaraJS</title>
     <link rel="stylesheet" href="">
     <link rel="stylesheet" href="../assets/vendor/prettify/prettify-min.css">
     <link rel="stylesheet" href="../assets/css/main.css" id="site_styles">
@@ -120,18 +120,18 @@
                 <div id="docs-main">
                     <div class="content">
 <div class="page-header">
-    <h1>Streams.SimpleStream <small>Class</small></h1>
+    <h1>UI.Slider <small>Class</small></h1>
 </div>
 
 <div class="well well-small">
 
         <div class="extends">
-            Extends Core.EventHandler
+            Extends View
         </div>
 
     <!---->
         <div class="foundat">
-            Defined in: <a href="../files/samsara_streams_SimpleStream.js.html#l9"><code>samsara&#x2F;streams&#x2F;SimpleStream.js:9</code></a>
+            Defined in: <a href="../files/samsara_ui_Slider.js.html#l22"><code>samsara&#x2F;ui&#x2F;Slider.js:22</code></a>
         </div>
     <!---->
 
@@ -140,22 +140,29 @@
 
 
 <div class="well well-small">
-    <p>A SimpleStream wraps an EventHandler and provides convenience
-methods of <code>map</code>, <code>filter</code>, <code>split</code>, and <code>pluck</code> to
-transform one stream into another.</p>
+    <p>A UI element that creates a slider controllable by mouse and touch events.
+A starting value and range is provided, and the user can change the value within
+the range by dragging and clicking on the slider.
+The slider has a <code>.value</code> property that defines its value as a stream.</p>
+<p>This file comes with an associated CSS file slider.css</p>
 
 </div>
 
     <div class="constructor">
         <h2>Constructor</h2>
-        <div id="method_Streams.SimpleStream" class="method item private">
-            <h3 class="name"><code>Streams.SimpleStream</code></h3>
+        <div id="method_UI.Slider" class="method item">
+            <h3 class="name"><code>UI.Slider</code></h3>
         
-                <span class="paren">()</span>
+                <div class="args">
+                    <span class="paren">(</span><ul class="args-list inline commas">
+                        <li class="arg">
+                                <code class="optional">[options]</code>
+                        </li>
+                    </ul><span class="paren">)</span>
+                </div>
         
         
         
-                <span class="flag private">private</span>
         
         
         
@@ -167,7 +174,7 @@ transform one stream into another.</p>
                         <!--Defined in-->
                         <!---->
                 <!---->
-                <!--<a href="../files/samsara_streams_SimpleStream.js.html#l9"><code>samsara&#x2F;streams&#x2F;SimpleStream.js:9</code></a>-->
+                <!--<a href="../files/samsara_ui_Slider.js.html#l22"><code>samsara&#x2F;ui&#x2F;Slider.js:22</code></a>-->
                 <!---->
                 </p>
         
@@ -179,13 +186,100 @@ transform one stream into another.</p>
                 
             </div>
         
+                <div class="params">
+                    <h4>Parameters:</h4>
+        
+                    <ul class="params-list">
+                        <li class="param">
+                                <code class="param-name optional">[options]</code>
+                                <span class="type"><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object" class="crosslink external" target="_blank">Object</a></span>
+                                <span class="flag optional" title="This parameter is optional.">optional</span>
+        
+        
+                            <div class="param-description">
+                                <p>Options</p>
+        
+                            </div>
+        
+                                <ul class="params-list">
+                                    <li class="param">
+                                            <code class="param-name optional">[value=0.5]</code>
+                                            <span class="type"><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Number" class="crosslink external" target="_blank">Number</a></span>
+                                            <span class="flag optional" title="This parameter is optional.">optional</span>
+        
+                                        <div class="param-description">
+                                            <p>Starting value</p>
+        
+                                        </div>
+        
+                                    </li>
+                                    <li class="param">
+                                            <code class="param-name optional">[range=[0,1]]          Range of values ([min, max]</code>
+                                            <span class="type"><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array" class="crosslink external" target="_blank">Array</a></span>
+                                            <span class="flag optional" title="This parameter is optional.">optional</span>
+        
+                                        <div class="param-description">
+                                            <p>)</p>
+        
+                                        </div>
+        
+                                    </li>
+                                    <li class="param">
+                                            <code class="param-name optional">[label]</code>
+                                            <span class="type"><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String" class="crosslink external" target="_blank">String</a></span>
+                                            <span class="flag optional" title="This parameter is optional.">optional</span>
+        
+                                        <div class="param-description">
+                                            <p>Name of label</p>
+        
+                                        </div>
+        
+                                    </li>
+                                    <li class="param">
+                                            <code class="param-name optional">[precision=1]</code>
+                                            <span class="type"><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Number" class="crosslink external" target="_blank">Number</a></span>
+                                            <span class="flag optional" title="This parameter is optional.">optional</span>
+        
+                                        <div class="param-description">
+                                            <p>Number of decimal points to display</p>
+        
+                                        </div>
+        
+                                    </li>
+                                    <li class="param">
+                                            <code class="param-name optional">[transition=false]</code>
+                                            <span class="type"><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object" class="crosslink external" target="_blank">Object</a></span>
+                                            <span class="flag optional" title="This parameter is optional.">optional</span>
+        
+                                        <div class="param-description">
+                                            <p>Default transition to animate values</p>
+        
+                                        </div>
+        
+                                    </li>
+                                </ul>
+                        </li>
+                    </ul>
+                </div>
         
         
                 <div class="example">
                     <h4>Example:</h4>
         
                     <div class="example-content">
-                        
+                        <pre class="code prettyprint"><code> var slider = new Slider({
+             value : 90,
+             range : [0, 360],
+             label : 'angle'
+         });
+        
+         var rotation = slider.value.map(function(angle){
+             return Transform.rotate(Math.PI * angle / 180);
+         });
+        
+         context.add({transform : rotation}).add(surface);
+         context.add(slider);</code></pre>
+        
                     </div>
                 </div>
         </div>
@@ -207,19 +301,11 @@ transform one stream into another.</p>
 
                     <ul class="index-list methods extends">
                             <li class="index-item method">
-                                <a href="#" data-tabid="#methods" data-anchor="#method_filter" data-tablink="filter">filter</a>
+                                <a href="#" data-tabid="#methods" data-anchor="#method_get" data-tablink="get">get</a>
 
                             </li>
                             <li class="index-item method">
-                                <a href="#" data-tabid="#methods" data-anchor="#method_map" data-tablink="map">map</a>
-
-                            </li>
-                            <li class="index-item method">
-                                <a href="#" data-tabid="#methods" data-anchor="#method_pluck" data-tablink="pluck">pluck</a>
-
-                            </li>
-                            <li class="index-item method">
-                                <a href="#" data-tabid="#methods" data-anchor="#method_split" data-tablink="split">split</a>
+                                <a href="#" data-tabid="#methods" data-anchor="#method_set" data-tablink="set">set</a>
 
                             </li>
                     </ul>
@@ -232,19 +318,13 @@ transform one stream into another.</p>
             <div id="methods" class="tab-pane">
                 <h2 class="off-left">Methods</h2>
 
-                    <div id="method_filter" class="method item">
-                        <h3 class="name"><code>filter</code></h3>
+                    <div id="method_get" class="method item">
+                        <h3 class="name"><code>get</code></h3>
                     
-                            <div class="args">
-                                <span class="paren">(</span><ul class="args-list inline commas">
-                                    <li class="arg">
-                                            <code>filterFn</code>
-                                    </li>
-                                </ul><span class="paren">)</span>
-                            </div>
+                            <span class="paren">()</span>
                     
                             <span class="returns-inline">
-                                <span class="type">SimpleStream</span>
+                                <span class="type"><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Number" class="crosslink external" target="_blank">Number</a> | <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Number" class="crosslink external" target="_blank">Number[]</a></span>
                             </span>
                     
                     
@@ -259,7 +339,7 @@ transform one stream into another.</p>
                                     <!--Defined in-->
                                     <!---->
                             <!---->
-                            <!--<a href="../files/samsara_streams_SimpleStream.js.html#l44"><code>samsara&#x2F;streams&#x2F;SimpleStream.js:44</code></a>-->
+                            <!--<a href="../files/samsara_ui_Slider.js.html#l93"><code>samsara&#x2F;ui&#x2F;Slider.js:93</code></a>-->
                             <!---->
                             </p>
                     
@@ -268,189 +348,35 @@ transform one stream into another.</p>
                         </div>
                     
                         <div class="description">
-                            <p>Filter converts the current stream into a new stream
-                    that only emits if the filter condition is satisfied.
-                    The filter function should return a Boolean value.</p>
+                            <p>Return the current value of the slider.</p>
                     
                         </div>
                     
-                            <div class="params">
-                                <h4>Parameters:</h4>
-                    
-                                <ul class="params-list">
-                                    <li class="param">
-                                            <code class="param-name">filterFn</code>
-                                            <span class="type"><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Function" class="crosslink external" target="_blank">Function</a></span>
-                    
-                    
-                                        <div class="param-description">
-                                            <p>Function to filter event payload</p>
-                    
-                                        </div>
-                    
-                                    </li>
-                                </ul>
-                            </div>
                     
                             <div class="returns">
                                 <h4>Returns:</h4>
                     
                                 <div class="returns-description">
-                                            <span class="type">SimpleStream</span>:
-                                        <p>stream  Filtered stream</p>
+                                            <span class="type"><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Number" class="crosslink external" target="_blank">Number</a> | <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Number" class="crosslink external" target="_blank">Number[]</a></span>:
+                                        <p>Current state</p>
                     
                                 </div>
                             </div>
                     
                     </div>
-                    <div id="method_map" class="method item">
-                        <h3 class="name"><code>map</code></h3>
+                    <div id="method_set" class="method item">
+                        <h3 class="name"><code>set</code></h3>
                     
                             <div class="args">
                                 <span class="paren">(</span><ul class="args-list inline commas">
                                     <li class="arg">
-                                            <code>mapperFn</code>
+                                            <code>value</code>
                                     </li>
-                                </ul><span class="paren">)</span>
-                            </div>
-                    
-                            <span class="returns-inline">
-                                <span class="type">SimpleStream</span>
-                            </span>
-                    
-                    
-                    
-                    
-                    
-                    
-                    
-                        <div class="meta">
-                                    <p>
-                                    <!---->
-                                    <!--Defined in-->
-                                    <!---->
-                            <!---->
-                            <!--<a href="../files/samsara_streams_SimpleStream.js.html#l29"><code>samsara&#x2F;streams&#x2F;SimpleStream.js:29</code></a>-->
-                            <!---->
-                            </p>
-                    
-                    
-                    
-                        </div>
-                    
-                        <div class="description">
-                            <p>Map converts the current stream into a new stream
-                    with a modified (mapped) data payload.</p>
-                    
-                        </div>
-                    
-                            <div class="params">
-                                <h4>Parameters:</h4>
-                    
-                                <ul class="params-list">
-                                    <li class="param">
-                                            <code class="param-name">mapperFn</code>
-                                            <span class="type"><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Function" class="crosslink external" target="_blank">Function</a></span>
-                    
-                    
-                                        <div class="param-description">
-                                            <p>Function to map event payload</p>
-                    
-                                        </div>
-                    
-                                    </li>
-                                </ul>
-                            </div>
-                    
-                            <div class="returns">
-                                <h4>Returns:</h4>
-                    
-                                <div class="returns-description">
-                                            <span class="type">SimpleStream</span>:
-                                        <p>stream  Mapped stream</p>
-                    
-                                </div>
-                            </div>
-                    
-                    </div>
-                    <div id="method_pluck" class="method item">
-                        <h3 class="name"><code>pluck</code></h3>
-                    
-                            <div class="args">
-                                <span class="paren">(</span><ul class="args-list inline commas">
                                     <li class="arg">
-                                            <code>key</code>
+                                            <code class="optional">[transition]</code>
                                     </li>
-                                </ul><span class="paren">)</span>
-                            </div>
-                    
-                            <span class="returns-inline">
-                                <span class="type">SimpleStream</span>
-                            </span>
-                    
-                    
-                    
-                    
-                    
-                    
-                    
-                        <div class="meta">
-                                    <p>
-                                    <!---->
-                                    <!--Defined in-->
-                                    <!---->
-                            <!---->
-                            <!--<a href="../files/samsara_streams_SimpleStream.js.html#l72"><code>samsara&#x2F;streams&#x2F;SimpleStream.js:72</code></a>-->
-                            <!---->
-                            </p>
-                    
-                    
-                    
-                        </div>
-                    
-                        <div class="description">
-                            <p>Pluck is an opinionated mapper. It projects a Stream
-                    onto one of its return values.</p>
-                    <p>Useful if a Stream returns an array or object.</p>
-                    
-                        </div>
-                    
-                            <div class="params">
-                                <h4>Parameters:</h4>
-                    
-                                <ul class="params-list">
-                                    <li class="param">
-                                            <code class="param-name">key</code>
-                                            <span class="type"><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String" class="crosslink external" target="_blank">String</a> | <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Number" class="crosslink external" target="_blank">Number</a></span>
-                    
-                    
-                                        <div class="param-description">
-                                            <p>Key to project event payload onto</p>
-                    
-                                        </div>
-                    
-                                    </li>
-                                </ul>
-                            </div>
-                    
-                            <div class="returns">
-                                <h4>Returns:</h4>
-                    
-                                <div class="returns-description">
-                                            <span class="type">SimpleStream</span>:
-                                        <p>stream  Plucked stream</p>
-                    
-                                </div>
-                            </div>
-                    
-                    </div>
-                    <div id="method_split" class="method item">
-                        <h3 class="name"><code>split</code></h3>
-                    
-                            <div class="args">
-                                <span class="paren">(</span><ul class="args-list inline commas">
                                     <li class="arg">
-                                            <code>splitterFn</code>
+                                            <code class="optional">[callback]</code>
                                     </li>
                                 </ul><span class="paren">)</span>
                             </div>
@@ -468,7 +394,7 @@ transform one stream into another.</p>
                                     <!--Defined in-->
                                     <!---->
                             <!---->
-                            <!--<a href="../files/samsara_streams_SimpleStream.js.html#l60"><code>samsara&#x2F;streams&#x2F;SimpleStream.js:60</code></a>-->
+                            <!--<a href="../files/samsara_ui_Slider.js.html#l75"><code>samsara&#x2F;ui&#x2F;Slider.js:75</code></a>-->
                             <!---->
                             </p>
                     
@@ -477,8 +403,8 @@ transform one stream into another.</p>
                         </div>
                     
                         <div class="description">
-                            <p>Split maps one of several streams based on custom logic.
-                    The splitter function should return an EventEmitter type.</p>
+                            <p>Set a new end value with an optional transition.
+                    An optional callback can fire when the transition completes.</p>
                     
                         </div>
                     
@@ -487,12 +413,36 @@ transform one stream into another.</p>
                     
                                 <ul class="params-list">
                                     <li class="param">
-                                            <code class="param-name">splitterFn</code>
-                                            <span class="type"><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Function" class="crosslink external" target="_blank">Function</a></span>
+                                            <code class="param-name">value</code>
+                                            <span class="type"><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Number" class="crosslink external" target="_blank">Number</a> | <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Number" class="crosslink external" target="_blank">Number[]</a></span>
                     
                     
                                         <div class="param-description">
-                                            <p>Splitter function</p>
+                                            <p>End value</p>
+                    
+                                        </div>
+                    
+                                    </li>
+                                    <li class="param">
+                                            <code class="param-name optional">[transition]</code>
+                                            <span class="type"><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object" class="crosslink external" target="_blank">Object</a></span>
+                                            <span class="flag optional" title="This parameter is optional.">optional</span>
+                    
+                    
+                                        <div class="param-description">
+                                            <p>Transition definition</p>
+                    
+                                        </div>
+                    
+                                    </li>
+                                    <li class="param">
+                                            <code class="param-name optional">[callback]</code>
+                                            <span class="type"><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Function" class="crosslink external" target="_blank">Function</a></span>
+                                            <span class="flag optional" title="This parameter is optional.">optional</span>
+                    
+                    
+                                        <div class="param-description">
+                                            <p>Callback</p>
                     
                                         </div>
                     

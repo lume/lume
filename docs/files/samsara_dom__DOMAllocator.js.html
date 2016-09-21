@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="utf-8">
-    <title>samsara/streams/SizeObservable.js - SamsaraJS</title>
+    <title>samsara/dom/_DOMAllocator.js - SamsaraJS</title>
     <link rel="stylesheet" href="">
     <link rel="stylesheet" href="../assets/vendor/prettify/prettify-min.css">
     <link rel="stylesheet" href="../assets/css/main.css" id="site_styles">
@@ -23,12 +23,12 @@
             <li class="divider-vertical"></li>
             <li>
                 <p class="navbar-text">
-                    API Docs for Version: <b>0.2.0</b>
+                    API Docs for Version: <b>0.2.2</b>
                 </p>
             </li>
         </div>
         <form class="navbar-form pull-right" style="line-height: 40px; height: 40px;">
-            <input style="margin-top: 0;" type="text" class="search-query" placeholder="Search for classes..." data-obj='["classes/Core.Controller", "classes/Core.ElementAllocator", "classes/Core.ElementOutput", "classes/Core.Engine", "classes/Core.LayoutNode", "classes/Core.OptionsManager", "classes/Core.SizeNode", "classes/Core.SUE", "classes/Core.Timer", "classes/Core.Transform", "classes/Core.Transitionable", "classes/Core.View", "classes/DOM.ContainerSurface", "classes/DOM.Context", "classes/DOM.Surface", "classes/Events.EventEmitter", "classes/Events.EventFilter", "classes/Events.EventHandler", "classes/Events.EventMapper", "classes/Events.EventSplitter", "classes/Inputs.GenericInput", "classes/Inputs.MouseInput", "classes/Inputs.PinchInput", "classes/Inputs.RotateInput", "classes/Inputs.ScaleInput", "classes/Inputs.ScrollInput", "classes/Inputs.TouchInput", "classes/Inputs.TouchTracker", "classes/Inputs.TwoFingerInput", "classes/Layouts.DrawerLayout", "classes/Layouts.FlexibleLayout", "classes/Layouts.GridLayout", "classes/Layouts.SequentialLayout", "classes/RenderTreeNode", "classes/RootNode", "classes/Streams.Accumulator", "classes/Streams.Differential", "classes/Streams.Observable", "classes/Streams.ResizeStream", "classes/Streams.SimpleStream", "classes/Streams.Stream", "classes/Transitions.Inertia", "classes/Transitions.Spring", "classes/Transitions.Tween"]'>
+            <input style="margin-top: 0;" type="text" class="search-query" placeholder="Search for classes..." data-obj='["classes/Core.Controller", "classes/Core.DOMAllocator", "classes/Core.DOMOutput", "classes/Core.Engine", "classes/Core.LayoutNode", "classes/Core.Node", "classes/Core.OptionsManager", "classes/Core.RenderTreeNode", "classes/Core.RootNode", "classes/Core.SizeNode", "classes/Core.Timer", "classes/Core.Transform", "classes/Core.Transitionable", "classes/Core.View", "classes/DOM.ContainerSurface", "classes/DOM.Context", "classes/DOM.Surface", "classes/Events.EventEmitter", "classes/Events.EventFilter", "classes/Events.EventHandler", "classes/Events.EventMapper", "classes/Events.EventSplitter", "classes/Inputs.GenericInput", "classes/Inputs.MouseInput", "classes/Inputs.PinchInput", "classes/Inputs.RotateInput", "classes/Inputs.ScaleInput", "classes/Inputs.ScrollInput", "classes/Inputs.TouchInput", "classes/Inputs.TouchTracker", "classes/Inputs.TwoFingerInput", "classes/Layouts.BidirectionalList", "classes/Layouts.DrawerLayout", "classes/Layouts.FlexLayout", "classes/Layouts.GridLayout", "classes/Layouts.HeaderFooterLayout", "classes/Layouts.SequentialLayout", "classes/Streams.Accumulator", "classes/Streams.Differential", "classes/Streams.Observable", "classes/Streams.SimpleStream", "classes/Streams.Stream", "classes/Transitions.Inertia", "classes/Transitions.Spring", "classes/Transitions.Tween", "classes/UI.Fingers", "classes/UI.Slider"]'>
         </form>
     </div>
 </div>
@@ -69,13 +69,17 @@
 	                            <li><a href="../classes/Inputs.ScaleInput.html">Inputs.ScaleInput</a></li>
 	                            <li><a href="../classes/Inputs.ScrollInput.html">Inputs.ScrollInput</a></li>
 	                            <li><a href="../classes/Inputs.TouchInput.html">Inputs.TouchInput</a></li>
+	                            <li><a href="../classes/Layouts.BidirectionalList.html">Layouts.BidirectionalList</a></li>
 	                            <li><a href="../classes/Layouts.DrawerLayout.html">Layouts.DrawerLayout</a></li>
-	                            <li><a href="../classes/Layouts.FlexibleLayout.html">Layouts.FlexibleLayout</a></li>
+	                            <li><a href="../classes/Layouts.FlexLayout.html">Layouts.FlexLayout</a></li>
 	                            <li><a href="../classes/Layouts.GridLayout.html">Layouts.GridLayout</a></li>
+	                            <li><a href="../classes/Layouts.HeaderFooterLayout.html">Layouts.HeaderFooterLayout</a></li>
 	                            <li><a href="../classes/Layouts.SequentialLayout.html">Layouts.SequentialLayout</a></li>
 	                            <li><a href="../classes/Streams.Accumulator.html">Streams.Accumulator</a></li>
 	                            <li><a href="../classes/Streams.Differential.html">Streams.Differential</a></li>
 	                            <li><a href="../classes/Streams.Stream.html">Streams.Stream</a></li>
+	                            <li><a href="../classes/UI.Fingers.html">UI.Fingers</a></li>
+	                            <li><a href="../classes/UI.Slider.html">UI.Slider</a></li>
 	                    </ul>
 	                </div>
 	    
@@ -116,7 +120,7 @@
                 <div id="docs-main">
                     <div class="content">
 <div class="page-header">
-    <h1>samsara/streams/SizeObservable.js <small>File</small></h1>
+    <h1>samsara/dom/_DOMAllocator.js <small>File</small></h1>
 </div>
 
 <div class="file">
@@ -124,58 +128,88 @@
 /* Copyright © 2015-2016 David Valdman */
 
 define(function(require, exports, module) {
-    var SimpleStream = require(&#x27;../streams/SimpleStream&#x27;);
-    var preTickQueue = require(&#x27;../core/queues/preTickQueue&#x27;);
-    var dirtyQueue = require(&#x27;../core/queues/dirtyQueue&#x27;);
 
     /**
-     * A SizeObservable is a stream for resize events set discretely in time, as opposed to continuously.
-     *  It emits appropriate &#x60;resize&#x60; events upon calling the &#x60;set&#x60; method.
+     * Handles creating, allocating and removing DOM elements within a provided DOM element.
+     *  Manages a pool of nodes based on DOM tagName for DOM node reuse.
+     *  When a Surface is deallocated, its element is cleared and put back in the pool.
+     *  When a Surface is allocated, an existing cleared element of the same tagName is
+     *  looked for. If it is not found, a new DOM element is created.
      *
-     * @class Observable
+     * @class DOMAllocator
      * @constructor
+     * @namespace Core
      * @private
-     * @extends Streams.SimpleStream
-     * @param value {Array} Size
+     * @param container {Node} DOM element
      */
-    function SizeObservable(value){
-        SimpleStream.call(this);
-        this.value = value;
-
-        if (value !== undefined) this.set(value);
+    function DOMAllocator(container) {
+        this.set(container);
+        this.detachedNodes = {};
     }
 
-    SizeObservable.prototype = Object.create(SimpleStream.prototype);
-    SizeObservable.prototype.constructor = SizeObservable;
-
     /**
-     * Getter for the provided size.
-     *
-     * @method get
-     * @return {Array}
-     */
-    SizeObservable.prototype.get = function(){
-        return this.value;
-    };
-
-    /**
-     * Setter for the provided size.
+     * Set containing element to insert allocated content into
      *
      * @method set
-     * @param value {Array} Size
+     * @param container {Node} DOM element
      */
-    SizeObservable.prototype.set = function(value){
-        var self = this;
-        preTickQueue.push(function(){
-            self.value = value;
-            self.emit(&#x27;resize&#x27;, value);
-            dirtyQueue.push(function(){
-                self.emit(&#x27;resize&#x27;, value);
-            });
-        });
+    DOMAllocator.prototype.set = function(container){
+        if (!container) container = document.createDocumentFragment();
+        this.container = container;
     };
 
-    module.exports = SizeObservable;
+    /**
+     * Move the DOM elements from their original container to a new one.
+     *
+     * @method migrate
+     * @param container {Node} DOM element
+     */
+    DOMAllocator.prototype.migrate = function migrate(container) {
+        var oldContainer = this.container;
+        if (container === oldContainer) return;
+
+        if (oldContainer instanceof DocumentFragment)
+            container.appendChild(oldContainer);
+        else {
+            while (oldContainer.hasChildNodes())
+                container.appendChild(oldContainer.firstChild);
+        }
+        this.container = container;
+    };
+
+    /**
+     * Allocate an element of specified type from the pool.
+     *
+     * @method allocate
+     * @param type {string} DOM tagName, e.g., &quot;div&quot;
+     * @return {Node}
+     */
+    DOMAllocator.prototype.allocate = function allocate(type) {
+        type = type.toLowerCase();
+        if (!(type in this.detachedNodes)) this.detachedNodes[type] = [];
+        var nodeStore = this.detachedNodes[type];
+        var result;
+        if (nodeStore.length === 0){
+            result = document.createElement(type);
+            this.container.appendChild(result);
+        }
+        else result = nodeStore.shift();
+        return result;
+    };
+
+    /**
+     * De-allocate an element of specified type to the pool for recycling.
+     *
+     * @method deallocate
+     * @param element {Node} DOM element
+     */
+    DOMAllocator.prototype.deallocate = function deallocate(element) {
+        var nodeType = element.nodeName.toLowerCase();
+        var nodeStore = this.detachedNodes[nodeType];
+        nodeStore.push(element);
+    };
+
+    module.exports = DOMAllocator;
 });
 
     </pre>

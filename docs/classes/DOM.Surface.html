@@ -23,12 +23,12 @@
             <li class="divider-vertical"></li>
             <li>
                 <p class="navbar-text">
-                    API Docs for Version: <b>0.2.0</b>
+                    API Docs for Version: <b>0.2.2</b>
                 </p>
             </li>
         </div>
         <form class="navbar-form pull-right" style="line-height: 40px; height: 40px;">
-            <input style="margin-top: 0;" type="text" class="search-query" placeholder="Search for classes..." data-obj='["classes/Core.Controller", "classes/Core.ElementAllocator", "classes/Core.ElementOutput", "classes/Core.Engine", "classes/Core.LayoutNode", "classes/Core.OptionsManager", "classes/Core.SizeNode", "classes/Core.SUE", "classes/Core.Timer", "classes/Core.Transform", "classes/Core.Transitionable", "classes/Core.View", "classes/DOM.ContainerSurface", "classes/DOM.Context", "classes/DOM.Surface", "classes/Events.EventEmitter", "classes/Events.EventFilter", "classes/Events.EventHandler", "classes/Events.EventMapper", "classes/Events.EventSplitter", "classes/Inputs.GenericInput", "classes/Inputs.MouseInput", "classes/Inputs.PinchInput", "classes/Inputs.RotateInput", "classes/Inputs.ScaleInput", "classes/Inputs.ScrollInput", "classes/Inputs.TouchInput", "classes/Inputs.TouchTracker", "classes/Inputs.TwoFingerInput", "classes/Layouts.DrawerLayout", "classes/Layouts.FlexibleLayout", "classes/Layouts.GridLayout", "classes/Layouts.SequentialLayout", "classes/RenderTreeNode", "classes/RootNode", "classes/Streams.Accumulator", "classes/Streams.Differential", "classes/Streams.Observable", "classes/Streams.ResizeStream", "classes/Streams.SimpleStream", "classes/Streams.Stream", "classes/Transitions.Inertia", "classes/Transitions.Spring", "classes/Transitions.Tween"]'>
+            <input style="margin-top: 0;" type="text" class="search-query" placeholder="Search for classes..." data-obj='["classes/Core.Controller", "classes/Core.DOMAllocator", "classes/Core.DOMOutput", "classes/Core.Engine", "classes/Core.LayoutNode", "classes/Core.Node", "classes/Core.OptionsManager", "classes/Core.RenderTreeNode", "classes/Core.RootNode", "classes/Core.SizeNode", "classes/Core.Timer", "classes/Core.Transform", "classes/Core.Transitionable", "classes/Core.View", "classes/DOM.ContainerSurface", "classes/DOM.Context", "classes/DOM.Surface", "classes/Events.EventEmitter", "classes/Events.EventFilter", "classes/Events.EventHandler", "classes/Events.EventMapper", "classes/Events.EventSplitter", "classes/Inputs.GenericInput", "classes/Inputs.MouseInput", "classes/Inputs.PinchInput", "classes/Inputs.RotateInput", "classes/Inputs.ScaleInput", "classes/Inputs.ScrollInput", "classes/Inputs.TouchInput", "classes/Inputs.TouchTracker", "classes/Inputs.TwoFingerInput", "classes/Layouts.BidirectionalList", "classes/Layouts.DrawerLayout", "classes/Layouts.FlexLayout", "classes/Layouts.GridLayout", "classes/Layouts.HeaderFooterLayout", "classes/Layouts.SequentialLayout", "classes/Streams.Accumulator", "classes/Streams.Differential", "classes/Streams.Observable", "classes/Streams.SimpleStream", "classes/Streams.Stream", "classes/Transitions.Inertia", "classes/Transitions.Spring", "classes/Transitions.Tween", "classes/UI.Fingers", "classes/UI.Slider"]'>
         </form>
     </div>
 </div>
@@ -69,13 +69,17 @@
 	                            <li><a href="../classes/Inputs.ScaleInput.html">Inputs.ScaleInput</a></li>
 	                            <li><a href="../classes/Inputs.ScrollInput.html">Inputs.ScrollInput</a></li>
 	                            <li><a href="../classes/Inputs.TouchInput.html">Inputs.TouchInput</a></li>
+	                            <li><a href="../classes/Layouts.BidirectionalList.html">Layouts.BidirectionalList</a></li>
 	                            <li><a href="../classes/Layouts.DrawerLayout.html">Layouts.DrawerLayout</a></li>
-	                            <li><a href="../classes/Layouts.FlexibleLayout.html">Layouts.FlexibleLayout</a></li>
+	                            <li><a href="../classes/Layouts.FlexLayout.html">Layouts.FlexLayout</a></li>
 	                            <li><a href="../classes/Layouts.GridLayout.html">Layouts.GridLayout</a></li>
+	                            <li><a href="../classes/Layouts.HeaderFooterLayout.html">Layouts.HeaderFooterLayout</a></li>
 	                            <li><a href="../classes/Layouts.SequentialLayout.html">Layouts.SequentialLayout</a></li>
 	                            <li><a href="../classes/Streams.Accumulator.html">Streams.Accumulator</a></li>
 	                            <li><a href="../classes/Streams.Differential.html">Streams.Differential</a></li>
 	                            <li><a href="../classes/Streams.Stream.html">Streams.Stream</a></li>
+	                            <li><a href="../classes/UI.Fingers.html">UI.Fingers</a></li>
+	                            <li><a href="../classes/UI.Slider.html">UI.Slider</a></li>
 	                    </ul>
 	                </div>
 	    
@@ -120,14 +124,17 @@
 </div>
 
 <div class="well well-small">
-
-        <div class="extends">
-            Extends <a href="../classes/Core.ElementOutput.html" class="crosslink">Core.ElementOutput</a>
+        <div class="uses">
+            Uses
+            <ul class="inline commas">
+                    <li><a href="DOM._DOMOutput.html">DOM._DOMOutput</a></li>
+            </ul>
         </div>
+
 
     <!---->
         <div class="foundat">
-            Defined in: <a href="../files/samsara_dom_Surface.js.html#l11"><code>samsara&#x2F;dom&#x2F;Surface.js:11</code></a>
+            Defined in: <a href="../files/samsara_dom_Surface.js.html#l16"><code>samsara&#x2F;dom&#x2F;Surface.js:16</code></a>
         </div>
     <!---->
 
@@ -169,7 +176,7 @@ Surfaces also act as sources for DOM events such as <code>click</code>.</p>
                         <!--Defined in-->
                         <!---->
                 <!---->
-                <!--<a href="../files/samsara_dom_Surface.js.html#l11"><code>samsara&#x2F;dom&#x2F;Surface.js:11</code></a>-->
+                <!--<a href="../files/samsara_dom_Surface.js.html#l16"><code>samsara&#x2F;dom&#x2F;Surface.js:16</code></a>-->
                 <!---->
                 </p>
         
@@ -391,25 +398,13 @@ Surfaces also act as sources for DOM events such as <code>click</code>.</p>
                 <div class="index-section methods">
                     <h3>Methods</h3>
 
-                    <ul class="index-list methods extends">
+                    <ul class="index-list methods">
                             <li class="index-item method">
                                 <a href="#" data-tabid="#methods" data-anchor="#method_addClass" data-tablink="addClass">addClass</a>
 
                             </li>
-                            <li class="index-item method private inherited">
-                                <a href="#" data-tabid="#methods" data-anchor="#method_attach" data-tablink="attach">attach</a>
-
-                            </li>
                             <li class="index-item method private">
                                 <a href="#" data-tabid="#methods" data-anchor="#method_deploy" data-tablink="deploy">deploy</a>
-
-                            </li>
-                            <li class="index-item method private inherited">
-                                <a href="#" data-tabid="#methods" data-anchor="#method_detach" data-tablink="detach">detach</a>
-
-                            </li>
-                            <li class="index-item method inherited">
-                                <a href="#" data-tabid="#methods" data-anchor="#method_emit" data-tablink="emit">emit</a>
 
                             </li>
                             <li class="index-item method">
@@ -432,28 +427,36 @@ Surfaces also act as sources for DOM events such as <code>click</code>.</p>
                                 <a href="#" data-tabid="#methods" data-anchor="#method_getSize" data-tablink="getSize">getSize</a>
 
                             </li>
-                            <li class="index-item method inherited">
+                            <li class="index-item method">
+                                <a href="#" data-tabid="#methods" data-anchor="#method_off" data-tablink="off">off</a>
+
+                            </li>
+                            <li class="index-item method">
                                 <a href="#" data-tabid="#methods" data-anchor="#method_on" data-tablink="on">on</a>
+
+                            </li>
+                            <li class="index-item method">
+                                <a href="#" data-tabid="#methods" data-anchor="#method_once" data-tablink="once">once</a>
+
+                            </li>
+                            <li class="index-item method">
+                                <a href="#" data-tabid="#methods" data-anchor="#method_querySelector" data-tablink="querySelector">querySelector</a>
+
+                            </li>
+                            <li class="index-item method">
+                                <a href="#" data-tabid="#methods" data-anchor="#method_querySelector" data-tablink="querySelector">querySelector</a>
 
                             </li>
                             <li class="index-item method private">
                                 <a href="#" data-tabid="#methods" data-anchor="#method_recall" data-tablink="recall">recall</a>
 
                             </li>
-                            <li class="index-item method private">
+                            <li class="index-item method">
                                 <a href="#" data-tabid="#methods" data-anchor="#method_remove" data-tablink="remove">remove</a>
 
                             </li>
                             <li class="index-item method">
                                 <a href="#" data-tabid="#methods" data-anchor="#method_removeClass" data-tablink="removeClass">removeClass</a>
-
-                            </li>
-                            <li class="index-item method inherited">
-                                <a href="#" data-tabid="#methods" data-anchor="#method_removeListener" data-tablink="removeListener">removeListener</a>
-
-                            </li>
-                            <li class="index-item method inherited inherited">
-                                <a href="#" data-tabid="#methods" data-anchor="#method_set" data-tablink="set">set</a>
 
                             </li>
                             <li class="index-item method">
@@ -534,7 +537,6 @@ Surfaces also act as sources for DOM events such as <code>click</code>.</p>
                     
                     
                     
-                            <span class="flag chainable">chainable</span>
                     
                     
                         <div class="meta">
@@ -543,7 +545,7 @@ Surfaces also act as sources for DOM events such as <code>click</code>.</p>
                                     <!--Defined in-->
                                     <!---->
                             <!---->
-                            <!--<a href="../files/samsara_dom_Surface.js.html#l234"><code>samsara&#x2F;dom&#x2F;Surface.js:234</code></a>-->
+                            <!--<a href="../files/samsara_dom_Surface.js.html#l251"><code>samsara&#x2F;dom&#x2F;Surface.js:251</code></a>-->
                             <!---->
                             </p>
                     
@@ -567,62 +569,6 @@ Surfaces also act as sources for DOM events such as <code>click</code>.</p>
                     
                                         <div class="param-description">
                                             <p>Class name</p>
-                    
-                                        </div>
-                    
-                                    </li>
-                                </ul>
-                            </div>
-                    
-                    
-                    </div>
-                    <div id="method_attach" class="method item private inherited">
-                        <h3 class="name"><code>attach</code></h3>
-                    
-                            <div class="args">
-                                <span class="paren">(</span><ul class="args-list inline commas">
-                                    <li class="arg">
-                                            <code>target</code>
-                                    </li>
-                                </ul><span class="paren">)</span>
-                            </div>
-                    
-                    
-                    
-                            <span class="flag private">private</span>
-                    
-                    
-                    
-                    
-                    
-                        <div class="meta">
-                                    <p>Inherited from
-                                    <a href="../classes/Core.ElementOutput.html#method_attach">Core.ElementOutput</a>:
-                            <!---->
-                            <!--<a href="../files/samsara_core_ElementOutput.js.html#l217"><code>samsara&#x2F;core&#x2F;ElementOutput.js:217</code></a>-->
-                            <!---->
-                            </p>
-                    
-                    
-                    
-                        </div>
-                    
-                        <div class="description">
-                            <p>Assigns the DOM element for committing and to and attaches event listeners.</p>
-                    
-                        </div>
-                    
-                            <div class="params">
-                                <h4>Parameters:</h4>
-                    
-                                <ul class="params-list">
-                                    <li class="param">
-                                            <code class="param-name">target</code>
-                                            <span class="type"><a href="https://developer.mozilla.org/en-US/docs/Web/API/Node" class="crosslink external" target="_blank">Node</a></span>
-                    
-                    
-                                        <div class="param-description">
-                                            <p>document parent of this container</p>
                     
                                         </div>
                     
@@ -657,7 +603,7 @@ Surfaces also act as sources for DOM events such as <code>click</code>.</p>
                                     <!--Defined in-->
                                     <!---->
                             <!---->
-                            <!--<a href="../files/samsara_dom_Surface.js.html#l434"><code>samsara&#x2F;dom&#x2F;Surface.js:434</code></a>-->
+                            <!--<a href="../files/samsara_dom_Surface.js.html#l468"><code>samsara&#x2F;dom&#x2F;Surface.js:468</code></a>-->
                             <!---->
                             </p>
                     
@@ -690,110 +636,6 @@ Surfaces also act as sources for DOM events such as <code>click</code>.</p>
                     
                     
                     </div>
-                    <div id="method_detach" class="method item private inherited">
-                        <h3 class="name"><code>detach</code></h3>
-                    
-                            <span class="paren">()</span>
-                    
-                    
-                    
-                            <span class="flag private">private</span>
-                    
-                    
-                    
-                    
-                    
-                        <div class="meta">
-                                    <p>Inherited from
-                                    <a href="../classes/Core.ElementOutput.html#method_detach">Core.ElementOutput</a>:
-                            <!---->
-                            <!--<a href="../files/samsara_core_ElementOutput.js.html#l229"><code>samsara&#x2F;core&#x2F;ElementOutput.js:229</code></a>-->
-                            <!---->
-                            </p>
-                    
-                    
-                    
-                        </div>
-                    
-                        <div class="description">
-                            <p>Removes the associated DOM element in memory and detached event listeners.</p>
-                    
-                        </div>
-                    
-                    
-                    
-                    </div>
-                    <div id="method_emit" class="method item inherited">
-                        <h3 class="name"><code>emit</code></h3>
-                    
-                            <div class="args">
-                                <span class="paren">(</span><ul class="args-list inline commas">
-                                    <li class="arg">
-                                            <code>type</code>
-                                    </li>
-                                    <li class="arg">
-                                            <code class="optional">[payload]</code>
-                                    </li>
-                                </ul><span class="paren">)</span>
-                            </div>
-                    
-                    
-                    
-                    
-                    
-                    
-                    
-                    
-                        <div class="meta">
-                                    <p>Inherited from
-                                    <a href="../classes/Core.ElementOutput.html#method_emit">Core.ElementOutput</a>:
-                            <!---->
-                            <!--<a href="../files/samsara_core_ElementOutput.js.html#l205"><code>samsara&#x2F;core&#x2F;ElementOutput.js:205</code></a>-->
-                            <!---->
-                            </p>
-                    
-                    
-                    
-                        </div>
-                    
-                        <div class="description">
-                            <p>Emit an event with optional data payload. This will execute all listening
-                    to the channel name with the payload as only argument.</p>
-                    
-                        </div>
-                    
-                            <div class="params">
-                                <h4>Parameters:</h4>
-                    
-                                <ul class="params-list">
-                                    <li class="param">
-                                            <code class="param-name">type</code>
-                                            <span class="type"><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String" class="crosslink external" target="_blank">String</a></span>
-                    
-                    
-                                        <div class="param-description">
-                                            <p>Event channel name</p>
-                    
-                                        </div>
-                    
-                                    </li>
-                                    <li class="param">
-                                            <code class="param-name optional">[payload]</code>
-                                            <span class="type"><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object" class="crosslink external" target="_blank">Object</a></span>
-                                            <span class="flag optional" title="This parameter is optional.">optional</span>
-                    
-                    
-                                        <div class="param-description">
-                                            <p>User defined data payload</p>
-                    
-                                        </div>
-                    
-                                    </li>
-                                </ul>
-                            </div>
-                    
-                    
-                    </div>
                     <div id="method_getAttributes" class="method item">
                         <h3 class="name"><code>getAttributes</code></h3>
                     
@@ -815,7 +657,7 @@ Surfaces also act as sources for DOM events such as <code>click</code>.</p>
                                     <!--Defined in-->
                                     <!---->
                             <!---->
-                            <!--<a href="../files/samsara_dom_Surface.js.html#l198"><code>samsara&#x2F;dom&#x2F;Surface.js:198</code></a>-->
+                            <!--<a href="../files/samsara_dom_Surface.js.html#l213"><code>samsara&#x2F;dom&#x2F;Surface.js:213</code></a>-->
                             <!---->
                             </p>
                     
@@ -859,7 +701,7 @@ Surfaces also act as sources for DOM events such as <code>click</code>.</p>
                                     <!--Defined in-->
                                     <!---->
                             <!---->
-                            <!--<a href="../files/samsara_dom_Surface.js.html#l297"><code>samsara&#x2F;dom&#x2F;Surface.js:297</code></a>-->
+                            <!--<a href="../files/samsara_dom_Surface.js.html#l312"><code>samsara&#x2F;dom&#x2F;Surface.js:312</code></a>-->
                             <!---->
                             </p>
                     
@@ -903,7 +745,7 @@ Surfaces also act as sources for DOM events such as <code>click</code>.</p>
                                     <!--Defined in-->
                                     <!---->
                             <!---->
-                            <!--<a href="../files/samsara_dom_Surface.js.html#l323"><code>samsara&#x2F;dom&#x2F;Surface.js:323</code></a>-->
+                            <!--<a href="../files/samsara_dom_Surface.js.html#l184"><code>samsara&#x2F;dom&#x2F;Surface.js:184</code></a>-->
                             <!---->
                             </p>
                     
@@ -947,7 +789,7 @@ Surfaces also act as sources for DOM events such as <code>click</code>.</p>
                                     <!--Defined in-->
                                     <!---->
                             <!---->
-                            <!--<a href="../files/samsara_dom_Surface.js.html#l224"><code>samsara&#x2F;dom&#x2F;Surface.js:224</code></a>-->
+                            <!--<a href="../files/samsara_dom_Surface.js.html#l241"><code>samsara&#x2F;dom&#x2F;Surface.js:241</code></a>-->
                             <!---->
                             </p>
                     
@@ -993,7 +835,7 @@ Surfaces also act as sources for DOM events such as <code>click</code>.</p>
                                     <!--Defined in-->
                                     <!---->
                             <!---->
-                            <!--<a href="../files/samsara_dom_Surface.js.html#l469"><code>samsara&#x2F;dom&#x2F;Surface.js:469</code></a>-->
+                            <!--<a href="../files/samsara_dom_Surface.js.html#l502"><code>samsara&#x2F;dom&#x2F;Surface.js:502</code></a>-->
                             <!---->
                             </p>
                     
@@ -1016,8 +858,8 @@ Surfaces also act as sources for DOM events such as <code>click</code>.</p>
                             </div>
                     
                     </div>
-                    <div id="method_on" class="method item inherited">
-                        <h3 class="name"><code>on</code></h3>
+                    <div id="method_off" class="method item">
+                        <h3 class="name"><code>off</code></h3>
                     
                             <div class="args">
                                 <span class="paren">(</span><ul class="args-list inline commas">
@@ -1038,251 +880,12 @@ Surfaces also act as sources for DOM events such as <code>click</code>.</p>
                     
                     
                         <div class="meta">
-                                    <p>Inherited from
-                                    <a href="../classes/Core.ElementOutput.html#method_on">Core.ElementOutput</a>:
-                            <!---->
-                            <!--<a href="../files/samsara_core_ElementOutput.js.html#l179"><code>samsara&#x2F;core&#x2F;ElementOutput.js:179</code></a>-->
-                            <!---->
-                            </p>
-                    
-                    
-                    
-                        </div>
-                    
-                        <div class="description">
-                            <p>Adds a handler to the <code>type</code> channel which will be executed on <code>emit</code>.</p>
-                    
-                        </div>
-                    
-                            <div class="params">
-                                <h4>Parameters:</h4>
-                    
-                                <ul class="params-list">
-                                    <li class="param">
-                                            <code class="param-name">type</code>
-                                            <span class="type"><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String" class="crosslink external" target="_blank">String</a></span>
-                    
-                    
-                                        <div class="param-description">
-                                            <p>DOM event channel name, e.g., "click", "touchmove"</p>
-                    
-                                        </div>
-                    
-                                    </li>
-                                    <li class="param">
-                                            <code class="param-name">handler</code>
-                                            <span class="type"><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Function" class="crosslink external" target="_blank">Function</a></span>
-                    
-                    
-                                        <div class="param-description">
-                                            <p>Handler. It's only argument will be an emitted data payload.</p>
-                    
-                                        </div>
-                    
-                                    </li>
-                                </ul>
-                            </div>
-                    
-                    
-                    </div>
-                    <div id="method_recall" class="method item private">
-                        <h3 class="name"><code>recall</code></h3>
-                    
-                            <div class="args">
-                                <span class="paren">(</span><ul class="args-list inline commas">
-                                    <li class="arg">
-                                            <code>target</code>
-                                    </li>
-                                </ul><span class="paren">)</span>
-                            </div>
-                    
-                    
-                    
-                            <span class="flag private">private</span>
-                    
-                    
-                    
-                    
-                    
-                        <div class="meta">
                                     <p>
                                     <!---->
                                     <!--Defined in-->
                                     <!---->
                             <!---->
-                            <!--<a href="../files/samsara_dom_Surface.js.html#l455"><code>samsara&#x2F;dom&#x2F;Surface.js:455</code></a>-->
-                            <!---->
-                            </p>
-                    
-                    
-                    
-                        </div>
-                    
-                        <div class="description">
-                            <p>Cache the content of the Surface in a document fragment for future deployment.</p>
-                    
-                        </div>
-                    
-                            <div class="params">
-                                <h4>Parameters:</h4>
-                    
-                                <ul class="params-list">
-                                    <li class="param">
-                                            <code class="param-name">target</code>
-                                            <span class="type"><a href="https://developer.mozilla.org/en-US/docs/Web/API/Node" class="crosslink external" target="_blank">Node</a></span>
-                    
-                    
-                                        <div class="param-description">
-                                            
-                                        </div>
-                    
-                                    </li>
-                                </ul>
-                            </div>
-                    
-                    
-                    </div>
-                    <div id="method_remove" class="method item private">
-                        <h3 class="name"><code>remove</code></h3>
-                    
-                            <div class="args">
-                                <span class="paren">(</span><ul class="args-list inline commas">
-                                    <li class="arg">
-                                            <code>allocator</code>
-                                    </li>
-                                </ul><span class="paren">)</span>
-                            </div>
-                    
-                    
-                    
-                            <span class="flag private">private</span>
-                    
-                    
-                    
-                    
-                    
-                        <div class="meta">
-                                    <p>
-                                    <!---->
-                                    <!--Defined in-->
-                                    <!---->
-                            <!---->
-                            <!--<a href="../files/samsara_dom_Surface.js.html#l389"><code>samsara&#x2F;dom&#x2F;Surface.js:389</code></a>-->
-                            <!---->
-                            </p>
-                    
-                    
-                    
-                        </div>
-                    
-                        <div class="description">
-                            <p>Remove all Samsara-relevant data from the Surface.</p>
-                    
-                        </div>
-                    
-                            <div class="params">
-                                <h4>Parameters:</h4>
-                    
-                                <ul class="params-list">
-                                    <li class="param">
-                                            <code class="param-name">allocator</code>
-                                            <span class="type">ElementAllocator</span>
-                    
-                    
-                                        <div class="param-description">
-                                            <p>Allocator</p>
-                    
-                                        </div>
-                    
-                                    </li>
-                                </ul>
-                            </div>
-                    
-                    
-                    </div>
-                    <div id="method_removeClass" class="method item">
-                        <h3 class="name"><code>removeClass</code></h3>
-                    
-                            <div class="args">
-                                <span class="paren">(</span><ul class="args-list inline commas">
-                                    <li class="arg">
-                                            <code>className</code>
-                                    </li>
-                                </ul><span class="paren">)</span>
-                            </div>
-                    
-                    
-                    
-                    
-                    
-                    
-                    
-                    
-                        <div class="meta">
-                                    <p>
-                                    <!---->
-                                    <!--Defined in-->
-                                    <!---->
-                            <!---->
-                            <!--<a href="../files/samsara_dom_Surface.js.html#l250"><code>samsara&#x2F;dom&#x2F;Surface.js:250</code></a>-->
-                            <!---->
-                            </p>
-                    
-                    
-                    
-                        </div>
-                    
-                        <div class="description">
-                            <p>Remove CSS class from the list of classes on this Surface.</p>
-                    
-                        </div>
-                    
-                            <div class="params">
-                                <h4>Parameters:</h4>
-                    
-                                <ul class="params-list">
-                                    <li class="param">
-                                            <code class="param-name">className</code>
-                                            <span class="type"><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String" class="crosslink external" target="_blank">String</a></span>
-                    
-                    
-                                        <div class="param-description">
-                                            <p>Class name</p>
-                    
-                                        </div>
-                    
-                                    </li>
-                                </ul>
-                            </div>
-                    
-                    
-                    </div>
-                    <div id="method_removeListener" class="method item inherited">
-                        <h3 class="name"><code>removeListener</code></h3>
-                    
-                            <div class="args">
-                                <span class="paren">(</span><ul class="args-list inline commas">
-                                    <li class="arg">
-                                            <code>type</code>
-                                    </li>
-                                    <li class="arg">
-                                            <code>handler</code>
-                                    </li>
-                                </ul><span class="paren">)</span>
-                            </div>
-                    
-                    
-                    
-                    
-                    
-                    
-                    
-                    
-                        <div class="meta">
-                                    <p>Inherited from
-                                    <a href="../classes/Core.ElementOutput.html#method_removeListener">Core.ElementOutput</a>:
-                            <!---->
-                            <!--<a href="../files/samsara_core_ElementOutput.js.html#l193"><code>samsara&#x2F;core&#x2F;ElementOutput.js:193</code></a>-->
+                            <!--<a href="../files/samsara_dom_Surface.js.html#l396"><code>samsara&#x2F;dom&#x2F;Surface.js:396</code></a>-->
                             <!---->
                             </p>
                     
@@ -1327,13 +930,16 @@ Surfaces also act as sources for DOM events such as <code>click</code>.</p>
                     
                     
                     </div>
-                    <div id="method_set" class="method item inherited">
-                        <h3 class="name"><code>set</code></h3>
+                    <div id="method_on" class="method item">
+                        <h3 class="name"><code>on</code></h3>
                     
                             <div class="args">
                                 <span class="paren">(</span><ul class="args-list inline commas">
                                     <li class="arg">
-                                            <code>sources</code>
+                                            <code>type</code>
+                                    </li>
+                                    <li class="arg">
+                                            <code>handler</code>
                                     </li>
                                 </ul><span class="paren">)</span>
                             </div>
@@ -1346,13 +952,12 @@ Surfaces also act as sources for DOM events such as <code>click</code>.</p>
                     
                     
                         <div class="meta">
-                                <p>Inherited from
-                                <a href="../classes/Core.SizeNode.html#method_set">
-                                    Core.SizeNode
-                                </a>
-                                but overwritten in
+                                    <p>
+                                    <!---->
+                                    <!--Defined in-->
+                                    <!---->
                             <!---->
-                            <!--<a href="../files/samsara_core_LayoutNode.js.html#l58"><code>samsara&#x2F;core&#x2F;LayoutNode.js:58</code></a>-->
+                            <!--<a href="../files/samsara_dom_Surface.js.html#l368"><code>samsara&#x2F;dom&#x2F;Surface.js:368</code></a>-->
                             <!---->
                             </p>
                     
@@ -1361,10 +966,7 @@ Surfaces also act as sources for DOM events such as <code>click</code>.</p>
                         </div>
                     
                         <div class="description">
-                            <p>Introduce new data streams to the layout node in {key : value} pairs.
-                    Here the <code>key</code> is one of "transform", "origin", "align" or "opacity".
-                    The <code>value</code> is either a stream, or a simple type like a <code>Number</code> or <code>Array</code>.
-                    Simple types will be wrapped in an <code>Observerable</code> to emit appropriate events.</p>
+                            <p>Adds a handler to the <code>type</code> channel which will be executed on <code>emit</code>.</p>
                     
                         </div>
                     
@@ -1373,12 +975,335 @@ Surfaces also act as sources for DOM events such as <code>click</code>.</p>
                     
                                 <ul class="params-list">
                                     <li class="param">
-                                            <code class="param-name">sources</code>
-                                            <span class="type"><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object" class="crosslink external" target="_blank">Object</a></span>
+                                            <code class="param-name">type</code>
+                                            <span class="type"><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String" class="crosslink external" target="_blank">String</a></span>
                     
                     
                                         <div class="param-description">
-                                            <p>Object of data sources</p>
+                                            <p>DOM event channel name, e.g., "click", "touchmove"</p>
+                    
+                                        </div>
+                    
+                                    </li>
+                                    <li class="param">
+                                            <code class="param-name">handler</code>
+                                            <span class="type"><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Function" class="crosslink external" target="_blank">Function</a></span>
+                    
+                    
+                                        <div class="param-description">
+                                            <p>Handler. It's only argument will be an emitted data payload.</p>
+                    
+                                        </div>
+                    
+                                    </li>
+                                </ul>
+                            </div>
+                    
+                    
+                    </div>
+                    <div id="method_once" class="method item">
+                        <h3 class="name"><code>once</code></h3>
+                    
+                            <div class="args">
+                                <span class="paren">(</span><ul class="args-list inline commas">
+                                    <li class="arg">
+                                            <code>type</code>
+                                    </li>
+                                    <li class="arg">
+                                            <code>handler</code>
+                                    </li>
+                                </ul><span class="paren">)</span>
+                            </div>
+                    
+                    
+                    
+                    
+                    
+                    
+                    
+                    
+                        <div class="meta">
+                                    <p>
+                                    <!---->
+                                    <!--Defined in-->
+                                    <!---->
+                            <!---->
+                            <!--<a href="../files/samsara_dom_Surface.js.html#l382"><code>samsara&#x2F;dom&#x2F;Surface.js:382</code></a>-->
+                            <!---->
+                            </p>
+                    
+                    
+                    
+                        </div>
+                    
+                        <div class="description">
+                            <p>Adds a handler to the <code>type</code> channel which will be executed on <code>emit</code> once and then removed.</p>
+                    
+                        </div>
+                    
+                            <div class="params">
+                                <h4>Parameters:</h4>
+                    
+                                <ul class="params-list">
+                                    <li class="param">
+                                            <code class="param-name">type</code>
+                                            <span class="type"><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String" class="crosslink external" target="_blank">String</a></span>
+                    
+                    
+                                        <div class="param-description">
+                                            <p>DOM event channel name, e.g., "click", "touchmove"</p>
+                    
+                                        </div>
+                    
+                                    </li>
+                                    <li class="param">
+                                            <code class="param-name">handler</code>
+                                            <span class="type"><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Function" class="crosslink external" target="_blank">Function</a></span>
+                    
+                    
+                                        <div class="param-description">
+                                            <p>Handler. It's only argument will be an emitted data payload.</p>
+                    
+                                        </div>
+                    
+                                    </li>
+                                </ul>
+                            </div>
+                    
+                    
+                    </div>
+                    <div id="method_querySelector" class="method item">
+                        <h3 class="name"><code>querySelector</code></h3>
+                    
+                            <span class="paren">()</span>
+                    
+                            <span class="returns-inline">
+                                <span class="type"><a href="https://developer.mozilla.org/en-US/docs/Web/API/Element" class="crosslink external" target="_blank">Element</a></span>
+                            </span>
+                    
+                    
+                    
+                    
+                    
+                    
+                    
+                        <div class="meta">
+                                    <p>
+                                    <!---->
+                                    <!--Defined in-->
+                                    <!---->
+                            <!---->
+                            <!--<a href="../files/samsara_dom_Surface.js.html#l322"><code>samsara&#x2F;dom&#x2F;Surface.js:322</code></a>-->
+                            <!---->
+                            </p>
+                    
+                    
+                    
+                        </div>
+                    
+                        <div class="description">
+                            <p>Apply the DOM's Element.querySelector to the Surface's current DOM target.
+                    Returns the first node matching the selector within the Surface's content.</p>
+                    
+                        </div>
+                    
+                    
+                            <div class="returns">
+                                <h4>Returns:</h4>
+                    
+                                <div class="returns-description">
+                                            <span class="type"><a href="https://developer.mozilla.org/en-US/docs/Web/API/Element" class="crosslink external" target="_blank">Element</a></span>:
+                                </div>
+                            </div>
+                    
+                    </div>
+                    <div id="method_querySelector" class="method item">
+                        <h3 class="name"><code>querySelector</code></h3>
+                    
+                            <span class="paren">()</span>
+                    
+                            <span class="returns-inline">
+                                <span class="type"><a href="https://developer.mozilla.org/en-US/docs/Web/API/NodeList" class="crosslink external" target="_blank">NodeList</a></span>
+                            </span>
+                    
+                    
+                    
+                    
+                    
+                    
+                    
+                        <div class="meta">
+                                    <p>
+                                    <!---->
+                                    <!--Defined in-->
+                                    <!---->
+                            <!---->
+                            <!--<a href="../files/samsara_dom_Surface.js.html#l334"><code>samsara&#x2F;dom&#x2F;Surface.js:334</code></a>-->
+                            <!---->
+                            </p>
+                    
+                    
+                    
+                        </div>
+                    
+                        <div class="description">
+                            <p>Apply the DOM's Element.querySelectorAll to the Surface's current DOM target.
+                    Returns a list of nodes matching the selector within the Surface's content.</p>
+                    
+                        </div>
+                    
+                    
+                            <div class="returns">
+                                <h4>Returns:</h4>
+                    
+                                <div class="returns-description">
+                                            <span class="type"><a href="https://developer.mozilla.org/en-US/docs/Web/API/NodeList" class="crosslink external" target="_blank">NodeList</a></span>:
+                                </div>
+                            </div>
+                    
+                    </div>
+                    <div id="method_recall" class="method item private">
+                        <h3 class="name"><code>recall</code></h3>
+                    
+                            <div class="args">
+                                <span class="paren">(</span><ul class="args-list inline commas">
+                                    <li class="arg">
+                                            <code>target</code>
+                                    </li>
+                                </ul><span class="paren">)</span>
+                            </div>
+                    
+                    
+                    
+                            <span class="flag private">private</span>
+                    
+                    
+                    
+                    
+                    
+                        <div class="meta">
+                                    <p>
+                                    <!---->
+                                    <!--Defined in-->
+                                    <!---->
+                            <!---->
+                            <!--<a href="../files/samsara_dom_Surface.js.html#l485"><code>samsara&#x2F;dom&#x2F;Surface.js:485</code></a>-->
+                            <!---->
+                            </p>
+                    
+                    
+                    
+                        </div>
+                    
+                        <div class="description">
+                            <p>Cache the content of the Surface in a document fragment for future deployment.</p>
+                    
+                        </div>
+                    
+                            <div class="params">
+                                <h4>Parameters:</h4>
+                    
+                                <ul class="params-list">
+                                    <li class="param">
+                                            <code class="param-name">target</code>
+                                            <span class="type"><a href="https://developer.mozilla.org/en-US/docs/Web/API/Node" class="crosslink external" target="_blank">Node</a></span>
+                    
+                    
+                                        <div class="param-description">
+                                            
+                                        </div>
+                    
+                                    </li>
+                                </ul>
+                            </div>
+                    
+                    
+                    </div>
+                    <div id="method_remove" class="method item">
+                        <h3 class="name"><code>remove</code></h3>
+                    
+                            <span class="paren">()</span>
+                    
+                    
+                    
+                    
+                    
+                    
+                    
+                    
+                        <div class="meta">
+                                    <p>
+                                    <!---->
+                                    <!--Defined in-->
+                                    <!---->
+                            <!---->
+                            <!--<a href="../files/samsara_dom_Surface.js.html#l444"><code>samsara&#x2F;dom&#x2F;Surface.js:444</code></a>-->
+                            <!---->
+                            </p>
+                    
+                    
+                    
+                        </div>
+                    
+                        <div class="description">
+                            <p>Clear the HTML contents of the Surface and remove it from the Render Tree.
+                    The DOM node the Surface occupied will be freed to a pool and can be used by another Surface.
+                    The Surface can be added to the render tree again and all its data (properties, event listeners, etc)
+                    will be restored.</p>
+                    
+                        </div>
+                    
+                    
+                    
+                    </div>
+                    <div id="method_removeClass" class="method item">
+                        <h3 class="name"><code>removeClass</code></h3>
+                    
+                            <div class="args">
+                                <span class="paren">(</span><ul class="args-list inline commas">
+                                    <li class="arg">
+                                            <code>className</code>
+                                    </li>
+                                </ul><span class="paren">)</span>
+                            </div>
+                    
+                    
+                    
+                    
+                    
+                    
+                    
+                    
+                        <div class="meta">
+                                    <p>
+                                    <!---->
+                                    <!--Defined in-->
+                                    <!---->
+                            <!---->
+                            <!--<a href="../files/samsara_dom_Surface.js.html#l269"><code>samsara&#x2F;dom&#x2F;Surface.js:269</code></a>-->
+                            <!---->
+                            </p>
+                    
+                    
+                    
+                        </div>
+                    
+                        <div class="description">
+                            <p>Remove CSS class from the list of classes on this Surface.</p>
+                    
+                        </div>
+                    
+                            <div class="params">
+                                <h4>Parameters:</h4>
+                    
+                                <ul class="params-list">
+                                    <li class="param">
+                                            <code class="param-name">className</code>
+                                            <span class="type"><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String" class="crosslink external" target="_blank">String</a></span>
+                    
+                    
+                                        <div class="param-description">
+                                            <p>Class name</p>
                     
                                         </div>
                     
@@ -1412,7 +1337,7 @@ Surfaces also act as sources for DOM events such as <code>click</code>.</p>
                                     <!--Defined in-->
                                     <!---->
                             <!---->
-                            <!--<a href="../files/samsara_dom_Surface.js.html#l514"><code>samsara&#x2F;dom&#x2F;Surface.js:514</code></a>-->
+                            <!--<a href="../files/samsara_dom_Surface.js.html#l544"><code>samsara&#x2F;dom&#x2F;Surface.js:544</code></a>-->
                             <!---->
                             </p>
                     
@@ -1463,7 +1388,6 @@ Surfaces also act as sources for DOM events such as <code>click</code>.</p>
                     
                     
                     
-                            <span class="flag chainable">chainable</span>
                     
                     
                         <div class="meta">
@@ -1472,7 +1396,7 @@ Surfaces also act as sources for DOM events such as <code>click</code>.</p>
                                     <!--Defined in-->
                                     <!---->
                             <!---->
-                            <!--<a href="../files/samsara_dom_Surface.js.html#l181"><code>samsara&#x2F;dom&#x2F;Surface.js:181</code></a>-->
+                            <!--<a href="../files/samsara_dom_Surface.js.html#l194"><code>samsara&#x2F;dom&#x2F;Surface.js:194</code></a>-->
                             <!---->
                             </p>
                     
@@ -1521,7 +1445,6 @@ Surfaces also act as sources for DOM events such as <code>click</code>.</p>
                     
                     
                     
-                            <span class="flag chainable">chainable</span>
                     
                     
                         <div class="meta">
@@ -1530,7 +1453,7 @@ Surfaces also act as sources for DOM events such as <code>click</code>.</p>
                                     <!--Defined in-->
                                     <!---->
                             <!---->
-                            <!--<a href="../files/samsara_dom_Surface.js.html#l278"><code>samsara&#x2F;dom&#x2F;Surface.js:278</code></a>-->
+                            <!--<a href="../files/samsara_dom_Surface.js.html#l300"><code>samsara&#x2F;dom&#x2F;Surface.js:300</code></a>-->
                             <!---->
                             </p>
                     
@@ -1579,7 +1502,6 @@ Surfaces also act as sources for DOM events such as <code>click</code>.</p>
                     
                     
                     
-                            <span class="flag chainable">chainable</span>
                     
                     
                         <div class="meta">
@@ -1588,7 +1510,7 @@ Surfaces also act as sources for DOM events such as <code>click</code>.</p>
                                     <!--Defined in-->
                                     <!---->
                             <!---->
-                            <!--<a href="../files/samsara_dom_Surface.js.html#l307"><code>samsara&#x2F;dom&#x2F;Surface.js:307</code></a>-->
+                            <!--<a href="../files/samsara_dom_Surface.js.html#l166"><code>samsara&#x2F;dom&#x2F;Surface.js:166</code></a>-->
                             <!---->
                             </p>
                     
@@ -1645,7 +1567,7 @@ Surfaces also act as sources for DOM events such as <code>click</code>.</p>
                                     <!--Defined in-->
                                     <!---->
                             <!---->
-                            <!--<a href="../files/samsara_dom_Surface.js.html#l503"><code>samsara&#x2F;dom&#x2F;Surface.js:503</code></a>-->
+                            <!--<a href="../files/samsara_dom_Surface.js.html#l534"><code>samsara&#x2F;dom&#x2F;Surface.js:534</code></a>-->
                             <!---->
                             </p>
                     
@@ -1702,7 +1624,7 @@ Surfaces also act as sources for DOM events such as <code>click</code>.</p>
                                     <!--Defined in-->
                                     <!---->
                             <!---->
-                            <!--<a href="../files/samsara_dom_Surface.js.html#l539"><code>samsara&#x2F;dom&#x2F;Surface.js:539</code></a>-->
+                            <!--<a href="../files/samsara_dom_Surface.js.html#l567"><code>samsara&#x2F;dom&#x2F;Surface.js:567</code></a>-->
                             <!---->
                             </p>
                     
@@ -1759,7 +1681,7 @@ Surfaces also act as sources for DOM events such as <code>click</code>.</p>
                                     <!--Defined in-->
                                     <!---->
                             <!---->
-                            <!--<a href="../files/samsara_dom_Surface.js.html#l333"><code>samsara&#x2F;dom&#x2F;Surface.js:333</code></a>-->
+                            <!--<a href="../files/samsara_dom_Surface.js.html#l346"><code>samsara&#x2F;dom&#x2F;Surface.js:346</code></a>-->
                             <!---->
                             </p>
                     
@@ -1816,7 +1738,7 @@ Surfaces also act as sources for DOM events such as <code>click</code>.</p>
                                     <!--Defined in-->
                                     <!---->
                             <!---->
-                            <!--<a href="../files/samsara_dom_Surface.js.html#l527"><code>samsara&#x2F;dom&#x2F;Surface.js:527</code></a>-->
+                            <!--<a href="../files/samsara_dom_Surface.js.html#l556"><code>samsara&#x2F;dom&#x2F;Surface.js:556</code></a>-->
                             <!---->
                             </p>
                     
@@ -1865,7 +1787,6 @@ Surfaces also act as sources for DOM events such as <code>click</code>.</p>
                     
                     
                     
-                            <span class="flag chainable">chainable</span>
                     
                     
                         <div class="meta">
@@ -1874,7 +1795,7 @@ Surfaces also act as sources for DOM events such as <code>click</code>.</p>
                                     <!--Defined in-->
                                     <!---->
                             <!---->
-                            <!--<a href="../files/samsara_dom_Surface.js.html#l208"><code>samsara&#x2F;dom&#x2F;Surface.js:208</code></a>-->
+                            <!--<a href="../files/samsara_dom_Surface.js.html#l223"><code>samsara&#x2F;dom&#x2F;Surface.js:223</code></a>-->
                             <!---->
                             </p>
                     
@@ -1932,7 +1853,7 @@ Surfaces also act as sources for DOM events such as <code>click</code>.</p>
                                     <!--Defined in-->
                                     <!---->
                             <!---->
-                            <!--<a href="../files/samsara_dom_Surface.js.html#l492"><code>samsara&#x2F;dom&#x2F;Surface.js:492</code></a>-->
+                            <!--<a href="../files/samsara_dom_Surface.js.html#l524"><code>samsara&#x2F;dom&#x2F;Surface.js:524</code></a>-->
                             <!---->
                             </p>
                     
@@ -1989,7 +1910,7 @@ Surfaces also act as sources for DOM events such as <code>click</code>.</p>
                                     <!--Defined in-->
                                     <!---->
                             <!---->
-                            <!--<a href="../files/samsara_dom_Surface.js.html#l480"><code>samsara&#x2F;dom&#x2F;Surface.js:480</code></a>-->
+                            <!--<a href="../files/samsara_dom_Surface.js.html#l513"><code>samsara&#x2F;dom&#x2F;Surface.js:513</code></a>-->
                             <!---->
                             </p>
                     
@@ -2047,7 +1968,7 @@ Surfaces also act as sources for DOM events such as <code>click</code>.</p>
                                     <!--Defined in-->
                                     <!---->
                             <!---->
-                            <!--<a href="../files/samsara_dom_Surface.js.html#l355"><code>samsara&#x2F;dom&#x2F;Surface.js:355</code></a>-->
+                            <!--<a href="../files/samsara_dom_Surface.js.html#l410"><code>samsara&#x2F;dom&#x2F;Surface.js:410</code></a>-->
                             <!---->
                             </p>
                     
@@ -2069,7 +1990,7 @@ Surfaces also act as sources for DOM events such as <code>click</code>.</p>
                                 <ul class="params-list">
                                     <li class="param">
                                             <code class="param-name">allocator</code>
-                                            <span class="type">ElementAllocator</span>
+                                            <span class="type">DOMAllocator</span>
                     
                     
                                         <div class="param-description">
@@ -2107,7 +2028,7 @@ Surfaces also act as sources for DOM events such as <code>click</code>.</p>
                                     <!--Defined in-->
                                     <!---->
                             <!---->
-                            <!--<a href="../files/samsara_dom_Surface.js.html#l265"><code>samsara&#x2F;dom&#x2F;Surface.js:265</code></a>-->
+                            <!--<a href="../files/samsara_dom_Surface.js.html#l287"><code>samsara&#x2F;dom&#x2F;Surface.js:287</code></a>-->
                             <!---->
                             </p>
                     

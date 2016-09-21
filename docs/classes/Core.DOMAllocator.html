@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="utf-8">
-    <title>Core.ElementOutput - SamsaraJS</title>
+    <title>Core.DOMAllocator - SamsaraJS</title>
     <link rel="stylesheet" href="">
     <link rel="stylesheet" href="../assets/vendor/prettify/prettify-min.css">
     <link rel="stylesheet" href="../assets/css/main.css" id="site_styles">
@@ -23,12 +23,12 @@
             <li class="divider-vertical"></li>
             <li>
                 <p class="navbar-text">
-                    API Docs for Version: <b>0.2.0</b>
+                    API Docs for Version: <b>0.2.2</b>
                 </p>
             </li>
         </div>
         <form class="navbar-form pull-right" style="line-height: 40px; height: 40px;">
-            <input style="margin-top: 0;" type="text" class="search-query" placeholder="Search for classes..." data-obj='["classes/Core.Controller", "classes/Core.ElementAllocator", "classes/Core.ElementOutput", "classes/Core.Engine", "classes/Core.LayoutNode", "classes/Core.OptionsManager", "classes/Core.SizeNode", "classes/Core.SUE", "classes/Core.Timer", "classes/Core.Transform", "classes/Core.Transitionable", "classes/Core.View", "classes/DOM.ContainerSurface", "classes/DOM.Context", "classes/DOM.Surface", "classes/Events.EventEmitter", "classes/Events.EventFilter", "classes/Events.EventHandler", "classes/Events.EventMapper", "classes/Events.EventSplitter", "classes/Inputs.GenericInput", "classes/Inputs.MouseInput", "classes/Inputs.PinchInput", "classes/Inputs.RotateInput", "classes/Inputs.ScaleInput", "classes/Inputs.ScrollInput", "classes/Inputs.TouchInput", "classes/Inputs.TouchTracker", "classes/Inputs.TwoFingerInput", "classes/Layouts.DrawerLayout", "classes/Layouts.FlexibleLayout", "classes/Layouts.GridLayout", "classes/Layouts.SequentialLayout", "classes/RenderTreeNode", "classes/RootNode", "classes/Streams.Accumulator", "classes/Streams.Differential", "classes/Streams.Observable", "classes/Streams.ResizeStream", "classes/Streams.SimpleStream", "classes/Streams.Stream", "classes/Transitions.Inertia", "classes/Transitions.Spring", "classes/Transitions.Tween"]'>
+            <input style="margin-top: 0;" type="text" class="search-query" placeholder="Search for classes..." data-obj='["classes/Core.Controller", "classes/Core.DOMAllocator", "classes/Core.DOMOutput", "classes/Core.Engine", "classes/Core.LayoutNode", "classes/Core.Node", "classes/Core.OptionsManager", "classes/Core.RenderTreeNode", "classes/Core.RootNode", "classes/Core.SizeNode", "classes/Core.Timer", "classes/Core.Transform", "classes/Core.Transitionable", "classes/Core.View", "classes/DOM.ContainerSurface", "classes/DOM.Context", "classes/DOM.Surface", "classes/Events.EventEmitter", "classes/Events.EventFilter", "classes/Events.EventHandler", "classes/Events.EventMapper", "classes/Events.EventSplitter", "classes/Inputs.GenericInput", "classes/Inputs.MouseInput", "classes/Inputs.PinchInput", "classes/Inputs.RotateInput", "classes/Inputs.ScaleInput", "classes/Inputs.ScrollInput", "classes/Inputs.TouchInput", "classes/Inputs.TouchTracker", "classes/Inputs.TwoFingerInput", "classes/Layouts.BidirectionalList", "classes/Layouts.DrawerLayout", "classes/Layouts.FlexLayout", "classes/Layouts.GridLayout", "classes/Layouts.HeaderFooterLayout", "classes/Layouts.SequentialLayout", "classes/Streams.Accumulator", "classes/Streams.Differential", "classes/Streams.Observable", "classes/Streams.SimpleStream", "classes/Streams.Stream", "classes/Transitions.Inertia", "classes/Transitions.Spring", "classes/Transitions.Tween", "classes/UI.Fingers", "classes/UI.Slider"]'>
         </form>
     </div>
 </div>
@@ -69,13 +69,17 @@
 	                            <li><a href="../classes/Inputs.ScaleInput.html">Inputs.ScaleInput</a></li>
 	                            <li><a href="../classes/Inputs.ScrollInput.html">Inputs.ScrollInput</a></li>
 	                            <li><a href="../classes/Inputs.TouchInput.html">Inputs.TouchInput</a></li>
+	                            <li><a href="../classes/Layouts.BidirectionalList.html">Layouts.BidirectionalList</a></li>
 	                            <li><a href="../classes/Layouts.DrawerLayout.html">Layouts.DrawerLayout</a></li>
-	                            <li><a href="../classes/Layouts.FlexibleLayout.html">Layouts.FlexibleLayout</a></li>
+	                            <li><a href="../classes/Layouts.FlexLayout.html">Layouts.FlexLayout</a></li>
 	                            <li><a href="../classes/Layouts.GridLayout.html">Layouts.GridLayout</a></li>
+	                            <li><a href="../classes/Layouts.HeaderFooterLayout.html">Layouts.HeaderFooterLayout</a></li>
 	                            <li><a href="../classes/Layouts.SequentialLayout.html">Layouts.SequentialLayout</a></li>
 	                            <li><a href="../classes/Streams.Accumulator.html">Streams.Accumulator</a></li>
 	                            <li><a href="../classes/Streams.Differential.html">Streams.Differential</a></li>
 	                            <li><a href="../classes/Streams.Stream.html">Streams.Stream</a></li>
+	                            <li><a href="../classes/UI.Fingers.html">UI.Fingers</a></li>
+	                            <li><a href="../classes/UI.Slider.html">UI.Slider</a></li>
 	                    </ul>
 	                </div>
 	    
@@ -116,22 +120,15 @@
                 <div id="docs-main">
                     <div class="content">
 <div class="page-header">
-    <h1>Core.ElementOutput <small>Class</small></h1>
+    <h1>Core.DOMAllocator <small>Class</small></h1>
 </div>
 
 <div class="well well-small">
-        <div class="uses">
-            Uses
-            <ul class="inline commas">
-                    <li><a href="Core.LayoutNode.html">Core.LayoutNode</a></li>
-                    <li><a href="Core.SizeNode.html">Core.SizeNode</a></li>
-            </ul>
-        </div>
 
 
     <!---->
         <div class="foundat">
-            Defined in: <a href="../files/samsara_core_ElementOutput.js.html#l20"><code>samsara&#x2F;core&#x2F;ElementOutput.js:20</code></a>
+            Defined in: <a href="../files/samsara_dom__DOMAllocator.js.html#l5"><code>samsara&#x2F;dom&#x2F;_DOMAllocator.js:5</code></a>
         </div>
     <!---->
 
@@ -140,21 +137,23 @@
 
 
 <div class="well well-small">
-    <p>Responsible for committing CSS3 properties to the DOM and providing DOM event hooks
-from a provided DOM element. Where Surface's API handles inputs from the developer
-from within Samsara, ElementOutput handles the DOM interaction layer.</p>
+    <p>Handles creating, allocating and removing DOM elements within a provided DOM element.
+Manages a pool of nodes based on DOM tagName for DOM node reuse.
+When a Surface is deallocated, its element is cleared and put back in the pool.
+When a Surface is allocated, an existing cleared element of the same tagName is
+looked for. If it is not found, a new DOM element is created.</p>
 
 </div>
 
     <div class="constructor">
         <h2>Constructor</h2>
-        <div id="method_Core.ElementOutput" class="method item private">
-            <h3 class="name"><code>Core.ElementOutput</code></h3>
+        <div id="method_Core.DOMAllocator" class="method item private">
+            <h3 class="name"><code>Core.DOMAllocator</code></h3>
         
                 <div class="args">
                     <span class="paren">(</span><ul class="args-list inline commas">
                         <li class="arg">
-                                <code>element</code>
+                                <code>container</code>
                         </li>
                     </ul><span class="paren">)</span>
                 </div>
@@ -173,7 +172,7 @@ from within Samsara, ElementOutput handles the DOM interaction layer.</p>
                         <!--Defined in-->
                         <!---->
                 <!---->
-                <!--<a href="../files/samsara_core_ElementOutput.js.html#l20"><code>samsara&#x2F;core&#x2F;ElementOutput.js:20</code></a>-->
+                <!--<a href="../files/samsara_dom__DOMAllocator.js.html#l5"><code>samsara&#x2F;dom&#x2F;_DOMAllocator.js:5</code></a>-->
                 <!---->
                 </p>
         
@@ -190,12 +189,12 @@ from within Samsara, ElementOutput handles the DOM interaction layer.</p>
         
                     <ul class="params-list">
                         <li class="param">
-                                <code class="param-name">element</code>
+                                <code class="param-name">container</code>
                                 <span class="type"><a href="https://developer.mozilla.org/en-US/docs/Web/API/Node" class="crosslink external" target="_blank">Node</a></span>
         
         
                             <div class="param-description">
-                                <p>document parent of this container</p>
+                                <p>DOM element</p>
         
                             </div>
         
@@ -222,27 +221,19 @@ from within Samsara, ElementOutput handles the DOM interaction layer.</p>
                     <h3>Methods</h3>
 
                     <ul class="index-list methods">
-                            <li class="index-item method private">
-                                <a href="#" data-tabid="#methods" data-anchor="#method_attach" data-tablink="attach">attach</a>
-
-                            </li>
-                            <li class="index-item method private">
-                                <a href="#" data-tabid="#methods" data-anchor="#method_detach" data-tablink="detach">detach</a>
+                            <li class="index-item method">
+                                <a href="#" data-tabid="#methods" data-anchor="#method_allocate" data-tablink="allocate">allocate</a>
 
                             </li>
                             <li class="index-item method">
-                                <a href="#" data-tabid="#methods" data-anchor="#method_emit" data-tablink="emit">emit</a>
+                                <a href="#" data-tabid="#methods" data-anchor="#method_deallocate" data-tablink="deallocate">deallocate</a>
 
                             </li>
                             <li class="index-item method">
-                                <a href="#" data-tabid="#methods" data-anchor="#method_on" data-tablink="on">on</a>
+                                <a href="#" data-tabid="#methods" data-anchor="#method_migrate" data-tablink="migrate">migrate</a>
 
                             </li>
                             <li class="index-item method">
-                                <a href="#" data-tabid="#methods" data-anchor="#method_removeListener" data-tablink="removeListener">removeListener</a>
-
-                            </li>
-                            <li class="index-item method inherited inherited">
                                 <a href="#" data-tabid="#methods" data-anchor="#method_set" data-tablink="set">set</a>
 
                             </li>
@@ -256,20 +247,22 @@ from within Samsara, ElementOutput handles the DOM interaction layer.</p>
             <div id="methods" class="tab-pane">
                 <h2 class="off-left">Methods</h2>
 
-                    <div id="method_attach" class="method item private">
-                        <h3 class="name"><code>attach</code></h3>
+                    <div id="method_allocate" class="method item">
+                        <h3 class="name"><code>allocate</code></h3>
                     
                             <div class="args">
                                 <span class="paren">(</span><ul class="args-list inline commas">
                                     <li class="arg">
-                                            <code>target</code>
+                                            <code>type</code>
                                     </li>
                                 </ul><span class="paren">)</span>
                             </div>
                     
+                            <span class="returns-inline">
+                                <span class="type"><a href="https://developer.mozilla.org/en-US/docs/Web/API/Node" class="crosslink external" target="_blank">Node</a></span>
+                            </span>
                     
                     
-                            <span class="flag private">private</span>
                     
                     
                     
@@ -281,7 +274,7 @@ from within Samsara, ElementOutput handles the DOM interaction layer.</p>
                                     <!--Defined in-->
                                     <!---->
                             <!---->
-                            <!--<a href="../files/samsara_core_ElementOutput.js.html#l217"><code>samsara&#x2F;core&#x2F;ElementOutput.js:217</code></a>-->
+                            <!--<a href="../files/samsara_dom__DOMAllocator.js.html#l53"><code>samsara&#x2F;dom&#x2F;_DOMAllocator.js:53</code></a>-->
                             <!---->
                             </p>
                     
@@ -290,7 +283,7 @@ from within Samsara, ElementOutput handles the DOM interaction layer.</p>
                         </div>
                     
                         <div class="description">
-                            <p>Assigns the DOM element for committing and to and attaches event listeners.</p>
+                            <p>Allocate an element of specified type from the pool.</p>
                     
                         </div>
                     
@@ -299,12 +292,76 @@ from within Samsara, ElementOutput handles the DOM interaction layer.</p>
                     
                                 <ul class="params-list">
                                     <li class="param">
-                                            <code class="param-name">target</code>
+                                            <code class="param-name">type</code>
+                                            <span class="type"><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String" class="crosslink external" target="_blank">String</a></span>
+                    
+                    
+                                        <div class="param-description">
+                                            <p>DOM tagName, e.g., "div"</p>
+                    
+                                        </div>
+                    
+                                    </li>
+                                </ul>
+                            </div>
+                    
+                            <div class="returns">
+                                <h4>Returns:</h4>
+                    
+                                <div class="returns-description">
+                                            <span class="type"><a href="https://developer.mozilla.org/en-US/docs/Web/API/Node" class="crosslink external" target="_blank">Node</a></span>:
+                                </div>
+                            </div>
+                    
+                    </div>
+                    <div id="method_deallocate" class="method item">
+                        <h3 class="name"><code>deallocate</code></h3>
+                    
+                            <div class="args">
+                                <span class="paren">(</span><ul class="args-list inline commas">
+                                    <li class="arg">
+                                            <code>element</code>
+                                    </li>
+                                </ul><span class="paren">)</span>
+                            </div>
+                    
+                    
+                    
+                    
+                    
+                    
+                    
+                    
+                        <div class="meta">
+                                    <p>
+                                    <!---->
+                                    <!--Defined in-->
+                                    <!---->
+                            <!---->
+                            <!--<a href="../files/samsara_dom__DOMAllocator.js.html#l73"><code>samsara&#x2F;dom&#x2F;_DOMAllocator.js:73</code></a>-->
+                            <!---->
+                            </p>
+                    
+                    
+                    
+                        </div>
+                    
+                        <div class="description">
+                            <p>De-allocate an element of specified type to the pool for recycling.</p>
+                    
+                        </div>
+                    
+                            <div class="params">
+                                <h4>Parameters:</h4>
+                    
+                                <ul class="params-list">
+                                    <li class="param">
+                                            <code class="param-name">element</code>
                                             <span class="type"><a href="https://developer.mozilla.org/en-US/docs/Web/API/Node" class="crosslink external" target="_blank">Node</a></span>
                     
                     
                                         <div class="param-description">
-                                            <p>document parent of this container</p>
+                                            <p>DOM element</p>
                     
                                         </div>
                     
@@ -314,51 +371,13 @@ from within Samsara, ElementOutput handles the DOM interaction layer.</p>
                     
                     
                     </div>
-                    <div id="method_detach" class="method item private">
-                        <h3 class="name"><code>detach</code></h3>
-                    
-                            <span class="paren">()</span>
-                    
-                    
-                    
-                            <span class="flag private">private</span>
-                    
-                    
-                    
-                    
-                    
-                        <div class="meta">
-                                    <p>
-                                    <!---->
-                                    <!--Defined in-->
-                                    <!---->
-                            <!---->
-                            <!--<a href="../files/samsara_core_ElementOutput.js.html#l229"><code>samsara&#x2F;core&#x2F;ElementOutput.js:229</code></a>-->
-                            <!---->
-                            </p>
-                    
-                    
-                    
-                        </div>
-                    
-                        <div class="description">
-                            <p>Removes the associated DOM element in memory and detached event listeners.</p>
-                    
-                        </div>
-                    
-                    
-                    
-                    </div>
-                    <div id="method_emit" class="method item">
-                        <h3 class="name"><code>emit</code></h3>
+                    <div id="method_migrate" class="method item">
+                        <h3 class="name"><code>migrate</code></h3>
                     
                             <div class="args">
                                 <span class="paren">(</span><ul class="args-list inline commas">
                                     <li class="arg">
-                                            <code>type</code>
-                                    </li>
-                                    <li class="arg">
-                                            <code class="optional">[payload]</code>
+                                            <code>container</code>
                                     </li>
                                 </ul><span class="paren">)</span>
                             </div>
@@ -376,7 +395,7 @@ from within Samsara, ElementOutput handles the DOM interaction layer.</p>
                                     <!--Defined in-->
                                     <!---->
                             <!---->
-                            <!--<a href="../files/samsara_core_ElementOutput.js.html#l205"><code>samsara&#x2F;core&#x2F;ElementOutput.js:205</code></a>-->
+                            <!--<a href="../files/samsara_dom__DOMAllocator.js.html#l34"><code>samsara&#x2F;dom&#x2F;_DOMAllocator.js:34</code></a>-->
                             <!---->
                             </p>
                     
@@ -385,8 +404,7 @@ from within Samsara, ElementOutput handles the DOM interaction layer.</p>
                         </div>
                     
                         <div class="description">
-                            <p>Emit an event with optional data payload. This will execute all listening
-                    to the channel name with the payload as only argument.</p>
+                            <p>Move the DOM elements from their original container to a new one.</p>
                     
                         </div>
                     
@@ -395,24 +413,12 @@ from within Samsara, ElementOutput handles the DOM interaction layer.</p>
                     
                                 <ul class="params-list">
                                     <li class="param">
-                                            <code class="param-name">type</code>
-                                            <span class="type"><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String" class="crosslink external" target="_blank">String</a></span>
+                                            <code class="param-name">container</code>
+                                            <span class="type"><a href="https://developer.mozilla.org/en-US/docs/Web/API/Node" class="crosslink external" target="_blank">Node</a></span>
                     
                     
                                         <div class="param-description">
-                                            <p>Event channel name</p>
-                    
-                                        </div>
-                    
-                                    </li>
-                                    <li class="param">
-                                            <code class="param-name optional">[payload]</code>
-                                            <span class="type"><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object" class="crosslink external" target="_blank">Object</a></span>
-                                            <span class="flag optional" title="This parameter is optional.">optional</span>
-                    
-                    
-                                        <div class="param-description">
-                                            <p>User defined data payload</p>
+                                            <p>DOM element</p>
                     
                                         </div>
                     
@@ -422,156 +428,13 @@ from within Samsara, ElementOutput handles the DOM interaction layer.</p>
                     
                     
                     </div>
-                    <div id="method_on" class="method item">
-                        <h3 class="name"><code>on</code></h3>
-                    
-                            <div class="args">
-                                <span class="paren">(</span><ul class="args-list inline commas">
-                                    <li class="arg">
-                                            <code>type</code>
-                                    </li>
-                                    <li class="arg">
-                                            <code>handler</code>
-                                    </li>
-                                </ul><span class="paren">)</span>
-                            </div>
-                    
-                    
-                    
-                    
-                    
-                    
-                    
-                    
-                        <div class="meta">
-                                    <p>
-                                    <!---->
-                                    <!--Defined in-->
-                                    <!---->
-                            <!---->
-                            <!--<a href="../files/samsara_core_ElementOutput.js.html#l179"><code>samsara&#x2F;core&#x2F;ElementOutput.js:179</code></a>-->
-                            <!---->
-                            </p>
-                    
-                    
-                    
-                        </div>
-                    
-                        <div class="description">
-                            <p>Adds a handler to the <code>type</code> channel which will be executed on <code>emit</code>.</p>
-                    
-                        </div>
-                    
-                            <div class="params">
-                                <h4>Parameters:</h4>
-                    
-                                <ul class="params-list">
-                                    <li class="param">
-                                            <code class="param-name">type</code>
-                                            <span class="type"><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String" class="crosslink external" target="_blank">String</a></span>
-                    
-                    
-                                        <div class="param-description">
-                                            <p>DOM event channel name, e.g., "click", "touchmove"</p>
-                    
-                                        </div>
-                    
-                                    </li>
-                                    <li class="param">
-                                            <code class="param-name">handler</code>
-                                            <span class="type"><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Function" class="crosslink external" target="_blank">Function</a></span>
-                    
-                    
-                                        <div class="param-description">
-                                            <p>Handler. It's only argument will be an emitted data payload.</p>
-                    
-                                        </div>
-                    
-                                    </li>
-                                </ul>
-                            </div>
-                    
-                    
-                    </div>
-                    <div id="method_removeListener" class="method item">
-                        <h3 class="name"><code>removeListener</code></h3>
-                    
-                            <div class="args">
-                                <span class="paren">(</span><ul class="args-list inline commas">
-                                    <li class="arg">
-                                            <code>type</code>
-                                    </li>
-                                    <li class="arg">
-                                            <code>handler</code>
-                                    </li>
-                                </ul><span class="paren">)</span>
-                            </div>
-                    
-                    
-                    
-                    
-                    
-                    
-                    
-                    
-                        <div class="meta">
-                                    <p>
-                                    <!---->
-                                    <!--Defined in-->
-                                    <!---->
-                            <!---->
-                            <!--<a href="../files/samsara_core_ElementOutput.js.html#l193"><code>samsara&#x2F;core&#x2F;ElementOutput.js:193</code></a>-->
-                            <!---->
-                            </p>
-                    
-                    
-                    
-                        </div>
-                    
-                        <div class="description">
-                            <p>Removes a previously added handler to the <code>type</code> channel.
-                    Undoes the work of <code>on</code>.</p>
-                    
-                        </div>
-                    
-                            <div class="params">
-                                <h4>Parameters:</h4>
-                    
-                                <ul class="params-list">
-                                    <li class="param">
-                                            <code class="param-name">type</code>
-                                            <span class="type"><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String" class="crosslink external" target="_blank">String</a></span>
-                    
-                    
-                                        <div class="param-description">
-                                            <p>DOM event channel name e.g., "click", "touchmove"</p>
-                    
-                                        </div>
-                    
-                                    </li>
-                                    <li class="param">
-                                            <code class="param-name">handler</code>
-                                            <span class="type"><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Function" class="crosslink external" target="_blank">Function</a></span>
-                    
-                    
-                                        <div class="param-description">
-                                            <p>Handler</p>
-                    
-                                        </div>
-                    
-                                    </li>
-                                </ul>
-                            </div>
-                    
-                    
-                    </div>
-                    <div id="method_set" class="method item inherited">
+                    <div id="method_set" class="method item">
                         <h3 class="name"><code>set</code></h3>
                     
                             <div class="args">
                                 <span class="paren">(</span><ul class="args-list inline commas">
                                     <li class="arg">
-                                            <code>sources</code>
+                                            <code>container</code>
                                     </li>
                                 </ul><span class="paren">)</span>
                             </div>
@@ -584,13 +447,12 @@ from within Samsara, ElementOutput handles the DOM interaction layer.</p>
                     
                     
                         <div class="meta">
-                                <p>Inherited from
-                                <a href="../classes/Core.SizeNode.html#method_set">
-                                    Core.SizeNode
-                                </a>
-                                but overwritten in
+                                    <p>
+                                    <!---->
+                                    <!--Defined in-->
+                                    <!---->
                             <!---->
-                            <!--<a href="../files/samsara_core_LayoutNode.js.html#l58"><code>samsara&#x2F;core&#x2F;LayoutNode.js:58</code></a>-->
+                            <!--<a href="../files/samsara_dom__DOMAllocator.js.html#l23"><code>samsara&#x2F;dom&#x2F;_DOMAllocator.js:23</code></a>-->
                             <!---->
                             </p>
                     
@@ -599,10 +461,8 @@ from within Samsara, ElementOutput handles the DOM interaction layer.</p>
                         </div>
                     
                         <div class="description">
-                            Introduce new data streams to the layout node in {key : value} pairs.
-                     Here the <code>key</code> is one of "transform", "origin", "align" or "opacity".
-                     The <code>value</code> is either a stream, or a simple type like a <code>Number</code> or <code>Array</code>.
-                     Simple types will be wrapped in an <code>Observerable</code> to emit appropriate events.
+                            <p>Set containing element to insert allocated content into</p>
+                    
                         </div>
                     
                             <div class="params">
@@ -610,12 +470,13 @@ from within Samsara, ElementOutput handles the DOM interaction layer.</p>
                     
                                 <ul class="params-list">
                                     <li class="param">
-                                            <code class="param-name">sources</code>
-                                            <span class="type"><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object" class="crosslink external" target="_blank">Object</a></span>
+                                            <code class="param-name">container</code>
+                                            <span class="type"><a href="https://developer.mozilla.org/en-US/docs/Web/API/Node" class="crosslink external" target="_blank">Node</a></span>
                     
                     
                                         <div class="param-description">
-                                            Object of data sources
+                                            <p>DOM element</p>
+                    
                                         </div>
                     
                                     </li>

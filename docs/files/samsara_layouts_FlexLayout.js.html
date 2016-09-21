@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="utf-8">
-    <title>samsara/layouts/SequentialLayout.js - SamsaraJS</title>
+    <title>samsara/layouts/FlexLayout.js - SamsaraJS</title>
     <link rel="stylesheet" href="">
     <link rel="stylesheet" href="../assets/vendor/prettify/prettify-min.css">
     <link rel="stylesheet" href="../assets/css/main.css" id="site_styles">
@@ -120,22 +120,24 @@
                 <div id="docs-main">
                     <div class="content">
 <div class="page-header">
-    <h1>samsara/layouts/SequentialLayout.js <small>File</small></h1>
+    <h1>samsara/layouts/FlexLayout.js <small>File</small></h1>
 </div>
 
 <div class="file">
     <pre class="prettyprint linenums">
 /* Copyright © 2015-2016 David Valdman */
 
-define(function(require, exports, module) {
+define(function(require, exports, module){
     var Transform = require(&#x27;../core/Transform&#x27;);
     var View = require(&#x27;../core/View&#x27;);
-    var ReduceStream = require(&#x27;../streams/ReduceStream&#x27;);
     var Stream = require(&#x27;../streams/Stream&#x27;);
+    var ReduceStream = require(&#x27;../streams/ReduceStream&#x27;);
+    var Accumulator = require(&#x27;../streams/Accumulator&#x27;);
+    var Differential = require(&#x27;../streams/Differential&#x27;);
 
     var CONSTANTS = {
         DIRECTION : {
-            X : 0, 
+            X : 0,
             Y : 1
         }
     };
@@ -148,78 +150,78 @@ define(function(require, exports, module) {
     }
 
     /**
-     * A layout which arranges items in series based on their size.
-     *  Items can be arranged vertically or horizontally.
+     * A layout which arranges items vertically or horizontally within a containing size.
+     *  Items with a definite size in the specified direction keep their size, where
+     *  items with an &#x60;undefined&#x60; size in the specified direction have a flexible size.
+     *  Flexible sized items split up the left over size relative to their flex value.
      *
-     * @class SequentialLayout
+     * @class FlexLayout
      * @constructor
      * @namespace Layouts
      * @extends Core.View
      * @param [options] {Object}                        Options
      * @param [options.direction]{Number}               Direction to lay out items
-     * @param [options.spacing] {Transitionable|Number} Gutter spacing between items
+     * @param [options.spacing]{Number}                 Spacing between items
      */
-    var SequentialLayout = View.extend({
+    var FlexLayout = View.extend({
         defaults : {
             direction : CONSTANTS.DIRECTION.X,
-            spacing : 0,
-            offset : 0
-        }, 
-        initialize : function initialize(options) {
+            spacing : 0
+        },
+        initialize : function initialize(options){
             // Store nodes and flex values
             this.nodes = [];
+            this.flexs = [];
 
-            this.stream = new ReduceStream(function(prev, size, spacing){
+            // Displacement for each item
+            this.lengthStream = new ReduceStream(function(prev, size){
                 if (!size) return false;
-                return prev + size[options.direction] + spacing;
-            }, undefined, {sources : [options.spacing], offset : options.offset});
+                return prev + size[options.direction] + options.spacing;
+            });
 
+            // Amount of length used by fixed sized items
+            this.usedLength = new ReduceStream(function(prev, size){
+                if (!size) return false;
+                return prev + size[options.direction];
+            });
+
+            // Amount of length left over for flex items
+            this.availableLength = Stream.lift(function(totalSize, usedLength){
+                if (!totalSize) return false;
+                return totalSize[options.direction] - usedLength;
+            }, [this.size, this.usedLength.headOutput]);
+
+            // Total amount of flex
+            this.totalFlex = new Accumulator(0);
+
+            // Map to convert displacement to transform
             this.setLengthMap(DEFAULT_LENGTH_MAP);
-
-            var length = Stream.lift(function(length, spacing){
-                return Math.max(length - spacing, 0);
-            }, [this.stream.headOutput, options.spacing]);
-
-            this.output.subscribe(length);
-
-            // SequentialLayout derives its size from its content
-            var size = [];
-            this.size = Stream.lift(function(parentSize, length){
-                if (!parentSize || length === undefined) return;
-                size[options.direction] = length;
-                size[1 - options.direction] = parentSize[1 - options.direction];
-                return size;
-            }, [this._size, length]);
         },
         /*
-        * Set a custom map from length displacements to transforms.
-        * &#x60;this&#x60; will automatically be bound to the instance.
-        *
-        * @method setLengthMap
-        * @param map [Function] Map &#x60;(length) -&gt; transform&#x60;
-        */
-        setLengthMap : function(map, sources){
+         * Set a custom map from length displacements to transforms.
+         * &#x60;this&#x60; will automatically be bound to the instance.
+         *
+         * @method setLengthMap
+         * @param map {Function} Map &#x60;(length) -&gt; transform&#x60;
+         */
+        setLengthMap : function(map){
             this.transformMap = map.bind(this);
-            if (sources) this.setSources(sources);
-        },
-        setSources : function(sources){
-            this.sources = sources;
         },
         /*
          * Add a renderable to the end of the layout
          *
          * @method push
-         * @param map [Function] Map &#x60;(length) -&gt; transform&#x60;
+         * @param item {Surface|View}           Renderable
+         * @param flex {Number|Transitionable}  Flex amount
          */
-        push : function(item) {
+        push : function(item, flex){
             this.nodes.push(item);
-            var length = this.stream.push(item.size);
+            this.flexs.push(flex);
 
-            var transform = (this.sources)
-                ? Stream.lift(this.transformMap, [length].concat(this.sources))
-                : length.map(this.transformMap);
-
-            this.add({transform : transform}).add(item);
+            if (flex === undefined) this.usedLength.push(item.size);
+            var length = this.lengthStream.push(item.size);
+            var node = createNodeFromLength.call(this, length, flex);
+            this.add(node).add(item);
         },
         /*
          * Unlink the last renderable in the layout
@@ -234,13 +236,17 @@ define(function(require, exports, module) {
          * Add a renderable to the beginning of the layout
          *
          * @method unshift
-         * @param item {Surface|View} Renderable
+         * @param item {Surface|View}           Renderable
+         * @param flex {Number|Transitionable}  Flex amount
          */
-        unshift : function(item){
+        unshift : function(item, flex){
             this.nodes.unshift(item);
-            var length = this.stream.unshift(item.size);
-            var transform = length.map(this.transformMap);
-            this.add({transform : transform}).add(item);
+            this.flexs.unshift(flex);
+
+            if (flex === undefined) this.usedLength.push(item.size);
+            var length = this.lengthStream.unshift(item.size);
+            var node = createNodeFromLength.call(this, length, flex);
+            this.add(node).add(item);
         },
         /*
          * Unlink the first renderable in the layout
@@ -255,10 +261,11 @@ define(function(require, exports, module) {
          * Add a renderable after a specified renderable
          *
          * @method insertAfter
-         * @param prevItem {NumberSurface|View} Index or renderable to insert after
-         * @param item {Surface|View}           Renderable to insert
+         * @param prevItem {Number|Surface|View}    Index or renderable to insert after
+         * @param item {Surface|View}               Renderable to insert
+         * @param flex {Number|Transitionable}      Flex amount
          */
-        insertAfter : function(prevItem, item) {
+        insertAfter : function(prevItem, item, flex){
             var index;
             if (typeof prevItem === &#x27;number&#x27;){
                 index = prevItem + 1;
@@ -267,20 +274,22 @@ define(function(require, exports, module) {
             else index = this.nodes.indexOf(prevItem) + 1;
 
             this.nodes.splice(index, 0, item);
+            this.flexs.splice(index, 0, flex);
 
-            if (!prevItem) return this.push(item);
-            var length = this.stream.insertAfter(prevItem.size, item.size);
-            var transform = length.map(this.transformMap);
-            this.add({transform : transform}).add(item);
+            if (flex === undefined) this.usedLength.push(item.size);
+            var length = this.lengthStream.insertAfter(prevItem.size, item.size);
+            var node = createNodeFromLength.call(this, length, flex);
+            this.add(node).add(item);
         },
         /*
          * Add a renderable before a specified renderable
          *
          * @method insertAfter
-         * @param prevItem {Number|Surface|View} Index or renderable to insert before
-         * @param item {Surface|View}            Renderable to insert
+         * @param prevItem {Number|Surface|View}    Index or renderable to insert before
+         * @param item {Surface|View}               Renderable to insert
+         * @param flex {Number|Transitionable}      Flex amount
          */
-        insertBefore : function(postItem, item){
+        insertBefore : function(postItem, item, flex){
             var index;
             if (typeof postItem === &#x27;number&#x27;){
                 index = postItem - 1;
@@ -289,37 +298,108 @@ define(function(require, exports, module) {
             else index = this.nodes.indexOf(postItem) - 1;
 
             this.nodes.splice(index + 1, 0, item);
-            
-            if (!postItem) return this.unshift(item);
-            var length = this.stream.insertBefore(postItem.size, item.size);
-            var transform = length.map(this.transformMap);
-            this.add({transform : transform}).add(item);
+            this.flexs.splice(index + 1, 0, flex);
+
+            if (flex === undefined) this.usedLength.push(item.size);
+            var length = this.lengthStream.insertBefore(postItem.size, item.size);
+            var node = createNodeFromLength.call(this, length, flex);
+            this.add(node).add(item);
         },
         /*
          * Unlink the renderable.
          *  To remove the renderable, call the &#x60;.remove&#x60; method on it after unlinking.
          *
          * @method unlink
-         * @param item {Surface|View} Item to remove
+         * @param item {Number|Surface|View}        Index or item to remove
          * @return item
          */
         unlink : function(item){
-            var index;
-            if (typeof item === &#x27;number&#x27;){
-                index = item;
-                item = this.nodes[item];
-            }
-            else index = this.nodes.indexOf(item);
+            var index = (typeof item === &#x27;number&#x27;)
+                ? item
+                : this.nodes.indexOf(item);
 
-            if (!item || !item.size) return;
-            this.nodes.splice(index, 1);
-            this.stream.remove(item.size);
+            item = this.nodes.splice(index, 1)[0];
+            var flex = this.flexs.splice(index, 1)[0];
+
+            if (flex === undefined) this.usedLength.remove(item.size);
+            else {
+                if (typeof flex === &#x27;number&#x27;)
+                    this.totalFlex.set(this.totalFlex.get() - flex);
+                else
+                    this.totalFlex.set(this.totalFlex.get() - flex.get());
+            }
+            this.lengthStream.remove(item.size);
 
             return item;
+        },
+        length : function(){
+            return this.nodes.length;
+        },
+        /*
+         * Returns flex for an item or index
+         *
+         * @method getFlexFor
+         * @param item {Index|Surface|View} Index or item to get flex for
+         * @return flex {Number|Transitionable}
+         */
+        getFlexFor : function(item){
+            if (item === undefined) return this.getFlexes();
+            return (typeof item === &#x27;number&#x27;)
+                ? this.flexs[item]
+                : this.flexs[this.nodes.indexOf(item)];
+        },
+        /*
+         * Returns flexes of all current renderables
+         *
+         * @method getFlexes
+         * @return flexes {Array}
+         */
+        getFlexes : function(){
+            return this.flexs;
         }
     }, CONSTANTS);
 
-    module.exports = SequentialLayout;
+    function createNodeFromLength(length, flex){
+        var transform = length.map(this.transformMap);
+
+        if (flex !== undefined){
+            var size;
+            if (typeof flex === &#x27;number&#x27;){
+                this.totalFlex.set(this.totalFlex.get() + flex);
+                // Flexible sized item: layout defines the size and transform
+                size = Stream.lift(function(availableLength, totalFlex){
+                    if (!availableLength) return false;
+                    var itemLength = (availableLength - (this.nodes.length - 1) * this.options.spacing) * (flex / totalFlex);
+                    return (this.options.direction === CONSTANTS.DIRECTION.X)
+                        ? [itemLength, undefined]
+                        : [undefined, itemLength];
+                }.bind(this), [this.availableLength, this.totalFlex]);
+            }
+            else {
+                this.totalFlex.set(this.totalFlex.get() + flex.get());
+
+                var flexDelta = new Differential();
+                flexDelta.subscribe(flex);
+                this.totalFlex.subscribe(flexDelta);
+
+                size = Stream.lift(function(availableLength, flex, totalFlex){
+                    if (!availableLength) return false;
+                    var itemLength = (availableLength - (this.nodes.length - 1) * this.options.spacing) * (flex / totalFlex);
+                    return (this.options.direction === CONSTANTS.DIRECTION.X)
+                        ? [itemLength, undefined]
+                        : [undefined, itemLength];
+                }.bind(this), [this.availableLength, flex, this.totalFlex]);
+            }
+
+            return {transform : transform, size : size};
+        }
+        else {
+            // Fixed size item: layout only defines the transform
+            return {transform : transform};
+        }
+    }
+
+    module.exports = FlexLayout;
 });
 
     </pre>

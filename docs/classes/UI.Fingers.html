@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="utf-8">
-    <title>samsara/streams/SimpleStream.js - SamsaraJS</title>
+    <title>UI.Fingers - SamsaraJS</title>
     <link rel="stylesheet" href="">
     <link rel="stylesheet" href="../assets/vendor/prettify/prettify-min.css">
     <link rel="stylesheet" href="../assets/css/main.css" id="site_styles">
@@ -120,102 +120,186 @@
                 <div id="docs-main">
                     <div class="content">
 <div class="page-header">
-    <h1>samsara/streams/SimpleStream.js <small>File</small></h1>
+    <h1>UI.Fingers <small>Class</small></h1>
 </div>
 
-<div class="file">
-    <pre class="prettyprint linenums">
-/* Copyright © 2015-2016 David Valdman */
+<div class="well well-small">
 
-define(function(require, exports, module) {
-    var EventHandler = require(&#x27;../events/EventHandler&#x27;);
-    var EventMapper = require(&#x27;../events/EventMapper&#x27;);
-    var EventFilter = require(&#x27;../events/EventFilter&#x27;);
-    var EventSplitter = require(&#x27;../events/EventSplitter&#x27;);
+        <div class="extends">
+            Extends View
+        </div>
 
-    /**
-     * A SimpleStream wraps an EventHandler and provides convenience
-     *  methods of &#x60;map&#x60;, &#x60;filter&#x60;, &#x60;split&#x60;, and &#x60;pluck&#x60; to
-     *  transform one stream into another.
-     *
-     * @example
-     *
-     * @class SimpleStream
-     * @extends Core.EventHandler
-     * @private
-     * @namespace Streams
-     * @constructor
-     */
-    function SimpleStream(){
-        EventHandler.call(this);
-    }
+    <!---->
+        <div class="foundat">
+            Defined in: <a href="../files/samsara_ui_Fingers.js.html#l20"><code>samsara&#x2F;ui&#x2F;Fingers.js:20</code></a>
+        </div>
+    <!---->
 
-    SimpleStream.prototype = Object.create(EventHandler.prototype);
-    SimpleStream.prototype.constructor = SimpleStream;
 
-    /**
-     * Map converts the current stream into a new stream
-     *  with a modified (mapped) data payload.
-     *
-     * @method map
-     * @param mapperFn {Function}    Function to map event payload
-     * @return stream {SimpleStream} Mapped stream
-     */
-    SimpleStream.prototype.map = function map(mapperFn){
-        var stream = new SimpleStream();
-        var mapper = new EventMapper(mapperFn);
-        stream.subscribe(mapper).subscribe(this);
-        return stream;
-    };
+</div>
 
-    /**
-     * Filter converts the current stream into a new stream
-     *  that only emits if the filter condition is satisfied.
-     *  The filter function should return a Boolean value.
-     *
-     * @method filter
-     * @param filterFn {Function}    Function to filter event payload
-     * @return stream {SimpleStream} Filtered stream
-     */
-    SimpleStream.prototype.filter = function filter(filterFn){
-        var filter = new EventFilter(filterFn);
-        var filteredStream = new SimpleStream();
-        filteredStream.subscribe(filter).subscribe(this);
-        return filteredStream;
-    };
 
-    /**
-     * Split maps one of several streams based on custom logic.
-     *  The splitter function should return an EventEmitter type.
-     *
-     * @method split
-     * @param splitterFn {Function}  Splitter function
-     */
-    SimpleStream.prototype.split = function split(splitterFn){
-        var splitter = new EventSplitter(splitterFn);
-        splitter.subscribe(this);
-    };
+<div class="well well-small">
+    <p>A UI element that visualizes multi-touch interactions and mouse drags.
+On a <code>touchstart</code> or <code>mousedown</code> event, a <code>Surface</code> will animate in over the touch point
+This surface will follow the user's dragging behavior, and animate out on a <code>touchend</code> or <code>mouseup</code> event.
+Useful for taking screen captures to showcase what the user is doing while using a touch-responsive application.</p>
+<p>This file comes with an associated CSS file fingers.css</p>
 
-    /**
-     * Pluck is an opinionated mapper. It projects a Stream
-     *  onto one of its return values.
-     *
-     *  Useful if a Stream returns an array or object.
-     *
-     * @method pluck
-     * @param key {String|Number}    Key to project event payload onto
-     * @return stream {SimpleStream} Plucked stream
-     */
-    SimpleStream.prototype.pluck = function pluck(key){
-        return this.map(function(value){
-            return value[key];
+</div>
+
+    <div class="constructor">
+        <h2>Constructor</h2>
+        <div id="method_UI.Fingers" class="method item">
+            <h3 class="name"><code>UI.Fingers</code></h3>
+        
+                <div class="args">
+                    <span class="paren">(</span><ul class="args-list inline commas">
+                        <li class="arg">
+                                <code class="optional">[options]</code>
+                        </li>
+                    </ul><span class="paren">)</span>
+                </div>
+        
+        
+        
+        
+        
+        
+        
+        
+            <div class="meta">
+                        <p>
+                        <!---->
+                        <!--Defined in-->
+                        <!---->
+                <!---->
+                <!--<a href="../files/samsara_ui_Fingers.js.html#l20"><code>samsara&#x2F;ui&#x2F;Fingers.js:20</code></a>-->
+                <!---->
+                </p>
+        
+        
+        
+            </div>
+        
+            <div class="description">
+                
+            </div>
+        
+                <div class="params">
+                    <h4>Parameters:</h4>
+        
+                    <ul class="params-list">
+                        <li class="param">
+                                <code class="param-name optional">[options]</code>
+                                <span class="type"><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object" class="crosslink external" target="_blank">Object</a></span>
+                                <span class="flag optional" title="This parameter is optional.">optional</span>
+        
+        
+                            <div class="param-description">
+                                <p>Options</p>
+        
+                            </div>
+        
+                                <ul class="params-list">
+                                    <li class="param">
+                                            <code class="param-name optional">[diameter=40]</code>
+                                            <span class="type"><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Number" class="crosslink external" target="_blank">Number</a></span>
+                                            <span class="flag optional" title="This parameter is optional.">optional</span>
+        
+                                        <div class="param-description">
+                                            <p>Diameter of finger surfaces</p>
+        
+                                        </div>
+        
+                                    </li>
+                                    <li class="param">
+                                            <code class="param-name optional">[opacityIn]</code>
+                                            <span class="type"><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object" class="crosslink external" target="_blank">Object</a> | <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Boolean" class="crosslink external" target="_blank">Boolean</a></span>
+                                            <span class="flag optional" title="This parameter is optional.">optional</span>
+        
+                                        <div class="param-description">
+                                            <p>Transition definition for opacity enter animation</p>
+        
+                                        </div>
+        
+                                    </li>
+                                    <li class="param">
+                                            <code class="param-name optional">[opacityOut]</code>
+                                            <span class="type"><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object" class="crosslink external" target="_blank">Object</a> | <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Boolean" class="crosslink external" target="_blank">Boolean</a></span>
+                                            <span class="flag optional" title="This parameter is optional.">optional</span>
+        
+                                        <div class="param-description">
+                                            <p>Transition definition for opacity exit animation</p>
+        
+                                        </div>
+        
+                                    </li>
+                                    <li class="param">
+                                            <code class="param-name optional">[scaleIn]</code>
+                                            <span class="type"><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object" class="crosslink external" target="_blank">Object</a> | <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Boolean" class="crosslink external" target="_blank">Boolean</a></span>
+                                            <span class="flag optional" title="This parameter is optional.">optional</span>
+        
+                                        <div class="param-description">
+                                            <p>Transition definition for scale enter animation</p>
+        
+                                        </div>
+        
+                                    </li>
+                                    <li class="param">
+                                            <code class="param-name optional">[scaleOut]</code>
+                                            <span class="type"><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object" class="crosslink external" target="_blank">Object</a> | <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Boolean" class="crosslink external" target="_blank">Boolean</a></span>
+                                            <span class="flag optional" title="This parameter is optional.">optional</span>
+        
+                                        <div class="param-description">
+                                            <p>Transition definition for scale exit animation</p>
+        
+                                        </div>
+        
+                                    </li>
+                                </ul>
+                        </li>
+                    </ul>
+                </div>
+        
+        
+                <div class="example">
+                    <h4>Example:</h4>
+        
+                    <div class="example-content">
+                        <pre class="code prettyprint"><code>var fingers = new Fingers({
+            diameter : 40,
+            scaleIn : {duration : 400},
+            scaleOut : {duration : 300}
         });
-    };
-    
-    module.exports = SimpleStream;
-});
+        
+        fingers.subscribe(context); // fingers listens to mouse/touch events from context
+        context.add(fingers); // finger surfaces render into the context</code></pre>
+        
+                    </div>
+                </div>
+        </div>
+    </div>
 
-    </pre>
+<div>
+    <ul class="nav nav-tabs">
+        <li class="active"><a data-toggle="tab" href="#index">Index</a></li>
+
+    </ul>
+
+    <div class="tab-content">
+        <div id="index" class="tab-pane active">
+            <h2 class="off-left">Item Index</h2>
+
+
+
+
+        </div>
+
+
+
+
+    </div>
 </div>
                     </div>
                 </div>

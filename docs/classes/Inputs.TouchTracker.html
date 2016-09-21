@@ -23,12 +23,12 @@
             <li class="divider-vertical"></li>
             <li>
                 <p class="navbar-text">
-                    API Docs for Version: <b>0.2.0</b>
+                    API Docs for Version: <b>0.2.2</b>
                 </p>
             </li>
         </div>
         <form class="navbar-form pull-right" style="line-height: 40px; height: 40px;">
-            <input style="margin-top: 0;" type="text" class="search-query" placeholder="Search for classes..." data-obj='["classes/Core.Controller", "classes/Core.ElementAllocator", "classes/Core.ElementOutput", "classes/Core.Engine", "classes/Core.LayoutNode", "classes/Core.OptionsManager", "classes/Core.SizeNode", "classes/Core.SUE", "classes/Core.Timer", "classes/Core.Transform", "classes/Core.Transitionable", "classes/Core.View", "classes/DOM.ContainerSurface", "classes/DOM.Context", "classes/DOM.Surface", "classes/Events.EventEmitter", "classes/Events.EventFilter", "classes/Events.EventHandler", "classes/Events.EventMapper", "classes/Events.EventSplitter", "classes/Inputs.GenericInput", "classes/Inputs.MouseInput", "classes/Inputs.PinchInput", "classes/Inputs.RotateInput", "classes/Inputs.ScaleInput", "classes/Inputs.ScrollInput", "classes/Inputs.TouchInput", "classes/Inputs.TouchTracker", "classes/Inputs.TwoFingerInput", "classes/Layouts.DrawerLayout", "classes/Layouts.FlexibleLayout", "classes/Layouts.GridLayout", "classes/Layouts.SequentialLayout", "classes/RenderTreeNode", "classes/RootNode", "classes/Streams.Accumulator", "classes/Streams.Differential", "classes/Streams.Observable", "classes/Streams.ResizeStream", "classes/Streams.SimpleStream", "classes/Streams.Stream", "classes/Transitions.Inertia", "classes/Transitions.Spring", "classes/Transitions.Tween"]'>
+            <input style="margin-top: 0;" type="text" class="search-query" placeholder="Search for classes..." data-obj='["classes/Core.Controller", "classes/Core.DOMAllocator", "classes/Core.DOMOutput", "classes/Core.Engine", "classes/Core.LayoutNode", "classes/Core.Node", "classes/Core.OptionsManager", "classes/Core.RenderTreeNode", "classes/Core.RootNode", "classes/Core.SizeNode", "classes/Core.Timer", "classes/Core.Transform", "classes/Core.Transitionable", "classes/Core.View", "classes/DOM.ContainerSurface", "classes/DOM.Context", "classes/DOM.Surface", "classes/Events.EventEmitter", "classes/Events.EventFilter", "classes/Events.EventHandler", "classes/Events.EventMapper", "classes/Events.EventSplitter", "classes/Inputs.GenericInput", "classes/Inputs.MouseInput", "classes/Inputs.PinchInput", "classes/Inputs.RotateInput", "classes/Inputs.ScaleInput", "classes/Inputs.ScrollInput", "classes/Inputs.TouchInput", "classes/Inputs.TouchTracker", "classes/Inputs.TwoFingerInput", "classes/Layouts.BidirectionalList", "classes/Layouts.DrawerLayout", "classes/Layouts.FlexLayout", "classes/Layouts.GridLayout", "classes/Layouts.HeaderFooterLayout", "classes/Layouts.SequentialLayout", "classes/Streams.Accumulator", "classes/Streams.Differential", "classes/Streams.Observable", "classes/Streams.SimpleStream", "classes/Streams.Stream", "classes/Transitions.Inertia", "classes/Transitions.Spring", "classes/Transitions.Tween", "classes/UI.Fingers", "classes/UI.Slider"]'>
         </form>
     </div>
 </div>
@@ -69,13 +69,17 @@
 	                            <li><a href="../classes/Inputs.ScaleInput.html">Inputs.ScaleInput</a></li>
 	                            <li><a href="../classes/Inputs.ScrollInput.html">Inputs.ScrollInput</a></li>
 	                            <li><a href="../classes/Inputs.TouchInput.html">Inputs.TouchInput</a></li>
+	                            <li><a href="../classes/Layouts.BidirectionalList.html">Layouts.BidirectionalList</a></li>
 	                            <li><a href="../classes/Layouts.DrawerLayout.html">Layouts.DrawerLayout</a></li>
-	                            <li><a href="../classes/Layouts.FlexibleLayout.html">Layouts.FlexibleLayout</a></li>
+	                            <li><a href="../classes/Layouts.FlexLayout.html">Layouts.FlexLayout</a></li>
 	                            <li><a href="../classes/Layouts.GridLayout.html">Layouts.GridLayout</a></li>
+	                            <li><a href="../classes/Layouts.HeaderFooterLayout.html">Layouts.HeaderFooterLayout</a></li>
 	                            <li><a href="../classes/Layouts.SequentialLayout.html">Layouts.SequentialLayout</a></li>
 	                            <li><a href="../classes/Streams.Accumulator.html">Streams.Accumulator</a></li>
 	                            <li><a href="../classes/Streams.Differential.html">Streams.Differential</a></li>
 	                            <li><a href="../classes/Streams.Stream.html">Streams.Stream</a></li>
+	                            <li><a href="../classes/UI.Fingers.html">UI.Fingers</a></li>
+	                            <li><a href="../classes/UI.Slider.html">UI.Slider</a></li>
 	                    </ul>
 	                </div>
 	    
@@ -123,14 +127,14 @@
         <div class="uses">
             Uses
             <ul class="inline commas">
-                    <li><a href="Core.OptionsManager.html">Core.OptionsManager</a></li>
+                    <li><a href="Core._OptionsManager.html">Core._OptionsManager</a></li>
             </ul>
         </div>
 
 
     <!---->
         <div class="foundat">
-            Defined in: <a href="../files/samsara_inputs_TouchTracker.js.html#l19"><code>samsara&#x2F;inputs&#x2F;TouchTracker.js:19</code></a>
+            Defined in: <a href="../files/samsara_inputs__TouchTracker.js.html#l9"><code>samsara&#x2F;inputs&#x2F;_TouchTracker.js:9</code></a>
         </div>
     <!---->
 
@@ -148,7 +152,8 @@ track previous touches to compute velocity.</p>
  <code>identifier</code>    - DOM event touch identifier
  <code>timestamp</code>     - Timestamp
  <code>count</code>         - DOM event for number of simultaneous touches
- <code>history</code>       - History of touches for the gesture</code></pre>
+ <code>history</code>       - History of touches for the gesture
+ <code>event</code>         - Original DOM event</code></pre>
 
 </div>
 
@@ -179,7 +184,7 @@ track previous touches to compute velocity.</p>
                         <!--Defined in-->
                         <!---->
                 <!---->
-                <!--<a href="../files/samsara_inputs_TouchTracker.js.html#l19"><code>samsara&#x2F;inputs&#x2F;TouchTracker.js:19</code></a>-->
+                <!--<a href="../files/samsara_inputs__TouchTracker.js.html#l9"><code>samsara&#x2F;inputs&#x2F;_TouchTracker.js:9</code></a>-->
                 <!---->
                 </p>
         
@@ -208,12 +213,34 @@ track previous touches to compute velocity.</p>
         
                                 <ul class="params-list">
                                     <li class="param">
+                                            <code class="param-name optional">[memory]</code>
+                                            <span class="type"><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Number" class="crosslink external" target="_blank">Number</a></span>
+                                            <span class="flag optional" title="This parameter is optional.">optional</span>
+        
+                                        <div class="param-description">
+                                            <p>Number of past touches to record in history</p>
+        
+                                        </div>
+        
+                                    </li>
+                                    <li class="param">
+                                            <code class="param-name optional">[track]</code>
+                                            <span class="type"><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Number" class="crosslink external" target="_blank">Number</a></span>
+                                            <span class="flag optional" title="This parameter is optional.">optional</span>
+        
+                                        <div class="param-description">
+                                            <p>Max simultaneous touches to record</p>
+        
+                                        </div>
+        
+                                    </li>
+                                    <li class="param">
                                             <code class="param-name optional">[limit]</code>
                                             <span class="type"><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Number" class="crosslink external" target="_blank">Number</a></span>
                                             <span class="flag optional" title="This parameter is optional.">optional</span>
         
                                         <div class="param-description">
-                                            <p>Number of touches to record</p>
+                                            <p>Limit number of touches. If reached, no events are emitted</p>
         
                                         </div>
         
@@ -242,44 +269,12 @@ track previous touches to compute velocity.</p>
                     <h3>Methods</h3>
 
                     <ul class="index-list methods">
-                            <li class="index-item method inherited">
-                                <a href="#" data-tabid="#methods" data-anchor="#method_&quot;on&quot;" data-tablink="&quot;on&quot;">&quot;on&quot;</a>
-
-                            </li>
-                            <li class="index-item method inherited">
-                                <a href="#" data-tabid="#methods" data-anchor="#method_get" data-tablink="get">get</a>
-
-                            </li>
-                            <li class="index-item method inherited">
-                                <a href="#" data-tabid="#methods" data-anchor="#method_getOptions" data-tablink="getOptions">getOptions</a>
-
-                            </li>
-                            <li class="index-item method inherited">
-                                <a href="#" data-tabid="#methods" data-anchor="#method_key" data-tablink="key">key</a>
-
-                            </li>
-                            <li class="index-item method inherited">
-                                <a href="#" data-tabid="#methods" data-anchor="#method_off" data-tablink="off">off</a>
-
-                            </li>
-                            <li class="index-item method inherited inherited">
-                                <a href="#" data-tabid="#methods" data-anchor="#method_OptionsManager.patch" data-tablink="OptionsManager.patch">OptionsManager.patch</a>
-
-                            </li>
-                            <li class="index-item method inherited">
-                                <a href="#" data-tabid="#methods" data-anchor="#method_patch" data-tablink="patch">patch</a>
-
-                            </li>
-                            <li class="index-item method inherited">
-                                <a href="#" data-tabid="#methods" data-anchor="#method_set" data-tablink="set">set</a>
-
-                            </li>
-                            <li class="index-item method inherited">
-                                <a href="#" data-tabid="#methods" data-anchor="#method_setOptions" data-tablink="setOptions">setOptions</a>
-
-                            </li>
-                            <li class="index-item method private">
+                            <li class="index-item method">
                                 <a href="#" data-tabid="#methods" data-anchor="#method_track" data-tablink="track">track</a>
+
+                            </li>
+                            <li class="index-item method">
+                                <a href="#" data-tabid="#methods" data-anchor="#method_untrack" data-tablink="untrack">untrack</a>
 
                             </li>
                     </ul>
@@ -292,580 +287,14 @@ track previous touches to compute velocity.</p>
             <div id="methods" class="tab-pane">
                 <h2 class="off-left">Methods</h2>
 
-                    <div id="method_&quot;on&quot;" class="method item inherited">
-                        <h3 class="name"><code>&quot;on&quot;</code></h3>
-                    
-                            <div class="args">
-                                <span class="paren">(</span><ul class="args-list inline commas">
-                                    <li class="arg">
-                                            <code>type</code>
-                                    </li>
-                                    <li class="arg">
-                                            <code>handler</code>
-                                    </li>
-                                </ul><span class="paren">)</span>
-                            </div>
-                    
-                    
-                    
-                    
-                    
-                    
-                    
-                    
-                        <div class="meta">
-                                    <p>Inherited from
-                                    <a href="../classes/Core.OptionsManager.html#method_&quot;on&quot;">Core.OptionsManager</a>:
-                            <!---->
-                            <!--<a href="../files/samsara_core_OptionsManager.js.html#l141"><code>samsara&#x2F;core&#x2F;OptionsManager.js:141</code></a>-->
-                            <!---->
-                            </p>
-                    
-                    
-                    
-                        </div>
-                    
-                        <div class="description">
-                            <p>Adds a handler to the <code>type</code> channel which will be executed on <code>emit</code>.</p>
-                    
-                        </div>
-                    
-                            <div class="params">
-                                <h4>Parameters:</h4>
-                    
-                                <ul class="params-list">
-                                    <li class="param">
-                                            <code class="param-name">type</code>
-                                            <span class="type"><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String" class="crosslink external" target="_blank">String</a></span>
-                    
-                    
-                                        <div class="param-description">
-                                            <p>Channel name</p>
-                    
-                                        </div>
-                    
-                                    </li>
-                                    <li class="param">
-                                            <code class="param-name">handler</code>
-                                            <span class="type"><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Function" class="crosslink external" target="_blank">Function</a></span>
-                    
-                    
-                                        <div class="param-description">
-                                            <p>Callback</p>
-                    
-                                        </div>
-                    
-                                    </li>
-                                </ul>
-                            </div>
-                    
-                    
-                    </div>
-                    <div id="method_get" class="method item inherited">
-                        <h3 class="name"><code>get</code></h3>
-                    
-                            <div class="args">
-                                <span class="paren">(</span><ul class="args-list inline commas">
-                                    <li class="arg">
-                                            <code>key</code>
-                                    </li>
-                                </ul><span class="paren">)</span>
-                            </div>
-                    
-                            <span class="returns-inline">
-                                <span class="type"><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object" class="crosslink external" target="_blank">Object</a></span>
-                            </span>
-                    
-                    
-                    
-                    
-                    
-                    
-                    
-                        <div class="meta">
-                                    <p>Inherited from
-                                    <a href="../classes/Core.OptionsManager.html#method_get">Core.OptionsManager</a>:
-                            <!---->
-                            <!--<a href="../files/samsara_core_OptionsManager.js.html#l108"><code>samsara&#x2F;core&#x2F;OptionsManager.js:108</code></a>-->
-                            <!---->
-                            </p>
-                    
-                    
-                    
-                        </div>
-                    
-                        <div class="description">
-                            <p>Look up options value by key or get the full options hash.</p>
-                    
-                        </div>
-                    
-                            <div class="params">
-                                <h4>Parameters:</h4>
-                    
-                                <ul class="params-list">
-                                    <li class="param">
-                                            <code class="param-name">key</code>
-                                            <span class="type"><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String" class="crosslink external" target="_blank">String</a></span>
-                    
-                    
-                                        <div class="param-description">
-                                            <p>Key</p>
-                    
-                                        </div>
-                    
-                                    </li>
-                                </ul>
-                            </div>
-                    
-                            <div class="returns">
-                                <h4>Returns:</h4>
-                    
-                                <div class="returns-description">
-                                            <span class="type"><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object" class="crosslink external" target="_blank">Object</a></span>:
-                                        <p>Associated object or full options hash</p>
-                    
-                                </div>
-                            </div>
-                    
-                    </div>
-                    <div id="method_getOptions" class="method item inherited">
-                        <h3 class="name"><code>getOptions</code></h3>
-                    
-                            <span class="paren">()</span>
-                    
-                    
-                    
-                    
-                    
-                    
-                    
-                    
-                        <div class="meta">
-                                    <p>Inherited from
-                                    <a href="../classes/Core.OptionsManager.html#method_getOptions">Core.OptionsManager</a>:
-                            <!---->
-                            <!--<a href="../files/samsara_core_OptionsManager.js.html#l119"><code>samsara&#x2F;core&#x2F;OptionsManager.js:119</code></a>-->
-                            <!---->
-                            </p>
-                    
-                    
-                    
-                        </div>
-                    
-                        <div class="description">
-                            <p>Alias for get</p>
-                    
-                        </div>
-                    
-                    
-                    
-                    </div>
-                    <div id="method_key" class="method item inherited">
-                        <h3 class="name"><code>key</code></h3>
-                    
-                            <div class="args">
-                                <span class="paren">(</span><ul class="args-list inline commas">
-                                    <li class="arg">
-                                            <code>key</code>
-                                    </li>
-                                </ul><span class="paren">)</span>
-                            </div>
-                    
-                            <span class="returns-inline">
-                                <span class="type">OptionsManager</span>
-                            </span>
-                    
-                    
-                    
-                    
-                    
-                    
-                    
-                        <div class="meta">
-                                    <p>Inherited from
-                                    <a href="../classes/Core.OptionsManager.html#method_key">Core.OptionsManager</a>:
-                            <!---->
-                            <!--<a href="../files/samsara_core_OptionsManager.js.html#l95"><code>samsara&#x2F;core&#x2F;OptionsManager.js:95</code></a>-->
-                            <!---->
-                            </p>
-                    
-                    
-                    
-                        </div>
-                    
-                        <div class="description">
-                            <p>Return OptionsManager based on sub-object retrieved by <code>key</code>.</p>
-                    
-                        </div>
-                    
-                            <div class="params">
-                                <h4>Parameters:</h4>
-                    
-                                <ul class="params-list">
-                                    <li class="param">
-                                            <code class="param-name">key</code>
-                                            <span class="type"><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String" class="crosslink external" target="_blank">String</a></span>
-                    
-                    
-                                        <div class="param-description">
-                                            <p>Key</p>
-                    
-                                        </div>
-                    
-                                    </li>
-                                </ul>
-                            </div>
-                    
-                            <div class="returns">
-                                <h4>Returns:</h4>
-                    
-                                <div class="returns-description">
-                                            <span class="type">OptionsManager</span>:
-                                        <p>Value</p>
-                    
-                                </div>
-                            </div>
-                    
-                    </div>
-                    <div id="method_off" class="method item inherited">
-                        <h3 class="name"><code>off</code></h3>
-                    
-                            <div class="args">
-                                <span class="paren">(</span><ul class="args-list inline commas">
-                                    <li class="arg">
-                                            <code>type</code>
-                                    </li>
-                                    <li class="arg">
-                                            <code>handler</code>
-                                    </li>
-                                </ul><span class="paren">)</span>
-                            </div>
-                    
-                    
-                    
-                    
-                    
-                    
-                    
-                    
-                        <div class="meta">
-                                    <p>Inherited from
-                                    <a href="../classes/Core.OptionsManager.html#method_off">Core.OptionsManager</a>:
-                            <!---->
-                            <!--<a href="../files/samsara_core_OptionsManager.js.html#l153"><code>samsara&#x2F;core&#x2F;OptionsManager.js:153</code></a>-->
-                            <!---->
-                            </p>
-                    
-                    
-                    
-                        </div>
-                    
-                        <div class="description">
-                            <p>Removes the <code>handler</code> from the <code>type</code> channel.
-                    This undoes the work of <code>on</code>.</p>
-                    
-                        </div>
-                    
-                            <div class="params">
-                                <h4>Parameters:</h4>
-                    
-                                <ul class="params-list">
-                                    <li class="param">
-                                            <code class="param-name">type</code>
-                                            <span class="type"><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String" class="crosslink external" target="_blank">String</a></span>
-                    
-                    
-                                        <div class="param-description">
-                                            <p>Channel name</p>
-                    
-                                        </div>
-                    
-                                    </li>
-                                    <li class="param">
-                                            <code class="param-name">handler</code>
-                                            <span class="type"><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Function" class="crosslink external" target="_blank">Function</a></span>
-                    
-                    
-                                        <div class="param-description">
-                                            <p>Callback</p>
-                    
-                                        </div>
-                    
-                                    </li>
-                                </ul>
-                            </div>
-                    
-                    
-                    </div>
-                    <div id="method_OptionsManager.patch" class="method item inherited">
-                        <h3 class="name"><code>OptionsManager.patch</code></h3>
-                    
-                            <div class="args">
-                                <span class="paren">(</span><ul class="args-list inline commas">
-                                    <li class="arg">
-                                            <code>options</code>
-                                    </li>
-                                    <li class="arg">
-                                            <code>patch</code>
-                                    </li>
-                                </ul><span class="paren">)</span>
-                            </div>
-                    
-                            <span class="returns-inline">
-                                <span class="type"><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object" class="crosslink external" target="_blank">Object</a></span>
-                            </span>
-                    
-                    
-                    
-                    
-                    
-                    
-                    
-                        <div class="meta">
-                                <p>Inherited from
-                                <a href="../classes/Core.OptionsManager.html#method_OptionsManager.patch">
-                                    Core.OptionsManager
-                                </a>
-                                but overwritten in
-                            <!---->
-                            <!--<a href="../files/samsara_core_OptionsManager.js.html#l33"><code>samsara&#x2F;core&#x2F;OptionsManager.js:33</code></a>-->
-                            <!---->
-                            </p>
-                    
-                    
-                    
-                        </div>
-                    
-                        <div class="description">
-                            <p>Constructor method. Create OptionsManager from source dictionary with arguments overriden by patch dictionary.</p>
-                    
-                        </div>
-                    
-                            <div class="params">
-                                <h4>Parameters:</h4>
-                    
-                                <ul class="params-list">
-                                    <li class="param">
-                                            <code class="param-name">options</code>
-                                            <span class="type"><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object" class="crosslink external" target="_blank">Object</a></span>
-                    
-                    
-                                        <div class="param-description">
-                                            <p>Options to be patched</p>
-                    
-                                        </div>
-                    
-                                    </li>
-                                    <li class="param">
-                                            <code class="param-name">patch</code>
-                                            <span class="type">...Object</span>
-                    
-                    
-                                        <div class="param-description">
-                                            <p>Options to overwrite</p>
-                    
-                                        </div>
-                    
-                                    </li>
-                                </ul>
-                            </div>
-                    
-                            <div class="returns">
-                                <h4>Returns:</h4>
-                    
-                                <div class="returns-description">
-                                            <span class="type"><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object" class="crosslink external" target="_blank">Object</a></span>:
-                                        <p>source</p>
-                    
-                                </div>
-                            </div>
-                    
-                    </div>
-                    <div id="method_patch" class="method item inherited">
-                        <h3 class="name"><code>patch</code></h3>
-                    
-                            <div class="args">
-                                <span class="paren">(</span><ul class="args-list inline commas">
-                                    <li class="arg">
-                                            <code>options</code>
-                                    </li>
-                                </ul><span class="paren">)</span>
-                            </div>
-                    
-                            <span class="returns-inline">
-                                <span class="type">OptionsManager</span>
-                            </span>
-                    
-                    
-                    
-                    
-                    
-                    
-                    
-                        <div class="meta">
-                                    <p>Inherited from
-                                    <a href="../classes/Core.OptionsManager.html#method_patch">Core.OptionsManager</a>:
-                            <!---->
-                            <!--<a href="../files/samsara_core_OptionsManager.js.html#l68"><code>samsara&#x2F;core&#x2F;OptionsManager.js:68</code></a>-->
-                            <!---->
-                            </p>
-                    
-                    
-                    
-                        </div>
-                    
-                        <div class="description">
-                            <p>Patch options with provided patches. Triggers <code>change</code> event on the object.</p>
-                    
-                        </div>
-                    
-                            <div class="params">
-                                <h4>Parameters:</h4>
-                    
-                                <ul class="params-list">
-                                    <li class="param">
-                                            <code class="param-name">options</code>
-                                            <span class="type"><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object" class="crosslink external" target="_blank">Object</a></span>
-                    
-                    
-                                        <div class="param-description">
-                                            <p>Patch options</p>
-                    
-                                        </div>
-                    
-                                    </li>
-                                </ul>
-                            </div>
-                    
-                            <div class="returns">
-                                <h4>Returns:</h4>
-                    
-                                <div class="returns-description">
-                                            <span class="type">OptionsManager</span>:
-                                        <p>this</p>
-                    
-                                </div>
-                            </div>
-                    
-                    </div>
-                    <div id="method_set" class="method item inherited">
-                        <h3 class="name"><code>set</code></h3>
-                    
-                            <div class="args">
-                                <span class="paren">(</span><ul class="args-list inline commas">
-                                    <li class="arg">
-                                            <code>key</code>
-                                    </li>
-                                    <li class="arg">
-                                            <code>value</code>
-                                    </li>
-                                </ul><span class="paren">)</span>
-                            </div>
-                    
-                            <span class="returns-inline">
-                                <span class="type">OptionsManager</span>
-                            </span>
-                    
-                    
-                    
-                    
-                    
-                    
-                    
-                        <div class="meta">
-                                    <p>Inherited from
-                                    <a href="../classes/Core.OptionsManager.html#method_set">Core.OptionsManager</a>:
-                            <!---->
-                            <!--<a href="../files/samsara_core_OptionsManager.js.html#l126"><code>samsara&#x2F;core&#x2F;OptionsManager.js:126</code></a>-->
-                            <!---->
-                            </p>
-                    
-                    
-                    
-                        </div>
-                    
-                        <div class="description">
-                            <p>Set key to value. Outputs <code>change</code> event if a value is overwritten.</p>
-                    
-                        </div>
-                    
-                            <div class="params">
-                                <h4>Parameters:</h4>
-                    
-                                <ul class="params-list">
-                                    <li class="param">
-                                            <code class="param-name">key</code>
-                                            <span class="type"><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String" class="crosslink external" target="_blank">String</a></span>
-                    
-                    
-                                        <div class="param-description">
-                                            <p>Key</p>
-                    
-                                        </div>
-                    
-                                    </li>
-                                    <li class="param">
-                                            <code class="param-name">value</code>
-                                            <span class="type"><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object" class="crosslink external" target="_blank">Object</a></span>
-                    
-                    
-                                        <div class="param-description">
-                                            <p>Value</p>
-                    
-                                        </div>
-                    
-                                    </li>
-                                </ul>
-                            </div>
-                    
-                            <div class="returns">
-                                <h4>Returns:</h4>
-                    
-                                <div class="returns-description">
-                                            <span class="type">OptionsManager</span>:
-                                        <p>Updated OptionsManager</p>
-                    
-                                </div>
-                            </div>
-                    
-                    </div>
-                    <div id="method_setOptions" class="method item inherited">
-                        <h3 class="name"><code>setOptions</code></h3>
-                    
-                            <span class="paren">()</span>
-                    
-                    
-                    
-                    
-                    
-                    
-                    
-                    
-                        <div class="meta">
-                                    <p>Inherited from
-                                    <a href="../classes/Core.OptionsManager.html#method_setOptions">Core.OptionsManager</a>:
-                            <!---->
-                            <!--<a href="../files/samsara_core_OptionsManager.js.html#l88"><code>samsara&#x2F;core&#x2F;OptionsManager.js:88</code></a>-->
-                            <!---->
-                            </p>
-                    
-                    
-                    
-                        </div>
-                    
-                        <div class="description">
-                            <p>Alias for patch</p>
-                    
-                        </div>
-                    
-                    
-                    
-                    </div>
-                    <div id="method_track" class="method item private">
+                    <div id="method_track" class="method item">
                         <h3 class="name"><code>track</code></h3>
                     
                             <div class="args">
                                 <span class="paren">(</span><ul class="args-list inline commas">
+                                    <li class="arg">
+                                            <code>id</code>
+                                    </li>
                                     <li class="arg">
                                             <code>data</code>
                                     </li>
@@ -874,7 +303,6 @@ track previous touches to compute velocity.</p>
                     
                     
                     
-                            <span class="flag private">private</span>
                     
                     
                     
@@ -886,7 +314,7 @@ track previous touches to compute velocity.</p>
                                     <!--Defined in-->
                                     <!---->
                             <!---->
-                            <!--<a href="../files/samsara_inputs_TouchTracker.js.html#l63"><code>samsara&#x2F;inputs&#x2F;TouchTracker.js:63</code></a>-->
+                            <!--<a href="../files/samsara_inputs__TouchTracker.js.html#l57"><code>samsara&#x2F;inputs&#x2F;_TouchTracker.js:57</code></a>-->
                             <!---->
                             </p>
                     
@@ -895,7 +323,7 @@ track previous touches to compute velocity.</p>
                         </div>
                     
                         <div class="description">
-                            <p>Record touch data, if selective is false.</p>
+                            <p>Record touch data</p>
                     
                         </div>
                     
@@ -904,12 +332,80 @@ track previous touches to compute velocity.</p>
                     
                                 <ul class="params-list">
                                     <li class="param">
+                                            <code class="param-name">id</code>
+                                            <span class="type"><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Number" class="crosslink external" target="_blank">Number</a></span>
+                    
+                    
+                                        <div class="param-description">
+                                            <p>touch identifier</p>
+                    
+                                        </div>
+                    
+                                    </li>
+                                    <li class="param">
                                             <code class="param-name">data</code>
                                             <span class="type"><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object" class="crosslink external" target="_blank">Object</a></span>
                     
                     
                                         <div class="param-description">
                                             <p>touch data</p>
+                    
+                                        </div>
+                    
+                                    </li>
+                                </ul>
+                            </div>
+                    
+                    
+                    </div>
+                    <div id="method_untrack" class="method item">
+                        <h3 class="name"><code>untrack</code></h3>
+                    
+                            <div class="args">
+                                <span class="paren">(</span><ul class="args-list inline commas">
+                                    <li class="arg">
+                                            <code>id</code>
+                                    </li>
+                                </ul><span class="paren">)</span>
+                            </div>
+                    
+                    
+                    
+                    
+                    
+                    
+                    
+                    
+                        <div class="meta">
+                                    <p>
+                                    <!---->
+                                    <!--Defined in-->
+                                    <!---->
+                            <!---->
+                            <!--<a href="../files/samsara_inputs__TouchTracker.js.html#l69"><code>samsara&#x2F;inputs&#x2F;_TouchTracker.js:69</code></a>-->
+                            <!---->
+                            </p>
+                    
+                    
+                    
+                        </div>
+                    
+                        <div class="description">
+                            <p>Remove record of touch data</p>
+                    
+                        </div>
+                    
+                            <div class="params">
+                                <h4>Parameters:</h4>
+                    
+                                <ul class="params-list">
+                                    <li class="param">
+                                            <code class="param-name">id</code>
+                                            <span class="type"><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Number" class="crosslink external" target="_blank">Number</a></span>
+                    
+                    
+                                        <div class="param-description">
+                                            <p>touch identifier</p>
                     
                                         </div>
                     

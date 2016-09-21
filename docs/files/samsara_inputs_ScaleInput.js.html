@@ -23,12 +23,12 @@
             <li class="divider-vertical"></li>
             <li>
                 <p class="navbar-text">
-                    API Docs for Version: <b>0.2.0</b>
+                    API Docs for Version: <b>0.2.2</b>
                 </p>
             </li>
         </div>
         <form class="navbar-form pull-right" style="line-height: 40px; height: 40px;">
-            <input style="margin-top: 0;" type="text" class="search-query" placeholder="Search for classes..." data-obj='["classes/Core.Controller", "classes/Core.ElementAllocator", "classes/Core.ElementOutput", "classes/Core.Engine", "classes/Core.LayoutNode", "classes/Core.OptionsManager", "classes/Core.SizeNode", "classes/Core.SUE", "classes/Core.Timer", "classes/Core.Transform", "classes/Core.Transitionable", "classes/Core.View", "classes/DOM.ContainerSurface", "classes/DOM.Context", "classes/DOM.Surface", "classes/Events.EventEmitter", "classes/Events.EventFilter", "classes/Events.EventHandler", "classes/Events.EventMapper", "classes/Events.EventSplitter", "classes/Inputs.GenericInput", "classes/Inputs.MouseInput", "classes/Inputs.PinchInput", "classes/Inputs.RotateInput", "classes/Inputs.ScaleInput", "classes/Inputs.ScrollInput", "classes/Inputs.TouchInput", "classes/Inputs.TouchTracker", "classes/Inputs.TwoFingerInput", "classes/Layouts.DrawerLayout", "classes/Layouts.FlexibleLayout", "classes/Layouts.GridLayout", "classes/Layouts.SequentialLayout", "classes/RenderTreeNode", "classes/RootNode", "classes/Streams.Accumulator", "classes/Streams.Differential", "classes/Streams.Observable", "classes/Streams.ResizeStream", "classes/Streams.SimpleStream", "classes/Streams.Stream", "classes/Transitions.Inertia", "classes/Transitions.Spring", "classes/Transitions.Tween"]'>
+            <input style="margin-top: 0;" type="text" class="search-query" placeholder="Search for classes..." data-obj='["classes/Core.Controller", "classes/Core.DOMAllocator", "classes/Core.DOMOutput", "classes/Core.Engine", "classes/Core.LayoutNode", "classes/Core.Node", "classes/Core.OptionsManager", "classes/Core.RenderTreeNode", "classes/Core.RootNode", "classes/Core.SizeNode", "classes/Core.Timer", "classes/Core.Transform", "classes/Core.Transitionable", "classes/Core.View", "classes/DOM.ContainerSurface", "classes/DOM.Context", "classes/DOM.Surface", "classes/Events.EventEmitter", "classes/Events.EventFilter", "classes/Events.EventHandler", "classes/Events.EventMapper", "classes/Events.EventSplitter", "classes/Inputs.GenericInput", "classes/Inputs.MouseInput", "classes/Inputs.PinchInput", "classes/Inputs.RotateInput", "classes/Inputs.ScaleInput", "classes/Inputs.ScrollInput", "classes/Inputs.TouchInput", "classes/Inputs.TouchTracker", "classes/Inputs.TwoFingerInput", "classes/Layouts.BidirectionalList", "classes/Layouts.DrawerLayout", "classes/Layouts.FlexLayout", "classes/Layouts.GridLayout", "classes/Layouts.HeaderFooterLayout", "classes/Layouts.SequentialLayout", "classes/Streams.Accumulator", "classes/Streams.Differential", "classes/Streams.Observable", "classes/Streams.SimpleStream", "classes/Streams.Stream", "classes/Transitions.Inertia", "classes/Transitions.Spring", "classes/Transitions.Tween", "classes/UI.Fingers", "classes/UI.Slider"]'>
         </form>
     </div>
 </div>
@@ -69,13 +69,17 @@
 	                            <li><a href="../classes/Inputs.ScaleInput.html">Inputs.ScaleInput</a></li>
 	                            <li><a href="../classes/Inputs.ScrollInput.html">Inputs.ScrollInput</a></li>
 	                            <li><a href="../classes/Inputs.TouchInput.html">Inputs.TouchInput</a></li>
+	                            <li><a href="../classes/Layouts.BidirectionalList.html">Layouts.BidirectionalList</a></li>
 	                            <li><a href="../classes/Layouts.DrawerLayout.html">Layouts.DrawerLayout</a></li>
-	                            <li><a href="../classes/Layouts.FlexibleLayout.html">Layouts.FlexibleLayout</a></li>
+	                            <li><a href="../classes/Layouts.FlexLayout.html">Layouts.FlexLayout</a></li>
 	                            <li><a href="../classes/Layouts.GridLayout.html">Layouts.GridLayout</a></li>
+	                            <li><a href="../classes/Layouts.HeaderFooterLayout.html">Layouts.HeaderFooterLayout</a></li>
 	                            <li><a href="../classes/Layouts.SequentialLayout.html">Layouts.SequentialLayout</a></li>
 	                            <li><a href="../classes/Streams.Accumulator.html">Streams.Accumulator</a></li>
 	                            <li><a href="../classes/Streams.Differential.html">Streams.Differential</a></li>
 	                            <li><a href="../classes/Streams.Stream.html">Streams.Stream</a></li>
+	                            <li><a href="../classes/UI.Fingers.html">UI.Fingers</a></li>
+	                            <li><a href="../classes/UI.Slider.html">UI.Slider</a></li>
 	                    </ul>
 	                </div>
 	    
@@ -121,42 +125,34 @@
 
 <div class="file">
     <pre class="prettyprint linenums">
-/* This Source Code Form is subject to the terms of the Mozilla Public
- * License, v. 2.0. If a copy of the MPL was not distributed with this
- * file, You can obtain one at http://mozilla.org/MPL/2.0/.
- *
- * @license MPL 2.0
- * @copyright Famous Industries, Inc. 2014
- */
-
-/* Modified work copyright © 2015-2016 David Valdman */
+/* Copyright © 2015-2016 David Valdman */
 
 define(function(require, exports, module) {
-    var TwoFingerInput = require(&#x27;../inputs/TwoFingerInput&#x27;);
-    var OptionsManager = require(&#x27;../core/OptionsManager&#x27;);
+    var TwoFingerInput = require(&#x27;./_TwoFingerInput&#x27;);
+    var OptionsManager = require(&#x27;../core/_OptionsManager&#x27;);
+    var EventHandler = require(&#x27;../events/EventHandler&#x27;);
 
     /**
      * Detects two-finger pinching motion and emits &#x60;start&#x60;, &#x60;update&#x60; and
      *  &#x60;end&#x60; events with the payload data:
      *
-     *      &#x60;value&#x60;         - Distance between the two touches
-     *      &#x60;delta&#x60;         - Differential in successive distances
-     *      &#x60;velocity&#x60;      - Relative velocity between two touches
-     *      &#x60;displacement&#x60;  - Total accumulated displacement
+     *      &#x60;count&#x60;         - Number of simultaneous touches
+     *      &#x60;value&#x60;         - Amount of scaling from starting placement
+     *      &#x60;delta&#x60;         - Difference in scaling
+     *      &#x60;velocity&#x60;      - Relative velocity of the scale
+     *      &#x60;cumulate&#x60;      - Total accumulated scaling
      *      &#x60;center&#x60;        - Midpoint between the two touches
-     *      &#x60;touchIds&#x60;       - Array of DOM event touch identifiers
      *
-     *  Note: Unlike PinchInput, which produces pixel values of displacement
-     *  between two touches, ScaleInput produces dimensionless values corresponding
-     *  to scaling of the initial distance between the touches. For example, if two
-     *  touches begin at 100 px apart, and move to 200 px apart, ScaleInput will emit
-     *  a value of 2 (for 2x magnification), while PinchInput will emit a value of 100.
+     *  The value is the ratio of the current displacement between two fingers
+     *  with the initial displacement. For example, a value of 1 indicates the fingers
+     *  are at the same displacement from where they began. A value of 2 indicates the fingers
+     *  are twice as far away as they originally began. A value of 1/2 indicates the fingers
+     *  are twice as close as they originally began, etc.
      *
      * @example
      *
      *      var scaleInput = new ScaleInput();
-     *
-     *      scaleInput.subscribe(Engine) // listens on &#x60;window&#x60; events
+     *      scaleInput.subscribe(surface)
      *
      *      scaleInput.on(&#x27;start&#x27;, function(payload){
      *          console.log(&#x27;start&#x27;, payload);
@@ -171,63 +167,100 @@ define(function(require, exports, module) {
      *      });
      *
      * @class ScaleInput
-     * @extends Inputs.TwoFingerInput
-     * @uses Core.OptionsManager
+     * @extends Inputs._TwoFingerInput
+     * @uses Core._OptionsManager
      * @constructor
-     * @param options {Object}              Options
-     * @param [options.scale=1] {Number}    Scale the response to pinch
+     * @param options {Object}                  Options
+     * @param [options.scale=1] {Number}        Scale the response to pinch
+     * @param [options.direction] {Number}      Direction to project movement onto.
+     *                                          Options found in ScaleInput.DIRECTION.
+     * @param [options.rails=false] {Boolean}   If a direction is specified, movement in the
+     *                                          orthogonal direction is suppressed
      */
     function ScaleInput(options) {
-        TwoFingerInput.call(this);
-
         this.options = OptionsManager.setOptions(this, options);
 
-        this._startDist = 0;
-        this._scaleFactor = 1;
+        this._eventInput = new TwoFingerInput(this.options);
+        this._eventOutput = new EventHandler();
+
+        EventHandler.setInputHandler(this, this._eventInput);
+        EventHandler.setOutputHandler(this, this._eventOutput);
+
+        this._eventInput.on(&#x27;twoFingerStart&#x27;, start.bind(this));
+        this._eventInput.on(&#x27;twoFingerUpdate&#x27;, update.bind(this));
+        this._eventInput.on(&#x27;twoFingerEnd&#x27;, end.bind(this));
+
+        this.payload = {
+            delta : 0,
+            velocity : 0,
+            value : 0,
+            cumulate : 0,
+            center : []
+        };
+
+        this.startDist = 0;
+        this.prevDist = 0;
+        this.value = 1;
+        this.cumulate = 1;
     }
 
     ScaleInput.prototype = Object.create(TwoFingerInput.prototype);
     ScaleInput.prototype.constructor = ScaleInput;
 
     ScaleInput.DEFAULT_OPTIONS = {
-        scale : 1
+        direction : undefined,
+        scale : 1,
+        rails : false
     };
 
-    // handles initial touch of two fingers
-    ScaleInput.prototype._startUpdate = function _startUpdate(event) {
-        this._startDist = TwoFingerInput.calculateDistance(this.posA, this.posB);
-        var center = TwoFingerInput.calculateCenter(this.posA, this.posB);
-
-        this._eventOutput.emit(&#x27;start&#x27;, {
-            count: event.touches.length,
-            touchIds: [this.touchAId, this.touchBId],
-            distance: this._startDist,
-            center: center
-        });
+    ScaleInput.DIRECTION = {
+        X : 0,
+        Y : 1
     };
 
-    // handles movement of two fingers
-    ScaleInput.prototype._moveUpdate = function _moveUpdate(diffTime) {
+    function start(data){
+        var center = TwoFingerInput.calculateCenter.call(this, data[0].position, data[1].position);
+        var distance = TwoFingerInput.calculateDistance.call(this, data[0].position, data[1].position);
+
+        this.startDist = distance;
+        this.prevDist = distance;
+        this.value = 1;
+
+        var payload = this.payload;
+        payload.value = this.value;
+        payload.center = center;
+
+        this._eventOutput.emit(&#x27;start&#x27;, payload);
+
+        this.value = distance;
+    }
+
+    function update(data) {
+        var center = TwoFingerInput.calculateCenter.call(this, data[0].position, data[1].position);
+        var distance = TwoFingerInput.calculateDistance.call(this, data[0].position, data[1].position);
+
         var scale = this.options.scale;
 
-        var currDist = TwoFingerInput.calculateDistance(this.posA, this.posB);
-        var center = TwoFingerInput.calculateCenter(this.posA, this.posB);
+        var delta = scale * (distance - this.prevDist) / this.startDist;
+        var velocity = delta / data.dt;
+        this.value += delta;
+        this.cumulate += delta;
 
-        var delta = (currDist - this._startDist) / this._startDist;
-        var newScaleFactor = Math.max(1 + scale * delta, 0);
-        var veloScale = (newScaleFactor - this._scaleFactor) / diffTime;
+        var payload = this.payload;
+        payload.delta = delta;
+        payload.cumulate = this.cumulate;
+        payload.velocity = velocity;
+        payload.value = this.value;
+        payload.center = center;
 
-        this._eventOutput.emit(&#x27;update&#x27;, {
-            delta : delta,
-            scale: newScaleFactor,
-            velocity: veloScale,
-            distance: currDist,
-            center : center,
-            touchIds: [this.touchAId, this.touchBId]
-        });
+        this._eventOutput.emit(&#x27;update&#x27;, payload);
 
-        this._scaleFactor = newScaleFactor;
-    };
+        this.prevDist = distance;
+    }
+
+    function end(){
+        this._eventOutput.emit(&#x27;end&#x27;, this.payload);
+    }
 
     module.exports = ScaleInput;
 });

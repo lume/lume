@@ -23,12 +23,12 @@
             <li class="divider-vertical"></li>
             <li>
                 <p class="navbar-text">
-                    API Docs for Version: <b>0.2.0</b>
+                    API Docs for Version: <b>0.2.2</b>
                 </p>
             </li>
         </div>
         <form class="navbar-form pull-right" style="line-height: 40px; height: 40px;">
-            <input style="margin-top: 0;" type="text" class="search-query" placeholder="Search for classes..." data-obj='["classes/Core.Controller", "classes/Core.ElementAllocator", "classes/Core.ElementOutput", "classes/Core.Engine", "classes/Core.LayoutNode", "classes/Core.OptionsManager", "classes/Core.SizeNode", "classes/Core.SUE", "classes/Core.Timer", "classes/Core.Transform", "classes/Core.Transitionable", "classes/Core.View", "classes/DOM.ContainerSurface", "classes/DOM.Context", "classes/DOM.Surface", "classes/Events.EventEmitter", "classes/Events.EventFilter", "classes/Events.EventHandler", "classes/Events.EventMapper", "classes/Events.EventSplitter", "classes/Inputs.GenericInput", "classes/Inputs.MouseInput", "classes/Inputs.PinchInput", "classes/Inputs.RotateInput", "classes/Inputs.ScaleInput", "classes/Inputs.ScrollInput", "classes/Inputs.TouchInput", "classes/Inputs.TouchTracker", "classes/Inputs.TwoFingerInput", "classes/Layouts.DrawerLayout", "classes/Layouts.FlexibleLayout", "classes/Layouts.GridLayout", "classes/Layouts.SequentialLayout", "classes/RenderTreeNode", "classes/RootNode", "classes/Streams.Accumulator", "classes/Streams.Differential", "classes/Streams.Observable", "classes/Streams.ResizeStream", "classes/Streams.SimpleStream", "classes/Streams.Stream", "classes/Transitions.Inertia", "classes/Transitions.Spring", "classes/Transitions.Tween"]'>
+            <input style="margin-top: 0;" type="text" class="search-query" placeholder="Search for classes..." data-obj='["classes/Core.Controller", "classes/Core.DOMAllocator", "classes/Core.DOMOutput", "classes/Core.Engine", "classes/Core.LayoutNode", "classes/Core.Node", "classes/Core.OptionsManager", "classes/Core.RenderTreeNode", "classes/Core.RootNode", "classes/Core.SizeNode", "classes/Core.Timer", "classes/Core.Transform", "classes/Core.Transitionable", "classes/Core.View", "classes/DOM.ContainerSurface", "classes/DOM.Context", "classes/DOM.Surface", "classes/Events.EventEmitter", "classes/Events.EventFilter", "classes/Events.EventHandler", "classes/Events.EventMapper", "classes/Events.EventSplitter", "classes/Inputs.GenericInput", "classes/Inputs.MouseInput", "classes/Inputs.PinchInput", "classes/Inputs.RotateInput", "classes/Inputs.ScaleInput", "classes/Inputs.ScrollInput", "classes/Inputs.TouchInput", "classes/Inputs.TouchTracker", "classes/Inputs.TwoFingerInput", "classes/Layouts.BidirectionalList", "classes/Layouts.DrawerLayout", "classes/Layouts.FlexLayout", "classes/Layouts.GridLayout", "classes/Layouts.HeaderFooterLayout", "classes/Layouts.SequentialLayout", "classes/Streams.Accumulator", "classes/Streams.Differential", "classes/Streams.Observable", "classes/Streams.SimpleStream", "classes/Streams.Stream", "classes/Transitions.Inertia", "classes/Transitions.Spring", "classes/Transitions.Tween", "classes/UI.Fingers", "classes/UI.Slider"]'>
         </form>
     </div>
 </div>
@@ -69,13 +69,17 @@
 	                            <li><a href="../classes/Inputs.ScaleInput.html">Inputs.ScaleInput</a></li>
 	                            <li><a href="../classes/Inputs.ScrollInput.html">Inputs.ScrollInput</a></li>
 	                            <li><a href="../classes/Inputs.TouchInput.html">Inputs.TouchInput</a></li>
+	                            <li><a href="../classes/Layouts.BidirectionalList.html">Layouts.BidirectionalList</a></li>
 	                            <li><a href="../classes/Layouts.DrawerLayout.html">Layouts.DrawerLayout</a></li>
-	                            <li><a href="../classes/Layouts.FlexibleLayout.html">Layouts.FlexibleLayout</a></li>
+	                            <li><a href="../classes/Layouts.FlexLayout.html">Layouts.FlexLayout</a></li>
 	                            <li><a href="../classes/Layouts.GridLayout.html">Layouts.GridLayout</a></li>
+	                            <li><a href="../classes/Layouts.HeaderFooterLayout.html">Layouts.HeaderFooterLayout</a></li>
 	                            <li><a href="../classes/Layouts.SequentialLayout.html">Layouts.SequentialLayout</a></li>
 	                            <li><a href="../classes/Streams.Accumulator.html">Streams.Accumulator</a></li>
 	                            <li><a href="../classes/Streams.Differential.html">Streams.Differential</a></li>
 	                            <li><a href="../classes/Streams.Stream.html">Streams.Stream</a></li>
+	                            <li><a href="../classes/UI.Fingers.html">UI.Fingers</a></li>
+	                            <li><a href="../classes/UI.Slider.html">UI.Slider</a></li>
 	                    </ul>
 	                </div>
 	    
@@ -125,15 +129,14 @@
 
 define(function(require, exports, module) {
     var EventHandler = require(&#x27;../../events/EventHandler&#x27;);
+    var SimpleStream = require(&#x27;../../streams/SimpleStream&#x27;);
     var Stream = require(&#x27;../../streams/Stream&#x27;);
-    var ResizeStream = require(&#x27;../../streams/ResizeStream&#x27;);
-    var SizeNode = require(&#x27;../SizeNode&#x27;);
-    var LayoutNode = require(&#x27;../LayoutNode&#x27;);
+    var LayoutNode = require(&#x27;./LayoutNode&#x27;);
+    var SizeNode = require(&#x27;./SizeNode&#x27;);
     var layoutAlgebra = require(&#x27;../algebras/layout&#x27;);
     var sizeAlgebra = require(&#x27;../algebras/size&#x27;);
-
-    var SIZE_KEYS = SizeNode.KEYS;
-    var LAYOUT_KEYS = LayoutNode.KEYS;
+    var preTickQueue = require(&#x27;../../core/queues/preTickQueue&#x27;);
+    var dirtyQueue = require(&#x27;../../core/queues/dirtyQueue&#x27;);
 
     /**
      * A node in the render tree. As such, it wraps a layout or size node,
@@ -149,14 +152,54 @@ define(function(require, exports, module) {
         // layout and size inputs
         this._layout = new EventHandler();
         this._size = new EventHandler();
+        this._logic = new EventHandler();
 
         // layout and size streams
-        this.size = null;
-        this.layout = null;
+        this.size = new SimpleStream();
+        this.layout = new SimpleStream();
 
+        // set node middleware
+        if (object) _set.call(this, object);
+        else {
+            // if no middleware specified, connect input to output
+            this.layout.subscribe(this._layout);
+            this.size.subscribe(this._size);
+        }
+
+        // save last spec if node is removed and later added
+        this._cachedSpec = {
+            layout : null,
+            size : null
+        };
+
+        // update size cache
+        this.size.on(&#x27;start&#x27;, updateSizeCache.bind(this));
+        this.size.on(&#x27;update&#x27;, updateSizeCache.bind(this));
+        this.size.on(&#x27;end&#x27;, updateSizeCache.bind(this));
+
+        // update layout spec
+        this.layout.on(&#x27;start&#x27;, updateLayoutCache.bind(this));
+        this.layout.on(&#x27;update&#x27;, updateLayoutCache.bind(this));
+        this.layout.on(&#x27;end&#x27;, updateLayoutCache.bind(this));
+
+        // reference to RootNode if a node is removed and later added
         this.root = null;
 
-        if (object) _set.call(this, object);
+        this._logic.on(&#x27;mount&#x27;, function(node){
+            this.root = node;
+        }.bind(this));
+
+        this._logic.on(&#x27;unmount&#x27;, function() {
+            this.root = null;
+        }.bind(this));
+    }
+
+    function updateLayoutCache(layout){
+        this._cachedSpec.layout = layout;
+    }
+
+    function updateSizeCache(size){
+        this._cachedSpec.size = size;
     }
 
     /**
@@ -171,7 +214,7 @@ define(function(require, exports, module) {
      *
      * @method add
      * @chainable
-     * @param node {Object|SizeNode|LayoutNode|Surface|View} Node
+     * @param node {Object|Node|Surface|View} Node
      * @return {RenderTreeNode}
      */
     RenderTreeNode.prototype.add = function add(node) {
@@ -183,38 +226,75 @@ define(function(require, exports, module) {
         }
         else if (node._isView){
             // View case
-            if (this.root)
-                node._node.root = this.root;
-            else if (this.tempRoot)
-                node._node.tempRoot = this.tempRoot;
+            return this.add(node._node);
+        }
+        else if (node instanceof RenderTreeNode){
+            // RenderTree Node
             childNode = node;
         }
         else {
-            // Node case
+            // LayoutNode or SizeNode or Surface
             childNode = new RenderTreeNode(node);
-            if (this.tempRoot)
-                childNode.tempRoot = this.tempRoot;
-            else childNode.root = _getRootNode.call(this);
         }
 
-        childNode._layout.subscribe(this.layout || this._layout);
-        childNode._size.subscribe(this.size || this._size);
+        childNode._layout.subscribe(this.layout);
+        childNode._size.subscribe(this.size);
+        childNode._logic.subscribe(this._logic);
+
+        // Called when node is removed and later added
+        if (this.root &amp;&amp; !childNode.root)
+            childNode._logic.trigger(&#x27;mount&#x27;, this.root);
+
+        // Emit previously cached values if node was removed
+        if (!node.root){
+            var self = this;
+            preTickQueue.push(function(){
+                if (!self._cachedSpec.size) return;
+                self.size.trigger(&#x27;start&#x27;, self._cachedSpec.size);
+                self.layout.trigger(&#x27;start&#x27;, self._cachedSpec.layout);
+                dirtyQueue.push(function(){
+                    self.size.trigger(&#x27;end&#x27;, self._cachedSpec.size);
+                    self.layout.trigger(&#x27;end&#x27;, self._cachedSpec.layout);
+                });
+            });
+        }
 
         return childNode;
     };
 
+    /**
+     * Remove the node from the Render Tree
+     *
+     * @method remove
+     */
+    RenderTreeNode.prototype.remove = function (){
+        this._logic.trigger(&#x27;unmount&#x27;);
+        this._layout.unsubscribe();
+        this._size.unsubscribe();
+        this._logic.unsubscribe();
+    };
+
+    // Creates a combination of Size/Layout nodes from an object literal
+    // depending on its keys
     function _createNodeFromObjectLiteral(object){
         var sizeKeys = {};
         var layoutKeys = {};
 
-        for (var key in object){
-            if (SIZE_KEYS[key]) sizeKeys[key] = object[key];
-            else if (LAYOUT_KEYS[key]) layoutKeys[key] = object[key];
-        }
+        var needsSize = false;
+        var needsLayout = false;
 
         var node = this;
-        var needsSize = Object.keys(sizeKeys).length &gt; 0;
-        var needsLayout = Object.keys(layoutKeys).length &gt; 0;
+
+        for (var key in object){
+            if (SizeNode.KEYS[key]){
+                sizeKeys[key] = object[key];
+                needsSize = true;
+            }
+            else if (LayoutNode.KEYS[key]){
+                layoutKeys[key] = object[key];
+                needsLayout = true;
+            }
+        }
 
         // create extra align node if needed
         if (needsSize &amp;&amp; layoutKeys.align){
@@ -236,42 +316,53 @@ define(function(require, exports, module) {
         return node;
     }
 
-    function _getRootNode(){
-        if (this.root) return this.root;
-        if (this.tempRoot) return _getRootNode.call(this.tempRoot);
-        return this;
-    }
-
+    // Set node middleware. Can be an object, SizeNode, LayoutNode, or Surface
     function _set(object) {
         if (object instanceof SizeNode){
-            this.size = ResizeStream.lift(
+            var size = Stream.lift(
                 function SGSizeAlgebra (objectSpec, parentSize){
                     if (!parentSize) return false;
-                    return (objectSpec)
+                    return(objectSpec)
                         ? sizeAlgebra(objectSpec, parentSize)
                         : parentSize;
-                },
+                }.bind(this),
                 [object, this._size]
             );
-            return;
+            this.size.subscribe(size);
+            this.layout.subscribe(this._layout);
         }
         else if (object instanceof LayoutNode){
-            this.layout = Stream.lift(
+            var layout = Stream.lift(
                 function SGLayoutAlgebra (objectSpec, parentSpec, size){
                     if (!parentSpec || !size) return false;
                     return (objectSpec)
                         ? layoutAlgebra(objectSpec, parentSpec, size)
                         : parentSpec;
-                },
+                }.bind(this),
                 [object, this._layout, this._size]
             );
-            return;
+            this.layout.subscribe(layout);
+            this.size.subscribe(this._size);
         }
+        else {
+            this._logic.on(&#x27;unmount&#x27;, function() {
+                object.remove();
+            }.bind(this));
 
-        // object is a leaf node
-        object._size.subscribe(this._size);
-        object._layout.subscribe(this._layout);
-        object._getRoot = _getRootNode.bind(this);
+            this._logic.on(&#x27;mount&#x27;, function(root) {
+                object.setup(root.allocator);
+            }.bind(this));
+
+            object.on(&#x27;recall&#x27;, function(){
+                object._size.unsubscribe(this._size);
+                object._layout.unsubscribe(this._layout);
+            }.bind(this));
+
+            object.on(&#x27;deploy&#x27;, function(){
+                object._size.subscribe(this._size);
+                object._layout.subscribe(this._layout);
+            }.bind(this));
+        }
     }
 
     module.exports = RenderTreeNode;

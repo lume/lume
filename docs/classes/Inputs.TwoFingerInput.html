@@ -23,12 +23,12 @@
             <li class="divider-vertical"></li>
             <li>
                 <p class="navbar-text">
-                    API Docs for Version: <b>0.2.0</b>
+                    API Docs for Version: <b>0.2.2</b>
                 </p>
             </li>
         </div>
         <form class="navbar-form pull-right" style="line-height: 40px; height: 40px;">
-            <input style="margin-top: 0;" type="text" class="search-query" placeholder="Search for classes..." data-obj='["classes/Core.Controller", "classes/Core.ElementAllocator", "classes/Core.ElementOutput", "classes/Core.Engine", "classes/Core.LayoutNode", "classes/Core.OptionsManager", "classes/Core.SizeNode", "classes/Core.SUE", "classes/Core.Timer", "classes/Core.Transform", "classes/Core.Transitionable", "classes/Core.View", "classes/DOM.ContainerSurface", "classes/DOM.Context", "classes/DOM.Surface", "classes/Events.EventEmitter", "classes/Events.EventFilter", "classes/Events.EventHandler", "classes/Events.EventMapper", "classes/Events.EventSplitter", "classes/Inputs.GenericInput", "classes/Inputs.MouseInput", "classes/Inputs.PinchInput", "classes/Inputs.RotateInput", "classes/Inputs.ScaleInput", "classes/Inputs.ScrollInput", "classes/Inputs.TouchInput", "classes/Inputs.TouchTracker", "classes/Inputs.TwoFingerInput", "classes/Layouts.DrawerLayout", "classes/Layouts.FlexibleLayout", "classes/Layouts.GridLayout", "classes/Layouts.SequentialLayout", "classes/RenderTreeNode", "classes/RootNode", "classes/Streams.Accumulator", "classes/Streams.Differential", "classes/Streams.Observable", "classes/Streams.ResizeStream", "classes/Streams.SimpleStream", "classes/Streams.Stream", "classes/Transitions.Inertia", "classes/Transitions.Spring", "classes/Transitions.Tween"]'>
+            <input style="margin-top: 0;" type="text" class="search-query" placeholder="Search for classes..." data-obj='["classes/Core.Controller", "classes/Core.DOMAllocator", "classes/Core.DOMOutput", "classes/Core.Engine", "classes/Core.LayoutNode", "classes/Core.Node", "classes/Core.OptionsManager", "classes/Core.RenderTreeNode", "classes/Core.RootNode", "classes/Core.SizeNode", "classes/Core.Timer", "classes/Core.Transform", "classes/Core.Transitionable", "classes/Core.View", "classes/DOM.ContainerSurface", "classes/DOM.Context", "classes/DOM.Surface", "classes/Events.EventEmitter", "classes/Events.EventFilter", "classes/Events.EventHandler", "classes/Events.EventMapper", "classes/Events.EventSplitter", "classes/Inputs.GenericInput", "classes/Inputs.MouseInput", "classes/Inputs.PinchInput", "classes/Inputs.RotateInput", "classes/Inputs.ScaleInput", "classes/Inputs.ScrollInput", "classes/Inputs.TouchInput", "classes/Inputs.TouchTracker", "classes/Inputs.TwoFingerInput", "classes/Layouts.BidirectionalList", "classes/Layouts.DrawerLayout", "classes/Layouts.FlexLayout", "classes/Layouts.GridLayout", "classes/Layouts.HeaderFooterLayout", "classes/Layouts.SequentialLayout", "classes/Streams.Accumulator", "classes/Streams.Differential", "classes/Streams.Observable", "classes/Streams.SimpleStream", "classes/Streams.Stream", "classes/Transitions.Inertia", "classes/Transitions.Spring", "classes/Transitions.Tween", "classes/UI.Fingers", "classes/UI.Slider"]'>
         </form>
     </div>
 </div>
@@ -69,13 +69,17 @@
 	                            <li><a href="../classes/Inputs.ScaleInput.html">Inputs.ScaleInput</a></li>
 	                            <li><a href="../classes/Inputs.ScrollInput.html">Inputs.ScrollInput</a></li>
 	                            <li><a href="../classes/Inputs.TouchInput.html">Inputs.TouchInput</a></li>
+	                            <li><a href="../classes/Layouts.BidirectionalList.html">Layouts.BidirectionalList</a></li>
 	                            <li><a href="../classes/Layouts.DrawerLayout.html">Layouts.DrawerLayout</a></li>
-	                            <li><a href="../classes/Layouts.FlexibleLayout.html">Layouts.FlexibleLayout</a></li>
+	                            <li><a href="../classes/Layouts.FlexLayout.html">Layouts.FlexLayout</a></li>
 	                            <li><a href="../classes/Layouts.GridLayout.html">Layouts.GridLayout</a></li>
+	                            <li><a href="../classes/Layouts.HeaderFooterLayout.html">Layouts.HeaderFooterLayout</a></li>
 	                            <li><a href="../classes/Layouts.SequentialLayout.html">Layouts.SequentialLayout</a></li>
 	                            <li><a href="../classes/Streams.Accumulator.html">Streams.Accumulator</a></li>
 	                            <li><a href="../classes/Streams.Differential.html">Streams.Differential</a></li>
 	                            <li><a href="../classes/Streams.Stream.html">Streams.Stream</a></li>
+	                            <li><a href="../classes/UI.Fingers.html">UI.Fingers</a></li>
+	                            <li><a href="../classes/UI.Slider.html">UI.Slider</a></li>
 	                    </ul>
 	                </div>
 	    
@@ -120,6 +124,12 @@
 </div>
 
 <div class="well well-small">
+        <div class="uses">
+            Uses
+            <ul class="inline commas">
+                    <li><a href="Core._OptionsManager.html">Core._OptionsManager</a></li>
+            </ul>
+        </div>
 
         <div class="extends">
             Extends <a href="../classes/Streams.SimpleStream.html" class="crosslink">Streams.SimpleStream</a>
@@ -127,7 +137,7 @@
 
     <!---->
         <div class="foundat">
-            Defined in: <a href="../files/samsara_inputs_TwoFingerInput.js.html#l20"><code>samsara&#x2F;inputs&#x2F;TwoFingerInput.js:20</code></a>
+            Defined in: <a href="../files/samsara_inputs__TwoFingerInput.js.html#l9"><code>samsara&#x2F;inputs&#x2F;_TwoFingerInput.js:9</code></a>
         </div>
     <!---->
 
@@ -137,7 +147,7 @@
 
 <div class="well well-small">
     <p>Generalizes handling of two-finger touch events.
-Helper to PinchInput, RotateInput, and ScaleInput.
+Helper to PinchInput and RotateInput.
 This class is meant to be overridden and not used directly.</p>
 
 </div>
@@ -163,7 +173,7 @@ This class is meant to be overridden and not used directly.</p>
                         <!--Defined in-->
                         <!---->
                 <!---->
-                <!--<a href="../files/samsara_inputs_TwoFingerInput.js.html#l20"><code>samsara&#x2F;inputs&#x2F;TwoFingerInput.js:20</code></a>-->
+                <!--<a href="../files/samsara_inputs__TwoFingerInput.js.html#l9"><code>samsara&#x2F;inputs&#x2F;_TwoFingerInput.js:9</code></a>-->
                 <!---->
                 </p>
         
@@ -206,7 +216,22 @@ This class is meant to be overridden and not used directly.</p>
                                     <span class="flag static">static</span>
                             </li>
                             <li class="index-item method">
+                                <a href="#" data-tabid="#methods" data-anchor="#method_calculateCenter" data-tablink="calculateCenter">calculateCenter</a>
+
+                                    <span class="flag static">static</span>
+                            </li>
+                            <li class="index-item method">
                                 <a href="#" data-tabid="#methods" data-anchor="#method_calculateDistance" data-tablink="calculateDistance">calculateDistance</a>
+
+                                    <span class="flag static">static</span>
+                            </li>
+                            <li class="index-item method">
+                                <a href="#" data-tabid="#methods" data-anchor="#method_calculateOrientation" data-tablink="calculateOrientation">calculateOrientation</a>
+
+                                    <span class="flag static">static</span>
+                            </li>
+                            <li class="index-item method">
+                                <a href="#" data-tabid="#methods" data-anchor="#method_detectOrientationChange" data-tablink="detectOrientationChange">detectOrientationChange</a>
 
                                     <span class="flag static">static</span>
                             </li>
@@ -242,10 +267,10 @@ This class is meant to be overridden and not used directly.</p>
                             <div class="args">
                                 <span class="paren">(</span><ul class="args-list inline commas">
                                     <li class="arg">
-                                            <code>posA</code>
+                                            <code>value1</code>
                                     </li>
                                     <li class="arg">
-                                            <code>posB</code>
+                                            <code>value2</code>
                                     </li>
                                 </ul><span class="paren">)</span>
                             </div>
@@ -267,7 +292,7 @@ This class is meant to be overridden and not used directly.</p>
                                     <!--Defined in-->
                                     <!---->
                             <!---->
-                            <!--<a href="../files/samsara_inputs_TwoFingerInput.js.html#l55"><code>samsara&#x2F;inputs&#x2F;TwoFingerInput.js:55</code></a>-->
+                            <!--<a href="../files/samsara_inputs__TwoFingerInput.js.html#l54"><code>samsara&#x2F;inputs&#x2F;_TwoFingerInput.js:54</code></a>-->
                             <!---->
                             </p>
                     
@@ -276,7 +301,8 @@ This class is meant to be overridden and not used directly.</p>
                         </div>
                     
                         <div class="description">
-                            <p>Calculates the angle between two touches relative to [0,1].</p>
+                            <p>Calculates the angle between two touches relative to [0,1].
+                    Direction option must not be set to x- or y- axes, otherwise 0 is returned.</p>
                     
                         </div>
                     
@@ -285,7 +311,7 @@ This class is meant to be overridden and not used directly.</p>
                     
                                 <ul class="params-list">
                                     <li class="param">
-                                            <code class="param-name">posA</code>
+                                            <code class="param-name">value1</code>
                                             <span class="type"><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array" class="crosslink external" target="_blank">Array</a></span>
                     
                     
@@ -296,7 +322,7 @@ This class is meant to be overridden and not used directly.</p>
                     
                                     </li>
                                     <li class="param">
-                                            <code class="param-name">posB</code>
+                                            <code class="param-name">value2</code>
                                             <span class="type"><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array" class="crosslink external" target="_blank">Array</a></span>
                     
                     
@@ -324,16 +350,16 @@ This class is meant to be overridden and not used directly.</p>
                             <div class="args">
                                 <span class="paren">(</span><ul class="args-list inline commas">
                                     <li class="arg">
-                                            <code>posA</code>
+                                            <code>value1</code>
                                     </li>
                                     <li class="arg">
-                                            <code>posB</code>
+                                            <code>value2</code>
                                     </li>
                                 </ul><span class="paren">)</span>
                             </div>
                     
                             <span class="returns-inline">
-                                <span class="type"><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array" class="crosslink external" target="_blank">Array</a></span>
+                                <span class="type"><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Number" class="crosslink external" target="_blank">Number</a> | <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array" class="crosslink external" target="_blank">Array</a></span>
                             </span>
                     
                     
@@ -349,7 +375,7 @@ This class is meant to be overridden and not used directly.</p>
                                     <!--Defined in-->
                                     <!---->
                             <!---->
-                            <!--<a href="../files/samsara_inputs_TwoFingerInput.js.html#l85"><code>samsara&#x2F;inputs&#x2F;TwoFingerInput.js:85</code></a>-->
+                            <!--<a href="../files/samsara_inputs__TwoFingerInput.js.html#l91"><code>samsara&#x2F;inputs&#x2F;_TwoFingerInput.js:91</code></a>-->
                             <!---->
                             </p>
                     
@@ -367,23 +393,23 @@ This class is meant to be overridden and not used directly.</p>
                     
                                 <ul class="params-list">
                                     <li class="param">
-                                            <code class="param-name">posA</code>
-                                            <span class="type"><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array" class="crosslink external" target="_blank">Array</a></span>
+                                            <code class="param-name">value1</code>
+                                            <span class="type"><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Number" class="crosslink external" target="_blank">Number</a> | <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array" class="crosslink external" target="_blank">Array</a></span>
                     
                     
                                         <div class="param-description">
-                                            <p>First touch location (x,y)</p>
+                                            <p>First touch location</p>
                     
                                         </div>
                     
                                     </li>
                                     <li class="param">
-                                            <code class="param-name">posB</code>
-                                            <span class="type"><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array" class="crosslink external" target="_blank">Array</a></span>
+                                            <code class="param-name">value2</code>
+                                            <span class="type"><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Number" class="crosslink external" target="_blank">Number</a> | <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array" class="crosslink external" target="_blank">Array</a></span>
                     
                     
                                         <div class="param-description">
-                                            <p>Second touch location (x,y)</p>
+                                            <p>Second touch location</p>
                     
                                         </div>
                     
@@ -395,7 +421,89 @@ This class is meant to be overridden and not used directly.</p>
                                 <h4>Returns:</h4>
                     
                                 <div class="returns-description">
-                                            <span class="type"><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array" class="crosslink external" target="_blank">Array</a></span>:
+                                            <span class="type"><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Number" class="crosslink external" target="_blank">Number</a> | <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array" class="crosslink external" target="_blank">Array</a></span>:
+                                </div>
+                            </div>
+                    
+                    </div>
+                    <div id="method_calculateCenter" class="method item">
+                        <h3 class="name"><code>calculateCenter</code></h3>
+                    
+                            <div class="args">
+                                <span class="paren">(</span><ul class="args-list inline commas">
+                                    <li class="arg">
+                                            <code>velocity1</code>
+                                    </li>
+                                    <li class="arg">
+                                            <code>velocity2</code>
+                                    </li>
+                                </ul><span class="paren">)</span>
+                            </div>
+                    
+                            <span class="returns-inline">
+                                <span class="type"><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Number" class="crosslink external" target="_blank">Number</a> | <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array" class="crosslink external" target="_blank">Array</a></span>
+                            </span>
+                    
+                    
+                    
+                    
+                            <span class="flag static">static</span>
+                    
+                    
+                    
+                        <div class="meta">
+                                    <p>
+                                    <!---->
+                                    <!--Defined in-->
+                                    <!---->
+                            <!---->
+                            <!--<a href="../files/samsara_inputs__TwoFingerInput.js.html#l106"><code>samsara&#x2F;inputs&#x2F;_TwoFingerInput.js:106</code></a>-->
+                            <!---->
+                            </p>
+                    
+                    
+                    
+                        </div>
+                    
+                        <div class="description">
+                            <p>Calculates the combined velocity of the two touches.</p>
+                    
+                        </div>
+                    
+                            <div class="params">
+                                <h4>Parameters:</h4>
+                    
+                                <ul class="params-list">
+                                    <li class="param">
+                                            <code class="param-name">velocity1</code>
+                                            <span class="type"><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Number" class="crosslink external" target="_blank">Number</a> | <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array" class="crosslink external" target="_blank">Array</a></span>
+                    
+                    
+                                        <div class="param-description">
+                                            <p>First velocity</p>
+                    
+                                        </div>
+                    
+                                    </li>
+                                    <li class="param">
+                                            <code class="param-name">velocity2</code>
+                                            <span class="type"><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Number" class="crosslink external" target="_blank">Number</a> | <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array" class="crosslink external" target="_blank">Array</a></span>
+                    
+                    
+                                        <div class="param-description">
+                                            <p>Second velocity</p>
+                    
+                                        </div>
+                    
+                                    </li>
+                                </ul>
+                            </div>
+                    
+                            <div class="returns">
+                                <h4>Returns:</h4>
+                    
+                                <div class="returns-description">
+                                            <span class="type"><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Number" class="crosslink external" target="_blank">Number</a> | <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array" class="crosslink external" target="_blank">Array</a></span>:
                                 </div>
                             </div>
                     
@@ -406,10 +514,10 @@ This class is meant to be overridden and not used directly.</p>
                             <div class="args">
                                 <span class="paren">(</span><ul class="args-list inline commas">
                                     <li class="arg">
-                                            <code>posA</code>
+                                            <code>value1</code>
                                     </li>
                                     <li class="arg">
-                                            <code>posB</code>
+                                            <code>value2</code>
                                     </li>
                                 </ul><span class="paren">)</span>
                             </div>
@@ -431,7 +539,7 @@ This class is meant to be overridden and not used directly.</p>
                                     <!--Defined in-->
                                     <!---->
                             <!---->
-                            <!--<a href="../files/samsara_inputs_TwoFingerInput.js.html#l70"><code>samsara&#x2F;inputs&#x2F;TwoFingerInput.js:70</code></a>-->
+                            <!--<a href="../files/samsara_inputs__TwoFingerInput.js.html#l71"><code>samsara&#x2F;inputs&#x2F;_TwoFingerInput.js:71</code></a>-->
                             <!---->
                             </p>
                     
@@ -449,8 +557,8 @@ This class is meant to be overridden and not used directly.</p>
                     
                                 <ul class="params-list">
                                     <li class="param">
-                                            <code class="param-name">posA</code>
-                                            <span class="type"><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array" class="crosslink external" target="_blank">Array</a></span>
+                                            <code class="param-name">value1</code>
+                                            <span class="type"><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Number" class="crosslink external" target="_blank">Number</a> | <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array" class="crosslink external" target="_blank">Array</a></span>
                     
                     
                                         <div class="param-description">
@@ -460,8 +568,8 @@ This class is meant to be overridden and not used directly.</p>
                     
                                     </li>
                                     <li class="param">
-                                            <code class="param-name">posB</code>
-                                            <span class="type"><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array" class="crosslink external" target="_blank">Array</a></span>
+                                            <code class="param-name">value2</code>
+                                            <span class="type"><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Number" class="crosslink external" target="_blank">Number</a> | <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array" class="crosslink external" target="_blank">Array</a></span>
                     
                     
                                         <div class="param-description">
@@ -482,6 +590,170 @@ This class is meant to be overridden and not used directly.</p>
                             </div>
                     
                     </div>
+                    <div id="method_calculateOrientation" class="method item">
+                        <h3 class="name"><code>calculateOrientation</code></h3>
+                    
+                            <div class="args">
+                                <span class="paren">(</span><ul class="args-list inline commas">
+                                    <li class="arg">
+                                            <code>value1</code>
+                                    </li>
+                                    <li class="arg">
+                                            <code>value2</code>
+                                    </li>
+                                </ul><span class="paren">)</span>
+                            </div>
+                    
+                            <span class="returns-inline">
+                                <span class="type"><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Number" class="crosslink external" target="_blank">Number</a> | <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array" class="crosslink external" target="_blank">Array</a></span>
+                            </span>
+                    
+                    
+                    
+                    
+                            <span class="flag static">static</span>
+                    
+                    
+                    
+                        <div class="meta">
+                                    <p>
+                                    <!---->
+                                    <!--Defined in-->
+                                    <!---->
+                            <!---->
+                            <!--<a href="../files/samsara_inputs__TwoFingerInput.js.html#l121"><code>samsara&#x2F;inputs&#x2F;_TwoFingerInput.js:121</code></a>-->
+                            <!---->
+                            </p>
+                    
+                    
+                    
+                        </div>
+                    
+                        <div class="description">
+                            <p>Calculates the direction of the touch.</p>
+                    
+                        </div>
+                    
+                            <div class="params">
+                                <h4>Parameters:</h4>
+                    
+                                <ul class="params-list">
+                                    <li class="param">
+                                            <code class="param-name">value1</code>
+                                            <span class="type"><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Number" class="crosslink external" target="_blank">Number</a> | <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array" class="crosslink external" target="_blank">Array</a></span>
+                    
+                    
+                                        <div class="param-description">
+                                            <p>First velocity</p>
+                    
+                                        </div>
+                    
+                                    </li>
+                                    <li class="param">
+                                            <code class="param-name">value2</code>
+                                            <span class="type"><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Number" class="crosslink external" target="_blank">Number</a> | <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array" class="crosslink external" target="_blank">Array</a></span>
+                    
+                    
+                                        <div class="param-description">
+                                            <p>Second velocity</p>
+                    
+                                        </div>
+                    
+                                    </li>
+                                </ul>
+                            </div>
+                    
+                            <div class="returns">
+                                <h4>Returns:</h4>
+                    
+                                <div class="returns-description">
+                                            <span class="type"><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Number" class="crosslink external" target="_blank">Number</a> | <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array" class="crosslink external" target="_blank">Array</a></span>:
+                                </div>
+                            </div>
+                    
+                    </div>
+                    <div id="method_detectOrientationChange" class="method item">
+                        <h3 class="name"><code>detectOrientationChange</code></h3>
+                    
+                            <div class="args">
+                                <span class="paren">(</span><ul class="args-list inline commas">
+                                    <li class="arg">
+                                            <code>dir2</code>
+                                    </li>
+                                    <li class="arg">
+                                            <code>dir1</code>
+                                    </li>
+                                </ul><span class="paren">)</span>
+                            </div>
+                    
+                            <span class="returns-inline">
+                                <span class="type"><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Boolean" class="crosslink external" target="_blank">Boolean</a></span>
+                            </span>
+                    
+                    
+                    
+                    
+                            <span class="flag static">static</span>
+                    
+                    
+                    
+                        <div class="meta">
+                                    <p>
+                                    <!---->
+                                    <!--Defined in-->
+                                    <!---->
+                            <!---->
+                            <!--<a href="../files/samsara_inputs__TwoFingerInput.js.html#l136"><code>samsara&#x2F;inputs&#x2F;_TwoFingerInput.js:136</code></a>-->
+                            <!---->
+                            </p>
+                    
+                    
+                    
+                        </div>
+                    
+                        <div class="description">
+                            <p>Detects if orientation has changed.</p>
+                    
+                        </div>
+                    
+                            <div class="params">
+                                <h4>Parameters:</h4>
+                    
+                                <ul class="params-list">
+                                    <li class="param">
+                                            <code class="param-name">dir2</code>
+                                            <span class="type"><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Number" class="crosslink external" target="_blank">Number</a> | <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array" class="crosslink external" target="_blank">Array</a></span>
+                    
+                    
+                                        <div class="param-description">
+                                            <p>First direction</p>
+                    
+                                        </div>
+                    
+                                    </li>
+                                    <li class="param">
+                                            <code class="param-name">dir1</code>
+                                            <span class="type"><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Number" class="crosslink external" target="_blank">Number</a> | <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array" class="crosslink external" target="_blank">Array</a></span>
+                    
+                    
+                                        <div class="param-description">
+                                            <p>Second direction</p>
+                    
+                                        </div>
+                    
+                                    </li>
+                                </ul>
+                            </div>
+                    
+                            <div class="returns">
+                                <h4>Returns:</h4>
+                    
+                                <div class="returns-description">
+                                            <span class="type"><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Boolean" class="crosslink external" target="_blank">Boolean</a></span>:
+                                </div>
+                            </div>
+                    
+                    </div>
                     <div id="method_filter" class="method item inherited">
                         <h3 class="name"><code>filter</code></h3>
                     
@@ -493,6 +765,9 @@ This class is meant to be overridden and not used directly.</p>
                                 </ul><span class="paren">)</span>
                             </div>
                     
+                            <span class="returns-inline">
+                                <span class="type">SimpleStream</span>
+                            </span>
                     
                     
                     
@@ -504,7 +779,7 @@ This class is meant to be overridden and not used directly.</p>
                                     <p>Inherited from
                                     <a href="../classes/Streams.SimpleStream.html#method_filter">Streams.SimpleStream</a>:
                             <!---->
-                            <!--<a href="../files/samsara_streams_SimpleStream.js.html#l43"><code>samsara&#x2F;streams&#x2F;SimpleStream.js:43</code></a>-->
+                            <!--<a href="../files/samsara_streams_SimpleStream.js.html#l44"><code>samsara&#x2F;streams&#x2F;SimpleStream.js:44</code></a>-->
                             <!---->
                             </p>
                     
@@ -515,7 +790,7 @@ This class is meant to be overridden and not used directly.</p>
                         <div class="description">
                             Filter converts the current stream into a new stream
                      that only emits if the filter condition is satisfied.
-                     The function should return a Boolean.
+                     The filter function should return a Boolean value.
                         </div>
                     
                             <div class="params">
@@ -535,6 +810,14 @@ This class is meant to be overridden and not used directly.</p>
                                 </ul>
                             </div>
                     
+                            <div class="returns">
+                                <h4>Returns:</h4>
+                    
+                                <div class="returns-description">
+                                            <span class="type">SimpleStream</span>:
+                                        stream  Filtered stream
+                                </div>
+                            </div>
                     
                     </div>
                     <div id="method_map" class="method item inherited">
@@ -548,6 +831,9 @@ This class is meant to be overridden and not used directly.</p>
                                 </ul><span class="paren">)</span>
                             </div>
                     
+                            <span class="returns-inline">
+                                <span class="type">SimpleStream</span>
+                            </span>
                     
                     
                     
@@ -589,6 +875,14 @@ This class is meant to be overridden and not used directly.</p>
                                 </ul>
                             </div>
                     
+                            <div class="returns">
+                                <h4>Returns:</h4>
+                    
+                                <div class="returns-description">
+                                            <span class="type">SimpleStream</span>:
+                                        stream  Mapped stream
+                                </div>
+                            </div>
                     
                     </div>
                     <div id="method_pluck" class="method item inherited">
@@ -602,6 +896,9 @@ This class is meant to be overridden and not used directly.</p>
                                 </ul><span class="paren">)</span>
                             </div>
                     
+                            <span class="returns-inline">
+                                <span class="type">SimpleStream</span>
+                            </span>
                     
                     
                     
@@ -625,7 +922,7 @@ This class is meant to be overridden and not used directly.</p>
                             Pluck is an opinionated mapper. It projects a Stream
                      onto one of its return values.
                     
-                     Useful if a Stream returns an array or an object.
+                     Useful if a Stream returns an array or object.
                         </div>
                     
                             <div class="params">
@@ -645,6 +942,14 @@ This class is meant to be overridden and not used directly.</p>
                                 </ul>
                             </div>
                     
+                            <div class="returns">
+                                <h4>Returns:</h4>
+                    
+                                <div class="returns-description">
+                                            <span class="type">SimpleStream</span>:
+                                        stream  Plucked stream
+                                </div>
+                            </div>
                     
                     </div>
                     <div id="method_split" class="method item inherited">
@@ -669,7 +974,7 @@ This class is meant to be overridden and not used directly.</p>
                                     <p>Inherited from
                                     <a href="../classes/Streams.SimpleStream.html#method_split">Streams.SimpleStream</a>:
                             <!---->
-                            <!--<a href="../files/samsara_streams_SimpleStream.js.html#l58"><code>samsara&#x2F;streams&#x2F;SimpleStream.js:58</code></a>-->
+                            <!--<a href="../files/samsara_streams_SimpleStream.js.html#l60"><code>samsara&#x2F;streams&#x2F;SimpleStream.js:60</code></a>-->
                             <!---->
                             </p>
                     
@@ -679,7 +984,7 @@ This class is meant to be overridden and not used directly.</p>
                     
                         <div class="description">
                             Split maps one of several streams based on custom logic.
-                     The function should return an EventEmitter.
+                     The splitter function should return an EventEmitter type.
                         </div>
                     
                             <div class="params">

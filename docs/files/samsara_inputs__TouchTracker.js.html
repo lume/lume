@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="utf-8">
-    <title>samsara/streams/SimpleStream.js - SamsaraJS</title>
+    <title>samsara/inputs/_TouchTracker.js - SamsaraJS</title>
     <link rel="stylesheet" href="">
     <link rel="stylesheet" href="../assets/vendor/prettify/prettify-min.css">
     <link rel="stylesheet" href="../assets/css/main.css" id="site_styles">
@@ -120,7 +120,7 @@
                 <div id="docs-main">
                     <div class="content">
 <div class="page-header">
-    <h1>samsara/streams/SimpleStream.js <small>File</small></h1>
+    <h1>samsara/inputs/_TouchTracker.js <small>File</small></h1>
 </div>
 
 <div class="file">
@@ -128,91 +128,144 @@
 /* Copyright © 2015-2016 David Valdman */
 
 define(function(require, exports, module) {
+    var OptionsManager = require(&#x27;../core/_OptionsManager&#x27;);
     var EventHandler = require(&#x27;../events/EventHandler&#x27;);
-    var EventMapper = require(&#x27;../events/EventMapper&#x27;);
-    var EventFilter = require(&#x27;../events/EventFilter&#x27;);
-    var EventSplitter = require(&#x27;../events/EventSplitter&#x27;);
+
+    var now = Date.now;
 
     /**
-     * A SimpleStream wraps an EventHandler and provides convenience
-     *  methods of &#x60;map&#x60;, &#x60;filter&#x60;, &#x60;split&#x60;, and &#x60;pluck&#x60; to
-     *  transform one stream into another.
+     * Catalogues a history of touch events. Useful for creating more complex
+     *  touch recognition for gestures. Currently only used by TouchInput to
+     *  track previous touches to compute velocity.
      *
-     * @example
+     * TouchTracker emits these events with the following payload data:
      *
-     * @class SimpleStream
-     * @extends Core.EventHandler
-     * @private
-     * @namespace Streams
+     *      &#x60;x&#x60;             - Displacement in x-direction
+     *      &#x60;y&#x60;             - Displacement in y-direction
+     *      &#x60;identifier&#x60;    - DOM event touch identifier
+     *      &#x60;timestamp&#x60;     - Timestamp
+     *      &#x60;count&#x60;         - DOM event for number of simultaneous touches
+     *      &#x60;history&#x60;       - History of touches for the gesture
+     *      &#x60;event&#x60;         - Original DOM event
+     *
+     * @class TouchTracker
      * @constructor
+     * @private
+     * @uses Core._OptionsManager
+     * @param [options] {Object}                Options
+     * @param [options.memory] {Number}         Number of past touches to record in history
+     * @param [options.track] {Number}          Max simultaneous touches to record
+     * @param [options.limit] {Number}          Limit number of touches. If reached, no events are emitted
      */
-    function SimpleStream(){
-        EventHandler.call(this);
+    function TouchTracker(options) {
+        this.options = OptionsManager.setOptions(this, options);
+
+        this.history = {};
+        this.numTouches = 0;
+
+        this._eventInput = new EventHandler();
+        this._eventOutput = new EventHandler();
+
+        EventHandler.setInputHandler(this, this._eventInput);
+        EventHandler.setOutputHandler(this, this._eventOutput);
+
+        this._eventInput.on(&#x27;touchstart&#x27;, handleStart.bind(this));
+        this._eventInput.on(&#x27;touchmove&#x27;, handleMove.bind(this));
+        this._eventInput.on(&#x27;touchend&#x27;, handleEnd.bind(this));
+        this._eventInput.on(&#x27;touchcancel&#x27;, handleEnd.bind(this));
     }
 
-    SimpleStream.prototype = Object.create(EventHandler.prototype);
-    SimpleStream.prototype.constructor = SimpleStream;
-
-    /**
-     * Map converts the current stream into a new stream
-     *  with a modified (mapped) data payload.
-     *
-     * @method map
-     * @param mapperFn {Function}    Function to map event payload
-     * @return stream {SimpleStream} Mapped stream
-     */
-    SimpleStream.prototype.map = function map(mapperFn){
-        var stream = new SimpleStream();
-        var mapper = new EventMapper(mapperFn);
-        stream.subscribe(mapper).subscribe(this);
-        return stream;
+    TouchTracker.DEFAULT_OPTIONS = {
+        track : 1,
+        limit : Infinity,  // number of simultaneous touches
+        memory : 1          // length of recorded history
     };
 
     /**
-     * Filter converts the current stream into a new stream
-     *  that only emits if the filter condition is satisfied.
-     *  The filter function should return a Boolean value.
+     * Record touch data
      *
-     * @method filter
-     * @param filterFn {Function}    Function to filter event payload
-     * @return stream {SimpleStream} Filtered stream
+     * @method track
+     * @param id {Number}   touch identifier
+     * @param data {Object} touch data
      */
-    SimpleStream.prototype.filter = function filter(filterFn){
-        var filter = new EventFilter(filterFn);
-        var filteredStream = new SimpleStream();
-        filteredStream.subscribe(filter).subscribe(this);
-        return filteredStream;
+    TouchTracker.prototype.track = function track(id, data) {
+        this.numTouches++;
+        this.history[id] = [data];
     };
 
     /**
-     * Split maps one of several streams based on custom logic.
-     *  The splitter function should return an EventEmitter type.
+     * Remove record of touch data
      *
-     * @method split
-     * @param splitterFn {Function}  Splitter function
+     * @method untrack
+     * @param id {Number}   touch identifier
      */
-    SimpleStream.prototype.split = function split(splitterFn){
-        var splitter = new EventSplitter(splitterFn);
-        splitter.subscribe(this);
+    TouchTracker.prototype.untrack = function track(id){
+        this.numTouches--;
+        delete this.history[id];
     };
 
-    /**
-     * Pluck is an opinionated mapper. It projects a Stream
-     *  onto one of its return values.
-     *
-     *  Useful if a Stream returns an array or object.
-     *
-     * @method pluck
-     * @param key {String|Number}    Key to project event payload onto
-     * @return stream {SimpleStream} Plucked stream
-     */
-    SimpleStream.prototype.pluck = function pluck(key){
-        return this.map(function(value){
-            return value[key];
-        });
-    };
-    
-    module.exports = SimpleStream;
+    function getData(touch, event, history) {
+        return {
+            x: touch.clientX,
+            y: touch.clientY,
+            touchId : touch.identifier,
+            timestamp: now(),
+            count: event.touches.length,
+            event: touch,
+            history: history
+        };
+    }
+
+    function handleStart(event) {
+        if (event.touches.length &gt;= this.options.limit) return false;
+        if (this.numTouches &gt;= this.options.track) return false;
+
+        for (var i = 0; i &lt; event.changedTouches.length; i++) {
+            var touch = event.changedTouches[i];
+            var touchId = touch.identifier;
+            var data = getData(touch, event, null);
+            this._eventOutput.emit(&#x27;trackstart&#x27;, data);
+            if (!this.history[touchId])
+                this.track(touchId, data);
+        }
+    }
+
+    function handleMove(event) {
+        if (event.touches.length &gt;= this.options.limit) return false;
+        if (this.numTouches &gt; this.options.track) return false;
+
+        event.preventDefault(); // prevents scrolling on mobile
+
+        for (var i = 0; i &lt; event.changedTouches.length; i++) {
+            var touch = event.changedTouches[i];
+            var history = this.history[touch.identifier];
+            if (history) {
+                var data = getData(touch, event, history);
+                this._eventOutput.emit(&#x27;trackmove&#x27;, data);
+                if (history.length &gt;= this.options.memory)
+                    history.shift();
+                history.push(data);
+            }
+        }
+    }
+
+    function handleEnd(event) {
+        if (event.touches.length &gt;= this.options.limit) return false;
+        if (this.numTouches &gt; this.options.track) return false;
+
+        for (var i = 0; i &lt; event.changedTouches.length; i++) {
+            var touch = event.changedTouches[i];
+            var touchId = touch.identifier;
+            var history = this.history[touchId];
+            if (history) {
+                var data = getData(touch, event, history);
+                this._eventOutput.emit(&#x27;trackend&#x27;, data);
+                this.untrack(touchId);
+            }
+        }
+    }
+
+    module.exports = TouchTracker;
 });
 
     </pre>

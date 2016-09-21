@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="utf-8">
-    <title>samsara/streams/SimpleStream.js - SamsaraJS</title>
+    <title>samsara/ui/Slider.js - SamsaraJS</title>
     <link rel="stylesheet" href="">
     <link rel="stylesheet" href="../assets/vendor/prettify/prettify-min.css">
     <link rel="stylesheet" href="../assets/css/main.css" id="site_styles">
@@ -120,99 +120,236 @@
                 <div id="docs-main">
                     <div class="content">
 <div class="page-header">
-    <h1>samsara/streams/SimpleStream.js <small>File</small></h1>
+    <h1>samsara/ui/Slider.js <small>File</small></h1>
 </div>
 
 <div class="file">
     <pre class="prettyprint linenums">
 /* Copyright © 2015-2016 David Valdman */
 
-define(function(require, exports, module) {
-    var EventHandler = require(&#x27;../events/EventHandler&#x27;);
-    var EventMapper = require(&#x27;../events/EventMapper&#x27;);
-    var EventFilter = require(&#x27;../events/EventFilter&#x27;);
-    var EventSplitter = require(&#x27;../events/EventSplitter&#x27;);
+define(function(require, exports, module){
+    var View = require(&#x27;samsara/core/View&#x27;);
+    var Surface = require(&#x27;samsara/dom/Surface&#x27;);
+    var Transform = require(&#x27;samsara/core/Transform&#x27;);
+    var Stream = require(&#x27;samsara/streams/Stream&#x27;);
+    var Transitionable = require(&#x27;samsara/core/Transitionable&#x27;);
+
+    var Differential = require(&#x27;samsara/streams/Differential&#x27;);
+    var Accumulator = require(&#x27;samsara/streams/Accumulator&#x27;);
+
+    var MouseInput = require(&#x27;samsara/inputs/MouseInput&#x27;);
+    var TouchInput = require(&#x27;samsara/inputs/TouchInput&#x27;);
+    var GenericInput = require(&#x27;samsara/inputs/GenericInput&#x27;);
+
+    GenericInput.register({
+        mouse : MouseInput,
+        touch : TouchInput
+    });
 
     /**
-     * A SimpleStream wraps an EventHandler and provides convenience
-     *  methods of &#x60;map&#x60;, &#x60;filter&#x60;, &#x60;split&#x60;, and &#x60;pluck&#x60; to
-     *  transform one stream into another.
+     * A UI element that creates a slider controllable by mouse and touch events.
+     *  A starting value and range is provided, and the user can change the value within
+     *  the range by dragging and clicking on the slider.
+     *  The slider has a &#x60;.value&#x60; property that defines its value as a stream.
      *
-     * @example
+     *  This file comes with an associated CSS file slider.css
      *
-     * @class SimpleStream
-     * @extends Core.EventHandler
-     * @private
-     * @namespace Streams
+     *  @example
+     *
+     *      var slider = new Slider({
+     *          value : 90,
+     *          range : [0, 360],
+     *          label : &#x27;angle&#x27;
+     *      });
+     *
+     *      var rotation = slider.value.map(function(angle){
+     *          return Transform.rotate(Math.PI * angle / 180);
+     *      });
+     *
+     *      context.add({transform : rotation}).add(surface);
+     *      context.add(slider);
+     *
+     * @class Slider
+     * @extends View
+     * @namespace UI
      * @constructor
+     * @param [options] {Object}                    Options
+     * @param [options.value=0.5] {Number}          Starting value
+     * @param [options.range=[0,1]] {Array}         Range of values ([min, max])
+     * @param [options.label] {String}              Name of label
+     * @param [options.precision=1] {Number}        Number of decimal points to display
+     * @param [options.transition=false] {Object}   Default transition to animate values
      */
-    function SimpleStream(){
-        EventHandler.call(this);
+    var Slider = View.extend({
+        defaults : {
+            value : 0.5,
+            range : [0, 1],
+            label : &#x27;&#x27;,
+            precision : 1,
+            transition : false
+        },
+        initialize : function(options){
+            setupSurfaces.call(this, options);
+            setupState.call(this, options);
+            setupEvents.call(this, options);
+            setupRenderTree.call(this, options);
+
+            this.size = Stream.lift(function(size, labelSize){
+                if (!labelSize) return false;
+                return [size[0], size[1] + labelSize[1]];
+            }, [this.foreground.size, this.label.size]);
+        },
+        /**
+         * Set a new end value with an optional transition.
+         *  An optional callback can fire when the transition completes.
+         *
+         * @method set
+         * @param value {Number|Number[]}           End value
+         * @param [transition] {Object}             Transition definition
+         * @param [callback] {Function}             Callback
+         */
+        set : function set(value, transition, callback){
+            var ratio = value2ratio.call(this, value);
+            if (transition === undefined) transition = this.options.transition;
+            if (transition){
+                this.transition.reset(this.ratio.get());
+                this.transition.set(ratio, transition, callback);
+            }
+            else this.ratio.set(ratio);
+        },
+        /**
+         * Return the current value of the slider.
+         *
+         * @method get
+         * @return {Number|Number[]}    Current state
+         */
+        get : function get(){
+            return ratio2value.call(this, this.ratio.get());
+        }
+    });
+
+    function value2ratio(value){
+        var min = this.options.range[0];
+        var max = this.options.range[1];
+        return (value - min) / (max - min);
     }
 
-    SimpleStream.prototype = Object.create(EventHandler.prototype);
-    SimpleStream.prototype.constructor = SimpleStream;
+    function ratio2value(ratio){
+        var min = this.options.range[0];
+        var max = this.options.range[1];
+        return min + ratio * (max - min);
+    }
 
-    /**
-     * Map converts the current stream into a new stream
-     *  with a modified (mapped) data payload.
-     *
-     * @method map
-     * @param mapperFn {Function}    Function to map event payload
-     * @return stream {SimpleStream} Mapped stream
-     */
-    SimpleStream.prototype.map = function map(mapperFn){
-        var stream = new SimpleStream();
-        var mapper = new EventMapper(mapperFn);
-        stream.subscribe(mapper).subscribe(this);
-        return stream;
-    };
-
-    /**
-     * Filter converts the current stream into a new stream
-     *  that only emits if the filter condition is satisfied.
-     *  The filter function should return a Boolean value.
-     *
-     * @method filter
-     * @param filterFn {Function}    Function to filter event payload
-     * @return stream {SimpleStream} Filtered stream
-     */
-    SimpleStream.prototype.filter = function filter(filterFn){
-        var filter = new EventFilter(filterFn);
-        var filteredStream = new SimpleStream();
-        filteredStream.subscribe(filter).subscribe(this);
-        return filteredStream;
-    };
-
-    /**
-     * Split maps one of several streams based on custom logic.
-     *  The splitter function should return an EventEmitter type.
-     *
-     * @method split
-     * @param splitterFn {Function}  Splitter function
-     */
-    SimpleStream.prototype.split = function split(splitterFn){
-        var splitter = new EventSplitter(splitterFn);
-        splitter.subscribe(this);
-    };
-
-    /**
-     * Pluck is an opinionated mapper. It projects a Stream
-     *  onto one of its return values.
-     *
-     *  Useful if a Stream returns an array or object.
-     *
-     * @method pluck
-     * @param key {String|Number}    Key to project event payload onto
-     * @return stream {SimpleStream} Plucked stream
-     */
-    SimpleStream.prototype.pluck = function pluck(key){
-        return this.map(function(value){
-            return value[key];
+    function setupSurfaces(options){
+        this.background = new Surface({
+            classes : [&#x27;samsara-slider-background&#x27;]
         });
-    };
-    
-    module.exports = SimpleStream;
+
+        this.foreground = new Surface({
+            classes : [&#x27;samsara-slider-foreground&#x27;]
+        });
+
+        var template = String(
+            &#x27;&lt;span class=&quot;label&quot;&gt;&#x27; + options.label +
+                &#x27;&lt;span class=&quot;range&quot;&gt;&#x27; + &#x27;[&#x27; + options.range[0] + &#x27;|&#x27; + options.range[1] + &#x27;]&lt;/span&gt;&#x27; +
+            &#x27;&lt;/span&gt;&#x27; +
+            &#x27;&lt;span class=&quot;value&quot;&gt;&lt;/span&gt;&#x27;
+        );
+
+        this.label = new Surface({
+            size : [undefined, true],
+            classes : [&#x27;samsara-slider-label&#x27;],
+            content : template
+        });
+
+        this.label.on(&#x27;deploy&#x27;, function(target){
+            this.labelContent = target.querySelector(&#x27;.value&#x27;);
+        }.bind(this));
+    }
+
+    function setupState(options){
+        var initRatio = value2ratio.call(this, options.value);
+        this.ratio = new Accumulator(initRatio, {min : 0, max : 1});
+
+        this.transition = new Transitionable(initRatio);
+        this.transitionDelta = new Differential();
+        this.transitionDelta.subscribe(this.transition);
+
+        this.value = this.ratio.map(ratio2value.bind(this));
+    }
+
+    function setupRenderTree(options){
+        var foregroundTransform = this.ratio.map(function(value){
+            return Transform.scaleX(value);
+        });
+
+        var labelTransform = this.background.size.map(function(size){
+            return Transform.translateY(size[1]);
+        });
+
+        // Render tree
+        this.add(this.background);
+        this.add({transform : foregroundTransform})
+            .add(this.foreground);
+        this.add({transform : labelTransform})
+            .add(this.label);
+    }
+
+    function setupEvents(options){
+        // Mouse and touch events
+        var gestureInput = new GenericInput(
+            [&#x27;mouse&#x27;, &#x27;touch&#x27;],
+            {direction : GenericInput.DIRECTION.X}
+        );
+
+        gestureInput.subscribe(this.background);
+
+        // Drags correspond to deltas that get accumulated
+        var width;
+        var gestureDelta = Stream.lift(function(size, data){
+            width = size[0];
+            if (!data) return false;
+
+            return data.delta / size[0];
+        }, [this.size, gestureInput]);
+
+        // Click on slider hooked up to transition slider value
+        var offsetX;
+        this.background.on(&#x27;mousedown&#x27;, function(event){
+            offsetX = event.offsetX;
+        });
+
+        this.background.on(&#x27;mouseup&#x27;, function(event){
+            // Check if the mouse hasn&#x27;t moved for a &quot;static&quot; click event
+            if (event.offsetX !== offsetX) return;
+            var ratio = event.offsetX / width;
+
+            // TODO: fix setting bug
+            if (this.options.transition){
+                this.transition.reset(this.ratio.get());
+                this.transition.set(ratio, this.options.transition);
+            }
+            else this.ratio.set(ratio);
+        }.bind(this));
+
+        this.ratio.subscribe(gestureDelta);
+        this.ratio.subscribe(this.transitionDelta);
+
+        this.value.on(&#x27;start&#x27;, renderValue.bind(this));
+        this.value.on(&#x27;update&#x27;, renderValue.bind(this));
+        this.value.on(&#x27;end&#x27;, renderValue.bind(this));
+    }
+
+    var prevValue = undefined;
+    function renderValue(value){
+        if (this.options.precision &lt; 0 || !this.labelContent) return;
+        var currValue = value.toFixed(this.options.precision);
+        if (currValue !== prevValue)
+            this.labelContent.textContent = currValue;
+        prevValue = currValue;
+    }
+
+    module.exports = Slider;
 });
 
     </pre>

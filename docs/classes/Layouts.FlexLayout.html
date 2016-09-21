@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="utf-8">
-    <title>Core.View - SamsaraJS</title>
+    <title>Layouts.FlexLayout - SamsaraJS</title>
     <link rel="stylesheet" href="">
     <link rel="stylesheet" href="../assets/vendor/prettify/prettify-min.css">
     <link rel="stylesheet" href="../assets/css/main.css" id="site_styles">
@@ -120,26 +120,18 @@
                 <div id="docs-main">
                     <div class="content">
 <div class="page-header">
-    <h1>Core.View <small>Class</small></h1>
+    <h1>Layouts.FlexLayout <small>Class</small></h1>
 </div>
 
 <div class="well well-small">
-        <div class="uses">
-            Uses
-            <ul class="inline commas">
-                    <li><a href="Core.SizeNode.html">Core.SizeNode</a></li>
-                    <li><a href="Core.LayoutNode.html">Core.LayoutNode</a></li>
-                    <li><a href="Core.SimpleStream.html">Core.SimpleStream</a></li>
-            </ul>
-        </div>
 
         <div class="extends">
-            Extends <a href="../classes/Core.Controller.html" class="crosslink">Core.Controller</a>
+            Extends <a href="../classes/Core.View.html" class="crosslink">Core.View</a>
         </div>
 
     <!---->
         <div class="foundat">
-            Defined in: <a href="../files/samsara_core_View.js.html#l9"><code>samsara&#x2F;core&#x2F;View.js:9</code></a>
+            Defined in: <a href="../files/samsara_layouts_FlexLayout.js.html#l25"><code>samsara&#x2F;layouts&#x2F;FlexLayout.js:25</code></a>
         </div>
     <!---->
 
@@ -148,22 +140,25 @@
 
 
 <div class="well well-small">
-    <p>A View provides encapsulation for a subtree of the render tree. You can build
-complicated visual components and add them to a render tree as you would a <code>Surface</code>.</p>
-<p>Custom <code>Views</code> are created by calling <code>extend</code> on the <code>View</code> constructor.</p>
-<p>In addition to what a <code>Controller</code> provides, a View provides:</p>
-<pre class="code prettyprint"><code> Render Tree method: <code>.add</code>
- Size methods: <code>setSize</code>, <code>setProportions</code>
- Layout methods: <code>setOpacity</code>, <code>setOrigin</code></code></pre>
+    <p>A layout which arranges items vertically or horizontally within a containing size.
+Items with a definite size in the specified direction keep their size, where
+items with an <code>undefined</code> size in the specified direction have a flexible size.
+Flexible sized items split up the left over size relative to their flex value.</p>
 
 </div>
 
     <div class="constructor">
         <h2>Constructor</h2>
-        <div id="method_Core.View" class="method item">
-            <h3 class="name"><code>Core.View</code></h3>
+        <div id="method_Layouts.FlexLayout" class="method item">
+            <h3 class="name"><code>Layouts.FlexLayout</code></h3>
         
-                <span class="paren">()</span>
+                <div class="args">
+                    <span class="paren">(</span><ul class="args-list inline commas">
+                        <li class="arg">
+                                <code class="optional">[options]</code>
+                        </li>
+                    </ul><span class="paren">)</span>
+                </div>
         
         
         
@@ -178,7 +173,7 @@ complicated visual components and add them to a render tree as you would a <code
                         <!--Defined in-->
                         <!---->
                 <!---->
-                <!--<a href="../files/samsara_core_View.js.html#l9"><code>samsara&#x2F;core&#x2F;View.js:9</code></a>-->
+                <!--<a href="../files/samsara_layouts_FlexLayout.js.html#l25"><code>samsara&#x2F;layouts&#x2F;FlexLayout.js:25</code></a>-->
                 <!---->
                 </p>
         
@@ -190,40 +185,50 @@ complicated visual components and add them to a render tree as you would a <code
                 
             </div>
         
+                <div class="params">
+                    <h4>Parameters:</h4>
+        
+                    <ul class="params-list">
+                        <li class="param">
+                                <code class="param-name optional">[options]</code>
+                                <span class="type"><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object" class="crosslink external" target="_blank">Object</a></span>
+                                <span class="flag optional" title="This parameter is optional.">optional</span>
         
         
-                <div class="example">
-                    <h4>Example:</h4>
+                            <div class="param-description">
+                                <p>Options</p>
         
-                    <div class="example-content">
-                        <pre class="code prettyprint"><code> var MyView = View.extend({
-             defaults : {
-                 defaultOption1 : '',
-                 defaultOption2 : 42
-             },
-             initialize : function(options){
-                 // this method called on instantiation
-                 // options are passed in after being patched by the specified defaults
+                            </div>
         
-                 var surface = new Surface({
-                     content : options.defaultOption1,
-                     size : [options.defaultOption2,100],
-                     properties : {background : 'red'}
-                 });
+                                <ul class="params-list">
+                                    <li class="param">
+                                            <code class="param-name optional">[direction]</code>
+                                            <span class="type"><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Number" class="crosslink external" target="_blank">Number</a></span>
+                                            <span class="flag optional" title="This parameter is optional.">optional</span>
         
-                 this.add(surface);
-             }
-         });
+                                        <div class="param-description">
+                                            <p>Direction to lay out items</p>
         
-         var myView = new myView({defaultOption1 : 'hello'});
+                                        </div>
         
-         var context = Context();
-         context.add(myView);
+                                    </li>
+                                    <li class="param">
+                                            <code class="param-name optional">[spacing]</code>
+                                            <span class="type"><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Number" class="crosslink external" target="_blank">Number</a></span>
+                                            <span class="flag optional" title="This parameter is optional.">optional</span>
         
-         context.mount(document.body);</code></pre>
+                                        <div class="param-description">
+                                            <p>Spacing between items</p>
         
-                    </div>
+                                        </div>
+        
+                                    </li>
+                                </ul>
+                        </li>
+                    </ul>
                 </div>
+        
+        
         </div>
     </div>
 
@@ -247,7 +252,7 @@ complicated visual components and add them to a render tree as you would a <code
                                 <a href="#" data-tabid="#methods" data-anchor="#method_&quot;on&quot;" data-tablink="&quot;on&quot;">&quot;on&quot;</a>
 
                             </li>
-                            <li class="index-item method">
+                            <li class="index-item method inherited">
                                 <a href="#" data-tabid="#methods" data-anchor="#method_add" data-tablink="add">add</a>
 
                             </li>
@@ -263,7 +268,7 @@ complicated visual components and add them to a render tree as you would a <code
                                 <a href="#" data-tabid="#methods" data-anchor="#method_getOptions" data-tablink="getOptions">getOptions</a>
 
                             </li>
-                            <li class="index-item method">
+                            <li class="index-item method inherited">
                                 <a href="#" data-tabid="#methods" data-anchor="#method_getSize" data-tablink="getSize">getSize</a>
 
                             </li>
@@ -287,7 +292,7 @@ complicated visual components and add them to a render tree as you would a <code
                                 <a href="#" data-tabid="#methods" data-anchor="#method_patch" data-tablink="patch">patch</a>
 
                             </li>
-                            <li class="index-item method">
+                            <li class="index-item method inherited">
                                 <a href="#" data-tabid="#methods" data-anchor="#method_remove" data-tablink="remove">remove</a>
 
                             </li>
@@ -295,16 +300,16 @@ complicated visual components and add them to a render tree as you would a <code
                                 <a href="#" data-tabid="#methods" data-anchor="#method_set" data-tablink="set">set</a>
 
                             </li>
-                            <li class="index-item method deprecated">
+                            <li class="index-item method deprecated inherited">
                                 <a href="#" data-tabid="#methods" data-anchor="#method_setAspectRatio" data-tablink="setAspectRatio">setAspectRatio</a>
 
                                     <span class="flag deprecated">deprecated</span>
                             </li>
-                            <li class="index-item method">
+                            <li class="index-item method inherited">
                                 <a href="#" data-tabid="#methods" data-anchor="#method_setMargins" data-tablink="setMargins">setMargins</a>
 
                             </li>
-                            <li class="index-item method">
+                            <li class="index-item method inherited">
                                 <a href="#" data-tabid="#methods" data-anchor="#method_setOpacity" data-tablink="setOpacity">setOpacity</a>
 
                             </li>
@@ -312,15 +317,15 @@ complicated visual components and add them to a render tree as you would a <code
                                 <a href="#" data-tabid="#methods" data-anchor="#method_setOptions" data-tablink="setOptions">setOptions</a>
 
                             </li>
-                            <li class="index-item method">
+                            <li class="index-item method inherited">
                                 <a href="#" data-tabid="#methods" data-anchor="#method_setOrigin" data-tablink="setOrigin">setOrigin</a>
 
                             </li>
-                            <li class="index-item method">
+                            <li class="index-item method inherited">
                                 <a href="#" data-tabid="#methods" data-anchor="#method_setProportions" data-tablink="setProportions">setProportions</a>
 
                             </li>
-                            <li class="index-item method">
+                            <li class="index-item method inherited">
                                 <a href="#" data-tabid="#methods" data-anchor="#method_setSize" data-tablink="setSize">setSize</a>
 
                             </li>
@@ -380,7 +385,8 @@ complicated visual components and add them to a render tree as you would a <code
                         </div>
                     
                         <div class="description">
-                            Adds a handler to the <code>type</code> channel which will be executed on <code>emit</code>.
+                            <p>Adds a handler to the <code>type</code> channel which will be executed on <code>emit</code>.</p>
+                    
                         </div>
                     
                             <div class="params">
@@ -393,7 +399,8 @@ complicated visual components and add them to a render tree as you would a <code
                     
                     
                                         <div class="param-description">
-                                            Channel name
+                                            <p>Channel name</p>
+                    
                                         </div>
                     
                                     </li>
@@ -403,7 +410,8 @@ complicated visual components and add them to a render tree as you would a <code
                     
                     
                                         <div class="param-description">
-                                            Callback
+                                            <p>Callback</p>
+                    
                                         </div>
                     
                                     </li>
@@ -412,7 +420,7 @@ complicated visual components and add them to a render tree as you would a <code
                     
                     
                     </div>
-                    <div id="method_add" class="method item">
+                    <div id="method_add" class="method item inherited">
                         <h3 class="name"><code>add</code></h3>
                     
                             <div class="args">
@@ -434,10 +442,8 @@ complicated visual components and add them to a render tree as you would a <code
                     
                     
                         <div class="meta">
-                                    <p>
-                                    <!---->
-                                    <!--Defined in-->
-                                    <!---->
+                                    <p>Inherited from
+                                    <a href="../classes/Core.View.html#method_add">Core.View</a>:
                             <!---->
                             <!--<a href="../files/samsara_core_View.js.html#l86"><code>samsara&#x2F;core&#x2F;View.js:86</code></a>-->
                             <!---->
@@ -616,7 +622,8 @@ complicated visual components and add them to a render tree as you would a <code
                         </div>
                     
                         <div class="description">
-                            Look up options value by key or get the full options hash.
+                            <p>Look up options value by key or get the full options hash.</p>
+                    
                         </div>
                     
                             <div class="params">
@@ -629,7 +636,8 @@ complicated visual components and add them to a render tree as you would a <code
                     
                     
                                         <div class="param-description">
-                                            Key
+                                            <p>Key</p>
+                    
                                         </div>
                     
                                     </li>
@@ -641,7 +649,8 @@ complicated visual components and add them to a render tree as you would a <code
                     
                                 <div class="returns-description">
                                             <span class="type"><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object" class="crosslink external" target="_blank">Object</a></span>:
-                                        Associated object or full options hash
+                                        <p>Associated object or full options hash</p>
+                    
                                 </div>
                             </div>
                     
@@ -716,7 +725,7 @@ complicated visual components and add them to a render tree as you would a <code
                             </div>
                     
                     </div>
-                    <div id="method_getSize" class="method item">
+                    <div id="method_getSize" class="method item inherited">
                         <h3 class="name"><code>getSize</code></h3>
                     
                             <span class="paren">()</span>
@@ -732,10 +741,8 @@ complicated visual components and add them to a render tree as you would a <code
                     
                     
                         <div class="meta">
-                                    <p>
-                                    <!---->
-                                    <!--Defined in-->
-                                    <!---->
+                                    <p>Inherited from
+                                    <a href="../classes/Core.View.html#method_getSize">Core.View</a>:
                             <!---->
                             <!--<a href="../files/samsara_core_View.js.html#l106"><code>samsara&#x2F;core&#x2F;View.js:106</code></a>-->
                             <!---->
@@ -796,7 +803,8 @@ complicated visual components and add them to a render tree as you would a <code
                         </div>
                     
                         <div class="description">
-                            Return OptionsManager based on sub-object retrieved by <code>key</code>.
+                            <p>Return OptionsManager based on sub-object retrieved by <code>key</code>.</p>
+                    
                         </div>
                     
                             <div class="params">
@@ -809,7 +817,8 @@ complicated visual components and add them to a render tree as you would a <code
                     
                     
                                         <div class="param-description">
-                                            Key
+                                            <p>Key</p>
+                    
                                         </div>
                     
                                     </li>
@@ -821,7 +830,8 @@ complicated visual components and add them to a render tree as you would a <code
                     
                                 <div class="returns-description">
                                             <span class="type">OptionsManager</span>:
-                                        Value
+                                        <p>Value</p>
+                    
                                 </div>
                             </div>
                     
@@ -860,8 +870,9 @@ complicated visual components and add them to a render tree as you would a <code
                         </div>
                     
                         <div class="description">
-                            Removes the <code>handler</code> from the <code>type</code> channel.
-                      This undoes the work of <code>on</code>.
+                            <p>Removes the <code>handler</code> from the <code>type</code> channel.
+                    This undoes the work of <code>on</code>.</p>
+                    
                         </div>
                     
                             <div class="params">
@@ -874,7 +885,8 @@ complicated visual components and add them to a render tree as you would a <code
                     
                     
                                         <div class="param-description">
-                                            Channel name
+                                            <p>Channel name</p>
+                    
                                         </div>
                     
                                     </li>
@@ -884,7 +896,8 @@ complicated visual components and add them to a render tree as you would a <code
                     
                     
                                         <div class="param-description">
-                                            Callback
+                                            <p>Callback</p>
+                    
                                         </div>
                     
                                     </li>
@@ -930,7 +943,8 @@ complicated visual components and add them to a render tree as you would a <code
                         </div>
                     
                         <div class="description">
-                            Constructor method. Create OptionsManager from source dictionary with arguments overridden by patch dictionary.
+                            <p>Constructor method. Create OptionsManager from source dictionary with arguments overridden by patch dictionary.</p>
+                    
                         </div>
                     
                             <div class="params">
@@ -943,7 +957,8 @@ complicated visual components and add them to a render tree as you would a <code
                     
                     
                                         <div class="param-description">
-                                            Options to be patched
+                                            <p>Options to be patched</p>
+                    
                                         </div>
                     
                                     </li>
@@ -953,7 +968,8 @@ complicated visual components and add them to a render tree as you would a <code
                     
                     
                                         <div class="param-description">
-                                            Options to override
+                                            <p>Options to override</p>
+                    
                                         </div>
                     
                                     </li>
@@ -965,7 +981,8 @@ complicated visual components and add them to a render tree as you would a <code
                     
                                 <div class="returns-description">
                                             <span class="type"><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object" class="crosslink external" target="_blank">Object</a></span>:
-                                        source
+                                        <p>source</p>
+                    
                                 </div>
                             </div>
                     
@@ -1010,7 +1027,8 @@ complicated visual components and add them to a render tree as you would a <code
                         </div>
                     
                         <div class="description">
-                            Constructor method. Convenience method to set options with defaults on an object instance.
+                            <p>Constructor method. Convenience method to set options with defaults on an object instance.</p>
+                    
                         </div>
                     
                             <div class="params">
@@ -1023,7 +1041,8 @@ complicated visual components and add them to a render tree as you would a <code
                     
                     
                                         <div class="param-description">
-                                            Constructor
+                                            <p>Constructor</p>
+                    
                                         </div>
                     
                                     </li>
@@ -1033,7 +1052,8 @@ complicated visual components and add them to a render tree as you would a <code
                     
                     
                                         <div class="param-description">
-                                            Overriding options
+                                            <p>Overriding options</p>
+                    
                                         </div>
                     
                                     </li>
@@ -1043,7 +1063,8 @@ complicated visual components and add them to a render tree as you would a <code
                     
                     
                                         <div class="param-description">
-                                            Default options
+                                            <p>Default options</p>
+                    
                                         </div>
                     
                                     </li>
@@ -1055,7 +1076,8 @@ complicated visual components and add them to a render tree as you would a <code
                     
                                 <div class="returns-description">
                                             <span class="type"><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object" class="crosslink external" target="_blank">Object</a></span>:
-                                        Patched options
+                                        <p>Patched options</p>
+                    
                                 </div>
                             </div>
                     
@@ -1094,7 +1116,8 @@ complicated visual components and add them to a render tree as you would a <code
                         </div>
                     
                         <div class="description">
-                            Patch options with provided patches. Triggers <code>change</code> event on the object.
+                            <p>Patch options with provided patches. Triggers <code>change</code> event on the object.</p>
+                    
                         </div>
                     
                             <div class="params">
@@ -1107,7 +1130,8 @@ complicated visual components and add them to a render tree as you would a <code
                     
                     
                                         <div class="param-description">
-                                            Patch options
+                                            <p>Patch options</p>
+                    
                                         </div>
                     
                                     </li>
@@ -1119,12 +1143,13 @@ complicated visual components and add them to a render tree as you would a <code
                     
                                 <div class="returns-description">
                                             <span class="type">OptionsManager</span>:
-                                        this
+                                        <p>this</p>
+                    
                                 </div>
                             </div>
                     
                     </div>
-                    <div id="method_remove" class="method item">
+                    <div id="method_remove" class="method item inherited">
                         <h3 class="name"><code>remove</code></h3>
                     
                             <span class="paren">()</span>
@@ -1137,10 +1162,8 @@ complicated visual components and add them to a render tree as you would a <code
                     
                     
                         <div class="meta">
-                                    <p>
-                                    <!---->
-                                    <!--Defined in-->
-                                    <!---->
+                                    <p>Inherited from
+                                    <a href="../classes/Core.View.html#method_remove">Core.View</a>:
                             <!---->
                             <!--<a href="../files/samsara_core_View.js.html#l96"><code>samsara&#x2F;core&#x2F;View.js:96</code></a>-->
                             <!---->
@@ -1197,7 +1220,8 @@ complicated visual components and add them to a render tree as you would a <code
                         </div>
                     
                         <div class="description">
-                            Set key to value. Outputs <code>change</code> event if a value is overwritten.
+                            <p>Set key to value. Outputs <code>change</code> event if a value is overwritten.</p>
+                    
                         </div>
                     
                             <div class="params">
@@ -1210,7 +1234,8 @@ complicated visual components and add them to a render tree as you would a <code
                     
                     
                                         <div class="param-description">
-                                            Key
+                                            <p>Key</p>
+                    
                                         </div>
                     
                                     </li>
@@ -1220,7 +1245,8 @@ complicated visual components and add them to a render tree as you would a <code
                     
                     
                                         <div class="param-description">
-                                            Value
+                                            <p>Value</p>
+                    
                                         </div>
                     
                                     </li>
@@ -1232,12 +1258,13 @@ complicated visual components and add them to a render tree as you would a <code
                     
                                 <div class="returns-description">
                                             <span class="type">OptionsManager</span>:
-                                        Updated OptionsManager
+                                        <p>Updated OptionsManager</p>
+                    
                                 </div>
                             </div>
                     
                     </div>
-                    <div id="method_setAspectRatio" class="method item deprecated">
+                    <div id="method_setAspectRatio" class="method item deprecated inherited">
                         <h3 class="name"><code>setAspectRatio</code></h3>
                     
                             <div class="args">
@@ -1257,10 +1284,8 @@ complicated visual components and add them to a render tree as you would a <code
                     
                     
                         <div class="meta">
-                                    <p>
-                                    <!---->
-                                    <!--Defined in-->
-                                    <!---->
+                                    <p>Inherited from
+                                    <a href="../classes/Core.View.html#method_setAspectRatio">Core.View</a>:
                             <!---->
                             <!--<a href="../files/samsara_core_View.js.html#l143"><code>samsara&#x2F;core&#x2F;View.js:143</code></a>-->
                             <!---->
@@ -1296,7 +1321,7 @@ complicated visual components and add them to a render tree as you would a <code
                     
                     
                     </div>
-                    <div id="method_setMargins" class="method item">
+                    <div id="method_setMargins" class="method item inherited">
                         <h3 class="name"><code>setMargins</code></h3>
                     
                             <div class="args">
@@ -1315,10 +1340,8 @@ complicated visual components and add them to a render tree as you would a <code
                     
                     
                         <div class="meta">
-                                    <p>
-                                    <!---->
-                                    <!--Defined in-->
-                                    <!---->
+                                    <p>Inherited from
+                                    <a href="../classes/Core.View.html#method_setMargins">Core.View</a>:
                             <!---->
                             <!--<a href="../files/samsara_core_View.js.html#l134"><code>samsara&#x2F;core&#x2F;View.js:134</code></a>-->
                             <!---->
@@ -1353,7 +1376,7 @@ complicated visual components and add them to a render tree as you would a <code
                     
                     
                     </div>
-                    <div id="method_setOpacity" class="method item">
+                    <div id="method_setOpacity" class="method item inherited">
                         <h3 class="name"><code>setOpacity</code></h3>
                     
                             <div class="args">
@@ -1372,10 +1395,8 @@ complicated visual components and add them to a render tree as you would a <code
                     
                     
                         <div class="meta">
-                                    <p>
-                                    <!---->
-                                    <!--Defined in-->
-                                    <!---->
+                                    <p>Inherited from
+                                    <a href="../classes/Core.View.html#method_setOpacity">Core.View</a>:
                             <!---->
                             <!--<a href="../files/samsara_core_View.js.html#l162"><code>samsara&#x2F;core&#x2F;View.js:162</code></a>-->
                             <!---->
@@ -1468,7 +1489,7 @@ complicated visual components and add them to a render tree as you would a <code
                     
                     
                     </div>
-                    <div id="method_setOrigin" class="method item">
+                    <div id="method_setOrigin" class="method item inherited">
                         <h3 class="name"><code>setOrigin</code></h3>
                     
                             <div class="args">
@@ -1487,10 +1508,8 @@ complicated visual components and add them to a render tree as you would a <code
                     
                     
                         <div class="meta">
-                                    <p>
-                                    <!---->
-                                    <!--Defined in-->
-                                    <!---->
+                                    <p>Inherited from
+                                    <a href="../classes/Core.View.html#method_setOrigin">Core.View</a>:
                             <!---->
                             <!--<a href="../files/samsara_core_View.js.html#l153"><code>samsara&#x2F;core&#x2F;View.js:153</code></a>-->
                             <!---->
@@ -1525,7 +1544,7 @@ complicated visual components and add them to a render tree as you would a <code
                     
                     
                     </div>
-                    <div id="method_setProportions" class="method item">
+                    <div id="method_setProportions" class="method item inherited">
                         <h3 class="name"><code>setProportions</code></h3>
                     
                             <div class="args">
@@ -1544,10 +1563,8 @@ complicated visual components and add them to a render tree as you would a <code
                     
                     
                         <div class="meta">
-                                    <p>
-                                    <!---->
-                                    <!--Defined in-->
-                                    <!---->
+                                    <p>Inherited from
+                                    <a href="../classes/Core.View.html#method_setProportions">Core.View</a>:
                             <!---->
                             <!--<a href="../files/samsara_core_View.js.html#l125"><code>samsara&#x2F;core&#x2F;View.js:125</code></a>-->
                             <!---->
@@ -1582,7 +1599,7 @@ complicated visual components and add them to a render tree as you would a <code
                     
                     
                     </div>
-                    <div id="method_setSize" class="method item">
+                    <div id="method_setSize" class="method item inherited">
                         <h3 class="name"><code>setSize</code></h3>
                     
                             <div class="args">
@@ -1601,10 +1618,8 @@ complicated visual components and add them to a render tree as you would a <code
                     
                     
                         <div class="meta">
-                                    <p>
-                                    <!---->
-                                    <!--Defined in-->
-                                    <!---->
+                                    <p>Inherited from
+                                    <a href="../classes/Core.View.html#method_setSize">Core.View</a>:
                             <!---->
                             <!--<a href="../files/samsara_core_View.js.html#l115"><code>samsara&#x2F;core&#x2F;View.js:115</code></a>-->
                             <!---->
