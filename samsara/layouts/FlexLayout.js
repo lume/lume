@@ -4,7 +4,7 @@ define(function(require, exports, module){
     var Transform = require('../core/Transform');
     var View = require('../core/View');
     var Stream = require('../streams/Stream');
-    var ReduceStream = require('../streams/ReduceStream');
+    var ReduceStream = require('../streams/LinkedStream');
     var Accumulator = require('../streams/Accumulator');
     var Differential = require('../streams/Differential');
 
