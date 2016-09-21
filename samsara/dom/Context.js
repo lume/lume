@@ -255,7 +255,7 @@ define(function(require, exports, module) {
      * Removes the `handler` from the `type`.
      *  Undoes the work of `on`.
      *
-     * @method on
+     * @method off
      * @param type {String}         Channel name
      * @param handler {Function}    Callback
      */
