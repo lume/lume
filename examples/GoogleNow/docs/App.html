@@ -247,7 +247,8 @@ This has the effect of “raising” the <code>Surface</code></p>
             
             <div class="content"><div class='highlight'><pre>            <span class="hljs-keyword">var</span> statusBar = <span class="hljs-keyword">new</span> Surface({
                 tagName: <span class="hljs-string">'img'</span>,
-                size: [<span class="hljs-literal">undefined</span>, <span class="hljs-literal">true</span>],
+                size: [<span class="hljs-literal">false</span>, <span class="hljs-literal">true</span>],
+                proportions: [<span class="hljs-number">1</span>, <span class="hljs-literal">false</span>],
                 attributes: {src: options.imgURLs.statusBar},
                 classes: [<span class="hljs-string">'statusBar'</span>],
                 opacity: <span class="hljs-keyword">this</span>.easingTransition
@@ -308,8 +309,7 @@ gives the effect that it is changing colors.</p>
             
             <div class="content"><div class='highlight'><pre>            <span class="hljs-keyword">var</span> googleColor = <span class="hljs-keyword">new</span> Surface({
                 tagName: <span class="hljs-string">'img'</span>,
-                proportions: [<span class="hljs-literal">false</span>, <span class="hljs-number">.1</span>],
-                aspectRatio: <span class="hljs-number">3</span>,
+                proportions: [<span class="hljs-number">.3</span>, <span class="hljs-number">.1</span>],
                 attributes: {src: options.imgURLs.googleColor},
                 origin: [<span class="hljs-number">.5</span>, <span class="hljs-number">.5</span>],
                 opacity: <span class="hljs-keyword">this</span>.easingTransition.map(<span class="hljs-function"><span class="hljs-keyword">function</span> (<span class="hljs-params">value</span>) </span>{
@@ -319,8 +319,7 @@ gives the effect that it is changing colors.</p>
 
             <span class="hljs-keyword">var</span> googleWhite = <span class="hljs-keyword">new</span> Surface({
                 tagName: <span class="hljs-string">'img'</span>,
-                proportions: [<span class="hljs-literal">false</span>, <span class="hljs-number">.1</span>],
-                aspectRatio: <span class="hljs-number">3</span>,
+                proportions : [<span class="hljs-number">.3</span>, <span class="hljs-number">.1</span>],
                 attributes : {src : options.imgURLs.googleWhite},
                 origin: [<span class="hljs-number">.5</span>, <span class="hljs-number">.5</span>],
                 opacity: <span class="hljs-keyword">this</span>.easingTransition
@@ -372,8 +371,9 @@ slightly in the x-direction.</p>
             <div class="content"><div class='highlight'><pre>        addCards : <span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params">options</span>)</span>{
             <span class="hljs-keyword">var</span> trafficCard = <span class="hljs-keyword">new</span> Surface({
                 tagName: <span class="hljs-string">'img'</span>,
-                proportions: [<span class="hljs-number">1</span>, <span class="hljs-literal">false</span>],
-                aspectRatio: <span class="hljs-number">1</span> / <span class="hljs-number">1.4</span>,
+                size: <span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params">parentSize</span>)</span>{
+                    <span class="hljs-keyword">return</span> [parentSize[<span class="hljs-number">0</span>], <span class="hljs-number">.72</span> * parentSize[<span class="hljs-number">0</span>]];
+                },
                 classes: [<span class="hljs-string">'card'</span>, <span class="hljs-string">'traffic-card'</span>],
                 attributes : {src : options.imgURLs.trafficCard},
                 origin: [<span class="hljs-number">.5</span>, <span class="hljs-number">0</span>]
@@ -381,8 +381,9 @@ slightly in the x-direction.</p>
 
             <span class="hljs-keyword">var</span> movieCard = <span class="hljs-keyword">new</span> Surface({
                 tagName: <span class="hljs-string">'img'</span>,
-                proportions: [<span class="hljs-number">1</span>, <span class="hljs-literal">false</span>],
-                aspectRatio: <span class="hljs-number">.58</span>,
+                size : <span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params">parentSize</span>)</span>{
+                    <span class="hljs-keyword">return</span> [parentSize[<span class="hljs-number">0</span>], <span class="hljs-number">.58</span> * parentSize[<span class="hljs-number">0</span>]];
+                },
                 attributes : {src : options.imgURLs.movieCard},
                 classes: [<span class="hljs-string">'card'</span>, <span class="hljs-string">'movie-card'</span>],
                 origin: [<span class="hljs-number">.5</span>, <span class="hljs-number">0</span>]
@@ -394,8 +395,9 @@ slightly in the x-direction.</p>
 
             <span class="hljs-keyword">var</span> timeCard = <span class="hljs-keyword">new</span> Surface({
                 content: timeContent,
-                proportions: [<span class="hljs-number">1</span>, <span class="hljs-literal">false</span>],
-                aspectRatio: <span class="hljs-number">1</span> / <span class="hljs-number">5</span>,
+                size : <span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params">parentSize</span>)</span>{
+                    <span class="hljs-keyword">return</span> [parentSize[<span class="hljs-number">0</span>], <span class="hljs-number">.2</span> * parentSize[<span class="hljs-number">0</span>]];
+                },
                 classes: [<span class="hljs-string">'card'</span>, <span class="hljs-string">'time-card'</span>],
                 origin: [<span class="hljs-number">.5</span>, <span class="hljs-number">0</span>]
             });</pre></div></div>
@@ -444,7 +446,7 @@ animation’s progress.</p>
             
             <div class="content"><div class='highlight'><pre>            <span class="hljs-keyword">var</span> trafficAndMovieSizeOffset = Stream.lift(<span class="hljs-function"><span class="hljs-keyword">function</span> (<span class="hljs-params">progress, trafficSize, movieSize</span>) </span>{
                 <span class="hljs-keyword">if</span> (!trafficSize || !movieSize) <span class="hljs-keyword">return</span> <span class="hljs-literal">false</span>;
-                <span class="hljs-keyword">var</span> offsetY = -<span class="hljs-number">2</span> * options.cardOffset + progress * (movieSize[<span class="hljs-number">1</span>] + trafficSize[<span class="hljs-number">1</span>] + <span class="hljs-number">2</span> * (options.cardOffset + options.cardPadding));
+                <span class="hljs-keyword">var</span> offsetY = <span class="hljs-number">-2</span> * options.cardOffset + progress * (movieSize[<span class="hljs-number">1</span>] + trafficSize[<span class="hljs-number">1</span>] + <span class="hljs-number">2</span> * (options.cardOffset + options.cardPadding));
                 <span class="hljs-keyword">return</span> Transform.thenMove(
                     Transform.scaleX(<span class="hljs-number">.95</span> + <span class="hljs-number">.05</span> * progress),
                     [<span class="hljs-number">0</span>, offsetY, <span class="hljs-number">0</span>]

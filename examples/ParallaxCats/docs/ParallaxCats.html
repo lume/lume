@@ -60,7 +60,6 @@
             
             <div class="content"><div class='highlight'><pre>define(<span class="hljs-function"><span class="hljs-keyword">function</span> (<span class="hljs-params">require, exports, module</span>) </span>{
     <span class="hljs-keyword">var</span> View = <span class="hljs-built_in">require</span>(<span class="hljs-string">'samsara/core/View'</span>);
-    <span class="hljs-keyword">var</span> Surface = <span class="hljs-built_in">require</span>(<span class="hljs-string">'samsara/dom/Surface'</span>);
     <span class="hljs-keyword">var</span> Scrollview = <span class="hljs-built_in">require</span>(<span class="hljs-string">'samsara/layouts/Scrollview'</span>);
     <span class="hljs-keyword">var</span> ParallaxCat = <span class="hljs-built_in">require</span>(<span class="hljs-string">'./ParallaxCat'</span>);</pre></div></div>
             
@@ -99,6 +98,7 @@
             </div>
             
             <div class="content"><div class='highlight'><pre>            <span class="hljs-keyword">var</span> scrollview = <span class="hljs-keyword">new</span> Scrollview({
+                enableMouseDrag: <span class="hljs-literal">true</span>,
                 direction: Scrollview.DIRECTION.Y,
                 drag: <span class="hljs-number">0.3</span>
             });</pre></div></div>

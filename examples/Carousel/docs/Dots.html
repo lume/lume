@@ -141,16 +141,13 @@
 
             </div>
             
-            <div class="content"><div class='highlight'><pre>            <span class="hljs-keyword">var</span> dots = [];
-            <span class="hljs-keyword">for</span> (<span class="hljs-keyword">var</span> i = <span class="hljs-number">0</span>; i &lt; options.numDots; i++){
+            <div class="content"><div class='highlight'><pre>            <span class="hljs-keyword">for</span> (<span class="hljs-keyword">var</span> i = <span class="hljs-number">0</span>; i &lt; options.numDots; i++){
                 <span class="hljs-keyword">var</span> dot = <span class="hljs-keyword">new</span> Surface({
                     size: [options.diameter, options.diameter],
                     classes : [<span class="hljs-string">'dot'</span>]
                 });
-                dots.push(dot);
-            }
-
-            dotLayout.addItems(dots);</pre></div></div>
+                dotLayout.push(dot);
+            }</pre></div></div>
             
         </li>
         

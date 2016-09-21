@@ -76,8 +76,10 @@
             </div>
             
             <div class="content"><div class='highlight'><pre>    <span class="hljs-keyword">var</span> logo = <span class="hljs-keyword">new</span> Logo({
-        proportions: [<span class="hljs-number">1</span> / <span class="hljs-number">3</span>, <span class="hljs-literal">false</span>], <span class="hljs-comment">// The logo's width will be 1/2 the screen</span>
-        aspectRatio: <span class="hljs-number">1</span>,              <span class="hljs-comment">// Forces logo's height = width</span>
+        size: <span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params">parentSize</span>)</span>{
+            <span class="hljs-keyword">var</span> length = <span class="hljs-number">0.5</span> * <span class="hljs-built_in">Math</span>.min(parentSize[<span class="hljs-number">0</span>], parentSize[<span class="hljs-number">1</span>]);
+            <span class="hljs-keyword">return</span> [length, length];
+        },
         origin: [<span class="hljs-number">.5</span>, <span class="hljs-number">.5</span>],            <span class="hljs-comment">// Origin point of the logo for centering</span>
         sides: <span class="hljs-number">6</span>                     <span class="hljs-comment">// Number of wedges</span>
     });</pre></div></div>
