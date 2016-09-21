@@ -1,5 +1,9 @@
 ## 0.2.2
 
+- Forget to update distribution files in 0.2.2 upgrade :-)
+
+## 0.2.2
+
 **General**
 - Add samsarajs to Bower thanks to @richardkopelow
 - Add eslint
