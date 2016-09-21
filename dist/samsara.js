@@ -61,8 +61,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	        Events: __webpack_require__(39),
 	        Inputs: __webpack_require__(40),
 	        Layouts: __webpack_require__(50),
-	        Streams: __webpack_require__(58),
-	        Transitions: __webpack_require__(59)
+	        Streams: __webpack_require__(60)
 	    };
 	}.call(exports, __webpack_require__, exports, module), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
 
@@ -74,12 +73,10 @@ return /******/ (function(modules) { // webpackBootstrap
 	var __WEBPACK_AMD_DEFINE_RESULT__;!(__WEBPACK_AMD_DEFINE_RESULT__ = function(require, exports, module) {
 	    module.exports = {
 	        Engine: __webpack_require__(2),
-	        LayoutNode: __webpack_require__(10),
-	        SizeNode: __webpack_require__(17),
-	        Timer: __webpack_require__(20),
-	        Transform: __webpack_require__(21),
-	        Transitionable: __webpack_require__(22),
-	        View: __webpack_require__(26)
+	        Timer: __webpack_require__(10),
+	        Transform: __webpack_require__(9),
+	        Transitionable: __webpack_require__(11),
+	        View: __webpack_require__(22)
 	    };
 	}.call(exports, __webpack_require__, exports, module), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
 
@@ -92,11 +89,12 @@ return /******/ (function(modules) { // webpackBootstrap
 	// TODO: cancel RAF when asleep
 	!(__WEBPACK_AMD_DEFINE_RESULT__ = function(require, exports, module) {
 	    var EventHandler = __webpack_require__(3);
-	    var State = __webpack_require__(5);
-	    var postTickQueue = __webpack_require__(6);
-	    var preTickQueue = __webpack_require__(7);
-	    var dirtyQueue = __webpack_require__(8);
-	    var tickQueue = __webpack_require__(9);
+	    var postTickQueue = __webpack_require__(5);
+	    var preTickQueue = __webpack_require__(6);
+	    var dirtyQueue = __webpack_require__(7);
+	    var tickQueue = __webpack_require__(8);
+	    var Transform = __webpack_require__(9);
+	    var Timer = __webpack_require__(10);
 
 	    var rafId = Number.NaN;
 	    var isMobile = /mobi/i.test(window.navigator.userAgent);
@@ -128,6 +126,11 @@ return /******/ (function(modules) { // webpackBootstrap
 	    */
 	    Engine.size = new EventHandler();
 
+	    /*
+	     * Emitter for layout events when RAF loop starts
+	     */
+	    Engine.layout = new EventHandler();
+
 	    /**
 	     * Updates by a single frame of the application by looping through all function queues.
 	     *  This is repeatedly called within a requestAnimationFrame loop until the application
@@ -141,19 +144,12 @@ return /******/ (function(modules) { // webpackBootstrap
 	        // browser events and their handlers happen before rendering begins
 	        while (preTickQueue.length) (preTickQueue.shift())();
 
-	        // tick signals base event flow coming in
-	        State.set(State.STATES.UPDATE);
-
 	        for (var i = 0; i < tickQueue.length; i++) tickQueue[i]();
 
 	        // post tick is for resolving larger components from their incoming signals
 	        while (postTickQueue.length) (postTickQueue.shift())();
 
-	        State.set(State.STATES.END);
-
 	        while (dirtyQueue.length) (dirtyQueue.shift())();
-
-	        State.set(State.STATES.START);
 	    };
 
 	    /**
@@ -175,7 +171,14 @@ return /******/ (function(modules) { // webpackBootstrap
 	     */
 	    Engine.stop = function() {
 	        window.cancelAnimationFrame(rafId);
+	        rafId = Number.NaN;
 	    };
+
+	    function firstStart(){
+	        handleResize();
+	        handleLayout();
+	        if (isNaN(rafId)) Engine.start();
+	    }
 
 	    /**
 	     * Subscribe context to resize events and start the render loop if not running
@@ -184,9 +187,11 @@ return /******/ (function(modules) { // webpackBootstrap
 	     * @static
 	     */
 	    Engine.registerContext = function(context) {
-	        context._size.subscribe(this.size);
-	        if (!rafId) Engine.start();
-	        handleResize();
+	        context._size.subscribe(Engine.size);
+	        context._layout.subscribe(Engine.layout);
+
+	        if (window.Promise) window.Promise.resolve().then(firstStart);
+	        else window.requestAnimationFrame(firstStart);
 	    };
 
 	    /**
@@ -196,8 +201,19 @@ return /******/ (function(modules) { // webpackBootstrap
 	     * @static
 	     */
 	    Engine.deregisterContext = function(context){
-	        context._size.unsubscribe(this.size);
+	        context._size.unsubscribe(Engine.size);
+	        context._layout.unsubscribe(Engine.layout);
 	    };
+
+	    var isResizing = false;
+	    var resizeDebounceTime = 150; // introduce lag to detect resize end event. see https://github.com/dmvaldman/samsara/issues/49
+
+	    var resizeEnd = Timer.debounce(function() {
+	        dirtyQueue.push(function(){
+	            Engine.size.emit('end', 'end');
+	            isResizing = false;
+	        });
+	    }, resizeDebounceTime);
 
 	    // Emit a resize event if the window's height or width has changed
 	    function handleResize() {
@@ -206,20 +222,53 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	        if (isMobile) {
 	            var newOrientation = newHeight > newWidth;
-	            if (orientation === newOrientation) return false;
+	            // if width hasn't changed, this indicated "split-screen" view on some iOS devices,
+	            // which should trigger a `resize` event
+	            if (orientation === newOrientation && newWidth === windowWidth)
+	                return false;
+
 	            orientation = newOrientation;
+
+	            // Landscape/Portrait resize events are discrete on mobile
+	            // so don't fire updates
+	            Engine.size.emit('start');
+	            dirtyQueue.push(function(){
+	                Engine.size.emit('end', 'end');
+	            });
 	        }
 	        else {
-	            if (newWidth === windowWidth && newHeight === windowHeight) return false;
+	            if (newWidth === windowWidth && newHeight === windowHeight)
+	                return false;
+
 	            windowWidth = newWidth;
 	            windowHeight = newHeight;
-	        }
 
-	        preTickQueue.push(function() {
-	            Engine.size.emit('resize');
-	            dirtyQueue.push(function() {
-	                Engine.size.emit('resize');
-	            });
+	            if (!isResizing){
+	                Engine.size.emit('start');
+	                isResizing = true;
+	                resizeEnd();
+	            }
+	            else {
+	                postTickQueue.push(function(){
+	                    Engine.size.emit('update');
+	                    resizeEnd();
+	                });
+	            }
+	        }
+	    }
+
+	    var layoutSpec = {
+	        transform : Transform.identity,
+	        opacity : 1,
+	        origin : null,
+	        align : null,
+	        nextSizeTransform : Transform.identity
+	    };
+
+	    function handleLayout(){
+	        Engine.layout.trigger('start', layoutSpec);
+	        dirtyQueue.push(function(){
+	            Engine.layout.trigger('end', layoutSpec);
 	        });
 	    }
 
@@ -231,15 +280,7 @@ return /******/ (function(modules) { // webpackBootstrap
 /* 3 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var __WEBPACK_AMD_DEFINE_RESULT__;/* This Source Code Form is subject to the terms of the Mozilla Public
-	 * License, v. 2.0. If a copy of the MPL was not distributed with this
-	 * file, You can obtain one at http://mozilla.org/MPL/2.0/.
-	 *
-	 * @license MPL 2.0
-	 * @copyright Famous Industries, Inc. 2014
-	 */
-
-	/* Modified work copyright © 2015-2016 David Valdman */
+	var __WEBPACK_AMD_DEFINE_RESULT__;/* Copyright © 2015-2016 David Valdman */
 
 	!(__WEBPACK_AMD_DEFINE_RESULT__ = function(require, exports, module) {
 	    var EventEmitter = __webpack_require__(4);
@@ -309,26 +350,6 @@ return /******/ (function(modules) { // webpackBootstrap
 	    };
 
 	    /**
-	     * Constructor helper method. Given an events dictionary of {eventName : handler} pairs, attach them to
-	     *  a provided input handler for an object.
-	     *
-	     * @method setInputEvents
-	     * @static
-	     * @private
-	     * @param object {Object}           Object to provide on, off and emit methods
-	     * @param handler {EventHandler}    Handler assigned event handler
-	     */
-	    EventHandler.setInputEvents = function setInputEvents(object, events, handlerIn){
-	        for (var key in events) {
-	            var handlerName = events[key];
-	            var handler = (typeof handlerName === 'string')
-	                ? object[handlerName]
-	                : handlerName;
-	            if (handler) handlerIn.on(key, handler.bind(object));
-	        }
-	    };
-
-	    /**
 	     * Adds a handler to the `type` channel which will be executed on `emit`.
 	     *  Extends EventEmitter's `on` method.
 	     *
@@ -343,6 +364,26 @@ return /******/ (function(modules) { // webpackBootstrap
 	            this.upstreamListeners[type] = upstreamListener;
 	            for (var i = 0; i < this.upstream.length; i++) {
 	                this.upstream[i].on(type, upstreamListener);
+	            }
+	        }
+	    };
+
+	    /**
+	     * Removes the handler from the `type` channel.
+	     *  If a handler is not specified or if there are no remaining handlers of the `type`,
+	     *  the EventHandler removes itself from the upstream sources.
+	     *
+	     * @method off
+	     * @param type {String}           Event channel name
+	     * @param [handler] {Function}    Handler
+	     */
+	    EventHandler.prototype.off = function off(type, handler) {
+	        var empty = EventEmitter.prototype.off.apply(this, arguments);
+	        if (empty && this.upstreamListeners[type]) {
+	            var oldUpstreamListener = this.upstreamListeners[type];
+	            delete this.upstreamListeners[type];
+	            for (var i = 0; i < this.upstream.length; i++) {
+	                this.upstream[i].off(type, oldUpstreamListener);
 	            }
 	        }
 	    };
@@ -397,15 +438,7 @@ return /******/ (function(modules) { // webpackBootstrap
 /* 4 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var __WEBPACK_AMD_DEFINE_RESULT__;/* This Source Code Form is subject to the terms of the Mozilla Public
-	 * License, v. 2.0. If a copy of the MPL was not distributed with this
-	 * file, You can obtain one at http://mozilla.org/MPL/2.0/.
-	 *
-	 * @license MPL 2.0
-	 * @copyright Famous Industries, Inc. 2014
-	 */
-
-	/* Modified work copyright © 2015-2016 David Valdman */
+	var __WEBPACK_AMD_DEFINE_RESULT__;/* Copyright © 2015-2016 David Valdman */
 
 	!(__WEBPACK_AMD_DEFINE_RESULT__ = function(require, exports, module) {
 	    /**
@@ -478,8 +511,8 @@ return /******/ (function(modules) { // webpackBootstrap
 	     */
 	    EventEmitter.prototype.once = function once(type, handler){
 	        var onceHandler = function(){
-	            EventEmitter.prototype.off.call(this, type, onceHandler);
-	            handler.apply(this, arguments);
+	            EventEmitter.prototype.off.call(this._owner, type, onceHandler);
+	            handler.apply(this._owner, arguments);
 	        }.bind(this);
 	        this.on(type, onceHandler);
 	    };
@@ -488,6 +521,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	     * Removes the `handler` from the `type` channel. This undoes the work of `on`.
 	     *  If no type is provided, then all event listeners are removed.
 	     *  If a type is provided but no handler, then all listeners of that type are removed.
+	     *  If no handlers are left for the specified type returns true, otherwise false.
 	     *
 	     * @method off
 	     * @param [type] {String}         Channel name
@@ -496,7 +530,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	    EventEmitter.prototype.off = function off(type, handler) {
 	        if (!type) {
 	            this.listeners = {};
-	            return;
+	            return true;
 	        }
 
 	        var listener = this.listeners[type];
@@ -507,6 +541,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	                if (index >= 0) listener.splice(index, 1);
 	            }
 	        }
+	        return this.listeners[type].length === 0;
 	    };
 
 	    /**
@@ -527,47 +562,6 @@ return /******/ (function(modules) { // webpackBootstrap
 /* 5 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var __WEBPACK_AMD_DEFINE_RESULT__;/* Copyright © 2015-2016 David Valdman */
-
-	!(__WEBPACK_AMD_DEFINE_RESULT__ = function(require, exports, module) {
-	    var STATE = {
-	        NONE : -1,
-	        START : 0,
-	        UPDATE : 1,
-	        END : 2
-	    };
-
-	    var currentState = STATE.START;
-
-	    /**
-	     * SUE specified the global state of the application, whether it is in a
-	     *  `start`, `update` or `end` state. This is necessary for coordinating
-	     *  `resize` events with `start`, `update`, `end` states in stream.
-	     *
-	     * @class SUE
-	     * @namespace Core
-	     * @static
-	     * @private
-	     */
-	    var SUE = {};
-
-	    SUE.STATES = STATE;
-
-	    SUE.set = function set(state){
-	        currentState = state;
-	    };
-
-	    SUE.get = function get(){
-	        return currentState;
-	    };
-
-	    module.exports = SUE;
-	}.call(exports, __webpack_require__, exports, module), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
-
-/***/ },
-/* 6 */
-/***/ function(module, exports, __webpack_require__) {
-
 	var __WEBPACK_AMD_DEFINE_RESULT__;/* Copyright © 2015 David Valdman */
 
 	!(__WEBPACK_AMD_DEFINE_RESULT__ = function(require, exports, module) {
@@ -582,8 +576,9 @@ return /******/ (function(modules) { // webpackBootstrap
 	    module.exports = [];
 	}.call(exports, __webpack_require__, exports, module), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
 
+
 /***/ },
-/* 7 */
+/* 6 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_RESULT__;/* Copyright © 2015 David Valdman */
@@ -599,8 +594,9 @@ return /******/ (function(modules) { // webpackBootstrap
 	    module.exports = [];
 	}.call(exports, __webpack_require__, exports, module), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
 
+
 /***/ },
-/* 8 */
+/* 7 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_RESULT__;/* Copyright © 2015 David Valdman */
@@ -616,8 +612,9 @@ return /******/ (function(modules) { // webpackBootstrap
 	    module.exports = [];
 	}.call(exports, __webpack_require__, exports, module), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
 
+
 /***/ },
-/* 9 */
+/* 8 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_RESULT__;/* Copyright © 2015 David Valdman */
@@ -634,1251 +631,12 @@ return /******/ (function(modules) { // webpackBootstrap
 	    module.exports = [];
 	}.call(exports, __webpack_require__, exports, module), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
 
+
 /***/ },
-/* 10 */
+/* 9 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_RESULT__;/* Copyright © 2015-2016 David Valdman */
-
-	!(__WEBPACK_AMD_DEFINE_RESULT__ = function(require, exports, module) {
-	    var EventHandler = __webpack_require__(3);
-	    var SimpleStream = __webpack_require__(11);
-	    var Stream = __webpack_require__(15);
-	    var Observable = __webpack_require__(16);
-
-	    /**
-	     * Encapsulates a stream of layout data (transform, origin, align, opacity).
-	     *  Listens on start/update/end events, batches them, and emits them downstream
-	     *  to descendant layout nodes.
-	     *
-	     *  @example
-	     *
-	     *      var context = Context();
-	     *
-	     *      var surface = new Surface({
-	     *          size : [100,100],
-	     *          properties : {background : 'red'}
-	     *      });
-	     *
-	     *      var opacity = new Transitionable(1);
-	     *
-	     *      var layout = new LayoutNode({
-	     *          transform : Transform.translateX(100),
-	     *          opacity : opacity
-	     *      });
-	     *
-	     *      context.add(layout).add(surface);
-	     *      context.mount(document.body)
-	     *
-	     *      opacity.set(0, {duration : 1000});
-	     *
-	     * @class LayoutNode
-	     * @constructor
-	     * @namespace Core
-	     * @private
-	     * @param sources {Object}                          Object of layout sources
-	     * @param [sources.transform] {Stream|Transform}    Transform source
-	     * @param [sources.align] {Stream|Array}            Align source
-	     * @param [sources.origin] {Stream|Array}           Origin source
-	     * @param [sources.opacity] {Stream|Number}         Opacity source
-	     */
-	    function LayoutNode(sources) {
-	        this.stream = _createStream(sources);
-	        EventHandler.setOutputHandler(this, this.stream);
-	    }
-
-	    // Enumeration of types of layout properties
-	    LayoutNode.KEYS = {
-	        transform : 'transform',
-	        origin : 'origin',
-	        align : 'align',
-	        opacity : 'opacity'
-	    };
-
-	    /**
-	     * Introduce new data streams to the layout node in {key : value} pairs.
-	     *  Here the `key` is one of "transform", "origin", "align" or "opacity".
-	     *  The `value` is either a stream, or a simple type like a `Number` or `Array`.
-	     *  Simple types will be wrapped in an `Observerable` to emit appropriate events.
-	     *
-	     * @method set
-	     * @param sources {Object}      Object of data sources
-	     */
-	    LayoutNode.prototype.set = function(sources){
-	        // TODO: be able to overwrite streams. Not only add
-	        for (var key in sources){
-	            var value = sources[key];
-
-	            var source = (value instanceof SimpleStream)
-	                ? value
-	                : new Observable(value);
-
-	            this.stream.addStream(key, source);
-	        }
-	    };
-
-	    function _createStream(sources){
-	        for (var key in sources){
-	            var value = sources[key];
-	            if (typeof value === 'number' || value instanceof Array){
-	                var source = new Observable(value);
-	                sources[key] = source;
-	            }
-	        }
-	        return Stream.merge(sources);
-	    }
-
-	    module.exports = LayoutNode;
-	}.call(exports, __webpack_require__, exports, module), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
-
-
-/***/ },
-/* 11 */
-/***/ function(module, exports, __webpack_require__) {
-
-	var __WEBPACK_AMD_DEFINE_RESULT__;/* Copyright © 2015-2016 David Valdman */
-
-	!(__WEBPACK_AMD_DEFINE_RESULT__ = function(require, exports, module) {
-	    var EventHandler = __webpack_require__(3);
-	    var EventMapper = __webpack_require__(12);
-	    var EventFilter = __webpack_require__(13);
-	    var EventSplitter = __webpack_require__(14);
-
-	    /**
-	     * A SimpleStream wraps an EventHandler and provides convenience
-	     *  methods of `map`, `filter`, `split`, and `pluck` to
-	     *  transform one stream into another.
-	     *
-	     * @example
-	     *
-	     * @class SimpleStream
-	     * @extends Core.EventHandler
-	     * @private
-	     * @namespace Streams
-	     * @constructor
-	     */
-	    function SimpleStream(){
-	        EventHandler.call(this);
-	    }
-
-	    SimpleStream.prototype = Object.create(EventHandler.prototype);
-	    SimpleStream.prototype.constructor = SimpleStream;
-
-	    /**
-	     * Map converts the current stream into a new stream
-	     *  with a modified (mapped) data payload.
-	     *
-	     * @method map
-	     * @param mapperFn {Function}   Function to map event payload
-	     */
-	    SimpleStream.prototype.map = function(mapperFn){
-	        var stream = new SimpleStream();
-	        var mapper = new EventMapper(mapperFn);
-	        stream.subscribe(mapper).subscribe(this);
-	        return stream;
-	    };
-
-	    /**
-	     * Filter converts the current stream into a new stream
-	     *  that only emits if the filter condition is satisfied.
-	     *  The function should return a Boolean.
-	     *
-	     * @method filter
-	     * @param filterFn {Function}   Function to filter event payload
-	     */
-	    SimpleStream.prototype.filter = function(filterFn){
-	        var filter = new EventFilter(filterFn);
-	        var filteredStream = new SimpleStream();
-	        filteredStream.subscribe(filter).subscribe(this);
-	        return filteredStream;
-	    };
-
-	    /**
-	     * Split maps one of several streams based on custom logic.
-	     *  The function should return an EventEmitter.
-	     *
-	     * @method split
-	     * @param splitterFn {Function}  Splitter function
-	     */
-	    SimpleStream.prototype.split = function(splitterFn){
-	        var splitter = new EventSplitter(splitterFn);
-	        var splitStream = new SimpleStream();
-	        splitStream.subscribe(splitter).subscribe(this);
-	        return splitStream;
-	    };
-
-	    /**
-	     * Pluck is an opinionated mapper. It projects a Stream
-	     *  onto one of its return values.
-	     *
-	     *  Useful if a Stream returns an array or an object.
-	     *
-	     * @method pluck
-	     * @param key {String|Number}   Key to project event payload onto
-	     */
-	    SimpleStream.prototype.pluck = function(key){
-	        return this.map(function(value){
-	            return value[key];
-	        });
-	    };
-
-	    //TODO: can this be inherited by other streams?
-	    SimpleStream.merge = function(){};
-
-	    /**
-	     * Lift is like map, except it maps several event sources,
-	     *  not only one.
-	     *
-	     *  @example
-	     *
-	     *      var liftedStream = SimpleStream.lift(function(payload1, payload2){
-	     *          return payload1 + payload2;
-	     *      }, [stream2, stream2]);
-	     *
-	     *      liftedStream.on('name'), function(data){
-	     *          // data = 3;
-	     *      });
-	     *
-	     *      stream2.emit('name', 1);
-	     *      stream2.emit('name', 2);
-	     *
-	     * @method lift
-	     * @static
-	     * @param map {Function}            Function to map stream payloads
-	     * @param streams {Array|Object}    Stream sources
-	     */
-	    SimpleStream.lift = function(map, streams){
-	        //TODO: fix comma separated arguments
-	        var mergedStream = (streams instanceof Array)
-	            ? this.merge(streams)
-	            : this.merge.apply(null, Array.prototype.splice.call(arguments, 1));
-
-	        var mappedStream = new EventMapper(function liftMap(data){
-	            return map.apply(null, data);
-	        });
-
-	        var liftedStream = new SimpleStream();
-	        liftedStream.subscribe(mappedStream).subscribe(mergedStream);
-
-	        return liftedStream;
-	    };
-
-	    module.exports = SimpleStream;
-	}.call(exports, __webpack_require__, exports, module), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
-
-
-/***/ },
-/* 12 */
-/***/ function(module, exports, __webpack_require__) {
-
-	var __WEBPACK_AMD_DEFINE_RESULT__;/* Copyright © 2015-2016 David Valdman */
-
-	!(__WEBPACK_AMD_DEFINE_RESULT__ = function(require, exports, module) {
-	    var EventHandler = __webpack_require__(3);
-
-	    /**
-	     * EventMapper modifies the data payload of an event based on
-	     *  a provided function.
-	     *
-	     *  Note: it does not modify the event's `type`.
-	     *
-	     *  @example
-	     *
-	     *      var eventMapper = new EventMapper(function(payload){
-	     *          return payload.x + payload.y
-	     *      });
-	     *
-	     *      var eventEmitter = new EventEmitter();
-	     *
-	     *      eventMapper.subscribe(eventEmitter);
-	     *
-	     *      eventMapper.on('name', function(value){
-	     *          alert(value);
-	     *      });
-	     *
-	     *      eventEmitter.emit('name', {x : 1, y : 2}); // alerts 3
-	     *
-	     * @class EventMapper
-	     * @namespace Events
-	     * @constructor
-	     * @param map {Function}  Function to modify the event payload
-	     */
-	    function EventMapper(map) {
-	        EventHandler.call(this);
-	        this._mappingFunction = map;
-	    }
-
-	    EventMapper.prototype = Object.create(EventHandler.prototype);
-	    EventMapper.prototype.constructor = EventMapper;
-
-	    /**
-	     * Emit mapped event.
-	     *
-	     * @method emit
-	     * @param type {String} Channel name
-	     * @param data {Object} Payload
-	     */
-	    EventMapper.prototype.emit = function emit(type, data) {
-	        var mappedData = this._mappingFunction(data);
-	        EventHandler.prototype.emit.call(this, type, mappedData);
-	    };
-
-	    /**
-	     * Alias of emit.
-	     *
-	     * @method trigger
-	     * @param type {String} Channel name
-	     * @param data {Object} Payload
-	     */
-	    EventMapper.prototype.trigger = EventMapper.prototype.emit;
-
-	    module.exports = EventMapper;
-	}.call(exports, __webpack_require__, exports, module), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
-
-
-/***/ },
-/* 13 */
-/***/ function(module, exports, __webpack_require__) {
-
-	var __WEBPACK_AMD_DEFINE_RESULT__;/* This Source Code Form is subject to the terms of the Mozilla Public
-	 * License, v. 2.0. If a copy of the MPL was not distributed with this
-	 * file, You can obtain one at http://mozilla.org/MPL/2.0/.
-	 *
-	 * @license MPL 2.0
-	 * @copyright Famous Industries, Inc. 2014
-	 */
-
-	/* Modified work copyright © 2015-2016 David Valdman */
-
-	!(__WEBPACK_AMD_DEFINE_RESULT__ = function(require, exports, module) {
-	    var EventHandler = __webpack_require__(3);
-
-	    /**
-	     * EventFilter regulates the broadcasting of events based on
-	     *  a specified condition prescribed by a provided function
-	     *  with the signature `(data) -> Boolean`
-	     *
-	     *  @example
-	     *
-	     *      var eventFilter = new EventFilter(function(payload){
-	     *          return (payload.value == 0);
-	     *      });
-	     *
-	     *      var eventEmitter = new EventEmitter();
-	     *
-	     *      eventFilter.subscribe(eventEmitter);
-	     *
-	     *      eventFilter.on('click', function(data){
-	     *          alert('fired');
-	     *      });
-	     *
-	     *      eventEmitter.emit('click', {value : 0}); // fired
-	     *      eventEmitter.emit('click', {value : 1}); // doesn't fire
-	     *
-	     * @class EventFilter
-	     * @namespace Events
-	     * @constructor
-	     * @param filter {Function}  Function returning a Boolean
-	     */
-	    function EventFilter(filter) {
-	        EventHandler.call(this);
-	        this._condition = filter;
-	    }
-	    EventFilter.prototype = Object.create(EventHandler.prototype);
-	    EventFilter.prototype.constructor = EventFilter;
-
-	    /**
-	     * Emit event if the condition is satisfied.
-	     *
-	     * @method emit
-	     * @param type {String} Channel name
-	     * @param data {Object} Payload
-	     */
-	    EventFilter.prototype.emit = function emit(type, data) {
-	        //TODO: add start/update/end logic
-	        if (!this._condition(data)) return;
-	        EventHandler.prototype.emit.apply(this, arguments);
-	    };
-
-	    /**
-	     * Alias of emit.
-	     *
-	     * @method trigger
-	     * @param type {String} Channel name
-	     * @param data {Object} Payload
-	     */
-	    EventFilter.prototype.trigger = EventFilter.prototype.emit;
-
-	    module.exports = EventFilter;
-	}.call(exports, __webpack_require__, exports, module), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
-
-
-/***/ },
-/* 14 */
-/***/ function(module, exports, __webpack_require__) {
-
-	var __WEBPACK_AMD_DEFINE_RESULT__;/* This Source Code Form is subject to the terms of the Mozilla Public
-	 * License, v. 2.0. If a copy of the MPL was not distributed with this
-	 * file, You can obtain one at http://mozilla.org/MPL/2.0/.
-	 *
-	 * @license MPL 2.0
-	 * @copyright Famous Industries, Inc. 2014
-	 */
-
-	/* Modified work copyright © 2015-2016 David Valdman */
-
-	!(__WEBPACK_AMD_DEFINE_RESULT__ = function(require, exports, module) {
-	    var EventHandler = __webpack_require__(3);
-
-	    /**
-	     * EventSplitter routes events to various event destinations
-	     *  based on custom logic. The return of the provided splitter
-	     *  function should be of type EventEmitter.
-	     *
-	     *  @example
-	     *
-	     *      var eventEmitter = new EventEmitter();
-	     *      var eventEmitterX = new eventEmitter();
-	     *      var eventEmitterY = new eventEmitter();
-	     *
-	     *      var eventSplitter = new EventSplitter(function(payload){
-	     *          return (payload.x > payload.y)
-	     *              ? eventEmitterX;
-	     *              : eventEmitterY;
-	     *      });
-	     *
-	     *      eventSplitter.subscribe(eventEmitter);
-	     *
-	     *      eventEmitterX.on('move', function(){
-	     *          console.log('x is bigger')
-	     *      });
-	     *
-	     *      eventEmitterY.on('move', function(){
-	     *          console.log('y is bigger')
-	     *      })
-	     *
-	     *      eventEmitter.emit('move', {x : 3, y : 2}); // x is bigger
-	     *
-	     * @class EventSplitter
-	     * @private
-	     * @namespace Events
-	     * @constructor
-	     * @param splitter {Function}
-	     */
-	    function EventSplitter(splitter) {
-	        EventHandler.call(this);
-	        this._splitter = splitter;
-	    }
-	    EventSplitter.prototype = Object.create(EventHandler.prototype);
-	    EventSplitter.prototype.constructor = EventSplitter;
-
-	    /**
-	     * Emit event.
-	     *
-	     * @method emit
-	     * @param type {String} Channel name
-	     * @param data {Object} Payload
-	     */
-	    EventSplitter.prototype.emit = function emit(type, data) {
-	        var target = this._splitter.apply(this, arguments);
-	        if (target && target.emit instanceof Function)
-	            target.emit(type, data);
-	    };
-
-	    /**
-	     * Alias of emit.
-	     *
-	     * @method trigger
-	     * @param type {String} Channel name
-	     * @param data {Object} Payload
-	     */
-	    EventSplitter.prototype.trigger = EventSplitter.prototype.emit;
-
-	    module.exports = EventSplitter;
-	}.call(exports, __webpack_require__, exports, module), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
-
-
-/***/ },
-/* 15 */
-/***/ function(module, exports, __webpack_require__) {
-
-	var __WEBPACK_AMD_DEFINE_RESULT__;/* Copyright © 2015-2016 David Valdman */
-
-	!(__WEBPACK_AMD_DEFINE_RESULT__ = function(require, exports, module){
-	    var EventHandler = __webpack_require__(3);
-	    var EventMapper = __webpack_require__(12);
-	    var SimpleStream = __webpack_require__(11);
-
-	    var preTickQueue = __webpack_require__(7);
-	    var postTickQueue = __webpack_require__(6);
-	    var dirtyQueue = __webpack_require__(8);
-	    var State = __webpack_require__(5);
-
-	    var EVENTS = {
-	        START : 'start',
-	        UPDATE : 'update',
-	        END : 'end',
-	        RESIZE : 'resize'
-	    };
-
-	    /**
-	     * Stream listens to `resize`, `start`, `update` and `end` events and
-	     *  emits `start`, `update` and `end` events. `Resize` events get
-	     *  unified with `start`, `update`, and `end` events depending on
-	     *  when they are fired within Samsara's engine cycle.
-	     *
-	     *  If listening to multiple sources, Stream emits a single event per
-	     *  Engine cycle.
-	     *
-	     *  @example
-	     *
-	     *      var position = new Transitionable([0,0]);
-	     *      var size = new EventEmitter();
-	     *
-	     *      var translationStream = Stream.lift(function(position, size){
-	     *          var translation = [
-	     *              position[0] + size[0],
-	     *              position[1] + size[1]
-	     *          ];
-	     *
-	     *          return Transform.translate(translation);
-	     *      }, [positionStream, sizeStream]);
-	     *
-	     *      translationStream.on('start', function(transform){
-	     *          console.log(transform);
-	     *      });
-	     *
-	     *      translationStream.on('update', function(transform){
-	     *          console.log(transform);
-	     *      });
-	     *
-	     *      translationStream.on('end', function(transform){
-	     *          console.log(transform);
-	     *      });
-	     *
-	     *      position.set([100, 50], {duration : 500});
-	     *      size.emit('resize', [100,100]);
-	     *
-	     * @class Stream
-	     * @extends Streams.SimpleStream
-	     * @namespace Streams
-	     * @param [options] {Object}            Options
-	     * @param [options.start] {Function}    Custom logic to map the `start` event
-	     * @param [options.update] {Function}   Custom logic to map the `update` event
-	     * @param [options.end] {Function}      Custom logic to map the `end` event
-	     * @constructor
-	     */
-	    function Stream(options){
-	        this._eventInput = new EventHandler();
-	        this._eventOutput = new EventHandler();
-	        EventHandler.setInputHandler(this, this._eventInput);
-	        EventHandler.setOutputHandler(this, this._eventOutput);
-
-	        var counter = 0;
-	        var isUpdating = false;
-	        var dirtyStart = false;
-	        var dirtyUpdate = false;
-	        var dirtyEnd = false;
-
-	        function start(data){
-	            var payload = options && options.start ? options.start(data) : data;
-	            if (payload !== false) this.emit(EVENTS.START, payload);
-	            dirtyStart = false;
-	        }
-
-	        function update(data){
-	            var payload = options && options.update ? options.update(data) : data;
-	            if (payload !== false) this.emit(EVENTS.UPDATE, payload);
-	            dirtyUpdate = false;
-	        }
-
-	        function end(data){
-	            var payload = options && options.end ? options.end(data) : data;
-	            if (payload !== false) this.emit(EVENTS.END, payload);
-	            dirtyEnd = false;
-	        }
-
-	        this._eventInput.on(EVENTS.START, function(data){
-	            counter++;
-	            if (dirtyStart || isUpdating) return false;
-	            dirtyStart = true;
-	            preTickQueue.push(start.bind(this, data));
-	        }.bind(this));
-
-	        this._eventInput.on(EVENTS.UPDATE, function(data){
-	            isUpdating = true;
-	            if (dirtyUpdate) return false;
-	            dirtyUpdate = true;
-	            postTickQueue.push(update.bind(this, data));
-	        }.bind(this));
-
-	        this._eventInput.on(EVENTS.END, function(data){
-	            counter--;
-	            if (isUpdating && counter > 0){
-	                update.call(this, data);
-	                return false;
-	            }
-	            isUpdating = false;
-	            if (dirtyEnd) return;
-	            dirtyEnd = true;
-	            dirtyQueue.push(end.bind(this, data));
-	        }.bind(this));
-
-	        this._eventInput.on(EVENTS.RESIZE, function(data){
-	            switch (State.get()){
-	                case State.STATES.START:
-	                    this.trigger(EVENTS.START, data);
-	                    break;
-	                case State.STATES.UPDATE:
-	                    this.trigger(EVENTS.UPDATE, data);
-	                    break;
-	                case State.STATES.END:
-	                    this.trigger(EVENTS.END, data);
-	                    break;
-	            }
-	        }.bind(this));
-	    }
-
-	    Stream.prototype = Object.create(SimpleStream.prototype);
-	    Stream.prototype.constructor = Stream;
-
-	    /**
-	     * Lift is like map, except it maps several event sources,
-	     *  not only one.
-	     *
-	     *  @example
-	     *
-	     *      var liftedStream = Stream.lift(function(payload1, payload2){
-	     *          return payload1 + payload2;
-	     *      }, [stream2, stream2]);
-	     *
-	     *      liftedStream.on('name'), function(data){
-	     *          // data = 3;
-	     *      });
-	     *
-	     *      stream2.emit('name', 1);
-	     *      stream2.emit('name', 2);
-	     *
-	     * @method lift
-	     * @static
-	     * @param map {Function}            Function to map stream payloads
-	     * @param streams {Array|Object}    Stream sources
-	     */
-	    Stream.lift = SimpleStream.lift;
-
-	    /**
-	     * Batches events for provided object of streams in
-	     *  {key : stream} pairs. Emits one event per Engine cycle.
-	     *
-	     * @method merge
-	     * @static
-	     * @param streams {Object}  Dictionary of `resize` streams
-	     */
-	    Stream.merge = function(streamObj){
-	        var mergedStream = new Stream();
-	        var mergedData = (streamObj instanceof Array) ? [] : {};
-
-	        mergedStream.addStream = function(key, stream){
-	            var mapper = (function(key){
-	                return new EventMapper(function(data){
-	                    mergedData[key] = data;
-	                    return mergedData;
-	                });
-	            })(key);
-
-	            mergedStream.subscribe(mapper).subscribe(stream);
-	        };
-
-	        for (var key in streamObj){
-	            var stream = streamObj[key];
-	            mergedStream.addStream(key, stream);
-	        }
-
-	        return mergedStream;
-	    };
-
-	    module.exports = Stream;
-	}.call(exports, __webpack_require__, exports, module), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
-
-
-/***/ },
-/* 16 */
-/***/ function(module, exports, __webpack_require__) {
-
-	var __WEBPACK_AMD_DEFINE_RESULT__;/* Copyright © 2015-2016 David Valdman */
-
-	!(__WEBPACK_AMD_DEFINE_RESULT__ = function(require, exports, module) {
-	    var SimpleStream = __webpack_require__(11);
-	    var preTickQueue = __webpack_require__(7);
-	    var dirtyQueue = __webpack_require__(8);
-
-	    /**
-	     * An Observable is a stream for events set discretely in time, as opposed to continuously.
-	     *  It emits appropriate `start` and `end` events upon calling the `set` method.
-	     *
-	     * @class Observable
-	     * @constructor
-	     * @private
-	     * @extends Streams.Stream
-	     * @param value {Number, String, Array, Object} Value
-	     */
-	    function Observable(value){
-	        SimpleStream.call(this);
-	        this.value = value;
-
-	        if (value !== undefined) this.set(value);
-	    }
-
-	    Observable.prototype = Object.create(SimpleStream.prototype);
-	    Observable.prototype.constructor = Observable;
-
-	    /**
-	     * Getter for the provided value.
-	     *
-	     * @method get
-	     * @return {Number, String, Array, Object}
-	     */
-	    Observable.prototype.get = function(){
-	        return this.value;
-	    };
-
-	    /**
-	     * Setter for the provided value.
-	     *
-	     * @method set
-	     * @param value {Number, String, Array, Object} Value
-	     */
-	    Observable.prototype.set = function(value){
-	        var self = this;
-	        preTickQueue.push(function(){
-	            self.value = value;
-	            self.emit('start', value);
-
-	            dirtyQueue.push(function(){
-	                self.emit('end', value);
-	            });
-	        });
-	    };
-
-	    module.exports = Observable;
-	}.call(exports, __webpack_require__, exports, module), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
-
-
-/***/ },
-/* 17 */
-/***/ function(module, exports, __webpack_require__) {
-
-	var __WEBPACK_AMD_DEFINE_RESULT__;/* Copyright © 2015-2016 David Valdman */
-
-	!(__WEBPACK_AMD_DEFINE_RESULT__ = function(require, exports, module) {
-	    var EventHandler = __webpack_require__(3);
-	    var SimpleStream = __webpack_require__(11);
-	    var ResizeStream = __webpack_require__(18);
-	    var SizeObservable = __webpack_require__(19);
-
-	    /**
-	     * Encapsulates a stream of size data (size, proportions, margins).
-	     *  Listens on start/update/end events, batches them, and emits resize events downstream
-	     *  to descendant size nodes.
-	     *
-	     *  Size can be defined with height and width given numerically, but
-	     *  they can also be:
-	     *
-	     *  ```
-	     *      `undefined` - takes the parent value
-	     *      `true`      - takes the DOM calculated value
-	     *      `false`     - value defined by setting an aspect ratio
-	     *  ```
-	     *
-	     *  @example
-	     *
-	     *      var context = Context();
-	     *
-	     *      var surface = new Surface({
-	     *          size : [100,100],
-	     *          properties : {background : 'red'}
-	     *      });
-	     *
-	     *      var sizeNode = new SizeNode({
-	     *          size : [100, undefined],
-	     *          margins : [50, 50]
-	     *      });
-	     *
-	     *      context.add(sizeNode).add(surface);
-	     *      context.mount(document.body)
-	     *
-	     * @class SizeNode
-	     * @namespace Core
-	     * @constructor
-	     * @private
-	     * @param sources {Object}                      Object of size sources
-	     * @param [sources.size] {Stream|Array}         Size source
-	     * @param [sources.margin] {Stream|Array}       Margin source
-	     * @param [sources.proportions] {Stream|Array}  Proportions source
-	     * @param [sources.aspectRatio] {Stream|Number} Aspect ratio source
-	     */
-	    function SizeNode(sources) {
-	        this.stream = _createStream(sources);
-	        EventHandler.setOutputHandler(this, this.stream);
-
-	        this.stream._eventInput.on('start', function(data){
-	            this.stream.trigger('resize', data);
-	        }.bind(this));
-
-	        this.stream._eventInput.on('update', function(data){
-	            this.stream.trigger('resize', data);
-	        }.bind(this));
-
-	        this.stream._eventInput.on('end', function(data){
-	            this.stream.trigger('resize', data);
-	        }.bind(this));
-	    }
-
-	    // Enumeration of types of size properties
-	    SizeNode.KEYS = {
-	        size : 'size',
-	        proportions : 'proportions',
-	        margins : 'margins',
-	        aspectRatio : 'aspectRatio'
-	    };
-
-	    /**
-	     * Introduce new data streams to the size node in {key : value} pairs.
-	     *  Here the `key` is one of "size", "proportions" or "marins".
-	     *  The `value` is either a stream, or a simple type like a `Number` or `Array`.
-	     *  Simple types will be wrapped in an `Observerable` to emit appropriate events.
-	     *
-	     * @method set
-	     * @param obj {Object}      Object of data sources
-	     */
-	    SizeNode.prototype.set = function(obj){
-	        // TODO: be able to overwrite streams. Not only add
-	        for (var key in obj){
-	            var value = obj[key];
-
-	            var source = (value instanceof SimpleStream)
-	                ? value
-	                : new SizeObservable(value);
-
-	            this.stream.addStream(key, source);
-	        }
-	    };
-
-	    function _createStream(sources){
-	        for (var key in sources){
-	            var value = sources[key];
-	            if (typeof value == 'number' || value instanceof Array){
-	                var source = new SizeObservable(value);
-	                sources[key] = source;
-	            }
-	        }
-	        return ResizeStream.merge(sources);
-	    }
-
-	    module.exports = SizeNode;
-	}.call(exports, __webpack_require__, exports, module), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
-
-
-/***/ },
-/* 18 */
-/***/ function(module, exports, __webpack_require__) {
-
-	var __WEBPACK_AMD_DEFINE_RESULT__;/* Copyright © 2015-2016 David Valdman */
-
-	!(__WEBPACK_AMD_DEFINE_RESULT__ = function(require, exports, module) {
-	    var SimpleStream = __webpack_require__(11);
-	    var EventMapper = __webpack_require__(12);
-	    var EventHandler = __webpack_require__(3);
-
-	    var preTickQueue = __webpack_require__(7);
-	    var postTickQueue = __webpack_require__(6);
-	    var dirtyQueue = __webpack_require__(8);
-	    var State = __webpack_require__(5);
-
-	    var EVENTS = {
-	        RESIZE : 'resize'
-	    };
-
-	    /**
-	     * ResizeStream is a stream that listens to and emits `resize` events.
-	     *
-	     * @class ResizeStream
-	     * @private
-	     * @extends Streams.Stream
-	     * @namespace Streams
-	     * @param [options] {Object}            Options
-	     * @param [options.resize] {Function}   Custom logic to map the `resize` event
-	     * @constructor
-	     */
-	    function ResizeStream(options){
-	        var dirtyResize = false;
-
-	        function resize(data){
-	            var payload = (options && options.resize)
-	                ? options.resize(data)
-	                : data;
-	            this.emit(EVENTS.RESIZE, payload);
-	            dirtyResize = false;
-	        }
-
-	        this._eventInput = new EventHandler();
-	        this._eventOutput = new EventHandler();
-	        EventHandler.setInputHandler(this, this._eventInput);
-	        EventHandler.setOutputHandler(this, this._eventOutput);
-
-	        this._eventInput.on(EVENTS.RESIZE, function(data){
-	            if (!dirtyResize) {
-	                var queue;
-	                switch (State.get()){
-	                    case State.STATES.START:
-	                        queue = preTickQueue;
-	                        break;
-	                    case State.STATES.UPDATE:
-	                        queue = postTickQueue;
-	                        break;
-	                    case State.STATES.END:
-	                        queue = dirtyQueue;
-	                        break;
-	                }
-	                queue.push(resize.bind(this, data));
-	            }
-	            dirtyResize = true;
-	        }.bind(this));
-	    }
-
-	    ResizeStream.prototype = Object.create(SimpleStream.prototype);
-	    ResizeStream.prototype.constructor = ResizeStream;
-
-	    /**
-	     * Extends SimpleStream.lift
-	     *
-	     * @method lift
-	     * @static
-	     */
-	    ResizeStream.lift = SimpleStream.lift;
-
-	    /**
-	     * Batches resize events for provided object of streams in
-	     *  {key : stream} pairs. Emits one `resize` event per Engine cycle.
-	     *
-	     * @method merge
-	     * @static
-	     * @private
-	     * @param streams {Object}  Dictionary of `resize` streams
-	     */
-	    ResizeStream.merge = function(streams){
-	        var mergedStream = new ResizeStream();
-	        var mergedData = (streams instanceof Array) ? [] : {};
-
-	        mergedStream.addStream = function(key, stream){
-	            var mapper = (function(key){
-	                return new EventMapper(function(data){
-	                    mergedData[key] = data;
-	                    return mergedData;
-	                });
-	            })(key);
-
-	            mergedStream.subscribe(mapper).subscribe(stream);
-	        };
-
-	        for (var key in streams){
-	            var stream = streams[key];
-	            mergedStream.addStream(key, stream);
-	        }
-
-	        return mergedStream;
-	    };
-
-	    module.exports = ResizeStream;
-	}.call(exports, __webpack_require__, exports, module), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
-
-
-/***/ },
-/* 19 */
-/***/ function(module, exports, __webpack_require__) {
-
-	var __WEBPACK_AMD_DEFINE_RESULT__;/* Copyright © 2015-2016 David Valdman */
-
-	!(__WEBPACK_AMD_DEFINE_RESULT__ = function(require, exports, module) {
-	    var SimpleStream = __webpack_require__(11);
-	    var preTickQueue = __webpack_require__(7);
-	    var dirtyQueue = __webpack_require__(8);
-
-	    /**
-	     * A SizeObservable is a stream for resize events set discretely in time, as opposed to continuously.
-	     *  It emits appropriate `resize` events upon calling the `set` method.
-	     *
-	     * @class Observable
-	     * @constructor
-	     * @private
-	     * @extends Streams.SimpleStream
-	     * @param value {Array} Size
-	     */
-	    function SizeObservable(value){
-	        SimpleStream.call(this);
-	        this.value = value;
-
-	        if (value !== undefined) this.set(value);
-	    }
-
-	    SizeObservable.prototype = Object.create(SimpleStream.prototype);
-	    SizeObservable.prototype.constructor = SizeObservable;
-
-	    /**
-	     * Getter for the provided size.
-	     *
-	     * @method get
-	     * @return {Array}
-	     */
-	    SizeObservable.prototype.get = function(){
-	        return this.value;
-	    };
-
-	    /**
-	     * Setter for the provided size.
-	     *
-	     * @method set
-	     * @param value {Array} Size
-	     */
-	    SizeObservable.prototype.set = function(value){
-	        var self = this;
-	        preTickQueue.push(function(){
-	            self.value = value;
-	            self.emit('resize', value);
-	            dirtyQueue.push(function(){
-	                self.emit('resize', value);
-	            });
-	        });
-	    };
-
-	    module.exports = SizeObservable;
-	}.call(exports, __webpack_require__, exports, module), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
-
-
-/***/ },
-/* 20 */
-/***/ function(module, exports, __webpack_require__) {
-
-	var __WEBPACK_AMD_DEFINE_RESULT__;/* This Source Code Form is subject to the terms of the Mozilla Public
-	 * License, v. 2.0. If a copy of the MPL was not distributed with this
-	 * file, You can obtain one at http://mozilla.org/MPL/2.0/.
-	 *
-	 * @license MPL 2.0
-	 * @copyright Famous Industries, Inc. 2014
-	 */
-
-	/* Modified work copyright © 2015-2016 David Valdman */
-
-	!(__WEBPACK_AMD_DEFINE_RESULT__ = function(require, exports, module) {
-	    var tickQueue = __webpack_require__(9);
-
-	    /**
-	     * A collection of timing utilities meant to translate the familiar setInterval, setTimeout
-	     *  timers to use Samsara's internal clock, which is backed by a requestAnimationFrame (RAF) loop.
-	     *  It also includes other helpful methods for debouncing.
-	     *
-	     * @example
-	     *
-	     *      Timer.setTimeout(function(){
-	     *          alert('I will execute after 1 second');
-	     *      }, 1000);
-	     *
-	     *      Timer.after(function(){
-	     *          alert('I will execute on the following RAF loop');
-	     *      }, 1);
-	     *
-	     *      var debouncedResize = Timer.debounce(function(){
-	     *          // this code will execute when the `resize` event
-	     *          // has stopped firing (for the last 200 milliseconds)
-	     *      }, 200);
-	     *
-	     *      Engine.on('resize', function(){
-	     *          debounceResize();
-	     *      });
-	     *
-	     * @class Timer
-	     * @static
-	     */
-	    var Timer = {};
-
-	    var getTime = (window.performance)
-	        ? function() { return window.performance.now(); }
-	        : Date.now;
-
-	    function _addTimerFunction(fn) {
-	        tickQueue.push(fn);
-	        return fn;
-	    }
-
-	    function _clearTimerFunction(fn){
-	        var index = tickQueue.indexOf(fn);
-	        if (index === -1) return;
-	        tickQueue.splice(index, 1);
-	    }
-
-	    /**
-	     * Wraps a function to be invoked after a certain amount of time.
-	     *  After a set duration has passed, it executes the function.
-	     *
-	     * @method setTimeout
-	     * @static
-	     * @param handler {Function}    Function to be run after a specified duration
-	     * @param duration {Number}     Time to delay execution (in milliseconds)
-	     * @return {Function}
-	     */
-	    Timer.setTimeout = function setTimeout(handler, duration) {
-	        var t = getTime();
-	        var callback = function() {
-	            var t2 = getTime();
-	            if (t2 - t >= duration) {
-	                handler.apply(this, arguments);
-	                Timer.clear(callback);
-	            }
-	        };
-	        return _addTimerFunction(callback);
-	    };
-
-	    /**
-	     * Wraps a function to be invoked at repeated intervals.
-	     *
-	     * @method setInterval
-	     * @static
-	     * @param handler {Function}    Function to be run at specified intervals
-	     * @param interval {Number}     Time interval (in milliseconds)
-	     * @return {Function}
-	     */
-	    Timer.setInterval = function setInterval(handler, duration) {
-	        var t = getTime();
-	        var callback = function() {
-	            var t2 = getTime();
-	            if (t2 - t >= duration) {
-	                handler.apply(this, arguments);
-	                t = getTime();
-	            }
-	        };
-	        return _addTimerFunction(callback);
-	    };
-
-	    /**
-	     * Wraps a function to be invoked after a specified number of Engine ticks.
-	     *
-	     * @method after
-	     * @static
-	     * @param handler {Function}    Function to be executed
-	     * @param numTicks {Number}     Number of frames to delay execution
-	     * @return {Function}
-	     */
-	    Timer.after = function after(handler, numTicks) {
-	        if (numTicks === undefined) return undefined;
-	        var callback = function() {
-	            numTicks--;
-	            if (numTicks <= 0) { //in case numTicks is fraction or negative
-	                handler.apply(this, arguments);
-	                Timer.clear(callback);
-	            }
-	        };
-	        return _addTimerFunction(callback);
-	    };
-
-	    /**
-	     * Wraps a function to be invoked every specified number of Engine ticks.
-	     *
-	     * @method every
-	     * @static
-	     * @param handler {Function}    Function to be executed
-	     * @param numTicks {Number}     Number of frames per execution
-	     * @return {Function}
-	     */
-	    Timer.every = function every(handler, numTicks) {
-	        numTicks = numTicks || 1;
-	        var initial = numTicks;
-	        var callback = function() {
-	            numTicks--;
-	            if (numTicks <= 0) {
-	                handler.apply(this, arguments);
-	                numTicks = initial;
-	            }
-	        };
-	        return _addTimerFunction(callback);
-	    };
-
-	    /**
-	     * Cancel a timer.
-	     *
-	     * @method clear
-	     * @static
-	     * @param handler {Function} Handler
-	     */
-	    Timer.clear = function clear(handler) {
-	        _clearTimerFunction(handler);
-	    };
-
-	    /**
-	     * Debounces a function for specified duration.
-	     *
-	     * @method debounce
-	     * @static
-	     * @param handler {Function}  Handler
-	     * @param duration {Number}   Duration
-	     * @return {Function}
-	     */
-	    Timer.debounce = function debounce(handler, duration) {
-	        var timeout;
-	        return function() {
-	            var args = arguments;
-
-	            var fn = function() {
-	                Timer.clear(timeout);
-	                timeout = null;
-	                handler.apply(this, args);
-	            }.bind(this);
-
-	            if (timeout) Timer.clear(timeout);
-	            timeout = Timer.setTimeout(fn, duration);
-	        };
-	    };
-
-	    /**
-	     * Debounces a function for a specified number of Engine frames.
-	     *
-	     * @method frameDebounce
-	     * @static
-	     * @param handler {Function}  Handler
-	     * @param numFrames {Number}  Number of frames
-	     * @return {Function}
-	     */
-	    Timer.frameDebounce = function frameDebounce(handler, numFrames){
-	        var timeout;
-	        return function() {
-	            var args = arguments;
-
-	            var fn = function() {
-	                timeout = null;
-	                handler.apply(this, args);
-	            }.bind(this);
-
-	            if (timeout) Timer.clear(timeout);
-	            timeout = Timer.after(fn, numFrames);
-	        };
-	    };
-
-	    module.exports = Timer;
-	}.call(exports, __webpack_require__, exports, module), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
-
-
-/***/ },
-/* 21 */
-/***/ function(module, exports, __webpack_require__) {
-
-	var __WEBPACK_AMD_DEFINE_RESULT__;/* This Source Code Form is subject to the terms of the Mozilla Public
-	 * License, v. 2.0. If a copy of the MPL was not distributed with this
-	 * file, You can obtain one at http://mozilla.org/MPL/2.0/.
-	 *
-	 * @license MPL 2.0
-	 * @copyright Famous Industries, Inc. 2014
-	 */
-
-	/* Modified work copyright © 2015-2016 David Valdman */
 
 	!(__WEBPACK_AMD_DEFINE_RESULT__ = function(require, exports, module) {
 
@@ -2274,11 +1032,11 @@ return /******/ (function(modules) { // webpackBootstrap
 	     *
 	     * @method perspective
 	     * @static
-	     * @param focusZ {Number}       z-depth of focal point
+	     * @param w {Number}       z-depth of focal point
 	     * @return {Array}
 	     */
-	    Transform.perspective = function perspective(focusZ) {
-	        return [1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, -1 / focusZ, 0, 0, 0, 1];
+	    Transform.perspective = function perspective(w) {
+	        return [1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, -1 / w, 0, 0, 0, 1];
 	    };
 
 	    /**
@@ -2306,19 +1064,19 @@ return /******/ (function(modules) { // webpackBootstrap
 	        // only need to consider 3x3 section for affine
 	        var c0 = t[5] * t[10] - t[6] * t[9];
 	        var c1 = t[4] * t[10] - t[6] * t[8];
-	        var c2 = t[4] * t[9] - t[5] * t[8];
+	        var c2 = t[4] * t[9]  - t[5] * t[8];
 	        var c4 = t[1] * t[10] - t[2] * t[9];
 	        var c5 = t[0] * t[10] - t[2] * t[8];
-	        var c6 = t[0] * t[9] - t[1] * t[8];
-	        var c8 = t[1] * t[6] - t[2] * t[5];
-	        var c9 = t[0] * t[6] - t[2] * t[4];
+	        var c6 = t[0] * t[9]  - t[1] * t[8];
+	        var c8 = t[1] * t[6]  - t[2] * t[5];
+	        var c9 = t[0] * t[6]  - t[2] * t[4];
 	        var c10 = t[0] * t[5] - t[1] * t[4];
 	        var detM = t[0] * c0 - t[1] * c1 + t[2] * c2;
 	        var invD = 1 / detM;
 	        var result = [
-	            invD * c0, -invD * c4, invD * c8, 0,
-	            -invD * c1, invD * c5, -invD * c9, 0,
-	            invD * c2, -invD * c6, invD * c10, 0,
+	            invD  * c0, -invD * c4,  invD * c8,  0,
+	            -invD * c1,  invD * c5, -invD * c9,  0,
+	            invD  * c2, -invD * c6,  invD * c10, 0,
 	            0, 0, 0, 1
 	        ];
 	        result[12] = -t[12] * result[0] - t[13] * result[4] - t[14] * result[8];
@@ -2339,15 +1097,13 @@ return /******/ (function(modules) { // webpackBootstrap
 	        return [t[0], t[4], t[8], t[12], t[1], t[5], t[9], t[13], t[2], t[6], t[10], t[14], t[3], t[7], t[11], t[15]];
 	    };
 
-	    function _normSquared(v) {
-	        return (v.length === 2)
-	            ? v[0] * v[0] + v[1] * v[1]
-	            : v[0] * v[0] + v[1] * v[1] + v[2] * v[2];
+	    function normSquared(v) {
+	        return v[0] * v[0] + v[1] * v[1] + v[2] * v[2];
 	    }
-	    function _norm(v) {
-	        return Math.sqrt(_normSquared(v));
+	    function norm(v) {
+	        return Math.sqrt(normSquared(v));
 	    }
-	    function _sign(n) {
+	    function sign(n) {
 	        return (n < 0) ? -1 : 1;
 	    }
 
@@ -2366,10 +1122,10 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	        //default Q1 to the identity matrix;
 	        var x = [t[0], t[1], t[2]];                // first column vector
-	        var sgn = _sign(x[0]);                     // sign of first component of x (for stability)
-	        var xNorm = _norm(x);                      // norm of first column vector
+	        var sgn = sign(x[0]);                      // sign of first component of x (for stability)
+	        var xNorm = norm(x);                       // norm of first column vector
 	        var v = [x[0] + sgn * xNorm, x[1], x[2]];  // v = x + sign(x[0])|x|e1
-	        var mult = 2 / _normSquared(v);            // mult = 2/v'v
+	        var mult = 2 / normSquared(v);             // mult = 2/v'v
 
 	        //bail out if our Matrix is singular
 	        if (mult >= Infinity) {
@@ -2404,10 +1160,10 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	        // SECOND ITERATION on (1,1) minor
 	        var x2 = [MQ1[5], MQ1[6]];
-	        var sgn2 = _sign(x2[0]);                    // sign of first component of x (for stability)
-	        var x2Norm = _norm(x2);                     // norm of first column vector
-	        var v2 = [x2[0] + sgn2 * x2Norm, x2[1]];    // v = x + sign(x[0])|x|e1
-	        var mult2 = 2 / _normSquared(v2);           // mult = 2/v'v
+	        var sgn2 = sign(x2[0]);                    // sign of first component of x (for stability)
+	        var x2Norm = norm(x2);                     // norm of first column vector
+	        var v2 = [x2[0] + sgn2 * x2Norm, x2[1]];   // v = x + sign(x[0])|x|e1
+	        var mult2 = 2 / normSquared(v2);           // mult = 2/v'v
 
 	        //evaluate Q2 = I - 2vv'/v'v
 	        var Q2 = [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1];
@@ -2429,7 +1185,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	        R = Transform.compose(R, remover);
 	        Q = Transform.compose(remover, Q);
 
-	        //decompose into rotate/scale/skew matrices
+	        // decompose into rotate/scale/skew matrices
 	        var result = {};
 	        result.translate = Transform.getTranslate(t);
 	        result.rotate = [Math.atan2(-Q[6], Q[10]), Math.asin(Q[2]), Math.atan2(-Q[1], Q[0])];
@@ -2440,13 +1196,16 @@ return /******/ (function(modules) { // webpackBootstrap
 	        result.scale = [R[0], R[5], R[10]];
 	        result.skew = [Math.atan2(R[9], result.scale[2]), Math.atan2(R[8], result.scale[2]), Math.atan2(R[4], result.scale[0])];
 
-	        //double rotation workaround
+	        // double rotation workaround
 	        if (Math.abs(result.rotate[0]) + Math.abs(result.rotate[2]) > 1.5 * Math.PI) {
 	            result.rotate[1] = Math.PI - result.rotate[1];
+
 	            if (result.rotate[1] > Math.PI) result.rotate[1] -= 2 * Math.PI;
-	            if (result.rotate[1] < -Math.PI) result.rotate[1] += 2 * Math.PI;
+	            else if (result.rotate[1] < -Math.PI) result.rotate[1] += 2 * Math.PI;
+
 	            if (result.rotate[0] < 0) result.rotate[0] += Math.PI;
 	            else result.rotate[0] -= Math.PI;
+
 	            if (result.rotate[2] < 0) result.rotate[2] += Math.PI;
 	            else result.rotate[2] -= Math.PI;
 	        }
@@ -2535,9 +1294,9 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	        return !(a && b) ||
 	            a[12] !== b[12] || a[13] !== b[13] || a[14] !== b[14] ||
-	            a[0] !== b[0] || a[1] !== b[1] || a[2] !== b[2] ||
-	            a[4] !== b[4] || a[5] !== b[5] || a[6] !== b[6] ||
-	            a[8] !== b[8] || a[9] !== b[9] || a[10] !== b[10];
+	            a[0]  !== b[0]  || a[1]  !== b[1]  || a[2]  !== b[2]  ||
+	            a[4]  !== b[4]  || a[5]  !== b[5]  || a[6]  !== b[6]  ||
+	            a[8]  !== b[8]  || a[9]  !== b[9]  || a[10] !== b[10];
 	    };
 
 	    module.exports = Transform;
@@ -2545,22 +1304,225 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 22 */
+/* 10 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var __WEBPACK_AMD_DEFINE_RESULT__;/* Copyright © 2015-2016 David Valdman */
+
+	!(__WEBPACK_AMD_DEFINE_RESULT__ = function(require, exports, module) {
+	    var tickQueue = __webpack_require__(8);
+
+	    /**
+	     * A collection of timing utilities meant to translate the familiar setInterval, setTimeout
+	     *  timers to use Samsara's internal clock, which is backed by a requestAnimationFrame (RAF) loop.
+	     *  It also includes other helpful methods for debouncing.
+	     *
+	     * @example
+	     *
+	     *      Timer.setTimeout(function(){
+	     *          alert('I will execute after 1 second');
+	     *      }, 1000);
+	     *
+	     *      Timer.after(function(){
+	     *          alert('I will execute on the following RAF loop');
+	     *      }, 1);
+	     *
+	     *      var debouncedResize = Timer.debounce(function(){
+	     *          // this code will execute when the `resize` event
+	     *          // has stopped firing (for the last 200 milliseconds)
+	     *      }, 200);
+	     *
+	     *      Engine.on('resize', function(){
+	     *          debounceResize();
+	     *      });
+	     *
+	     * @class Timer
+	     * @static
+	     */
+	    var Timer = {};
+
+	    var getTime = (window.performance)
+	        ? function() { return window.performance.now(); }
+	        : Date.now;
+
+	    function _addTimerFunction(fn) {
+	        tickQueue.push(fn);
+	        return fn;
+	    }
+
+	    function _clearTimerFunction(fn){
+	        var index = tickQueue.indexOf(fn);
+	        if (index === -1) return;
+	        tickQueue.splice(index, 1);
+	    }
+
+	    /**
+	     * Wraps a function to be invoked after a certain amount of time.
+	     *  After a set duration has passed, it executes the function.
+	     *
+	     * @method setTimeout
+	     * @static
+	     * @param handler {Function}    Function to be run after a specified duration
+	     * @param duration {Number}     Time to delay execution (in milliseconds)
+	     * @return {Function}
+	     */
+	    Timer.setTimeout = function setTimeout(handler, duration) {
+	        var t = getTime();
+	        function callback() {
+	            var t2 = getTime();
+	            if (t2 - t >= duration) {
+	                handler.apply(this, arguments);
+	                Timer.clear(callback);
+	            }
+	        }
+	        return _addTimerFunction(callback);
+	    };
+
+	    /**
+	     * Wraps a function to be invoked at repeated intervals.
+	     *
+	     * @method setInterval
+	     * @static
+	     * @param handler {Function}    Function to be run at specified intervals
+	     * @param interval {Number}     Time interval (in milliseconds)
+	     * @return {Function}
+	     */
+	    Timer.setInterval = function setInterval(handler, duration) {
+	        var t = getTime();
+	        function callback() {
+	            var t2 = getTime();
+	            if (t2 - t >= duration) {
+	                handler.apply(this, arguments);
+	                t = getTime();
+	            }
+	        }
+	        return _addTimerFunction(callback);
+	    };
+
+	    /**
+	     * Wraps a function to be invoked after a specified number of Engine ticks.
+	     *
+	     * @method after
+	     * @static
+	     * @param handler {Function}    Function to be executed
+	     * @param numTicks {Number}     Number of frames to delay execution
+	     * @return {Function}
+	     */
+	    Timer.after = function after(handler, numTicks) {
+	        if (numTicks === undefined) return undefined;
+	        function callback() {
+	            numTicks--;
+	            if (numTicks <= 0) { //in case numTicks is fraction or negative
+	                handler.apply(this, arguments);
+	                Timer.clear(callback);
+	            }
+	        }
+	        return _addTimerFunction(callback);
+	    };
+
+	    /**
+	     * Wraps a function to be invoked every specified number of Engine ticks.
+	     *
+	     * @method every
+	     * @static
+	     * @param handler {Function}    Function to be executed
+	     * @param numTicks {Number}     Number of frames per execution
+	     * @return {Function}
+	     */
+	    Timer.every = function every(handler, numTicks) {
+	        numTicks = numTicks || 1;
+	        var initial = numTicks;
+	        function callback() {
+	            numTicks--;
+	            if (numTicks <= 0) {
+	                handler.apply(this, arguments);
+	                numTicks = initial;
+	            }
+	        }
+	        return _addTimerFunction(callback);
+	    };
+
+	    /**
+	     * Cancel a timer.
+	     *
+	     * @method clear
+	     * @static
+	     * @param handler {Function} Handler
+	     */
+	    Timer.clear = function clear(handler) {
+	        _clearTimerFunction(handler);
+	    };
+
+	    /**
+	     * Debounces a function for specified duration.
+	     *
+	     * @method debounce
+	     * @static
+	     * @param handler {Function}  Handler
+	     * @param duration {Number}   Duration
+	     * @return {Function}
+	     */
+	    Timer.debounce = function debounce(handler, duration) {
+	        var timeout;
+	        return function() {
+	            var args = arguments;
+
+	            var fn = function() {
+	                Timer.clear(timeout);
+	                timeout = null;
+	                handler.apply(this, args);
+	            }.bind(this);
+
+	            if (timeout) Timer.clear(timeout);
+	            timeout = Timer.setTimeout(fn, duration);
+	        };
+	    };
+
+	    /**
+	     * Debounces a function for a specified number of Engine frames.
+	     *
+	     * @method frameDebounce
+	     * @static
+	     * @param handler {Function}  Handler
+	     * @param numFrames {Number}  Number of frames
+	     * @return {Function}
+	     */
+	    Timer.frameDebounce = function frameDebounce(handler, numFrames){
+	        var timeout;
+	        return function() {
+	            var args = arguments;
+
+	            var fn = function() {
+	                timeout = null;
+	                handler.apply(this, args);
+	            }.bind(this);
+
+	            if (timeout) Timer.clear(timeout);
+	            timeout = Timer.after(fn, numFrames);
+	        };
+	    };
+
+	    module.exports = Timer;
+	}.call(exports, __webpack_require__, exports, module), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
+
+
+/***/ },
+/* 11 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_RESULT__;/* Copyright © 2015-2016 David Valdman */
 
 	!(__WEBPACK_AMD_DEFINE_RESULT__ = function (require, exports, module) {
-	    var dirtyQueue = __webpack_require__(8);
-	    var preTickQueue = __webpack_require__(7);
-	    var tickQueue = __webpack_require__(9);
+	    var dirtyQueue = __webpack_require__(7);
+	    var preTickQueue = __webpack_require__(6);
+	    var tickQueue = __webpack_require__(8);
 	    var EventHandler = __webpack_require__(3);
-	    var SimpleStream = __webpack_require__(11);
-	    var Stream = __webpack_require__(15);
+	    var SimpleStream = __webpack_require__(12);
+	    var Stream = __webpack_require__(16);
 
-	    var Tween = __webpack_require__(23);
-	    var Spring = __webpack_require__(24);
-	    var Inertia = __webpack_require__(25);
+	    var Tween = __webpack_require__(19);
+	    var Spring = __webpack_require__(20);
+	    var Inertia = __webpack_require__(21);
 
 	    var transitionMethods = {
 	        tween: Tween,
@@ -2700,14 +1662,12 @@ return /******/ (function(modules) { // webpackBootstrap
 	     * @method set
 	     * @param value {Number|Number[]}           End value
 	     * @param [transition] {Object}             Transition definition
-	     * @param [transition.curve] {string}       Easing curve name, e.g., "easeIn"
-	     * @param [transition.duration] {string}    Duration of transition
 	     * @param [callback] {Function}             Callback
 	     */
 	    Transitionable.prototype.set = function set(value, transition, callback) {
-	        if (!transition) {
+	        if (!transition || transition.duration === 0) {
 	            this.value = value;
-	            if (callback) callback();
+	            if (callback) dirtyQueue.push(callback);
 	            if (!this.isActive()){
 	                this.trigger('start', value);
 
@@ -2722,11 +1682,11 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	        var curve = transition.curve;
 
-	        var method = (curve && transitionMethods[curve])
+	        var Method = (curve && transitionMethods[curve])
 	            ? transitionMethods[curve]
 	            : Tween;
 
-	        if (this._method !== method) {
+	        if (this._method !== Method) {
 	            if (this._engineInstance){
 	                if (this.updateMethod){
 	                    var index = tickQueue.indexOf(this.updateMethod);
@@ -2737,17 +1697,17 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	            if (this.value instanceof Array) {
 	                var dimensions = this.value.length;
-	                this._engineInstance = (dimensions < method.DIMENSIONS)
-	                    ? new method(this.value)
-	                    : new NDTransitionable(this.value, method);
+	                this._engineInstance = (dimensions < Method.DIMENSIONS)
+	                    ? new Method(this.value)
+	                    : new NDTransitionable(this.value, Method);
 	            }
-	            else this._engineInstance = new method(this.value);
+	            else this._engineInstance = new Method(this.value);
 
 	            this.subscribe(this._engineInstance);
 	            this.updateMethod = this._engineInstance.update.bind(this._engineInstance);
 	            tickQueue.push(this.updateMethod);
 
-	            this._method = method;
+	            this._method = Method;
 	        }
 
 	        if (!transition.velocity) transition.velocity = this.velocity;
@@ -2871,20 +1831,18 @@ return /******/ (function(modules) { // webpackBootstrap
 	     */
 	    Transitionable.prototype.delay = function delay(callback, duration) {
 	        this.set(this.get(), {
-	                duration: duration,
-	                curve: function () { return 0; }
-	            },
-	            callback
-	        );
+	            duration: duration,
+	            curve: function () { return 0; }
+	        }, callback);
 	    };
 
-	    function NDTransitionable(value, method) {
+	    function NDTransitionable(value, Method) {
 	        this._eventOutput = new EventHandler();
 	        EventHandler.setOutputHandler(this, this._eventOutput);
 
 	        this.sources = [];
 	        for (var i = 0; i < value.length; i++) {
-	            var source = new method(value[i]);
+	            var source = new Method(value[i]);
 	            this.sources.push(source);
 	        }
 
@@ -2924,14 +1882,608 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 23 */
+/* 12 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_RESULT__;/* Copyright © 2015-2016 David Valdman */
 
 	!(__WEBPACK_AMD_DEFINE_RESULT__ = function(require, exports, module) {
 	    var EventHandler = __webpack_require__(3);
-	    var SimpleStream = __webpack_require__(11);
+	    var EventMapper = __webpack_require__(13);
+	    var EventFilter = __webpack_require__(14);
+	    var EventSplitter = __webpack_require__(15);
+
+	    /**
+	     * A SimpleStream wraps an EventHandler and provides convenience
+	     *  methods of `map`, `filter`, `split`, and `pluck` to
+	     *  transform one stream into another.
+	     *
+	     * @example
+	     *
+	     * @class SimpleStream
+	     * @extends Core.EventHandler
+	     * @private
+	     * @namespace Streams
+	     * @constructor
+	     */
+	    function SimpleStream(){
+	        EventHandler.call(this);
+	    }
+
+	    SimpleStream.prototype = Object.create(EventHandler.prototype);
+	    SimpleStream.prototype.constructor = SimpleStream;
+
+	    /**
+	     * Map converts the current stream into a new stream
+	     *  with a modified (mapped) data payload.
+	     *
+	     * @method map
+	     * @param mapperFn {Function}    Function to map event payload
+	     * @return stream {SimpleStream} Mapped stream
+	     */
+	    SimpleStream.prototype.map = function map(mapperFn){
+	        var stream = new SimpleStream();
+	        var mapper = new EventMapper(mapperFn);
+	        stream.subscribe(mapper).subscribe(this);
+	        return stream;
+	    };
+
+	    /**
+	     * Filter converts the current stream into a new stream
+	     *  that only emits if the filter condition is satisfied.
+	     *  The filter function should return a Boolean value.
+	     *
+	     * @method filter
+	     * @param filterFn {Function}    Function to filter event payload
+	     * @return stream {SimpleStream} Filtered stream
+	     */
+	    SimpleStream.prototype.filter = function filter(filterFn){
+	        var filter = new EventFilter(filterFn);
+	        var filteredStream = new SimpleStream();
+	        filteredStream.subscribe(filter).subscribe(this);
+	        return filteredStream;
+	    };
+
+	    /**
+	     * Split maps one of several streams based on custom logic.
+	     *  The splitter function should return an EventEmitter type.
+	     *
+	     * @method split
+	     * @param splitterFn {Function}  Splitter function
+	     */
+	    SimpleStream.prototype.split = function split(splitterFn){
+	        var splitter = new EventSplitter(splitterFn);
+	        splitter.subscribe(this);
+	    };
+
+	    /**
+	     * Pluck is an opinionated mapper. It projects a Stream
+	     *  onto one of its return values.
+	     *
+	     *  Useful if a Stream returns an array or object.
+	     *
+	     * @method pluck
+	     * @param key {String|Number}    Key to project event payload onto
+	     * @return stream {SimpleStream} Plucked stream
+	     */
+	    SimpleStream.prototype.pluck = function pluck(key){
+	        return this.map(function(value){
+	            return value[key];
+	        });
+	    };
+	    
+	    module.exports = SimpleStream;
+	}.call(exports, __webpack_require__, exports, module), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
+
+
+/***/ },
+/* 13 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var __WEBPACK_AMD_DEFINE_RESULT__;/* Copyright © 2015-2016 David Valdman */
+
+	!(__WEBPACK_AMD_DEFINE_RESULT__ = function(require, exports, module) {
+	    var EventHandler = __webpack_require__(3);
+
+	    /**
+	     * EventMapper modifies the data payload of an event based on
+	     *  a provided function.
+	     *
+	     *  Note: it does not modify the event's `type`.
+	     *
+	     *  @example
+	     *
+	     *      var eventMapper = new EventMapper(function(payload){
+	     *          return payload.x + payload.y
+	     *      });
+	     *
+	     *      var eventEmitter = new EventEmitter();
+	     *
+	     *      eventMapper.subscribe(eventEmitter);
+	     *
+	     *      eventMapper.on('name', function(value){
+	     *          alert(value);
+	     *      });
+	     *
+	     *      eventEmitter.emit('name', {x : 1, y : 2}); // alerts 3
+	     *
+	     * @class EventMapper
+	     * @namespace Events
+	     * @constructor
+	     * @param map {Function}  Function to modify the event payload
+	     */
+	    function EventMapper(map) {
+	        EventHandler.call(this);
+	        this._mappingFunction = map;
+	    }
+
+	    EventMapper.prototype = Object.create(EventHandler.prototype);
+	    EventMapper.prototype.constructor = EventMapper;
+
+	    /**
+	     * Emit mapped event.
+	     *
+	     * @method emit
+	     * @param type {String} Channel name
+	     * @param data {Object} Payload
+	     */
+	    EventMapper.prototype.emit = function emit(type, data) {
+	        var mappedData = this._mappingFunction(data);
+	        EventHandler.prototype.emit.call(this, type, mappedData);
+	    };
+
+	    /**
+	     * Alias of emit.
+	     *
+	     * @method trigger
+	     * @param type {String} Channel name
+	     * @param data {Object} Payload
+	     */
+	    EventMapper.prototype.trigger = EventMapper.prototype.emit;
+
+	    module.exports = EventMapper;
+	}.call(exports, __webpack_require__, exports, module), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
+
+
+/***/ },
+/* 14 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var __WEBPACK_AMD_DEFINE_RESULT__;/* Copyright © 2015-2016 David Valdman */
+
+	!(__WEBPACK_AMD_DEFINE_RESULT__ = function(require, exports, module) {
+	    var EventHandler = __webpack_require__(3);
+
+	    /**
+	     * EventFilter regulates the broadcasting of events based on
+	     *  a specified condition prescribed by a provided function
+	     *  with the signature `(data) -> Boolean`
+	     *
+	     *  @example
+	     *
+	     *      var eventFilter = new EventFilter(function(payload){
+	     *          return (payload.value == 0);
+	     *      });
+	     *
+	     *      var eventEmitter = new EventEmitter();
+	     *
+	     *      eventFilter.subscribe(eventEmitter);
+	     *
+	     *      eventFilter.on('click', function(data){
+	     *          alert('fired');
+	     *      });
+	     *
+	     *      eventEmitter.emit('click', {value : 0}); // fired
+	     *      eventEmitter.emit('click', {value : 1}); // doesn't fire
+	     *
+	     * @class EventFilter
+	     * @namespace Events
+	     * @constructor
+	     * @param filter {Function}  Function returning a Boolean
+	     */
+	    function EventFilter(filter) {
+	        EventHandler.call(this);
+	        this._condition = filter;
+	    }
+	    EventFilter.prototype = Object.create(EventHandler.prototype);
+	    EventFilter.prototype.constructor = EventFilter;
+
+	    /**
+	     * Emit event if the condition is satisfied.
+	     *
+	     * @method emit
+	     * @param type {String} Channel name
+	     * @param data {Object} Payload
+	     */
+	    EventFilter.prototype.emit = function emit(type, data) {
+	        //TODO: add start/update/end logic
+	        if (!this._condition(data)) return;
+	        EventHandler.prototype.emit.apply(this, arguments);
+	    };
+
+	    /**
+	     * Alias of emit.
+	     *
+	     * @method trigger
+	     * @param type {String} Channel name
+	     * @param data {Object} Payload
+	     */
+	    EventFilter.prototype.trigger = EventFilter.prototype.emit;
+
+	    module.exports = EventFilter;
+	}.call(exports, __webpack_require__, exports, module), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
+
+
+/***/ },
+/* 15 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var __WEBPACK_AMD_DEFINE_RESULT__;/* Copyright © 2015-2016 David Valdman */
+
+	!(__WEBPACK_AMD_DEFINE_RESULT__ = function(require, exports, module) {
+	    var EventHandler = __webpack_require__(3);
+
+	    /**
+	     * EventSplitter routes events to various event destinations
+	     *  based on custom logic. The return of the provided splitter
+	     *  function should be of type EventEmitter.
+	     *
+	     *  @example
+	     *
+	     *      var eventEmitter = new EventEmitter();
+	     *      var eventEmitterX = new eventEmitter();
+	     *      var eventEmitterY = new eventEmitter();
+	     *
+	     *      var eventSplitter = new EventSplitter(function(payload){
+	     *          return (payload.x > payload.y)
+	     *              ? eventEmitterX;
+	     *              : eventEmitterY;
+	     *      });
+	     *
+	     *      eventSplitter.subscribe(eventEmitter);
+	     *
+	     *      eventEmitterX.on('move', function(){
+	     *          console.log('x is bigger')
+	     *      });
+	     *
+	     *      eventEmitterY.on('move', function(){
+	     *          console.log('y is bigger')
+	     *      })
+	     *
+	     *      eventEmitter.emit('move', {x : 3, y : 2}); // x is bigger
+	     *
+	     * @class EventSplitter
+	     * @private
+	     * @namespace Events
+	     * @constructor
+	     * @param splitter {Function}
+	     */
+	    function EventSplitter(splitter) {
+	        EventHandler.call(this);
+	        this._splitter = splitter;
+
+	        this.on('start', function(){});
+	        this.on('update', function(){});
+	        this.on('end', function(){});
+	    }
+	    EventSplitter.prototype = Object.create(EventHandler.prototype);
+	    EventSplitter.prototype.constructor = EventSplitter;
+
+	    /**
+	     * Emit event.
+	     *
+	     * @method emit
+	     * @param type {String} Channel name
+	     * @param data {Object} Payload
+	     */
+	    EventSplitter.prototype.emit = function emit(type, data) {
+	        var target = this._splitter.call(this, data);
+	        if (target && target.emit instanceof Function)
+	            target.emit(type, data);
+	    };
+
+	    /**
+	     * Alias of emit.
+	     *
+	     * @method trigger
+	     * @param type {String} Channel name
+	     * @param data {Object} Payload
+	     */
+	    EventSplitter.prototype.trigger = EventSplitter.prototype.emit;
+
+	    module.exports = EventSplitter;
+	}.call(exports, __webpack_require__, exports, module), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
+
+
+/***/ },
+/* 16 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var __WEBPACK_AMD_DEFINE_RESULT__;/* Copyright © 2015-2016 David Valdman */
+
+	!(__WEBPACK_AMD_DEFINE_RESULT__ = function(require, exports, module){
+	    var MergedStream = __webpack_require__(17);
+	    var LiftedStream = __webpack_require__(18);
+	    var EventHandler = __webpack_require__(3);
+	    var SimpleStream = __webpack_require__(12);
+
+	    var preTickQueue = __webpack_require__(6);
+	    var postTickQueue = __webpack_require__(5);
+	    var dirtyQueue = __webpack_require__(7);
+
+	    var EVENTS = {
+	        START : 'start',
+	        UPDATE : 'update',
+	        END : 'end'
+	    };
+
+	    /**
+	     * Stream listens to `start`, `update` and `end` events and
+	     *  emits `start`, `update` and `end` events.
+	     *
+	     *  If listening to multiple sources, Stream emits a single event per
+	     *  Engine cycle.
+	     *
+	     *  @example
+	     *
+	     *      var position = new Transitionable([0,0]);
+	     *      var size = new EventEmitter();
+	     *
+	     *      var translationStream = Stream.lift(function(position, size){
+	     *          var translation = [
+	     *              position[0] + size[0],
+	     *              position[1] + size[1]
+	     *          ];
+	     *
+	     *          return Transform.translate(translation);
+	     *      }, [positionStream, sizeStream]);
+	     *
+	     *      translationStream.on('start', function(transform){
+	     *          console.log(transform);
+	     *      });
+	     *
+	     *      translationStream.on('update', function(transform){
+	     *          console.log(transform);
+	     *      });
+	     *
+	     *      translationStream.on('end', function(transform){
+	     *          console.log(transform);
+	     *      });
+	     *
+	     *      position.set([100, 50], {duration : 500});
+	     *
+	     * @class Stream
+	     * @extends Streams.SimpleStream
+	     * @namespace Streams
+	     * @param [options] {Object}            Options
+	     * @param [options.start] {Function}    Custom logic to map the `start` event
+	     * @param [options.update] {Function}   Custom logic to map the `update` event
+	     * @param [options.end] {Function}      Custom logic to map the `end` event
+	     * @constructor
+	     */
+	    function Stream(options){
+	        this._eventInput = new EventHandler();
+	        this._eventOutput = new EventHandler();
+	        EventHandler.setInputHandler(this, this._eventInput);
+	        EventHandler.setOutputHandler(this, this._eventOutput);
+
+	        var counter = 0;
+	        var isUpdating = false;
+	        var dirtyStart = false;
+	        var dirtyUpdate = false;
+	        var dirtyEnd = false;
+
+	        function start(data){
+	            var payload = options && options.start ? options.start(data) : data;
+	            if (payload !== false) this.emit(EVENTS.START, payload);
+	            dirtyStart = false;
+	        }
+
+	        function update(data){
+	            var payload = options && options.update ? options.update(data) : data;
+	            if (payload !== false) this.emit(EVENTS.UPDATE, payload);
+	            dirtyUpdate = false;
+	        }
+
+	        function end(data){
+	            var payload = options && options.end ? options.end(data) : data;
+	            if (payload !== false) this.emit(EVENTS.END, payload);
+	            dirtyEnd = false;
+	        }
+
+	        this._eventInput.on(EVENTS.START, function(data){
+	            counter++;
+	            if (dirtyStart || isUpdating) return false;
+	            dirtyStart = true;
+	            preTickQueue.push(start.bind(this, data));
+	        }.bind(this));
+
+	        this._eventInput.on(EVENTS.UPDATE, function(data){
+	            isUpdating = true;
+	            if (dirtyUpdate) return false;
+	            dirtyUpdate = true;
+	            postTickQueue.push(update.bind(this, data));
+	        }.bind(this));
+
+	        this._eventInput.on(EVENTS.END, function(data){
+	            counter--;
+	            if (isUpdating && counter > 0){
+	                update.call(this, data);
+	                return false;
+	            }
+	            isUpdating = false;
+	            if (dirtyEnd) return;
+	            dirtyEnd = true;
+	            dirtyQueue.push(end.bind(this, data));
+	        }.bind(this));
+	    }
+
+	    Stream.prototype = Object.create(SimpleStream.prototype);
+	    Stream.prototype.constructor = Stream;
+
+	    /**
+	     * Batches events for provided object of streams in
+	     *  {key : stream} pairs. Emits one event per Engine cycle.
+	     *
+	     * @method merge
+	     * @static
+	     * @param streams {Object}  Dictionary of `resize` streams
+	     */
+	    Stream.merge = function(streams) {
+	        return new MergedStream(streams);
+	    };
+
+	    /**
+	     * Lift is like map, except it maps several event sources,
+	     *  not only one.
+	     *
+	     *  @example
+	     *
+	     *      var liftedStream = Stream.lift(function(payload1, payload2){
+	     *          return payload1 + payload2;
+	     *      }, [stream2, stream2]);
+	     *
+	     *      liftedStream.on('name'), function(data){
+	     *          // data = 3;
+	     *      });
+	     *
+	     *      stream2.emit('name', 1);
+	     *      stream2.emit('name', 2);
+	     *
+	     * @method lift
+	     * @static
+	     * @param map {Function}            Function to map stream payloads
+	     * @param streams {Array|Object}    Stream sources
+	     */
+	    Stream.lift = function(maps, streams){
+	        return new LiftedStream(maps, new MergedStream(streams));
+	    };
+
+	    module.exports = Stream;
+	}.call(exports, __webpack_require__, exports, module), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
+
+
+/***/ },
+/* 17 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var __WEBPACK_AMD_DEFINE_RESULT__;/* Copyright © 2015-2016 David Valdman */
+
+	!(__WEBPACK_AMD_DEFINE_RESULT__ = function(require, exports, module) {
+	    var SimpleStream = __webpack_require__(12);
+
+	    function MergedStream(streams) {
+	        this.mergedData = streams instanceof Array ? [] : {};
+	        this.streamCache = {};
+
+	        var Stream = __webpack_require__(16);
+
+	        Stream.call(this, {
+	            start : function() {
+	                return this.mergedData;
+	            }.bind(this),
+	            update : function() {
+	                return this.mergedData;
+	            }.bind(this),
+	            end : function() {
+	                return this.mergedData;
+	            }.bind(this)
+	        });
+
+	        for (var key in streams)
+	            this.addStream(key, streams[key]);
+	    }
+
+	    MergedStream.prototype = Object.create(SimpleStream.prototype);
+	    MergedStream.prototype.constructor = MergedStream;
+
+	    MergedStream.prototype.addStream = function(key, stream) {
+	        var mergedData = this.mergedData;
+
+	        if (stream instanceof Object && stream.on){
+	            mergedData[key] = undefined;
+
+	            stream.on('start', function(data){
+	                mergedData[key] = data;
+	            });
+
+	            stream.on('update', function(data){
+	                mergedData[key] = data;
+	            });
+
+	            stream.on('end', function(data){
+	                mergedData[key] = data;
+	            });
+
+	            this.subscribe(stream);
+	        }
+	        else mergedData[key] = stream;
+
+	        this.streamCache[key] = stream;
+	    };
+
+	    MergedStream.prototype.removeStream = function(key) {
+	        var stream = this.streamCache[key];
+	        this.unsubscribe(stream);
+
+	        delete this.streamCache[key];
+
+	        if (this.mergedData instanceof Array){
+	            var index = this.mergedData.indexOf(key);
+	            this.mergedData.splice(index, 1);
+	        }
+	        else
+	            delete this.mergedData[key];
+	    };
+
+	    MergedStream.prototype.replaceStream = function(key, stream) {
+	        this.removeStream(key);
+	        this.addStream(key, stream);
+	    };
+	    
+	    module.exports = MergedStream;
+	}.call(exports, __webpack_require__, exports, module), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
+
+
+/***/ },
+/* 18 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var __WEBPACK_AMD_DEFINE_RESULT__;/* Copyright © 2015-2016 David Valdman */
+	!(__WEBPACK_AMD_DEFINE_RESULT__ = function(require, exports, module) {
+	    var SimpleStream = __webpack_require__(12);
+	    var EventMapper = __webpack_require__(13);
+
+	    function LiftedStream(map, mergedStream) {
+	        SimpleStream.call(this);
+	        var mappedStream = new EventMapper(function liftMap(data) {
+	            return map.apply(null, data);
+	        });
+	        this.mergedStream = mergedStream;
+	        this.subscribe(mappedStream).subscribe(mergedStream);
+	    }
+
+	    LiftedStream.prototype = Object.create(SimpleStream.prototype);
+	    LiftedStream.prototype.constructor = LiftedStream;
+
+	    LiftedStream.prototype.replaceStream = function() {
+	        this.mergedStream.replaceStream.apply(this.mergedStream, arguments);
+	    };
+	    
+	    module.exports = LiftedStream;
+	}.call(exports, __webpack_require__, exports, module), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
+
+
+/***/ },
+/* 19 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var __WEBPACK_AMD_DEFINE_RESULT__;/* Copyright © 2015-2016 David Valdman */
+
+	!(__WEBPACK_AMD_DEFINE_RESULT__ = function(require, exports, module) {
+	    var EventHandler = __webpack_require__(3);
+	    var SimpleStream = __webpack_require__(12);
+	    var dirtyQueue = __webpack_require__(7);
 
 	    var now = Date.now;
 	    var eps = 1e-9; // for calculating velocity using finite difference
@@ -3170,9 +2722,11 @@ return /******/ (function(modules) { // webpackBootstrap
 	        else {
 	            this.emit('update', this._endValue);
 
-	            this.reset(this._endValue);
-	            this._active = false;
-	            this.emit('end', this._endValue);
+	            dirtyQueue.push(function(){
+	                this.reset(this._endValue);
+	                this._active = false;
+	                this.emit('end', this._endValue);
+	            }.bind(this));
 	        }
 	    };
 
@@ -3224,14 +2778,15 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 24 */
+/* 20 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_RESULT__;/* Copyright © 2015-2016 David Valdman */
 
 	!(__WEBPACK_AMD_DEFINE_RESULT__ = function (require, exports, module) {
 	    var EventHandler = __webpack_require__(3);
-	    var SimpleStream = __webpack_require__(11);
+	    var SimpleStream = __webpack_require__(12);
+	    var dirtyQueue = __webpack_require__(7);
 
 	    var now = Date.now;
 	    var eps = 1e-6; // for calculating velocity using finite difference
@@ -3385,9 +2940,12 @@ return /******/ (function(modules) { // webpackBootstrap
 	        else {
 	            this.emit('update', this.target);
 
-	            this.reset(this.target);
-	            this._active = false;
-	            this.emit('end', this.target);
+	            dirtyQueue.push(function(){
+	                this.reset(this.target);
+	                this._active = false;
+	                this.emit('end', this.target);
+	            }.bind(this));
+
 	        }
 	    };
 
@@ -3416,13 +2974,13 @@ return /******/ (function(modules) { // webpackBootstrap
 	    }
 
 	    function createUnderDampedSpring(damping, period, x0, x1, v0) {
-	        var w_d =  Math.sqrt(1 - damping * damping) / period; // damped frequency
+	        var wD =  Math.sqrt(1 - damping * damping) / period; // damped frequency
 	        var A = x0 - x1;
-	        var B = (damping / period * A + v0) / (w_d);
+	        var B = (damping / period * A + v0) / (wD);
 
 	        return function (t) {
 	            return x1 + Math.exp(-damping * t / period) *
-	                (A * Math.cos(w_d * t) + B * Math.sin(w_d * t));
+	                (A * Math.cos(wD * t) + B * Math.sin(wD * t));
 	        }
 	    }
 
@@ -3436,9 +2994,9 @@ return /******/ (function(modules) { // webpackBootstrap
 	    }
 
 	    function createOverDampedSpring(damping, period, x0, x1, v0) {
-	        var w_d = Math.sqrt(damping * damping - 1) / period; // damped frequency
-	        var r1 = -damping / period + w_d;
-	        var r2 = -damping / period - w_d;
+	        var wD = Math.sqrt(damping * damping - 1) / period; // damped frequency
+	        var r1 = -damping / period + wD;
+	        var r2 = -damping / period - wD;
 	        var L = x0 - x1;
 	        var const1 = (r1 * L - v0) / (r2 - r1);
 	        var A = L + const1;
@@ -3452,15 +3010,17 @@ return /******/ (function(modules) { // webpackBootstrap
 	    module.exports = Spring;
 	}.call(exports, __webpack_require__, exports, module), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
 
+
 /***/ },
-/* 25 */
+/* 21 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_RESULT__;/* Copyright © 2015-2016 David Valdman */
 
 	!(__WEBPACK_AMD_DEFINE_RESULT__ = function (require, exports, module) {
 	    var EventHandler = __webpack_require__(3);
-	    var SimpleStream = __webpack_require__(11);
+	    var SimpleStream = __webpack_require__(12);
+	    var dirtyQueue = __webpack_require__(7);
 
 	    var now = Date.now;
 	    var tolerance = 1e-4; // energy minimum
@@ -3515,7 +3075,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	        this.value = value;
 
-	        this.drag = (transition.drag == undefined)
+	        this.drag = (transition.drag === undefined)
 	            ? Inertia.DEFAULT_OPTIONS.drag
 	            : Math.pow(Math.min(transition.drag, 1), 3);
 
@@ -3600,28 +3160,29 @@ return /******/ (function(modules) { // webpackBootstrap
 	        else {
 	            this.emit('update', this.value);
 
-	            this.reset(this.value);
-	            this._active = false;
-	            this.emit('end', this.value);
+	            dirtyQueue.push(function(){
+	                this.reset(this.value);
+	                this._active = false;
+	                this.emit('end', this.value);
+	            }.bind(this));
 	        }
 	    };
 
 	    module.exports = Inertia;
 	}.call(exports, __webpack_require__, exports, module), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
 
+
 /***/ },
-/* 26 */
+/* 22 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_RESULT__;/* Copyright © 2015-2016 David Valdman */
 
 	!(__WEBPACK_AMD_DEFINE_RESULT__ = function(require, exports, module) {
-	    var RenderTreeNode = __webpack_require__(27);
-	    var Controller = __webpack_require__(30);
-	    var SizeNode = __webpack_require__(17);
-	    var LayoutNode = __webpack_require__(10);
-	    var Transitionable = __webpack_require__(22);
-	    var EventHandler = __webpack_require__(3);
+	    var Controller = __webpack_require__(23);
+	    var RenderTreeNode = __webpack_require__(25);
+	    var SizeNode = __webpack_require__(29);
+	    var LayoutNode = __webpack_require__(26);
 
 	    /**
 	     * A View provides encapsulation for a subtree of the render tree. You can build
@@ -3691,12 +3252,13 @@ return /******/ (function(modules) { // webpackBootstrap
 	            this.size = this._addNode.size; // actual size
 	            this._size = this._node.size; // incoming parent size
 
-	            this._cachedSize = [0,0];
-	            this.size.on('resize', function(size){
-	                this._cachedSize = size;
-	            }.bind(this));
+	            this._cachedSize = [0, 0];
+	            
+	            this.size.on('start', updateSize.bind(this));
+	            this.size.on('update', updateSize.bind(this));
+	            this.size.on('end', updateSize.bind(this));
 
-	            Controller.apply(this, arguments);
+	            Controller.call(this, options);
 	            if (this.options) setOptions.call(this, this.options);
 	        },
 	        /**
@@ -3709,8 +3271,14 @@ return /******/ (function(modules) { // webpackBootstrap
 	        add : function add(){
 	            return RenderTreeNode.prototype.add.apply(this._addNode, arguments);
 	        },
+	        /**
+	         * Remove the View from the RenderTree. All Surfaces added to the View
+	         *  will also be removed. The View can be added back at a later time and
+	         *  all of its data and Surfaces will be restored.
+	         *
+	         * @method remove
+	         */
 	        remove : function remove(){
-	            this._cachedSize = [0,0];
 	            RenderTreeNode.prototype.remove.apply(this._node, arguments);
 	        },
 	        /**
@@ -3742,12 +3310,22 @@ return /******/ (function(modules) { // webpackBootstrap
 	            this._sizeNode.set({proportions : proportions});
 	        },
 	        /**
-	         * Setter for proportions.
+	         * Setter for margins.
 	         *
-	         * @method setProportions
-	         * @param aspectRatio {Number[]|Stream} Proportions as [x,y], or a stream.
+	         * @method setMargins
+	         * @param margins {Number[]|Stream} Margins as [x,y], or a stream.
 	         */
-	        setAspectRatio: function setProportions(aspectRatio) {
+	        setMargins : function setMargins(margins){
+	            this._sizeNode.set({margins : margins});
+	        },
+	        /**
+	         * Setter for aspect ratio.
+	         *
+	         * @method setAspectRatio
+	         * @deprecated Use size functions instead
+	         * @param aspectRatio {Number|Stream} Aspect ratio, or a stream.
+	         */
+	        setAspectRatio: function setAspectRatio(aspectRatio) {
 	            this._sizeNode.set({aspectRatio: aspectRatio});
 	        },
 	        /**
@@ -3770,6 +3348,12 @@ return /******/ (function(modules) { // webpackBootstrap
 	        }
 	    });
 
+	    function updateSize(size){
+	        if (this._cachedSize[0] === size[0] && this._cachedSize[1] === size[1]) return;
+	        this._cachedSize = size;
+	        this.emit('resize', size);
+	    }
+
 	    function setOptions(options){
 	        for (var key in options){
 	            var value = options[key];
@@ -3779,6 +3363,9 @@ return /******/ (function(modules) { // webpackBootstrap
 	                    break;
 	                case 'proportions':
 	                    this.setProportions(value);
+	                    break;
+	                case 'margins':
+	                    this.setMargins(value);
 	                    break;
 	                case 'aspectRatio':
 	                    this.setAspectRatio(value);
@@ -3798,400 +3385,15 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 27 */
+/* 23 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_RESULT__;/* Copyright © 2015-2016 David Valdman */
 
 	!(__WEBPACK_AMD_DEFINE_RESULT__ = function(require, exports, module) {
+	    var OptionsManager = __webpack_require__(24);
 	    var EventHandler = __webpack_require__(3);
-	    var Stream = __webpack_require__(15);
-	    var ResizeStream = __webpack_require__(18);
-	    var SizeNode = __webpack_require__(17);
-	    var LayoutNode = __webpack_require__(10);
-	    var layoutAlgebra = __webpack_require__(28);
-	    var sizeAlgebra = __webpack_require__(29);
-	    var preTickQueue = __webpack_require__(7);
-	    var dirtyQueue = __webpack_require__(8);
-
-	    var SIZE_KEYS = SizeNode.KEYS;
-	    var LAYOUT_KEYS = LayoutNode.KEYS;
-
-	    /**
-	     * A node in the render tree. As such, it wraps a layout or size node,
-	     *  providing them with an `add` method. By adding nodes, the render tree
-	     *  is constructed, the leaves of which are `Surfaces`.
-	     *
-	     *  @constructor
-	     *  @class RenderTreeNode
-	     *  @private
-	     *  @param object {Object|SizeNode|LayoutNode|Surface|View}
-	     */
-	    function RenderTreeNode(object) {
-	        // layout and size inputs
-	        this._layout = new EventHandler();
-	        this._size = new EventHandler();
-	        this._logic = new EventHandler();
-
-	        // layout and size streams
-	        this.size = new EventHandler();
-	        this.layout = new EventHandler();
-
-	        this.root = null;
-
-	        if (object) _set.call(this, object);
-	        else {
-	            this.layout.subscribe(this._layout);
-	            this.size.subscribe(this._size);
-	        }
-
-	        // save last spec if node is removed and later added
-	        this._cachedSpec = {
-	            layout : null,
-	            size : null
-	        };
-
-	        this.layout.on('start', function(data) {
-	            this._cachedSpec.layout = data;
-	        }.bind(this));
-
-	        this.layout.on('update', function(data) {
-	            this._cachedSpec.layout = data;
-	        }.bind(this));
-
-	        this.layout.on('end', function(data) {
-	            this._cachedSpec.layout = data;
-	        }.bind(this));
-
-	        this.size.on('resize', function(size) {
-	            this._cachedSpec.size = size;
-	        }.bind(this));
-
-	        this._logic.on('mount', function(node){
-	            this.root = node;
-	        }.bind(this));
-
-	        this._logic.on('unmount', function() {
-	            this.root = null;
-	        }.bind(this));
-	    }
-
-	    /**
-	     * Extends the render tree with a new node. Similar to how a tree data structure
-	     *  is created, but instead of a node with an array of children, children subscribe
-	     *  to notifications from the parent.
-	     *
-	     *  Nodes can be instances of `LayoutNode`, `SizeNode`, or Object literals with
-	     *  size and layout properties, in which case, appropriate nodes will be created.
-	     *
-	     *  This method also takes `Views` (subtrees) and `Surfaces` (leaves).
-	     *
-	     * @method add
-	     * @chainable
-	     * @param node {Object|SizeNode|LayoutNode|Surface|View} Node
-	     * @return {RenderTreeNode}
-	     */
-	    RenderTreeNode.prototype.add = function add(node) {
-	        var childNode;
-
-	        var self = this;
-	        preTickQueue.push(function() {
-	            if (!self._cachedSpec.size) return;
-	            self.size.trigger('resize', self._cachedSpec.size);
-	            self.layout.trigger('start', self._cachedSpec.layout);
-	            dirtyQueue.push(function() {
-	                self.layout.trigger('end', self._cachedSpec.layout);
-	            });
-	        });
-
-	        if (node.constructor === Object){
-	            // Object literal case
-	            return _createNodeFromObjectLiteral.call(this, node);
-	        }
-	        else if (node._isView){
-	            // View case
-	            return this.add(node._node);
-	        }
-	        else if (node instanceof RenderTreeNode){
-	            // RenderTree Node
-	            childNode = node;
-	        }
-	        else {
-	            // LayoutNode or SizeNode or Surface
-	            childNode = new RenderTreeNode(node);
-	        }
-
-	        childNode._layout.subscribe(this.layout);
-	        childNode._size.subscribe(this.size);
-	        childNode._logic.subscribe(this._logic);
-
-	        // Called when node is removed and later added
-	        if (this.root && !childNode.root)
-	            childNode._logic.trigger('mount', this.root);
-
-	        this._logic.emit('attach');
-
-	        return childNode;
-	    };
-
-	    RenderTreeNode.prototype.remove = function (){
-	        this._logic.trigger('detach');
-	        this._logic.trigger('unmount');
-	        this._layout.unsubscribe();
-	        this._size.unsubscribe();
-	        this._logic.unsubscribe();
-	    };
-
-	    function _createNodeFromObjectLiteral(object){
-	        var sizeKeys = {};
-	        var layoutKeys = {};
-
-	        for (var key in object){
-	            if (SIZE_KEYS[key]) sizeKeys[key] = object[key];
-	            else if (LAYOUT_KEYS[key]) layoutKeys[key] = object[key];
-	        }
-
-	        var node = this;
-	        var needsSize = Object.keys(sizeKeys).length > 0;
-	        var needsLayout = Object.keys(layoutKeys).length > 0;
-
-	        // create extra align node if needed
-	        if (needsSize && layoutKeys.align){
-	            var alignNode = new LayoutNode({
-	                align : layoutKeys.align
-	            });
-	            delete layoutKeys.align;
-	            node = node.add(alignNode);
-	        }
-
-	        // create size node first if needed
-	        if (needsSize)
-	            node = node.add(new SizeNode(sizeKeys));
-
-	        // create layout node if needed
-	        if (needsLayout)
-	            node = node.add(new LayoutNode(layoutKeys));
-
-	        return node;
-	    }
-
-	    function _set(object) {
-	        if (object instanceof SizeNode){
-	            var size = ResizeStream.lift(
-	                function SGSizeAlgebra (objectSpec, parentSize){
-	                    if (!parentSize) return false;
-	                    return (objectSpec)
-	                        ? sizeAlgebra(objectSpec, parentSize)
-	                        : parentSize;
-	                },
-	                [object, this._size]
-	            );
-	            this.size.subscribe(size);
-	            this.layout.subscribe(this._layout);
-	            return;
-	        }
-	        else if (object instanceof LayoutNode){
-	            var layout = Stream.lift(
-	                function SGLayoutAlgebra (objectSpec, parentSpec, size){
-	                    if (!parentSpec || !size) return false;
-	                    return (objectSpec)
-	                        ? layoutAlgebra(objectSpec, parentSpec, size)
-	                        : parentSpec;
-	                },
-	                [object, this._layout, this._size]
-	            );
-	            this.layout.subscribe(layout);
-	            this.size.subscribe(this._size);
-	            return;
-	        }
-
-	        // object is a leaf node
-	        object._size.subscribe(this._size);
-	        object._layout.subscribe(this._layout);
-
-	        this._logic.on('detach', function(){
-	            object.remove();
-	            object._size.unsubscribe(this._size);
-	            object._layout.unsubscribe(this._layout);
-	        }.bind(this));
-
-	        this._logic.on('attach', function(){
-	            if (this.root && !object._currentTarget)
-	                object.setup(this.root.allocator);
-	            object._size.subscribe(this._size);
-	            object._layout.subscribe(this._layout);
-	        }.bind(this));
-	    }
-
-	    module.exports = RenderTreeNode;
-	}.call(exports, __webpack_require__, exports, module), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
-
-
-/***/ },
-/* 28 */
-/***/ function(module, exports, __webpack_require__) {
-
-	var __WEBPACK_AMD_DEFINE_RESULT__;/* Copyright © 2015-2016 David Valdman */
-
-	!(__WEBPACK_AMD_DEFINE_RESULT__ = function(require, exports, module) {
-	    var Transform = __webpack_require__(21);
-
-	    var DEFAULT = {
-	        OPACITY : 1,
-	        TRANSFORM : Transform.identity,
-	        ORIGIN : null,
-	        ALIGN : null
-	    };
-
-	    /**
-	     * Defines the rules for composing layout specs: transform, align, origin and opacity.
-	     *  Transform is multiplied by the parent's transform (matrix multiplication).
-	     *  Align is a proportional offset relative to the parent size.
-	     *  Origin is a proportional offset relative to the current size.
-	     *  Opacity is multiplied by the parent's opacity.
-	     *
-	     * @method compose
-	     * @private
-	     * @param spec {object}           Object layout spec
-	     * @param parentSpec {object}     Parent layout spec
-	     * @param size {Array}            Object size
-	     * @return {object}               The composed layout spec
-	     */
-
-	    function compose(spec, parentSpec, size){
-	        var parentOpacity = (parentSpec.opacity !== undefined) ? parentSpec.opacity : DEFAULT.OPACITY;
-	        var parentTransform = parentSpec.transform || DEFAULT.TRANSFORM;
-
-	        var origin = spec.origin || DEFAULT.ORIGIN;
-	        var align = spec.align || DEFAULT.ALIGN;
-
-	        var opacity = (spec.opacity !== undefined)
-	            ? parentOpacity * spec.opacity
-	            : parentOpacity;
-
-	        var transform = (spec.transform)
-	            ? Transform.compose(parentTransform, spec.transform)
-	            : parentTransform;
-
-	        var nextSizeTransform = (spec.origin)
-	            ? parentTransform
-	            : parentSpec.nextSizeTransform || parentTransform;
-
-	        if (spec.size)
-	            nextSizeTransform = parentTransform;
-
-	        if (origin && (origin[0] || origin[1])){
-	            //TODO: allow origin to propogate when size is non-numeric
-	            var tx =  (typeof size[0] === 'number') ? -origin[0] * size[0] : 0;
-	            var ty =  (typeof size[1] === 'number') ? -origin[1] * size[1] : 0;
-	            transform = Transform.moveThen([tx, ty, 0], transform);
-	            origin = null;
-	        }
-
-	        if (size && align && (align[0] || align[1])) {
-	            var shift = _vecInContext([align[0] * size[0], align[1] * size[1], 0], nextSizeTransform);
-	            transform = Transform.thenMove(transform, shift);
-	            align = null;
-	        }
-
-	        return {
-	            transform : transform,
-	            opacity : opacity,
-	            origin : origin,
-	            align : align,
-	            nextSizeTransform : nextSizeTransform
-	        };
-	    }
-
-	    function _vecInContext(v, m) {
-	        return [
-	            v[0] * m[0] + v[1] * m[4] + v[2] * m[8],
-	            v[0] * m[1] + v[1] * m[5] + v[2] * m[9],
-	            v[0] * m[2] + v[1] * m[6] + v[2] * m[10]
-	        ];
-	    }
-
-	    module.exports = compose;
-	}.call(exports, __webpack_require__, exports, module), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
-
-
-/***/ },
-/* 29 */
-/***/ function(module, exports, __webpack_require__) {
-
-	var __WEBPACK_AMD_DEFINE_RESULT__;/* Copyright © 2015-2016 David Valdman */
-
-	!(__WEBPACK_AMD_DEFINE_RESULT__ = function(require, exports, module) {
-
-	    /**
-	     * Defines the rules for composing size specs (size, margin, proportions) into a new size.
-	     *  A margin array reduces the parent size by an amount specified in pixels.
-	     *  A proportions array scales the parent size by a provided ratio.
-	     *  A size array [width, height] can take `true`, `undefined`, or numeric values.
-	     *      `undefined` takes the parent value
-	     *      `true` takes the value defined by the DOM
-	     *      numeric values override parent values
-	     *
-	     * @method compose
-	     * @private
-	     * @param spec {object}           Object size spec
-	     * @param parentSize {object}     Parent size
-	     * @return size {object}          Composed size
-	     */
-
-	    function compose(spec, parentSize){
-	        if (!spec) return parentSize;
-
-	        var size = new Array(2);
-
-	        if (spec.size) {
-	            // inheritance
-	            if (spec.size[0] === undefined) size[0] = parentSize[0];
-	            if (spec.size[1] === undefined) size[1] = parentSize[1];
-
-	            // override
-	            if (typeof spec.size[0] === 'number') size[0] = spec.size[0];
-	            if (typeof spec.size[1] === 'number') size[1] = spec.size[1];
-
-	            if (spec.size[0] === true) size[0] = true;
-	            if (spec.size[1] === true) size[1] = true;
-	        }
-
-	        if (spec.proportions) {
-	            if (typeof spec.proportions[0] === 'number') size[0] = spec.proportions[0] * parentSize[0];
-	            if (typeof spec.proportions[1] === 'number') size[1] = spec.proportions[1] * parentSize[1];
-	        }
-
-	        if (spec.aspectRatio) {
-	            if (typeof size[0] === 'number') size[1] = spec.aspectRatio * size[0];
-	            else if (typeof size[1] === 'number') size[0] = spec.aspectRatio * size[1];
-	        }
-
-	        if (size[0] === undefined) size[0] = parentSize[0];
-	        if (size[1] === undefined) size[1] = parentSize[1];
-
-	        if (spec.margins) {
-	            size[0] -= 2 * spec.margins[0];
-	            size[1] -= 2 * spec.margins[1];
-	        }
-
-	        return size;
-	    }
-
-	    module.exports = compose;
-	}.call(exports, __webpack_require__, exports, module), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
-
-
-/***/ },
-/* 30 */
-/***/ function(module, exports, __webpack_require__) {
-
-	var __WEBPACK_AMD_DEFINE_RESULT__;/* Copyright © 2015-2016 David Valdman */
-
-	!(__WEBPACK_AMD_DEFINE_RESULT__ = function(require, exports, module) {
-	    var OptionsManager = __webpack_require__(31);
-	    var EventHandler = __webpack_require__(3);
-	    var SimpleStream = __webpack_require__(11);
+	    var SimpleStream = __webpack_require__(12);
 
 	    /**
 	     * A utility class which can be extended by custom classes. These classes will then
@@ -4243,15 +3445,19 @@ return /******/ (function(modules) { // webpackBootstrap
 	     * @param options {Object} Instance options
 	     */
 	    function Controller(options) {
+	        // set options
 	        this.options = _clone(this.constructor.DEFAULT_OPTIONS || Controller.DEFAULT_OPTIONS);
 	        this._optionsManager = new OptionsManager(this.options);
 	        if (options) this.setOptions(options);
 
+	        // set input and output streams
 	        this.input = new SimpleStream();
 	        this.output = new SimpleStream();
 	        EventHandler.setInputHandler(this, this.input);
 	        EventHandler.setOutputHandler(this, this.output);
-	        EventHandler.setInputEvents(this, this.constructor.EVENTS || Controller.EVENTS, this.input);
+
+	        // bind events defined in the constructor's EVENTS dictionary to the input
+	        setInputEvents.call(this, this.constructor.EVENTS || Controller.EVENTS, this.input);
 
 	        this.input.bindThis(this);
 	        this.input.subscribe(this._optionsManager);
@@ -4299,11 +3505,6 @@ return /******/ (function(modules) { // webpackBootstrap
 	        OptionsManager.prototype.setOptions.apply(this._optionsManager, arguments);
 	    };
 
-	    var RESERVED_KEYS = {
-	        DEFAULTS : 'defaults',
-	        EVENTS : 'events'
-	    };
-
 	    function _clone(obj) {
 	        var copy;
 	        if (typeof obj === 'object') {
@@ -4326,19 +3527,39 @@ return /******/ (function(modules) { // webpackBootstrap
 	        return copy;
 	    }
 
-	    function extend(protoObj, constants){
+	    /**
+	     * Constructor helper method. Given an events dictionary of {eventName : handler} pairs, attach them to
+	     *  a provided input handler for an object. The `handler` can be a string, in which case the string resolves
+	     *  to a method with the string's name defined on the object.
+	     */
+	    function setInputEvents(events, inputHandler){
+	        for (var key in events) {
+	            var handlerName = events[key];
+	            var handler = (typeof handlerName === 'string')
+	                ? this[handlerName]
+	                : handlerName;
+	            if (handler) inputHandler.on(key, handler.bind(this));
+	        }
+	    }
+	    
+	    var RESERVED_KEYS = {
+	        DEFAULTS : 'defaults',
+	        EVENTS : 'events'
+	    };
+
+	    function extend(properties, constructorProperties){
 	        var parent = this;
 
-	        var child = (protoObj.hasOwnProperty('constructor'))
-	            ? function(){ protoObj.constructor.apply(this, arguments); }
+	        var child = (properties.hasOwnProperty('constructor'))
+	            ? function(){ properties.constructor.apply(this, arguments); }
 	            : function(){ parent.apply(this, arguments); };
 
 	        child.extend = extend;
 	        child.prototype = Object.create(parent.prototype);
 	        child.prototype.constructor = child;
 
-	        for (var key in protoObj){
-	            var value = protoObj[key];
+	        for (var key in properties){
+	            var value = properties[key];
 	            switch (key) {
 	                case RESERVED_KEYS.DEFAULTS:
 	                    child.DEFAULT_OPTIONS = value;
@@ -4346,28 +3567,29 @@ return /******/ (function(modules) { // webpackBootstrap
 	                case RESERVED_KEYS.EVENTS:
 	                    if (!child.EVENTS) child.EVENTS = value;
 	                    else
-	                        for (var key in value)
-	                            child.EVENTS[key] = value[key];
+	                        for (var type in value)
+	                            child.EVENTS[type] = value[type];
 	                    break;
 	                default:
 	                    child.prototype[key] = value;
 	            }
 	        }
 
-
-	        for (var key in constants)
-	            child[key] = constants[key];
+	        for (key in constructorProperties)
+	            child[key] = constructorProperties[key];
 
 	        return child;
 	    }
 
 	    /**
-	     * Allows a class to extend Controller.
-	     *  Note: this is a method defined on the Controller constructor
+	     * Extend the Controller class with user-defined instance properties, as well as constructor
+	     *  properties.
 	     *
 	     * @method extend
-	     * @param protoObj {Object}     Prototype properties of the extended class
-	     * @param constants {Object}    Constants to be added to the extended class's constructor
+	     * @static
+	     * @private
+	     * @param properties {Object}               User-defined instance methods and properties
+	     * @param [constructorProperties] {Object}  Constructor properties
 	     */
 	    Controller.extend = extend;
 
@@ -4376,18 +3598,10 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 31 */
+/* 24 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var __WEBPACK_AMD_DEFINE_RESULT__;/* This Source Code Form is subject to the terms of the Mozilla Public
-	 * License, v. 2.0. If a copy of the MPL was not distributed with this
-	 * file, You can obtain one at http://mozilla.org/MPL/2.0/.
-	 *
-	 * @license MPL 2.0
-	 * @copyright Famous Industries, Inc. 2014
-	 */
-
-	/* Modified work copyright © 2015-2016 David Valdman */
+	var __WEBPACK_AMD_DEFINE_RESULT__;/* Copyright © 2015-2016 David Valdman */
 
 	!(__WEBPACK_AMD_DEFINE_RESULT__ = function(require, exports, module) {
 	    var EventHandler = __webpack_require__(3);
@@ -4412,11 +3626,11 @@ return /******/ (function(modules) { // webpackBootstrap
 	    }
 
 	    /**
-	     * Constructor method. Create OptionsManager from source dictionary with arguments overriden by patch dictionary.
+	     * Constructor method. Create OptionsManager from source dictionary with arguments overridden by patch dictionary.
 	     *
 	     * @method OptionsManager.patch
 	     * @param options {Object}          Options to be patched
-	     * @param patch {...Object}         Options to overwrite
+	     * @param patch {...Object}         Options to override
 	     * @return source {Object}
 	     */
 	    OptionsManager.patch = function patch(options, patch) {
@@ -4428,10 +3642,11 @@ return /******/ (function(modules) { // webpackBootstrap
 	    /**
 	     * Constructor method. Convenience method to set options with defaults on an object instance.
 	     *
-	     * @method OptionsManager.patch
-	     * @param options {Object}          Options to be patched
-	     * @param overrides {...Object}     Options to overwrite
-	     * @return source {Object}
+	     * @method OptionsManager.setOptions
+	     * @param instance {Function}    Constructor
+	     * @param options {Object}       Overriding options
+	     * @param defaults {Object}      Default options
+	     * @return {Object}              Patched options
 	     */
 	    OptionsManager.setOptions = function(instance, options, defaults){
 	        defaults = defaults || _clone(instance.constructor.DEFAULT_OPTIONS) || {};
@@ -4453,15 +3668,15 @@ return /******/ (function(modules) { // webpackBootstrap
 	     * @param options {Object}          Patch options
 	     * @return this {OptionsManager}
 	     */
-	    OptionsManager.prototype.patch = function patch(options, clone) {
+	    OptionsManager.prototype.patch = function patch(options) {
 	        var myState = this._value;
-	        for (var k in options) {
-	            if ((k in myState) && (options[k] && options[k].constructor === Object) && (myState[k] && myState[k].constructor === Object)) {
-	                if (!myState.hasOwnProperty(k)) myState[k] = Object.create(myState[k]);
-	                this.key(k).patch(options[k]);
-	                if (this._eventHandler) this._eventHandler.emit('change', {key: k, value: this.key(k).value()});
+	        for (var key in options) {
+	            if ((key in myState) && (options[key] && options[key].constructor === Object) && (myState[key] && myState[key].constructor === Object)) {
+	                if (!myState.hasOwnProperty(key)) myState[key] = Object.create(myState[key]);
+	                this.key(key).patch(options[key]);
+	                if (this._eventHandler) this._eventHandler.emit('change', {key: key, value: this.key(key).value()});
 	            }
-	            else this.set(k, options[k]);
+	            else this.set(key, options[key]);
 	        }
 	        return this;
 	    };
@@ -4571,6 +3786,697 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
+/* 25 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var __WEBPACK_AMD_DEFINE_RESULT__;/* Copyright © 2015-2016 David Valdman */
+
+	!(__WEBPACK_AMD_DEFINE_RESULT__ = function(require, exports, module) {
+	    var EventHandler = __webpack_require__(3);
+	    var SimpleStream = __webpack_require__(12);
+	    var Stream = __webpack_require__(16);
+	    var LayoutNode = __webpack_require__(26);
+	    var SizeNode = __webpack_require__(29);
+	    var layoutAlgebra = __webpack_require__(30);
+	    var sizeAlgebra = __webpack_require__(31);
+	    var preTickQueue = __webpack_require__(6);
+	    var dirtyQueue = __webpack_require__(7);
+
+	    /**
+	     * A node in the render tree. As such, it wraps a layout or size node,
+	     *  providing them with an `add` method. By adding nodes, the render tree
+	     *  is constructed, the leaves of which are `Surfaces`.
+	     *
+	     *  @constructor
+	     *  @class RenderTreeNode
+	     *  @private
+	     *  @param object {Object|SizeNode|LayoutNode|Surface|View}
+	     */
+	    function RenderTreeNode(object) {
+	        // layout and size inputs
+	        this._layout = new EventHandler();
+	        this._size = new EventHandler();
+	        this._logic = new EventHandler();
+
+	        // layout and size streams
+	        this.size = new SimpleStream();
+	        this.layout = new SimpleStream();
+
+	        // set node middleware
+	        if (object) _set.call(this, object);
+	        else {
+	            // if no middleware specified, connect input to output
+	            this.layout.subscribe(this._layout);
+	            this.size.subscribe(this._size);
+	        }
+
+	        // save last spec if node is removed and later added
+	        this._cachedSpec = {
+	            layout : null,
+	            size : null
+	        };
+
+	        // update size cache
+	        this.size.on('start', updateSizeCache.bind(this));
+	        this.size.on('update', updateSizeCache.bind(this));
+	        this.size.on('end', updateSizeCache.bind(this));
+
+	        // update layout spec
+	        this.layout.on('start', updateLayoutCache.bind(this));
+	        this.layout.on('update', updateLayoutCache.bind(this));
+	        this.layout.on('end', updateLayoutCache.bind(this));
+
+	        // reference to RootNode if a node is removed and later added
+	        this.root = null;
+
+	        this._logic.on('mount', function(node){
+	            this.root = node;
+	        }.bind(this));
+
+	        this._logic.on('unmount', function() {
+	            this.root = null;
+	        }.bind(this));
+	    }
+
+	    function updateLayoutCache(layout){
+	        this._cachedSpec.layout = layout;
+	    }
+
+	    function updateSizeCache(size){
+	        this._cachedSpec.size = size;
+	    }
+
+	    /**
+	     * Extends the render tree with a new node. Similar to how a tree data structure
+	     *  is created, but instead of a node with an array of children, children subscribe
+	     *  to notifications from the parent.
+	     *
+	     *  Nodes can be instances of `LayoutNode`, `SizeNode`, or Object literals with
+	     *  size and layout properties, in which case, appropriate nodes will be created.
+	     *
+	     *  This method also takes `Views` (subtrees) and `Surfaces` (leaves).
+	     *
+	     * @method add
+	     * @chainable
+	     * @param node {Object|Node|Surface|View} Node
+	     * @return {RenderTreeNode}
+	     */
+	    RenderTreeNode.prototype.add = function add(node) {
+	        var childNode;
+
+	        if (node.constructor === Object){
+	            // Object literal case
+	            return _createNodeFromObjectLiteral.call(this, node);
+	        }
+	        else if (node._isView){
+	            // View case
+	            return this.add(node._node);
+	        }
+	        else if (node instanceof RenderTreeNode){
+	            // RenderTree Node
+	            childNode = node;
+	        }
+	        else {
+	            // LayoutNode or SizeNode or Surface
+	            childNode = new RenderTreeNode(node);
+	        }
+
+	        childNode._layout.subscribe(this.layout);
+	        childNode._size.subscribe(this.size);
+	        childNode._logic.subscribe(this._logic);
+
+	        // Called when node is removed and later added
+	        if (this.root && !childNode.root)
+	            childNode._logic.trigger('mount', this.root);
+
+	        // Emit previously cached values if node was removed
+	        if (!node.root){
+	            var self = this;
+	            preTickQueue.push(function(){
+	                if (!self._cachedSpec.size) return;
+	                self.size.trigger('start', self._cachedSpec.size);
+	                self.layout.trigger('start', self._cachedSpec.layout);
+	                dirtyQueue.push(function(){
+	                    self.size.trigger('end', self._cachedSpec.size);
+	                    self.layout.trigger('end', self._cachedSpec.layout);
+	                });
+	            });
+	        }
+
+	        return childNode;
+	    };
+
+	    /**
+	     * Remove the node from the Render Tree
+	     *
+	     * @method remove
+	     */
+	    RenderTreeNode.prototype.remove = function (){
+	        this._logic.trigger('unmount');
+	        this._layout.unsubscribe();
+	        this._size.unsubscribe();
+	        this._logic.unsubscribe();
+	    };
+
+	    // Creates a combination of Size/Layout nodes from an object literal
+	    // depending on its keys
+	    function _createNodeFromObjectLiteral(object){
+	        var sizeKeys = {};
+	        var layoutKeys = {};
+
+	        var needsSize = false;
+	        var needsLayout = false;
+
+	        var node = this;
+
+	        for (var key in object){
+	            if (SizeNode.KEYS[key]){
+	                sizeKeys[key] = object[key];
+	                needsSize = true;
+	            }
+	            else if (LayoutNode.KEYS[key]){
+	                layoutKeys[key] = object[key];
+	                needsLayout = true;
+	            }
+	        }
+
+	        // create extra align node if needed
+	        if (needsSize && layoutKeys.align){
+	            var alignNode = new LayoutNode({
+	                align : layoutKeys.align
+	            });
+	            delete layoutKeys.align;
+	            node = node.add(alignNode);
+	        }
+
+	        // create size node first if needed
+	        if (needsSize)
+	            node = node.add(new SizeNode(sizeKeys));
+
+	        // create layout node if needed
+	        if (needsLayout)
+	            node = node.add(new LayoutNode(layoutKeys));
+
+	        return node;
+	    }
+
+	    // Set node middleware. Can be an object, SizeNode, LayoutNode, or Surface
+	    function _set(object) {
+	        if (object instanceof SizeNode){
+	            var size = Stream.lift(
+	                function SGSizeAlgebra (objectSpec, parentSize){
+	                    if (!parentSize) return false;
+	                    return(objectSpec)
+	                        ? sizeAlgebra(objectSpec, parentSize)
+	                        : parentSize;
+	                }.bind(this),
+	                [object, this._size]
+	            );
+	            this.size.subscribe(size);
+	            this.layout.subscribe(this._layout);
+	        }
+	        else if (object instanceof LayoutNode){
+	            var layout = Stream.lift(
+	                function SGLayoutAlgebra (objectSpec, parentSpec, size){
+	                    if (!parentSpec || !size) return false;
+	                    return (objectSpec)
+	                        ? layoutAlgebra(objectSpec, parentSpec, size)
+	                        : parentSpec;
+	                }.bind(this),
+	                [object, this._layout, this._size]
+	            );
+	            this.layout.subscribe(layout);
+	            this.size.subscribe(this._size);
+	        }
+	        else {
+	            this._logic.on('unmount', function() {
+	                object.remove();
+	            }.bind(this));
+
+	            this._logic.on('mount', function(root) {
+	                object.setup(root.allocator);
+	            }.bind(this));
+
+	            object.on('recall', function(){
+	                object._size.unsubscribe(this._size);
+	                object._layout.unsubscribe(this._layout);
+	            }.bind(this));
+
+	            object.on('deploy', function(){
+	                object._size.subscribe(this._size);
+	                object._layout.subscribe(this._layout);
+	            }.bind(this));
+	        }
+	    }
+
+	    module.exports = RenderTreeNode;
+	}.call(exports, __webpack_require__, exports, module), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
+
+
+/***/ },
+/* 26 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var __WEBPACK_AMD_DEFINE_RESULT__;/* Copyright © 2015-2016 David Valdman */
+
+	!(__WEBPACK_AMD_DEFINE_RESULT__ = function(require, exports, module) {
+	    var Node = __webpack_require__(27);
+
+	    /**
+	     * Encapsulates a stream of layout data (transform, origin, align, opacity).
+	     *  Listens on start/update/end events, batches them, and emits them downstream
+	     *  to descendant layout nodes.
+	     *
+	     *  @example
+	     *
+	     *      var context = Context();
+	     *
+	     *      var surface = new Surface({
+	     *          size : [100,100],
+	     *          properties : {background : 'red'}
+	     *      });
+	     *
+	     *      var opacity = new Transitionable(1);
+	     *
+	     *      var layout = new LayoutNode({
+	     *          transform : Transform.translateX(100),
+	     *          opacity : opacity
+	     *      });
+	     *
+	     *      context.add(layout).add(surface);
+	     *      context.mount(document.body)
+	     *
+	     *      opacity.set(0, {duration : 1000});
+	     *
+	     * @class LayoutNode
+	     * @constructor
+	     * @namespace Core
+	     * @private
+	     * @param sources {Object}                          Object of layout sources
+	     * @param [sources.transform] {Stream|Transform}    Transform source
+	     * @param [sources.align] {Stream|Array}            Align source
+	     * @param [sources.origin] {Stream|Array}           Origin source
+	     * @param [sources.opacity] {Stream|Number}         Opacity source
+	     */
+	    function LayoutNode(sources) {
+	        Node.call(this, sources);
+	    }
+
+	    LayoutNode.prototype = Object.create(Node.prototype);
+	    LayoutNode.prototype.constructor = LayoutNode;
+
+	    // Enumeration of types of layout properties
+	    LayoutNode.KEYS = {
+	        transform : true,
+	        origin : true,
+	        align : true,
+	        opacity : true
+	    };
+
+	    module.exports = LayoutNode;
+	}.call(exports, __webpack_require__, exports, module), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
+
+
+/***/ },
+/* 27 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var __WEBPACK_AMD_DEFINE_RESULT__;/* Copyright © 2015-2016 David Valdman */
+
+	!(__WEBPACK_AMD_DEFINE_RESULT__ = function(require, exports, module) {
+	    var EventHandler = __webpack_require__(3);
+	    var SimpleStream = __webpack_require__(12);
+	    var Stream = __webpack_require__(16);
+	    var Observable = __webpack_require__(28);
+
+	    /**
+	     * Encapsulates a stream of layout data (transform, origin, align, opacity).
+	     *  Listens on start/update/end events, batches them, and emits them downstream
+	     *  to descendant layout nodes.
+	     *
+	     *  @example
+	     *
+	     *      var context = Context();
+	     *
+	     *      var surface = new Surface({
+	     *          size : [100,100],
+	     *          properties : {background : 'red'}
+	     *      });
+	     *
+	     *      var opacity = new Transitionable(1);
+	     *
+	     *      var layout = new LayoutNode({
+	     *          transform : Transform.translateX(100),
+	     *          opacity : opacity
+	     *      });
+	     *
+	     *      context.add(layout).add(surface);
+	     *      context.mount(document.body)
+	     *
+	     *      opacity.set(0, {duration : 1000});
+	     *
+	     * @class Node
+	     * @constructor
+	     * @namespace Core
+	     * @private
+	     * @param sources {Object}                          Object of layout sources
+	     * @param [sources.transform] {Stream|Transform}    Transform source
+	     * @param [sources.align] {Stream|Array}            Align source
+	     * @param [sources.origin] {Stream|Array}           Origin source
+	     * @param [sources.opacity] {Stream|Number}         Opacity source
+	     */
+	    function Node(sources) {
+	        this.stream = _createStream(sources);
+	        EventHandler.setOutputHandler(this, this.stream);
+	    }
+
+	    /**
+	     * Introduce new data streams to the layout node in {key : value} pairs.
+	     *  Here the `key` is a value from one of `SizeNode.KEYS` or `LayoutNode.KEYS`.
+	     *  The `value` is either a stream, or a simple type like a `Number` or `Array`.
+	     *  Simple types will be wrapped in an `Observerable` to emit appropriate events.
+	     *
+	     * @method set
+	     * @param sources {Object}      Object of data sources
+	     */
+	    Node.prototype.set = function(sources) {
+	        // TODO: be able to overwrite streams. Not only add
+	        for (var key in sources) {
+	            var value = sources[key];
+
+	            var source = (value instanceof SimpleStream)
+	                ? value
+	                : new Observable(value);
+
+	            this.stream.addStream(key, source);
+	        }
+	    };
+
+	    function _createStream(sources) {
+	        for (var key in sources) {
+	            var value = sources[key];
+	            if (!(value instanceof SimpleStream)) {
+	                var source = new Observable(value);
+	                sources[key] = source;
+	            }
+	        }
+	        return Stream.merge(sources);
+	    }
+
+	    module.exports = Node;
+	}.call(exports, __webpack_require__, exports, module), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
+
+
+/***/ },
+/* 28 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var __WEBPACK_AMD_DEFINE_RESULT__;/* Copyright © 2015-2016 David Valdman */
+
+	!(__WEBPACK_AMD_DEFINE_RESULT__ = function(require, exports, module) {
+	    var SimpleStream = __webpack_require__(12);
+	    var preTickQueue = __webpack_require__(6);
+	    var dirtyQueue = __webpack_require__(7);
+
+	    /**
+	     * An Observable is a stream for events set discretely in time, as opposed to continuously.
+	     *  It emits appropriate `start` and `end` events upon calling the `set` method.
+	     *
+	     * @class Observable
+	     * @constructor
+	     * @private
+	     * @extends Streams.Stream
+	     * @param value {Number, String, Array, Object} Value
+	     */
+	    function Observable(value){
+	        SimpleStream.call(this);
+	        this.value = value;
+
+	        if (value !== undefined) this.set(value);
+	    }
+
+	    Observable.prototype = Object.create(SimpleStream.prototype);
+	    Observable.prototype.constructor = Observable;
+
+	    /**
+	     * Getter for the provided value.
+	     *
+	     * @method get
+	     * @return {Number, String, Array, Object}
+	     */
+	    Observable.prototype.get = function(){
+	        return this.value;
+	    };
+
+	    /**
+	     * Setter for the provided value.
+	     *
+	     * @method set
+	     * @param value {Number, String, Array, Object} Value
+	     */
+	    Observable.prototype.set = function(value){
+	        var self = this;
+	        self.value = value;
+	        preTickQueue.push(function(){
+	            self.emit('start', value);
+	            dirtyQueue.push(function(){
+	                self.emit('end', value);
+	            });
+	        });
+	    };
+
+	    module.exports = Observable;
+	}.call(exports, __webpack_require__, exports, module), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
+
+
+/***/ },
+/* 29 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var __WEBPACK_AMD_DEFINE_RESULT__;/* Copyright © 2015-2016 David Valdman */
+
+	!(__WEBPACK_AMD_DEFINE_RESULT__ = function(require, exports, module) {
+	    var Node = __webpack_require__(27);
+
+	    /**
+	     * Encapsulates a stream of size data (size, proportions, margins).
+	     *  Listens on start/update/end events, batches them, and emits resize events downstream
+	     *  to descendant size nodes.
+	     *
+	     *  Size can be defined with height and width given numerically, but
+	     *  they can also be:
+	     *
+	     *  ```
+	     *      `undefined` - takes the parent value
+	     *      `true`      - takes the DOM calculated value
+	     *      `false`     - value defined by setting an aspect ratio
+	     *  ```
+	     *
+	     *  @example
+	     *
+	     *      var context = Context();
+	     *
+	     *      var surface = new Surface({
+	     *          size : [100,100],
+	     *          properties : {background : 'red'}
+	     *      });
+	     *
+	     *      var sizeNode = new SizeNode({
+	     *          size : [100, undefined],
+	     *          margins : [50, 50]
+	     *      });
+	     *
+	     *      context.add(sizeNode).add(surface);
+	     *      context.mount(document.body)
+	     *
+	     * @class SizeNode
+	     * @namespace Core
+	     * @constructor
+	     * @private
+	     * @param sources {Object}                      Object of size sources
+	     * @param [sources.size] {Stream|Array}         Size source
+	     * @param [sources.margin] {Stream|Array}       Margin source
+	     * @param [sources.proportions] {Stream|Array}  Proportions source
+	     * @param [sources.aspectRatio] {Stream|Number} Aspect ratio source
+	     */
+	    function SizeNode(sources) {
+	        Node.call(this, sources);
+	    }
+	    
+	    SizeNode.prototype = Object.create(Node.prototype);
+	    SizeNode.prototype.constructor = SizeNode;
+
+	    // Enumeration of types of size properties
+	    SizeNode.KEYS = {
+	        size : true,
+	        proportions : true,
+	        margins : true,
+	        aspectRatio : true
+	    };
+
+	    module.exports = SizeNode;
+	}.call(exports, __webpack_require__, exports, module), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
+
+
+/***/ },
+/* 30 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var __WEBPACK_AMD_DEFINE_RESULT__;/* Copyright © 2015-2016 David Valdman */
+
+	!(__WEBPACK_AMD_DEFINE_RESULT__ = function(require, exports, module) {
+	    var Transform = __webpack_require__(9);
+
+	    var DEFAULT = {
+	        OPACITY : 1,
+	        TRANSFORM : Transform.identity,
+	        ORIGIN : null,
+	        ALIGN : null
+	    };
+
+	    /**
+	     * Defines the rules for composing layout specs: transform, align, origin and opacity.
+	     *  Transform is multiplied by the parent's transform (matrix multiplication).
+	     *  Align is a proportional offset relative to the parent size.
+	     *  Origin is a proportional offset relative to the current size.
+	     *  Opacity is multiplied by the parent's opacity.
+	     *
+	     * @method compose
+	     * @private
+	     * @param spec {object}           Object layout spec
+	     * @param parentSpec {object}     Parent layout spec
+	     * @param size {Array}            Object size
+	     * @return {object}               The composed layout spec
+	     */
+
+	    function compose(spec, parentSpec, size){
+	        var parentOpacity = (parentSpec.opacity !== undefined) ? parentSpec.opacity : DEFAULT.OPACITY;
+	        var parentTransform = parentSpec.transform || DEFAULT.TRANSFORM;
+
+	        var origin = spec.origin || DEFAULT.ORIGIN;
+	        var align = spec.align || DEFAULT.ALIGN;
+
+	        var opacity = (spec.opacity !== undefined)
+	            ? parentOpacity * spec.opacity
+	            : parentOpacity;
+
+	        var transform = (spec.transform)
+	            ? Transform.compose(parentTransform, spec.transform)
+	            : parentTransform;
+
+	        var nextSizeTransform = (spec.origin)
+	            ? parentTransform
+	            : parentSpec.nextSizeTransform || parentTransform;
+
+	        if (spec.size)
+	            nextSizeTransform = parentTransform;
+
+	        if (origin && (origin[0] || origin[1])){
+	            //TODO: allow origin to propogate when size is non-numeric
+	            var tx = (typeof size[0] === 'number') ? -origin[0] * size[0] : 0;
+	            var ty = (typeof size[1] === 'number') ? -origin[1] * size[1] : 0;
+	            transform = Transform.moveThen([tx, ty, 0], transform);
+	            origin = null;
+	        }
+
+	        if (size && align && (align[0] || align[1])) {
+	            var shift = _vecInContext([align[0] * size[0], align[1] * size[1], 0], nextSizeTransform);
+	            transform = Transform.thenMove(transform, shift);
+	            align = null;
+	        }
+
+	        return {
+	            transform : transform,
+	            opacity : opacity,
+	            origin : origin,
+	            align : align,
+	            nextSizeTransform : nextSizeTransform
+	        };
+	    }
+
+	    function _vecInContext(v, m) {
+	        return [
+	            v[0] * m[0] + v[1] * m[4] + v[2] * m[8],
+	            v[0] * m[1] + v[1] * m[5] + v[2] * m[9],
+	            v[0] * m[2] + v[1] * m[6] + v[2] * m[10]
+	        ];
+	    }
+
+	    module.exports = compose;
+	}.call(exports, __webpack_require__, exports, module), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
+
+
+/***/ },
+/* 31 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var __WEBPACK_AMD_DEFINE_RESULT__;/* Copyright © 2015-2016 David Valdman */
+
+	!(__WEBPACK_AMD_DEFINE_RESULT__ = function(require, exports, module) {
+
+	    /**
+	     * Defines the rules for composing size specs (size, margin, proportions) into a new size.
+	     *  A margin array reduces the parent size by an amount specified in pixels.
+	     *  A proportions array scales the parent size by a provided ratio.
+	     *  A size array [width, height] can take `true`, `undefined`, or numeric values.
+	     *      `undefined` takes the parent value
+	     *      `true` takes the value defined by the DOM
+	     *      numeric values override parent values
+	     *
+	     * @method compose
+	     * @private
+	     * @param spec {object}           Object size spec
+	     * @param parentSize {object}     Parent size
+	     * @return size {object}          Composed size
+	     */
+
+	    function compose(spec, parentSize){
+	        if (!spec) return parentSize;
+
+	        var size = new Array(2);
+
+	        if (spec.size instanceof Function) {
+	            size = spec.size(parentSize);
+	        }
+	        else if (spec.size instanceof Array) {
+	            // inheritance
+	            if (spec.size[0] === undefined) size[0] = parentSize[0];
+	            if (spec.size[1] === undefined) size[1] = parentSize[1];
+
+	            // override
+	            if (typeof spec.size[0] === 'number') size[0] = spec.size[0];
+	            if (typeof spec.size[1] === 'number') size[1] = spec.size[1];
+
+	            if (spec.size[0] === true) size[0] = true;
+	            if (spec.size[1] === true) size[1] = true;
+	        }
+
+	        if (spec.proportions) {
+	            if (typeof spec.proportions[0] === 'number') size[0] = spec.proportions[0] * parentSize[0];
+	            if (typeof spec.proportions[1] === 'number') size[1] = spec.proportions[1] * parentSize[1];
+	        }
+
+	        if (spec.aspectRatio) {
+	            if (typeof size[0] === 'number') size[1] = spec.aspectRatio * size[0];
+	            else if (typeof size[1] === 'number') size[0] = spec.aspectRatio * size[1];
+	        }
+
+	        if (size[0] === undefined) size[0] = parentSize[0];
+	        if (size[1] === undefined) size[1] = parentSize[1];
+
+	        if (spec.margins) {
+	            size[0] -= 2 * spec.margins[0];
+	            size[1] -= 2 * spec.margins[1];
+	        }
+
+	        return size;
+	    }
+
+	    module.exports = compose;
+	}.call(exports, __webpack_require__, exports, module), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
+
+
+/***/ },
 /* 32 */
 /***/ function(module, exports, __webpack_require__) {
 
@@ -4590,17 +4496,16 @@ return /******/ (function(modules) { // webpackBootstrap
 	var __WEBPACK_AMD_DEFINE_RESULT__;/* Copyright © 2015-2016 David Valdman */
 
 	!(__WEBPACK_AMD_DEFINE_RESULT__ = function(require, exports, module) {
+	    var DOMOutput = __webpack_require__(34);
 	    var EventHandler = __webpack_require__(3);
-	    var Stream = __webpack_require__(15);
-	    var ResizeStream = __webpack_require__(18);
-	    var SizeNode = __webpack_require__(17);
-	    var LayoutNode = __webpack_require__(10);
-	    var sizeAlgebra = __webpack_require__(29);
-	    var layoutAlgebra = __webpack_require__(28);
-	    var ElementOutput = __webpack_require__(34);
-	    var dirtyQueue = __webpack_require__(8);
+	    var Stream = __webpack_require__(16);
+	    var SizeNode = __webpack_require__(29);
+	    var LayoutNode = __webpack_require__(26);
+	    var sizeAlgebra = __webpack_require__(31);
+	    var layoutAlgebra = __webpack_require__(30);
+	    var dirtyQueue = __webpack_require__(7);
 
-	    var isTouchEnabled = "ontouchstart" in window;
+	    var isTouchEnabled = 'ontouchstart' in window;
 	    var isIOS = /iPad|iPhone|iPod/.test(navigator.platform);
 
 	    /**
@@ -4639,7 +4544,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	     * @class Surface
 	     * @namespace DOM
 	     * @constructor
-	     * @extends Core.ElementOutput
+	     * @uses DOM._DOMOutput
 	     * @param [options] {Object}                Options
 	     * @param [options.size] {Number[]}         Size (width, height) in pixels. These can also be `true` or `undefined`.
 	     * @param [options.classes] {String[]}      CSS classes
@@ -4662,8 +4567,8 @@ return /******/ (function(modules) { // webpackBootstrap
 	        this.content = '';
 	        this._cachedSize = null;
 	        this._allocator = null;
-
-	        this._elementOutput = new ElementOutput();
+	        this._currentTarget = null;
+	        this._elementOutput = new DOMOutput();
 
 	        this._eventOutput = new EventHandler();
 	        EventHandler.setOutputHandler(this, this._eventOutput);
@@ -4678,7 +4583,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	        this._size = new EventHandler();
 	        this._layout = new EventHandler();
 
-	        this.size = ResizeStream.lift(function elementSizeLift(sizeSpec, parentSize) {
+	        this.size = Stream.lift(function elementSizeLift(sizeSpec, parentSize) {
 	            if (!parentSize) return false; // occurs when surface is never added
 	            return sizeAlgebra(sizeSpec, parentSize);
 	        }, [this._sizeNode, this._size]);
@@ -4690,29 +4595,39 @@ return /******/ (function(modules) { // webpackBootstrap
 	                : parentSpec;
 	        }, [this._layout, this._layoutNode, this.size]);
 
-	        this.layout.on('update', commitLayout.bind(this));
-	        this.layout.on('end', commitLayout.bind(this));
-	        this.size.on('resize', commitSize.bind(this));
+	        this.layout.on('start', function(){
+	            if (!this._currentTarget) return;
+	            this._elementOutput.promoteLayer(this._currentTarget);
+	        }.bind(this));
+
+	        this.layout.on('update', function(layout){
+	            if (!this._currentTarget) return;
+	            this._elementOutput.commitLayout(this._currentTarget, layout);
+	        }.bind(this));
+
+	        this.layout.on('end', function(layout){
+	            if (!this._currentTarget) return;
+	            this._elementOutput.commitLayout(this._currentTarget, layout);
+	            this._elementOutput.demoteLayer(this._currentTarget);
+	        }.bind(this));
+
+	        this.size.on('start', commitSize.bind(this));
+	        this.size.on('update', commitSize.bind(this));
+	        this.size.on('end', commitSize.bind(this));
 
 	        if (options) this.setOptions(options);
 	    }
 
-	    Surface.prototype = Object.create(ElementOutput.prototype);
+	    Surface.prototype = Object.create(DOMOutput.prototype);
 	    Surface.prototype.constructor = Surface;
 	    Surface.prototype.elementType = 'div'; // Default tagName. Can be overridden in options.
 	    Surface.prototype.elementClass = 'samsara-surface';
 
-	    function commitLayout(layout) {
-	        if (this._currentTarget)
-	            this._elementOutput.commitLayout(this._currentTarget, layout);
-	    }
-
-	    function commitSize(size) {
-	        if (this._currentTarget){
-	            var shouldResize = this._elementOutput.commitSize(this._currentTarget, size);
-	            this._cachedSize = size;
-	            if (shouldResize) this.emit('resize', size);
-	        }
+	    function commitSize(size){
+	        if (!this._currentTarget) return;
+	        var shouldResize = this._elementOutput.commitSize(this._currentTarget, size);
+	        this._cachedSize = size;
+	        if (shouldResize) this.emit('resize', size);
 	    }
 
 	    function enableScroll(){
@@ -4728,9 +4643,9 @@ return /******/ (function(modules) { // webpackBootstrap
 	                    var height = target.offsetHeight;
 	                    var scrollHeight = target.scrollHeight;
 
-	                    if (top == 0)
+	                    if (top === 0)
 	                        target.scrollTop = 1;
-	                    else if (top + height == scrollHeight)
+	                    else if (top + height === scrollHeight)
 	                        target.scrollTop = scrollHeight - height - 1;
 
 	                }, false);
@@ -4742,26 +4657,52 @@ return /******/ (function(modules) { // webpackBootstrap
 	            }, false);
 	        });
 	    }
+
+	    /**
+	     * Set or overwrite innerHTML content of this Surface.
+	     *
+	     * @method setContent
+	     * @param content {String|DocumentFragment} HTML content
+	     */
+	    Surface.prototype.setContent = function setContent(content){
+	        if (this.content !== content){
+	            this.content = content;
+
+	            if (this._currentTarget){
+	                dirtyQueue.push(function(){
+	                    this._elementOutput.applyContent(this._currentTarget, content);
+	                }.bind(this));
+	            }
+	        }
+	    };
+
+	    /**
+	     * Return innerHTML content of this Surface.
+	     *
+	     * @method getContent
+	     * @return {String}
+	     */
+	    Surface.prototype.getContent = function getContent(){
+	        return this.content;
+	    };
 	    
 	    /**
 	     * Setter for HTML attributes.
 	     *
 	     * @method setAttributes
-	     * @chainable
 	     * @param attributes {Object}   HTML Attributes
 	     */
 	    Surface.prototype.setAttributes = function setAttributes(attributes) {
 	        for (var key in attributes) {
 	            var value = attributes[key];
-	            if (value != undefined) this.attributes[key] = attributes[key];
+	            if (value !== undefined) this.attributes[key] = attributes[key];
 	        }
 
-	        dirtyQueue.push(function(){
-	            if (this._currentTarget)
+	        if (this._currentTarget){
+	            dirtyQueue.push(function(){
 	                this._elementOutput.applyAttributes(this._currentTarget, attributes);
-	        }.bind(this));
-
-	        return this;
+	            }.bind(this));
+	        }
 	    };
 
 	    /**
@@ -4779,19 +4720,17 @@ return /******/ (function(modules) { // webpackBootstrap
 	     *  Note: properties are camelCased, not hyphenated.
 	     *
 	     * @method setProperties
-	     * @chainable
 	     * @param properties {Object}   CSS properties
 	     */
 	    Surface.prototype.setProperties = function setProperties(properties) {
 	        for (var key in properties)
 	            this.properties[key] = properties[key];
 
-	        dirtyQueue.push(function() {
-	            if (this._currentTarget)
+	        if (this._currentTarget){
+	            dirtyQueue.push(function(){
 	                this._elementOutput.applyProperties(this._currentTarget, properties);
-	        }.bind(this));
-
-	        return this;
+	            }.bind(this));
+	        }
 	    };
 
 	    /**
@@ -4808,19 +4747,18 @@ return /******/ (function(modules) { // webpackBootstrap
 	     * Add CSS class to the list of classes on this Surface.
 	     *
 	     * @method addClass
-	     * @chainable
 	     * @param className {String}    Class name
 	     */
 	    Surface.prototype.addClass = function addClass(className) {
 	        if (this.classList.indexOf(className) < 0) {
 	            this.classList.push(className);
 
-	            dirtyQueue.push(function() {
-	                if (this._currentTarget)
+	            if (this._currentTarget){
+	                dirtyQueue.push(function(){
 	                    this._elementOutput.applyClasses(this._currentTarget, this.classList);
-	            }.bind(this));
+	                }.bind(this));
+	            }
 	        }
-	        return this;
 	    };
 
 	    /**
@@ -4833,10 +4771,11 @@ return /******/ (function(modules) { // webpackBootstrap
 	        var i = this.classList.indexOf(className);
 	        if (i >= 0) {
 	            this.classList.splice(i, 1);
-	            dirtyQueue.push(function() {
-	                if (this._currentTarget)
+	            if (this._currentTarget){
+	                dirtyQueue.push(function(){
 	                    this._elementOutput.removeClasses(this._currentTarget, this.classList);
-	            }.bind(this));
+	                }.bind(this));
+	            }
 	        }
 	    };
 
@@ -4848,7 +4787,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	     */
 	    Surface.prototype.toggleClass = function toggleClass(className) {
 	        var i = this.classList.indexOf(className);
-	        (i == -1)
+	        (i === -1)
 	            ? this.addClass(className)
 	            : this.removeClass(className);
 	    };
@@ -4857,14 +4796,12 @@ return /******/ (function(modules) { // webpackBootstrap
 	     * Reset classlist.
 	     *
 	     * @method setClasses
-	     * @chainable
 	     * @param classlist {String[]}  ClassList
 	     */
 	    Surface.prototype.setClasses = function setClasses(classList) {
 	        for (var i = 0; i < classList.length; i++) {
 	            this.addClass(classList[i]);
 	        }
-	        return this;
 	    };
 
 	    /**
@@ -4878,32 +4815,27 @@ return /******/ (function(modules) { // webpackBootstrap
 	    };
 
 	    /**
-	     * Set or overwrite innerHTML content of this Surface.
+	     * Apply the DOM's Element.querySelector to the Surface's current DOM target.
+	     *  Returns the first node matching the selector within the Surface's content.
 	     *
-	     * @method setContent
-	     * @chainable
-	     * @param content {String|DocumentFragment} HTML content
+	     * @method querySelector
+	     * @return {Element}
 	     */
-	    Surface.prototype.setContent = function setContent(content) {
-	        if (this.content !== content) {
-	            this.content = content;
-
-	            dirtyQueue.push(function() {
-	                if (this._currentTarget)
-	                    this._elementOutput.deploy(this._currentTarget, content);
-	            }.bind(this));
-	        }
-	        return this;
+	    Surface.prototype.querySelector = function querySelector(selector){
+	        if (this._currentTarget)
+	            return this._elementOutput.querySelector(this._currentTarget, selector);
 	    };
 
 	    /**
-	     * Return innerHTML content of this Surface.
+	     * Apply the DOM's Element.querySelectorAll to the Surface's current DOM target.
+	     *  Returns a list of nodes matching the selector within the Surface's content.
 	     *
-	     * @method getContent
-	     * @return {String}
+	     * @method querySelector
+	     * @return {NodeList}
 	     */
-	    Surface.prototype.getContent = function getContent() {
-	        return this.content;
+	    Surface.prototype.querySelectorAll = function querySelectorAll(selector){
+	        if (this._currentTarget)
+	            return this._elementOutput.querySelectorAll(this._currentTarget, selector);
 	    };
 
 	    /**
@@ -4943,6 +4875,20 @@ return /******/ (function(modules) { // webpackBootstrap
 	    };
 
 	    /**
+	     * Adds a handler to the `type` channel which will be executed on `emit` once and then removed.
+	     *
+	     * @method once
+	     *
+	     * @param type {String}         DOM event channel name, e.g., "click", "touchmove"
+	     * @param handler {Function}    Handler. It's only argument will be an emitted data payload.
+	     */
+	    Surface.prototype.once = function on(type, handler){
+	        if (this._currentTarget)
+	            this._elementOutput.once(this._currentTarget, type, this._eventForwarder);
+	        EventHandler.prototype.once.apply(this._eventOutput, arguments);
+	    };
+
+	    /**
 	     * Removes a previously added handler to the `type` channel.
 	     *  Undoes the work of `on`.
 	     *
@@ -4965,9 +4911,11 @@ return /******/ (function(modules) { // webpackBootstrap
 	     *
 	     * @private
 	     * @method setup
-	     * @param allocator {ElementAllocator} Allocator
+	     * @param allocator {DOMAllocator} Allocator
 	     */
 	    Surface.prototype.setup = function setup(allocator) {
+	        if (this._currentTarget) return;
+
 	        this._allocator = allocator;
 
 	        // create element of specific type
@@ -4985,27 +4933,20 @@ return /******/ (function(modules) { // webpackBootstrap
 	        for (var type in this._eventOutput.listeners)
 	            this._elementOutput.on(target, type, this._eventForwarder);
 
-	        this._elementOutput.set(target);
-	        this._elementOutput.applyClasses(target, this.classList);
-	        this._elementOutput.applyProperties(target, this.properties);
-	        this._elementOutput.applyAttributes(target, this.attributes);
-
-	        this.deploy(target);
+	        this.deploy(this._currentTarget);
 	    };
 
 	    /**
-	     * Remove all Samsara-relevant data from the Surface.
+	     * Clear the HTML contents of the Surface and remove it from the Render Tree.
+	     *  The DOM node the Surface occupied will be freed to a pool and can be used by another Surface.
+	     *  The Surface can be added to the render tree again and all its data (properties, event listeners, etc)
+	     *  will be restored.
 	     *
-	     * @private
 	     * @method remove
 	     */
 	    Surface.prototype.remove = function remove() {
 	        var target = this._currentTarget;
-
-	        this._elementOutput.removeClasses(target, this.classList);
-	        this._elementOutput.removeProperties(target, this.properties);
-	        this._elementOutput.removeAttributes(target, this.attributes);
-	        this._elementOutput.reset(target);
+	        if (!target) return;
 
 	        for (var type in this._eventOutput.listeners)
 	            this._elementOutput.off(target, type, this._eventForwarder);
@@ -5027,8 +4968,12 @@ return /******/ (function(modules) { // webpackBootstrap
 	     * @param target {Node} DOM element to set content into
 	     */
 	    Surface.prototype.deploy = function deploy(target) {
-	        var content = this.getContent();
-	        this._elementOutput.deploy(target, content);
+	        this._elementOutput.makeVisible(target);
+	        this._elementOutput.applyClasses(target, this.classList);
+	        this._elementOutput.applyProperties(target, this.properties);
+	        this._elementOutput.applyAttributes(target, this.attributes);
+	        this._elementOutput.applyContent(target, this.content);
+
 	        this._eventOutput.emit('deploy', target);
 	    };
 
@@ -5041,7 +4986,12 @@ return /******/ (function(modules) { // webpackBootstrap
 	     */
 	    Surface.prototype.recall = function recall(target) {
 	        this._eventOutput.emit('recall');
-	        this.content = this._elementOutput.recall(target);
+
+	        this._elementOutput.removeClasses(target, this.classList);
+	        this._elementOutput.removeProperties(target, this.properties);
+	        this._elementOutput.removeAttributes(target, this.attributes);
+	        this.content = this._elementOutput.recallContent(target);
+	        this._elementOutput.makeInvisible(target);
 	    };
 
 	    /**
@@ -5131,14 +5081,14 @@ return /******/ (function(modules) { // webpackBootstrap
 	var __WEBPACK_AMD_DEFINE_RESULT__;/* Copyright © 2015-2016 David Valdman */
 
 	!(__WEBPACK_AMD_DEFINE_RESULT__ = function(require, exports, module) {
-	    var Transform = __webpack_require__(21);
+	    var Transform = __webpack_require__(9);
 
 	    var usePrefix = !('transform' in window.document.documentElement.style);
 	    var devicePixelRatio = 2 * (window.devicePixelRatio || 1);
 	    var MIN_OPACITY = 0.0001;
 	    var MAX_OPACITY = 0.9999;
 	    var EPSILON = 1e-5;
-	    var _zeroZero = [0,0];
+	    var _zeroZero = [0, 0];
 
 	    /**
 	     * Responsible for committing CSS3 properties to the DOM and providing DOM event hooks
@@ -5146,7 +5096,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	     *  from within Samsara, ElementOutput handles the DOM interaction layer.
 	     *
 	     *
-	     * @class ElementOutput
+	     * @class DOMOutput
 	     * @constructor
 	     * @namespace Core
 	     * @uses Core.LayoutNode
@@ -5154,7 +5104,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	     * @private
 	     * @param {Node} element document parent of this container
 	     */
-	    function ElementOutput() {
+	    function DOMOutput() {
 	        this._cachedSpec = {};
 	        this._opacityDirty = true;
 	        this._originDirty = true;
@@ -5203,21 +5153,18 @@ return /******/ (function(modules) { // webpackBootstrap
 	            element.style.transform = _formatCSSTransform(transform, unit);
 	        };
 
-	    var _setSize = function _setSize(target, size){
+	    function _setSize(target, size){
 	        if (size[0] === true) size[0] = target.offsetWidth;
-	        else target.style.width = size[0] + 'px';
+	        else if (size[0] >= 0) target.style.width = size[0] + 'px';
 
 	        if (size[1] === true) size[1] = target.offsetHeight;
-	        else target.style.height = size[1] + 'px';
-	    };
+	        else if (size[1] >= 0) target.style.height = size[1] + 'px';
+	    }
 
-	    // {Visibility : hidden} allows for DOM events to pass through the element
-	    // TODO: use pointerEvents instead. However, there is a bug in Chrome for Android
-	    // ticket here: https://code.google.com/p/chromium/issues/detail?id=569654
-	    var _setOpacity = function _setOpacity(element, opacity) {
+	    // pointerEvents logic allows for DOM events to pass through the element when invisible
+	    function _setOpacity(element, opacity) {
 	        if (!this._isVisible && opacity > MIN_OPACITY) {
-	            //element.style.pointerEvents = 'auto';
-	            element.style.visibility = 'visible';
+	            element.style.pointerEvents = 'auto';
 	            this._isVisible = true;
 	        }
 
@@ -5225,54 +5172,61 @@ return /******/ (function(modules) { // webpackBootstrap
 	        else if (opacity < MIN_OPACITY) {
 	            opacity = MIN_OPACITY;
 	            if (this._isVisible) {
-	                //element.style.pointerEvents = 'none';
-	                element.style.visibility = 'hidden';
+	                element.style.pointerEvents = 'none';
 	                this._isVisible = false;
 	            }
 	        }
 
-	        if (this._isVisible) element.style.opacity = opacity;
+	        element.style.opacity = opacity;
+	    }
+
+	    DOMOutput.prototype.querySelector = function querySelector(target, selector){
+	        return target.querySelector(selector);
 	    };
 
-	    ElementOutput.prototype.applyClasses = function applyClasses(target, classList) {
+	    DOMOutput.prototype.querySelectorAll = function querySelectorAll(target, selector){
+	        return target.querySelectorAll(selector);
+	    };
+
+	    DOMOutput.prototype.applyClasses = function applyClasses(target, classList) {
 	        for (var i = 0; i < classList.length; i++)
 	            target.classList.add(classList[i]);
 	    };
 
-	    ElementOutput.prototype.applyProperties = function applyProperties(target, properties) {
+	    DOMOutput.prototype.applyProperties = function applyProperties(target, properties) {
 	        for (var key in properties)
 	            target.style[key] = properties[key];
 	    };
 
-	    ElementOutput.prototype.applyAttributes = function applyAttributes(target, attributes) {
+	    DOMOutput.prototype.applyAttributes = function applyAttributes(target, attributes) {
 	        for (var key in attributes)
 	            target.setAttribute(key, attributes[key]);
 	    };
 
-	    ElementOutput.prototype.removeClasses = function removeClasses(target, classList) {
+	    DOMOutput.prototype.removeClasses = function removeClasses(target, classList) {
 	        for (var i = 0; i < classList.length; i++)
 	            target.classList.remove(classList[i]);
 	    };
 
-	    ElementOutput.prototype.removeProperties = function removeProperties(target, properties) {
+	    DOMOutput.prototype.removeProperties = function removeProperties(target, properties) {
 	        for (var key in properties)
 	            target.style[key] = '';
 	    };
 
-	    ElementOutput.prototype.removeAttributes = function removeAttributes(target, attributes) {
+	    DOMOutput.prototype.removeAttributes = function removeAttributes(target, attributes) {
 	        for (var key in attributes)
 	            target.removeAttribute(key);
 	    };
 
-	    ElementOutput.prototype.on = function on(target, type, handler) {
+	    DOMOutput.prototype.on = function on(target, type, handler) {
 	        target.addEventListener(type, handler);
 	    };
 
-	    ElementOutput.prototype.off = function off(target, type, handler) {
+	    DOMOutput.prototype.off = function off(target, type, handler) {
 	        target.removeEventListener(type, handler);
 	    };
 
-	    ElementOutput.prototype.deploy = function deploy(target, content) {
+	    DOMOutput.prototype.applyContent = function applyContent(target, content) {
 	        if (content instanceof Node) {
 	            while (target.hasChildNodes()) target.removeChild(target.firstChild);
 	            target.appendChild(content);
@@ -5280,15 +5234,14 @@ return /******/ (function(modules) { // webpackBootstrap
 	        else target.innerHTML = content;
 	    };
 
-	    ElementOutput.prototype.recall = function deploy(target) {
+	    DOMOutput.prototype.recallContent = function recallContent(target) {
 	        var df = document.createDocumentFragment();
 	        while (target.hasChildNodes()) df.appendChild(target.firstChild);
 	        return df;
 	    };
 
-	    ElementOutput.prototype.set = function set(target){
+	    DOMOutput.prototype.makeVisible = function makeVisible(target){
 	        target.style.display = '';
-	        target.style.visibility = '';
 
 	        // for true-sized elements, reset height and width
 	        if (this._cachedSize) {
@@ -5297,7 +5250,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	        }
 	    };
 
-	    ElementOutput.prototype.reset = function reset(target){
+	    DOMOutput.prototype.makeInvisible = function makeInvisible(target){
 	        target.style.display = 'none';
 	        target.style.opacity = '';
 	        target.style.width = '';
@@ -5315,7 +5268,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	        this._cachedSpec = {};
 	    };
 
-	    ElementOutput.prototype.commitLayout = function commitLayout(target, layout) {
+	    DOMOutput.prototype.commitLayout = function commitLayout(target, layout) {
 	        var cache = this._cachedSpec;
 
 	        var transform = layout.transform || Transform.identity;
@@ -5346,7 +5299,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	        this._opacityDirty = false;
 	    };
 
-	    ElementOutput.prototype.commitSize = function commitSize(target, size){
+	    DOMOutput.prototype.commitSize = function commitSize(target, size){
 	        if (size[0] !== true) size[0] = _round(size[0], devicePixelRatio);
 	        if (size[1] !== true) size[1] = _round(size[1], devicePixelRatio);
 
@@ -5358,7 +5311,15 @@ return /******/ (function(modules) { // webpackBootstrap
 	        else return false;
 	    };
 
-	    module.exports = ElementOutput;
+	    DOMOutput.prototype.promoteLayer = function (target){
+	        target.style.willChange = 'transform, opacity';
+	    };
+
+	    DOMOutput.prototype.demoteLayer = function(target) {
+	        target.style.willChange = 'auto';
+	    };
+
+	    module.exports = DOMOutput;
 	}.call(exports, __webpack_require__, exports, module), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
 
 
@@ -5483,24 +5444,13 @@ return /******/ (function(modules) { // webpackBootstrap
 	var __WEBPACK_AMD_DEFINE_RESULT__;/* Copyright © 2015-2016 David Valdman */
 	// TODO: Enable CSS properties on Context
 	!(__WEBPACK_AMD_DEFINE_RESULT__ = function(require, exports, module) {
+	    var DOMAllocator = __webpack_require__(37);
 	    var Engine = __webpack_require__(2);
-	    var RootNode = __webpack_require__(37);
-	    var Transform = __webpack_require__(21);
-	    var ElementAllocator = __webpack_require__(38);
-	    var Transitionable = __webpack_require__(22);
-	    var OptionsManager = __webpack_require__(31);
-	    var SimpleStream = __webpack_require__(11);
+	    var RootNode = __webpack_require__(38);
+	    var Transitionable = __webpack_require__(11);
+	    var OptionsManager = __webpack_require__(24);
+	    var SimpleStream = __webpack_require__(12);
 	    var EventHandler = __webpack_require__(3);
-	    var preTickQueue = __webpack_require__(7);
-	    var dirtyQueue = __webpack_require__(8);
-
-	    var layoutSpec = {
-	        transform : Transform.identity,
-	        opacity : 1,
-	        origin : null,
-	        align : null,
-	        nextSizeTransform : Transform.identity
-	    };
 
 	    /**
 	     * A Context defines a top-level DOM element inside which other nodes (like Surfaces) are rendered.
@@ -5538,34 +5488,32 @@ return /******/ (function(modules) { // webpackBootstrap
 	        this._size = new SimpleStream();
 	        this._layout = new SimpleStream();
 
-	        this.size = this._size.map(function(){
-	            var size = [this.container.clientWidth, this.container.clientHeight];
-	            this.emit('resize', size);
-	            return size;
+	        this._cachedSize = [];
+	        this.size = this._size.map(function(type){
+	            // If `end` event, simply return cache. Otherwise cache busting fails
+	            // as the `end` size is the same as the `start` size for immediate sets
+	            if (type === 'end'){
+	                return this._cachedSize;
+	            }
+
+	            var width = this.container.clientWidth;
+	            var height = this.container.clientHeight;
+
+	            if (width !== this._cachedSize[0] || height !== this._cachedSize[1]){
+	                this._cachedSize[0] = width;
+	                this._cachedSize[1] = height;
+	                this.emit('resize', this._cachedSize);
+	                // TODO: shouldn't need to create new array - DOMOutput bug
+	                return [width, height];
+	            }
+	            else return false;
 	        }.bind(this));
 
 	        this._perspective = new Transitionable();
 	        this._perspectiveOrigin = new Transitionable();
 
-	        this._perspective.on('update', function(perspective){
-	            if (!this.container) return;
-	            setPerspective(this.container, perspective);
-	        }.bind(this));
-
-	        this._perspective.on('end', function(perspective){
-	            if (!this.container) return;
-	            setPerspective(this.container, perspective);
-	        }.bind(this));
-
-	        this._perspectiveOrigin.on('update', function(origin) {
-	            if (!this.container) return;
-	            setPerspectiveOrigin(this.container, origin);
-	        }.bind(this));
-
-	        this._perspectiveOrigin.on('end', function(origin) {
-	            if (!this.container) return;
-	            setPerspectiveOrigin(this.container, origin);
-	        }.bind(this));
+	        this.perspectiveFrom(this._perspective);
+	        this.perspectiveOriginFrom(this._perspectiveOrigin);
 
 	        this._eventOutput = new EventHandler();
 	        this._eventForwarder = function _eventForwarder(event) {
@@ -5617,6 +5565,42 @@ return /******/ (function(modules) { // webpackBootstrap
 	    };
 
 	    /**
+	     * Pull the perspective value from a transitionable.
+	     *
+	     * @method perspectiveFrom
+	     * @param perspective {Transitionable}    Perspective transitionable
+	     */
+	    Context.prototype.perspectiveFrom = function perspectiveFrom(perspective){
+	        this._perspective = perspective;
+
+	        this._perspective.on('update', function(perspective){
+	            setPerspective(this.container, perspective);
+	        }.bind(this));
+
+	        this._perspective.on('end', function(perspective){
+	            setPerspective(this.container, perspective);
+	        }.bind(this));
+	    };
+
+	    /**
+	     * Pull the perspective-origin value from a transitionable.
+	     *
+	     * @method perspectiveOriginFrom
+	     * @param perspectiveOrigin {Transitionable}    Perspective-origin transitionable
+	     */
+	    Context.prototype.perspectiveOriginFrom = function perspectiveOriginFrom(perspectiveOrigin){
+	        this._perspectiveOrigin = perspectiveOrigin;
+
+	        this._perspectiveOrigin.on('update', function(origin){
+	            setPerspectiveOrigin(this.container, origin);
+	        }.bind(this));
+
+	        this._perspectiveOrigin.on('end', function(origin){
+	            setPerspectiveOrigin(this.container, origin);
+	        }.bind(this));
+	    };
+
+	    /**
 	     * Get current perspective of this Context in pixels.
 	     *
 	     * @method getPerspective
@@ -5635,7 +5619,13 @@ return /******/ (function(modules) { // webpackBootstrap
 	     * @param [callback] {Function} Callback executed on completion of transition
 	     */
 	    Context.prototype.setPerspective = function setPerspective(perspective, transition, callback) {
-	        this._perspective.set(perspective, transition, callback);
+	        if (this.container)
+	            this._perspective.set(perspective, transition, callback);
+	        else {
+	            this.on('deploy', function(){
+	                this._perspective.set(perspective, transition, callback);
+	            }.bind(this));
+	        }
 	    };
 
 	    /**
@@ -5647,7 +5637,13 @@ return /******/ (function(modules) { // webpackBootstrap
 	     * @param [callback] {Function} Callback executed on completion of transition
 	     */
 	    Context.prototype.setPerspectiveOrigin = function setPerspectiveOrigin(origin, transition, callback) {
-	        this._perspectiveOrigin.set(origin, transition, callback);
+	        if (this.container)
+	            this._perspectiveOrigin.set(origin, transition, callback);
+	        else {
+	            this.on('deploy', function() {
+	                this._perspectiveOrigin.set(origin, transition, callback);
+	            }.bind(this));
+	        }
 	    };
 
 	    /**
@@ -5667,20 +5663,13 @@ return /******/ (function(modules) { // webpackBootstrap
 	        }
 	        else this.container.classList.add(this.elementClass);
 
-	        var allocator = new ElementAllocator(this.container);
+	        var allocator = new DOMAllocator(this.container);
 	        this._node.setAllocator(allocator);
 
 	        this._node._size.subscribe(this.size);
 	        this._node._layout.subscribe(this._layout);
 
 	        this.emit('deploy', this.container);
-
-	        preTickQueue.push(function (){
-	            this._layout.trigger('start', layoutSpec);
-	            dirtyQueue.push(function(){
-	                this._layout.trigger('end', layoutSpec);
-	            }.bind(this));
-	        }.bind(this));
 
 	        Engine.registerContext(this);
 	    };
@@ -5709,7 +5698,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	     * Removes the `handler` from the `type`.
 	     *  Undoes the work of `on`.
 	     *
-	     * @method on
+	     * @method off
 	     * @param type {String}         Channel name
 	     * @param handler {Function}    Callback
 	     */
@@ -5762,7 +5751,99 @@ return /******/ (function(modules) { // webpackBootstrap
 	var __WEBPACK_AMD_DEFINE_RESULT__;/* Copyright © 2015-2016 David Valdman */
 
 	!(__WEBPACK_AMD_DEFINE_RESULT__ = function(require, exports, module) {
-	    var RenderTreeNode = __webpack_require__(27);
+
+	    /**
+	     * Handles creating, allocating and removing DOM elements within a provided DOM element.
+	     *  Manages a pool of nodes based on DOM tagName for DOM node reuse.
+	     *  When a Surface is deallocated, its element is cleared and put back in the pool.
+	     *  When a Surface is allocated, an existing cleared element of the same tagName is
+	     *  looked for. If it is not found, a new DOM element is created.
+	     *
+	     * @class DOMAllocator
+	     * @constructor
+	     * @namespace Core
+	     * @private
+	     * @param container {Node} DOM element
+	     */
+	    function DOMAllocator(container) {
+	        this.set(container);
+	        this.detachedNodes = {};
+	    }
+
+	    /**
+	     * Set containing element to insert allocated content into
+	     *
+	     * @method set
+	     * @param container {Node} DOM element
+	     */
+	    DOMAllocator.prototype.set = function(container){
+	        if (!container) container = document.createDocumentFragment();
+	        this.container = container;
+	    };
+
+	    /**
+	     * Move the DOM elements from their original container to a new one.
+	     *
+	     * @method migrate
+	     * @param container {Node} DOM element
+	     */
+	    DOMAllocator.prototype.migrate = function migrate(container) {
+	        var oldContainer = this.container;
+	        if (container === oldContainer) return;
+
+	        if (oldContainer instanceof DocumentFragment)
+	            container.appendChild(oldContainer);
+	        else {
+	            while (oldContainer.hasChildNodes())
+	                container.appendChild(oldContainer.firstChild);
+	        }
+	        this.container = container;
+	    };
+
+	    /**
+	     * Allocate an element of specified type from the pool.
+	     *
+	     * @method allocate
+	     * @param type {string} DOM tagName, e.g., "div"
+	     * @return {Node}
+	     */
+	    DOMAllocator.prototype.allocate = function allocate(type) {
+	        type = type.toLowerCase();
+	        if (!(type in this.detachedNodes)) this.detachedNodes[type] = [];
+	        var nodeStore = this.detachedNodes[type];
+	        var result;
+	        if (nodeStore.length === 0){
+	            result = document.createElement(type);
+	            this.container.appendChild(result);
+	        }
+	        else result = nodeStore.shift();
+	        return result;
+	    };
+
+	    /**
+	     * De-allocate an element of specified type to the pool for recycling.
+	     *
+	     * @method deallocate
+	     * @param element {Node} DOM element
+	     */
+	    DOMAllocator.prototype.deallocate = function deallocate(element) {
+	        var nodeType = element.nodeName.toLowerCase();
+	        var nodeStore = this.detachedNodes[nodeType];
+	        nodeStore.push(element);
+	    };
+
+	    module.exports = DOMAllocator;
+	}.call(exports, __webpack_require__, exports, module), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
+
+
+/***/ },
+/* 38 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var __WEBPACK_AMD_DEFINE_RESULT__;/* Copyright © 2015-2016 David Valdman */
+
+	!(__WEBPACK_AMD_DEFINE_RESULT__ = function(require, exports, module) {
+	    var RenderTreeNode = __webpack_require__(25);
 
 	    /**
 	     * A RootNode is a first node in the Render Tree. It is like any other
@@ -5793,7 +5874,6 @@ return /******/ (function(modules) { // webpackBootstrap
 	    RootNode.prototype.setAllocator = function setAllocator(allocator){
 	        this.allocator = allocator;
 	        this._logic.trigger('mount', this);
-	        this._logic.trigger('attach');
 	    };
 
 	    RootNode.prototype.remove = function remove() {
@@ -5806,106 +5886,6 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 38 */
-/***/ function(module, exports, __webpack_require__) {
-
-	var __WEBPACK_AMD_DEFINE_RESULT__;/* This Source Code Form is subject to the terms of the Mozilla Public
-	 * License, v. 2.0. If a copy of the MPL was not distributed with this
-	 * file, You can obtain one at http://mozilla.org/MPL/2.0/.
-	 *
-	 * @license MPL 2.0
-	 * @copyright Famous Industries, Inc. 2014
-	 */
-
-	/* Modified work copyright © 2015-2016 David Valdman */
-
-	!(__WEBPACK_AMD_DEFINE_RESULT__ = function(require, exports, module) {
-
-	    /**
-	     * Handles creating, allocating and removing DOM elements within a provided DOM element.
-	     *  Manages a pool of nodes based on DOM tagName for DOM node reuse.
-	     *  When a Surface is deallocated, its element is cleared and put back in the pool.
-	     *  When a Surface is allocated, an existing cleared element of the same tagName is
-	     *  looked for. If it is not found, a new DOM element is created.
-	     *
-	     * @class ElementAllocator
-	     * @constructor
-	     * @namespace Core
-	     * @private
-	     * @param container {Node} DOM element
-	     */
-	    function ElementAllocator(container) {
-	        this.set(container);
-	        this.detachedNodes = {};
-	    }
-
-	    /**
-	     * Set containing element to insert allocated content into
-	     *
-	     * @method set
-	     * @param container {Node} DOM element
-	     */
-	    ElementAllocator.prototype.set = function(container){
-	        if (!container) container = document.createDocumentFragment();
-	        this.container = container;
-	    };
-
-	    /**
-	     * Move the DOM elements from their original container to a new one.
-	     *
-	     * @method migrate
-	     * @param container {Node} DOM element
-	     */
-	    ElementAllocator.prototype.migrate = function migrate(container) {
-	        var oldContainer = this.container;
-	        if (container === oldContainer) return;
-
-	        if (oldContainer instanceof DocumentFragment)
-	            container.appendChild(oldContainer);
-	        else {
-	            while (oldContainer.hasChildNodes())
-	                container.appendChild(oldContainer.firstChild);
-	        }
-	        this.container = container;
-	    };
-
-	    /**
-	     * Allocate an element of specified type from the pool.
-	     *
-	     * @method allocate
-	     * @param type {string} DOM tagName, e.g., "div"
-	     * @return {Node}
-	     */
-	    ElementAllocator.prototype.allocate = function allocate(type) {
-	        type = type.toLowerCase();
-	        if (!(type in this.detachedNodes)) this.detachedNodes[type] = [];
-	        var nodeStore = this.detachedNodes[type];
-	        var result;
-	        if (nodeStore.length === 0){
-	            result = document.createElement(type);
-	            this.container.appendChild(result);
-	        }
-	        else result = nodeStore.shift();
-	        return result;
-	    };
-
-	    /**
-	     * De-allocate an element of specified type to the pool for recycling.
-	     *
-	     * @method deallocate
-	     * @param element {Node} DOM element
-	     */
-	    ElementAllocator.prototype.deallocate = function deallocate(element) {
-	        var nodeType = element.nodeName.toLowerCase();
-	        var nodeStore = this.detachedNodes[nodeType];
-	        nodeStore.push(element);
-	    };
-
-	    module.exports = ElementAllocator;
-	}.call(exports, __webpack_require__, exports, module), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
-
-
-/***/ },
 /* 39 */
 /***/ function(module, exports, __webpack_require__) {
 
@@ -5913,9 +5893,9 @@ return /******/ (function(modules) { // webpackBootstrap
 	    module.exports = {
 	        EventEmitter: __webpack_require__(4),
 	        EventHandler: __webpack_require__(3),
-	        EventMapper: __webpack_require__(12),
-	        EventFilter: __webpack_require__(13),
-	        EventSplitter: __webpack_require__(14)
+	        EventMapper: __webpack_require__(13),
+	        EventFilter: __webpack_require__(14),
+	        EventSplitter: __webpack_require__(15)
 	    };
 	}.call(exports, __webpack_require__, exports, module), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
 
@@ -5941,19 +5921,11 @@ return /******/ (function(modules) { // webpackBootstrap
 /* 41 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var __WEBPACK_AMD_DEFINE_RESULT__;/* This Source Code Form is subject to the terms of the Mozilla Public
-	 * License, v. 2.0. If a copy of the MPL was not distributed with this
-	 * file, You can obtain one at http://mozilla.org/MPL/2.0/.
-	 *
-	 * @license MPL 2.0
-	 * @copyright Famous Industries, Inc. 2014
-	 */
-
-	/* Modified work copyright © 2015-2016 David Valdman */
+	var __WEBPACK_AMD_DEFINE_RESULT__;/* Copyright © 2015-2016 David Valdman */
 
 	!(__WEBPACK_AMD_DEFINE_RESULT__ = function(require, exports, module) {
 	    var EventHandler = __webpack_require__(3);
-	    var SimpleStream = __webpack_require__(11);
+	    var SimpleStream = __webpack_require__(12);
 
 	    // Global registry of input constructors. Append only.
 	    var registry = {};
@@ -6103,20 +6075,12 @@ return /******/ (function(modules) { // webpackBootstrap
 /* 42 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var __WEBPACK_AMD_DEFINE_RESULT__;/* This Source Code Form is subject to the terms of the Mozilla Public
-	 * License, v. 2.0. If a copy of the MPL was not distributed with this
-	 * file, You can obtain one at http://mozilla.org/MPL/2.0/.
-	 *
-	 * @license MPL 2.0
-	 * @copyright Famous Industries, Inc. 2014
-	 */
-
-	/* Modified work copyright © 2015-2016 David Valdman */
+	var __WEBPACK_AMD_DEFINE_RESULT__;/* Copyright © 2015-2016 David Valdman */
 
 	!(__WEBPACK_AMD_DEFINE_RESULT__ = function(require, exports, module) {
 	    var EventHandler = __webpack_require__(3);
-	    var OptionsManager = __webpack_require__(31);
-	    var SimpleStream = __webpack_require__(11);
+	    var OptionsManager = __webpack_require__(24);
+	    var SimpleStream = __webpack_require__(12);
 
 	    var MINIMUM_TICK_TIME = 8;
 	    var _now = Date.now;
@@ -6134,10 +6098,8 @@ return /******/ (function(modules) { // webpackBootstrap
 	     *      `delta`     - Differential in pixels between successive mouse positions
 	     *      `velocity`  - Velocity of mouse movement in pixels per second
 	     *      `cumulate`  - Accumulated value over successive displacements
-	     *      `clientX`   - DOM event clientX property
-	     *      `clientY`   - DOM event clientY property
-	     *      `offsetX`   - DOM event offsetX property
-	     *      `offsetY`   - DOM event offsetY property
+	     *      `event`     - Original DOM event
+	     *      `dt`        - Time since last update
 	     *
 	     * @example
 	     *
@@ -6170,10 +6132,13 @@ return /******/ (function(modules) { // webpackBootstrap
 	     * @class MouseInput
 	     * @constructor
 	     * @extend SimpleStream
+	     * @uses Core._OptionsManager
 	     * @param [options] {Object}                Options
+	     * @param [options.scale=1] {Number}        Scale the response to the mouse
 	     * @param [options.direction] {Number}      Direction to project movement onto.
 	     *                                          Options found in MouseInput.DIRECTION.
-	     * @param [options.scale=1] {Number}        Scale the response to the mouse
+	     * @param [options.rails=false] {Boolean}   If a direction is specified, movement in the
+	     *                                          orthogonal direction is suppressed
 	     */
 	    function MouseInput(options) {
 	        this.options = OptionsManager.setOptions(this, options);
@@ -6184,20 +6149,22 @@ return /******/ (function(modules) { // webpackBootstrap
 	        EventHandler.setInputHandler(this, this._eventInput);
 	        EventHandler.setOutputHandler(this, this._eventOutput);
 
+	        // references for event listeners put on document when
+	        // mouse is quickly moved off of target DOM element
+	        this.boundMove = null;
+	        this.boundUp = null;
+
 	        this._eventInput.on('mousedown',    handleStart.bind(this));
 	        this._eventInput.on('mousemove',    handleMove.bind(this));
 	        this._eventInput.on('mouseup',      handleEnd.bind(this));
+	        this._eventInput.on('mouseenter',   handleEnter.bind(this));
 	        this._eventInput.on('mouseleave',   handleLeave.bind(this));
 
 	        this._payload = {
 	            delta : null,
 	            value : null,
 	            cumulate : null,
-	            velocity : null,
-	            clientX : 0,
-	            clientY : 0,
-	            offsetX : 0,
-	            offsetY : 0
+	            velocity : null
 	        };
 
 	        this._value = null;
@@ -6213,7 +6180,8 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	    MouseInput.DEFAULT_OPTIONS = {
 	        direction : undefined,
-	        scale : 1
+	        scale : 1,
+	        rails : false
 	    };
 
 	    /**
@@ -6261,10 +6229,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	        payload.value = this._value;
 	        payload.cumulate = this._cumulate;
 	        payload.velocity = velocity;
-	        payload.clientX = x;
-	        payload.clientY = y;
-	        payload.offsetX = event.offsetX;
-	        payload.offsetY = event.offsetY;
+	        payload.event = event;
 
 	        this._eventOutput.emit('start', payload);
 	    }
@@ -6272,6 +6237,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	    function handleMove(event){
 	        if (!this._down) return false;
 
+	        var direction = this.options.direction;
 	        var scale = this.options.scale;
 
 	        var prevCoord = this._prevCoord;
@@ -6285,22 +6251,30 @@ return /******/ (function(modules) { // webpackBootstrap
 	        var diffX = scale * (x - prevCoord[0]);
 	        var diffY = scale * (y - prevCoord[1]);
 
-	        var dt = Math.max(currTime - prevTime, MINIMUM_TICK_TIME); // minimum tick time
-	        var inv_dt = 1 / dt;
+	        if (this.options.rails && direction !== undefined){
+	            var activateRails =
+	                (direction === MouseInput.DIRECTION.X && Math.abs(diffX) < Math.abs(0.5 * diffY)) ||
+	                (direction === MouseInput.DIRECTION.Y && Math.abs(diffY) < Math.abs(0.5 * diffX));
 
-	        var velX = diffX * inv_dt;
-	        var velY = diffY * inv_dt;
+	            if (activateRails) return false;
+	        }
+
+	        var dt = Math.max(currTime - prevTime, MINIMUM_TICK_TIME); // minimum tick time
+	        var invDt = 1 / dt;
+
+	        var velX = diffX * invDt;
+	        var velY = diffY * invDt;
 
 	        var nextVel;
 	        var nextDelta;
 
-	        if (this.options.direction === MouseInput.DIRECTION.X) {
+	        if (direction === MouseInput.DIRECTION.X) {
 	            nextDelta = diffX;
 	            nextVel = velX;
 	            this._value += nextDelta;
 	            this._cumulate += nextDelta;
 	        }
-	        else if (this.options.direction === MouseInput.DIRECTION.Y) {
+	        else if (direction === MouseInput.DIRECTION.Y) {
 	            nextDelta = diffY;
 	            nextVel = velY;
 	            this._value += nextDelta;
@@ -6320,10 +6294,8 @@ return /******/ (function(modules) { // webpackBootstrap
 	        payload.value = this._value;
 	        payload.cumulate = this._cumulate;
 	        payload.velocity = nextVel;
-	        payload.clientX = x;
-	        payload.clientY = y;
-	        payload.offsetX = event.offsetX;
-	        payload.offsetY = event.offsetY;
+	        payload.event = event;
+	        payload.dt = dt;
 
 	        this._eventOutput.emit('update', payload);
 
@@ -6332,52 +6304,61 @@ return /******/ (function(modules) { // webpackBootstrap
 	        this._move = true;
 	    }
 
-	    function handleEnd() {
+	    function handleEnd(event) {
 	        if (!this._down) return false;
 
+	        this._payload.event = event;
 	        this._eventOutput.emit('end', this._payload);
+
 	        this._prevCoord = undefined;
 	        this._prevTime = undefined;
 	        this._down = false;
 	        this._move = false;
 	    }
 
+	    function handleEnter(event){
+	        if (!this._down || !this._move) return;
+
+	        this._eventInput.off('mousemove', handleMove.bind(this));
+	        this._eventInput.off('mouseup', handleEnd.bind(this));
+
+	        document.removeEventListener('mousemove', this.boundMove);
+	        document.removeEventListener('mouseup', this.boundUp);
+	    }
+
 	    function handleLeave(event) {
 	        if (!this._down || !this._move) return;
 
-	        var boundMove = handleMove.bind(this);
-	        var boundEnd = function(event) {
+	        this.boundMove = handleMove.bind(this);
+	        this.boundUp = function(event) {
 	            handleEnd.call(this, event);
-	            document.removeEventListener('mousemove', boundMove);
-	            document.removeEventListener('mouseup', boundEnd);
+	            document.removeEventListener('mousemove', this.boundMove);
+	            document.removeEventListener('mouseup', this.boundUp);
 	        }.bind(this, event);
 
-	        document.addEventListener('mousemove', boundMove);
-	        document.addEventListener('mouseup', boundEnd);
+
+	        this._eventInput.off('mousemove', handleMove.bind(this));
+	        this._eventInput.off('mouseup', handleEnd.bind(this));
+
+	        document.addEventListener('mousemove', this.boundMove);
+	        document.addEventListener('mouseup', this.boundUp);
 	    }
 
 	    module.exports = MouseInput;
 	}.call(exports, __webpack_require__, exports, module), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
 
+
 /***/ },
 /* 43 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var __WEBPACK_AMD_DEFINE_RESULT__;/* This Source Code Form is subject to the terms of the Mozilla Public
-	 * License, v. 2.0. If a copy of the MPL was not distributed with this
-	 * file, You can obtain one at http://mozilla.org/MPL/2.0/.
-	 *
-	 * @license MPL 2.0
-	 * @copyright Famous Industries, Inc. 2014
-	 */
-
-	/* Modified work copyright © 2015-2016 David Valdman */
+	var __WEBPACK_AMD_DEFINE_RESULT__;/* Copyright © 2015-2016 David Valdman */
 
 	!(__WEBPACK_AMD_DEFINE_RESULT__ = function(require, exports, module) {
 	    var TouchTracker = __webpack_require__(44);
 	    var EventHandler = __webpack_require__(3);
-	    var SimpleStream = __webpack_require__(11);
-	    var OptionsManager = __webpack_require__(31);
+	    var SimpleStream = __webpack_require__(12);
+	    var OptionsManager = __webpack_require__(24);
 
 	    var MINIMUM_TICK_TIME = 8;
 
@@ -6394,10 +6375,10 @@ return /******/ (function(modules) { // webpackBootstrap
 	     *      `delta`     - Differential in pixels between successive mouse positions
 	     *      `velocity`  - Velocity of mouse movement in pixels per second
 	     *      `cumulate`  - Accumulated displacement over successive displacements
-	     *      `clientX`   - DOM event clientX property
-	     *      `clientY`   - DOM event clientY property
 	     *      `count`     - DOM event for number of simultaneous touches
-	     *      `touchId`     - DOM touch event identifier
+	     *      `touchId`   - DOM touch event identifier
+	     *      `event`     - Original DOM event
+	     *      `dt`        - Time since last update
 	     *
 	     * @example
 	     *
@@ -6405,7 +6386,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	     *          direction : TouchInput.DIRECTION.Y
 	     *      });
 	     *
-	     *      touchInput.subscribe(Engine);
+	     *      touchInput.subscribe(surface);
 	     *
 	     *      touchInput.on('start', function(payload){
 	     *          // fired on mouse down
@@ -6425,18 +6406,22 @@ return /******/ (function(modules) { // webpackBootstrap
 	     * @class TouchInput
 	     * @constructor
 	     * @extends Streams.SimpleStream
-	     * @uses Inputs.TouchTracker
-	     * @uses Core.OptionsManager
+	     * @uses Inputs._TouchTracker
+	     * @uses Core._OptionsManager
 	     * @param [options] {Object}                Options
+	     * @param [options.scale=1] {Number}        Scale the response to the mouse
+	     * @param [options.track=1] {Number}        Max simultaneous touches to record
+	     * @param [options.limit=Infinity] {Number} Limit number of touches. If reached, no events are emitted
 	     * @param [options.direction] {Number}      Direction to project movement onto.
 	     *                                          Options found in TouchInput.DIRECTION.
-	     * @param [options.scale=1] {Number}        Scale the response to the mouse
+	     * @param [options.rails=false] {Boolean}   If a direction is unspecified, movement in the
+	     *                                          orthogonal to the principal direction is suppressed
 	     */
 	    function TouchInput(options) {
 	        this.options = OptionsManager.setOptions(this, options);
 
 	        this._eventOutput = new EventHandler();
-	        this._touchTracker = new TouchTracker();
+	        this._touchTracker = new TouchTracker(this.options);
 
 	        EventHandler.setOutputHandler(this, this._eventOutput);
 	        EventHandler.setInputHandler(this, this._touchTracker);
@@ -6445,19 +6430,9 @@ return /******/ (function(modules) { // webpackBootstrap
 	        this._touchTracker.on('trackmove', handleMove.bind(this));
 	        this._touchTracker.on('trackend', handleEnd.bind(this));
 
-	        this._payload = {
-	            delta : null,
-	            value : null,
-	            cumulate : null,
-	            velocity : null,
-	            clientX : undefined,
-	            clientY : undefined,
-	            count : 0,
-	            touchId : undefined
-	        };
-
-	        this._cumulate = null;
-	        this._value = null;
+	        this._payload = {};
+	        this._cumulate = {};
+	        this._value = {};
 	    }
 
 	    TouchInput.prototype = Object.create(SimpleStream.prototype);
@@ -6465,7 +6440,10 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	    TouchInput.DEFAULT_OPTIONS = {
 	        direction : undefined,
-	        scale : 1
+	        scale : 1,
+	        rails : false,
+	        track : 1,
+	        limit : Infinity
 	    };
 
 	    /**
@@ -6482,92 +6460,115 @@ return /******/ (function(modules) { // webpackBootstrap
 	    };
 
 	    function handleStart(data) {
+	        var touchId = data.touchId;
 	        var velocity;
 	        var delta;
+
 	        if (this.options.direction !== undefined) {
-	            if (this._cumulate === null) this._cumulate = 0;
-	            this._value = 0;
+	            if (!this._cumulate[touchId]) this._cumulate[touchId] = 0;
+	            this._value[touchId] = 0;
 	            velocity = 0;
 	            delta = 0;
 	        }
 	        else {
-	            if (this._cumulate === null) this._cumulate = [0, 0];
-	            this._value = [0, 0];
+	            if (!this._cumulate[touchId]) this._cumulate[touchId] = [0, 0];
+	            this._value[touchId] = [0, 0];
 	            velocity = [0, 0];
 	            delta = [0, 0];
 	        }
 
-	        var payload = this._payload;
+	        var payload = {};
+	        this._payload[data.touchId] = payload;
+
 	        payload.delta = delta;
-	        payload.value = this._value;
-	        payload.cumulate = this._cumulate;
+	        payload.value = this._value[touchId];
+	        payload.cumulate = this._cumulate[touchId];
 	        payload.velocity = velocity;
-	        payload.clientX = data.x;
-	        payload.clientY = data.y;
 	        payload.count = data.count;
-	        payload.touchId = data.identifier;
+	        payload.touchId = data.touchId;
+	        payload.event = data.event;
+	        payload.timestamp = data.timestamp;
 
 	        this._eventOutput.emit('start', payload);
 	    }
 
 	    function handleMove(data) {
+	        var direction = this.options.direction;
+	        var touchId = data.touchId;
+
 	        var scale = this.options.scale;
-	        var history = data.history;
+	        var prevData = data.history[0];
 
-	        var currHistory = history[history.length - 1];
-	        var prevHistory = history[history.length - 2];
+	        var prevTime = prevData.timestamp;
+	        var currTime = data.timestamp;
 
-	        var prevTime = prevHistory.timestamp;
-	        var currTime = currHistory.timestamp;
+	        var diffX = scale * (data.x - prevData.x);
+	        var diffY = scale * (data.y - prevData.y);
 
-	        var diffX = scale * (currHistory.x - prevHistory.x);
-	        var diffY = scale * (currHistory.y - prevHistory.y);
+	        if (this.options.rails){
+	            if ((direction === TouchInput.DIRECTION.X && Math.abs(diffY) > Math.abs(diffX)))
+	                diffY = 0;
+
+	            if (direction === TouchInput.DIRECTION.Y && Math.abs(diffX) > Math.abs(diffY))
+	                diffX = 0;
+	        }
 
 	        var dt = Math.max(currTime - prevTime, MINIMUM_TICK_TIME);
-	        var inv_dt = 1 / dt;
+	        var invDt = 1 / dt;
 
-	        var velX = diffX * inv_dt;
-	        var velY = diffY * inv_dt;
+	        var velX = diffX * invDt;
+	        var velY = diffY * invDt;
 
 	        var nextVel;
 	        var nextDelta;
-	        if (this.options.direction === TouchInput.DIRECTION.X) {
+	        if (direction === TouchInput.DIRECTION.X) {
 	            nextDelta = diffX;
 	            nextVel = velX;
-	            this._value += nextDelta;
-	            this._cumulate += nextDelta;
+	            this._value[touchId] += nextDelta;
+	            this._cumulate[touchId] += nextDelta;
 	        }
-	        else if (this.options.direction === TouchInput.DIRECTION.Y) {
+	        else if (direction === TouchInput.DIRECTION.Y) {
 	            nextDelta = diffY;
 	            nextVel = velY;
-	            this._value += nextDelta;
-	            this._cumulate += nextDelta;
+	            this._value[touchId] += nextDelta;
+	            this._cumulate[touchId] += nextDelta;
 	        }
 	        else {
 	            nextDelta = [diffX, diffY];
 	            nextVel = [velX, velY];
-	            this._value[0] += nextDelta[0];
-	            this._value[1] += nextDelta[1];
-	            this._cumulate[0] += nextDelta[0];
-	            this._cumulate[1] += nextDelta[1];
+	            this._value[touchId][0] += nextDelta[0];
+	            this._value[touchId][1] += nextDelta[1];
+	            this._cumulate[touchId][0] += nextDelta[0];
+	            this._cumulate[touchId][1] += nextDelta[1];
 	        }
 
-	        var payload = this._payload;
+	        var payload = this._payload[data.touchId];
 	        payload.delta = nextDelta;
 	        payload.velocity = nextVel;
-	        payload.value = this._value;
-	        payload.cumulate = this._cumulate;
-	        payload.clientX = data.x;
-	        payload.clientY = data.y;
+	        payload.value = this._value[touchId];
+	        payload.cumulate = this._cumulate[touchId];
 	        payload.count = data.count;
-	        payload.touchId = data.identifier;
+	        payload.touchId = data.touchId;
+	        payload.event = data.event;
+	        payload.timestamp = data.timestamp;
+	        payload.dt = dt;
 
 	        this._eventOutput.emit('update', payload);
 	    }
 
 	    function handleEnd(data) {
-	        this._payload.count = data.count;
-	        this._eventOutput.emit('end', this._payload);
+	        var touchId = data.touchId;
+
+	        var payload = this._payload[touchId];
+	        payload.count = data.count;
+	        payload.event = data.event;
+	        payload.timestamp = data.timestamp;
+
+	        this._eventOutput.emit('end', payload);
+
+	        delete this._payload[touchId];
+	        delete this._value[touchId];
+	        delete this._cumulate[touchId];
 	    }
 
 	    module.exports = TouchInput;
@@ -6578,23 +6579,13 @@ return /******/ (function(modules) { // webpackBootstrap
 /* 44 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var __WEBPACK_AMD_DEFINE_RESULT__;/* This Source Code Form is subject to the terms of the Mozilla Public
-	 * License, v. 2.0. If a copy of the MPL was not distributed with this
-	 * file, You can obtain one at http://mozilla.org/MPL/2.0/.
-	 *
-	 * @license MPL 2.0
-	 * @copyright Famous Industries, Inc. 2014
-	 */
-
-	/* Modified work copyright © 2015-2016 David Valdman */
-
-	//TODO: deprecate in favor of generic history stream
+	var __WEBPACK_AMD_DEFINE_RESULT__;/* Copyright © 2015-2016 David Valdman */
 
 	!(__WEBPACK_AMD_DEFINE_RESULT__ = function(require, exports, module) {
-	    var OptionsManager = __webpack_require__(31);
+	    var OptionsManager = __webpack_require__(24);
 	    var EventHandler = __webpack_require__(3);
 
-	    var _now = Date.now;
+	    var now = Date.now;
 
 	    /**
 	     * Catalogues a history of touch events. Useful for creating more complex
@@ -6609,20 +6600,22 @@ return /******/ (function(modules) { // webpackBootstrap
 	     *      `timestamp`     - Timestamp
 	     *      `count`         - DOM event for number of simultaneous touches
 	     *      `history`       - History of touches for the gesture
+	     *      `event`         - Original DOM event
 	     *
 	     * @class TouchTracker
 	     * @constructor
 	     * @private
-	     * @uses Core.OptionsManager
+	     * @uses Core._OptionsManager
 	     * @param [options] {Object}                Options
-	     * @param [options.limit] {Number}          Number of touches to record
+	     * @param [options.memory] {Number}         Number of past touches to record in history
+	     * @param [options.track] {Number}          Max simultaneous touches to record
+	     * @param [options.limit] {Number}          Limit number of touches. If reached, no events are emitted
 	     */
-
 	    function TouchTracker(options) {
 	        this.options = OptionsManager.setOptions(this, options);
 
-	        this.touchHistory = {};
-	        this._isTouched = false;
+	        this.history = {};
+	        this.numTouches = 0;
 
 	        this._eventInput = new EventHandler();
 	        this._eventOutput = new EventHandler();
@@ -6630,76 +6623,100 @@ return /******/ (function(modules) { // webpackBootstrap
 	        EventHandler.setInputHandler(this, this._eventInput);
 	        EventHandler.setOutputHandler(this, this._eventOutput);
 
-	        this._eventInput.on('touchstart', _handleStart.bind(this));
-	        this._eventInput.on('touchmove', _handleMove.bind(this));
-	        this._eventInput.on('touchend', _handleEnd.bind(this));
-	        this._eventInput.on('touchcancel', _handleEnd.bind(this));
+	        this._eventInput.on('touchstart', handleStart.bind(this));
+	        this._eventInput.on('touchmove', handleMove.bind(this));
+	        this._eventInput.on('touchend', handleEnd.bind(this));
+	        this._eventInput.on('touchcancel', handleEnd.bind(this));
 	    }
 
 	    TouchTracker.DEFAULT_OPTIONS = {
-	        limit : 1 // number of simultaneous touches
+	        track : 1,
+	        limit : Infinity,  // number of simultaneous touches
+	        memory : 1          // length of recorded history
 	    };
 
 	    /**
-	     * Record touch data, if selective is false.
-	     * @private
+	     * Record touch data
+	     *
 	     * @method track
-	     * @param {Object} data touch data
+	     * @param id {Number}   touch identifier
+	     * @param data {Object} touch data
 	     */
-	    TouchTracker.prototype.track = function track(data) {
-	        this.touchHistory[data.identifier] = [data];
+	    TouchTracker.prototype.track = function track(id, data) {
+	        this.numTouches++;
+	        this.history[id] = [data];
 	    };
 
-	    function _timestampTouch(touch, event, history) {
+	    /**
+	     * Remove record of touch data
+	     *
+	     * @method untrack
+	     * @param id {Number}   touch identifier
+	     */
+	    TouchTracker.prototype.untrack = function track(id){
+	        this.numTouches--;
+	        delete this.history[id];
+	    };
+
+	    function getData(touch, event, history) {
 	        return {
 	            x: touch.clientX,
 	            y: touch.clientY,
-	            identifier : touch.identifier,
-	            timestamp: _now(),
+	            touchId : touch.identifier,
+	            timestamp: now(),
 	            count: event.touches.length,
+	            event: touch,
 	            history: history
 	        };
 	    }
 
-	    function _handleStart(event) {
-	        if (event.touches.length > this.options.limit) return;
-	        this._isTouched = true;
+	    function handleStart(event) {
+	        if (event.touches.length >= this.options.limit) return false;
+	        if (this.numTouches >= this.options.track) return false;
 
 	        for (var i = 0; i < event.changedTouches.length; i++) {
 	            var touch = event.changedTouches[i];
-	            var data = _timestampTouch(touch, event, null);
+	            var touchId = touch.identifier;
+	            var data = getData(touch, event, null);
 	            this._eventOutput.emit('trackstart', data);
-	            if (!this.touchHistory[touch.identifier]) this.track(data);
+	            if (!this.history[touchId])
+	                this.track(touchId, data);
 	        }
 	    }
 
-	    function _handleMove(event) {
+	    function handleMove(event) {
+	        if (event.touches.length >= this.options.limit) return false;
+	        if (this.numTouches > this.options.track) return false;
+
 	        event.preventDefault(); // prevents scrolling on mobile
+
 	        for (var i = 0; i < event.changedTouches.length; i++) {
 	            var touch = event.changedTouches[i];
-	            var history = this.touchHistory[touch.identifier];
+	            var history = this.history[touch.identifier];
 	            if (history) {
-	                var data = _timestampTouch(touch, event, history);
-	                this.touchHistory[touch.identifier].push(data);
+	                var data = getData(touch, event, history);
 	                this._eventOutput.emit('trackmove', data);
+	                if (history.length >= this.options.memory)
+	                    history.shift();
+	                history.push(data);
 	            }
 	        }
 	    }
 
-	    function _handleEnd(event) {
-	        if (!this._isTouched) return;
+	    function handleEnd(event) {
+	        if (event.touches.length >= this.options.limit) return false;
+	        if (this.numTouches > this.options.track) return false;
 
 	        for (var i = 0; i < event.changedTouches.length; i++) {
 	            var touch = event.changedTouches[i];
-	            var history = this.touchHistory[touch.identifier];
+	            var touchId = touch.identifier;
+	            var history = this.history[touchId];
 	            if (history) {
-	                var data = _timestampTouch(touch, event, history);
+	                var data = getData(touch, event, history);
 	                this._eventOutput.emit('trackend', data);
-	                delete this.touchHistory[touch.identifier];
+	                this.untrack(touchId);
 	            }
 	        }
-
-	        this._isTouched = false;
 	    }
 
 	    module.exports = TouchTracker;
@@ -6710,21 +6727,13 @@ return /******/ (function(modules) { // webpackBootstrap
 /* 45 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var __WEBPACK_AMD_DEFINE_RESULT__;/* This Source Code Form is subject to the terms of the Mozilla Public
-	 * License, v. 2.0. If a copy of the MPL was not distributed with this
-	 * file, You can obtain one at http://mozilla.org/MPL/2.0/.
-	 *
-	 * @license MPL 2.0
-	 * @copyright Famous Industries, Inc. 2014
-	 */
-
-	/* Modified work copyright © 2015-2016 David Valdman */
+	var __WEBPACK_AMD_DEFINE_RESULT__;/* Copyright © 2015-2016 David Valdman */
 
 	!(__WEBPACK_AMD_DEFINE_RESULT__ = function(require, exports, module) {
 	    var EventHandler = __webpack_require__(3);
-	    var OptionsManager = __webpack_require__(31);
-	    var SimpleStream = __webpack_require__(11);
-	    var Timer = __webpack_require__(20);
+	    var OptionsManager = __webpack_require__(24);
+	    var SimpleStream = __webpack_require__(12);
+	    var Timer = __webpack_require__(10);
 
 	    var MINIMUM_TICK_TIME = 8;
 	    var MAX_DIFFERENTIAL = 50; // caps mousewheel differentials
@@ -6735,17 +6744,14 @@ return /******/ (function(modules) { // webpackBootstrap
 	     *
 	     *      `value`     - Scroll displacement in pixels from start
 	     *      `delta`     - Scroll differential in pixels between subsequent events
-	     *      `velocity`  - Velocity of scroll,
-	     *      `clientX`   - DOM event clientX property
-	     *      `clientY`   - DOM event clientY property
-	     *      `offsetX`   - DOM event offsetX property
-	     *      `offsetY`   - DOM event offsetY property
+	     *      `velocity`  - Velocity of scroll
+	     *      `event`     - Original DOM event
 	     *
 	     * @example
 	     *
 	     *      var scrollInput = new ScrollInput();
 	     *
-	     *      scrollInput.subscribe(Engine) // listens on `window` events
+	     *      scrollInput.subscribe(surface)
 	     *
 	     *      scrollInput.on('start', function(payload){
 	     *          console.log('start', payload);
@@ -6762,8 +6768,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	     * @class ScrollInput
 	     * @constructor
 	     * @extends Streams.SimpleStream
-	     * @uses Inputs.TouchTracker
-	     * @uses Core.OptionsManager
+	     * @uses Core._OptionsManager
 	     * @param [options] {Object}                Options
 	     * @param [options.direction] {Number}      Direction to project movement onto.
 	     *                                          Options found in TouchInput.DIRECTION.
@@ -6777,10 +6782,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	            value : null,
 	            cumulate : null,
 	            velocity : null,
-	            clientX : undefined,
-	            clientY : undefined,
-	            offsetX : undefined,
-	            offsetY : undefined
+	            event : null
 	        };
 
 	        this._eventInput = new EventHandler();
@@ -6791,18 +6793,19 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	        this._eventInput.on('wheel', handleMove.bind(this));
 
-	        this._value = (this.options.direction === undefined) ? [0,0] : 0;
+	        this._value = (this.options.direction === undefined) ? [0, 0] : 0;
 	        this._cumulate = (this.options.direction === undefined) ? [0, 0] : 0;
 	        this._prevTime = undefined;
 	        this._inProgress = false;
 
 	        var self = this;
-	        this._scrollEnd = Timer.debounce(function(){
+	        this._scrollEnd = Timer.debounce(function(event){
 	            self._inProgress = false;
 	            // this prevents velocities for mousewheel events vs trackpad ones
 	            if (self._payload.delta !== 0){
 	                self._payload.velocity = 0;
 	            }
+	            self._payload.event = event;
 
 	            self._eventOutput.emit('end', self._payload);
 	        }, 100);
@@ -6835,14 +6838,11 @@ return /******/ (function(modules) { // webpackBootstrap
 	        event.preventDefault(); // Disable default scrolling behavior
 
 	        if (!this._inProgress) {
-	            this._value = (this.options.direction === undefined) ? [0,0] : 0;
+	            this._value = (this.options.direction === undefined) ? [0, 0] : 0;
 	            payload = this._payload;
 	            payload.value = this._value;
 	            payload.cumulate = this._cumulate;
-	            payload.clientX = event.clientX;
-	            payload.clientY = event.clientY;
-	            payload.offsetX = event.offsetX;
-	            payload.offsetY = event.offsetY;
+	            payload.event = event;
 
 	            this._eventOutput.emit('start', payload);
 	            this._inProgress = true;
@@ -6896,11 +6896,12 @@ return /******/ (function(modules) { // webpackBootstrap
 	        payload.velocity = nextVel;
 	        payload.value = this._value;
 	        payload.cumulate = this._cumulate;
+	        payload.event = event;
 
 	        this._eventOutput.emit('update', payload);
 
 	        // debounce `end` event
-	        this._scrollEnd();
+	        this._scrollEnd(event);
 	    }
 
 	    module.exports = ScrollInput;
@@ -6911,42 +6912,34 @@ return /******/ (function(modules) { // webpackBootstrap
 /* 46 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var __WEBPACK_AMD_DEFINE_RESULT__;/* This Source Code Form is subject to the terms of the Mozilla Public
-	 * License, v. 2.0. If a copy of the MPL was not distributed with this
-	 * file, You can obtain one at http://mozilla.org/MPL/2.0/.
-	 *
-	 * @license MPL 2.0
-	 * @copyright Famous Industries, Inc. 2014
-	 */
-
-	/* Modified work copyright © 2015-2016 David Valdman */
+	var __WEBPACK_AMD_DEFINE_RESULT__;/* Copyright © 2015-2016 David Valdman */
 
 	!(__WEBPACK_AMD_DEFINE_RESULT__ = function(require, exports, module) {
 	    var TwoFingerInput = __webpack_require__(47);
-	    var OptionsManager = __webpack_require__(31);
+	    var OptionsManager = __webpack_require__(24);
+	    var EventHandler = __webpack_require__(3);
 
 	    /**
 	     * Detects two-finger pinching motion and emits `start`, `update` and
 	     *  `end` events with the payload data:
 	     *
-	     *      `value`         - Distance between the two touches
-	     *      `delta`         - Differential in successive distances
-	     *      `velocity`      - Relative velocity between two touches
-	     *      `displacement`  - Total accumulated displacement
+	     *      `count`         - Number of simultaneous touches
+	     *      `value`         - Amount of scaling from starting placement
+	     *      `delta`         - Difference in scaling
+	     *      `velocity`      - Relative velocity of the scale
+	     *      `cumulate`      - Total accumulated scaling
 	     *      `center`        - Midpoint between the two touches
-	     *      `touchIds`       - Array of DOM event touch identifiers
 	     *
-	     *  Note: Unlike PinchInput, which produces pixel values of displacement
-	     *  between two touches, ScaleInput produces dimensionless values corresponding
-	     *  to scaling of the initial distance between the touches. For example, if two
-	     *  touches begin at 100 px apart, and move to 200 px apart, ScaleInput will emit
-	     *  a value of 2 (for 2x magnification), while PinchInput will emit a value of 100.
+	     *  The value is the ratio of the current displacement between two fingers
+	     *  with the initial displacement. For example, a value of 1 indicates the fingers
+	     *  are at the same displacement from where they began. A value of 2 indicates the fingers
+	     *  are twice as far away as they originally began. A value of 1/2 indicates the fingers
+	     *  are twice as close as they originally began, etc.
 	     *
 	     * @example
 	     *
 	     *      var scaleInput = new ScaleInput();
-	     *
-	     *      scaleInput.subscribe(Engine) // listens on `window` events
+	     *      scaleInput.subscribe(surface)
 	     *
 	     *      scaleInput.on('start', function(payload){
 	     *          console.log('start', payload);
@@ -6961,63 +6954,100 @@ return /******/ (function(modules) { // webpackBootstrap
 	     *      });
 	     *
 	     * @class ScaleInput
-	     * @extends Inputs.TwoFingerInput
-	     * @uses Core.OptionsManager
+	     * @extends Inputs._TwoFingerInput
+	     * @uses Core._OptionsManager
 	     * @constructor
-	     * @param options {Object}              Options
-	     * @param [options.scale=1] {Number}    Scale the response to pinch
+	     * @param options {Object}                  Options
+	     * @param [options.scale=1] {Number}        Scale the response to pinch
+	     * @param [options.direction] {Number}      Direction to project movement onto.
+	     *                                          Options found in ScaleInput.DIRECTION.
+	     * @param [options.rails=false] {Boolean}   If a direction is specified, movement in the
+	     *                                          orthogonal direction is suppressed
 	     */
 	    function ScaleInput(options) {
-	        TwoFingerInput.call(this);
-
 	        this.options = OptionsManager.setOptions(this, options);
 
-	        this._startDist = 0;
-	        this._scaleFactor = 1;
+	        this._eventInput = new TwoFingerInput(this.options);
+	        this._eventOutput = new EventHandler();
+
+	        EventHandler.setInputHandler(this, this._eventInput);
+	        EventHandler.setOutputHandler(this, this._eventOutput);
+
+	        this._eventInput.on('twoFingerStart', start.bind(this));
+	        this._eventInput.on('twoFingerUpdate', update.bind(this));
+	        this._eventInput.on('twoFingerEnd', end.bind(this));
+
+	        this.payload = {
+	            delta : 0,
+	            velocity : 0,
+	            value : 0,
+	            cumulate : 0,
+	            center : []
+	        };
+
+	        this.startDist = 0;
+	        this.prevDist = 0;
+	        this.value = 1;
+	        this.cumulate = 1;
 	    }
 
 	    ScaleInput.prototype = Object.create(TwoFingerInput.prototype);
 	    ScaleInput.prototype.constructor = ScaleInput;
 
 	    ScaleInput.DEFAULT_OPTIONS = {
-	        scale : 1
+	        direction : undefined,
+	        scale : 1,
+	        rails : false
 	    };
 
-	    // handles initial touch of two fingers
-	    ScaleInput.prototype._startUpdate = function _startUpdate(event) {
-	        this._startDist = TwoFingerInput.calculateDistance(this.posA, this.posB);
-	        var center = TwoFingerInput.calculateCenter(this.posA, this.posB);
-
-	        this._eventOutput.emit('start', {
-	            count: event.touches.length,
-	            touchIds: [this.touchAId, this.touchBId],
-	            distance: this._startDist,
-	            center: center
-	        });
+	    ScaleInput.DIRECTION = {
+	        X : 0,
+	        Y : 1
 	    };
 
-	    // handles movement of two fingers
-	    ScaleInput.prototype._moveUpdate = function _moveUpdate(diffTime) {
+	    function start(data){
+	        var center = TwoFingerInput.calculateCenter.call(this, data[0].position, data[1].position);
+	        var distance = TwoFingerInput.calculateDistance.call(this, data[0].position, data[1].position);
+
+	        this.startDist = distance;
+	        this.prevDist = distance;
+	        this.value = 1;
+
+	        var payload = this.payload;
+	        payload.value = this.value;
+	        payload.center = center;
+
+	        this._eventOutput.emit('start', payload);
+
+	        this.value = distance;
+	    }
+
+	    function update(data) {
+	        var center = TwoFingerInput.calculateCenter.call(this, data[0].position, data[1].position);
+	        var distance = TwoFingerInput.calculateDistance.call(this, data[0].position, data[1].position);
+
 	        var scale = this.options.scale;
 
-	        var currDist = TwoFingerInput.calculateDistance(this.posA, this.posB);
-	        var center = TwoFingerInput.calculateCenter(this.posA, this.posB);
+	        var delta = scale * (distance - this.prevDist) / this.startDist;
+	        var velocity = delta / data.dt;
+	        this.value += delta;
+	        this.cumulate += delta;
 
-	        var delta = (currDist - this._startDist) / this._startDist;
-	        var newScaleFactor = Math.max(1 + scale * delta, 0);
-	        var veloScale = (newScaleFactor - this._scaleFactor) / diffTime;
+	        var payload = this.payload;
+	        payload.delta = delta;
+	        payload.cumulate = this.cumulate;
+	        payload.velocity = velocity;
+	        payload.value = this.value;
+	        payload.center = center;
 
-	        this._eventOutput.emit('update', {
-	            delta : delta,
-	            scale: newScaleFactor,
-	            velocity: veloScale,
-	            distance: currDist,
-	            center : center,
-	            touchIds: [this.touchAId, this.touchBId]
-	        });
+	        this._eventOutput.emit('update', payload);
 
-	        this._scaleFactor = newScaleFactor;
-	    };
+	        this.prevDist = distance;
+	    }
+
+	    function end(){
+	        this._eventOutput.emit('end', this.payload);
+	    }
 
 	    module.exports = ScaleInput;
 	}.call(exports, __webpack_require__, exports, module), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
@@ -7027,72 +7057,73 @@ return /******/ (function(modules) { // webpackBootstrap
 /* 47 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var __WEBPACK_AMD_DEFINE_RESULT__;/* This Source Code Form is subject to the terms of the Mozilla Public
-	 * License, v. 2.0. If a copy of the MPL was not distributed with this
-	 * file, You can obtain one at http://mozilla.org/MPL/2.0/.
-	 *
-	 * @license MPL 2.0
-	 * @copyright Famous Industries, Inc. 2014
-	 */
-
-	/* Modified work copyright © 2015-2016 David Valdman */
-
-	// TODO: emit start, update, end events instead
-	// of calling protected _startUpdate etc methods
+	var __WEBPACK_AMD_DEFINE_RESULT__;/* Copyright © 2015-2016 David Valdman */
 
 	!(__WEBPACK_AMD_DEFINE_RESULT__ = function(require, exports, module) {
 	    var EventHandler = __webpack_require__(3);
-	    var SimpleStream = __webpack_require__(11);
-
-	    var _now = Date.now;
+	    var SimpleStream = __webpack_require__(12);
+	    var OptionsManager = __webpack_require__(24);
+	    var TouchInput = __webpack_require__(43);
 
 	    /**
 	     * Generalizes handling of two-finger touch events.
-	     *  Helper to PinchInput, RotateInput, and ScaleInput.
+	     *  Helper to PinchInput and RotateInput.
 	     *  This class is meant to be overridden and not used directly.
 	     *
 	     * @class TwoFingerInput
 	     * @extends Streams.SimpleStream
+	     * @uses Core._OptionsManager
 	     * @private
 	     * @constructor
 	     */
-	    function TwoFingerInput() {
-	        this._eventInput = new EventHandler();
+	    function TwoFingerInput(options) {
+	        this.options = OptionsManager.setOptions(this, options);
+
+	        this._eventInput = new TouchInput(this.options);
 	        this._eventOutput = new EventHandler();
 
 	        EventHandler.setInputHandler(this, this._eventInput);
 	        EventHandler.setOutputHandler(this, this._eventOutput);
 
-	        this.touchAEnabled = false;
-	        this.touchAId = 0;
+	        this.payload = [];
+	        this.touchIdA = undefined;
+	        this.touchIdB = undefined;
 	        this.posA = null;
-	        this.timestampA = 0;
-	        this.touchBEnabled = false;
-	        this.touchBId = 0;
 	        this.posB = null;
-	        this.timestampB = 0;
 
-	        this._eventInput.on('touchstart', this.handleStart.bind(this));
-	        this._eventInput.on('touchmove', this.handleMove.bind(this));
-	        this._eventInput.on('touchend', this.handleEnd.bind(this));
-	        this._eventInput.on('touchcancel', this.handleEnd.bind(this));
+	        this._eventInput.on('start', handleStart.bind(this));
+	        this._eventInput.on('update', handleMove.bind(this));
+	        this._eventInput.on('end', handleEnd.bind(this));
 	    }
 
 	    TwoFingerInput.prototype = Object.create(SimpleStream.prototype);
 	    TwoFingerInput.prototype.constructor = TwoFingerInput;
 
+	    TwoFingerInput.DIRECTION = {
+	        X : 0,
+	        Y : 1
+	    };
+
+	    TwoFingerInput.DEFAULT_OPTIONS = {
+	        direction : undefined,
+	        rails : false,
+	        track : 2
+	    };
+
 	    /**
 	     * Calculates the angle between two touches relative to [0,1].
+	     *  Direction option must not be set to x- or y- axes, otherwise 0 is returned.
 	     *
 	     * @method calculateAngle
 	     * @static
-	     * @param posA {Array}  First touch location (x,y)
-	     * @param posB {Array}  Second touch location (x,y)
+	     * @param value1 {Array}  First touch location (x,y)
+	     * @param value2 {Array}  Second touch location (x,y)
 	     * @return {Number}
 	     */
-	    TwoFingerInput.calculateAngle = function(posA, posB) {
-	        var diffX = posB[0] - posA[0];
-	        var diffY = posB[1] - posA[1];
+	    TwoFingerInput.calculateAngle = function(value1, value2) {
+	        if (this.options.direction !== undefined) return 0;
+	        var diffX = value2[0] - value1[0];
+	        var diffY = value2[1] - value1[1];
 	        return Math.atan2(diffY, diffX);
 	    };
 
@@ -7101,14 +7132,19 @@ return /******/ (function(modules) { // webpackBootstrap
 	     *
 	     * @method calculateDistance
 	     * @static
-	     * @param posA {Array}  First touch location (x,y)
-	     * @param posB {Array}  Second touch location (x,y)
+	     * @param value1 {Number|Array}  First touch location (x,y)
+	     * @param value2 {Number|Array}  Second touch location (x,y)
 	     * @return {Number}
 	     */
-	    TwoFingerInput.calculateDistance = function(posA, posB) {
-	        var diffX = posB[0] - posA[0];
-	        var diffY = posB[1] - posA[1];
-	        return Math.sqrt(diffX * diffX + diffY * diffY);
+	    TwoFingerInput.calculateDistance = function(value1, value2) {
+	        var direction = this.options.direction;
+	        
+	        if (direction === undefined){
+	            var diffX = value2[0] - value1[0];
+	            var diffY = value2[1] - value1[1];
+	            return Math.sqrt(diffX * diffX + diffY * diffY);
+	        }
+	        else return Math.abs(value2 - value1);
 	    };
 
 	    /**
@@ -7116,74 +7152,114 @@ return /******/ (function(modules) { // webpackBootstrap
 	     *
 	     * @method calculateCenter
 	     * @static
-	     * @param posA {Array}  First touch location (x,y)
-	     * @param posB {Array}  Second touch location (x,y)
-	     * @return {Array}
+	     * @param value1 {Number|Array}  First touch location
+	     * @param value2 {Number|Array}  Second touch location
+	     * @return {Number|Array}
 	     */
-	    TwoFingerInput.calculateCenter = function(posA, posB) {
-	        return [(posA[0] + posB[0]) / 2.0, (posA[1] + posB[1]) / 2.0];
+	    TwoFingerInput.calculateCenter = function(value1, value2) {
+	        return (this.options.direction === undefined)
+	            ? [0.5 * (value1[0] + value2[0]), 0.5 * (value1[1] + value2[1])]
+	            : (value1 + value2);
 	    };
 
-	    // private
-	    TwoFingerInput.prototype.handleStart = function handleStart(event) {
-	        for (var i = 0; i < event.changedTouches.length; i++) {
-	            var touch = event.changedTouches[i];
-	            if (!this.touchAEnabled) {
-	                this.touchAId = touch.identifier;
-	                this.touchAEnabled = true;
-	                this.posA = [touch.pageX, touch.pageY];
-	                this.timestampA = _now();
-	            }
-	            else if (!this.touchBEnabled) {
-	                this.touchBId = touch.identifier;
-	                this.touchBEnabled = true;
-	                this.posB = [touch.pageX, touch.pageY];
-	                this.timestampB = _now();
-	                this._startUpdate(event);
-	            }
-	        }
+	    /**
+	     * Calculates the combined velocity of the two touches.
+	     *
+	     * @method calculateCenter
+	     * @static
+	     * @param velocity1 {Number|Array}  First velocity
+	     * @param velocity2 {Number|Array}  Second velocity
+	     * @return {Number|Array}
+	     */
+	    TwoFingerInput.calculateVelocity = function(velocity1, velocity2){
+	        return (this.options.direction === undefined)
+	            ? [0.5 * (velocity1[0] + velocity2[0]), 0.5 * (velocity1[1] + velocity2[1])]
+	            : 0.5 * (velocity1 + velocity2);
 	    };
 
-	    // private
-	    TwoFingerInput.prototype.handleMove = function handleMove(event) {
-	        if (!(this.touchAEnabled && this.touchBEnabled)) return;
-	        var prevTimeA = this.timestampA;
-	        var prevTimeB = this.timestampB;
-	        var diffTime;
-	        for (var i = 0; i < event.changedTouches.length; i++) {
-	            var touch = event.changedTouches[i];
-	            if (touch.identifier === this.touchAId) {
-	                this.posA = [touch.pageX, touch.pageY];
-	                this.timestampA = _now();
-	                diffTime = this.timestampA - prevTimeA;
-	            }
-	            else if (touch.identifier === this.touchBId) {
-	                this.posB = [touch.pageX, touch.pageY];
-	                this.timestampB = _now();
-	                diffTime = this.timestampB - prevTimeB;
-	            }
-	        }
-	        if (diffTime) this._moveUpdate(diffTime);
+	    /**
+	     * Calculates the direction of the touch.
+	     *
+	     * @method calculateOrientation
+	     * @static
+	     * @param value1 {Number|Array}  First velocity
+	     * @param value2 {Number|Array}  Second velocity
+	     * @return {Number|Array}
+	     */
+	    TwoFingerInput.calculateOrientation = function(value1, value2){
+	        return (this.options.direction === undefined)
+	            ? [(value2[0] - value1[0]), (value2[1] - value1[1])]
+	            : value2 - value1;
 	    };
 
-	    // private
-	    TwoFingerInput.prototype.handleEnd = function handleEnd(event) {
-	        for (var i = 0; i < event.changedTouches.length; i++) {
-	            var touch = event.changedTouches[i];
-	            if (touch.identifier === this.touchAId || touch.identifier === this.touchBId) {
-	                if (this.touchAEnabled && this.touchBEnabled) {
-	                    this._eventOutput.emit('end', {
-	                        touches : [this.touchAId, this.touchBId],
-	                        angle   : this._angle
-	                    });
-	                }
-	                this.touchAEnabled = false;
-	                this.touchAId = 0;
-	                this.touchBEnabled = false;
-	                this.touchBId = 0;
-	            }
-	        }
+	    /**
+	     * Detects if orientation has changed.
+	     *
+	     * @method detectOrientationChange
+	     * @static
+	     * @param dir2 {Number|Array}  First direction
+	     * @param dir1 {Number|Array}  Second direction
+	     * @return {Boolean}
+	     */
+	    TwoFingerInput.detectOrientationChange = function(dir1, dir2){
+	        return (this.options.direction === undefined)
+	            ? dir1[0] * dir2[0] + dir1[1] * dir2[1] <= 0
+	            : dir1 * dir2 <= 0;
 	    };
+
+	    function getPosition(event){
+	        var direction = this.options.direction;
+	        var position;
+	        if (direction === TwoFingerInput.DIRECTION.X)
+	            position = event.pageX;
+	        else if (direction === TwoFingerInput.DIRECTION.Y)
+	            position = event.pageY;
+	        else
+	            position = [event.pageX, event.pageY];
+
+	        return position;
+	    }
+
+	    function handleStart(data) {
+	        data.position = getPosition.call(this, data.event);
+
+	        if (this.touchIdA === data.touchId){
+	            this.payload[0] = data;
+	        }
+
+	        if (this.touchIdA === undefined){
+	            this.touchIdA = data.touchId;
+	            this.payload[0] = data;
+	        }
+	        else if (this.touchIdB === undefined){
+	            this.touchIdB = data.touchId;
+	            this.payload[1] = data;
+	            this.emit('twoFingerStart', this.payload);
+	        }
+	    }
+
+	    function handleMove(data) {
+	        if (this.touchIdA === undefined || this.touchIdB === undefined)
+	            return false;
+
+	        data.position = getPosition.call(this, data.event);
+
+	        if (data.touchId === this.touchIdA)
+	            this.payload[0] = data;
+	        else if (data.touchId === this.touchIdB)
+	            this.payload[1] = data;
+
+	        this.emit('twoFingerUpdate', this.payload);
+	    }
+
+	    function handleEnd(data) {
+	        if (this.touchIdA === undefined && this.touchIdB === undefined) return false;
+
+	        this.emit('twoFingerEnd', this.payload);
+	        this.touchIdA = undefined;
+	        this.touchIdB = undefined;
+	        this.payload = [];
+	    }
 
 	    module.exports = TwoFingerInput;
 	}.call(exports, __webpack_require__, exports, module), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
@@ -7193,35 +7269,28 @@ return /******/ (function(modules) { // webpackBootstrap
 /* 48 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var __WEBPACK_AMD_DEFINE_RESULT__;/* This Source Code Form is subject to the terms of the Mozilla Public
-	 * License, v. 2.0. If a copy of the MPL was not distributed with this
-	 * file, You can obtain one at http://mozilla.org/MPL/2.0/.
-	 *
-	 * @license MPL 2.0
-	 * @copyright Famous Industries, Inc. 2014
-	 */
-
-	/* Modified work copyright © 2015-2016 David Valdman */
+	var __WEBPACK_AMD_DEFINE_RESULT__;/* Copyright © 2015-2016 David Valdman */
 
 	!(__WEBPACK_AMD_DEFINE_RESULT__ = function(require, exports, module) {
 	    var TwoFingerInput = __webpack_require__(47);
-	    var OptionsManager = __webpack_require__(31);
+	    var OptionsManager = __webpack_require__(24);
+	    var EventHandler = __webpack_require__(3);
 
 	    /**
 	     * Detects two-finger rotational motion and emits `start`, `update` and
 	     *  `end` events with the payload data:
 	     *
+	     *      `count`         - Number of simultaneous touches
 	     *      `value`         - Angle of rotation
 	     *      `delta`         - Differential of successive angles
+	     *      `cumulate`      - Total accumulated rotation
 	     *      `velocity`      - Velocity of rotation
 	     *      `center`        - Midpoint between the two touches
-	     *      `touchIds`       - Array of DOM event touch identifiers
 	     *
 	     * @example
 	     *
 	     *      var rotateInput = new RotateInput();
-	     *
-	     *      rotateInput.subscribe(Engine) // listens on `window` events
+	     *      rotateInput.subscribe(surface)
 	     *
 	     *      rotateInput.on('start', function(payload){
 	     *          console.log('start', payload);
@@ -7236,19 +7305,37 @@ return /******/ (function(modules) { // webpackBootstrap
 	     *      });
 	     *
 	     * @class RotateInput
-	     * @extends Inputs.TwoFingerInput
-	     * @uses Core.OptionsManager
+	     * @extends Inputs._TwoFingerInput
+	     * @uses Core._OptionsManager
 	     * @constructor
 	     * @param options {Object}              Options
 	     * @param [options.scale=1] {Number}    Scale the response to pinch
 	     */
 	    function RotateInput(options) {
-	        TwoFingerInput.call(this);
-
 	        this.options = OptionsManager.setOptions(this, options);
+
+	        this._eventInput = new TwoFingerInput(this.options);
+	        this._eventOutput = new EventHandler();
+
+	        EventHandler.setInputHandler(this, this._eventInput);
+	        EventHandler.setOutputHandler(this, this._eventOutput);
+
+	        this._eventInput.on('twoFingerStart', start.bind(this));
+	        this._eventInput.on('twoFingerUpdate', update.bind(this));
+	        this._eventInput.on('twoFingerEnd', end.bind(this));
+
+	        this.payload = {
+	            count : 0,
+	            delta : 0,
+	            velocity : 0,
+	            value : 1,
+	            cumulate : 0,
+	            center : []
+	        };
 
 	        this._angle = 0;
 	        this._previousAngle = 0;
+	        this.cumulate = 0;
 	    }
 
 	    RotateInput.prototype = Object.create(TwoFingerInput.prototype);
@@ -7258,41 +7345,48 @@ return /******/ (function(modules) { // webpackBootstrap
 	        scale : 1
 	    };
 
-	    RotateInput.prototype._startUpdate = function _startUpdate(event) {
-	        this._previousAngle = TwoFingerInput.calculateAngle(this.posA, this.posB);
-	        var center = TwoFingerInput.calculateCenter(this.posA, this.posB);
+	    function start(data) {
+	        this._previousAngle = TwoFingerInput.calculateAngle.call(this, data[0].position, data[1].position);
+	        var center = TwoFingerInput.calculateCenter.call(this, data[0].position, data[1].position);
 
 	        this._angle = 0;
 
-	        this._eventOutput.emit('start', {
-	            count: event.touches.length,
-	            value: this._angle,
-	            center: center,
-	            touchIds: [this.touchAId, this.touchBId]
-	        });
-	    };
+	        var payload = this.payload;
+	        payload.count = event.touches.length;
+	        payload.value = this._angle;
+	        payload.cumulate = this.cumulate;
+	        payload.center = center;
 
-	    RotateInput.prototype._moveUpdate = function _moveUpdate(diffTime) {
+	        this._eventOutput.emit('start', this.payload);
+	    }
+
+	    function update(data) {
+	        var currAngle = TwoFingerInput.calculateAngle.call(this, data[0].position, data[1].position);
+	        var center = TwoFingerInput.calculateCenter.call(this, data[0].position, data[1].position);
+
 	        var scale = this.options.scale;
 
-	        var currAngle = TwoFingerInput.calculateAngle(this.posA, this.posB);
-	        var center = TwoFingerInput.calculateCenter(this.posA, this.posB);
+	        var delta = scale * (currAngle - this._previousAngle);
+	        var velocity = delta / data.dt;
 
-	        var diffTheta = scale * (currAngle - this._previousAngle);
-	        var velTheta = diffTheta / diffTime;
+	        this._angle += delta;
+	        this.cumulate += delta;
 
-	        this._angle += diffTheta;
+	        var payload = this.payload;
+	        payload.delta = delta;
+	        payload.cumulate = this.cumulate;
+	        payload.velocity = velocity;
+	        payload.value = this._angle;
+	        payload.center = center;
 
-	        this._eventOutput.emit('update', {
-	            delta : diffTheta,
-	            velocity: velTheta,
-	            value: this._angle,
-	            center: center,
-	            touchIds: [this.touchAId, this.touchBId]
-	        });
+	        this._eventOutput.emit('update', payload);
 
 	        this._previousAngle = currAngle;
-	    };
+	    }
+
+	    function end(data){
+	        this._eventOutput.emit('update', this.payload);
+	    }
 
 	    module.exports = RotateInput;
 	}.call(exports, __webpack_require__, exports, module), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
@@ -7302,19 +7396,12 @@ return /******/ (function(modules) { // webpackBootstrap
 /* 49 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var __WEBPACK_AMD_DEFINE_RESULT__;/* This Source Code Form is subject to the terms of the Mozilla Public
-	 * License, v. 2.0. If a copy of the MPL was not distributed with this
-	 * file, You can obtain one at http://mozilla.org/MPL/2.0/.
-	 *
-	 * @license MPL 2.0
-	 * @copyright Famous Industries, Inc. 2014
-	 */
+	var __WEBPACK_AMD_DEFINE_RESULT__;/* Copyright © 2015-2016 David Valdman */
 
-	/* Modified work copyright © 2015-2016 David Valdman */
-
-	!(__WEBPACK_AMD_DEFINE_RESULT__ = function(require, exports, module) {
+	!(__WEBPACK_AMD_DEFINE_RESULT__ = function(require, exports, module){
+	    var EventHandler = __webpack_require__(3);
 	    var TwoFingerInput = __webpack_require__(47);
-	    var OptionsManager = __webpack_require__(31);
+	    var OptionsManager = __webpack_require__(24);
 
 	    /**
 	     * Detects two-finger pinching motion and emits `start`, `update` and
@@ -7325,7 +7412,6 @@ return /******/ (function(modules) { // webpackBootstrap
 	     *      `velocity`      - Relative velocity between two touches
 	     *      `displacement`  - Total accumulated displacement
 	     *      `center`        - Midpoint between the two touches
-	     *      `touchIds`      - Array of DOM event touch identifiers
 	     *
 	     * @example
 	     *
@@ -7346,63 +7432,108 @@ return /******/ (function(modules) { // webpackBootstrap
 	     *      });
 	     *
 	     * @class PinchInput
-	     * @extends Inputs.TwoFingerInput
-	     * @uses Core.OptionsManager
+	     * @extends Inputs._TwoFingerInput
+	     * @uses Core._OptionsManager
 	     * @constructor
-	     * @param options {Object}              Options
-	     * @param [options.scale=1] {Number}    Scale the response to pinch
+	     * @param options {Object}                  Options
+	     * @param [options.scale=1] {Number}        Scale the response to pinch
+	     * @param [options.direction] {Number}      Direction to project movement onto.
+	     *                                          Options found in TouchInput.DIRECTION.
+	     * @param [options.rails=false] {Boolean}   If a direction is specified, movement in the
+	     *                                          orthogonal direction is suppressed
 	     */
-	    function PinchInput(options) {
-	        TwoFingerInput.call(this);
-
+	    function PinchInput(options){
 	        this.options = OptionsManager.setOptions(this, options);
 
-	        this._displacement = 0;
-	        this._previousDistance = 0;
+	        this._eventInput = new TwoFingerInput(this.options);
+	        this._eventOutput = new EventHandler();
+
+	        EventHandler.setInputHandler(this, this._eventInput);
+	        EventHandler.setOutputHandler(this, this._eventOutput);
+	        
+	        this._eventInput.on('twoFingerStart', start.bind(this));
+	        this._eventInput.on('twoFingerUpdate', update.bind(this));
+	        this._eventInput.on('twoFingerEnd', end.bind(this));
+
+	        this.payload = {
+	            delta : null,
+	            velocity : null,
+	            value : null,
+	            center : []
+	        };
+
+	        this.value = 0;
+	        this.direction = [];
 	    }
 
 	    PinchInput.prototype = Object.create(TwoFingerInput.prototype);
 	    PinchInput.prototype.constructor = PinchInput;
 
+	    PinchInput.DIRECTION = {
+	        X : 0,
+	        Y : 1
+	    };
+
 	    PinchInput.DEFAULT_OPTIONS = {
-	        scale : 1
+	        scale : 1,
+	        direction : undefined,
+	        rails : true
 	    };
 
-	    PinchInput.prototype._startUpdate = function _startUpdate(event) {
-	        var center = TwoFingerInput.calculateCenter(this.posA, this.posB);
-	        this._previousDistance = TwoFingerInput.calculateDistance(this.posA, this.posB);
+	    function start(data){
+	        var center = TwoFingerInput.calculateCenter.call(this, data[0].position, data[1].position);
+	        var distance = TwoFingerInput.calculateDistance.call(this, data[0].position, data[1].position);
+	        this.direction = TwoFingerInput.calculateOrientation.call(this, data[0].position, data[1].position);
 
-	        this._displacement = 0;
+	        var payload = this.payload;
+	        payload.value = distance;
+	        payload.center = center;
 
-	        this._eventOutput.emit('start', {
-	            count: event.touches.length,
-	            touchIds: [this.touchAId, this.touchBId],
-	            value: this._previousDistance,
-	            center: center
-	        });
-	    };
+	        this._eventOutput.emit('start', payload);
 
-	    PinchInput.prototype._moveUpdate = function _moveUpdate(diffTime) {
-	        var currDist = TwoFingerInput.calculateDistance(this.posA, this.posB);
-	        var center = TwoFingerInput.calculateCenter(this.posA, this.posB);
+	        this.value = distance;
+	    }
 
+	    function update(data){
+	        var center = TwoFingerInput.calculateCenter.call(this, data[0].position, data[1].position);
+	        var distance = TwoFingerInput.calculateDistance.call(this, data[0].position, data[1].position);
+	        var velocity = TwoFingerInput.calculateVelocity.call(this, data[0].velocity, data[1].velocity);
+	        var currDirection = TwoFingerInput.calculateOrientation.call(this, data[0].position, data[1].position);
+
+	        var changedDirection = TwoFingerInput.detectOrientationChange.call(this, currDirection, this.direction);
 	        var scale = this.options.scale;
-	        var delta = scale * (currDist - this._previousDistance);
-	        var velocity = delta / diffTime;
+	        var delta;
 
-	        this._displacement += delta;
+	        if (this.options.direction === undefined){
+	            if (changedDirection){
+	                distance[0] *= -1;
+	                distance[1] *= -1;
+	            }
 
-	        this._eventOutput.emit('update', {
-	            delta : delta,
-	            velocity: velocity,
-	            value: currDist,
-	            displacement: this._displacement,
-	            center: center,
-	            touchIds: [this.touchAId, this.touchBId]
-	        });
+	            delta = [
+	                scale * (distance[0] - this.value[0]),
+	                scale * (distance[1] - this.value[1])
+	            ];
+	        }
+	        else {
+	            if (changedDirection) distance *= -1;
+	            delta = scale * (distance - this.value);
+	        }
 
-	        this._previousDistance = currDist;
-	    };
+	        var payload = this.payload;
+	        payload.delta = delta;
+	        payload.velocity = velocity;
+	        payload.value = this.value;
+	        payload.center = center;
+
+	        this._eventOutput.emit('update', payload);
+
+	        this.value = distance;
+	    }
+
+	    function end(){
+	        this._eventOutput.emit('end', this.payload);
+	    }
 
 	    module.exports = PinchInput;
 	}.call(exports, __webpack_require__, exports, module), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
@@ -7416,9 +7547,10 @@ return /******/ (function(modules) { // webpackBootstrap
 	    module.exports = {
 	        DrawerLayout: __webpack_require__(51),
 	        FlexibleLayout: __webpack_require__(54),
-	        GridLayout: __webpack_require__(55),
-	        SequentialLayout: __webpack_require__(56),
-	        Scrollview: __webpack_require__(57)
+	        GridLayout: __webpack_require__(56),
+	        SequentialLayout: __webpack_require__(57),
+	        HeaderFooterLayout: __webpack_require__(58),
+	        Scrollview: __webpack_require__(59)
 	    };
 	}.call(exports, __webpack_require__, exports, module), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
 
@@ -7430,14 +7562,13 @@ return /******/ (function(modules) { // webpackBootstrap
 	var __WEBPACK_AMD_DEFINE_RESULT__;/* Copyright © 2015-2016 David Valdman */
 
 	!(__WEBPACK_AMD_DEFINE_RESULT__ = function(require, exports, module) {
-	    var Transform = __webpack_require__(21);
-	    var Transitionable = __webpack_require__(22);
-	    var View = __webpack_require__(26);
-	    var LayoutNode = __webpack_require__(10);
-	    var Stream = __webpack_require__(15);
+	    var Transform = __webpack_require__(9);
+	    var Transitionable = __webpack_require__(11);
+	    var View = __webpack_require__(22);
+	    var Stream = __webpack_require__(16);
 	    var Differential = __webpack_require__(52);
 	    var Accumulator = __webpack_require__(53);
-	    var EventMapper = __webpack_require__(12);
+	    var EventMapper = __webpack_require__(13);
 
 	    var CONSTANTS = {
 	        DIRECTION : {
@@ -7618,12 +7749,11 @@ return /******/ (function(modules) { // webpackBootstrap
 	         * @param drawer {Surface|View}
 	         */
 	        addDrawer : function addDrawer(drawer){
-	            if (this.options.revealLength == undefined)
+	            if (this.options.revealLength === undefined)
 	                this.options.revealLength = drawer.getSize()[this.direction];
 
 	            this.drawer = drawer;
-	            var layout = new LayoutNode({transform : Transform.behind});
-	            this.add(layout).add(this.drawer);
+	            this.add({transform : Transform.behind}).add(this.drawer);
 	        },
 	        /**
 	         * Set the content component with a Surface or View.
@@ -7638,9 +7768,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	                    : Transform.translateY(position)
 	            }.bind(this));
 
-	            var layout = new LayoutNode({transform : transform});
-
-	            this.add(layout).add(content);
+	            this.add({transform : transform}).add(content);
 	        },
 	        /**
 	         * Reveals the drawer with a transition.
@@ -7744,8 +7872,8 @@ return /******/ (function(modules) { // webpackBootstrap
 	var __WEBPACK_AMD_DEFINE_RESULT__;/* Copyright © 2015-2016 David Valdman */
 
 	!(__WEBPACK_AMD_DEFINE_RESULT__ = function(require, exports, module){
-	    var Stream = __webpack_require__(15);
-	    var OptionsManager = __webpack_require__(31);
+	    var Stream = __webpack_require__(16);
+	    var OptionsManager = __webpack_require__(24);
 
 	    /**
 	     * Differential is a Stream that emits differentials of consecutive
@@ -7762,7 +7890,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	     *
 	     * @class Differential
 	     * @extends Streams.Stream
-	     * @uses Core.OptionsManager
+	     * @uses Core._OptionsManager
 	     * @namespace Streams
 	     * @constructor
 	     * @param [options] {Object}        Options
@@ -7773,18 +7901,33 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	        var previous = undefined;
 	        var delta = undefined;
+	        var tempDelta = undefined;
+	        var hasUpdated = false;
 
 	        Stream.call(this, {
 	            update: function () { return delta; }
 	        });
 
 	        this._eventInput.on('start', function (value) {
-	            if (value instanceof Array)
+	            hasUpdated = false;
+	            var scale = this.options.scale;
+	            if (value instanceof Array){
+	                if (previous !== undefined){
+	                    tempDelta = [];
+	                    for (var i = 0; i < value.length; i++)
+	                        tempDelta[i] = scale * (value[i] - previous[i]);
+	                }
 	                previous = value.slice();
-	            else previous = value;
-	        });
+	            }
+	            else {
+	                if (previous !== undefined)
+	                    tempDelta = scale * (value - previous);
+	                previous = value;
+	            }
+	        }.bind(this));
 
 	        this._eventInput.on('update', function (value) {
+	            hasUpdated = true;
 	            var scale = this.options.scale;
 	            if (previous instanceof Array) {
 	                delta = [];
@@ -7795,6 +7938,14 @@ return /******/ (function(modules) { // webpackBootstrap
 	            }
 	            else {
 	                delta = scale * (value - previous);
+	                previous = value;
+	            }
+	        }.bind(this));
+
+	        this._eventInput.on('end', function(value){
+	            // Emit update if immediate set called
+	            if (!hasUpdated && tempDelta !== undefined) {
+	                this.emit('update', tempDelta);
 	                previous = value;
 	            }
 	        }.bind(this));
@@ -7818,10 +7969,10 @@ return /******/ (function(modules) { // webpackBootstrap
 	var __WEBPACK_AMD_DEFINE_RESULT__;/* Copyright © 2015-2016 David Valdman */
 
 	!(__WEBPACK_AMD_DEFINE_RESULT__ = function(require, exports, module){
-	    var OptionsManager = __webpack_require__(31);
-	    var Stream = __webpack_require__(15);
-	    var preTickQueue = __webpack_require__(7);
-	    var dirtyQueue = __webpack_require__(8);
+	    var OptionsManager = __webpack_require__(24);
+	    var Stream = __webpack_require__(16);
+	    var preTickQueue = __webpack_require__(6);
+	    var dirtyQueue = __webpack_require__(7);
 
 	    /**
 	     * Accumulator is a Stream that accumulates a value given by a
@@ -7839,6 +7990,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	     *
 	     * @class Accumulator
 	     * @extends Streams.Stream
+	     * @uses Core._OptionsManager
 	     * @namespace Streams
 	     * @constructor
 	     * @param [sum] {Number|Array}    Initial value
@@ -7936,13 +8088,13 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	var __WEBPACK_AMD_DEFINE_RESULT__;/* Copyright © 2015-2016 David Valdman */
 
-	!(__WEBPACK_AMD_DEFINE_RESULT__ = function(require, exports, module) {
-	    var Transform = __webpack_require__(21);
-	    var Transitionable = __webpack_require__(22);
-	    var View = __webpack_require__(26);
-	    var Stream = __webpack_require__(15);
-	    var LayoutNode = __webpack_require__(10);
-	    var SizeNode = __webpack_require__(17);
+	!(__WEBPACK_AMD_DEFINE_RESULT__ = function(require, exports, module){
+	    var Transform = __webpack_require__(9);
+	    var View = __webpack_require__(22);
+	    var Stream = __webpack_require__(16);
+	    var ReduceStream = __webpack_require__(55);
+	    var Accumulator = __webpack_require__(53);
+	    var Differential = __webpack_require__(52);
 
 	    var CONSTANTS = {
 	        DIRECTION : {
@@ -7951,108 +8103,264 @@ return /******/ (function(modules) { // webpackBootstrap
 	        }
 	    };
 
+	    // Default map to convert displacement to transform
+	    function DEFAULT_LENGTH_MAP(length){
+	        return (this.options.direction === CONSTANTS.DIRECTION.X)
+	            ? Transform.translateX(length)
+	            : Transform.translateY(length);
+	    }
+
 	    /**
-	     * A layout which arranges items vertically or horizontally and
-	     *  with sizes prescribed by ratios of a containing size. These
-	     *  ratios can be animated.
+	     * A layout which arranges items vertically or horizontally within a containing size.
+	     *  Items with a definite size in the specified direction keep their size, where
+	     *  items with an `undefined` size in the specified direction have a flexible size.
+	     *  Flexible sized items split up the left over size relative to their flex value.
 	     *
-	     * @class FlexibleLayout
+	     * @class FlexLayout
 	     * @constructor
 	     * @namespace Layouts
 	     * @extends Core.View
 	     * @param [options] {Object}                        Options
 	     * @param [options.direction]{Number}               Direction to lay out items
-	     * @param [options.ratios] {Transitionable|Array}   The proportions
+	     * @param [options.spacing]{Number}                 Spacing between items
 	     */
-	    var FlexibleLayout = View.extend({
+	    var FlexLayout = View.extend({
 	        defaults : {
 	            direction : CONSTANTS.DIRECTION.X,
-	            ratios : []
+	            spacing : 0
 	        },
 	        initialize : function initialize(options){
-	            var ratios = (options.ratios instanceof Transitionable)
-	                ? options.ratios
-	                : new Transitionable(options.ratios);
-
+	            // Store nodes and flex values
 	            this.nodes = [];
+	            this.flexs = [];
 
-	            var stateStream = Stream.lift(function(ratios, parentSize){
-	                var direction = options.direction;
+	            // Displacement for each item
+	            this.lengthStream = new ReduceStream(function(prev, size){
+	                if (!size) return false;
+	                return prev + size[options.direction] + options.spacing;
+	            });
 
-	                // calculate remaining size after true-sized nodes are accounted for
-	                var flexLength = parentSize[direction];
-	                var ratioSum = 0;
-	                for (var i = 0; i < ratios.length; i++) {
-	                    var ratio = ratios[i];
-	                    var node = this.nodes[i];
+	            // Amount of length used by fixed sized items
+	            this.usedLength = new ReduceStream(function(prev, size){
+	                if (!size) return false;
+	                return prev + size[options.direction];
+	            });
 
-	                    (typeof ratio !== 'number')
-	                        ? flexLength -= node.getSize()[direction] || 0
-	                        : ratioSum += ratio;
-	                }
+	            // Amount of length left over for flex items
+	            this.availableLength = Stream.lift(function(totalSize, usedLength){
+	                if (!totalSize) return false;
+	                return totalSize[options.direction] - usedLength;
+	            }, [this.size, this.usedLength.headOutput]);
 
-	                // calculate sizes and displacements of nodes
-	                var displacement = 0;
-	                var transforms = [];
-	                var sizes = [];
-	                for (var i = 0; i < ratios.length; i++) {
-	                    node = this.nodes[i];
-	                    ratio = ratios[i];
+	            // Total amount of flex
+	            this.totalFlex = new Accumulator(0);
 
-	                    var nodeLength = (typeof ratio === 'number')
-	                        ? flexLength * ratio / ratioSum
-	                        : node.getSize()[direction];
-
-	                    var transform = (direction == CONSTANTS.DIRECTION.X)
-	                        ? Transform.translateX(displacement)
-	                        : Transform.translateY(displacement);
-
-	                    var size = (direction == CONSTANTS.DIRECTION.X)
-	                        ? [nodeLength, undefined]
-	                        : [undefined, nodeLength];
-
-	                    sizes.push(size);
-	                    transforms.push(transform);
-
-	                    displacement += nodeLength;
-	                }
-
-	                return {
-	                    transforms : transforms,
-	                    sizes : sizes
-	                };
-
-	            }.bind(this), [ratios, this.size]);
-
-	            this.transforms = stateStream.pluck('transforms');
-	            this.sizes = stateStream.pluck('sizes');
+	            // Map to convert displacement to transform
+	            this.setLengthMap(DEFAULT_LENGTH_MAP);
 	        },
-	        /**
-	         * Add content as an array of Views or Surfaces.
+	        /*
+	         * Set a custom map from length displacements to transforms.
+	         * `this` will automatically be bound to the instance.
 	         *
-	         * @method addItems
-	         * @param items {Array}  An array of Views or Surfaces
+	         * @method setLengthMap
+	         * @param map {Function} Map `(length) -> transform`
 	         */
-	        addItems : function addItems(items){
-	            this.nodes = items;
+	        setLengthMap : function(map){
+	            this.transformMap = map.bind(this);
+	        },
+	        /*
+	         * Add a renderable to the end of the layout
+	         *
+	         * @method push
+	         * @param item {Surface|View}           Renderable
+	         * @param flex {Number|Transitionable}  Flex amount
+	         */
+	        push : function(item, flex){
+	            this.nodes.push(item);
+	            this.flexs.push(flex);
 
-	            for (var i = 0; i < this.nodes.length; i++){
-	                var node = this.nodes[i];
+	            if (flex === undefined) this.usedLength.push(item.size);
+	            var length = this.lengthStream.push(item.size);
+	            var node = createNodeFromLength.call(this, length, flex);
+	            this.add(node).add(item);
+	        },
+	        /*
+	         * Unlink the last renderable in the layout
+	         *
+	         * @method pop
+	         * @return item
+	         */
+	        pop : function(){
+	            return this.unlink(this.nodes.length - 1);
+	        },
+	        /*
+	         * Add a renderable to the beginning of the layout
+	         *
+	         * @method unshift
+	         * @param item {Surface|View}           Renderable
+	         * @param flex {Number|Transitionable}  Flex amount
+	         */
+	        unshift : function(item, flex){
+	            this.nodes.unshift(item);
+	            this.flexs.unshift(flex);
 
-	                var layoutNode = new LayoutNode({
-	                    transform : this.transforms.pluck(i)
-	                });
-
-	                var sizeNode = new SizeNode({
-	                    size : this.sizes.pluck(i)
-	                });
-
-	                this.add(layoutNode).add(sizeNode).add(node);
+	            if (flex === undefined) this.usedLength.push(item.size);
+	            var length = this.lengthStream.unshift(item.size);
+	            var node = createNodeFromLength.call(this, length, flex);
+	            this.add(node).add(item);
+	        },
+	        /*
+	         * Unlink the first renderable in the layout
+	         *
+	         * @method shift
+	         * @return item
+	         */
+	        shift : function(){
+	            return this.unlink(0);
+	        },
+	        /*
+	         * Add a renderable after a specified renderable
+	         *
+	         * @method insertAfter
+	         * @param prevItem {Number|Surface|View}    Index or renderable to insert after
+	         * @param item {Surface|View}               Renderable to insert
+	         * @param flex {Number|Transitionable}      Flex amount
+	         */
+	        insertAfter : function(prevItem, item, flex){
+	            var index;
+	            if (typeof prevItem === 'number'){
+	                index = prevItem + 1;
+	                prevItem = this.nodes[prevItem];
 	            }
+	            else index = this.nodes.indexOf(prevItem) + 1;
+
+	            this.nodes.splice(index, 0, item);
+	            this.flexs.splice(index, 0, flex);
+
+	            if (flex === undefined) this.usedLength.push(item.size);
+	            var length = this.lengthStream.insertAfter(prevItem.size, item.size);
+	            var node = createNodeFromLength.call(this, length, flex);
+	            this.add(node).add(item);
+	        },
+	        /*
+	         * Add a renderable before a specified renderable
+	         *
+	         * @method insertAfter
+	         * @param prevItem {Number|Surface|View}    Index or renderable to insert before
+	         * @param item {Surface|View}               Renderable to insert
+	         * @param flex {Number|Transitionable}      Flex amount
+	         */
+	        insertBefore : function(postItem, item, flex){
+	            var index;
+	            if (typeof postItem === 'number'){
+	                index = postItem - 1;
+	                postItem = this.nodes[postItem];
+	            }
+	            else index = this.nodes.indexOf(postItem) - 1;
+
+	            this.nodes.splice(index + 1, 0, item);
+	            this.flexs.splice(index + 1, 0, flex);
+
+	            if (flex === undefined) this.usedLength.push(item.size);
+	            var length = this.lengthStream.insertBefore(postItem.size, item.size);
+	            var node = createNodeFromLength.call(this, length, flex);
+	            this.add(node).add(item);
+	        },
+	        /*
+	         * Unlink the renderable.
+	         *  To remove the renderable, call the `.remove` method on it after unlinking.
+	         *
+	         * @method unlink
+	         * @param item {Number|Surface|View}        Index or item to remove
+	         * @return item
+	         */
+	        unlink : function(item){
+	            var index = (typeof item === 'number')
+	                ? item
+	                : this.nodes.indexOf(item);
+
+	            item = this.nodes.splice(index, 1)[0];
+	            var flex = this.flexs.splice(index, 1)[0];
+
+	            if (flex === undefined) this.usedLength.remove(item.size);
+	            else {
+	                if (typeof flex === 'number')
+	                    this.totalFlex.set(this.totalFlex.get() - flex);
+	                else
+	                    this.totalFlex.set(this.totalFlex.get() - flex.get());
+	            }
+	            this.lengthStream.remove(item.size);
+
+	            return item;
+	        },
+	        length : function(){
+	            return this.nodes.length;
+	        },
+	        /*
+	         * Returns flex for an item or index
+	         *
+	         * @method getFlexFor
+	         * @param item {Index|Surface|View} Index or item to get flex for
+	         * @return flex {Number|Transitionable}
+	         */
+	        getFlexFor : function(item){
+	            if (item === undefined) return this.getFlexes();
+	            return (typeof item === 'number')
+	                ? this.flexs[item]
+	                : this.flexs[this.nodes.indexOf(item)];
+	        },
+	        /*
+	         * Returns flexes of all current renderables
+	         *
+	         * @method getFlexes
+	         * @return flexes {Array}
+	         */
+	        getFlexes : function(){
+	            return this.flexs;
 	        }
 	    }, CONSTANTS);
 
-	    module.exports = FlexibleLayout;
+	    function createNodeFromLength(length, flex){
+	        var transform = length.map(this.transformMap);
+
+	        if (flex !== undefined){
+	            var size;
+	            if (typeof flex === 'number'){
+	                this.totalFlex.set(this.totalFlex.get() + flex);
+	                // Flexible sized item: layout defines the size and transform
+	                size = Stream.lift(function(availableLength, totalFlex){
+	                    if (!availableLength) return false;
+	                    var itemLength = (availableLength - (this.nodes.length - 1) * this.options.spacing) * (flex / totalFlex);
+	                    return (this.options.direction === CONSTANTS.DIRECTION.X)
+	                        ? [itemLength, undefined]
+	                        : [undefined, itemLength];
+	                }.bind(this), [this.availableLength, this.totalFlex]);
+	            }
+	            else {
+	                this.totalFlex.set(this.totalFlex.get() + flex.get());
+
+	                var flexDelta = new Differential();
+	                flexDelta.subscribe(flex);
+	                this.totalFlex.subscribe(flexDelta);
+
+	                size = Stream.lift(function(availableLength, flex, totalFlex){
+	                    if (!availableLength) return false;
+	                    var itemLength = (availableLength - (this.nodes.length - 1) * this.options.spacing) * (flex / totalFlex);
+	                    return (this.options.direction === CONSTANTS.DIRECTION.X)
+	                        ? [itemLength, undefined]
+	                        : [undefined, itemLength];
+	                }.bind(this), [this.availableLength, flex, this.totalFlex]);
+	            }
+
+	            return {transform : transform, size : size};
+	        }
+	        else {
+	            // Fixed size item: layout only defines the transform
+	            return {transform : transform};
+	        }
+	    }
+
+	    module.exports = FlexLayout;
 	}.call(exports, __webpack_require__, exports, module), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
 
 
@@ -8061,118 +8369,167 @@ return /******/ (function(modules) { // webpackBootstrap
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_RESULT__;/* Copyright © 2015-2016 David Valdman */
-
 	!(__WEBPACK_AMD_DEFINE_RESULT__ = function(require, exports, module) {
-	    var Transform = __webpack_require__(21);
-	    var View = __webpack_require__(26);
-	    var Stream = __webpack_require__(15);
-	    var LayoutNode = __webpack_require__(10);
-	    var SizeNode = __webpack_require__(17);
-	    var Transitionable = __webpack_require__(22);
+	    var Stream = __webpack_require__(16);
+	    var SimpleStream = __webpack_require__(12);
+	    var Observable = __webpack_require__(28);
 
-	    /**
-	     * A layout that arranges items in a grid and can rearrange the grid responsively.
-	     *
-	     *  The user provides the number of items per row in an array or a dictionary
-	     *  with keys that are pixel values. The items will be sized to fill the available space.
-	     *
-	     *  Let itemsPerRow be a dictionary if you want the grid to rearrange responsively. The
-	     *  keys should be pixel values. The row arrangement will be one of the entries of
-	     *  the dictionary whose key value is closest to the parent width without exceeding it.
-	     *
-	     *  @class GridLayout
-	     *  @constructor
-	     *  @extends Core.View
-	     *  @param [options] {Object}                           Options
-	     *  @param options.itemsPerRow {Array|Object}            Number of items per row, or an object of {width : itemsPerRow} pairs
-	     *  @param [options.gutter=0] {Transitionable|Number}   Gap space between successive items
-	     */
-	    var GridLayout = View.extend({
-	        defaults : {
-	            itemsPerRow : [],
-	            gutter : 0
-	        },
-	        events : {},
-	        initialize : function initialize(options){
-	            var gutter = (options.gutter instanceof Transitionable)
-	                ? options.gutter
-	                : new Transitionable(options.gutter);
+	    function ReduceStream(reducer, value, options) {
+	        this.reducer = reducer;
+	        this.options = options || {offset : 0};
 
-	            this.stream = Stream.lift(function(size, gutter){
-	                if (!size) return false; // TODO: fix bug
+	        this.prev = null;
+	        this.next = null;
 
-	                var width = size[0];
-	                var height = size[1];
+	        this.head = this;
+	        this.headOutput = new SimpleStream();
 
-	                var rows = ((options.itemsPerRow instanceof Array))
-	                    ? options.itemsPerRow
-	                    : selectRows(options.itemsPerRow, width);
+	        if (value) {
+	            this.value = value;
+	            this.input = new SimpleStream();
+	            this.output = (options.sources)
+	                ? Stream.lift(this.reducer, [this.input, this.value].concat(options.sources))
+	                : Stream.lift(this.reducer, [this.input, this.value]);
+	        }
+	        else {
+	            this.value = null;
 
-	                var numRows = rows.length;
-	                var rowHeight = (height - ((numRows - 1) * gutter)) / numRows;
-
-	                var sizes = [];
-	                var positions = [];
-
-	                var y = 0;
-	                for (var row = 0; row < numRows; row++){
-	                    var numCols = rows[row];
-	                    var colWidth = (width - ((numCols - 1) * gutter)) / numCols;
-
-	                    var x = 0;
-	                    for (var col = 0; col < numCols; col++){
-	                        var size = [colWidth, rowHeight];
-	                        sizes.push(size);
-	                        positions.push([x,y]);
-	                        x += colWidth + gutter;
-	                    }
-
-	                    y += rowHeight + gutter;
-	                }
-
-	                return {
-	                    sizes : sizes,
-	                    positions : positions
-	                };
-	            }, [this.size, gutter])
-	        },
-	        /**
-	         * Add items to the layout.
-	         *
-	         * @method addItems
-	         * @param [items] {Array}   Array of Surfaces or Views
-	         */
-	        addItems : function addItems(items){
-	            var sizes = this.stream.pluck('sizes');
-	            var positions = this.stream.pluck('positions');
-
-	            for (var i = 0; i < items.length; i++){
-	                var node = items[i];
-
-	                var size = sizes.pluck(i);
-	                var position = positions.pluck(i);
-
-	                var transform = position.map(function(position){
-	                    return Transform.translate(position);
-	                });
-
-	                var size = new SizeNode({size : size});
-	                var layout = new LayoutNode({transform : transform});
-
-	                this.add(size).add(layout).add(node);
+	            if (typeof this.options.offset === 'number'){
+	                this.output = new Observable(this.options.offset);
+	            }
+	            else {
+	                this.output = new SimpleStream();
+	                this.output.subscribe(this.options.offset);
 	            }
 	        }
-	    });
 
-	    function selectRows(rows, width){
-	        for (var cutoff in rows) {
-	            if (width <= parseInt(cutoff))
-	                break;
-	        }
-	        return rows[cutoff];
+	        setHeadOutput.call(this, this.head.output);
 	    }
 
-	    module.exports = GridLayout;
+	    ReduceStream.prototype = Object.create(Stream.prototype);
+	    ReduceStream.prototype.constructor = ReduceStream;
+
+	    ReduceStream.prototype.push = function(stream) {
+	        // refire the initial value if adding to an empty list
+	        if (this.head === this && this.output.set)
+	            this.output.set(this.options.offset || 0);
+
+	        var sizeArray = new ReduceStream(this.reducer, stream, this.options);
+	        connect(this.head, sizeArray);
+
+	        this.head = sizeArray;
+	        setHeadOutput.call(this, this.head.output);
+
+	        return sizeArray.input;
+	    };
+
+	    ReduceStream.prototype.pop = function() {
+	        var prev = this.head.prev;
+
+	        sever(prev, this.head);
+	        this.head = prev;
+
+	        setHeadOutput.call(this, this.head.output);
+	    };
+
+	    ReduceStream.prototype.unshift = function(value) {
+	        var curr = this;
+	        var next = curr.next;
+
+	        if (!next) return this.push(value);
+
+	        var newNode = new ReduceStream(this.reducer, value, this.options);
+
+	        sever(curr, next);
+	        connect(curr, newNode);
+	        connect(newNode, next);
+
+	        if (this.output.set) this.output.set(this.options.offset || 0);
+	        
+	        return newNode.input;
+	    };
+
+	    ReduceStream.prototype.shift = function(){
+	        this.remove(this.next.value);
+	    };
+
+	    ReduceStream.prototype.insertAfter = function(target, value) {
+	        var curr = getNode.call(this, target);
+	        if (!curr) return;
+
+	        var next = curr.next;
+
+	        if (next) {
+	            var newNode = new ReduceStream(this.reducer, value, this.options);
+
+	            sever(curr, next);
+	            connect(newNode, next);
+	            connect(curr, newNode);
+
+	            return newNode.input;
+	        }
+	        else return this.push(value);
+	    };
+
+	    ReduceStream.prototype.insertBefore = function(target, value){
+	        var curr = getNode.call(this, target);
+	        if (!curr) return;
+
+	        var prev = curr.prev;
+
+	        if (prev !== this){
+	            var newNode = new ReduceStream(this.reducer, value, this.options);
+	            sever(prev, curr);
+	            connect(newNode, curr);
+	            connect(prev, newNode);
+	            return newNode.input;
+	        }
+	        else return this.unshift(value);
+	    };
+
+	    ReduceStream.prototype.remove = function(value){
+	        var curr = getNode.call(this, value);
+	        if (!curr) return;
+
+	        var prev = curr.prev;
+	        var next = curr.next;
+
+	        if (next){
+	            sever(curr, next);
+	            sever(prev, curr);
+	            connect(prev, next);
+
+	            if (this.output.set) this.output.set(this.options.offset || 0);
+	        }
+	        else this.pop();
+	    };
+
+	    function getNode(value){
+	        var node = this;
+	        while (node && node.value !== value)
+	            node = node.next;
+
+	        return node;
+	    }
+
+	    function sever(node1, node2){
+	        node1.next = null;
+	        node2.prev = null;
+	        node2.input.unsubscribe(node1.output)
+	    }
+
+	    function connect(node1, node2){
+	        node1.next = node2;
+	        node2.prev = node1;
+	        node2.input.subscribe(node1.output);
+	    }
+
+	    function setHeadOutput(output){
+	        this.headOutput.unsubscribe();
+	        this.headOutput.subscribe(output);
+	    }
+
+	    module.exports = ReduceStream;
 	}.call(exports, __webpack_require__, exports, module), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
 
 
@@ -8182,18 +8539,195 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	var __WEBPACK_AMD_DEFINE_RESULT__;/* Copyright © 2015-2016 David Valdman */
 
+	!(__WEBPACK_AMD_DEFINE_RESULT__ = function(require, exports, module){
+	    var View = __webpack_require__(22);
+	    var FlexLayout = __webpack_require__(54);
+
+	    /**
+	     * A layout that arranges items in a grid and can rearrange the grid responsively.
+	     *
+	     *  The user provides the number of items per row in an array or a dictionary
+	     *  with keys that are pixel values. The items will be sized to fill the available space.
+	     *
+	     *  @class GridLayout
+	     *  @constructor
+	     *  @extends Core.View
+	     *  @param [options] {Object}                           Options
+	     *  @param [options.spacing=0] {Array}                  Gap space between successive rows and columns
+	     */
+	    var GridLayout = View.extend({
+	        defaults : {
+	            spacing : [0, 0]
+	        },
+	        initialize : function initialize(options){
+	            this.rows = [];
+	            this.col = new FlexLayout({
+	                direction: FlexLayout.DIRECTION.Y,
+	                spacing: options.spacing[1]
+	            });
+
+	            this.add(this.col);
+	        },
+	        push : function(item, flex, row){
+	            if (row > this.rows.length) return;
+
+	            if (row === -1){
+	                this.unshift(item, flex, row);
+	                return;
+	            }
+
+	            if (row === undefined) row = this.rows.length;
+
+	            var flexRow;
+	            if (row === this.rows.length){
+	                // append a new row
+	                flexRow = new FlexLayout({
+	                    direction: FlexLayout.DIRECTION.X,
+	                    spacing: this.options.spacing[0]
+	                });
+
+	                this.rows.push(flexRow);
+	                this.col.push(flexRow, 1);
+	            }
+	            else flexRow = this.rows[row];
+
+	            flexRow.push(item, flex);
+	        },
+	        pop : function(row){
+	            if (row === undefined) row = this.rows.length - 1;
+
+	            var flexRow = this.rows[row];
+
+	            var item = flexRow.pop();
+
+	            if (flexRow.length() === 0)
+	                removeRow.call(this, row);
+
+	            return item;
+	        },
+	        unshift : function(item, flex, row){
+	            if (row < -1) return;
+
+	            if (row === this.rows.length){
+	                this.push(item, flex, row);
+	                return;
+	            }
+
+	            if (row === undefined) row = -1;
+
+	            var flexRow;
+	            if (row === -1){
+	                // prepend a new row
+	                flexRow = new FlexLayout({
+	                    direction : FlexLayout.DIRECTION.X,
+	                    spacing : this.options.spacing[0]
+	                });
+
+	                this.rows.unshift(flexRow);
+	                this.col.unshift(flexRow, 1);
+	            }
+	            else flexRow = this.rows[row];
+
+	            flexRow.unshift(item, flex);
+	        },
+	        shift : function(row){
+	            if (row === undefined) row = 0;
+	            var flexRow = this.rows[row];
+
+	            var item = flexRow.shift();
+
+	            if (this.rows[row].length() === 0)
+	                removeRow.call(this, row);
+
+	            return item;
+	        },
+	        insertAfter : function(row, col, item, flex){
+	            var flexRow = this.rows[row];
+	            flexRow.insertAfter(col, item, flex);
+	        },
+	        insertBefore : function(row, col, item, flex){
+	            var flexRow = this.rows[row];
+	            flexRow.insertBefore(col, item, flex);
+	        },
+	        unlink : function(row, col){
+	            var flexRow = this.rows[row];
+	            flexRow.unlink(col);
+	        },
+	        advance : function(row){
+	            var nextRow = row + 1;
+
+	            var numRows = this.rows.length;
+
+	            var surface = this.pop(row);
+	            surface.remove();
+
+	            nextRow -= (numRows - this.rows.length);
+
+	            var flex = 1;
+	            this.unshift(surface, flex, nextRow);
+	        },
+	        retreat : function(row){
+	            var prevRow = row - 1;
+
+	            var surface = this.shift(row);
+	            surface.remove();
+
+	            var flex = 1;
+	            this.push(surface, flex, prevRow);
+	        },
+	        resize : function(colsPerRow){
+	            for (var row = 0; row < colsPerRow.length; row++){
+	                var nCols = colsPerRow[row];
+	                var count = this.rows[row].nodes.length;
+
+	                while (count > nCols) {
+	                    this.advance(row);
+	                    count--;
+	                }
+
+	                while (count < nCols) {
+	                    this.retreat(row + 1);
+	                    count++;
+	                }
+	            }
+	        }
+	    });
+
+	    function removeRow(rowIndex){
+	        var emptyRow = this.col.unlink(this.rows[rowIndex]);
+	        emptyRow.remove();
+	        this.rows.splice(rowIndex, 1);
+	    }
+
+	    module.exports = GridLayout;
+	}.call(exports, __webpack_require__, exports, module), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
+
+
+/***/ },
+/* 57 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var __WEBPACK_AMD_DEFINE_RESULT__;/* Copyright © 2015-2016 David Valdman */
+
 	!(__WEBPACK_AMD_DEFINE_RESULT__ = function(require, exports, module) {
-	    var Transform = __webpack_require__(21);
-	    var View = __webpack_require__(26);
-	    var ResizeStream = __webpack_require__(18);
-	    var LayoutNode = __webpack_require__(10);
+	    var Transform = __webpack_require__(9);
+	    var View = __webpack_require__(22);
+	    var ReduceStream = __webpack_require__(55);
+	    var Stream = __webpack_require__(16);
 
 	    var CONSTANTS = {
 	        DIRECTION : {
-	            X : 0,
+	            X : 0, 
 	            Y : 1
 	        }
 	    };
+
+	    // Default map to convert displacement to transform
+	    function DEFAULT_LENGTH_MAP(length){
+	        return (this.options.direction === CONSTANTS.DIRECTION.X)
+	            ? Transform.translateX(length)
+	            : Transform.translateY(length);
+	    }
 
 	    /**
 	     * A layout which arranges items in series based on their size.
@@ -8210,55 +8744,160 @@ return /******/ (function(modules) { // webpackBootstrap
 	    var SequentialLayout = View.extend({
 	        defaults : {
 	            direction : CONSTANTS.DIRECTION.X,
-	            spacing : 0
-	        },
-	        initialize : function initialize(){},
-	        /**
-	         * Add content as an array of Views or Surfaces.
-	         *
-	         * @method addItems
-	         * @param items {Array}  An array of Views or Surfaces
-	         */
-	        addItems : function addItems(items){
-	            var sizes = [];
-	            for (var i = 0; i < items.length; i++)
-	                sizes.push(items[i].size);
+	            spacing : 0,
+	            offset : 0
+	        }, 
+	        initialize : function initialize(options) {
+	            // Store nodes and flex values
+	            this.nodes = [];
 
-	            var stream = ResizeStream.lift(function(){
-	                var sizes = arguments;
-	                var direction = this.options.direction;
-	                var transforms = [];
+	            this.stream = new ReduceStream(function(prev, size, spacing){
+	                if (!size) return false;
+	                return prev + size[options.direction] + spacing;
+	            }, undefined, {sources : [options.spacing], offset : options.offset});
 
-	                var length = 0;
-	                for (var i = 0; i < sizes.length; i++){
-	                    var size = sizes[i];
+	            this.setLengthMap(DEFAULT_LENGTH_MAP);
 
-	                    var transform = direction === CONSTANTS.DIRECTION.X
-	                        ? Transform.translateX(length)
-	                        : Transform.translateY(length);
-
-	                    transforms.push(transform);
-
-	                    length += size[direction] + this.options.spacing;
-	                }
-
-	                return {
-	                    transforms : transforms,
-	                    length: length
-	                };
-	            }.bind(this), sizes);
-
-	            var transforms = stream.pluck('transforms');
-	            var length = stream.pluck('length');
+	            var length = Stream.lift(function(length, spacing){
+	                return Math.max(length - spacing, 0);
+	            }, [this.stream.headOutput, options.spacing]);
 
 	            this.output.subscribe(length);
 
-	            for (var i = 0; i < items.length; i++){
-	                var node = items[i];
-	                var transform = transforms.pluck(i);
-	                var layout = new LayoutNode({transform : transform});
-	                this.add(layout).add(node);
+	            // SequentialLayout derives its size from its content
+	            var size = [];
+	            this.size = Stream.lift(function(parentSize, length){
+	                if (!parentSize || length === undefined) return;
+	                size[options.direction] = length;
+	                size[1 - options.direction] = parentSize[1 - options.direction];
+	                return size;
+	            }, [this._size, length]);
+	        },
+	        /*
+	        * Set a custom map from length displacements to transforms.
+	        * `this` will automatically be bound to the instance.
+	        *
+	        * @method setLengthMap
+	        * @param map [Function] Map `(length) -> transform`
+	        */
+	        setLengthMap : function(map, sources){
+	            this.transformMap = map.bind(this);
+	            if (sources) this.setSources(sources);
+	        },
+	        setSources : function(sources){
+	            this.sources = sources;
+	        },
+	        /*
+	         * Add a renderable to the end of the layout
+	         *
+	         * @method push
+	         * @param map [Function] Map `(length) -> transform`
+	         */
+	        push : function(item) {
+	            this.nodes.push(item);
+	            var length = this.stream.push(item.size);
+
+	            var transform = (this.sources)
+	                ? Stream.lift(this.transformMap, [length].concat(this.sources))
+	                : length.map(this.transformMap);
+
+	            this.add({transform : transform}).add(item);
+	        },
+	        /*
+	         * Unlink the last renderable in the layout
+	         *
+	         * @method pop
+	         * @return item
+	         */
+	        pop : function(){
+	            return this.unlink(this.nodes.length - 1);
+	        },
+	        /*
+	         * Add a renderable to the beginning of the layout
+	         *
+	         * @method unshift
+	         * @param item {Surface|View} Renderable
+	         */
+	        unshift : function(item){
+	            this.nodes.unshift(item);
+	            var length = this.stream.unshift(item.size);
+	            var transform = length.map(this.transformMap);
+	            this.add({transform : transform}).add(item);
+	        },
+	        /*
+	         * Unlink the first renderable in the layout
+	         *
+	         * @method shift
+	         * @return item
+	         */
+	        shift : function(){
+	            return this.unlink(0);
+	        },
+	        /*
+	         * Add a renderable after a specified renderable
+	         *
+	         * @method insertAfter
+	         * @param prevItem {NumberSurface|View} Index or renderable to insert after
+	         * @param item {Surface|View}           Renderable to insert
+	         */
+	        insertAfter : function(prevItem, item) {
+	            var index;
+	            if (typeof prevItem === 'number'){
+	                index = prevItem + 1;
+	                prevItem = this.nodes[prevItem];
 	            }
+	            else index = this.nodes.indexOf(prevItem) + 1;
+
+	            this.nodes.splice(index, 0, item);
+
+	            if (!prevItem) return this.push(item);
+	            var length = this.stream.insertAfter(prevItem.size, item.size);
+	            var transform = length.map(this.transformMap);
+	            this.add({transform : transform}).add(item);
+	        },
+	        /*
+	         * Add a renderable before a specified renderable
+	         *
+	         * @method insertAfter
+	         * @param prevItem {Number|Surface|View} Index or renderable to insert before
+	         * @param item {Surface|View}            Renderable to insert
+	         */
+	        insertBefore : function(postItem, item){
+	            var index;
+	            if (typeof postItem === 'number'){
+	                index = postItem - 1;
+	                postItem = this.nodes[postItem];
+	            }
+	            else index = this.nodes.indexOf(postItem) - 1;
+
+	            this.nodes.splice(index + 1, 0, item);
+	            
+	            if (!postItem) return this.unshift(item);
+	            var length = this.stream.insertBefore(postItem.size, item.size);
+	            var transform = length.map(this.transformMap);
+	            this.add({transform : transform}).add(item);
+	        },
+	        /*
+	         * Unlink the renderable.
+	         *  To remove the renderable, call the `.remove` method on it after unlinking.
+	         *
+	         * @method unlink
+	         * @param item {Surface|View} Item to remove
+	         * @return item
+	         */
+	        unlink : function(item){
+	            var index;
+	            if (typeof item === 'number'){
+	                index = item;
+	                item = this.nodes[item];
+	            }
+	            else index = this.nodes.indexOf(item);
+
+	            if (!item || !item.size) return;
+	            this.nodes.splice(index, 1);
+	            this.stream.remove(item.size);
+
+	            return item;
 	        }
 	    }, CONSTANTS);
 
@@ -8267,7 +8906,97 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 57 */
+/* 58 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var __WEBPACK_AMD_DEFINE_RESULT__;/* Copyright © 2015-2016 David Valdman */
+
+	!(__WEBPACK_AMD_DEFINE_RESULT__ = function(require, exports, module){
+	    var Transform = __webpack_require__(9);
+	    var View = __webpack_require__(22);
+	    var Stream = __webpack_require__(16);
+
+	    /**
+	     *
+	     * A 3-part layout that arranges content in a header section, content section and footer section.
+	     *  The header and footer sections are each optional (though one of the two must be specified).
+	     *  If the header's or footer's size changes, the content will size appropriately to fit.
+	     * 
+	     * @class HeaderFooterLayout
+	     * @constructor
+	     * @namespace Layouts
+	     * @extends Core.View
+	     * @param [options] {Object}                Options
+	     * @param options.header {Surface|View}     Surface or View acting as a header
+	     * @param options.footer {Surface|View}     Surface or View acting as a footer
+	     * @param [options.content] {Surface|View}  Surface or View acting as content
+	     */
+	    var HeaderFooterLayout = View.extend({
+	        defaults : {
+	            header : null,
+	            content : null,
+	            footer : null
+	        },
+	        initialize : function initialize(options){
+	            this.contentNode = null;
+	            var size, transform;
+
+	            if (options.header) {
+	                transform = options.header.size.map(function(size){
+	                    if (!size) return false;
+	                    return Transform.translateY(size[1]);
+	                });
+
+	                size = (options.footer)
+	                    ? Stream.lift(function(headerSize, footerSize, parentSize){
+	                        if (!headerSize || !footerSize) return false;
+	                        return [parentSize[0], parentSize[1] - headerSize[1] - footerSize[1]];
+	                    }, [options.header.size, options.footer.size, this.size])
+	                    : Stream.lift(function(headerSize, parentSize){
+	                        if (!headerSize || !parentSize) return false;
+	                        return [parentSize[0], parentSize[1] - headerSize[1]];
+	                    }, [options.header.size, this.size]);
+
+	                this.add(options.header);
+	                this.contentNode = this.add({transform : transform, size : size});
+	            }
+	            else if (options.footer){
+	                size = Stream.lift(function(footerSize, parentSize){
+	                    if (!footerSize) return false;
+	                    return [parentSize[0], parentSize[1] - footerSize[1]];
+	                }, [options.footer.size, this.size]);
+
+	                this.contentNode = this.add({size : size});
+	            }
+
+	            if (options.footer){
+	                transform = options.footer.size.map(function(size){
+	                    return Transform.translateY(-size[1]);
+	                });
+
+	                this.add({align : [0, 1], transform : transform}).add(options.footer);
+	            }
+
+	            if (options.content) this.addContent(options.content);
+	        },
+	        /*
+	         * Set the content. Can be used to reset the content as well.
+	         *
+	         * @method addContent
+	         * @param content {Surface|View} Either a surface or view to act as content
+	         */
+	        addContent : function(content){
+	            this.options.content = content;
+	            this.contentNode.add(content);
+	        }
+	    });
+
+	    module.exports = HeaderFooterLayout;
+	}.call(exports, __webpack_require__, exports, module), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
+
+
+/***/ },
+/* 59 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_RESULT__;/* Copyright © 2015-2016 David Valdman */
@@ -8275,25 +9004,25 @@ return /******/ (function(modules) { // webpackBootstrap
 	// This code is still in beta. Documentation forthcoming.
 
 	!(__WEBPACK_AMD_DEFINE_RESULT__ = function (require, exports, module) {
-	    var Transform = __webpack_require__(21);
-	    var Transitionable = __webpack_require__(22);
-	    var View = __webpack_require__(26);
-	    var LayoutNode = __webpack_require__(10);
-	    var Stream = __webpack_require__(15);
-	    var ResizeStream = __webpack_require__(18);
+	    var Transform = __webpack_require__(9);
+	    var Transitionable = __webpack_require__(11);
+	    var View = __webpack_require__(22);
+	    var Stream = __webpack_require__(16);
 	    var Accumulator = __webpack_require__(53);
 	    var Differential = __webpack_require__(52);
 
-	    var SequentialLayout = __webpack_require__(56);
+	    var SequentialLayout = __webpack_require__(57);
 	    var ContainerSurface = __webpack_require__(35);
 
 	    var GenericInput = __webpack_require__(41);
 	    var ScrollInput = __webpack_require__(45);
 	    var TouchInput = __webpack_require__(43);
+	    var MouseInput = __webpack_require__(42);
 
 	    GenericInput.register({
 	        touch: TouchInput,
-	        scroll: ScrollInput
+	        scroll: ScrollInput,
+	        mouse: MouseInput
 	    });
 
 	    var CONSTANTS = {
@@ -8319,6 +9048,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	            marginTop: 0,
 	            marginBottom: 0,
 	            clip: true,
+	            enableMouseDrag: false,
 	            pageTransition: {
 	                curve : 'spring',
 	                period : 100,
@@ -8337,17 +9067,21 @@ return /******/ (function(modules) { // webpackBootstrap
 	            this.itemOffset = 0;
 	            this.items = [];
 	            this.velocity = 0;
-	            var isTouching = false;
 	            this.overflow = 0;
 
+	            var isTouching = false;
+	            var isMouseWheelActive = false;
 	            var edge = EDGE.NONE;
-	            var isMobile = (window.ontouchstart !== undefined);
 
 	            this.layout = new SequentialLayout({
 	                direction: options.direction
 	            });
 
-	            var genericInput = new GenericInput(['touch', 'scroll'], {
+	            var inputs = options.enableMouseDrag
+	                ? ['touch', 'scroll', 'mouse']
+	                : ['touch', 'scroll'];
+
+	            var genericInput = new GenericInput(inputs, {
 	                direction: options.direction
 	            });
 
@@ -8366,6 +9100,15 @@ return /******/ (function(modules) { // webpackBootstrap
 	            position.subscribe(gestureDifferential);
 	            position.subscribe(dragDifferential);
 	            position.subscribe(springDifferential);
+
+	            var scrollInput = genericInput.getInput('scroll');
+	            scrollInput.on('start', function(){
+	                isMouseWheelActive = true;
+	            });
+
+	            scrollInput.on('end', function(){
+	                isMouseWheelActive = false;
+	            });
 
 	            genericInput.on('start', function () {
 	                isTouching = true;
@@ -8410,7 +9153,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	            // overflow is a measure of how much of the content
 	            // extends past the viewport
-	            var overflowStream = ResizeStream.lift(function (contentLength, viewportSize) {
+	            var overflowStream = Stream.lift(function (contentLength, viewportSize) {
 	                if (!contentLength) return false;
 	                var overflow = viewportSize[options.direction] - options.marginBottom - contentLength;
 	                return (overflow >= 0) ? false : overflow;
@@ -8422,7 +9165,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	                if (this.spring.isActive()) return Math.round(top);
 
 	                if (top > 0) { // reached top of scrollview
-	                    if (!isMobile){
+	                    if (isMouseWheelActive){
 	                        edge = EDGE.TOP;
 	                        position.set(0, true);
 	                        changePage.call(this, this._currentIndex);
@@ -8440,7 +9183,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	                    }
 	                }
 	                else if(top < overflow) { // reached bottom of scrollview
-	                    if (!isMobile) {
+	                    if (isMouseWheelActive) {
 	                        edge = EDGE.BOTTOM;
 	                        position.set(overflow, true);
 	                        changePage.call(this, this._currentIndex);
@@ -8467,13 +9210,11 @@ return /******/ (function(modules) { // webpackBootstrap
 	                return Math.round(top);
 	            }.bind(this), [position, overflowStream]);
 
-	            var displacementNode = new LayoutNode({
-	                transform: this.offset.map(function (position) {
-	                    position += options.marginTop;
-	                    return options.direction == CONSTANTS.DIRECTION.Y
-	                        ? Transform.translateY(position)
-	                        : Transform.translateX(position);
-	                })
+	            var transform = this.offset.map(function (position) {
+	                position += options.marginTop;
+	                return options.direction === CONSTANTS.DIRECTION.Y
+	                    ? Transform.translateY(position)
+	                    : Transform.translateX(position);
 	            });
 
 	            this.container = new ContainerSurface({
@@ -8482,7 +9223,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	            genericInput.subscribe(this.container);
 
-	            this.container.add(displacementNode).add(this.layout);
+	            this.container.add({transform : transform}).add(this.layout);
 	            this.add(this.container);
 	        },
 	        setPerspective: function(){
@@ -8494,13 +9235,14 @@ return /******/ (function(modules) { // webpackBootstrap
 	        goTo: function (index, transition, callback) {
 	            transition = transition || this.options.pageTransition;
 	            var position = this.itemOffset;
+	            var i;
 
 	            if (index > this._currentIndex && index < this.items.length) {
-	                for (var i = this._currentIndex; i < index; i++)
+	                for (i = this._currentIndex; i < index; i++)
 	                    position -= this.items[i].getSize()[this.options.direction];
 	            }
 	            else if (index < this._currentIndex && index >= 0) {
-	                for (var i = this._currentIndex; i > index; i--)
+	                for (i = this._currentIndex; i > index; i--)
 	                    position += this.items[i].getSize()[this.options.direction];
 	            }
 
@@ -8512,11 +9254,13 @@ return /******/ (function(modules) { // webpackBootstrap
 	            return this._currentIndex;
 	        },
 	        addItems: function (items) {
-	            this.layout.addItems(items);
+	            for (var i = 0; i < items.length; i++) 
+	                this.layout.push(items[i]);
+	            
 	            this.items = items;
 
 	            var args = [this.offset];
-	            for (var i = 0; i < items.length; i++) {
+	            for (i = 0; i < items.length; i++) {
 	                args.push(items[i].size);
 	            }
 
@@ -8570,7 +9314,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	    }, CONSTANTS);
 
 	    function changePage(index) {
-	        if (index == this._previousIndex) return;
+	        if (index === this._previousIndex) return;
 	        this.emit('page', index);
 	        this._previousIndex = index;
 	    }
@@ -8627,30 +9371,16 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 58 */
+/* 60 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_RESULT__;!(__WEBPACK_AMD_DEFINE_RESULT__ = function(require, exports, module) {
 	    module.exports = {
 	        Accumulator: __webpack_require__(53),
 	        Differential: __webpack_require__(52),
-	        SimpleStream: __webpack_require__(11),
-	        Stream: __webpack_require__(15),
-	        Observable: __webpack_require__(16),
-	        SizeObservable: __webpack_require__(19)
-	    };
-	}.call(exports, __webpack_require__, exports, module), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
-
-
-/***/ },
-/* 59 */
-/***/ function(module, exports, __webpack_require__) {
-
-	var __WEBPACK_AMD_DEFINE_RESULT__;!(__WEBPACK_AMD_DEFINE_RESULT__ = function(require, exports, module) {
-	    module.exports = {
-	        Tween: __webpack_require__(23),
-	        Spring: __webpack_require__(24),
-	        Inertia: __webpack_require__(25)
+	        SimpleStream: __webpack_require__(12),
+	        Stream: __webpack_require__(16),
+	        Observable: __webpack_require__(28)
 	    };
 	}.call(exports, __webpack_require__, exports, module), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
 
