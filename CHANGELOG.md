@@ -1,4 +1,4 @@
-## 0.2.2
+## 0.2.3
 
 - Forget to update distribution files in 0.2.2 upgrade :-)
 
