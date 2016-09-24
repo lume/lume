@@ -291,3 +291,9 @@ square.transform.setRotate([0,2*Math.PI,0], {duration: 5000, curve: 'easeInOut'}
     </body>
 </html>
 ```
+
+---
+
+Testing powered by:
+
+[![BrowserStack](https://cloud.githubusercontent.com/assets/297678/18807024/f6a2ed04-81f1-11e6-94d7-b4205ed77db8.png)](https://www.browserstack.com/)
