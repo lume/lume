@@ -1,51 +1,35 @@
 /* Copyright © 2015-2016 David Valdman */
 
 define(function(require, exports, module) {
-    var EventHandler = require('../../events/EventHandler');
     var SimpleStream = require('../../streams/SimpleStream');
-    var Stream = require('../../streams/Stream');
+    var MergedStream = require('../../streams/_MergedStream');
     var Observable = require('../../streams/Observable');
 
     /**
-     * Encapsulates a stream of layout data (transform, origin, align, opacity).
-     *  Listens on start/update/end events, batches them, and emits them downstream
-     *  to descendant layout nodes.
-     *
-     *  @example
-     *
-     *      var context = Context();
-     *
-     *      var surface = new Surface({
-     *          size : [100,100],
-     *          properties : {background : 'red'}
-     *      });
-     *
-     *      var opacity = new Transitionable(1);
-     *
-     *      var layout = new LayoutNode({
-     *          transform : Transform.translateX(100),
-     *          opacity : opacity
-     *      });
-     *
-     *      context.add(layout).add(surface);
-     *      context.mount(document.body)
-     *
-     *      opacity.set(0, {duration : 1000});
+     * A wrapper around a merged stream used to define Layout or Size nodes.
      *
      * @class Node
      * @constructor
      * @namespace Core
+     * @uses _MergedStream
      * @private
-     * @param sources {Object}                          Object of layout sources
-     * @param [sources.transform] {Stream|Transform}    Transform source
-     * @param [sources.align] {Stream|Array}            Align source
-     * @param [sources.origin] {Stream|Array}           Origin source
-     * @param [sources.opacity] {Stream|Number}         Opacity source
+     * @param sources {Object} Object of sources
      */
     function Node(sources) {
-        this.stream = _createStream(sources);
-        EventHandler.setOutputHandler(this, this.stream);
+        // Wrap source in Observable if necessary
+        for (var key in sources) {
+            var value = sources[key];
+            if (!(value instanceof SimpleStream)) {
+                var source = new Observable(value);
+                sources[key] = source;
+            }
+        }
+
+        MergedStream.call(this, sources);
     }
+
+    Node.prototype = Object.create(MergedStream.prototype);
+    Node.prototype.constructor = Node;
 
     /**
      * Introduce new data streams to the layout node in {key : value} pairs.
@@ -65,20 +49,9 @@ define(function(require, exports, module) {
                 ? value
                 : new Observable(value);
 
-            this.stream.addStream(key, source);
+            this.addStream(key, source);
         }
     };
-
-    function _createStream(sources) {
-        for (var key in sources) {
-            var value = sources[key];
-            if (!(value instanceof SimpleStream)) {
-                var source = new Observable(value);
-                sources[key] = source;
-            }
-        }
-        return Stream.merge(sources);
-    }
 
     module.exports = Node;
 });
