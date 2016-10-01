@@ -112,15 +112,15 @@ define(function(require, exports, module) {
             childNode._logic.trigger('mount', this.root);
 
         // Emit previously cached values if node was removed
-        if (!node.root){
-            var self = this;
-            // TODO: switch to nextQueue
-            dirtyQueue.push(function(){
-                if (!self._cachedSpec.size) return;
-                self.size.trigger('set', self._cachedSpec.size);
-                self.layout.trigger('set', self._cachedSpec.layout);
-            });
-        }
+        // if (!node.root){
+        //     var self = this;
+        //     // TODO: switch to nextQueue
+        //     dirtyQueue.push(function(){
+        //         if (!self._cachedSpec.size) return;
+        //         self.size.trigger('set', self._cachedSpec.size);
+        //         self.layout.trigger('set', self._cachedSpec.layout);
+        //     });
+        // }
 
         return childNode;
     };
