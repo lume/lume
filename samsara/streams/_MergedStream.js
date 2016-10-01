@@ -2,6 +2,7 @@
 
 define(function(require, exports, module) {
     var SimpleStream = require('./SimpleStream');
+    var Observable = require('./Observable');
 
     function MergedStream(streams) {
         this.mergedData = streams instanceof Array ? [] : {};
@@ -18,26 +19,30 @@ define(function(require, exports, module) {
             end : boundEmit
         });
 
-        for (var key in streams)
-            this.addStream(key, streams[key]);
+        if (streams) this.set(streams);
     }
 
     MergedStream.prototype = Object.create(SimpleStream.prototype);
     MergedStream.prototype.constructor = MergedStream;
 
+    MergedStream.prototype.set = function(sources){
+        for (var key in sources) {
+            var source = sources[key];
+            this.addStream(key, source);
+        }
+    };
+
     MergedStream.prototype.addStream = function(key, stream) {
         var mergedData = this.mergedData;
+        mergedData[key] = undefined;
 
-        if (stream instanceof Object && stream.on){
-            mergedData[key] = undefined;
+        if (!stream.on) stream = new Observable(stream);
 
-            stream.on(['set', 'start', 'update', 'end'], function(data){
-                mergedData[key] = data;
-            });
+        stream.on(['set', 'start', 'update', 'end'], function(data){
+            mergedData[key] = data;
+        });
 
-            this.subscribe(stream);
-        }
-        else mergedData[key] = stream;
+        this.subscribe(stream);
 
         this.streamCache[key] = stream;
     };

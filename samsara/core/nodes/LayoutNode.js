@@ -1,7 +1,7 @@
 /* Copyright © 2015-2016 David Valdman */
 
 define(function(require, exports, module) {
-    var Node = require('./Node');
+    var MergedStream = require('../../streams/_MergedStream');
 
     /**
      * Encapsulates a stream of layout data (transform, origin, align, opacity).
@@ -40,10 +40,10 @@ define(function(require, exports, module) {
      * @param [sources.opacity] {Stream|Number}         Opacity source
      */
     function LayoutNode(sources) {
-        Node.call(this, sources);
+        MergedStream.call(this, sources);
     }
 
-    LayoutNode.prototype = Object.create(Node.prototype);
+    LayoutNode.prototype = Object.create(MergedStream.prototype);
     LayoutNode.prototype.constructor = LayoutNode;
 
     // Enumeration of types of layout properties

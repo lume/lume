@@ -1,7 +1,7 @@
 /* Copyright © 2015-2016 David Valdman */
 
 define(function(require, exports, module) {
-    var Node = require('./Node');
+    var MergedStream = require('../../streams/_MergedStream');
 
     /**
      * Encapsulates a stream of size data (size, proportions, margins).
@@ -45,10 +45,10 @@ define(function(require, exports, module) {
      * @param [sources.aspectRatio] {Stream|Number} Aspect ratio source
      */
     function SizeNode(sources) {
-        Node.call(this, sources);
+        MergedStream.call(this, sources);
     }
-    
-    SizeNode.prototype = Object.create(Node.prototype);
+
+    SizeNode.prototype = Object.create(MergedStream.prototype);
     SizeNode.prototype.constructor = SizeNode;
 
     // Enumeration of types of size properties
