@@ -59,7 +59,6 @@ define(function(require, exports, module) {
      * @param [options.origin] {Number[]}       Origin (x,y), with values between 0 and 1
      * @param [options.margins] {Number[]}      Margins (x,y) in pixels
      * @param [options.proportions] {Number[]}  Proportions (x,y) with values between 0 and 1
-     * @param [options.aspectRatio] {Number}    Aspect ratio
      * @param [options.opacity=1] {Number}      Opacity
      * @param [options.tagName="div"] {String}  HTML tagName
      * @param [options.enableScroll] {Boolean}  Allows a Surface to support native scroll behavior

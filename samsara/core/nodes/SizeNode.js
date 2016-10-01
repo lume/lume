@@ -14,7 +14,7 @@ define(function(require, exports, module) {
      *  ```
      *      `undefined` - takes the parent value
      *      `true`      - takes the DOM calculated value
-     *      `false`     - value defined by setting an aspect ratio
+     *      `false`     - value defined by another property (proportion, or margin value)
      *  ```
      *
      *  @example
@@ -42,7 +42,6 @@ define(function(require, exports, module) {
      * @param [sources.size] {Stream|Array}         Size source
      * @param [sources.margin] {Stream|Array}       Margin source
      * @param [sources.proportions] {Stream|Array}  Proportions source
-     * @param [sources.aspectRatio] {Stream|Number} Aspect ratio source
      */
     function SizeNode(sources) {
         MergedStream.call(this, sources);
@@ -55,8 +54,7 @@ define(function(require, exports, module) {
     SizeNode.KEYS = {
         size : true,
         proportions : true,
-        margins : true,
-        aspectRatio : true
+        margins : true
     };
 
     module.exports = SizeNode;
