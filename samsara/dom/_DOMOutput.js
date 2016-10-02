@@ -30,6 +30,7 @@ define(function(require, exports, module) {
         this._originDirty = true;
         this._transformDirty = true;
         this._isVisible = true;
+        this._roundToPixel = false;
     }
 
     function _round(value, unit){
@@ -211,7 +212,7 @@ define(function(require, exports, module) {
 
         if (this._transformDirty) {
             cache.transform = transform;
-            _setTransform(target, transform, this.roundToPixel ? 1 : devicePixelRatio);
+            _setTransform(target, transform, this._roundToPixel ? 1 : devicePixelRatio);
         }
 
         this._originDirty = false;

@@ -190,7 +190,7 @@ define(function(require, exports, module) {
     Surface.prototype.getContent = function getContent(){
         return this.content;
     };
-    
+
     /**
      * Setter for HTML attributes.
      *
@@ -362,7 +362,7 @@ define(function(require, exports, module) {
         if (options.content !== undefined) this.setContent(options.content);
         if (options.aspectRatio !== undefined) this.setAspectRatio(options.aspectRatio);
         if (options.enableScroll) enableScroll.call(this);
-        if (options.roundToPixel) this.roundToPixel = options.roundToPixel;
+        if (options.roundToPixel) this._elementOutput._roundToPixel = options.roundToPixel;
     };
 
     /**
