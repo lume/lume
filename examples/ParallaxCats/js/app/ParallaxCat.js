@@ -25,7 +25,7 @@ define(function(require, exports, module) {
             // Create the cat photo
             var cat = new Surface({
                 size: function(parentSize){
-                    return [parentsize[0], 4/3 * parentSize[1]];
+                    return [parentSize[0], 4/3 * parentSize[1]];
                 },
                 tagName : 'img',
                 origin : [0.5,0.2],
