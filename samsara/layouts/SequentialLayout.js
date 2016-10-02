@@ -45,7 +45,7 @@ define(function(require, exports, module) {
             this.nodes = [];
 
             this.stream = new ReduceStream(function(prev, length, spacing){
-                if (length === undefined) return false;
+                if (prev === undefined || length === undefined) return false;
                 return prev + length + spacing;
             }, options.offset, [options.spacing]);
 
