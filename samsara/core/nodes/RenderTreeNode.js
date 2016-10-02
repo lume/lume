@@ -8,7 +8,7 @@ define(function(require, exports, module) {
     var SizeNode = require('./SizeNode');
     var layoutAlgebra = require('../algebras/layout');
     var sizeAlgebra = require('../algebras/size');
-    var dirtyQueue = require('../../core/queues/dirtyQueue');
+    var preTickQueue = require('../../core/queues/preTickQueue');
 
     /**
      * A node in the render tree. As such, it wraps a layout or size node,
@@ -111,16 +111,16 @@ define(function(require, exports, module) {
         if (this.root && !childNode.root)
             childNode._logic.trigger('mount', this.root);
 
-        // Emit previously cached values if node was removed
-        // if (!node.root){
-        //     var self = this;
-        //     // TODO: switch to nextQueue
-        //     dirtyQueue.push(function(){
-        //         if (!self._cachedSpec.size) return;
-        //         self.size.trigger('set', self._cachedSpec.size);
-        //         self.layout.trigger('set', self._cachedSpec.layout);
-        //     });
-        // }
+        // Emit previously cached values if node added after initial resize
+        if (!node.root){
+            var self = this;
+            // TODO: switch to nextQueue
+            preTickQueue.push(function(){
+                if (node.root) return;
+                if (self._cachedSpec.size) self.size.trigger('set', self._cachedSpec.size);
+                if (self._cachedSpec.layout) self.layout.trigger('set', self._cachedSpec.layout);
+            });
+        }
 
         return childNode;
     };
