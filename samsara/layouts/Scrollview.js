@@ -218,9 +218,7 @@ define(function (require, exports, module) {
 
             // this.output.subscribe(pivot);
 
-            pivot.on('start', function(){});
-            pivot.on('update', function(){});
-            pivot.on('end', function(){});
+            pivot.on(['set', 'start', 'update', 'end'], function(){});
 
             var properties = (this.options.clip) ? {overflow : 'hidden'} : {};
             this.container = new ContainerSurface(properties);
