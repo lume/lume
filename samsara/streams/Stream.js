@@ -72,6 +72,7 @@ define(function(require, exports, module){
         var locked = false;
         var lockedAbove = false;
         var lockCounter = 0;
+        var unsubscribed = false;
 
         var states = {
             set: false,
@@ -82,11 +83,30 @@ define(function(require, exports, module){
         };
 
         function resolve(data){
+            if (unsubscribed){
+                this.emit(EVENTS.END, data);
+
+                states.start = false;
+                states.update = false;
+                states.end = false;
+                states.set = false;
+                states.prev = EVENTS.END;
+
+                return;
+            }
+
+            if (states.prev === EVENTS.START && states.set){
+                console.log('BUG!', states)
+            }
+
             if (startCounter === 0 && states.update && states.end){
                 // update and end called in the same tick when tick should end
                 this.emit(EVENTS.UPDATE, data);
                 states.prev = EVENTS.UPDATE;
                 states.update = false;
+            }
+            else if (states.prev === EVENTS.START && states.set) {
+                states.set = false;
             }
             else if (states.prev !== EVENTS.UPDATE && states.start && states.update){
                 // start and update called in the same tick
@@ -158,6 +178,7 @@ define(function(require, exports, module){
             if (options.end) data = options.end(data);
             states.end = true;
             startCounter--;
+            if (startCounter < 0) console.log('fuck');
             delay.call(this, data);
         }.bind(this));
 
@@ -176,6 +197,17 @@ define(function(require, exports, module){
             lockCounter--;
             if (lockCounter === 0){
                 lockedAbove = false;
+            }
+        });
+
+        this._eventInput.on('subscribe', function(){
+            unsubscribed = false;
+        });
+
+        this._eventInput.on('unsubscribe', function(){
+            if (startCounter > 0){
+                startCounter = 0;
+                unsubscribed = true;
             }
         });
     }
