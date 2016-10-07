@@ -124,6 +124,7 @@ define(function(require, exports, module) {
     EventHandler.prototype.subscribe = function subscribe(source) {
         var index = this.upstream.indexOf(source);
         if (index < 0) {
+            if (source.trigger) source.trigger('subscribe', null);
             this.upstream.push(source);
             for (var type in this.upstreamListeners) {
                 source.on(type, this.upstreamListeners[type]);
@@ -151,6 +152,7 @@ define(function(require, exports, module) {
         else {
             var index = this.upstream.indexOf(source);
             if (index >= 0) {
+                if (source.trigger) source.trigger('unsubscribe', null);
                 this.upstream.splice(index, 1);
                 for (var type in this.upstreamListeners) {
                     source.off(type, this.upstreamListeners[type]);

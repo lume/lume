@@ -40,7 +40,9 @@ define(function(require, exports, module) {
 
     var FORBIDDEN_TYPES = {
         lockBelow : true,
-        unlockBelow : true
+        unlockBelow : true,
+        subscribe : true,
+        unsubscribe : true
     };
 
     /**
