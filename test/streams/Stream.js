@@ -48,6 +48,46 @@ define(function (require) {
         return STATE[newState];
     }
 
+    QUnit.test('cutoff', function(assert){
+        var done = assert.async();
+
+        var t = new Transitionable(0);
+
+        var stream = new Stream();
+        stream.subscribe(t);
+
+
+        stream.on('start', function(value) {
+            console.log('start', value);
+            state = updateState(state, 'start');
+
+            assert.ok(value === 0);
+        });
+
+        stream.on('update', function(value) {
+            console.log('update', value);
+            state = updateState(state, 'update');
+
+            assert.ok(value >= 0 && value < 1);
+        });
+
+        stream.on('end', function(value) {
+            console.log('end', value);
+            state = updateState(state, 'end');
+
+            assert.ok(value < 1);
+
+            loop.stop();
+            done();
+        });
+
+        t.set(1, {duration : 500});
+
+        Timer.setTimeout(function(){
+            stream.unsubscribe(t);
+        }, 250)
+    });
+
     QUnit.test('start', function(assert){
         expect(1);
         var done = assert.async();
@@ -368,12 +408,12 @@ define(function (require) {
             done();
         });
 
-        t.set(1, {duration : 500}, function(){
-            s.set(2, {duration : 500});
+        t.set(1, {duration : 200}, function(){
+            s.set(2, {duration : 200});
         });
 
         Timer.setTimeout(function(){
-            r.set(3, {duration : 1000});
+            r.set(3, {duration : 300});
         }, 300);
     });
 
@@ -460,7 +500,47 @@ define(function (require) {
             done();
         });
 
-        t.set(1, {duration : 1000});
+        t.set(1, {duration : 500});
+    });
+
+    QUnit.test('Set on update merge', function(assert){
+        var done = assert.async();
+
+        var t = new Transitionable(0);
+        var s = new Transitionable(1);
+
+        var stream = Stream.merge([t, s]);
+
+        stream.on('set', function(value) {
+            console.log('set', value);
+            state = updateState(state, 'set');
+            assert.equal(value[1], 2);
+        });
+
+        stream.on('start', function(value) {
+            console.log('start', value);
+            state = updateState(state, 'start');
+            assert.deepEqual(value, [0, 1]);
+        });
+
+        stream.on('update', function(value) {
+            console.log('update', value);
+            state = updateState(state, 'update');
+        });
+
+        stream.on('end', function(value) {
+            console.log('end', value);
+            state = updateState(state, 'end');
+            assert.deepEqual(value, [1, 2]);
+            loop.stop();
+            done();
+        });
+
+        t.set(1, {duration : 500});
+
+        Timer.setTimeout(function(){
+            s.set(2);
+        }, 100);
     });
 
     QUnit.test('Cascade merge', function(assert){
