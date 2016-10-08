@@ -14,7 +14,7 @@ define(function(require, exports, module){
 
         this._output = Stream.lift(reducer, sources);
 
-        this.output = new SimpleStream();
+        // this.output = new SimpleStream();
 
         this.stream = stream;
 
@@ -50,11 +50,27 @@ define(function(require, exports, module){
         this.tailOutput = new SimpleStream();
         this.tailOutput.subscribe(this.offset);
 
-        this.headOutput = new SimpleStream();
+        this.headOutput = new Stream();
         this.headOutput.subscribe(this.offset);
 
         this.pivotOutput = new SimpleStream();
         this.pivotOutput.subscribe(this.offset);
+
+        this.headOutput.on('set', function(data){
+            console.log('head set', data);
+        })
+
+        this.headOutput.on('start', function(data){
+            console.log('head start', data);
+        })
+
+        this.headOutput.on('update', function(data){
+            console.log('head update', data);
+        })
+
+        this.headOutput.on('end', function(data){
+            console.log('head end', data);
+        })
     }
 
     function fireOffset(){
@@ -71,39 +87,55 @@ define(function(require, exports, module){
 
     LinkedList.prototype.push = function(stream){
         var node = new ReduceNode(this.reducer, stream, this.extras);
-        node.output.subscribe(node._input);
+        // node.output.subscribe(node._input);
+
+        // node.on('start', function(){
+        //     console.log('node start')
+        // })
+
+        // node.on('update', function(){
+        //     console.log('node update')
+        // })
+
+        // node.on('end', function(){
+        //     console.log('node end')
+        // })
 
         if (this.next.length === 0){
             node.subscribe(this.offset);
             setPivotOutput.call(this, node.stream);
+            setHeadOutput.call(this, node, this.offset);
             fireOffset.call(this);
         }
         else {
-            node.subscribe(this.next[this.next.length - 1]);
+            var lastNode = this.next[this.next.length - 1];
+            node.subscribe(lastNode);
+            setHeadOutput.call(this, node, lastNode);
         }
 
         this.next.push(node);
-        setHeadOutput.call(this, node);
 
-        return node.output;
+        return node._input;
     };
 
     LinkedList.prototype.unshift = function(stream){
         var node = new ReduceNode(this.prevReducer, stream, this.extras);
-        node.output.subscribe(node._output);
+        // node.output.subscribe(node._output);
 
         if (this.prev.length === 0){
             node.subscribe(this.offset);
             fireOffset.call(this);
+            setTailOutput.call(this, node);
         }
         else {
-            node.subscribe(this.prev[this.prev.length - 1]);
+            var firstNode = this.prev[this.prev.length - 1];
+            node.subscribe(firstNode);
+            setTailOutput.call(this, node);
         }
 
         this.prev.push(node);
-        setTailOutput.call(this, node);
 
-        return node.output;
+        return node._output;
     };
 
     LinkedList.prototype.pop = function(){
@@ -144,8 +176,8 @@ define(function(require, exports, module){
                 var next = this.next.shift();
                 next.setMap(this.prevReducer);
 
-                next.output.unsubscribe();
-                next.output.subscribe(next._output);
+                // next.unsubscribe();
+                // next.subscribe(next._output);
 
                 if (this.next[0]) this.next[0].unsubscribe(next);
                 if (this.prev[0]) this.prev[0].subscribe(next);
@@ -158,8 +190,8 @@ define(function(require, exports, module){
                 var prev = this.prev.shift();
                 prev.setMap(this.reducer);
 
-                prev.output.unsubscribe();
-                prev.output.subscribe(prev._input);
+                // prev.output.unsubscribe();
+                // prev.output.subscribe(prev._input);
 
                 if (this.prev[0]) this.prev[0].unsubscribe(prev);
                 if (this.next[0]) this.next[0].subscribe(prev);
@@ -187,7 +219,7 @@ define(function(require, exports, module){
         fireOffset.call(this);
     };
 
-    function setHeadOutput(head){
+    function setHeadOutput(head, prevHead){
         this.headOutput.unsubscribe();
         this.headOutput.subscribe(head);
     }
