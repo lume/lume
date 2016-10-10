@@ -15,7 +15,7 @@ const ObservableMixin = base => {
         }
 
         off(eventName, callback) {
-            if (!this._eventMap.has(eventName)) return
+            if (!this._eventMap || !this._eventMap.has(eventName)) return
 
             const callbacks = this._eventMap.get(eventName)
 
@@ -29,7 +29,7 @@ const ObservableMixin = base => {
         }
 
         triggerEvent(eventName, data) {
-            if (!this._eventMap.has(eventName)) return
+            if (!this._eventMap || !this._eventMap.has(eventName)) return
 
             const callbacks = this._eventMap.get(eventName)
 
