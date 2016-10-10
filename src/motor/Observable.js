@@ -11,7 +11,10 @@ const ObservableMixin = base => {
             if (!this._eventMap.has(eventName))
                 this._eventMap.set(eventName, [])
 
-            this._eventMap.get(eventName).push(callback)
+            if (typeof callback == 'function')
+                this._eventMap.get(eventName).push(callback)
+            else
+                throw new Error('Expected a function in callback argument of Observable#on.')
         }
 
         off(eventName, callback) {
