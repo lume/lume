@@ -17,6 +17,8 @@ define(function(require, exports, module) {
      *
      * MouseInput emits these events with the following payload data:
      *
+     *      `x`         - x-position relative to screen (independent of scroll)
+     *      `y`         - y-position relative to screen (independent of scroll)
      *      `value`     - Displacement in pixels from `mousedown`
      *      `delta`     - Differential in pixels between successive mouse positions
      *      `velocity`  - Velocity of mouse movement in pixels per second
@@ -84,6 +86,8 @@ define(function(require, exports, module) {
         this._eventInput.on('mouseleave',   handleLeave.bind(this));
 
         this._payload = {
+            x : 0,
+            y : 0,
             delta : null,
             value : null,
             cumulate : null,
@@ -139,12 +143,16 @@ define(function(require, exports, module) {
             this._value = 0;
             delta = 0;
             velocity = 0;
+            if (this.options.direction === MouseInput.DIRECTION.X) payload.x = x;
+            if (this.options.direction === MouseInput.DIRECTION.Y) payload.y = y;
         }
         else {
             if (this._cumulate === null) this._cumulate = [0, 0];
             this._value = [0, 0];
             delta = [0, 0];
             velocity = [0, 0];
+            payload.x = x;
+            payload.y = y;
         }
 
         var payload = this._payload;
@@ -191,19 +199,25 @@ define(function(require, exports, module) {
         var nextVel;
         var nextDelta;
 
+        var payload = this._payload;
+
         if (direction === MouseInput.DIRECTION.X) {
+            payload.x = x;
             nextDelta = diffX;
             nextVel = velX;
             this._value += nextDelta;
             this._cumulate += nextDelta;
         }
         else if (direction === MouseInput.DIRECTION.Y) {
+            payload.y = y;
             nextDelta = diffY;
             nextVel = velY;
             this._value += nextDelta;
             this._cumulate += nextDelta;
         }
         else {
+            payload.x = x;
+            payload.y = y;
             nextDelta = [diffX, diffY];
             nextVel = [velX, velY];
             this._value[0] += nextDelta[0];
@@ -212,7 +226,7 @@ define(function(require, exports, module) {
             this._cumulate[1] += nextDelta[1];
         }
 
-        var payload = this._payload;
+
         payload.delta = nextDelta;
         payload.value = this._value;
         payload.cumulate = this._cumulate;
