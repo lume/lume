@@ -1,4 +1,5 @@
 import { makeAccessorsEnumerable } from './Utility'
+import Observable from './Observable'
 
 /**
  * Represents a set of values for the X, Y, and Z axes. For example, the
@@ -8,31 +9,29 @@ import { makeAccessorsEnumerable } from './Utility'
  * The value don't have to be numerical. For example,
  * {x:'foo', y:'bar', z:'baz'}
  */
-class XYZValues {
+class XYZValues extends Observable {
     constructor(x = 0, y = 0, z = 0) {
+        super()
         this._x = x
         this._y = y
         this._z = z
     }
 
-    // override this on the instance to run logic on a property change.
-    onChanged() {}
-
     set x(value) {
         this._x = value
-        this.onChanged()
+        this.triggerEvent('valuechanged', {x: value})
     }
     get x() { return this._x }
 
     set y(value) {
         this._y = value
-        this.onChanged()
+        this.triggerEvent('valuechanged', {y: value})
     }
     get y() { return this._y }
 
     set z(value) {
         this._z = value
-        this.onChanged()
+        this.triggerEvent('valuechanged', {z: value})
     }
     get z() { return this._z }
 }

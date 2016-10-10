@@ -32,15 +32,20 @@ const SizeableMixin = base => {
             };
 
             // TODO: move this observation in Node. I don't think it belongs here.
-            const propertyChange = () => this._needsToBeRendered()
-            this._properties.sizeMode.onChanged = propertyChange
-            this._properties.absoluteSize.onChanged = propertyChange
-            this._properties.proportionalSize.onChanged = propertyChange
+            const propertyChange = () => {
+                this._calcSize()
+                this._needsToBeRendered()
+            }
+            console.log(' ### sizeMode?', this._properties.sizeMode)
+            this._properties.sizeMode.on('valuechanged', propertyChange)
+            this._properties.absoluteSize.on('valuechanged', propertyChange)
+            this._properties.proportionalSize.on('valuechanged', propertyChange)
 
             // This line calls the leaf-class `properties` setter, but we want
             // to use the current prototype's `properties` setter, which
             // requires the super long line after this one. XXX Maybe there's a
             // better way to manage this?
+            //
             //this.properties = options
             Object.getOwnPropertyDescriptor(Sizeable.prototype, 'properties').set.call(this, options)
         }
