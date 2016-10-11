@@ -2,8 +2,6 @@ import nodeStyles from './node-style'
 
 export default
 Object.assign({}, nodeStyles, {
-    //display:   'block',
-    //boxSizing: 'border-box',
     position: 'relative',
     overflow: 'hidden',
     width:    '100%',
@@ -13,6 +11,6 @@ Object.assign({}, nodeStyles, {
     // TODO: make settable. issue #32
     perspective: 1000,
 
-    // XXX: Do we need this? Make it configurable?
+    // TODO: Do we need this? Make it configurable?
     //perspectiveOrigin: '25%',
 })

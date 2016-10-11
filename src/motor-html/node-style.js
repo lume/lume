@@ -1,6 +1,7 @@
 
 export default {
     display:         'block',
+    boxSizing:       'border-box',
     position:        'absolute',
     top:             0,
     left:            0,
