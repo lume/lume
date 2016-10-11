@@ -34,11 +34,9 @@ const TransformableMixin = base => {
                 align: new XYZValues(0, 0, 0),
                 mountPoint: new XYZValues(0, 0, 0),
 
-                transform: new window.DOMMatrix,
+                opacity: 1,
 
-                style: {
-                    opacity: 1,
-                },
+                transform: new window.DOMMatrix,
             })
 
             // TODO: opacity needs onChanged handler like all the other
@@ -130,11 +128,11 @@ const TransformableMixin = base => {
          */
         set opacity(opacity) {
             if (!isRealNumber(opacity)) throw new Error('Expected a real number for Node#opacity.')
-            this._properties.style.opacity = opacity;
+            this._properties.opacity = opacity;
             this._needsToBeRendered()
         }
         get opacity() {
-            return this._properties.style.opacity
+            return this._properties.opacity
         }
 
         /**
@@ -227,16 +225,17 @@ const TransformableMixin = base => {
                 this.mountPoint = properties.mountPoint
 
             // Opacity
-            if (properties.style) {
-                if (typeof properties.style.opacity != 'undefined')
-                    this.opacity = properties.opacity
-            }
+            if (properties.opacity)
+                this.opacity = properties.opacity
 
             this._needsToBeRendered()
         }
         // no need for a properties getter.
 
         // TODO Where does _render belong? Probably in the DOMRenderer?
+        // TODO: rename to _update? it's not really rendering, it's updating
+        // the transform, then the HTML engine renders the DOM elements, and
+        // the WebGL renderer will render the meshes.
         _render(timestamp) {
             // applies the transform matrix to the element's style property.
             // TODO: We shouldn't need to re-calculate the whole matrix every render?
@@ -245,7 +244,7 @@ const TransformableMixin = base => {
             super._render()
 
             // TODO move to DOMRenderer
-            this._applyStyles()
+            this._applyOpacityToElement()
 
             return this
         }
@@ -268,14 +267,14 @@ const TransformableMixin = base => {
 
             let alignAdjustment = [0,0,0]
             if (this._parent) { // The root Scene doesn't have a parent, for example.
-                let parentSize = this._parent.actualSize
+                let parentSize = this._parent._calculatedSize
                 alignAdjustment[0] = parentSize.x * this._properties.align.x
                 alignAdjustment[1] = parentSize.y * this._properties.align.y
                 alignAdjustment[2] = parentSize.z * this._properties.align.z
             }
 
             let mountPointAdjustment = [0,0,0]
-            let thisSize = this.actualSize
+            let thisSize = this._calculatedSize
             mountPointAdjustment[0] = thisSize.x * this._properties.mountPoint.x
             mountPointAdjustment[1] = thisSize.y * this._properties.mountPoint.y
             mountPointAdjustment[2] = thisSize.z * this._properties.mountPoint.z
@@ -361,16 +360,16 @@ const TransformableMixin = base => {
                 ${ matrix.m44 }
             )`;
 
-            this._applyStyle('transform', cssMatrixString);
+            this._applyStyleToElement('transform', cssMatrixString);
         }
 
         /**
          * @private
+         *
+         * TODO: move into DOMRenderer.
          */
-        _applyStyles () {
-            for (let key of Object.keys(this._properties.style)) {
-                this._applyStyle(key, this._properties.style[key]);
-            }
+        _applyOpacityToElement() {
+            this._applyStyleToElement('opacity', this._properties.opacity);
         }
     }
 
@@ -404,8 +403,9 @@ const TransformableMixin = base => {
     // motor-scpecific and can be used anywhere.
     makeLowercaseSetterAliases(Transformable.prototype)
 
-    // So Tween.js can animate opacity. Note, makes all accessors enumerable
-    // even though we don't need to animate them all, not a big deal.
+    // So Tween.js can animate Transformable properties that are accessors.
+    // Note, this makes all accessors enumerable even though we don't need to
+    // animate them all, but it's not a big deal.
     makeAccessorsEnumerable(Transformable.prototype)
 
     return Transformable

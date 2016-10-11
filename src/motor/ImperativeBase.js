@@ -209,8 +209,18 @@ export function initImperativeBase() {
                     childNode._giveSceneRefToChildren()
                 }
 
+                // Calculate sizing because proportional size might depend on
+                // the new parent.
+                // TODO delegate to animation frame?
+                childNode._calcSize()
+                childNode._needsToBeRendered()
+
+                // child should watch the parent for size changes.
+                this.on('sizechange', childNode._onParentSizeChange)
+
                 // TODO move to DOMRenderer
-                this._mountChildElement(childNode)
+                // TODO delegate to animation frame?
+                this._appendChildElement(childNode)
 
                 return this
             }
@@ -228,7 +238,7 @@ export function initImperativeBase() {
                 }
             }
 
-            _mountChildElement(childNode) {
+            _appendChildElement(childNode) {
                 // If Node's HTML element isn't mounted.. mount it.
                 // TODO move to DOMRenderer
                 if (! childNode._mounted) {
@@ -253,6 +263,9 @@ export function initImperativeBase() {
 
             removeChild(childNode) {
                 super.removeChild(childNode)
+
+                // childNode no longer needs to observe parent for size changes.
+                this.off('sizechange', childNode._onParentSizeChange)
 
                 if (childNode instanceof ImperativeBase) {
                     childNode._scene = null // not part of a scene anymore.

@@ -1,3 +1,4 @@
+import { makeAccessorsEnumerable } from './Utility'
 import Sizeable from './Sizeable'
 import ImperativeBase, {initImperativeBase} from './ImperativeBase'
 import MotorHTMLScene from '../motor-html/scene'
@@ -10,18 +11,100 @@ class Scene extends Sizeable.mixin(ImperativeBase) {
     constructor(options = {}) {
         super(options)
 
+        this._elementParentSize = {x:0, y:0, z:0}
+
+        this._onElementParentSizeChange = (newSize) => {
+            this._elementParentSize = newSize
+            this._calcSize()
+            this._needsToBeRendered()
+        }
+
         // TODO: remove, only Node needs scenePromise stuff.
         this._scene = this
         this._resolveScenePromise(this)
 
         // For now, Scenes are always proportionally sized by default.
         // TODO: Scene is not Transformable, it contains all the Transformable Nodes, so set sizing by CSS.
-        this._properties.sizeMode = { x: 'proportional', y: 'proportional', z: 'proportional' }
+        this.sizeMode = { x: 'proportional', y: 'proportional' }
 
         // TODO: We need to render one time each time mountPromise is resolved,
         // not just this one time in the constructor.
-        // TODO: Does Scene need this call?
+        this._calcSize()
         this._needsToBeRendered()
+    }
+
+    // When we set the scene's size mode, we should start polling if it has
+    // proportional sizing.
+    set sizeMode(newValue) {
+        super.sizeMode = newValue
+        this._startOrStopSizePolling()
+    }
+    get sizeMode() {
+        return super.sizeMode
+    }
+
+    _startOrStopSizePolling() {
+        if (
+            this._properties.sizeMode.x == 'proportional'
+            || this._properties.sizeMode.y == 'proportional'
+            || this._properties.sizeMode.z == 'proportional'
+        ) {
+            this._startSizePolling()
+        }
+        else {
+            this._stopSizePolling()
+        }
+    }
+
+    _startSizePolling() {
+        // observe size changes on the scene element.
+        this._el.element._startSizePolling()
+        this._el.element.on('parentsizechange', this._onElementParentSizeChange)
+    }
+
+    _stopSizePolling() {
+        // observe size changes on the scene element.
+        this._el.element.off('parentsizechange', this._onElementParentSizeChange)
+        this._el.element._stopSizePolling()
+    }
+
+    /**
+     * @override
+     */
+    _calcSize() {
+        const {x,y,z} = this._calculatedSize
+        const previousSize = {x,y,z}
+
+        if (this._properties.sizeMode._x == 'absolute') {
+            this._calculatedSize.x = this._properties.absoluteSize._x
+        }
+        else { // proportional
+            this._calculatedSize.x = Math.round(this._properties.proportionalSize._x * this._elementParentSize.x)
+        }
+
+        if (this._properties.sizeMode._y == 'absolute') {
+            this._calculatedSize.y = this._properties.absoluteSize._y
+        }
+        else { // proportional
+            this._calculatedSize.y = Math.round(this._properties.proportionalSize._y * this._elementParentSize.y)
+        }
+
+        if (this._properties.sizeMode._z == 'absolute') {
+            this._calculatedSize.z = this._properties.absoluteSize._z
+        }
+        else { // proportional
+            // XXX: z size is always 0, since the scene is always flat.
+            this._calculatedSize.z = Math.round(this._properties.proportionalSize._z * this._elementParentSize.z)
+        }
+
+        if (
+            previousSize.x !== this._calculatedSize.x
+            || previousSize.y !== this._calculatedSize.y
+            || previousSize.z !== this._calculatedSize.z
+        ) {
+            const {x,y,z} = this._calculatedSize
+            this.triggerEvent('sizechange', {x,y,z})
+        }
     }
 
     /**
@@ -70,6 +153,8 @@ class Scene extends Sizeable.mixin(ImperativeBase) {
             throw new Error('Invalid mount point specified in Scene.mount() call. Specify a selector, or pass an actual HTMLElement.')
         }
 
+        this._startOrStopSizePolling()
+
         this._resolveMountPromise(this._mounted)
     }
 
@@ -78,6 +163,8 @@ class Scene extends Sizeable.mixin(ImperativeBase) {
      * mountPromise.
      */
     unmount() {
+        this._stopSizePolling()
+
         if (this._el.element.parentNode)
             this._el.element.parentNode.removeChild(this._el.element)
 
@@ -88,5 +175,7 @@ class Scene extends Sizeable.mixin(ImperativeBase) {
     }
 
 }
+
+makeAccessorsEnumerable(Scene.prototype)
 
 export {Scene as default}
