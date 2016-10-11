@@ -138,6 +138,8 @@ define(function(require, exports, module) {
         this._down = true;
         this._move = false;
 
+        var payload = this._payload;
+
         if (this.options.direction !== undefined) {
             if (this._cumulate === null) this._cumulate = 0;
             this._value = 0;
@@ -155,7 +157,6 @@ define(function(require, exports, module) {
             payload.y = y;
         }
 
-        var payload = this._payload;
         payload.delta = delta;
         payload.value = this._value;
         payload.cumulate = this._cumulate;
