@@ -97,9 +97,9 @@ define(function(require, exports, module) {
             // Object literal case
             return _createNodeFromObjectLiteral.call(this, node);
         }
-        else if (node._isView){
+        else if (node._onAdd){
             // View case
-            return this.add(node._node);
+            return node._onAdd(this);
         }
         else if (node instanceof RenderTreeNode){
             // RenderTree Node
