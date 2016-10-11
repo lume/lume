@@ -74,6 +74,7 @@ define(function(require, exports, module) {
 
         this._eventOutput = new EventHandler();
         this._eventForwarder = function _eventForwarder(event) {
+            event.stopPropagation();
             this._eventOutput.emit(event.type, event);
         }.bind(this);
 
