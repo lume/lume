@@ -7165,11 +7165,11 @@ return /******/ (function(modules) { // webpackBootstrap
 	
 	var _PushPaneLayout3 = _interopRequireDefault(_PushPaneLayout2);
 	
-	var _Scene2 = __webpack_require__(380);
+	var _Scene2 = __webpack_require__(383);
 	
 	var _Scene3 = _interopRequireDefault(_Scene2);
 	
-	var _Sizeable2 = __webpack_require__(379);
+	var _Sizeable2 = __webpack_require__(380);
 	
 	var _Sizeable3 = _interopRequireDefault(_Sizeable2);
 	
@@ -7177,7 +7177,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	
 	var _Transformable3 = _interopRequireDefault(_Transformable2);
 	
-	var _TreeNode2 = __webpack_require__(383);
+	var _TreeNode2 = __webpack_require__(382);
 	
 	var _TreeNode3 = _interopRequireDefault(_TreeNode2);
 	
@@ -9124,7 +9124,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	
 	var _Transformable2 = _interopRequireDefault(_Transformable);
 	
-	var _ImperativeBase = __webpack_require__(382);
+	var _ImperativeBase = __webpack_require__(381);
 	
 	var _ImperativeBase2 = _interopRequireDefault(_ImperativeBase);
 	
@@ -10232,7 +10232,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	
 	var _XYZValues2 = _interopRequireDefault(_XYZValues);
 	
-	var _Sizeable = __webpack_require__(379);
+	var _Sizeable = __webpack_require__(380);
 	
 	var _Sizeable2 = _interopRequireDefault(_Sizeable);
 	
@@ -10707,7 +10707,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	
 	var _Utility = __webpack_require__(373);
 	
-	var _Observable2 = __webpack_require__(381);
+	var _Observable2 = __webpack_require__(379);
 	
 	var _Observable3 = _interopRequireDefault(_Observable2);
 	
@@ -10786,6 +10786,110 @@ return /******/ (function(modules) { // webpackBootstrap
 
 /***/ },
 /* 379 */
+/***/ function(module, exports) {
+
+	'use strict';
+	
+	Object.defineProperty(exports, "__esModule", {
+	    value: true
+	});
+	
+	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+	
+	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+	
+	function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+	
+	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+	
+	var instanceofSymbol = Symbol('instanceofSymbol');
+	
+	var ObservableMixin = function ObservableMixin(base) {
+	    var Observable = function (_base) {
+	        _inherits(Observable, _base);
+	
+	        function Observable() {
+	            _classCallCheck(this, Observable);
+	
+	            return _possibleConstructorReturn(this, Object.getPrototypeOf(Observable).apply(this, arguments));
+	        }
+	
+	        _createClass(Observable, [{
+	            key: 'on',
+	            value: function on(eventName, callback) {
+	                if (!this._eventMap) this._eventMap = new Map();
+	
+	                if (!this._eventMap.has(eventName)) this._eventMap.set(eventName, []);
+	
+	                if (typeof callback == 'function') this._eventMap.get(eventName).push(callback);else throw new Error('Expected a function in callback argument of Observable#on.');
+	            }
+	        }, {
+	            key: 'off',
+	            value: function off(eventName, callback) {
+	                if (!this._eventMap || !this._eventMap.has(eventName)) return;
+	
+	                var callbacks = this._eventMap.get(eventName);
+	
+	                if (callbacks.indexOf(callback) === -1) return;
+	
+	                callbacks.splice(callbacks.indexOf(callback), 1);
+	
+	                if (callbacks.length === 0) this._eventMap.delete(eventName);
+	
+	                if (this._eventMap.size === 0) this._eventMap = null;
+	            }
+	        }, {
+	            key: 'triggerEvent',
+	            value: function triggerEvent(eventName, data) {
+	                if (!this._eventMap || !this._eventMap.has(eventName)) return;
+	
+	                var callbacks = this._eventMap.get(eventName);
+	
+	                for (var i = 0, len = callbacks.length; i < len; i += 1) {
+	                    callbacks[i](data);
+	                }
+	            }
+	        }]);
+	
+	        return Observable;
+	    }(base);
+	
+	    Object.defineProperty(Observable, Symbol.hasInstance, {
+	        value: function value(obj) {
+	            if (this !== Observable) return Object.getPrototypeOf(Observable)[Symbol.hasInstance].call(this, obj);
+	
+	            var currentProto = obj;
+	
+	            while (currentProto) {
+	                var desc = Object.getOwnPropertyDescriptor(currentProto, "constructor");
+	
+	                if (desc && desc.value && desc.value.hasOwnProperty(instanceofSymbol)) return true;
+	
+	                currentProto = Object.getPrototypeOf(currentProto);
+	            }
+	
+	            return false;
+	        }
+	    });
+	
+	    Observable[instanceofSymbol] = true;
+	
+	    return Observable;
+	};
+	
+	var Observable = ObservableMixin(function () {
+	    function _class() {
+	        _classCallCheck(this, _class);
+	    }
+	
+	    return _class;
+	}());
+	Observable.mixin = ObservableMixin;
+	
+	exports.default = Observable;
+
+/***/ },
+/* 380 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -10807,7 +10911,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	
 	var _Motor2 = _interopRequireDefault(_Motor);
 	
-	var _Observable = __webpack_require__(381);
+	var _Observable = __webpack_require__(379);
 	
 	var _Observable2 = _interopRequireDefault(_Observable);
 	
@@ -11189,397 +11293,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	exports.default = Sizeable;
 
 /***/ },
-/* 380 */
-/***/ function(module, exports, __webpack_require__) {
-
-	'use strict';
-	
-	Object.defineProperty(exports, "__esModule", {
-	    value: true
-	});
-	exports.default = undefined;
-	
-	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
-	
-	var _get = function get(object, property, receiver) { if (object === null) object = Function.prototype; var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { return get(parent, property, receiver); } } else if ("value" in desc) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } };
-	
-	var _set = function set(object, property, value, receiver) { var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent !== null) { set(parent, property, value, receiver); } } else if ("value" in desc && desc.writable) { desc.value = value; } else { var setter = desc.set; if (setter !== undefined) { setter.call(receiver, value); } } return value; };
-	
-	var _Utility = __webpack_require__(373);
-	
-	var _Sizeable = __webpack_require__(379);
-	
-	var _Sizeable2 = _interopRequireDefault(_Sizeable);
-	
-	var _ImperativeBase = __webpack_require__(382);
-	
-	var _ImperativeBase2 = _interopRequireDefault(_ImperativeBase);
-	
-	var _scene = __webpack_require__(384);
-	
-	var _scene2 = _interopRequireDefault(_scene);
-	
-	var _documentReady = __webpack_require__(304);
-	
-	var _documentReady2 = _interopRequireDefault(_documentReady);
-	
-	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-	
-	function _asyncToGenerator(fn) { return function () { var gen = fn.apply(this, arguments); return new Promise(function (resolve, reject) { function step(key, arg) { try { var info = gen[key](arg); var value = info.value; } catch (error) { reject(error); return; } if (info.done) { resolve(value); } else { return Promise.resolve(value).then(function (value) { return step("next", value); }, function (err) { return step("throw", err); }); } } return step("next"); }); }; }
-	
-	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-	
-	function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
-	
-	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
-	
-	(0, _ImperativeBase.initImperativeBase)();
-	
-	// Scene is Sizeable, which is currently a subset of Transformable.
-	
-	var Scene = function (_Sizeable$mixin) {
-	    _inherits(Scene, _Sizeable$mixin);
-	
-	    function Scene() {
-	        var options = arguments.length <= 0 || arguments[0] === undefined ? {} : arguments[0];
-	
-	        _classCallCheck(this, Scene);
-	
-	        var _this = _possibleConstructorReturn(this, Object.getPrototypeOf(Scene).call(this, options));
-	
-	        _this._elementParentSize = { x: 0, y: 0, z: 0 };
-	
-	        _this._onElementParentSizeChange = function (newSize) {
-	            _this._elementParentSize = newSize;
-	            _this._calcSize();
-	            _this._needsToBeRendered();
-	        };
-	
-	        // TODO: remove, only Node needs scenePromise stuff.
-	        _this._scene = _this;
-	        _this._resolveScenePromise(_this);
-	
-	        // For now, Scenes are always proportionally sized by default.
-	        // TODO: Scene is not Transformable, it contains all the Transformable Nodes, so set sizing by CSS.
-	        _this.sizeMode = { x: 'proportional', y: 'proportional' };
-	
-	        // TODO: We need to render one time each time mountPromise is resolved,
-	        // not just this one time in the constructor.
-	        _this._calcSize();
-	        _this._needsToBeRendered();
-	        return _this;
-	    }
-	
-	    // When we set the scene's size mode, we should start polling if it has
-	    // proportional sizing.
-	
-	
-	    _createClass(Scene, [{
-	        key: '_startOrStopSizePolling',
-	        value: function _startOrStopSizePolling() {
-	            if (this._properties.sizeMode.x == 'proportional' || this._properties.sizeMode.y == 'proportional' || this._properties.sizeMode.z == 'proportional') {
-	                this._startSizePolling();
-	            } else {
-	                this._stopSizePolling();
-	            }
-	        }
-	    }, {
-	        key: '_startSizePolling',
-	        value: function _startSizePolling() {
-	            // observe size changes on the scene element.
-	            this._el.element._startSizePolling();
-	            this._el.element.on('parentsizechange', this._onElementParentSizeChange);
-	        }
-	    }, {
-	        key: '_stopSizePolling',
-	        value: function _stopSizePolling() {
-	            // observe size changes on the scene element.
-	            this._el.element.off('parentsizechange', this._onElementParentSizeChange);
-	            this._el.element._stopSizePolling();
-	        }
-	
-	        /**
-	         * @override
-	         */
-	
-	    }, {
-	        key: '_calcSize',
-	        value: function _calcSize() {
-	            var _calculatedSize = this._calculatedSize;
-	            var x = _calculatedSize.x;
-	            var y = _calculatedSize.y;
-	            var z = _calculatedSize.z;
-	
-	            var previousSize = { x: x, y: y, z: z };
-	
-	            if (this._properties.sizeMode._x == 'absolute') {
-	                this._calculatedSize.x = this._properties.absoluteSize._x;
-	            } else {
-	                // proportional
-	                this._calculatedSize.x = Math.round(this._properties.proportionalSize._x * this._elementParentSize.x);
-	            }
-	
-	            if (this._properties.sizeMode._y == 'absolute') {
-	                this._calculatedSize.y = this._properties.absoluteSize._y;
-	            } else {
-	                // proportional
-	                this._calculatedSize.y = Math.round(this._properties.proportionalSize._y * this._elementParentSize.y);
-	            }
-	
-	            if (this._properties.sizeMode._z == 'absolute') {
-	                this._calculatedSize.z = this._properties.absoluteSize._z;
-	            } else {
-	                // proportional
-	                // XXX: z size is always 0, since the scene is always flat.
-	                this._calculatedSize.z = Math.round(this._properties.proportionalSize._z * this._elementParentSize.z);
-	            }
-	
-	            if (previousSize.x !== this._calculatedSize.x || previousSize.y !== this._calculatedSize.y || previousSize.z !== this._calculatedSize.z) {
-	                var _calculatedSize2 = this._calculatedSize;
-	                var _x2 = _calculatedSize2.x;
-	                var _y = _calculatedSize2.y;
-	                var _z = _calculatedSize2.z;
-	
-	                this.triggerEvent('sizechange', { x: _x2, y: _y, z: _z });
-	            }
-	        }
-	
-	        /**
-	         * @override
-	         */
-	
-	    }, {
-	        key: '_makeElement',
-	        value: function _makeElement() {
-	            return new _scene2.default();
-	        }
-	
-	        /**
-	         * Mount the scene into the given target.
-	         * Resolves the Scene's mountPromise, which can be use to do something once
-	         * the scene is mounted.
-	         *
-	         * @param {string|HTMLElement} [mountPoint=document.body] If a string selector is provided,
-	         * the mount point will be selected from the DOM. If an HTMLElement is
-	         * provided, that will be the mount point. If no mount point is provided,
-	         * the scene will be mounted into document.body.
-	         */
-	
-	    }, {
-	        key: 'mount',
-	        value: function () {
-	            var _ref = _asyncToGenerator(regeneratorRuntime.mark(function _callee(mountPoint) {
-	                var selector;
-	                return regeneratorRuntime.wrap(function _callee$(_context) {
-	                    while (1) {
-	                        switch (_context.prev = _context.next) {
-	                            case 0:
-	                                if (!(document.readyState == 'loading')) {
-	                                    _context.next = 3;
-	                                    break;
-	                                }
-	
-	                                _context.next = 3;
-	                                return (0, _documentReady2.default)();
-	
-	                            case 3:
-	
-	                                // if no mountPoint was provided, just mount onto the <body> element.
-	                                // XXX: Maybe we should just not mount the scene if no mountPoint is
-	                                // provided, and expose a mount method.
-	                                if (!mountPoint) {
-	                                    mountPoint = document.body;
-	                                }
-	
-	                                // if the user supplied a selector, mount there.
-	                                else if (typeof mountPoint === 'string') {
-	                                        selector = mountPoint;
-	
-	                                        mountPoint = document.querySelector(selector);
-	                                    }
-	
-	                                // if we have an actual mount point (the user may have supplied one)
-	
-	                                if (!(mountPoint instanceof window.HTMLElement)) {
-	                                    _context.next = 9;
-	                                    break;
-	                                }
-	
-	                                if (mountPoint !== this._el.element.parentNode) mountPoint.appendChild(this._el.element);
-	
-	                                this._mounted = true;
-	                                _context.next = 10;
-	                                break;
-	
-	                            case 9:
-	                                throw new Error('Invalid mount point specified in Scene.mount() call. Specify a selector, or pass an actual HTMLElement.');
-	
-	                            case 10:
-	
-	                                this._startOrStopSizePolling();
-	
-	                                this._resolveMountPromise(this._mounted);
-	
-	                            case 12:
-	                            case 'end':
-	                                return _context.stop();
-	                        }
-	                    }
-	                }, _callee, this);
-	            }));
-	
-	            function mount(_x3) {
-	                return _ref.apply(this, arguments);
-	            }
-	
-	            return mount;
-	        }()
-	
-	        /**
-	         * Unmount the scene from it's mount point. Resets the Scene's
-	         * mountPromise.
-	         */
-	
-	    }, {
-	        key: 'unmount',
-	        value: function unmount() {
-	            var _this2 = this;
-	
-	            this._stopSizePolling();
-	
-	            if (this._el.element.parentNode) this._el.element.parentNode.removeChild(this._el.element);
-	
-	            this._mounted = false;
-	
-	            // a new promise to be resolved on the next mount.
-	            this._mountPromise = new Promise(function (r) {
-	                return _this2._resolveMountPromise = r;
-	            });
-	        }
-	    }, {
-	        key: 'sizeMode',
-	        set: function set(newValue) {
-	            _set(Object.getPrototypeOf(Scene.prototype), 'sizeMode', newValue, this);
-	            this._startOrStopSizePolling();
-	        },
-	        get: function get() {
-	            return _get(Object.getPrototypeOf(Scene.prototype), 'sizeMode', this);
-	        }
-	    }]);
-	
-	    return Scene;
-	}(_Sizeable2.default.mixin(_ImperativeBase2.default));
-	
-	(0, _Utility.makeAccessorsEnumerable)(Scene.prototype);
-	
-	exports.default = Scene;
-
-/***/ },
 /* 381 */
-/***/ function(module, exports) {
-
-	'use strict';
-	
-	Object.defineProperty(exports, "__esModule", {
-	    value: true
-	});
-	
-	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
-	
-	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-	
-	function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
-	
-	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
-	
-	var instanceofSymbol = Symbol('instanceofSymbol');
-	
-	var ObservableMixin = function ObservableMixin(base) {
-	    var Observable = function (_base) {
-	        _inherits(Observable, _base);
-	
-	        function Observable() {
-	            _classCallCheck(this, Observable);
-	
-	            return _possibleConstructorReturn(this, Object.getPrototypeOf(Observable).apply(this, arguments));
-	        }
-	
-	        _createClass(Observable, [{
-	            key: 'on',
-	            value: function on(eventName, callback) {
-	                if (!this._eventMap) this._eventMap = new Map();
-	
-	                if (!this._eventMap.has(eventName)) this._eventMap.set(eventName, []);
-	
-	                if (typeof callback == 'function') this._eventMap.get(eventName).push(callback);else throw new Error('Expected a function in callback argument of Observable#on.');
-	            }
-	        }, {
-	            key: 'off',
-	            value: function off(eventName, callback) {
-	                if (!this._eventMap || !this._eventMap.has(eventName)) return;
-	
-	                var callbacks = this._eventMap.get(eventName);
-	
-	                if (callbacks.indexOf(callback) === -1) return;
-	
-	                callbacks.splice(callbacks.indexOf(callback), 1);
-	
-	                if (callbacks.length === 0) this._eventMap.delete(eventName);
-	
-	                if (this._eventMap.size === 0) this._eventMap = null;
-	            }
-	        }, {
-	            key: 'triggerEvent',
-	            value: function triggerEvent(eventName, data) {
-	                if (!this._eventMap || !this._eventMap.has(eventName)) return;
-	
-	                var callbacks = this._eventMap.get(eventName);
-	
-	                for (var i = 0, len = callbacks.length; i < len; i += 1) {
-	                    callbacks[i](data);
-	                }
-	            }
-	        }]);
-	
-	        return Observable;
-	    }(base);
-	
-	    Object.defineProperty(Observable, Symbol.hasInstance, {
-	        value: function value(obj) {
-	            if (this !== Observable) return Object.getPrototypeOf(Observable)[Symbol.hasInstance].call(this, obj);
-	
-	            var currentProto = obj;
-	
-	            while (currentProto) {
-	                var desc = Object.getOwnPropertyDescriptor(currentProto, "constructor");
-	
-	                if (desc && desc.value && desc.value.hasOwnProperty(instanceofSymbol)) return true;
-	
-	                currentProto = Object.getPrototypeOf(currentProto);
-	            }
-	
-	            return false;
-	        }
-	    });
-	
-	    Observable[instanceofSymbol] = true;
-	
-	    return Observable;
-	};
-	
-	var Observable = ObservableMixin(function () {
-	    function _class() {
-	        _classCallCheck(this, _class);
-	    }
-	
-	    return _class;
-	}());
-	Observable.mixin = ObservableMixin;
-	
-	exports.default = Observable;
-
-/***/ },
-/* 382 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -11595,7 +11309,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	
 	exports.initImperativeBase = initImperativeBase;
 	
-	var _TreeNode = __webpack_require__(383);
+	var _TreeNode = __webpack_require__(382);
 	
 	var _TreeNode2 = _interopRequireDefault(_TreeNode);
 	
@@ -11607,7 +11321,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	
 	var _Node2 = _interopRequireDefault(_Node);
 	
-	var _Scene = __webpack_require__(380);
+	var _Scene = __webpack_require__(383);
 	
 	var _Scene2 = _interopRequireDefault(_Scene);
 	
@@ -12024,7 +11738,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	exports.default = ImperativeBase;
 
 /***/ },
-/* 383 */
+/* 382 */
 /***/ function(module, exports) {
 
 	'use strict';
@@ -12226,6 +11940,292 @@ return /******/ (function(modules) { // webpackBootstrap
 	exports.default = TreeNode;
 
 /***/ },
+/* 383 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+	
+	Object.defineProperty(exports, "__esModule", {
+	    value: true
+	});
+	exports.default = undefined;
+	
+	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+	
+	var _get = function get(object, property, receiver) { if (object === null) object = Function.prototype; var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { return get(parent, property, receiver); } } else if ("value" in desc) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } };
+	
+	var _set = function set(object, property, value, receiver) { var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent !== null) { set(parent, property, value, receiver); } } else if ("value" in desc && desc.writable) { desc.value = value; } else { var setter = desc.set; if (setter !== undefined) { setter.call(receiver, value); } } return value; };
+	
+	var _Utility = __webpack_require__(373);
+	
+	var _Sizeable = __webpack_require__(380);
+	
+	var _Sizeable2 = _interopRequireDefault(_Sizeable);
+	
+	var _ImperativeBase = __webpack_require__(381);
+	
+	var _ImperativeBase2 = _interopRequireDefault(_ImperativeBase);
+	
+	var _scene = __webpack_require__(384);
+	
+	var _scene2 = _interopRequireDefault(_scene);
+	
+	var _documentReady = __webpack_require__(304);
+	
+	var _documentReady2 = _interopRequireDefault(_documentReady);
+	
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+	
+	function _asyncToGenerator(fn) { return function () { var gen = fn.apply(this, arguments); return new Promise(function (resolve, reject) { function step(key, arg) { try { var info = gen[key](arg); var value = info.value; } catch (error) { reject(error); return; } if (info.done) { resolve(value); } else { return Promise.resolve(value).then(function (value) { return step("next", value); }, function (err) { return step("throw", err); }); } } return step("next"); }); }; }
+	
+	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+	
+	function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+	
+	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+	
+	(0, _ImperativeBase.initImperativeBase)();
+	
+	// Scene is Sizeable, which is currently a subset of Transformable.
+	
+	var Scene = function (_Sizeable$mixin) {
+	    _inherits(Scene, _Sizeable$mixin);
+	
+	    function Scene() {
+	        var options = arguments.length <= 0 || arguments[0] === undefined ? {} : arguments[0];
+	
+	        _classCallCheck(this, Scene);
+	
+	        var _this = _possibleConstructorReturn(this, Object.getPrototypeOf(Scene).call(this, options));
+	
+	        _this._elementParentSize = { x: 0, y: 0, z: 0 };
+	
+	        _this._onElementParentSizeChange = function (newSize) {
+	            _this._elementParentSize = newSize;
+	            _this._calcSize();
+	            _this._needsToBeRendered();
+	        };
+	
+	        // TODO: remove, only Node needs scenePromise stuff.
+	        _this._scene = _this;
+	        _this._resolveScenePromise(_this);
+	
+	        // For now, Scenes are always proportionally sized by default.
+	        // TODO: Scene is not Transformable, it contains all the Transformable Nodes, so set sizing by CSS.
+	        _this.sizeMode = { x: 'proportional', y: 'proportional' };
+	
+	        // TODO: We need to render one time each time mountPromise is resolved,
+	        // not just this one time in the constructor.
+	        _this._calcSize();
+	        _this._needsToBeRendered();
+	        return _this;
+	    }
+	
+	    // When we set the scene's size mode, we should start polling if it has
+	    // proportional sizing.
+	
+	
+	    _createClass(Scene, [{
+	        key: '_startOrStopSizePolling',
+	        value: function _startOrStopSizePolling() {
+	            if (this._properties.sizeMode.x == 'proportional' || this._properties.sizeMode.y == 'proportional' || this._properties.sizeMode.z == 'proportional') {
+	                this._startSizePolling();
+	            } else {
+	                this._stopSizePolling();
+	            }
+	        }
+	    }, {
+	        key: '_startSizePolling',
+	        value: function _startSizePolling() {
+	            // observe size changes on the scene element.
+	            this._el.element._startSizePolling();
+	            this._el.element.on('parentsizechange', this._onElementParentSizeChange);
+	        }
+	    }, {
+	        key: '_stopSizePolling',
+	        value: function _stopSizePolling() {
+	            // observe size changes on the scene element.
+	            this._el.element.off('parentsizechange', this._onElementParentSizeChange);
+	            this._el.element._stopSizePolling();
+	        }
+	
+	        /**
+	         * @override
+	         */
+	
+	    }, {
+	        key: '_calcSize',
+	        value: function _calcSize() {
+	            var _calculatedSize = this._calculatedSize;
+	            var x = _calculatedSize.x;
+	            var y = _calculatedSize.y;
+	            var z = _calculatedSize.z;
+	
+	            var previousSize = { x: x, y: y, z: z };
+	
+	            if (this._properties.sizeMode._x == 'absolute') {
+	                this._calculatedSize.x = this._properties.absoluteSize._x;
+	            } else {
+	                // proportional
+	                this._calculatedSize.x = Math.round(this._properties.proportionalSize._x * this._elementParentSize.x);
+	            }
+	
+	            if (this._properties.sizeMode._y == 'absolute') {
+	                this._calculatedSize.y = this._properties.absoluteSize._y;
+	            } else {
+	                // proportional
+	                this._calculatedSize.y = Math.round(this._properties.proportionalSize._y * this._elementParentSize.y);
+	            }
+	
+	            if (this._properties.sizeMode._z == 'absolute') {
+	                this._calculatedSize.z = this._properties.absoluteSize._z;
+	            } else {
+	                // proportional
+	                // XXX: z size is always 0, since the scene is always flat.
+	                this._calculatedSize.z = Math.round(this._properties.proportionalSize._z * this._elementParentSize.z);
+	            }
+	
+	            if (previousSize.x !== this._calculatedSize.x || previousSize.y !== this._calculatedSize.y || previousSize.z !== this._calculatedSize.z) {
+	                var _calculatedSize2 = this._calculatedSize;
+	                var _x2 = _calculatedSize2.x;
+	                var _y = _calculatedSize2.y;
+	                var _z = _calculatedSize2.z;
+	
+	                this.triggerEvent('sizechange', { x: _x2, y: _y, z: _z });
+	            }
+	        }
+	
+	        /**
+	         * @override
+	         */
+	
+	    }, {
+	        key: '_makeElement',
+	        value: function _makeElement() {
+	            return new _scene2.default();
+	        }
+	
+	        /**
+	         * Mount the scene into the given target.
+	         * Resolves the Scene's mountPromise, which can be use to do something once
+	         * the scene is mounted.
+	         *
+	         * @param {string|HTMLElement} [mountPoint=document.body] If a string selector is provided,
+	         * the mount point will be selected from the DOM. If an HTMLElement is
+	         * provided, that will be the mount point. If no mount point is provided,
+	         * the scene will be mounted into document.body.
+	         */
+	
+	    }, {
+	        key: 'mount',
+	        value: function () {
+	            var _ref = _asyncToGenerator(regeneratorRuntime.mark(function _callee(mountPoint) {
+	                var selector;
+	                return regeneratorRuntime.wrap(function _callee$(_context) {
+	                    while (1) {
+	                        switch (_context.prev = _context.next) {
+	                            case 0:
+	                                if (!(document.readyState == 'loading')) {
+	                                    _context.next = 3;
+	                                    break;
+	                                }
+	
+	                                _context.next = 3;
+	                                return (0, _documentReady2.default)();
+	
+	                            case 3:
+	
+	                                // if no mountPoint was provided, just mount onto the <body> element.
+	                                // XXX: Maybe we should just not mount the scene if no mountPoint is
+	                                // provided, and expose a mount method.
+	                                if (!mountPoint) {
+	                                    mountPoint = document.body;
+	                                }
+	
+	                                // if the user supplied a selector, mount there.
+	                                else if (typeof mountPoint === 'string') {
+	                                        selector = mountPoint;
+	
+	                                        mountPoint = document.querySelector(selector);
+	                                    }
+	
+	                                // if we have an actual mount point (the user may have supplied one)
+	
+	                                if (!(mountPoint instanceof window.HTMLElement)) {
+	                                    _context.next = 9;
+	                                    break;
+	                                }
+	
+	                                if (mountPoint !== this._el.element.parentNode) mountPoint.appendChild(this._el.element);
+	
+	                                this._mounted = true;
+	                                _context.next = 10;
+	                                break;
+	
+	                            case 9:
+	                                throw new Error('Invalid mount point specified in Scene.mount() call. Specify a selector, or pass an actual HTMLElement.');
+	
+	                            case 10:
+	
+	                                this._startOrStopSizePolling();
+	
+	                                this._resolveMountPromise(this._mounted);
+	
+	                            case 12:
+	                            case 'end':
+	                                return _context.stop();
+	                        }
+	                    }
+	                }, _callee, this);
+	            }));
+	
+	            function mount(_x3) {
+	                return _ref.apply(this, arguments);
+	            }
+	
+	            return mount;
+	        }()
+	
+	        /**
+	         * Unmount the scene from it's mount point. Resets the Scene's
+	         * mountPromise.
+	         */
+	
+	    }, {
+	        key: 'unmount',
+	        value: function unmount() {
+	            var _this2 = this;
+	
+	            this._stopSizePolling();
+	
+	            if (this._el.element.parentNode) this._el.element.parentNode.removeChild(this._el.element);
+	
+	            this._mounted = false;
+	
+	            // a new promise to be resolved on the next mount.
+	            this._mountPromise = new Promise(function (r) {
+	                return _this2._resolveMountPromise = r;
+	            });
+	        }
+	    }, {
+	        key: 'sizeMode',
+	        set: function set(newValue) {
+	            _set(Object.getPrototypeOf(Scene.prototype), 'sizeMode', newValue, this);
+	            this._startOrStopSizePolling();
+	        },
+	        get: function get() {
+	            return _get(Object.getPrototypeOf(Scene.prototype), 'sizeMode', this);
+	        }
+	    }]);
+	
+	    return Scene;
+	}(_Sizeable2.default.mixin(_ImperativeBase2.default));
+	
+	(0, _Utility.makeAccessorsEnumerable)(Scene.prototype);
+	
+	exports.default = Scene;
+
+/***/ },
 /* 384 */
 /***/ function(module, exports, __webpack_require__) {
 
@@ -12248,11 +12248,11 @@ return /******/ (function(modules) { // webpackBootstrap
 	
 	var _Motor2 = _interopRequireDefault(_Motor);
 	
-	var _Scene = __webpack_require__(380);
+	var _Scene = __webpack_require__(383);
 	
 	var _Scene2 = _interopRequireDefault(_Scene);
 	
-	var _Observable = __webpack_require__(381);
+	var _Observable = __webpack_require__(379);
 	
 	var _Observable2 = _interopRequireDefault(_Observable);
 	
@@ -15294,7 +15294,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	
 	var _Transformable2 = _interopRequireDefault(_Transformable);
 	
-	var _Sizeable = __webpack_require__(379);
+	var _Sizeable = __webpack_require__(380);
 	
 	var _Sizeable2 = _interopRequireDefault(_Sizeable);
 	
