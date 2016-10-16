@@ -196,25 +196,31 @@ define(function(require, exports, module){
      * @param out {Quaternion}      The resulting quaternion
      */
     Quaternion.slerp = function slerp(start, end, t, out) {
-        var scaleFrom, scaleTo;
-        var cosomega = Quaternion.dot(start, end);
-
-        if (cosomega < 1) {
-            var omega = Math.acos(cosomega);
-            var sinomega = Math.sin(omega);
-            scaleFrom = Math.sin((1 - t) * omega) / sinomega;
-            scaleTo = Math.sin(t * omega) / sinomega;
-        }
+        if (t === 0)
+            Quaternion.set(start, out);
+        else if (t === 1)
+            Quaternion.set(end, out);
         else {
-            scaleFrom = 1 - t;
-            scaleTo = t;
-        }
+            var scaleFrom, scaleTo;
+            var cosTheta = Quaternion.dot(start, end);
 
-        var result1 = [];
-        var result2 = [];
-        Quaternion.scalarMultiply(start, scaleFrom, result1)
-        Quaternion.scalarMultiply(end, scaleTo, result2),
-        Quaternion.sum(result1, result2, out);
+            if (cosTheta < 1) {
+                var theta = Math.acos(cosTheta);
+                var sinTheta = Math.sin(theta);
+                scaleFrom = Math.sin((1 - t) * theta) / sinTheta;
+                scaleTo = Math.sin(t * theta) / sinTheta;
+            }
+            else {
+                scaleFrom = 1 - t;
+                scaleTo = t;
+            }
+
+            var result1 = [];
+            var result2 = [];
+            Quaternion.scalarMultiply(start, scaleFrom, result1)
+            Quaternion.scalarMultiply(end, scaleTo, result2),
+            Quaternion.sum(result1, result2, out);
+        }
     };
 
     /**
@@ -327,6 +333,53 @@ define(function(require, exports, module){
         var z = s * q[3];
 
         return [angle, x, y, z];
+    }
+
+     /**
+     * Get the angle associated with the quaternion rotation.
+     *
+     * @method getAngle
+     * @static
+     * @param q {Quaternion}    Quaternion
+     * @return {Number}         Angle
+     */
+    Quaternion.getAngle = function getAngle(q){
+        return 2 * Math.acos(q[0]);
+    }
+
+     /**
+     * Get the axis associated with the quaternion rotation.
+     *
+     * @method getAxis
+     * @static
+     * @param q {Quaternion}    Quaternion
+     * @return {Array}          Axis
+     */
+    Quaternion.getAxis = function getAngle(q){
+        var len = Quaternion.length(q);
+        var halfAngle = Math.acos(q[0]);
+        var s = len / Math.sin(halfAngle);
+
+        var x = s * q[1];
+        var y = s * q[2];
+        var z = s * q[3];
+
+        return [x, y, z];
+    }
+
+     /**
+     * Set the angle of a quaternion, keeping its axis constant.
+     *
+     * @method setAngle
+     * @static
+     * @param q {Quaternion}    Quaternion
+     * @param angle {Number}    New angle
+     * @param out {Quaternion}  The resulting quaternion
+     */
+    Quaternion.setAngle = function getAngle(q, angle, out){
+        var axis = Quaternion.getAxis(q);
+        axis.unshift(angle);
+        Quaternion.fromAngleAxis(axis, out);
     }
 
      /**

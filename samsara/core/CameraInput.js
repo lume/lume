@@ -31,40 +31,27 @@ define(function(require, exports, module){
         var rotationInput = new GenericInput(['mouse', 'touch']);
         var zoomInput = new ScrollInput({direction : ScrollInput.DIRECTION.Y});
 
-        var prev = [0,0];
-        this.inertia.on('start', function(value){
-            prev[0] = value[0];
-            prev[1] = value[1];
-        }.bind(this));
-
-        this.inertia.on('update', function(value){
-            var delta = [value[0] - prev[0], value[1] - prev[1]];
-
-            handleRotation.call(this, {
-                delta: delta,
-                x: value[0],
-                y: value[1]
-            });
-
-            prev[0] = value[0];
-            prev[1] = value[1];
-        }.bind(this));
-
-        this.inertia.on('end', function(value){
-            this._eventOutput.emit('end', value);
-        }.bind(this));
-
         rotationInput.on('start', function(data){
+            if (this.inertia.isActive()) this.inertia.halt();
             this._eventOutput.emit('start', data);
         }.bind(this));
 
         rotationInput.on('end', function(data){
-            this.inertia.reset([data.x, data.y]);
-            this.inertia.set([data.x, data.y], {
-                curve : 'inertia',
-                velocity : data.velocity,
-                drag: .5
+            var angle = Quaternion.getAngle(this.delta);
+            this.inertia.reset(angle);
+            this.inertia.set(angle, {
+                curve : 'damp',
+                damping : .9
             });
+        }.bind(this));
+
+        this.inertia.on('update', function(angle){
+            Quaternion.setAngle(this.delta, angle, this.delta);
+            this.emit('rotate', this.delta);
+        }.bind(this));
+
+        this.inertia.on('end', function(value){
+            this._eventOutput.emit('end', value);
         }.bind(this));
 
         rotationInput.subscribe(this._eventInput);
@@ -90,7 +77,6 @@ define(function(require, exports, module){
 
         var dp = Math.sqrt(px*px + py*py + pz*pz);
         var dq = Math.sqrt(qx*qx + qy*qy + qz*qz);
-
 
         px /= dp;
         py /= dp;
