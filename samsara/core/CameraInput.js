@@ -4,6 +4,9 @@ define(function(require, exports, module){
     var Quaternion = require('./_Quaternion');
     var EventHandler = require('../events/EventHandler');
 
+    var Transitionable = require('./Transitionable');
+    var Differential = require('../streams/Differential');
+
     var MouseInput = require('../inputs/MouseInput');
     var TouchInput = require('../inputs/TouchInput');
     var ScrollInput = require('../inputs/ScrollInput');
@@ -18,6 +21,8 @@ define(function(require, exports, module){
         this.delta = Quaternion.create();
         this.radius = 300;
 
+        this.inertia = new Transitionable([0,0]);
+
         this._eventInput = new EventHandler();
         this._eventOutput = new EventHandler();
         EventHandler.setInputHandler(this, this._eventInput);
@@ -26,12 +31,40 @@ define(function(require, exports, module){
         var rotationInput = new GenericInput(['mouse', 'touch']);
         var zoomInput = new ScrollInput({direction : ScrollInput.DIRECTION.Y});
 
+        var prev = [0,0];
+        this.inertia.on('start', function(value){
+            prev[0] = value[0];
+            prev[1] = value[1];
+        }.bind(this));
+
+        this.inertia.on('update', function(value){
+            var delta = [value[0] - prev[0], value[1] - prev[1]];
+
+            handleRotation.call(this, {
+                delta: delta,
+                x: value[0],
+                y: value[1]
+            });
+
+            prev[0] = value[0];
+            prev[1] = value[1];
+        }.bind(this));
+
+        this.inertia.on('end', function(value){
+            this._eventOutput.emit('end', value);
+        }.bind(this));
+
         rotationInput.on('start', function(data){
             this._eventOutput.emit('start', data);
         }.bind(this));
 
         rotationInput.on('end', function(data){
-            this._eventOutput.emit('end', data);
+            this.inertia.reset([data.x, data.y]);
+            this.inertia.set([data.x, data.y], {
+                curve : 'inertia',
+                velocity : data.velocity,
+                drag: .5
+            });
         }.bind(this));
 
         rotationInput.subscribe(this._eventInput);
