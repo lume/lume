@@ -1,8 +1,7 @@
 /* Copyright © 2015-2016 David Valdman */
 
 define(function(require, exports, module) {
-    var EventHandler = require('../events/EventHandler');
-    var SimpleStream = require('../streams/SimpleStream');
+    var Transition = require('./_Transition');
     var dirtyQueue = require('../core/queues/dirtyQueue');
 
     var now = Date.now;
@@ -20,22 +19,12 @@ define(function(require, exports, module) {
      * @param value {Number}    Initial value
      */
     function Tween(value) {
-        SimpleStream.call(this);
-
-        this.state = value || 0;
-        this.velocity = 0;
-        this._startValue = value || 0;
-        this._endValue = 0;
-        this._startTime = now();
+        Transition.apply(this, arguments);
         this._curve = undefined;
         this._duration = 0;
-        this._active = false;
-
-        this._eventOutput = new EventHandler();
-        EventHandler.setOutputHandler(this, this._eventOutput);
     }
 
-    Tween.prototype = Object.create(SimpleStream.prototype);
+    Tween.prototype = Object.create(Transition.prototype);
     Tween.prototype.constructor = Tween;
 
     /**
@@ -157,69 +146,16 @@ define(function(require, exports, module) {
      *                                      {duration: number, curve: name}
      */
     Tween.prototype.set = function set(endValue, transition) {
-        this._startValue = this.get();
-
-        if (!this._active) {
-            this.emit('start', this._startValue);
-            this._active = true;
-        }
-
-        this._endValue = endValue;
-        this._startTime = now();
+        Transition.prototype.set.apply(this, arguments);
 
         var curve = transition.curve;
         if (!registeredCurves[curve] && Tween.CURVES[curve])
             Tween.register(curve, Tween.CURVES[curve]);
 
-        this.velocity = transition.velocity;
         this._duration = transition.duration || Tween.DEFAULT_OPTIONS.duration;
         this._curve = curve
             ? (curve instanceof Function) ? curve : getCurve(curve)
             : Tween.DEFAULT_OPTIONS.curve;
-    };
-
-    /**
-     * Get current value.
-     *
-     * @method get
-     * @return {Number|Number[]}
-     */
-    Tween.prototype.get = function get() {
-        return this.state;
-    };
-
-    /**
-     * Get current velocity
-     *
-     * @method getVelocity
-     * @returns {Number|Number[]}
-     */
-    Tween.prototype.getVelocity = function getVelocity() {
-        return this.velocity;
-    };
-
-    /**
-     * Reset the value and velocity of the transition.
-     *
-     * @method reset
-     * @param value {Number|Number[]}       Value
-     * @param [velocity] {Number|Number[]}  Velocity
-     */
-    Tween.prototype.reset = function reset(value, velocity) {
-        this.state = value;
-        this.velocity = velocity || 0;
-    };
-
-    /**
-     * Halt transition at current state and erase all pending actions.
-     *
-     * @method halt
-     */
-    Tween.prototype.halt = function halt() {
-        var value = this.get();
-        this.reset(value);
-        this._active = false;
-        this.emit('end', value);
     };
 
     /**
@@ -230,22 +166,22 @@ define(function(require, exports, module) {
     Tween.prototype.update = function update() {
         if (!this._active) return;
 
-        var timeSinceStart = now() - this._startTime;
+        var timeSinceStart = now() - this._previousTime;
 
-        this.velocity = _calculateVelocity(this.state, this._startValue, this._curve, this._duration, 1);
+        this.velocity = _calculateVelocity(this.state, this.start, this._curve, this._duration, 1);
 
         if (timeSinceStart < this._duration) {
             var t = timeSinceStart / this._duration;
-            this.state = _interpolate(this._startValue, this._endValue, this._curve(t));
-            this.emit('update', this.state);
+            this.value = _interpolate(this.start, this.end, this._curve(t));
+            this.emit('update', this.value);
         }
         else {
-            this.emit('update', this._endValue);
+            this.emit('update', this.end);
 
             dirtyQueue.push(function(){
-                this.reset(this._endValue);
+                this.reset(this.end);
                 this._active = false;
-                this.emit('end', this._endValue);
+                this.emit('end', this.end);
             }.bind(this));
         }
     };

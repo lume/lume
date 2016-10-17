@@ -1,8 +1,7 @@
 /* Copyright © 2015-2016 David Valdman */
 
 define(function (require, exports, module) {
-    var EventHandler = require('../events/EventHandler');
-    var SimpleStream = require('../streams/SimpleStream');
+    var Transition = require('./_Transition');
     var dirtyQueue = require('../core/queues/dirtyQueue');
 
     var now = Date.now;
@@ -19,18 +18,8 @@ define(function (require, exports, module) {
      * @param velocity {Number} Initial velocity
      */
     function Inertia(value, velocity) {
-        SimpleStream.call(this);
-
-        this.value = value || 0;
-        this.velocity = velocity || 0;
+        Transition.apply(this, arguments);
         this.drag = 0;
-
-        this.energy = null;
-        this._active = false;
-        this._previousTime = now();
-
-        this._eventOutput = new EventHandler();
-        EventHandler.setOutputHandler(this, this._eventOutput);
     }
 
     Inertia.DIMENSIONS = 1;
@@ -40,7 +29,7 @@ define(function (require, exports, module) {
         drag: 0.1
     };
 
-    Inertia.prototype = Object.create(SimpleStream.prototype);
+    Inertia.prototype = Object.create(Transition.prototype);
     Inertia.prototype.constructor = Inertia;
 
     /**
@@ -51,73 +40,11 @@ define(function (require, exports, module) {
      * @param [transition] {Object}         Transition definition
      */
     Inertia.prototype.set = function (value, transition) {
-        if (!this._active) {
-            this.emit('start', value);
-            this._active = true;
-        }
-
-        this.value = value;
+        Transition.prototype.set.apply(this, arguments);
 
         this.drag = (transition.drag === undefined)
             ? Inertia.DEFAULT_OPTIONS.drag
             : Math.pow(Math.min(transition.drag, 1), 3);
-
-        this.velocity = transition.velocity || this.velocity;
-    };
-
-    /**
-     * Get current value.
-     *
-     * @method get
-     * @return {Number}
-     */
-    Inertia.prototype.get = function () {
-        return this.value;
-    };
-
-    /**
-     * Get current velocity
-     *
-     * @method getVelocity
-     * @returns {Number}
-     */
-    Inertia.prototype.getVelocity = function () {
-        return this.velocity;
-    };
-
-    /**
-     * Reset the value and velocity of the transition.
-     *
-     * @method reset
-     * @param value {Number}       Value
-     * @param [velocity] {Number}  Velocity
-     */
-    Inertia.prototype.reset = function (value, velocity) {
-        this.value = value;
-        this.velocity = velocity || 0;
-    };
-
-    /**
-     * Halt transition at current state and erase all pending actions.
-     *
-     * @method halt
-     */
-    Inertia.prototype.halt = function () {
-        if (!this._active) return;
-        var value = this.get();
-        this.reset(value);
-        this._active = false;
-        this.emit('end', value);
-    };
-
-    /**
-     * Check to see if Inertia is actively transitioning
-     *
-     * @method isActive
-     * @returns {Boolean}
-     */
-    Inertia.prototype.isActive = function isActive() {
-        return this._active;
     };
 
     /**

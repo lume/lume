@@ -1,8 +1,7 @@
 /* Copyright © 2015-2016 David Valdman */
 
 define(function (require, exports, module) {
-    var EventHandler = require('../events/EventHandler');
-    var SimpleStream = require('../streams/SimpleStream');
+    var Transition = require('./_Transition');
     var dirtyQueue = require('../core/queues/dirtyQueue');
 
     var now = Date.now;
@@ -21,20 +20,9 @@ define(function (require, exports, module) {
      * @param velocity {Number} Initial velocity
      */
     function Spring(value, velocity) {
-        SimpleStream.call(this);
-
-        this.value = value || 0;
-        this.velocity = velocity || 0;
-
-        this.target = null;
-        this.startTime = now();
+        Transition.apply(this, arguments);
         this.curve = null;
-        this.energy = null;
         this.energyTolerance = tolerance;
-        this._active = false;
-
-        this._eventOutput = new EventHandler();
-        EventHandler.setOutputHandler(this, this._eventOutput);
     }
 
     Spring.DIMENSIONS = 1;
@@ -45,7 +33,7 @@ define(function (require, exports, module) {
         period : 100
     };
 
-    Spring.prototype = Object.create(SimpleStream.prototype);
+    Spring.prototype = Object.create(Transition.prototype);
     Spring.prototype.constructor = Spring;
 
     /**
@@ -56,80 +44,16 @@ define(function (require, exports, module) {
      * @param [transition] {Object}         Transition definition
      */
     Spring.prototype.set = function (value, transition) {
-        var x0 = this.get();
-
-        if (!this._active){
-            this.emit('start', x0);
-            this._active = true;
-        }
+        Transition.prototype.set.apply(this, arguments);
 
         var damping = transition.damping || Spring.DEFAULT_OPTIONS.damping;
         var period = transition.period || Spring.DEFAULT_OPTIONS.period;
-        var v0 = transition.velocity || this.velocity;
 
-        this.curve = getCurve(damping, period, x0, value, v0);
+        this.curve = getCurve(damping, period, this.start, this.end, this.velocity);
         this.energy = calculateEnergy(period);
 
-        var spread = getSpread(value, x0);
+        var spread = getSpread(this.end, this.start);
         this.energyTolerance = tolerance * Math.pow(spread, 2);
-
-        this.target = value;
-        this.startTime = now();
-    };
-
-    /**
-     * Get current value.
-     *
-     * @method get
-     * @return {Number}
-     */
-    Spring.prototype.get = function () {
-        return this.value;
-    };
-
-    /**
-     * Get current velocity
-     *
-     * @method getVelocity
-     * @returns {Number}
-     */
-    Spring.prototype.getVelocity = function () {
-        return this.velocity;
-    };
-
-    /**
-     * Reset the value and velocity of the transition.
-     *
-     * @method reset
-     * @param value {Number}       Value
-     * @param [velocity] {Number}  Velocity
-     */
-    Spring.prototype.reset = function reset(value, velocity) {
-        this.value = value;
-        this.velocity = velocity || 0;
-    };
-
-    /**
-     * Halt transition at current state and erase all pending actions.
-     *
-     * @method halt
-     */
-    Spring.prototype.halt = function halt() {
-        if (!this._active) return;
-        var value = this.get();
-        this.reset(value);
-        this._active = false;
-        this.emit('end', value);
-    };
-
-    /**
-     * Check to see if Spring is actively transitioning
-     *
-     * @method isActive
-     * @returns {Boolean}
-     */
-    Spring.prototype.isActive = function isActive(){
-        return this._active;
     };
 
     /**
@@ -140,29 +64,27 @@ define(function (require, exports, module) {
     Spring.prototype.update = function update() {
         if (!this._active) return;
 
-        var timeSinceStart = now() - this.startTime;
+        var timeSinceStart = now() - this._previousTime;
 
-        var value = this.curve(timeSinceStart);
+        this.value = this.curve(timeSinceStart);
         var next = this.curve(timeSinceStart + eps);
         var prev = this.curve(timeSinceStart - eps);
 
         this.velocity = (next - prev) / (2 * eps);
 
-        var energy = this.energy(this.target, value, this.velocity);
+        var energy = this.energy(this.end, this.value, this.velocity);
 
         if (energy >= this.energyTolerance) {
-            this.value = value;
-            this.emit('update', value);
+            this.emit('update', this.value);
         }
         else {
-            this.emit('update', this.target);
+            this.emit('update', this.end);
 
             dirtyQueue.push(function(){
-                this.reset(this.target);
+                this.reset(this.end);
                 this._active = false;
-                this.emit('end', this.target);
+                this.emit('end', this.end);
             }.bind(this));
-
         }
     };
 
