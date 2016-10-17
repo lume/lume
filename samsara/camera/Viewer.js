@@ -65,27 +65,27 @@ define(function(require, exports, module){
                 if (inertia && inertia.isActive()) inertia.halt();
 
                 this.emit('start', {
-                    position: this.camera.getPosition(),
-                    orientation: this.camera.getOrientation()
+                    position: this.getPosition(),
+                    orientation: this.getOrientation()
                 });
             }.bind(this));
 
             rotationInput.on('update', function(data){
                 var angleAxis = convertInputToAngleAxis.call(this, data);
                 Quaternion.fromAngleAxis(angleAxis, this.delta);
-                this.camera.rotateBy(this.delta);
+                this.rotateBy(this.delta);
 
                 this.emit('update', {
-                    position: this.camera.getPosition(),
-                    orientation: this.camera.getOrientation()
+                    position: this.getPosition(),
+                    orientation: this.getOrientation()
                 });
             }.bind(this));
 
             rotationInput.on('end', function(data){
                 if (!inertia) {
                     this.emit('end', {
-                        position: this.camera.getPosition(),
-                        orientation: this.camera.getOrientation()
+                        position: this.getPosition(),
+                        orientation: this.getOrientation()
                     });
                 }
                 else {
@@ -101,29 +101,29 @@ define(function(require, exports, module){
             if (inertia){
                 inertia.on('update', function(angle){
                     Quaternion.setAngle(this.delta, angle, this.delta);
-                    this.camera.rotateBy(this.delta);
+                    this.rotateBy(this.delta);
 
                     this.emit('update', {
-                        position: this.camera.getPosition(),
-                        orientation: this.camera.getOrientation()
+                        position: this.getPosition(),
+                        orientation: this.getOrientation()
                     });
                 }.bind(this));
 
                 inertia.on('end', function(value){
                     this.emit('end', {
-                        position: this.camera.getPosition(),
-                        orientation: this.camera.getOrientation()
+                        position: this.getPosition(),
+                        orientation: this.getOrientation()
                     });
                 }.bind(this));
             }
 
             zoomInput.on('update', function(data){
                 var zoom = data.delta;
-                this.camera.zoomBy(zoom);
+                this.zoomBy(zoom);
 
                 this.emit('update', {
-                    position: this.camera.getPosition(),
-                    orientation: this.camera.getOrientation()
+                    position: this.getPosition(),
+                    orientation: this.getOrientation()
                 });
             }.bind(this));
         },
@@ -135,6 +135,30 @@ define(function(require, exports, module){
         },
         remove : function(){
             return Camera.prototype.remove.apply(this.camera, arguments);
+        },
+        setPosition : function(position, transition, callback){
+            Camera.prototype.setPosition.apply(this.camera, arguments);
+        },
+        getPosition : function(){
+            return Camera.prototype.getPosition.apply(this.camera);
+        },
+        setOrientation : function(orientation, transition, callback){
+            Camera.prototype.setOrientation.apply(this.camera, arguments);
+        },
+        getOrientation : function(){
+            return Camera.prototype.getOrientation.apply(this.camera);
+        },
+        zoomBy : function(delta, transition, callback){
+            Camera.prototype.zoomBy.apply(this.camera, arguments);
+        },
+        rotateBy : function(rotation, transition, callback){
+            Camera.prototype.rotateBy.apply(this.camera, arguments);
+        },
+        lookAt : function(position, orientation, transition, callback){
+            Camera.prototype.lookAt.apply(this.camera, arguments);
+        },
+        lookAtTransform : function(transform, transition, callback){
+            Camera.prototype.lookAtTransform.apply(this.camera, arguments);
         }
     });
 
