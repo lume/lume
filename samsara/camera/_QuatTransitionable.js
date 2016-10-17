@@ -2,9 +2,9 @@
 
 define(function(require, exports, module){
     var Quaternion = require('./_Quaternion');
-    var Transitionable = require('./Transitionable');
+    var Transitionable = require('../core/Transitionable');
+    var Transform = require('../core/Transform');
     var EventHandler = require('../events/EventHandler');
-    var Transform = require('./Transform');
 
     function QuatTransitionable(quaternion){
         this.start = Quaternion.create();

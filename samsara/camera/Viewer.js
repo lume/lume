@@ -1,13 +1,13 @@
 /* Copyright © 2015-2016 David Valdman */
 
 define(function(require, exports, module){
-    var Transform = require('./Transform');
-    var Transitionable = require('./Transitionable');
+    var Camera = require('./Camera');
     var Quaternion = require('./_Quaternion');
+    var Controller = require('../core/Controller');
+    var Transform = require('../core/Transform');
+    var Transitionable = require('../core/Transitionable');
     var Stream = require('../streams/Stream');
     var EventHandler = require('../events/EventHandler');
-    var Controller = require('./Controller');
-    var Camera = require('./Camera');
 
     var MouseInput = require('../inputs/MouseInput');
     var TouchInput = require('../inputs/TouchInput');
@@ -21,9 +21,9 @@ define(function(require, exports, module){
 
     var Viewer = Controller.extend({
         defaults : {
-            radius : 500,
-            rotationScale : 1,
-            zoomScale : 1,
+            radius: 500,
+            rotationScale: 1,
+            zoomScale: 1,
             inertia: true
         },
         initialize : function(options){

@@ -1,13 +1,13 @@
 /* Copyright © 2015-2016 David Valdman */
 
 define(function(require, exports, module){
-    var Transform = require('./Transform');
-    var QuatTransitionable = require('./_QuatTransitionable');
     var Quaternion = require('./_Quaternion');
-    var Transitionable = require('./Transitionable');
+    var QuatTransitionable = require('./_QuatTransitionable');
+    var Transform = require('../core/Transform');
+    var Transitionable = require('../core/Transitionable');
+    var LayoutNode = require('../core/nodes/LayoutNode');
+    var RenderTreeNode = require('../core/nodes/RenderTreeNode');
     var Stream = require('../streams/Stream');
-    var LayoutNode = require('./nodes/LayoutNode');
-    var RenderTreeNode = require('./nodes/RenderTreeNode');
 
     function Camera(){
         this.orientationState = Quaternion.create();
