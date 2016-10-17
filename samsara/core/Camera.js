@@ -8,7 +8,6 @@ define(function(require, exports, module){
     var Stream = require('../streams/Stream');
     var LayoutNode = require('./nodes/LayoutNode');
     var RenderTreeNode = require('./nodes/RenderTreeNode');
-    var EventHandler = require('../events/EventHandler');
 
     function Camera(){
         this.orientationState = Quaternion.create();
@@ -21,50 +20,8 @@ define(function(require, exports, module){
             return Transform.inverse(Transform.moveThen(position, transform));
         }, [this.position, this.orientation]);
 
-        this._node = new LayoutNode({transform : transform});
-
-        this._eventInput = new EventHandler();
-        this._eventOutput = new EventHandler();
-        EventHandler.setInputHandler(this, this._eventInput);
-        EventHandler.setOutputHandler(this, this._eventOutput);
-
-        this._eventInput.on('start', function(){
-            this._eventOutput.emit('start', {
-                position: this.getPosition(),
-                orientation: this.getOrientation()
-            });
-        }.bind(this));
-
-        this._eventInput.on('end', function(){
-            this._eventOutput.emit('end', {
-                position: this.getPosition(),
-                orientation: this.getOrientation()
-            });
-        }.bind(this));
-
-        this._eventInput.on('rotate', function(rotation){
-            this.rotateBy(rotation);
-            this._eventOutput.emit('update', {
-                position: this.getPosition(),
-                orientation: this.getOrientation()
-            });
-        }.bind(this));
-
-        this._eventInput.on('translate', function(delta){
-            this.translateBy(delta);
-            this._eventOutput.emit('update', {
-                position: this.getPosition(),
-                orientation: this.getOrientation()
-            });
-        }.bind(this));
-
-        this._eventInput.on('zoom', function(zoom){
-            this.zoomBy(zoom);
-            this._eventOutput.emit('update', {
-                position: this.getPosition(),
-                orientation: this.getOrientation()
-            });
-        }.bind(this));
+        var layout = new LayoutNode({transform : transform});
+        this._node = new RenderTreeNode(layout);
     }
 
     Camera.prototype.setPosition = function(position, transition, callback){
