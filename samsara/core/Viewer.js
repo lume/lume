@@ -23,7 +23,8 @@ define(function(require, exports, module){
         defaults : {
             radius : 500,
             rotationScale : 1,
-            zoomScale : 1
+            zoomScale : 1,
+            inertia: true
         },
         initialize : function(options){
             this.camera = new Camera(options);
@@ -51,7 +52,7 @@ define(function(require, exports, module){
                 this.center[1] = center[1];
             }.bind(this));
 
-            var inertia = new Transitionable(0);
+            var inertia = options.inertia ? new Transitionable(0) : false;
             var rotationInput = new GenericInput(['mouse', 'touch'], {scale : options.rotationScale});
             var zoomInput = new ScrollInput({
                 direction : ScrollInput.DIRECTION.Y,
@@ -62,7 +63,7 @@ define(function(require, exports, module){
             zoomInput.subscribe(this.input);
 
             rotationInput.on('start', function(data){
-                if (inertia.isActive()) inertia.halt();
+                if (inertia && inertia.isActive()) inertia.halt();
 
                 this.emit('start', {
                     position: this.camera.getPosition(),
@@ -82,30 +83,40 @@ define(function(require, exports, module){
             }.bind(this));
 
             rotationInput.on('end', function(data){
-                var angle = Quaternion.getAngle(this.delta);
-                inertia.reset(angle);
-                inertia.set(angle, {
-                    curve : 'damp',
-                    damping : .9
-                });
+                if (!inertia) {
+                    this.emit('end', {
+                        position: this.camera.getPosition(),
+                        orientation: this.camera.getOrientation()
+                    });
+                }
+                else {
+                    var angle = Quaternion.getAngle(this.delta);
+                    inertia.reset(angle);
+                    inertia.set(angle, {
+                        curve : 'damp',
+                        damping : .9
+                    });
+                }
             }.bind(this));
 
-            inertia.on('update', function(angle){
-                Quaternion.setAngle(this.delta, angle, this.delta);
-                this.camera.rotateBy(this.delta);
+            if (inertia){
+                inertia.on('update', function(angle){
+                    Quaternion.setAngle(this.delta, angle, this.delta);
+                    this.camera.rotateBy(this.delta);
 
-                this.emit('update', {
-                    position: this.camera.getPosition(),
-                    orientation: this.camera.getOrientation()
-                });
-            }.bind(this));
+                    this.emit('update', {
+                        position: this.camera.getPosition(),
+                        orientation: this.camera.getOrientation()
+                    });
+                }.bind(this));
 
-            inertia.on('end', function(value){
-                this.emit('end', {
-                    position: this.camera.getPosition(),
-                    orientation: this.camera.getOrientation()
-                });
-            }.bind(this));
+                inertia.on('end', function(value){
+                    this.emit('end', {
+                        position: this.camera.getPosition(),
+                        orientation: this.camera.getOrientation()
+                    });
+                }.bind(this));
+            }
 
             zoomInput.on('update', function(data){
                 var zoom = data.delta;
