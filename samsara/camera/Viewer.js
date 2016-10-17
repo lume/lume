@@ -7,7 +7,6 @@ define(function(require, exports, module){
     var Transform = require('../core/Transform');
     var Transitionable = require('../core/Transitionable');
     var Stream = require('../streams/Stream');
-    var EventHandler = require('../events/EventHandler');
 
     var MouseInput = require('../inputs/MouseInput');
     var TouchInput = require('../inputs/TouchInput');
@@ -34,7 +33,7 @@ define(function(require, exports, module){
             var centerStream = Stream.lift(function(size, layout){
                 if (!size || !layout) return false;
                 var pos = Transform.getTranslate(layout.transform);
-                return [pos[0] + size[0]/2, pos[1] + size[1]/2];
+                return [pos[0] + 0.5 * size[0], pos[1] + 0.5 * size[1]];
             }, [this.camera._node._size, this.camera._node.layout]);
 
             centerStream.on('start', function(center){
@@ -153,8 +152,8 @@ define(function(require, exports, module){
         var qy = py + dy;
         var qz = this.options.radius;
 
-        var dp = Math.sqrt(px*px + py*py + pz*pz);
-        var dq = Math.sqrt(qx*qx + qy*qy + qz*qz);
+        var dp = Math.sqrt(px * px + py * py + pz * pz);
+        var dq = Math.sqrt(qx * qx + qy * qy + qz * qz);
 
         px /= dp;
         py /= dp;
@@ -163,11 +162,11 @@ define(function(require, exports, module){
         qy /= dq;
         qz /= dq;
 
-        var angle = Math.acos(px*qx + py*qy + pz*qz);
+        var angle = Math.acos(px * qx + py * qy + pz * qz);
 
-        var axisX = py*qz - pz*qy;
-        var axisY = pz*qx - px*qz;
-        var axisZ = px*qy - py*qx;
+        var axisX = py * qz - pz * qy;
+        var axisY = pz * qx - px * qz;
+        var axisZ = px * qy - py * qx;
 
         return [angle, axisX, axisY, axisZ];
     }

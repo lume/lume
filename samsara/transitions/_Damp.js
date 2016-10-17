@@ -60,7 +60,7 @@ define(function (require, exports, module) {
         this._previousTime = currentTime;
 
         var newValue = this.value * this.damp;
-        this.velocity = 1/dt * (this.value - newValue);
+        this.velocity = 1 / dt * (this.value - newValue);
 
         this.value = newValue;
 

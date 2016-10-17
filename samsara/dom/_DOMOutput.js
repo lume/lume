@@ -10,10 +10,10 @@ define(function(require, exports, module) {
     var EPSILON = 1e-5;
     var _zeroZero = [0, 0];
 
-    var string_matrix3d = 'matrix3d(';
-    var string_comma = ',';
-    var string_paren = ')';
-    var string_px = 'px';
+    var stringMatrix3d = 'matrix3d(';
+    var stringComma = ',';
+    var stringParen = ')';
+    var stringPx = 'px';
 
     /**
      * Responsible for committing CSS3 properties to the DOM and providing DOM event hooks
@@ -45,14 +45,14 @@ define(function(require, exports, module) {
     }
 
     function _formatCSSTransform(transform, unit) {
-        var result = string_matrix3d;
+        var result = stringMatrix3d;
         for (var i = 0; i < 15; i++) {
             if (Math.abs(transform[i]) < EPSILON) transform[i] = 0;
             result += (i === 12 || i === 13)
-                ? _round(transform[i], unit) + string_comma
-                : transform[i] + string_comma;
+                ? _round(transform[i], unit) + stringComma
+                : transform[i] + stringComma;
         }
-        return result + transform[15] + string_paren;
+        return result + transform[15] + stringParen;
     }
 
     function _formatCSSOrigin(origin) {
@@ -81,10 +81,10 @@ define(function(require, exports, module) {
 
     function _setSize(target, size){
         if (size[0] === true) size[0] = target.offsetWidth;
-        else if (size[0] >= 0) target.style.width = size[0] + string_px;
+        else if (size[0] >= 0) target.style.width = size[0] + stringPx;
 
         if (size[1] === true) size[1] = target.offsetHeight;
-        else if (size[1] >= 0) target.style.height = size[1] + string_px;
+        else if (size[1] >= 0) target.style.height = size[1] + stringPx;
     }
 
     // pointerEvents logic allows for DOM events to pass through the element when invisible

@@ -10,7 +10,7 @@ define(function(require, exports, module){
      * @static
      * @private
      */
-    Quaternion = {};
+    var Quaternion = {};
 
     /**
      * Create a quaternion. Either provide a quaternion to clone, otherwise
@@ -262,24 +262,27 @@ define(function(require, exports, module){
         var y = q[2];
         var z = q[3];
 
-        var xx = x*x;
-        var yy = y*y;
-        var zz = z*z;
-        var xy = x*y;
-        var xz = x*z;
-        var yz = y*z;
+        var xx = x * x;
+        var yy = y * y;
+        var zz = z * z;
+        var xy = x * y;
+        var xz = x * z;
+        var yz = y * z;
+        var wx = w * x;
+        var wy = w * y;
+        var wz = w * z;
 
         return [
             1 - 2 * (yy + zz),
-            2 * (xy - w*z),
-            2 * (xz + w*y),
+            2 * (xy - wz),
+            2 * (xz + wy),
             0,
-            2 * (xy + w*z),
+            2 * (xy + wz),
             1 - 2 * (xx + zz),
-            2 * (yz - w*x),
+            2 * (yz - wx),
             0,
-            2 * (xz - w*y),
-            2 * (yz + w*x),
+            2 * (xz - wy),
+            2 * (yz + wx),
             1 - 2 * (xx + yy),
             0,
             0, 0, 0, 1
