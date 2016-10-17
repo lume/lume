@@ -6,6 +6,7 @@ define(function(require, exports, module){
     var Quaternion = require('./_Quaternion');
     var Stream = require('../streams/Stream');
     var EventHandler = require('../events/EventHandler');
+    var Controller = require('./Controller');
     var Camera = require('./Camera');
 
     var MouseInput = require('../inputs/MouseInput');
@@ -18,105 +19,114 @@ define(function(require, exports, module){
         touch : TouchInput
     });
 
-    function Viewer(options) {
-        Camera.call(this, arguments);
+    var Viewer = Controller.extend({
+        defaults : {
+            radius : 500,
+            rotationScale : 1,
+            zoomScale : 1
+        },
+        initialize : function(options){
+            this.camera = new Camera(options);
+            this.delta = Quaternion.create();
+            this.center = [];
 
-        this.delta = Quaternion.create();
-        this.radius = 1000;
-        this.center = [];
+            var centerStream = Stream.lift(function(size, layout){
+                if (!size || !layout) return false;
+                var pos = Transform.getTranslate(layout.transform);
+                return [pos[0] + size[0]/2, pos[1] + size[1]/2];
+            }, [this.camera._node._size, this.camera._node.layout]);
 
-        var centerStream = Stream.lift(function(size, layout){
-            if (!size || !layout) return false;
-            var pos = Transform.getTranslate(layout.transform);
-            return [pos[0] + size[0]/2, pos[1] + size[1]/2];
-        }, [this._node._size, this._node.layout]);
+            centerStream.on('start', function(center){
+                this.center[0] = center[0];
+                this.center[1] = center[1];
+            }.bind(this));
 
-        centerStream.on('start', function(center){
-            this.center[0] = center[0];
-            this.center[1] = center[1];
-        }.bind(this));
+            centerStream.on('update', function(center){
+                this.center[0] = center[0];
+                this.center[1] = center[1];
+            }.bind(this));
 
-        centerStream.on('update', function(center){
-            this.center[0] = center[0];
-            this.center[1] = center[1];
-        }.bind(this));
+            centerStream.on('end', function(center){
+                this.center[0] = center[0];
+                this.center[1] = center[1];
+            }.bind(this));
 
-        centerStream.on('end', function(center){
-            this.center[0] = center[0];
-            this.center[1] = center[1];
-        }.bind(this));
-
-        this._eventInput = new EventHandler();
-        this._eventOutput = new EventHandler();
-        EventHandler.setInputHandler(this, this._eventInput);
-        EventHandler.setOutputHandler(this, this._eventOutput);
-
-        var inertia = new Transitionable(0);
-        var rotationInput = new GenericInput(['mouse', 'touch']);
-        var zoomInput = new ScrollInput({direction : ScrollInput.DIRECTION.Y});
-
-        rotationInput.subscribe(this._eventInput);
-        zoomInput.subscribe(this._eventInput);
-
-        rotationInput.on('start', function(data){
-            if (inertia.isActive()) inertia.halt();
-
-            this._eventOutput.emit('start', {
-                position: this.getPosition(),
-                orientation: this.getOrientation()
+            var inertia = new Transitionable(0);
+            var rotationInput = new GenericInput(['mouse', 'touch'], {scale : options.rotationScale});
+            var zoomInput = new ScrollInput({
+                direction : ScrollInput.DIRECTION.Y,
+                scale: options.zoomScale
             });
-        }.bind(this));
 
-        rotationInput.on('update', function(data){
-            var angleAxis = convertInputToAngleAxis.call(this, data);
-            Quaternion.fromAngleAxis(angleAxis, this.delta);
-            this.rotateBy(this.delta);
+            rotationInput.subscribe(this.input);
+            zoomInput.subscribe(this.input);
 
-            this._eventOutput.emit('update', {
-                position: this.getPosition(),
-                orientation: this.getOrientation()
-            });
-        }.bind(this));
+            rotationInput.on('start', function(data){
+                if (inertia.isActive()) inertia.halt();
 
-        rotationInput.on('end', function(data){
-            var angle = Quaternion.getAngle(this.delta);
-            inertia.reset(angle);
-            inertia.set(angle, {
-                curve : 'damp',
-                damping : .9
-            });
-        }.bind(this));
+                this.emit('start', {
+                    position: this.camera.getPosition(),
+                    orientation: this.camera.getOrientation()
+                });
+            }.bind(this));
 
-        inertia.on('update', function(angle){
-            Quaternion.setAngle(this.delta, angle, this.delta);
-            this.rotateBy(this.delta);
+            rotationInput.on('update', function(data){
+                var angleAxis = convertInputToAngleAxis.call(this, data);
+                Quaternion.fromAngleAxis(angleAxis, this.delta);
+                this.camera.rotateBy(this.delta);
 
-            this._eventOutput.emit('update', {
-                position: this.getPosition(),
-                orientation: this.getOrientation()
-            });
-        }.bind(this));
+                this.emit('update', {
+                    position: this.camera.getPosition(),
+                    orientation: this.camera.getOrientation()
+                });
+            }.bind(this));
 
-        inertia.on('end', function(value){
-            this._eventOutput.emit('end', {
-                position: this.getPosition(),
-                orientation: this.getOrientation()
-            });
-        }.bind(this));
+            rotationInput.on('end', function(data){
+                var angle = Quaternion.getAngle(this.delta);
+                inertia.reset(angle);
+                inertia.set(angle, {
+                    curve : 'damp',
+                    damping : .9
+                });
+            }.bind(this));
 
-        zoomInput.on('update', function(data){
-            var zoom = data.delta;
-            this.zoomBy(zoom);
+            inertia.on('update', function(angle){
+                Quaternion.setAngle(this.delta, angle, this.delta);
+                this.camera.rotateBy(this.delta);
 
-            this._eventOutput.emit('update', {
-                position: this.getPosition(),
-                orientation: this.getOrientation()
-            });
-        }.bind(this));
-    }
+                this.emit('update', {
+                    position: this.camera.getPosition(),
+                    orientation: this.camera.getOrientation()
+                });
+            }.bind(this));
 
-    Viewer.prototype = Object.create(Camera.prototype);
-    Viewer.prototype.constructor = Viewer;
+            inertia.on('end', function(value){
+                this.emit('end', {
+                    position: this.camera.getPosition(),
+                    orientation: this.camera.getOrientation()
+                });
+            }.bind(this));
+
+            zoomInput.on('update', function(data){
+                var zoom = data.delta;
+                this.camera.zoomBy(zoom);
+
+                this.emit('update', {
+                    position: this.camera.getPosition(),
+                    orientation: this.camera.getOrientation()
+                });
+            }.bind(this));
+        },
+        _onAdd : function(){
+            return Camera.prototype._onAdd.apply(this.camera, arguments);
+        },
+        add : function(){
+            return Camera.prototype.add.apply(this.camera, arguments);
+        },
+        remove : function(){
+            return Camera.prototype.remove.apply(this.camera, arguments);
+        }
+    });
 
     function convertInputToAngleAxis(data){
         var delta = data.delta;
@@ -126,11 +136,11 @@ define(function(require, exports, module){
 
         var px = data.x - this.center[0];
         var py = data.y - this.center[1];
-        var pz = this.radius;
+        var pz = this.options.radius;
 
         var qx = px + dx;
         var qy = py + dy;
-        var qz = this.radius;
+        var qz = this.options.radius;
 
         var dp = Math.sqrt(px*px + py*py + pz*pz);
         var dq = Math.sqrt(qx*qx + qy*qy + qz*qz);
