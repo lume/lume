@@ -72,6 +72,17 @@ define(function(require, exports, module){
         );
     }
 
+    Camera.prototype.lookAtTransform = function(transform, transition, callback){
+        var result = Transform.interpret(transform);
+        var position = result.translate;
+        var rotation = result.rotation;
+
+        var orientation = [];
+        Quaternion.fromEulerAngles(rotation, orientation);
+
+        this.lookAt(position, orientation, transition, callback);
+    }
+
     Camera.prototype._onAdd = function(parent){
         return parent.add(this._node);
     }
