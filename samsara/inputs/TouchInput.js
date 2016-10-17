@@ -17,6 +17,8 @@ define(function(require, exports, module) {
      *
      * TouchInput emits these events with the following payload data:
      *
+     *      `x`         - x-position relative to screen (independent of scroll)
+     *      `y`         - y-position relative to screen (independent of scroll)
      *      `value`     - Displacement in pixels from `touchstart`
      *      `delta`     - Differential in pixels between successive mouse positions
      *      `velocity`  - Velocity of mouse movement in pixels per second
@@ -110,7 +112,10 @@ define(function(require, exports, module) {
         var velocity;
         var delta;
 
+        var payload = {};
         if (this.options.direction !== undefined) {
+            if (this.options.direction === TouchInput.DIRECTION.X) payload.x = data.x;
+            if (this.options.direction === TouchInput.DIRECTION.Y) payload.y = data.y;
             if (!this._cumulate[touchId]) this._cumulate[touchId] = 0;
             this._value[touchId] = 0;
             velocity = 0;
@@ -121,10 +126,9 @@ define(function(require, exports, module) {
             this._value[touchId] = [0, 0];
             velocity = [0, 0];
             delta = [0, 0];
+            payload.x = data.x;
+            payload.y = data.y;
         }
-
-        var payload = {};
-        this._payload[data.touchId] = payload;
 
         payload.delta = delta;
         payload.value = this._value[touchId];
@@ -134,6 +138,8 @@ define(function(require, exports, module) {
         payload.touchId = data.touchId;
         payload.event = data.event;
         payload.timestamp = data.timestamp;
+
+        this._payload[data.touchId] = payload;
 
         this._eventOutput.emit('start', payload);
     }
@@ -148,8 +154,11 @@ define(function(require, exports, module) {
         var prevTime = prevData.timestamp;
         var currTime = data.timestamp;
 
-        var diffX = scale * (data.x - prevData.x);
-        var diffY = scale * (data.y - prevData.y);
+        var x = data.x;
+        var y = data.y;
+
+        var diffX = scale * (x - prevData.x);
+        var diffY = scale * (y - prevData.y);
 
         if (this.options.rails){
             if ((direction === TouchInput.DIRECTION.X && Math.abs(diffY) > Math.abs(diffX)))
@@ -168,18 +177,22 @@ define(function(require, exports, module) {
         var nextVel;
         var nextDelta;
         if (direction === TouchInput.DIRECTION.X) {
+            payload.x = x;
             nextDelta = diffX;
             nextVel = velX;
             this._value[touchId] += nextDelta;
             this._cumulate[touchId] += nextDelta;
         }
         else if (direction === TouchInput.DIRECTION.Y) {
+            payload.y = y;
             nextDelta = diffY;
             nextVel = velY;
             this._value[touchId] += nextDelta;
             this._cumulate[touchId] += nextDelta;
         }
         else {
+            payload.x = x;
+            payload.y = y;
             nextDelta = [diffX, diffY];
             nextVel = [velX, velY];
             this._value[touchId][0] += nextDelta[0];
@@ -188,7 +201,6 @@ define(function(require, exports, module) {
             this._cumulate[touchId][1] += nextDelta[1];
         }
 
-        var payload = this._payload[data.touchId];
         payload.delta = nextDelta;
         payload.velocity = nextVel;
         payload.value = this._value[touchId];
@@ -198,6 +210,8 @@ define(function(require, exports, module) {
         payload.event = data.event;
         payload.timestamp = data.timestamp;
         payload.dt = dt;
+
+        var payload = this._payload[data.touchId];
 
         this._eventOutput.emit('update', payload);
     }

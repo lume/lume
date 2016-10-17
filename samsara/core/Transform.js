@@ -390,18 +390,6 @@ define(function(require, exports, module) {
     };
 
     /**
-     * Returns a perspective Transform.
-     *
-     * @method perspective
-     * @static
-     * @param w {Number}       z-depth of focal point
-     * @return {Array}
-     */
-    Transform.perspective = function perspective(w) {
-        return [1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, -1 / w, 0, 0, 0, 1];
-    };
-
-    /**
      * Return translation vector component of the given Transform.
      *
      * @method getTranslate

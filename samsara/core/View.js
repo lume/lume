@@ -54,7 +54,6 @@ define(function(require, exports, module) {
      * @uses Core.SimpleStream
      */
     var View = Controller.extend({
-        _isView : true,
         defaults : {
             size : null,
             origin : null,
@@ -75,13 +74,16 @@ define(function(require, exports, module) {
             this._size = this._node.size; // incoming parent size
 
             this._cachedSize = [0, 0];
-            
+
             this.size.on('start', updateSize.bind(this));
             this.size.on('update', updateSize.bind(this));
             this.size.on('end', updateSize.bind(this));
 
             Controller.call(this, options);
             if (this.options) setOptions.call(this, this.options);
+        },
+        _onAdd : function(parent){
+            parent.add(this._node);
         },
         /**
          * Extends the render tree subtree with a new node.

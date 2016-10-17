@@ -5,10 +5,11 @@ define(function (require, exports, module) {
     var dirtyQueue = require('../core/queues/dirtyQueue');
 
     var now = Date.now;
-    var tolerance = 1e-4; // energy minimum
+    var tolerance = 1e-6; // energy minimum
 
     /**
-     * Defines an inertial transition, which decreases
+     * Defines an damping transition, which decreases the set value to 0 by repeatedly
+     *  scaling it by the damping factor each tick.
      *
      * @class Inertia
      * @private
@@ -17,20 +18,19 @@ define(function (require, exports, module) {
      * @param value {Number}    Initial value
      * @param velocity {Number} Initial velocity
      */
-    function Inertia(value, velocity) {
+    function Damp(value, velocity) {
         Transition.apply(this, arguments);
-        this.drag = 0;
+        this.damp = 0;
     }
 
-    Inertia.DIMENSIONS = 1;
+    Damp.DIMENSIONS = 1;
 
-    Inertia.DEFAULT_OPTIONS = {
-        velocity: 0,
-        drag: 0.1
+    Damp.DEFAULT_OPTIONS = {
+        damping: 0.9
     };
 
-    Inertia.prototype = Object.create(Transition.prototype);
-    Inertia.prototype.constructor = Inertia;
+    Damp.prototype = Object.create(Transition.prototype);
+    Damp.prototype.constructor = Damp;
 
     /**
      * Set new value to transition to, with a transition definition.
@@ -39,12 +39,12 @@ define(function (require, exports, module) {
      * @param value {Number}                Starting value
      * @param [transition] {Object}         Transition definition
      */
-    Inertia.prototype.set = function (value, transition) {
+    Damp.prototype.set = function (value, transition) {
         Transition.prototype.set.apply(this, arguments);
 
-        this.drag = (transition.drag === undefined)
-            ? Inertia.DEFAULT_OPTIONS.drag
-            : Math.pow(Math.min(transition.drag, 1), 3);
+        this.damp = (transition.damping === undefined)
+            ? Damp.DEFAULT_OPTIONS.damping
+            : transition.damping;
     };
 
     /**
@@ -52,17 +52,19 @@ define(function (require, exports, module) {
      *
      * @method update
      */
-    Inertia.prototype.update = function update() {
+    Damp.prototype.update = function update() {
         if (!this._active) return;
 
         var currentTime = now();
         var dt = currentTime - this._previousTime;
         this._previousTime = currentTime;
 
-        this.velocity *= (1 - this.drag);
-        this.value += dt * this.velocity;
+        var newValue = this.value * this.damp;
+        this.velocity = 1/dt * (this.value - newValue);
 
-        var energy = 0.5 * this.velocity * this.velocity;
+        this.value = newValue;
+
+        var energy = 0.5 * this.value * this.value;
 
         if (energy >= tolerance) {
             this.emit('update', this.value);
@@ -78,5 +80,5 @@ define(function (require, exports, module) {
         }
     };
 
-    module.exports = Inertia;
+    module.exports = Damp;
 });

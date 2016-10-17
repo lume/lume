@@ -11,11 +11,13 @@ define(function (require, exports, module) {
     var Tween = require('../transitions/_Tween');
     var Spring = require('../transitions/_Spring');
     var Inertia = require('../transitions/_Inertia');
+    var Damp = require('../transitions/_Damp');
 
     var transitionMethods = {
         tween: Tween,
         spring: Spring,
-        inertia: Inertia
+        inertia: Inertia,
+        damp: Damp
     };
 
     /**
