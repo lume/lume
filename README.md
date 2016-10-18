@@ -9,22 +9,24 @@
   </a>
 </p>
 
-SamsaraJS is a functional reactive library for animating layout. It provides a language for positioning,
-orienting and sizing DOM elements and animating these properties over time. Everything in SamsaraJS — from 
-the user input to the rendering pipeline — is a stream. Building a user interface becomes the art of composing streams.
+SamsaraJS is a library for building _continuous_ user interfaces. A continuous UI is one where many
+visual elements are animating gradually and in coordinated ways. For example, the opacity of a
+nav bar fading with the displacement of a hamburger menu translating to a user's swipe gesture.
 
-SamsaraJS was created to solve performance on the mobile web. Under the hood, animations are hardware accelerated 
-and batched by a single request animation frame loop. Building responsive user interfaces
-is made possible with physics-based transitions, rich support for gestures, and a stream architecture that 
-makes coordinating complex animations simple.
+Historically speaking, the web was made for _point and click_. With the invention of fingers our interfaces have
+evolved to _point and move_. We no longer _click_ **next**, we _scroll_ down. We no longer _click_ **delete**, we _swipe_ away.
 
-SamsaraJS doesn't have any opinions about content, only presentation. It moves rectangles around the screen — 
-what you do inside those rectangles is up to you. It doesn’t include any support for routing, server syncing, 
-templating or data-binding; there are plenty of other great frameworks for that. If we don’t play nicely with your tools, 
-let us know and we will do our best to improve. Integrations with MVC frameworks like Backbone and React are on the roadmap.
+Building these interactions and maintaining performance is hard, and SamsaraJS is here to help. It supports
 
-**tl;dr** If you've ever wanted the opacity of a nav bar to respond to the displacement of a hamburger menu which
-responds to a user's swipe gesture, then you might want to clone this repo.
+- 3D transforms and perspective (all hardware accelerated)
+- natural physics-based transitions like springs and inertia along with tweens
+- user input for mouse and touch along with gestures like pinch, scale, and rotate
+- a stream-based architecture for coordinating animations
+
+Importantly, SamsaraJS doesn't have any opinions about content, only presentation. It moves rectangles around the
+screen — what you do inside them is up to you. There is no support for routing,
+server syncing, templating or data-binding. There are many other frameworks for these needs, and Samsara
+is designed to be friends with them.
 
 ### Getting Started
 
@@ -58,7 +60,7 @@ Clone this repo
 	git clone git@github.com:dmvaldman/samsara.git
 ```
 
-You'll find AMD modules in the `samsara` directory, CommonJS bundles in the `dist` directory, examples in the 
+You'll find AMD modules in the `samsara` directory, CommonJS bundles in the `dist` directory, examples in the
 `examples` directory and reference documentation in the `docs` directory.
 
 #### NPM
