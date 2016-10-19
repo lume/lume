@@ -11,14 +11,15 @@ define(function(require, exports, module){
 
     function Camera(){
         this.orientationState = Quaternion.create();
-
         this.position = new Transitionable([0, 0, 0]);
         this.orientation = new QuatTransitionable(this.orientationState);
 
         var transform = Stream.lift(function(position, orientation){
-            var transform = Quaternion.toTransform(orientation);
-            return Transform.inverse(Transform.moveThen(position, transform));
-        }, [this.position, this.orientation]);
+            Quaternion.conjugate(orientation, this.orientationState);
+            var transform = Quaternion.toTransform(this.orientationState);
+            var invPosition = [-position[0], -position[1], -position[2]];
+            return Transform.thenMove(transform, invPosition);
+        }.bind(this), [this.position, this.orientation]);
 
         var layout = new LayoutNode({transform : transform});
         this._node = new RenderTreeNode(layout);
@@ -47,40 +48,36 @@ define(function(require, exports, module){
         this.position.set(newPosition, transition, callback);
     }
 
-    Camera.prototype.rotateBy = function(rotation){
+    Camera.prototype.rotateBy = function(rotation, transition, callback){
         var currentOrientation = this.orientation.get();
         Quaternion.multiply(currentOrientation, rotation, this.orientationState);
-        this.orientation.set(this.orientationState);
+        this.orientation.set(this.orientationState, transition, callback);
     }
 
-    Camera.prototype.translateBy = function(delta){
+    Camera.prototype.translateBy = function(delta, transition, callback){
         var currentPosition = this.position.get();
         var newPosition = [
             currentPosition[0] + delta[0],
             currentPosition[1] + delta[1],
             currentPosition[2] + delta[2]
         ];
-        this.position.set(newPosition);
+        this.position.set(newPosition, transition, callback);
     }
 
     Camera.prototype.lookAt = function(position, orientation, transition, callback){
-        this.set(
-            [-position[0], -position[1], -position[2]],
-            [-orientation[0], -orientation[1], -orientation[2], -orientation[3]],
-            transition,
-            callback
-        );
+        Quaternion.conjugate(this.orientationState, this.orientationState);
+        this.setPosition(position, transition);
+        this.setOrientation(this.orientationState, transition, callback);
     }
 
     Camera.prototype.lookAtTransform = function(transform, transition, callback){
         var result = Transform.interpret(transform);
-        var position = result.translate;
-        var rotation = result.rotation;
+        var rotation = result.rotate;
 
-        var orientation = [];
-        Quaternion.fromEulerAngles(rotation, orientation);
+        Quaternion.fromEulerAngles(rotation, this.orientationState);
+        Quaternion.conjugate(this.orientationState, this.orientationState);
 
-        this.lookAt(position, orientation, transition, callback);
+        this.orientation.set(this.orientationState, transition);
     }
 
     Camera.prototype._onAdd = function(parent){
