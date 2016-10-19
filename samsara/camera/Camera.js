@@ -9,9 +9,9 @@ define(function(require, exports, module){
     var RenderTreeNode = require('../core/nodes/RenderTreeNode');
     var Stream = require('../streams/Stream');
 
-    function Camera(){
-        this.orientationState = Quaternion.create();
-        this.position = new Transitionable([0, 0, 0]);
+    function Camera(options){
+        this.orientationState = Quaternion.create(options.orietation);
+        this.position = new Transitionable(options.position || [0,0,0]);
         this.orientation = new QuatTransitionable(this.orientationState);
 
         var transform = Stream.lift(function(position, orientation){
