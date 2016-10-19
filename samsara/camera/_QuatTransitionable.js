@@ -30,7 +30,7 @@ define(function(require, exports, module){
 
         // go shorter way around
         if (Quaternion.dot(this.start, quat) < 0)
-            Quaternion.negate(this.end, this.end);
+            Quaternion.negate(this.start, this.start);
 
         Quaternion.set(quat, this.end);
 
