@@ -27,6 +27,11 @@ define(function(require, exports, module){
 
     QuatTransitionable.prototype.set = function(quat, transition, callback){
         Quaternion.set(this.get(), this.start);
+
+        // go shorter way around
+        if (Quaternion.dot(this.start, quat) < 0)
+            Quaternion.negate(this.end, this.end);
+
         Quaternion.set(quat, this.end);
 
         this.t.reset(0);
