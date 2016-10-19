@@ -533,7 +533,7 @@ define(function(require, exports, module) {
         var R = Transform.compose(Q, T);
 
         //remove negative scaling
-        var remover = Transform.scale(R[0] < 0 ? -1 : 1, R[5] < 0 ? -1 : 1, R[10] < 0 ? -1 : 1);
+        var remover = Transform.scale([R[0] < 0 ? -1 : 1, R[5] < 0 ? -1 : 1, R[10] < 0 ? -1 : 1]);
         R = Transform.compose(R, remover);
         Q = Transform.compose(remover, Q);
 
