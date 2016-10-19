@@ -10,11 +10,9 @@
 </p>
 
 SamsaraJS is a library for building _continuous_ user interfaces. A continuous UI is one where many
-visual elements are animating gradually and in coordinated ways. For example, the opacity of a
-nav bar fading with the displacement of a hamburger menu translating to a user's swipe gesture.
-
-Historically speaking, the web was made for _point and click_. With the invention of fingers our interfaces have
-evolved to _point and move_. We no longer _click_ **next**, we _scroll_ down. We no longer _click_ **delete**, we _swipe_ away.
+visual elements are animating in coordinated ways. For example, you may want to fade the opacity of a
+nav bar while a settings menu is translated by a user's swipe gesture. Or maybe you want to blur and scale 
+a banner image when a user scrolls some content past its limits, and add a springy bounce at the end.
 
 Building these interactions and maintaining performance is hard, and SamsaraJS is here to help. It supports
 
@@ -23,12 +21,12 @@ Building these interactions and maintaining performance is hard, and SamsaraJS i
 - user input for mouse and touch along with gestures like pinch, scale, and rotate
 - a stream-based architecture for coordinating animations
 
-Importantly, SamsaraJS doesn't have any opinions about content, only presentation. It moves rectangles around the
+SamsaraJS is opinionated about presentation, but has no opinions about content. It moves rectangles around the
 screen — what you do inside them is up to you. There is no support for routing,
-server syncing, templating or data-binding. There are many other frameworks for these needs, and Samsara
+server syncing, templating, data-binding, etc. There are many other frameworks for those needs, and Samsara
 is designed to be friends with them.
 
-### Getting Started
+## Getting Started
 
 | Resources      |               |
 | -------------- | ------------- |
@@ -36,7 +34,7 @@ is designed to be friends with them.
 | API docs       | [samsaraJS.org/reference_docs](http://www.samsaraJS.org/reference_docs/index.html)  |
 | Questions      | [SamsaraJS Google Group](https://groups.google.com/forum/#!forum/samsarajs) |
 
-### Examples
+## Examples
 
 | Example  | Demo (fullscreen) | Description |
 | -------- | ----------------- | ----------- |
@@ -57,7 +55,7 @@ below, you will also need to include this CSS file for SamsaraJS to work properl
 Clone this repo
 
 ```
-	git clone git@github.com:dmvaldman/samsara.git
+git clone git@github.com:dmvaldman/samsara.git
 ```
 
 You'll find AMD modules in the `samsara` directory, CommonJS bundles in the `dist` directory, examples in the
@@ -68,15 +66,15 @@ You'll find AMD modules in the `samsara` directory, CommonJS bundles in the `dis
 Install the CommonJS build of Samsara with
 
 ```
-	npm install samsarajs
+npm install samsarajs
 ```
 
 This will provide a bundled `Samsara` object. Note there is a case-difference: path keys are
 capitalized for CommonJS but lowercase for AMD.
 
 ```js
-	var Surface = require('samsara/dom/Surface');   // AMD
-	var Surface = require('samsarajs').DOM.Surface; // CommonJS
+var Surface = require('samsara/dom/Surface');   // AMD
+var Surface = require('samsarajs').DOM.Surface; // CommonJS
 ```
 
 The `samsara.css` file will also be included in `node_modules/samsarajs/dist/samsara.css`.
@@ -90,11 +88,5 @@ through `window.Samsara`. This is particularly useful for sharing on sites like 
 [![Talk](http://i.imgur.com/tGbmVk4.png)](https://www.youtube.com/watch?v=biJXpv-6XVY)
 [JSConf EU 2015 Berlin, Germany](https://www.youtube.com/watch?v=biJXpv-6XVY)
 
-## Roadmap
-- [ ] Node removal and recycling (surface.remove(), node.remove(), view.remove())
-- [ ] More Tests
-- [ ] Backbone.js, React.js, Vue.js integrations
-- [ ] Improved Scrollview
-- [ ] 3D Camera
-- [ ] Migrate to es6
-- [ ] More layouts
+[![Talk](http://i.imgur.com/O4mr8v7.png)](https://www.youtube.com/watch?v=9bmoo64hhg4)
+[InRhythm Meetup](https://www.youtube.com/watch?v=9bmoo64hhg4)
