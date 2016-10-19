@@ -173,6 +173,21 @@ define(function(require, exports, module){
     };
 
     /**
+     * Negate a quaternion.
+     *
+     * @method negate
+     * @static
+     * @param q {Quaternion}
+     * @param out {Quaternion} The resulting quaternion
+     */
+    Quaternion.negate = function negate(q, out) {
+        out[0] = -q[0];
+        out[1] = -q[1];
+        out[2] = -q[2];
+        out[3] = -q[3];
+    };
+
+    /**
      * Normalize a quaternion to be of unit length.
      *
      * @method normalize
@@ -328,6 +343,11 @@ define(function(require, exports, module){
     Quaternion.toAngleAxis = function toAngleAxis(q){
         var len = Quaternion.length(q);
         var halfAngle = Math.acos(q[0]);
+
+        if (halfAngle === 0) {
+            return [0,1,0,0];
+        }
+
         var s = len / Math.sin(halfAngle);
 
         var angle = 2 * halfAngle;
@@ -361,6 +381,11 @@ define(function(require, exports, module){
     Quaternion.getAxis = function getAngle(q){
         var len = Quaternion.length(q);
         var halfAngle = Math.acos(q[0]);
+
+        if (halfAngle === 0) {
+            return [1,0,0];
+        }
+
         var s = len / Math.sin(halfAngle);
 
         var x = s * q[1];
