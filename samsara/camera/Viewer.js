@@ -61,7 +61,9 @@ define(function(require, exports, module){
             rotationInput.subscribe(this.input);
             zoomInput.subscribe(this.input);
 
+            var hasMoved = false;
             rotationInput.on('start', function(data){
+                hasMoved = false;
                 if (inertia && inertia.isActive()) inertia.halt();
 
                 this.emit('start', {
@@ -71,6 +73,7 @@ define(function(require, exports, module){
             }.bind(this));
 
             rotationInput.on('update', function(data){
+                hasMoved = true;
                 var angleAxis = convertInputToAngleAxis.call(this, data);
                 Quaternion.fromAngleAxis(angleAxis, this.delta);
                 this.rotateBy(this.delta);
@@ -82,7 +85,7 @@ define(function(require, exports, module){
             }.bind(this));
 
             rotationInput.on('end', function(data){
-                if (!inertia) {
+                if (!hasMoved || !inertia) {
                     this.emit('end', {
                         position: this.getPosition(),
                         orientation: this.getOrientation()
