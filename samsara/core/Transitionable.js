@@ -12,6 +12,7 @@ define(function (require, exports, module) {
     var Spring = require('../transitions/_Spring');
     var Inertia = require('../transitions/_Inertia');
     var Damp = require('../transitions/_Damp');
+    var Immediate = require('../transitions/_Immediate');
 
     var transitionMethods = {
         tween: Tween,
@@ -22,8 +23,14 @@ define(function (require, exports, module) {
 
     /**
      * A way to transition numeric values and arrays of numbers between start and end states.
-     *  Transitions are given an easing curve and a duration.
-     *  Non-numeric values are ignored.
+     *  Transitioning happens through one of many possible interpolations, such as easing
+     *  curves like 'easeIn', or physics curves like 'spring' and 'inertia'. The choice
+     *  of interpolation is specified when `.set` is called. If no interpolation is specified
+     *  then the value changes immediately. Non-numeric values in arrays, such as `undefined`
+     *  or `true`, are safely ignored.
+     *
+     *  Transitionables are streams, so they emit `start`, `update` and `end` events, with a payload
+     *  that is their current value. As streams, they can also be mapped, filtered, composed, etc.
      *
      *  @example
      *
@@ -49,8 +56,6 @@ define(function (require, exports, module) {
      * @param value {Number|Number[]}   Starting value
      */
     function Transitionable(value) {
-        this.value = value || 0;
-        this.velocity = 0;
         this._callback = undefined;
         this._method = null;
         this._active = false;
@@ -74,13 +79,10 @@ define(function (require, exports, module) {
 
         this._eventInput.on('update', function (value) {
             hasUpdated = true;
-            this.value = value;
-            this.velocity = this._engineInstance.getVelocity();
             this.emit('update', value);
         }.bind(this));
 
         this._eventInput.on('end', function (value) {
-            this.value = value;
             this._currentActive = false;
 
             if (this._callback) {
@@ -93,25 +95,12 @@ define(function (require, exports, module) {
                 this._active = false;
                 hasUpdated = false;
 
-                if (this._engineInstance)
-                    this.velocity = this._engineInstance.getVelocity();
-
                 this._active = false;
                 this.emit('end', value);
             }
         }.bind(this));
 
-        if (value !== undefined) {
-            this.value = value;
-            preTickQueue.push(function () {
-                this.trigger('start', value);
-
-                dirtyQueue.push(function () {
-                    if (hasUpdated) return;
-                    this.trigger('end', value);
-                }.bind(this));
-            }.bind(this));
-        }
+        if (value !== undefined) this.set(value);
     }
 
     Transitionable.prototype = Object.create(SimpleStream.prototype);
@@ -156,53 +145,53 @@ define(function (require, exports, module) {
      */
     Transitionable.prototype.set = function set(value, transition, callback) {
         if (!transition || transition.duration === 0) {
-            this.value = value;
             if (callback) dirtyQueue.push(callback);
-            if (!this.isActive()){
-                this.trigger('start', value);
+            var Method = Immediate;
+        }
+        else {
+            if (callback) this._callback = callback;
+            var curve = transition.curve;
 
-                dirtyQueue.push(function () {
-                    this.trigger('end', value);
-                }.bind(this));
-            }
-            return;
+            var Method = (curve && transitionMethods[curve])
+                ? transitionMethods[curve]
+                : Tween;
         }
 
-        if (callback) this._callback = callback;
-
-        var curve = transition.curve;
-
-        var Method = (curve && transitionMethods[curve])
-            ? transitionMethods[curve]
-            : Tween;
-
         if (this._method !== Method) {
-            if (this._engineInstance){
+            // remove previous
+            if (this._interpolant){
                 if (this.updateMethod){
                     var index = tickQueue.indexOf(this.updateMethod);
                     if (index >= 0) tickQueue.splice(index, 1);
                 }
-                this.unsubscribe(this._engineInstance);
+                this.unsubscribe(this._interpolant);
             }
 
-            if (this.value instanceof Array) {
-                var dimensions = this.value.length;
-                this._engineInstance = (dimensions < Method.DIMENSIONS)
-                    ? new Method(this.value)
-                    : new NDTransitionable(this.value, Method);
+            if (value instanceof Array) {
+                var dimensions = value.length;
+                var currValue = this.get();
+                if (currValue === undefined) currValue = value;
+                this._interpolant = (dimensions < Method.DIMENSIONS)
+                    ? new Method(currValue)
+                    : new NDTransitionable(currValue, Method);
             }
-            else this._engineInstance = new Method(this.value);
+            else {
+                var currValue = this.get();
+                if (currValue === undefined) currValue = value;
+                this._interpolant = new Method(currValue);
+            }
 
-            this.subscribe(this._engineInstance);
-            this.updateMethod = this._engineInstance.update.bind(this._engineInstance);
-            tickQueue.push(this.updateMethod);
+            this.subscribe(this._interpolant);
+
+            if (this._interpolant.update){
+                this.updateMethod = this._interpolant.update.bind(this._interpolant);
+                tickQueue.push(this.updateMethod);
+            }
 
             this._method = Method;
         }
 
-        if (!transition.velocity) transition.velocity = this.velocity;
-
-        this._engineInstance.set(value, transition);
+        this._interpolant.set(value, transition);
     };
 
     /**
@@ -212,7 +201,7 @@ define(function (require, exports, module) {
      * @return {Number|Number[]}    Current state
      */
     Transitionable.prototype.get = function get() {
-        return this.value;
+        if (this._interpolant) return this._interpolant.get();
     };
 
     /**
@@ -222,7 +211,8 @@ define(function (require, exports, module) {
      * @return {Number|Number[]}    Current state
      */
     Transitionable.prototype.getVelocity = function getVelocity(){
-        return this.velocity;
+        if (this._interpolant && this._interpolant.getVelocity)
+            return this._interpolant.getVelocity();
     };
 
     /**
@@ -233,11 +223,9 @@ define(function (require, exports, module) {
      * @param [velocity] {Number|Number[]}  New velocity
      */
     Transitionable.prototype.reset = function reset(value, velocity){
-        this.value = value;
-        this.velocity = velocity || 0;
         this._callback = null;
         this._method = null;
-        if (this._engineInstance) this._engineInstance.reset(value, velocity);
+        if (this._interpolant) this._interpolant.reset(value, velocity);
     };
 
     /**
@@ -247,16 +235,17 @@ define(function (require, exports, module) {
      */
     Transitionable.prototype.halt = function () {
         if (!this._active) return;
-        this.reset(this.get());
-        this.trigger('end', this.value);
+        var value = this.get();
+        this.reset(value);
+        this.trigger('end', value);
 
         //TODO: refactor this
-        if (this._engineInstance) {
+        if (this._interpolant) {
             if (this.updateMethod) {
                 var index = tickQueue.indexOf(this.updateMethod);
                 if (index >= 0) tickQueue.splice(index, 1);
             }
-            this.unsubscribe(this._engineInstance);
+            this.unsubscribe(this._interpolant);
         }
     };
 
@@ -340,19 +329,25 @@ define(function (require, exports, module) {
         this._eventOutput.subscribe(this.stream);
     }
 
+    // N-dimensional extension for arrays when interpolants can't natively support multi-dimensional arrays
     NDTransitionable.prototype.set = function (value, transition) {
-        var velocity = transition.velocity ? transition.velocity.slice() : undefined;
+        var velocity = (transition && transition.velocity) ? transition.velocity.slice() : undefined;
         for (var i = 0; i < value.length; i++){
             if (velocity) transition.velocity = velocity[i];
             this.sources[i].set(value[i], transition);
         }
     };
 
+    NDTransitionable.prototype.get = function () {
+        return this.sources.map(function(source){
+            return source.get();
+        });
+    };
+
     NDTransitionable.prototype.getVelocity = function () {
-        var velocity = [];
-        for (var i = 0; i < this.sources.length; i++)
-            velocity[i] = this.sources[i].getVelocity();
-        return velocity;
+        return this.sources.map(function(source){
+            return source.getVelocity();
+        });
     };
 
     NDTransitionable.prototype.update = function () {
