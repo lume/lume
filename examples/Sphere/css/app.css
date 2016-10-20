@@ -1,0 +1,19 @@
+* {
+    -webkit-user-callout: none;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    user-select: none;
+    cursor: default;
+}
+
+body {
+    background: black;
+    margin: 0;
+    cursor: move;
+}
+
+.item {
+    background:magenta;
+    box-shadow: 0px 0px 3px 3px #222;
+    cursor: pointer;
+}
