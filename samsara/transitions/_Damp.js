@@ -37,7 +37,7 @@ define(function (require, exports, module) {
      *
      * @method set
      * @param value {Number}                Starting value
-     * @param [transition] {Object}         Transition definition
+     * @param transition {Object}           Transition definition
      */
     Damp.prototype.set = function (value, transition) {
         Transition.prototype.set.apply(this, arguments);

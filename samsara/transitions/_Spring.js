@@ -41,7 +41,7 @@ define(function (require, exports, module) {
      *
      * @method set
      * @param value {Number}                End value
-     * @param [transition] {Object}         Transition definition
+     * @param transition {Object}           Transition definition
      */
     Spring.prototype.set = function (value, transition) {
         Transition.prototype.set.apply(this, arguments);

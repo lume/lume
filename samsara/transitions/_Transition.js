@@ -44,7 +44,7 @@ define(function (require, exports, module) {
         this.start = this.get();
         this.end = value;
 
-        if (transition.velocity) this.velocity = transition.velocity;
+        if (transition && transition.velocity) this.velocity = transition.velocity;
         else this.velocity = this.velocity || 0;
 
         this._previousTime = Date.now();
@@ -90,9 +90,9 @@ define(function (require, exports, module) {
      */
     Transition.prototype.halt = function () {
         if (!this._active) return;
+        this._active = false;
         var value = this.get();
         this.reset(value);
-        this._active = false;
         this.emit('end', value);
     };
 

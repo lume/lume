@@ -142,7 +142,7 @@ define(function(require, exports, module) {
      *
      * @method set
      * @param endValue {Number|Number[]}    End value
-     * @param [transition] {Object}         Transition object of type
+     * @param transition {Object}           Transition object of type
      *                                      {duration: number, curve: name}
      */
     Tween.prototype.set = function set(endValue, transition) {
