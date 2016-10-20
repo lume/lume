@@ -17,8 +17,7 @@ define(function(require, exports, module){
         var transform = Stream.lift(function(position, orientation){
             Quaternion.conjugate(orientation, this.orientationState);
             var transform = Quaternion.toTransform(this.orientationState);
-            var invPosition = [-position[0], -position[1], -position[2]];
-            return Transform.thenMove(transform, invPosition);
+            return Transform.thenMove(transform, position);
         }.bind(this), [this.position, this.orientation]);
 
         var layout = new LayoutNode({transform : transform});
