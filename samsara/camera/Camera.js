@@ -11,7 +11,7 @@ define(function(require, exports, module){
 
     function Camera(options){
         this.orientationState = Quaternion.create(options.orietation);
-        this.position = new Transitionable(options.position || [0,0,0]);
+        this.position = new Transitionable(options.position || [0, 0, 0]);
         this.orientation = new QuatTransitionable(this.orientationState);
 
         var transform = Stream.lift(function(position, orientation){

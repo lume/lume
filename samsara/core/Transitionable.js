@@ -2,7 +2,6 @@
 
 define(function (require, exports, module) {
     var dirtyQueue = require('./queues/dirtyQueue');
-    var preTickQueue = require('./queues/preTickQueue');
     var tickQueue = require('./queues/tickQueue');
     var EventHandler = require('../events/EventHandler');
     var SimpleStream = require('../streams/SimpleStream');
@@ -60,8 +59,6 @@ define(function (require, exports, module) {
         this._method = null;
         this._active = false;
         this._currentActive = false;
-
-        var hasUpdated = false;
         this.updateMethod = undefined;
 
         this._eventInput = new EventHandler();
@@ -78,7 +75,6 @@ define(function (require, exports, module) {
         }.bind(this));
 
         this._eventInput.on('update', function (value) {
-            hasUpdated = true;
             this.emit('update', value);
         }.bind(this));
 
@@ -92,9 +88,6 @@ define(function (require, exports, module) {
             }
 
             if (!this._currentActive){
-                this._active = false;
-                hasUpdated = false;
-
                 this._active = false;
                 this.emit('end', value);
             }
@@ -144,15 +137,16 @@ define(function (require, exports, module) {
      * @param [callback] {Function}             Callback
      */
     Transitionable.prototype.set = function set(value, transition, callback) {
+        var Method;
         if (!transition || transition.duration === 0) {
             if (callback) dirtyQueue.push(callback);
-            var Method = Immediate;
+            Method = Immediate;
         }
         else {
             if (callback) this._callback = callback;
             var curve = transition.curve;
 
-            var Method = (curve && transitionMethods[curve])
+            Method = (curve && transitionMethods[curve])
                 ? transitionMethods[curve]
                 : Tween;
         }
@@ -168,18 +162,11 @@ define(function (require, exports, module) {
             }
 
             if (value instanceof Array) {
-                var dimensions = value.length;
-                var currValue = this.get();
-                if (currValue === undefined) currValue = value;
-                this._interpolant = (dimensions < Method.DIMENSIONS)
-                    ? new Method(currValue)
-                    : new NDTransitionable(currValue, Method);
+                this._interpolant = (value.length < Method.DIMENSIONS)
+                    ? new Method(this.get())
+                    : new NDTransitionable(this.get(), Method);
             }
-            else {
-                var currValue = this.get();
-                if (currValue === undefined) currValue = value;
-                this._interpolant = new Method(currValue);
-            }
+            else this._interpolant = new Method(this.get());
 
             this.subscribe(this._interpolant);
 

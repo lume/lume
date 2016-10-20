@@ -345,7 +345,7 @@ define(function(require, exports, module){
         var halfAngle = Math.acos(q[0]);
 
         if (halfAngle === 0) {
-            return [0,1,0,0];
+            return [0, 1, 0, 0];
         }
 
         var s = len / Math.sin(halfAngle);
@@ -383,7 +383,7 @@ define(function(require, exports, module){
         var halfAngle = Math.acos(q[0]);
 
         if (halfAngle === 0) {
-            return [1,0,0];
+            return [1, 0, 0];
         }
 
         var s = len / Math.sin(halfAngle);
