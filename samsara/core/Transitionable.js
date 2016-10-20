@@ -1,6 +1,7 @@
 /* Copyright © 2015-2016 David Valdman */
 
 define(function (require, exports, module) {
+    var preTickQueue = require('./queues/preTickQueue');
     var dirtyQueue = require('./queues/dirtyQueue');
     var tickQueue = require('./queues/tickQueue');
     var EventHandler = require('../events/EventHandler');
@@ -66,7 +67,9 @@ define(function (require, exports, module) {
         EventHandler.setInputHandler(this, this._eventInput);
         EventHandler.setOutputHandler(this, this._eventOutput);
 
+        var hasUpdated = false;
         this._eventInput.on('start', function (value) {
+            hasUpdated = false;
             this._currentActive = true;
             if (!this._active) {
                 this.emit('start', value);
@@ -75,6 +78,7 @@ define(function (require, exports, module) {
         }.bind(this));
 
         this._eventInput.on('update', function (value) {
+            hasUpdated = true;
             this.emit('update', value);
         }.bind(this));
 
@@ -88,12 +92,23 @@ define(function (require, exports, module) {
             }
 
             if (!this._currentActive){
+                hasUpdated = false;
                 this._active = false;
                 this.emit('end', value);
             }
         }.bind(this));
 
-        if (value !== undefined) this.set(value);
+        if (value !== undefined) {
+            this.value = value;
+            preTickQueue.push(function () {
+                this.trigger('start', value);
+
+                dirtyQueue.push(function () {
+                    if (hasUpdated) return;
+                    this.trigger('end', value);
+                }.bind(this));
+            }.bind(this));
+        }
     }
 
     Transitionable.prototype = Object.create(SimpleStream.prototype);
@@ -139,6 +154,7 @@ define(function (require, exports, module) {
     Transitionable.prototype.set = function set(value, transition, callback) {
         var Method;
         if (!transition || transition.duration === 0) {
+            this.value = value;
             if (callback) dirtyQueue.push(callback);
             Method = Immediate;
         }
@@ -188,7 +204,7 @@ define(function (require, exports, module) {
      * @return {Number|Number[]}    Current state
      */
     Transitionable.prototype.get = function get() {
-        if (this._interpolant) return this._interpolant.get();
+        return (this._interpolant) ? this._interpolant.get() : this.value;
     };
 
     /**
@@ -212,6 +228,7 @@ define(function (require, exports, module) {
     Transitionable.prototype.reset = function reset(value, velocity){
         this._callback = null;
         this._method = null;
+        this.value = value;
         if (this._interpolant) this._interpolant.reset(value, velocity);
     };
 
