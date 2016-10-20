@@ -147,6 +147,7 @@ define(function(require, exports, module) {
     function handleMove(data) {
         var direction = this.options.direction;
         var touchId = data.touchId;
+        var payload = this._payload[touchId];
 
         var scale = this.options.scale;
         var prevData = data.history[0];
@@ -176,6 +177,7 @@ define(function(require, exports, module) {
 
         var nextVel;
         var nextDelta;
+
         if (direction === TouchInput.DIRECTION.X) {
             payload.x = x;
             nextDelta = diffX;
@@ -210,8 +212,6 @@ define(function(require, exports, module) {
         payload.event = data.event;
         payload.timestamp = data.timestamp;
         payload.dt = dt;
-
-        var payload = this._payload[data.touchId];
 
         this._eventOutput.emit('update', payload);
     }
