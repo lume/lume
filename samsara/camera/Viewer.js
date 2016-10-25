@@ -30,6 +30,9 @@ define(function(require, exports, module){
             this.delta = Quaternion.create();
             this.center = [];
 
+            this.orientation = this.camera.orientation;
+            this.position = this.camera.position;
+
             var centerStream = Stream.lift(function(size, layout){
                 if (!size || !layout) return false;
                 var pos = Transform.getTranslate(layout.transform);
@@ -157,11 +160,8 @@ define(function(require, exports, module){
         rotateBy : function(rotation, transition, callback){
             Camera.prototype.rotateBy.apply(this.camera, arguments);
         },
-        lookAt : function(position, orientation, transition, callback){
+        lookAt : function(transform, transition, callback){
             Camera.prototype.lookAt.apply(this.camera, arguments);
-        },
-        lookAtTransform : function(transform, transition, callback){
-            Camera.prototype.lookAtTransform.apply(this.camera, arguments);
         }
     });
 
@@ -179,15 +179,15 @@ define(function(require, exports, module){
         var qy = py + dy;
         var qz = this.options.radius;
 
-        var dp = Math.sqrt(px * px + py * py + pz * pz);
-        var dq = Math.sqrt(qx * qx + qy * qy + qz * qz);
+        var dpInv = 1 / Math.hypot(px, py, pz);
+        var dqInv = 1 / Math.hypot(qx, qy, qz);
 
-        px /= dp;
-        py /= dp;
-        pz /= dp;
-        qx /= dq;
-        qy /= dq;
-        qz /= dq;
+        px *= dpInv;
+        py *= dpInv;
+        pz *= dpInv;
+        qx *= dqInv;
+        qy *= dqInv;
+        qz *= dqInv;
 
         var angle = Math.acos(px * qx + py * qy + pz * qz);
 

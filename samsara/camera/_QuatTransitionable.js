@@ -3,8 +3,18 @@
 define(function(require, exports, module){
     var Quaternion = require('./_Quaternion');
     var Transitionable = require('../core/Transitionable');
+    var SimpleStream = require('../streams/SimpleStream');
     var EventHandler = require('../events/EventHandler');
 
+    /**
+     * An extension of Transitionable to transition Quaternions via spherical linear interpolation (slerp).
+     *
+     * @class QuatTransitionable
+     * @private
+     * @constructor
+     * @extends Streams.SimpleStream
+     * @param value {Quaternion}   Starting quaternion
+     */
     function QuatTransitionable(quaternion){
         this.start = Quaternion.create();
         this.end = Quaternion.create();
@@ -20,35 +30,81 @@ define(function(require, exports, module){
         EventHandler.setOutputHandler(this, this._eventOutput);
     }
 
-    QuatTransitionable.prototype.reset = function(quat){
-        Quaternion.set(quat, this.start);
-        this.t.reset(0);
-    }
+    QuatTransitionable.prototype = Object.create(SimpleStream.prototype);
+    QuatTransitionable.prototype.constructor = QuatTransitionable;
 
-    QuatTransitionable.prototype.set = function(quat, transition, callback){
+    /**
+     * Define a new end value that will be transitioned towards with the prescribed
+     *  transition. An optional callback can fire when the transition completes.
+     *
+     * @method set
+     * @param quaternion {Quaternion}           Quaternion end value
+     * @param [transition] {Object}             Transition definition
+     * @param [callback] {Function}             Callback
+     */
+    QuatTransitionable.prototype.set = function(quaternion, transition, callback){
         Quaternion.set(this.get(), this.start);
 
         // go shorter way around
-        if (Quaternion.dot(this.start, quat) < 0)
+        if (Quaternion.dot(this.start, quaternion) < 0)
             Quaternion.negate(this.start, this.start);
 
-        Quaternion.set(quat, this.end);
+        Quaternion.set(quaternion, this.end);
 
         this.t.reset(0);
         this.t.set(1, transition, callback);
     }
 
-    QuatTransitionable.prototype.isActive = function(){
-        return this.t.isActive();
+    /**
+     * Sets the value and velocity of the transition without firing any events.
+     *
+     * @method reset
+     * @param quaternion {Quaternion}       New quaternion
+     * @param [velocity] {Number|Number[]}  New velocity
+     */
+    QuatTransitionable.prototype.reset = function(quaternion, velocity){
+        Quaternion.set(quaternion, this.start);
+        Transitionable.prototype.getVelocity.call(this.t, 0);
     }
 
+    /**
+     * Determine is the transition is ongoing, or has completed.
+     *
+     * @method isActive
+     * @return {Boolean}
+     */
+    QuatTransitionable.prototype.isActive = function(){
+        return Transitionable.prototype.isActive.apply(this.t, arguments);
+    }
+
+    /**
+     * Ends the transition in place.
+     *
+     * @method halt
+     */
     QuatTransitionable.prototype.halt = function(){
         Quaternion.set(this.get(), this.value);
-        return this.t.halt();
+        Transitionable.prototype.halt.apply(this.t, arguments);
     }
 
+    /**
+     * Return the current value of the transition.
+     *
+     * @method get
+     * @return {Quaternion}    Current quaternion
+     */
     QuatTransitionable.prototype.get = function(){
         return this.value;
+    }
+
+    /**
+     * Return the current velocity of the transition.
+     *
+     * @method getVelocity
+     * @return {Number|Number[]}    Current velocity
+     */
+    QuatTransitionable.prototype.getVelocity = function(){
+        return Transitionable.prototype.getVelocity.apply(this.t, arguments);
     }
 
     module.exports = QuatTransitionable;

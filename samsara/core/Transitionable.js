@@ -211,7 +211,7 @@ define(function (require, exports, module) {
      * Return the current velocity of the transition.
      *
      * @method getVelocity
-     * @return {Number|Number[]}    Current state
+     * @return {Number|Number[]}    Current velocity
      */
     Transitionable.prototype.getVelocity = function getVelocity(){
         if (this._interpolant && this._interpolant.getVelocity)
