@@ -90,7 +90,7 @@ define(function(require, exports, module) {
     }
 
     function handleStart(event) {
-        if (event.touches.length >= this.options.limit) return false;
+        if (event.touches.length > this.options.limit) return false;
         if (this.numTouches >= this.options.track) return false;
 
         for (var i = 0; i < event.changedTouches.length; i++) {
@@ -104,7 +104,7 @@ define(function(require, exports, module) {
     }
 
     function handleMove(event) {
-        if (event.touches.length >= this.options.limit) return false;
+        if (event.touches.length > this.options.limit) return false;
         if (this.numTouches > this.options.track) return false;
 
         event.preventDefault(); // prevents scrolling on mobile
@@ -123,7 +123,7 @@ define(function(require, exports, module) {
     }
 
     function handleEnd(event) {
-        if (event.touches.length >= this.options.limit) return false;
+        if (event.touches.length > this.options.limit) return false;
         if (this.numTouches > this.options.track) return false;
 
         for (var i = 0; i < event.changedTouches.length; i++) {
