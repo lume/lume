@@ -39,8 +39,7 @@ define(function(require, exports, module) {
         EventHandler.setOutputHandler(this, this._eventOutput);
 
         this._inputs = {};
-        if (inputs) this.addInput(inputs);
-        if (options) this.setOptions(options);
+        if (inputs) this.addInput(inputs, options);
     }
 
     GenericInput.prototype = Object.create(SimpleStream.prototype);
@@ -135,10 +134,10 @@ define(function(require, exports, module) {
      * @param inputs {Object|Array.String} an array of registered input keys
      *    or an object with fields {input key : input options}
      */
-    GenericInput.prototype.addInput = function addInput(inputs) {
+    GenericInput.prototype.addInput = function addInput(inputs, options) {
         if (inputs instanceof Array)
             for (var i = 0; i < inputs.length; i++)
-                _addSingleInput.call(this, inputs[i]);
+                _addSingleInput.call(this, inputs[i], options);
         else if (inputs instanceof Object)
             for (var key in inputs)
                 _addSingleInput.call(this, key, inputs[key]);
