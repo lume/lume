@@ -11,54 +11,81 @@ define(function(require, exports, module){
     var MouseInput = require('../inputs/MouseInput');
     var TouchInput = require('../inputs/TouchInput');
     var ScrollInput = require('../inputs/ScrollInput');
+    var PinchInput = require('../inputs/PinchInput');
     var GenericInput = require('../inputs/GenericInput');
 
     GenericInput.register({
         mouse : MouseInput,
-        touch : TouchInput
+        touch : TouchInput,
+        pinch : PinchInput,
+        scroll : ScrollInput
     });
 
-    var Viewer = Controller.extend({
+    /**
+     * A tackball camera. This is a camera that rotates (in place) what is added to its render tree. It can
+     *  also zoom in and out. These actions are tied to DOM events. Rotation is connected to mouse and touch events,
+     *  and zooming is connected to the scrollwheel.
+     *
+     *  The drawer is initially hidden behind the content, until it is moved
+     *  by a call to setPosition. The source of the movement can be by subscribing
+     *  the layout to user input (like a Mouse/Touch/Scroll input), or by manually
+     *  calling setPosition with a transition.
+     *
+     *  The layout emits a `start`, `update` and `end` Stream with payload
+     *
+     *      `progress` - Number between 0 and 1 indicating how open the drawer is
+     *      `value` - Pixel displacement in how open the drawer is
+     *
+     *  It also emits `close` and `open` events.
+     *
+     *  The drawer can be revealed from any side of the content (top, left, bottom, right),
+     *  by specifying a side option.
+     *
+     *  @class TrackballCamera
+     *  @constructor
+     *  @namespace Camera
+     *  @extends Core.Controller
+     *  @param [options] {Object}                       Options
+     *  @param [options.radius] {Number}                  Side to reveal the drawer from. Defined in DrawerLayout.SIDES
+     *  @param [options.rotationScale] {Number}          The maximum length to reveal the drawer
+     *  @param [options.zoomScale] {Number}     The velocity needed to complete the drawer transition
+     *  @param [options.inertia] {Number}     The displacement needed to complete the drawer transition
+     *  @param [options.position] {Object}       A transition definition for closing the drawer
+     *  @param [options.orientation] {Object}        A transition definition for opening the drawer
+     */
+    var TrackballCamera = Controller.extend({
         defaults : {
             radius: 500,
             rotationScale: 1,
             zoomScale: 1,
-            inertia: true
+            inertia: true,
+            position: Camera.DEFAULT_OPTIONS.position,
+            orientation: Camera.DEFAULT_OPTIONS.orientation
         },
         initialize : function(options){
             this.camera = new Camera(options);
             this.delta = Quaternion.create();
-            this.center = [];
 
             this.orientation = this.camera.orientation;
             this.position = this.camera.position;
 
+            this.center = [];
             var centerStream = Stream.lift(function(size, layout){
                 if (!size || !layout) return false;
                 var pos = Transform.getTranslate(layout.transform);
-                return [pos[0] + 0.5 * size[0], pos[1] + 0.5 * size[1]];
-            }, [this.camera._node._size, this.camera._node.layout]);
+                this.center[0] = pos[0] + 0.5 * size[0];
+                this.center[1] = pos[1] + 0.5 * size[1];
+            }.bind(this), [this.camera._node._size, this.camera._node.layout]);
 
-            centerStream.on('start', function(center){
-                this.center[0] = center[0];
-                this.center[1] = center[1];
-            }.bind(this));
+            centerStream.on('start', function(center){});
+            centerStream.on('update', function(center){});
+            centerStream.on('end', function(center){});
 
-            centerStream.on('update', function(center){
-                this.center[0] = center[0];
-                this.center[1] = center[1];
-            }.bind(this));
-
-            centerStream.on('end', function(center){
-                this.center[0] = center[0];
-                this.center[1] = center[1];
-            }.bind(this));
-
-            var inertia = options.inertia ? new Transitionable(0) : false;
-            var rotationInput = new GenericInput(['mouse', 'touch'], {scale : options.rotationScale});
-            var zoomInput = new ScrollInput({
-                direction : ScrollInput.DIRECTION.Y,
-                scale: options.zoomScale
+            var rotationInertia = options.inertia ? new Transitionable(0) : false;
+            var rotationInput = new GenericInput(['mouse', 'touch'], {scale : options.rotationScale, limit: 1});
+            var zoomInput = new GenericInput({
+                pinch : {scale: options.zoomScale},
+                scroll : {scale: options.zoomScale, direction: ScrollInput.DIRECTION.Y}
             });
 
             rotationInput.subscribe(this.input);
@@ -67,7 +94,7 @@ define(function(require, exports, module){
             var hasMoved = false;
             rotationInput.on('start', function(data){
                 hasMoved = false;
-                if (inertia && inertia.isActive()) inertia.halt();
+                if (rotationInertia && rotationInertia.isActive()) rotationInertia.halt();
 
                 this.emit('start', {
                     position: this.getPosition(),
@@ -88,7 +115,7 @@ define(function(require, exports, module){
             }.bind(this));
 
             rotationInput.on('end', function(data){
-                if (!hasMoved || !inertia) {
+                if (!hasMoved || !rotationInertia) {
                     this.emit('end', {
                         position: this.getPosition(),
                         orientation: this.getOrientation()
@@ -96,16 +123,16 @@ define(function(require, exports, module){
                 }
                 else {
                     var angle = Quaternion.getAngle(this.delta);
-                    inertia.reset(angle);
-                    inertia.set(angle, {
+                    rotationInertia.reset(angle);
+                    rotationInertia.set(angle, {
                         curve : 'damp',
                         damping : .9
                     });
                 }
             }.bind(this));
 
-            if (inertia){
-                inertia.on('update', function(angle){
+            if (rotationInertia){
+                rotationInertia.on('update', function(angle){
                     Quaternion.setAngle(this.delta, angle, this.delta);
                     this.rotateBy(this.delta);
 
@@ -115,7 +142,7 @@ define(function(require, exports, module){
                     });
                 }.bind(this));
 
-                inertia.on('end', function(value){
+                rotationInertia.on('end', function(value){
                     this.emit('end', {
                         position: this.getPosition(),
                         orientation: this.getOrientation()
@@ -198,5 +225,5 @@ define(function(require, exports, module){
         return [angle, axisX, axisY, axisZ];
     }
 
-    module.exports = Viewer;
+    module.exports = TrackballCamera;
 });
