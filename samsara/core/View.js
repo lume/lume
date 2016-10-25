@@ -83,7 +83,7 @@ define(function(require, exports, module) {
             if (this.options) setOptions.call(this, this.options);
         },
         _onAdd : function(parent){
-            parent.add(this._node);
+            return parent.add(this._node);
         },
         /**
          * Extends the render tree subtree with a new node.
