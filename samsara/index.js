@@ -5,6 +5,7 @@ define(function(require, exports, module) {
         Events: require('./events'),
         Inputs: require('./inputs'),
         Layouts: require('./layouts'),
-        Streams: require('./streams')
+        Streams: require('./streams'),
+        Camera: require('./camera')
     };
 });
