@@ -88,8 +88,8 @@ define(function(require, exports, module) {
     };
 
     function firstStart(){
-        handleResize();
-        handleLayout();
+        preTickQueue.push(handleResize);
+        preTickQueue.push(handleLayout);
         if (isNaN(rafId)) Engine.start();
     }
 
