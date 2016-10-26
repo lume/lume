@@ -23,6 +23,7 @@ define(function(require, exports, module){
      *
      * @class Camera
      * @constructor
+     * @namespace Camera
      * @param options {Object}                              Options
      * @param [options.orientation=[1,0,0,0]] {Quaternion}  Initial orientation of camera
      * @param [options.position=[0,0,0]] {Array}            Initial position of camera

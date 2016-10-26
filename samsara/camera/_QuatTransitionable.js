@@ -12,6 +12,7 @@ define(function(require, exports, module){
      * @class QuatTransitionable
      * @private
      * @constructor
+     * @namespace Camera
      * @extends Streams.SimpleStream
      * @param value {Quaternion}   Starting quaternion
      */

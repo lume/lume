@@ -138,6 +138,7 @@ define(function(require, exports, module) {
         payload.touchId = data.touchId;
         payload.event = data.event;
         payload.timestamp = data.timestamp;
+        payload.dt = 0;
 
         this._payload[data.touchId] = payload;
 

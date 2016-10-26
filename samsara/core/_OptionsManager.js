@@ -45,6 +45,7 @@ define(function(require, exports, module) {
      * @param defaults {Object}      Default options
      * @return {Object}              Patched options
      */
+    // TODO: subscribe to change events
     OptionsManager.setOptions = function(instance, options, defaults){
         defaults = defaults || _clone(instance.constructor.DEFAULT_OPTIONS) || {};
         var optionsManager = new OptionsManager(defaults);

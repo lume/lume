@@ -6,7 +6,7 @@ define(function(require, exports, module){
      *  Quaternions are represented as 4-dimensional arrays [w, x, y, z].
      *
      * @class Quaternion
-     * @namespace Core
+     * @namespace Camera
      * @static
      * @private
      */
