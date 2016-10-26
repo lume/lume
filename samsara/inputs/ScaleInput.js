@@ -115,7 +115,7 @@ define(function(require, exports, module) {
         var scale = this.options.scale;
 
         var delta = scale * (distance - this.prevDist) / this.startDist;
-        var velocity = delta / data.dt;
+        var velocity = 2 * delta / (data[0].dt + data[1].dt);
         this.value += delta;
         this.cumulate += delta;
 
