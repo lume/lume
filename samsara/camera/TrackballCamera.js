@@ -82,6 +82,8 @@ define(function(require, exports, module){
             centerStream.on('end', function(center){});
 
             var rotationInertia = options.inertia ? new Transitionable(0) : false;
+            var zoomInertia = options.inertia ? new Transitionable(0) : false;
+
             var rotationInput = new GenericInput(['mouse', 'touch'], {scale : options.rotationScale, limit: 1});
             var zoomInput = new GenericInput({
                 pinch : {scale: options.zoomScale},
@@ -159,6 +161,41 @@ define(function(require, exports, module){
                     orientation: this.getOrientation()
                 });
             }.bind(this));
+
+            zoomInput.on('end', function(data){
+                if (!zoomInertia){
+                    this.emit('end', {
+                        position: this.getPosition(),
+                        orientation: this.getOrientation()
+                    });
+                }
+                else if (data.velocity !== 0){
+                    var z = this.getPosition()[2];
+                    zoomInertia.reset(z);
+                    zoomInertia.set(z, {
+                        curve : 'inertia',
+                        damping: .2,
+                        velocity : data.velocity
+                    });
+                }
+            }.bind(this));
+
+            if (zoomInertia){
+                zoomInertia.on('update', function(value){
+                    this.setZoom(value);
+                    this.emit('update', {
+                        position: this.getPosition(),
+                        orientation: this.getOrientation()
+                    });
+                }.bind(this));
+
+                zoomInertia.on('end', function(value){
+                    this.emit('end', {
+                        position: this.getPosition(),
+                        orientation: this.getOrientation()
+                    });
+                }.bind(this));
+            }
         },
         _onAdd : function(){
             return Camera.prototype._onAdd.apply(this.camera, arguments);
@@ -183,6 +220,12 @@ define(function(require, exports, module){
         },
         zoomBy : function(delta, transition, callback){
             Camera.prototype.zoomBy.apply(this.camera, arguments);
+        },
+        setZoom : function(zoom, transition, callback){
+            var position = this.getPosition();
+            var newPosition = position.slice();
+            newPosition[2] = zoom;
+            Camera.prototype.setPosition.call(this.camera, newPosition, transition, callback);
         },
         rotateBy : function(rotation, transition, callback){
             Camera.prototype.rotateBy.apply(this.camera, arguments);
