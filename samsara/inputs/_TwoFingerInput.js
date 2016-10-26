@@ -79,7 +79,7 @@ define(function(require, exports, module) {
      */
     TwoFingerInput.calculateDistance = function(value1, value2) {
         var direction = this.options.direction;
-        
+
         if (direction === undefined){
             var diffX = value2[0] - value1[0];
             var diffY = value2[1] - value1[1];
@@ -194,7 +194,11 @@ define(function(require, exports, module) {
     }
 
     function handleEnd(data) {
-        if (this.touchIdA === undefined && this.touchIdB === undefined) return false;
+        if (this.touchIdA === undefined || this.touchIdB === undefined) {
+            this.touchIdA = undefined;
+            this.touchIdB = undefined;
+            return false;
+        }
 
         this.emit('twoFingerEnd', this.payload);
         this.touchIdA = undefined;
