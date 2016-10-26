@@ -105,7 +105,7 @@ define(function(require, exports, module) {
 
     function handleMove(event) {
         if (event.touches.length > this.options.limit) return false;
-        if (this.numTouches > this.options.track) return false;
+        if (this.numTouches !== this.options.track) return false;
 
         event.preventDefault(); // prevents scrolling on mobile
 
@@ -114,7 +114,13 @@ define(function(require, exports, module) {
             var history = this.history[touch.identifier];
             if (history) {
                 var data = getData(touch, event, history);
+
+                // don't send event if touch hasn't moved
+                var prev = history[this.options.memory - 1];
+                if (data.x === prev.x && data.y === prev.y) continue;
+
                 this._eventOutput.emit('trackmove', data);
+
                 if (history.length >= this.options.memory)
                     history.shift();
                 history.push(data);
