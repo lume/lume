@@ -1,3 +1,29 @@
+## 0.2.4
+
+**General**
+- Add Sphere example
+- Add Camera directory with:
+    - `Quaternion.js` - Math library for quaternionic math
+    - `QuatTransitionable.js` - Extension of `Transitionable` to `Quaternions` with slerping
+    - `Camera` - Generic camera class
+    - `TrackballCamera` - Trackball camera for rotating and scaling objects in 3D using mouse and touch gestures
+
+**DOM**
+- Fix `roundToPixel` is `Surface` and `Context` cfb7952
+- Call `event.stopPropagation` on DOM events dffba67
+- Suppress "ghost" mouse DOM events that fire with touch events 4f7d358
+
+**Core**
+- Fix bugs in `Transform.interpet` 0341a41, 34ab1a6
+- `Transitionable` now acts as a shell for interpolation engines 01f6374
+- Fix `true`-sizing bug 16f3b18
+
+**Inputs**
+- Add `x` and `y` `pageX/Y` positions to `MouseInput` and `TouchInput` dacf532
+- Fix options passed in with inputs for `GenericInput` 8d14d80
+- Fix `PinchInput` and `ScaleInput` velocity calculation 9c79999
+- No `touchmove` event propagation unless the touch has actually moved 2a3f653
+
 ## 0.2.3
 
 - Forget to update distribution files in 0.2.2 upgrade :-)
