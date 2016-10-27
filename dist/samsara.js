@@ -57,11 +57,12 @@ return /******/ (function(modules) { // webpackBootstrap
 	var __WEBPACK_AMD_DEFINE_RESULT__;!(__WEBPACK_AMD_DEFINE_RESULT__ = function(require, exports, module) {
 	    module.exports = {
 	        Core: __webpack_require__(1),
-	        DOM: __webpack_require__(32),
-	        Events: __webpack_require__(39),
-	        Inputs: __webpack_require__(40),
-	        Layouts: __webpack_require__(50),
-	        Streams: __webpack_require__(60)
+	        DOM: __webpack_require__(35),
+	        Events: __webpack_require__(42),
+	        Inputs: __webpack_require__(43),
+	        Layouts: __webpack_require__(53),
+	        Streams: __webpack_require__(63),
+	        Camera: __webpack_require__(64)
 	    };
 	}.call(exports, __webpack_require__, exports, module), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
 
@@ -76,7 +77,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	        Timer: __webpack_require__(10),
 	        Transform: __webpack_require__(9),
 	        Transitionable: __webpack_require__(11),
-	        View: __webpack_require__(22)
+	        View: __webpack_require__(25)
 	    };
 	}.call(exports, __webpack_require__, exports, module), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
 
@@ -175,8 +176,8 @@ return /******/ (function(modules) { // webpackBootstrap
 	    };
 
 	    function firstStart(){
-	        handleResize();
-	        handleLayout();
+	        preTickQueue.push(handleResize);
+	        preTickQueue.push(handleLayout);
 	        if (isNaN(rafId)) Engine.start();
 	    }
 
@@ -1028,18 +1029,6 @@ return /******/ (function(modules) { // webpackBootstrap
 	    };
 
 	    /**
-	     * Returns a perspective Transform.
-	     *
-	     * @method perspective
-	     * @static
-	     * @param w {Number}       z-depth of focal point
-	     * @return {Array}
-	     */
-	    Transform.perspective = function perspective(w) {
-	        return [1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, -1 / w, 0, 0, 0, 1];
-	    };
-
-	    /**
 	     * Return translation vector component of the given Transform.
 	     *
 	     * @method getTranslate
@@ -1098,7 +1087,9 @@ return /******/ (function(modules) { // webpackBootstrap
 	    };
 
 	    function normSquared(v) {
-	        return v[0] * v[0] + v[1] * v[1] + v[2] * v[2];
+	        return (v.length === 2)
+	            ? v[0] * v[0] + v[1] * v[1]
+	            : v[0] * v[0] + v[1] * v[1] + v[2] * v[2];
 	    }
 	    function norm(v) {
 	        return Math.sqrt(normSquared(v));
@@ -1113,15 +1104,15 @@ return /******/ (function(modules) { // webpackBootstrap
 	     * @method interpret
 	     * @static
 	     * @private
-	     * @param t {Transform}     Transform
+	     * @param T {Transform}     Transform
 	     * @return {Object}
 	     */
-	    Transform.interpret = function interpret(t) {
+	    Transform.interpret = function interpret(T) {
 	        // QR decomposition via Householder reflections
 	        // FIRST ITERATION
 
 	        //default Q1 to the identity matrix;
-	        var x = [t[0], t[1], t[2]];                // first column vector
+	        var x = [T[0], T[1], T[2]];                // first column vector
 	        var sgn = sign(x[0]);                      // sign of first component of x (for stability)
 	        var xNorm = norm(x);                       // norm of first column vector
 	        var v = [x[0] + sgn * xNorm, x[1], x[2]];  // v = x + sign(x[0])|x|e1
@@ -1130,7 +1121,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	        //bail out if our Matrix is singular
 	        if (mult >= Infinity) {
 	            return {
-	                translate: Transform.getTranslate(t),
+	                translate: Transform.getTranslate(T),
 	                rotate: [0, 0, 0],
 	                scale: [0, 0, 0],
 	                skew: [0, 0, 0]
@@ -1156,7 +1147,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	        Q1[9] = Q1[6];                      // 2,1 entry
 
 	        //reduce first column of M
-	        var MQ1 = Transform.compose(Q1, t);
+	        var MQ1 = Transform.compose(Q1, T);
 
 	        // SECOND ITERATION on (1,1) minor
 	        var x2 = [MQ1[5], MQ1[6]];
@@ -1178,16 +1169,16 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	        //calc QR decomposition. Q = Q1*Q2, R = Q'*M
 	        var Q = Transform.compose(Q2, Q1);      //note: really Q transpose
-	        var R = Transform.compose(Q, t);
+	        var R = Transform.compose(Q, T);
 
 	        //remove negative scaling
-	        var remover = Transform.scale(R[0] < 0 ? -1 : 1, R[5] < 0 ? -1 : 1, R[10] < 0 ? -1 : 1);
+	        var remover = Transform.scale([R[0] < 0 ? -1 : 1, R[5] < 0 ? -1 : 1, R[10] < 0 ? -1 : 1]);
 	        R = Transform.compose(R, remover);
 	        Q = Transform.compose(remover, Q);
 
 	        // decompose into rotate/scale/skew matrices
 	        var result = {};
-	        result.translate = Transform.getTranslate(t);
+	        result.translate = Transform.getTranslate(T);
 	        result.rotate = [Math.atan2(-Q[6], Q[10]), Math.asin(Q[2]), Math.atan2(-Q[1], Q[0])];
 	        if (!result.rotate[0]) {
 	            result.rotate[0] = 0;
@@ -1513,27 +1504,36 @@ return /******/ (function(modules) { // webpackBootstrap
 	var __WEBPACK_AMD_DEFINE_RESULT__;/* Copyright © 2015-2016 David Valdman */
 
 	!(__WEBPACK_AMD_DEFINE_RESULT__ = function (require, exports, module) {
-	    var dirtyQueue = __webpack_require__(7);
 	    var preTickQueue = __webpack_require__(6);
+	    var dirtyQueue = __webpack_require__(7);
 	    var tickQueue = __webpack_require__(8);
 	    var EventHandler = __webpack_require__(3);
 	    var SimpleStream = __webpack_require__(12);
 	    var Stream = __webpack_require__(16);
 
 	    var Tween = __webpack_require__(19);
-	    var Spring = __webpack_require__(20);
-	    var Inertia = __webpack_require__(21);
+	    var Spring = __webpack_require__(21);
+	    var Inertia = __webpack_require__(22);
+	    var Damp = __webpack_require__(23);
+	    var Immediate = __webpack_require__(24);
 
 	    var transitionMethods = {
 	        tween: Tween,
 	        spring: Spring,
-	        inertia: Inertia
+	        inertia: Inertia,
+	        damp: Damp
 	    };
 
 	    /**
 	     * A way to transition numeric values and arrays of numbers between start and end states.
-	     *  Transitions are given an easing curve and a duration.
-	     *  Non-numeric values are ignored.
+	     *  Transitioning happens through one of many possible interpolations, such as easing
+	     *  curves like 'easeIn', or physics curves like 'spring' and 'inertia'. The choice
+	     *  of interpolation is specified when `.set` is called. If no interpolation is specified
+	     *  then the value changes immediately. Non-numeric values in arrays, such as `undefined`
+	     *  or `true`, are safely ignored.
+	     *
+	     *  Transitionables are streams, so they emit `start`, `update` and `end` events, with a payload
+	     *  that is their current value. As streams, they can also be mapped, filtered, composed, etc.
 	     *
 	     *  @example
 	     *
@@ -1559,14 +1559,10 @@ return /******/ (function(modules) { // webpackBootstrap
 	     * @param value {Number|Number[]}   Starting value
 	     */
 	    function Transitionable(value) {
-	        this.value = value || 0;
-	        this.velocity = 0;
 	        this._callback = undefined;
 	        this._method = null;
 	        this._active = false;
 	        this._currentActive = false;
-
-	        var hasUpdated = false;
 	        this.updateMethod = undefined;
 
 	        this._eventInput = new EventHandler();
@@ -1574,7 +1570,9 @@ return /******/ (function(modules) { // webpackBootstrap
 	        EventHandler.setInputHandler(this, this._eventInput);
 	        EventHandler.setOutputHandler(this, this._eventOutput);
 
+	        var hasUpdated = false;
 	        this._eventInput.on('start', function (value) {
+	            hasUpdated = false;
 	            this._currentActive = true;
 	            if (!this._active) {
 	                this.emit('start', value);
@@ -1584,13 +1582,10 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	        this._eventInput.on('update', function (value) {
 	            hasUpdated = true;
-	            this.value = value;
-	            this.velocity = this._engineInstance.getVelocity();
 	            this.emit('update', value);
 	        }.bind(this));
 
 	        this._eventInput.on('end', function (value) {
-	            this.value = value;
 	            this._currentActive = false;
 
 	            if (this._callback) {
@@ -1600,12 +1595,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	            }
 
 	            if (!this._currentActive){
-	                this._active = false;
 	                hasUpdated = false;
-
-	                if (this._engineInstance)
-	                    this.velocity = this._engineInstance.getVelocity();
-
 	                this._active = false;
 	                this.emit('end', value);
 	            }
@@ -1665,54 +1655,49 @@ return /******/ (function(modules) { // webpackBootstrap
 	     * @param [callback] {Function}             Callback
 	     */
 	    Transitionable.prototype.set = function set(value, transition, callback) {
+	        var Method;
 	        if (!transition || transition.duration === 0) {
 	            this.value = value;
 	            if (callback) dirtyQueue.push(callback);
-	            if (!this.isActive()){
-	                this.trigger('start', value);
+	            Method = Immediate;
+	        }
+	        else {
+	            if (callback) this._callback = callback;
+	            var curve = transition.curve;
 
-	                dirtyQueue.push(function () {
-	                    this.trigger('end', value);
-	                }.bind(this));
-	            }
-	            return;
+	            Method = (curve && transitionMethods[curve])
+	                ? transitionMethods[curve]
+	                : Tween;
 	        }
 
-	        if (callback) this._callback = callback;
-
-	        var curve = transition.curve;
-
-	        var Method = (curve && transitionMethods[curve])
-	            ? transitionMethods[curve]
-	            : Tween;
-
 	        if (this._method !== Method) {
-	            if (this._engineInstance){
+	            // remove previous
+	            if (this._interpolant){
 	                if (this.updateMethod){
 	                    var index = tickQueue.indexOf(this.updateMethod);
 	                    if (index >= 0) tickQueue.splice(index, 1);
 	                }
-	                this.unsubscribe(this._engineInstance);
+	                this.unsubscribe(this._interpolant);
 	            }
 
-	            if (this.value instanceof Array) {
-	                var dimensions = this.value.length;
-	                this._engineInstance = (dimensions < Method.DIMENSIONS)
-	                    ? new Method(this.value)
-	                    : new NDTransitionable(this.value, Method);
+	            if (value instanceof Array) {
+	                this._interpolant = (value.length < Method.DIMENSIONS)
+	                    ? new Method(this.get())
+	                    : new NDTransitionable(this.get(), Method);
 	            }
-	            else this._engineInstance = new Method(this.value);
+	            else this._interpolant = new Method(this.get());
 
-	            this.subscribe(this._engineInstance);
-	            this.updateMethod = this._engineInstance.update.bind(this._engineInstance);
-	            tickQueue.push(this.updateMethod);
+	            this.subscribe(this._interpolant);
+
+	            if (this._interpolant.update){
+	                this.updateMethod = this._interpolant.update.bind(this._interpolant);
+	                tickQueue.push(this.updateMethod);
+	            }
 
 	            this._method = Method;
 	        }
 
-	        if (!transition.velocity) transition.velocity = this.velocity;
-
-	        this._engineInstance.set(value, transition);
+	        this._interpolant.set(value, transition);
 	    };
 
 	    /**
@@ -1722,17 +1707,18 @@ return /******/ (function(modules) { // webpackBootstrap
 	     * @return {Number|Number[]}    Current state
 	     */
 	    Transitionable.prototype.get = function get() {
-	        return this.value;
+	        return (this._interpolant) ? this._interpolant.get() : this.value;
 	    };
 
 	    /**
 	     * Return the current velocity of the transition.
 	     *
 	     * @method getVelocity
-	     * @return {Number|Number[]}    Current state
+	     * @return {Number|Number[]}    Current velocity
 	     */
 	    Transitionable.prototype.getVelocity = function getVelocity(){
-	        return this.velocity;
+	        if (this._interpolant && this._interpolant.getVelocity)
+	            return this._interpolant.getVelocity();
 	    };
 
 	    /**
@@ -1743,11 +1729,10 @@ return /******/ (function(modules) { // webpackBootstrap
 	     * @param [velocity] {Number|Number[]}  New velocity
 	     */
 	    Transitionable.prototype.reset = function reset(value, velocity){
-	        this.value = value;
-	        this.velocity = velocity || 0;
 	        this._callback = null;
 	        this._method = null;
-	        if (this._engineInstance) this._engineInstance.reset(value, velocity);
+	        this.value = value;
+	        if (this._interpolant) this._interpolant.reset(value, velocity);
 	    };
 
 	    /**
@@ -1757,16 +1742,17 @@ return /******/ (function(modules) { // webpackBootstrap
 	     */
 	    Transitionable.prototype.halt = function () {
 	        if (!this._active) return;
-	        this.reset(this.get());
-	        this.trigger('end', this.value);
+	        var value = this.get();
+	        this.reset(value);
+	        this.trigger('end', value);
 
 	        //TODO: refactor this
-	        if (this._engineInstance) {
+	        if (this._interpolant) {
 	            if (this.updateMethod) {
 	                var index = tickQueue.indexOf(this.updateMethod);
 	                if (index >= 0) tickQueue.splice(index, 1);
 	            }
-	            this.unsubscribe(this._engineInstance);
+	            this.unsubscribe(this._interpolant);
 	        }
 	    };
 
@@ -1850,19 +1836,25 @@ return /******/ (function(modules) { // webpackBootstrap
 	        this._eventOutput.subscribe(this.stream);
 	    }
 
+	    // N-dimensional extension for arrays when interpolants can't natively support multi-dimensional arrays
 	    NDTransitionable.prototype.set = function (value, transition) {
-	        var velocity = transition.velocity ? transition.velocity.slice() : undefined;
+	        var velocity = (transition && transition.velocity) ? transition.velocity.slice() : undefined;
 	        for (var i = 0; i < value.length; i++){
 	            if (velocity) transition.velocity = velocity[i];
 	            this.sources[i].set(value[i], transition);
 	        }
 	    };
 
+	    NDTransitionable.prototype.get = function () {
+	        return this.sources.map(function(source){
+	            return source.get();
+	        });
+	    };
+
 	    NDTransitionable.prototype.getVelocity = function () {
-	        var velocity = [];
-	        for (var i = 0; i < this.sources.length; i++)
-	            velocity[i] = this.sources[i].getVelocity();
-	        return velocity;
+	        return this.sources.map(function(source){
+	            return source.getVelocity();
+	        });
 	    };
 
 	    NDTransitionable.prototype.update = function () {
@@ -2481,8 +2473,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	var __WEBPACK_AMD_DEFINE_RESULT__;/* Copyright © 2015-2016 David Valdman */
 
 	!(__WEBPACK_AMD_DEFINE_RESULT__ = function(require, exports, module) {
-	    var EventHandler = __webpack_require__(3);
-	    var SimpleStream = __webpack_require__(12);
+	    var Transition = __webpack_require__(20);
 	    var dirtyQueue = __webpack_require__(7);
 
 	    var now = Date.now;
@@ -2500,22 +2491,12 @@ return /******/ (function(modules) { // webpackBootstrap
 	     * @param value {Number}    Initial value
 	     */
 	    function Tween(value) {
-	        SimpleStream.call(this);
-
-	        this.state = value || 0;
-	        this.velocity = 0;
-	        this._startValue = value || 0;
-	        this._endValue = 0;
-	        this._startTime = now();
+	        Transition.apply(this, arguments);
 	        this._curve = undefined;
 	        this._duration = 0;
-	        this._active = false;
-
-	        this._eventOutput = new EventHandler();
-	        EventHandler.setOutputHandler(this, this._eventOutput);
 	    }
 
-	    Tween.prototype = Object.create(SimpleStream.prototype);
+	    Tween.prototype = Object.create(Transition.prototype);
 	    Tween.prototype.constructor = Tween;
 
 	    /**
@@ -2633,73 +2614,20 @@ return /******/ (function(modules) { // webpackBootstrap
 	     *
 	     * @method set
 	     * @param endValue {Number|Number[]}    End value
-	     * @param [transition] {Object}         Transition object of type
+	     * @param transition {Object}           Transition object of type
 	     *                                      {duration: number, curve: name}
 	     */
 	    Tween.prototype.set = function set(endValue, transition) {
-	        this._startValue = this.get();
-
-	        if (!this._active) {
-	            this.emit('start', this._startValue);
-	            this._active = true;
-	        }
-
-	        this._endValue = endValue;
-	        this._startTime = now();
+	        Transition.prototype.set.apply(this, arguments);
 
 	        var curve = transition.curve;
 	        if (!registeredCurves[curve] && Tween.CURVES[curve])
 	            Tween.register(curve, Tween.CURVES[curve]);
 
-	        this.velocity = transition.velocity;
 	        this._duration = transition.duration || Tween.DEFAULT_OPTIONS.duration;
 	        this._curve = curve
 	            ? (curve instanceof Function) ? curve : getCurve(curve)
 	            : Tween.DEFAULT_OPTIONS.curve;
-	    };
-
-	    /**
-	     * Get current value.
-	     *
-	     * @method get
-	     * @return {Number|Number[]}
-	     */
-	    Tween.prototype.get = function get() {
-	        return this.state;
-	    };
-
-	    /**
-	     * Get current velocity
-	     *
-	     * @method getVelocity
-	     * @returns {Number|Number[]}
-	     */
-	    Tween.prototype.getVelocity = function getVelocity() {
-	        return this.velocity;
-	    };
-
-	    /**
-	     * Reset the value and velocity of the transition.
-	     *
-	     * @method reset
-	     * @param value {Number|Number[]}       Value
-	     * @param [velocity] {Number|Number[]}  Velocity
-	     */
-	    Tween.prototype.reset = function reset(value, velocity) {
-	        this.state = value;
-	        this.velocity = velocity || 0;
-	    };
-
-	    /**
-	     * Halt transition at current state and erase all pending actions.
-	     *
-	     * @method halt
-	     */
-	    Tween.prototype.halt = function halt() {
-	        var value = this.get();
-	        this.reset(value);
-	        this._active = false;
-	        this.emit('end', value);
 	    };
 
 	    /**
@@ -2710,22 +2638,22 @@ return /******/ (function(modules) { // webpackBootstrap
 	    Tween.prototype.update = function update() {
 	        if (!this._active) return;
 
-	        var timeSinceStart = now() - this._startTime;
+	        var timeSinceStart = now() - this._previousTime;
 
-	        this.velocity = _calculateVelocity(this.state, this._startValue, this._curve, this._duration, 1);
+	        this.velocity = _calculateVelocity(this.state, this.start, this._curve, this._duration, 1);
 
 	        if (timeSinceStart < this._duration) {
 	            var t = timeSinceStart / this._duration;
-	            this.state = _interpolate(this._startValue, this._endValue, this._curve(t));
-	            this.emit('update', this.state);
+	            this.value = _interpolate(this.start, this.end, this._curve(t));
+	            this.emit('update', this.value);
 	        }
 	        else {
-	            this.emit('update', this._endValue);
+	            this.emit('update', this.end);
 
 	            dirtyQueue.push(function(){
-	                this.reset(this._endValue);
+	                this.reset(this.end);
 	                this._active = false;
-	                this.emit('end', this._endValue);
+	                this.emit('end', this.end);
 	            }.bind(this));
 	        }
 	    };
@@ -2786,6 +2714,128 @@ return /******/ (function(modules) { // webpackBootstrap
 	!(__WEBPACK_AMD_DEFINE_RESULT__ = function (require, exports, module) {
 	    var EventHandler = __webpack_require__(3);
 	    var SimpleStream = __webpack_require__(12);
+
+	    function Transition(value, velocity) {
+	        SimpleStream.call(this);
+
+	        this.value = value || 0;
+	        this.velocity = velocity || 0;
+
+	        this.start = value;
+	        this.end = 0;
+
+	        this.energy = Number.NaN;
+	        this._previousTime = Number.NaN;
+	        this._active = false;
+
+	        this._eventOutput = new EventHandler();
+	        EventHandler.setOutputHandler(this, this._eventOutput);
+	    }
+
+	    Transition.DIMENSIONS = 1;
+
+	    Transition.DEFAULT_OPTIONS = {};
+
+	    Transition.prototype = Object.create(SimpleStream.prototype);
+	    Transition.prototype.constructor = Transition;
+
+	    /**
+	     * Set new value to transition to, with a transition definition.
+	     *
+	     * @method set
+	     * @param value {Number}                Starting value
+	     * @param [transition] {Object}         Transition definition
+	     */
+	    Transition.prototype.set = function (value, transition) {
+	        if (!this._active) {
+	            this.emit('start', this.get());
+	            this._active = true;
+	        }
+
+	        this.start = this.get();
+	        this.end = value;
+
+	        if (transition && transition.velocity) this.velocity = transition.velocity;
+	        else this.velocity = this.velocity || 0;
+
+	        this._previousTime = Date.now();
+	    };
+
+	    /**
+	     * Get current value.
+	     *
+	     * @method get
+	     * @return {Number}
+	     */
+	    Transition.prototype.get = function () {
+	        return this.value;
+	    };
+
+	    /**
+	     * Get current velocity
+	     *
+	     * @method getVelocity
+	     * @returns {Number}
+	     */
+	    Transition.prototype.getVelocity = function () {
+	        return this.velocity;
+	    };
+
+	    /**
+	     * Reset the value and velocity of the transition.
+	     *
+	     * @method reset
+	     * @param value {Number}       Value
+	     * @param [velocity] {Number}  Velocity
+	     */
+	    Transition.prototype.reset = function (value, velocity) {
+	        this.start = value;
+	        this.value = value;
+	        this.velocity = velocity || 0;
+	    };
+
+	    /**
+	     * Halt transition at current state and erase all pending actions.
+	     *
+	     * @method halt
+	     */
+	    Transition.prototype.halt = function () {
+	        if (!this._active) return;
+	        this._active = false;
+	        var value = this.get();
+	        this.reset(value);
+	        this.emit('end', value);
+	    };
+
+	    /**
+	     * Check to see if Inertia is actively transitioning
+	     *
+	     * @method isActive
+	     * @returns {Boolean}
+	     */
+	    Transition.prototype.isActive = function isActive() {
+	        return this._active;
+	    };
+
+	    /**
+	     * Update the transition in time.
+	     *
+	     * @method update
+	     */
+	    Transition.prototype.update = function update() {};
+
+	    module.exports = Transition;
+	}.call(exports, __webpack_require__, exports, module), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
+
+
+/***/ },
+/* 21 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var __WEBPACK_AMD_DEFINE_RESULT__;/* Copyright © 2015-2016 David Valdman */
+
+	!(__WEBPACK_AMD_DEFINE_RESULT__ = function (require, exports, module) {
+	    var Transition = __webpack_require__(20);
 	    var dirtyQueue = __webpack_require__(7);
 
 	    var now = Date.now;
@@ -2804,20 +2854,9 @@ return /******/ (function(modules) { // webpackBootstrap
 	     * @param velocity {Number} Initial velocity
 	     */
 	    function Spring(value, velocity) {
-	        SimpleStream.call(this);
-
-	        this.value = value || 0;
-	        this.velocity = velocity || 0;
-
-	        this.target = null;
-	        this.startTime = now();
+	        Transition.apply(this, arguments);
 	        this.curve = null;
-	        this.energy = null;
 	        this.energyTolerance = tolerance;
-	        this._active = false;
-
-	        this._eventOutput = new EventHandler();
-	        EventHandler.setOutputHandler(this, this._eventOutput);
 	    }
 
 	    Spring.DIMENSIONS = 1;
@@ -2828,7 +2867,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	        period : 100
 	    };
 
-	    Spring.prototype = Object.create(SimpleStream.prototype);
+	    Spring.prototype = Object.create(Transition.prototype);
 	    Spring.prototype.constructor = Spring;
 
 	    /**
@@ -2836,83 +2875,19 @@ return /******/ (function(modules) { // webpackBootstrap
 	     *
 	     * @method set
 	     * @param value {Number}                End value
-	     * @param [transition] {Object}         Transition definition
+	     * @param transition {Object}           Transition definition
 	     */
 	    Spring.prototype.set = function (value, transition) {
-	        var x0 = this.get();
-
-	        if (!this._active){
-	            this.emit('start', x0);
-	            this._active = true;
-	        }
+	        Transition.prototype.set.apply(this, arguments);
 
 	        var damping = transition.damping || Spring.DEFAULT_OPTIONS.damping;
 	        var period = transition.period || Spring.DEFAULT_OPTIONS.period;
-	        var v0 = transition.velocity || this.velocity;
 
-	        this.curve = getCurve(damping, period, x0, value, v0);
+	        this.curve = getCurve(damping, period, this.start, this.end, this.velocity);
 	        this.energy = calculateEnergy(period);
 
-	        var spread = getSpread(value, x0);
+	        var spread = getSpread(this.end, this.start);
 	        this.energyTolerance = tolerance * Math.pow(spread, 2);
-
-	        this.target = value;
-	        this.startTime = now();
-	    };
-
-	    /**
-	     * Get current value.
-	     *
-	     * @method get
-	     * @return {Number}
-	     */
-	    Spring.prototype.get = function () {
-	        return this.value;
-	    };
-
-	    /**
-	     * Get current velocity
-	     *
-	     * @method getVelocity
-	     * @returns {Number}
-	     */
-	    Spring.prototype.getVelocity = function () {
-	        return this.velocity;
-	    };
-
-	    /**
-	     * Reset the value and velocity of the transition.
-	     *
-	     * @method reset
-	     * @param value {Number}       Value
-	     * @param [velocity] {Number}  Velocity
-	     */
-	    Spring.prototype.reset = function reset(value, velocity) {
-	        this.value = value;
-	        this.velocity = velocity || 0;
-	    };
-
-	    /**
-	     * Halt transition at current state and erase all pending actions.
-	     *
-	     * @method halt
-	     */
-	    Spring.prototype.halt = function halt() {
-	        if (!this._active) return;
-	        var value = this.get();
-	        this.reset(value);
-	        this._active = false;
-	        this.emit('end', value);
-	    };
-
-	    /**
-	     * Check to see if Spring is actively transitioning
-	     *
-	     * @method isActive
-	     * @returns {Boolean}
-	     */
-	    Spring.prototype.isActive = function isActive(){
-	        return this._active;
 	    };
 
 	    /**
@@ -2923,29 +2898,27 @@ return /******/ (function(modules) { // webpackBootstrap
 	    Spring.prototype.update = function update() {
 	        if (!this._active) return;
 
-	        var timeSinceStart = now() - this.startTime;
+	        var timeSinceStart = now() - this._previousTime;
 
-	        var value = this.curve(timeSinceStart);
+	        this.value = this.curve(timeSinceStart);
 	        var next = this.curve(timeSinceStart + eps);
 	        var prev = this.curve(timeSinceStart - eps);
 
 	        this.velocity = (next - prev) / (2 * eps);
 
-	        var energy = this.energy(this.target, value, this.velocity);
+	        var energy = this.energy(this.end, this.value, this.velocity);
 
 	        if (energy >= this.energyTolerance) {
-	            this.value = value;
-	            this.emit('update', value);
+	            this.emit('update', this.value);
 	        }
 	        else {
-	            this.emit('update', this.target);
+	            this.emit('update', this.end);
 
 	            dirtyQueue.push(function(){
-	                this.reset(this.target);
+	                this.reset(this.end);
 	                this._active = false;
-	                this.emit('end', this.target);
+	                this.emit('end', this.end);
 	            }.bind(this));
-
 	        }
 	    };
 
@@ -3012,14 +2985,13 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 21 */
+/* 22 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_RESULT__;/* Copyright © 2015-2016 David Valdman */
 
 	!(__WEBPACK_AMD_DEFINE_RESULT__ = function (require, exports, module) {
-	    var EventHandler = __webpack_require__(3);
-	    var SimpleStream = __webpack_require__(12);
+	    var Transition = __webpack_require__(20);
 	    var dirtyQueue = __webpack_require__(7);
 
 	    var now = Date.now;
@@ -3036,18 +3008,8 @@ return /******/ (function(modules) { // webpackBootstrap
 	     * @param velocity {Number} Initial velocity
 	     */
 	    function Inertia(value, velocity) {
-	        SimpleStream.call(this);
-
-	        this.value = value || 0;
-	        this.velocity = velocity || 0;
+	        Transition.apply(this, arguments);
 	        this.drag = 0;
-
-	        this.energy = null;
-	        this._active = false;
-	        this._previousTime = now();
-
-	        this._eventOutput = new EventHandler();
-	        EventHandler.setOutputHandler(this, this._eventOutput);
 	    }
 
 	    Inertia.DIMENSIONS = 1;
@@ -3057,7 +3019,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	        drag: 0.1
 	    };
 
-	    Inertia.prototype = Object.create(SimpleStream.prototype);
+	    Inertia.prototype = Object.create(Transition.prototype);
 	    Inertia.prototype.constructor = Inertia;
 
 	    /**
@@ -3068,73 +3030,11 @@ return /******/ (function(modules) { // webpackBootstrap
 	     * @param [transition] {Object}         Transition definition
 	     */
 	    Inertia.prototype.set = function (value, transition) {
-	        if (!this._active) {
-	            this.emit('start', value);
-	            this._active = true;
-	        }
-
-	        this.value = value;
+	        Transition.prototype.set.apply(this, arguments);
 
 	        this.drag = (transition.drag === undefined)
 	            ? Inertia.DEFAULT_OPTIONS.drag
 	            : Math.pow(Math.min(transition.drag, 1), 3);
-
-	        this.velocity = transition.velocity || this.velocity;
-	    };
-
-	    /**
-	     * Get current value.
-	     *
-	     * @method get
-	     * @return {Number}
-	     */
-	    Inertia.prototype.get = function () {
-	        return this.value;
-	    };
-
-	    /**
-	     * Get current velocity
-	     *
-	     * @method getVelocity
-	     * @returns {Number}
-	     */
-	    Inertia.prototype.getVelocity = function () {
-	        return this.velocity;
-	    };
-
-	    /**
-	     * Reset the value and velocity of the transition.
-	     *
-	     * @method reset
-	     * @param value {Number}       Value
-	     * @param [velocity] {Number}  Velocity
-	     */
-	    Inertia.prototype.reset = function (value, velocity) {
-	        this.value = value;
-	        this.velocity = velocity || 0;
-	    };
-
-	    /**
-	     * Halt transition at current state and erase all pending actions.
-	     *
-	     * @method halt
-	     */
-	    Inertia.prototype.halt = function () {
-	        if (!this._active) return;
-	        var value = this.get();
-	        this.reset(value);
-	        this._active = false;
-	        this.emit('end', value);
-	    };
-
-	    /**
-	     * Check to see if Inertia is actively transitioning
-	     *
-	     * @method isActive
-	     * @returns {Boolean}
-	     */
-	    Inertia.prototype.isActive = function isActive() {
-	        return this._active;
 	    };
 
 	    /**
@@ -3173,16 +3073,151 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 22 */
+/* 23 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var __WEBPACK_AMD_DEFINE_RESULT__;/* Copyright © 2015-2016 David Valdman */
+
+	!(__WEBPACK_AMD_DEFINE_RESULT__ = function (require, exports, module) {
+	    var Transition = __webpack_require__(20);
+	    var dirtyQueue = __webpack_require__(7);
+
+	    var now = Date.now;
+	    var tolerance = 1e-6; // energy minimum
+
+	    /**
+	     * Defines an damping transition, which decreases the set value to 0 by repeatedly
+	     *  scaling it by the damping factor each tick.
+	     *
+	     * @class Inertia
+	     * @private
+	     * @namespace Transitions
+	     * @constructor
+	     * @param value {Number}    Initial value
+	     * @param velocity {Number} Initial velocity
+	     */
+	    function Damp(value, velocity) {
+	        Transition.apply(this, arguments);
+	        this.damp = 0;
+	    }
+
+	    Damp.DIMENSIONS = 1;
+
+	    Damp.DEFAULT_OPTIONS = {
+	        damping: 0.9
+	    };
+
+	    Damp.prototype = Object.create(Transition.prototype);
+	    Damp.prototype.constructor = Damp;
+
+	    /**
+	     * Set new value to transition to, with a transition definition.
+	     *
+	     * @method set
+	     * @param value {Number}                Starting value
+	     * @param transition {Object}           Transition definition
+	     */
+	    Damp.prototype.set = function (value, transition) {
+	        Transition.prototype.set.apply(this, arguments);
+
+	        this.damp = (transition.damping === undefined)
+	            ? Damp.DEFAULT_OPTIONS.damping
+	            : transition.damping;
+	    };
+
+	    /**
+	     * Update the transition in time.
+	     *
+	     * @method update
+	     */
+	    Damp.prototype.update = function update() {
+	        if (!this._active) return;
+
+	        var currentTime = now();
+	        var dt = currentTime - this._previousTime;
+	        this._previousTime = currentTime;
+
+	        var newValue = this.value * this.damp;
+	        this.velocity = 1 / dt * (this.value - newValue);
+
+	        this.value = newValue;
+
+	        var energy = 0.5 * this.value * this.value;
+
+	        if (energy >= tolerance) {
+	            this.emit('update', this.value);
+	        }
+	        else {
+	            this.emit('update', this.value);
+
+	            dirtyQueue.push(function(){
+	                this.reset(this.value);
+	                this._active = false;
+	                this.emit('end', this.value);
+	            }.bind(this));
+	        }
+	    };
+
+	    module.exports = Damp;
+	}.call(exports, __webpack_require__, exports, module), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
+
+
+/***/ },
+/* 24 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var __WEBPACK_AMD_DEFINE_RESULT__;/* Copyright © 2015-2016 David Valdman */
+
+	!(__WEBPACK_AMD_DEFINE_RESULT__ = function (require, exports, module) {
+	    var Transition = __webpack_require__(20);
+	    var dirtyQueue = __webpack_require__(7);
+
+	    /**
+	     * An immediate transition, with no interpolation between values.
+	     *  Only emits `start` and `end` events.
+	     *
+	     * @method set
+	     * @param value {Number}                End value
+	     */
+	    function Immediate(value) {
+	        Transition.apply(this, arguments);
+	    }
+
+	    Immediate.DIMENSIONS = Infinity;
+
+	    Immediate.prototype = Object.create(Transition.prototype);
+	    Immediate.prototype.constructor = Immediate;
+
+	    /**
+	     * Set new value to transition to.
+	     *
+	     * @method set
+	     * @param value {Number}                End value
+	     * @param transition {Object}           Transition definition
+	     */
+	    Immediate.prototype.set = function(value){
+	        this.value = value;
+	        Transition.prototype.set.apply(this, arguments);
+	        dirtyQueue.push(function() {
+	            this.emit('end', this.value);
+	        }.bind(this));
+	    }
+
+	    module.exports = Immediate;
+	}.call(exports, __webpack_require__, exports, module), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
+
+
+/***/ },
+/* 25 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_RESULT__;/* Copyright © 2015-2016 David Valdman */
 
 	!(__WEBPACK_AMD_DEFINE_RESULT__ = function(require, exports, module) {
-	    var Controller = __webpack_require__(23);
-	    var RenderTreeNode = __webpack_require__(25);
-	    var SizeNode = __webpack_require__(29);
-	    var LayoutNode = __webpack_require__(26);
+	    var Controller = __webpack_require__(26);
+	    var RenderTreeNode = __webpack_require__(28);
+	    var SizeNode = __webpack_require__(32);
+	    var LayoutNode = __webpack_require__(29);
 
 	    /**
 	     * A View provides encapsulation for a subtree of the render tree. You can build
@@ -3232,7 +3267,6 @@ return /******/ (function(modules) { // webpackBootstrap
 	     * @uses Core.SimpleStream
 	     */
 	    var View = Controller.extend({
-	        _isView : true,
 	        defaults : {
 	            size : null,
 	            origin : null,
@@ -3253,13 +3287,16 @@ return /******/ (function(modules) { // webpackBootstrap
 	            this._size = this._node.size; // incoming parent size
 
 	            this._cachedSize = [0, 0];
-	            
+
 	            this.size.on('start', updateSize.bind(this));
 	            this.size.on('update', updateSize.bind(this));
 	            this.size.on('end', updateSize.bind(this));
 
 	            Controller.call(this, options);
 	            if (this.options) setOptions.call(this, this.options);
+	        },
+	        _onAdd : function(parent){
+	            return parent.add(this._node);
 	        },
 	        /**
 	         * Extends the render tree subtree with a new node.
@@ -3385,13 +3422,13 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 23 */
+/* 26 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_RESULT__;/* Copyright © 2015-2016 David Valdman */
 
 	!(__WEBPACK_AMD_DEFINE_RESULT__ = function(require, exports, module) {
-	    var OptionsManager = __webpack_require__(24);
+	    var OptionsManager = __webpack_require__(27);
 	    var EventHandler = __webpack_require__(3);
 	    var SimpleStream = __webpack_require__(12);
 
@@ -3598,7 +3635,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 24 */
+/* 27 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_RESULT__;/* Copyright © 2015-2016 David Valdman */
@@ -3648,6 +3685,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	     * @param defaults {Object}      Default options
 	     * @return {Object}              Patched options
 	     */
+	    // TODO: subscribe to change events
 	    OptionsManager.setOptions = function(instance, options, defaults){
 	        defaults = defaults || _clone(instance.constructor.DEFAULT_OPTIONS) || {};
 	        var optionsManager = new OptionsManager(defaults);
@@ -3786,7 +3824,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 25 */
+/* 28 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_RESULT__;/* Copyright © 2015-2016 David Valdman */
@@ -3795,10 +3833,10 @@ return /******/ (function(modules) { // webpackBootstrap
 	    var EventHandler = __webpack_require__(3);
 	    var SimpleStream = __webpack_require__(12);
 	    var Stream = __webpack_require__(16);
-	    var LayoutNode = __webpack_require__(26);
-	    var SizeNode = __webpack_require__(29);
-	    var layoutAlgebra = __webpack_require__(30);
-	    var sizeAlgebra = __webpack_require__(31);
+	    var LayoutNode = __webpack_require__(29);
+	    var SizeNode = __webpack_require__(32);
+	    var layoutAlgebra = __webpack_require__(33);
+	    var sizeAlgebra = __webpack_require__(34);
 	    var preTickQueue = __webpack_require__(6);
 	    var dirtyQueue = __webpack_require__(7);
 
@@ -3888,9 +3926,9 @@ return /******/ (function(modules) { // webpackBootstrap
 	            // Object literal case
 	            return _createNodeFromObjectLiteral.call(this, node);
 	        }
-	        else if (node._isView){
+	        else if (node._onAdd){
 	            // View case
-	            return this.add(node._node);
+	            return node._onAdd(this);
 	        }
 	        else if (node instanceof RenderTreeNode){
 	            // RenderTree Node
@@ -4034,13 +4072,13 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 26 */
+/* 29 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_RESULT__;/* Copyright © 2015-2016 David Valdman */
 
 	!(__WEBPACK_AMD_DEFINE_RESULT__ = function(require, exports, module) {
-	    var Node = __webpack_require__(27);
+	    var Node = __webpack_require__(30);
 
 	    /**
 	     * Encapsulates a stream of layout data (transform, origin, align, opacity).
@@ -4098,7 +4136,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 27 */
+/* 30 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_RESULT__;/* Copyright © 2015-2016 David Valdman */
@@ -4107,7 +4145,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	    var EventHandler = __webpack_require__(3);
 	    var SimpleStream = __webpack_require__(12);
 	    var Stream = __webpack_require__(16);
-	    var Observable = __webpack_require__(28);
+	    var Observable = __webpack_require__(31);
 
 	    /**
 	     * Encapsulates a stream of layout data (transform, origin, align, opacity).
@@ -4188,7 +4226,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 28 */
+/* 31 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_RESULT__;/* Copyright © 2015-2016 David Valdman */
@@ -4250,13 +4288,13 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 29 */
+/* 32 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_RESULT__;/* Copyright © 2015-2016 David Valdman */
 
 	!(__WEBPACK_AMD_DEFINE_RESULT__ = function(require, exports, module) {
-	    var Node = __webpack_require__(27);
+	    var Node = __webpack_require__(30);
 
 	    /**
 	     * Encapsulates a stream of size data (size, proportions, margins).
@@ -4319,7 +4357,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 30 */
+/* 33 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_RESULT__;/* Copyright © 2015-2016 David Valdman */
@@ -4407,7 +4445,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 31 */
+/* 34 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_RESULT__;/* Copyright © 2015-2016 David Valdman */
@@ -4477,32 +4515,32 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 32 */
+/* 35 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_RESULT__;!(__WEBPACK_AMD_DEFINE_RESULT__ = function(require, exports, module) {
 	    module.exports = {
-	        Surface: __webpack_require__(33),
-	        ContainerSurface: __webpack_require__(35),
-	        Context: __webpack_require__(36)
+	        Surface: __webpack_require__(36),
+	        ContainerSurface: __webpack_require__(38),
+	        Context: __webpack_require__(39)
 	    };
 	}.call(exports, __webpack_require__, exports, module), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
 
 
 /***/ },
-/* 33 */
+/* 36 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_RESULT__;/* Copyright © 2015-2016 David Valdman */
 
 	!(__WEBPACK_AMD_DEFINE_RESULT__ = function(require, exports, module) {
-	    var DOMOutput = __webpack_require__(34);
+	    var DOMOutput = __webpack_require__(37);
 	    var EventHandler = __webpack_require__(3);
 	    var Stream = __webpack_require__(16);
-	    var SizeNode = __webpack_require__(29);
-	    var LayoutNode = __webpack_require__(26);
-	    var sizeAlgebra = __webpack_require__(31);
-	    var layoutAlgebra = __webpack_require__(30);
+	    var SizeNode = __webpack_require__(32);
+	    var LayoutNode = __webpack_require__(29);
+	    var sizeAlgebra = __webpack_require__(34);
+	    var layoutAlgebra = __webpack_require__(33);
 	    var dirtyQueue = __webpack_require__(7);
 
 	    var isTouchEnabled = 'ontouchstart' in window;
@@ -4574,8 +4612,23 @@ return /******/ (function(modules) { // webpackBootstrap
 	        EventHandler.setOutputHandler(this, this._eventOutput);
 
 	        this._eventForwarder = function _eventForwarder(event) {
-	            this._eventOutput.emit(event.type, event);
+	            event.stopPropagation();
+	            var shouldEmit = processEvent.call(this, event);
+	            if (shouldEmit) this._eventOutput.emit(event.type, event);
 	        }.bind(this);
+
+	        var suppressMouseEvents = false;
+	        function processEvent(event){
+	            // if `touchstart` fired, then suppress phantom mouse events
+	            var type = event.type;
+	            if (type === 'touchstart') suppressMouseEvents = true;
+	            if (suppressMouseEvents && type[0] === 'm') {
+	                // `mouseup` is the last fired event
+	                if (type === 'mouseup') suppressMouseEvents = false;
+	                return false;
+	            }
+	            else return true;
+	        }
 
 	        this._sizeNode = new SizeNode();
 	        this._layoutNode = new LayoutNode();
@@ -4685,7 +4738,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	    Surface.prototype.getContent = function getContent(){
 	        return this.content;
 	    };
-	    
+
 	    /**
 	     * Setter for HTML attributes.
 	     *
@@ -4857,7 +4910,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	        if (options.content !== undefined) this.setContent(options.content);
 	        if (options.aspectRatio !== undefined) this.setAspectRatio(options.aspectRatio);
 	        if (options.enableScroll) enableScroll.call(this);
-	        if (options.roundToPixel) this.roundToPixel = options.roundToPixel;
+	        if (options.roundToPixel) this._elementOutput._roundToPixel = options.roundToPixel;
 	    };
 
 	    /**
@@ -5075,7 +5128,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 34 */
+/* 37 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_RESULT__;/* Copyright © 2015-2016 David Valdman */
@@ -5089,6 +5142,11 @@ return /******/ (function(modules) { // webpackBootstrap
 	    var MAX_OPACITY = 0.9999;
 	    var EPSILON = 1e-5;
 	    var _zeroZero = [0, 0];
+
+	    var stringMatrix3d = 'matrix3d(';
+	    var stringComma = ',';
+	    var stringParen = ')';
+	    var stringPx = 'px';
 
 	    /**
 	     * Responsible for committing CSS3 properties to the DOM and providing DOM event hooks
@@ -5110,6 +5168,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	        this._originDirty = true;
 	        this._transformDirty = true;
 	        this._isVisible = true;
+	        this._roundToPixel = false;
 	    }
 
 	    function _round(value, unit){
@@ -5119,14 +5178,14 @@ return /******/ (function(modules) { // webpackBootstrap
 	    }
 
 	    function _formatCSSTransform(transform, unit) {
-	        var result = 'matrix3d(';
+	        var result = stringMatrix3d;
 	        for (var i = 0; i < 15; i++) {
 	            if (Math.abs(transform[i]) < EPSILON) transform[i] = 0;
 	            result += (i === 12 || i === 13)
-	                ? _round(transform[i], unit) + ','
-	                : transform[i] + ',';
+	                ? _round(transform[i], unit) + stringComma
+	                : transform[i] + stringComma;
 	        }
-	        return result + transform[15] + ')';
+	        return result + transform[15] + stringParen;
 	    }
 
 	    function _formatCSSOrigin(origin) {
@@ -5155,10 +5214,10 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	    function _setSize(target, size){
 	        if (size[0] === true) size[0] = target.offsetWidth;
-	        else if (size[0] >= 0) target.style.width = size[0] + 'px';
+	        else if (size[0] >= 0) target.style.width = size[0] + stringPx;
 
 	        if (size[1] === true) size[1] = target.offsetHeight;
-	        else if (size[1] >= 0) target.style.height = size[1] + 'px';
+	        else if (size[1] >= 0) target.style.height = size[1] + stringPx;
 	    }
 
 	    // pointerEvents logic allows for DOM events to pass through the element when invisible
@@ -5291,7 +5350,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	        if (this._transformDirty) {
 	            cache.transform = transform;
-	            _setTransform(target, transform, this.roundToPixel ? 1 : devicePixelRatio);
+	            _setTransform(target, transform, this._roundToPixel ? 1 : devicePixelRatio);
 	        }
 
 	        this._originDirty = false;
@@ -5324,14 +5383,14 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 35 */
+/* 38 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_RESULT__;/* Copyright © 2015-2016 David Valdman */
 
 	!(__WEBPACK_AMD_DEFINE_RESULT__ = function(require, exports, module) {
-	    var Surface = __webpack_require__(33);
-	    var Context = __webpack_require__(36);
+	    var Surface = __webpack_require__(36);
+	    var Context = __webpack_require__(39);
 
 	    /**
 	     * ContainerSurface enables nesting of DOM. A ContainerSurface manages
@@ -5438,17 +5497,17 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 36 */
+/* 39 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_RESULT__;/* Copyright © 2015-2016 David Valdman */
 	// TODO: Enable CSS properties on Context
 	!(__WEBPACK_AMD_DEFINE_RESULT__ = function(require, exports, module) {
-	    var DOMAllocator = __webpack_require__(37);
+	    var DOMAllocator = __webpack_require__(40);
 	    var Engine = __webpack_require__(2);
-	    var RootNode = __webpack_require__(38);
+	    var RootNode = __webpack_require__(41);
 	    var Transitionable = __webpack_require__(11);
-	    var OptionsManager = __webpack_require__(24);
+	    var OptionsManager = __webpack_require__(27);
 	    var SimpleStream = __webpack_require__(12);
 	    var EventHandler = __webpack_require__(3);
 
@@ -5516,9 +5575,25 @@ return /******/ (function(modules) { // webpackBootstrap
 	        this.perspectiveOriginFrom(this._perspectiveOrigin);
 
 	        this._eventOutput = new EventHandler();
+
 	        this._eventForwarder = function _eventForwarder(event) {
-	            this._eventOutput.emit(event.type, event);
+	            event.stopPropagation();
+	            var shouldEmit = processEvent.call(this, event);
+	            if (shouldEmit) this._eventOutput.emit(event.type, event);
 	        }.bind(this);
+
+	        var suppressMouseEvents = false;
+	        function processEvent(event){
+	            // if `touchstart` fired, then suppress phantom mouse events
+	            var type = event.type;
+	            if (type === 'touchstart') suppressMouseEvents = true;
+	            if (suppressMouseEvents && type[0] === 'm') {
+	                // `mouseup` is the last fired event
+	                if (type === 'mouseup') suppressMouseEvents = false;
+	                return false;
+	            }
+	            else return true;
+	        }
 
 	        // Prevents dragging of entire page
 	        if (this.options.enableScroll === false){
@@ -5745,7 +5820,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 37 */
+/* 40 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_RESULT__;/* Copyright © 2015-2016 David Valdman */
@@ -5837,13 +5912,13 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 38 */
+/* 41 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_RESULT__;/* Copyright © 2015-2016 David Valdman */
 
 	!(__WEBPACK_AMD_DEFINE_RESULT__ = function(require, exports, module) {
-	    var RenderTreeNode = __webpack_require__(25);
+	    var RenderTreeNode = __webpack_require__(28);
 
 	    /**
 	     * A RootNode is a first node in the Render Tree. It is like any other
@@ -5886,7 +5961,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 39 */
+/* 42 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_RESULT__;!(__WEBPACK_AMD_DEFINE_RESULT__ = function(require, exports, module) {
@@ -5901,24 +5976,24 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 40 */
+/* 43 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_RESULT__;!(__WEBPACK_AMD_DEFINE_RESULT__ = function(require, exports, module) {
 	    module.exports = {
-	        GenericInput: __webpack_require__(41),
-	        MouseInput: __webpack_require__(42),
-	        TouchInput: __webpack_require__(43),
-	        ScrollInput: __webpack_require__(45),
-	        ScaleInput: __webpack_require__(46),
-	        RotateInput: __webpack_require__(48),
-	        PinchInput: __webpack_require__(49)
+	        GenericInput: __webpack_require__(44),
+	        MouseInput: __webpack_require__(45),
+	        TouchInput: __webpack_require__(46),
+	        ScrollInput: __webpack_require__(48),
+	        ScaleInput: __webpack_require__(49),
+	        RotateInput: __webpack_require__(51),
+	        PinchInput: __webpack_require__(52)
 	    };
 	}.call(exports, __webpack_require__, exports, module), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
 
 
 /***/ },
-/* 41 */
+/* 44 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_RESULT__;/* Copyright © 2015-2016 David Valdman */
@@ -5962,8 +6037,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	        EventHandler.setOutputHandler(this, this._eventOutput);
 
 	        this._inputs = {};
-	        if (inputs) this.addInput(inputs);
-	        if (options) this.setOptions(options);
+	        if (inputs) this.addInput(inputs, options);
 	    }
 
 	    GenericInput.prototype = Object.create(SimpleStream.prototype);
@@ -6058,10 +6132,10 @@ return /******/ (function(modules) { // webpackBootstrap
 	     * @param inputs {Object|Array.String} an array of registered input keys
 	     *    or an object with fields {input key : input options}
 	     */
-	    GenericInput.prototype.addInput = function addInput(inputs) {
+	    GenericInput.prototype.addInput = function addInput(inputs, options) {
 	        if (inputs instanceof Array)
 	            for (var i = 0; i < inputs.length; i++)
-	                _addSingleInput.call(this, inputs[i]);
+	                _addSingleInput.call(this, inputs[i], options);
 	        else if (inputs instanceof Object)
 	            for (var key in inputs)
 	                _addSingleInput.call(this, key, inputs[key]);
@@ -6072,14 +6146,14 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 42 */
+/* 45 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_RESULT__;/* Copyright © 2015-2016 David Valdman */
 
 	!(__WEBPACK_AMD_DEFINE_RESULT__ = function(require, exports, module) {
 	    var EventHandler = __webpack_require__(3);
-	    var OptionsManager = __webpack_require__(24);
+	    var OptionsManager = __webpack_require__(27);
 	    var SimpleStream = __webpack_require__(12);
 
 	    var MINIMUM_TICK_TIME = 8;
@@ -6094,6 +6168,8 @@ return /******/ (function(modules) { // webpackBootstrap
 	     *
 	     * MouseInput emits these events with the following payload data:
 	     *
+	     *      `x`         - x-position relative to screen (independent of scroll)
+	     *      `y`         - y-position relative to screen (independent of scroll)
 	     *      `value`     - Displacement in pixels from `mousedown`
 	     *      `delta`     - Differential in pixels between successive mouse positions
 	     *      `velocity`  - Velocity of mouse movement in pixels per second
@@ -6161,6 +6237,8 @@ return /******/ (function(modules) { // webpackBootstrap
 	        this._eventInput.on('mouseleave',   handleLeave.bind(this));
 
 	        this._payload = {
+	            x : 0,
+	            y : 0,
 	            delta : null,
 	            value : null,
 	            cumulate : null,
@@ -6211,20 +6289,25 @@ return /******/ (function(modules) { // webpackBootstrap
 	        this._down = true;
 	        this._move = false;
 
+	        var payload = this._payload;
+
 	        if (this.options.direction !== undefined) {
 	            if (this._cumulate === null) this._cumulate = 0;
 	            this._value = 0;
 	            delta = 0;
 	            velocity = 0;
+	            if (this.options.direction === MouseInput.DIRECTION.X) payload.x = x;
+	            if (this.options.direction === MouseInput.DIRECTION.Y) payload.y = y;
 	        }
 	        else {
 	            if (this._cumulate === null) this._cumulate = [0, 0];
 	            this._value = [0, 0];
 	            delta = [0, 0];
 	            velocity = [0, 0];
+	            payload.x = x;
+	            payload.y = y;
 	        }
 
-	        var payload = this._payload;
 	        payload.delta = delta;
 	        payload.value = this._value;
 	        payload.cumulate = this._cumulate;
@@ -6268,19 +6351,25 @@ return /******/ (function(modules) { // webpackBootstrap
 	        var nextVel;
 	        var nextDelta;
 
+	        var payload = this._payload;
+
 	        if (direction === MouseInput.DIRECTION.X) {
+	            payload.x = x;
 	            nextDelta = diffX;
 	            nextVel = velX;
 	            this._value += nextDelta;
 	            this._cumulate += nextDelta;
 	        }
 	        else if (direction === MouseInput.DIRECTION.Y) {
+	            payload.y = y;
 	            nextDelta = diffY;
 	            nextVel = velY;
 	            this._value += nextDelta;
 	            this._cumulate += nextDelta;
 	        }
 	        else {
+	            payload.x = x;
+	            payload.y = y;
 	            nextDelta = [diffX, diffY];
 	            nextVel = [velX, velY];
 	            this._value[0] += nextDelta[0];
@@ -6289,7 +6378,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	            this._cumulate[1] += nextDelta[1];
 	        }
 
-	        var payload = this._payload;
+
 	        payload.delta = nextDelta;
 	        payload.value = this._value;
 	        payload.cumulate = this._cumulate;
@@ -6317,7 +6406,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	    }
 
 	    function handleEnter(event){
-	        if (!this._down || !this._move) return;
+	        if (!this._down || !this._move) return false;
 
 	        this._eventInput.off('mousemove', handleMove.bind(this));
 	        this._eventInput.off('mouseup', handleEnd.bind(this));
@@ -6327,7 +6416,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	    }
 
 	    function handleLeave(event) {
-	        if (!this._down || !this._move) return;
+	        if (!this._down || !this._move) return false;
 
 	        this.boundMove = handleMove.bind(this);
 	        this.boundUp = function(event) {
@@ -6349,16 +6438,16 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 43 */
+/* 46 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_RESULT__;/* Copyright © 2015-2016 David Valdman */
 
 	!(__WEBPACK_AMD_DEFINE_RESULT__ = function(require, exports, module) {
-	    var TouchTracker = __webpack_require__(44);
+	    var TouchTracker = __webpack_require__(47);
 	    var EventHandler = __webpack_require__(3);
 	    var SimpleStream = __webpack_require__(12);
-	    var OptionsManager = __webpack_require__(24);
+	    var OptionsManager = __webpack_require__(27);
 
 	    var MINIMUM_TICK_TIME = 8;
 
@@ -6371,6 +6460,8 @@ return /******/ (function(modules) { // webpackBootstrap
 	     *
 	     * TouchInput emits these events with the following payload data:
 	     *
+	     *      `x`         - x-position relative to screen (independent of scroll)
+	     *      `y`         - y-position relative to screen (independent of scroll)
 	     *      `value`     - Displacement in pixels from `touchstart`
 	     *      `delta`     - Differential in pixels between successive mouse positions
 	     *      `velocity`  - Velocity of mouse movement in pixels per second
@@ -6464,7 +6555,10 @@ return /******/ (function(modules) { // webpackBootstrap
 	        var velocity;
 	        var delta;
 
+	        var payload = {};
 	        if (this.options.direction !== undefined) {
+	            if (this.options.direction === TouchInput.DIRECTION.X) payload.x = data.x;
+	            if (this.options.direction === TouchInput.DIRECTION.Y) payload.y = data.y;
 	            if (!this._cumulate[touchId]) this._cumulate[touchId] = 0;
 	            this._value[touchId] = 0;
 	            velocity = 0;
@@ -6475,10 +6569,9 @@ return /******/ (function(modules) { // webpackBootstrap
 	            this._value[touchId] = [0, 0];
 	            velocity = [0, 0];
 	            delta = [0, 0];
+	            payload.x = data.x;
+	            payload.y = data.y;
 	        }
-
-	        var payload = {};
-	        this._payload[data.touchId] = payload;
 
 	        payload.delta = delta;
 	        payload.value = this._value[touchId];
@@ -6488,6 +6581,9 @@ return /******/ (function(modules) { // webpackBootstrap
 	        payload.touchId = data.touchId;
 	        payload.event = data.event;
 	        payload.timestamp = data.timestamp;
+	        payload.dt = 0;
+
+	        this._payload[data.touchId] = payload;
 
 	        this._eventOutput.emit('start', payload);
 	    }
@@ -6495,6 +6591,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	    function handleMove(data) {
 	        var direction = this.options.direction;
 	        var touchId = data.touchId;
+	        var payload = this._payload[touchId];
 
 	        var scale = this.options.scale;
 	        var prevData = data.history[0];
@@ -6502,8 +6599,11 @@ return /******/ (function(modules) { // webpackBootstrap
 	        var prevTime = prevData.timestamp;
 	        var currTime = data.timestamp;
 
-	        var diffX = scale * (data.x - prevData.x);
-	        var diffY = scale * (data.y - prevData.y);
+	        var x = data.x;
+	        var y = data.y;
+
+	        var diffX = scale * (x - prevData.x);
+	        var diffY = scale * (y - prevData.y);
 
 	        if (this.options.rails){
 	            if ((direction === TouchInput.DIRECTION.X && Math.abs(diffY) > Math.abs(diffX)))
@@ -6521,19 +6621,24 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	        var nextVel;
 	        var nextDelta;
+
 	        if (direction === TouchInput.DIRECTION.X) {
+	            payload.x = x;
 	            nextDelta = diffX;
 	            nextVel = velX;
 	            this._value[touchId] += nextDelta;
 	            this._cumulate[touchId] += nextDelta;
 	        }
 	        else if (direction === TouchInput.DIRECTION.Y) {
+	            payload.y = y;
 	            nextDelta = diffY;
 	            nextVel = velY;
 	            this._value[touchId] += nextDelta;
 	            this._cumulate[touchId] += nextDelta;
 	        }
 	        else {
+	            payload.x = x;
+	            payload.y = y;
 	            nextDelta = [diffX, diffY];
 	            nextVel = [velX, velY];
 	            this._value[touchId][0] += nextDelta[0];
@@ -6542,7 +6647,6 @@ return /******/ (function(modules) { // webpackBootstrap
 	            this._cumulate[touchId][1] += nextDelta[1];
 	        }
 
-	        var payload = this._payload[data.touchId];
 	        payload.delta = nextDelta;
 	        payload.velocity = nextVel;
 	        payload.value = this._value[touchId];
@@ -6576,13 +6680,13 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 44 */
+/* 47 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_RESULT__;/* Copyright © 2015-2016 David Valdman */
 
 	!(__WEBPACK_AMD_DEFINE_RESULT__ = function(require, exports, module) {
-	    var OptionsManager = __webpack_require__(24);
+	    var OptionsManager = __webpack_require__(27);
 	    var EventHandler = __webpack_require__(3);
 
 	    var now = Date.now;
@@ -6671,7 +6775,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	    }
 
 	    function handleStart(event) {
-	        if (event.touches.length >= this.options.limit) return false;
+	        if (event.touches.length > this.options.limit) return false;
 	        if (this.numTouches >= this.options.track) return false;
 
 	        for (var i = 0; i < event.changedTouches.length; i++) {
@@ -6685,7 +6789,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	    }
 
 	    function handleMove(event) {
-	        if (event.touches.length >= this.options.limit) return false;
+	        if (event.touches.length > this.options.limit) return false;
 	        if (this.numTouches > this.options.track) return false;
 
 	        event.preventDefault(); // prevents scrolling on mobile
@@ -6695,7 +6799,13 @@ return /******/ (function(modules) { // webpackBootstrap
 	            var history = this.history[touch.identifier];
 	            if (history) {
 	                var data = getData(touch, event, history);
+
+	                // don't send event if touch hasn't moved
+	                var prev = history[this.options.memory - 1];
+	                if (data.x === prev.x && data.y === prev.y) continue;
+
 	                this._eventOutput.emit('trackmove', data);
+
 	                if (history.length >= this.options.memory)
 	                    history.shift();
 	                history.push(data);
@@ -6704,7 +6814,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	    }
 
 	    function handleEnd(event) {
-	        if (event.touches.length >= this.options.limit) return false;
+	        if (event.touches.length > this.options.limit) return false;
 	        if (this.numTouches > this.options.track) return false;
 
 	        for (var i = 0; i < event.changedTouches.length; i++) {
@@ -6724,14 +6834,14 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 45 */
+/* 48 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_RESULT__;/* Copyright © 2015-2016 David Valdman */
 
 	!(__WEBPACK_AMD_DEFINE_RESULT__ = function(require, exports, module) {
 	    var EventHandler = __webpack_require__(3);
-	    var OptionsManager = __webpack_require__(24);
+	    var OptionsManager = __webpack_require__(27);
 	    var SimpleStream = __webpack_require__(12);
 	    var Timer = __webpack_require__(10);
 
@@ -6909,14 +7019,14 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 46 */
+/* 49 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_RESULT__;/* Copyright © 2015-2016 David Valdman */
 
 	!(__WEBPACK_AMD_DEFINE_RESULT__ = function(require, exports, module) {
-	    var TwoFingerInput = __webpack_require__(47);
-	    var OptionsManager = __webpack_require__(24);
+	    var TwoFingerInput = __webpack_require__(50);
+	    var OptionsManager = __webpack_require__(27);
 	    var EventHandler = __webpack_require__(3);
 
 	    /**
@@ -7029,7 +7139,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	        var scale = this.options.scale;
 
 	        var delta = scale * (distance - this.prevDist) / this.startDist;
-	        var velocity = delta / data.dt;
+	        var velocity = 2 * delta / (data[0].dt + data[1].dt);
 	        this.value += delta;
 	        this.cumulate += delta;
 
@@ -7054,7 +7164,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 47 */
+/* 50 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_RESULT__;/* Copyright © 2015-2016 David Valdman */
@@ -7062,8 +7172,8 @@ return /******/ (function(modules) { // webpackBootstrap
 	!(__WEBPACK_AMD_DEFINE_RESULT__ = function(require, exports, module) {
 	    var EventHandler = __webpack_require__(3);
 	    var SimpleStream = __webpack_require__(12);
-	    var OptionsManager = __webpack_require__(24);
-	    var TouchInput = __webpack_require__(43);
+	    var OptionsManager = __webpack_require__(27);
+	    var TouchInput = __webpack_require__(46);
 
 	    /**
 	     * Generalizes handling of two-finger touch events.
@@ -7138,7 +7248,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	     */
 	    TwoFingerInput.calculateDistance = function(value1, value2) {
 	        var direction = this.options.direction;
-	        
+
 	        if (direction === undefined){
 	            var diffX = value2[0] - value1[0];
 	            var diffY = value2[1] - value1[1];
@@ -7253,7 +7363,11 @@ return /******/ (function(modules) { // webpackBootstrap
 	    }
 
 	    function handleEnd(data) {
-	        if (this.touchIdA === undefined && this.touchIdB === undefined) return false;
+	        if (this.touchIdA === undefined || this.touchIdB === undefined) {
+	            this.touchIdA = undefined;
+	            this.touchIdB = undefined;
+	            return false;
+	        }
 
 	        this.emit('twoFingerEnd', this.payload);
 	        this.touchIdA = undefined;
@@ -7266,14 +7380,14 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 48 */
+/* 51 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_RESULT__;/* Copyright © 2015-2016 David Valdman */
 
 	!(__WEBPACK_AMD_DEFINE_RESULT__ = function(require, exports, module) {
-	    var TwoFingerInput = __webpack_require__(47);
-	    var OptionsManager = __webpack_require__(24);
+	    var TwoFingerInput = __webpack_require__(50);
+	    var OptionsManager = __webpack_require__(27);
 	    var EventHandler = __webpack_require__(3);
 
 	    /**
@@ -7393,15 +7507,15 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 49 */
+/* 52 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_RESULT__;/* Copyright © 2015-2016 David Valdman */
 
 	!(__WEBPACK_AMD_DEFINE_RESULT__ = function(require, exports, module){
 	    var EventHandler = __webpack_require__(3);
-	    var TwoFingerInput = __webpack_require__(47);
-	    var OptionsManager = __webpack_require__(24);
+	    var TwoFingerInput = __webpack_require__(50);
+	    var OptionsManager = __webpack_require__(27);
 
 	    /**
 	     * Detects two-finger pinching motion and emits `start`, `update` and
@@ -7450,7 +7564,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	        EventHandler.setInputHandler(this, this._eventInput);
 	        EventHandler.setOutputHandler(this, this._eventOutput);
-	        
+
 	        this._eventInput.on('twoFingerStart', start.bind(this));
 	        this._eventInput.on('twoFingerUpdate', update.bind(this));
 	        this._eventInput.on('twoFingerEnd', end.bind(this));
@@ -7497,28 +7611,16 @@ return /******/ (function(modules) { // webpackBootstrap
 	    function update(data){
 	        var center = TwoFingerInput.calculateCenter.call(this, data[0].position, data[1].position);
 	        var distance = TwoFingerInput.calculateDistance.call(this, data[0].position, data[1].position);
-	        var velocity = TwoFingerInput.calculateVelocity.call(this, data[0].velocity, data[1].velocity);
 	        var currDirection = TwoFingerInput.calculateOrientation.call(this, data[0].position, data[1].position);
 
 	        var changedDirection = TwoFingerInput.detectOrientationChange.call(this, currDirection, this.direction);
 	        var scale = this.options.scale;
 	        var delta;
 
-	        if (this.options.direction === undefined){
-	            if (changedDirection){
-	                distance[0] *= -1;
-	                distance[1] *= -1;
-	            }
+	        if (changedDirection) distance *= -1;
+	        delta = scale * (distance - this.value);
 
-	            delta = [
-	                scale * (distance[0] - this.value[0]),
-	                scale * (distance[1] - this.value[1])
-	            ];
-	        }
-	        else {
-	            if (changedDirection) distance *= -1;
-	            delta = scale * (distance - this.value);
-	        }
+	        var velocity = 2 * delta / (data[0].dt + data[1].dt);
 
 	        var payload = this.payload;
 	        payload.delta = delta;
@@ -7540,23 +7642,23 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 50 */
+/* 53 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_RESULT__;!(__WEBPACK_AMD_DEFINE_RESULT__ = function(require, exports, module) {
 	    module.exports = {
-	        DrawerLayout: __webpack_require__(51),
-	        FlexibleLayout: __webpack_require__(54),
-	        GridLayout: __webpack_require__(56),
-	        SequentialLayout: __webpack_require__(57),
-	        HeaderFooterLayout: __webpack_require__(58),
-	        Scrollview: __webpack_require__(59)
+	        DrawerLayout: __webpack_require__(54),
+	        FlexibleLayout: __webpack_require__(57),
+	        GridLayout: __webpack_require__(59),
+	        SequentialLayout: __webpack_require__(60),
+	        HeaderFooterLayout: __webpack_require__(61),
+	        Scrollview: __webpack_require__(62)
 	    };
 	}.call(exports, __webpack_require__, exports, module), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
 
 
 /***/ },
-/* 51 */
+/* 54 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_RESULT__;/* Copyright © 2015-2016 David Valdman */
@@ -7564,10 +7666,10 @@ return /******/ (function(modules) { // webpackBootstrap
 	!(__WEBPACK_AMD_DEFINE_RESULT__ = function(require, exports, module) {
 	    var Transform = __webpack_require__(9);
 	    var Transitionable = __webpack_require__(11);
-	    var View = __webpack_require__(22);
+	    var View = __webpack_require__(25);
 	    var Stream = __webpack_require__(16);
-	    var Differential = __webpack_require__(52);
-	    var Accumulator = __webpack_require__(53);
+	    var Differential = __webpack_require__(55);
+	    var Accumulator = __webpack_require__(56);
 	    var EventMapper = __webpack_require__(13);
 
 	    var CONSTANTS = {
@@ -7866,14 +7968,14 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 52 */
+/* 55 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_RESULT__;/* Copyright © 2015-2016 David Valdman */
 
 	!(__WEBPACK_AMD_DEFINE_RESULT__ = function(require, exports, module){
 	    var Stream = __webpack_require__(16);
-	    var OptionsManager = __webpack_require__(24);
+	    var OptionsManager = __webpack_require__(27);
 
 	    /**
 	     * Differential is a Stream that emits differentials of consecutive
@@ -7963,13 +8065,13 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 53 */
+/* 56 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_RESULT__;/* Copyright © 2015-2016 David Valdman */
 
 	!(__WEBPACK_AMD_DEFINE_RESULT__ = function(require, exports, module){
-	    var OptionsManager = __webpack_require__(24);
+	    var OptionsManager = __webpack_require__(27);
 	    var Stream = __webpack_require__(16);
 	    var preTickQueue = __webpack_require__(6);
 	    var dirtyQueue = __webpack_require__(7);
@@ -8083,18 +8185,18 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 54 */
+/* 57 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_RESULT__;/* Copyright © 2015-2016 David Valdman */
 
 	!(__WEBPACK_AMD_DEFINE_RESULT__ = function(require, exports, module){
 	    var Transform = __webpack_require__(9);
-	    var View = __webpack_require__(22);
+	    var View = __webpack_require__(25);
 	    var Stream = __webpack_require__(16);
-	    var ReduceStream = __webpack_require__(55);
-	    var Accumulator = __webpack_require__(53);
-	    var Differential = __webpack_require__(52);
+	    var ReduceStream = __webpack_require__(58);
+	    var Accumulator = __webpack_require__(56);
+	    var Differential = __webpack_require__(55);
 
 	    var CONSTANTS = {
 	        DIRECTION : {
@@ -8365,14 +8467,14 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 55 */
+/* 58 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_RESULT__;/* Copyright © 2015-2016 David Valdman */
 	!(__WEBPACK_AMD_DEFINE_RESULT__ = function(require, exports, module) {
 	    var Stream = __webpack_require__(16);
 	    var SimpleStream = __webpack_require__(12);
-	    var Observable = __webpack_require__(28);
+	    var Observable = __webpack_require__(31);
 
 	    function ReduceStream(reducer, value, options) {
 	        this.reducer = reducer;
@@ -8534,14 +8636,14 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 56 */
+/* 59 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_RESULT__;/* Copyright © 2015-2016 David Valdman */
 
 	!(__WEBPACK_AMD_DEFINE_RESULT__ = function(require, exports, module){
-	    var View = __webpack_require__(22);
-	    var FlexLayout = __webpack_require__(54);
+	    var View = __webpack_require__(25);
+	    var FlexLayout = __webpack_require__(57);
 
 	    /**
 	     * A layout that arranges items in a grid and can rearrange the grid responsively.
@@ -8704,15 +8806,15 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 57 */
+/* 60 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_RESULT__;/* Copyright © 2015-2016 David Valdman */
 
 	!(__WEBPACK_AMD_DEFINE_RESULT__ = function(require, exports, module) {
 	    var Transform = __webpack_require__(9);
-	    var View = __webpack_require__(22);
-	    var ReduceStream = __webpack_require__(55);
+	    var View = __webpack_require__(25);
+	    var ReduceStream = __webpack_require__(58);
 	    var Stream = __webpack_require__(16);
 
 	    var CONSTANTS = {
@@ -8906,14 +9008,14 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 58 */
+/* 61 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_RESULT__;/* Copyright © 2015-2016 David Valdman */
 
 	!(__WEBPACK_AMD_DEFINE_RESULT__ = function(require, exports, module){
 	    var Transform = __webpack_require__(9);
-	    var View = __webpack_require__(22);
+	    var View = __webpack_require__(25);
 	    var Stream = __webpack_require__(16);
 
 	    /**
@@ -8996,7 +9098,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 59 */
+/* 62 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_RESULT__;/* Copyright © 2015-2016 David Valdman */
@@ -9006,18 +9108,18 @@ return /******/ (function(modules) { // webpackBootstrap
 	!(__WEBPACK_AMD_DEFINE_RESULT__ = function (require, exports, module) {
 	    var Transform = __webpack_require__(9);
 	    var Transitionable = __webpack_require__(11);
-	    var View = __webpack_require__(22);
+	    var View = __webpack_require__(25);
 	    var Stream = __webpack_require__(16);
-	    var Accumulator = __webpack_require__(53);
-	    var Differential = __webpack_require__(52);
+	    var Accumulator = __webpack_require__(56);
+	    var Differential = __webpack_require__(55);
 
-	    var SequentialLayout = __webpack_require__(57);
-	    var ContainerSurface = __webpack_require__(35);
+	    var SequentialLayout = __webpack_require__(60);
+	    var ContainerSurface = __webpack_require__(38);
 
-	    var GenericInput = __webpack_require__(41);
-	    var ScrollInput = __webpack_require__(45);
-	    var TouchInput = __webpack_require__(43);
-	    var MouseInput = __webpack_require__(42);
+	    var GenericInput = __webpack_require__(44);
+	    var ScrollInput = __webpack_require__(48);
+	    var TouchInput = __webpack_require__(46);
+	    var MouseInput = __webpack_require__(45);
 
 	    GenericInput.register({
 	        touch: TouchInput,
@@ -9371,17 +9473,1144 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 60 */
+/* 63 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_RESULT__;!(__WEBPACK_AMD_DEFINE_RESULT__ = function(require, exports, module) {
 	    module.exports = {
-	        Accumulator: __webpack_require__(53),
-	        Differential: __webpack_require__(52),
+	        Accumulator: __webpack_require__(56),
+	        Differential: __webpack_require__(55),
 	        SimpleStream: __webpack_require__(12),
 	        Stream: __webpack_require__(16),
-	        Observable: __webpack_require__(28)
+	        Observable: __webpack_require__(31)
 	    };
+	}.call(exports, __webpack_require__, exports, module), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
+
+
+/***/ },
+/* 64 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var __WEBPACK_AMD_DEFINE_RESULT__;!(__WEBPACK_AMD_DEFINE_RESULT__ = function(require, exports, module) {
+	    module.exports = {
+	        Camera: __webpack_require__(65),
+	        TrackballCamera: __webpack_require__(68),
+	        Quaternion: __webpack_require__(66),
+	        QuatTransitionable: __webpack_require__(67)
+	    };
+	}.call(exports, __webpack_require__, exports, module), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
+
+
+/***/ },
+/* 65 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var __WEBPACK_AMD_DEFINE_RESULT__;/* Copyright © 2015-2016 David Valdman */
+
+	!(__WEBPACK_AMD_DEFINE_RESULT__ = function(require, exports, module){
+	    var Quaternion = __webpack_require__(66);
+	    var QuatTransitionable = __webpack_require__(67);
+	    var Transform = __webpack_require__(9);
+	    var Transitionable = __webpack_require__(11);
+	    var LayoutNode = __webpack_require__(29);
+	    var RenderTreeNode = __webpack_require__(28);
+	    var OptionsManager = __webpack_require__(27);
+	    var Stream = __webpack_require__(16);
+
+	    /**
+	     * A way to transition numeric values and arrays of numbers between start and end states.
+	     *  Transitioning happens through one of many possible interpolations, such as easing
+	     *  curves like 'easeIn', or physics curves like 'spring' and 'inertia'. The choice
+	     *  of interpolation is specified when `.set` is called. If no interpolation is specified
+	     *  then the value changes immediately. Non-numeric values in arrays, such as `undefined`
+	     *  or `true`, are safely ignored.
+	     *
+	     *  Transitionables are streams, so they emit `start`, `update` and `end` events, with a payload
+	     *  that is their current value. As streams, they can also be mapped, filtered, composed, etc.
+	     *
+	     * @class Camera
+	     * @constructor
+	     * @namespace Camera
+	     * @param options {Object}                              Options
+	     * @param [options.orientation=[1,0,0,0]] {Quaternion}  Initial orientation of camera
+	     * @param [options.position=[0,0,0]] {Array}            Initial position of camera
+	     */
+	    function Camera(options){
+	        this.options = OptionsManager.setOptions(this, options);
+
+	        this.orientationState = Quaternion.create(options.orietation);
+	        this.position = new Transitionable(options.position);
+	        this.orientation = new QuatTransitionable(this.orientationState);
+
+	        var transform = Stream.lift(function(position, orientation){
+	            Quaternion.conjugate(orientation, this.orientationState);
+	            var transform = Quaternion.toTransform(this.orientationState);
+	            return Transform.thenMove(transform, position);
+	        }.bind(this), [this.position, this.orientation]);
+
+	        var layout = new LayoutNode({transform : transform});
+	        this._node = new RenderTreeNode(layout);
+	    }
+
+	    Camera.DEFAULT_OPTIONS = {
+	        position: [0, 0, 0],
+	        orientation: Quaternion.create()
+	    };
+
+	    /**
+	     * Set the position.
+	     *
+	     * @method setPosition
+	     * @param position {Number[]}               End position
+	     * @param [transition] {Object}             Transition definition
+	     * @param [callback] {Function}             Callback
+	     */
+	    Camera.prototype.setPosition = function(position, transition, callback){
+	        this.position.set(position, transition, callback);
+	    }
+
+	    /**
+	     * Get the position.
+	     *
+	     * @method getPosition
+	     * @return {Array}                          Position
+	     */
+	    Camera.prototype.getPosition = function(){
+	        return this.position.get();
+	    }
+
+	    /**
+	     * Set the orientation.
+	     *
+	     * @method setOrientation
+	     * @param orientation {Array}               [angle, x-axis, y-axis, z-axis]
+	     * @param [transition] {Object}             Transition definition
+	     * @param [callback] {Function}             Callback
+	     */
+	    Camera.prototype.setOrientation = function(orientation, transition, callback){
+	        Quaternion.fromAngleAxis(orientation, this.orientationState);
+	        this.orientation.set(this.orientationState, transition, callback);
+	    }
+
+	    /**
+	     * Get the orientation.
+	     *
+	     * @method getOrientation
+	     * @return {Array}                          Orientation as [angle, x-axis, y-axis, z-axis]
+	     */
+	    Camera.prototype.getOrientation = function(){
+	        return Quaternion.toAngleAxis(this.orientation.get());
+	    }
+
+	    /**
+	     * Move the position of the camera in the z-direction by a given amount.
+	     *
+	     * @method zoomBy
+	     * @param delta {Number}                    Relative amount to zoom by
+	     * @param [transition] {Object}             Transition definition
+	     * @param [callback] {Function}             Callback
+	     */
+	    Camera.prototype.zoomBy = function(delta, transition, callback){
+	        var position = this.position.get();
+	        var newPosition = [position[0], position[1], position[2] + delta];
+	        this.position.set(newPosition, transition, callback);
+	    }
+
+	    /**
+	     * Move the position of the camera in the z-direction to the given zoom.
+	     *
+	     * @method setZoom
+	     * @param zoom {Number}                     Absolute amount to zoom
+	     * @param [transition] {Object}             Transition definition
+	     * @param [callback] {Function}             Callback
+	     */
+	    Camera.prototype.setZoom = function(zoom, transition, callback){
+	        var position = this.getPosition();
+	        var previousZoom = position[2];
+	        var delta = zoom - previousZoom;
+	        this.zoomBy(delta, transition, callback);
+	    }
+
+	    /**
+	     * Rotate the orientation of the camera by a given rotation.
+	     *
+	     * @method rotateBy
+	     * @param rotation {Array}                  Rotation as [angle, x-axis, y-axis, z-axis]
+	     * @param [transition] {Object}             Transition definition
+	     * @param [callback] {Function}             Callback
+	     */
+	    Camera.prototype.rotateBy = function(rotation, transition, callback){
+	        var currentOrientation = this.orientation.get();
+	        Quaternion.multiply(currentOrientation, rotation, this.orientationState);
+	        this.orientation.set(this.orientationState, transition, callback);
+	    }
+
+	    /**
+	     * Translate relative to current position of camera.
+	     *
+	     * @method translateBy
+	     * @param delta {Array}                     Relative amount to translate by [x, y, z]
+	     * @param [transition] {Object}             Transition definition
+	     * @param [callback] {Function}             Callback
+	     */
+	    Camera.prototype.translateBy = function(delta, transition, callback){
+	        var currentPosition = this.position.get();
+	        var newPosition = [
+	            currentPosition[0] + delta[0],
+	            currentPosition[1] + delta[1],
+	            currentPosition[2] + delta[2]
+	        ];
+	        this.position.set(newPosition, transition, callback);
+	    }
+
+	    /**
+	     * Face the camera towards a Transform. The Transform is decomposed into
+	     *  its position and rotation parts to calulate where to orient the camera.
+	     *
+	     * @method lookAt
+	     * @param transform {Transform}             Transform to face camera toward
+	     * @param [transition] {Object}             Transition definition
+	     * @param [callback] {Function}             Callback
+	     */
+	    Camera.prototype.lookAt = function(transform, transition, callback){
+	        var result = Transform.interpret(transform);
+	        var rotation = result.rotate;
+
+	        Quaternion.fromEulerAngles(rotation, this.orientationState);
+	        Quaternion.conjugate(this.orientationState, this.orientationState);
+
+	        this.orientation.set(this.orientationState, transition);
+	    }
+
+	    Camera.prototype._onAdd = function(parent){
+	        return parent.add(this._node);
+	    }
+
+	    /**
+	     * Extends the render tree subtree with a new node.
+	     *
+	     * @method add
+	     * @param object {SizeNode|LayoutNode|Surface} Node
+	     * @return {RenderTreeNode}
+	     */
+	    Camera.prototype.add = function(){
+	        return RenderTreeNode.prototype.add.apply(this._node, arguments);
+	    }
+
+	    /**
+	     * Remove the Camera from the RenderTree. All Surfaces added to the View
+	     *  will also be removed. The Camera can be added back at a later time and
+	     *  all of its data and Surfaces will be restored.
+	     *
+	     * @method remove
+	     */
+	    Camera.prototype.remove = function(){
+	        return RenderTreeNode.prototype.remove.apply(this._node, arguments);
+	    }
+
+	    module.exports = Camera;
+	}.call(exports, __webpack_require__, exports, module), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
+
+
+/***/ },
+/* 66 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var __WEBPACK_AMD_DEFINE_RESULT__;!(__WEBPACK_AMD_DEFINE_RESULT__ = function(require, exports, module){
+	    var identity = [1, 0, 0, 0];
+
+	    /**
+	     * Quaternion is a singleton with helper methods for quaternionic math.
+	     *  Quaternions are represented as 4-dimensional arrays [w, x, y, z].
+	     *
+	     * @class Quaternion
+	     * @namespace Camera
+	     * @static
+	     * @private
+	     */
+	    var Quaternion = {};
+
+	    /**
+	     * Create a quaternion. Either provide a quaternion to clone, otherwise
+	     *  the identity quaternion is returned.
+	     *
+	     * @method create
+	     * @static
+	     * @param [q] {Array}       Given quaternion
+	     * @return {Quaternion}     Created quaternion
+	     */
+	    Quaternion.create = function create(q){
+	        return (q || identity).slice();
+	    }
+
+	    /**
+	     * Set a quaternion with coordinates from a given quaternion.
+	     *
+	     * @method set
+	     * @static
+	     * @param q {Array}         Given quaternion
+	     * @param out {Quaternion}  The resulting quaternion
+	     */
+	    Quaternion.set = function(q, out){
+	        out[0] = q[0];
+	        out[1] = q[1];
+	        out[2] = q[2];
+	        out[3] = q[3];
+	    }
+
+	    /**
+	     * Output a quaternion that represents a rotation of a given angle about a given axis.
+	     *
+	     * @method fromAngleAxis
+	     * @static
+	     * @param values {Array}    Values in the form of [angle, x, y, z]
+	     *                          where [x, y, z] is the axis of rotation,
+	     *                          and angle is the angle about this axis.
+	     * @param out {Quaternion}  The resulting quaternion
+	     */
+	    Quaternion.fromAngleAxis = function fromAngleAxis(values, out) {
+	        var angle = values[0];
+
+	        var x = values[1];
+	        var y = values[2];
+	        var z = values[3];
+
+	        var len = Math.hypot(x, y, z);
+
+	        if (len === 0) {
+	            out[0] = 1;
+	            out[1] = out[2] = out[3] = 0;
+	        }
+	        else {
+	            var halfAngle = 0.5 * angle;
+	            var s = Math.sin(halfAngle) / len;
+	            out[0] = Math.cos(halfAngle);
+	            out[1] = s * x;
+	            out[2] = s * y;
+	            out[3] = s * z;
+	        }
+	    };
+
+	    /**
+	     * Output a quaternion from given Euler angles [x, y, z].
+	     *
+	     * @method fromEulerAngles
+	     * @static
+	     * @param angles {Array}    Euler angles [x, y, z]
+	     * @param out {Quaternion}  The resulting quaternion
+	     */
+	    Quaternion.fromEulerAngles = function fromEulerAngles(angles, out) {
+	        var hx = 0.5 * angles[0];
+	        var hy = 0.5 * angles[1];
+	        var hz = 0.5 * angles[2];
+
+	        var sx = Math.sin(hx);
+	        var sy = Math.sin(hy);
+	        var sz = Math.sin(hz);
+	        var cx = Math.cos(hx);
+	        var cy = Math.cos(hy);
+	        var cz = Math.cos(hz);
+
+	        out[0] = cx * cy * cz - sx * sy * sz;
+	        out[1] = sx * cy * cz + cx * sy * sz;
+	        out[2] = cx * sy * cz - sx * cy * sz;
+	        out[3] = cx * cy * sz + sx * sy * cz;
+	    };
+
+	    /**
+	     * Sum two quaternions.
+	     *
+	     * @method sum
+	     * @static
+	     * @param q1 {Quaternion}
+	     * @param q2 {Quaternion}
+	     * @param out {Quaternion} The resulting quaternion
+	     */
+	    Quaternion.sum = function sum(q1, q2, out) {
+	        out[0] = q1[0] + q2[0];
+	        out[1] = q1[1] + q2[1];
+	        out[2] = q1[2] + q2[2];
+	        out[3] = q1[3] + q2[3];
+	    };
+
+	    /**
+	     * Multiply two quaternions.
+	     *
+	     * @method multiply
+	     * @static
+	     * @param q1 {Quaternion}
+	     * @param q2 {Quaternion}
+	     * @param out {Quaternion} The resulting quaternion
+	     */
+	    Quaternion.multiply = function multiply(q1, q2, out) {
+	        var w1 = q1[0];
+	        var x1 = q1[1];
+	        var y1 = q1[2];
+	        var z1 = q1[3];
+
+	        var w2 = q2[0];
+	        var x2 = q2[1];
+	        var y2 = q2[2];
+	        var z2 = q2[3];
+
+	        out[0] = w1 * w2 - x1 * x2 - y1 * y2 - z1 * z2;
+	        out[1] = x1 * w2 + x2 * w1 + y2 * z1 - y1 * z2;
+	        out[2] = y1 * w2 + y2 * w1 + x1 * z2 - x2 * z1;
+	        out[3] = z1 * w2 + z2 * w1 + x2 * y1 - x1 * y2;
+	    };
+
+	    /**
+	     * Scale a quaternion.
+	     *
+	     * @method scalarMultiply
+	     * @static
+	     * @param q1 {Quaternion}
+	     * @param s {Number}
+	     * @param out {Quaternion} The resulting quaternion
+	     */
+	    Quaternion.scalarMultiply = function scalarMultiply(q, s, out) {
+	        out[0] = s * q[0];
+	        out[1] = s * q[1];
+	        out[2] = s * q[2];
+	        out[3] = s * q[3];
+	    };
+
+	    /**
+	     * Conjugate a quaternion.
+	     *
+	     * @method conjugate
+	     * @static
+	     * @param q {Quaternion}
+	     * @param out {Quaternion} The resulting quaternion
+	     */
+	    Quaternion.conjugate = function conjugate(q, out) {
+	        out[0] =  q[0];
+	        out[1] = -q[1];
+	        out[2] = -q[2];
+	        out[3] = -q[3];
+	    };
+
+	    /**
+	     * Negate a quaternion.
+	     *
+	     * @method negate
+	     * @static
+	     * @param q {Quaternion}
+	     * @param out {Quaternion} The resulting quaternion
+	     */
+	    Quaternion.negate = function negate(q, out) {
+	        out[0] = -q[0];
+	        out[1] = -q[1];
+	        out[2] = -q[2];
+	        out[3] = -q[3];
+	    };
+
+	    /**
+	     * Normalize a quaternion to be of unit length.
+	     *
+	     * @method normalize
+	     * @static
+	     * @param q {Quaternion}
+	     * @param out {Quaternion} The resulting quaternion
+	     */
+	    Quaternion.normalize = function normalize(q, out) {
+	        var len = Quaternion.length(q);
+	        Quaternion.scalarMultiply(q, 1 / len, out);
+	    };
+
+	    /**
+	     * Spherical linear interpolation between quaternions with a given weight.
+	     *
+	     * @method slerp
+	     * @static
+	     * @param start {Quaternion}    Starting quaternion
+	     * @param end {Quaternion}      Ending quaternion
+	     * @param t {Number}            Weight of interpolation
+	     * @param out {Quaternion}      The resulting quaternion
+	     */
+	    Quaternion.slerp = function slerp(start, end, t, out) {
+	        if (t === 0)
+	            Quaternion.set(start, out);
+	        else if (t === 1)
+	            Quaternion.set(end, out);
+	        else {
+	            var scaleFrom, scaleTo;
+	            var cosTheta = Quaternion.dot(start, end);
+
+	            if (cosTheta < 1) {
+	                var theta = Math.acos(cosTheta);
+	                var sinTheta = Math.sin(theta);
+	                scaleFrom = Math.sin((1 - t) * theta) / sinTheta;
+	                scaleTo = Math.sin(t * theta) / sinTheta;
+	            }
+	            else {
+	                scaleFrom = 1 - t;
+	                scaleTo = t;
+	            }
+
+	            var result1 = [];
+	            var result2 = [];
+	            Quaternion.scalarMultiply(start, scaleFrom, result1)
+	            Quaternion.scalarMultiply(end, scaleTo, result2),
+	            Quaternion.sum(result1, result2, out);
+	        }
+	    };
+
+	    /**
+	     * Get the length of a quaternion.
+	     *
+	     * @method length
+	     * @static
+	     * @param q {Quaternion}
+	     * @return length {Quaternion}
+	     */
+	    Quaternion.length = function length(q) {
+	        return Math.hypot.apply(null, q);
+	    };
+
+	    /**
+	     * Dot product of two quaternions.
+	     *
+	     * @method dot
+	     * @static
+	     * @param q1 {Quaternion}
+	     * @param q2 {Quaternion}
+	     * @return {Number}
+	     */
+	    Quaternion.dot = function dot(q1, q2) {
+	        return q1[0] * q2[0] + q1[1] * q2[1] + q1[2] * q2[2] + q1[3] * q2[3];
+	    };
+
+	    /**
+	     * Calculate the corresponding matrix transform from a quaternion.
+	     *
+	     * @method toTransform
+	     * @static
+	     * @param q {Quaternion}
+	     * @return {Transform}
+	     */
+	    Quaternion.toTransform = function toTransform(q) {
+	        var w = q[0];
+	        var x = q[1];
+	        var y = q[2];
+	        var z = q[3];
+
+	        var xx = x * x;
+	        var yy = y * y;
+	        var zz = z * z;
+	        var xy = x * y;
+	        var xz = x * z;
+	        var yz = y * z;
+	        var wx = w * x;
+	        var wy = w * y;
+	        var wz = w * z;
+
+	        return [
+	            1 - 2 * (yy + zz),
+	            2 * (xy - wz),
+	            2 * (xz + wy),
+	            0,
+	            2 * (xy + wz),
+	            1 - 2 * (xx + zz),
+	            2 * (yz - wx),
+	            0,
+	            2 * (xz - wy),
+	            2 * (yz + wx),
+	            1 - 2 * (xx + yy),
+	            0,
+	            0, 0, 0, 1
+	        ];
+	    };
+
+	    /**
+	     * Calculate the corresponding euler angles from a quaternion.
+	     *
+	     * @method toEulerAngles
+	     * @static
+	     * @param q {Quaternion}
+	     * @return {Array}
+	     */
+	    Quaternion.toEulerAngles = function toEulerAngles(q) {
+	        var w = q[0];
+	        var x = q[1];
+	        var y = q[2];
+	        var z = q[3];
+
+	        var xx = x * x;
+	        var yy = y * y;
+	        var zz = z * z;
+
+	        var ty = 2 * (x * z + y * w);
+	        ty = ty < -1 ? -1 : ty > 1 ? 1 : ty;
+
+	        return [
+	            Math.atan2(2 * (x * w - y * z), 1 - 2 * (xx + yy)),
+	            Math.asin(ty),
+	            Math.atan2(2 * (z * w - x * y), 1 - 2 * (yy + zz))
+	        ];
+	    };
+
+	    /**
+	     * Calculate the corresponding angle/axis representation of a quaternion.
+	     *
+	     * @method toAngleAxis
+	     * @static
+	     * @param q {Quaternion}
+	     * @return {Array}
+	     */
+	    Quaternion.toAngleAxis = function toAngleAxis(q){
+	        var len = Quaternion.length(q);
+	        var halfAngle = Math.acos(q[0]);
+
+	        if (halfAngle === 0) {
+	            return [0, 1, 0, 0];
+	        }
+
+	        var s = len / Math.sin(halfAngle);
+
+	        var angle = 2 * halfAngle;
+	        var x = s * q[1];
+	        var y = s * q[2];
+	        var z = s * q[3];
+
+	        return [angle, x, y, z];
+	    }
+
+	     /**
+	     * Get the angle associated with the quaternion rotation.
+	     *
+	     * @method getAngle
+	     * @static
+	     * @param q {Quaternion}    Quaternion
+	     * @return {Number}         Angle
+	     */
+	    Quaternion.getAngle = function getAngle(q){
+	        return 2 * Math.acos(q[0]);
+	    }
+
+	     /**
+	     * Get the axis associated with the quaternion rotation.
+	     *
+	     * @method getAxis
+	     * @static
+	     * @param q {Quaternion}    Quaternion
+	     * @return {Array}          Axis
+	     */
+	    Quaternion.getAxis = function getAngle(q){
+	        var len = Quaternion.length(q);
+	        var halfAngle = Math.acos(q[0]);
+
+	        if (halfAngle === 0) {
+	            return [1, 0, 0];
+	        }
+
+	        var s = len / Math.sin(halfAngle);
+
+	        var x = s * q[1];
+	        var y = s * q[2];
+	        var z = s * q[3];
+
+	        return [x, y, z];
+	    }
+
+	     /**
+	     * Set the angle of a quaternion, keeping its axis constant.
+	     *
+	     * @method setAngle
+	     * @static
+	     * @param q {Quaternion}    Quaternion
+	     * @param angle {Number}    New angle
+	     * @param out {Quaternion}  The resulting quaternion
+	     */
+	    Quaternion.setAngle = function getAngle(q, angle, out){
+	        var axis = Quaternion.getAxis(q);
+	        axis.unshift(angle);
+	        Quaternion.fromAngleAxis(axis, out);
+	    }
+
+	     /**
+	     * Rotate a vector (3-dimensional array) by a quaternion.
+	     *  v' = ~q * v * q.
+	     *
+	     * @method rotateVector
+	     * @static
+	     * @param q {Quaternion}    Quaternion representing rotation
+	     * @param v {Array}         Vector. 3-dimensional array [x, y, z]
+	     * @return {Array}          Rotated vector
+	     */
+	    Quaternion.rotateVector = function rotateVector(q, v) {
+	        var result = [];
+	        var w = [0, v[0], v[1], v[2]];
+
+	        Quaternion.conjugate(q, result);
+	        Quaternion.multiply(result, w, result);
+	        Quaternion.multiply(result, q, result);
+
+	        result.shift();
+	        return result;
+	    };
+
+	    module.exports = Quaternion;
+	}.call(exports, __webpack_require__, exports, module), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
+
+
+/***/ },
+/* 67 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var __WEBPACK_AMD_DEFINE_RESULT__;/* Copyright © 2015-2016 David Valdman */
+
+	!(__WEBPACK_AMD_DEFINE_RESULT__ = function(require, exports, module){
+	    var Quaternion = __webpack_require__(66);
+	    var Transitionable = __webpack_require__(11);
+	    var SimpleStream = __webpack_require__(12);
+	    var EventHandler = __webpack_require__(3);
+
+	    /**
+	     * An extension of Transitionable to transition Quaternions via spherical linear interpolation (slerp).
+	     *
+	     * @class QuatTransitionable
+	     * @private
+	     * @constructor
+	     * @namespace Camera
+	     * @extends Streams.SimpleStream
+	     * @param value {Quaternion}   Starting quaternion
+	     */
+	    function QuatTransitionable(quaternion){
+	        this.start = Quaternion.create();
+	        this.end = Quaternion.create();
+	        this.value = Quaternion.create();
+
+	        this.t = new Transitionable(0);
+
+	        this._eventOutput = this.t.map(function(t){
+	            Quaternion.slerp(this.start, this.end, t, this.value);
+	            return this.value;
+	        }.bind(this));
+
+	        EventHandler.setOutputHandler(this, this._eventOutput);
+	    }
+
+	    QuatTransitionable.prototype = Object.create(SimpleStream.prototype);
+	    QuatTransitionable.prototype.constructor = QuatTransitionable;
+
+	    /**
+	     * Define a new end value that will be transitioned towards with the prescribed
+	     *  transition. An optional callback can fire when the transition completes.
+	     *
+	     * @method set
+	     * @param quaternion {Quaternion}           Quaternion end value
+	     * @param [transition] {Object}             Transition definition
+	     * @param [callback] {Function}             Callback
+	     */
+	    QuatTransitionable.prototype.set = function(quaternion, transition, callback){
+	        Quaternion.set(this.get(), this.start);
+
+	        // go shorter way around
+	        if (Quaternion.dot(this.start, quaternion) < 0)
+	            Quaternion.negate(this.start, this.start);
+
+	        Quaternion.set(quaternion, this.end);
+
+	        this.t.reset(0);
+	        this.t.set(1, transition, callback);
+	    }
+
+	    /**
+	     * Sets the value and velocity of the transition without firing any events.
+	     *
+	     * @method reset
+	     * @param quaternion {Quaternion}       New quaternion
+	     * @param [velocity] {Number|Number[]}  New velocity
+	     */
+	    QuatTransitionable.prototype.reset = function(quaternion, velocity){
+	        Quaternion.set(quaternion, this.start);
+	        Transitionable.prototype.getVelocity.call(this.t, 0);
+	    }
+
+	    /**
+	     * Determine is the transition is ongoing, or has completed.
+	     *
+	     * @method isActive
+	     * @return {Boolean}
+	     */
+	    QuatTransitionable.prototype.isActive = function(){
+	        return Transitionable.prototype.isActive.apply(this.t, arguments);
+	    }
+
+	    /**
+	     * Ends the transition in place.
+	     *
+	     * @method halt
+	     */
+	    QuatTransitionable.prototype.halt = function(){
+	        Quaternion.set(this.get(), this.value);
+	        Transitionable.prototype.halt.apply(this.t, arguments);
+	    }
+
+	    /**
+	     * Return the current value of the transition.
+	     *
+	     * @method get
+	     * @return {Quaternion}    Current quaternion
+	     */
+	    QuatTransitionable.prototype.get = function(){
+	        return this.value;
+	    }
+
+	    /**
+	     * Return the current velocity of the transition.
+	     *
+	     * @method getVelocity
+	     * @return {Number|Number[]}    Current velocity
+	     */
+	    QuatTransitionable.prototype.getVelocity = function(){
+	        return Transitionable.prototype.getVelocity.apply(this.t, arguments);
+	    }
+
+	    module.exports = QuatTransitionable;
+	}.call(exports, __webpack_require__, exports, module), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
+
+
+/***/ },
+/* 68 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var __WEBPACK_AMD_DEFINE_RESULT__;/* Copyright © 2015-2016 David Valdman */
+
+	!(__WEBPACK_AMD_DEFINE_RESULT__ = function(require, exports, module){
+	    var Camera = __webpack_require__(65);
+	    var Quaternion = __webpack_require__(66);
+	    var Controller = __webpack_require__(26);
+	    var Transform = __webpack_require__(9);
+	    var Transitionable = __webpack_require__(11);
+	    var Stream = __webpack_require__(16);
+
+	    var MouseInput = __webpack_require__(45);
+	    var TouchInput = __webpack_require__(46);
+	    var ScrollInput = __webpack_require__(48);
+	    var PinchInput = __webpack_require__(52);
+	    var GenericInput = __webpack_require__(44);
+
+	    GenericInput.register({
+	        mouse : MouseInput,
+	        touch : TouchInput,
+	        pinch : PinchInput,
+	        scroll : ScrollInput
+	    });
+
+	    /**
+	     * A tackball camera. This is a camera that rotates (in place) what is added to its render tree. It can
+	     *  also zoom in and out. These actions are tied to DOM events. Rotation is connected to mouse and touch events,
+	     *  and zooming is connected to the scrollwheel and pinch (two-finger touch) input.
+	     *
+	     *  @class TrackballCamera
+	     *  @constructor
+	     *  @namespace Camera
+	     *  @extends Core.Controller
+	     *  @param [options] {Object}                       Options
+	     *  @param [options.radius=500] {Number}            Radius of the trackball camera
+	     *  @param [options.rotationScale=1] {Number}       Amount to scale the rotation
+	     *  @param [options.zoomScale=1] {Number}           Amount to scale the zoom
+	     *  @param [options.inertia=true] {Boolean}         Include inertia for rotation and zooming
+	     *  @param [options.position=[0,0,0]] {Array}       Starting position of the camera
+	     *  @param [options.orientation=[1,0,0,0]] {Array}  Starting orientation of the camera
+	     */
+	    var TrackballCamera = Controller.extend({
+	        defaults : {
+	            radius: 500,
+	            rotationScale: 1,
+	            zoomScale: 1,
+	            inertia: true,
+	            position: Camera.DEFAULT_OPTIONS.position,
+	            orientation: Camera.DEFAULT_OPTIONS.orientation
+	        },
+	        initialize : function(options){
+	            this.camera = new Camera(options);
+	            this.delta = Quaternion.create();
+
+	            this.orientation = this.camera.orientation;
+	            this.position = this.camera.position;
+
+	            // get the coordinates of the center of the camera
+	            // TODO: make work if inside of ContainerSurfaces
+	            this.center = [];
+	            var centerStream = Stream.lift(function(size, layout){
+	                if (!size || !layout) return false;
+	                var pos = Transform.getTranslate(layout.transform);
+	                this.center[0] = pos[0] + 0.5 * size[0];
+	                this.center[1] = pos[1] + 0.5 * size[1];
+	            }.bind(this), [this.camera._node._size, this.camera._node.layout]);
+
+	            centerStream.on('start', function(center){});
+	            centerStream.on('update', function(center){});
+	            centerStream.on('end', function(center){});
+
+	            var rotationInertia = options.inertia ? new Transitionable(0) : false;
+	            var zoomInertia = options.inertia ? new Transitionable(0) : false;
+
+	            var rotationInput = new GenericInput(['mouse', 'touch'], {scale : options.rotationScale, limit: 1});
+	            var zoomInput = new GenericInput({
+	                pinch : {scale: options.zoomScale},
+	                scroll : {scale: options.zoomScale, direction: ScrollInput.DIRECTION.Y}
+	            });
+
+	            rotationInput.subscribe(this.input);
+	            zoomInput.subscribe(this.input);
+
+	            // update rotation based on mouse and touch dragging
+	            var hasMoved = false;
+	            rotationInput.on('start', function(data){
+	                hasMoved = false;
+	                if (rotationInertia && rotationInertia.isActive()) rotationInertia.halt();
+
+	                this.emit('start', {
+	                    position: this.getPosition(),
+	                    orientation: this.getOrientation()
+	                });
+	            }.bind(this));
+
+	            rotationInput.on('update', function(data){
+	                hasMoved = true;
+	                var angleAxis = convertInputToAngleAxis.call(this, data);
+	                Quaternion.fromAngleAxis(angleAxis, this.delta);
+	                this.rotateBy(this.delta);
+
+	                this.emit('update', {
+	                    position: this.getPosition(),
+	                    orientation: this.getOrientation()
+	                });
+	            }.bind(this));
+
+	            // at end of rotation, apply inertia to Quaternion if inertia is allowed
+	            rotationInput.on('end', function(data){
+	                if (!hasMoved || !rotationInertia) {
+	                    this.emit('end', {
+	                        position: this.getPosition(),
+	                        orientation: this.getOrientation()
+	                    });
+	                }
+	                else {
+	                    var angle = Quaternion.getAngle(this.delta);
+	                    rotationInertia.reset(angle);
+	                    rotationInertia.set(angle, {
+	                        curve : 'damp',
+	                        damping : .9
+	                    });
+	                }
+	            }.bind(this));
+
+	            if (rotationInertia){
+	                rotationInertia.on('update', function(angle){
+	                    Quaternion.setAngle(this.delta, angle, this.delta);
+	                    this.rotateBy(this.delta);
+
+	                    this.emit('update', {
+	                        position: this.getPosition(),
+	                        orientation: this.getOrientation()
+	                    });
+	                }.bind(this));
+
+	                rotationInertia.on('end', function(value){
+	                    this.emit('end', {
+	                        position: this.getPosition(),
+	                        orientation: this.getOrientation()
+	                    });
+	                }.bind(this));
+	            }
+
+	            // update zoom based on mousewheel and pinch events
+	            zoomInput.on('update', function(data){
+	                var zoom = data.delta;
+	                this.zoomBy(zoom);
+
+	                this.emit('update', {
+	                    position: this.getPosition(),
+	                    orientation: this.getOrientation()
+	                });
+	            }.bind(this));
+
+	            // at end of zooming (on pinch), apply inertia to zoom
+	            zoomInput.on('end', function(data){
+	                if (!zoomInertia){
+	                    this.emit('end', {
+	                        position: this.getPosition(),
+	                        orientation: this.getOrientation()
+	                    });
+	                }
+	                else if (data.velocity !== 0){
+	                    var z = this.getPosition()[2];
+	                    zoomInertia.reset(z);
+	                    zoomInertia.set(z, {
+	                        curve : 'inertia',
+	                        damping: .2,
+	                        velocity : data.velocity
+	                    });
+	                }
+	            }.bind(this));
+
+	            if (zoomInertia){
+	                zoomInertia.on('update', function(value){
+	                    this.setZoom(value);
+	                    this.emit('update', {
+	                        position: this.getPosition(),
+	                        orientation: this.getOrientation()
+	                    });
+	                }.bind(this));
+
+	                zoomInertia.on('end', function(value){
+	                    this.emit('end', {
+	                        position: this.getPosition(),
+	                        orientation: this.getOrientation()
+	                    });
+	                }.bind(this));
+	            }
+	        },
+	        _onAdd : function(){
+	            return Camera.prototype._onAdd.apply(this.camera, arguments);
+	        },
+	        /**
+	         * Extends the render tree subtree with a new node.
+	         *
+	         * @method add
+	         * @param object {SizeNode|LayoutNode|Surface} Node
+	         * @return {RenderTreeNode}
+	         */
+	        add : function(){
+	            return Camera.prototype.add.apply(this.camera, arguments);
+	        },
+	        /**
+	         * Remove from the RenderTree. All Surfaces added to the View
+	         *  will also be removed. The Camera can be added back at a later time and
+	         *  all of its data and Surfaces will be restored.
+	         *
+	         * @method remove
+	         */
+	        remove : function(){
+	            return Camera.prototype.remove.apply(this.camera, arguments);
+	        },
+	        /**
+	         * Set the position.
+	         *
+	         * @method setPosition
+	         * @param position {Number[]}               End position
+	         * @param [transition] {Object}             Transition definition
+	         * @param [callback] {Function}             Callback
+	         */
+	        setPosition : function(position, transition, callback){
+	            Camera.prototype.setPosition.apply(this.camera, arguments);
+	        },
+	        /**
+	         * Get the position.
+	         *
+	         * @method getPosition
+	         * @return {Array}                          Position
+	         */
+	        getPosition : function(){
+	            return Camera.prototype.getPosition.apply(this.camera);
+	        },
+	        /**
+	         * Set the orientation.
+	         *
+	         * @method setOrientation
+	         * @param orientation {Array}               [angle, x-axis, y-axis, z-axis]
+	         * @param [transition] {Object}             Transition definition
+	         * @param [callback] {Function}             Callback
+	         */
+	        setOrientation : function(orientation, transition, callback){
+	            Camera.prototype.setOrientation.apply(this.camera, arguments);
+	        },
+	        /**
+	         * Get the orientation.
+	         *
+	         * @method getOrientation
+	         * @return {Array}                          Orientation as [angle, x-axis, y-axis, z-axis]
+	         */
+	        getOrientation : function(){
+	            return Camera.prototype.getOrientation.apply(this.camera);
+	        },
+	        /**
+	         * Move the position of the camera in the z-direction by a given amount.
+	         *
+	         * @method zoomBy
+	         * @param delta {Number}                    Relative amount to zoom by
+	         * @param [transition] {Object}             Transition definition
+	         * @param [callback] {Function}             Callback
+	         */
+	        zoomBy : function(delta, transition, callback){
+	            Camera.prototype.zoomBy.apply(this.camera, arguments);
+	        },
+	        /**
+	         * Move the position of the camera in the z-direction to the given zoom.
+	         *
+	         * @method setZoom
+	         * @param zoom {Number}                     Absolute amount to zoom
+	         * @param [transition] {Object}             Transition definition
+	         * @param [callback] {Function}             Callback
+	         */
+	        setZoom : function(zoom, transition, callback){
+	            Camera.prototype.setZoom.apply(this.camera, arguments);
+	        },
+	        /**
+	         * Rotate the orientation of the camera by a given rotation.
+	         *
+	         * @method rotateBy
+	         * @param rotation {Array}                  Rotation as [angle, x-axis, y-axis, z-axis]
+	         * @param [transition] {Object}             Transition definition
+	         * @param [callback] {Function}             Callback
+	         */
+	        rotateBy : function(rotation, transition, callback){
+	            Camera.prototype.rotateBy.apply(this.camera, arguments);
+	        },
+	        /**
+	         * Face the camera towards a Transform. The Transform is decomposed into
+	         *  its position and rotation parts to calulate where to orient the camera.
+	         *
+	         * @method lookAt
+	         * @param transform {Transform}             Transform to face camera toward
+	         * @param [transition] {Object}             Transition definition
+	         * @param [callback] {Function}             Callback
+	         */
+	        lookAt : function(transform, transition, callback){
+	            Camera.prototype.lookAt.apply(this.camera, arguments);
+	        }
+	    });
+
+	    // convert mouse/touch input delta into a rotation for the camera
+	    function convertInputToAngleAxis(data){
+	        var delta = data.delta;
+
+	        var dx = delta[0];
+	        var dy = delta[1];
+
+	        var px = data.x - this.center[0];
+	        var py = data.y - this.center[1];
+	        var pz = this.options.radius;
+
+	        var qx = px + dx;
+	        var qy = py + dy;
+	        var qz = this.options.radius;
+
+	        var dpInv = 1 / Math.hypot(px, py, pz);
+	        var dqInv = 1 / Math.hypot(qx, qy, qz);
+
+	        px *= dpInv;
+	        py *= dpInv;
+	        pz *= dpInv;
+	        qx *= dqInv;
+	        qy *= dqInv;
+	        qz *= dqInv;
+
+	        var angle = Math.acos(px * qx + py * qy + pz * qz);
+
+	        var axisX = py * qz - pz * qy;
+	        var axisY = pz * qx - px * qz;
+	        var axisZ = px * qy - py * qx;
+
+	        return [angle, axisX, axisY, axisZ];
+	    }
+
+	    module.exports = TrackballCamera;
 	}.call(exports, __webpack_require__, exports, module), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
 
 

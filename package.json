@@ -3,7 +3,7 @@
   "description": "Reactive layout for user interfaces",
   "url": "http://samsaraJS.org",
   "author": "David Valdman <dmvaldman@gmail.com>",
-  "version": "0.2.3",
+  "version": "0.2.4",
   "main": "dist/samsara.js",
   "scripts": {
     "test": "npm run lint && phantomjs test/vendor/runner.js test/index.html",
