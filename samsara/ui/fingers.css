@@ -3,8 +3,8 @@
 /* For use with the Fingers.js Samsara UI component */
 
 .samsara-fingers {
-    background: rgba(255,255,255,.3);
-    border: 1px solid rgba(255,255,255,.4);
+    background: rgba(255,255,255,.5);
+    border: 1px solid rgba(255,255,255,.6);
     border-radius: 50%;
     z-index: 1
 }
