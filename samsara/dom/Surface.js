@@ -80,8 +80,22 @@ define(function(require, exports, module) {
 
         this._eventForwarder = function _eventForwarder(event) {
             event.stopPropagation();
-            this._eventOutput.emit(event.type, event);
+            var shouldEmit = processEvent.call(this, event);
+            if (shouldEmit) this._eventOutput.emit(event.type, event);
         }.bind(this);
+
+        var suppressMouseEvents = false;
+        function processEvent(event){
+            // if `touchstart` fired, then suppress phantom mouse events
+            var type = event.type;
+            if (type === 'touchstart') suppressMouseEvents = true;
+            if (suppressMouseEvents && type[0] === 'm') {
+                // `mouseup` is the last fired event
+                if (type === 'mouseup') suppressMouseEvents = false;
+                return false;
+            }
+            else return true;
+        }
 
         this._sizeNode = new SizeNode();
         this._layoutNode = new LayoutNode();
