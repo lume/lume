@@ -1,7 +1,7 @@
 /* Copyright © 2015-2016 David Valdman */
 
 define(function(require, exports, module){
-    var Quaternion = require('./_Quaternion');
+    var Quaternion = require('./Quaternion');
     var Transitionable = require('../core/Transitionable');
     var SimpleStream = require('../streams/SimpleStream');
     var EventHandler = require('../events/EventHandler');

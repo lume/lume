@@ -1,8 +1,8 @@
 /* Copyright © 2015-2016 David Valdman */
 
 define(function(require, exports, module){
-    var Quaternion = require('./_Quaternion');
-    var QuatTransitionable = require('./_QuatTransitionable');
+    var Quaternion = require('./Quaternion');
+    var QuatTransitionable = require('./QuatTransitionable');
     var Transform = require('../core/Transform');
     var Transitionable = require('../core/Transitionable');
     var LayoutNode = require('../core/nodes/LayoutNode');

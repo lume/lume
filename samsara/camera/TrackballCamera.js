@@ -2,7 +2,7 @@
 
 define(function(require, exports, module){
     var Camera = require('./Camera');
-    var Quaternion = require('./_Quaternion');
+    var Quaternion = require('./Quaternion');
     var Controller = require('../core/Controller');
     var Transform = require('../core/Transform');
     var Transitionable = require('../core/Transitionable');
