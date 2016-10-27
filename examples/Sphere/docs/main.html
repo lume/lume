@@ -55,8 +55,11 @@
             
             <div class="content"><div class='highlight'><pre>define(<span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params">require, exports, module</span>) </span>{
     <span class="hljs-keyword">var</span> Context = <span class="hljs-built_in">require</span>(<span class="hljs-string">'samsara/dom/Context'</span>);
-    <span class="hljs-keyword">var</span> Viewer = <span class="hljs-built_in">require</span>(<span class="hljs-string">'samsara/camera/Viewer'</span>);
-    <span class="hljs-keyword">var</span> Sphere = <span class="hljs-built_in">require</span>(<span class="hljs-string">'./app/Sphere'</span>);</pre></div></div>
+    <span class="hljs-keyword">var</span> ArcballCamera = <span class="hljs-built_in">require</span>(<span class="hljs-string">'samsara/camera/TrackballCamera'</span>);
+    <span class="hljs-keyword">var</span> Sphere = <span class="hljs-built_in">require</span>(<span class="hljs-string">'./app/Sphere'</span>);
+    <span class="hljs-keyword">var</span> Surface = <span class="hljs-built_in">require</span>(<span class="hljs-string">'samsara/dom/Surface'</span>);
+    <span class="hljs-keyword">var</span> Transform = <span class="hljs-built_in">require</span>(<span class="hljs-string">'samsara/core/Transform'</span>);
+    <span class="hljs-keyword">var</span> Quaternion = <span class="hljs-built_in">require</span>(<span class="hljs-string">'samsara/camera/Quaternion'</span>);</pre></div></div>
             
         </li>
         
@@ -67,11 +70,11 @@
               <div class="pilwrap ">
                 <a class="pilcrow" href="#section-2">&#182;</a>
               </div>
-              <p>Radius of sphere</p>
+              <p>Radius of sphere (fixed)</p>
 
             </div>
             
-            <div class="content"><div class='highlight'><pre>    <span class="hljs-keyword">var</span> radius = <span class="hljs-built_in">Math</span>.min(<span class="hljs-built_in">window</span>.innerWidth/<span class="hljs-number">2</span>, <span class="hljs-number">300</span>);</pre></div></div>
+            <div class="content"><div class='highlight'><pre>    <span class="hljs-keyword">var</span> radius = <span class="hljs-built_in">Math</span>.min(<span class="hljs-built_in">window</span>.innerWidth/<span class="hljs-number">2</span>, <span class="hljs-built_in">window</span>.innerHeight/<span class="hljs-number">2</span>, <span class="hljs-number">300</span>);</pre></div></div>
             
         </li>
         
@@ -136,7 +139,7 @@
             </div>
             
             <div class="content"><div class='highlight'><pre>    <span class="hljs-keyword">var</span> cameraStartPosition = [<span class="hljs-number">0</span>, <span class="hljs-number">0</span>, -radius];
-    <span class="hljs-keyword">var</span> viewer = <span class="hljs-keyword">new</span> Viewer({
+    <span class="hljs-keyword">var</span> camera = <span class="hljs-keyword">new</span> ArcballCamera({
         radius : radius,
         position: cameraStartPosition
     });</pre></div></div>
@@ -154,7 +157,7 @@
 
             </div>
             
-            <div class="content"><div class='highlight'><pre>    viewer.subscribe(context);</pre></div></div>
+            <div class="content"><div class='highlight'><pre>    camera.subscribe(context);</pre></div></div>
             
         </li>
         
@@ -170,8 +173,8 @@
             </div>
             
             <div class="content"><div class='highlight'><pre>    sphere.on(<span class="hljs-string">'lookAt'</span>, <span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params">transform</span>)</span>{
-        viewer.setPosition([<span class="hljs-number">0</span>,<span class="hljs-number">0</span>,<span class="hljs-number">0</span>], lookAtTransition);
-        viewer.lookAtTransform(transform, lookAtTransition);
+        camera.setPosition([<span class="hljs-number">0</span>,<span class="hljs-number">0</span>,<span class="hljs-number">0</span>], lookAtTransition);
+        camera.lookAt(transform, lookAtTransition);
     });</pre></div></div>
             
         </li>
@@ -188,7 +191,7 @@
             </div>
             
             <div class="content"><div class='highlight'><pre>    context.on(<span class="hljs-string">'click'</span>, <span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params"></span>)</span>{
-        viewer.setPosition(cameraStartPosition, lookAtTransition);
+        camera.setPosition(cameraStartPosition, lookAtTransition);
     });</pre></div></div>
             
         </li>
@@ -200,12 +203,12 @@
               <div class="pilwrap ">
                 <a class="pilcrow" href="#section-9">&#182;</a>
               </div>
-              <p>Create the render tree</p>
+              <p>Create the render tree for the sphere</p>
 
             </div>
             
             <div class="content"><div class='highlight'><pre>    <span class="hljs-keyword">var</span> cameraNode = context
-        .add(viewer)
+        .add(camera)
         .add({align : [<span class="hljs-number">.5</span>,<span class="hljs-number">.5</span>]})
         .add(sphere);</pre></div></div>
             
@@ -218,11 +221,65 @@
               <div class="pilwrap ">
                 <a class="pilcrow" href="#section-10">&#182;</a>
               </div>
+              <p>Add a surface in the middle of the sphere that is a
+transparent gradient that darkens the back hemisphere</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>    <span class="hljs-keyword">var</span> gradientSurface = <span class="hljs-keyword">new</span> Surface({
+        size : [<span class="hljs-number">2</span>*radius, <span class="hljs-number">2</span>*radius], <span class="hljs-comment">// size of sphere</span>
+        origin : [<span class="hljs-number">.5</span>,<span class="hljs-number">.5</span>],
+        classes : [<span class="hljs-string">'gradient'</span>]
+    });</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-11">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-11">&#182;</a>
+              </div>
+              <p>Transform the gradient surface to follow the sphere</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>    <span class="hljs-keyword">var</span> gradientSurfaceTransform = camera.orientation.map(<span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params">rotation</span>)</span>{
+        <span class="hljs-keyword">return</span> Quaternion.toTransform(rotation);
+    });</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-12">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-12">&#182;</a>
+              </div>
+              <p>Create the render tree for the gradient surface</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>    cameraNode
+        .add({transform : gradientSurfaceTransform})
+        .add(gradientSurface);</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-13">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-13">&#182;</a>
+              </div>
               <p>Mount to the DOM</p>
 
             </div>
             
-            <div class="content"><div class='highlight'><pre>    context.mount(<span class="hljs-built_in">document</span>.body);
+            <div class="content"><div class='highlight'><pre>    context.mount(<span class="hljs-built_in">document</span>.querySelector(<span class="hljs-string">'#sphere'</span>));
 });</pre></div></div>
             
         </li>
