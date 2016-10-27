@@ -99,7 +99,7 @@ define(function(require, exports, module){
      * Move the position of the camera in the z-direction by a given amount.
      *
      * @method zoomBy
-     * @param delta {Number}                    Relative amount to zoom in by
+     * @param delta {Number}                    Relative amount to zoom by
      * @param [transition] {Object}             Transition definition
      * @param [callback] {Function}             Callback
      */
@@ -107,6 +107,21 @@ define(function(require, exports, module){
         var position = this.position.get();
         var newPosition = [position[0], position[1], position[2] + delta];
         this.position.set(newPosition, transition, callback);
+    }
+
+    /**
+     * Move the position of the camera in the z-direction to the given zoom.
+     *
+     * @method setZoom
+     * @param zoom {Number}                     Absolute amount to zoom
+     * @param [transition] {Object}             Transition definition
+     * @param [callback] {Function}             Callback
+     */
+    Camera.prototype.setZoom = function(zoom, transition, callback){
+        var position = this.getPosition();
+        var previousZoom = position[2];
+        var delta = zoom - previousZoom;
+        this.zoomBy(delta, transition, callback);
     }
 
     /**

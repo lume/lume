@@ -24,34 +24,19 @@ define(function(require, exports, module){
     /**
      * A tackball camera. This is a camera that rotates (in place) what is added to its render tree. It can
      *  also zoom in and out. These actions are tied to DOM events. Rotation is connected to mouse and touch events,
-     *  and zooming is connected to the scrollwheel.
-     *
-     *  The drawer is initially hidden behind the content, until it is moved
-     *  by a call to setPosition. The source of the movement can be by subscribing
-     *  the layout to user input (like a Mouse/Touch/Scroll input), or by manually
-     *  calling setPosition with a transition.
-     *
-     *  The layout emits a `start`, `update` and `end` Stream with payload
-     *
-     *      `progress` - Number between 0 and 1 indicating how open the drawer is
-     *      `value` - Pixel displacement in how open the drawer is
-     *
-     *  It also emits `close` and `open` events.
-     *
-     *  The drawer can be revealed from any side of the content (top, left, bottom, right),
-     *  by specifying a side option.
+     *  and zooming is connected to the scrollwheel and pinch (two-finger touch) input.
      *
      *  @class TrackballCamera
      *  @constructor
      *  @namespace Camera
      *  @extends Core.Controller
      *  @param [options] {Object}                       Options
-     *  @param [options.radius] {Number}                  Side to reveal the drawer from. Defined in DrawerLayout.SIDES
-     *  @param [options.rotationScale] {Number}          The maximum length to reveal the drawer
-     *  @param [options.zoomScale] {Number}     The velocity needed to complete the drawer transition
-     *  @param [options.inertia] {Number}     The displacement needed to complete the drawer transition
-     *  @param [options.position] {Object}       A transition definition for closing the drawer
-     *  @param [options.orientation] {Object}        A transition definition for opening the drawer
+     *  @param [options.radius=500] {Number}            Radius of the trackball camera
+     *  @param [options.rotationScale=1] {Number}       Amount to scale the rotation
+     *  @param [options.zoomScale=1] {Number}           Amount to scale the zoom
+     *  @param [options.inertia=true] {Boolean}         Include inertia for rotation and zooming
+     *  @param [options.position=[0,0,0]] {Array}       Starting position of the camera
+     *  @param [options.orientation=[1,0,0,0]] {Array}  Starting orientation of the camera
      */
     var TrackballCamera = Controller.extend({
         defaults : {
@@ -69,6 +54,8 @@ define(function(require, exports, module){
             this.orientation = this.camera.orientation;
             this.position = this.camera.position;
 
+            // get the coordinates of the center of the camera
+            // TODO: make work if inside of ContainerSurfaces
             this.center = [];
             var centerStream = Stream.lift(function(size, layout){
                 if (!size || !layout) return false;
@@ -93,6 +80,7 @@ define(function(require, exports, module){
             rotationInput.subscribe(this.input);
             zoomInput.subscribe(this.input);
 
+            // update rotation based on mouse and touch dragging
             var hasMoved = false;
             rotationInput.on('start', function(data){
                 hasMoved = false;
@@ -116,6 +104,7 @@ define(function(require, exports, module){
                 });
             }.bind(this));
 
+            // at end of rotation, apply inertia to Quaternion if inertia is allowed
             rotationInput.on('end', function(data){
                 if (!hasMoved || !rotationInertia) {
                     this.emit('end', {
@@ -152,6 +141,7 @@ define(function(require, exports, module){
                 }.bind(this));
             }
 
+            // update zoom based on mousewheel and pinch events
             zoomInput.on('update', function(data){
                 var zoom = data.delta;
                 this.zoomBy(zoom);
@@ -162,6 +152,7 @@ define(function(require, exports, module){
                 });
             }.bind(this));
 
+            // at end of zooming (on pinch), apply inertia to zoom
             zoomInput.on('end', function(data){
                 if (!zoomInertia){
                     this.emit('end', {
@@ -200,41 +191,114 @@ define(function(require, exports, module){
         _onAdd : function(){
             return Camera.prototype._onAdd.apply(this.camera, arguments);
         },
+        /**
+         * Extends the render tree subtree with a new node.
+         *
+         * @method add
+         * @param object {SizeNode|LayoutNode|Surface} Node
+         * @return {RenderTreeNode}
+         */
         add : function(){
             return Camera.prototype.add.apply(this.camera, arguments);
         },
+        /**
+         * Remove from the RenderTree. All Surfaces added to the View
+         *  will also be removed. The Camera can be added back at a later time and
+         *  all of its data and Surfaces will be restored.
+         *
+         * @method remove
+         */
         remove : function(){
             return Camera.prototype.remove.apply(this.camera, arguments);
         },
+        /**
+         * Set the position.
+         *
+         * @method setPosition
+         * @param position {Number[]}               End position
+         * @param [transition] {Object}             Transition definition
+         * @param [callback] {Function}             Callback
+         */
         setPosition : function(position, transition, callback){
             Camera.prototype.setPosition.apply(this.camera, arguments);
         },
+        /**
+         * Get the position.
+         *
+         * @method getPosition
+         * @return {Array}                          Position
+         */
         getPosition : function(){
             return Camera.prototype.getPosition.apply(this.camera);
         },
+        /**
+         * Set the orientation.
+         *
+         * @method setOrientation
+         * @param orientation {Array}               [angle, x-axis, y-axis, z-axis]
+         * @param [transition] {Object}             Transition definition
+         * @param [callback] {Function}             Callback
+         */
         setOrientation : function(orientation, transition, callback){
             Camera.prototype.setOrientation.apply(this.camera, arguments);
         },
+        /**
+         * Get the orientation.
+         *
+         * @method getOrientation
+         * @return {Array}                          Orientation as [angle, x-axis, y-axis, z-axis]
+         */
         getOrientation : function(){
             return Camera.prototype.getOrientation.apply(this.camera);
         },
+        /**
+         * Move the position of the camera in the z-direction by a given amount.
+         *
+         * @method zoomBy
+         * @param delta {Number}                    Relative amount to zoom by
+         * @param [transition] {Object}             Transition definition
+         * @param [callback] {Function}             Callback
+         */
         zoomBy : function(delta, transition, callback){
             Camera.prototype.zoomBy.apply(this.camera, arguments);
         },
+        /**
+         * Move the position of the camera in the z-direction to the given zoom.
+         *
+         * @method setZoom
+         * @param zoom {Number}                     Absolute amount to zoom
+         * @param [transition] {Object}             Transition definition
+         * @param [callback] {Function}             Callback
+         */
         setZoom : function(zoom, transition, callback){
-            var position = this.getPosition();
-            var newPosition = position.slice();
-            newPosition[2] = zoom;
-            Camera.prototype.setPosition.call(this.camera, newPosition, transition, callback);
+            Camera.prototype.setZoom.apply(this.camera, arguments);
         },
+        /**
+         * Rotate the orientation of the camera by a given rotation.
+         *
+         * @method rotateBy
+         * @param rotation {Array}                  Rotation as [angle, x-axis, y-axis, z-axis]
+         * @param [transition] {Object}             Transition definition
+         * @param [callback] {Function}             Callback
+         */
         rotateBy : function(rotation, transition, callback){
             Camera.prototype.rotateBy.apply(this.camera, arguments);
         },
+        /**
+         * Face the camera towards a Transform. The Transform is decomposed into
+         *  its position and rotation parts to calulate where to orient the camera.
+         *
+         * @method lookAt
+         * @param transform {Transform}             Transform to face camera toward
+         * @param [transition] {Object}             Transition definition
+         * @param [callback] {Function}             Callback
+         */
         lookAt : function(transform, transition, callback){
             Camera.prototype.lookAt.apply(this.camera, arguments);
         }
     });
 
+    // convert mouse/touch input delta into a rotation for the camera
     function convertInputToAngleAxis(data){
         var delta = data.delta;
 
