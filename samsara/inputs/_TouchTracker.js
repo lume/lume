@@ -105,7 +105,7 @@ define(function(require, exports, module) {
 
     function handleMove(event) {
         if (event.touches.length > this.options.limit) return false;
-        if (this.numTouches !== this.options.track) return false;
+        if (this.numTouches > this.options.track) return false;
 
         event.preventDefault(); // prevents scrolling on mobile
 

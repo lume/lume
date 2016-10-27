@@ -255,7 +255,7 @@ define(function(require, exports, module) {
     }
 
     function handleEnter(event){
-        if (!this._down || !this._move) return;
+        if (!this._down || !this._move) return false;
 
         this._eventInput.off('mousemove', handleMove.bind(this));
         this._eventInput.off('mouseup', handleEnd.bind(this));
@@ -265,7 +265,7 @@ define(function(require, exports, module) {
     }
 
     function handleLeave(event) {
-        if (!this._down || !this._move) return;
+        if (!this._down || !this._move) return false;
 
         this.boundMove = handleMove.bind(this);
         this.boundUp = function(event) {
