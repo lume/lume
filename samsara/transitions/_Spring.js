@@ -75,13 +75,12 @@ define(function (require, exports, module) {
 
         var energy = this.energy(this.end, this.value, this.velocity);
 
-        this.value = value;
-        this.emit('update', value);
+        this.emit('update', this.value);
 
         if (energy < this.energyTolerance) {
-            this.reset(this.target);
+            this.reset(this.end);
             this._active = false;
-            this.emit('end', this.target);
+            this.emit('end', this.end);
         }
     };
 

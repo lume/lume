@@ -2,7 +2,7 @@
 
 define(function (require, exports, module) {
     var Transition = require('./_Transition');
-    var dirtyQueue = require('../core/queues/dirtyQueue');
+    var preTickQueue = require('../core/queues/preTickQueue');
 
     /**
      * An immediate transition, with no interpolation between values.
@@ -29,10 +29,13 @@ define(function (require, exports, module) {
      */
     Immediate.prototype.set = function(value){
         this.value = value;
-        Transition.prototype.set.apply(this, arguments);
-        dirtyQueue.push(function() {
-            this.emit('end', this.value);
-        }.bind(this));
+        var self = this;
+        preTickQueue.push(function(){
+            self.emit('set', self.value);
+        });
+
+        this.start = this.get();
+        this.end = value;
     }
 
     module.exports = Immediate;

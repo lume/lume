@@ -67,6 +67,10 @@ define(function (require, exports, module) {
         EventHandler.setInputHandler(this, this._eventInput);
         EventHandler.setOutputHandler(this, this._eventOutput);
 
+        this._eventInput.on('set', function (value) {
+            this.emit('set', value);
+        }.bind(this));
+
         var hasUpdated = false;
         this._eventInput.on('start', function (value) {
             hasUpdated = false;

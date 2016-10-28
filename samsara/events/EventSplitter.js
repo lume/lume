@@ -42,9 +42,7 @@ define(function(require, exports, module) {
         EventHandler.call(this);
         this._splitter = splitter;
 
-        this.on('start', function(){});
-        this.on('update', function(){});
-        this.on('end', function(){});
+        this.on(['start', 'update', 'end', 'set'], function(){});
     }
     EventSplitter.prototype = Object.create(EventHandler.prototype);
     EventSplitter.prototype.constructor = EventSplitter;
