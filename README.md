@@ -50,7 +50,7 @@ is designed to be friends with them.
 SamsaraJS requires a small CSS file located at `dist/samsara.css` or `samsara/samsara.css`. For all of the installation methods
 below, you will also need to include this CSS file for SamsaraJS to work properly.
 
-#### Git
+### Git
 
 Clone this repo
 
@@ -61,7 +61,7 @@ git clone git@github.com:dmvaldman/samsara.git
 You'll find AMD modules in the `samsara` directory, CommonJS bundles in the `dist` directory, examples in the
 `examples` directory and reference documentation in the `docs` directory.
 
-#### NPM
+### NPM
 
 Install the CommonJS build of Samsara with
 
@@ -79,14 +79,14 @@ var Surface = require('samsarajs').DOM.Surface; // CommonJS
 
 The `samsara.css` file will also be included in `node_modules/samsarajs/dist/samsara.css`.
 
-#### Window Object
+### Window Object
 
 Copy `dist/samsara.js` and include it as a source file. `Samsara` will then be accessible
 through `window.Samsara`. This is particularly useful for sharing on sites like jsFiddle, CodePen, etc.
 
-#### Yeoman Generator
+### Yeoman Generator
 
-A [generator](https://github.com/richardkopelow/generator-samsara) was made by @richardkopelow (thanks!). This is an easy way to get started if you're comfortable with [yeoman](http://yeoman.io/).
+A generator was made by @richardkopelow (thanks!). This is an easy way to get started if you're comfortable with [yeoman](http://yeoman.io/). Follow the [installation instructions here](https://github.com/richardkopelow/generator-samsara).
 
 ## Talks
 [![Talk](http://i.imgur.com/tGbmVk4.png)](https://www.youtube.com/watch?v=biJXpv-6XVY)
