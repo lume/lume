@@ -86,7 +86,7 @@ through `window.Samsara`. This is particularly useful for sharing on sites like 
 
 ### Yeoman Generator
 
-A generator was made by @richardkopelow (thanks!). This is an easy way to get started if you're comfortable with [yeoman](http://yeoman.io/). Follow the [installation instructions here](https://github.com/richardkopelow/generator-samsara).
+A generator was made by [@richardkopelow](https://github.com/richardkopelow). This is an easy way to get started if you're comfortable with [yeoman](http://yeoman.io/). Follow the [installation instructions here](https://github.com/richardkopelow/generator-samsara).
 
 ## Talks
 [![Talk](http://i.imgur.com/tGbmVk4.png)](https://www.youtube.com/watch?v=biJXpv-6XVY)
