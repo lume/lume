@@ -84,6 +84,10 @@ The `samsara.css` file will also be included in `node_modules/samsarajs/dist/sam
 Copy `dist/samsara.js` and include it as a source file. `Samsara` will then be accessible
 through `window.Samsara`. This is particularly useful for sharing on sites like jsFiddle, CodePen, etc.
 
+#### Yeoman Generator
+
+A [generator](https://github.com/richardkopelow/generator-samsara) was made by @richardkopelow (thanks!). This is an easy way to get started if you're comfortable with [yeoman](http://yeoman.io/).
+
 ## Talks
 [![Talk](http://i.imgur.com/tGbmVk4.png)](https://www.youtube.com/watch?v=biJXpv-6XVY)
 [JSConf EU 2015 Berlin, Germany](https://www.youtube.com/watch?v=biJXpv-6XVY)
