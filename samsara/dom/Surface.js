@@ -510,6 +510,7 @@ define(function(require, exports, module) {
     Surface.prototype.recall = function recall(target) {
         this._eventOutput.emit('recall');
 
+        DOMOutput.demoteLayer(target);
         DOMOutput.removeClasses(target, this.classList);
         DOMOutput.removeProperties(target, this.properties);
         DOMOutput.removeAttributes(target, this.attributes);

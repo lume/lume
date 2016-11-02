@@ -210,7 +210,7 @@ define(function(require, exports, module) {
     };
 
     DOMOutput.demoteLayer = function(element) {
-        element.style.willChange = 'auto';
+        element.style.willChange = '';
     };
 
     DOMOutput.makeVisible = function makeVisible(element, size){
