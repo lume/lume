@@ -70,10 +70,10 @@ define(function(require, exports, module) {
         this.attributes = {};
         this.classList = [];
         this.content = '';
-        this._cachedSize = null;
+        this._cachedSpec = {};
         this._allocator = null;
         this._currentTarget = null;
-        this._elementOutput = new DOMOutput();
+        this._elementOutput = new DOMOutput({roundToPixel : options.roundToPixel});
 
         this._eventOutput = new EventHandler();
         EventHandler.setOutputHandler(this, this._eventOutput);
@@ -117,18 +117,18 @@ define(function(require, exports, module) {
 
         this.layout.on('start', function(){
             if (!this._currentTarget) return;
-            this._elementOutput.promoteLayer(this._currentTarget);
+            DOMOutput.promoteLayer(this._currentTarget);
         }.bind(this));
 
         this.layout.on('update', function(layout){
             if (!this._currentTarget) return;
-            this._elementOutput.commitLayout(this._currentTarget, layout);
+            this._elementOutput.commitLayout(this._currentTarget, layout, this._cachedSpec);
         }.bind(this));
 
         this.layout.on('end', function(layout){
             if (!this._currentTarget) return;
-            this._elementOutput.commitLayout(this._currentTarget, layout);
-            this._elementOutput.demoteLayer(this._currentTarget);
+            this._elementOutput.commitLayout(this._currentTarget, layout, this._cachedSpec);
+            DOMOutput.demoteLayer(this._currentTarget);
         }.bind(this));
 
         this.size.on('start', commitSize.bind(this));
@@ -138,16 +138,18 @@ define(function(require, exports, module) {
         if (options) this.setOptions(options);
     }
 
-    Surface.prototype = Object.create(DOMOutput.prototype);
-    Surface.prototype.constructor = Surface;
     Surface.prototype.elementType = 'div'; // Default tagName. Can be overridden in options.
     Surface.prototype.elementClass = 'samsara-surface';
 
     function commitSize(size){
         if (!this._currentTarget) return;
-        var shouldResize = this._elementOutput.commitSize(this._currentTarget, size);
+        var prevSize = this._cachedSpec.size;
+        var shouldResize = this._elementOutput.commitSize(this._currentTarget, size, prevSize);
         this._cachedSize = size;
-        if (shouldResize) this.emit('resize', size);
+        if (shouldResize) {
+            this._cachedSpec.size = size;
+            this.emit('resize', size);
+        }
     }
 
     function enableScroll(){
@@ -190,7 +192,7 @@ define(function(require, exports, module) {
 
             if (this._currentTarget){
                 dirtyQueue.push(function(){
-                    this._elementOutput.applyContent(this._currentTarget, content);
+                    DOMOutput.applyContent(this._currentTarget, content);
                 }.bind(this));
             }
         }
@@ -220,7 +222,7 @@ define(function(require, exports, module) {
 
         if (this._currentTarget){
             dirtyQueue.push(function(){
-                this._elementOutput.applyAttributes(this._currentTarget, attributes);
+                DOMOutput.applyAttributes(this._currentTarget, attributes);
             }.bind(this));
         }
     };
@@ -248,7 +250,7 @@ define(function(require, exports, module) {
 
         if (this._currentTarget){
             dirtyQueue.push(function(){
-                this._elementOutput.applyProperties(this._currentTarget, properties);
+                DOMOutput.applyProperties(this._currentTarget, properties);
             }.bind(this));
         }
     };
@@ -275,7 +277,7 @@ define(function(require, exports, module) {
 
             if (this._currentTarget){
                 dirtyQueue.push(function(){
-                    this._elementOutput.applyClasses(this._currentTarget, this.classList);
+                    DOMOutput.applyClasses(this._currentTarget, this.classList);
                 }.bind(this));
             }
         }
@@ -293,7 +295,7 @@ define(function(require, exports, module) {
             this.classList.splice(i, 1);
             if (this._currentTarget){
                 dirtyQueue.push(function(){
-                    this._elementOutput.removeClasses(this._currentTarget, this.classList);
+                    DOMOutput.removeClasses(this._currentTarget, this.classList);
                 }.bind(this));
             }
         }
@@ -343,7 +345,7 @@ define(function(require, exports, module) {
      */
     Surface.prototype.querySelector = function querySelector(selector){
         if (this._currentTarget)
-            return this._elementOutput.querySelector(this._currentTarget, selector);
+            return DOMOutput.querySelector(this._currentTarget, selector);
     };
 
     /**
@@ -355,7 +357,7 @@ define(function(require, exports, module) {
      */
     Surface.prototype.querySelectorAll = function querySelectorAll(selector){
         if (this._currentTarget)
-            return this._elementOutput.querySelectorAll(this._currentTarget, selector);
+            return DOMOutput.querySelectorAll(this._currentTarget, selector);
     };
 
     /**
@@ -390,7 +392,7 @@ define(function(require, exports, module) {
      */
     Surface.prototype.on = function on(type, handler) {
         if (this._currentTarget)
-            this._elementOutput.on(this._currentTarget, type, this._eventForwarder);
+            DOMOutput.on(this._currentTarget, type, this._eventForwarder);
         EventHandler.prototype.on.apply(this._eventOutput, arguments);
     };
 
@@ -418,7 +420,7 @@ define(function(require, exports, module) {
      */
     Surface.prototype.off = function off(type, handler) {
         if (this._currentTarget)
-            this._elementOutput.off(this._currentTarget, type, this._eventForwarder);
+            DOMOutput.off(this._currentTarget, type, this._eventForwarder);
         EventHandler.prototype.off.apply(this._eventOutput, arguments);
     };
 
@@ -451,7 +453,7 @@ define(function(require, exports, module) {
         }
 
         for (var type in this._eventOutput.listeners)
-            this._elementOutput.on(target, type, this._eventForwarder);
+            DOMOutput.on(target, type, this._eventForwarder);
 
         this.deploy(this._currentTarget);
     };
@@ -469,7 +471,7 @@ define(function(require, exports, module) {
         if (!target) return;
 
         for (var type in this._eventOutput.listeners)
-            this._elementOutput.off(target, type, this._eventForwarder);
+            DOMOutput.off(target, type, this._eventForwarder);
 
         // cache the target's contents for later deployment
         this.recall(target);
@@ -477,6 +479,7 @@ define(function(require, exports, module) {
         this._allocator.deallocate(target);
         this._allocator = null;
 
+        this._cachedSpec = {};
         this._currentTarget = null;
     };
 
@@ -488,11 +491,11 @@ define(function(require, exports, module) {
      * @param target {Node} DOM element to set content into
      */
     Surface.prototype.deploy = function deploy(target) {
-        this._elementOutput.makeVisible(target);
-        this._elementOutput.applyClasses(target, this.classList);
-        this._elementOutput.applyProperties(target, this.properties);
-        this._elementOutput.applyAttributes(target, this.attributes);
-        this._elementOutput.applyContent(target, this.content);
+        DOMOutput.makeVisible(target, this._cachedSize);
+        DOMOutput.applyClasses(target, this.classList);
+        DOMOutput.applyProperties(target, this.properties);
+        DOMOutput.applyAttributes(target, this.attributes);
+        DOMOutput.applyContent(target, this.content);
 
         this._eventOutput.emit('deploy', target);
     };
@@ -507,11 +510,11 @@ define(function(require, exports, module) {
     Surface.prototype.recall = function recall(target) {
         this._eventOutput.emit('recall');
 
-        this._elementOutput.removeClasses(target, this.classList);
-        this._elementOutput.removeProperties(target, this.properties);
-        this._elementOutput.removeAttributes(target, this.attributes);
-        this.content = this._elementOutput.recallContent(target);
-        this._elementOutput.makeInvisible(target);
+        DOMOutput.removeClasses(target, this.classList);
+        DOMOutput.removeProperties(target, this.properties);
+        DOMOutput.removeAttributes(target, this.attributes);
+        DOMOutput.makeInvisible(target);
+        this.content = DOMOutput.recallContent(target);
     };
 
     /**

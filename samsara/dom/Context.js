@@ -2,6 +2,7 @@
 // TODO: Enable CSS properties on Context
 define(function(require, exports, module) {
     var DOMAllocator = require('./_DOMAllocator');
+    var DOMOutput = require('./_domOutput');
     var Engine = require('../core/Engine');
     var RootNode = require('../core/nodes/RootNode');
     var Transitionable = require('../core/Transitionable');
@@ -42,6 +43,9 @@ define(function(require, exports, module) {
         this.options = OptionsManager.setOptions(this, options, Context.DEFAULT_OPTIONS);
         this._node = new RootNode();
 
+        this.container = null;
+        this._domOutput = new DOMOutput();
+
         this._size = new SimpleStream();
         this._layout = new SimpleStream();
 
@@ -53,8 +57,8 @@ define(function(require, exports, module) {
                 return this._cachedSize;
             }
 
-            var width = this.container.clientWidth;
-            var height = this.container.clientHeight;
+            var width = DOMOutput.getWidth(this.container);
+            var height = DOMOutput.getHeight(this.container);
 
             if (width !== this._cachedSize[0] || height !== this._cachedSize[1]){
                 this._cachedSize[0] = width;
@@ -96,7 +100,7 @@ define(function(require, exports, module) {
         // Prevents dragging of entire page
         if (this.options.enableScroll === false){
             this.on('deploy', function(target) {
-                target.addEventListener('touchmove', function(event) {
+                DOMOutput.on(target, 'touchmove', function(event){
                     event.preventDefault();
                 }, false);
             });
@@ -122,21 +126,6 @@ define(function(require, exports, module) {
         return RootNode.prototype.add.apply(this._node, arguments);
     };
 
-    Context.prototype.remove = function remove(){
-        if (this.elementClass instanceof Array){
-            for (var i = 0; i < this.elementClass.length; i++)
-                this.container.classList.remove(this.elementClass[i])
-        }
-        else this.container.classList.remove(this.elementClass);
-
-        this._node.remove();
-
-        while (this.container.hasChildNodes())
-            this.container.removeChild(this.container.firstChild);
-
-        Engine.deregisterContext(this);
-    };
-
     /**
      * Pull the perspective value from a transitionable.
      *
@@ -144,14 +133,15 @@ define(function(require, exports, module) {
      * @param perspective {Transitionable}    Perspective transitionable
      */
     Context.prototype.perspectiveFrom = function perspectiveFrom(perspective){
+        this._perspective.unsubscribe();
         this._perspective = perspective;
 
         this._perspective.on('update', function(perspective){
-            setPerspective(this.container, perspective);
+            this._domOutput.commitPerspective(this.container, perspective);
         }.bind(this));
 
         this._perspective.on('end', function(perspective){
-            setPerspective(this.container, perspective);
+            this._domOutput.commitPerspective(this.container, perspective);
         }.bind(this));
     };
 
@@ -162,14 +152,15 @@ define(function(require, exports, module) {
      * @param perspectiveOrigin {Transitionable}    Perspective-origin transitionable
      */
     Context.prototype.perspectiveOriginFrom = function perspectiveOriginFrom(perspectiveOrigin){
+        this._perspectiveOrigin.unsubscribe();
         this._perspectiveOrigin = perspectiveOrigin;
 
         this._perspectiveOrigin.on('update', function(origin){
-            setPerspectiveOrigin(this.container, origin);
+            this._domOutput.commitPerspectiveOrigin(this.container, origin);
         }.bind(this));
 
         this._perspectiveOrigin.on('end', function(origin){
-            setPerspectiveOrigin(this.container, origin);
+            this._domOutput.commitPerspectiveOrigin(this.container, origin);
         }.bind(this));
     };
 
@@ -230,11 +221,9 @@ define(function(require, exports, module) {
 
         this.container = node;
 
-        if (this.elementClass instanceof Array) {
-            for (var i = 0; i < this.elementClass.length; i++)
-                this.container.classList.add(this.elementClass[i])
-        }
-        else this.container.classList.add(this.elementClass);
+        (this.elementClass instanceof Array)
+            ? DOMOutput.applyClasses(this.container, this.elementClass)
+            : DOMOutput.applyClass(this.container, this.elementClass);
 
         var allocator = new DOMAllocator(this.container);
         this._node.setAllocator(allocator);
@@ -245,6 +234,26 @@ define(function(require, exports, module) {
         this.emit('deploy', this.container);
 
         Engine.registerContext(this);
+    };
+
+    /**
+     * Clear the HTML contents of the Context and remove it from the Render Tree.
+     *  The Context can be added to the render tree again and all its data (properties, event listeners, etc)
+     *  will be restored.
+     *
+     * @method remove
+     */
+    Context.prototype.remove = function remove(){
+        (this.elementClass instanceof Array)
+            ? DOMOutput.removeClasses(this.container, this.elementClass)
+            : DOMOutput.removeClass(this.container, this.elementClass);
+
+        this._node.remove();
+
+        //TODO add ability to resurrect content
+        DOMOutput.recallContent(this.container);
+
+        Engine.deregisterContext(this);
     };
 
     /**
@@ -290,28 +299,6 @@ define(function(require, exports, module) {
     Context.prototype.emit = function emit(type, payload) {
         EventHandler.prototype.emit.apply(this._eventOutput, arguments);
     };
-
-    var usePrefix = !('perspective' in window.document.documentElement.style);
-
-    var setPerspective = usePrefix
-        ? function setPerspective(element, perspective) {
-            element.style.webkitPerspective = perspective ? (perspective | 0) + 'px' : '0px';
-        }
-        : function setPerspective(element, perspective) {
-            element.style.perspective = perspective ? (perspective | 0) + 'px' : '0px';
-        };
-
-    function _formatCSSOrigin(origin) {
-        return (100 * origin[0]) + '% ' + (100 * origin[1]) + '%';
-    }
-
-    var setPerspectiveOrigin = usePrefix
-        ? function setPerspectiveOrigin(element, origin) {
-            element.style.webkitPerspectiveOrigin = origin ? _formatCSSOrigin(origin) : '50% 50%';
-        }
-        : function setPerspectiveOrigin(element, origin) {
-            element.style.perspectiveOrigin = origin ? _formatCSSOrigin(origin) : '50% 50%';
-        };
 
     module.exports = Context;
 });
