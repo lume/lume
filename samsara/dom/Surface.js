@@ -73,7 +73,7 @@ define(function(require, exports, module) {
         this._cachedSpec = {};
         this._allocator = null;
         this._currentTarget = null;
-        this._elementOutput = new DOMOutput({roundToPixel : options.roundToPixel});
+        this._elementOutput = new DOMOutput();
 
         this._eventOutput = new EventHandler();
         EventHandler.setOutputHandler(this, this._eventOutput);
