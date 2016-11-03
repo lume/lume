@@ -2,7 +2,7 @@
 // TODO: Enable CSS properties on Context
 define(function(require, exports, module) {
     var DOMAllocator = require('./_DOMAllocator');
-    var DOMOutput = require('./_domOutput');
+    var DOMOutput = require('./_DOMOutput');
     var Engine = require('../core/Engine');
     var RootNode = require('../core/nodes/RootNode');
     var Transitionable = require('../core/Transitionable');
