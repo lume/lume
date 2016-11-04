@@ -67,11 +67,13 @@ define(function (require, exports, module) {
         EventHandler.setInputHandler(this, this._eventInput);
         EventHandler.setOutputHandler(this, this._eventOutput);
 
+        var hasUpdated = false;
+
         this._eventInput.on('set', function (value) {
-            this.emit('set', value);
+            if (hasUpdated) this.trigger('end', value);
+            else this.emit('set', value);
         }.bind(this));
 
-        var hasUpdated = false;
         this._eventInput.on('start', function (value) {
             hasUpdated = false;
             this._currentActive = true;
@@ -155,8 +157,8 @@ define(function (require, exports, module) {
     Transitionable.prototype.set = function set(value, transition, callback) {
         var Method;
         if (!transition || transition.duration === 0) {
+            this._callback = undefined;
             this.value = value;
-            if (callback) callback();
             Method = Immediate;
         }
         else {
@@ -357,7 +359,8 @@ define(function (require, exports, module) {
 
     NDTransitionable.prototype.update = function () {
         for (var i = 0; i < this.sources.length; i++)
-            this.sources[i].update();
+            if (this.sources[i].update)
+                this.sources[i].update();
     };
 
     NDTransitionable.prototype.reset = function (value) {
