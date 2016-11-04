@@ -2,6 +2,7 @@ define(function (require) {
     var loop = require('loop');
     var Transitionable = require('samsara/core/Transitionable');
     var Stream = require('samsara/streams/Stream');
+    var Timer = require('samsara/core/Timer');
 
     loop.start();
 
@@ -71,7 +72,6 @@ define(function (require) {
             state = updateState(state, 'end');
             assert.equal(value, 0);
             loop.stop();
-            done();
         });
     });
 
@@ -104,6 +104,80 @@ define(function (require) {
         });
 
         t.set(1, {duration : 200});
+    });
+
+    QUnit.test('Interrupt', function(assert){
+        var done = assert.async();
+        var t = new Transitionable(0);
+
+        t.on('start', function(value) {
+            console.log('start', value);
+            state = updateState(state, 'start');
+            assert.equal(value, 0);
+        });
+
+        t.on('update', function(value) {
+            console.log('update', value);
+            state = updateState(state, 'update');
+            assert.ok(value >= 0 && value <= 20);
+        });
+
+        t.on('end', function(value) {
+            console.log('end', value);
+            state = updateState(state, 'end');
+            assert.equal(value, 20);
+
+            done();
+            loop.stop();
+        });
+
+        t.set(1, {duration : 200}, function(){
+            console.log('should not fire')
+            // should not fire
+            assert.ok(false);
+        });
+
+        Timer.setTimeout(function(){
+            t.set(20, {duration : 100}, function(){
+                assert.ok(true);
+            });
+        }, 100);
+    });
+
+    QUnit.test('Set Interrupt', function(assert){
+        var done = assert.async();
+        var t = new Transitionable(0);
+
+        t.on('start', function(value) {
+            console.log('start', value);
+            state = updateState(state, 'start');
+            assert.equal(value, 0);
+        });
+
+        t.on('update', function(value) {
+            console.log('update', value);
+            state = updateState(state, 'update');
+            assert.ok(value >= 0 && value <= 2);
+        });
+
+        t.on('end', function(value) {
+            console.log('end', value);
+            state = updateState(state, 'end');
+            assert.equal(value, 2);
+
+            done();
+            loop.stop();
+        });
+
+        t.set(1, {duration : 200}, function(){
+            console.log('should not fire');
+            // should not fire
+            assert.ok(false);
+        });
+
+        Timer.setTimeout(function(){
+            t.set(2);
+        }, 100);
     });
 
     QUnit.test('Start on end', function(assert){
