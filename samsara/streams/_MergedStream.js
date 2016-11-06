@@ -1,14 +1,12 @@
 /* Copyright © 2015-2016 David Valdman */
 
 define(function(require, exports, module) {
-    var SimpleStream = require('./SimpleStream');
+    var Stream = require('./_Stream');
     var Observable = require('./Observable');
 
     function MergedStream(streams) {
         this.mergedData = streams instanceof Array ? [] : {};
         this.streamCache = {};
-
-        var Stream = require('./Stream');
 
         var boundEmit = function(){ return this.mergedData; }.bind(this);
 
@@ -22,7 +20,7 @@ define(function(require, exports, module) {
         if (streams) this.set(streams);
     }
 
-    MergedStream.prototype = Object.create(SimpleStream.prototype);
+    MergedStream.prototype = Object.create(Stream.prototype);
     MergedStream.prototype.constructor = MergedStream;
 
     MergedStream.prototype.set = function(sources){
