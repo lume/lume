@@ -2,7 +2,7 @@
 
 define(function(require, exports, module){
     var EventHandler = require('../events/EventHandler');
-    var SimpleStream = require('../streams/SimpleStream');
+    var StreamContract = require('../streams/_StreamContract');
     var preTickQueue = require('../core/queues/preTickQueue');
 
     var EVENTS = {
@@ -57,12 +57,11 @@ define(function(require, exports, module){
      * @constructor
      */
     function Stream(options){
-        options = options || {};
+        StreamContract.call(this);
 
         this._eventInput = new EventHandler();
-        this._eventOutput = new EventHandler();
-        EventHandler.setInputHandler(this, this._eventInput);
-        EventHandler.setOutputHandler(this, this._eventOutput);
+
+        options = options || {};
 
         var startCounter = 0;
         var delayQueue = 0;
@@ -81,7 +80,18 @@ define(function(require, exports, module){
 
         function resolve(data){
             if (states.prev === EVENTS.START && states.set){
-                console.log('BUG!', states)
+                // console.log('BUG!', states);
+
+                // this.emit(EVENTS.UPDATE, data);
+                // states.prev = EVENTS.UPDATE;
+
+                // states.start = false;
+                // states.update = false;
+                // states.end = false;
+                // states.set = false;
+
+                // return;
+                // debugger
             }
 
             if (startCounter === 0 && states.update && states.end){
@@ -186,8 +196,28 @@ define(function(require, exports, module){
         });
     }
 
-    Stream.prototype = Object.create(SimpleStream.prototype);
+    Stream.prototype = Object.create(StreamContract.prototype);
     Stream.prototype.constructor = Stream;
+
+    Stream.prototype.subscribe = function(source){
+        if (source._isActive) this.trigger('start', source.get());
+        return EventHandler.prototype.subscribe.apply(this._eventInput, arguments);
+    };
+
+    Stream.prototype.unsubscribe = function(source){
+        if (!source){
+            for (var i = 0; i < this._eventInput.upstream.length; i++){
+                var source = this._eventInput.upstream[i]
+                this.unsubscribe(source)
+            }
+        }
+        else if (source._isActive) this.trigger('end', source.get());
+        return EventHandler.prototype.unsubscribe.apply(this._eventInput, arguments);
+    };
+
+    Stream.prototype.trigger = function(type, handler){
+        EventHandler.prototype.trigger.apply(this._eventInput, arguments);
+    };
 
     module.exports = Stream;
 });
