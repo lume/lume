@@ -3,7 +3,7 @@
 define(function(require, exports, module) {
     var TouchTracker = require('./_TouchTracker');
     var EventHandler = require('../events/EventHandler');
-    var SimpleStream = require('../streams/SimpleStream');
+    var StreamContract = require('../streams/_StreamContract');
     var OptionsManager = require('../core/_OptionsManager');
 
     var MINIMUM_TICK_TIME = 8;
@@ -68,10 +68,9 @@ define(function(require, exports, module) {
     function TouchInput(options) {
         this.options = OptionsManager.setOptions(this, options);
 
-        this._eventOutput = new EventHandler();
-        this._touchTracker = new TouchTracker(this.options);
+        StreamContract.call(this);
 
-        EventHandler.setOutputHandler(this, this._eventOutput);
+        this._touchTracker = new TouchTracker(this.options);
         EventHandler.setInputHandler(this, this._touchTracker);
 
         this._touchTracker.on('trackstart', handleStart.bind(this));
@@ -83,7 +82,7 @@ define(function(require, exports, module) {
         this._value = {};
     }
 
-    TouchInput.prototype = Object.create(SimpleStream.prototype);
+    TouchInput.prototype = Object.create(StreamContract.prototype);
     TouchInput.prototype.constructor = TouchInput;
 
     TouchInput.DEFAULT_OPTIONS = {
@@ -142,7 +141,7 @@ define(function(require, exports, module) {
 
         this._payload[data.touchId] = payload;
 
-        this._eventOutput.emit('start', payload);
+        this.emit('start', payload);
     }
 
     function handleMove(data) {
@@ -214,7 +213,7 @@ define(function(require, exports, module) {
         payload.timestamp = data.timestamp;
         payload.dt = dt;
 
-        this._eventOutput.emit('update', payload);
+        this.emit('update', payload);
     }
 
     function handleEnd(data) {
@@ -225,7 +224,7 @@ define(function(require, exports, module) {
         payload.event = data.event;
         payload.timestamp = data.timestamp;
 
-        this._eventOutput.emit('end', payload);
+        this.emit('end', payload);
         delete this._payload[touchId];
         delete this._value[touchId];
         delete this._cumulate[touchId];

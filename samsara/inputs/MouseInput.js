@@ -3,7 +3,7 @@
 define(function(require, exports, module) {
     var EventHandler = require('../events/EventHandler');
     var OptionsManager = require('../core/_OptionsManager');
-    var SimpleStream = require('../streams/SimpleStream');
+    var StreamContract = require('../streams/_StreamContract');
 
     var MINIMUM_TICK_TIME = 8;
     var _now = Date.now;
@@ -56,7 +56,7 @@ define(function(require, exports, module) {
      *
      * @class MouseInput
      * @constructor
-     * @extend SimpleStream
+     * @extends SimpleStream
      * @uses Core._OptionsManager
      * @param [options] {Object}                Options
      * @param [options.scale=1] {Number}        Scale the response to the mouse
@@ -68,11 +68,10 @@ define(function(require, exports, module) {
     function MouseInput(options) {
         this.options = OptionsManager.setOptions(this, options);
 
-        this._eventInput = new EventHandler();
-        this._eventOutput = new EventHandler();
+        StreamContract.call(this);
 
+        this._eventInput = new EventHandler();
         EventHandler.setInputHandler(this, this._eventInput);
-        EventHandler.setOutputHandler(this, this._eventOutput);
 
         // references for event listeners put on document when
         // mouse is quickly moved off of target DOM element
@@ -102,7 +101,7 @@ define(function(require, exports, module) {
         this._move = false;
     }
 
-    MouseInput.prototype = Object.create(SimpleStream.prototype);
+    MouseInput.prototype = Object.create(StreamContract.prototype);
     MouseInput.prototype.constructor = MouseInput;
 
     MouseInput.DEFAULT_OPTIONS = {
@@ -163,7 +162,7 @@ define(function(require, exports, module) {
         payload.velocity = velocity;
         payload.event = event;
 
-        this._eventOutput.emit('start', payload);
+        this.emit('start', payload);
     }
 
     function handleMove(event){
@@ -235,7 +234,7 @@ define(function(require, exports, module) {
         payload.event = event;
         payload.dt = dt;
 
-        this._eventOutput.emit('update', payload);
+        this.emit('update', payload);
 
         this._prevCoord = [x, y];
         this._prevTime = currTime;
@@ -247,7 +246,7 @@ define(function(require, exports, module) {
 
         this._payload.event = event;
 
-        this._eventOutput.emit('end', this._payload);
+        this.emit('end', this._payload);
 
         this._prevCoord = undefined;
         this._prevTime = undefined;
@@ -274,7 +273,6 @@ define(function(require, exports, module) {
             document.removeEventListener('mousemove', this.boundMove);
             document.removeEventListener('mouseup', this.boundUp);
         }.bind(this, event);
-
 
         this._eventInput.off('mousemove', handleMove.bind(this));
         this._eventInput.off('mouseup', handleEnd.bind(this));
