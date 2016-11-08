@@ -124,7 +124,6 @@ define(function(require, exports, module) {
     EventHandler.prototype.subscribe = function subscribe(source) {
         var index = this.upstream.indexOf(source);
         if (index < 0) {
-            this.trigger('subscribe', null);
             this.upstream.push(source);
             for (var type in this.upstreamListeners) {
                 source.on(type, this.upstreamListeners[type]);
@@ -140,7 +139,7 @@ define(function(require, exports, module) {
      *  If no source is provided, all subscribed sources are unsubscribed from.
      *
      * @method unsubscribe
-     * @param [source] {EventEmitter} Event source
+     * @param [source] {EventEmitter} Event source. If omitted, all sources will be unsubscribed from.
      * @return {Boolean}              True if no source was unsubscribed. False if none found.
      */
     EventHandler.prototype.unsubscribe = function unsubscribe(source) {
@@ -152,7 +151,6 @@ define(function(require, exports, module) {
         else {
             var index = this.upstream.indexOf(source);
             if (index >= 0) {
-                this.trigger('unsubscribe', null);
                 this.upstream.splice(index, 1);
                 for (var type in this.upstreamListeners) {
                     source.off(type, this.upstreamListeners[type]);
