@@ -622,4 +622,184 @@ define(function (require) {
         });
     });
 
+    QUnit.test('unsubscribe interrupt', function(assert){
+        var done = assert.async();
+
+        var t = new Transitionable(0);
+
+        var stream = new Stream();
+        stream.subscribe(t);
+
+        var state = STATE.none;
+
+        stream.on('start', function(value) {
+            console.log('start', value);
+            state = updateState(state, 'start');
+        });
+
+        stream.on('update', function(value) {
+            console.log('update', value);
+            state = updateState(state, 'update');
+        });
+
+        stream.on('end', function(value) {
+            console.log('end', value);
+            state = updateState(state, 'end');
+
+            loop.stop();
+            done();
+        });
+
+        Timer.setTimeout(function(){
+            stream.unsubscribe(t);
+        }, 300);
+
+        t.set(1, {duration : 500});
+    });
+
+    QUnit.test('unsubscribe interrupt 2', function(assert){
+        var done = assert.async();
+
+        var t = new Transitionable(0);
+        var s = new Transitionable(0);
+
+        var stream = Stream.merge([t, s]);
+
+        var state = STATE.none;
+
+        stream.on('start', function(value) {
+            console.log('start', value);
+            state = updateState(state, 'start');
+        });
+
+        stream.on('update', function(value) {
+            console.log('update', value);
+            state = updateState(state, 'update');
+        });
+
+        stream.on('end', function(value) {
+            console.log('end', value);
+            state = updateState(state, 'end');
+
+            loop.stop();
+            done();
+        });
+
+        s.on(['start', 'update', 'end'], function(value){
+            console.log('s update', value)
+        })
+
+        Timer.setTimeout(function(){
+            stream.unsubscribe(t);
+        }, 300);
+
+        s.set(1, {duration : 500});
+        t.set(1, {duration : 400});
+    });
+
+    QUnit.test('subscribe interrupt', function(assert){
+        var done = assert.async();
+
+        var t = new Transitionable(0);
+
+        var stream = new Stream();
+
+        var state = STATE.none;
+
+        stream.on('start', function(value) {
+            console.log('start', value);
+            state = updateState(state, 'start');
+        });
+
+        stream.on('update', function(value) {
+            console.log('update', value);
+            state = updateState(state, 'update');
+        });
+
+        stream.on('end', function(value) {
+            console.log('end', value);
+            state = updateState(state, 'end');
+
+            loop.stop();
+            done();
+        });
+
+        Timer.setTimeout(function(){
+            stream.subscribe(t);
+        }, 200);
+
+        t.set(1, {duration : 500});
+    });
+
+    QUnit.test('subscribe interrupt 2', function(assert){
+        var done = assert.async();
+
+        var t = new Transitionable(0);
+        var s = new Transitionable(0);
+
+        var state = STATE.none;
+
+        s.on(['start', 'update', 'end'], function(value){
+            console.log('s update', value)
+        })
+
+        Timer.setTimeout(function(){
+            var stream = Stream.merge([t, s]);
+
+            stream.on('start', function(value) {
+                console.log('start', value);
+                state = updateState(state, 'start');
+            });
+
+            stream.on('update', function(value) {
+                console.log('update', value);
+                state = updateState(state, 'update');
+            });
+
+            stream.on('end', function(value) {
+                console.log('end', value);
+                state = updateState(state, 'end');
+
+                loop.stop();
+                done();
+            });
+        }, 300);
+
+        s.set(1, {duration : 500});
+        t.set(1, {duration : 400});
+    });
+
+    QUnit.test('unsubscribe on end', function(assert){
+        var done = assert.async();
+
+        var t = new Transitionable(0);
+        var s = new Stream();
+        s.subscribe(t);
+
+        var state = STATE.none;
+
+        s.on('start', function(value){
+            console.log('s start', value);
+            state = updateState(state, 'start');
+        });
+
+        s.on('update', function(value){
+            console.log('s update', value);
+            state = updateState(state, 'update');
+        });
+
+        s.on('end', function(value){
+            console.log('s end', value);
+            state = updateState(state, 'end');
+
+            loop.stop();
+            done();
+        });
+
+        t.set(1, {duration : 400}, function(){
+            console.log('hi!')
+            s.unsubscribe(t);
+        });
+    });
+
 });

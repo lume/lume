@@ -57,21 +57,8 @@ define(function (require) {
             done();
         });
 
-        t.on('start', function(value) {
-            console.log('start', value);
-            state = updateState(state, 'start');
-            assert.equal(value, 0);
-        });
-
-        t.on('update', function(value) {
+        t.on(['start', 'update', 'end'], function(value) {
             assert.ok(false);
-        });
-
-        t.on('end', function(value) {
-            console.log('end', value);
-            state = updateState(state, 'end');
-            assert.equal(value, 0);
-            loop.stop();
         });
     });
 
@@ -104,6 +91,41 @@ define(function (require) {
         });
 
         t.set(1, {duration : 200});
+    });
+
+    QUnit.test('Multiset', function(assert){
+        var done = assert.async();
+
+        var t = new Transitionable(0);
+
+        t.on('set', function(value) {
+            assert.ok(false);
+        });
+
+        t.on('start', function(value) {
+            console.log('start', value);
+            state = updateState(state, 'start');
+            assert.equal(value, 0);
+        });
+
+        t.on('update', function(value) {
+            console.log('update', value);
+            state = updateState(state, 'update');
+            assert.ok(value >= 0 && value <= 2);
+        });
+
+        t.on('end', function(value) {
+            console.log('end', value);
+            state = updateState(state, 'end');
+            assert.equal(value, 2);
+            loop.stop();
+            done();
+        });
+
+        t.set(1, {duration : 250});
+        Timer.setTimeout(function(){
+            t.set(2, {duration : 200});
+        }, 100);
     });
 
     QUnit.test('Interrupt', function(assert){
