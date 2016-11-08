@@ -5,8 +5,9 @@ define(function (require, exports, module) {
     var dirtyQueue = require('./queues/dirtyQueue');
     var tickQueue = require('./queues/tickQueue');
     var EventHandler = require('../events/EventHandler');
-    var SimpleStream = require('../streams/SimpleStream');
+    var StreamContract = require('../streams/_StreamContract');
     var Stream = require('../streams/Stream');
+    var MergedStream = require('../streams/_MergedStream');
 
     var Tween = require('../transitions/_Tween');
     var Spring = require('../transitions/_Spring');
@@ -56,16 +57,15 @@ define(function (require, exports, module) {
      * @param value {Number|Number[]}   Starting value
      */
     function Transitionable(value) {
-        this._callback = undefined;
-        this._method = null;
-        this._active = false;
-        this._currentActive = false;
-        this.updateMethod = undefined;
+        StreamContract.call(this);
 
         this._eventInput = new EventHandler();
-        this._eventOutput = new EventHandler();
         EventHandler.setInputHandler(this, this._eventInput);
-        EventHandler.setOutputHandler(this, this._eventOutput);
+
+        this._callback = undefined;
+        this._method = null;
+        this._currentActive = false;
+        this.updateMethod = undefined;
 
         var hasUpdated = false;
 
@@ -77,9 +77,8 @@ define(function (require, exports, module) {
         this._eventInput.on('start', function (value) {
             hasUpdated = false;
             this._currentActive = true;
-            if (!this._active) {
+            if (!this.isActive()) {
                 this.emit('start', value);
-                this._active = true;
             }
         }.bind(this));
 
@@ -91,6 +90,13 @@ define(function (require, exports, module) {
         this._eventInput.on('end', function (value) {
             this._currentActive = false;
 
+            // remove previous
+            if (this.updateMethod){
+                var index = tickQueue.indexOf(this.updateMethod);
+                if (index >= 0) tickQueue.splice(index, 1);
+            }
+            this.unsubscribe(this._interpolant);
+
             // fire callback before `end` event to ensure overriding of `end` event if new `set` is called
             if (this._callback) {
                 var callback = this._callback;
@@ -100,7 +106,6 @@ define(function (require, exports, module) {
 
             if (!this._currentActive){
                 hasUpdated = false;
-                this._active = false;
                 this.emit('end', value);
             }
         }.bind(this));
@@ -114,7 +119,7 @@ define(function (require, exports, module) {
         }
     }
 
-    Transitionable.prototype = Object.create(SimpleStream.prototype);
+    Transitionable.prototype = Object.create(StreamContract.prototype);
     Transitionable.prototype.constructor = Transitionable;
 
     /**
@@ -155,46 +160,46 @@ define(function (require, exports, module) {
      * @param [callback] {Function}             Callback
      */
     Transitionable.prototype.set = function set(value, transition, callback) {
-        var Method;
+        var Interpolant;
         if (!transition || transition.duration === 0) {
             this._callback = undefined;
             this.value = value;
-            Method = Immediate;
+            Interpolant = Immediate;
         }
         else {
             if (callback) this._callback = callback;
             var curve = transition.curve;
 
-            Method = (curve && transitionMethods[curve])
+            Interpolant = (curve && transitionMethods[curve])
                 ? transitionMethods[curve]
                 : Tween;
         }
 
-        if (this._method !== Method) {
-            // remove previous
-            if (this._interpolant){
-                if (this.updateMethod){
-                    var index = tickQueue.indexOf(this.updateMethod);
-                    if (index >= 0) tickQueue.splice(index, 1);
-                }
-                this.unsubscribe(this._interpolant);
-            }
+        // remove previous
+        if (this.updateMethod){
+            var index = tickQueue.indexOf(this.updateMethod);
+            if (index >= 0) tickQueue.splice(index, 1);
+        }
+        this.unsubscribe(this._interpolant);
 
+        if (this._method !== Interpolant) {
+            // create new
             if (value instanceof Array) {
-                this._interpolant = (value.length < Method.DIMENSIONS)
-                    ? new Method(this.get())
-                    : new NDTransitionable(this.get(), Method);
+                this._interpolant = (value.length < Interpolant.DIMENSIONS)
+                    ? new Interpolant(this.get())
+                    : new NDTransitionable(this.get(), Interpolant);
             }
-            else this._interpolant = new Method(this.get());
+            else this._interpolant = new Interpolant(this.get());
 
-            this.subscribe(this._interpolant);
+            this._method = Interpolant;
+        }
 
-            if (this._interpolant.update){
-                this.updateMethod = this._interpolant.update.bind(this._interpolant);
-                tickQueue.push(this.updateMethod);
-            }
+        // add new
+        this.subscribe(this._interpolant);
 
-            this._method = Method;
+        if (this._interpolant.update){
+            this.updateMethod = this._interpolant.update.bind(this._interpolant);
+            tickQueue.push(this.updateMethod);
         }
 
         this._interpolant.set(value, transition);
@@ -241,7 +246,7 @@ define(function (require, exports, module) {
      * @method halt
      */
     Transitionable.prototype.halt = function () {
-        if (!this._active) return;
+        if (!this.isActive()) return;
         var value = this.get();
         this.reset(value);
         this.trigger('end', value);
@@ -254,16 +259,6 @@ define(function (require, exports, module) {
             }
             this.unsubscribe(this._interpolant);
         }
-    };
-
-    /**
-     * Determine is the transition is ongoing, or has completed.
-     *
-     * @method isActive
-     * @return {Boolean}
-     */
-    Transitionable.prototype.isActive = function isActive() {
-        return this._active;
     };
 
     /**
@@ -323,8 +318,7 @@ define(function (require, exports, module) {
     };
 
     function NDTransitionable(value, Method) {
-        this._eventOutput = new EventHandler();
-        EventHandler.setOutputHandler(this, this._eventOutput);
+        EventHandler.call(this);
 
         this.sources = [];
         for (var i = 0; i < value.length; i++) {
@@ -333,8 +327,11 @@ define(function (require, exports, module) {
         }
 
         this.stream = Stream.merge(this.sources);
-        this._eventOutput.subscribe(this.stream);
+        this.subscribe(this.stream);
     }
+
+    NDTransitionable.prototype = Object.create(EventHandler.prototype);
+    NDTransitionable.prototype.constructor = NDTransitionable;
 
     // N-dimensional extension for arrays when interpolants can't natively support multi-dimensional arrays
     NDTransitionable.prototype.set = function (value, transition) {
