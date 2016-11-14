@@ -5,6 +5,29 @@ import MotorHTMLNode from './node'
 
 var DeclarativeBase
 
+// Override HTMLElement.prototype.attachShadow in v1, and
+// HTMLElement.prototype.createShadowRoot in v0, so that we can make a Map of
+// motor- elements to their shadow roots, so we can always get a reference to
+// the element's shadow root even if it is closed.
+const elementsWithRoots = new Set
+function hijack(original) {
+    return function(...args) {
+        console.log(' --- hijacked!!!!!')
+        let root = null
+        try {
+            root = original.call(this, ...args)
+        }
+        catch (e) { throw e }
+        if (this instanceof DeclarativeBase)
+            elementsWithRoots.add(this)
+        return root
+    }
+}
+if (HTMLElement.prototype.createShadowRoot instanceof Function)
+    HTMLElement.prototype.createShadowRoot = hijack(HTMLElement.prototype.createShadowRoot)
+if (HTMLElement.prototype.attachShadow instanceof Function)
+    HTMLElement.prototype.attachShadow = hijack(HTMLElement.prototype.attachShadow)
+
 // ... Little did I know that the `WebComponent` function I made is
 // considered a form of mixin. ...
 // TODO: follow the mixin pattern as with Node and Scene classes.
