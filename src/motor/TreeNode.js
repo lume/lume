@@ -107,6 +107,14 @@ const TreeNodeMixin = base => {
         }
 
         /**
+         * Shortcut to remove all children.
+         */
+        removeAllChildren() {
+            this.removeChildren(this._children)
+            return this
+        }
+
+        /**
          * @readonly
          * @return {number} How many children this TreeNode has.
          */
