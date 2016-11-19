@@ -14,9 +14,6 @@ if (typeof window.HTMLElement != 'function') {
 // XXX: Maybe we can improve by clearing items after X amount of time?
 const classCache = new Map
 
-const stylesheets = new WeakMap
-const instanceCountByConstructor = new WeakMap
-
 function hasHTMLElementPrototype(constructor) {
     if (!constructor) return false
     if (constructor === HTMLElement) return true
@@ -114,24 +111,14 @@ function WebComponentMixin(elementClass) {
         }
         attachedCallback() { this.connectedCallback() } // back-compat
 
-        _createStylesheet() {
+        _createStyles() {
+            // TODO: Create styles inside of an animation frame?
 
-            if (!instanceCountByConstructor.get(this.constructor))
-                instanceCountByConstructor.set(this.constructor, 0)
+            // XXX This creates a new rule per instance. Would it be better to
+            // create a single rule per class instead?
+            const rule = jss.createRule(this.getStyles())
 
-            instanceCountByConstructor.set(this.constructor,
-                instanceCountByConstructor.get(this.constructor) + 1)
-
-            if (instanceCountByConstructor.get(this.constructor) === 1) {
-
-                // XXX create stylesheet inside animation frame?
-                stylesheets.set(this.constructor,
-                    jss.createStyleSheet({ MotorHTMLStyle: this.getStyles() }).attach())
-            }
-        }
-
-        get stylesheet() {
-            return stylesheets.get(this.constructor)
+            rule.applyTo(this)
         }
 
         async disconnectedCallback() {
@@ -147,9 +134,8 @@ function WebComponentMixin(elementClass) {
             // both get called, and in which case we don't necessarily want to
             // clean up. If the element gets re-attached before the next tick
             // (for example, gets moved), then we want to preserve the
-            // associated stylesheet and other stuff that would be cleaned up
-            // by an extending class' _cleanUp method by not running the
-            // following this.deinit() call.
+            // stuff that would be cleaned up by an extending class' deinit
+            // method by not running the following this.deinit() call.
             await Promise.resolve() // deferr to the next tick.
 
             // As mentioned in the previous comment, if the element was not
@@ -164,23 +150,14 @@ function WebComponentMixin(elementClass) {
         }
         detachedCallback() { this.disconnectedCallback() } // back-compat
 
-        _destroyStylesheet() {
-            instanceCountByConstructor.set(this.constructor,
-                instanceCountByConstructor.get(this.constructor) - 1)
-
-            if (instanceCountByConstructor.get(this.constructor) === 0) {
-                stylesheets.get(this.constructor).detach()
-                stylesheets.delete(this.constructor)
-                instanceCountByConstructor.delete(this.constructor)
-            }
-        }
-
         /**
-         * This method should be implemented by extending classes.
+         * This method can be overridden by extending classes, it should return
+         * JSS-compatible styling. See http://github.com/cssinjs/jss for
+         * documentation.
          * @abstract
          */
         getStyles() {
-            throw new Error('Your component must define a getStyles method, which returns the JSS-compatible JSON-formatted styling of your component.')
+            return {}
         }
 
 
@@ -195,10 +172,7 @@ function WebComponentMixin(elementClass) {
          * Subclasses should extend this to add such logic.
          */
         init() {
-            this._createStylesheet()
-
-            // TODO: Find a better pattern for style rule naming.
-            this.classList.add(this.stylesheet.classes['MotorHTMLStyle'])
+            this._createStyles()
 
             // Handle any nodes that may have been connected before `this` node
             // was created (f.e. child nodes that were connected before the
@@ -257,12 +231,8 @@ function WebComponentMixin(elementClass) {
          * can be used directly instead.
          */
         deinit() {
-            // TODO: Find a better pattern for style rule naming.
-            this.classList.remove(this.stylesheet.classes['MotorHTMLStyle'])
-
-            // XXX: We can clean up the style after some time, for example like 1
-            // minute, or something, instead of instantly.
-            this._destroyStylesheet()
+            // Nothing much at the moment, but extending classes can extend
+            // this to add deintialization logic.
 
             this._initialized = false
         }
