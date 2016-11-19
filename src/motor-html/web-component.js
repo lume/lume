@@ -1,5 +1,6 @@
 /* global customElements */
 
+import { observeChildren } from '../motor/Utility'
 import jss from '../jss'
 
 // Very very stupid hack needed for Safari in order for us to be able to extend
@@ -190,22 +191,7 @@ function WebComponentMixin(elementClass) {
                 }, 5)
             }
 
-            // TODO issue #40
-            // Observe nodes in the future.
-            // This one doesn't need a timeout since the observation is already
-            // async.
-            const observer = new MutationObserver(changes => {
-                for (let change of changes) {
-                    if (change.type != 'childList') continue
-
-                    for (let node of change.addedNodes)
-                        this.childConnectedCallback(node)
-
-                    for (let node of change.removedNodes)
-                        this.childDisconnectedCallback(node)
-                }
-            })
-            observer.observe(this, { childList: true })
+            observeChildren(this, this.childConnectedCallback, this.childDisconnectedCallback)
 
             // fire this.attributeChangedCallback in case some attributes have
             // existed before the custom element was upgraded.

@@ -61,6 +61,27 @@ function makeAccessorsEnumerable(object) {
     }
 }
 
+function observeChildren(ctx, onConnect, onDisconnect) {
+
+    // TODO issue #40
+    // Observe nodes in the future.
+    // This one doesn't need a timeout since the observation is already
+    // async.
+    const observer = new MutationObserver(changes => {
+        for (let change of changes) {
+            if (change.type != 'childList') continue
+
+            for (let node of change.addedNodes)
+                onConnect.call(ctx, node)
+
+            for (let node of change.removedNodes)
+                onDisconnect.call(ctx, node)
+        }
+    })
+    observer.observe(ctx, { childList: true })
+    return observer
+}
+
 export {
   epsilon,
   applyCSSLabel,
@@ -68,4 +89,5 @@ export {
   animationFrame,
   makeLowercaseSetterAliases,
   makeAccessorsEnumerable,
+  observeChildren,
 }
