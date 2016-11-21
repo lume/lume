@@ -10,7 +10,6 @@ var DeclarativeBase
 // HTMLElement.prototype.createShadowRoot in v0, so that we can make a Map of
 // motor- elements to their shadow roots, so we can always get a reference to
 // the element's shadow root even if it is closed.
-const elementsWithRoots = new Set
 const observers = new WeakMap
 function hijack(original) {
     return function(...args) {
@@ -25,12 +24,18 @@ function hijack(original) {
         }
         catch (e) { throw e }
         if (this instanceof DeclarativeBase) {
+            this.hasShadowRoot = true
             if (oldRoot) {
                 onV0ShadowRootReplaced.call(this, oldRoot)
             }
-            elementsWithRoots.add(this)
             const observer = observeChildren(root, shadowRootChildAdded.bind(this), shadowRootChildRemoved.bind(this))
             observers.set(root, observer)
+
+            for (const child of this.children) {
+                if (child instanceof DeclarativeBase) {
+                    child.isPossiblyDistributed = true
+                }
+            }
         }
         return root
     }
@@ -84,6 +89,16 @@ export function initMotorHTMLBase() {
             super.createdCallback()
 
             this.imperativeCounterpart = null // to hold the imperative API Node instance.
+
+            // true if this node has a shadow root (even if it is "closed", see
+            // hijack function above). Once true always true because shadow
+            // roots cannot be removed.
+            this.hasShadowRoot = false
+
+            // True when this node has a parent that has a shadow root. When
+            // using the HTML API, Imperative API can look at this to determine
+            // whether to render this node or not, in the case of WebGL.
+            this.isPossiblyDistributed = false
 
             // XXX: "this.ready" seems to be more intuitive on the HTML side than
             // "this.mountPromise" because if the user has a reference to a
@@ -161,6 +176,7 @@ export function initMotorHTMLBase() {
         childConnectedCallback(child) {
             // mirror the DOM connections in the imperative API's virtual scene graph.
             if (child instanceof MotorHTMLNode) {
+                if (this.hasShadowRoot) child.isPossiblyDistributed = true
                 this.imperativeCounterpart.addChild(child.imperativeCounterpart)
             }
             else if (typeof HTMLSlotElement != 'undefined' && child instanceof HTMLSlotElement) {
@@ -174,6 +190,7 @@ export function initMotorHTMLBase() {
         childDisconnectedCallback(child) {
             // mirror the connection in the imperative API's virtual scene graph.
             if (child instanceof MotorHTMLNode) {
+                child.isPossiblyDistributed = false
                 this.imperativeCounterpart.removeChild(child.imperativeCounterpart)
             }
             else if (typeof HTMLSlotElement != 'undefined' && child instanceof HTMLSlotElement) {
