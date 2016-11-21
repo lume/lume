@@ -15,10 +15,10 @@ if (typeof window.HTMLElement != 'function') {
 // XXX: Maybe we can improve by clearing items after X amount of time?
 const classCache = new Map
 
-function hasHTMLElementPrototype(constructor) {
+function classExtendsHTMLElement(constructor) {
     if (!constructor) return false
     if (constructor === HTMLElement) return true
-    else return hasHTMLElementPrototype(constructor.prototype)
+    else return classExtendsHTMLElement(constructor.prototype.__proto__ ? constructor.prototype.__proto__.constructor : null)
 }
 
 /**
@@ -37,7 +37,7 @@ export default
 function WebComponentMixin(elementClass) {
     if (!elementClass) elementClass = HTMLElement
 
-    if (!hasHTMLElementPrototype(elementClass)) {
+    if (!classExtendsHTMLElement(elementClass)) {
         throw new TypeError(
             'The argument to WebComponentMixin must be a constructor that extends from or is HTMLElement.'
         )
