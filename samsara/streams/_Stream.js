@@ -56,12 +56,42 @@ define(function(require, exports, module){
      * @param [options.end] {Function}      Custom logic to map the `end` event
      * @constructor
      */
-    function Stream(options){
+    function Stream(triggers){
         StreamContract.call(this);
+
+        this._triggers = triggers || {};
 
         this._eventInput = new EventHandler();
 
-        options = options || {};
+        createResolveStrategy.call(this, this._triggers);
+    }
+
+    function createSimpleStrategy(triggers){
+        this._eventInput.off();
+
+        this._eventInput.on(EVENTS.SET, function(data){
+            if (triggers.set) data = triggers.set(data);
+            this.emit(EVENTS.SET, data);
+        }.bind(this));
+
+        this._eventInput.on(EVENTS.START, function(data){
+            if (triggers.start) data = triggers.start(data);
+            this.emit(EVENTS.START, data);
+        }.bind(this));
+
+        this._eventInput.on(EVENTS.UPDATE, function(data){
+            if (triggers.update) data = triggers.update(data);
+            this.emit(EVENTS.UPDATE, data);
+        }.bind(this));
+
+        this._eventInput.on(EVENTS.END, function(data){
+            if (triggers.end) data = triggers.end(data);
+            this.emit(EVENTS.END, data);
+        }.bind(this));
+    }
+
+    function createResolveStrategy(triggers){
+        this._eventInput.off();
 
         var startCounter = 0;
         var delayQueue = 0;
@@ -157,20 +187,20 @@ define(function(require, exports, module){
         }
 
         this._eventInput.on(EVENTS.SET, function(data){
-            if (options.set) data = options.set(data);
+            if (triggers.set) data = this._triggers.set(data);
             states.set = true;
             delay.call(this, data);
         }.bind(this));
 
         this._eventInput.on(EVENTS.START, function(data){
-            if (options.start) data = options.start(data);
+            if (triggers.start) data = triggers.start(data);
             states.start = true;
             startCounter++;
             delay.call(this, data);
         }.bind(this));
 
         this._eventInput.on(EVENTS.END, function(data){
-            if (options.end) data = options.end(data);
+            if (triggers.end) data = triggers.end(data);
             states.end = true;
             startCounter--;
             if (startCounter < 0) console.log('fuck');
@@ -178,7 +208,7 @@ define(function(require, exports, module){
         }.bind(this));
 
         this._eventInput.on(EVENTS.UPDATE, function(data){
-            if (options.update) data = options.update(data);
+            if (triggers.update) data = triggers.update(data);
             states.update = true;
             delay.call(this, data);
         }.bind(this));
