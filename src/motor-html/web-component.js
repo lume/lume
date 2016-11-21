@@ -96,6 +96,7 @@ function WebComponentMixin(elementClass) {
         createdCallback() {
             this._attached = false
             this._initialized = false
+            this._childObserver = null
         }
 
         // Subclasses can implement these.
@@ -179,19 +180,21 @@ function WebComponentMixin(elementClass) {
             // was created (f.e. child nodes that were connected before the
             // custom elements were registered and which would therefore not be
             // detected by the following MutationObserver).
-            if (this.childNodes.length) {
+            if (!this._childObserver) {
+                if (this.childNodes.length) {
+                    // Timeout needed in case the Custom Element classes are
+                    // registered after the elements are already defined in the
+                    // DOM but not yet upgraded. TODO: describe this better,
+                    // not clear why it's needed.
+                    setTimeout(() => {
+                        for (let node of this.childNodes) {
+                            this.childConnectedCallback(node)
+                        }
+                    }, 5)
+                }
 
-                // Timeout needed in case the Custom Elements classes are
-                // registered after the elements are already defined in the DOM
-                // but not yet upgraded.
-                setTimeout(() => {
-                    for (let node of this.childNodes) {
-                        this.childConnectedCallback(node)
-                    }
-                }, 5)
+                this._childObserver = observeChildren(this, this.childConnectedCallback, this.childDisconnectedCallback)
             }
-
-            observeChildren(this, this.childConnectedCallback, this.childDisconnectedCallback)
 
             // fire this.attributeChangedCallback in case some attributes have
             // existed before the custom element was upgraded.
