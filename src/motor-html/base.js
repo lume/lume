@@ -2,6 +2,7 @@
 
 import WebComponent from './web-component'
 import MotorHTMLNode from './node'
+import { observeChildren } from '../motor/Utility'
 
 var DeclarativeBase
 
@@ -10,17 +11,59 @@ var DeclarativeBase
 // motor- elements to their shadow roots, so we can always get a reference to
 // the element's shadow root even if it is closed.
 const elementsWithRoots = new Set
+const observers = new WeakMap
 function hijack(original) {
     return function(...args) {
-        console.log(' --- hijacked!!!!!')
+        // In v0, shadow roots can be replaced, but in v1 calling attachShadow
+        // on an element that already has a root throws. So, we can set this to
+        // true, and if the try-catch passes then we know we have a v0 root and
+        // that the root was just replaced.
+        const oldRoot = this.shadowRoot
         let root = null
         try {
             root = original.call(this, ...args)
         }
         catch (e) { throw e }
-        if (this instanceof DeclarativeBase)
+        if (this instanceof DeclarativeBase) {
+            if (oldRoot) {
+                onV0ShadowRootReplaced.call(this, oldRoot)
+            }
             elementsWithRoots.add(this)
+            const observer = observeChildren(root, shadowRootChildAdded.bind(this), shadowRootChildRemoved.bind(this))
+            observers.set(root, observer)
+        }
         return root
+    }
+}
+function shadowRootChildAdded(child) {
+    if (!(child instanceof DeclarativeBase)) return
+    this.imperativeCounterpart.addChild(child.imperativeCounterpart)
+    console.log('added:', child)
+    console.log(this.shadowRoot.children)
+}
+function shadowRootChildRemoved(child) {
+    if (!(child instanceof DeclarativeBase)) return
+    this.imperativeCounterpart.removeChild(child.imperativeCounterpart)
+    console.log('removed:', child)
+    console.log(this.shadowRoot.children)
+}
+function onV0ShadowRootReplaced(oldRoot) {
+    observers.get(oldRoot).disconnect()
+    observers.delete(oldRoot)
+    let i = 0
+    for (let child of oldRoot.childNodes) {
+        if (child instanceof DeclarativeBase) {
+            // We should disconnect the imperative connection (f.e. so it is
+            // not rendered in WebGL)...
+            this.imperativeCounterpart.removeChild(child.imperativeCounterpart)
+            // ...but we should place the element back where it was so there's
+            // no surprises to the HTML-API user who might go looking for the
+            // element. Due to the fact that the observer on the oldRoot was
+            // removed, adding the element back to the oldRoot won't cause it
+            // to be reconnected on the imperative side.
+            oldRoot.insertBefore(child, oldRoot.childNodes[i])
+        }
+        i += 1
     }
 }
 if (HTMLElement.prototype.createShadowRoot instanceof Function)
@@ -60,7 +103,7 @@ export function initMotorHTMLBase() {
         // called by WebComponent#connectedCallback()
         init() {
 
-            // call this._associateImperativeNode() before super.init() because
+            // XXX: we call this._associateImperativeNode() before super.init() because
             // super.init() may call this.childConnectedCallback() which depends
             // on the imperative counterpart existing.
             this._associateImperativeNode()

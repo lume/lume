@@ -218,9 +218,13 @@ export function initImperativeBase() {
                 // child should watch the parent for size changes.
                 this.on('sizechange', childNode._onParentSizeChange)
 
+                // If child Node's HTML element isn't mounted.. mount it.
                 // TODO move to DOMRenderer
                 // TODO delegate to animation frame?
-                this._appendChildElement(childNode)
+                if (!childNode._mounted && childNode._parent) {
+                    this._appendChildElement(childNode)
+                    childNode._mounted = true;
+                }
 
                 return this
             }
@@ -239,26 +243,40 @@ export function initImperativeBase() {
             }
 
             _appendChildElement(childNode) {
-                // If Node's HTML element isn't mounted.. mount it.
-                // TODO move to DOMRenderer
-                if (! childNode._mounted) {
-                    if (childNode._parent) {
 
-                        // TODO: camera
-                        // Mount to parent if parent is a Node
-                        // if (childNode._parent instanceof Node) {
-                            if (childNode._el.element.parentNode !== childNode._parent._el.element) {
-                                childNode._parent._el.element.appendChild(childNode._el.element);
-                            }
-                            childNode._mounted = true;
+                // TODO: camera
+                // Mount to parent if parent is a Node
+                // if (childNode._parent instanceof Node) {
 
-                        // Mount to camera if top level Node
-                        // } else {
-                        //   //scene.camera.element.appendChild(childNode._el);
-                        //   childNode._mounted = true;
-                        // }
+                    if (
+
+                        // When using the imperative API, this statement is
+                        // true, so the DOM elements need to be connected.
+                        !childNode._el.element.parentNode
+
+                        // This condition is irrelevant when strictly using the
+                        // imperative API. However, it is possible that when
+                        // usingthe HTML API that the HTML-API node can be placed
+                        // somewhere that isn't another HTML-API node, and the
+                        // imperative Node can be gotten and used to add the
+                        // node to another imperative Node. In this case, the
+                        // HTML-API node will be added to the proper HTMLparent.
+                        || (childNode._el.element.parentElement && childNode._el.element.parentElement !== childNode._parent._el.element)
+
+                        // When an HTML-API node is already child of the
+                        // relevant parent, or it is child of a shadow root of
+                        // the relevant parent, there there's nothing to do,
+                        // everything is already as expected, so the following
+                        // conditional body is skipped.
+                    ) {
+                        childNode._parent._el.element.appendChild(childNode._el.element);
                     }
-                }
+
+                // Mount to camera if top level Node
+                // } else {
+                //   //scene.camera.element.appendChild(childNode._el);
+                //   childNode._mounted = true;
+                // }
             }
 
             removeChild(childNode) {
