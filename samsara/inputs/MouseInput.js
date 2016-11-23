@@ -75,11 +75,10 @@ define(function(require, exports, module) {
 
         // references for event listeners put on document when
         // mouse is quickly moved off of target DOM element
-        this.boundMove = null;
+        this.boundMove = handleMove.bind(this);;
         this.boundUp = null;
 
         this._eventInput.on('mousedown',    handleStart.bind(this));
-        this._eventInput.on('mousemove',    handleMove.bind(this));
         this._eventInput.on('mouseup',      handleEnd.bind(this));
         this._eventInput.on('mouseenter',   handleEnter.bind(this));
         this._eventInput.on('mouseleave',   handleLeave.bind(this));
@@ -98,7 +97,6 @@ define(function(require, exports, module) {
         this._prevCoord = undefined;
         this._prevTime = undefined;
         this._down = false;
-        this._move = false;
     }
 
     MouseInput.prototype = Object.create(StreamContract.prototype);
@@ -124,6 +122,8 @@ define(function(require, exports, module) {
     };
 
     function handleStart(event) {
+        this._eventInput.on('mousemove', this.boundMove);
+
         var delta;
         var velocity;
 
@@ -135,7 +135,6 @@ define(function(require, exports, module) {
         this._prevCoord = [x, y];
         this._prevTime = _now();
         this._down = true;
-        this._move = false;
 
         var payload = this._payload;
 
@@ -166,8 +165,6 @@ define(function(require, exports, module) {
     }
 
     function handleMove(event){
-        if (!this._down) return false;
-
         var direction = this.options.direction;
         var scale = this.options.scale;
 
@@ -238,11 +235,10 @@ define(function(require, exports, module) {
 
         this._prevCoord = [x, y];
         this._prevTime = currTime;
-        this._move = true;
     }
 
     function handleEnd(event) {
-        if (!this._down) return false;
+        this._eventInput.off('mousemove');
 
         this._payload.event = event;
 
@@ -251,14 +247,13 @@ define(function(require, exports, module) {
         this._prevCoord = undefined;
         this._prevTime = undefined;
         this._down = false;
-        this._move = false;
     }
 
     function handleEnter(event){
         if (!this._down) return false;
 
-        this._eventInput.off('mousemove', handleMove.bind(this));
-        this._eventInput.off('mouseup', handleEnd.bind(this));
+        this._eventInput.off('mousemove');
+        this._eventInput.off('mouseup');
 
         document.removeEventListener('mousemove', this.boundMove);
         document.removeEventListener('mouseup', this.boundUp);
@@ -267,15 +262,14 @@ define(function(require, exports, module) {
     function handleLeave(event) {
         if (!this._down) return false;
 
-        this.boundMove = handleMove.bind(this);
         this.boundUp = function(event) {
             handleEnd.call(this, event);
             document.removeEventListener('mousemove', this.boundMove);
             document.removeEventListener('mouseup', this.boundUp);
         }.bind(this, event);
 
-        this._eventInput.off('mousemove', handleMove.bind(this));
-        this._eventInput.off('mouseup', handleEnd.bind(this));
+        this._eventInput.off('mousemove');
+        this._eventInput.off('mouseup');
 
         document.addEventListener('mousemove', this.boundMove);
         document.addEventListener('mouseup', this.boundUp);
