@@ -119,8 +119,8 @@ define(function(require, exports, module) {
      * Listen for events from an an upstream source.
      *
      * @method subscribe
-     * @param source {EventEmitter} Event source
-     * @return {Boolean}            True if source was not already subscribed. False otherwise.
+     * @param source {EventEmitter}         Event source
+     * @return {EventHandler|Boolean}       Returns passed in argument for chaining. False if already subscribed.
      */
     EventHandler.prototype.subscribe = function subscribe(source) {
         var index = this.upstream.indexOf(source);
@@ -129,7 +129,7 @@ define(function(require, exports, module) {
             for (var type in this.upstreamListeners) {
                 source.on(type, this.upstreamListeners[type]);
             }
-            return true;
+            return source;
         }
         return false;
     };
