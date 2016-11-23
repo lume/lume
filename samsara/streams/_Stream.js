@@ -10,7 +10,9 @@ define(function(require, exports, module){
         START : 'start',
         UPDATE : 'update',
         END : 'end',
-        SET : 'set'
+        SET : 'set',
+        LOCK : 'lockBelow',
+        UNLOCK : 'unlockBelow'
     };
 
     /**
@@ -66,6 +68,20 @@ define(function(require, exports, module){
 
         this._eventInput = new EventHandler();
 
+        this.filter = new EventFilter(function(type, value){
+            return !(
+                type === EVENTS.SET    ||
+                type === EVENTS.START  ||
+                type === EVENTS.UPDATE ||
+                type === EVENTS.END    ||
+                type === EVENTS.LOCK   ||
+                type === EVENTS.UNLOCK
+            );
+        });
+
+        this.filter.subscribe(this._eventInput);
+        this._eventOutput.subscribe(this.filter);
+
         createSimpleStrategy.call(this, this._triggers);
     }
 
@@ -74,18 +90,6 @@ define(function(require, exports, module){
 
     function createSimpleStrategy(triggers){
         this._eventInput.off();
-
-        var filter = new EventFilter(function(type, value){
-            return !(
-                type === EVENTS.SET    ||
-                type === EVENTS.START  ||
-                type === EVENTS.UPDATE ||
-                type === EVENTS.END
-            );
-        });
-
-        filter.subscribe(this._eventInput);
-        this._eventOutput.subscribe(filter);
 
         this._eventInput.on(EVENTS.SET, function(data){
             if (triggers.set) data = triggers.set(data);
