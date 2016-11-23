@@ -8,6 +8,7 @@ define(function(require, exports, module) {
     var tickQueue = require('./queues/tickQueue');
     var Transform = require('./Transform');
     var Timer = require('./Timer');
+    var tick = require('./tick');
 
     var rafId = Number.NaN;
     var isMobile = /mobi/i.test(window.navigator.userAgent);
@@ -58,6 +59,8 @@ define(function(require, exports, module) {
         while (preTickQueue.length) (preTickQueue.shift())();
 
         for (var i = 0; i < tickQueue.length; i++) tickQueue[i]();
+
+        tick.emit('tick');
 
         // post tick is for resolving larger components from their incoming signals
         while (postTickQueue.length) (postTickQueue.shift())();

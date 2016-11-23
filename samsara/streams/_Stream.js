@@ -1,6 +1,7 @@
 /* Copyright © 2015-2016 David Valdman */
 
 define(function(require, exports, module){
+    var tick = require('../core/tick');
     var EventHandler = require('../events/EventHandler');
     var EventFilter = require('../events/EventFilter');
     var StreamContract = require('../streams/_StreamContract');
@@ -82,6 +83,7 @@ define(function(require, exports, module){
         this.filter.subscribe(this._eventInput);
         this._eventOutput.subscribe(this.filter);
 
+        // createResolveStrategy.call(this, this._triggers);
         createSimpleStrategy.call(this, this._triggers);
     }
 
@@ -91,36 +93,41 @@ define(function(require, exports, module){
     function createSimpleStrategy(triggers){
         this._eventInput.off();
 
-        this._eventInput.on(EVENTS.SET, function(data){
-            if (triggers.set) data = triggers.set(data);
-            this.emit(EVENTS.SET, data);
-        }.bind(this));
+        if (triggers){
+            this._eventInput.on(EVENTS.SET, function(data){
+                if (triggers.set) data = triggers.set(data);
+                this.emit(EVENTS.SET, data);
+            }.bind(this));
 
-        this._eventInput.on(EVENTS.START, function(data){
-            if (triggers.start) data = triggers.start(data);
-            this.emit(EVENTS.START, data);
-        }.bind(this));
+            this._eventInput.on(EVENTS.START, function(data){
+                if (triggers.start) data = triggers.start(data);
+                this.emit(EVENTS.START, data);
+            }.bind(this));
 
-        this._eventInput.on(EVENTS.UPDATE, function(data){
-            if (triggers.update) data = triggers.update(data);
-            this.emit(EVENTS.UPDATE, data);
-        }.bind(this));
+            this._eventInput.on(EVENTS.UPDATE, function(data){
+                if (triggers.update) data = triggers.update(data);
+                this.emit(EVENTS.UPDATE, data);
+            }.bind(this));
 
-        this._eventInput.on(EVENTS.END, function(data){
-            if (triggers.end) data = triggers.end(data);
-            this.emit(EVENTS.END, data);
-        }.bind(this));
+            this._eventInput.on(EVENTS.END, function(data){
+                if (triggers.end) data = triggers.end(data);
+                this.emit(EVENTS.END, data);
+            }.bind(this));
+        }
+        else this._eventOutput.subscribe(this._eventInput);
     }
 
     function createResolveStrategy(triggers){
         this._eventInput.off();
 
+        var hasTicked = false;
         var startCounter = 0;
-        var delayQueue = 0;
 
+        var hasSentLock = false;
+        var hasReceived = false;
         var locked = false;
-        var lockedAbove = false;
         var lockCounter = 0;
+        var self = this;
 
         var states = {
             set: false,
@@ -131,20 +138,15 @@ define(function(require, exports, module){
         };
 
         function resolve(data){
-            if (states.prev === EVENTS.START && states.set){
-                // console.log('BUG!', states);
+            hasTicked = false;
+            hasReceived = false;
 
-                // this.emit(EVENTS.UPDATE, data);
-                // states.prev = EVENTS.UPDATE;
-
-                // states.start = false;
-                // states.update = false;
-                // states.end = false;
-                // states.set = false;
-
-                // return;
-                // debugger
+            if (hasSentLock){
+                self.emit('unlockBelow');
+                hasSentLock = false;
             }
+
+            if (states.prev === EVENTS.START && states.set){}
 
             if (startCounter === 0 && states.update && states.end){
                 // update and end called in the same tick when tick should end
@@ -188,62 +190,63 @@ define(function(require, exports, module){
             states.set = false;
         }
 
-        var self = this;
+        var cache;
         function delay(data){
-            if (!locked) {
-                locked = true;
+            cache = data;
+            hasReceived = true;
+
+            if (!hasSentLock) {
                 this.emit('lockBelow');
+                hasSentLock = true;
             }
 
-            delayQueue++;
-            preTickQueue.push(function(){
-                delayQueue--;
-                if (delayQueue === 0){
-                    locked = false;
-                    if (!lockedAbove){
-                        self.emit('unlockBelow');
-                        resolve.call(self, data);
-                    }
-                }
-            });
+            if (!locked && hasTicked){
+                resolve.call(self, data);
+            }
         }
 
+        tick.on('tick', function(){
+            hasTicked = true;
+            if (!locked && hasReceived) {
+                resolve.call(self, cache);
+            }
+        });
+
         this._eventInput.on(EVENTS.SET, function(data){
-            if (triggers.set) data = this._triggers.set(data);
+            if (triggers.set) data = triggers.set(data);
             states.set = true;
-            delay.call(this, data);
-        }.bind(this));
+            delay.call(self, data);
+        });
 
         this._eventInput.on(EVENTS.START, function(data){
             if (triggers.start) data = triggers.start(data);
             states.start = true;
             startCounter++;
-            delay.call(this, data);
-        }.bind(this));
+            delay.call(self, data);
+        });
 
         this._eventInput.on(EVENTS.END, function(data){
             if (triggers.end) data = triggers.end(data);
             states.end = true;
             startCounter--;
-            if (startCounter < 0) console.log('fuck');
-            delay.call(this, data);
-        }.bind(this));
+            delay.call(self, data);
+        });
 
         this._eventInput.on(EVENTS.UPDATE, function(data){
             if (triggers.update) data = triggers.update(data);
             states.update = true;
-            delay.call(this, data);
-        }.bind(this));
+            delay.call(self, data);
+        });
 
         this._eventInput.on('lockBelow', function(){
             lockCounter++;
-            lockedAbove = true;
+            locked = true;
         });
 
         this._eventInput.on('unlockBelow', function(){
             lockCounter--;
             if (lockCounter === 0){
-                lockedAbove = false;
+                locked = false;
             }
         });
     }

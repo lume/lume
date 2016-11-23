@@ -3,6 +3,7 @@ define(function(require, exports, module){
     var Stream = require('./Stream');
     var SimpleStream = require('./SimpleStream');
     var Observable = require('./Observable');
+    var StreamContract = require('./_StreamContract');
     var EventHandler = require('../events/EventHandler');
     var preTickQueue = require('../core/queues/preTickQueue');
 
@@ -13,14 +14,55 @@ define(function(require, exports, module){
         if (extras) sources = sources.concat(extras);
 
         this._output = Stream.lift(reducer, sources);
-
-        // this.output = new SimpleStream();
-
-        this.stream = stream;
-
-        EventHandler.setInputHandler(this, this._input);
+        StreamContract.call(this, this._output);
+        this.stream = this._output;
         EventHandler.setOutputHandler(this, this._output);
+
+        // this._input = new SimpleStream();
+
+        // var sources = [this._input, stream];
+        // if (extras) sources = sources.concat(extras);
+
+        // this._output = Stream.lift(reducer, sources);
+
+        // this.stream = stream;
+
+        // EventHandler.setInputHandler(this, this._input);
+        // EventHandler.setOutputHandler(this, this._output);
+
+        // this._input.on('subscribe', function(){
+        //     if (this._output._isActive)
+        //         this._output.emit('start', this._output.get());
+        // }.bind(this));
+
+        // this._input.on('unsubscribe', function(){
+        //     if (this._output._isActive)
+        //         this._output.emit('end', this._output.get());
+        // }.bind(this));
     }
+
+    ReduceNode.prototype = Object.create(StreamContract.prototype);
+    ReduceNode.prototype.constructor = ReduceNode;
+
+    ReduceNode.prototype.subscribe = function(source){
+        if (source._isActive) this.trigger('start', source.get());
+        return EventHandler.prototype.subscribe.apply(this._input, arguments);
+    };
+
+    ReduceNode.prototype.unsubscribe = function(source){
+        if (!source){
+            for (var i = 0; i < this._input.upstream.length; i++){
+                var source = this._input.upstream[i]
+                this.unsubscribe(source)
+            }
+        }
+        else if (source._isActive) this.trigger('end', source.get());
+        return EventHandler.prototype.unsubscribe.apply(this._input, arguments);
+    };
+
+    ReduceNode.prototype.trigger = function(type, handler){
+        EventHandler.prototype.trigger.apply(this._input, arguments);
+    };
 
     ReduceNode.prototype.setMap = function(map){
         this._output.setMap(map);
@@ -55,26 +97,11 @@ define(function(require, exports, module){
 
         this.pivotOutput = new SimpleStream();
         this.pivotOutput.subscribe(this.offset);
-
-        this.headOutput.on('set', function(data){
-            console.log('head set', data);
-        })
-
-        this.headOutput.on('start', function(data){
-            console.log('head start', data);
-        })
-
-        this.headOutput.on('update', function(data){
-            console.log('head update', data);
-        })
-
-        this.headOutput.on('end', function(data){
-            console.log('head end', data);
-        })
     }
 
     function fireOffset(){
         if (this.offset instanceof Observable){
+            // this.offset.emit('set', this.offset.get());
             this.offset.set(this.offset.get());
         }
         else {
@@ -88,18 +115,6 @@ define(function(require, exports, module){
     LinkedList.prototype.push = function(stream){
         var node = new ReduceNode(this.reducer, stream, this.extras);
         // node.output.subscribe(node._input);
-
-        // node.on('start', function(){
-        //     console.log('node start')
-        // })
-
-        // node.on('update', function(){
-        //     console.log('node update')
-        // })
-
-        // node.on('end', function(){
-        //     console.log('node end')
-        // })
 
         if (this.next.length === 0){
             node.subscribe(this.offset);
@@ -143,6 +158,7 @@ define(function(require, exports, module){
 
         var node = this.next.pop();
         var prev = (this.next.length === 0) ? this.offset : this.next[this.next.length - 1];
+
         node.unsubscribe(prev);
         setHeadOutput.call(this, prev);
 
