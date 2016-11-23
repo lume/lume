@@ -2,6 +2,7 @@
 
 define(function(require, exports, module){
     var EventHandler = require('../events/EventHandler');
+    var EventFilter = require('../events/EventFilter');
     var StreamContract = require('../streams/_StreamContract');
     var preTickQueue = require('../core/queues/preTickQueue');
 
@@ -51,6 +52,7 @@ define(function(require, exports, module){
      * @extends Streams.SimpleStream
      * @namespace Streams
      * @param [options] {Object}            Options
+     * @param [options.set] {Function}      Custom logic to map the `set` event
      * @param [options.start] {Function}    Custom logic to map the `start` event
      * @param [options.update] {Function}   Custom logic to map the `update` event
      * @param [options.end] {Function}      Custom logic to map the `end` event
@@ -60,14 +62,30 @@ define(function(require, exports, module){
         StreamContract.call(this);
 
         this._triggers = triggers || {};
+        this._numSources = 0;
 
         this._eventInput = new EventHandler();
 
-        createResolveStrategy.call(this, this._triggers);
+        createSimpleStrategy.call(this, this._triggers);
     }
+
+    Stream.prototype = Object.create(StreamContract.prototype);
+    Stream.prototype.constructor = Stream;
 
     function createSimpleStrategy(triggers){
         this._eventInput.off();
+
+        var filter = new EventFilter(function(type, value){
+            return !(
+                type === EVENTS.SET    ||
+                type === EVENTS.START  ||
+                type === EVENTS.UPDATE ||
+                type === EVENTS.END
+            );
+        });
+
+        filter.subscribe(this._eventInput);
+        this._eventOutput.subscribe(filter);
 
         this._eventInput.on(EVENTS.SET, function(data){
             if (triggers.set) data = triggers.set(data);
@@ -230,8 +248,14 @@ define(function(require, exports, module){
     Stream.prototype.constructor = Stream;
 
     Stream.prototype.subscribe = function(source){
-        if (source._isActive) this.trigger('start', source.get());
-        return EventHandler.prototype.subscribe.apply(this._eventInput, arguments);
+        var success = EventHandler.prototype.subscribe.apply(this._eventInput, arguments);
+        if (success) {
+            if (source._isActive) this.trigger('start', source.get());
+            this._numSources++;
+            if (this._numSources === 2) createResolveStrategy.call(this, this._triggers);
+        }
+
+        return success;
     };
 
     Stream.prototype.unsubscribe = function(source){
@@ -240,9 +264,17 @@ define(function(require, exports, module){
                 var source = this._eventInput.upstream[i]
                 this.unsubscribe(source)
             }
+            return true;
         }
-        else if (source._isActive) this.trigger('end', source.get());
-        return EventHandler.prototype.unsubscribe.apply(this._eventInput, arguments);
+
+        var success = EventHandler.prototype.unsubscribe.apply(this._eventInput, arguments);
+        if (success) {
+            if (source._isActive) this.trigger('end', source.get());
+            this._numSources--;
+            if (this._numSources === 1) createSimpleStrategy.call(this, this._triggers);
+        }
+
+        return success;
     };
 
     Stream.prototype.trigger = function(type, handler){
