@@ -2,7 +2,6 @@
 
 define(function(require, exports, module) {
     var EventHandler = require('../../events/EventHandler');
-    var SimpleStream = require('../../streams/SimpleStream');
     var Stream = require('../../streams/Stream');
     var LayoutNode = require('./LayoutNode');
     var SizeNode = require('./SizeNode');
@@ -27,8 +26,8 @@ define(function(require, exports, module) {
         this._logic = new EventHandler();
 
         // layout and size streams
-        this.size = new SimpleStream();
-        this.layout = new SimpleStream();
+        this.size = new Stream();
+        this.layout = new Stream();
 
         // set node middleware
         if (object) _set.call(this, object);
