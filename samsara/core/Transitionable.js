@@ -2,7 +2,6 @@
 
 define(function (require, exports, module) {
     var preTickQueue = require('./queues/preTickQueue');
-    var dirtyQueue = require('./queues/dirtyQueue');
     var tickQueue = require('./queues/tickQueue');
     var EventHandler = require('../events/EventHandler');
     var StreamContract = require('../streams/_StreamContract');
