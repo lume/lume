@@ -5,7 +5,6 @@ define(function(require, exports, module){
     var EventHandler = require('../events/EventHandler');
     var EventFilter = require('../events/EventFilter');
     var StreamContract = require('../streams/_StreamContract');
-    var preTickQueue = require('../core/queues/preTickQueue');
 
     var EVENTS = {
         START : 'start',
@@ -64,7 +63,7 @@ define(function(require, exports, module){
     function Stream(triggers){
         StreamContract.call(this);
 
-        this._triggers = triggers || {};
+        this._triggers = triggers;
         this._numSources = 0;
 
         this._eventInput = new EventHandler();
@@ -91,34 +90,31 @@ define(function(require, exports, module){
     Stream.prototype.constructor = Stream;
 
     function createSimpleStrategy(triggers){
-        this._eventInput.off();
+        this._eventInput.off(['start', 'update', 'end', 'set', 'unlockBelow', 'lockBelow']);
 
-        if (triggers){
-            this._eventInput.on(EVENTS.SET, function(data){
-                if (triggers.set) data = triggers.set(data);
-                this.emit(EVENTS.SET, data);
-            }.bind(this));
+        this._eventInput.on(EVENTS.SET, function(data){
+            if (triggers && triggers.set) data = triggers.set(data);
+            this.emit(EVENTS.SET, data);
+        }.bind(this));
 
-            this._eventInput.on(EVENTS.START, function(data){
-                if (triggers.start) data = triggers.start(data);
-                this.emit(EVENTS.START, data);
-            }.bind(this));
+        this._eventInput.on(EVENTS.START, function(data){
+            if (triggers && triggers.start) data = triggers.start(data);
+            this.emit(EVENTS.START, data);
+        }.bind(this));
 
-            this._eventInput.on(EVENTS.UPDATE, function(data){
-                if (triggers.update) data = triggers.update(data);
-                this.emit(EVENTS.UPDATE, data);
-            }.bind(this));
+        this._eventInput.on(EVENTS.UPDATE, function(data){
+            if (triggers && triggers.update) data = triggers.update(data);
+            this.emit(EVENTS.UPDATE, data);
+        }.bind(this));
 
-            this._eventInput.on(EVENTS.END, function(data){
-                if (triggers.end) data = triggers.end(data);
-                this.emit(EVENTS.END, data);
-            }.bind(this));
-        }
-        else this._eventOutput.subscribe(this._eventInput);
+        this._eventInput.on(EVENTS.END, function(data){
+            if (triggers && triggers.end) data = triggers.end(data);
+            this.emit(EVENTS.END, data);
+        }.bind(this));
     }
 
     function createResolveStrategy(triggers){
-        this._eventInput.off();
+        this._eventInput.off(['start', 'update', 'end', 'set']);
 
         var hasTicked = false;
         var startCounter = 0;
@@ -138,15 +134,10 @@ define(function(require, exports, module){
         };
 
         function resolve(data){
-            hasTicked = false;
-            hasReceived = false;
-
             if (hasSentLock){
                 self.emit('unlockBelow');
                 hasSentLock = false;
             }
-
-            if (states.prev === EVENTS.START && states.set){}
 
             if (startCounter === 0 && states.update && states.end){
                 // update and end called in the same tick when tick should end
@@ -212,28 +203,33 @@ define(function(require, exports, module){
             }
         });
 
+        tick.on('end tick', function(){
+            hasTicked = false;
+            hasReceived = false;
+        });
+
         this._eventInput.on(EVENTS.SET, function(data){
-            if (triggers.set) data = triggers.set(data);
+            if (triggers && triggers.set) data = triggers.set(data);
             states.set = true;
             delay.call(self, data);
         });
 
         this._eventInput.on(EVENTS.START, function(data){
-            if (triggers.start) data = triggers.start(data);
+            if (triggers && triggers.start) data = triggers.start(data);
             states.start = true;
             startCounter++;
             delay.call(self, data);
         });
 
         this._eventInput.on(EVENTS.END, function(data){
-            if (triggers.end) data = triggers.end(data);
+            if (triggers && triggers.end) data = triggers.end(data);
             states.end = true;
             startCounter--;
             delay.call(self, data);
         });
 
         this._eventInput.on(EVENTS.UPDATE, function(data){
-            if (triggers.update) data = triggers.update(data);
+            if (triggers && triggers.update) data = triggers.update(data);
             states.update = true;
             delay.call(self, data);
         });
@@ -257,9 +253,9 @@ define(function(require, exports, module){
     Stream.prototype.subscribe = function(source){
         var success = EventHandler.prototype.subscribe.apply(this._eventInput, arguments);
         if (success) {
-            if (source._isActive) this.trigger('start', source.get());
             this._numSources++;
             if (this._numSources === 2) createResolveStrategy.call(this, this._triggers);
+            if (source._isActive) this.trigger('start', source.get());
         }
 
         return success;
