@@ -75,13 +75,13 @@ define(function(require, exports, module) {
 
         // references for event listeners put on document when
         // mouse is quickly moved off of target DOM element
-        this.boundMove = handleMove.bind(this);;
+        this.boundMove = handleMove.bind(this);
+        this.boundEnter = handleEnter.bind(this);
+        this.boundLeave = handleLeave.bind(this);
         this.boundUp = null;
 
-        this._eventInput.on('mousedown',    handleStart.bind(this));
-        this._eventInput.on('mouseup',      handleEnd.bind(this));
-        this._eventInput.on('mouseenter',   handleEnter.bind(this));
-        this._eventInput.on('mouseleave',   handleLeave.bind(this));
+        this._eventInput.on('mousedown', handleStart.bind(this));
+        this._eventInput.on('mouseup', handleEnd.bind(this));
 
         this._payload = {
             x : 0,
@@ -96,7 +96,6 @@ define(function(require, exports, module) {
         this._cumulate = null;
         this._prevCoord = undefined;
         this._prevTime = undefined;
-        this._down = false;
     }
 
     MouseInput.prototype = Object.create(StreamContract.prototype);
@@ -123,6 +122,8 @@ define(function(require, exports, module) {
 
     function handleStart(event) {
         this._eventInput.on('mousemove', this.boundMove);
+        this._eventInput.on('mouseenter', this.boundEnter);
+        this._eventInput.on('mouseleave', this.boundLeave);
 
         var delta;
         var velocity;
@@ -134,7 +135,6 @@ define(function(require, exports, module) {
 
         this._prevCoord = [x, y];
         this._prevTime = _now();
-        this._down = true;
 
         var payload = this._payload;
 
@@ -239,6 +239,8 @@ define(function(require, exports, module) {
 
     function handleEnd(event) {
         this._eventInput.off('mousemove');
+        this._eventInput.off('mouseenter');
+        this._eventInput.off('mouseleave');
 
         this._payload.event = event;
 
@@ -246,12 +248,9 @@ define(function(require, exports, module) {
 
         this._prevCoord = undefined;
         this._prevTime = undefined;
-        this._down = false;
     }
 
     function handleEnter(event){
-        if (!this._down) return false;
-
         this._eventInput.off('mousemove');
         this._eventInput.off('mouseup');
 
@@ -260,8 +259,6 @@ define(function(require, exports, module) {
     }
 
     function handleLeave(event) {
-        if (!this._down) return false;
-
         this.boundUp = function(event) {
             handleEnd.call(this, event);
             document.removeEventListener('mousemove', this.boundMove);
