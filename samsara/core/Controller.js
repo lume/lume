@@ -4,6 +4,7 @@ define(function(require, exports, module) {
     var OptionsManager = require('./_OptionsManager');
     var EventHandler = require('../events/EventHandler');
     var Stream = require('../streams/Stream');
+    var SimpleStream = require('../streams/SimpleStream');
 
     /**
      * A utility class which can be extended by custom classes. These classes will then
@@ -61,17 +62,16 @@ define(function(require, exports, module) {
         if (options) this.setOptions(options);
 
         // set input and output streams
-        this.input = new Stream();
+        this.input = new SimpleStream();
         this.output = new Stream();
         EventHandler.setInputHandler(this, this.input);
         EventHandler.setOutputHandler(this, this.output);
 
-        this._optionsInput = new EventHandler();
-        this._optionsInput.bindThis(this);
-        this._optionsInput.subscribe(this._optionsManager);
+        this.input.bindThis(this);
+        this.input.subscribe(this._optionsManager);
 
         // bind events defined in the constructor's EVENTS dictionary to the input
-        setInputEvents.call(this, this.constructor.EVENTS || Controller.EVENTS, this._optionsInput);
+        setInputEvents.call(this, this.constructor.EVENTS || Controller.EVENTS, this.input);
 
         if (this.initialize) this.initialize(this.options);
     }
