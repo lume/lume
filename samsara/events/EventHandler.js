@@ -99,20 +99,29 @@ define(function(require, exports, module) {
      *  the EventHandler removes itself from the upstream sources.
      *
      * @method off
-     * @param type {String}           Event channel name
+     * @param type {String|Array}     Event channel name
      * @param [handler] {Function}    Handler
      * @return {Boolean}              True if no more listeners remain. False otherwise.
      */
     EventHandler.prototype.off = function off(type, handler) {
-        var empty = EventEmitter.prototype.off.apply(this, arguments);
-        if (empty && this.upstreamListeners[type]) {
-            var oldUpstreamListener = this.upstreamListeners[type];
-            delete this.upstreamListeners[type];
-            for (var i = 0; i < this.upstream.length; i++) {
-                this.upstream[i].off(type, oldUpstreamListener);
-            }
+        var i, empty;
+        if (type instanceof Array){
+            empty = false;
+            for (i = 0; i < type.length; i++)
+                empty |= off.call(this, type[i], handler);
+            return empty;
         }
-        return empty;
+        else {
+            empty = EventEmitter.prototype.off.apply(this, arguments);
+            if (empty && this.upstreamListeners[type]) {
+                var oldUpstreamListener = this.upstreamListeners[type];
+                delete this.upstreamListeners[type];
+                for (i = 0; i < this.upstream.length; i++) {
+                    this.upstream[i].off(type, oldUpstreamListener);
+                }
+            }
+            return empty;
+        }
     };
 
     /**
