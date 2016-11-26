@@ -3,6 +3,7 @@
 define(function(require, exports, module) {
     var EventHandler = require('../events/EventHandler');
     var postTickQueue = require('./queues/postTickQueue');
+    var nextTick = require('./queues/nextTick');
     var preTickQueue = require('./queues/preTickQueue');
     var dirtyQueue = require('./queues/dirtyQueue');
     var tickQueue = require('./queues/tickQueue');
@@ -62,10 +63,14 @@ define(function(require, exports, module) {
 
         tick.emit('tick');
 
+        while (nextTick.length) preTickQueue.push(nextTick.shift());
+
         // post tick is for resolving larger components from their incoming signals
         while (postTickQueue.length) (postTickQueue.shift())();
 
         while (dirtyQueue.length) (dirtyQueue.shift())();
+
+        tick.emit('end tick');
     };
 
     /**
