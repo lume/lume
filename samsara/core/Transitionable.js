@@ -2,6 +2,7 @@
 
 define(function (require, exports, module) {
     var preTickQueue = require('./queues/preTickQueue');
+    var nextTick = require('./queues/nextTick');
     var tickQueue = require('./queues/tickQueue');
     var EventHandler = require('../events/EventHandler');
     var StreamContract = require('../streams/_StreamContract');
@@ -104,8 +105,10 @@ define(function (require, exports, module) {
             }
 
             if (!this._currentActive){
-                hasUpdated = false;
-                this.emit('end', value);
+                nextTick.push(function(){
+                    hasUpdated = false;
+                    this.emit('end', value);
+                }.bind(this));
             }
         }.bind(this));
 
@@ -198,7 +201,9 @@ define(function (require, exports, module) {
 
         if (this._interpolant.update){
             this.updateMethod = this._interpolant.update.bind(this._interpolant);
-            tickQueue.push(this.updateMethod);
+            nextTick.push(function(){
+                tickQueue.push(this.updateMethod);
+            }.bind(this));
         }
 
         this._interpolant.set(value, transition);
@@ -233,7 +238,7 @@ define(function (require, exports, module) {
      * @param [velocity] {Number|Number[]}  New velocity
      */
     Transitionable.prototype.reset = function reset(value, velocity){
-        this._callback = null;
+        this._callback = undefined;
         this._method = null;
         this.value = value;
         if (this._interpolant) this._interpolant.reset(value, velocity);
