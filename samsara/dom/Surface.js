@@ -73,9 +73,7 @@ define(function(require, exports, module) {
         this._allocator = null;
         this._currentTarget = null;
         this._elementOutput = new DOMOutput();
-
         this._eventOutput = new EventHandler();
-        EventHandler.setOutputHandler(this, this._eventOutput);
 
         this._eventForwarder = function _eventForwarder(event) {
             event.stopPropagation();
@@ -104,8 +102,10 @@ define(function(require, exports, module) {
 
         this.size = Stream.lift(function elementSizeLift(sizeSpec, parentSize) {
             if (!parentSize) return false; // occurs when surface is never added
-            return sizeAlgebra(sizeSpec, parentSize);
-        }, [this._sizeNode, this._size]);
+            var size = sizeAlgebra(sizeSpec, parentSize);
+            commitSize.call(this, size);
+            return size;
+        }.bind(this), [this._sizeNode, this._size]);
 
         this.layout = Stream.lift(function(parentSpec, objectSpec, size) {
             if (!parentSpec || !size) return false;
@@ -135,7 +135,7 @@ define(function(require, exports, module) {
             this._elementOutput.commitLayout(this._currentTarget, layout);
         }.bind(this));
 
-        this.size.on(['set', 'start', 'update', 'end'], commitSize.bind(this));
+        // this.size.on(['set', 'start', 'update', 'end'], commitSize.bind(this));
 
         if (options) this.setOptions(options);
     }
@@ -421,6 +421,18 @@ define(function(require, exports, module) {
         if (this._currentTarget)
             this._elementOutput.off(this._currentTarget, type, this._eventForwarder);
         EventHandler.prototype.off.apply(this._eventOutput, arguments);
+    };
+
+    /**
+     * Emit events.
+     *
+     * @method emit
+     * @private
+     * @param type {String}
+     * @param data {Any}
+     */
+    Surface.prototype.emit = function off(type, data) {
+        EventHandler.prototype.emit.apply(this._eventOutput, arguments);
     };
 
     /**
