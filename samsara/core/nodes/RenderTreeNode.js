@@ -37,16 +37,6 @@ define(function(require, exports, module) {
             this.size.subscribe(this._size);
         }
 
-        // save last spec if node is removed and later added
-        this._cachedSpec = {
-            layout : null,
-            size : null
-        };
-
-        // update size and layout cache
-        this.size.on(['start', 'update', 'end', 'set'], updateSizeCache.bind(this));
-        this.layout.on(['start', 'update', 'end', 'set'], updateLayoutCache.bind(this));
-
         // reference to RootNode if a node is removed and later added
         this.root = null;
 
@@ -57,14 +47,6 @@ define(function(require, exports, module) {
         this._logic.on('unmount', function() {
             this.root = null;
         }.bind(this));
-    }
-
-    function updateLayoutCache(layout){
-        this._cachedSpec.layout = layout;
-    }
-
-    function updateSizeCache(size){
-        this._cachedSpec.size = size;
     }
 
     /**
@@ -116,8 +98,8 @@ define(function(require, exports, module) {
             // TODO: switch to nextQueue
             preTickQueue.push(function(){
                 if (node.root) return;
-                if (self._cachedSpec.size) self.size.trigger('set', self._cachedSpec.size);
-                if (self._cachedSpec.layout) self.layout.trigger('set', self._cachedSpec.layout);
+                if (self.size.get()) self.size.trigger('set', self.size.get());
+                if (self.layout.get()) self.layout.trigger('set', self.layout.get());
             });
         }
 
