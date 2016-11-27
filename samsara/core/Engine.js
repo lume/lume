@@ -160,7 +160,7 @@ define(function(require, exports, module) {
             windowHeight = newHeight;
 
             if (!isResizing){
-                if (firstStart){
+                if (firstStart === true){
                     Engine.size.emit('set');
                 }
                 else {
