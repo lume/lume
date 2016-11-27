@@ -102,10 +102,10 @@ define(function(require, exports, module) {
 
         this.size = Stream.lift(function elementSizeLift(sizeSpec, parentSize) {
             if (!parentSize) return false; // occurs when surface is never added
-            var size = sizeAlgebra(sizeSpec, parentSize);
-            commitSize.call(this, size);
-            return size;
+            return sizeAlgebra(sizeSpec, parentSize);
         }.bind(this), [this._sizeNode, this._size]);
+
+        this.size.on(['set', 'start', 'update', 'end'], commitSize.bind(this));
 
         this.layout = Stream.lift(function(parentSpec, objectSpec, size) {
             if (!parentSpec || !size) return false;
@@ -134,8 +134,6 @@ define(function(require, exports, module) {
             if (!this._currentTarget) return;
             this._elementOutput.commitLayout(this._currentTarget, layout);
         }.bind(this));
-
-        // this.size.on(['set', 'start', 'update', 'end'], commitSize.bind(this));
 
         if (options) this.setOptions(options);
     }
