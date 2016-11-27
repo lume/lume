@@ -255,7 +255,9 @@ define(function(require, exports, module){
         if (success) {
             this._numSources++;
             if (this._numSources === 2) createResolveStrategy.call(this, this._triggers);
-            if (source._isActive) this.trigger('start', source.get());
+            if (source._isActive) {
+                this.trigger('start', source.get());
+            }
         }
 
         return success;
@@ -272,7 +274,9 @@ define(function(require, exports, module){
 
         var success = EventHandler.prototype.unsubscribe.apply(this._eventInput, arguments);
         if (success) {
-            if (source._isActive) this.trigger('end', source.get());
+            if (source._isActive) {
+                this.trigger('end', source.get());
+            }
             this._numSources--;
             if (this._numSources === 1) createSimpleStrategy.call(this, this._triggers);
         }
