@@ -82,6 +82,46 @@ function observeChildren(ctx, onConnect, onDisconnect) {
     return observer
 }
 
+const hasShadowDomV0 =
+    typeof Element.prototype.createShadowRoot == 'function'
+    && typeof HTMLContentElement == 'function'
+    ? true : false
+
+const hasShadowDomV1 =
+    typeof Element.prototype.attachShadow == 'function'
+    && typeof HTMLSlotElement == 'function'
+    ? true : false
+
+// See http://stackoverflow.com/a/40078261/454780
+// XXX This function only works on roots whose hosts have no light-tree Nodes,
+// so we're not using this at the moment when detecting slot and content
+// elements in DeclarativeBase childConnected/Disconnected Callbacks. See
+// the TODO there.
+function getShadowRootVersion(shadowRoot) {
+    console.log('getShadowRootVersion')
+    if (!shadowRoot) return null
+    const slot = document.createElement('slot')
+    shadowRoot.appendChild(slot)
+    slot.appendChild(document.createElement('div'))
+    const assignedNodes = slot.assignedNodes({ flatten: true })
+    slot.remove()
+    console.log('hmm', assignedNodes.length, assignedNodes.length > 0 ? 'v1' : 'v0')
+    return assignedNodes.length > 0 ? 'v1' : 'v0'
+}
+
+function getAncestorShadowRootIfAny(node) {
+    if (!node) return null // XXX throw error instead? What pattern is better?
+
+    let current = node
+
+    while (current && !(current instanceof ShadowRoot)) {
+        current = current.parentNode
+    }
+
+    console.log('getAncestorShadowRootIfAny', current)
+    return current
+}
+
 export {
   epsilon,
   applyCSSLabel,
@@ -90,4 +130,8 @@ export {
   makeLowercaseSetterAliases,
   makeAccessorsEnumerable,
   observeChildren,
+  getShadowRootVersion,
+  hasShadowDomV0,
+  hasShadowDomV1,
+  getAncestorShadowRootIfAny,
 }

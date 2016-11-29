@@ -2,7 +2,8 @@
 
 import WebComponent from './web-component'
 import MotorHTMLNode from './node'
-import { observeChildren } from '../motor/Utility'
+import { observeChildren, getShadowRootVersion, hasShadowDomV0, hasShadowDomV1,
+    getAncestorShadowRootIfAny } from '../motor/Utility'
 
 var DeclarativeBase
 
@@ -24,7 +25,7 @@ function hijack(original) {
         }
         catch (e) { throw e }
         if (this instanceof DeclarativeBase) {
-            this.hasShadowRoot = true
+            this._hasShadowRoot = true
             if (oldRoot) {
                 onV0ShadowRootReplaced.call(this, oldRoot)
             }
@@ -33,7 +34,7 @@ function hijack(original) {
 
             for (const child of this.children) {
                 if (child instanceof DeclarativeBase) {
-                    child.isPossiblyDistributed = true
+                    child._isPossiblyDistributed = true
                 }
             }
         }
@@ -43,14 +44,10 @@ function hijack(original) {
 function shadowRootChildAdded(child) {
     if (!(child instanceof DeclarativeBase)) return
     this.imperativeCounterpart.addChild(child.imperativeCounterpart)
-    console.log('added:', child)
-    console.log(this.shadowRoot.children)
 }
 function shadowRootChildRemoved(child) {
     if (!(child instanceof DeclarativeBase)) return
     this.imperativeCounterpart.removeChild(child.imperativeCounterpart)
-    console.log('removed:', child)
-    console.log(this.shadowRoot.children)
 }
 function onV0ShadowRootReplaced(oldRoot) {
     observers.get(oldRoot).disconnect()
@@ -84,6 +81,9 @@ initMotorHTMLBase()
 export function initMotorHTMLBase() {
     if (DeclarativeBase) return
 
+    /**
+     * @implements {EventListener}
+     */
     DeclarativeBase = class DeclarativeBase extends WebComponent(window.HTMLElement) {
         createdCallback() {
             super.createdCallback()
@@ -93,12 +93,20 @@ export function initMotorHTMLBase() {
             // true if this node has a shadow root (even if it is "closed", see
             // hijack function above). Once true always true because shadow
             // roots cannot be removed.
-            this.hasShadowRoot = false
+            this._hasShadowRoot = false
 
             // True when this node has a parent that has a shadow root. When
             // using the HTML API, Imperative API can look at this to determine
             // whether to render this node or not, in the case of WebGL.
-            this.isPossiblyDistributed = false
+            this._isPossiblyDistributed = false
+
+            // A map of the slot elements that are children of this node and
+            // their last-known assigned nodes. When a slotchange happens while
+            // this node is in a shadow root and has a slot child, we can
+            // detect what the difference is between the last known and the new
+            // assignments, and notate the new distribution of child nodes. See
+            // issue #40 for background on why we do this.
+            this._slotElementsAssignedNodes = new WeakMap
 
             // XXX: "this.ready" seems to be more intuitive on the HTML side than
             // "this.mountPromise" because if the user has a reference to a
@@ -174,30 +182,121 @@ export function initMotorHTMLBase() {
         }
 
         childConnectedCallback(child) {
+
             // mirror the DOM connections in the imperative API's virtual scene graph.
             if (child instanceof MotorHTMLNode) {
-                if (this.hasShadowRoot) child.isPossiblyDistributed = true
+                if (this._hasShadowRoot) child._isPossiblyDistributed = true
                 this.imperativeCounterpart.addChild(child.imperativeCounterpart)
             }
-            else if (typeof HTMLSlotElement != 'undefined' && child instanceof HTMLSlotElement) {
-                console.log(' -- a slot child connected!')
+
+            // TODO: There's no way currently to detect v0 vs v1 ShadowRoots,
+            // so these conditional checks assume the end user is using
+            // <content> elements in v0 roots, and <slot> elements in v1 roots.
+            // Doing otherwise may have unknown and undersirable behavior. See
+            // the TODO for getShadowRootVersion in ../motor/Utility for more
+            // info.
+            else if (
+                hasShadowDomV0
+                && child instanceof HTMLContentElement
+                &&
+                //getShadowRootVersion(
+                    getAncestorShadowRootIfAny(this)
+                //) == 'v0'
+            ) {
+                // TODO observe <content> elements.
             }
-            else if (typeof HTMLContentElement != 'undefined' && child instanceof HTMLContentElement) {
-                console.log(' -- a content child connected!')
+            else if (
+                hasShadowDomV1
+                && child instanceof HTMLSlotElement
+                &&
+                //getShadowRootVersion(
+                    getAncestorShadowRootIfAny(this)
+                //) == 'v1'
+            ) {
+                child.addEventListener('slotchange', this)
+                this._handleDistributedChildren(child)
             }
+        }
+
+        // This method is part of the EventListener interface.
+        handleEvent(event) {
+            if (event.type == 'slotchange') {
+                const slot = event.target
+                this._handleDistributedChildren(slot)
+            }
+        }
+
+        _handleDistributedChildren(slot) {
+            const diff = this._getDistributedChildDifference(slot)
+            console.log('diff:', diff)
+        }
+
+        _getDistributedChildDifference(slot) {
+            let previousNodes
+
+            if (this._slotElementsAssignedNodes.has(slot))
+                previousNodes = this._slotElementsAssignedNodes.get(slot)
+            else
+                previousNodes = []
+
+            const newNodes = slot.assignedNodes({flatten: true})
+
+            // save the newNodes to be used as the previousNodes for next time.
+            this._slotElementsAssignedNodes.set(slot, newNodes)
+
+            const diff = {
+                removed: [],
+            }
+
+            for (let i=0, l=previousNodes.length; i<l; i+=1) {
+                let oldNode = previousNodes[i]
+                let newIndex = newNodes.indexOf(oldNode)
+
+                // if it exists in the previousNodes but not the newNodes, then
+                // the node was removed.
+                if (!(newIndex >= 0)) {
+                    diff.removed.push(oldNode)
+                }
+
+                // otherwise the node wasn't added or removed.
+                else {
+                    newNodes.splice(i, 1)
+                }
+            }
+
+            // Remaining nodes in newNodes must have been added.
+            diff.added = newNodes
+
+            return diff
         }
 
         childDisconnectedCallback(child) {
             // mirror the connection in the imperative API's virtual scene graph.
             if (child instanceof MotorHTMLNode) {
-                child.isPossiblyDistributed = false
+                child._isPossiblyDistributed = false
                 this.imperativeCounterpart.removeChild(child.imperativeCounterpart)
             }
-            else if (typeof HTMLSlotElement != 'undefined' && child instanceof HTMLSlotElement) {
-                console.log(' -- a slot child disconnected!')
+            else if (
+                hasShadowDomV0
+                && child instanceof HTMLContentElement
+                &&
+                //getShadowRootVersion(
+                    getAncestorShadowRootIfAny(this)
+                //) == 'v0'
+            ) {
+                // TODO: unobserve <content> element
             }
-            else if (typeof HTMLContentElement != 'undefined' && child instanceof HTMLContentElement) {
-                console.log(' -- a content child disconnected!')
+            else if (
+                hasShadowDomV1
+                && child instanceof HTMLSlotElement
+                &&
+                //getShadowRootVersion(
+                    getAncestorShadowRootIfAny(this)
+                //) == 'v1'
+            ) {
+                child.removeEventListener('slotchange', this)
+                this._handleDistributedChildren(child)
+                this._slotElementsAssignedNodes.delete(child)
             }
         }
     }
