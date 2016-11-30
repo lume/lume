@@ -186,6 +186,7 @@ export function initImperativeBase() {
              * @override
              */
             addChild(childNode) {
+                if (!(childNode instanceof ImperativeBase)) return
 
                 // We cannot add Scenes to Nodes, for now.
                 // XXX: How will we handle mounting a Scene inside a Node when using only WebGL?
@@ -280,20 +281,20 @@ export function initImperativeBase() {
             }
 
             removeChild(childNode) {
+                if (!(childNode instanceof ImperativeBase)) return
+
                 super.removeChild(childNode)
 
                 // childNode no longer needs to observe parent for size changes.
                 this.off('sizechange', childNode._onParentSizeChange)
 
-                if (childNode instanceof ImperativeBase) {
-                    childNode._scene = null // not part of a scene anymore.
-                    childNode._scenePromise = null // reset so that it can be awaited again for when the node is re-mounted.
-                    childNode._mounted = false
-                    childNode._mountPromise = null // reset so that it can be awaited again for when the node is re-mounted.
+                childNode._scene = null // not part of a scene anymore.
+                childNode._scenePromise = null // reset so that it can be awaited again for when the node is re-mounted.
+                childNode._mounted = false
+                childNode._mountPromise = null // reset so that it can be awaited again for when the node is re-mounted.
 
-                    // TODO: move this out, into DOMRenderer
-                    this._detachElement(childNode)
-                }
+                // TODO: move this out, into DOMRenderer
+                this._detachElement(childNode)
             }
 
             _detachElement(childNode) {
