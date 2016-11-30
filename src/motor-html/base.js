@@ -41,12 +41,47 @@ function hijack(original) {
     }
 }
 function shadowRootChildAdded(child) {
-    if (!(child instanceof DeclarativeBase)) return
-    this.imperativeCounterpart.addChild(child.imperativeCounterpart)
+
+    // XXX Logic here is similar to childConnectedCallback
+
+    if (child instanceof DeclarativeBase) {
+        this.imperativeCounterpart.addChild(child.imperativeCounterpart)
+    }
+    else if (
+        hasShadowDomV0
+        && child instanceof HTMLContentElement
+    ) {
+        // TODO observe <content> elements.
+    }
+    else if (
+        hasShadowDomV1
+        && child instanceof HTMLSlotElement
+    ) {
+        child.addEventListener('slotchange', this)
+        this._handleDistributedChildren(child)
+    }
 }
 function shadowRootChildRemoved(child) {
-    if (!(child instanceof DeclarativeBase)) return
-    this.imperativeCounterpart.removeChild(child.imperativeCounterpart)
+
+    // XXX Logic here is similar to childDisconnectedCallback
+
+    if (child instanceof DeclarativeBase) {
+        this.imperativeCounterpart.removeChild(child.imperativeCounterpart)
+    }
+    else if (
+        hasShadowDomV0
+        && child instanceof HTMLContentElement
+    ) {
+        // TODO: unobserve <content> element
+    }
+    else if (
+        hasShadowDomV1
+        && child instanceof HTMLSlotElement
+    ) {
+        child.removeEventListener('slotchange', this)
+        this._handleDistributedChildren(child)
+        this._slotElementsAssignedNodes.delete(child)
+    }
 }
 function onV0ShadowRootReplaced(oldRoot) {
     observers.get(oldRoot).disconnect()
