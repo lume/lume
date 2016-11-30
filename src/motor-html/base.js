@@ -33,9 +33,8 @@ function hijack(original) {
             observers.set(root, observer)
 
             for (const child of this.children) {
-                if (child instanceof DeclarativeBase) {
-                    child._isPossiblyDistributed = true
-                }
+                if (!(child instanceof DeclarativeBase)) continue
+                child._isPossiblyDistributed = true
             }
         }
         return root
@@ -54,17 +53,19 @@ function onV0ShadowRootReplaced(oldRoot) {
     observers.delete(oldRoot)
     let i = 0
     for (let child of oldRoot.childNodes) {
-        if (child instanceof DeclarativeBase) {
-            // We should disconnect the imperative connection (f.e. so it is
-            // not rendered in WebGL)...
-            this.imperativeCounterpart.removeChild(child.imperativeCounterpart)
-            // ...but we should place the element back where it was so there's
-            // no surprises to the HTML-API user who might go looking for the
-            // element. Due to the fact that the observer on the oldRoot was
-            // removed, adding the element back to the oldRoot won't cause it
-            // to be reconnected on the imperative side.
-            oldRoot.insertBefore(child, oldRoot.childNodes[i])
-        }
+        if (!(child instanceof DeclarativeBase)) { i += 1; continue }
+
+        // We should disconnect the imperative connection (f.e. so it is
+        // not rendered in WebGL)...
+        this.imperativeCounterpart.removeChild(child.imperativeCounterpart)
+
+        // ...but we should place the element back where it was so there's
+        // no surprises to the HTML-API user who might go looking for the
+        // element. Due to the fact that the observer on the oldRoot was
+        // removed, adding the element back to the oldRoot won't cause it
+        // to be reconnected on the imperative side.
+        oldRoot.insertBefore(child, oldRoot.childNodes[i])
+
         i += 1
     }
 }
