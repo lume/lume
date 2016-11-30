@@ -108,6 +108,19 @@ export function initMotorHTMLBase() {
             // issue #40 for background on why we do this.
             this._slotElementsAssignedNodes = new WeakMap
 
+            // If this node is distributed into a shadow tree, this will
+            // reference the parent of the <slot> or <content> element.
+            // Basically, this node will render as a child of that parent node
+            // in the flat tree.
+            this._shadowParent = null
+
+            // If this element has a child <slot> or <content> element while in
+            // a shadow root, then this will be a Set of the nodes distributed
+            // into the <slot> or <content>, and those nodes render relatively
+            // to this node in the flat tree. We instantiate this later, only
+            // when/if needed.
+            this._shadowChildren = null
+
             // XXX: "this.ready" seems to be more intuitive on the HTML side than
             // "this.mountPromise" because if the user has a reference to a
             // motor-node or a motor-scene and it exists in DOM, then it is already
@@ -228,7 +241,33 @@ export function initMotorHTMLBase() {
 
         _handleDistributedChildren(slot) {
             const diff = this._getDistributedChildDifference(slot)
-            console.log('diff:', diff)
+
+            for (const addedNode of diff.added) {
+
+                // We do this because if the given slot is assigned to another
+                // slot, then this logic will run again for the next slot on
+                // that next slot's slotchange, so we remove the distributed
+                // node from the previous shadowParent and add it to the next
+                // one. If we don't do this, then the distributed node will
+                // exist in multiple shadowChildren lists when there is a
+                // chain of assigned slots. For more info, see
+                // https://github.com/w3c/webcomponents/issues/611
+                if (addedNode._shadowParent && addedNode._shadowParent._shadowChildren) {
+                    addedNode._shadowParent._shadowChildren.delete(addedNode)
+                    if (!addedNode._shadowParent._shadowChildren.size)
+                        addedNode._shadowParent._shadowChildren = null
+                }
+
+                addedNode._shadowParent = this
+                if (!this._shadowChildren) this._shadowChildren = new Set
+                this._shadowChildren.add(addedNode)
+            }
+
+            for (const removedNode of diff.removed) {
+                removedNode._shadowParent = null
+                this._shadowChildren.delete(removedNode)
+                if (!this._shadowChildren.size) this._shadowChildren = null
+            }
         }
 
         _getDistributedChildDifference(slot) {
