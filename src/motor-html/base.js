@@ -243,6 +243,7 @@ export function initMotorHTMLBase() {
             const diff = this._getDistributedChildDifference(slot)
 
             for (const addedNode of diff.added) {
+                if (!(addedNode instanceof DeclarativeBase)) continue
 
                 // We do this because if the given slot is assigned to another
                 // slot, then this logic will run again for the next slot on
@@ -264,6 +265,7 @@ export function initMotorHTMLBase() {
             }
 
             for (const removedNode of diff.removed) {
+                if (!(removedNode instanceof DeclarativeBase)) continue
                 removedNode._shadowParent = null
                 this._shadowChildren.delete(removedNode)
                 if (!this._shadowChildren.size) this._shadowChildren = null

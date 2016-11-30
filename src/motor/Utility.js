@@ -118,7 +118,6 @@ function getAncestorShadowRootIfAny(node) {
         current = current.parentNode
     }
 
-    console.log('getAncestorShadowRootIfAny', current)
     return current
 }
 
