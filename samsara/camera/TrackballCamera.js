@@ -179,13 +179,13 @@ define(function(require, exports, module){
 
             // at end of zooming (on pinch), apply inertia to zoom
             zoomInput.on('end', function(data){
-                if (!zoomInertia){
+                if (!zoomInertia || data.velocty === 0){
                     this.emit('end', {
                         position: this.getPosition(),
                         orientation: this.getOrientation()
                     });
                 }
-                else if (data.velocity !== 0){
+                else {
                     var z = this.getPosition()[2];
                     zoomInertia.reset(z);
                     zoomInertia.set(z, {
