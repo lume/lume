@@ -2,7 +2,7 @@
 
 import WebComponent from './web-component'
 import MotorHTMLNode from './node'
-import { observeChildren, getShadowRootVersion, hasShadowDomV0, hasShadowDomV1,
+import { observeChildren, /*getShadowRootVersion,*/ hasShadowDomV0, hasShadowDomV1,
     getAncestorShadowRootIfAny } from '../motor/Utility'
 
 var DeclarativeBase
@@ -380,3 +380,23 @@ export function initMotorHTMLBase() {
 }
 
 export {DeclarativeBase as default}
+
+// in the future, the user will be able to toggle the HTML API.
+const hasHtmlApi = true
+
+// Traverses a tree while considering ShadowDOM disribution.
+function traverse(node, isShadowChild) {
+    console.log(isShadowChild ? 'distributedNode:' : 'node:', node)
+
+    for (const child of node.children) {
+        // skip nodes that are possiblyDistributed, i.e. they have a parent
+        // that has a ShadowRoot.
+        if (!hasHtmlApi || !child._el.element._isPossiblyDistributed)
+            traverse(child)
+    }
+
+    if (hasHtmlApi && node._el.element._shadowChildren) {
+        for (const shadowChild of node._el.element._shadowChildren)
+            traverse(shadowChild.imperativeCounterpart, true)
+    }
+}
