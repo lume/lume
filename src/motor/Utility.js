@@ -121,6 +121,26 @@ function getAncestorShadowRootIfAny(node) {
     return current
 }
 
+// in the future, the user will be able to toggle the HTML API.
+const hasHtmlApi = true
+
+// Traverses a tree while considering ShadowDOM disribution.
+function traverse(node, isShadowChild) {
+    console.log(isShadowChild ? 'distributedNode:' : 'node:', node)
+
+    for (const child of node.children) {
+        // skip nodes that are possiblyDistributed, i.e. they have a parent
+        // that has a ShadowRoot.
+        if (!hasHtmlApi || !child._el.element._isPossiblyDistributed)
+            traverse(child)
+    }
+
+    if (hasHtmlApi && node._el.element._shadowChildren) {
+        for (const shadowChild of node._el.element._shadowChildren)
+            traverse(shadowChild.imperativeCounterpart, true)
+    }
+}
+
 export {
   epsilon,
   applyCSSLabel,
@@ -133,4 +153,5 @@ export {
   hasShadowDomV0,
   hasShadowDomV1,
   getAncestorShadowRootIfAny,
+  traverse,
 }
