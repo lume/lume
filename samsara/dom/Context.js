@@ -6,7 +6,7 @@ define(function(require, exports, module) {
     var RootNode = require('../core/nodes/RootNode');
     var Transitionable = require('../core/Transitionable');
     var OptionsManager = require('../core/_OptionsManager');
-    var Stream = require('../streams/Stream');
+    var SimpleStream = require('../streams/SimpleStream');
     var EventHandler = require('../events/EventHandler');
 
     /**
@@ -42,8 +42,8 @@ define(function(require, exports, module) {
         this.options = OptionsManager.setOptions(this, options, Context.DEFAULT_OPTIONS);
         this._node = new RootNode();
 
-        this._size = new Stream();
-        this._layout = new Stream();
+        this._size = new SimpleStream();
+        this._layout = new SimpleStream();
 
         this._cachedSize = [];
         this.size = this._size.map(function(type){
