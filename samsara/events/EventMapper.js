@@ -39,10 +39,11 @@ define(function(require, exports, module) {
     EventMapper.prototype.constructor = EventMapper;
 
     var FORBIDDEN_TYPES = {
-        lockBelow : true,
-        unlockBelow : true,
+        lock : true,
+        unlock : true,
         subscribe : true,
-        unsubscribe : true
+        unsubscribe : true,
+        dep : true
     };
 
     /**
@@ -53,7 +54,10 @@ define(function(require, exports, module) {
      * @param data {Object} Payload
      */
     EventMapper.prototype.emit = function emit(type, data) {
-        if (FORBIDDEN_TYPES[type]) return;
+        if (FORBIDDEN_TYPES[type]) {
+            EventHandler.prototype.emit.call(this, type, data);
+            return;
+        }
         var mappedData = this._map(data);
         EventHandler.prototype.emit.call(this, type, mappedData);
     };

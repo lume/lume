@@ -100,15 +100,15 @@ define(function(require, exports, module) {
         this._size = new EventHandler();
         this._layout = new EventHandler();
 
-        this.size = Stream.lift(function elementSizeLift(sizeSpec, parentSize) {
+        this.size = Stream.lift(function surfaceSizeLift(sizeSpec, parentSize) {
             if (!parentSize) return false; // occurs when surface is never added
             return sizeAlgebra(sizeSpec, parentSize);
-        }.bind(this), [this._sizeNode, this._size]);
+        }, [this._sizeNode, this._size]);
 
         this.size.on(['set', 'start', 'update', 'end'], commitSize.bind(this));
 
-        this.layout = Stream.lift(function(parentSpec, objectSpec, size) {
-            if (!parentSpec || !size) return false;
+        this.layout = Stream.lift(function surfaceLayoutLift(parentSpec, objectSpec, size) {
+            if (!parentSpec || !size) return false; // occurs when surface is never added
             return (objectSpec)
                 ? layoutAlgebra(objectSpec, parentSpec, size)
                 : parentSpec;

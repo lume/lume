@@ -138,6 +138,11 @@ define(function(require, exports, module) {
             for (var type in this.upstreamListeners) {
                 source.on(type, this.upstreamListeners[type]);
             }
+            if (source.onSubscribe && source.trigger){
+                window.Promise.resolve().then(function(){
+                    source.trigger('subscribe');
+                }.bind(this));
+            }
             return source;
         }
         return false;
@@ -165,6 +170,11 @@ define(function(require, exports, module) {
                 this.upstream.splice(index, 1);
                 for (var type in this.upstreamListeners) {
                     source.off(type, this.upstreamListeners[type]);
+                }
+                if (source.onSubscribe && source.trigger){
+                    window.Promise.resolve().then(function(){
+                        source.trigger('unsubscribe');
+                    }.bind(this));
                 }
                 return true;
             }
