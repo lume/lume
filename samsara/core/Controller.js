@@ -3,8 +3,8 @@
 define(function(require, exports, module) {
     var OptionsManager = require('./_OptionsManager');
     var EventHandler = require('../events/EventHandler');
-    var Stream = require('../streams/Stream');
     var SimpleStream = require('../streams/SimpleStream');
+    var StreamOutput = require('../streams/_StreamContract');
 
     /**
      * A utility class which can be extended by custom classes. These classes will then
@@ -63,7 +63,7 @@ define(function(require, exports, module) {
 
         // set input and output streams
         this.input = new SimpleStream();
-        this.output = new Stream();
+        this.output = new StreamOutput();
         EventHandler.setInputHandler(this, this.input);
         EventHandler.setOutputHandler(this, this.output);
 
