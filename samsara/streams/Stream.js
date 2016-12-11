@@ -14,7 +14,7 @@ define(function(require, exports, module) {
      * @static
      * @param streams {Object}  Dictionary of `resize` streams
      */
-    Stream.merge = function(streams) {
+    Stream.merge = function merge(streams) {
         return new _MergedStream(streams);
     };
 
@@ -40,8 +40,8 @@ define(function(require, exports, module) {
      * @param map {Function}            Function to map stream payloads
      * @param streams {Array|Object}    Stream sources
      */
-    Stream.lift = function(maps, streams){
-        return new _LiftedStream(maps, streams);
+    Stream.lift = function lift(map, streams){
+        return new _LiftedStream(map, streams);
     };
 
     module.exports = Stream;
