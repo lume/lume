@@ -1,24 +1,24 @@
 /* Copyright © 2015-2016 David Valdman */
 define(function(require, exports, module) {
-    var Stream = require('./_Stream');
     var MergedStream = require('./_MergedStream');
+    var StreamOutput = require('./_StreamContract');
     var EventMapper = require('../events/EventMapper');
 
     function LiftedStream(map, streams) {
-        Stream.call(this);
-
+        StreamOutput.call(this);
         var mergedStream = new MergedStream(streams);
+
         this._map = map;
-
-        // TODO: replace with mergedStream.map
-        var mappedStream = new EventMapper(function liftMap(data) {
+        var mapped = function applyMap (data){
             return this._map.apply(null, data);
-        }.bind(this));
+        }.bind(this);
 
-        this.subscribe(mappedStream).subscribe(mergedStream);
+        this._mappedStream = new EventMapper(mapped);
+
+        this.subscribe(this._mappedStream).subscribe(mergedStream);
     }
 
-    LiftedStream.prototype = Object.create(MergedStream.prototype);
+    LiftedStream.prototype = Object.create(StreamOutput.prototype);
     LiftedStream.prototype.constructor = LiftedStream;
 
     /**
@@ -28,7 +28,7 @@ define(function(require, exports, module) {
      * @param map {Function} Mapping function
      */
     LiftedStream.prototype.setMap = function(map) {
-        this._map = map;
+        EventMapper.prototype.set.apply(this._mappedStream, arguments);
     };
 
     module.exports = LiftedStream;
