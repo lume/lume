@@ -3,6 +3,7 @@
 define(function(require, exports, module) {
     var EventHandler = require('../../events/EventHandler');
     var Stream = require('../../streams/Stream');
+    var StreamContract = require('../../streams/_StreamContract');
     var LayoutNode = require('./LayoutNode');
     var SizeNode = require('./SizeNode');
     var layoutAlgebra = require('../algebras/layout');
@@ -26,8 +27,8 @@ define(function(require, exports, module) {
         this._logic = new EventHandler();
 
         // layout and size streams
-        this.size = new Stream();
-        this.layout = new Stream();
+        this.size = new StreamContract();
+        this.layout = new StreamContract();
 
         // set node middleware
         if (object) _set.call(this, object);
@@ -165,7 +166,7 @@ define(function(require, exports, module) {
         if (object instanceof SizeNode){
             var size = Stream.lift(
                 function SGSizeAlgebra (objectSpec, parentSize){
-                    if (!parentSize) return false;
+                    // if (!parentSize) return false;
                     return(objectSpec)
                         ? sizeAlgebra(objectSpec, parentSize)
                         : parentSize;
@@ -178,7 +179,7 @@ define(function(require, exports, module) {
         else if (object instanceof LayoutNode){
             var layout = Stream.lift(
                 function SGLayoutAlgebra (objectSpec, parentSpec, size){
-                    if (!parentSpec || !size) return false;
+                    // if (!parentSpec || !size) return false;
                     return (objectSpec)
                         ? layoutAlgebra(objectSpec, parentSpec, size)
                         : parentSpec;
