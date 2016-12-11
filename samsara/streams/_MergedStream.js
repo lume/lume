@@ -34,11 +34,17 @@ define(function(require, exports, module) {
         var mergedData = this.mergedData;
         mergedData[key] = undefined;
 
-        if (!stream.on) stream = new Observable(stream);
-
-        stream.on(['set', 'start', 'update', 'end'], function(data){
-            mergedData[key] = data;
-        });
+        if (!stream.on) {
+            stream = new Observable(stream);
+            stream.on('set', function(data){
+                mergedData[key] = data;
+            });
+        }
+        else {
+            stream.on(['set', 'start', 'update', 'end'], function(data){
+                mergedData[key] = data;
+            });
+        }
 
         this.subscribe(stream);
 
@@ -55,8 +61,7 @@ define(function(require, exports, module) {
             var index = this.mergedData.indexOf(key);
             this.mergedData.splice(index, 1);
         }
-        else
-            delete this.mergedData[key];
+        else delete this.mergedData[key];
     };
 
     MergedStream.prototype.replaceStream = function(key, stream) {
