@@ -75,11 +75,13 @@ define(function (require, exports, module) {
         }.bind(this));
 
         this._eventInput.on('start', function (value) {
-            hasUpdated = false;
-            this._currentActive = true;
-            if (!this.isActive()) {
-                this.emit('start', value);
-            }
+            preTickQueue.push(function(){
+                hasUpdated = false;
+                this._currentActive = true;
+                if (!this.isActive()) {
+                    this.emit('start', value);
+                }
+            }.bind(this));
         }.bind(this));
 
         this._eventInput.on('update', function (value) {
