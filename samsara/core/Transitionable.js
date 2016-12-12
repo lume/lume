@@ -106,12 +106,12 @@ define(function (require, exports, module) {
                 callback();
             }
 
-            if (!this._currentActive){
-                nextTick.push(function(){
+            nextTick.push(function(){
+                if (!this._currentActive){
                     hasUpdated = false;
                     this.emit('end', value);
-                }.bind(this));
-            }
+                }
+            }.bind(this));
         }.bind(this));
 
         if (value !== undefined) {
