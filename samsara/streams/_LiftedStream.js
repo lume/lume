@@ -8,10 +8,9 @@ define(function(require, exports, module) {
         StreamOutput.call(this);
         var mergedStream = new MergedStream(streams);
 
-        this._map = map;
-        var mapped = function applyMap (data){
-            return this._map.apply(null, data);
-        }.bind(this);
+        function mapped (data){
+            return map.apply(null, data);
+        };
 
         this._mappedStream = new EventMapper(mapped);
 
@@ -28,7 +27,11 @@ define(function(require, exports, module) {
      * @param map {Function} Mapping function
      */
     LiftedStream.prototype.setMap = function(map) {
-        EventMapper.prototype.set.apply(this._mappedStream, arguments);
+        function mapped (data){
+            return map.apply(null, data);
+        };
+
+        this._mappedStream.set(mapped);
     };
 
     module.exports = LiftedStream;
