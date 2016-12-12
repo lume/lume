@@ -79,8 +79,6 @@ define(function(require, exports, module){
             count++;
         }
 
-        // console.log('create stream', this.id, str);
-
         createComplexStrategy.call(this, triggers);
     }
 
@@ -104,28 +102,25 @@ define(function(require, exports, module){
         };
 
         var resolve = function (data){
-            // console.log('resolve', this.id, deps.length === 0);
-            // if (deps.length !== 0) console.log(deps)
-
             if (hasSentLock){
                 this.emit('unlock', this);
                 hasSentLock = false;
             }
 
-            if (startCounter === 0 && states.update && states.end){
-                // update and end called in the same tick when tick should end
-                this._output.emit(EVENTS.UPDATE, data);
-                states.prev = EVENTS.UPDATE;
-                states.update = false;
-            }
-            else if (states.prev === EVENTS.START && states.set) {
-                states.set = false;
-            }
-            else if (states.prev !== EVENTS.UPDATE && states.start && states.update){
-                // start and update called in the same tick
-                this._output.emit(EVENTS.START, data);
-                states.prev = EVENTS.START;
-            }
+            // if (startCounter === 0 && states.update && states.end){
+            //     // update and end called in the same tick when tick should end
+            //     this._output.emit(EVENTS.UPDATE, data);
+            //     states.prev = EVENTS.UPDATE;
+            //     states.update = false;
+            // }
+            // else if (states.prev === EVENTS.START && states.set) {
+            //     states.set = false;
+            // }
+            // else if (states.prev !== EVENTS.UPDATE && states.start && states.update){
+            //     // start and update called in the same tick
+            //     this._output.emit(EVENTS.START, data);
+            //     states.prev = EVENTS.START;
+            // }
 
             if (states.update || (states.start && states.end)){
                 // call update if updating or if both starting and stopping
@@ -133,19 +128,19 @@ define(function(require, exports, module){
                 states.prev = EVENTS.UPDATE;
             }
             else if (states.prev !== EVENTS.UPDATE && states.start && !states.end){
-                if (states.prev === EVENTS.START) console.log('crap');
+                // if (states.prev === EVENTS.START) console.log('crap');
                 // call start if all have started
                 this._output.emit(EVENTS.START, data);
                 states.prev = EVENTS.START;
             }
             else if (startCounter === 0 && states.prev !== EVENTS.START && states.end && !states.start){
-                if (states.prev === EVENTS.END) console.log('crap');
+                // if (states.prev === EVENTS.END) console.log('crap');
                 // call end if all have ended
                 this._output.emit(EVENTS.END, data);
                 states.prev = EVENTS.END;
             }
             else if (states.prev !== EVENTS.UPDATE && states.set){
-                if (states.prev === EVENTS.SET) console.log('crap');
+                // if (states.prev === EVENTS.SET) console.log('crap');
                 this._output.emit(EVENTS.SET, data);
                 states.prev = EVENTS.SET;
             }
@@ -183,12 +178,6 @@ define(function(require, exports, module){
             delay(data);
         });
 
-        // when an event comes in, batch it and lock all merged streams below
-
-        // if all sources are transitionables (etc), wait for the tick event, then fire
-
-        // if one or more sources are not transitionables (etc),
-
         this._input.on('subscribe', function(){
             this.emit('dep', this);
         }.bind(this));
@@ -198,30 +187,23 @@ define(function(require, exports, module){
         }.bind(this));
 
         this._input.on('dep', function(dep){
-            // console.log('stream', this.id, 'receive dep', dep.id)
             dep.on('lock', depLock);
             dep.on('unlock', depUnlock);
         }.bind(this));
 
         this._input.on('undep', function(dep){
             dep.off('lock', depLock);
-            dep.off('unlock', depUnLock);
+            dep.off('unlock', depUnlock);
         });
 
-        var deps = [];
         function depLock(dep){
-            deps.push(dep);
             locked = true;
             if (dep instanceof Stream) lockedCounter++;
-            // console.log(this.id, 'is LOCKED from', dep.id, 'counter: ', lockedCounter)
             if (lockedCounter === 1) self._output.emit('lock', self);
         }
 
         function depUnlock(dep){
-            deps.splice(deps.indexOf(dep), 1);
-            // TODO: check this
             if (dep instanceof Stream) lockedCounter--;
-            // console.log(this.id, 'is UNLOCKED from', dep.id, 'counter: ', lockedCounter)
             if (lockedCounter === 0){
                 locked = false;
                 self._output.emit('unlock', self)
@@ -309,6 +291,10 @@ define(function(require, exports, module){
         return EventHandler.prototype.on.apply(this._output, arguments);
     };
 
+    Stream.prototype.off = function(){
+        return EventHandler.prototype.off.apply(this._output, arguments);
+    };
+
     Stream.prototype.isActive = function(){
         return StreamOutput.prototype.isActive.apply(this._output, arguments);
     };
@@ -316,10 +302,6 @@ define(function(require, exports, module){
     Stream.prototype.get = function(){
         return StreamOutput.prototype.get.apply(this._output, arguments);
     };
-
-    function isStream(source){
-        return (source instanceof Stream);
-    }
 
     module.exports = Stream;
 });
