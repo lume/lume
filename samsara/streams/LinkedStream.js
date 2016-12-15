@@ -1,72 +1,13 @@
 /* Copyright © 2015-2016 David Valdman */
 define(function(require, exports, module){
     var Stream = require('./Stream');
+    var ReduceStream = require('./_ReduceStream');
     var SimpleStream = require('./SimpleStream');
     var Observable = require('./Observable');
-    var StreamContract = require('./_StreamContract');
-    var EventHandler = require('../events/EventHandler');
+    var StreamInput = require('./_StreamInput');
+    var StreamOutput = require('./_StreamContract');
     var preTickQueue = require('../core/queues/preTickQueue');
-
-    function ReduceNode(reducer, stream, extras){
-        this._input = new SimpleStream();
-
-        var sources = [this._input, stream];
-        if (extras) sources = sources.concat(extras);
-
-        this._output = Stream.lift(reducer, sources);
-        StreamContract.call(this, this._output);
-        this.stream = this._output;
-        EventHandler.setOutputHandler(this, this._output);
-
-        // this._input = new SimpleStream();
-
-        // var sources = [this._input, stream];
-        // if (extras) sources = sources.concat(extras);
-
-        // this._output = Stream.lift(reducer, sources);
-
-        // this.stream = stream;
-
-        // EventHandler.setInputHandler(this, this._input);
-        // EventHandler.setOutputHandler(this, this._output);
-
-        // this._input.on('subscribe', function(){
-        //     if (this._output._isActive)
-        //         this._output.emit('start', this._output.get());
-        // }.bind(this));
-
-        // this._input.on('unsubscribe', function(){
-        //     if (this._output._isActive)
-        //         this._output.emit('end', this._output.get());
-        // }.bind(this));
-    }
-
-    ReduceNode.prototype = Object.create(StreamContract.prototype);
-    ReduceNode.prototype.constructor = ReduceNode;
-
-    ReduceNode.prototype.subscribe = function(source){
-        if (source._isActive) this.trigger('start', source.get());
-        return EventHandler.prototype.subscribe.apply(this._input, arguments);
-    };
-
-    ReduceNode.prototype.unsubscribe = function(source){
-        if (!source){
-            for (var i = 0; i < this._input.upstream.length; i++){
-                var source = this._input.upstream[i]
-                this.unsubscribe(source)
-            }
-        }
-        else if (source._isActive) this.trigger('end', source.get());
-        return EventHandler.prototype.unsubscribe.apply(this._input, arguments);
-    };
-
-    ReduceNode.prototype.trigger = function(type, handler){
-        EventHandler.prototype.trigger.apply(this._input, arguments);
-    };
-
-    ReduceNode.prototype.setMap = function(map){
-        this._output.setMap(map);
-    };
+    var nextTick = require('../core/queues/nextTick');
 
     function LinkedList(reducer, offset, extras){
         this.reducer = reducer;
@@ -89,36 +30,27 @@ define(function(require, exports, module){
         this.prev = []; // A list of items rendered before the offset, in order of distance from the offset
         this.next = []; // A list of items rendered after the offset, in order of distance from the offset
 
-        this.tailOutput = new SimpleStream();
+        this.tailOutput = new Stream();
         this.tailOutput.subscribe(this.offset);
 
         this.headOutput = new Stream();
         this.headOutput.subscribe(this.offset);
 
-        this.pivotOutput = new SimpleStream();
+        this.pivotOutput = new StreamOutput();
         this.pivotOutput.subscribe(this.offset);
     }
 
     function fireOffset(){
-        if (this.offset instanceof Observable){
-            // this.offset.emit('set', this.offset.get());
-            this.offset.set(this.offset.get());
-        }
-        else {
-            var self = this;
-            preTickQueue.push(function(){
-                self.offset.emit('set', self.cachedOffset);
-            });
-        }
+        this.offset.set(this.offset.get());
     }
 
     LinkedList.prototype.push = function(stream){
-        var node = new ReduceNode(this.reducer, stream, this.extras);
-        // node.output.subscribe(node._input);
+        var node = new ReduceStream(this.reducer, stream, this.extras);
+        node.position.subscribe(node._input);
 
         if (this.next.length === 0){
             node.subscribe(this.offset);
-            setPivotOutput.call(this, node.stream);
+            setPivotOutput.call(this, node);
             setHeadOutput.call(this, node, this.offset);
             fireOffset.call(this);
         }
@@ -130,12 +62,12 @@ define(function(require, exports, module){
 
         this.next.push(node);
 
-        return node._input;
+        return node.position;
     };
 
     LinkedList.prototype.unshift = function(stream){
-        var node = new ReduceNode(this.prevReducer, stream, this.extras);
-        // node.output.subscribe(node._output);
+        var node = new ReduceStream(this.prevReducer, stream, this.extras);
+        node.position.subscribe(node._output);
 
         if (this.prev.length === 0){
             node.subscribe(this.offset);
@@ -150,7 +82,7 @@ define(function(require, exports, module){
 
         this.prev.push(node);
 
-        return node._output;
+        return node.position;
     };
 
     LinkedList.prototype.pop = function(){
@@ -190,10 +122,10 @@ define(function(require, exports, module){
         if (index > 0){
             for (i = 0; i < index; i++){
                 var next = this.next.shift();
-                next.setMap(this.prevReducer);
 
-                // next.unsubscribe();
-                // next.subscribe(next._output);
+                next.setMap(this.prevReducer);
+                next.position.unsubscribe(next._input);
+                next.position.subscribe(next._output);
 
                 if (this.next[0]) this.next[0].unsubscribe(next);
                 if (this.prev[0]) this.prev[0].subscribe(next);
@@ -204,10 +136,10 @@ define(function(require, exports, module){
         else {
             for (i = 0; i < -index; i++) {
                 var prev = this.prev.shift();
-                prev.setMap(this.reducer);
 
-                // prev.output.unsubscribe();
-                // prev.output.subscribe(prev._input);
+                prev.setMap(this.reducer);
+                prev.position.unsubscribe(prev._output);
+                prev.position.subscribe(prev._input);
 
                 if (this.prev[0]) this.prev[0].unsubscribe(prev);
                 if (this.next[0]) this.next[0].subscribe(prev);
@@ -225,12 +157,10 @@ define(function(require, exports, module){
         if (this.next[0]) {
             this.next[0].subscribe(this.offset);
             setHeadOutput.call(this, this.next[this.next.length - 1]);
-            setPivotOutput.call(this, this.next[0].stream);
         }
-        else {
-            setHeadOutput.call(this, this.offset);
-            setPivotOutput.call(this, this.offset);
-        }
+        else setHeadOutput.call(this, this.offset);
+
+        setPivotOutput.call(this, this.next[0] || this.offset);
 
         fireOffset.call(this);
     };
