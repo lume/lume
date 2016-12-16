@@ -43,7 +43,8 @@ define(function(require, exports, module) {
         unlock : true,
         subscribe : true,
         unsubscribe : true,
-        dep : true
+        dep : true,
+        undep : true
     };
 
     /**
