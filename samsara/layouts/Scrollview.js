@@ -111,7 +111,7 @@ define(function (require, exports, module) {
 
             genericInput.on('start', function () {
                 isTouching = true;
-                this.spring.halt();
+                // this.spring.halt();
             }.bind(this));
 
             genericInput.on('end', function (data) {
@@ -177,37 +177,29 @@ define(function (require, exports, module) {
                 return edge;
             }.bind(this), [this.layout, this.size, this.position]);
 
-            overflow.on('start', function(){});
-            overflow.on('update', function(){});
-            overflow.on('end', function(){});
+            overflow.on(['set', 'start', 'update', 'end'], function(){});
 
             var pivot = Stream.lift(function(offset, pivotLength, edge){
-                if (offset === undefined || !pivotLength) return false;
-
-                if (-offset > pivotLength){
+                if (pivotLength < 0){
                     // next
                     progress = 1;
                     if (edge !== EDGE.BOTTOM) {
-                        // dirtyQueue.push(function(){
                         this.layout.setPivot(1);
-                        this.position.set(pivotLength + offset);
+                        this.position.set(pivotLength);
                         this._currentIndex++;
-                        // }.bind(this));
                     }
                 }
                 else if (offset > 0){
                     // previous
                     progress = 0;
                     if (edge !== EDGE.TOP) {
-                        // dirtyQueue.push(function(){
                         this.layout.setPivot(-1);
-                        this.position.set(-pivotLength + offset);
+                        this.position.set(-pivotLength + 2*offset);
                         this._currentIndex--;
-                        // }.bind(this))
                     }
                 }
                 else {
-                    progress = -offset / pivotLength;
+                    progress = -offset / length;
                 }
 
                 return {
@@ -232,20 +224,16 @@ define(function (require, exports, module) {
             ContainerSurface.prototype.setPerspective.apply(this.container, arguments);
         },
         push: function(item) {
-            this.layout.push(item);
+            return this.layout.push(item);
         },
         unshift: function(item) {
-            this.layout.unshift(item);
+            return this.layout.unshift(item);
         },
         pop: function (){
             return this.layout.pop();
         },
         shift : function(){
             return this.layout.shift();
-        },
-        addItems: function (items) {
-            for (var i = 0; i < items.length; i++)
-                this.push(items[i]);
         }
     }, CONSTANTS);
 

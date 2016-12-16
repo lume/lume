@@ -3,8 +3,7 @@
 define(function(require, exports, module) {
     var Transform = require('../core/Transform');
     var View = require('../core/View');
-    // var ReduceStream = require('../streams/ReduceStream');
-    var ReduceStream = require('../streams/LinkedStream');
+    var LinkedStream = require('../streams/LinkedStream');
     var SimpleStream = require('../streams/SimpleStream');
     var Stream = require('../streams/Stream');
 
@@ -44,10 +43,9 @@ define(function(require, exports, module) {
             // Store nodes and flex values
             this.nodes = [];
 
-            this.stream = new ReduceStream(function(prev, length, spacing){
-                if (prev === undefined || length === undefined) return false;
-                return prev + length + spacing;
-            }, options.offset, [options.spacing]);
+            this.stream = new LinkedStream(function(prev, length){
+                return prev + length;
+            }, options.offset);
 
             this.setLengthMap(DEFAULT_LENGTH_MAP);
 
@@ -55,15 +53,16 @@ define(function(require, exports, module) {
                 return Math.max(length - spacing, 0);
             }, [this.stream.headOutput, options.spacing]);
 
-            this.output.subscribe(Stream.merge([this.stream.tailOutput, this.stream.headOutput]));
+            var output = Stream.merge([this.stream.tailOutput, this.stream.headOutput]);
+            this.output.subscribe(output);
 
-            this.pivot = new SimpleStream();
+            this.pivot = new Stream();
             this.pivot.subscribe(this.stream.pivotOutput);
 
             // SequentialLayout derives its size from its content
             var size = [];
             this.size = Stream.lift(function(parentSize, length){
-                if (!parentSize || length === undefined) return;
+                if (!parentSize) return;
                 size[options.direction] = length;
                 size[1 - options.direction] = parentSize[1 - options.direction];
                 return size;
