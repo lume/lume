@@ -9,7 +9,7 @@ define(function(require, exports, module){
     var preTickQueue = require('../core/queues/preTickQueue');
     var nextTick = require('../core/queues/nextTick');
 
-    function LinkedList(reducer, offset, extras){
+    function LinkedStream(reducer, offset, extras){
         this.reducer = reducer;
         this.prevReducer = function(){
             arguments[0] *= -1;
@@ -36,7 +36,7 @@ define(function(require, exports, module){
         this.headOutput = new Stream();
         this.headOutput.subscribe(this.offset);
 
-        this.pivotOutput = new StreamOutput();
+        this.pivotOutput = new Stream();
         this.pivotOutput.subscribe(this.offset);
     }
 
@@ -44,7 +44,7 @@ define(function(require, exports, module){
         this.offset.set(this.offset.get());
     }
 
-    LinkedList.prototype.push = function(stream){
+    LinkedStream.prototype.push = function(stream){
         var node = new ReduceStream(this.reducer, stream, this.extras);
         node.position.subscribe(node._input);
 
@@ -65,7 +65,7 @@ define(function(require, exports, module){
         return node.position;
     };
 
-    LinkedList.prototype.unshift = function(stream){
+    LinkedStream.prototype.unshift = function(stream){
         var node = new ReduceStream(this.prevReducer, stream, this.extras);
         node.position.subscribe(node._output);
 
@@ -85,7 +85,7 @@ define(function(require, exports, module){
         return node.position;
     };
 
-    LinkedList.prototype.pop = function(){
+    LinkedStream.prototype.pop = function(){
         if (!this.next.length) return;
 
         var node = this.next.pop();
@@ -97,18 +97,19 @@ define(function(require, exports, module){
         return node;
     };
 
-    LinkedList.prototype.shift = function(){
+    LinkedStream.prototype.shift = function(){
         if (!this.prev.length) return;
 
         var node = this.prev.shift();
         var next = (this.prev.length === 0) ? this.offset : this.prev[0];
+
         node.unsubscribe(next);
         setTailOutput.call(this, next);
 
         return node;
     };
 
-    LinkedList.prototype.setPivot = function(index){
+    LinkedStream.prototype.setPivot = function(index){
         if (
             index === 0 ||
             index > 0 && index > this.next.length ||
@@ -180,5 +181,5 @@ define(function(require, exports, module){
         this.pivotOutput.subscribe(pivotStream);
     }
 
-    module.exports = LinkedList;
+    module.exports = LinkedStream;
 });
