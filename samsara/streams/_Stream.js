@@ -2,7 +2,7 @@
 
 define(function(require, exports, module){
     var tick = require('../core/tick');
-    var EventHandler = require('../events/EventHandler');
+    var StreamInput = require('../streams/_StreamInput');
     var SimpleStream = require('../streams/SimpleStream');
     var StreamOutput = require('../streams/_StreamContract');
 
@@ -64,7 +64,7 @@ define(function(require, exports, module){
     function Stream(triggers){
         triggers = triggers || {};
 
-        this._input = new EventHandler();
+        this._input = new StreamInput();
         this._output = new StreamOutput();
         this._numSources = 0;
 
@@ -91,6 +91,8 @@ define(function(require, exports, module){
         };
 
         var resolve = function (data){
+            hasReceivedEvent = false;
+
             if (hasSentLock){
                 this.emit('unlock', this);
                 hasSentLock = false;
@@ -115,13 +117,15 @@ define(function(require, exports, module){
                 states.prev = EVENTS.UPDATE;
             }
             else if (states.prev !== EVENTS.UPDATE && states.start && !states.end){
-                if (states.prev === EVENTS.START) console.log('crap start');
+                // if (states.prev === EVENTS.START) console.log('crap start');
+                // if (states.prev === EVENTS.UPDATE ) console.log('crap start 2')
                 // call start if all have started
                 this._output.emit(EVENTS.START, data);
                 states.prev = EVENTS.START;
             }
-            else if (startCounter === 0 && states.prev !== EVENTS.START && states.end && !states.start){
-                if (states.prev === EVENTS.END) console.log('crap end');
+            else if (states.prev !== EVENTS.START && startCounter === 0 && states.end && !states.start){
+                // if (states.prev === EVENTS.END) console.log('crap end');
+                // if (states.prev === EVENTS.START ) console.log('crap end 2')
                 // call end if all have ended
                 this._output.emit(EVENTS.END, data);
                 states.prev = EVENTS.END;
@@ -223,7 +227,7 @@ define(function(require, exports, module){
 
         tick.on('end tick', function(){
             hasTicked = false;
-            hasReceivedEvent = false;
+            // hasReceivedEvent = false;
         });
     }
 
@@ -231,7 +235,7 @@ define(function(require, exports, module){
     Stream.prototype.constructor = Stream;
 
     Stream.prototype.subscribe = function(source){
-        var success = EventHandler.prototype.subscribe.apply(this._input, arguments);
+        var success = StreamInput.prototype.subscribe.apply(this._input, arguments);
         if (success) {
             // if (source.locked) {
             //     this.lockedCounter++;
@@ -245,10 +249,6 @@ define(function(require, exports, module){
             window.Promise.resolve().then(function(){
                 this.trigger('lock', source);
             }.bind(this));
-
-            if (source.isActive && source.isActive()) {
-                this.trigger('start', source.get());
-            }
         }
 
         return success;
@@ -265,7 +265,7 @@ define(function(require, exports, module){
             return true;
         }
 
-        var success = EventHandler.prototype.unsubscribe.apply(this._input, arguments);
+        var success = StreamInput.prototype.unsubscribe.apply(this._input, arguments);
         if (success) {
             // if (source.locked) {
             //     this.lockedCounter--;
@@ -278,9 +278,6 @@ define(function(require, exports, module){
                 this.trigger('lock', source);
             }.bind(this));
 
-            if (source.isActive && source.isActive()) {
-                this.trigger('end', source.get());
-            }
             this._numSources--;
             // if (this._numSources === 1) createSimpleStrategy.call(this);
         }
@@ -289,19 +286,19 @@ define(function(require, exports, module){
     };
 
     Stream.prototype.trigger = function(){
-        return EventHandler.prototype.trigger.apply(this._input, arguments);
+        return StreamInput.prototype.trigger.apply(this._input, arguments);
     };
 
     Stream.prototype.emit = function(){
-        return EventHandler.prototype.emit.apply(this._output, arguments);
+        return StreamOutput.prototype.emit.apply(this._output, arguments);
     };
 
     Stream.prototype.on = function(){
-        return EventHandler.prototype.on.apply(this._output, arguments);
+        return StreamOutput.prototype.on.apply(this._output, arguments);
     };
 
     Stream.prototype.off = function(){
-        return EventHandler.prototype.off.apply(this._output, arguments);
+        return StreamOutput.prototype.off.apply(this._output, arguments);
     };
 
     Stream.prototype.isActive = function(){
