@@ -24,8 +24,6 @@ define(function(require, exports, module) {
      * @class DOMOutput
      * @constructor
      * @namespace Core
-     * @uses Core.LayoutNode
-     * @uses Core.SizeNode
      * @private
      * @param {Node} element document parent of this container
      */
@@ -39,9 +37,8 @@ define(function(require, exports, module) {
     }
 
     function _round(value, unit){
-        return (unit === 1)
-            ? Math.round(value)
-            : Math.round(value * unit) / unit
+        if (unit === 1) return Math.round(value);
+        else return Math.round(value * unit) / unit
     }
 
     function _formatCSSTransform(transform, unit) {

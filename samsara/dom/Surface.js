@@ -376,7 +376,7 @@ define(function(require, exports, module) {
         if (options.attributes !== undefined) this.setAttributes(options.attributes);
         if (options.content !== undefined) this.setContent(options.content);
         if (options.enableScroll) enableScroll.call(this);
-        if (options.roundToPixel) this._elementOutput._roundToPixel = options.roundToPixel;
+        if (options.roundToPixel) this._elementOutput._roundToPixel = options.roundToPixel || false;
     };
 
     /**
