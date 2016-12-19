@@ -243,6 +243,7 @@ define(function(require, exports, module) {
         this._eventInput.off('mouseleave');
 
         this._payload.event = event;
+        this._payload.delta = (this.options.direction === undefined) ? [0,0] : 0;
 
         this.emit('end', this._payload);
 

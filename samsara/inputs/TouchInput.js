@@ -223,6 +223,7 @@ define(function(require, exports, module) {
         payload.count = data.count;
         payload.event = data.event;
         payload.timestamp = data.timestamp;
+        payload.delta = (this.options.direction === undefined) ? [0,0] : 0;
 
         this.emit('end', payload);
         delete this._payload[touchId];
