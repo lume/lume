@@ -6,7 +6,7 @@ define(function(require, exports, module) {
 
     function LiftedStream(map, streams) {
         StreamOutput.call(this);
-        var mergedStream = new MergedStream(streams);
+        this.mergedStream = new MergedStream(streams);
 
         function mapped (data){
             return map.apply(null, data);
@@ -14,7 +14,7 @@ define(function(require, exports, module) {
 
         this._mappedStream = new EventMapper(mapped);
 
-        this.subscribe(this._mappedStream).subscribe(mergedStream);
+        this.subscribe(this._mappedStream).subscribe(this.mergedStream);
     }
 
     LiftedStream.prototype = Object.create(StreamOutput.prototype);
@@ -32,6 +32,7 @@ define(function(require, exports, module) {
         };
 
         this._mappedStream.set(mapped);
+        this._cache = mapped(this.mergedStream.get());
     };
 
     module.exports = LiftedStream;
