@@ -5,7 +5,6 @@ define(function(require, exports, module) {
     var OptionsManager = require('../core/_OptionsManager');
     var StreamContract = require('../streams/_StreamContract');
 
-    var MINIMUM_TICK_TIME = 8;
     var _now = Date.now;
 
     /**
@@ -187,7 +186,7 @@ define(function(require, exports, module) {
             if (activateRails) return false;
         }
 
-        var dt = Math.max(currTime - prevTime, MINIMUM_TICK_TIME); // minimum tick time
+        var dt = currTime - prevTime;
         var invDt = 1 / dt;
 
         var velX = diffX * invDt;
@@ -227,7 +226,7 @@ define(function(require, exports, module) {
         payload.delta = nextDelta;
         payload.value = this._value;
         payload.cumulate = this._cumulate;
-        payload.velocity = nextVel;
+        payload.velocity = 0.5 * (payload.velocity + nextVel); // trailing average
         payload.event = event;
         payload.dt = dt;
 

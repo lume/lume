@@ -5,8 +5,7 @@ define(function(require, exports, module) {
     var EventHandler = require('../events/EventHandler');
     var StreamContract = require('../streams/_StreamContract');
     var OptionsManager = require('../core/_OptionsManager');
-
-    var MINIMUM_TICK_TIME = 8;
+    var preTickQueue = require('../core/queues/preTickQueue');
 
     /**
      * Wrapper for DOM touch events. Converts
@@ -169,7 +168,7 @@ define(function(require, exports, module) {
                 diffX = 0;
         }
 
-        var dt = Math.max(currTime - prevTime, MINIMUM_TICK_TIME);
+        var dt = currTime - prevTime;
         var invDt = 1 / dt;
 
         var velX = diffX * invDt;
@@ -204,7 +203,7 @@ define(function(require, exports, module) {
         }
 
         payload.delta = nextDelta;
-        payload.velocity = nextVel;
+        payload.velocity = 0.5 * (payload.velocity + nextVel); // trailing average
         payload.value = this._value[touchId];
         payload.cumulate = this._cumulate[touchId];
         payload.count = data.count;
