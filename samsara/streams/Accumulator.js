@@ -31,11 +31,12 @@ define(function(require, exports, module){
      */
     function Accumulator(sum, options){
         this.options = OptionsManager.setOptions(this, options);
-        this.sum = undefined;
         if (sum !== undefined) this.set(sum);
+        else this.sum = 0;
 
         Stream.call(this, {
             set: set.bind(this),
+            start: start.bind(this),
             update: update.bind(this),
             end: end.bind(this)
         });
@@ -44,10 +45,14 @@ define(function(require, exports, module){
             if (value instanceof Array) {
                 this.sum = [];
                 for (var i = 0; i < value.length; i++)
-                    this.sum[i] = clamp(value[i], this.options.min, this.options.max);
+                    this.sum[i] = clamp(this.sum[i] + value[i], this.options.min, this.options.max);
             }
-            else this.sum = clamp(value, this.options.min, this.options.max);
+            else this.sum = clamp(this.sum + value, this.options.min, this.options.max);
 
+            return this.sum;
+        }
+
+        function start(value){
             return this.sum;
         }
 
@@ -62,6 +67,7 @@ define(function(require, exports, module){
         }
 
         function end(delta){
+            // should always be 0
             return update.call(this, delta);
         }
     }
@@ -83,21 +89,24 @@ define(function(require, exports, module){
      *
      * @method set
      * @param sum {Number}              Current value
-     * @param [silent=false] {Boolean}  Flag to suppress events
      */
-    Accumulator.prototype.set = function(sum, silent){
+    Accumulator.prototype.set = function(sum){
         if (sum instanceof Array){
             this.sum = [];
-            for (var i = 0; i < sum.length; i++)
+            value = [];
+            for (var i = 0; i < sum.length; i++){
                 this.sum[i] = clamp(sum[i], this.options.min, this.options.max);
+                value[i] = 0;
+            }
         }
-        else this.sum = clamp(sum, this.options.min, this.options.max);
+        else {
+            this.sum = clamp(sum, this.options.min, this.options.max);
+            value = 0;
+        }
 
-        if (silent === true) return;
-        var self = this;
         preTickQueue.push(function(){
-            self.trigger('set', self.sum);
-        });
+            this.trigger('set', value);
+        }.bind(this));
     };
 
     /**

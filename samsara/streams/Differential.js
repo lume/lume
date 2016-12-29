@@ -3,7 +3,7 @@
 define(function(require, exports, module){
     var Stream = require('../streams/Stream');
     var OptionsManager = require('../core/_OptionsManager');
-    var dirtyQueue = require('../core/queues/dirtyQueue');
+    var nextTick = require('../core/queues/nextTick');
 
     /**
      * Differential is a Stream that emits differentials of consecutive
@@ -45,19 +45,25 @@ define(function(require, exports, module){
             if (value instanceof Array){
                 if (previous === undefined){
                     delta = value.map(function(val){ return 0; });
+                    previous = value.slice();
                 }
                 else {
                     for (var i = 0; i < value.length; i++)
                         delta[i] = scale * (value[i] - previous[i]);
+                    previous = value.slice();
                 }
-                previous = value.slice();
             }
             else {
-                delta = (previous === undefined) ? 0 : scale * (value - previous);
-                previous = value;
+                if (previous === undefined){
+                    delta = 0;
+                    previous = value;
+                }
+                else {
+                    delta = scale * (value - previous);
+                    previous = value;
+                }
             }
-
-            return value;
+            return delta;
         }
 
         function update(value) {
@@ -78,13 +84,18 @@ define(function(require, exports, module){
         }
 
         function end(value){
-            var tempDelta = delta;
-            this.trigger('update', value);
-            // TODO: switch to nextQueue
-            dirtyQueue.push(function(){
-                this.emit('end', tempDelta);
-            }.bind(this));
-            return false;
+            if (previous instanceof Array) {
+                delta = [];
+                for (var i = 0; i < previous.length; i++) {
+                    delta[i] = 0;
+                }
+            }
+            else {
+                delta = 0;
+                previous = value;
+            }
+
+            return delta;
         }
     }
 
