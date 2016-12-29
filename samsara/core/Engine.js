@@ -57,9 +57,9 @@ define(function(require, exports, module) {
      */
     Engine.step = function step() {
         // browser events and their handlers happen before rendering begins
-        while (preTickQueue.length) (preTickQueue.shift())();
-
         for (var i = 0; i < tickQueue.length; i++) tickQueue[i]();
+
+        while (preTickQueue.length) (preTickQueue.shift())();
 
         tick.emit('tick');
 
