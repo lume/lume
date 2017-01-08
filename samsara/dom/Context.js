@@ -138,24 +138,17 @@ define(function(require, exports, module) {
     };
 
     /**
-     * Pull the perspective value from a transitionable.
+     * Provide the perspective value from a stream.
      *
      * @method perspectiveFrom
-     * @param perspective {Transitionable}    Perspective transitionable
+     * @param perspective {Stream}    Perspective stream
      */
     Context.prototype.perspectiveFrom = function perspectiveFrom(perspective){
         this._perspective = perspective;
 
-        this._perspective.on('set', function(perspective){
-            setPerspective(this.container, perspective);
-        }.bind(this));
-
-        this._perspective.on('update', function(perspective){
-            setPerspective(this.container, perspective);
-        }.bind(this));
-
-        this._perspective.on('end', function(perspective){
-            setPerspective(this.container, perspective);
+        this._perspective.on(['set', 'start', 'update', 'end'], function(perspective){
+            if (this.container)
+                setPerspective(this.container, perspective);
         }.bind(this));
     };
 
@@ -168,12 +161,9 @@ define(function(require, exports, module) {
     Context.prototype.perspectiveOriginFrom = function perspectiveOriginFrom(perspectiveOrigin){
         this._perspectiveOrigin = perspectiveOrigin;
 
-        this._perspectiveOrigin.on('update', function(origin){
-            setPerspectiveOrigin(this.container, origin);
-        }.bind(this));
-
-        this._perspectiveOrigin.on('end', function(origin){
-            setPerspectiveOrigin(this.container, origin);
+        this._perspectiveOrigin.on(['set', 'start', 'update', 'end'], function(origin){
+            if (this.container)
+                setPerspectiveOrigin(this.container, origin);
         }.bind(this));
     };
 
