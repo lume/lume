@@ -4,6 +4,7 @@ define(function(require, exports, module) {
     var DOMOutput = require('./_DOMOutput');
     var EventHandler = require('../events/EventHandler');
     var Stream = require('../streams/Stream');
+    var StreamContract = require('../streams/_StreamContract');
     var SizeNode = require('../core/nodes/SizeNode');
     var LayoutNode = require('../core/nodes/LayoutNode');
     var sizeAlgebra = require('../core/algebras/size');
@@ -75,6 +76,7 @@ define(function(require, exports, module) {
         this._elementOutput = new DOMOutput();
         this._eventOutput = new EventHandler();
 
+        // TODO: stopPropagation has adverse effects for bubbling
         this._eventForwarder = function _eventForwarder(event) {
             event.stopPropagation();
             var shouldEmit = processEvent.call(this, event);
@@ -94,44 +96,34 @@ define(function(require, exports, module) {
             else return true;
         }
 
-        this._sizeNode = new SizeNode();
-        this._layoutNode = new LayoutNode();
+        this._sizeNode = null;
+        this._layoutNode = null;
 
         this._size = new EventHandler();
         this._layout = new EventHandler();
 
-        this.size = Stream.lift(function surfaceSizeLift(sizeSpec, parentSize) {
-            if (!parentSize) return false; // occurs when surface is never added
-            return sizeAlgebra(sizeSpec, parentSize);
-        }, [this._sizeNode, this._size]);
+        this.size = new StreamContract();
+        this.layout = new StreamContract();
+
+        this.size.subscribe(this._size);
+        this.layout.subscribe(this._layout);
 
         this.size.on(['set', 'start', 'update', 'end'], commitSize.bind(this));
 
-        this.layout = Stream.lift(function surfaceLayoutLift(parentSpec, objectSpec, size) {
-            if (!parentSpec || !size) return false; // occurs when surface is never added
-            return (objectSpec)
-                ? layoutAlgebra(objectSpec, parentSpec, size)
-                : parentSpec;
-        }, [this._layout, this._layoutNode, this.size]);
-
-        this.layout.on('start', function(){
+        this.layout.on('start', function(layout){
             if (!this._currentTarget) return;
             this._elementOutput.promoteLayer(this._currentTarget);
+            this._elementOutput.commitLayout(this._currentTarget, layout);
         }.bind(this));
 
-        this.layout.on('update', function(layout){
+        this.layout.on(['set', 'update'], function(layout){
             if (!this._currentTarget) return;
             this._elementOutput.commitLayout(this._currentTarget, layout);
         }.bind(this));
 
         this.layout.on('end', function(layout){
             if (!this._currentTarget) return;
-            this._elementOutput.commitLayout(this._currentTarget, layout);
             this._elementOutput.demoteLayer(this._currentTarget);
-        }.bind(this));
-
-        this.layout.on('set', function(layout){
-            if (!this._currentTarget) return;
             this._elementOutput.commitLayout(this._currentTarget, layout);
         }.bind(this));
 
@@ -543,6 +535,7 @@ define(function(require, exports, module) {
      * @param size {Number[]|Stream} Size as [width, height] in pixels, or a stream.
      */
     Surface.prototype.setSize = function setSize(size) {
+        if (!this._sizeNode) createSizeNode.call(this);
         this._cachedSize = size;
         this._sizeNode.set({size : size});
     };
@@ -554,6 +547,7 @@ define(function(require, exports, module) {
      * @param proportions {Number[]|Stream} Proportions as [x,y], or a stream.
      */
     Surface.prototype.setProportions = function setProportions(proportions) {
+        if (!this._sizeNode) createSizeNode.call(this);
         this._sizeNode.set({proportions : proportions});
     };
 
@@ -564,6 +558,7 @@ define(function(require, exports, module) {
      * @param margins {Number[]|Stream} Margins as [width, height] in pixels, or a stream.
      */
     Surface.prototype.setMargins = function setMargins(margins) {
+        if (!this._sizeNode) createSizeNode.call(this);
         this._sizeNode.set({margins : margins});
     };
 
@@ -574,6 +569,7 @@ define(function(require, exports, module) {
      * @param origin {Number[]|Stream} Origin as [x,y], or a stream.
      */
     Surface.prototype.setOrigin = function setOrigin(origin){
+        if (!this._layoutNode) createLayoutNode.call(this);
         this._layoutNode.set({origin : origin});
         this._elementOutput._originDirty = true;
     };
@@ -585,9 +581,36 @@ define(function(require, exports, module) {
      * @param opacity {Number} Opacity
      */
     Surface.prototype.setOpacity = function setOpacity(opacity){
+        if (!this._layoutNode) createLayoutNode.call(this);
         this._layoutNode.set({opacity : opacity});
         this._elementOutput._opacityDirty = true;
     };
+
+    function createSizeNode(){
+        this._sizeNode = new SizeNode();
+
+        var size = Stream.lift(function surfaceSizeLift(sizeSpec, parentSize) {
+            if (!parentSize) return false; // occurs when surface is never added
+            return sizeAlgebra(sizeSpec, parentSize);
+        }, [this._sizeNode, this._size]);
+
+        this.size.unsubscribe(this._size);
+        this.size.subscribe(size);
+    }
+
+    function createLayoutNode(){
+        this._layoutNode = new LayoutNode();
+
+        var layout = Stream.lift(function surfaceLayoutLift(parentSpec, objectSpec, size) {
+            if (!parentSpec || !size) return false; // occurs when surface is never added
+            return (objectSpec)
+                ? layoutAlgebra(objectSpec, parentSpec, size)
+                : parentSpec;
+        }.bind(this), [this._layout, this._layoutNode, this.size]);
+
+        this.layout.unsubscribe(this._layout);
+        this.layout.subscribe(layout);
+    }
 
     module.exports = Surface;
 });
