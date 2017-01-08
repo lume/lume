@@ -239,6 +239,17 @@ define(function(require, exports, module){
     };
 
     /**
+     * Set the quaternion to the identity.
+     *
+     * @method clear
+     * @static
+     * @param q {Array}         Given quaternion
+     */
+    Quaternion.clear = function(q){
+        Quaternion.set(identity, q);
+    }
+
+    /**
      * Get the length of a quaternion.
      *
      * @method length
