@@ -89,6 +89,16 @@ define(function(require, exports, module) {
     };
 
     /**
+     * Provide the perspective value from a stream.
+     *
+     * @method perspectiveFrom
+     * @param perspective {Stream}    Perspective stream
+     */
+    Context.prototype.perspectiveFrom = function perspectiveFrom(perspective){
+        Context.prototype.perspectiveFrom.apply(this.context, arguments);
+    };
+
+    /**
      * Extends the render tree with a provided node.
      *
      * @method add
