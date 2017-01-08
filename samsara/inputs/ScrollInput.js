@@ -6,8 +6,8 @@ define(function(require, exports, module) {
     var SimpleStream = require('../streams/SimpleStream');
     var Timer = require('../core/Timer');
 
-    var MINIMUM_TICK_TIME = 8;
     var MAX_DIFFERENTIAL = 50; // caps mousewheel differentials
+    var DEBOUNCE = 100;
 
     /**
      * Wrapper for DOM wheel/mousewheel events. Converts `scroll` events
@@ -68,6 +68,7 @@ define(function(require, exports, module) {
         this._cumulate = (this.options.direction === undefined) ? [0, 0] : 0;
         this._prevTime = undefined;
         this._inProgress = false;
+        this._preventDefault = true;
 
         var self = this;
         this._scrollEnd = Timer.debounce(function(event){
@@ -79,7 +80,7 @@ define(function(require, exports, module) {
             self._payload.event = event;
 
             self._eventOutput.emit('end', self._payload);
-        }, 100);
+        }, DEBOUNCE);
     }
 
     ScrollInput.prototype = Object.create(SimpleStream.prototype);
@@ -88,6 +89,24 @@ define(function(require, exports, module) {
     ScrollInput.DEFAULT_OPTIONS = {
         direction: undefined,
         scale: 1
+    };
+
+    /**
+     * Calls `event.preventDefault` on the DOM scroll event
+     *
+     * @method preventDefault
+     */
+    ScrollInput.prototype.preventDefault = function(){
+        this._preventDefault = true;
+    };
+
+    /**
+     * `event.preventDefault` is not called on the DOM scroll event
+     *
+     * @method enableDefault
+     */
+    ScrollInput.prototype.enableDefault = function(){
+        this._preventDefault = false;
     };
 
     /**
@@ -106,7 +125,8 @@ define(function(require, exports, module) {
     var _now = Date.now;
 
     function handleMove(event) {
-        event.preventDefault(); // Disable default scrolling behavior
+        if (this._preventDefault)
+            event.preventDefault(); // Disable default scrolling behavior
 
         if (!this._inProgress) {
             this._value = (this.options.direction === undefined) ? [0, 0] : 0;
@@ -131,11 +151,12 @@ define(function(require, exports, module) {
         if (diffX < -MAX_DIFFERENTIAL) diffX = -MAX_DIFFERENTIAL;
         if (diffY < -MAX_DIFFERENTIAL) diffY = -MAX_DIFFERENTIAL;
 
-        var invDeltaT = 1 / Math.max(currTime - prevTime, MINIMUM_TICK_TIME); // minimum tick time
+        var dt = currTime - prevTime;
+        var invDt = 1 / dt;
         this._prevTime = currTime;
 
-        var velX = diffX * invDeltaT;
-        var velY = diffY * invDeltaT;
+        var velX = diffX * invDt;
+        var velY = diffY * invDt;
 
         var scale = this.options.scale;
         var nextVel;
