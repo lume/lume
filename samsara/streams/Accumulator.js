@@ -31,6 +31,7 @@ define(function(require, exports, module){
      */
     function Accumulator(sum, options){
         this.options = OptionsManager.setOptions(this, options);
+
         if (sum !== undefined) this.set(sum);
         else this.sum = 0;
 
@@ -43,7 +44,8 @@ define(function(require, exports, module){
 
         function set(value){
             if (value instanceof Array) {
-                this.sum = [];
+                if (!this.sum) for (var i = 0; i < value.length; i++) this.sum[i] = 0;
+
                 for (var i = 0; i < value.length; i++)
                     this.sum[i] = clamp(this.sum[i] + value[i], this.options.min, this.options.max);
             }
