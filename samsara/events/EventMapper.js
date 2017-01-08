@@ -44,7 +44,11 @@ define(function(require, exports, module) {
         subscribe : true,
         unsubscribe : true,
         dep : true,
-        undep : true
+        undep : true,
+        mount : true,
+        unmount : true,
+        deploy : true,
+        recall : true
     };
 
     /**
