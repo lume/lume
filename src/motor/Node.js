@@ -33,23 +33,16 @@ class Node extends ImperativeBase.mixin(Transformable) {
         //this.callSuperConstructor(ImperativeBase)
 
         /**
-         * Creates a render task to update this Sizeable and re-render. Also passes the
-         * updated size to children, so they can re-render as well, if needed.
-         *
-         * The HTML API MotorHTMLScene's size might change outside of an animation
-         * frame, so that's why we need to create a render task.
          * @private
-         *
-         * @param {Object} size The new size of the scene, in the form {x:10, y:10}.
-         *
-         * XXX: We define this method here in order to keep `this` in context
-         * without creating a new reference like we would when using
-         * Function#bind when we pass this method as an event handler. The
-         * downside of this is more memory usage since it is no longer located
-         * on the prototype chain and a new method created for each instance.
-         * TODO: Is there a better way?
+         * This method is defined here in the consructor as an arrow function
+         * because parent Nodes pass it to Observable#on and Observable#off. If
+         * it were a prototype method, then it would need to be bound when
+         * passed to Observable#on, which would require keeping track of the
+         * bound function reference in order to be able to pass it to
+         * Observable#off later. See ImperativeBase#addChild and
+         * ImperativeBase#removeChild.
          */
-        this._onParentSizeChange = (newSize) => {
+        this._onParentSizeChange = () => {
 
             // We only need to recalculate sizing and matrices if this node has
             // properties that depend on parent sizing (proportional size,
@@ -65,18 +58,12 @@ class Node extends ImperativeBase.mixin(Transformable) {
                 || this._properties.align.x !== 0
                 || this._properties.align.y !== 0
                 || this._properties.align.z !== 0
-
-                || (this._properties.sizeMode.x === "proportional" && this._properties.mountPoint.x !== 0)
-                || (this._properties.sizeMode.y === "proportional" && this._properties.mountPoint.y !== 0)
-                || (this._properties.sizeMode.z === "proportional" && this._properties.mountPoint.z !== 0)
             ) {
                 this._calcSize()
                 this._needsToBeRendered()
             }
         }
 
-        // TODO: We need to render one time each time mountPromise is resolved,
-        // not just this one time in the constructor.
         this._calcSize()
         this._needsToBeRendered()
     }

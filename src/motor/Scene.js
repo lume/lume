@@ -45,9 +45,10 @@ class Scene extends ImperativeBase.mixin(Sizeable) {
 
     _startOrStopSizePolling() {
         if (
-            this._properties.sizeMode.x == 'proportional'
+            this._mounted &&
+            (this._properties.sizeMode.x == 'proportional'
             || this._properties.sizeMode.y == 'proportional'
-            || this._properties.sizeMode.z == 'proportional'
+            || this._properties.sizeMode.z == 'proportional')
         ) {
             this._startSizePolling()
         }
