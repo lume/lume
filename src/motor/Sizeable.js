@@ -79,8 +79,7 @@ const SizeableMixin = base => {
         // handle each axis in separate methods, and call those separately in
         // the accessors?
         _calcSize() {
-            const {x,y,z} = this._calculatedSize
-            const previousSize = {x,y,z}
+            const previousSize = Object.assign({}, this._calculatedSize)
 
             if (this._properties.sizeMode._x == 'absolute') {
                 this._calculatedSize.x = this._properties.absoluteSize._x
@@ -114,8 +113,7 @@ const SizeableMixin = base => {
                 || previousSize.y !== this._calculatedSize.y
                 || previousSize.z !== this._calculatedSize.z
             ) {
-                const {x,y,z} = this._calculatedSize
-                this.triggerEvent('sizechange', {x,y,z})
+                this.triggerEvent('sizechange', Object.assign({}, this._calculatedSize))
             }
         }
 
@@ -232,7 +230,7 @@ const SizeableMixin = base => {
         // no need for a properties getter.
 
         // TODO Where does _render belong? Probably in the DOMRenderer?
-        _render(timestamp) {
+        _render() {
 
             // TODO move to DOMRenderer
             this._applySizeToElement()
