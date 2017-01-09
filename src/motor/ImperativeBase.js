@@ -107,22 +107,19 @@ export function initImperativeBase() {
              */
             async _waitForSceneThenResolveMountPromise() {
 
-                // TODO: this conditional check should work with child classes who's
-                // constructor is no longer named "Node".
                 // This should not fire for Scene or child classes of Scene because a
                 // Scene's mountPromise is resolved when it is mounted with the
                 // `Scene#mount` method.
-                if (this instanceof Node) {
-                    await this._getScenePromise()
-                    await this._scene.mountPromise
+                if (!(this instanceof Node)) return
 
-                    // TODO TODO: also wait for this._mounted so this.element is
-                    // actually mounted in the DOM? Maybe not, as that will be moved to
-                    // the DOMRenderer. Or possibly add that functionality in the HTML
-                    // API. Revisit later.
-                    this._resolveMountPromise(true)
-                }
+                await this._getScenePromise()
+                await this._scene.mountPromise
 
+                // TODO TODO: also wait for this._mounted so this.element is
+                // actually mounted in the DOM? Maybe not, as that will be moved to
+                // the DOMRenderer. Or possibly add that functionality in the HTML
+                // API. Revisit later.
+                this._resolveMountPromise(true)
             }
 
             /**

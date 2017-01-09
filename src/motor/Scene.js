@@ -7,7 +7,7 @@ import documentReady from 'awaitbox/dom/documentReady'
 initImperativeBase()
 
 // Scene is Sizeable, which is currently a subset of Transformable.
-class Scene extends Sizeable.mixin(ImperativeBase) {
+class Scene extends ImperativeBase.mixin(Sizeable) {
     constructor(options = {}) {
         super(options)
 

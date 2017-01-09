@@ -5,7 +5,7 @@ import MotorHTMLNode from '../motor-html/node'
 
 initImperativeBase()
 
-class Node extends Transformable.mixin(ImperativeBase) {
+class Node extends ImperativeBase.mixin(Transformable) {
 
     /**
      * @constructor
