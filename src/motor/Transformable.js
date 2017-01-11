@@ -41,13 +41,18 @@ const TransformableMixin = base => {
 
             // TODO: opacity needs onChanged handler like all the other
             // properties.
-            const propertyChange = () => this._needsToBeRendered()
-            this._properties.position.on('valuechanged', propertyChange)
-            this._properties.rotation.on('valuechanged', propertyChange)
-            this._properties.scale.on('valuechanged', propertyChange)
-            this._properties.origin.on('valuechanged', propertyChange)
-            this._properties.align.on('valuechanged', propertyChange)
-            this._properties.mountPoint.on('valuechanged', propertyChange)
+            this._properties.position.on('valuechanged',
+                () => this.triggerEvent('propertychange', 'position'))
+            this._properties.rotation.on('valuechanged',
+                () => this.triggerEvent('propertychange', 'rotation'))
+            this._properties.scale.on('valuechanged',
+                () => this.triggerEvent('propertychange', 'scale'))
+            this._properties.origin.on('valuechanged',
+                () => this.triggerEvent('propertychange', 'origin'))
+            this._properties.align.on('valuechanged',
+                () => this.triggerEvent('propertychange', 'align'))
+            this._properties.mountPoint.on('valuechanged',
+                () => this.triggerEvent('propertychange', 'mountPoint'))
 
             this.properties = options
         }
@@ -68,7 +73,7 @@ const TransformableMixin = base => {
             if (typeof newValue.y != 'undefined') this._properties.position._y = newValue.y
             if (typeof newValue.z != 'undefined') this._properties.position._z = newValue.z
 
-            this._needsToBeRendered()
+            this.triggerEvent('propertychange', 'position')
         }
         get position() {
             return this._properties.position
@@ -92,7 +97,7 @@ const TransformableMixin = base => {
             if (typeof newValue.y != 'undefined') this._properties.rotation._y = newValue.y
             if (typeof newValue.z != 'undefined') this._properties.rotation._z = newValue.z
 
-            this._needsToBeRendered()
+            this.triggerEvent('propertychange', 'rotation')
         }
         get rotation() {
             return this._properties.rotation
@@ -114,7 +119,7 @@ const TransformableMixin = base => {
             if (typeof newValue.y != 'undefined') this._properties.scale._y = newValue.y
             if (typeof newValue.z != 'undefined') this._properties.scale._z = newValue.z
 
-            this._needsToBeRendered()
+            this.triggerEvent('propertychange', 'scale')
         }
         get scale() {
             return this._properties.scale
@@ -129,7 +134,7 @@ const TransformableMixin = base => {
         set opacity(opacity) {
             if (!isRealNumber(opacity)) throw new Error('Expected a real number for Node#opacity.')
             this._properties.opacity = opacity;
-            this._needsToBeRendered()
+            this.triggerEvent('propertychange', 'opacity')
         }
         get opacity() {
             return this._properties.opacity
@@ -152,7 +157,7 @@ const TransformableMixin = base => {
             if (typeof newValue.y != 'undefined') this._properties.align._y = newValue.y
             if (typeof newValue.z != 'undefined') this._properties.align._z = newValue.z
 
-            this._needsToBeRendered()
+            this.triggerEvent('propertychange', 'align')
         }
         get align() {
             return this._properties.align
@@ -177,7 +182,7 @@ const TransformableMixin = base => {
             if (typeof newValue.y != 'undefined') this._properties.mountPoint._y = newValue.y
             if (typeof newValue.z != 'undefined') this._properties.mountPoint._z = newValue.z
 
-            this._needsToBeRendered()
+            this.triggerEvent('propertychange', 'mountPoint')
         }
         get mountPoint() {
             return this._properties.mountPoint
@@ -227,27 +232,8 @@ const TransformableMixin = base => {
             // Opacity
             if (properties.opacity)
                 this.opacity = properties.opacity
-
-            this._needsToBeRendered()
         }
         // no need for a properties getter.
-
-        // TODO Where does _render belong? Probably in the DOMRenderer?
-        // TODO: rename to _update? it's not really rendering, it's updating
-        // the transform, then the HTML engine renders the DOM elements, and
-        // the WebGL renderer will render the meshes.
-        _render(timestamp) {
-            // applies the transform matrix to the element's style property.
-            // TODO: We shouldn't need to re-calculate the whole matrix every render?
-            this._setMatrix3d(this._calculateMatrix());
-
-            super._render()
-
-            // TODO move to DOMRenderer
-            this._applyOpacityToElement()
-
-            return this
-        }
 
         /**
          * [applyTransform description]
@@ -304,72 +290,6 @@ const TransformableMixin = base => {
             // TODO: move by positive origin after rotating.
 
             return matrix
-        }
-
-        /**
-         * [setMatrix3d description]
-         *
-         * @private
-         * @param {DOMMatrix} matrix A DOMMatrix instance to set as this node's
-         * transform. See "W3C Geometry Interfaces".
-         */
-        _setMatrix3d (matrix) {
-            this._properties.transform = matrix
-            // ^ TODO PERFORMANCE: What's faster? Setting a new DOMMatrix (as we do here
-            // currently, the result of _calculateMatrix) or applying all
-            // transform values to the existing DOMMatrix?
-
-            this._applyTransform();
-        }
-
-        /**
-         * Apply the DOMMatrix value to the style of this Node's element.
-         *
-         * @private
-         *
-         * TODO We'll eventually apply the DOMMatrix directly instead of
-         * converting to a string here.
-         *
-         * TODO move to DOMRenderer
-         *
-         * TODO: Maybe this should not apply style directly, it should be batched
-         * into Motor._nodesToBeRendered, and same for other styles.
-         */
-        _applyTransform () {
-            var matrix = this._properties.transform;
-
-            // XXX: is this in the right order? UPDATE: It is.
-            // TODO: Apply DOMMatrix directly to the Element once browser APIs
-            // support it. Maybe we can polyfill this?
-            var cssMatrixString = `matrix3d(
-                ${ matrix.m11 },
-                ${ matrix.m12 },
-                ${ matrix.m13 },
-                ${ matrix.m14 },
-                ${ matrix.m21 },
-                ${ matrix.m22 },
-                ${ matrix.m23 },
-                ${ matrix.m24 },
-                ${ matrix.m31 },
-                ${ matrix.m32 },
-                ${ matrix.m33 },
-                ${ matrix.m34 },
-                ${ matrix.m41 },
-                ${ matrix.m42 },
-                ${ matrix.m43 },
-                ${ matrix.m44 }
-            )`;
-
-            this._applyStyleToElement('transform', cssMatrixString);
-        }
-
-        /**
-         * @private
-         *
-         * TODO: move into DOMRenderer.
-         */
-        _applyOpacityToElement() {
-            this._applyStyleToElement('opacity', this._properties.opacity);
         }
     }
 

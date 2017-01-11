@@ -2,6 +2,7 @@ import TreeNode from './TreeNode'
 import ElementManager from './ElementManager'
 import Node from './Node'
 import Scene from './Scene'
+import Motor from './Motor'
 
 // We explicitly use `var` instead of `let` here because it is hoisted for the
 // Node and Scene modules. This, along with the following initImperativeBase
@@ -77,6 +78,19 @@ export function initImperativeBase() {
                 this._mountPromise = new Promise(r => this._resolveMountPromise = r)
 
                 this._waitForSceneThenResolveMountPromise()
+
+                // See Transformable/Sizeable propertychange event.
+                this.on('propertychange', prop => {
+                    if (
+                        prop == 'sizeMode' ||
+                        prop == 'absoluteSize' ||
+                        prop == 'proportionalSize'
+                    ) {
+                        this._calcSize()
+                    }
+
+                    this._needsToBeRendered()
+                })
             }
 
             /**
@@ -300,6 +314,132 @@ export function initImperativeBase() {
                 // XXX Only remove the childNode _el if it has an actual parent
                 if (childNode._el.element.parentNode)
                     childNode._el.element.parentNode.removeChild(childNode._el.element)
+            }
+
+            _needsToBeRendered() {
+                Motor._setNodeToBeRendered(this)
+
+                // TODO: Move this logic into Motor (probably to the _setNodeToBeRendered method).
+                if (!Motor._inFrame) Motor._startAnimationLoop()
+            }
+
+            // TODO Where does _render belong? Probably in the DOMRenderer?
+            // TODO: rename to _update? it's not really rendering, it's updating
+            // the transform, then the HTML engine renders the DOM elements, and
+            // the WebGL renderer will render the meshes.
+            _render(timestamp) {
+                // Only Node is Transformable, so
+                if (this instanceof Node) {
+                    // applies the transform matrix to the element's style property.
+                    // TODO: We shouldn't need to re-calculate the whole matrix every render?
+                    this._setMatrix3d(this._calculateMatrix())
+
+                    // TODO move to DOMRenderer
+                    this._applyOpacityToElement()
+                }
+
+                // Both Node and Scene are Sizeable
+                // TODO move to DOMRenderer
+                this._applySizeToElement()
+
+                return this
+            }
+
+            /**
+             * [setMatrix3d description]
+             *
+             * @private
+             * @param {DOMMatrix} matrix A DOMMatrix instance to set as this node's
+             * transform. See "W3C Geometry Interfaces".
+             */
+            _setMatrix3d (matrix) {
+                this._properties.transform = matrix
+                // ^ TODO PERFORMANCE: What's faster? Setting a new DOMMatrix (as we do here
+                // currently, the result of _calculateMatrix) or applying all
+                // transform values to the existing DOMMatrix?
+
+                this._applyTransform();
+            }
+
+            /**
+             * Apply the DOMMatrix value to the style of this Node's element.
+             *
+             * @private
+             *
+             * TODO We'll eventually apply the DOMMatrix directly instead of
+             * converting to a string here.
+             *
+             * TODO move to DOMRenderer
+             *
+             * TODO: Maybe this should not apply style directly, it should be batched
+             * into Motor._nodesToBeRendered, and same for other styles.
+             */
+            _applyTransform () {
+                var matrix = this._properties.transform;
+
+                // XXX: is this in the right order? UPDATE: It is.
+                // TODO: Apply DOMMatrix directly to the Element once browser APIs
+                // support it. Maybe we can polyfill this?
+                var cssMatrixString = `matrix3d(
+                    ${ matrix.m11 },
+                    ${ matrix.m12 },
+                    ${ matrix.m13 },
+                    ${ matrix.m14 },
+                    ${ matrix.m21 },
+                    ${ matrix.m22 },
+                    ${ matrix.m23 },
+                    ${ matrix.m24 },
+                    ${ matrix.m31 },
+                    ${ matrix.m32 },
+                    ${ matrix.m33 },
+                    ${ matrix.m34 },
+                    ${ matrix.m41 },
+                    ${ matrix.m42 },
+                    ${ matrix.m43 },
+                    ${ matrix.m44 }
+                )`;
+
+                this._applyStyleToElement('transform', cssMatrixString);
+            }
+
+            /**
+             * [applySize description]
+             *
+             * @method
+             * @private
+             * @memberOf Node
+             *
+             * TODO: move to DOMRenderer
+             */
+            _applySizeToElement () {
+                const {x,y} = this._calculatedSize
+
+                this._applyStyleToElement('width', `${x}px`)
+                this._applyStyleToElement('height', `${y}px`)
+
+                // XXX: we ignore the Z axis on elements, since they are flat.
+            }
+
+            /**
+             * Apply a style property to this node's element.
+             *
+             * TODO: move into DOMRenderer.
+             *
+             * @private
+             * @param  {string} property The CSS property we will a apply.
+             * @param  {string} value    The value the CSS property wil have.
+             */
+            _applyStyleToElement (property, value) {
+                this._el.element.style[property] = value;
+            }
+
+            /**
+             * @private
+             *
+             * TODO: move into DOMRenderer.
+             */
+            _applyOpacityToElement() {
+                this._applyStyleToElement('opacity', this._properties.opacity);
             }
         }
 

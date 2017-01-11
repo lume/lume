@@ -1,6 +1,5 @@
 import { makeLowercaseSetterAliases, makeAccessorsEnumerable } from './Utility'
 import XYZValues from './XYZValues'
-import Motor from './Motor'
 import Observable from './Observable'
 
 // fallback to experimental CSS transform if browser doesn't have it (fix for Safari 9)
@@ -35,13 +34,12 @@ const SizeableMixin = base => {
             };
 
             // TODO: move this observation in Node. I don't think it belongs here.
-            const propertyChange = () => {
-                this._calcSize()
-                this._needsToBeRendered()
-            }
-            this._properties.sizeMode.on('valuechanged', propertyChange)
-            this._properties.absoluteSize.on('valuechanged', propertyChange)
-            this._properties.proportionalSize.on('valuechanged', propertyChange)
+            this._properties.sizeMode.on('valuechanged',
+                () => this.triggerEvent('propertychange', 'sizeMode'))
+            this._properties.absoluteSize.on('valuechanged',
+                () => this.triggerEvent('propertychange', 'absoluteSize'))
+            this._properties.proportionalSize.on('valuechanged',
+                () => this.triggerEvent('propertychange', 'proportionalSize'))
 
             // This line calls the leaf-class `properties` setter, but we want
             // to use the current prototype's `properties` setter, which
@@ -68,8 +66,7 @@ const SizeableMixin = base => {
             if (typeof newValue.y != 'undefined') this._properties.sizeMode._y = newValue.y
             if (typeof newValue.z != 'undefined') this._properties.sizeMode._z = newValue.z
 
-            this._calcSize()
-            this._needsToBeRendered()
+            this.triggerEvent('propertychange', 'sizeMode')
         }
         get sizeMode() {
             return this._properties.sizeMode
@@ -78,6 +75,9 @@ const SizeableMixin = base => {
         // XXX: We handle all axes at the same time. Would it be better to
         // handle each axis in separate methods, and call those separately in
         // the accessors?
+        // TODO: This is called in ImperativeBase on propertychange. Maybe we
+        // can refactor so it is called inside an animation frame like
+        // Transform#_calculateMatrix?
         _calcSize() {
             const previousSize = Object.assign({}, this._calculatedSize)
 
@@ -137,8 +137,7 @@ const SizeableMixin = base => {
             if (typeof newValue.y != 'undefined') this._properties.absoluteSize._y = Math.round(newValue.y)
             if (typeof newValue.z != 'undefined') this._properties.absoluteSize._z = Math.round(newValue.z)
 
-            this._calcSize()
-            this._needsToBeRendered()
+            this.triggerEvent('propertychange', 'absoluteSize')
         }
         get absoluteSize() {
             return this._properties.absoluteSize
@@ -178,8 +177,7 @@ const SizeableMixin = base => {
             if (typeof newValue.y != 'undefined') this._properties.proportionalSize._y = newValue.y
             if (typeof newValue.z != 'undefined') this._properties.proportionalSize._z = newValue.z
 
-            this._calcSize()
-            this._needsToBeRendered()
+            this.triggerEvent('propertychange', 'proportionalSize')
         }
         get proportionalSize() {
             return this._properties.proportionalSize
@@ -223,65 +221,8 @@ const SizeableMixin = base => {
             // Proportional Size
             if (properties.proportionalSize)
                 this.proportionalSize = properties.proportionalSize
-
-            this._calcSize()
-            this._needsToBeRendered()
         }
         // no need for a properties getter.
-
-        // TODO Where does _render belong? Probably in the DOMRenderer?
-        _render() {
-
-            // TODO move to DOMRenderer
-            this._applySizeToElement()
-
-            return this
-        }
-
-        /**
-         * [applySize description]
-         *
-         * @method
-         * @private
-         * @memberOf Node
-         *
-         * TODO: move to DOMRenderer
-         */
-        _applySizeToElement () {
-            const {x,y} = this._calculatedSize
-
-            this._applyStyleToElement('width', `${x}px`)
-            this._applyStyleToElement('height', `${y}px`)
-
-            // XXX: we ignore the Z axis on elements, since they are flat.
-        }
-
-        /**
-         * Apply a style property to this node's element.
-         *
-         * TODO: move into DOMRenderer.
-         *
-         * @private
-         * @param  {string} property The CSS property we will a apply.
-         * @param  {string} value    The value the CSS property wil have.
-         */
-        _applyStyleToElement (property, value) {
-            this._el.element.style[property] = value;
-        }
-
-        /**
-         * TODO: This method is currently extended by the Node class which seems
-         * out of place. What's the best way to organize this behavior?
-         *
-         * TODO: where is the best place to house _needsToBeRendered? In the ImperativeBase class?
-         * Sizeable? A new Renderable class?
-         */
-        _needsToBeRendered() {
-            Motor._setNodeToBeRendered(this)
-
-            // TODO: Move this logic into Motor (probably to the _setNodeToBeRendered method).
-            if (!Motor._inFrame) Motor._startAnimationLoop()
-        }
     }
 
     Object.defineProperty(Sizeable, Symbol.hasInstance, {
