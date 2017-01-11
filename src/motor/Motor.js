@@ -12,7 +12,7 @@ class Motor {
         this._rAF = null // the current animation frame, or null.
         this._animationLoopStarted = false
         this._allRenderTasks = []
-        this._nodesToBeRendered = new Map
+        this._nodesToBeRendered = new Set
     }
 
     /**
@@ -116,7 +116,10 @@ class Motor {
 
     _setNodeToBeRendered(node) {
         if (!this._nodesToBeRendered.has(node))
-            this._nodesToBeRendered.set(node)
+            this._nodesToBeRendered.add(node)
+
+        // TODO: Move this logic into Motor (probably to the _setNodeToBeRendered method).
+        if (!this._inFrame) this._startAnimationLoop()
     }
 
     // currently unused, as the list is cleared after each frame.
@@ -126,7 +129,7 @@ class Motor {
     }
 
     _renderNodes(timestamp) {
-        for (let [node] of this._nodesToBeRendered) {
+        for (let node of this._nodesToBeRendered) {
             node._render(timestamp)
         }
         this._nodesToBeRendered.clear()

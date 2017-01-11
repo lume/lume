@@ -317,9 +317,6 @@ export function initImperativeBase() {
 
             _needsToBeRendered() {
                 Motor._setNodeToBeRendered(this)
-
-                // TODO: Move this logic into Motor (probably to the _setNodeToBeRendered method).
-                if (!Motor._inFrame) Motor._startAnimationLoop()
             }
 
             // TODO Where does _render belong? Maybe in the DOMRenderer?
