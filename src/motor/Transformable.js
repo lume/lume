@@ -12,6 +12,9 @@ let instanceofSymbol = Symbol('instanceofSymbol')
 // TODO: Is this the best name? Maybe Renderable? How to organize the DOM and
 // WebGL components?
 const TransformableMixin = base => {
+
+    // Transformable extends TreeNode (indirectly through Sizeable) because it
+    // needs to be aware of its _parent when calculating align adjustments.
     class Transformable extends Sizeable.mixin(base) {
 
         constructor(options = {}) {

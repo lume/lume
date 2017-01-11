@@ -1,4 +1,3 @@
-import TreeNode from './TreeNode'
 import ElementManager from './ElementManager'
 import Node from './Node'
 import Scene from './Scene'
@@ -35,7 +34,7 @@ export function initImperativeBase() {
      * at least one of those to render with.
      */
     let ImperativeBaseMixin = base => {
-        class ImperativeBase extends TreeNode.mixin(base) {
+        class ImperativeBase extends base {
             constructor(options = {}) {
 
                 // The presence of a _motorHtmlCounterpart argument signifies that
@@ -323,7 +322,7 @@ export function initImperativeBase() {
                 if (!Motor._inFrame) Motor._startAnimationLoop()
             }
 
-            // TODO Where does _render belong? Probably in the DOMRenderer?
+            // TODO Where does _render belong? Maybe in the DOMRenderer?
             // TODO: rename to _update? it's not really rendering, it's updating
             // the transform, then the HTML engine renders the DOM elements, and
             // the WebGL renderer will render the meshes.

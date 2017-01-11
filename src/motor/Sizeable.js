@@ -1,4 +1,5 @@
 import { makeLowercaseSetterAliases, makeAccessorsEnumerable } from './Utility'
+import TreeNode from './TreeNode'
 import XYZValues from './XYZValues'
 import Observable from './Observable'
 
@@ -19,7 +20,10 @@ if (typeof document.createElement('div').style.transform == 'undefined') {
 let instanceofSymbol = Symbol('instanceofSymbol')
 
 const SizeableMixin = base => {
-    class Sizeable extends Observable.mixin(base) {
+
+    // Sizeable extends TreeNode because Sizeable knows about its _parent when
+    // calculating proportionalSize.
+    class Sizeable extends TreeNode.mixin(Observable.mixin(base)) {
 
         constructor(options = {}) {
             super(options)
