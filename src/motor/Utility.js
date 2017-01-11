@@ -71,11 +71,13 @@ function observeChildren(ctx, onConnect, onDisconnect) {
         for (const change of changes) {
             if (change.type != 'childList') continue
 
-            for (const node of change.addedNodes)
-                onConnect.call(ctx, node)
+            if (typeof onConnect == 'function')
+                for (const node of change.addedNodes)
+                    onConnect.call(ctx, node)
 
-            for (const node of change.removedNodes)
-                onDisconnect.call(ctx, node)
+            if (typeof onDisconnect == 'function')
+                for (const node of change.removedNodes)
+                    onDisconnect.call(ctx, node)
         }
     })
     observer.observe(ctx, { childList: true })
