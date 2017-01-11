@@ -133,15 +133,11 @@ class Scene extends ImperativeBase.mixin(Sizeable) {
         // if no mountPoint was provided, just mount onto the <body> element.
         // XXX: Maybe we should just not mount the scene if no mountPoint is
         // provided, and expose a mount method.
-        if (!mountPoint) {
-            mountPoint = document.body
-        }
+        if (!mountPoint) mountPoint = document.body
 
         // if the user supplied a selector, mount there.
-        else if (typeof mountPoint === 'string') {
-            const selector = mountPoint
-            mountPoint = document.querySelector(selector)
-        }
+        else if (typeof mountPoint === 'string')
+            mountPoint = document.querySelector(mountPoint)
 
         // if we have an actual mount point (the user may have supplied one)
         if (mountPoint instanceof window.HTMLElement) {
