@@ -118,7 +118,6 @@ class Motor {
         if (!this._nodesToBeRendered.has(node))
             this._nodesToBeRendered.add(node)
 
-        // TODO: Move this logic into Motor (probably to the _setNodeToBeRendered method).
         if (!this._inFrame) this._startAnimationLoop()
     }
 
