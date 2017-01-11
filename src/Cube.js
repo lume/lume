@@ -60,16 +60,16 @@ export class Cube extends Molecule {
      * @param {Number} index The index (a integer between 0 and 5) that specifies which side to create.
      */
     _createCubeSide(index) {
-        var T = Transform;
-        var sideMol = new Molecule();
-        var side = new Plane({
+        const T = Transform;
+        const sideMol = new Molecule();
+        const side = new Plane({
             size: [this.cubeWidth,this.cubeWidth],
             properties: {
                 background: 'pink',
                 backfaceVisibility: 'visible'
             }
         });
-        var sync = new GenericSync(['mouse','touch']);
+        const sync = new GenericSync(['mouse','touch']);
 
         this.cubeSides.push(side);
 

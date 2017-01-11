@@ -109,7 +109,7 @@ class Motor {
     }
 
     _runRenderTasks(timestamp) {
-        for (let task of this._allRenderTasks) {
+        for (const task of this._allRenderTasks) {
             task(timestamp)
         }
     }
@@ -128,7 +128,7 @@ class Motor {
     }
 
     _renderNodes(timestamp) {
-        for (let node of this._nodesToBeRendered) {
+        for (const node of this._nodesToBeRendered) {
             node._render(timestamp)
         }
         this._nodesToBeRendered.clear()

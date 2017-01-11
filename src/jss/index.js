@@ -7,7 +7,7 @@ import jssVendorPrefixer from 'jss-vendor-prefixer'
 import jssCamelCase      from 'jss-camel-case'
 import jssPropsSort      from 'jss-props-sort'
 
-let jss = Jss.create()
+const jss = Jss.create()
 
 jss.use(jssNested())
 jss.use(jssExtend())

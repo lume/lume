@@ -139,7 +139,7 @@ class Scene extends ImperativeBase.mixin(Sizeable) {
 
         // if the user supplied a selector, mount there.
         else if (typeof mountPoint === 'string') {
-            let selector = mountPoint
+            const selector = mountPoint
             mountPoint = document.querySelector(selector)
         }
 

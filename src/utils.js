@@ -18,14 +18,14 @@ import Engine from 'famous/src/core/Engine';
  * @returns {module: famous/src/core/Context} The `Context` with the applied perspective.
  */
 export function contextWithPerspective(perspective) {
-    var context = Engine.createContext();
+    const context = Engine.createContext();
     context.setPerspective(perspective);
     return context;
 }
 
 export function simpleExtend(object, ...others) {
     others.forEach(function(other) {
-        for (var prop in other) {
+        for (const prop in other) {
             object[prop] = other[prop]
         }
     })

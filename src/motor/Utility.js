@@ -22,9 +22,9 @@ function applyCSSLabel(value, label) {
 async function getBodySize() {
     await windowLoaded()
 
-    let body = document.body
-    let width = window.parseInt(window.getComputedStyle(body).getPropertyValue('width'))
-    let height = window.parseInt(window.getComputedStyle(body).getPropertyValue('height'))
+    const body = document.body
+    const width = window.parseInt(window.getComputedStyle(body).getPropertyValue('width'))
+    const height = window.parseInt(window.getComputedStyle(body).getPropertyValue('height'))
 
     return { width, height }
 }
@@ -39,7 +39,7 @@ function animationFrame() {
 // Create lowercase versions of each setter property.
 function makeLowercaseSetterAliases(object) {
     const props = Object.getOwnPropertyNames(object)
-    for (let prop of props) {
+    for (const prop of props) {
         const lowercaseProp = prop.toLowerCase()
         if (lowercaseProp != prop) {
             const descriptor = Object.getOwnPropertyDescriptor(object, prop)
@@ -52,7 +52,7 @@ function makeLowercaseSetterAliases(object) {
 
 function makeAccessorsEnumerable(object) {
     const props = Object.getOwnPropertyNames(object)
-    for (let prop of props) {
+    for (const prop of props) {
         const descriptor = Object.getOwnPropertyDescriptor(object, prop)
         if (descriptor && (descriptor.set || descriptor.get)) {
             descriptor.enumerable = true
@@ -68,13 +68,13 @@ function observeChildren(ctx, onConnect, onDisconnect) {
     // This one doesn't need a timeout since the observation is already
     // async.
     const observer = new MutationObserver(changes => {
-        for (let change of changes) {
+        for (const change of changes) {
             if (change.type != 'childList') continue
 
-            for (let node of change.addedNodes)
+            for (const node of change.addedNodes)
                 onConnect.call(ctx, node)
 
-            for (let node of change.removedNodes)
+            for (const node of change.removedNodes)
                 onDisconnect.call(ctx, node)
         }
     })

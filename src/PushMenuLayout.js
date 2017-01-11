@@ -591,8 +591,8 @@ export class PushMenuLayout extends Molecule {
      */
     monkeyPatchNodeRenderMethod() {
 
-        let oldRender = this.node.render
-        let layout = this // "this" is this PushMenuLayout
+        const oldRender = this.node.render
+        const layout = this // "this" is this PushMenuLayout
 
         this.node.render = function() {
 
@@ -601,8 +601,8 @@ export class PushMenuLayout extends Molecule {
             // TODO: Make the item to be blurred specifiable, perhaps with a method on
             // layout.
             if (layout.options.blur && layout.options.fade && layout.options.animationType == 'moveBack') {
-                let momentaryBlur = (layout.animationTransition.get() * layout.options.blurRadius)
-                let filter = {
+                const momentaryBlur = (layout.animationTransition.get() * layout.options.blurRadius)
+                const filter = {
                     "-webkit-filter": 'blur('+momentaryBlur+'px)',
                     "-moz-filter":    'blur('+momentaryBlur+'px)',
                     "-ms-filter":     'blur('+momentaryBlur+'px)',

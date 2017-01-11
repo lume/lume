@@ -187,7 +187,7 @@ function WebComponentMixin(elementClass) {
                     // DOM but not yet upgraded. TODO: describe this better,
                     // not clear why it's needed.
                     setTimeout(() => {
-                        for (let node of this.childNodes) {
+                        for (const node of this.childNodes) {
                             this.childConnectedCallback(node)
                         }
                     }, 5)
@@ -203,7 +203,7 @@ function WebComponentMixin(elementClass) {
                 // HTMLElement#attributes is a NamedNodeMap which is not an
                 // iterable, so we use Array.from. See:
                 // https://github.com/zloirock/core-js/issues/234
-                for (let attr of Array.from(this.attributes))
+                for (const attr of Array.from(this.attributes))
                     if ('attributeChangedCallback' in this)
                         this.attributeChangedCallback(attr.name, null, attr.value)
             }

@@ -57,10 +57,10 @@ export class Calendar extends Molecule {
      * @private
      */
     _createGrid() {
-        var grid = new Grid(this.columnsRows[0], this.columnsRows[1], this.options.size);
+        const grid = new Grid(this.columnsRows[0], this.columnsRows[1], this.options.size);
 
         forLength(this.columnsRows[0]*this.columnsRows[1], function(i) {
-            var plane = new DoubleSidedPlane({
+            const plane = new DoubleSidedPlane({
                 properties: {
                     background: 'teal',
                 }
@@ -83,8 +83,8 @@ export class Calendar extends Molecule {
             flipDiagonal: function() {
                 this.flipSide = +!this.flipSide;
                 // determine which dimension of the grid is shorter and which is longer.
-                var shortest = 0;
-                var longest;
+                let shortest = 0;
+                let longest;
                 this.columnsRows.forEach(function(item, index) {
                     if (item < this.columnsRows[shortest])
                         shortest = index;
@@ -95,7 +95,7 @@ export class Calendar extends Molecule {
                 forLength(this.columnsRows[0]+this.columnsRows[1]-1, function(column) {
                     forLength(this.columnsRows[shortest], function(row) {
                         if (column-row >= 0 && column-row < this.columnsRows[longest]) {
-                            var plane = this.planes[column-row + this.columnsRows[longest]*row];
+                            const plane = this.planes[column-row + this.columnsRows[longest]*row];
                             flipOne(plane, column);
                         }
                     }.bind(this));
@@ -105,7 +105,7 @@ export class Calendar extends Molecule {
                     if (typeof item.__targetRotation == 'undefined') {
                         item.__targetRotation = new Transitionable(0);
                     }
-                    var rotation = new Transitionable(item.__targetRotation.get());
+                    const rotation = new Transitionable(item.__targetRotation.get());
                     item.__targetRotation.set(item.__targetRotation.get()+Math.PI);
 
                     //item.get().transformFrom(function() {

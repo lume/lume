@@ -20,7 +20,7 @@ initImperativeBase()
 export function initImperativeBase() {
     if (ImperativeBase) return
 
-    let instanceofSymbol = Symbol('instanceofSymbol')
+    const instanceofSymbol = Symbol('instanceofSymbol')
 
     /**
      * The ImperativeBase class is the base class for the Imperative version of the
@@ -33,7 +33,7 @@ export function initImperativeBase() {
      * HTML rendering. Disabling both WebGL and HTML won't make sense, as we'll need
      * at least one of those to render with.
      */
-    let ImperativeBaseMixin = base => {
+    const ImperativeBaseMixin = base => {
         class ImperativeBase extends base {
             constructor(options = {}) {
 
@@ -246,7 +246,7 @@ export function initImperativeBase() {
              * Resolves the _scenePromise for all children of the tree of this Node.
              */
             _giveSceneRefToChildren() {
-                for (let childNode of this._children) {
+                for (const childNode of this._children) {
                     childNode._scene = this._scene
                     childNode._resolveScenePromise(childNode._scene)
                     childNode._giveSceneRefToChildren();
@@ -446,7 +446,7 @@ export function initImperativeBase() {
                 let currentProto = obj
 
                 while(currentProto) {
-                    let desc = Object.getOwnPropertyDescriptor(currentProto, "constructor")
+                    const desc = Object.getOwnPropertyDescriptor(currentProto, "constructor")
 
                     if (desc && desc.value && desc.value.hasOwnProperty(instanceofSymbol))
                         return true

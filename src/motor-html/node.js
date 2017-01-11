@@ -77,7 +77,7 @@ proxyGettersSetters(Sizeable, MotorHTMLNode)
 
 function parseNumberArray(str) {
     checkIsNumberArrayString(str)
-    let numbers = str.split(',')
+    const numbers = str.split(',')
     return {
         x: window.parseFloat(numbers[0]),
         y: window.parseFloat(numbers[1]),
@@ -87,7 +87,7 @@ function parseNumberArray(str) {
 
 function parseStringArray(str) {
     checkIsSizeArrayString(str)
-    let strings = str.split(',')
+    const strings = str.split(',')
     return {
         x: strings[0].trim(),
         y: strings[1].trim(),
@@ -127,7 +127,7 @@ function proxyGettersSetters(SourceClass, TargetClass) {
 
     const props = Object.getOwnPropertyNames(SourceClass.prototype)
 
-    for (let prop of props) {
+    for (const prop of props) {
         if (
             // skip the blacklisted properties
             methodProxyBlacklist.indexOf(prop) >= 0

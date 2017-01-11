@@ -45,7 +45,7 @@ export class Plane extends Molecule {
      * See [famous/src/core/Surface.getContent](#famous/src/core/Surface.getContent).
      */
     getContent() {
-        var args = Array.prototype.splice.call(arguments, 0);
+        const args = Array.prototype.splice.call(arguments, 0);
         return this.surface.getContent.apply(this.surface, args);
     }
 
@@ -54,7 +54,7 @@ export class Plane extends Molecule {
      * See [famous/src/core/Surface.setContent](#famous/src/core/Surface.setContent).
      */
     setContent() {
-        var args = Array.prototype.splice.call(arguments, 0);
+        const args = Array.prototype.splice.call(arguments, 0);
         return this.surface.setContent.apply(this.surface, args);
     }
 }

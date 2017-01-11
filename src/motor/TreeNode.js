@@ -1,4 +1,4 @@
-let instanceofSymbol = Symbol('instanceofSymbol')
+const instanceofSymbol = Symbol('instanceofSymbol')
 
 const TreeNodeMixin = base => {
     class TreeNode extends base {
@@ -87,7 +87,7 @@ const TreeNodeMixin = base => {
                     tree.
                 `)
 
-            let thisHasChild = this._children.indexOf(childNode) >= 0
+            const thisHasChild = this._children.indexOf(childNode) >= 0
             if (! thisHasChild) return this
 
             childNode._parent = null
@@ -130,7 +130,7 @@ const TreeNodeMixin = base => {
             let currentProto = obj
 
             while(currentProto) {
-                let desc = Object.getOwnPropertyDescriptor(currentProto, "constructor")
+                const desc = Object.getOwnPropertyDescriptor(currentProto, "constructor")
 
                 if (desc && desc.value && desc.value.hasOwnProperty(instanceofSymbol))
                     return true

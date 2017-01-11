@@ -17,7 +17,7 @@ if (typeof document.createElement('div').style.transform == 'undefined') {
     })
 }
 
-let instanceofSymbol = Symbol('instanceofSymbol')
+const instanceofSymbol = Symbol('instanceofSymbol')
 
 const SizeableMixin = base => {
 
@@ -236,7 +236,7 @@ const SizeableMixin = base => {
             let currentProto = obj
 
             while (currentProto) {
-                let desc = Object.getOwnPropertyDescriptor(currentProto, "constructor")
+                const desc = Object.getOwnPropertyDescriptor(currentProto, "constructor")
 
                 if (desc && desc.value && desc.value.hasOwnProperty(instanceofSymbol))
                     return true

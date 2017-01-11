@@ -87,7 +87,7 @@ function onV0ShadowRootReplaced(oldRoot) {
     observers.get(oldRoot).disconnect()
     observers.delete(oldRoot)
     let i = 0
-    for (let child of oldRoot.childNodes) {
+    for (const child of oldRoot.childNodes) {
         if (!(child instanceof DeclarativeBase)) { i += 1; continue }
 
         // We should disconnect the imperative connection (f.e. so it is
@@ -326,8 +326,8 @@ export function initMotorHTMLBase() {
             }
 
             for (let i=0, l=previousNodes.length; i<l; i+=1) {
-                let oldNode = previousNodes[i]
-                let newIndex = newNodes.indexOf(oldNode)
+                const oldNode = previousNodes[i]
+                const newIndex = newNodes.indexOf(oldNode)
 
                 // if it exists in the previousNodes but not the newNodes, then
                 // the node was removed.

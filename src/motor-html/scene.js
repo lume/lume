@@ -7,8 +7,8 @@ import MotorHTMLBase, {initMotorHTMLBase} from './base'
 
 initMotorHTMLBase()
 
-let privates = new WeakMap()
-let _ = instance => {
+const privates = new WeakMap()
+const _ = instance => {
     if (!privates.get(instance)) privates.set(instance, {})
     return privates.get(instance)
 }

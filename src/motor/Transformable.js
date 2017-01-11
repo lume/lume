@@ -2,7 +2,7 @@ import XYZValues from './XYZValues'
 import Sizeable from './Sizeable'
 import { makeLowercaseSetterAliases, makeAccessorsEnumerable } from './Utility'
 
-let instanceofSymbol = Symbol('instanceofSymbol')
+const instanceofSymbol = Symbol('instanceofSymbol')
 
 // Transformable doesn't need to extend from a class, but there isn't multiple
 // inheritance in JavaSript out of the box, and Node needs to have the
@@ -252,23 +252,23 @@ const TransformableMixin = base => {
          * order of choice instead of always x,y,z order as we do here.
          */
         _calculateMatrix () {
-            let matrix = new window.DOMMatrix
+            const matrix = new window.DOMMatrix
 
-            let alignAdjustment = [0,0,0]
+            const alignAdjustment = [0,0,0]
             if (this._parent) { // The root Scene doesn't have a parent, for example.
-                let parentSize = this._parent._calculatedSize
+                const parentSize = this._parent._calculatedSize
                 alignAdjustment[0] = parentSize.x * this._properties.align.x
                 alignAdjustment[1] = parentSize.y * this._properties.align.y
                 alignAdjustment[2] = parentSize.z * this._properties.align.z
             }
 
-            let mountPointAdjustment = [0,0,0]
-            let thisSize = this._calculatedSize
+            const mountPointAdjustment = [0,0,0]
+            const thisSize = this._calculatedSize
             mountPointAdjustment[0] = thisSize.x * this._properties.mountPoint.x
             mountPointAdjustment[1] = thisSize.y * this._properties.mountPoint.y
             mountPointAdjustment[2] = thisSize.z * this._properties.mountPoint.z
 
-            let appliedPosition = []
+            const appliedPosition = []
             appliedPosition[0] = this._properties.position.x + alignAdjustment[0] - mountPointAdjustment[0]
             appliedPosition[1] = this._properties.position.y + alignAdjustment[1] - mountPointAdjustment[1]
             appliedPosition[2] = this._properties.position.z + alignAdjustment[2] - mountPointAdjustment[2]
@@ -285,7 +285,7 @@ const TransformableMixin = base => {
             // XXX: Does order in which axis rotations are applied matter? If so,
             // which order is best? Maybe we let the user decide (with our
             // recommendation)?
-            let rotation = this._properties.rotation
+            const rotation = this._properties.rotation
             matrix.rotateAxisAngleSelf(1,0,0, rotation.x)
             matrix.rotateAxisAngleSelf(0,1,0, rotation.y)
             matrix.rotateAxisAngleSelf(0,0,1, rotation.z)
@@ -303,7 +303,7 @@ const TransformableMixin = base => {
             let currentProto = obj
 
             while(currentProto) {
-                let desc = Object.getOwnPropertyDescriptor(currentProto, "constructor")
+                const desc = Object.getOwnPropertyDescriptor(currentProto, "constructor")
 
                 if (desc && desc.value && desc.value.hasOwnProperty(instanceofSymbol))
                     return true

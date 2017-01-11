@@ -136,7 +136,7 @@ export class Molecule {
      * An example of setting just a single option without erasing other options:
      *
      * ```js
-     * var myMolecule = new Molecule()
+     * const myMolecule = new Molecule()
      * myMolecule.setOptions({
      *   align: [0.2, 0.8]
      * })
@@ -148,7 +148,7 @@ export class Molecule {
         if (typeof newOptions == 'undefined' || newOptions.constructor.name != "Object")
             newOptions = {}
 
-        for (var prop in newOptions) {
+        for (const prop in newOptions) {
             // Subject to change when Famo.us API changes.
             if (Modifier.prototype[''+prop+'From']) {
                 this.modifier[''+prop+'From'](newOptions[prop]);
@@ -181,7 +181,7 @@ export class Molecule {
      * TODO v0.1.0: Let this method accept a `Molecule`, then stop doing `pipe(this.options.handler)` in other places
      */
     pipe() {
-        var args = Array.prototype.splice.call(arguments, 0);
+        const args = Array.prototype.splice.call(arguments, 0);
         return this.options.handler.pipe.apply(this.options.handler, args);
     }
 
@@ -195,7 +195,7 @@ export class Molecule {
      * TODO v0.1.0: Let this method accept a `Molecule`, then stop doing `unpipe(this.options.handler)` in other places
      */
     unpipe() {
-        var args = Array.prototype.splice.call(arguments, 0);
+        const args = Array.prototype.splice.call(arguments, 0);
         return this.options.handler.unpipe.apply(this.options.handler, args);
     }
 
@@ -204,7 +204,7 @@ export class Molecule {
      * See [famous/src/core/EventHandler.on](#famous/src/core/EventHandler.on).
      */
     on() {
-        var args = Array.prototype.splice.call(arguments, 0);
+        const args = Array.prototype.splice.call(arguments, 0);
         return this.options.handler.on.apply(this.options.handler, args);
     }
 
@@ -213,7 +213,7 @@ export class Molecule {
      * See [famous/src/core/EventHandler.off](#famous/src/core/EventHandler.off).
      */
     off() {
-        var args = Array.prototype.splice.call(arguments, 0);
+        const args = Array.prototype.splice.call(arguments, 0);
         return this.options.handler.on.apply(this.options.handler, args);
     }
 }

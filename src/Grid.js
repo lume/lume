@@ -55,23 +55,23 @@ export class Grid extends Molecule {
      * @param {Number} index The integer index of the grid cell.
      */
     _createGridCell(index) {
-        var column = index % this.columns;
-        var row = Math.floor(index / this.columns);
+        const column = index % this.columns;
+        const row = Math.floor(index / this.columns);
 
-        var cellSize = null;
+        let cellSize = null;
         if (typeof this.options.size[0] != 'undefined' && typeof this.options.size[1] != 'undefined') {
             cellSize = [];
             cellSize[0] = this.options.size[0]/this.columns;
             cellSize[1] = this.options.size[1]/this.rows;
         }
 
-        var mod = new Modifier({
+        const mod = new Modifier({
             align: [0,0],
             origin: [0,0],
             size: cellSize? [cellSize[0], cellSize[1]]: [undefined, undefined],
             transform: Transform.translate(column*cellSize[0],row*cellSize[1],0)
         });
-        var mod2 = new Modifier({
+        const mod2 = new Modifier({
             //transform: Transform.rotateY(Math.PI/10),
             align: [0.5,0.5],
             origin: [0.5,0.5]
