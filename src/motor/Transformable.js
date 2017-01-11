@@ -253,25 +253,29 @@ const TransformableMixin = base => {
          */
         _calculateMatrix () {
             const matrix = new window.DOMMatrix
+            const properties = this._properties
 
             const alignAdjustment = [0,0,0]
             if (this._parent) { // The root Scene doesn't have a parent, for example.
                 const parentSize = this._parent._calculatedSize
-                alignAdjustment[0] = parentSize.x * this._properties.align.x
-                alignAdjustment[1] = parentSize.y * this._properties.align.y
-                alignAdjustment[2] = parentSize.z * this._properties.align.z
+                const {align} = properties
+                alignAdjustment[0] = parentSize.x * align.x
+                alignAdjustment[1] = parentSize.y * align.y
+                alignAdjustment[2] = parentSize.z * align.z
             }
 
             const mountPointAdjustment = [0,0,0]
             const thisSize = this._calculatedSize
-            mountPointAdjustment[0] = thisSize.x * this._properties.mountPoint.x
-            mountPointAdjustment[1] = thisSize.y * this._properties.mountPoint.y
-            mountPointAdjustment[2] = thisSize.z * this._properties.mountPoint.z
+            const {mountPoint} = properties
+            mountPointAdjustment[0] = thisSize.x * mountPoint.x
+            mountPointAdjustment[1] = thisSize.y * mountPoint.y
+            mountPointAdjustment[2] = thisSize.z * mountPoint.z
 
             const appliedPosition = []
-            appliedPosition[0] = this._properties.position.x + alignAdjustment[0] - mountPointAdjustment[0]
-            appliedPosition[1] = this._properties.position.y + alignAdjustment[1] - mountPointAdjustment[1]
-            appliedPosition[2] = this._properties.position.z + alignAdjustment[2] - mountPointAdjustment[2]
+            const {position} = properties
+            appliedPosition[0] = position.x + alignAdjustment[0] - mountPointAdjustment[0]
+            appliedPosition[1] = position.y + alignAdjustment[1] - mountPointAdjustment[1]
+            appliedPosition[2] = position.z + alignAdjustment[2] - mountPointAdjustment[2]
 
             matrix.translateSelf(appliedPosition[0], appliedPosition[1], appliedPosition[2])
 
@@ -285,7 +289,7 @@ const TransformableMixin = base => {
             // XXX: Does order in which axis rotations are applied matter? If so,
             // which order is best? Maybe we let the user decide (with our
             // recommendation)?
-            const rotation = this._properties.rotation
+            const {rotation} = properties
             matrix.rotateAxisAngleSelf(1,0,0, rotation.x)
             matrix.rotateAxisAngleSelf(0,1,0, rotation.y)
             matrix.rotateAxisAngleSelf(0,0,1, rotation.z)
