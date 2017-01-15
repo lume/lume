@@ -192,54 +192,48 @@ const TransformableMixin = base => {
         }
 
         /**
-         * Set all properties of the Node in one method.
+         * Set all properties of a Transformable in one method.
          *
-         * @param {Object} properties Properties object - see example
+         * @param {Object} properties Properties object - see example.
          *
          * @example
          * node.properties = {
-         *   classes: ['open'],
-         *   position: [200, 300, 0],
-         *   rotation: [3, 0, 0],
-         *   scale: [1, 1, 1],
-         *   opacity: .9
+         *   position: {x:200, y:300, z:100},
+         *   rotation: {z:35},
+         *   scale: {y:2},
+         *   opacity: .9,
          * }
          */
         set properties (properties = {}) {
             super.properties = properties
 
-            // Position
             if (properties.position)
                 this.position = properties.position
 
-            // Rotation
             if (properties.rotation)
                 this.rotation = properties.rotation
 
-            // Scale
             if (properties.scale)
                 this.scale = properties.scale
 
-            // Origin
             if (properties.origin)
                 this.origin = properties.origin
 
-            // Align
             if (properties.align)
                 this.align = properties.align
 
-            // Mount Point
             if (properties.mountPoint)
                 this.mountPoint = properties.mountPoint
 
-            // Opacity
             if (properties.opacity)
                 this.opacity = properties.opacity
         }
         // no need for a properties getter.
 
         /**
-         * [applyTransform description]
+         * Takes all the current component values (position, rotation, etc) and
+         * calculates a transformation DOMMatrix from them. See "W3C Geometry
+         * Interfaces" to learn about DOMMatrix.
          *
          * @method
          * @private
@@ -250,6 +244,10 @@ const TransformableMixin = base => {
          * to the matrix individually when the user gives us those values. It might be
          * more performant. It will also let the user apply x,y,z rotation in their
          * order of choice instead of always x,y,z order as we do here.
+         *
+         * TODO PERFORMANCE: What's faster? Setting a new DOMMatrix (as we do
+         * here currently) or applying all transform values to the existing
+         * DOMMatrix?
          */
         _calculateMatrix () {
             const matrix = new window.DOMMatrix

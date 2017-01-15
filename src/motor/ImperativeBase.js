@@ -49,10 +49,10 @@ export function initImperativeBase() {
                 // Here we create the DOM HTMLElement associated with this
                 // Imperative-API Node.
                 // TODO: move to DOMRenderer
-                this._el = new ElementManager(
+                this._elementManager = new ElementManager(
                     _motorHtmlCounterpart || this._makeElement()
                 )
-                this._el.element._associateImperativeNode(this)
+                this._elementManager.element._associateImperativeNode(this)
 
                 this._mounted = false;
 
@@ -131,7 +131,11 @@ export function initImperativeBase() {
                 // TODO TODO: also wait for this._mounted so this.element is
                 // actually mounted in the DOM? Maybe not, as that will be moved to
                 // the DOMRenderer. Or possibly add that functionality in the HTML
-                // API. Revisit later.
+                // API. Revisit later. EDIT: Actually, if we'reawaiting
+                // scene.mountPromise, this means that the scene is mounted
+                // into DOM, and so if this Node hasa scene and it is mounted
+                // into DOM then this Node's element must also be mounted into
+                // DOM because that happens synchronously in Node.addChild.
                 this._resolveMountPromise(true)
             }
 
@@ -152,7 +156,7 @@ export function initImperativeBase() {
              * TODO: get from the DOMRenderer when that is implemented.
              */
             get element() {
-                return this._el.element
+                return this._elementManager.element
             }
 
             /**
@@ -233,8 +237,8 @@ export function initImperativeBase() {
                 // TODO move to DOMRenderer
                 // TODO delegate to animation frame?
                 if (!childNode._mounted && childNode._parent) {
-                    this._appendChildElement(childNode)
-                    childNode._mounted = true;
+                    this._elementManager.connectElementToParent(childNode)
+                    childNode._mounted = true
                 }
 
                 return this
@@ -253,43 +257,6 @@ export function initImperativeBase() {
                 }
             }
 
-            _appendChildElement(childNode) {
-
-                // TODO: camera
-                // Mount to parent if parent is a Node
-                // if (childNode._parent instanceof Node) {
-
-                    if (
-
-                        // When using the imperative API, this statement is
-                        // true, so the DOM elements need to be connected.
-                        !childNode._el.element.parentNode
-
-                        // This condition is irrelevant when strictly using the
-                        // imperative API. However, it is possible that when
-                        // usingthe HTML API that the HTML-API node can be placed
-                        // somewhere that isn't another HTML-API node, and the
-                        // imperative Node can be gotten and used to add the
-                        // node to another imperative Node. In this case, the
-                        // HTML-API node will be added to the proper HTMLparent.
-                        || (childNode._el.element.parentElement && childNode._el.element.parentElement !== childNode._parent._el.element)
-
-                        // When an HTML-API node is already child of the
-                        // relevant parent, or it is child of a shadow root of
-                        // the relevant parent, there there's nothing to do,
-                        // everything is already as expected, so the following
-                        // conditional body is skipped.
-                    ) {
-                        childNode._parent._el.element.appendChild(childNode._el.element);
-                    }
-
-                // Mount to camera if top level Node
-                // } else {
-                //   //scene.camera.element.appendChild(childNode._el);
-                //   childNode._mounted = true;
-                // }
-            }
-
             removeChild(childNode) {
                 if (!(childNode instanceof ImperativeBase)) return
 
@@ -304,15 +271,24 @@ export function initImperativeBase() {
                 childNode._mountPromise = null // reset so that it can be awaited again for when the node is re-mounted.
 
                 // TODO: move this out, into DOMRenderer
-                this._detachElement(childNode)
+                this._elementManager.disconnectElementFromParent(childNode)
             }
 
-            _detachElement(childNode) {
-                // TODO: move this out, into DOMRenderer
+            /**
+             * Set all properties of an ImperativeBase instance in one method.
+             *
+             * @param {Object} properties Properties object - see example.
+             *
+             * @example
+             * node.properties = {
+             *   classes: ['open', 'big'],
+             * }
+             */
+            set properties (properties = {}) {
+                super.properties = properties
 
-                // XXX Only remove the childNode _el if it has an actual parent
-                if (childNode._el.element.parentNode)
-                    childNode._el.element.parentNode.removeChild(childNode._el.element)
+                if (properties.classes)
+                    this._elementManager.setClasses(...properties.classes);
             }
 
             _needsToBeRendered() {
@@ -324,118 +300,7 @@ export function initImperativeBase() {
             // the transform, then the HTML engine renders the DOM elements, and
             // the WebGL renderer will render the meshes.
             _render(timestamp) {
-                // Only Node is Transformable, so
-                if (this instanceof Node) {
-                    // applies the transform matrix to the element's style property.
-                    // TODO: We shouldn't need to re-calculate the whole matrix every render?
-                    this._setMatrix3d(this._calculateMatrix())
-
-                    // TODO move to DOMRenderer
-                    this._applyOpacityToElement()
-                }
-
-                // Both Node and Scene are Sizeable
-                // TODO move to DOMRenderer
-                this._applySizeToElement()
-
-                return this
-            }
-
-            /**
-             * [setMatrix3d description]
-             *
-             * @private
-             * @param {DOMMatrix} matrix A DOMMatrix instance to set as this node's
-             * transform. See "W3C Geometry Interfaces".
-             */
-            _setMatrix3d (matrix) {
-                this._properties.transform = matrix
-                // ^ TODO PERFORMANCE: What's faster? Setting a new DOMMatrix (as we do here
-                // currently, the result of _calculateMatrix) or applying all
-                // transform values to the existing DOMMatrix?
-
-                this._applyTransform();
-            }
-
-            /**
-             * Apply the DOMMatrix value to the style of this Node's element.
-             *
-             * @private
-             *
-             * TODO We'll eventually apply the DOMMatrix directly instead of
-             * converting to a string here.
-             *
-             * TODO move to DOMRenderer
-             *
-             * TODO: Maybe this should not apply style directly, it should be batched
-             * into Motor._nodesToBeRendered, and same for other styles.
-             */
-            _applyTransform () {
-                var matrix = this._properties.transform;
-
-                // XXX: is this in the right order? UPDATE: It is.
-                // TODO: Apply DOMMatrix directly to the Element once browser APIs
-                // support it. Maybe we can polyfill this?
-                var cssMatrixString = `matrix3d(
-                    ${ matrix.m11 },
-                    ${ matrix.m12 },
-                    ${ matrix.m13 },
-                    ${ matrix.m14 },
-                    ${ matrix.m21 },
-                    ${ matrix.m22 },
-                    ${ matrix.m23 },
-                    ${ matrix.m24 },
-                    ${ matrix.m31 },
-                    ${ matrix.m32 },
-                    ${ matrix.m33 },
-                    ${ matrix.m34 },
-                    ${ matrix.m41 },
-                    ${ matrix.m42 },
-                    ${ matrix.m43 },
-                    ${ matrix.m44 }
-                )`;
-
-                this._applyStyleToElement('transform', cssMatrixString);
-            }
-
-            /**
-             * [applySize description]
-             *
-             * @method
-             * @private
-             * @memberOf Node
-             *
-             * TODO: move to DOMRenderer
-             */
-            _applySizeToElement () {
-                const {x,y} = this._calculatedSize
-
-                this._applyStyleToElement('width', `${x}px`)
-                this._applyStyleToElement('height', `${y}px`)
-
-                // XXX: we ignore the Z axis on elements, since they are flat.
-            }
-
-            /**
-             * Apply a style property to this node's element.
-             *
-             * TODO: move into DOMRenderer.
-             *
-             * @private
-             * @param  {string} property The CSS property we will a apply.
-             * @param  {string} value    The value the CSS property wil have.
-             */
-            _applyStyleToElement (property, value) {
-                this._el.element.style[property] = value;
-            }
-
-            /**
-             * @private
-             *
-             * TODO: move into DOMRenderer.
-             */
-            _applyOpacityToElement() {
-                this._applyStyleToElement('opacity', this._properties.opacity);
+                this._elementManager.applyImperativeNodeProperties(this)
             }
         }
 

@@ -15,7 +15,7 @@ class Scene extends ImperativeBase.mixin(Sizeable) {
 
         this._onElementParentSizeChange = (newSize) => {
             this._elementParentSize = newSize
-            this._calcSize()
+            this._calcSize() // TODO: Move _calcSize into a render task, similar to _calculateMatrix?
             this._needsToBeRendered()
         }
 
@@ -59,14 +59,14 @@ class Scene extends ImperativeBase.mixin(Sizeable) {
 
     _startSizePolling() {
         // observe size changes on the scene element.
-        this._el.element._startSizePolling()
-        this._el.element.on('parentsizechange', this._onElementParentSizeChange)
+        this._elementManager.element._startSizePolling()
+        this._elementManager.element.on('parentsizechange', this._onElementParentSizeChange)
     }
 
     _stopSizePolling() {
         // observe size changes on the scene element.
-        this._el.element.off('parentsizechange', this._onElementParentSizeChange)
-        this._el.element._stopSizePolling()
+        this._elementManager.element.off('parentsizechange', this._onElementParentSizeChange)
+        this._elementManager.element._stopSizePolling()
     }
 
     /**
@@ -141,8 +141,8 @@ class Scene extends ImperativeBase.mixin(Sizeable) {
 
         // if we have an actual mount point (the user may have supplied one)
         if (mountPoint instanceof window.HTMLElement) {
-            if (mountPoint !== this._el.element.parentNode)
-                mountPoint.appendChild(this._el.element)
+            if (mountPoint !== this._elementManager.element.parentNode)
+                mountPoint.appendChild(this._elementManager.element)
 
             this._mounted = true
         }
@@ -162,8 +162,8 @@ class Scene extends ImperativeBase.mixin(Sizeable) {
     unmount() {
         this._stopSizePolling()
 
-        if (this._el.element.parentNode)
-            this._el.element.parentNode.removeChild(this._el.element)
+        if (this._elementManager.element.parentNode)
+            this._elementManager.element.parentNode.removeChild(this._elementManager.element)
 
         this._mounted = false
 

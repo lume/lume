@@ -188,41 +188,24 @@ const SizeableMixin = base => {
         }
 
         /**
-         * Set all properties of the Node in one method.
-         *
-         * XXX: Should we change size so it matches structure here and on the node?
+         * Set all properties of a Sizeable in one method.
          *
          * @param {Object} properties Properties object - see example
          *
          * @example
          * node.properties = {
-         *   classes: ['open'],
-         *   position: [200, 300, 0],
-         *   rotation: [3, 0, 0],
-         *   scale: [1, 1, 1],
-         *   size: {
-         *     mode: ['absolute', 'proportional'],
-         *     absolute: [300, null],
-         *     proportional: [null, .5]
-         *   },
-         *   opacity: .9
+         *   sizeMode: {x:'absolute', y:'proportional', z:'absolute'},
+         *   absoluteSize: {x:300, y:100, z:200},
+         *   proportionalSize: {x:1, z:0.5}
          * }
          */
         set properties (properties = {}) {
-            // Classes
-            // TODO: _el reference needs to be moved out.
-            if (properties.classes)
-                this._el.setClasses(properties.classes);
-
-            // Size Modes
             if (properties.sizeMode)
                 this.sizeMode = properties.sizeMode
 
-            // Absolute Size
             if (properties.absoluteSize)
                 this.absoluteSize = properties.absoluteSize
 
-            // Proportional Size
             if (properties.proportionalSize)
                 this.proportionalSize = properties.proportionalSize
         }

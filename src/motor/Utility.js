@@ -133,12 +133,12 @@ function traverse(node, isShadowChild) {
     for (const child of node.children) {
         // skip nodes that are possiblyDistributed, i.e. they have a parent
         // that has a ShadowRoot.
-        if (!hasHtmlApi || !child._el.element._isPossiblyDistributed)
+        if (!hasHtmlApi || !child._elementManager.element._isPossiblyDistributed)
             traverse(child)
     }
 
-    if (hasHtmlApi && node._el.element._shadowChildren) {
-        for (const shadowChild of node._el.element._shadowChildren)
+    if (hasHtmlApi && node._elementManager.element._shadowChildren) {
+        for (const shadowChild of node._elementManager.element._shadowChildren)
             traverse(shadowChild.imperativeCounterpart, true)
     }
 }
