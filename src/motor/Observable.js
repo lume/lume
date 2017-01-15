@@ -4,6 +4,10 @@ const instanceofSymbol = Symbol('instanceofSymbol')
 const ObservableMixin = base => {
     class Observable extends base {
 
+        constructor(options = {}) {
+            super(options)
+        }
+
         on(eventName, callback) {
             if (!this._eventMap)
                 this._eventMap = new Map
