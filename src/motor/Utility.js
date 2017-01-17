@@ -61,6 +61,10 @@ function makeAccessorsEnumerable(object) {
     }
 }
 
+// NOTE: If a child is disconnected then connected to the same parent in the
+// same turn, then the onConnect and onDisconnect callbacks won't be called (it
+// is pointless because the DOM tree will be back in the exact state as before,
+// and the rendering in the following frame should be the same).
 function observeChildren(ctx, onConnect, onDisconnect) {
 
     // TODO issue #40
@@ -68,18 +72,25 @@ function observeChildren(ctx, onConnect, onDisconnect) {
     // This one doesn't need a timeout since the observation is already
     // async.
     const observer = new MutationObserver(changes => {
+        const weights = new Map
+
         for (const change of changes) {
             if (change.type != 'childList') continue
 
-            if (typeof onConnect == 'function')
-                for (const node of change.addedNodes)
-                    onConnect.call(ctx, node)
+            for (const addedNode of change.addedNodes)
+                weights.set(addedNode, (weights.get(addedNode) || 0) + 1)
 
-            if (typeof onDisconnect == 'function')
-                for (const node of change.removedNodes)
-                    onDisconnect.call(ctx, node)
+            for (const removedNode of change.removedNodes)
+                weights.set(removedNode, (weights.get(removedNode) || 0) - 1)
         }
+
+        for (const [node, weight] of weights)
+            if (weight > 0)
+                onConnect.call(ctx, node)
+            else if (weight < 0)
+                onDisconnect.call(ctx, node)
     })
+
     observer.observe(ctx, { childList: true })
     return observer
 }

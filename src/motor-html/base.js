@@ -178,6 +178,13 @@ export function initMotorHTMLBase() {
             // XXX: we call this._associateImperativeNode() before super.init() because
             // super.init() may call this.childConnectedCallback() which depends
             // on the imperative counterpart existing.
+            //
+            // TODO: Maybe this can be called in childConnectedCallback instead
+            // of connectedCallback, where in that case the parent will know if
+            // the child is instanceof MotorHTMLNode. This would prevent init
+            // logic from happening when a MotorHTMLNode is incorrectly
+            // connected to something other than another MotorHTMLNode or
+            // MotorHTMLScene.
             this._associateImperativeNode()
 
             super.init()
@@ -235,6 +242,11 @@ export function initMotorHTMLBase() {
             // mirror the DOM connections in the imperative API's virtual scene graph.
             if (child instanceof MotorHTMLNode) {
                 if (this._hasShadowRoot) child._isPossiblyDistributed = true
+
+                // If ImperativeBase#addChild was called first, child's
+                // _parent will already be set, so prevent recursion.
+                if (child.imperativeCounterpart._parent) return
+
                 this.imperativeCounterpart.addChild(child.imperativeCounterpart)
             }
 
@@ -351,6 +363,11 @@ export function initMotorHTMLBase() {
             // mirror the connection in the imperative API's virtual scene graph.
             if (child instanceof MotorHTMLNode) {
                 child._isPossiblyDistributed = false
+
+                // If ImperativeBase#removeChild was called first, child's
+                // _parent will already be null, so prevent recursion.
+                if (!child.imperativeCounterpart._parent) return
+
                 this.imperativeCounterpart.removeChild(child.imperativeCounterpart)
             }
             else if (

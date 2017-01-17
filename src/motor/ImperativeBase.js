@@ -203,7 +203,8 @@ export function initImperativeBase() {
                 if (!(childNode instanceof ImperativeBase)) return
 
                 // We cannot add Scenes to Nodes, for now.
-                // XXX: How will we handle mounting a Scene inside a Node when using only WebGL?
+                // TODO: How will we handle mounting a Scene inside a Node when
+                // using only WebGL?
                 if (childNode instanceof Scene) {
                     throw new Error(`
                         A Scene cannot be added to another Node (at least for now). To

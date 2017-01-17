@@ -46,8 +46,12 @@ const TreeNodeMixin = base => {
             // in the element's attachedCallback, but the code stops at this line (which is
             // good).
             //
-            // TODO TODO: prevent the second call altogether.
-            if (childNode._parent === this) return
+            // TODO: prevent the second call altogether.
+            // TODO: It may be better to throw an error instead, otherwise
+            // extending classes may still do unintentional stuff after
+            // super.addChild returns.
+            if (childNode._parent === this)
+                throw new Error('childNode is already a child of this parent.')
 
             if (childNode._parent)
                 childNode._parent.removeChild(childNode)
@@ -87,8 +91,8 @@ const TreeNodeMixin = base => {
                     tree.
                 `)
 
-            const thisHasChild = this._children.indexOf(childNode) >= 0
-            if (! thisHasChild) return this
+            if (childNode._parent !== this)
+                throw new ReferenceError('childNode is not a child of this parent.')
 
             childNode._parent = null
             this._children.splice(this._children.indexOf(childNode), 1);
