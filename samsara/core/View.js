@@ -2,14 +2,7 @@
 
 define(function(require, exports, module) {
     var Controller = require('./Controller');
-    var RenderTreeNode = require('./nodes/RenderTreeNode');
-    var SizeNode = require('./nodes/SizeNode');
-    var LayoutNode = require('./nodes/LayoutNode');
-    var EventHandler = require('../events/EventHandler');
-    var SimpleStream = require('../streams/SimpleStream');
-    var Stream = require('../streams/Stream');
-    var sizeAlgebra = require('./algebras/size');
-    var layoutAlgebra = require('./algebras/layout');
+    var EmptyNode = require('./EmptyNode');
 
     /**
      * A View provides encapsulation for a subtree of the render tree. You can build
@@ -54,49 +47,23 @@ define(function(require, exports, module) {
      * @class View
      * @constructor
      * @extends Core.Controller
-     * @uses Core.SizeNode
-     * @uses Core.LayoutNode
-     * @uses Core.SimpleStream
+     * @extends Core.EmptyNode
      */
     var View = Controller.extend({
-        defaults : {
-            size : null,
-            origin : null,
-            opacity : 1
-        },
-        events : {
-            change : setOptions
-        },
         constructor : function View(options){
-            this._sizeNode = null;
-            this._layoutNode = null;
+            this._node = new EmptyNode(options);
 
-            this._size = new EventHandler();
-            this._layout = new EventHandler();
-            this._logic = new EventHandler();
+            this._node.size.on('resize', function(size){
+                this.emit('resize', size);
+            }.bind(this));
 
-            this.size = new SimpleStream();
-            this.layout = new SimpleStream();
-
-            this.size.subscribe(this._size);
-            this.layout.subscribe(this._layout);
-
-            this._node = new RenderTreeNode();
-
-            this._node._size.subscribe(this.size);
-            this._node._layout.subscribe(this.layout);
-            this._node._logic.subscribe(this._logic);
-
-            this._cachedSize = [0, 0];
-            this.size.on(['set', 'start', 'update', 'end'], updateSize.bind(this));
+            this.size = this._node.size;
+            this.layout = this._node.layout;
 
             Controller.call(this, options);
-            if (this.options) setOptions.call(this, this.options);
         },
         _onAdd : function(parent){
-            this._logic.unsubscribe();
-            this._logic.subscribe(parent._logic);
-            return this;
+            return EmptyNode.prototype._onAdd.apply(this._node, arguments);
         },
         /**
          * Extends the render tree subtree with a new node.
@@ -106,7 +73,7 @@ define(function(require, exports, module) {
          * @return {RenderTreeNode}
          */
         add : function add(){
-            return RenderTreeNode.prototype.add.apply(this._node, arguments);
+            return EmptyNode.prototype.add.apply(this._node, arguments);
         },
         /**
          * Remove the View from the RenderTree. All Surfaces added to the View
@@ -116,7 +83,7 @@ define(function(require, exports, module) {
          * @method remove
          */
         remove : function remove(){
-            RenderTreeNode.prototype.remove.apply(this._node, arguments);
+            EmptyNode.prototype.remove.apply(this._node, arguments);
         },
         /**
          * Getter for size.
@@ -125,7 +92,7 @@ define(function(require, exports, module) {
          * @return size {Number[]}
          */
         getSize : function(){
-            return this._cachedSize;
+            return EmptyNode.prototype.getSize.apply(this._node);
         },
         /**
          * Setter for size.
@@ -134,9 +101,7 @@ define(function(require, exports, module) {
          * @param size {Number[]|Stream} Size as [width, height] in pixels, or a stream.
          */
         setSize : function setSize(size){
-            if (!this._sizeNode) createSizeNode.call(this);
-            this._cachedSize = size;
-            this._sizeNode.set({size : size});
+            EmptyNode.prototype.setSize.apply(this._node, arguments);
         },
         /**
          * Setter for proportions.
@@ -145,8 +110,7 @@ define(function(require, exports, module) {
          * @param proportions {Number[]|Stream} Proportions as [x,y], or a stream.
          */
         setProportions : function setProportions(proportions){
-            if (!this._sizeNode) createSizeNode.call(this);
-            this._sizeNode.set({proportions : proportions});
+            EmptyNode.prototype.setProportions.apply(this._node, arguments);
         },
         /**
          * Setter for margins.
@@ -155,8 +119,7 @@ define(function(require, exports, module) {
          * @param margins {Number[]|Stream} Margins as [x,y], or a stream.
          */
         setMargins : function setMargins(margins){
-            if (!this._sizeNode) createSizeNode.call(this);
-            this._sizeNode.set({margins : margins});
+            EmptyNode.prototype.setMargins.apply(this._node, arguments);
         },
         /**
          * Setter for origin.
@@ -165,8 +128,7 @@ define(function(require, exports, module) {
          * @param origin {Number[]|Stream} Origin as [x,y], or a stream.
          */
         setOrigin : function setOrigin(origin){
-            if (!this._layoutNode) createLayoutNode.call(this);
-            this._layoutNode.set({origin : origin});
+            EmptyNode.prototype.setOrigin.apply(this._node, arguments);
         },
         /**
          * Setter for opacity.
@@ -175,65 +137,9 @@ define(function(require, exports, module) {
          * @param opacity {Number|Stream} Opacity
          */
         setOpacity : function setOpacity(opacity){
-            if (!this._layoutNode) createLayoutNode.call(this);
-            this._layoutNode.set({opacity : opacity});
+            EmptyNode.prototype.setOpacity.apply(this._node, arguments);
         }
     });
-
-    function updateSize(size){
-        if (this._cachedSize[0] === size[0] && this._cachedSize[1] === size[1]) return;
-        this._cachedSize = size;
-        this.emit('resize', size);
-    }
-
-    function setOptions(options){
-        for (var key in options){
-            var value = options[key];
-            switch (key){
-                case 'size':
-                    this.setSize(value);
-                    break;
-                case 'proportions':
-                    this.setProportions(value);
-                    break;
-                case 'margins':
-                    this.setMargins(value);
-                    break;
-                case 'origin':
-                    this.setOrigin(value);
-                    break;
-                case 'opacity':
-                    this.setOpacity(value);
-                    break;
-            }
-        }
-    }
-
-    function createSizeNode(){
-        this.size.unsubscribe();
-        this._sizeNode = new SizeNode();
-
-        var size = Stream.lift(function surfaceSizeLift(sizeSpec, parentSize) {
-            if (!parentSize) return false;
-            return sizeAlgebra(sizeSpec, parentSize);
-        }, [this._sizeNode, this._size]);
-
-        this.size.subscribe(size);
-    }
-
-    function createLayoutNode(){
-        this.layout.unsubscribe();
-        this._layoutNode = new LayoutNode();
-
-        var layout = Stream.lift(function surfaceLayoutLift(parentSpec, objectSpec, size) {
-            if (!size || !parentSpec) return false;
-            return (objectSpec)
-                ? layoutAlgebra(objectSpec, parentSpec, size)
-                : parentSpec;
-        }, [this._layout, this._layoutNode, this.size]);
-
-        this.layout.subscribe(layout);
-    }
 
     module.exports = View;
 });

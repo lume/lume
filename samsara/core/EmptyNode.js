@@ -26,6 +26,9 @@ define(function(require, exports, module){
 
         this._node = new RenderTreeNode();
 
+        this._cachedSize = [0, 0];
+        this._node.size.on(['set', 'start', 'update', 'end'], updateSize.bind(this));
+
         this._node._size.subscribe(this.size);
         this._node._layout.subscribe(this.layout);
         this._node._logic.subscribe(this._logic);
@@ -86,6 +89,12 @@ define(function(require, exports, module){
         if (!this._layoutNode) createLayoutNode.call(this);
         this._layoutNode.set({opacity : opacity});
     };
+
+    function updateSize(size){
+        if (this._cachedSize[0] === size[0] && this._cachedSize[1] === size[1]) return;
+        this._cachedSize = size;
+        this.size.emit('resize', size);
+    }
 
     function setOptions(options){
         for (var key in options){
