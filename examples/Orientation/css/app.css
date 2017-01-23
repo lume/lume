@@ -1,0 +1,40 @@
+body {
+    background: black;
+    margin: 0;
+}
+
+.face {
+    border : 2px solid white;
+    -webkit-align-items: center;
+    align-items: center;
+    -webkit-justify-content: center;
+    justify-content: center;
+    display: -webkit-flex;
+    display: flex;
+    font-family: Helvetica;
+    font-size: 40px;
+}
+
+.front {
+    background: rgba(255, 0, 0, 0.8);
+}
+
+.top {
+    background: rgba(185, 0, 0, 0.8);
+}
+
+.bottom {
+    background: rgba(185, 0, 0, 0.8);
+}
+
+.left {
+    background: rgba(185, 0, 0, 0.8);
+}
+
+.right {
+    background: rgba(185, 0, 0, 0.8);
+}
+
+.back {
+    background: rgba(150, 0, 0, 0.8);
+}
