@@ -1,0 +1,63 @@
+body {
+    background: black;
+    margin: 0;
+    font-family: Avenir Next, Helvetica;
+    /*overflow: hidden;*/
+}
+
+#helix {
+    overflow : hidden;
+}
+
+#overlay {
+    pointer-events: none;
+    /*overflow: hidden;*/
+    /*min-height: 100%;
+    min-width: 100%;*/
+}
+
+.navItem {
+    background:rgba(50,50,50, .5);
+    color: rgba(250,250,250,.8);
+    border-bottom: 2px solid rgba(100,100,100,.5);
+    pointer-events: all;
+    cursor: pointer;
+    font-size: 20px;
+    text-shadow: 0px 0px 1px black;
+}
+
+.navItem:active {
+    background: #4c4c4c;
+}
+
+.navItem:not(:first-child) {
+    border-left: 1px solid rgba(100,100,100,.5);
+}
+
+.navItem:first-child {
+    border-right: 1px solid rgba(100,100,100,.5);
+}
+
+.center {
+    display: flex;
+    display: -webkit-flex;
+    align-items: center;
+    -webkit-align-items: center;
+    justify-content: center;
+    -webkit-justify-content: center;
+}
+
+.noselect {
+    -webkit-touch-callout: none;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+}
+
+.samsara-fingers {
+    background: rgba(255, 255, 255, .3);
+    border: 1px solid rgba(255, 255, 255, .4);
+    border-radius: 50%;
+    z-index: 1
+}
