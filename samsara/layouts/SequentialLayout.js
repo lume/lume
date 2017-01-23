@@ -1,4 +1,4 @@
-/* Copyright © 2015-2016 David Valdman */
+/* Copyright © 2015-2017 David Valdman */
 
 define(function(require, exports, module) {
     var Transform = require('../core/Transform');
@@ -6,6 +6,8 @@ define(function(require, exports, module) {
     var LinkedStream = require('../streams/LinkedStream');
     var SimpleStream = require('../streams/SimpleStream');
     var Stream = require('../streams/Stream');
+    var StreamIO = require('../streams/_StreamIO');
+    var Transitionable = require('../core/Transitionable');
 
     var CONSTANTS = {
         DIRECTION : {
@@ -43,30 +45,32 @@ define(function(require, exports, module) {
             // Store nodes and flex values
             this.nodes = [];
 
-            this.stream = new LinkedStream(function(prev, length){
-                return prev + length;
-            }, options.offset);
+            var offset = (typeof options.offset === 'number')
+                ? new Transitionable(options.offset)
+                : options.offset;
+
+            var spacing = (typeof options.spacing === 'number')
+                ? new Transitionable(options.spacing)
+                : options.spacing;
+
+            // add extras here
+            this.stream = new LinkedStream(function(prev, length, spacing){
+                return prev + length + spacing;
+            }, offset);
 
             this.setLengthMap(DEFAULT_LENGTH_MAP);
 
-            var length = Stream.lift(function(length, spacing){
-                return Math.max(length - spacing, 0);
+            var head = Stream.lift(function(length, spacing){
+                return length - spacing;
             }, [this.stream.headOutput, options.spacing]);
 
-            var output = Stream.merge([this.stream.tailOutput, this.stream.headOutput]);
-            this.output.subscribe(output);
+            this.bounds = Stream.merge([this.stream.tailOutput, head]);
 
-            this.pivot = new Stream();
+            this.pivot = new StreamIO();
             this.pivot.subscribe(this.stream.pivotOutput);
 
-            // SequentialLayout derives its size from its content
-            var size = [];
-            this.size = Stream.lift(function(parentSize, length){
-                if (!parentSize) return;
-                size[options.direction] = length;
-                size[1 - options.direction] = parentSize[1 - options.direction];
-                return size;
-            }, [this._size, length]);
+            this.prevPivot = new StreamIO();
+            this.prevPivot.subscribe(this.stream.prevPivot);
         },
         /*
         * Set a custom map from length displacements to transforms.
@@ -88,12 +92,12 @@ define(function(require, exports, module) {
          * @method push
          * @param map [Function] Map `(length) -> transform`
          */
-        push : function(item) {
+        push : function(item, spacing) {
             var stream = item.size.map(function(size){
                 return size[this.options.direction];
             }.bind(this));
 
-            var length = this.stream.push(stream);
+            var length = this.stream.push(stream, spacing || this.options.spacing);
 
             this.nodes.push(item);
 
@@ -110,8 +114,8 @@ define(function(require, exports, module) {
          * @return item
          */
         pop : function(){
-            this.stream.pop();
-            return this.nodes.pop();
+            var result = this.stream.pop();
+            return (result) ? this.nodes.pop() : false;
         },
         /*
          * Add a renderable to the beginning of the layout
@@ -119,12 +123,12 @@ define(function(require, exports, module) {
          * @method unshift
          * @param item {Surface|View} Renderable
          */
-        unshift : function(item){
+        unshift : function(item, spacing){
             var stream = item.size.map(function(size){
                 return size[this.options.direction];
             }.bind(this));
 
-            var length = this.stream.unshift(stream);
+            var length = this.stream.unshift(stream, spacing || this.options.spacing);
 
             this.nodes.unshift(item);
 
@@ -138,8 +142,8 @@ define(function(require, exports, module) {
          * @return item
          */
         shift : function(){
-            this.stream.shift();
-            return this.nodes.shift();
+            var result = this.stream.shift();
+            return (result) ? this.nodes.shift() : false;
         },
         /*
          * Unlink the renderable.

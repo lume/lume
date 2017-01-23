@@ -27,7 +27,7 @@ define(function(require, exports, module) {
     };
 
     StreamInput.prototype.unsubscribe = function(source){
-            if (!source){
+        if (!source){
             for (var i = 0; i < this.upstream.length; i++){
                 var source = this.upstream[i]
                 this.unsubscribe(source)

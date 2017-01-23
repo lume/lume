@@ -5,11 +5,11 @@ define(function(require, exports, module){
     var StreamInput = require('./_StreamInput');
     var StreamOutput = require('./_StreamContract');
 
-    function ReduceStream(reducer, stream, extras){
+    function ReduceStream(reducer, stream, spacing){
         this._input = new StreamInput();
 
         var sources = [this._input, stream];
-        if (extras) sources = sources.concat(extras);
+        if (spacing) sources.push(spacing);
 
         this._output = Stream.lift(reducer, sources);
 
