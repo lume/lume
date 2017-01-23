@@ -74,7 +74,8 @@ define(function(require, exports, module) {
         }
         else if (node._onAdd){
             // View case
-            return node._onAdd(this);
+            // return node._onAdd(this);
+            childNode = node._onAdd(this);
         }
         else if (node instanceof RenderTreeNode){
             // RenderTree Node
@@ -95,13 +96,12 @@ define(function(require, exports, module) {
 
         // Emit previously cached values if node added after initial resize
         if (!node.root){
-            var self = this;
             // TODO: switch to nextQueue
             preTickQueue.push(function(){
                 if (node.root) return;
-                if (self.size.get()) self.size.trigger('set', self.size.get());
-                if (self.layout.get()) self.layout.trigger('set', self.layout.get());
-            });
+                if (this.size.get() !== null) this.size.trigger('set', this.size.get());
+                if (this.layout.get() !== null) this.layout.trigger('set', this.layout.get());
+            }.bind(this));
         }
 
         return childNode;
@@ -166,7 +166,7 @@ define(function(require, exports, module) {
         if (object instanceof SizeNode){
             var size = Stream.lift(
                 function SGSizeAlgebra (objectSpec, parentSize){
-                    // if (!parentSize) return false;
+                    if (!parentSize) return false;
                     return(objectSpec)
                         ? sizeAlgebra(objectSpec, parentSize)
                         : parentSize;
@@ -179,7 +179,7 @@ define(function(require, exports, module) {
         else if (object instanceof LayoutNode){
             var layout = Stream.lift(
                 function SGLayoutAlgebra (objectSpec, parentSpec, size){
-                    // if (!parentSpec || !size) return false;
+                    if (!parentSpec || !size) return false;
                     return (objectSpec)
                         ? layoutAlgebra(objectSpec, parentSpec, size)
                         : parentSpec;
