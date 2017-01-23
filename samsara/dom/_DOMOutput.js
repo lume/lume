@@ -6,7 +6,7 @@ define(function(require, exports, module) {
     var usePrefix = !('transform' in window.document.documentElement.style);
     var devicePixelRatio = 2 * (window.devicePixelRatio || 1);
     var MIN_OPACITY = 0.0001;
-    var MAX_OPACITY = 0.9999;
+    var MAX_OPACITY = 1;
     var EPSILON = 1e-5;
     var _zeroZero = [0, 0];
 
@@ -34,6 +34,7 @@ define(function(require, exports, module) {
         this._transformDirty = true;
         this._isVisible = true;
         this._roundToPixel = false;
+        this._pointerEventStyle = '';
     }
 
     function _round(value, unit){
@@ -87,7 +88,7 @@ define(function(require, exports, module) {
     // pointerEvents logic allows for DOM events to pass through the element when invisible
     function _setOpacity(element, opacity) {
         if (!this._isVisible && opacity > MIN_OPACITY) {
-            element.style.pointerEvents = 'auto';
+            element.style.pointerEvents = this._pointerEventStyle || '';
             this._isVisible = true;
         }
 
@@ -95,6 +96,7 @@ define(function(require, exports, module) {
         else if (opacity < MIN_OPACITY) {
             opacity = MIN_OPACITY;
             if (this._isVisible) {
+                this._pointerEventStyle = element.style.pointerEvents;
                 element.style.pointerEvents = 'none';
                 this._isVisible = false;
             }
