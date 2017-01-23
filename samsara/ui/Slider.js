@@ -67,7 +67,7 @@ define(function(require, exports, module){
             setupEvents.call(this, options);
             setupRenderTree.call(this, options);
 
-            this.size = Stream.lift(function(size, labelSize){
+            this.customSize = Stream.lift(function(size, labelSize){
                 if (!labelSize) return false;
                 return [size[0], size[1] + labelSize[1]];
             }, [this.foreground.size, this.label.size]);
@@ -114,14 +114,6 @@ define(function(require, exports, module){
     }
 
     function setupSurfaces(options){
-        this.background = new Surface({
-            classes : ['samsara-slider-background']
-        });
-
-        this.foreground = new Surface({
-            classes : ['samsara-slider-foreground']
-        });
-
         var template = String(
             '<span class="label">' + options.label +
                 '<span class="range">' + '[' + options.range[0] + '|' + options.range[1] + ']</span>' +
@@ -138,6 +130,23 @@ define(function(require, exports, module){
         this.label.on('deploy', function(target){
             this.labelContent = target.querySelector('.value');
         }.bind(this));
+
+        var size = Stream.lift(function(labelSize, size){
+            if (!size || !labelSize) return false;
+            return [
+                size[0], size[1] - labelSize[1]
+            ];
+        }, [this.label.size, this.size])
+
+        this.background = new Surface({
+            size : size,
+            classes : ['samsara-slider-background']
+        });
+
+        this.foreground = new Surface({
+            size : size,
+            classes : ['samsara-slider-foreground']
+        });
     }
 
     function setupState(options){
