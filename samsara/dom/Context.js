@@ -75,7 +75,7 @@ define(function(require, exports, module) {
         this._eventOutput = new EventHandler();
 
         this._eventForwarder = function _eventForwarder(event) {
-            event.stopPropagation();
+            // event.stopPropagation();
             var shouldEmit = processEvent.call(this, event);
             if (shouldEmit) this._eventOutput.emit(event.type, event);
         }.bind(this);
@@ -217,7 +217,7 @@ define(function(require, exports, module) {
      * Allocate contents of the `context` to a DOM node.
      *
      * @method mount
-     * @param node {Node}  DOM element
+     * @param [node=document.body] {Node}  DOM element
      */
     Context.prototype.mount = function mount(node){
         node = node || window.document.body;
