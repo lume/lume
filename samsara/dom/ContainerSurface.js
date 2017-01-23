@@ -1,4 +1,4 @@
-/* Copyright © 2015-2016 David Valdman */
+/* Copyright © 2015-2017 David Valdman */
 
 define(function(require, exports, module) {
     var Surface = require('./Surface');
@@ -94,8 +94,30 @@ define(function(require, exports, module) {
      * @method perspectiveFrom
      * @param perspective {Stream}    Perspective stream
      */
-    Context.prototype.perspectiveFrom = function perspectiveFrom(perspective){
+    ContainerSurface.prototype.perspectiveFrom = function perspectiveFrom(){
         Context.prototype.perspectiveFrom.apply(this.context, arguments);
+    };
+
+        /**
+     * Set current perspective of the `context` in pixels.
+     *
+     * @method setPerspective
+     * @param perspective {Number}  Perspective in pixels
+     * @param [transition] {Object} Transition definition
+     * @param [callback] {Function} Callback executed on completion of transition
+     */
+    ContainerSurface.prototype.setPerspectiveOrigin = function setPerspectiveOrigin(origin, transition, callback) {
+        Context.prototype.setPerspectiveOrigin.apply(this.context, arguments);
+    };
+
+    /**
+     * Pull the perspective-origin value from a transitionable.
+     *
+     * @method perspectiveOriginFrom
+     * @param perspectiveOrigin {Transitionable}    Perspective-origin transitionable
+     */
+    ContainerSurface.prototype.perspectiveOriginFrom = function perspectiveOriginFrom(perspectiveOrigin){
+        Context.prototype.perspectiveOriginFrom.apply(this.context, arguments);
     };
 
     /**
