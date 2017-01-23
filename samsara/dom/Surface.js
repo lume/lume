@@ -1,4 +1,4 @@
-/* Copyright © 2015-2016 David Valdman */
+/* Copyright © 2015-2017 David Valdman */
 
 define(function(require, exports, module) {
     var DOMOutput = require('./_DOMOutput');
@@ -78,7 +78,7 @@ define(function(require, exports, module) {
 
         // TODO: stopPropagation has adverse effects for bubbling
         this._eventForwarder = function _eventForwarder(event) {
-            event.stopPropagation();
+            // event.stopPropagation();
             var shouldEmit = processEvent.call(this, event);
             if (shouldEmit) this._eventOutput.emit(event.type, event);
         }.bind(this);
@@ -594,7 +594,7 @@ define(function(require, exports, module) {
             return sizeAlgebra(sizeSpec, parentSize);
         }, [this._sizeNode, this._size]);
 
-        this.size.unsubscribe(this._size);
+        this.size.unsubscribe();
         this.size.subscribe(size);
     }
 
@@ -608,7 +608,7 @@ define(function(require, exports, module) {
                 : parentSpec;
         }.bind(this), [this._layout, this._layoutNode, this.size]);
 
-        this.layout.unsubscribe(this._layout);
+        this.layout.unsubscribe();
         this.layout.subscribe(layout);
     }
 
