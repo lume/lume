@@ -125,6 +125,17 @@ define(function(require, exports, module) {
     };
 
     /**
+     * Determine if an event source is currently subscribed.
+     *
+     * @method has
+     * @param  source {EventEmitter}  Event source.
+     * @return {Boolean}              True if source is subscribed. False otherwise.
+     */
+    EventHandler.prototype.has = function has(source){
+        return (this.upstream.indexOf(source) >= 0);
+    }
+
+    /**
      * Listen for events from an an upstream source.
      *
      * @method subscribe
@@ -147,17 +158,6 @@ define(function(require, exports, module) {
         }
         return false;
     };
-
-    /**
-     * Determine if an event source is currently subscribed.
-     *
-     * @method has
-     * @param  source {EventEmitter}  Event source.
-     * @return {Boolean}              True if source is subscribed. False otherwise.
-     */
-    EventHandler.prototype.has = function has(source){
-        return (this.upstream.indexOf(source) >= 0);
-    }
 
     /**
      * Stop listening to events from an upstream source.
