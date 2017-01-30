@@ -11,6 +11,7 @@ class Scene extends ImperativeBase.mixin(Sizeable) {
     constructor(options = {}) {
         super(options)
 
+        // XXX: z size is always 0, since native DOM elements are always flat.
         this._elementParentSize = {x:0, y:0, z:0}
 
         this._onElementParentSizeChange = (newSize) => {
@@ -69,43 +70,9 @@ class Scene extends ImperativeBase.mixin(Sizeable) {
         this._elementManager.element._stopSizePolling()
     }
 
-    /**
-     * @override
-     */
-    _calcSize() {
-        const {x,y,z} = this._calculatedSize
-        const previousSize = {x,y,z}
-
-        if (this._properties.sizeMode._x == 'absolute') {
-            this._calculatedSize.x = this._properties.absoluteSize._x
-        }
-        else { // proportional
-            this._calculatedSize.x = Math.round(this._properties.proportionalSize._x * this._elementParentSize.x)
-        }
-
-        if (this._properties.sizeMode._y == 'absolute') {
-            this._calculatedSize.y = this._properties.absoluteSize._y
-        }
-        else { // proportional
-            this._calculatedSize.y = Math.round(this._properties.proportionalSize._y * this._elementParentSize.y)
-        }
-
-        if (this._properties.sizeMode._z == 'absolute') {
-            this._calculatedSize.z = this._properties.absoluteSize._z
-        }
-        else { // proportional
-            // XXX: z size is always 0, since the scene is always flat.
-            this._calculatedSize.z = Math.round(this._properties.proportionalSize._z * this._elementParentSize.z)
-        }
-
-        if (
-            previousSize.x !== this._calculatedSize.x
-            || previousSize.y !== this._calculatedSize.y
-            || previousSize.z !== this._calculatedSize.z
-        ) {
-            const {x,y,z} = this._calculatedSize
-            this.triggerEvent('sizechange', {x,y,z})
-        }
+    /** @override */
+    _getParentSize() {
+        return this._mounted ? this._elementParentSize : {x:0,y:0,z:0}
     }
 
     /**

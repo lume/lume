@@ -83,42 +83,43 @@ const SizeableMixin = base => {
         // can refactor so it is called inside an animation frame like
         // Transform#_calculateMatrix?
         _calcSize() {
-            const previousSize = Object.assign({}, this._calculatedSize)
+            const calculatedSize = this._calculatedSize
+            const {...previousSize} = calculatedSize
+            const props = this._properties
+            const parentSize = this._getParentSize()
 
-            if (this._properties.sizeMode._x == 'absolute') {
-                this._calculatedSize.x = this._properties.absoluteSize._x
+            if (props.sizeMode._x == 'absolute') {
+                calculatedSize.x = props.absoluteSize._x
             }
             else { // proportional
-                this._parent?
-                    this._calculatedSize.x = Math.round(this._parent._calculatedSize.x * this._properties.proportionalSize._x):
-                    this._calculatedSize.x = 0
+                calculatedSize.x = Math.round(parentSize.x * props.proportionalSize._x)
             }
 
-            if (this._properties.sizeMode._y == 'absolute') {
-                this._calculatedSize.y = this._properties.absoluteSize._y
+            if (props.sizeMode._y == 'absolute') {
+                calculatedSize.y = props.absoluteSize._y
             }
             else { // proportional
-                this._parent?
-                    this._calculatedSize.y = Math.round(this._parent._calculatedSize.y * this._properties.proportionalSize._y):
-                    this._calculatedSize.y = 0
+                calculatedSize.y = Math.round(parentSize.y * props.proportionalSize._y)
             }
 
-            if (this._properties.sizeMode._z == 'absolute') {
-                this._calculatedSize.z = this._properties.absoluteSize._z
+            if (props.sizeMode._z == 'absolute') {
+                calculatedSize.z = props.absoluteSize._z
             }
             else { // proportional
-                this._parent?
-                    this._calculatedSize.z = Math.round(this._parent._calculatedSize.z * this._properties.proportionalSize._z):
-                    this._calculatedSize.z = 0
+                calculatedSize.z = Math.round(parentSize.z * props.proportionalSize._z)
             }
 
             if (
-                previousSize.x !== this._calculatedSize.x
-                || previousSize.y !== this._calculatedSize.y
-                || previousSize.z !== this._calculatedSize.z
+                previousSize.x !== calculatedSize.x
+                || previousSize.y !== calculatedSize.y
+                || previousSize.z !== calculatedSize.z
             ) {
-                this.triggerEvent('sizechange', Object.assign({}, this._calculatedSize))
+                this.triggerEvent('sizechange', Object.assign({}, calculatedSize))
             }
+        }
+
+        _getParentSize() {
+            return this._parent ? this._parent._calculatedSize : {x:0,y:0,z:0}
         }
 
         /**
