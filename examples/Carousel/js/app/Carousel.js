@@ -31,12 +31,11 @@ define(function (require, exports, module) {
                     }
                 });
 
-                surfaces.push(surface);
+                // Add the surface to the carousel
+                this.scrollview.push(surface);
+
                 hue += 360 / options.pages;
             }
-
-            // Add the surfaces to the carousel
-            this.addItems(surfaces);
         },
         createArrows : function(options){
             this.arrows = new Arrows(options);
@@ -97,9 +96,6 @@ define(function (require, exports, module) {
             this.add({align: [.5, .9]})
                 .add({size: size, origin: [.5, .5]}) // define origin point and size of dots view
                 .add(this.dots);
-        },
-        addItems : function(items){
-            this.scrollview.addItems(items);
         }
     });
 
