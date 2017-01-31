@@ -53,10 +53,10 @@ define(function (require, exports, module) {
     // Create the safariTabs view with specified options
     var safariTabs = new SafariTabs({
         tabData : tabData,
-        perspective: 1000,          // Perspective for the scrollview
+        perspective: 600,          // Perspective for the scrollview
         tab : {                     // Options for the tab
-            titleHeightRatio : .06, // Height of the title bar as a ratio of page height
-            angle : -Math.PI/5,     // Angle to rotate the tabs by
+            titleHeight : 30, // Height of the title bar as a ratio of page height
+            angle : -Math.PI/6,     // Angle to rotate the tabs by
             spacing : 150,          // Vertical spacing between tabs
             height : 400            // Total height of the tab
         },
