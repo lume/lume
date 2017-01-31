@@ -19,7 +19,6 @@ define(function (require, exports, module) {
             });
 
             // Create the parallaxCat images
-            var cats = [];
             for (var i = 0; i < options.urls.length; i++) {
                 var parallaxCat = new ParallaxCat({
                     proportions : [1, 1/2],
@@ -35,10 +34,8 @@ define(function (require, exports, module) {
                 // parallax effect
                 parallaxCat.subscribe(scrollview);
 
-                cats.push(parallaxCat);
+                scrollview.push(parallaxCat)
             }
-
-            scrollview.addItems(cats);
 
             // Build the render subtree consisting of only the scrollview
             this.add(scrollview);

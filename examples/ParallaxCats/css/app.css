@@ -1,9 +1,9 @@
 body {
     background: black;
-    overflow: hidden;
     margin: 0;
 }
 
 .cat {
-    border: 4px solid black;
+    border-bottom: 3px solid black;
+    overflow: hidden;
 }

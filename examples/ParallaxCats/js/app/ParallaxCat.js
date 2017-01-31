@@ -18,16 +18,13 @@ define(function(require, exports, module) {
             // Each cat image is placed inside a container with
             // `overflow : hidden` to clip the content
             var container = new ContainerSurface({
-                classes: ['cat'],
-                properties: {overflow: 'hidden'}
+                classes: ['cat']
             });
 
-            // Create the cat photo
+            // Create the cat photo with a [1,1.75] aspect ratio
             var cat = new Surface({
-                size: function(parentSize){
-                    return [parentSize[0], 4/3 * parentSize[1]];
-                },
                 tagName : 'img',
+                proportions : [1,7/4],
                 origin : [0.5,0.2],
                 attributes : {src : options.src}
             });
@@ -35,20 +32,17 @@ define(function(require, exports, module) {
             // Transform the image inside of the container by
             // mapping the input (provided by the scrollview) to a translation
             var parallaxTransform = this.input.map(function (data) {
-                var offset = options.parallaxAmount * (data.index + data.progress);
-                return Transform.translateY(offset)
+                var offset = (data.progress + data.index - options.index) * options.parallaxAmount;
+                return Transform.compose(
+                    Transform.skewY(options.skew),
+                    Transform.translateY(offset)
+                );
             });
 
             // Build the render subtree inside the container
             container
                 .add({
-                    align : [.5, 0.2],
-                    transform: Transform.compose(
-                        Transform.translateY(-options.index * options.parallaxAmount),
-                        Transform.skewY(options.skew)
-                    )
-                })
-                .add({
+                    align : [.5,0.2],
                     transform: parallaxTransform
                 })
                 .add(cat);
