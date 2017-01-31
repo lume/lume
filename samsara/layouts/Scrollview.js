@@ -68,6 +68,7 @@ define(function (require, exports, module) {
             this._currentIndex = 0;
             this._previousIndex = 0;
             this.velocity = 0;
+            this.isPaused = false;
 
             var isTouching = false;
             var isMouseWheelActive = false;
@@ -77,7 +78,7 @@ define(function (require, exports, module) {
                 ? ['touch', 'scroll', 'mouse']
                 : ['touch', 'scroll'];
 
-            var genericInput = new GenericInput(inputs, {
+            this.input = new GenericInput(inputs, {
                 direction: options.direction,
                 limit: 1
             });
@@ -88,16 +89,16 @@ define(function (require, exports, module) {
 
             var dragDifferential = new Differential();
             var springDifferential = new Differential();
-            var gestureDifferential = genericInput.pluck('delta');
+            var inputDifferential = this.input.pluck('delta');
 
             dragDifferential.subscribe(this.drag);
             springDifferential.subscribe(this.spring);
 
-            this.position.subscribe(gestureDifferential);
+            this.position.subscribe(inputDifferential);
             this.position.subscribe(dragDifferential);
             this.position.subscribe(springDifferential);
 
-            var scrollInput = genericInput.getInput('scroll');
+            var scrollInput = this.input.getInput('scroll');
 
             scrollInput.on('start', function(){
                 isMouseWheelActive = true;
@@ -107,20 +108,21 @@ define(function (require, exports, module) {
                 isMouseWheelActive = false;
             });
 
-            genericInput.on('start', function () {
+            this.input.on('start', function () {
                 isTouching = true;
                 this.spring.halt();
                 this.drag.halt();
             }.bind(this));
 
-            genericInput.on('end', function (data) {
+            this.input.on('end', function (data) {
                 isTouching = false;
+                if (this.position._isPaused) return false;
 
                 nextTick.push(function(){
                     switch (edge) {
                         case EDGE.NONE:
                             (this.options.paginated)
-                                ? handlePagination.call(this, data.velocity)
+                                ? handlePagination.call(this, this.pageOverflow, data.velocity)
                                 : handleDrag.call(this, data.velocity);
                             break;
                         case EDGE.TOP:
@@ -143,6 +145,7 @@ define(function (require, exports, module) {
             // extends past the viewport
             // responsible for setting edgeGrip
             this.edgeOverflow = 0;
+            this.pageOverflow = 0;
             var handledEdge = false;
             var overflow = Stream.lift(function (size, viewportSize, offset, endPosition) {
                 if (!size || !viewportSize) return false;
@@ -158,7 +161,7 @@ define(function (require, exports, module) {
                         this.edgeOverflow = overflowPrev;
                         if (edge !== EDGE.TOP){
                             edge = EDGE.TOP;
-                            genericInput.setOptions({scale : options.edgeGrip});
+                            this.input.setOptions({scale : options.edgeGrip});
                             if (!isTouching) {
                                 handleEdge.call(this, this.edgeOverflow, this.velocity);
                                 handledEdge = true;
@@ -169,7 +172,7 @@ define(function (require, exports, module) {
                         this.edgeOverflow = overflowNext;
                         if (edge !== EDGE.BOTTOM){
                             edge = EDGE.BOTTOM;
-                            genericInput.setOptions({scale : options.edgeGrip});
+                            this.input.setOptions({scale : options.edgeGrip});
                             if (!isTouching) {
                                 handleEdge.call(this, this.edgeOverflow, this.velocity);
                                 handledEdge = true;
@@ -177,7 +180,7 @@ define(function (require, exports, module) {
                         }
                     }
                     else if (edge !== EDGE.NONE){
-                        genericInput.setOptions({scale : 1});
+                        this.input.setOptions({scale : 1});
                         edge = EDGE.NONE;
                     }
 
@@ -192,7 +195,7 @@ define(function (require, exports, module) {
                         console.log('top')
                         edge = EDGE.TOP;
 
-                        genericInput.setOptions({scale : options.edgeGrip});
+                        this.input.setOptions({scale : options.edgeGrip});
                         if (!isTouching) handleEdge.call(this, this.edgeOverflow, this.velocity);
                     }
                 }
@@ -203,13 +206,13 @@ define(function (require, exports, module) {
                         console.log('bottom')
                         edge = EDGE.BOTTOM;
 
-                        genericInput.setOptions({scale : options.edgeGrip});
+                        this.input.setOptions({scale : options.edgeGrip});
                         if (!isTouching) handleEdge.call(this, this.edgeOverflow, this.velocity);
                     }
                 }
                 else if (edge !== EDGE.NONE){
                     console.log('middle')
-                    genericInput.setOptions({scale : 1});
+                    this.input.setOptions({scale : 1});
                     edge = EDGE.NONE;
                 }
 
@@ -224,7 +227,15 @@ define(function (require, exports, module) {
             // offset is positive and decreasing
             // pivotLength is negative and decreasing
             var pivot = Stream.lift(function(offset, pivotLength, prevPivotLength, edge){
-                // console.log(offset, pivotLength, prevPivotLength, edge);
+                // console.log(offset, pivotLength, prevPivotLength);
+
+                var itemLength = pivotLength - offset;
+                if (-offset > itemLength/2){
+                    this.pageOverflow = pivotLength;
+                }
+                else {
+                    this.pageOverflow = offset;
+                }
 
                 if (offset > 0 && edge !== EDGE.TOP){
                     // previous
@@ -233,6 +244,7 @@ define(function (require, exports, module) {
                     this.layout.setPivot(-1);
                     this.position.set(prevPivotLength);
                     this._currentIndex--;
+                    progress = 1;
                 }
                 else if (pivotLength < 0 && edge !== EDGE.BOTTOM){
                     // next
@@ -241,9 +253,11 @@ define(function (require, exports, module) {
                     this.layout.setPivot(1);
                     this.position.set(pivotLength);
                     this._currentIndex++;
+                    progress = 0;
                 }
-
-                progress = -offset / pivotLength;
+                else {
+                    progress = offset / (offset - pivotLength);
+                }
 
                 return {
                     index : this._currentIndex,
@@ -253,10 +267,12 @@ define(function (require, exports, module) {
 
             pivot.on(['set', 'start', 'update', 'end'], function(){});
 
+            this.output.subscribe(pivot);
+
             if (options.clip) options.container.properties.overflow = 'hidden';
             this.container = new ContainerSurface(options.container);
 
-            genericInput.subscribe(this.container);
+            this.input.subscribe(this.container);
 
             this.container.add(this.layout);
             this.add(this.container);
@@ -287,6 +303,12 @@ define(function (require, exports, module) {
         },
         shift : function(){
             return this.layout.shift();
+        },
+        pause : function(){
+            this.input.unsubscribe(this.container);
+        },
+        resume : function(){
+            this.input.subscribe(this.container);
         }
     }, CONSTANTS);
 
@@ -298,8 +320,12 @@ define(function (require, exports, module) {
         this.spring.set(-overflow, this.options.edgeTransition);
     }
 
-    function handlePagination(){
+    function handlePagination(pageOverflow, velocity){
+        this.drag.halt();
+        this.options.pageTransition.velocity = velocity;
 
+        this.spring.reset(pageOverflow);
+        this.spring.set(0, this.options.pageTransition);
     }
 
     function handleDrag(velocity){
