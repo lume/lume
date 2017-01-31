@@ -227,7 +227,6 @@ define(function(require, exports, module) {
         this.emit('end', payload);
         delete this._payload[touchId];
         delete this._value[touchId];
-        delete this._cumulate[touchId];
     }
 
     module.exports = TouchInput;
