@@ -17,7 +17,7 @@
     "build-cjs": "./.scripts/build-cjs.sh",
     "build-amd": "./.scripts/build-amd.sh",
     "build-global": "./.scripts/build-global.sh",
-    "watch": "./.scripts/build-cjs.sh --watch & ./.scripts/build-global.sh --watch &"
+    "watch": "./.scripts/build-cjs.sh --watch & P1=$!; ./.scripts/build-global.sh --watch & P2=$!; wait $P1 $P2"
   },
   "dependencies": {
     "army-knife": "^0.2.1",
