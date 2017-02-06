@@ -27,6 +27,7 @@ class MotorHTMLNode extends MotorHTMLBase {
     }
 
     attributeChangedCallback(attribute, oldValue, newValue) {
+        super.attributeChangedCallback(...arguments)
         this._updateNodeProperty(attribute, oldValue, newValue)
     }
 

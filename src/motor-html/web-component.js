@@ -96,6 +96,7 @@ function WebComponentMixin(elementClass) {
         createdCallback() {
             this._attached = false
             this._initialized = false
+            this._initialAttributeChange = false
             this._childObserver = null
         }
 
@@ -198,15 +199,18 @@ function WebComponentMixin(elementClass) {
 
             // fire this.attributeChangedCallback in case some attributes have
             // existed before the custom element was upgraded.
-            if (this.hasAttributes()) {
+            if (!this._initialAttributeChange && this.hasAttributes()) {
 
                 // HTMLElement#attributes is a NamedNodeMap which is not an
                 // iterable, so we use Array.from. See:
                 // https://github.com/zloirock/core-js/issues/234
                 for (const attr of Array.from(this.attributes))
-                    if ('attributeChangedCallback' in this)
-                        this.attributeChangedCallback(attr.name, null, attr.value)
+                    this.attributeChangedCallback(attr.name, null, attr.value)
             }
+        }
+
+        attributeChangedCallback() {
+            this._initialAttributeChange = true
         }
 
         /**
