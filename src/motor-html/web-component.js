@@ -98,6 +98,7 @@ function WebComponentMixin(elementClass) {
             this._initialized = false
             this._initialAttributeChange = false
             this._childObserver = null
+            this._style = null
         }
 
         // Subclasses can implement these.
@@ -122,6 +123,8 @@ function WebComponentMixin(elementClass) {
             const rule = jss.createRule(this.getStyles())
 
             rule.applyTo(this)
+
+            return rule
         }
 
         async disconnectedCallback() {
@@ -175,7 +178,7 @@ function WebComponentMixin(elementClass) {
          * Subclasses should extend this to add such logic.
          */
         init() {
-            this._createStyles()
+            if (!this._style) this._style = this._createStyles()
 
             // Handle any nodes that may have been connected before `this` node
             // was created (f.e. child nodes that were connected before the
