@@ -32,6 +32,8 @@ class Node extends ImperativeBase.mixin(Transformable) {
         //this.callSuperConstructor(TreeNode)
         //this.callSuperConstructor(ImperativeBase)
 
+        this._waitingMountPromiseToRender = false
+
         /**
          * @private
          * This method is defined here in the consructor as an arrow function
@@ -88,10 +90,16 @@ class Node extends ImperativeBase.mixin(Transformable) {
      * super._needsToBeRendered after the first call are basically no-ops when
      * the code path reaches Motor._setNodeToBeRendered. We need to evaluate
      * this a little more...
+     *
+     * TODO: Does scene need to have the _waitingMountPromiseToRender guard
+     * too?
      */
     async _needsToBeRendered() {
+        if (this._waitingMountPromiseToRender) return
         if (!this._mounted) {
+            this._waitingMountPromiseToRender = true
             await this.mountPromise
+            this._waitingMountPromiseToRender = false
         }
         super._needsToBeRendered()
     }
