@@ -63,7 +63,7 @@ class ElementManager {
                 // node to another imperative Node. In this case, the
                 // HTML-API node will be added to the proper HTMLparent.
                 || (childImperativeNode._elementManager.element.parentElement &&
-                    childImperativeNode._elementManager.element.parentElement !== childImperativeNode._parent._elementManager.element)
+                    childImperativeNode._elementManager.element.parentElement !== this.element)
 
                 // When an HTML-API node is already child of the
                 // relevant parent, or it is child of a shadow root of
@@ -71,7 +71,7 @@ class ElementManager {
                 // everything is already as expected, so the following
                 // conditional body is skipped.
             ) {
-                childImperativeNode._parent._elementManager.addChild(childImperativeNode._elementManager)
+                this.addChild(childImperativeNode._elementManager)
             }
 
         // Mount to camera if top level Node
@@ -84,9 +84,11 @@ class ElementManager {
     disconnectChildElement(childImperativeNode) {
         // TODO: move this out, into DOMRenderer
 
-        // XXX Only remove the childImperativeNode _elementManager if it has an actual parent
-        if (childImperativeNode._elementManager.element.parentNode == childImperativeNode._parent._elementManager.element)
-            childImperativeNode._parent._elementManager.removeChild(childImperativeNode._elementManager)
+        // If DeclarativeBase#removeChild was called first, we don't need to
+        // call this again.
+        if (!childImperativeNode._elementManager.element.parentNode) return
+
+        this.removeChild(childImperativeNode._elementManager)
     }
 
     /**
