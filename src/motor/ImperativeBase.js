@@ -176,24 +176,24 @@ export function initImperativeBase() {
             get scene() {
                 // NOTE: this._scene is initally null, created in the constructor.
 
-                // if already cached, return it.
-                if (this._scene) return this._scene
+                // if already cached, return it. Or if no parent, return it (it'll be null).
+                if (this._scene || !this._parent) return this._scene
 
                 // if the parent node already has a ref to the scene, use that.
-                if (this._parent && this._parent._scene) {
+                if (this._parent._scene) {
                     this._scene = this._parent._scene
-
-                    return this._scene
                 }
-
+                else if (this._parent instanceof Scene) {
+                    this._scene = this._parent
+                }
                 // otherwise call the scene getter on the parent, which triggers
                 // traversal up the scene graph in order to find the root scene (null
                 // if none).
                 else {
-                    if (this._parent) this._scene = this._parent.scene
-
-                    return this._scene
+                    this._scene = this._parent.scene
                 }
+
+                return this._scene
             }
 
             /**

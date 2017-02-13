@@ -20,10 +20,6 @@ class Scene extends ImperativeBase.mixin(Sizeable) {
             this._needsToBeRendered()
         }
 
-        // TODO: remove, only Node needs scenePromise stuff.
-        this._scene = this
-        this._resolveScenePromise(this)
-
         // For now, Scenes are always proportionally sized by default.
         // TODO: Scene is not Transformable, it contains all the Transformable Nodes, so set sizing by CSS.
         this.sizeMode = { x: 'proportional', y: 'proportional' }
