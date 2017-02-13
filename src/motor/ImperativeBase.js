@@ -227,7 +227,8 @@ export function initImperativeBase() {
 
                 // Calculate sizing because proportional size might depend on
                 // the new parent.
-                // TODO delegate to animation frame?
+                // TODO: this will be removed after rendering on mount, in
+                // https://github.com/trusktr/infamous/issues/67.
                 childNode._calcSize()
                 childNode._needsToBeRendered()
 
@@ -266,10 +267,14 @@ export function initImperativeBase() {
                 // childNode no longer needs to observe parent for size changes.
                 this.off('sizechange', childNode._onParentSizeChange)
 
-                childNode._scene = null // not part of a scene anymore.
-                childNode._scenePromise = null // reset so that it can be awaited again for when the node is re-mounted.
+                // not part of a scene anymore.
+                childNode._scene = null
+                // reset so that it can be awaited again for when the node is re-mounted.
+                childNode._scenePromise = null
+                // obviously not mounted anymore.
                 childNode._mounted = false
-                childNode._mountPromise = null // reset so that it can be awaited again for when the node is re-mounted.
+                // reset so that it can be awaited again for when the node is re-mounted.
+                childNode._mountPromise = null
 
                 // TODO: move this out, into DOMRenderer
                 this._elementManager.disconnectChildElement(childNode)

@@ -16,16 +16,13 @@ class Scene extends ImperativeBase.mixin(Sizeable) {
 
         this._onElementParentSizeChange = (newSize) => {
             this._elementParentSize = newSize
-            this._calcSize() // TODO: Move _calcSize into a render task, similar to _calculateMatrix?
+            this._calcSize()
             this._needsToBeRendered()
         }
 
         // For now, Scenes are always proportionally sized by default.
-        // TODO: Scene is not Transformable, it contains all the Transformable Nodes, so set sizing by CSS.
         this.sizeMode = { x: 'proportional', y: 'proportional' }
 
-        // TODO: We need to render one time each time mountPromise is resolved,
-        // not just this one time in the constructor.
         this._calcSize()
         this._needsToBeRendered()
     }
