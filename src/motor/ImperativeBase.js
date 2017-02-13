@@ -237,8 +237,8 @@ export function initImperativeBase() {
                 // If child Node's HTML element isn't mounted.. mount it.
                 // TODO move to DOMRenderer
                 // TODO delegate to animation frame?
-                if (!childNode._mounted && childNode._parent) {
-                    this._elementManager.connectElementToParent(childNode)
+                if (!childNode._mounted) {
+                    this._elementManager.connectChildElement(childNode)
                     childNode._mounted = true
                 }
 
@@ -272,7 +272,7 @@ export function initImperativeBase() {
                 childNode._mountPromise = null // reset so that it can be awaited again for when the node is re-mounted.
 
                 // TODO: move this out, into DOMRenderer
-                this._elementManager.disconnectElementFromParent(childNode)
+                this._elementManager.disconnectChildElement(childNode)
             }
 
             /**

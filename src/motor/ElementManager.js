@@ -42,7 +42,7 @@ class ElementManager {
         this.element.removeChild(childElementManager.element)
     }
 
-    connectElementToParent(childImperativeNode) {
+    connectChildElement(childImperativeNode) {
         // TODO: move this out, into DOMRenderer
 
         // TODO: camera
@@ -81,7 +81,7 @@ class ElementManager {
         // }
     }
 
-    disconnectElementFromParent(childImperativeNode) {
+    disconnectChildElement(childImperativeNode) {
         // TODO: move this out, into DOMRenderer
 
         // XXX Only remove the childImperativeNode _elementManager if it has an actual parent
