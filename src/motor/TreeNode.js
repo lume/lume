@@ -37,7 +37,7 @@ const TreeNodeMixin = base => {
         addChild (childNode) {
 
             if (! (childNode instanceof TreeNode))
-                throw new Error('TreeNode.addChild expects the childNode argument to be a TreeNode instance.')
+                throw new TypeError('TreeNode.addChild expects the childNode argument to be a TreeNode instance.')
 
             // Do nothing if the child TreeNode is already added to this TreeNode.
             //
