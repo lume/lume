@@ -51,7 +51,7 @@ function shadowRootChildAdded(child) {
         hasShadowDomV0
         && child instanceof HTMLContentElement
     ) {
-        // TODO observe <content> elements.
+        // observe <content> elements.
     }
     else if (
         hasShadowDomV1
@@ -72,7 +72,7 @@ function shadowRootChildRemoved(child) {
         hasShadowDomV0
         && child instanceof HTMLContentElement
     ) {
-        // TODO: unobserve <content> element
+        // unobserve <content> element
     }
     else if (
         hasShadowDomV1
@@ -108,10 +108,6 @@ if (HTMLElement.prototype.createShadowRoot instanceof Function)
     HTMLElement.prototype.createShadowRoot = hijack(HTMLElement.prototype.createShadowRoot)
 if (HTMLElement.prototype.attachShadow instanceof Function)
     HTMLElement.prototype.attachShadow = hijack(HTMLElement.prototype.attachShadow)
-
-// ... Little did I know that the `WebComponent` function I made is
-// considered a form of mixin. ...
-// TODO: follow the mixin pattern as with Node and Scene classes.
 
 initMotorHTMLBase()
 export function initMotorHTMLBase() {
@@ -157,17 +153,6 @@ export function initMotorHTMLBase() {
             // when/if needed.
             this._shadowChildren = null
 
-            // XXX: "this.ready" seems to be more intuitive on the HTML side than
-            // "this.mountPromise" because if the user has a reference to a
-            // motor-node or a motor-scene and it exists in DOM, then it is already
-            // "mounted" from the HTML API perspective although not necessarily
-            // ready because `connectedCallback`. Maybe we can use "mountPromise"
-            // for the imperative API, and "ready" for the HTML API. For example:
-            //
-            // await $('motor-scene')[0].ready // When using the HTML API
-            // await node.mountPromise // When using the imperative API
-            //
-            // Or, maybe we can just use ".ready" in both APIs?...
             this._resolveReadyPromise = null
             this.ready = new Promise(r => this._resolveReadyPromise = r)
         }

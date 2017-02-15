@@ -80,19 +80,6 @@ class Node extends ImperativeBase.mixin(Transformable) {
     /**
      * Trigger a re-render for this node (wait until mounted if not nounted
      * yet).
-     *
-     * @override see Transformable#override
-     *
-     * TODO If a setter is called over and over in a render task before the node
-     * is mounted, then each tick will cause an await this.mountPromise, and
-     * eventually all the bodies will fire all at once. I don't think we want
-     * this to happen. However, it's harmless since the calls to
-     * super._needsToBeRendered after the first call are basically no-ops when
-     * the code path reaches Motor._setNodeToBeRendered. We need to evaluate
-     * this a little more...
-     *
-     * TODO: Does scene need to have the _waitingMountPromiseToRender guard
-     * too?
      */
     async _needsToBeRendered() {
         if (this._waitingMountPromiseToRender) return
@@ -106,7 +93,6 @@ class Node extends ImperativeBase.mixin(Transformable) {
 
     _render(timestamp) {
         // applies the transform matrix to the element's style property.
-        // TODO: We shouldn't need to re-calculate the whole matrix every render?
         this._properties.transform = this._calculateMatrix()
         super._render(timestamp)
     }

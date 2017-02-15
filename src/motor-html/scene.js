@@ -18,7 +18,6 @@ class MotorHTMLScene extends Observable.mixin(MotorHTMLBase) {
     createdCallback() {
         super.createdCallback()
 
-        // TODO move to DOMRenderer
         this._sizePollTask = null
         this._parentSize = {x:0, y:0, z:0}
     }

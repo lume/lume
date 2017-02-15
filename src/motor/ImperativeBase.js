@@ -48,7 +48,6 @@ export function initImperativeBase() {
 
                 // Here we create the DOM HTMLElement associated with this
                 // Imperative-API Node.
-                // TODO: move to DOMRenderer
                 this._elementManager = new ElementManager(
                     _motorHtmlCounterpart || this._makeElement()
                 )
@@ -61,18 +60,14 @@ export function initImperativeBase() {
                 // This is an internal promise that resolves when this Node is added to
                 // to a scene graph that has a root Scene TreeNode. The resolved value
                 // is the root Scene.
-                // TODO: Move to Node, only Node needs scenePromise stuff.
                 this._resolveScenePromise = null
                 this._scenePromise = new Promise(r => this._resolveScenePromise = r)
 
-                // Provide the user a promise that resolves when this Node is attached
+                // A promise that resolves when this Node is attached
                 // to a tree that has a root Scene TreeNode *and* when that root Scene
                 // has been mounted into the DOM (Note, the _scenePromise resolves only
                 // when the first condition is true and the root Scene hasn't
                 // necessarily been mounted).
-                //
-                // TODO: Maybe we should rename this to `.ready`, matching with the
-                // HTML API. See motor-html/node createdCallback.
                 this._resolveMountPromise = null
                 this._mountPromise = new Promise(r => this._resolveMountPromise = r)
 
@@ -106,7 +101,6 @@ export function initImperativeBase() {
             /**
              * @private
              * Get a promise for the node's eventual scene.
-             * TODO: Move to Node, only Node needs scenePromise stuff.
              */
             _getScenePromise() {
                 if (!this._scene && !this._scenePromise)
@@ -128,14 +122,6 @@ export function initImperativeBase() {
                 await this._getScenePromise()
                 await this._scene.mountPromise
 
-                // TODO TODO: also wait for this._mounted so this.element is
-                // actually mounted in the DOM? Maybe not, as that will be moved to
-                // the DOMRenderer. Or possibly add that functionality in the HTML
-                // API. Revisit later. EDIT: Actually, if we'reawaiting
-                // scene.mountPromise, this means that the scene is mounted
-                // into DOM, and so if this Node hasa scene and it is mounted
-                // into DOM then this Node's element must also be mounted into
-                // DOM because that happens synchronously in Node.addChild.
                 this._resolveMountPromise(true)
             }
 
@@ -153,7 +139,6 @@ export function initImperativeBase() {
 
             /**
              * @readonly
-             * TODO: get from the DOMRenderer when that is implemented.
              */
             get element() {
                 return this._elementManager.element
@@ -203,8 +188,6 @@ export function initImperativeBase() {
                 if (!(childNode instanceof ImperativeBase)) return
 
                 // We cannot add Scenes to Nodes, for now.
-                // TODO: How will we handle mounting a Scene inside a Node when
-                // using only WebGL?
                 if (childNode instanceof Scene) {
                     throw new Error(`
                         A Scene cannot be added to another Node (at least for now). To
@@ -227,8 +210,6 @@ export function initImperativeBase() {
 
                 // Calculate sizing because proportional size might depend on
                 // the new parent.
-                // TODO: this will be removed after rendering on mount, in
-                // https://github.com/trusktr/infamous/issues/67.
                 childNode._calcSize()
                 childNode._needsToBeRendered()
 
@@ -236,8 +217,6 @@ export function initImperativeBase() {
                 this.on('sizechange', childNode._onParentSizeChange)
 
                 // If child Node's HTML element isn't mounted.. mount it.
-                // TODO move to DOMRenderer
-                // TODO delegate to animation frame?
                 if (!childNode._mounted) {
                     this._elementManager.connectChildElement(childNode)
                     childNode._mounted = true
@@ -276,7 +255,6 @@ export function initImperativeBase() {
                 // reset so that it can be awaited again for when the node is re-mounted.
                 childNode._mountPromise = null
 
-                // TODO: move this out, into DOMRenderer
                 this._elementManager.disconnectChildElement(childNode)
             }
 
@@ -301,10 +279,6 @@ export function initImperativeBase() {
                 Motor._setNodeToBeRendered(this)
             }
 
-            // TODO Where does _render belong? Maybe in the DOMRenderer?
-            // TODO: rename to _update? it's not really rendering, it's updating
-            // the transform, then the HTML engine renders the DOM elements, and
-            // the WebGL renderer will render the meshes.
             _render(timestamp) {
                 this._elementManager.applyImperativeNodeProperties(this)
             }
