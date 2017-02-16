@@ -12877,27 +12877,8 @@ return /******/ (function(modules) { // webpackBootstrap
 	                this.ready = new Promise(function (r) {
 	                    return _this2._resolveReadyPromise = r;
 	                });
-	            }
 	
-	            // called by WebComponent#connectedCallback()
-	
-	        }, {
-	            key: 'init',
-	            value: function init() {
-	
-	                // XXX: we call this._associateImperativeNode() before super.init() because
-	                // super.init() may call this.childConnectedCallback() which depends
-	                // on the imperative counterpart existing.
-	                //
-	                // TODO: Maybe this can be called in childConnectedCallback instead
-	                // of connectedCallback, where in that case the parent will know if
-	                // the child is instanceof MotorHTMLNode. This would prevent init
-	                // logic from happening when a MotorHTMLNode is incorrectly
-	                // connected to something other than another MotorHTMLNode or
-	                // MotorHTMLScene.
 	                this._associateImperativeNode();
-	
-	                _get(DeclarativeBase.prototype.__proto__ || Object.getPrototypeOf(DeclarativeBase.prototype), 'init', this).call(this);
 	            }
 	
 	            /**
