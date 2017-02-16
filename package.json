@@ -6,7 +6,7 @@
   "main": "index.js",
   "browser": "index.js",
   "global": "global.js",
-  "license": "MPL",
+  "license": "MIT",
   "homepage": "http://infamous.io",
   "scripts": {
     "test": "./.scripts/test.sh",
