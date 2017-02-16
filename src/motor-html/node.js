@@ -7,9 +7,6 @@ import MotorHTMLBase, {initMotorHTMLBase} from './base'
 
 initMotorHTMLBase()
 
-// XXX we'll export the class directly for v1 Custom Elements, and encourage
-// end users to define the name of the element as they see fit. We won't
-// define the name ourselves like we do here.
 class MotorHTMLNode extends MotorHTMLBase {
 
     getStyles() {
@@ -32,20 +29,8 @@ class MotorHTMLNode extends MotorHTMLBase {
     }
 
     async _updateNodeProperty(attribute, oldValue, newValue) {
-        // TODO: Handle actual values (not just string property values as
-        // follows) for performance; especially when DOMMatrix is supported
-        // by browsers.
-
-        // if not initialized yet, wait before setting the attribute.
-        // XXX What happens if this is called many times before the Node is
-        // ready? Will it set an attribute perhaps many times at once when the
-        // node becomes ready?
-        if (!this.imperativeCounterpart) await this.ready
-
         // attributes on our HTML elements are the same name as those on
         // the Node class (the setters).
-        // TODO: make a list of the properties (or get them dynamically) then
-        // assign them dynamically.
         if (newValue !== oldValue) {
             if (attribute.match(/opacity/i))
                 this.imperativeCounterpart[attribute] = window.parseFloat(newValue)
@@ -53,14 +38,14 @@ class MotorHTMLNode extends MotorHTMLBase {
                 this.imperativeCounterpart[attribute] = parseStringArray(newValue)
             else if (
                 attribute.match(/rotation/i)
-                || attribute.match(/scale/i) // scale is TODO on imperative side.
+                || attribute.match(/scale/i)
                 || attribute.match(/position/i)
                 || attribute.match(/absoluteSize/i)
                 || attribute.match(/proportionalSize/i)
                 || attribute.match(/align/i)
                 || attribute.match(/mountPoint/i)
-                || attribute.match(/origin/i) // origin is TODO on imperative side.
-                || attribute.match(/skew/i) // skew is TODO on imperative side.
+                || attribute.match(/origin/i)
+                || attribute.match(/skew/i)
             ) {
                 this.imperativeCounterpart[attribute] = parseNumberArray(newValue)
             }
@@ -102,7 +87,6 @@ function checkIsNumberArrayString(str) {
 }
 
 function checkIsSizeArrayString(str) {
-    // TODO: throw error if str is not a valid array of size mode strings.
     return
 }
 

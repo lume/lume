@@ -67,10 +67,6 @@ function makeAccessorsEnumerable(object) {
 // and the rendering in the following frame should be the same).
 function observeChildren(ctx, onConnect, onDisconnect) {
 
-    // TODO issue #40
-    // Observe nodes in the future.
-    // This one doesn't need a timeout since the observation is already
-    // async.
     const observer = new MutationObserver(changes => {
         const weights = new Map
 

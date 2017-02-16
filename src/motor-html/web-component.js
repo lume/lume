@@ -65,24 +65,18 @@ function WebComponentMixin(elementClass) {
             // instead (this is a flaw of Custom Elements v0 which is fixed in v1
             // where class constructors can be used directly).
             if ('registerElement' in document && !('customElements' in window)) {
-
-                // TODO: link to docs.
                 throw new Error(`
                     You cannot instantiate this class directly without first registering it
                     with \`document.registerElement(...)\`. See an example at http://....
                 `)
-
             }
 
             // Throw an error if no Custom Elements API exists.
             if (!('registerElement' in document) && !('customElements' in window)) {
-
-                // TODO: link to docs.
                 throw new Error(`
                     Your browser does not support the Custom Elements API. You'll
                     need to install a polyfill. See how at http://....
                 `)
-
             }
 
             // otherwise the V1 API exists, so call the createdCallback, which
@@ -116,10 +110,6 @@ function WebComponentMixin(elementClass) {
         attachedCallback() { this.connectedCallback() } // back-compat
 
         _createStyles() {
-            // TODO: Create styles inside of an animation frame?
-
-            // XXX This creates a new rule per instance. Would it be better to
-            // create a single rule per class instead?
             const rule = jss.createRule(this.getStyles())
 
             rule.applyTo(this)
@@ -130,7 +120,7 @@ function WebComponentMixin(elementClass) {
         async disconnectedCallback() {
             this._attached = false
 
-            // XXX Deferr to the next tick before cleaning up in case the
+            // Deferr to the next tick before cleaning up in case the
             // element is actually being re-attached somewhere else within this
             // same tick (detaching and attaching is synchronous, so by
             // deferring to the next tick we'll be able to know if the element
@@ -147,9 +137,6 @@ function WebComponentMixin(elementClass) {
             // As mentioned in the previous comment, if the element was not
             // re-attached in the last tick (for example, it was moved to
             // another element), then clean up.
-            //
-            // XXX (performance): Should we coordinate this.deinit() with the
-            // animation loop to prevent jank?
             if (!this._attached && this._initialized) {
                 this.deinit()
             }
@@ -186,10 +173,16 @@ function WebComponentMixin(elementClass) {
             // detected by the following MutationObserver).
             if (!this._childObserver) {
                 if (this.childNodes.length) {
+
                     // Timeout needed in case the Custom Element classes are
                     // registered after the elements are already defined in the
-                    // DOM but not yet upgraded. TODO: describe this better,
-                    // not clear why it's needed.
+                    // DOM but not yet upgraded. This means that the `node` arg
+                    // might be a `<motor-node>` but if it isn't upgraded then
+                    // its API won't be available to the logic inside the
+                    // childConnectedCallback. The reason this happens is
+                    // because parents are upgraded first and their
+                    // connectedCallbacks fired before their children are
+                    // upgraded.
                     setTimeout(() => {
                         for (const node of this.childNodes) {
                             this.childConnectedCallback(node)

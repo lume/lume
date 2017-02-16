@@ -218,13 +218,6 @@ export function initMotorHTMLBase() {
 
                 this.imperativeCounterpart.addChild(child.imperativeCounterpart)
             }
-
-            // TODO: There's no way currently to detect v0 vs v1 ShadowRoots,
-            // so these conditional checks assume the end user is using
-            // <content> elements in v0 roots, and <slot> elements in v1 roots.
-            // Doing otherwise may have unknown and undersirable behavior. See
-            // the TODO for getShadowRootVersion in ../motor/Utility for more
-            // info.
             else if (
                 hasShadowDomV0
                 && child instanceof HTMLContentElement
@@ -233,7 +226,7 @@ export function initMotorHTMLBase() {
                     getAncestorShadowRootIfAny(this)
                 //) == 'v0'
             ) {
-                // TODO observe <content> elements.
+                // observe <content> elements.
             }
             else if (
                 hasShadowDomV1
@@ -347,7 +340,7 @@ export function initMotorHTMLBase() {
                     getAncestorShadowRootIfAny(this)
                 //) == 'v0'
             ) {
-                // TODO: unobserve <content> element
+                // unobserve <content> element
             }
             else if (
                 hasShadowDomV1
