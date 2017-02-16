@@ -155,24 +155,8 @@ export function initMotorHTMLBase() {
 
             this._resolveReadyPromise = null
             this.ready = new Promise(r => this._resolveReadyPromise = r)
-        }
 
-        // called by WebComponent#connectedCallback()
-        init() {
-
-            // XXX: we call this._associateImperativeNode() before super.init() because
-            // super.init() may call this.childConnectedCallback() which depends
-            // on the imperative counterpart existing.
-            //
-            // TODO: Maybe this can be called in childConnectedCallback instead
-            // of connectedCallback, where in that case the parent will know if
-            // the child is instanceof MotorHTMLNode. This would prevent init
-            // logic from happening when a MotorHTMLNode is incorrectly
-            // connected to something other than another MotorHTMLNode or
-            // MotorHTMLScene.
             this._associateImperativeNode()
-
-            super.init()
         }
 
         /**
