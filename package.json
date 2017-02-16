@@ -11,13 +11,15 @@
   "scripts": {
     "test": "./.scripts/test.sh",
     "clean": "./.scripts/clean.sh",
-    "prepublish": "npm run build",
     "build": "./.scripts/build.sh",
     "build-umd": "./.scripts/build-umd.sh",
     "build-cjs": "./.scripts/build-cjs.sh",
     "build-amd": "./.scripts/build-amd.sh",
     "build-global": "./.scripts/build-global.sh",
-    "watch": "./.scripts/build-cjs.sh --watch & P1=$!; ./.scripts/build-global.sh --watch & P2=$!; wait $P1 $P2"
+    "watch": "./.scripts/build-cjs.sh --watch & P1=$!; ./.scripts/build-global.sh --watch & P2=$!; wait $P1 $P2",
+    "prepublish": "npm run build-cjs",
+    "version": "npm run build-global && git add -f global.js",
+    "postversion": "npm publish && git push && git push --tags"
   },
   "dependencies": {
     "army-knife": "^0.2.1",
