@@ -10132,10 +10132,6 @@ return /******/ (function(modules) { // webpackBootstrap
 	// and the rendering in the following frame should be the same).
 	function observeChildren(ctx, onConnect, onDisconnect) {
 	
-	    // TODO issue #40
-	    // Observe nodes in the future.
-	    // This one doesn't need a timeout since the observation is already
-	    // async.
 	    var observer = new MutationObserver(function (changes) {
 	        var weights = new Map();
 	
@@ -12031,8 +12027,6 @@ return /******/ (function(modules) { // webpackBootstrap
 	                            case 3:
 	
 	                                // if no mountPoint was provided, just mount onto the <body> element.
-	                                // XXX: Maybe we should just not mount the scene if no mountPoint is
-	                                // provided, and expose a mount method.
 	                                if (!mountPoint) mountPoint = document.body;
 	
 	                                // if the user supplied a selector, mount there.
@@ -12969,28 +12963,20 @@ return /******/ (function(modules) { // webpackBootstrap
 	                    if (child.imperativeCounterpart._parent) return;
 	
 	                    this.imperativeCounterpart.addChild(child.imperativeCounterpart);
-	                }
-	
-	                // TODO: There's no way currently to detect v0 vs v1 ShadowRoots,
-	                // so these conditional checks assume the end user is using
-	                // <content> elements in v0 roots, and <slot> elements in v1 roots.
-	                // Doing otherwise may have unknown and undersirable behavior. See
-	                // the TODO for getShadowRootVersion in ../motor/Utility for more
-	                // info.
-	                else if (_Utility.hasShadowDomV0 && child instanceof HTMLContentElement &&
-	                    //getShadowRootVersion(
-	                    (0, _Utility.getAncestorShadowRootIfAny)(this)
-	                    //) == 'v0'
-	                    ) {
-	                            // TODO observe <content> elements.
-	                        } else if (_Utility.hasShadowDomV1 && child instanceof HTMLSlotElement &&
-	                    //getShadowRootVersion(
-	                    (0, _Utility.getAncestorShadowRootIfAny)(this)
-	                    //) == 'v1'
-	                    ) {
-	                            child.addEventListener('slotchange', this);
-	                            this._handleDistributedChildren(child);
-	                        }
+	                } else if (_Utility.hasShadowDomV0 && child instanceof HTMLContentElement &&
+	                //getShadowRootVersion(
+	                (0, _Utility.getAncestorShadowRootIfAny)(this)
+	                //) == 'v0'
+	                ) {
+	                        // observe <content> elements.
+	                    } else if (_Utility.hasShadowDomV1 && child instanceof HTMLSlotElement &&
+	                //getShadowRootVersion(
+	                (0, _Utility.getAncestorShadowRootIfAny)(this)
+	                //) == 'v1'
+	                ) {
+	                        child.addEventListener('slotchange', this);
+	                        this._handleDistributedChildren(child);
+	                    }
 	            }
 	
 	            // This method is part of the EventListener interface.
@@ -13132,7 +13118,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	                (0, _Utility.getAncestorShadowRootIfAny)(this)
 	                //) == 'v0'
 	                ) {
-	                        // TODO: unobserve <content> element
+	                        // unobserve <content> element
 	                    } else if (_Utility.hasShadowDomV1 && child instanceof HTMLSlotElement &&
 	                //getShadowRootVersion(
 	                (0, _Utility.getAncestorShadowRootIfAny)(this)
@@ -13242,15 +13228,11 @@ return /******/ (function(modules) { // webpackBootstrap
 	            var _this = _possibleConstructorReturn(this, (WebComponent.__proto__ || Object.getPrototypeOf(WebComponent)).call(this));
 	
 	            if ('registerElement' in document && !('customElements' in window)) {
-	
-	                // TODO: link to docs.
 	                throw new Error('\n                    You cannot instantiate this class directly without first registering it\n                    with `document.registerElement(...)`. See an example at http://....\n                ');
 	            }
 	
 	            // Throw an error if no Custom Elements API exists.
 	            if (!('registerElement' in document) && !('customElements' in window)) {
-	
-	                // TODO: link to docs.
 	                throw new Error('\n                    Your browser does not support the Custom Elements API. You\'ll\n                    need to install a polyfill. See how at http://....\n                ');
 	            }
 	
@@ -13300,10 +13282,6 @@ return /******/ (function(modules) { // webpackBootstrap
 	        }, {
 	            key: '_createStyles',
 	            value: function _createStyles() {
-	                // TODO: Create styles inside of an animation frame?
-	
-	                // XXX This creates a new rule per instance. Would it be better to
-	                // create a single rule per class instead?
 	                var rule = _jss2.default.createRule(this.getStyles());
 	
 	                rule.applyTo(this);
@@ -13320,7 +13298,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	                                case 0:
 	                                    this._attached = false;
 	
-	                                    // XXX Deferr to the next tick before cleaning up in case the
+	                                    // Deferr to the next tick before cleaning up in case the
 	                                    // element is actually being re-attached somewhere else within this
 	                                    // same tick (detaching and attaching is synchronous, so by
 	                                    // deferring to the next tick we'll be able to know if the element
@@ -13341,9 +13319,6 @@ return /******/ (function(modules) { // webpackBootstrap
 	                                    // As mentioned in the previous comment, if the element was not
 	                                    // re-attached in the last tick (for example, it was moved to
 	                                    // another element), then clean up.
-	                                    //
-	                                    // XXX (performance): Should we coordinate this.deinit() with the
-	                                    // animation loop to prevent jank?
 	                                    if (!this._attached && this._initialized) {
 	                                        this.deinit();
 	                                    }
@@ -13405,10 +13380,16 @@ return /******/ (function(modules) { // webpackBootstrap
 	                // detected by the following MutationObserver).
 	                if (!this._childObserver) {
 	                    if (this.childNodes.length) {
+	
 	                        // Timeout needed in case the Custom Element classes are
 	                        // registered after the elements are already defined in the
-	                        // DOM but not yet upgraded. TODO: describe this better,
-	                        // not clear why it's needed.
+	                        // DOM but not yet upgraded. This means that the `node` arg
+	                        // might be a `<motor-node>` but if it isn't upgraded then
+	                        // its API won't be available to the logic inside the
+	                        // childConnectedCallback. The reason this happens is
+	                        // because parents are upgraded first and their
+	                        // connectedCallbacks fired before their children are
+	                        // upgraded.
 	                        setTimeout(function () {
 	                            var _iteratorNormalCompletion = true;
 	                            var _didIteratorError = false;
@@ -15754,10 +15735,6 @@ return /******/ (function(modules) { // webpackBootstrap
 	
 	(0, _base.initMotorHTMLBase)();
 	
-	// XXX we'll export the class directly for v1 Custom Elements, and encourage
-	// end users to define the name of the element as they see fit. We won't
-	// define the name ourselves like we do here.
-	
 	var MotorHTMLNode = function (_MotorHTMLBase) {
 	    _inherits(MotorHTMLNode, _MotorHTMLBase);
 	
@@ -15799,32 +15776,17 @@ return /******/ (function(modules) { // webpackBootstrap
 	                    while (1) {
 	                        switch (_context.prev = _context.next) {
 	                            case 0:
-	                                if (this.imperativeCounterpart) {
-	                                    _context.next = 3;
-	                                    break;
-	                                }
-	
-	                                _context.next = 3;
-	                                return this.ready;
-	
-	                            case 3:
-	
 	                                // attributes on our HTML elements are the same name as those on
 	                                // the Node class (the setters).
-	                                // TODO: make a list of the properties (or get them dynamically) then
-	                                // assign them dynamically.
 	                                if (newValue !== oldValue) {
-	                                    if (attribute.match(/opacity/i)) this.imperativeCounterpart[attribute] = window.parseFloat(newValue);else if (attribute.match(/sizeMode/i)) this.imperativeCounterpart[attribute] = parseStringArray(newValue);else if (attribute.match(/rotation/i) || attribute.match(/scale/i) // scale is TODO on imperative side.
-	                                    || attribute.match(/position/i) || attribute.match(/absoluteSize/i) || attribute.match(/proportionalSize/i) || attribute.match(/align/i) || attribute.match(/mountPoint/i) || attribute.match(/origin/i) // origin is TODO on imperative side.
-	                                    || attribute.match(/skew/i) // skew is TODO on imperative side.
-	                                    ) {
-	                                            this.imperativeCounterpart[attribute] = parseNumberArray(newValue);
-	                                        } else {
+	                                    if (attribute.match(/opacity/i)) this.imperativeCounterpart[attribute] = window.parseFloat(newValue);else if (attribute.match(/sizeMode/i)) this.imperativeCounterpart[attribute] = parseStringArray(newValue);else if (attribute.match(/rotation/i) || attribute.match(/scale/i) || attribute.match(/position/i) || attribute.match(/absoluteSize/i) || attribute.match(/proportionalSize/i) || attribute.match(/align/i) || attribute.match(/mountPoint/i) || attribute.match(/origin/i) || attribute.match(/skew/i)) {
+	                                        this.imperativeCounterpart[attribute] = parseNumberArray(newValue);
+	                                    } else {
 	                                        /* nothing, ignore other attributes */
 	                                    }
 	                                }
 	
-	                            case 4:
+	                            case 1:
 	                            case 'end':
 	                                return _context.stop();
 	                        }
@@ -15875,7 +15837,6 @@ return /******/ (function(modules) { // webpackBootstrap
 	}
 	
 	function checkIsSizeArrayString(str) {
-	    // TODO: throw error if str is not a valid array of size mode strings.
 	    return;
 	}
 	
