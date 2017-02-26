@@ -118,15 +118,9 @@ const SizeableMixin = base => {
             if (!(newValue instanceof Object))
                 throw new TypeError('Invalid value for Node#absoluteSize.')
 
-            // XXX: We use Math.round because it's the same behavior as the CSS
-            // engine when setting `px` values. Our WebGL items will be sized
-            // the same way. Maybe we can abstract this by scaling things down
-            // in the DOM, and upscaling our number values. For example, we can
-            // apply a scale of 0.01 and then a size value of 1.56 would
-            // actually mean 156px, etc.
-            if (typeof newValue.x != 'undefined') this._properties.absoluteSize._x = Math.round(newValue.x)
-            if (typeof newValue.y != 'undefined') this._properties.absoluteSize._y = Math.round(newValue.y)
-            if (typeof newValue.z != 'undefined') this._properties.absoluteSize._z = Math.round(newValue.z)
+            if (typeof newValue.x != 'undefined') this._properties.absoluteSize._x = newValue.x
+            if (typeof newValue.y != 'undefined') this._properties.absoluteSize._y = newValue.y
+            if (typeof newValue.z != 'undefined') this._properties.absoluteSize._z = newValue.z
 
             this.triggerEvent('propertychange', 'absoluteSize')
         }
