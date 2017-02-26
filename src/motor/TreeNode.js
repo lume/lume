@@ -40,7 +40,7 @@ const TreeNodeMixin = base => {
                 throw new TypeError('TreeNode.addChild expects the childNode argument to be a TreeNode instance.')
 
             if (childNode._parent === this)
-                throw new Error('childNode is already a child of this parent.')
+                throw new ReferenceError('childNode is already a child of this parent.')
 
             if (childNode._parent)
                 childNode._parent.removeChild(childNode)
