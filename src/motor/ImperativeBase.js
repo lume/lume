@@ -53,6 +53,8 @@ export function initImperativeBase() {
                 )
                 this._elementManager.element._associateImperativeNode(this)
 
+                // True when this Node is added to a parent AND it has
+                // anancestor Scene who is mounted into DOM.
                 this._mounted = false;
 
                 this._scene = null // stores a ref to this Node's root Scene.
@@ -123,6 +125,7 @@ export function initImperativeBase() {
                 await this._scene.mountPromise
 
                 this._resolveMountPromise(true)
+                this._mounted = true
             }
 
             /**
@@ -216,11 +219,7 @@ export function initImperativeBase() {
                 // child should watch the parent for size changes.
                 this.on('sizechange', childNode._onParentSizeChange)
 
-                // If child Node's HTML element isn't mounted.. mount it.
-                if (!childNode._mounted) {
-                    this._elementManager.connectChildElement(childNode)
-                    childNode._mounted = true
-                }
+                this._elementManager.connectChildElement(childNode)
 
                 return this
             }
