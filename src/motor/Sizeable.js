@@ -43,13 +43,7 @@ const SizeableMixin = base => {
             this._properties.proportionalSize.on('valuechanged',
                 () => this.triggerEvent('propertychange', 'proportionalSize'))
 
-            // This line calls the leaf-class `properties` setter, but we want
-            // to use the current prototype's `properties` setter, which
-            // requires the super long line after this one. XXX Maybe there's a
-            // better way to manage this?
-            //
-            //this.properties = options
-            Object.getOwnPropertyDescriptor(Sizeable.prototype, 'properties').set.call(this, options)
+            this.properties = options
         }
 
         /**
