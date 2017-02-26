@@ -39,27 +39,14 @@ const TreeNodeMixin = base => {
             if (! (childNode instanceof TreeNode))
                 throw new TypeError('TreeNode.addChild expects the childNode argument to be a TreeNode instance.')
 
-            // Do nothing if the child TreeNode is already added to this TreeNode.
-            //
-            // After adding a TreeNode to a parent using this imperative API, the
-            // MotorHTMLNode ends up calling addChild on this TreeNode's parent a second time
-            // in the element's attachedCallback, but the code stops at this line (which is
-            // good).
-            //
-            // TODO: prevent the second call altogether.
-            // TODO: It may be better to throw an error instead, otherwise
-            // extending classes may still do unintentional stuff after
-            // super.addChild returns.
             if (childNode._parent === this)
                 throw new Error('childNode is already a child of this parent.')
 
             if (childNode._parent)
                 childNode._parent.removeChild(childNode)
 
-            // Add parent
             childNode._parent = this;
 
-            // Add to children array
             this._children.push(childNode);
 
             return this
@@ -76,10 +63,7 @@ const TreeNodeMixin = base => {
         }
 
         /**
-         * Remove a child node from this node. Silently fails if the node doesn't
-         * exist, etc.
-         *
-         * XXX Should this be silent? Or should we throw?
+         * Remove a child node from this node.
          *
          * @param {TreeNode} childNode The node to remove.
          */

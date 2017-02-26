@@ -42,7 +42,7 @@ function hijack(original) {
 }
 function shadowRootChildAdded(child) {
 
-    // XXX Logic here is similar to childConnectedCallback
+    // NOTE Logic here is similar to childConnectedCallback
 
     if (child instanceof DeclarativeBase) {
         this.imperativeCounterpart.addChild(child.imperativeCounterpart)
@@ -63,7 +63,7 @@ function shadowRootChildAdded(child) {
 }
 function shadowRootChildRemoved(child) {
 
-    // XXX Logic here is similar to childDisconnectedCallback
+    // NOTE Logic here is similar to childDisconnectedCallback
 
     if (child instanceof DeclarativeBase) {
         this.imperativeCounterpart.removeChild(child.imperativeCounterpart)

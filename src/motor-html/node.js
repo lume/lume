@@ -96,8 +96,6 @@ function proxyGettersSetters(SourceClass, TargetClass) {
 
     // Node methods not to proxy (private underscored methods are also detected and
     // ignored).
-    //
-    // XXX Should use a whitelist instead of a blacklist?
     const methodProxyBlacklist = [
         'constructor',
         'parent',

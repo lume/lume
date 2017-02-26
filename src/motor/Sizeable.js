@@ -7,7 +7,6 @@ import Observable from './Observable'
 if (typeof document.createElement('div').style.transform == 'undefined') {
     Object.defineProperty(CSSStyleDeclaration.prototype, 'transform', {
         set(value) {
-            // XXX Might need to proxy to ms for IE11.
             this.webkitTransform = value
         },
         get() {
@@ -32,12 +31,11 @@ const SizeableMixin = base => {
 
             // Property Cache, with default values
             this._properties = {
-                sizeMode: new XYZValues('absolute', 'absolute', 'absolute'),
-                absoluteSize: new XYZValues(0, 0, 0),
+                sizeMode:         new XYZValues('absolute', 'absolute', 'absolute'),
+                absoluteSize:     new XYZValues(0, 0, 0),
                 proportionalSize: new XYZValues(1, 1, 1),
             };
 
-            // TODO: move this observation in Node. I don't think it belongs here.
             this._properties.sizeMode.on('valuechanged',
                 () => this.triggerEvent('propertychange', 'sizeMode'))
             this._properties.absoluteSize.on('valuechanged',
@@ -76,12 +74,6 @@ const SizeableMixin = base => {
             return this._properties.sizeMode
         }
 
-        // XXX: We handle all axes at the same time. Would it be better to
-        // handle each axis in separate methods, and call those separately in
-        // the accessors?
-        // TODO: This is called in ImperativeBase on propertychange. Maybe we
-        // can refactor so it is called inside an animation frame like
-        // Transform#_calculateMatrix?
         _calcSize() {
             const calculatedSize = this._calculatedSize
             const {...previousSize} = calculatedSize
@@ -237,10 +229,6 @@ const SizeableMixin = base => {
     // for use by MotorHTML, convenient since HTMLElement attributes are all
     // converted to lowercase by default, so if we don't do this then we won't be
     // able to map attributes to Node setters as easily.
-    //
-    // TODO: move this call out of here, run it in a motor-specific class so
-    // that Transformable and related classes are not necessarily
-    // motor-scpecific and can be used anywhere.
     makeLowercaseSetterAliases(Sizeable.prototype)
 
     makeAccessorsEnumerable(Sizeable.prototype)

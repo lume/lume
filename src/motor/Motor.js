@@ -121,12 +121,6 @@ class Motor {
         if (!this._inFrame) this._startAnimationLoop()
     }
 
-    // currently unused, as the list is cleared after each frame.
-    // TODO: prevent GC by clearing a linked list instead of Array, Set or Map?
-    _unsetNodeToBeRendered(node) {
-        this._nodesToBeRendered.delete(node)
-    }
-
     _renderNodes(timestamp) {
         for (const node of this._nodesToBeRendered) {
             node._render(timestamp)

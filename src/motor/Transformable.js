@@ -4,13 +4,6 @@ import { makeLowercaseSetterAliases, makeAccessorsEnumerable } from './Utility'
 
 const instanceofSymbol = Symbol('instanceofSymbol')
 
-// Transformable doesn't need to extend from a class, but there isn't multiple
-// inheritance in JavaSript out of the box, and Node needs to have the
-// properties of Transformable and other classes, while Scene will branch from
-// an ancestor class of Node.
-//
-// TODO: Is this the best name? Maybe Renderable? How to organize the DOM and
-// WebGL components?
 const TransformableMixin = base => {
 
     // Transformable extends TreeNode (indirectly through Sizeable) because it
@@ -22,28 +15,16 @@ const TransformableMixin = base => {
 
             // Property Cache, with default values
             Object.assign(this._properties, {
-
-                // XXX: remove these in favor of storing them directly in the
-                // DOMMatrix?
-                position: new XYZValues(0, 0, 0),
-                rotation: new XYZValues(0, 0, 0),
-
-                // TODO: handle scale
-                scale: new XYZValues(1, 1, 1),
-
-                // TODO, handle origin, needs a setter/getter pair.
-                origin: new XYZValues(0.5, 0.5, 0.5),
-
-                align: new XYZValues(0, 0, 0),
+                position:   new XYZValues(0, 0, 0),
+                rotation:   new XYZValues(0, 0, 0),
+                scale:      new XYZValues(1, 1, 1),
+                origin:     new XYZValues(0.5, 0.5, 0.5),
+                align:      new XYZValues(0, 0, 0),
                 mountPoint: new XYZValues(0, 0, 0),
-
-                opacity: 1,
-
-                transform: new window.DOMMatrix,
+                opacity:    1,
+                transform:  new window.DOMMatrix,
             })
 
-            // TODO: opacity needs onChanged handler like all the other
-            // properties.
             this._properties.position.on('valuechanged',
                 () => this.triggerEvent('propertychange', 'position'))
             this._properties.rotation.on('valuechanged',
@@ -87,10 +68,6 @@ const TransformableMixin = base => {
          * @param {number} [newValue.x] The x-axis rotation to apply.
          * @param {number} [newValue.y] The y-axis rotation to apply.
          * @param {number} [newValue.z] The z-axis rotation to apply.
-         *
-         * XXX: We should we also provide a setRotationAxis method to rotate about
-         * a particular axis? Or, maybe if a fourth `w` property is specified then
-         * x, y, and z can define a rotation axis and w be the angle.
          */
         set rotation(newValue) {
             if (!(newValue instanceof Object))
@@ -111,8 +88,6 @@ const TransformableMixin = base => {
          * @param {number} [newValue.x] The x-axis scale to apply.
          * @param {number} [newValue.y] The y-axis scale to apply.
          * @param {number} [newValue.z] The z-axis scale to apply.
-         *
-         * TODO: scale is not handled yet.
          */
         set scale(newValue) {
             if (!(newValue instanceof Object))
@@ -167,10 +142,7 @@ const TransformableMixin = base => {
         }
 
         /**
-         * Set the mount point of the Node. TODO: put "mount point" into words.
-         *
-         * XXX possibly rename to "anchor" to avoid confusion with Scene.mount?
-         * Could also segway to anchors system like Qt QML.
+         * Set the mount point of the Node.
          *
          * @param {Object} newValue
          * @param {number} [newValue.x] The x-axis mountPoint to apply.
@@ -238,16 +210,6 @@ const TransformableMixin = base => {
          * @method
          * @private
          * @memberOf Node
-         *
-         * TODO: instead of calculating the whole matrix here all at once (which
-         * gets called each _render()), apply rotation, translation, etc, directly
-         * to the matrix individually when the user gives us those values. It might be
-         * more performant. It will also let the user apply x,y,z rotation in their
-         * order of choice instead of always x,y,z order as we do here.
-         *
-         * TODO PERFORMANCE: What's faster? Setting a new DOMMatrix (as we do
-         * here currently) or applying all transform values to the existing
-         * DOMMatrix?
          */
         _calculateMatrix () {
             const matrix = new window.DOMMatrix
@@ -277,22 +239,17 @@ const TransformableMixin = base => {
 
             matrix.translateSelf(appliedPosition[0], appliedPosition[1], appliedPosition[2])
 
-            // TODO: move by negative origin before rotating.
-            // XXX Should we calculate origin here, or should we leave that to the
-            // DOM renderer (in the style property)? WebGL renderer will need
-            // manual calculations. Maybe we don't do it here, and delegate it to
-            // DOM and WebGL renderers.
+            // origin calculation will go here:
+            // - move by negative origin before rotating.
 
             // apply each axis rotation, in the x,y,z order.
-            // XXX: Does order in which axis rotations are applied matter? If so,
-            // which order is best? Maybe we let the user decide (with our
-            // recommendation)?
             const {rotation} = properties
             matrix.rotateAxisAngleSelf(1,0,0, rotation.x)
             matrix.rotateAxisAngleSelf(0,1,0, rotation.y)
             matrix.rotateAxisAngleSelf(0,0,1, rotation.z)
 
-            // TODO: move by positive origin after rotating.
+            // origin calculation will go here:
+            // - move by positive origin after rotating.
 
             return matrix
         }
@@ -322,10 +279,6 @@ const TransformableMixin = base => {
     // for use by MotorHTML, convenient since HTMLElement attributes are all
     // converted to lowercase by default, so if we don't do this then we won't be
     // able to map attributes to Node setters as easily.
-    //
-    // TODO: move this call out of here, run it in a motor-specific class so
-    // that Transformable and related classes are not necessarily
-    // motor-scpecific and can be used anywhere.
     makeLowercaseSetterAliases(Transformable.prototype)
 
     // So Tween.js can animate Transformable properties that are accessors.

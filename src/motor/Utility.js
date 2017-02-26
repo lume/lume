@@ -101,11 +101,6 @@ const hasShadowDomV1 =
     && typeof HTMLSlotElement == 'function'
     ? true : false
 
-// See http://stackoverflow.com/a/40078261/454780
-// XXX This function only works on roots whose hosts have no light-tree Nodes,
-// so we're not using this at the moment when detecting slot and content
-// elements in DeclarativeBase childConnected/Disconnected Callbacks. See
-// the TODO there.
 function getShadowRootVersion(shadowRoot) {
     console.log('getShadowRootVersion')
     if (!shadowRoot) return null

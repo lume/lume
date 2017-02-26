@@ -49,7 +49,7 @@ class ElementManager {
 
             // This condition is irrelevant when strictly using the
             // imperative API. However, it is possible that when
-            // usingthe HTML API that the HTML-API node can be placed
+            // using the HTML API that the HTML-API node can be placed
             // somewhere that isn't another HTML-API node, and the
             // imperative Node can be gotten and used to add the
             // node to another imperative Node. In this case, the
@@ -110,7 +110,7 @@ class ElementManager {
         this.applyStyle('width', `${x}px`)
         this.applyStyle('height', `${y}px`)
 
-        // XXX: we ignore the Z axis on elements, since they are flat.
+        // NOTE: we ignore the Z axis on elements, since they are flat.
     }
 
     applyOpacity(opacity) {

@@ -11,7 +11,7 @@ class Scene extends ImperativeBase.mixin(Sizeable) {
     constructor(options = {}) {
         super(options)
 
-        // XXX: z size is always 0, since native DOM elements are always flat.
+        // NOTE: z size is always 0, since native DOM elements are always flat.
         this._elementParentSize = {x:0, y:0, z:0}
 
         this._onElementParentSizeChange = (newSize) => {

@@ -12,7 +12,6 @@ if (typeof window.HTMLElement != 'function') {
     window.HTMLElement = _HTMLElement
 }
 
-// XXX: Maybe we can improve by clearing items after X amount of time?
 const classCache = new Map
 
 function classExtendsHTMLElement(constructor) {
