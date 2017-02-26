@@ -113,9 +113,7 @@ function getShadowRootVersion(shadowRoot) {
     return assignedNodes.length > 0 ? 'v1' : 'v0'
 }
 
-function getAncestorShadowRootIfAny(node) {
-    if (!node) return null // XXX throw error instead? What pattern is better?
-
+function getAncestorShadowRoot(node) {
     let current = node
 
     while (current && !(current instanceof ShadowRoot)) {
@@ -156,6 +154,6 @@ export {
   getShadowRootVersion,
   hasShadowDomV0,
   hasShadowDomV1,
-  getAncestorShadowRootIfAny,
+  getAncestorShadowRoot,
   traverse,
 }

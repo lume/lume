@@ -2,8 +2,8 @@
 
 import WebComponent from './web-component'
 import MotorHTMLNode from './node'
-import { observeChildren, /*getShadowRootVersion,*/ hasShadowDomV0, hasShadowDomV1,
-    getAncestorShadowRootIfAny } from '../motor/Utility'
+import { observeChildren, /*getShadowRootVersion,*/ hasShadowDomV0,
+    hasShadowDomV1, getAncestorShadowRoot } from '../motor/Utility'
 
 var DeclarativeBase
 
@@ -223,7 +223,7 @@ export function initMotorHTMLBase() {
                 && child instanceof HTMLContentElement
                 &&
                 //getShadowRootVersion(
-                    getAncestorShadowRootIfAny(this)
+                    getAncestorShadowRoot(this)
                 //) == 'v0'
             ) {
                 // observe <content> elements.
@@ -233,7 +233,7 @@ export function initMotorHTMLBase() {
                 && child instanceof HTMLSlotElement
                 &&
                 //getShadowRootVersion(
-                    getAncestorShadowRootIfAny(this)
+                    getAncestorShadowRoot(this)
                 //) == 'v1'
             ) {
                 child.addEventListener('slotchange', this)
@@ -337,7 +337,7 @@ export function initMotorHTMLBase() {
                 && child instanceof HTMLContentElement
                 &&
                 //getShadowRootVersion(
-                    getAncestorShadowRootIfAny(this)
+                    getAncestorShadowRoot(this)
                 //) == 'v0'
             ) {
                 // unobserve <content> element
@@ -347,7 +347,7 @@ export function initMotorHTMLBase() {
                 && child instanceof HTMLSlotElement
                 &&
                 //getShadowRootVersion(
-                    getAncestorShadowRootIfAny(this)
+                    getAncestorShadowRoot(this)
                 //) == 'v1'
             ) {
                 child.removeEventListener('slotchange', this)
