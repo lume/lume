@@ -51,14 +51,16 @@ class Scene extends ImperativeBase.mixin(Sizeable) {
         }
     }
 
+    // observe size changes on the scene element.
     _startSizePolling() {
-        // observe size changes on the scene element.
+        if (!this._elementManager) return
         this._elementManager.element._startSizePolling()
         this._elementManager.element.on('parentsizechange', this._onElementParentSizeChange)
     }
 
+    // Don't observe size changes on the scene element.
     _stopSizePolling() {
-        // observe size changes on the scene element.
+        if (!this._elementManager) return
         this._elementManager.element.off('parentsizechange', this._onElementParentSizeChange)
         this._elementManager.element._stopSizePolling()
     }
