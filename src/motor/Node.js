@@ -32,7 +32,7 @@ class Node extends ImperativeBase.mixin(Transformable) {
         //this.callSuperConstructor(TreeNode)
         //this.callSuperConstructor(ImperativeBase)
 
-        this._waitingMountPromiseToRender = false
+        this._awaitingMountPromiseToRender = false
 
         /**
          * @private
@@ -82,11 +82,11 @@ class Node extends ImperativeBase.mixin(Transformable) {
      * yet).
      */
     async _needsToBeRendered() {
-        if (this._waitingMountPromiseToRender) return
+        if (this._awaitingMountPromiseToRender) return
         if (!this._mounted) {
-            this._waitingMountPromiseToRender = true
+            this._awaitingMountPromiseToRender = true
             await this.mountPromise
-            this._waitingMountPromiseToRender = false
+            this._awaitingMountPromiseToRender = false
         }
         super._needsToBeRendered()
     }
