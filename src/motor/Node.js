@@ -32,8 +32,6 @@ class Node extends ImperativeBase.mixin(Transformable) {
         //this.callSuperConstructor(TreeNode)
         //this.callSuperConstructor(ImperativeBase)
 
-        this._awaitingMountPromiseToRender = false
-
         /**
          * @private
          * This method is defined here in the consructor as an arrow function
@@ -75,20 +73,6 @@ class Node extends ImperativeBase.mixin(Transformable) {
      */
     _makeElement() {
         return new MotorHTMLNode
-    }
-
-    /**
-     * Trigger a re-render for this node (wait until mounted if not nounted
-     * yet).
-     */
-    async _needsToBeRendered() {
-        if (this._awaitingMountPromiseToRender) return
-        if (!this._mounted) {
-            this._awaitingMountPromiseToRender = true
-            await this.mountPromise
-            this._awaitingMountPromiseToRender = false
-        }
-        super._needsToBeRendered()
     }
 
     _render(timestamp) {

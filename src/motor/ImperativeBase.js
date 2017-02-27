@@ -73,6 +73,8 @@ export function initImperativeBase() {
                 this._resolveMountPromise = null
                 this._mountPromise = new Promise(r => this._resolveMountPromise = r)
 
+                this._awaitingMountPromiseToRender = false
+
                 this._waitForSceneThenResolveMountPromise()
 
                 // See Transformable/Sizeable propertychange event.
@@ -274,7 +276,15 @@ export function initImperativeBase() {
                     this._elementManager.setClasses(...properties.classes);
             }
 
-            _needsToBeRendered() {
+            async _needsToBeRendered() {
+                if (this._awaitingMountPromiseToRender) return
+
+                if (!this._mounted) {
+                    this._awaitingMountPromiseToRender = true
+                    await this.mountPromise
+                    this._awaitingMountPromiseToRender = false
+                }
+
                 Motor._setNodeToBeRendered(this)
             }
 
