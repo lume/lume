@@ -10,10 +10,9 @@ const TransformableMixin = base => {
     // needs to be aware of its _parent when calculating align adjustments.
     class Transformable extends Sizeable.mixin(base) {
 
-        constructor(options = {}) {
-            super(options)
+        _setDefaultProperties() {
+            super._setDefaultProperties()
 
-            // Property Cache, with default values
             Object.assign(this._properties, {
                 position:   new XYZValues(0, 0, 0),
                 rotation:   new XYZValues(0, 0, 0),
@@ -24,6 +23,10 @@ const TransformableMixin = base => {
                 opacity:    1,
                 transform:  new window.DOMMatrix,
             })
+        }
+
+        _setPropertyObservers() {
+            super._setPropertyObservers()
 
             this._properties.position.on('valuechanged',
                 () => this.triggerEvent('propertychange', 'position'))
@@ -37,8 +40,6 @@ const TransformableMixin = base => {
                 () => this.triggerEvent('propertychange', 'align'))
             this._properties.mountPoint.on('valuechanged',
                 () => this.triggerEvent('propertychange', 'mountPoint'))
-
-            this.properties = options
         }
 
         /**

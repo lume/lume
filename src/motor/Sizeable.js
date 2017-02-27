@@ -28,22 +28,27 @@ const SizeableMixin = base => {
             super(options)
 
             this._calculatedSize = { x:0, y:0, z:0 }
+            this._properties = {}
+            this._setDefaultProperties()
+            this._setPropertyObservers()
+            this.properties = options
+        }
 
-            // Property Cache, with default values
-            this._properties = {
+        _setDefaultProperties() {
+            Object.assign(this._properties, {
                 sizeMode:         new XYZValues('absolute', 'absolute', 'absolute'),
                 absoluteSize:     new XYZValues(0, 0, 0),
                 proportionalSize: new XYZValues(1, 1, 1),
-            };
+            })
+        }
 
+        _setPropertyObservers() {
             this._properties.sizeMode.on('valuechanged',
                 () => this.triggerEvent('propertychange', 'sizeMode'))
             this._properties.absoluteSize.on('valuechanged',
                 () => this.triggerEvent('propertychange', 'absoluteSize'))
             this._properties.proportionalSize.on('valuechanged',
                 () => this.triggerEvent('propertychange', 'proportionalSize'))
-
-            this.properties = options
         }
 
         /**
