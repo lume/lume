@@ -126,7 +126,7 @@ export function initImperativeBase() {
                 await this._getScenePromise()
                 await this._scene.mountPromise
 
-                this._resolveMountPromise(true)
+                this._resolveMountPromise()
                 this._mounted = true
             }
 
