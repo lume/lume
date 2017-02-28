@@ -44,16 +44,17 @@ class MotorHTMLScene extends Observable.mixin(MotorHTMLBase) {
         // The scene has a parent by the time this is called (see
         // src/motor/Scene#mount where _startSizePolling is called)
         const parent = this.parentNode
-        const width = parent.clientWidth
-        const height = parent.clientHeight
+        const parentSize = this._parentSize
+        const style = getComputedStyle(parent)
+        const width = parseFloat(style.width)
+        const height = parseFloat(style.height)
 
         // if we have a size change, trigger parentsizechange
-        if (this._parentSize.x != width || this._parentSize.y != height) {
-            this._parentSize.x = width
-            this._parentSize.y = height
+        if (parentSize.x != width || parentSize.y != height) {
+            parentSize.x = width
+            parentSize.y = height
 
-            const {x,y,z} = this._parentSize
-            this.triggerEvent('parentsizechange', {x,y,z})
+            this.triggerEvent('parentsizechange', Object.assign({}, parentSize))
         }
     }
 
