@@ -83,21 +83,21 @@ const SizeableMixin = base => {
                 calculatedSize.x = props.absoluteSize._x
             }
             else { // proportional
-                calculatedSize.x = Math.round(parentSize.x * props.proportionalSize._x)
+                calculatedSize.x = parentSize.x * props.proportionalSize._x
             }
 
             if (props.sizeMode._y == 'absolute') {
                 calculatedSize.y = props.absoluteSize._y
             }
             else { // proportional
-                calculatedSize.y = Math.round(parentSize.y * props.proportionalSize._y)
+                calculatedSize.y = parentSize.y * props.proportionalSize._y
             }
 
             if (props.sizeMode._z == 'absolute') {
                 calculatedSize.z = props.absoluteSize._z
             }
             else { // proportional
-                calculatedSize.z = Math.round(parentSize.z * props.proportionalSize._z)
+                calculatedSize.z = parentSize.z * props.proportionalSize._z
             }
 
             if (
