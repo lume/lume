@@ -110,12 +110,14 @@ class Scene extends ImperativeBase.mixin(Sizeable) {
         if (!(mountPoint instanceof window.HTMLElement))
             throw new Error('Invalid mount point specified in Scene.mount() call. Specify a selector, or pass an actual HTMLElement.')
 
-        if (mountPoint !== this._elementManager.element.parentNode)
-            mountPoint.appendChild(this._elementManager.element)
+        // no-op if already mounted at the specified node.
+        if (mountPoint === this._elementManager.element.parentNode) return
 
-        this._startOrStopSizePolling()
+        if (this._mounted) this.unmount()
+        mountPoint.appendChild(this._elementManager.element)
         this._resolveMountPromise()
         this._mounted = true
+        this._startOrStopSizePolling()
     }
 
     /**
