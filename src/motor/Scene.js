@@ -1,6 +1,7 @@
 import { makeAccessorsEnumerable } from './Utility'
 import Sizeable from './Sizeable'
 import ImperativeBase, {initImperativeBase} from './ImperativeBase'
+import XYZValues from './XYZValues'
 import MotorHTMLScene from '../motor-html/scene'
 import documentReady from 'awaitbox/dom/documentReady'
 
@@ -20,11 +21,17 @@ class Scene extends ImperativeBase.mixin(Sizeable) {
             this._needsToBeRendered()
         }
 
-        // For now, Scenes are always proportionally sized by default.
-        this.sizeMode = { x: 'proportional', y: 'proportional' }
-
         this._calcSize()
         this._needsToBeRendered()
+
+    }
+
+    _setDefaultProperties() {
+        super._setDefaultProperties()
+
+        Object.assign(this._properties, {
+            sizeMode: new XYZValues('proportional', 'proportional', 'absolute'),
+        })
     }
 
     // When we set the scene's size mode, we should start polling if it has
