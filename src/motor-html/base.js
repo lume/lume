@@ -156,7 +156,19 @@ export function initMotorHTMLBase() {
             this._resolveReadyPromise = null
             this.ready = new Promise(r => this._resolveReadyPromise = r)
 
-            this._associateImperativeNode()
+            // We use Promise.resolve here to defer to the next microtask.
+            // While we support Custom Elements v0, this is necessary because
+            // the imperative Node counterpart will have already called the
+            // `_associateImperativeNode` method on this element, causing the
+            // next microtask's call to be a no-op. When this MotorHTML element
+            // API is used instead of the Imperative counterpart, then the next
+            // microtask's `_associateImperativeNode` call will not be a no-op.
+            // When we drop support for v0 Custom Elements at some point, we
+            // can rely on passing a constructor argument similarly to how we
+            // do with motor/Node in order to detect that the constructor is
+            // being called from the reciprocal API. See the constructor in
+            // motor/Node.js to get see the idea.
+            Promise.resolve().then(() => this._associateImperativeNode())
         }
 
         /**

@@ -54,7 +54,7 @@ export function initImperativeBase() {
                 this._elementManager.element._associateImperativeNode(this)
 
                 // True when this Node is added to a parent AND it has
-                // anancestor Scene who is mounted into DOM.
+                // an anancestor Scene that is mounted into DOM.
                 this._mounted = false;
 
                 this._scene = null // stores a ref to this Node's root Scene.
