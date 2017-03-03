@@ -4,7 +4,7 @@ define(function(require, exports, module) {
     var OptionsManager = require('./_OptionsManager');
     var EventHandler = require('../events/EventHandler');
     var SimpleStream = require('../streams/SimpleStream');
-    var StreamOutput = require('../streams/_StreamContract');
+    var StreamOutput = require('../streams/_StreamOutput');
 
     /**
      * A utility class which can be extended by custom classes. These classes will then

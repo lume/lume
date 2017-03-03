@@ -1,7 +1,7 @@
 /* Copyright © 2015-2016 David Valdman */
 define(function(require, exports, module) {
     var MergedStream = require('./_MergedStream');
-    var StreamOutput = require('./_StreamContract');
+    var StreamOutput = require('./_StreamOutput');
     var EventMapper = require('../events/EventMapper');
 
     function LiftedStream(map, streams) {

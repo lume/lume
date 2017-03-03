@@ -3,7 +3,7 @@
 define(function(require, exports, module) {
     var TouchTracker = require('./_TouchTracker');
     var EventHandler = require('../events/EventHandler');
-    var StreamContract = require('../streams/_StreamContract');
+    var StreamOutput = require('../streams/_StreamOutput');
     var OptionsManager = require('../core/_OptionsManager');
     var preTickQueue = require('../core/queues/preTickQueue');
 
@@ -67,7 +67,7 @@ define(function(require, exports, module) {
     function TouchInput(options) {
         this.options = OptionsManager.setOptions(this, options);
 
-        StreamContract.call(this);
+        StreamOutput.call(this);
 
         this._touchTracker = new TouchTracker(this.options);
         EventHandler.setInputHandler(this, this._touchTracker);
@@ -81,7 +81,7 @@ define(function(require, exports, module) {
         this._value = {};
     }
 
-    TouchInput.prototype = Object.create(StreamContract.prototype);
+    TouchInput.prototype = Object.create(StreamOutput.prototype);
     TouchInput.prototype.constructor = TouchInput;
 
     TouchInput.DEFAULT_OPTIONS = {

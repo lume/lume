@@ -5,7 +5,7 @@ define(function (require, exports, module) {
     var nextTick = require('./queues/nextTick');
     var tickQueue = require('./queues/tickQueue');
     var EventHandler = require('../events/EventHandler');
-    var StreamContract = require('../streams/_StreamContract');
+    var StreamOutput = require('../streams/_StreamOutput');
     var Stream = require('../streams/Stream');
     var MergedStream = require('../streams/_MergedStream');
 
@@ -57,7 +57,7 @@ define(function (require, exports, module) {
      * @param value {Number|Number[]}   Starting value
      */
     function Transitionable(value) {
-        StreamContract.call(this);
+        StreamOutput.call(this);
 
         this._eventInput = new EventHandler();
         EventHandler.setInputHandler(this, this._eventInput);
@@ -123,7 +123,7 @@ define(function (require, exports, module) {
         }
     }
 
-    Transitionable.prototype = Object.create(StreamContract.prototype);
+    Transitionable.prototype = Object.create(StreamOutput.prototype);
     Transitionable.prototype.constructor = Transitionable;
 
     /**

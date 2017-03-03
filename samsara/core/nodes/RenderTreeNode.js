@@ -3,7 +3,7 @@
 define(function(require, exports, module) {
     var EventHandler = require('../../events/EventHandler');
     var Stream = require('../../streams/Stream');
-    var StreamContract = require('../../streams/_StreamContract');
+    var StreamOutput = require('../../streams/_StreamOutput');
     var LayoutNode = require('./LayoutNode');
     var SizeNode = require('./SizeNode');
     var layoutAlgebra = require('../algebras/layout');
@@ -27,8 +27,8 @@ define(function(require, exports, module) {
         this._logic = new EventHandler();
 
         // layout and size streams
-        this.size = new StreamContract();
-        this.layout = new StreamContract();
+        this.size = new StreamOutput();
+        this.layout = new StreamOutput();
 
         // set node middleware
         if (object) _set.call(this, object);

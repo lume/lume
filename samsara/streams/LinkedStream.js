@@ -5,7 +5,7 @@ define(function(require, exports, module){
     var Observable = require('./Observable');
     var SimpleStream = require('./SimpleStream');
     var StreamInput = require('./_StreamInput');
-    var StreamOutput = require('./_StreamContract');
+    var StreamOutput = require('./_StreamOutput');
     var StreamIO = require('../streams/_StreamIO');
     var preTickQueue = require('../core/queues/preTickQueue');
     var nextTick = require('../core/queues/nextTick');

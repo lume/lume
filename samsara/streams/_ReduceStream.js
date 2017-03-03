@@ -3,7 +3,8 @@ define(function(require, exports, module){
     var Stream = require('./Stream');
     var SimpleStream = require('./SimpleStream');
     var StreamInput = require('./_StreamInput');
-    var StreamOutput = require('./_StreamContract');
+    var StreamIO = require('./_StreamIO');
+    var StreamOutput = require('./_StreamOutput');
 
     function ReduceStream(reducer, stream, spacing){
         this._input = new StreamInput();

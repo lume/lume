@@ -32,7 +32,9 @@ define(function(require, exports, module) {
 
     MergedStream.prototype.addStream = function(key, stream) {
         var mergedData = this.mergedData;
-        mergedData[key] = undefined;
+        mergedData[key] = (stream.get instanceof Function)
+            ? stream.get()
+            : undefined;
 
         if (!stream.on) {
             stream = new Observable(stream);

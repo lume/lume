@@ -4,7 +4,7 @@ define(function(require, exports, module) {
     var DOMOutput = require('./_DOMOutput');
     var EventHandler = require('../events/EventHandler');
     var Stream = require('../streams/Stream');
-    var StreamContract = require('../streams/_StreamContract');
+    var StreamOutput = require('../streams/_StreamOutput');
     var SizeNode = require('../core/nodes/SizeNode');
     var LayoutNode = require('../core/nodes/LayoutNode');
     var sizeAlgebra = require('../core/algebras/size');
@@ -102,8 +102,8 @@ define(function(require, exports, module) {
         this._size = new EventHandler();
         this._layout = new EventHandler();
 
-        this.size = new StreamContract();
-        this.layout = new StreamContract();
+        this.size = new StreamOutput();
+        this.layout = new StreamOutput();
 
         this.size.subscribe(this._size);
         this.layout.subscribe(this._layout);

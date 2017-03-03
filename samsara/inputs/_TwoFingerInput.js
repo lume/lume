@@ -2,7 +2,7 @@
 
 define(function(require, exports, module) {
     var EventHandler = require('../events/EventHandler');
-    var StreamContract = require('../streams/_StreamContract');
+    var StreamOutput = require('../streams/_StreamOutput');
     var OptionsManager = require('../core/_OptionsManager');
     var TouchInput = require('./TouchInput');
 
@@ -20,7 +20,7 @@ define(function(require, exports, module) {
     function TwoFingerInput(options) {
         this.options = OptionsManager.setOptions(this, options);
 
-        StreamContract.call(this);
+        StreamOutput.call(this);
 
         this._eventInput = new TouchInput(this.options);
         EventHandler.setInputHandler(this, this._eventInput);
@@ -36,7 +36,7 @@ define(function(require, exports, module) {
         this._eventInput.on('end', handleEnd.bind(this));
     }
 
-    TwoFingerInput.prototype = Object.create(StreamContract.prototype);
+    TwoFingerInput.prototype = Object.create(StreamOutput.prototype);
     TwoFingerInput.prototype.constructor = TwoFingerInput;
 
     TwoFingerInput.DIRECTION = {

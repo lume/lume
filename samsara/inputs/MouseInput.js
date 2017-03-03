@@ -3,7 +3,7 @@
 define(function(require, exports, module) {
     var EventHandler = require('../events/EventHandler');
     var OptionsManager = require('../core/_OptionsManager');
-    var StreamContract = require('../streams/_StreamContract');
+    var StreamOutput = require('../streams/_StreamOutput');
 
     var _now = Date.now;
 
@@ -67,7 +67,7 @@ define(function(require, exports, module) {
     function MouseInput(options) {
         this.options = OptionsManager.setOptions(this, options);
 
-        StreamContract.call(this);
+        StreamOutput.call(this);
 
         this._eventInput = new EventHandler();
         EventHandler.setInputHandler(this, this._eventInput);
@@ -97,7 +97,7 @@ define(function(require, exports, module) {
         this._prevTime = undefined;
     }
 
-    MouseInput.prototype = Object.create(StreamContract.prototype);
+    MouseInput.prototype = Object.create(StreamOutput.prototype);
     MouseInput.prototype.constructor = MouseInput;
 
     MouseInput.DEFAULT_OPTIONS = {
