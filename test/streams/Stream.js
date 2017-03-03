@@ -6,7 +6,6 @@ define(function (require) {
     var EventEmitter = require('samsara/events/EventEmitter');
 
     var preTickQueue = require('samsara/core/queues/preTickQueue');
-    var postTickQueue = require('samsara/core/queues/postTickQueue');
 
     loop.start();
 
@@ -47,46 +46,6 @@ define(function (require) {
 
         return STATE[newState];
     }
-
-    QUnit.test('cutoff', function(assert){
-        var done = assert.async();
-
-        var t = new Transitionable(0);
-
-        var stream = new Stream();
-        stream.subscribe(t);
-
-
-        stream.on('start', function(value) {
-            console.log('start', value);
-            state = updateState(state, 'start');
-
-            assert.ok(value === 0);
-        });
-
-        stream.on('update', function(value) {
-            console.log('update', value);
-            state = updateState(state, 'update');
-
-            assert.ok(value >= 0 && value < 1);
-        });
-
-        stream.on('end', function(value) {
-            console.log('end', value);
-            state = updateState(state, 'end');
-
-            assert.ok(value < 1);
-
-            loop.stop();
-            done();
-        });
-
-        t.set(1, {duration : 500});
-
-        Timer.setTimeout(function(){
-            stream.unsubscribe(t);
-        }, 250)
-    });
 
     QUnit.test('start', function(assert){
         expect(1);
@@ -188,7 +147,7 @@ define(function (require) {
     });
 
     QUnit.test('SUE start update', function(assert){
-        expect(4);
+        expect(2);
         var done = assert.async();
 
         var source1 = new EventEmitter();
@@ -197,11 +156,11 @@ define(function (require) {
         var stream = Stream.merge([source1, source2]);
 
         stream.on('start', function(data){
-            assert.ok(data[0]);
-            assert.ok(data[1]);
+            assert.ok(false);
         });
 
         stream.on('update', function(data){
+            console.log('update', data);
             assert.ok(data[0]);
             assert.ok(data[1]);
             loop.stop();
@@ -619,186 +578,6 @@ define(function (require) {
 
         t.set(1, {duration : 200}, function(){
             s.set(2, {duration : 200});
-        });
-    });
-
-    QUnit.test('unsubscribe interrupt', function(assert){
-        var done = assert.async();
-
-        var t = new Transitionable(0);
-
-        var stream = new Stream();
-        stream.subscribe(t);
-
-        var state = STATE.none;
-
-        stream.on('start', function(value) {
-            console.log('start', value);
-            state = updateState(state, 'start');
-        });
-
-        stream.on('update', function(value) {
-            console.log('update', value);
-            state = updateState(state, 'update');
-        });
-
-        stream.on('end', function(value) {
-            console.log('end', value);
-            state = updateState(state, 'end');
-
-            loop.stop();
-            done();
-        });
-
-        Timer.setTimeout(function(){
-            stream.unsubscribe(t);
-        }, 300);
-
-        t.set(1, {duration : 500});
-    });
-
-    QUnit.test('unsubscribe interrupt 2', function(assert){
-        var done = assert.async();
-
-        var t = new Transitionable(0);
-        var s = new Transitionable(0);
-
-        var stream = Stream.merge([t, s]);
-
-        var state = STATE.none;
-
-        stream.on('start', function(value) {
-            console.log('start', value);
-            state = updateState(state, 'start');
-        });
-
-        stream.on('update', function(value) {
-            console.log('update', value);
-            state = updateState(state, 'update');
-        });
-
-        stream.on('end', function(value) {
-            console.log('end', value);
-            state = updateState(state, 'end');
-
-            loop.stop();
-            done();
-        });
-
-        s.on(['start', 'update', 'end'], function(value){
-            console.log('s update', value)
-        })
-
-        Timer.setTimeout(function(){
-            stream.unsubscribe(t);
-        }, 300);
-
-        s.set(1, {duration : 500});
-        t.set(1, {duration : 400});
-    });
-
-    QUnit.test('subscribe interrupt', function(assert){
-        var done = assert.async();
-
-        var t = new Transitionable(0);
-
-        var stream = new Stream();
-
-        var state = STATE.none;
-
-        stream.on('start', function(value) {
-            console.log('start', value);
-            state = updateState(state, 'start');
-        });
-
-        stream.on('update', function(value) {
-            console.log('update', value);
-            state = updateState(state, 'update');
-        });
-
-        stream.on('end', function(value) {
-            console.log('end', value);
-            state = updateState(state, 'end');
-
-            loop.stop();
-            done();
-        });
-
-        Timer.setTimeout(function(){
-            stream.subscribe(t);
-        }, 200);
-
-        t.set(1, {duration : 500});
-    });
-
-    QUnit.test('subscribe interrupt 2', function(assert){
-        var done = assert.async();
-
-        var t = new Transitionable(0);
-        var s = new Transitionable(0);
-
-        var state = STATE.none;
-
-        s.on(['start', 'update', 'end'], function(value){
-            console.log('s update', value)
-        })
-
-        Timer.setTimeout(function(){
-            var stream = Stream.merge([t, s]);
-
-            stream.on('start', function(value) {
-                console.log('start', value);
-                state = updateState(state, 'start');
-            });
-
-            stream.on('update', function(value) {
-                console.log('update', value);
-                state = updateState(state, 'update');
-            });
-
-            stream.on('end', function(value) {
-                console.log('end', value);
-                state = updateState(state, 'end');
-
-                loop.stop();
-                done();
-            });
-        }, 300);
-
-        s.set(1, {duration : 500});
-        t.set(1, {duration : 400});
-    });
-
-    QUnit.test('unsubscribe on end', function(assert){
-        var done = assert.async();
-
-        var t = new Transitionable(0);
-        var s = new Stream();
-        s.subscribe(t);
-
-        var state = STATE.none;
-
-        s.on('start', function(value){
-            console.log('s start', value);
-            state = updateState(state, 'start');
-        });
-
-        s.on('update', function(value){
-            console.log('s update', value);
-            state = updateState(state, 'update');
-        });
-
-        s.on('end', function(value){
-            console.log('s end', value);
-            state = updateState(state, 'end');
-
-            loop.stop();
-            done();
-        });
-
-        t.set(1, {duration : 400}, function(){
-            console.log('hi!')
-            s.unsubscribe(t);
         });
     });
 
