@@ -98,7 +98,7 @@ define(function(require, exports, module) {
             this.on('deploy', function(target) {
                 target.addEventListener('touchmove', function(event) {
                     event.preventDefault();
-                }, false);
+                }, {passive : false});
             });
         }
     }
@@ -251,11 +251,18 @@ define(function(require, exports, module) {
      * @param handler {Function}    Callback
      */
     Context.prototype.on = function on(type, handler){
-        if (this.container)
-            this.container.addEventListener(type, this._eventForwarder);
+        if (this.container){
+            if (this.container === document.body){
+                this.container.addEventListener(type, this._eventForwarder, {passive : false})
+            }
+            else this.container.addEventListener(type, this._eventForwarder);
+        }
         else {
             this._eventOutput.on('deploy', function(target){
-                target.addEventListener(type, this._eventForwarder);
+                if (target === document.body){
+                    target.addEventListener(type, this._eventForwarder, {passive : false})
+                }
+                else target.addEventListener(type, this._eventForwarder);
             }.bind(this));
         }
         EventHandler.prototype.on.apply(this._eventOutput, arguments);
