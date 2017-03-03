@@ -6,13 +6,14 @@ define(function (require, exports, module) {
     var SequentialLayout = require('samsara/layouts/SequentialLayout');
 
     // Parameters
-    var spacing = 5;                    // spacing between items
-    var numSurfaces = 5;                // initial population
+    var spacing = 0;                    // spacing between items
+    var numSurfaces = 0;                // initial population
     var navHeight = 50;                 // nav height
     var transition = {duration : 200};  // animation transition
+    var surfHeight = 110;
 
     // Create the layout with options
-    var layout = new SequentialLayout({
+    layout = new SequentialLayout({
         direction : SequentialLayout.DIRECTION.Y,
         spacing : spacing
     });
@@ -20,8 +21,8 @@ define(function (require, exports, module) {
     // Build the layout
     var sizes = [];
     for (var i = 0; i < numSurfaces; i++) {
-        var size = new Transitionable([undefined, 100]);
-        var surface = createSurface(size);
+        var size = new Transitionable([undefined, surfHeight]);
+        surface = createSurface(size);
 
         layout.push(surface);
         sizes.push(size);
@@ -31,7 +32,7 @@ define(function (require, exports, module) {
     var nav = new SequentialLayout({
         size : [undefined, navHeight],
         direction: SequentialLayout.DIRECTION.X,
-        spacing : 0
+        spacing : spacing
     });
 
     // List all actions in the nav bar
@@ -63,7 +64,7 @@ define(function (require, exports, module) {
                         sizes.push(size);
                         layout.push(surface);
 
-                        size.set([undefined, 100], transition);
+                        size.set([undefined, surfHeight], transition);
                         numSurfaces++;
                         break;
                     case 'POP':
@@ -85,7 +86,7 @@ define(function (require, exports, module) {
                         sizes.unshift(size);
                         layout.unshift(surface);
 
-                        size.set([undefined, 100], transition);
+                        size.set([undefined, surfHeight], transition);
 
                         numSurfaces++;
                         break;
@@ -109,7 +110,7 @@ define(function (require, exports, module) {
                         sizes.splice(randomIndex, 0, size);
                         layout.insertBefore(randomIndex, surface);
 
-                        size.set([undefined, 100], transition);
+                        size.set([undefined, surfHeight], transition);
                         numSurfaces++;
                         break;
                 }
@@ -134,7 +135,7 @@ define(function (require, exports, module) {
             sizes.splice(index, 1);
 
             size.set([undefined, -spacing], transition, function() {
-                layout.unlink(surface);
+                // layout.unlink(surface);
                 surface.remove();
             });
 
@@ -158,7 +159,7 @@ define(function (require, exports, module) {
     });
 
     // Build Render Tree
-    var context = new Context();
+    context = new Context();
     context.add(nav);
     context.add({transform : Transform.translateY(navHeight)}).add(layout);
     context.add({transform : footerTransform}).add(footer);
