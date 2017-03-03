@@ -4,7 +4,7 @@ define(function(require, exports, module){
     var Transform = require('../core/Transform');
     var View = require('../core/View');
     var Stream = require('../streams/Stream');
-    var ReduceStream = require('../streams/LinkedStream');
+    var LinkedStream = require('../streams/LinkedStream');
     var Accumulator = require('../streams/Accumulator');
     var Differential = require('../streams/Differential');
 
@@ -47,16 +47,16 @@ define(function(require, exports, module){
             this.flexs = [];
 
             // Displacement for each item
-            this.lengthStream = new ReduceStream(function(prev, size){
+            this.lengthStream = new LinkedStream(function(prev, size){
                 if (!size) return false;
                 return prev + size[options.direction] + options.spacing;
             });
 
             // Amount of length used by fixed sized items
-            this.usedLength = new ReduceStream(function(prev, size){
+            this.usedLength = new LinkedStream(function(prev, size){
                 if (!size) return false;
                 return prev + size[options.direction];
-            });
+            }, 0);
 
             // Amount of length left over for flex items
             this.availableLength = Stream.lift(function(totalSize, usedLength){
