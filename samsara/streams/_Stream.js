@@ -4,7 +4,7 @@ define(function(require, exports, module){
     var tick = require('../core/tick');
     var StreamInput = require('../streams/_StreamInput');
     var SimpleStream = require('../streams/SimpleStream');
-    var StreamOutput = require('../streams/_StreamContract');
+    var StreamOutput = require('../streams/_StreamOutput');
 
     var EVENTS = {
         START : 'start',
