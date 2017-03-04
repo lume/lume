@@ -23,7 +23,6 @@ class Scene extends ImperativeBase.mixin(Sizeable) {
 
         this._calcSize()
         this._needsToBeRendered()
-
     }
 
     _setDefaultProperties() {
@@ -115,8 +114,8 @@ class Scene extends ImperativeBase.mixin(Sizeable) {
 
         if (this._mounted) this.unmount()
         mountPoint.appendChild(this._elementManager.element)
-        this._resolveMountPromise()
         this._mounted = true
+        if (this._mountPromise) this._resolveMountPromise()
         this._startOrStopSizePolling()
     }
 
@@ -125,15 +124,18 @@ class Scene extends ImperativeBase.mixin(Sizeable) {
      * mountPromise.
      */
     unmount() {
+        if (!this._mounted) return
+
         this._stopSizePolling()
 
         if (this._elementManager.element.parentNode)
             this._elementManager.element.parentNode.removeChild(this._elementManager.element)
 
+        if (this._mountPromise) this._rejectMountPromise('mountcancel')
         this._mounted = false
-
-        // a new promise to be resolved on the next mount.
-        this._mountPromise = new Promise(r => this._resolveMountPromise = r)
+        this._resolveMountPromise = null
+        this._rejectMountPromise = null
+        this._mountPromise = null
     }
 
 }

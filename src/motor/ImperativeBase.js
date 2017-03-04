@@ -70,12 +70,12 @@ export function initImperativeBase() {
                 // has been mounted into the DOM (Note, the _scenePromise resolves only
                 // when the first condition is true and the root Scene hasn't
                 // necessarily been mounted).
+                this._mountPromise = null
                 this._resolveMountPromise = null
-                this._mountPromise = new Promise(r => this._resolveMountPromise = r)
+                this._rejectMountPromise = null
 
                 this._awaitingMountPromiseToRender = false
-
-                this._waitForSceneThenResolveMountPromise()
+                this._waitingForMountConditions = false
 
                 // See Transformable/Sizeable propertychange event.
                 this.on('propertychange', prop => {
@@ -114,32 +114,27 @@ export function initImperativeBase() {
             }
 
             /**
-             * @private
-             */
-            async _waitForSceneThenResolveMountPromise() {
-
-                // This should not fire for Scene or child classes of Scene because a
-                // Scene's mountPromise is resolved when it is mounted with the
-                // `Scene#mount` method.
-                if (!(this instanceof Node)) return
-
-                await this._getScenePromise()
-                await this._scene.mountPromise
-
-                this._resolveMountPromise()
-                this._mounted = true
-            }
-
-            /**
              * @readonly
              */
             get mountPromise() {
-                if (!this._mounted && !this._mountPromise) {
-                    this._mountPromise = new Promise(r => this._resolveMountPromise = r)
-                    this._waitForSceneThenResolveMountPromise() // This is a noop if `this` is a `Scene`.
+                if (!this._mountPromise) {
+                    this._mountPromise = new Promise((a, b) => {
+                        this._resolveMountPromise = a
+                        this._rejectMountPromise = b
+                    })
                 }
 
+                if (!this._mounted)
+                    this._waitForMountThenResolveMountPromise()
+                else if (this._mounted)
+                    this._resolveMountPromise()
+
                 return this._mountPromise
+            }
+
+            _waitForMountThenResolveMountPromise() {
+                // extended in Node or Scene to await for anything that mount
+                // depends on.
             }
 
             /**
@@ -240,20 +235,18 @@ export function initImperativeBase() {
             }
 
             removeChild(childNode) {
-                if (!(childNode instanceof ImperativeBase)) return
+                if (!(childNode instanceof Node)) return
 
                 super.removeChild(childNode)
 
-                // childNode no longer needs to observe parent for size changes.
                 this.off('sizechange', childNode._onParentSizeChange)
 
-                // not part of a scene anymore.
                 childNode._scene = null
-                // reset so that it can be awaited again for when the node is re-mounted.
                 childNode._scenePromise = null
-                // obviously not mounted anymore.
+                if (childNode._mountPromise) childNode._rejectMountPromise('mountcancel')
                 childNode._mounted = false
-                // reset so that it can be awaited again for when the node is re-mounted.
+                childNode._resolveMountPromise = null
+                childNode._rejectMountPromise = null
                 childNode._mountPromise = null
 
                 this._elementManager.disconnectChildElement(childNode)
@@ -280,9 +273,15 @@ export function initImperativeBase() {
                 if (this._awaitingMountPromiseToRender) return
 
                 if (!this._mounted) {
-                    this._awaitingMountPromiseToRender = true
-                    await this.mountPromise
-                    this._awaitingMountPromiseToRender = false
+                    try {
+                        this._awaitingMountPromiseToRender = true
+                        await this.mountPromise
+                    } catch(e) {
+                        if (e == 'mountcancel') return
+                        else throw e
+                    } finally {
+                        this._awaitingMountPromiseToRender = false
+                    }
                 }
 
                 Motor._setNodeToBeRendered(this)

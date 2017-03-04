@@ -153,9 +153,6 @@ export function initMotorHTMLBase() {
             // when/if needed.
             this._shadowChildren = null
 
-            this._resolveReadyPromise = null
-            this.ready = new Promise(r => this._resolveReadyPromise = r)
-
             // We use Promise.resolve here to defer to the next microtask.
             // While we support Custom Elements v0, this is necessary because
             // the imperative Node counterpart will have already called the
@@ -168,7 +165,10 @@ export function initMotorHTMLBase() {
             // do with motor/Node in order to detect that the constructor is
             // being called from the reciprocal API. See the constructor in
             // motor/Node.js to get see the idea.
-            Promise.resolve().then(() => this._associateImperativeNode())
+            // TODO: renewable promise after unmount.
+            this.ready = Promise.resolve()
+                .then(() => this._associateImperativeNode())
+                .then(() => this.imperativeCounterpart.mountPromise)
         }
 
         /**
@@ -200,8 +200,6 @@ export function initMotorHTMLBase() {
 
             // otherwise if called from a MotorHTML class without an argument
             else this.imperativeCounterpart = this._makeImperativeCounterpart()
-
-            this._signalWhenReady()
         }
 
         /**
@@ -211,11 +209,6 @@ export function initMotorHTMLBase() {
          */
         _makeImperativeCounterpart() {
             throw new TypeError('This method should be implemented by classes extending DeclarativeBase.')
-        }
-
-        async _signalWhenReady() {
-            await this.imperativeCounterpart.mountPromise
-            this._resolveReadyPromise()
         }
 
         childConnectedCallback(child) {
