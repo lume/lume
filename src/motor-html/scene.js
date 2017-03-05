@@ -20,13 +20,14 @@ class MotorHTMLScene extends Observable.mixin(MotorHTMLBase) {
 
         this._sizePollTask = null
         this._parentSize = {x:0, y:0, z:0}
-    }
 
-    init() {
-        super.init() // indirectly triggers this._makeImperativeCounterpart...
-
-        // ... then we can reference it.
-        this.imperativeCounterpart.mount(this.parentNode)
+        // After the imperativeCounterpart is available it needs to register
+        // mount into DOM. This is only for MotorHTMLScenes because their
+        // imperativeCounterparts are not added to a parent Node.
+        // MotorHTMLNodes get their parent connection from their parent in
+        // childConnectedCallback.
+        this._imperativeCounterpartPromise
+            .then(() => this.imperativeCounterpart.mount(this.parentNode))
     }
 
     _startSizePolling() {
