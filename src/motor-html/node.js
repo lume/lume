@@ -23,12 +23,13 @@ class MotorHTMLNode extends MotorHTMLBase {
         })
     }
 
-    attributeChangedCallback(attribute, oldValue, newValue) {
-        super.attributeChangedCallback(...arguments)
-        this._updateNodeProperty(attribute, oldValue, newValue)
+    async attributeChangedCallback(...args) {
+        super.attributeChangedCallback(...args)
+        await this._imperativeCounterpartPromise
+        this._updateNodeProperty(...args)
     }
 
-    async _updateNodeProperty(attribute, oldValue, newValue) {
+    _updateNodeProperty(attribute, oldValue, newValue) {
         // attributes on our HTML elements are the same name as those on
         // the Node class (the setters).
         if (newValue !== oldValue) {
