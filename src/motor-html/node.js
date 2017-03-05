@@ -3,7 +3,7 @@ import styles from './node-style'
 import Node from '../motor/Node'
 import Transformable from '../motor/Transformable'
 import Sizeable from '../motor/Sizeable'
-import MotorHTMLBase, {initMotorHTMLBase} from './base'
+import MotorHTMLBase, {initMotorHTMLBase, proxyGettersSetters} from './base'
 
 initMotorHTMLBase()
 
@@ -88,63 +88,6 @@ function checkIsNumberArrayString(str) {
 
 function checkIsSizeArrayString(str) {
     return
-}
-
-// Creates setters/getters on the TargetClass which proxy to the
-// setters/getters on SourceClass.
-function proxyGettersSetters(SourceClass, TargetClass) {
-
-    // Node methods not to proxy (private underscored methods are also detected and
-    // ignored).
-    const methodProxyBlacklist = [
-        'constructor',
-        'parent',
-        'children', // proxying this one would really break stuff (f.e. React)
-        'element',
-        'scene',
-        'addChild',
-        'addChildren',
-        'removeChild',
-        'removeChildren',
-    ]
-
-    const props = Object.getOwnPropertyNames(SourceClass.prototype)
-
-    for (const prop of props) {
-        if (
-            // skip the blacklisted properties
-            methodProxyBlacklist.indexOf(prop) >= 0
-
-            // skip the private underscored properties
-            || prop.indexOf('_') == 0
-
-            // skip properties that are already defined.
-            || TargetClass.prototype.hasOwnProperty(prop)
-        ) continue
-
-        const targetDescriptor = {}
-        const sourceDescriptor = Object.getOwnPropertyDescriptor(SourceClass.prototype, prop)
-
-        // if the property has a setter
-        if (sourceDescriptor.set) {
-            Object.assign(targetDescriptor, {
-                set(value) {
-                    this.imperativeCounterpart[prop] = value
-                }
-            })
-        }
-
-        // if the property has a getter
-        if (sourceDescriptor.get) {
-            Object.assign(targetDescriptor, {
-                get() {
-                    return this.imperativeCounterpart[prop]
-                }
-            })
-        }
-
-        Object.defineProperty(TargetClass.prototype, prop, targetDescriptor)
-    }
 }
 
 import 'document-register-element'

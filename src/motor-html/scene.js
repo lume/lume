@@ -3,7 +3,8 @@ import styles from './scene-style'
 import Motor from '../motor/Motor'
 import Scene from '../motor/Scene'
 import Observable from '../motor/Observable'
-import MotorHTMLBase, {initMotorHTMLBase} from './base'
+import Sizeable from '../motor/Sizeable'
+import MotorHTMLBase, {initMotorHTMLBase, proxyGettersSetters} from './base'
 
 initMotorHTMLBase()
 
@@ -81,6 +82,10 @@ class MotorHTMLScene extends Observable.mixin(MotorHTMLBase) {
         this._sizePollTask = null
     }
 }
+
+// This associates the Transformable getters/setters with the HTML-API classes,
+// so that the same getters/setters can be called from HTML side of the API.
+proxyGettersSetters(Sizeable, MotorHTMLScene)
 
 import 'document-register-element'
 MotorHTMLScene = document.registerElement('motor-scene', MotorHTMLScene)
