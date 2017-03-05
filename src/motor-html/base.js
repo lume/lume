@@ -166,8 +166,9 @@ export function initMotorHTMLBase() {
             // being called from the reciprocal API. See the constructor in
             // motor/Node.js to get see the idea.
             // TODO: renewable promise after unmount.
-            this.ready = Promise.resolve()
+            this._imperativeCounterpartPromise = Promise.resolve()
                 .then(() => this._associateImperativeNode())
+            this.ready = this._imperativeCounterpartPromise
                 .then(() => this.imperativeCounterpart.mountPromise)
         }
 
