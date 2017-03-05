@@ -57,14 +57,6 @@ export function initImperativeBase() {
                 // an anancestor Scene that is mounted into DOM.
                 this._mounted = false;
 
-                this._scene = null // stores a ref to this Node's root Scene.
-
-                // This is an internal promise that resolves when this Node is added to
-                // to a scene graph that has a root Scene TreeNode. The resolved value
-                // is the root Scene.
-                this._resolveScenePromise = null
-                this._scenePromise = new Promise(r => this._resolveScenePromise = r)
-
                 // A promise that resolves when this Node is attached
                 // to a tree that has a root Scene TreeNode *and* when that root Scene
                 // has been mounted into the DOM (Note, the _scenePromise resolves only
@@ -103,17 +95,6 @@ export function initImperativeBase() {
             }
 
             /**
-             * @private
-             * Get a promise for the node's eventual scene.
-             */
-            _getScenePromise() {
-                if (!this._scene && !this._scenePromise)
-                    this._scenePromise = new Promise(r => this._resolveScenePromise = r)
-
-                return this._scenePromise
-            }
-
-            /**
              * @readonly
              */
             get mountPromise() {
@@ -145,43 +126,6 @@ export function initImperativeBase() {
             }
 
             /**
-             * Get the Scene that this Node is in, null if no Scene. This is recursive
-             * at first, then cached.
-             *
-             * This traverses up the scene graph tree starting at this Node and finds
-             * the root Scene, if any. It caches the value for performance. If this
-             * Node is removed from a parent node with parent.removeChild(), then the
-             * cache is invalidated so the traversal can happen again when this Node is
-             * eventually added to a new tree. This way, if the scene is cached on a
-             * parent Node that we're adding this Node to then we can get that cached
-             * value instead of traversing the tree.
-             *
-             * @readonly
-             */
-            get scene() {
-                // NOTE: this._scene is initally null, created in the constructor.
-
-                // if already cached, return it. Or if no parent, return it (it'll be null).
-                if (this._scene || !this._parent) return this._scene
-
-                // if the parent node already has a ref to the scene, use that.
-                if (this._parent._scene) {
-                    this._scene = this._parent._scene
-                }
-                else if (this._parent instanceof Scene) {
-                    this._scene = this._parent
-                }
-                // otherwise call the scene getter on the parent, which triggers
-                // traversal up the scene graph in order to find the root scene (null
-                // if none).
-                else {
-                    this._scene = this._parent.scene
-                }
-
-                return this._scene
-            }
-
-            /**
              * @override
              */
             addChild(childNode) {
@@ -190,9 +134,9 @@ export function initImperativeBase() {
                 // We cannot add Scenes to Nodes, for now.
                 if (childNode instanceof Scene) {
                     throw new Error(`
-                        A Scene cannot be added to another Node (at least for now). To
-                        place a Scene in a Node, just mount a new Scene onto a
-                        MotorHTMLNode with Scene.mount().
+                        A Scene cannot be added to another Node or Scene (at
+                        least for now). To place a Scene in a Node, just mount
+                        a new Scene onto a MotorHTMLNode with Scene.mount().
                     `)
                 }
 
@@ -201,8 +145,8 @@ export function initImperativeBase() {
                 // Pass this parent node's Scene reference (if any, checking this cache
                 // first) to the new child and the child's children.
                 //
-                // NOTE: Order is important: this needs to happen after previous stuff
-                // in this method, so that the childNode.scene getter works.
+                // NOTE: this needs to happen after previous stuff in this
+                // method, so that the childNode.scene getter works.
                 if (childNode._scene || childNode.scene) {
                     childNode._resolveScenePromise(childNode._scene)
                     childNode._giveSceneRefToChildren()
@@ -219,19 +163,6 @@ export function initImperativeBase() {
                 this._elementManager.connectChildElement(childNode)
 
                 return this
-            }
-
-            /**
-             * @private
-             * This method to be called only when this Node has this.scene.
-             * Resolves the _scenePromise for all children of the tree of this Node.
-             */
-            _giveSceneRefToChildren() {
-                for (const childNode of this._children) {
-                    childNode._scene = this._scene
-                    childNode._resolveScenePromise(childNode._scene)
-                    childNode._giveSceneRefToChildren();
-                }
             }
 
             removeChild(childNode) {
