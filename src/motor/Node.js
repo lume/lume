@@ -121,22 +121,6 @@ class Node extends ImperativeBase.mixin(Transformable) {
         return this._scenePromise
     }
 
-    get mountPromise() {
-        if (!this._mountPromise) {
-            this._mountPromise = new Promise((a, b) => {
-                this._resolveMountPromise = a
-                this._rejectMountPromise = b
-            })
-        }
-
-        if (!this._mounted)
-            this._waitForMountThenResolveMountPromise()
-        else if (this._mounted)
-            this._resolveMountPromise()
-
-        return this._mountPromise
-    }
-
     /**
      * Get the Scene that this Node is in, null if no Scene. This is recursive
      * at first, then cached.
