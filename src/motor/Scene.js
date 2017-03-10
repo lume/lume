@@ -118,6 +118,7 @@ class Scene extends ImperativeBase.mixin(Sizeable) {
 
         if (this._mountPromise) this._resolveMountPromise()
 
+        this._elementManager.shouldRender()
         this._startOrStopSizePolling()
     }
 
@@ -128,6 +129,7 @@ class Scene extends ImperativeBase.mixin(Sizeable) {
     unmount() {
         if (!this._mounted) return
 
+        this._elementManager.shouldNotRender()
         this._stopSizePolling()
 
         if (this._elementManager.element.parentNode)

@@ -95,6 +95,7 @@ class Node extends ImperativeBase.mixin(Transformable) {
 
         this._mounted = true
         this._resolveMountPromise()
+        this._elementManager.shouldRender()
     }
 
     /**

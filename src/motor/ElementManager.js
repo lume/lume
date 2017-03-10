@@ -1,4 +1,5 @@
 import Node from './Node'
+import Motor from './Motor'
 
 /**
  * Manages a DOM element. Exposes a set of recommended APIs for working with
@@ -127,6 +128,20 @@ class ElementManager {
 
         // But both Node and Scene are Sizeable
         this.applySize(node._calculatedSize)
+    }
+
+    shouldRender() {
+        const task = Motor.addRenderTask(() => {
+            this.applyStyle('display', 'block')
+            Motor.removeRenderTask(task)
+        })
+    }
+
+    shouldNotRender() {
+        const task = Motor.addRenderTask(() => {
+            this.applyStyle('display', 'none')
+            Motor.removeRenderTask(task)
+        })
     }
 }
 

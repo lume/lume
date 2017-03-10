@@ -99,9 +99,9 @@ export function initImperativeBase() {
              */
             get mountPromise() {
                 if (!this._mountPromise) {
-                    this._mountPromise = new Promise((a, b) => {
-                        this._resolveMountPromise = a
-                        this._rejectMountPromise = b
+                    this._mountPromise = new Promise((resolve, reject) => {
+                        this._resolveMountPromise = resolve
+                        this._rejectMountPromise = reject
                     })
                 }
 
@@ -173,6 +173,7 @@ export function initImperativeBase() {
                 childNode._resetSceneRef()
 
                 if (childNode._mountPromise) childNode._rejectMountPromise('mountcancel')
+                if (childNode._mounted) childNode._elementManager.shouldNotRender()
                 childNode._resetMountPromise()
 
                 this._elementManager.disconnectChildElement(childNode)
