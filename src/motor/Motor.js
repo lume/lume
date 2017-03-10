@@ -11,7 +11,7 @@ class Motor {
         this._inFrame = false // true when inside a requested animation frame.
         this._rAF = null // the current animation frame, or null.
         this._animationLoopStarted = false
-        this._allRenderTasks = []
+        this._allRenderTasks = new Set
         this._nodesToBeRendered = new Set
     }
 
@@ -40,7 +40,7 @@ class Motor {
             this._renderNodes(timestamp)
 
             // If any tasks are left to run, continue the animation loop.
-            if (this._allRenderTasks.length)
+            if (this._allRenderTasks.size)
                 this._rAF = requestAnimationFrame(motorLoop)
             else {
                 this._rAF = null
@@ -63,7 +63,7 @@ class Motor {
             //this._renderNodes(timestamp)
 
             //// If any tasks are left to run, continue the animation loop.
-            //if (!this._allRenderTasks.length) {
+            //if (!this._allRenderTasks.size) {
                 //this._rAF = null
                 //this._animationLoopStarted = false
             //}
@@ -95,7 +95,7 @@ class Motor {
         if (typeof fn != 'function')
             throw new Error('Render task must be a function.')
 
-        this._allRenderTasks.push(fn)
+        this._allRenderTasks.add(fn)
 
         // If the render loop isn't started, start it.
         if (!this._animationLoopStarted)
@@ -105,7 +105,7 @@ class Motor {
     }
 
     removeRenderTask(fn) {
-        this._allRenderTasks.splice(this._allRenderTasks.indexOf(fn), 1)
+        this._allRenderTasks.delete(fn)
     }
 
     _runRenderTasks(timestamp) {
