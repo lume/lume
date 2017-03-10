@@ -38,8 +38,8 @@ class Node extends ImperativeBase.mixin(Transformable) {
         // This is an internal promise that resolves when this Node is added to
         // to a scene graph that has a root Scene TreeNode. The resolved value
         // is the root Scene.
+        this._scenePromise = null
         this._resolveScenePromise = null
-        this._scenePromise = new Promise(r => this._resolveScenePromise = r)
 
         /**
          * @private
@@ -109,10 +109,32 @@ class Node extends ImperativeBase.mixin(Transformable) {
      * Get a promise for the node's eventual scene.
      */
     _getScenePromise() {
-        if (!this._scene && !this._scenePromise)
-            this._scenePromise = new Promise(r => this._resolveScenePromise = r)
+        if (!this._scenePromise) {
+            this._scenePromise = new Promise((a, b) => {
+                this._resolveScenePromise = a
+            })
+        }
+
+        if (this._scene)
+            this._resolveScenePromise()
 
         return this._scenePromise
+    }
+
+    get mountPromise() {
+        if (!this._mountPromise) {
+            this._mountPromise = new Promise((a, b) => {
+                this._resolveMountPromise = a
+                this._rejectMountPromise = b
+            })
+        }
+
+        if (!this._mounted)
+            this._waitForMountThenResolveMountPromise()
+        else if (this._mounted)
+            this._resolveMountPromise()
+
+        return this._mountPromise
     }
 
     /**
@@ -160,8 +182,18 @@ class Node extends ImperativeBase.mixin(Transformable) {
     _giveSceneRefToChildren() {
         for (const childNode of this._children) {
             childNode._scene = this._scene
-            childNode._resolveScenePromise(childNode._scene)
+            if (childNode._resolveScenePromise)
+                childNode._resolveScenePromise(childNode._scene)
             childNode._giveSceneRefToChildren();
+        }
+    }
+
+    _resetSceneRef() {
+        this._scene = null
+        this._scenePromise = null
+        this._resolveScenePromise = null
+        for (const childNode of this._children) {
+            childNode._resetSceneRef();
         }
     }
 

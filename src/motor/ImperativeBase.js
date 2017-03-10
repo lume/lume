@@ -53,15 +53,15 @@ export function initImperativeBase() {
                 )
                 this._elementManager.element._associateImperativeNode(this)
 
-                // True when this Node is added to a parent AND it has
-                // an anancestor Scene that is mounted into DOM.
+                // For Nodes, true when this Node is added to a parent AND it
+                // has an anancestor Scene that is mounted into DOM. For
+                // Scenes, true when mounted into DOM.
                 this._mounted = false;
 
-                // A promise that resolves when this Node is attached
-                // to a tree that has a root Scene TreeNode *and* when that root Scene
-                // has been mounted into the DOM (Note, the _scenePromise resolves only
-                // when the first condition is true and the root Scene hasn't
-                // necessarily been mounted).
+                // For Nodes, a promise that resolves when this Node is
+                // attached to a tree that has a root Scene TreeNode *and* when
+                // that root Scene has been mounted into the DOM. For Scenes,
+                // resolves when mounted into DOM.
                 this._mountPromise = null
                 this._resolveMountPromise = null
                 this._rejectMountPromise = null
@@ -144,11 +144,9 @@ export function initImperativeBase() {
 
                 // Pass this parent node's Scene reference (if any, checking this cache
                 // first) to the new child and the child's children.
-                //
-                // NOTE: this needs to happen after previous stuff in this
-                // method, so that the childNode.scene getter works.
                 if (childNode._scene || childNode.scene) {
-                    childNode._resolveScenePromise(childNode._scene)
+                    if (childNode._resolveScenePromise)
+                        childNode._resolveScenePromise(childNode._scene)
                     childNode._giveSceneRefToChildren()
                 }
 
@@ -172,15 +170,22 @@ export function initImperativeBase() {
 
                 this.off('sizechange', childNode._onParentSizeChange)
 
-                childNode._scene = null
-                childNode._scenePromise = null
+                childNode._resetSceneRef()
+
                 if (childNode._mountPromise) childNode._rejectMountPromise('mountcancel')
-                childNode._mounted = false
-                childNode._resolveMountPromise = null
-                childNode._rejectMountPromise = null
-                childNode._mountPromise = null
+                childNode._resetMountPromise()
 
                 this._elementManager.disconnectChildElement(childNode)
+            }
+
+            _resetMountPromise() {
+                this._mounted = false
+                this._mountPromise = null
+                this._resolveMountPromise = null
+                this._rejectMountPromise = null
+                for (const childNode of this._children) {
+                    childNode._resetMountPromise();
+                }
             }
 
             /**

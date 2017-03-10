@@ -134,10 +134,7 @@ class Scene extends ImperativeBase.mixin(Sizeable) {
             this._elementManager.element.parentNode.removeChild(this._elementManager.element)
 
         if (this._mountPromise) this._rejectMountPromise('mountcancel')
-        this._mounted = false
-        this._resolveMountPromise = null
-        this._rejectMountPromise = null
-        this._mountPromise = null
+        this._resetMountPromise()
     }
 
 }
