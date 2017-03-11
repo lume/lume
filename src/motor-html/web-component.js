@@ -99,6 +99,7 @@ function WebComponentMixin(elementClass) {
         childDisconnectedCallback(child) {}
 
         connectedCallback() {
+            if (super.connectedCallback) super.connectedCallback()
             this._attached = true
 
             if (!this._initialized) {
@@ -117,6 +118,7 @@ function WebComponentMixin(elementClass) {
         }
 
         async disconnectedCallback() {
+            if (super.disconnectedCallback) super.disconnectedCallback()
             this._attached = false
 
             // Deferr to the next tick before cleaning up in case the
@@ -205,6 +207,7 @@ function WebComponentMixin(elementClass) {
         }
 
         attributeChangedCallback() {
+            if (super.attributeChangedCallback) super.attributeChangedCallback()
             this._initialAttributeChange = true
         }
 
