@@ -38,7 +38,10 @@ class ElementManager {
     }
 
     removeChild(childElementManager) {
-        this.element.removeChild(childElementManager.element)
+        // This conditional check is needed incase the element was already
+        // removed from the HTML-API side.
+        if (childElementManager.element.parentNode === this.element)
+            this.element.removeChild(childElementManager.element)
     }
 
     connectChildElement(childImperativeNode) {

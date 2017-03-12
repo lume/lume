@@ -62,16 +62,28 @@ function makeAccessorsEnumerable(object) {
 }
 
 // NOTE: If a child is disconnected then connected to the same parent in the
-// same turn, then the onConnect and onDisconnect callbacks won't be called (it
-// is pointless because the DOM tree will be back in the exact state as before,
-// and the rendering in the following frame should be the same).
+// same turn, then the onConnect and onDisconnect callbacks won't be called
+// because the DOM tree will be back in the exact state as before.
+let childObservationHandlers = null
+let childObserver = null
 function observeChildren(ctx, onConnect, onDisconnect) {
-
-    const observer = new MutationObserver(changes => {
-        const weights = new Map
+    if (!childObservationHandlers) childObservationHandlers = new Map
+    if (!childObserver) childObserver = createChildObserver()
+    childObservationHandlers.set(ctx, {onConnect, onDisconnect})
+    childObserver.observe(ctx, { childList: true })
+    return true
+}
+function createChildObserver() {
+    return new MutationObserver(async (changes) => {
+        const weightsPerTarget = new Map
 
         for (const change of changes) {
             if (change.type != 'childList') continue
+
+            if (!weightsPerTarget.has(change.target))
+                weightsPerTarget.set(change.target, new Map)
+
+            const weights = weightsPerTarget.get(change.target)
 
             for (const addedNode of change.addedNodes)
                 weights.set(addedNode, (weights.get(addedNode) || 0) + 1)
@@ -80,15 +92,17 @@ function observeChildren(ctx, onConnect, onDisconnect) {
                 weights.set(removedNode, (weights.get(removedNode) || 0) - 1)
         }
 
-        for (const [node, weight] of weights)
-            if (weight > 0)
-                onConnect.call(ctx, node)
-            else if (weight < 0)
-                onDisconnect.call(ctx, node)
-    })
+        for (const [target, weights] of weightsPerTarget) {
+            const {onConnect, onDisconnect} = childObservationHandlers.get(target)
 
-    observer.observe(ctx, { childList: true })
-    return observer
+            for (const [node, weight] of weights) {
+                if (weight > 0 && typeof onConnect == 'function')
+                    onConnect.call(target, node)
+                else if (weight < 0 && typeof onDisconnect == 'function')
+                    onDisconnect.call(target, node)
+            }
+        }
+    })
 }
 
 const hasShadowDomV0 =
