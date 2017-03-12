@@ -6269,7 +6269,8 @@ return /******/ (function(modules) { // webpackBootstrap
 	!(function(global) {
 	  "use strict";
 	
-	  var hasOwn = Object.prototype.hasOwnProperty;
+	  var Op = Object.prototype;
+	  var hasOwn = Op.hasOwnProperty;
 	  var undefined; // More compressible than void 0.
 	  var $Symbol = typeof Symbol === "function" ? Symbol : {};
 	  var iteratorSymbol = $Symbol.iterator || "@@iterator";
@@ -6293,8 +6294,9 @@ return /******/ (function(modules) { // webpackBootstrap
 	  runtime = global.regeneratorRuntime = inModule ? module.exports : {};
 	
 	  function wrap(innerFn, outerFn, self, tryLocsList) {
-	    // If outerFn provided, then outerFn.prototype instanceof Generator.
-	    var generator = Object.create((outerFn || Generator).prototype);
+	    // If outerFn provided and outerFn.prototype is a Generator, then outerFn.prototype instanceof Generator.
+	    var protoGenerator = outerFn && outerFn.prototype instanceof Generator ? outerFn : Generator;
+	    var generator = Object.create(protoGenerator.prototype);
 	    var context = new Context(tryLocsList || []);
 	
 	    // The ._invoke method unifies the implementations of the .next,
@@ -6340,10 +6342,29 @@ return /******/ (function(modules) { // webpackBootstrap
 	  function GeneratorFunction() {}
 	  function GeneratorFunctionPrototype() {}
 	
-	  var Gp = GeneratorFunctionPrototype.prototype = Generator.prototype;
+	  // This is a polyfill for %IteratorPrototype% for environments that
+	  // don't natively support it.
+	  var IteratorPrototype = {};
+	  IteratorPrototype[iteratorSymbol] = function () {
+	    return this;
+	  };
+	
+	  var getProto = Object.getPrototypeOf;
+	  var NativeIteratorPrototype = getProto && getProto(getProto(values([])));
+	  if (NativeIteratorPrototype &&
+	      NativeIteratorPrototype !== Op &&
+	      hasOwn.call(NativeIteratorPrototype, iteratorSymbol)) {
+	    // This environment has a native %IteratorPrototype%; use it instead
+	    // of the polyfill.
+	    IteratorPrototype = NativeIteratorPrototype;
+	  }
+	
+	  var Gp = GeneratorFunctionPrototype.prototype =
+	    Generator.prototype = Object.create(IteratorPrototype);
 	  GeneratorFunction.prototype = Gp.constructor = GeneratorFunctionPrototype;
 	  GeneratorFunctionPrototype.constructor = GeneratorFunction;
-	  GeneratorFunctionPrototype[toStringTagSymbol] = GeneratorFunction.displayName = "GeneratorFunction";
+	  GeneratorFunctionPrototype[toStringTagSymbol] =
+	    GeneratorFunction.displayName = "GeneratorFunction";
 	
 	  // Helper for defining the .next, .throw, and .return methods of the
 	  // Iterator interface in terms of a single ._invoke method.
@@ -6380,16 +6401,11 @@ return /******/ (function(modules) { // webpackBootstrap
 	
 	  // Within the body of any async function, `await x` is transformed to
 	  // `yield regeneratorRuntime.awrap(x)`, so that the runtime can test
-	  // `value instanceof AwaitArgument` to determine if the yielded value is
-	  // meant to be awaited. Some may consider the name of this method too
-	  // cutesy, but they are curmudgeons.
+	  // `hasOwn.call(value, "__await")` to determine if the yielded value is
+	  // meant to be awaited.
 	  runtime.awrap = function(arg) {
-	    return new AwaitArgument(arg);
+	    return { __await: arg };
 	  };
-	
-	  function AwaitArgument(arg) {
-	    this.arg = arg;
-	  }
 	
 	  function AsyncIterator(generator) {
 	    function invoke(method, arg, resolve, reject) {
@@ -6399,8 +6415,10 @@ return /******/ (function(modules) { // webpackBootstrap
 	      } else {
 	        var result = record.arg;
 	        var value = result.value;
-	        if (value instanceof AwaitArgument) {
-	          return Promise.resolve(value.arg).then(function(value) {
+	        if (value &&
+	            typeof value === "object" &&
+	            hasOwn.call(value, "__await")) {
+	          return Promise.resolve(value.__await).then(function(value) {
 	            invoke("next", value, resolve, reject);
 	          }, function(err) {
 	            invoke("throw", err, resolve, reject);
@@ -6469,6 +6487,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	  }
 	
 	  defineIteratorMethods(AsyncIterator.prototype);
+	  runtime.AsyncIterator = AsyncIterator;
 	
 	  // Note that simple async functions are implemented on top of
 	  // AsyncIterator objects; they just return a Promise for the value of
@@ -6503,90 +6522,34 @@ return /******/ (function(modules) { // webpackBootstrap
 	        return doneResult();
 	      }
 	
+	      context.method = method;
+	      context.arg = arg;
+	
 	      while (true) {
 	        var delegate = context.delegate;
 	        if (delegate) {
-	          if (method === "return" ||
-	              (method === "throw" && delegate.iterator[method] === undefined)) {
-	            // A return or throw (when the delegate iterator has no throw
-	            // method) always terminates the yield* loop.
-	            context.delegate = null;
-	
-	            // If the delegate iterator has a return method, give it a
-	            // chance to clean up.
-	            var returnMethod = delegate.iterator["return"];
-	            if (returnMethod) {
-	              var record = tryCatch(returnMethod, delegate.iterator, arg);
-	              if (record.type === "throw") {
-	                // If the return method threw an exception, let that
-	                // exception prevail over the original return or throw.
-	                method = "throw";
-	                arg = record.arg;
-	                continue;
-	              }
-	            }
-	
-	            if (method === "return") {
-	              // Continue with the outer return, now that the delegate
-	              // iterator has been terminated.
-	              continue;
-	            }
+	          var delegateResult = maybeInvokeDelegate(delegate, context);
+	          if (delegateResult) {
+	            if (delegateResult === ContinueSentinel) continue;
+	            return delegateResult;
 	          }
-	
-	          var record = tryCatch(
-	            delegate.iterator[method],
-	            delegate.iterator,
-	            arg
-	          );
-	
-	          if (record.type === "throw") {
-	            context.delegate = null;
-	
-	            // Like returning generator.throw(uncaught), but without the
-	            // overhead of an extra function call.
-	            method = "throw";
-	            arg = record.arg;
-	            continue;
-	          }
-	
-	          // Delegate generator ran and handled its own exceptions so
-	          // regardless of what the method was, we continue as if it is
-	          // "next" with an undefined arg.
-	          method = "next";
-	          arg = undefined;
-	
-	          var info = record.arg;
-	          if (info.done) {
-	            context[delegate.resultName] = info.value;
-	            context.next = delegate.nextLoc;
-	          } else {
-	            state = GenStateSuspendedYield;
-	            return info;
-	          }
-	
-	          context.delegate = null;
 	        }
 	
-	        if (method === "next") {
+	        if (context.method === "next") {
 	          // Setting context._sent for legacy support of Babel's
 	          // function.sent implementation.
-	          context.sent = context._sent = arg;
+	          context.sent = context._sent = context.arg;
 	
-	        } else if (method === "throw") {
+	        } else if (context.method === "throw") {
 	          if (state === GenStateSuspendedStart) {
 	            state = GenStateCompleted;
-	            throw arg;
+	            throw context.arg;
 	          }
 	
-	          if (context.dispatchException(arg)) {
-	            // If the dispatched exception was caught by a catch block,
-	            // then let that catch block handle the exception normally.
-	            method = "next";
-	            arg = undefined;
-	          }
+	          context.dispatchException(context.arg);
 	
-	        } else if (method === "return") {
-	          context.abrupt("return", arg);
+	        } else if (context.method === "return") {
+	          context.abrupt("return", context.arg);
 	        }
 	
 	        state = GenStateExecuting;
@@ -6599,39 +6562,111 @@ return /******/ (function(modules) { // webpackBootstrap
 	            ? GenStateCompleted
 	            : GenStateSuspendedYield;
 	
-	          var info = {
+	          if (record.arg === ContinueSentinel) {
+	            continue;
+	          }
+	
+	          return {
 	            value: record.arg,
 	            done: context.done
 	          };
 	
-	          if (record.arg === ContinueSentinel) {
-	            if (context.delegate && method === "next") {
-	              // Deliberately forget the last sent value so that we don't
-	              // accidentally pass it on to the delegate.
-	              arg = undefined;
-	            }
-	          } else {
-	            return info;
-	          }
-	
 	        } else if (record.type === "throw") {
 	          state = GenStateCompleted;
 	          // Dispatch the exception by looping back around to the
-	          // context.dispatchException(arg) call above.
-	          method = "throw";
-	          arg = record.arg;
+	          // context.dispatchException(context.arg) call above.
+	          context.method = "throw";
+	          context.arg = record.arg;
 	        }
 	      }
 	    };
 	  }
 	
+	  // Call delegate.iterator[context.method](context.arg) and handle the
+	  // result, either by returning a { value, done } result from the
+	  // delegate iterator, or by modifying context.method and context.arg,
+	  // setting context.delegate to null, and returning the ContinueSentinel.
+	  function maybeInvokeDelegate(delegate, context) {
+	    var method = delegate.iterator[context.method];
+	    if (method === undefined) {
+	      // A .throw or .return when the delegate iterator has no .throw
+	      // method always terminates the yield* loop.
+	      context.delegate = null;
+	
+	      if (context.method === "throw") {
+	        if (delegate.iterator.return) {
+	          // If the delegate iterator has a return method, give it a
+	          // chance to clean up.
+	          context.method = "return";
+	          context.arg = undefined;
+	          maybeInvokeDelegate(delegate, context);
+	
+	          if (context.method === "throw") {
+	            // If maybeInvokeDelegate(context) changed context.method from
+	            // "return" to "throw", let that override the TypeError below.
+	            return ContinueSentinel;
+	          }
+	        }
+	
+	        context.method = "throw";
+	        context.arg = new TypeError(
+	          "The iterator does not provide a 'throw' method");
+	      }
+	
+	      return ContinueSentinel;
+	    }
+	
+	    var record = tryCatch(method, delegate.iterator, context.arg);
+	
+	    if (record.type === "throw") {
+	      context.method = "throw";
+	      context.arg = record.arg;
+	      context.delegate = null;
+	      return ContinueSentinel;
+	    }
+	
+	    var info = record.arg;
+	
+	    if (! info) {
+	      context.method = "throw";
+	      context.arg = new TypeError("iterator result is not an object");
+	      context.delegate = null;
+	      return ContinueSentinel;
+	    }
+	
+	    if (info.done) {
+	      // Assign the result of the finished delegate to the temporary
+	      // variable specified by delegate.resultName (see delegateYield).
+	      context[delegate.resultName] = info.value;
+	
+	      // Resume execution at the desired location (see delegateYield).
+	      context.next = delegate.nextLoc;
+	
+	      // If context.method was "throw" but the delegate handled the
+	      // exception, let the outer generator proceed normally. If
+	      // context.method was "next", forget context.arg since it has been
+	      // "consumed" by the delegate iterator. If context.method was
+	      // "return", allow the original .return call to continue in the
+	      // outer generator.
+	      if (context.method !== "return") {
+	        context.method = "next";
+	        context.arg = undefined;
+	      }
+	
+	    } else {
+	      // Re-yield the result returned by the delegate method.
+	      return info;
+	    }
+	
+	    // The delegate iterator is finished, so forget it and continue with
+	    // the outer generator.
+	    context.delegate = null;
+	    return ContinueSentinel;
+	  }
+	
 	  // Define Generator.prototype.{next,throw,return} in terms of the
 	  // unified ._invoke helper method.
 	  defineIteratorMethods(Gp);
-	
-	  Gp[iteratorSymbol] = function() {
-	    return this;
-	  };
 	
 	  Gp[toStringTagSymbol] = "Generator";
 	
@@ -6749,6 +6784,9 @@ return /******/ (function(modules) { // webpackBootstrap
 	      this.done = false;
 	      this.delegate = null;
 	
+	      this.method = "next";
+	      this.arg = undefined;
+	
 	      this.tryEntries.forEach(resetTryEntry);
 	
 	      if (!skipTempReset) {
@@ -6785,7 +6823,15 @@ return /******/ (function(modules) { // webpackBootstrap
 	        record.type = "throw";
 	        record.arg = exception;
 	        context.next = loc;
-	        return !!caught;
+	
+	        if (caught) {
+	          // If the dispatched exception was caught by a catch block,
+	          // then let that catch block handle the exception normally.
+	          context.method = "next";
+	          context.arg = undefined;
+	        }
+	
+	        return !! caught;
 	      }
 	
 	      for (var i = this.tryEntries.length - 1; i >= 0; --i) {
@@ -6853,12 +6899,12 @@ return /******/ (function(modules) { // webpackBootstrap
 	      record.arg = arg;
 	
 	      if (finallyEntry) {
+	        this.method = "next";
 	        this.next = finallyEntry.finallyLoc;
-	      } else {
-	        this.complete(record);
+	        return ContinueSentinel;
 	      }
 	
-	      return ContinueSentinel;
+	      return this.complete(record);
 	    },
 	
 	    complete: function(record, afterLoc) {
@@ -6870,11 +6916,14 @@ return /******/ (function(modules) { // webpackBootstrap
 	          record.type === "continue") {
 	        this.next = record.arg;
 	      } else if (record.type === "return") {
-	        this.rval = record.arg;
+	        this.rval = this.arg = record.arg;
+	        this.method = "return";
 	        this.next = "end";
 	      } else if (record.type === "normal" && afterLoc) {
 	        this.next = afterLoc;
 	      }
+	
+	      return ContinueSentinel;
 	    },
 	
 	    finish: function(finallyLoc) {
@@ -6912,6 +6961,12 @@ return /******/ (function(modules) { // webpackBootstrap
 	        resultName: resultName,
 	        nextLoc: nextLoc
 	      };
+	
+	      if (this.method === "next") {
+	        // Deliberately forget the last sent value so that we don't
+	        // accidentally pass it on to the delegate.
+	        this.arg = undefined;
+	      }
 	
 	      return ContinueSentinel;
 	    }
@@ -7396,37 +7451,34 @@ return /******/ (function(modules) { // webpackBootstrap
 	})();
 	
 	
-	// Include a performance.now polyfill
-	(function () {
-		// In node.js, use process.hrtime.
-		if (this.window === undefined && this.process !== undefined) {
-			TWEEN.now = function () {
-				var time = process.hrtime();
+	// Include a performance.now polyfill.
+	// In node.js, use process.hrtime.
+	if (typeof (window) === 'undefined' && typeof (process) !== 'undefined') {
+		TWEEN.now = function () {
+			var time = process.hrtime();
 	
-				// Convert [seconds, microseconds] to milliseconds.
-				return time[0] * 1000 + time[1] / 1000;
-			};
-		}
-		// In a browser, use window.performance.now if it is available.
-		else if (this.window !== undefined &&
-		         window.performance !== undefined &&
+			// Convert [seconds, nanoseconds] to milliseconds.
+			return time[0] * 1000 + time[1] / 1000000;
+		};
+	}
+	// In a browser, use window.performance.now if it is available.
+	else if (typeof (window) !== 'undefined' &&
+	         window.performance !== undefined &&
 			 window.performance.now !== undefined) {
-	
-			// This must be bound, because directly assigning this function
-			// leads to an invocation exception in Chrome.
-			TWEEN.now = window.performance.now.bind(window.performance);
-		}
-		// Use Date.now if it is available.
-		else if (Date.now !== undefined) {
-			TWEEN.now = Date.now;
-		}
-		// Otherwise, use 'new Date().getTime()'.
-		else {
-			TWEEN.now = function () {
-				return new Date().getTime();
-			};
-		}
-	})();
+		// This must be bound, because directly assigning this function
+		// leads to an invocation exception in Chrome.
+		TWEEN.now = window.performance.now.bind(window.performance);
+	}
+	// Use Date.now if it is available.
+	else if (Date.now !== undefined) {
+		TWEEN.now = Date.now;
+	}
+	// Otherwise, use 'new Date().getTime()'.
+	else {
+		TWEEN.now = function () {
+			return new Date().getTime();
+		};
+	}
 	
 	
 	TWEEN.Tween = function (object) {
@@ -7437,6 +7489,7 @@ return /******/ (function(modules) { // webpackBootstrap
 		var _valuesStartRepeat = {};
 		var _duration = 1000;
 		var _repeat = 0;
+		var _repeatDelayTime;
 		var _yoyo = false;
 		var _isPlaying = false;
 		var _reversed = false;
@@ -7451,18 +7504,13 @@ return /******/ (function(modules) { // webpackBootstrap
 		var _onCompleteCallback = null;
 		var _onStopCallback = null;
 	
-		// Set all starting values present on the target object
-		for (var field in object) {
-			_valuesStart[field] = parseFloat(object[field], 10);
-		}
-	
 		this.to = function (properties, duration) {
+	
+			_valuesEnd = properties;
 	
 			if (duration !== undefined) {
 				_duration = duration;
 			}
-	
-			_valuesEnd = properties;
 	
 			return this;
 	
@@ -7495,10 +7543,11 @@ return /******/ (function(modules) { // webpackBootstrap
 	
 				// If `to()` specifies a property that doesn't exist in the source object,
 				// we should not set that property in the object
-				if (_valuesStart[property] === undefined) {
+				if (_object[property] === undefined) {
 					continue;
 				}
 	
+				// Save the starting value.
 				_valuesStart[property] = _object[property];
 	
 				if ((_valuesStart[property] instanceof Array) === false) {
@@ -7523,10 +7572,17 @@ return /******/ (function(modules) { // webpackBootstrap
 			_isPlaying = false;
 	
 			if (_onStopCallback !== null) {
-				_onStopCallback.call(_object);
+				_onStopCallback.call(_object, _object);
 			}
 	
 			this.stopChainedTweens();
+			return this;
+	
+		};
+	
+		this.end = function () {
+	
+			this.update(_startTime + _duration);
 			return this;
 	
 		};
@@ -7549,6 +7605,13 @@ return /******/ (function(modules) { // webpackBootstrap
 		this.repeat = function (times) {
 	
 			_repeat = times;
+			return this;
+	
+		};
+	
+		this.repeatDelay = function (amount) {
+	
+			_repeatDelayTime = amount;
 			return this;
 	
 		};
@@ -7623,11 +7686,10 @@ return /******/ (function(modules) { // webpackBootstrap
 			if (_onStartCallbackFired === false) {
 	
 				if (_onStartCallback !== null) {
-					_onStartCallback.call(_object);
+					_onStartCallback.call(_object, _object);
 				}
 	
 				_onStartCallbackFired = true;
-	
 			}
 	
 			elapsed = (time - _startTime) / _duration;
@@ -7655,9 +7717,9 @@ return /******/ (function(modules) { // webpackBootstrap
 					if (typeof (end) === 'string') {
 	
 						if (end.charAt(0) === '+' || end.charAt(0) === '-') {
-							end = start + parseFloat(end, 10);
+							end = start + parseFloat(end);
 						} else {
-							end = parseFloat(end, 10);
+							end = parseFloat(end);
 						}
 					}
 	
@@ -7686,7 +7748,7 @@ return /******/ (function(modules) { // webpackBootstrap
 					for (property in _valuesStartRepeat) {
 	
 						if (typeof (_valuesEnd[property]) === 'string') {
-							_valuesStartRepeat[property] = _valuesStartRepeat[property] + parseFloat(_valuesEnd[property], 10);
+							_valuesStartRepeat[property] = _valuesStartRepeat[property] + parseFloat(_valuesEnd[property]);
 						}
 	
 						if (_yoyo) {
@@ -7704,14 +7766,19 @@ return /******/ (function(modules) { // webpackBootstrap
 						_reversed = !_reversed;
 					}
 	
-					_startTime = time + _delayTime;
+					if (_repeatDelayTime !== undefined) {
+						_startTime = time + _repeatDelayTime;
+					} else {
+						_startTime = time + _delayTime;
+					}
 	
 					return true;
 	
 				} else {
 	
 					if (_onCompleteCallback !== null) {
-						_onCompleteCallback.call(_object);
+	
+						_onCompleteCallback.call(_object, _object);
 					}
 	
 					for (var i = 0, numChainedTweens = _chainedTweens.length; i < numChainedTweens; i++) {
@@ -8215,6 +8282,10 @@ return /******/ (function(modules) { // webpackBootstrap
 	
 	var _Node2 = _interopRequireDefault(_Node);
 	
+	var _Motor = __webpack_require__(385);
+	
+	var _Motor2 = _interopRequireDefault(_Motor);
+	
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 	
 	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
@@ -8269,7 +8340,9 @@ return /******/ (function(modules) { // webpackBootstrap
 	    }, {
 	        key: 'removeChild',
 	        value: function removeChild(childElementManager) {
-	            this.element.removeChild(childElementManager.element);
+	            // This conditional check is needed incase the element was already
+	            // removed from the HTML-API side.
+	            if (childElementManager.element.parentNode === this.element) this.element.removeChild(childElementManager.element);
 	        }
 	    }, {
 	        key: 'connectChildElement',
@@ -8282,7 +8355,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	
 	            // This condition is irrelevant when strictly using the
 	            // imperative API. However, it is possible that when
-	            // usingthe HTML API that the HTML-API node can be placed
+	            // using the HTML API that the HTML-API node can be placed
 	            // somewhere that isn't another HTML-API node, and the
 	            // imperative Node can be gotten and used to add the
 	            // node to another imperative Node. In this case, the
@@ -8327,14 +8400,14 @@ return /******/ (function(modules) { // webpackBootstrap
 	    }, {
 	        key: 'applySize',
 	        value: function applySize(size) {
-	            var x = size.x;
-	            var y = size.y;
+	            var x = size.x,
+	                y = size.y;
 	
 	
 	            this.applyStyle('width', x + 'px');
 	            this.applyStyle('height', y + 'px');
 	
-	            // XXX: we ignore the Z axis on elements, since they are flat.
+	            // NOTE: we ignore the Z axis on elements, since they are flat.
 	        }
 	    }, {
 	        key: 'applyOpacity',
@@ -8353,6 +8426,26 @@ return /******/ (function(modules) { // webpackBootstrap
 	
 	            // But both Node and Scene are Sizeable
 	            this.applySize(node._calculatedSize);
+	        }
+	    }, {
+	        key: 'shouldRender',
+	        value: function shouldRender() {
+	            var _this = this;
+	
+	            var task = _Motor2.default.addRenderTask(function () {
+	                _this.applyStyle('display', 'block');
+	                _Motor2.default.removeRenderTask(task);
+	            });
+	        }
+	    }, {
+	        key: 'shouldNotRender',
+	        value: function shouldNotRender() {
+	            var _this2 = this;
+	
+	            var task = _Motor2.default.addRenderTask(function () {
+	                _this2.applyStyle('display', 'none');
+	                _Motor2.default.removeRenderTask(task);
+	            });
 	        }
 	    }]);
 	
@@ -8389,6 +8482,10 @@ return /******/ (function(modules) { // webpackBootstrap
 	var _node = __webpack_require__(417);
 	
 	var _node2 = _interopRequireDefault(_node);
+	
+	var _Scene = __webpack_require__(381);
+	
+	var _Scene2 = _interopRequireDefault(_Scene);
 	
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 	
@@ -8434,7 +8531,13 @@ return /******/ (function(modules) { // webpackBootstrap
 	
 	        var _this = _possibleConstructorReturn(this, (Node.__proto__ || Object.getPrototypeOf(Node)).call(this, options));
 	
-	        _this._waitingMountPromiseToRender = false;
+	        _this._scene = null; // stores a ref to this Node's root Scene.
+	
+	        // This is an internal promise that resolves when this Node is added to
+	        // to a scene graph that has a root Scene TreeNode. The resolved value
+	        // is the root Scene.
+	        _this._scenePromise = null;
+	        _this._resolveScenePromise = null;
 	
 	        /**
 	         * @private
@@ -8466,30 +8569,19 @@ return /******/ (function(modules) { // webpackBootstrap
 	    }
 	
 	    /**
-	     * @override
+	     * @private
 	     */
 	
 	
 	    _createClass(Node, [{
-	        key: '_makeElement',
-	        value: function _makeElement() {
-	            return new _node2.default();
-	        }
-	
-	        /**
-	         * Trigger a re-render for this node (wait until mounted if not nounted
-	         * yet).
-	         */
-	
-	    }, {
-	        key: '_needsToBeRendered',
+	        key: '_waitForMountThenResolveMountPromise',
 	        value: function () {
 	            var _ref = _asyncToGenerator(regeneratorRuntime.mark(function _callee() {
 	                return regeneratorRuntime.wrap(function _callee$(_context) {
 	                    while (1) {
 	                        switch (_context.prev = _context.next) {
 	                            case 0:
-	                                if (!this._waitingMountPromiseToRender) {
+	                                if (!this._awaitingScenePromise) {
 	                                    _context.next = 2;
 	                                    break;
 	                                }
@@ -8497,41 +8589,204 @@ return /******/ (function(modules) { // webpackBootstrap
 	                                return _context.abrupt('return');
 	
 	                            case 2:
-	                                if (this._mounted) {
-	                                    _context.next = 7;
+	                                _context.prev = 2;
+	
+	                                this._awaitingScenePromise = true;
+	                                _context.next = 6;
+	                                return this._getScenePromise();
+	
+	                            case 6:
+	                                _context.next = 8;
+	                                return this._scene.mountPromise;
+	
+	                            case 8:
+	                                _context.next = 17;
+	                                break;
+	
+	                            case 10:
+	                                _context.prev = 10;
+	                                _context.t0 = _context['catch'](2);
+	
+	                                if (!(_context.t0 == 'mountcancel')) {
+	                                    _context.next = 16;
 	                                    break;
 	                                }
 	
-	                                this._waitingMountPromiseToRender = true;
-	                                _context.next = 6;
-	                                return this.mountPromise;
+	                                return _context.abrupt('return');
 	
-	                            case 6:
-	                                this._waitingMountPromiseToRender = false;
+	                            case 16:
+	                                throw _context.t0;
 	
-	                            case 7:
-	                                _get(Node.prototype.__proto__ || Object.getPrototypeOf(Node.prototype), '_needsToBeRendered', this).call(this);
+	                            case 17:
+	                                _context.prev = 17;
 	
-	                            case 8:
+	                                this._awaitingScenePromise = false;
+	                                return _context.finish(17);
+	
+	                            case 20:
+	
+	                                this._mounted = true;
+	                                this._resolveMountPromise();
+	                                this._elementManager.shouldRender();
+	
+	                            case 23:
 	                            case 'end':
 	                                return _context.stop();
 	                        }
 	                    }
-	                }, _callee, this);
+	                }, _callee, this, [[2, 10, 17, 20]]);
 	            }));
 	
-	            function _needsToBeRendered() {
+	            function _waitForMountThenResolveMountPromise() {
 	                return _ref.apply(this, arguments);
 	            }
 	
-	            return _needsToBeRendered;
+	            return _waitForMountThenResolveMountPromise;
 	        }()
+	
+	        /**
+	         * @override
+	         */
+	
+	    }, {
+	        key: '_makeElement',
+	        value: function _makeElement() {
+	            return new _node2.default();
+	        }
+	
+	        /**
+	         * @private
+	         * Get a promise for the node's eventual scene.
+	         */
+	
+	    }, {
+	        key: '_getScenePromise',
+	        value: function _getScenePromise() {
+	            var _this2 = this;
+	
+	            if (!this._scenePromise) {
+	                this._scenePromise = new Promise(function (a, b) {
+	                    _this2._resolveScenePromise = a;
+	                });
+	            }
+	
+	            if (this._scene) this._resolveScenePromise();
+	
+	            return this._scenePromise;
+	        }
+	
+	        /**
+	         * Get the Scene that this Node is in, null if no Scene. This is recursive
+	         * at first, then cached.
+	         *
+	         * This traverses up the scene graph tree starting at this Node and finds
+	         * the root Scene, if any. It caches the value for performance. If this
+	         * Node is removed from a parent node with parent.removeChild(), then the
+	         * cache is invalidated so the traversal can happen again when this Node is
+	         * eventually added to a new tree. This way, if the scene is cached on a
+	         * parent Node that we're adding this Node to then we can get that cached
+	         * value instead of traversing the tree.
+	         *
+	         * @readonly
+	         */
+	
+	    }, {
+	        key: '_giveSceneRefToChildren',
+	
+	
+	        /**
+	         * @private
+	         * This method to be called only when this Node has this.scene.
+	         * Resolves the _scenePromise for all children of the tree of this Node.
+	         */
+	        value: function _giveSceneRefToChildren() {
+	            var _iteratorNormalCompletion = true;
+	            var _didIteratorError = false;
+	            var _iteratorError = undefined;
+	
+	            try {
+	                for (var _iterator = this._children[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
+	                    var childNode = _step.value;
+	
+	                    childNode._scene = this._scene;
+	                    if (childNode._resolveScenePromise) childNode._resolveScenePromise(childNode._scene);
+	                    childNode._giveSceneRefToChildren();
+	                }
+	            } catch (err) {
+	                _didIteratorError = true;
+	                _iteratorError = err;
+	            } finally {
+	                try {
+	                    if (!_iteratorNormalCompletion && _iterator.return) {
+	                        _iterator.return();
+	                    }
+	                } finally {
+	                    if (_didIteratorError) {
+	                        throw _iteratorError;
+	                    }
+	                }
+	            }
+	        }
+	    }, {
+	        key: '_resetSceneRef',
+	        value: function _resetSceneRef() {
+	            this._scene = null;
+	            this._scenePromise = null;
+	            this._resolveScenePromise = null;
+	            var _iteratorNormalCompletion2 = true;
+	            var _didIteratorError2 = false;
+	            var _iteratorError2 = undefined;
+	
+	            try {
+	                for (var _iterator2 = this._children[Symbol.iterator](), _step2; !(_iteratorNormalCompletion2 = (_step2 = _iterator2.next()).done); _iteratorNormalCompletion2 = true) {
+	                    var childNode = _step2.value;
+	
+	                    childNode._resetSceneRef();
+	                }
+	            } catch (err) {
+	                _didIteratorError2 = true;
+	                _iteratorError2 = err;
+	            } finally {
+	                try {
+	                    if (!_iteratorNormalCompletion2 && _iterator2.return) {
+	                        _iterator2.return();
+	                    }
+	                } finally {
+	                    if (_didIteratorError2) {
+	                        throw _iteratorError2;
+	                    }
+	                }
+	            }
+	        }
 	    }, {
 	        key: '_render',
 	        value: function _render(timestamp) {
 	            // applies the transform matrix to the element's style property.
 	            this._properties.transform = this._calculateMatrix();
 	            _get(Node.prototype.__proto__ || Object.getPrototypeOf(Node.prototype), '_render', this).call(this, timestamp);
+	        }
+	    }, {
+	        key: 'scene',
+	        get: function get() {
+	            // NOTE: this._scene is initally null, created in the constructor.
+	
+	            // if already cached, return it. Or if no parent, return it (it'll be null).
+	            if (this._scene || !this._parent) return this._scene;
+	
+	            // if the parent node already has a ref to the scene, use that.
+	            if (this._parent._scene) {
+	                this._scene = this._parent._scene;
+	            } else if (this._parent instanceof _Scene2.default) {
+	                this._scene = this._parent;
+	            }
+	            // otherwise call the scene getter on the parent, which triggers
+	            // traversal up the scene graph in order to find the root scene (null
+	            // if none).
+	            else {
+	                    this._scene = this._parent.scene;
+	                }
+	
+	            return this._scene;
 	        }
 	    }]);
 	
@@ -9486,6 +9741,8 @@ return /******/ (function(modules) { // webpackBootstrap
 	
 	var _set = function set(object, property, value, receiver) { var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent !== null) { set(parent, property, value, receiver); } } else if ("value" in desc && desc.writable) { desc.value = value; } else { var setter = desc.set; if (setter !== undefined) { setter.call(receiver, value); } } return value; };
 	
+	var _get = function get(object, property, receiver) { if (object === null) object = Function.prototype; var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { return get(parent, property, receiver); } } else if ("value" in desc) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } };
+	
 	var _XYZValues = __webpack_require__(306);
 	
 	var _XYZValues2 = _interopRequireDefault(_XYZValues);
@@ -9506,13 +9763,6 @@ return /******/ (function(modules) { // webpackBootstrap
 	
 	var instanceofSymbol = Symbol('instanceofSymbol');
 	
-	// Transformable doesn't need to extend from a class, but there isn't multiple
-	// inheritance in JavaSript out of the box, and Node needs to have the
-	// properties of Transformable and other classes, while Scene will branch from
-	// an ancestor class of Node.
-	//
-	// TODO: Is this the best name? Maybe Renderable? How to organize the DOM and
-	// WebGL components?
 	var TransformableMixin = function TransformableMixin(base) {
 	
 	    // Transformable extends TreeNode (indirectly through Sizeable) because it
@@ -9521,70 +9771,64 @@ return /******/ (function(modules) { // webpackBootstrap
 	        _inherits(Transformable, _Sizeable$mixin);
 	
 	        function Transformable() {
-	            var options = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
-	
 	            _classCallCheck(this, Transformable);
 	
-	            // Property Cache, with default values
-	            var _this = _possibleConstructorReturn(this, (Transformable.__proto__ || Object.getPrototypeOf(Transformable)).call(this, options));
-	
-	            Object.assign(_this._properties, {
-	
-	                // XXX: remove these in favor of storing them directly in the
-	                // DOMMatrix?
-	                position: new _XYZValues2.default(0, 0, 0),
-	                rotation: new _XYZValues2.default(0, 0, 0),
-	
-	                // TODO: handle scale
-	                scale: new _XYZValues2.default(1, 1, 1),
-	
-	                // TODO, handle origin, needs a setter/getter pair.
-	                origin: new _XYZValues2.default(0.5, 0.5, 0.5),
-	
-	                align: new _XYZValues2.default(0, 0, 0),
-	                mountPoint: new _XYZValues2.default(0, 0, 0),
-	
-	                opacity: 1,
-	
-	                transform: new window.DOMMatrix()
-	            });
-	
-	            // TODO: opacity needs onChanged handler like all the other
-	            // properties.
-	            _this._properties.position.on('valuechanged', function () {
-	                return _this.triggerEvent('propertychange', 'position');
-	            });
-	            _this._properties.rotation.on('valuechanged', function () {
-	                return _this.triggerEvent('propertychange', 'rotation');
-	            });
-	            _this._properties.scale.on('valuechanged', function () {
-	                return _this.triggerEvent('propertychange', 'scale');
-	            });
-	            _this._properties.origin.on('valuechanged', function () {
-	                return _this.triggerEvent('propertychange', 'origin');
-	            });
-	            _this._properties.align.on('valuechanged', function () {
-	                return _this.triggerEvent('propertychange', 'align');
-	            });
-	            _this._properties.mountPoint.on('valuechanged', function () {
-	                return _this.triggerEvent('propertychange', 'mountPoint');
-	            });
-	
-	            _this.properties = options;
-	            return _this;
+	            return _possibleConstructorReturn(this, (Transformable.__proto__ || Object.getPrototypeOf(Transformable)).apply(this, arguments));
 	        }
 	
-	        /**
-	         * Set the position of the Transformable.
-	         *
-	         * @param {Object} newValue
-	         * @param {number} [newValue.x] The x-axis position to apply.
-	         * @param {number} [newValue.y] The y-axis position to apply.
-	         * @param {number} [newValue.z] The z-axis position to apply.
-	         */
-	
-	
 	        _createClass(Transformable, [{
+	            key: '_setDefaultProperties',
+	            value: function _setDefaultProperties() {
+	                _get(Transformable.prototype.__proto__ || Object.getPrototypeOf(Transformable.prototype), '_setDefaultProperties', this).call(this);
+	
+	                Object.assign(this._properties, {
+	                    position: new _XYZValues2.default(0, 0, 0),
+	                    rotation: new _XYZValues2.default(0, 0, 0),
+	                    scale: new _XYZValues2.default(1, 1, 1),
+	                    origin: new _XYZValues2.default(0.5, 0.5, 0.5),
+	                    align: new _XYZValues2.default(0, 0, 0),
+	                    mountPoint: new _XYZValues2.default(0, 0, 0),
+	                    opacity: 1,
+	                    transform: new window.DOMMatrix()
+	                });
+	            }
+	        }, {
+	            key: '_setPropertyObservers',
+	            value: function _setPropertyObservers() {
+	                var _this2 = this;
+	
+	                _get(Transformable.prototype.__proto__ || Object.getPrototypeOf(Transformable.prototype), '_setPropertyObservers', this).call(this);
+	
+	                this._properties.position.on('valuechanged', function () {
+	                    return _this2.triggerEvent('propertychange', 'position');
+	                });
+	                this._properties.rotation.on('valuechanged', function () {
+	                    return _this2.triggerEvent('propertychange', 'rotation');
+	                });
+	                this._properties.scale.on('valuechanged', function () {
+	                    return _this2.triggerEvent('propertychange', 'scale');
+	                });
+	                this._properties.origin.on('valuechanged', function () {
+	                    return _this2.triggerEvent('propertychange', 'origin');
+	                });
+	                this._properties.align.on('valuechanged', function () {
+	                    return _this2.triggerEvent('propertychange', 'align');
+	                });
+	                this._properties.mountPoint.on('valuechanged', function () {
+	                    return _this2.triggerEvent('propertychange', 'mountPoint');
+	                });
+	            }
+	
+	            /**
+	             * Set the position of the Transformable.
+	             *
+	             * @param {Object} newValue
+	             * @param {number} [newValue.x] The x-axis position to apply.
+	             * @param {number} [newValue.y] The y-axis position to apply.
+	             * @param {number} [newValue.z] The z-axis position to apply.
+	             */
+	
+	        }, {
 	            key: '_calculateMatrix',
 	
 	            // no need for a properties getter.
@@ -9597,16 +9841,6 @@ return /******/ (function(modules) { // webpackBootstrap
 	             * @method
 	             * @private
 	             * @memberOf Node
-	             *
-	             * TODO: instead of calculating the whole matrix here all at once (which
-	             * gets called each _render()), apply rotation, translation, etc, directly
-	             * to the matrix individually when the user gives us those values. It might be
-	             * more performant. It will also let the user apply x,y,z rotation in their
-	             * order of choice instead of always x,y,z order as we do here.
-	             *
-	             * TODO PERFORMANCE: What's faster? Setting a new DOMMatrix (as we do
-	             * here currently) or applying all transform values to the existing
-	             * DOMMatrix?
 	             */
 	            value: function _calculateMatrix() {
 	                var matrix = new window.DOMMatrix();
@@ -9640,23 +9874,18 @@ return /******/ (function(modules) { // webpackBootstrap
 	
 	                matrix.translateSelf(appliedPosition[0], appliedPosition[1], appliedPosition[2]);
 	
-	                // TODO: move by negative origin before rotating.
-	                // XXX Should we calculate origin here, or should we leave that to the
-	                // DOM renderer (in the style property)? WebGL renderer will need
-	                // manual calculations. Maybe we don't do it here, and delegate it to
-	                // DOM and WebGL renderers.
+	                // origin calculation will go here:
+	                // - move by negative origin before rotating.
 	
 	                // apply each axis rotation, in the x,y,z order.
-	                // XXX: Does order in which axis rotations are applied matter? If so,
-	                // which order is best? Maybe we let the user decide (with our
-	                // recommendation)?
 	                var rotation = properties.rotation;
 	
 	                matrix.rotateAxisAngleSelf(1, 0, 0, rotation.x);
 	                matrix.rotateAxisAngleSelf(0, 1, 0, rotation.y);
 	                matrix.rotateAxisAngleSelf(0, 0, 1, rotation.z);
 	
-	                // TODO: move by positive origin after rotating.
+	                // origin calculation will go here:
+	                // - move by positive origin after rotating.
 	
 	                return matrix;
 	            }
@@ -9680,10 +9909,6 @@ return /******/ (function(modules) { // webpackBootstrap
 	             * @param {number} [newValue.x] The x-axis rotation to apply.
 	             * @param {number} [newValue.y] The y-axis rotation to apply.
 	             * @param {number} [newValue.z] The z-axis rotation to apply.
-	             *
-	             * XXX: We should we also provide a setRotationAxis method to rotate about
-	             * a particular axis? Or, maybe if a fourth `w` property is specified then
-	             * x, y, and z can define a rotation axis and w be the angle.
 	             */
 	
 	        }, {
@@ -9706,8 +9931,6 @@ return /******/ (function(modules) { // webpackBootstrap
 	             * @param {number} [newValue.x] The x-axis scale to apply.
 	             * @param {number} [newValue.y] The y-axis scale to apply.
 	             * @param {number} [newValue.z] The z-axis scale to apply.
-	             *
-	             * TODO: scale is not handled yet.
 	             */
 	
 	        }, {
@@ -9769,10 +9992,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	            }
 	
 	            /**
-	             * Set the mount point of the Node. TODO: put "mount point" into words.
-	             *
-	             * XXX possibly rename to "anchor" to avoid confusion with Scene.mount?
-	             * Could also segway to anchors system like Qt QML.
+	             * Set the mount point of the Node.
 	             *
 	             * @param {Object} newValue
 	             * @param {number} [newValue.x] The x-axis mountPoint to apply.
@@ -9858,10 +10078,6 @@ return /******/ (function(modules) { // webpackBootstrap
 	    // for use by MotorHTML, convenient since HTMLElement attributes are all
 	    // converted to lowercase by default, so if we don't do this then we won't be
 	    // able to map attributes to Node setters as easily.
-	    //
-	    // TODO: move this call out of here, run it in a motor-specific class so
-	    // that Transformable and related classes are not necessarily
-	    // motor-scpecific and can be used anywhere.
 	    (0, _Utility.makeLowercaseSetterAliases)(Transformable.prototype);
 	
 	    // So Tween.js can animate Transformable properties that are accessors.
@@ -9989,7 +10205,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	Object.defineProperty(exports, "__esModule", {
 	    value: true
 	});
-	exports.traverse = exports.getAncestorShadowRootIfAny = exports.hasShadowDomV1 = exports.hasShadowDomV0 = exports.getShadowRootVersion = exports.observeChildren = exports.makeAccessorsEnumerable = exports.makeLowercaseSetterAliases = exports.animationFrame = exports.getBodySize = exports.applyCSSLabel = exports.epsilon = undefined;
+	exports.traverse = exports.getAncestorShadowRoot = exports.hasShadowDomV1 = exports.hasShadowDomV0 = exports.getShadowRootVersion = exports.observeChildren = exports.makeAccessorsEnumerable = exports.makeLowercaseSetterAliases = exports.animationFrame = exports.getBodySize = exports.applyCSSLabel = exports.epsilon = undefined;
 	
 	var _slicedToArray = function () { function sliceIterator(arr, i) { var _arr = []; var _n = true; var _d = false; var _e = undefined; try { for (var _i = arr[Symbol.iterator](), _s; !(_n = (_s = _i.next()).done); _n = true) { _arr.push(_s.value); if (i && _arr.length === i) break; } } catch (err) { _d = true; _e = err; } finally { try { if (!_n && _i["return"]) _i["return"](); } finally { if (_d) throw _e; } } return _arr; } return function (arr, i) { if (Array.isArray(arr)) { return arr; } else if (Symbol.iterator in Object(arr)) { return sliceIterator(arr, i); } else { throw new TypeError("Invalid attempt to destructure non-iterable instance"); } }; }();
 	
@@ -10127,131 +10343,295 @@ return /******/ (function(modules) { // webpackBootstrap
 	}
 	
 	// NOTE: If a child is disconnected then connected to the same parent in the
-	// same turn, then the onConnect and onDisconnect callbacks won't be called (it
-	// is pointless because the DOM tree will be back in the exact state as before,
-	// and the rendering in the following frame should be the same).
+	// same turn, then the onConnect and onDisconnect callbacks won't be called
+	// because the DOM tree will be back in the exact state as before.
+	var childObservationHandlers = null;
+	var childObserver = null;
 	function observeChildren(ctx, onConnect, onDisconnect) {
+	    if (!childObservationHandlers) childObservationHandlers = new Map();
+	    if (!childObserver) childObserver = createChildObserver();
+	    childObservationHandlers.set(ctx, { onConnect: onConnect, onDisconnect: onDisconnect });
+	    childObserver.observe(ctx, { childList: true });
+	    return true;
+	}
+	function createChildObserver() {
+	    var _this = this;
 	
-	    var observer = new MutationObserver(function (changes) {
-	        var weights = new Map();
+	    return new MutationObserver(function () {
+	        var _ref2 = _asyncToGenerator(regeneratorRuntime.mark(function _callee2(changes) {
+	            var weightsPerTarget, _iteratorNormalCompletion3, _didIteratorError3, _iteratorError3, _iterator3, _step3, change, weights, _iteratorNormalCompletion5, _didIteratorError5, _iteratorError5, _iterator5, _step5, addedNode, _iteratorNormalCompletion6, _didIteratorError6, _iteratorError6, _iterator6, _step6, removedNode, _iteratorNormalCompletion4, _didIteratorError4, _iteratorError4, _iterator4, _step4, _step4$value, target, _weights, _childObservationHand, onConnect, onDisconnect, _iteratorNormalCompletion7, _didIteratorError7, _iteratorError7, _iterator7, _step7, _step7$value, node, weight;
 	
-	        var _iteratorNormalCompletion3 = true;
-	        var _didIteratorError3 = false;
-	        var _iteratorError3 = undefined;
+	            return regeneratorRuntime.wrap(function _callee2$(_context2) {
+	                while (1) {
+	                    switch (_context2.prev = _context2.next) {
+	                        case 0:
+	                            weightsPerTarget = new Map();
+	                            _iteratorNormalCompletion3 = true;
+	                            _didIteratorError3 = false;
+	                            _iteratorError3 = undefined;
+	                            _context2.prev = 4;
+	                            _iterator3 = changes[Symbol.iterator]();
 	
-	        try {
-	            for (var _iterator3 = changes[Symbol.iterator](), _step3; !(_iteratorNormalCompletion3 = (_step3 = _iterator3.next()).done); _iteratorNormalCompletion3 = true) {
-	                var change = _step3.value;
+	                        case 6:
+	                            if (_iteratorNormalCompletion3 = (_step3 = _iterator3.next()).done) {
+	                                _context2.next = 53;
+	                                break;
+	                            }
 	
-	                if (change.type != 'childList') continue;
+	                            change = _step3.value;
 	
-	                var _iteratorNormalCompletion5 = true;
-	                var _didIteratorError5 = false;
-	                var _iteratorError5 = undefined;
+	                            if (!(change.type != 'childList')) {
+	                                _context2.next = 10;
+	                                break;
+	                            }
 	
-	                try {
-	                    for (var _iterator5 = change.addedNodes[Symbol.iterator](), _step5; !(_iteratorNormalCompletion5 = (_step5 = _iterator5.next()).done); _iteratorNormalCompletion5 = true) {
-	                        var addedNode = _step5.value;
+	                            return _context2.abrupt('continue', 50);
 	
-	                        weights.set(addedNode, (weights.get(addedNode) || 0) + 1);
-	                    }
-	                } catch (err) {
-	                    _didIteratorError5 = true;
-	                    _iteratorError5 = err;
-	                } finally {
-	                    try {
-	                        if (!_iteratorNormalCompletion5 && _iterator5.return) {
-	                            _iterator5.return();
-	                        }
-	                    } finally {
-	                        if (_didIteratorError5) {
+	                        case 10:
+	
+	                            if (!weightsPerTarget.has(change.target)) weightsPerTarget.set(change.target, new Map());
+	
+	                            weights = weightsPerTarget.get(change.target);
+	                            _iteratorNormalCompletion5 = true;
+	                            _didIteratorError5 = false;
+	                            _iteratorError5 = undefined;
+	                            _context2.prev = 15;
+	
+	
+	                            for (_iterator5 = change.addedNodes[Symbol.iterator](); !(_iteratorNormalCompletion5 = (_step5 = _iterator5.next()).done); _iteratorNormalCompletion5 = true) {
+	                                addedNode = _step5.value;
+	
+	                                weights.set(addedNode, (weights.get(addedNode) || 0) + 1);
+	                            }_context2.next = 23;
+	                            break;
+	
+	                        case 19:
+	                            _context2.prev = 19;
+	                            _context2.t0 = _context2['catch'](15);
+	                            _didIteratorError5 = true;
+	                            _iteratorError5 = _context2.t0;
+	
+	                        case 23:
+	                            _context2.prev = 23;
+	                            _context2.prev = 24;
+	
+	                            if (!_iteratorNormalCompletion5 && _iterator5.return) {
+	                                _iterator5.return();
+	                            }
+	
+	                        case 26:
+	                            _context2.prev = 26;
+	
+	                            if (!_didIteratorError5) {
+	                                _context2.next = 29;
+	                                break;
+	                            }
+	
 	                            throw _iteratorError5;
-	                        }
-	                    }
-	                }
 	
-	                var _iteratorNormalCompletion6 = true;
-	                var _didIteratorError6 = false;
-	                var _iteratorError6 = undefined;
+	                        case 29:
+	                            return _context2.finish(26);
 	
-	                try {
-	                    for (var _iterator6 = change.removedNodes[Symbol.iterator](), _step6; !(_iteratorNormalCompletion6 = (_step6 = _iterator6.next()).done); _iteratorNormalCompletion6 = true) {
-	                        var removedNode = _step6.value;
+	                        case 30:
+	                            return _context2.finish(23);
 	
-	                        weights.set(removedNode, (weights.get(removedNode) || 0) - 1);
-	                    }
-	                } catch (err) {
-	                    _didIteratorError6 = true;
-	                    _iteratorError6 = err;
-	                } finally {
-	                    try {
-	                        if (!_iteratorNormalCompletion6 && _iterator6.return) {
-	                            _iterator6.return();
-	                        }
-	                    } finally {
-	                        if (_didIteratorError6) {
+	                        case 31:
+	                            _iteratorNormalCompletion6 = true;
+	                            _didIteratorError6 = false;
+	                            _iteratorError6 = undefined;
+	                            _context2.prev = 34;
+	                            for (_iterator6 = change.removedNodes[Symbol.iterator](); !(_iteratorNormalCompletion6 = (_step6 = _iterator6.next()).done); _iteratorNormalCompletion6 = true) {
+	                                removedNode = _step6.value;
+	
+	                                weights.set(removedNode, (weights.get(removedNode) || 0) - 1);
+	                            }_context2.next = 42;
+	                            break;
+	
+	                        case 38:
+	                            _context2.prev = 38;
+	                            _context2.t1 = _context2['catch'](34);
+	                            _didIteratorError6 = true;
+	                            _iteratorError6 = _context2.t1;
+	
+	                        case 42:
+	                            _context2.prev = 42;
+	                            _context2.prev = 43;
+	
+	                            if (!_iteratorNormalCompletion6 && _iterator6.return) {
+	                                _iterator6.return();
+	                            }
+	
+	                        case 45:
+	                            _context2.prev = 45;
+	
+	                            if (!_didIteratorError6) {
+	                                _context2.next = 48;
+	                                break;
+	                            }
+	
 	                            throw _iteratorError6;
-	                        }
+	
+	                        case 48:
+	                            return _context2.finish(45);
+	
+	                        case 49:
+	                            return _context2.finish(42);
+	
+	                        case 50:
+	                            _iteratorNormalCompletion3 = true;
+	                            _context2.next = 6;
+	                            break;
+	
+	                        case 53:
+	                            _context2.next = 59;
+	                            break;
+	
+	                        case 55:
+	                            _context2.prev = 55;
+	                            _context2.t2 = _context2['catch'](4);
+	                            _didIteratorError3 = true;
+	                            _iteratorError3 = _context2.t2;
+	
+	                        case 59:
+	                            _context2.prev = 59;
+	                            _context2.prev = 60;
+	
+	                            if (!_iteratorNormalCompletion3 && _iterator3.return) {
+	                                _iterator3.return();
+	                            }
+	
+	                        case 62:
+	                            _context2.prev = 62;
+	
+	                            if (!_didIteratorError3) {
+	                                _context2.next = 65;
+	                                break;
+	                            }
+	
+	                            throw _iteratorError3;
+	
+	                        case 65:
+	                            return _context2.finish(62);
+	
+	                        case 66:
+	                            return _context2.finish(59);
+	
+	                        case 67:
+	                            _iteratorNormalCompletion4 = true;
+	                            _didIteratorError4 = false;
+	                            _iteratorError4 = undefined;
+	                            _context2.prev = 70;
+	                            _iterator4 = weightsPerTarget[Symbol.iterator]();
+	
+	                        case 72:
+	                            if (_iteratorNormalCompletion4 = (_step4 = _iterator4.next()).done) {
+	                                _context2.next = 97;
+	                                break;
+	                            }
+	
+	                            _step4$value = _slicedToArray(_step4.value, 2), target = _step4$value[0], _weights = _step4$value[1];
+	                            _childObservationHand = childObservationHandlers.get(target), onConnect = _childObservationHand.onConnect, onDisconnect = _childObservationHand.onDisconnect;
+	                            _iteratorNormalCompletion7 = true;
+	                            _didIteratorError7 = false;
+	                            _iteratorError7 = undefined;
+	                            _context2.prev = 78;
+	
+	
+	                            for (_iterator7 = _weights[Symbol.iterator](); !(_iteratorNormalCompletion7 = (_step7 = _iterator7.next()).done); _iteratorNormalCompletion7 = true) {
+	                                _step7$value = _slicedToArray(_step7.value, 2), node = _step7$value[0], weight = _step7$value[1];
+	
+	                                if (weight > 0 && typeof onConnect == 'function') onConnect.call(target, node);else if (weight < 0 && typeof onDisconnect == 'function') onDisconnect.call(target, node);
+	                            }
+	                            _context2.next = 86;
+	                            break;
+	
+	                        case 82:
+	                            _context2.prev = 82;
+	                            _context2.t3 = _context2['catch'](78);
+	                            _didIteratorError7 = true;
+	                            _iteratorError7 = _context2.t3;
+	
+	                        case 86:
+	                            _context2.prev = 86;
+	                            _context2.prev = 87;
+	
+	                            if (!_iteratorNormalCompletion7 && _iterator7.return) {
+	                                _iterator7.return();
+	                            }
+	
+	                        case 89:
+	                            _context2.prev = 89;
+	
+	                            if (!_didIteratorError7) {
+	                                _context2.next = 92;
+	                                break;
+	                            }
+	
+	                            throw _iteratorError7;
+	
+	                        case 92:
+	                            return _context2.finish(89);
+	
+	                        case 93:
+	                            return _context2.finish(86);
+	
+	                        case 94:
+	                            _iteratorNormalCompletion4 = true;
+	                            _context2.next = 72;
+	                            break;
+	
+	                        case 97:
+	                            _context2.next = 103;
+	                            break;
+	
+	                        case 99:
+	                            _context2.prev = 99;
+	                            _context2.t4 = _context2['catch'](70);
+	                            _didIteratorError4 = true;
+	                            _iteratorError4 = _context2.t4;
+	
+	                        case 103:
+	                            _context2.prev = 103;
+	                            _context2.prev = 104;
+	
+	                            if (!_iteratorNormalCompletion4 && _iterator4.return) {
+	                                _iterator4.return();
+	                            }
+	
+	                        case 106:
+	                            _context2.prev = 106;
+	
+	                            if (!_didIteratorError4) {
+	                                _context2.next = 109;
+	                                break;
+	                            }
+	
+	                            throw _iteratorError4;
+	
+	                        case 109:
+	                            return _context2.finish(106);
+	
+	                        case 110:
+	                            return _context2.finish(103);
+	
+	                        case 111:
+	                        case 'end':
+	                            return _context2.stop();
 	                    }
 	                }
-	            }
-	        } catch (err) {
-	            _didIteratorError3 = true;
-	            _iteratorError3 = err;
-	        } finally {
-	            try {
-	                if (!_iteratorNormalCompletion3 && _iterator3.return) {
-	                    _iterator3.return();
-	                }
-	            } finally {
-	                if (_didIteratorError3) {
-	                    throw _iteratorError3;
-	                }
-	            }
-	        }
+	            }, _callee2, _this, [[4, 55, 59, 67], [15, 19, 23, 31], [24,, 26, 30], [34, 38, 42, 50], [43,, 45, 49], [60,, 62, 66], [70, 99, 103, 111], [78, 82, 86, 94], [87,, 89, 93], [104,, 106, 110]]);
+	        }));
 	
-	        var _iteratorNormalCompletion4 = true;
-	        var _didIteratorError4 = false;
-	        var _iteratorError4 = undefined;
-	
-	        try {
-	            for (var _iterator4 = weights[Symbol.iterator](), _step4; !(_iteratorNormalCompletion4 = (_step4 = _iterator4.next()).done); _iteratorNormalCompletion4 = true) {
-	                var _step4$value = _slicedToArray(_step4.value, 2);
-	
-	                var node = _step4$value[0];
-	                var weight = _step4$value[1];
-	
-	                if (weight > 0) onConnect.call(ctx, node);else if (weight < 0) onDisconnect.call(ctx, node);
-	            }
-	        } catch (err) {
-	            _didIteratorError4 = true;
-	            _iteratorError4 = err;
-	        } finally {
-	            try {
-	                if (!_iteratorNormalCompletion4 && _iterator4.return) {
-	                    _iterator4.return();
-	                }
-	            } finally {
-	                if (_didIteratorError4) {
-	                    throw _iteratorError4;
-	                }
-	            }
-	        }
-	    });
-	
-	    observer.observe(ctx, { childList: true });
-	    return observer;
+	        return function (_x) {
+	            return _ref2.apply(this, arguments);
+	        };
+	    }());
 	}
 	
 	var hasShadowDomV0 = typeof Element.prototype.createShadowRoot == 'function' && typeof HTMLContentElement == 'function' ? true : false;
 	
 	var hasShadowDomV1 = typeof Element.prototype.attachShadow == 'function' && typeof HTMLSlotElement == 'function' ? true : false;
 	
-	// See http://stackoverflow.com/a/40078261/454780
-	// XXX This function only works on roots whose hosts have no light-tree Nodes,
-	// so we're not using this at the moment when detecting slot and content
-	// elements in DeclarativeBase childConnected/Disconnected Callbacks. See
-	// the TODO there.
 	function getShadowRootVersion(shadowRoot) {
 	    console.log('getShadowRootVersion');
 	    if (!shadowRoot) return null;
@@ -10264,9 +10644,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	    return assignedNodes.length > 0 ? 'v1' : 'v0';
 	}
 	
-	function getAncestorShadowRootIfAny(node) {
-	    if (!node) return null; // XXX throw error instead? What pattern is better?
-	
+	function getAncestorShadowRoot(node) {
 	    var current = node;
 	
 	    while (current && !(current instanceof ShadowRoot)) {
@@ -10283,55 +10661,55 @@ return /******/ (function(modules) { // webpackBootstrap
 	function traverse(node, isShadowChild) {
 	    console.log(isShadowChild ? 'distributedNode:' : 'node:', node);
 	
-	    var _iteratorNormalCompletion7 = true;
-	    var _didIteratorError7 = false;
-	    var _iteratorError7 = undefined;
+	    var _iteratorNormalCompletion8 = true;
+	    var _didIteratorError8 = false;
+	    var _iteratorError8 = undefined;
 	
 	    try {
-	        for (var _iterator7 = node.children[Symbol.iterator](), _step7; !(_iteratorNormalCompletion7 = (_step7 = _iterator7.next()).done); _iteratorNormalCompletion7 = true) {
-	            var child = _step7.value;
+	        for (var _iterator8 = node.children[Symbol.iterator](), _step8; !(_iteratorNormalCompletion8 = (_step8 = _iterator8.next()).done); _iteratorNormalCompletion8 = true) {
+	            var child = _step8.value;
 	
 	            // skip nodes that are possiblyDistributed, i.e. they have a parent
 	            // that has a ShadowRoot.
 	            if (!hasHtmlApi || !child._elementManager.element._isPossiblyDistributed) traverse(child);
 	        }
 	    } catch (err) {
-	        _didIteratorError7 = true;
-	        _iteratorError7 = err;
+	        _didIteratorError8 = true;
+	        _iteratorError8 = err;
 	    } finally {
 	        try {
-	            if (!_iteratorNormalCompletion7 && _iterator7.return) {
-	                _iterator7.return();
+	            if (!_iteratorNormalCompletion8 && _iterator8.return) {
+	                _iterator8.return();
 	            }
 	        } finally {
-	            if (_didIteratorError7) {
-	                throw _iteratorError7;
+	            if (_didIteratorError8) {
+	                throw _iteratorError8;
 	            }
 	        }
 	    }
 	
 	    if (hasHtmlApi && node._elementManager.element._shadowChildren) {
-	        var _iteratorNormalCompletion8 = true;
-	        var _didIteratorError8 = false;
-	        var _iteratorError8 = undefined;
+	        var _iteratorNormalCompletion9 = true;
+	        var _didIteratorError9 = false;
+	        var _iteratorError9 = undefined;
 	
 	        try {
-	            for (var _iterator8 = node._elementManager.element._shadowChildren[Symbol.iterator](), _step8; !(_iteratorNormalCompletion8 = (_step8 = _iterator8.next()).done); _iteratorNormalCompletion8 = true) {
-	                var shadowChild = _step8.value;
+	            for (var _iterator9 = node._elementManager.element._shadowChildren[Symbol.iterator](), _step9; !(_iteratorNormalCompletion9 = (_step9 = _iterator9.next()).done); _iteratorNormalCompletion9 = true) {
+	                var shadowChild = _step9.value;
 	
 	                traverse(shadowChild.imperativeCounterpart, true);
 	            }
 	        } catch (err) {
-	            _didIteratorError8 = true;
-	            _iteratorError8 = err;
+	            _didIteratorError9 = true;
+	            _iteratorError9 = err;
 	        } finally {
 	            try {
-	                if (!_iteratorNormalCompletion8 && _iterator8.return) {
-	                    _iterator8.return();
+	                if (!_iteratorNormalCompletion9 && _iterator9.return) {
+	                    _iterator9.return();
 	                }
 	            } finally {
-	                if (_didIteratorError8) {
-	                    throw _iteratorError8;
+	                if (_didIteratorError9) {
+	                    throw _iteratorError9;
 	                }
 	            }
 	        }
@@ -10348,7 +10726,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	exports.getShadowRootVersion = getShadowRootVersion;
 	exports.hasShadowDomV0 = hasShadowDomV0;
 	exports.hasShadowDomV1 = hasShadowDomV1;
-	exports.getAncestorShadowRootIfAny = getAncestorShadowRootIfAny;
+	exports.getAncestorShadowRoot = getAncestorShadowRoot;
 	exports.traverse = traverse;
 
 /***/ },
@@ -10762,9 +11140,9 @@ return /******/ (function(modules) { // webpackBootstrap
 	          resolve(value);
 	        } else {
 	          return _promise2.default.resolve(value).then(function (value) {
-	            return step("next", value);
+	            step("next", value);
 	          }, function (err) {
-	            return step("throw", err);
+	            step("throw", err);
 	          });
 	        }
 	      }
@@ -10921,7 +11299,6 @@ return /******/ (function(modules) { // webpackBootstrap
 	if (typeof document.createElement('div').style.transform == 'undefined') {
 	    Object.defineProperty(CSSStyleDeclaration.prototype, 'transform', {
 	        set: function set(value) {
-	            // XXX Might need to proxy to ms for IE11.
 	            this.webkitTransform = value;
 	        },
 	        get: function get() {
@@ -10949,55 +11326,49 @@ return /******/ (function(modules) { // webpackBootstrap
 	            var _this = _possibleConstructorReturn(this, (Sizeable.__proto__ || Object.getPrototypeOf(Sizeable)).call(this, options));
 	
 	            _this._calculatedSize = { x: 0, y: 0, z: 0 };
-	
-	            // Property Cache, with default values
-	            _this._properties = {
-	                sizeMode: new _XYZValues2.default('absolute', 'absolute', 'absolute'),
-	                absoluteSize: new _XYZValues2.default(0, 0, 0),
-	                proportionalSize: new _XYZValues2.default(1, 1, 1)
-	            };
-	
-	            // TODO: move this observation in Node. I don't think it belongs here.
-	            _this._properties.sizeMode.on('valuechanged', function () {
-	                return _this.triggerEvent('propertychange', 'sizeMode');
-	            });
-	            _this._properties.absoluteSize.on('valuechanged', function () {
-	                return _this.triggerEvent('propertychange', 'absoluteSize');
-	            });
-	            _this._properties.proportionalSize.on('valuechanged', function () {
-	                return _this.triggerEvent('propertychange', 'proportionalSize');
-	            });
-	
-	            // This line calls the leaf-class `properties` setter, but we want
-	            // to use the current prototype's `properties` setter, which
-	            // requires the super long line after this one. XXX Maybe there's a
-	            // better way to manage this?
-	            //
-	            //this.properties = options
-	            Object.getOwnPropertyDescriptor(Sizeable.prototype, 'properties').set.call(_this, options);
+	            _this._properties = {};
+	            _this._setDefaultProperties();
+	            _this._setPropertyObservers();
+	            _this.properties = options;
 	            return _this;
 	        }
 	
-	        /**
-	         * Set the size mode for each axis. Possible size modes are "absolute" and "proportional".
-	         *
-	         * @param {Object} newValue
-	         * @param {number} [newValue.x] The x-axis sizeMode to apply.
-	         * @param {number} [newValue.y] The y-axis sizeMode to apply.
-	         * @param {number} [newValue.z] The z-axis sizeMode to apply.
-	         */
-	
-	
 	        _createClass(Sizeable, [{
+	            key: '_setDefaultProperties',
+	            value: function _setDefaultProperties() {
+	                Object.assign(this._properties, {
+	                    sizeMode: new _XYZValues2.default('absolute', 'absolute', 'absolute'),
+	                    absoluteSize: new _XYZValues2.default(0, 0, 0),
+	                    proportionalSize: new _XYZValues2.default(1, 1, 1)
+	                });
+	            }
+	        }, {
+	            key: '_setPropertyObservers',
+	            value: function _setPropertyObservers() {
+	                var _this2 = this;
+	
+	                this._properties.sizeMode.on('valuechanged', function () {
+	                    return _this2.triggerEvent('propertychange', 'sizeMode');
+	                });
+	                this._properties.absoluteSize.on('valuechanged', function () {
+	                    return _this2.triggerEvent('propertychange', 'absoluteSize');
+	                });
+	                this._properties.proportionalSize.on('valuechanged', function () {
+	                    return _this2.triggerEvent('propertychange', 'proportionalSize');
+	                });
+	            }
+	
+	            /**
+	             * Set the size mode for each axis. Possible size modes are "absolute" and "proportional".
+	             *
+	             * @param {Object} newValue
+	             * @param {number} [newValue.x] The x-axis sizeMode to apply.
+	             * @param {number} [newValue.y] The y-axis sizeMode to apply.
+	             * @param {number} [newValue.z] The z-axis sizeMode to apply.
+	             */
+	
+	        }, {
 	            key: '_calcSize',
-	
-	
-	            // XXX: We handle all axes at the same time. Would it be better to
-	            // handle each axis in separate methods, and call those separately in
-	            // the accessors?
-	            // TODO: This is called in ImperativeBase on propertychange. Maybe we
-	            // can refactor so it is called inside an animation frame like
-	            // Transform#_calculateMatrix?
 	            value: function _calcSize() {
 	                var calculatedSize = this._calculatedSize;
 	
@@ -11010,21 +11381,21 @@ return /******/ (function(modules) { // webpackBootstrap
 	                    calculatedSize.x = props.absoluteSize._x;
 	                } else {
 	                    // proportional
-	                    calculatedSize.x = Math.round(parentSize.x * props.proportionalSize._x);
+	                    calculatedSize.x = parentSize.x * props.proportionalSize._x;
 	                }
 	
 	                if (props.sizeMode._y == 'absolute') {
 	                    calculatedSize.y = props.absoluteSize._y;
 	                } else {
 	                    // proportional
-	                    calculatedSize.y = Math.round(parentSize.y * props.proportionalSize._y);
+	                    calculatedSize.y = parentSize.y * props.proportionalSize._y;
 	                }
 	
 	                if (props.sizeMode._z == 'absolute') {
 	                    calculatedSize.z = props.absoluteSize._z;
 	                } else {
 	                    // proportional
-	                    calculatedSize.z = Math.round(parentSize.z * props.proportionalSize._z);
+	                    calculatedSize.z = parentSize.z * props.proportionalSize._z;
 	                }
 	
 	                if (previousSize.x !== calculatedSize.x || previousSize.y !== calculatedSize.y || previousSize.z !== calculatedSize.z) {
@@ -11063,15 +11434,9 @@ return /******/ (function(modules) { // webpackBootstrap
 	            set: function set(newValue) {
 	                if (!(newValue instanceof Object)) throw new TypeError('Invalid value for Node#absoluteSize.');
 	
-	                // XXX: We use Math.round because it's the same behavior as the CSS
-	                // engine when setting `px` values. Our WebGL items will be sized
-	                // the same way. Maybe we can abstract this by scaling things down
-	                // in the DOM, and upscaling our number values. For example, we can
-	                // apply a scale of 0.01 and then a size value of 1.56 would
-	                // actually mean 156px, etc.
-	                if (typeof newValue.x != 'undefined') this._properties.absoluteSize._x = Math.round(newValue.x);
-	                if (typeof newValue.y != 'undefined') this._properties.absoluteSize._y = Math.round(newValue.y);
-	                if (typeof newValue.z != 'undefined') this._properties.absoluteSize._z = Math.round(newValue.z);
+	                if (typeof newValue.x != 'undefined') this._properties.absoluteSize._x = newValue.x;
+	                if (typeof newValue.y != 'undefined') this._properties.absoluteSize._y = newValue.y;
+	                if (typeof newValue.z != 'undefined') this._properties.absoluteSize._z = newValue.z;
 	
 	                this.triggerEvent('propertychange', 'absoluteSize');
 	            },
@@ -11094,10 +11459,10 @@ return /******/ (function(modules) { // webpackBootstrap
 	        }, {
 	            key: 'actualSize',
 	            get: function get() {
-	                var _calculatedSize = this._calculatedSize;
-	                var x = _calculatedSize.x;
-	                var y = _calculatedSize.y;
-	                var z = _calculatedSize.z;
+	                var _calculatedSize = this._calculatedSize,
+	                    x = _calculatedSize.x,
+	                    y = _calculatedSize.y,
+	                    z = _calculatedSize.z;
 	
 	                return { x: x, y: y, z: z };
 	            }
@@ -11182,10 +11547,6 @@ return /******/ (function(modules) { // webpackBootstrap
 	    // for use by MotorHTML, convenient since HTMLElement attributes are all
 	    // converted to lowercase by default, so if we don't do this then we won't be
 	    // able to map attributes to Node setters as easily.
-	    //
-	    // TODO: move this call out of here, run it in a motor-specific class so
-	    // that Transformable and related classes are not necessarily
-	    // motor-scpecific and can be used anywhere.
 	    (0, _Utility.makeLowercaseSetterAliases)(Sizeable.prototype);
 	
 	    (0, _Utility.makeAccessorsEnumerable)(Sizeable.prototype);
@@ -11264,25 +11625,12 @@ return /******/ (function(modules) { // webpackBootstrap
 	
 	                if (!(childNode instanceof TreeNode)) throw new TypeError('TreeNode.addChild expects the childNode argument to be a TreeNode instance.');
 	
-	                // Do nothing if the child TreeNode is already added to this TreeNode.
-	                //
-	                // After adding a TreeNode to a parent using this imperative API, the
-	                // MotorHTMLNode ends up calling addChild on this TreeNode's parent a second time
-	                // in the element's attachedCallback, but the code stops at this line (which is
-	                // good).
-	                //
-	                // TODO: prevent the second call altogether.
-	                // TODO: It may be better to throw an error instead, otherwise
-	                // extending classes may still do unintentional stuff after
-	                // super.addChild returns.
-	                if (childNode._parent === this) throw new Error('childNode is already a child of this parent.');
+	                if (childNode._parent === this) throw new ReferenceError('childNode is already a child of this parent.');
 	
 	                if (childNode._parent) childNode._parent.removeChild(childNode);
 	
-	                // Add parent
 	                childNode._parent = this;
 	
-	                // Add to children array
 	                this._children.push(childNode);
 	
 	                return this;
@@ -11306,10 +11654,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	            }
 	
 	            /**
-	             * Remove a child node from this node. Silently fails if the node doesn't
-	             * exist, etc.
-	             *
-	             * XXX Should this be silent? Or should we throw?
+	             * Remove a child node from this node.
 	             *
 	             * @param {TreeNode} childNode The node to remove.
 	             */
@@ -11521,29 +11866,21 @@ return /******/ (function(modules) { // webpackBootstrap
 	                _this._elementManager = new _ElementManager2.default(_motorHtmlCounterpart || _this._makeElement());
 	                _this._elementManager.element._associateImperativeNode(_this);
 	
+	                // For Nodes, true when this Node is added to a parent AND it
+	                // has an anancestor Scene that is mounted into DOM. For
+	                // Scenes, true when mounted into DOM.
 	                _this._mounted = false;
 	
-	                _this._scene = null; // stores a ref to this Node's root Scene.
-	
-	                // This is an internal promise that resolves when this Node is added to
-	                // to a scene graph that has a root Scene TreeNode. The resolved value
-	                // is the root Scene.
-	                _this._resolveScenePromise = null;
-	                _this._scenePromise = new Promise(function (r) {
-	                    return _this._resolveScenePromise = r;
-	                });
-	
-	                // A promise that resolves when this Node is attached
-	                // to a tree that has a root Scene TreeNode *and* when that root Scene
-	                // has been mounted into the DOM (Note, the _scenePromise resolves only
-	                // when the first condition is true and the root Scene hasn't
-	                // necessarily been mounted).
+	                // For Nodes, a promise that resolves when this Node is
+	                // attached to a tree that has a root Scene TreeNode *and* when
+	                // that root Scene has been mounted into the DOM. For Scenes,
+	                // resolves when mounted into DOM.
+	                _this._mountPromise = null;
 	                _this._resolveMountPromise = null;
-	                _this._mountPromise = new Promise(function (r) {
-	                    return _this._resolveMountPromise = r;
-	                });
+	                _this._rejectMountPromise = null;
 	
-	                _this._waitForSceneThenResolveMountPromise();
+	                _this._awaitingMountPromiseToRender = false;
+	                _this._waitingForMountConditions = false;
 	
 	                // See Transformable/Sizeable propertychange event.
 	                _this.on('propertychange', function (prop) {
@@ -11572,67 +11909,15 @@ return /******/ (function(modules) { // webpackBootstrap
 	                }
 	
 	                /**
-	                 * @private
-	                 * Get a promise for the node's eventual scene.
+	                 * @readonly
 	                 */
 	
 	            }, {
-	                key: '_getScenePromise',
-	                value: function _getScenePromise() {
-	                    var _this2 = this;
+	                key: '_waitForMountThenResolveMountPromise',
+	                value: function _waitForMountThenResolveMountPromise() {}
+	                // extended in Node or Scene to await for anything that mount
+	                // depends on.
 	
-	                    if (!this._scene && !this._scenePromise) this._scenePromise = new Promise(function (r) {
-	                        return _this2._resolveScenePromise = r;
-	                    });
-	
-	                    return this._scenePromise;
-	                }
-	
-	                /**
-	                 * @private
-	                 */
-	
-	            }, {
-	                key: '_waitForSceneThenResolveMountPromise',
-	                value: function () {
-	                    var _ref = _asyncToGenerator(regeneratorRuntime.mark(function _callee() {
-	                        return regeneratorRuntime.wrap(function _callee$(_context) {
-	                            while (1) {
-	                                switch (_context.prev = _context.next) {
-	                                    case 0:
-	                                        if (this instanceof _Node2.default) {
-	                                            _context.next = 2;
-	                                            break;
-	                                        }
-	
-	                                        return _context.abrupt('return');
-	
-	                                    case 2:
-	                                        _context.next = 4;
-	                                        return this._getScenePromise();
-	
-	                                    case 4:
-	                                        _context.next = 6;
-	                                        return this._scene.mountPromise;
-	
-	                                    case 6:
-	
-	                                        this._resolveMountPromise(true);
-	
-	                                    case 7:
-	                                    case 'end':
-	                                        return _context.stop();
-	                                }
-	                            }
-	                        }, _callee, this);
-	                    }));
-	
-	                    function _waitForSceneThenResolveMountPromise() {
-	                        return _ref.apply(this, arguments);
-	                    }
-	
-	                    return _waitForSceneThenResolveMountPromise;
-	                }()
 	
 	                /**
 	                 * @readonly
@@ -11650,18 +11935,15 @@ return /******/ (function(modules) { // webpackBootstrap
 	
 	                    // We cannot add Scenes to Nodes, for now.
 	                    if (childNode instanceof _Scene2.default) {
-	                        throw new Error('\n                        A Scene cannot be added to another Node (at least for now). To\n                        place a Scene in a Node, just mount a new Scene onto a\n                        MotorHTMLNode with Scene.mount().\n                    ');
+	                        throw new Error('\n                        A Scene cannot be added to another Node or Scene (at\n                        least for now). To place a Scene in a Node, just mount\n                        a new Scene onto a MotorHTMLNode with Scene.mount().\n                    ');
 	                    }
 	
 	                    _get(ImperativeBase.prototype.__proto__ || Object.getPrototypeOf(ImperativeBase.prototype), 'addChild', this).call(this, childNode);
 	
 	                    // Pass this parent node's Scene reference (if any, checking this cache
 	                    // first) to the new child and the child's children.
-	                    //
-	                    // NOTE: Order is important: this needs to happen after previous stuff
-	                    // in this method, so that the childNode.scene getter works.
 	                    if (childNode._scene || childNode.scene) {
-	                        childNode._resolveScenePromise(childNode._scene);
+	                        if (childNode._resolveScenePromise) childNode._resolveScenePromise(childNode._scene);
 	                        childNode._giveSceneRefToChildren();
 	                    }
 	
@@ -11673,24 +11955,34 @@ return /******/ (function(modules) { // webpackBootstrap
 	                    // child should watch the parent for size changes.
 	                    this.on('sizechange', childNode._onParentSizeChange);
 	
-	                    // If child Node's HTML element isn't mounted.. mount it.
-	                    if (!childNode._mounted) {
-	                        this._elementManager.connectChildElement(childNode);
-	                        childNode._mounted = true;
-	                    }
+	                    this._elementManager.connectChildElement(childNode);
 	
 	                    return this;
 	                }
-	
-	                /**
-	                 * @private
-	                 * This method to be called only when this Node has this.scene.
-	                 * Resolves the _scenePromise for all children of the tree of this Node.
-	                 */
-	
 	            }, {
-	                key: '_giveSceneRefToChildren',
-	                value: function _giveSceneRefToChildren() {
+	                key: 'removeChild',
+	                value: function removeChild(childNode) {
+	                    if (!(childNode instanceof _Node2.default)) return;
+	
+	                    _get(ImperativeBase.prototype.__proto__ || Object.getPrototypeOf(ImperativeBase.prototype), 'removeChild', this).call(this, childNode);
+	
+	                    this.off('sizechange', childNode._onParentSizeChange);
+	
+	                    childNode._resetSceneRef();
+	
+	                    if (childNode._mountPromise) childNode._rejectMountPromise('mountcancel');
+	                    if (childNode._mounted) childNode._elementManager.shouldNotRender();
+	                    childNode._resetMountPromise();
+	
+	                    this._elementManager.disconnectChildElement(childNode);
+	                }
+	            }, {
+	                key: '_resetMountPromise',
+	                value: function _resetMountPromise() {
+	                    this._mounted = false;
+	                    this._mountPromise = null;
+	                    this._resolveMountPromise = null;
+	                    this._rejectMountPromise = null;
 	                    var _iteratorNormalCompletion = true;
 	                    var _didIteratorError = false;
 	                    var _iteratorError = undefined;
@@ -11699,9 +11991,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	                        for (var _iterator = this._children[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
 	                            var childNode = _step.value;
 	
-	                            childNode._scene = this._scene;
-	                            childNode._resolveScenePromise(childNode._scene);
-	                            childNode._giveSceneRefToChildren();
+	                            childNode._resetMountPromise();
 	                        }
 	                    } catch (err) {
 	                        _didIteratorError = true;
@@ -11718,27 +12008,6 @@ return /******/ (function(modules) { // webpackBootstrap
 	                        }
 	                    }
 	                }
-	            }, {
-	                key: 'removeChild',
-	                value: function removeChild(childNode) {
-	                    if (!(childNode instanceof ImperativeBase)) return;
-	
-	                    _get(ImperativeBase.prototype.__proto__ || Object.getPrototypeOf(ImperativeBase.prototype), 'removeChild', this).call(this, childNode);
-	
-	                    // childNode no longer needs to observe parent for size changes.
-	                    this.off('sizechange', childNode._onParentSizeChange);
-	
-	                    // not part of a scene anymore.
-	                    childNode._scene = null;
-	                    // reset so that it can be awaited again for when the node is re-mounted.
-	                    childNode._scenePromise = null;
-	                    // obviously not mounted anymore.
-	                    childNode._mounted = false;
-	                    // reset so that it can be awaited again for when the node is re-mounted.
-	                    childNode._mountPromise = null;
-	
-	                    this._elementManager.disconnectChildElement(childNode);
-	                }
 	
 	                /**
 	                 * Set all properties of an ImperativeBase instance in one method.
@@ -11753,9 +12022,73 @@ return /******/ (function(modules) { // webpackBootstrap
 	
 	            }, {
 	                key: '_needsToBeRendered',
-	                value: function _needsToBeRendered() {
-	                    _Motor2.default._setNodeToBeRendered(this);
-	                }
+	                value: function () {
+	                    var _ref = _asyncToGenerator(regeneratorRuntime.mark(function _callee() {
+	                        return regeneratorRuntime.wrap(function _callee$(_context) {
+	                            while (1) {
+	                                switch (_context.prev = _context.next) {
+	                                    case 0:
+	                                        if (!this._awaitingMountPromiseToRender) {
+	                                            _context.next = 2;
+	                                            break;
+	                                        }
+	
+	                                        return _context.abrupt('return');
+	
+	                                    case 2:
+	                                        if (this._mounted) {
+	                                            _context.next = 19;
+	                                            break;
+	                                        }
+	
+	                                        _context.prev = 3;
+	
+	                                        this._awaitingMountPromiseToRender = true;
+	                                        _context.next = 7;
+	                                        return this.mountPromise;
+	
+	                                    case 7:
+	                                        _context.next = 16;
+	                                        break;
+	
+	                                    case 9:
+	                                        _context.prev = 9;
+	                                        _context.t0 = _context['catch'](3);
+	
+	                                        if (!(_context.t0 == 'mountcancel')) {
+	                                            _context.next = 15;
+	                                            break;
+	                                        }
+	
+	                                        return _context.abrupt('return');
+	
+	                                    case 15:
+	                                        throw _context.t0;
+	
+	                                    case 16:
+	                                        _context.prev = 16;
+	
+	                                        this._awaitingMountPromiseToRender = false;
+	                                        return _context.finish(16);
+	
+	                                    case 19:
+	
+	                                        _Motor2.default._setNodeToBeRendered(this);
+	
+	                                    case 20:
+	                                    case 'end':
+	                                        return _context.stop();
+	                                }
+	                            }
+	                        }, _callee, this, [[3, 9, 16, 19]]);
+	                    }));
+	
+	                    function _needsToBeRendered() {
+	                        return _ref.apply(this, arguments);
+	                    }
+	
+	                    return _needsToBeRendered;
+	                }()
 	            }, {
 	                key: '_render',
 	                value: function _render(timestamp) {
@@ -11764,65 +12097,23 @@ return /******/ (function(modules) { // webpackBootstrap
 	            }, {
 	                key: 'mountPromise',
 	                get: function get() {
-	                    var _this3 = this;
+	                    var _this2 = this;
 	
-	                    if (!this._mounted && !this._mountPromise) {
-	                        this._mountPromise = new Promise(function (r) {
-	                            return _this3._resolveMountPromise = r;
+	                    if (!this._mountPromise) {
+	                        this._mountPromise = new Promise(function (resolve, reject) {
+	                            _this2._resolveMountPromise = resolve;
+	                            _this2._rejectMountPromise = reject;
 	                        });
-	                        this._waitForSceneThenResolveMountPromise(); // This is a noop if `this` is a `Scene`.
 	                    }
+	
+	                    if (!this._mounted) this._waitForMountThenResolveMountPromise();else if (this._mounted) this._resolveMountPromise();
 	
 	                    return this._mountPromise;
 	                }
-	
-	                /**
-	                 * @readonly
-	                 */
-	
 	            }, {
 	                key: 'element',
 	                get: function get() {
 	                    return this._elementManager.element;
-	                }
-	
-	                /**
-	                 * Get the Scene that this Node is in, null if no Scene. This is recursive
-	                 * at first, then cached.
-	                 *
-	                 * This traverses up the scene graph tree starting at this Node and finds
-	                 * the root Scene, if any. It caches the value for performance. If this
-	                 * Node is removed from a parent node with parent.removeChild(), then the
-	                 * cache is invalidated so the traversal can happen again when this Node is
-	                 * eventually added to a new tree. This way, if the scene is cached on a
-	                 * parent Node that we're adding this Node to then we can get that cached
-	                 * value instead of traversing the tree.
-	                 *
-	                 * @readonly
-	                 */
-	
-	            }, {
-	                key: 'scene',
-	                get: function get() {
-	                    // NOTE: this._scene is initally null, created in the constructor.
-	
-	                    // if already cached, return it. Or if no parent, return it (it'll be null).
-	                    if (this._scene || !this._parent) return this._scene;
-	
-	                    // if the parent node already has a ref to the scene, use that.
-	                    if (this._parent._scene) {
-	                        this._scene = this._parent._scene;
-	                    } else if (this._parent instanceof _Scene2.default) {
-	                        this._scene = this._parent;
-	                    }
-	                    // otherwise call the scene getter on the parent, which triggers
-	                    // traversal up the scene graph in order to find the root scene (null
-	                    // if none).
-	                    else {
-	                            this._scene = this._parent.scene;
-	                        }
-	
-	                    return this._scene;
 	                }
 	            }, {
 	                key: 'properties',
@@ -11888,9 +12179,9 @@ return /******/ (function(modules) { // webpackBootstrap
 	
 	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 	
-	var _get = function get(object, property, receiver) { if (object === null) object = Function.prototype; var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { return get(parent, property, receiver); } } else if ("value" in desc) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } };
-	
 	var _set = function set(object, property, value, receiver) { var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent !== null) { set(parent, property, value, receiver); } } else if ("value" in desc && desc.writable) { desc.value = value; } else { var setter = desc.set; if (setter !== undefined) { setter.call(receiver, value); } } return value; };
+	
+	var _get = function get(object, property, receiver) { if (object === null) object = Function.prototype; var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { return get(parent, property, receiver); } } else if ("value" in desc) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } };
 	
 	var _Utility = __webpack_require__(307);
 	
@@ -11901,6 +12192,10 @@ return /******/ (function(modules) { // webpackBootstrap
 	var _ImperativeBase = __webpack_require__(380);
 	
 	var _ImperativeBase2 = _interopRequireDefault(_ImperativeBase);
+	
+	var _XYZValues = __webpack_require__(306);
+	
+	var _XYZValues2 = _interopRequireDefault(_XYZValues);
 	
 	var _scene = __webpack_require__(382);
 	
@@ -11932,7 +12227,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	
 	        _classCallCheck(this, Scene);
 	
-	        // XXX: z size is always 0, since native DOM elements are always flat.
+	        // NOTE: z size is always 0, since native DOM elements are always flat.
 	        var _this = _possibleConstructorReturn(this, (Scene.__proto__ || Object.getPrototypeOf(Scene)).call(this, options));
 	
 	        _this._elementParentSize = { x: 0, y: 0, z: 0 };
@@ -11943,19 +12238,25 @@ return /******/ (function(modules) { // webpackBootstrap
 	            _this._needsToBeRendered();
 	        };
 	
-	        // For now, Scenes are always proportionally sized by default.
-	        _this.sizeMode = { x: 'proportional', y: 'proportional' };
-	
 	        _this._calcSize();
 	        _this._needsToBeRendered();
 	        return _this;
 	    }
 	
-	    // When we set the scene's size mode, we should start polling if it has
-	    // proportional sizing.
-	
-	
 	    _createClass(Scene, [{
+	        key: '_setDefaultProperties',
+	        value: function _setDefaultProperties() {
+	            _get(Scene.prototype.__proto__ || Object.getPrototypeOf(Scene.prototype), '_setDefaultProperties', this).call(this);
+	
+	            Object.assign(this._properties, {
+	                sizeMode: new _XYZValues2.default('proportional', 'proportional', 'absolute')
+	            });
+	        }
+	
+	        // When we set the scene's size mode, we should start polling if it has
+	        // proportional sizing.
+	
+	    }, {
 	        key: '_startOrStopSizePolling',
 	        value: function _startOrStopSizePolling() {
 	            if (this._mounted && (this._properties.sizeMode.x == 'proportional' || this._properties.sizeMode.y == 'proportional' || this._properties.sizeMode.z == 'proportional')) {
@@ -11964,17 +12265,23 @@ return /******/ (function(modules) { // webpackBootstrap
 	                this._stopSizePolling();
 	            }
 	        }
+	
+	        // observe size changes on the scene element.
+	
 	    }, {
 	        key: '_startSizePolling',
 	        value: function _startSizePolling() {
-	            // observe size changes on the scene element.
+	            if (!this._elementManager) return;
 	            this._elementManager.element._startSizePolling();
 	            this._elementManager.element.on('parentsizechange', this._onElementParentSizeChange);
 	        }
+	
+	        // Don't observe size changes on the scene element.
+	
 	    }, {
 	        key: '_stopSizePolling',
 	        value: function _stopSizePolling() {
-	            // observe size changes on the scene element.
+	            if (!this._elementManager) return;
 	            this._elementManager.element.off('parentsizechange', this._onElementParentSizeChange);
 	            this._elementManager.element._stopSizePolling();
 	        }
@@ -12034,25 +12341,25 @@ return /******/ (function(modules) { // webpackBootstrap
 	
 	                                // if we have an actual mount point (the user may have supplied one)
 	
-	                                if (!(mountPoint instanceof window.HTMLElement)) {
-	                                    _context.next = 9;
+	                                if (mountPoint instanceof window.HTMLElement) {
+	                                    _context.next = 6;
 	                                    break;
 	                                }
+	
+	                                throw new Error('Invalid mount point specified in Scene.mount() call. Specify a selector, or pass an actual HTMLElement.');
+	
+	                            case 6:
+	
+	                                if (this._mounted) this.unmount();
 	
 	                                if (mountPoint !== this._elementManager.element.parentNode) mountPoint.appendChild(this._elementManager.element);
 	
 	                                this._mounted = true;
-	                                _context.next = 10;
-	                                break;
 	
-	                            case 9:
-	                                throw new Error('Invalid mount point specified in Scene.mount() call. Specify a selector, or pass an actual HTMLElement.');
+	                                if (this._mountPromise) this._resolveMountPromise();
 	
-	                            case 10:
-	
+	                                this._elementManager.shouldRender();
 	                                this._startOrStopSizePolling();
-	
-	                                this._resolveMountPromise(this._mounted);
 	
 	                            case 12:
 	                            case 'end':
@@ -12077,18 +12384,15 @@ return /******/ (function(modules) { // webpackBootstrap
 	    }, {
 	        key: 'unmount',
 	        value: function unmount() {
-	            var _this2 = this;
+	            if (!this._mounted) return;
 	
+	            this._elementManager.shouldNotRender();
 	            this._stopSizePolling();
 	
 	            if (this._elementManager.element.parentNode) this._elementManager.element.parentNode.removeChild(this._elementManager.element);
 	
-	            this._mounted = false;
-	
-	            // a new promise to be resolved on the next mount.
-	            this._mountPromise = new Promise(function (r) {
-	                return _this2._resolveMountPromise = r;
-	            });
+	            if (this._mountPromise) this._rejectMountPromise('mountcancel');
+	            this._resetMountPromise();
 	        }
 	    }, {
 	        key: 'sizeMode',
@@ -12139,6 +12443,10 @@ return /******/ (function(modules) { // webpackBootstrap
 	
 	var _Observable2 = _interopRequireDefault(_Observable);
 	
+	var _Sizeable = __webpack_require__(378);
+	
+	var _Sizeable2 = _interopRequireDefault(_Sizeable);
+	
 	var _base = __webpack_require__(387);
 	
 	var _base2 = _interopRequireDefault(_base);
@@ -12173,31 +12481,32 @@ return /******/ (function(modules) { // webpackBootstrap
 	    _createClass(MotorHTMLScene, [{
 	        key: 'createdCallback',
 	        value: function createdCallback() {
+	            var _this2 = this;
+	
 	            _get(MotorHTMLScene.prototype.__proto__ || Object.getPrototypeOf(MotorHTMLScene.prototype), 'createdCallback', this).call(this);
 	
 	            this._sizePollTask = null;
 	            this._parentSize = { x: 0, y: 0, z: 0 };
-	        }
-	    }, {
-	        key: 'init',
-	        value: function init() {
-	            _get(MotorHTMLScene.prototype.__proto__ || Object.getPrototypeOf(MotorHTMLScene.prototype), 'init', this).call(this); // indirectly triggers this._makeImperativeCounterpart...
 	
-	            // ... then we can reference it.
-	            this.imperativeCounterpart.mount(this.parentNode);
+	            // After the imperativeCounterpart is available it needs to register
+	            // mount into DOM. This is only for MotorHTMLScenes because their
+	            // imperativeCounterparts are not added to a parent Node.
+	            // MotorHTMLNodes get their parent connection from their parent in
+	            // childConnectedCallback.
+	            this._imperativeCounterpartPromise.then(function () {
+	                return _this2.imperativeCounterpart.mount(_this2.parentNode);
+	            });
 	        }
 	    }, {
 	        key: '_startSizePolling',
 	        value: function _startSizePolling() {
-	            // XXX Polling is required because there's no other way to do this
+	            // NOTE Polling is currently required because there's no other way to do this
 	            // reliably, not even with MutationObserver. ResizeObserver hasn't
 	            // landed in browsers yet.
-	            // TODO: detect when ResizeObserver exists and use it instead of
-	            // polling.
 	            if (!this._sizePollTask) this._sizePollTask = _Motor2.default.addRenderTask(this._checkSize.bind(this));
 	        }
 	
-	        // XXX, the Z dimension of a scene doesn't matter, it's a flat plane, so
+	        // NOTE, the Z dimension of a scene doesn't matter, it's a flat plane, so
 	        // we haven't taken that into consideration here.
 	
 	    }, {
@@ -12207,24 +12516,17 @@ return /******/ (function(modules) { // webpackBootstrap
 	            // The scene has a parent by the time this is called (see
 	            // src/motor/Scene#mount where _startSizePolling is called)
 	            var parent = this.parentNode;
-	
-	            // TODO: Should we use getComputedStyle or clientWidth/Height, or
-	            // something else? See http://stackoverflow.com/questions/39963699 for
-	            // detail on why it would matter.
-	            var width = parent.clientWidth;
-	            var height = parent.clientHeight;
+	            var parentSize = this._parentSize;
+	            var style = getComputedStyle(parent);
+	            var width = parseFloat(style.width);
+	            var height = parseFloat(style.height);
 	
 	            // if we have a size change, trigger parentsizechange
-	            if (this._parentSize.x != width || this._parentSize.y != height) {
-	                this._parentSize.x = width;
-	                this._parentSize.y = height;
+	            if (parentSize.x != width || parentSize.y != height) {
+	                parentSize.x = width;
+	                parentSize.y = height;
 	
-	                var _parentSize = this._parentSize;
-	                var x = _parentSize.x;
-	                var y = _parentSize.y;
-	                var z = _parentSize.z;
-	
-	                this.triggerEvent('parentsizechange', { x: x, y: y, z: z });
+	                this.triggerEvent('parentsizechange', Object.assign({}, parentSize));
 	            }
 	        }
 	    }, {
@@ -12260,6 +12562,12 @@ return /******/ (function(modules) { // webpackBootstrap
 	    return MotorHTMLScene;
 	}(_Observable2.default.mixin(_base2.default));
 	
+	// This associates the Transformable getters/setters with the HTML-API classes,
+	// so that the same getters/setters can be called from HTML side of the API.
+	
+	
+	(0, _base.proxyGettersSetters)(_Sizeable2.default, MotorHTMLScene);
+	
 	exports.default = MotorHTMLScene = document.registerElement('motor-scene', MotorHTMLScene);
 	
 	exports.default = MotorHTMLScene;
@@ -12287,9 +12595,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	    height: '100%',
 	
 	    // Constant perspective for now.
-	    // TODO: make settable. issue #32
 	    perspective: 1000
-	
 	});
 
 /***/ },
@@ -12302,14 +12608,18 @@ return /******/ (function(modules) { // webpackBootstrap
 	    value: true
 	});
 	exports.default = {
-	    display: 'block',
+	
+	    // all items of the scene graph are hidden until they are mounted in a
+	    // scene (this changes to `display:block`).
+	    display: 'none',
+	
 	    boxSizing: 'border-box',
 	    position: 'absolute',
 	    top: 0,
 	    left: 0,
 	
-	    // TODO: set via JavaScript. Defaults to [0.5,0.5,0.5] (the Z axis
-	    // doesn't apply for DOM elements, but will for 3D objects in WebGL.)
+	    // Defaults to [0.5,0.5,0.5] (the Z axis doesn't apply for DOM elements,
+	    // but will for 3D objects in WebGL.)
 	    transformOrigin: '50% 50% 0', // default
 	
 	    transformStyle: 'preserve-3d'
@@ -12348,7 +12658,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	        this._inFrame = false; // true when inside a requested animation frame.
 	        this._rAF = null; // the current animation frame, or null.
 	        this._animationLoopStarted = false;
-	        this._allRenderTasks = [];
+	        this._allRenderTasks = new Set();
 	        this._nodesToBeRendered = new Set();
 	    }
 	
@@ -12404,7 +12714,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	                                    _this._renderNodes(timestamp);
 	
 	                                    // If any tasks are left to run, continue the animation loop.
-	                                    if (_this._allRenderTasks.length) _this._rAF = requestAnimationFrame(motorLoop);else {
+	                                    if (_this._allRenderTasks.size) _this._rAF = requestAnimationFrame(motorLoop);else {
 	                                        _this._rAF = null;
 	                                        _this._animationLoopStarted = false;
 	                                    }
@@ -12425,7 +12735,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	                                //this._renderNodes(timestamp)
 	
 	                                //// If any tasks are left to run, continue the animation loop.
-	                                //if (!this._allRenderTasks.length) {
+	                                //if (!this._allRenderTasks.size) {
 	                                //this._rAF = null
 	                                //this._animationLoopStarted = false
 	                                //}
@@ -12473,7 +12783,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	        value: function addRenderTask(fn) {
 	            if (typeof fn != 'function') throw new Error('Render task must be a function.');
 	
-	            this._allRenderTasks.push(fn);
+	            this._allRenderTasks.add(fn);
 	
 	            // If the render loop isn't started, start it.
 	            if (!this._animationLoopStarted) this._startAnimationLoop();
@@ -12483,7 +12793,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	    }, {
 	        key: 'removeRenderTask',
 	        value: function removeRenderTask(fn) {
-	            this._allRenderTasks.splice(this._allRenderTasks.indexOf(fn), 1);
+	            this._allRenderTasks.delete(fn);
 	        }
 	    }, {
 	        key: '_runRenderTasks',
@@ -12519,15 +12829,6 @@ return /******/ (function(modules) { // webpackBootstrap
 	            if (!this._nodesToBeRendered.has(node)) this._nodesToBeRendered.add(node);
 	
 	            if (!this._inFrame) this._startAnimationLoop();
-	        }
-	
-	        // currently unused, as the list is cleared after each frame.
-	        // TODO: prevent GC by clearing a linked list instead of Array, Set or Map?
-	
-	    }, {
-	        key: '_unsetNodeToBeRendered',
-	        value: function _unsetNodeToBeRendered(node) {
-	            this._nodesToBeRendered.delete(node);
 	        }
 	    }, {
 	        key: '_renderNodes',
@@ -12655,6 +12956,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	var _get = function get(object, property, receiver) { if (object === null) object = Function.prototype; var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { return get(parent, property, receiver); } } else if ("value" in desc) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } };
 	
 	exports.initMotorHTMLBase = initMotorHTMLBase;
+	exports.proxyGettersSetters = proxyGettersSetters;
 	
 	var _webComponent = __webpack_require__(388);
 	
@@ -12667,8 +12969,6 @@ return /******/ (function(modules) { // webpackBootstrap
 	var _Utility = __webpack_require__(307);
 	
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-	
-	function _asyncToGenerator(fn) { return function () { var gen = fn.apply(this, arguments); return new Promise(function (resolve, reject) { function step(key, arg) { try { var info = gen[key](arg); var value = info.value; } catch (error) { reject(error); return; } if (info.done) { resolve(value); } else { return Promise.resolve(value).then(function (value) { step("next", value); }, function (err) { step("throw", err); }); } } return step("next"); }); }; }
 	
 	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 	
@@ -12739,7 +13039,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	}
 	function shadowRootChildAdded(child) {
 	
-	    // XXX Logic here is similar to childConnectedCallback
+	    // NOTE Logic here is similar to childConnectedCallback
 	
 	    if (child instanceof DeclarativeBase) {
 	        this.imperativeCounterpart.addChild(child.imperativeCounterpart);
@@ -12752,7 +13052,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	}
 	function shadowRootChildRemoved(child) {
 	
-	    // XXX Logic here is similar to childDisconnectedCallback
+	    // NOTE Logic here is similar to childDisconnectedCallback
 	
 	    if (child instanceof DeclarativeBase) {
 	        this.imperativeCounterpart.removeChild(child.imperativeCounterpart);
@@ -12867,12 +13167,25 @@ return /******/ (function(modules) { // webpackBootstrap
 	                // when/if needed.
 	                this._shadowChildren = null;
 	
-	                this._resolveReadyPromise = null;
-	                this.ready = new Promise(function (r) {
-	                    return _this2._resolveReadyPromise = r;
+	                // We use Promise.resolve here to defer to the next microtask.
+	                // While we support Custom Elements v0, this is necessary because
+	                // the imperative Node counterpart will have already called the
+	                // `_associateImperativeNode` method on this element, causing the
+	                // next microtask's call to be a no-op. When this MotorHTML element
+	                // API is used instead of the Imperative counterpart, then the next
+	                // microtask's `_associateImperativeNode` call will not be a no-op.
+	                // When we drop support for v0 Custom Elements at some point, we
+	                // can rely on passing a constructor argument similarly to how we
+	                // do with motor/Node in order to detect that the constructor is
+	                // being called from the reciprocal API. See the constructor in
+	                // motor/Node.js to get see the idea.
+	                // TODO: renewable promise after unmount.
+	                this._imperativeCounterpartPromise = Promise.resolve().then(function () {
+	                    return _this2._associateImperativeNode();
 	                });
-	
-	                this._associateImperativeNode();
+	                this.ready = this._imperativeCounterpartPromise.then(function () {
+	                    return _this2.imperativeCounterpart.mountPromise;
+	                });
 	            }
 	
 	            /**
@@ -12907,8 +13220,6 @@ return /******/ (function(modules) { // webpackBootstrap
 	
 	                // otherwise if called from a MotorHTML class without an argument
 	                else this.imperativeCounterpart = this._makeImperativeCounterpart();
-	
-	                this._signalWhenReady();
 	            }
 	
 	            /**
@@ -12922,34 +13233,6 @@ return /******/ (function(modules) { // webpackBootstrap
 	            value: function _makeImperativeCounterpart() {
 	                throw new TypeError('This method should be implemented by classes extending DeclarativeBase.');
 	            }
-	        }, {
-	            key: '_signalWhenReady',
-	            value: function () {
-	                var _ref = _asyncToGenerator(regeneratorRuntime.mark(function _callee() {
-	                    return regeneratorRuntime.wrap(function _callee$(_context) {
-	                        while (1) {
-	                            switch (_context.prev = _context.next) {
-	                                case 0:
-	                                    _context.next = 2;
-	                                    return this.imperativeCounterpart.mountPromise;
-	
-	                                case 2:
-	                                    this._resolveReadyPromise();
-	
-	                                case 3:
-	                                case 'end':
-	                                    return _context.stop();
-	                            }
-	                        }
-	                    }, _callee, this);
-	                }));
-	
-	                function _signalWhenReady() {
-	                    return _ref.apply(this, arguments);
-	                }
-	
-	                return _signalWhenReady;
-	            }()
 	        }, {
 	            key: 'childConnectedCallback',
 	            value: function childConnectedCallback(child) {
@@ -12965,13 +13248,13 @@ return /******/ (function(modules) { // webpackBootstrap
 	                    this.imperativeCounterpart.addChild(child.imperativeCounterpart);
 	                } else if (_Utility.hasShadowDomV0 && child instanceof HTMLContentElement &&
 	                //getShadowRootVersion(
-	                (0, _Utility.getAncestorShadowRootIfAny)(this)
+	                (0, _Utility.getAncestorShadowRoot)(this)
 	                //) == 'v0'
 	                ) {
 	                        // observe <content> elements.
 	                    } else if (_Utility.hasShadowDomV1 && child instanceof HTMLSlotElement &&
 	                //getShadowRootVersion(
-	                (0, _Utility.getAncestorShadowRootIfAny)(this)
+	                (0, _Utility.getAncestorShadowRoot)(this)
 	                //) == 'v1'
 	                ) {
 	                        child.addEventListener('slotchange', this);
@@ -13115,13 +13398,13 @@ return /******/ (function(modules) { // webpackBootstrap
 	                    this.imperativeCounterpart.removeChild(child.imperativeCounterpart);
 	                } else if (_Utility.hasShadowDomV0 && child instanceof HTMLContentElement &&
 	                //getShadowRootVersion(
-	                (0, _Utility.getAncestorShadowRootIfAny)(this)
+	                (0, _Utility.getAncestorShadowRoot)(this)
 	                //) == 'v0'
 	                ) {
 	                        // unobserve <content> element
 	                    } else if (_Utility.hasShadowDomV1 && child instanceof HTMLSlotElement &&
 	                //getShadowRootVersion(
-	                (0, _Utility.getAncestorShadowRootIfAny)(this)
+	                (0, _Utility.getAncestorShadowRoot)(this)
 	                //) == 'v1'
 	                ) {
 	                        child.removeEventListener('slotchange', this);
@@ -13133,6 +13416,80 @@ return /******/ (function(modules) { // webpackBootstrap
 	
 	        return DeclarativeBase;
 	    }((0, _webComponent2.default)(window.HTMLElement));
+	}
+	
+	// Creates setters/getters on the TargetClass which proxy to the
+	// setters/getters on SourceClass.
+	function proxyGettersSetters(SourceClass, TargetClass) {
+	
+	    // Node methods not to proxy (private underscored methods are also detected and
+	    // ignored).
+	    var methodProxyBlacklist = ['constructor', 'parent', 'children', // proxying this one would really break stuff (f.e. React)
+	    'element', 'scene', 'addChild', 'addChildren', 'removeChild', 'removeChildren'];
+	
+	    var props = Object.getOwnPropertyNames(SourceClass.prototype);
+	
+	    var _iteratorNormalCompletion5 = true;
+	    var _didIteratorError5 = false;
+	    var _iteratorError5 = undefined;
+	
+	    try {
+	        var _loop = function _loop() {
+	            var prop = _step5.value;
+	
+	            if (
+	            // skip the blacklisted properties
+	            methodProxyBlacklist.indexOf(prop) >= 0
+	
+	            // skip the private underscored properties
+	            || prop.indexOf('_') == 0
+	
+	            // skip properties that are already defined.
+	            || TargetClass.prototype.hasOwnProperty(prop)) return 'continue';
+	
+	            var targetDescriptor = {};
+	            var sourceDescriptor = Object.getOwnPropertyDescriptor(SourceClass.prototype, prop);
+	
+	            // if the property has a setter
+	            if (sourceDescriptor.set) {
+	                Object.assign(targetDescriptor, {
+	                    set: function set(value) {
+	                        this.imperativeCounterpart[prop] = value;
+	                    }
+	                });
+	            }
+	
+	            // if the property has a getter
+	            if (sourceDescriptor.get) {
+	                Object.assign(targetDescriptor, {
+	                    get: function get() {
+	                        return this.imperativeCounterpart[prop];
+	                    }
+	                });
+	            }
+	
+	            Object.defineProperty(TargetClass.prototype, prop, targetDescriptor);
+	        };
+	
+	        for (var _iterator5 = props[Symbol.iterator](), _step5; !(_iteratorNormalCompletion5 = (_step5 = _iterator5.next()).done); _iteratorNormalCompletion5 = true) {
+	            var _ret = _loop();
+	
+	            if (_ret === 'continue') continue;
+	        }
+	    } catch (err) {
+	        _didIteratorError5 = true;
+	        _iteratorError5 = err;
+	    } finally {
+	        try {
+	            if (!_iteratorNormalCompletion5 && _iterator5.return) {
+	                _iterator5.return();
+	            }
+	        } finally {
+	            if (_didIteratorError5) {
+	                throw _iteratorError5;
+	            }
+	        }
+	    }
 	}
 	
 	exports.default = DeclarativeBase;
@@ -13148,6 +13505,8 @@ return /******/ (function(modules) { // webpackBootstrap
 	});
 	
 	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+	
+	var _get = function get(object, property, receiver) { if (object === null) object = Function.prototype; var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { return get(parent, property, receiver); } } else if ("value" in desc) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } };
 	
 	exports.default = WebComponentMixin;
 	
@@ -13176,7 +13535,6 @@ return /******/ (function(modules) { // webpackBootstrap
 	    window.HTMLElement = _HTMLElement;
 	}
 	
-	// XXX: Maybe we can improve by clearing items after X amount of time?
 	var classCache = new Map();
 	
 	function classExtendsHTMLElement(constructor) {
@@ -13266,6 +13624,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	        }, {
 	            key: 'connectedCallback',
 	            value: function connectedCallback() {
+	                if (_get(WebComponent.prototype.__proto__ || Object.getPrototypeOf(WebComponent.prototype), 'connectedCallback', this)) _get(WebComponent.prototype.__proto__ || Object.getPrototypeOf(WebComponent.prototype), 'connectedCallback', this).call(this);
 	                this._attached = true;
 	
 	                if (!this._initialized) {
@@ -13296,6 +13655,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	                        while (1) {
 	                            switch (_context.prev = _context.next) {
 	                                case 0:
+	                                    if (_get(WebComponent.prototype.__proto__ || Object.getPrototypeOf(WebComponent.prototype), 'disconnectedCallback', this)) _get(WebComponent.prototype.__proto__ || Object.getPrototypeOf(WebComponent.prototype), 'disconnectedCallback', this).call(this);
 	                                    this._attached = false;
 	
 	                                    // Deferr to the next tick before cleaning up in case the
@@ -13310,10 +13670,10 @@ return /******/ (function(modules) { // webpackBootstrap
 	                                    // (for example, gets moved), then we want to preserve the
 	                                    // stuff that would be cleaned up by an extending class' deinit
 	                                    // method by not running the following this.deinit() call.
-	                                    _context.next = 3;
+	                                    _context.next = 4;
 	                                    return Promise.resolve();
 	
-	                                case 3:
+	                                case 4:
 	                                    // deferr to the next tick.
 	
 	                                    // As mentioned in the previous comment, if the element was not
@@ -13323,7 +13683,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	                                        this.deinit();
 	                                    }
 	
-	                                case 4:
+	                                case 5:
 	                                case 'end':
 	                                    return _context.stop();
 	                            }
@@ -13457,6 +13817,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	        }, {
 	            key: 'attributeChangedCallback',
 	            value: function attributeChangedCallback() {
+	                if (_get(WebComponent.prototype.__proto__ || Object.getPrototypeOf(WebComponent.prototype), 'attributeChangedCallback', this)) _get(WebComponent.prototype.__proto__ || Object.getPrototypeOf(WebComponent.prototype), 'attributeChangedCallback', this).call(this);
 	                this._initialAttributeChange = true;
 	            }
 	
@@ -15342,12 +15703,12 @@ return /******/ (function(modules) { // webpackBootstrap
 	
 	var _supportedValue2 = _interopRequireDefault(_supportedValue);
 	
-	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
 	
-	exports.default = {
-	  prefix: _prefix2.default,
-	  supportedProperty: _supportedProperty2.default,
-	  supportedValue: _supportedValue2.default
+	exports['default'] = {
+	  prefix: _prefix2['default'],
+	  supportedProperty: _supportedProperty2['default'],
+	  supportedValue: _supportedValue2['default']
 	}; /**
 	    * CSS Vendor prefix detection and property feature testing.
 	    *
@@ -15356,9 +15717,9 @@ return /******/ (function(modules) { // webpackBootstrap
 	    * @license MIT
 	    */
 	
-	exports.prefix = _prefix2.default;
-	exports.supportedProperty = _supportedProperty2.default;
-	exports.supportedValue = _supportedValue2.default;
+	exports.prefix = _prefix2['default'];
+	exports.supportedProperty = _supportedProperty2['default'];
+	exports.supportedValue = _supportedValue2['default'];
 
 /***/ },
 /* 410 */
@@ -15370,11 +15731,11 @@ return /******/ (function(modules) { // webpackBootstrap
 	  value: true
 	});
 	
-	var _isBrowser = __webpack_require__(411);
+	var _isInBrowser = __webpack_require__(411);
 	
-	var _isBrowser2 = _interopRequireDefault(_isBrowser);
+	var _isInBrowser2 = _interopRequireDefault(_isInBrowser);
 	
-	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
 	
 	var js = ''; /**
 	              * Export javascript style and css style vendor prefixes.
@@ -15384,13 +15745,15 @@ return /******/ (function(modules) { // webpackBootstrap
 	var css = '';
 	
 	// We should not do anything if required serverside.
-	if (_isBrowser2.default) {
+	if (_isInBrowser2['default']) {
+	  // Order matters. We need to check Webkit the last one because
+	  // other vendors use to add Webkit prefixes to some properties
 	  var jsCssMap = {
-	    Webkit: '-webkit-',
 	    Moz: '-moz-',
 	    // IE did it wrong again ...
 	    ms: '-ms-',
-	    O: '-o-'
+	    O: '-o-',
+	    Webkit: '-webkit-'
 	  };
 	  var style = document.createElement('p').style;
 	  var testProp = 'Transform';
@@ -15410,11 +15773,25 @@ return /******/ (function(modules) { // webpackBootstrap
 	 * @type {{js: String, css: String}}
 	 * @api public
 	 */
-	exports.default = { js: js, css: css };
+	exports['default'] = { js: js, css: css };
 
 /***/ },
 /* 411 */
-319,
+/***/ function(module, exports) {
+
+	"use strict";
+	
+	Object.defineProperty(exports, "__esModule", {
+	    value: true
+	});
+	
+	var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; };
+	
+	var isBrowser = exports.isBrowser = (typeof window === "undefined" ? "undefined" : _typeof(window)) === "object" && (typeof document === "undefined" ? "undefined" : _typeof(document)) === 'object' && document.nodeType === 9;
+	
+	exports.default = isBrowser;
+
+/***/ },
 /* 412 */
 /***/ function(module, exports, __webpack_require__) {
 
@@ -15423,11 +15800,11 @@ return /******/ (function(modules) { // webpackBootstrap
 	Object.defineProperty(exports, "__esModule", {
 	  value: true
 	});
-	exports.default = supportedProperty;
+	exports['default'] = supportedProperty;
 	
-	var _isBrowser = __webpack_require__(411);
+	var _isInBrowser = __webpack_require__(411);
 	
-	var _isBrowser2 = _interopRequireDefault(_isBrowser);
+	var _isInBrowser2 = _interopRequireDefault(_isInBrowser);
 	
 	var _prefix = __webpack_require__(410);
 	
@@ -15437,12 +15814,12 @@ return /******/ (function(modules) { // webpackBootstrap
 	
 	var _camelize2 = _interopRequireDefault(_camelize);
 	
-	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
 	
 	var el = void 0;
 	var cache = {};
 	
-	if (_isBrowser2.default) {
+	if (_isInBrowser2['default']) {
 	  el = document.createElement('p');
 	
 	  /**
@@ -15456,7 +15833,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	   */
 	  var computed = window.getComputedStyle(document.documentElement, '');
 	  for (var key in computed) {
-	    cache[computed[key]] = computed[key];
+	    if (!isNaN(key)) cache[computed[key]] = computed[key];
 	  }
 	}
 	
@@ -15478,12 +15855,12 @@ return /******/ (function(modules) { // webpackBootstrap
 	  // Camelization is required because we can't test using
 	  // css syntax for e.g. in FF.
 	  // Test if property is supported as it is.
-	  if ((0, _camelize2.default)(prop) in el.style) {
+	  if ((0, _camelize2['default'])(prop) in el.style) {
 	    cache[prop] = prop;
 	  }
 	  // Test if property is supported with vendor prefix.
-	  else if (_prefix2.default.js + (0, _camelize2.default)('-' + prop) in el.style) {
-	      cache[prop] = _prefix2.default.css + prop;
+	  else if (_prefix2['default'].js + (0, _camelize2['default'])('-' + prop) in el.style) {
+	      cache[prop] = _prefix2['default'].css + prop;
 	    } else {
 	      cache[prop] = false;
 	    }
@@ -15500,7 +15877,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	Object.defineProperty(exports, "__esModule", {
 	  value: true
 	});
-	exports.default = camelize;
+	exports['default'] = camelize;
 	var regExp = /[-\s]+(.)?/g;
 	
 	/**
@@ -15526,22 +15903,22 @@ return /******/ (function(modules) { // webpackBootstrap
 	Object.defineProperty(exports, "__esModule", {
 	  value: true
 	});
-	exports.default = supportedValue;
+	exports['default'] = supportedValue;
 	
-	var _isBrowser = __webpack_require__(411);
+	var _isInBrowser = __webpack_require__(411);
 	
-	var _isBrowser2 = _interopRequireDefault(_isBrowser);
+	var _isInBrowser2 = _interopRequireDefault(_isInBrowser);
 	
 	var _prefix = __webpack_require__(410);
 	
 	var _prefix2 = _interopRequireDefault(_prefix);
 	
-	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
 	
 	var cache = {};
 	var el = void 0;
 	
-	if (_isBrowser2.default) el = document.createElement('p');
+	if (_isInBrowser2['default']) el = document.createElement('p');
 	
 	/**
 	 * Returns prefixed value if needed. Returns `false` if value is not supported.
@@ -15573,11 +15950,11 @@ return /******/ (function(modules) { // webpackBootstrap
 	  }
 	
 	  // Value is supported as it is.
-	  if (el.style[property] === value) {
+	  if (el.style[property] !== '') {
 	    cache[cacheKey] = value;
 	  } else {
 	    // Test value with vendor prefix.
-	    value = _prefix2.default.css + value;
+	    value = _prefix2['default'].css + value;
 	
 	    // Hardcode test to convert "flex" to "-ms-flexbox" for IE10.
 	    if (value === '-ms-flex') value = '-ms-flexbox';
@@ -15585,10 +15962,13 @@ return /******/ (function(modules) { // webpackBootstrap
 	    el.style[property] = value;
 	
 	    // Value is supported with vendor prefix.
-	    if (el.style[property] === value) cache[cacheKey] = value;
+	    if (el.style[property] !== '') cache[cacheKey] = value;
 	  }
 	
 	  if (!cache[cacheKey]) cache[cacheKey] = false;
+	
+	  // Reset style value.
+	  el.style[property] = '';
 	
 	  return cache[cacheKey];
 	}
@@ -15764,29 +16144,26 @@ return /******/ (function(modules) { // webpackBootstrap
 	        }
 	    }, {
 	        key: 'attributeChangedCallback',
-	        value: function attributeChangedCallback(attribute, oldValue, newValue) {
-	            _get(MotorHTMLNode.prototype.__proto__ || Object.getPrototypeOf(MotorHTMLNode.prototype), 'attributeChangedCallback', this).apply(this, arguments);
-	            this._updateNodeProperty(attribute, oldValue, newValue);
-	        }
-	    }, {
-	        key: '_updateNodeProperty',
 	        value: function () {
-	            var _ref = _asyncToGenerator(regeneratorRuntime.mark(function _callee(attribute, oldValue, newValue) {
+	            var _ref = _asyncToGenerator(regeneratorRuntime.mark(function _callee() {
+	                var _get2;
+	
+	                for (var _len = arguments.length, args = Array(_len), _key = 0; _key < _len; _key++) {
+	                    args[_key] = arguments[_key];
+	                }
+	
 	                return regeneratorRuntime.wrap(function _callee$(_context) {
 	                    while (1) {
 	                        switch (_context.prev = _context.next) {
 	                            case 0:
-	                                // attributes on our HTML elements are the same name as those on
-	                                // the Node class (the setters).
-	                                if (newValue !== oldValue) {
-	                                    if (attribute.match(/opacity/i)) this.imperativeCounterpart[attribute] = window.parseFloat(newValue);else if (attribute.match(/sizeMode/i)) this.imperativeCounterpart[attribute] = parseStringArray(newValue);else if (attribute.match(/rotation/i) || attribute.match(/scale/i) || attribute.match(/position/i) || attribute.match(/absoluteSize/i) || attribute.match(/proportionalSize/i) || attribute.match(/align/i) || attribute.match(/mountPoint/i) || attribute.match(/origin/i) || attribute.match(/skew/i)) {
-	                                        this.imperativeCounterpart[attribute] = parseNumberArray(newValue);
-	                                    } else {
-	                                        /* nothing, ignore other attributes */
-	                                    }
-	                                }
+	                                (_get2 = _get(MotorHTMLNode.prototype.__proto__ || Object.getPrototypeOf(MotorHTMLNode.prototype), 'attributeChangedCallback', this)).call.apply(_get2, [this].concat(args));
+	                                _context.next = 3;
+	                                return this._imperativeCounterpartPromise;
 	
-	                            case 1:
+	                            case 3:
+	                                this._updateNodeProperty.apply(this, args);
+	
+	                            case 4:
 	                            case 'end':
 	                                return _context.stop();
 	                        }
@@ -15794,12 +16171,25 @@ return /******/ (function(modules) { // webpackBootstrap
 	                }, _callee, this);
 	            }));
 	
-	            function _updateNodeProperty(_x, _x2, _x3) {
+	            function attributeChangedCallback() {
 	                return _ref.apply(this, arguments);
 	            }
 	
-	            return _updateNodeProperty;
+	            return attributeChangedCallback;
 	        }()
+	    }, {
+	        key: '_updateNodeProperty',
+	        value: function _updateNodeProperty(attribute, oldValue, newValue) {
+	            // attributes on our HTML elements are the same name as those on
+	            // the Node class (the setters).
+	            if (newValue !== oldValue) {
+	                if (attribute.match(/opacity/i)) this.imperativeCounterpart[attribute] = window.parseFloat(newValue);else if (attribute.match(/sizeMode/i)) this.imperativeCounterpart[attribute] = parseStringArray(newValue);else if (attribute.match(/rotation/i) || attribute.match(/scale/i) || attribute.match(/position/i) || attribute.match(/absoluteSize/i) || attribute.match(/proportionalSize/i) || attribute.match(/align/i) || attribute.match(/mountPoint/i) || attribute.match(/origin/i) || attribute.match(/skew/i)) {
+	                    this.imperativeCounterpart[attribute] = parseNumberArray(newValue);
+	                } else {
+	                    /* nothing, ignore other attributes */
+	                }
+	            }
+	        }
 	    }]);
 	
 	    return MotorHTMLNode;
@@ -15809,8 +16199,8 @@ return /******/ (function(modules) { // webpackBootstrap
 	// so that the same getters/setters can be called from HTML side of the API.
 	
 	
-	proxyGettersSetters(_Transformable2.default, MotorHTMLNode);
-	proxyGettersSetters(_Sizeable2.default, MotorHTMLNode);
+	(0, _base.proxyGettersSetters)(_Transformable2.default, MotorHTMLNode);
+	(0, _base.proxyGettersSetters)(_Sizeable2.default, MotorHTMLNode);
 	
 	function parseNumberArray(str) {
 	    checkIsNumberArrayString(str);
@@ -15838,82 +16228,6 @@ return /******/ (function(modules) { // webpackBootstrap
 	
 	function checkIsSizeArrayString(str) {
 	    return;
-	}
-	
-	// Creates setters/getters on the TargetClass which proxy to the
-	// setters/getters on SourceClass.
-	function proxyGettersSetters(SourceClass, TargetClass) {
-	
-	    // Node methods not to proxy (private underscored methods are also detected and
-	    // ignored).
-	    //
-	    // XXX Should use a whitelist instead of a blacklist?
-	    var methodProxyBlacklist = ['constructor', 'parent', 'children', // proxying this one would really break stuff (f.e. React)
-	    'element', 'scene', 'addChild', 'addChildren', 'removeChild', 'removeChildren'];
-	
-	    var props = Object.getOwnPropertyNames(SourceClass.prototype);
-	
-	    var _iteratorNormalCompletion = true;
-	    var _didIteratorError = false;
-	    var _iteratorError = undefined;
-	
-	    try {
-	        var _loop = function _loop() {
-	            var prop = _step.value;
-	
-	            if (
-	            // skip the blacklisted properties
-	            methodProxyBlacklist.indexOf(prop) >= 0
-	
-	            // skip the private underscored properties
-	            || prop.indexOf('_') == 0
-	
-	            // skip properties that are already defined.
-	            || TargetClass.prototype.hasOwnProperty(prop)) return 'continue';
-	
-	            var targetDescriptor = {};
-	            var sourceDescriptor = Object.getOwnPropertyDescriptor(SourceClass.prototype, prop);
-	
-	            // if the property has a setter
-	            if (sourceDescriptor.set) {
-	                Object.assign(targetDescriptor, {
-	                    set: function set(value) {
-	                        this.imperativeCounterpart[prop] = value;
-	                    }
-	                });
-	            }
-	
-	            // if the property has a getter
-	            if (sourceDescriptor.get) {
-	                Object.assign(targetDescriptor, {
-	                    get: function get() {
-	                        return this.imperativeCounterpart[prop];
-	                    }
-	                });
-	            }
-	
-	            Object.defineProperty(TargetClass.prototype, prop, targetDescriptor);
-	        };
-	
-	        for (var _iterator = props[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
-	            var _ret = _loop();
-	
-	            if (_ret === 'continue') continue;
-	        }
-	    } catch (err) {
-	        _didIteratorError = true;
-	        _iteratorError = err;
-	    } finally {
-	        try {
-	            if (!_iteratorNormalCompletion && _iterator.return) {
-	                _iterator.return();
-	            }
-	        } finally {
-	            if (_didIteratorError) {
-	                throw _iteratorError;
-	            }
-	        }
-	    }
 	}
 	
 	exports.default = MotorHTMLNode = document.registerElement('motor-node', MotorHTMLNode);
