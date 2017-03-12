@@ -168,7 +168,7 @@ export function initMotorHTMLBase() {
             // TODO: renewable promise after unmount.
             this._imperativeCounterpartPromise = Promise.resolve()
                 .then(() => this._associateImperativeNode())
-            this.ready = this._imperativeCounterpartPromise
+            this.mountPromise = this._imperativeCounterpartPromise
                 .then(() => this.imperativeCounterpart.mountPromise)
         }
 
