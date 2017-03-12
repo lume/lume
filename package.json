@@ -18,8 +18,9 @@
     "build-global": "./.scripts/build-global.sh",
     "watch": "./.scripts/build-cjs.sh --watch & P1=$!; ./.scripts/build-global.sh --watch & P2=$!; wait $P1 $P2",
     "prepublish": "npm run build-cjs",
+    "preversion": "git reset HEAD global.js && git checkout -- global.js && git add . && git stash",
     "version": "npm run build-global && git add -f global.js",
-    "postversion": "npm publish && git push && git push --tags"
+    "postversion": "npm publish && git push && git push --tags && git stash pop && git reset HEAD"
   },
   "dependencies": {
     "army-knife": "^0.2.1",
