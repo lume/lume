@@ -13183,7 +13183,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	                this._imperativeCounterpartPromise = Promise.resolve().then(function () {
 	                    return _this2._associateImperativeNode();
 	                });
-	                this.ready = this._imperativeCounterpartPromise.then(function () {
+	                this.mountPromise = this._imperativeCounterpartPromise.then(function () {
 	                    return _this2.imperativeCounterpart.mountPromise;
 	                });
 	            }
