@@ -556,7 +556,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 /***/ },
 /* 6 */
-[422, 7],
+[456, 7],
 /* 7 */
 /***/ function(module, exports) {
 
@@ -625,11 +625,11 @@ return /******/ (function(modules) { // webpackBootstrap
 
 /***/ },
 /* 10 */
-[423, 11, 17, 6],
+[457, 11, 17, 6],
 /* 11 */
-[424, 12, 14, 16, 6],
+[458, 12, 14, 16, 6],
 /* 12 */
-[425, 13],
+[459, 13],
 /* 13 */
 /***/ function(module, exports) {
 
@@ -639,11 +639,11 @@ return /******/ (function(modules) { // webpackBootstrap
 
 /***/ },
 /* 14 */
-[426, 6, 7, 15],
+[460, 6, 7, 15],
 /* 15 */
-[427, 13, 4],
+[461, 13, 4],
 /* 16 */
-[428, 13],
+[462, 13],
 /* 17 */
 /***/ function(module, exports) {
 
@@ -705,7 +705,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 /***/ },
 /* 20 */
-[429, 21],
+[463, 21],
 /* 21 */
 /***/ function(module, exports) {
 
@@ -774,11 +774,11 @@ return /******/ (function(modules) { // webpackBootstrap
 
 /***/ },
 /* 23 */
-[430, 4],
+[464, 4],
 /* 24 */
-[431, 11, 5, 25],
+[465, 11, 5, 25],
 /* 25 */
-[432, 23, 19, 4],
+[466, 23, 19, 4],
 /* 26 */
 /***/ function(module, exports, __webpack_require__) {
 
@@ -821,13 +821,13 @@ return /******/ (function(modules) { // webpackBootstrap
 
 /***/ },
 /* 30 */
-[433, 31, 41],
+[467, 31, 41],
 /* 31 */
-[434, 5, 32, 36, 40],
+[468, 5, 32, 36, 40],
 /* 32 */
-[435, 33, 35],
+[469, 33, 35],
 /* 33 */
-[436, 34],
+[470, 34],
 /* 34 */
 /***/ function(module, exports) {
 
@@ -849,9 +849,9 @@ return /******/ (function(modules) { // webpackBootstrap
 
 /***/ },
 /* 36 */
-[437, 32, 37, 39],
+[471, 32, 37, 39],
 /* 37 */
-[438, 38],
+[472, 38],
 /* 38 */
 /***/ function(module, exports) {
 
@@ -864,9 +864,9 @@ return /******/ (function(modules) { // webpackBootstrap
 
 /***/ },
 /* 39 */
-[439, 38],
+[473, 38],
 /* 40 */
-[440, 23, 19],
+[474, 23, 19],
 /* 41 */
 /***/ function(module, exports) {
 
@@ -919,11 +919,11 @@ return /******/ (function(modules) { // webpackBootstrap
 
 /***/ },
 /* 46 */
-[441, 12, 47, 41, 40, 15, 48],
+[475, 12, 47, 41, 40, 15, 48],
 /* 47 */
-[442, 11, 12, 30, 6],
+[476, 11, 12, 30, 6],
 /* 48 */
-[443, 4],
+[477, 4],
 /* 49 */
 /***/ function(module, exports, __webpack_require__) {
 
@@ -1050,9 +1050,9 @@ return /******/ (function(modules) { // webpackBootstrap
 
 /***/ },
 /* 58 */
-[444, 35],
+[478, 35],
 /* 59 */
-[445, 5, 58, 40],
+[479, 5, 58, 40],
 /* 60 */
 /***/ function(module, exports, __webpack_require__) {
 
@@ -1275,7 +1275,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 /***/ },
 /* 75 */
-[446, 34, 25],
+[480, 34, 25],
 /* 76 */
 /***/ function(module, exports, __webpack_require__) {
 
@@ -2210,11 +2210,11 @@ return /******/ (function(modules) { // webpackBootstrap
 
 /***/ },
 /* 126 */
-[447, 127, 128],
+[481, 127, 128],
 /* 127 */
-[448, 38, 35],
+[482, 38, 35],
 /* 128 */
-[449, 28, 8, 18, 10, 5, 129, 130, 24, 59, 25],
+[483, 28, 8, 18, 10, 5, 129, 130, 24, 59, 25],
 /* 129 */
 /***/ function(module, exports) {
 
@@ -2222,7 +2222,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 /***/ },
 /* 130 */
-[450, 46, 17, 24, 10, 25],
+[484, 46, 17, 24, 10, 25],
 /* 131 */
 /***/ function(module, exports, __webpack_require__) {
 
@@ -2689,9 +2689,9 @@ return /******/ (function(modules) { // webpackBootstrap
 
 /***/ },
 /* 161 */
-[451, 12],
+[485, 12],
 /* 162 */
-[452, 129, 25],
+[486, 129, 25],
 /* 163 */
 /***/ function(module, exports, __webpack_require__) {
 
@@ -2706,9 +2706,9 @@ return /******/ (function(modules) { // webpackBootstrap
 
 /***/ },
 /* 164 */
-[453, 75, 25, 129, 9],
+[487, 75, 25, 129, 9],
 /* 165 */
-[454, 25],
+[488, 25],
 /* 166 */
 /***/ function(module, exports, __webpack_require__) {
 
@@ -3238,7 +3238,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 /***/ },
 /* 193 */
-[455, 186, 194, 129, 32, 128],
+[489, 186, 194, 129, 32, 128],
 /* 194 */
 /***/ function(module, exports) {
 
@@ -3509,7 +3509,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 /***/ },
 /* 204 */
-[456, 28, 4, 20, 75, 8, 13, 21, 205, 206, 207, 208, 209, 25, 210, 24, 192, 9, 165],
+[490, 28, 4, 20, 75, 8, 13, 21, 205, 206, 207, 208, 209, 25, 210, 24, 192, 9, 165],
 /* 205 */
 /***/ function(module, exports) {
 
@@ -3521,13 +3521,13 @@ return /******/ (function(modules) { // webpackBootstrap
 
 /***/ },
 /* 206 */
-[457, 20, 161, 162, 12, 37, 164],
+[491, 20, 161, 162, 12, 37, 164],
 /* 207 */
-[458, 12, 21, 25],
+[492, 12, 21, 25],
 /* 208 */
-[459, 20, 78, 48, 15, 4, 34],
+[493, 20, 78, 48, 15, 4, 34],
 /* 209 */
-[460, 4, 208, 34],
+[494, 4, 208, 34],
 /* 210 */
 /***/ function(module, exports, __webpack_require__) {
 
@@ -7206,32 +7206,64 @@ return /******/ (function(modules) { // webpackBootstrap
 	'use strict';
 	
 	Object.defineProperty(exports, "__esModule", {
-	  value: true
+	    value: true
 	});
+	exports.motorHtml = exports.motor = exports.utils = exports.PushMenuLayout = exports.Plane = exports.Molecule = exports.Grid = exports.DoubleSidedPlane = exports.Cube = exports.Calendar = undefined;
 	
-	var _motor = __webpack_require__(299);
+	var _Calendar2 = __webpack_require__(299);
 	
-	Object.keys(_motor).forEach(function (key) {
-	  if (key === "default" || key === "__esModule") return;
-	  Object.defineProperty(exports, key, {
-	    enumerable: true,
-	    get: function get() {
-	      return _motor[key];
-	    }
-	  });
-	});
+	var _Calendar3 = _interopRequireDefault(_Calendar2);
 	
-	var _motorHtml = __webpack_require__(420);
+	var _Cube2 = __webpack_require__(326);
 	
-	Object.keys(_motorHtml).forEach(function (key) {
-	  if (key === "default" || key === "__esModule") return;
-	  Object.defineProperty(exports, key, {
-	    enumerable: true,
-	    get: function get() {
-	      return _motorHtml[key];
-	    }
-	  });
-	});
+	var _Cube3 = _interopRequireDefault(_Cube2);
+	
+	var _DoubleSidedPlane2 = __webpack_require__(322);
+	
+	var _DoubleSidedPlane3 = _interopRequireDefault(_DoubleSidedPlane2);
+	
+	var _Grid2 = __webpack_require__(320);
+	
+	var _Grid3 = _interopRequireDefault(_Grid2);
+	
+	var _Molecule2 = __webpack_require__(306);
+	
+	var _Molecule3 = _interopRequireDefault(_Molecule2);
+	
+	var _Plane2 = __webpack_require__(323);
+	
+	var _Plane3 = _interopRequireDefault(_Plane2);
+	
+	var _PushMenuLayout2 = __webpack_require__(331);
+	
+	var _PushMenuLayout3 = _interopRequireDefault(_PushMenuLayout2);
+	
+	var _utils = __webpack_require__(314);
+	
+	var utils = _interopRequireWildcard(_utils);
+	
+	var _motor = __webpack_require__(361);
+	
+	var motor = _interopRequireWildcard(_motor);
+	
+	var _motorHtml = __webpack_require__(454);
+	
+	var motorHtml = _interopRequireWildcard(_motorHtml);
+	
+	function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
+	
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+	
+	exports.Calendar = _Calendar3.default;
+	exports.Cube = _Cube3.default;
+	exports.DoubleSidedPlane = _DoubleSidedPlane3.default;
+	exports.Grid = _Grid3.default;
+	exports.Molecule = _Molecule3.default;
+	exports.Plane = _Plane3.default;
+	exports.PushMenuLayout = _PushMenuLayout3.default;
+	exports.utils = utils;
+	exports.motor = motor;
+	exports.motorHtml = motorHtml;
 
 /***/ },
 /* 299 */
@@ -7240,53 +7272,10145 @@ return /******/ (function(modules) { // webpackBootstrap
 	'use strict';
 	
 	Object.defineProperty(exports, "__esModule", {
+	    value: true
+	});
+	exports.Calendar = undefined;
+	
+	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+	
+	var _Transform = __webpack_require__(300);
+	
+	var _Transform2 = _interopRequireDefault(_Transform);
+	
+	var _Transitionable = __webpack_require__(301);
+	
+	var _Transitionable2 = _interopRequireDefault(_Transitionable);
+	
+	var _Easing = __webpack_require__(305);
+	
+	var _Easing2 = _interopRequireDefault(_Easing);
+	
+	var _Molecule2 = __webpack_require__(306);
+	
+	var _Molecule3 = _interopRequireDefault(_Molecule2);
+	
+	var _Grid = __webpack_require__(320);
+	
+	var _Grid2 = _interopRequireDefault(_Grid);
+	
+	var _DoubleSidedPlane = __webpack_require__(322);
+	
+	var _DoubleSidedPlane2 = _interopRequireDefault(_DoubleSidedPlane);
+	
+	var _forLength = __webpack_require__(321);
+	
+	var _forLength2 = _interopRequireDefault(_forLength);
+	
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+	
+	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+	
+	function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+	
+	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; } /*
+	                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                * LICENSE
+	                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                *
+	                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                * This Source Code Form is subject to the terms of the Mozilla Public
+	                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                * License, v. 2.0. If a copy of the MPL was not distributed with this
+	                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                * file, You can obtain one at http://mozilla.org/MPL/2.0/.
+	                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                *
+	                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                */
+	
+	/**
+	 * A calendar widget for selecting a date (WIP).
+	 *
+	 * @class Calendar
+	 * @extends Molecule
+	 */
+	var Calendar = exports.Calendar = function (_Molecule) {
+	    _inherits(Calendar, _Molecule);
+	
+	    /**
+	     * Create a new `Calendar` with the given Famo.us-style size array and
+	     * transition. The transition is the type of animation used when switching
+	     * between months.
+	     *
+	     * @constructor
+	     * @param {Array} calendarSize A Famo.us-style width/height size array.
+	     * @param {String} transition The name of the animation transition to use when switching months.
+	     */
+	    function Calendar(calendarSize, transition) {
+	        _classCallCheck(this, Calendar);
+	
+	        var _this = _possibleConstructorReturn(this, (Calendar.__proto__ || Object.getPrototypeOf(Calendar)).call(this, { size: calendarSize }));
+	
+	        _this.transition = transition;
+	        _this.flipSide = 0; // 0 means the initial front faces are showing, 1 means the initial back faces are showing.
+	        _this.columnsRows = [7, 6];
+	        _this.planes = [];
+	
+	        _this._initializeTransitions();
+	        _this._createGrid();
+	
+	        setTimeout(function () {
+	            this.transitions[this.transition]();
+	            setInterval(this.transitions[this.transition], 2000);
+	        }.bind(_this), 800);
+	        return _this;
+	    }
+	
+	    /**
+	     * Creates the grid used for the layout of the day cells.
+	     *
+	     * @private
+	     */
+	
+	
+	    _createClass(Calendar, [{
+	        key: '_createGrid',
+	        value: function _createGrid() {
+	            var grid = new _Grid2.default(this.columnsRows[0], this.columnsRows[1], this.options.size);
+	
+	            (0, _forLength2.default)(this.columnsRows[0] * this.columnsRows[1], function (i) {
+	                var plane = new _DoubleSidedPlane2.default({
+	                    properties: {
+	                        background: 'teal'
+	                    }
+	                });
+	                this.planes.push(plane);
+	            }.bind(this));
+	
+	            grid.setChildren(this.planes);
+	            this.add(grid);
+	        }
+	
+	        /**
+	         * Set up `this.transitions`, containing the available month-to-month
+	         * transitions.
+	         *
+	         * @private
+	         */
+	
+	    }, {
+	        key: '_initializeTransitions',
+	        value: function _initializeTransitions() {
+	            this.transitions = {
+	                flipDiagonal: function () {
+	                    this.flipSide = +!this.flipSide;
+	                    // determine which dimension of the grid is shorter and which is longer.
+	                    var shortest = 0;
+	                    var longest = void 0;
+	                    this.columnsRows.forEach(function (item, index) {
+	                        if (item < this.columnsRows[shortest]) shortest = index;
+	                    }.bind(this));
+	                    longest = +!shortest;
+	
+	                    // for each diagonal of the grid, flip those cells.
+	                    (0, _forLength2.default)(this.columnsRows[0] + this.columnsRows[1] - 1, function (column) {
+	                        (0, _forLength2.default)(this.columnsRows[shortest], function (row) {
+	                            if (column - row >= 0 && column - row < this.columnsRows[longest]) {
+	                                var plane = this.planes[column - row + this.columnsRows[longest] * row];
+	                                flipOne(plane, column);
+	                            }
+	                        }.bind(this));
+	                    }.bind(this));
+	
+	                    function flipOne(item, column) {
+	                        if (typeof item.__targetRotation == 'undefined') {
+	                            item.__targetRotation = new _Transitionable2.default(0);
+	                        }
+	                        var rotation = new _Transitionable2.default(item.__targetRotation.get());
+	                        item.__targetRotation.set(item.__targetRotation.get() + Math.PI);
+	
+	                        //item.get().transformFrom(function() {
+	                        //return Transform.rotateY(rotation.get());
+	                        //});
+	                        item.children[0].get().transformFrom(function () {
+	                            return _Transform2.default.rotateY(rotation.get());
+	                        });
+	                        item.children[1].get().transformFrom(function () {
+	                            return _Transform2.default.rotateY(rotation.get() + Math.PI);
+	                        });
+	
+	                        setTimeout(function () {
+	                            rotation.set(item.__targetRotation.get(), { duration: 2000, curve: _Easing2.default.outExpo });
+	                        }, 0 + 50 * column);
+	                    }
+	                }.bind(this)
+	            };
+	        }
+	    }]);
+	
+	    return Calendar;
+	}(_Molecule3.default);
+	
+	exports.default = Calendar;
+
+/***/ },
+/* 300 */
+/***/ function(module, exports) {
+
+	/* This Source Code Form is subject to the terms of the Mozilla Public
+	 * License, v. 2.0. If a copy of the MPL was not distributed with this
+	 * file, You can obtain one at http://mozilla.org/MPL/2.0/.
+	 *
+	 * Owner: mark@famo.us
+	 * @license MPL 2.0
+	 * @copyright Famous Industries, Inc. 2015
+	 */
+	
+	
+	    /**
+	     *  A high-performance static matrix math library used to calculate
+	     *    affine transforms on surfaces and other renderables.
+	     *    Famo.us uses 4x4 matrices corresponding directly to
+	     *    WebKit matrices (column-major order).
+	     *
+	     *    The internal "type" of a Matrix is a 16-long float array in
+	     *    row-major order, with:
+	     *    elements [0],[1],[2],[4],[5],[6],[8],[9],[10] forming the 3x3
+	     *          transformation matrix;
+	     *    elements [12], [13], [14] corresponding to the t_x, t_y, t_z
+	     *           translation;
+	     *    elements [3], [7], [11] set to 0;
+	     *    element [15] set to 1.
+	     *    All methods are static.
+	     *
+	     * @static
+	     *
+	     * @class Transform
+	     */
+	    var Transform = {};
+	
+	    // WARNING: these matrices correspond to WebKit matrices, which are
+	    //    transposed from their math counterparts
+	    Transform.precision = 1e-6;
+	    Transform.identity = [1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1];
+	
+	    /**
+	     * Multiply two or more Transform matrix types to return a Transform matrix.
+	     *
+	     * @method multiply4x4
+	     * @static
+	     * @param {Transform} a left Transform
+	     * @param {Transform} b right Transform
+	     * @return {Transform}
+	     */
+	    Transform.multiply4x4 = function multiply4x4(a, b) {
+	        return [
+	            a[0] * b[0] + a[4] * b[1] + a[8] * b[2] + a[12] * b[3],
+	            a[1] * b[0] + a[5] * b[1] + a[9] * b[2] + a[13] * b[3],
+	            a[2] * b[0] + a[6] * b[1] + a[10] * b[2] + a[14] * b[3],
+	            a[3] * b[0] + a[7] * b[1] + a[11] * b[2] + a[15] * b[3],
+	            a[0] * b[4] + a[4] * b[5] + a[8] * b[6] + a[12] * b[7],
+	            a[1] * b[4] + a[5] * b[5] + a[9] * b[6] + a[13] * b[7],
+	            a[2] * b[4] + a[6] * b[5] + a[10] * b[6] + a[14] * b[7],
+	            a[3] * b[4] + a[7] * b[5] + a[11] * b[6] + a[15] * b[7],
+	            a[0] * b[8] + a[4] * b[9] + a[8] * b[10] + a[12] * b[11],
+	            a[1] * b[8] + a[5] * b[9] + a[9] * b[10] + a[13] * b[11],
+	            a[2] * b[8] + a[6] * b[9] + a[10] * b[10] + a[14] * b[11],
+	            a[3] * b[8] + a[7] * b[9] + a[11] * b[10] + a[15] * b[11],
+	            a[0] * b[12] + a[4] * b[13] + a[8] * b[14] + a[12] * b[15],
+	            a[1] * b[12] + a[5] * b[13] + a[9] * b[14] + a[13] * b[15],
+	            a[2] * b[12] + a[6] * b[13] + a[10] * b[14] + a[14] * b[15],
+	            a[3] * b[12] + a[7] * b[13] + a[11] * b[14] + a[15] * b[15]
+	        ];
+	    };
+	
+	    /**
+	     * Fast-multiply two Transform matrix types to return a
+	     *    Matrix, assuming bottom row on each is [0 0 0 1].
+	     *
+	     * @method multiply
+	     * @static
+	     * @param {Transform} a left Transform
+	     * @param {Transform} b right Transform
+	     * @return {Transform}
+	     */
+	    Transform.multiply = function multiply(a, b) {
+	        return [
+	            a[0] * b[0] + a[4] * b[1] + a[8] * b[2],
+	            a[1] * b[0] + a[5] * b[1] + a[9] * b[2],
+	            a[2] * b[0] + a[6] * b[1] + a[10] * b[2],
+	            0,
+	            a[0] * b[4] + a[4] * b[5] + a[8] * b[6],
+	            a[1] * b[4] + a[5] * b[5] + a[9] * b[6],
+	            a[2] * b[4] + a[6] * b[5] + a[10] * b[6],
+	            0,
+	            a[0] * b[8] + a[4] * b[9] + a[8] * b[10],
+	            a[1] * b[8] + a[5] * b[9] + a[9] * b[10],
+	            a[2] * b[8] + a[6] * b[9] + a[10] * b[10],
+	            0,
+	            a[0] * b[12] + a[4] * b[13] + a[8] * b[14] + a[12],
+	            a[1] * b[12] + a[5] * b[13] + a[9] * b[14] + a[13],
+	            a[2] * b[12] + a[6] * b[13] + a[10] * b[14] + a[14],
+	            1
+	        ];
+	    };
+	
+	    /**
+	     * Return a Transform translated by additional amounts in each
+	     *    dimension. This is equivalent to the result of
+	     *
+	     *    Transform.multiply(Matrix.translate(t[0], t[1], t[2]), m).
+	     *
+	     * @method thenMove
+	     * @static
+	     * @param {Transform} m a Transform
+	     * @param {Array.Number} t floats delta vector of length 2 or 3
+	     * @return {Transform}
+	     */
+	    Transform.thenMove = function thenMove(m, t) {
+	        if (!t[2]) t[2] = 0;
+	        return [m[0], m[1], m[2], 0, m[4], m[5], m[6], 0, m[8], m[9], m[10], 0, m[12] + t[0], m[13] + t[1], m[14] + t[2], 1];
+	    };
+	
+	    /**
+	     * Return a Transform matrix which represents the result of a transform matrix
+	     *    applied after a move. This is faster than the equivalent multiply.
+	     *    This is equivalent to the result of:
+	     *
+	     *    Transform.multiply(m, Transform.translate(t[0], t[1], t[2])).
+	     *
+	     * @method moveThen
+	     * @static
+	     * @param {Array.Number} v vector representing initial movement
+	     * @param {Transform} m matrix to apply afterwards
+	     * @return {Transform} the resulting matrix
+	     */
+	    Transform.moveThen = function moveThen(v, m) {
+	        if (!v[2]) v[2] = 0;
+	        var t0 = v[0] * m[0] + v[1] * m[4] + v[2] * m[8];
+	        var t1 = v[0] * m[1] + v[1] * m[5] + v[2] * m[9];
+	        var t2 = v[0] * m[2] + v[1] * m[6] + v[2] * m[10];
+	        return Transform.thenMove(m, [t0, t1, t2]);
+	    };
+	
+	    /**
+	     * Return a Transform which represents a translation by specified
+	     *    amounts in each dimension.
+	     *
+	     * @method translate
+	     * @static
+	     * @param {Number} x x translation
+	     * @param {Number} y y translation
+	     * @param {Number} z z translation
+	     * @return {Transform}
+	     */
+	    Transform.translate = function translate(x, y, z) {
+	        if (z === undefined) z = 0;
+	        return [1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, x, y, z, 1];
+	    };
+	
+	    /**
+	     * Return a Transform scaled by a vector in each
+	     *    dimension. This is a more performant equivalent to the result of
+	     *
+	     *    Transform.multiply(Transform.scale(s[0], s[1], s[2]), m).
+	     *
+	     * @method thenScale
+	     * @static
+	     * @param {Transform} m a matrix
+	     * @param {Array.Number} s delta vector (array of floats &&
+	     *    array.length == 3)
+	     * @return {Transform}
+	     */
+	    Transform.thenScale = function thenScale(m, s) {
+	        return [
+	            s[0] * m[0], s[1] * m[1], s[2] * m[2], 0,
+	            s[0] * m[4], s[1] * m[5], s[2] * m[6], 0,
+	            s[0] * m[8], s[1] * m[9], s[2] * m[10], 0,
+	            s[0] * m[12], s[1] * m[13], s[2] * m[14], 1
+	        ];
+	    };
+	
+	    /**
+	     * Return a Transform which represents a scale by specified amounts
+	     *    in each dimension.
+	     *
+	     * @method scale
+	     * @static
+	     * @param {Number} x x scale factor
+	     * @param {Number} y y scale factor
+	     * @param {Number} z z scale factor
+	     * @return {Transform}
+	     */
+	    Transform.scale = function scale(x, y, z) {
+	        if (z === undefined) z = 1;
+	        if (y === undefined) y = x;
+	        return [x, 0, 0, 0, 0, y, 0, 0, 0, 0, z, 0, 0, 0, 0, 1];
+	    };
+	
+	    /**
+	     * Return a Transform which represents a clockwise
+	     *    rotation around the x axis.
+	     *
+	     * @method rotateX
+	     * @static
+	     * @param {Number} theta radians
+	     * @return {Transform}
+	     */
+	    Transform.rotateX = function rotateX(theta) {
+	        var cosTheta = Math.cos(theta);
+	        var sinTheta = Math.sin(theta);
+	        return [1, 0, 0, 0, 0, cosTheta, sinTheta, 0, 0, -sinTheta, cosTheta, 0, 0, 0, 0, 1];
+	    };
+	
+	    /**
+	     * Return a Transform which represents a clockwise
+	     *    rotation around the y axis.
+	     *
+	     * @method rotateY
+	     * @static
+	     * @param {Number} theta radians
+	     * @return {Transform}
+	     */
+	    Transform.rotateY = function rotateY(theta) {
+	        var cosTheta = Math.cos(theta);
+	        var sinTheta = Math.sin(theta);
+	        return [cosTheta, 0, -sinTheta, 0, 0, 1, 0, 0, sinTheta, 0, cosTheta, 0, 0, 0, 0, 1];
+	    };
+	
+	    /**
+	     * Return a Transform which represents a clockwise
+	     *    rotation around the z axis.
+	     *
+	     * @method rotateZ
+	     * @static
+	     * @param {Number} theta radians
+	     * @return {Transform}
+	     */
+	    Transform.rotateZ = function rotateZ(theta) {
+	        var cosTheta = Math.cos(theta);
+	        var sinTheta = Math.sin(theta);
+	        return [cosTheta, sinTheta, 0, 0, -sinTheta, cosTheta, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1];
+	    };
+	
+	    /**
+	     * Return a Transform which represents composed clockwise
+	     *    rotations along each of the axes. Equivalent to the result of
+	     *    Matrix.multiply(rotateX(phi), rotateY(theta), rotateZ(psi)).
+	     *
+	     * @method rotate
+	     * @static
+	     * @param {Number} phi radians to rotate about the positive x axis
+	     * @param {Number} theta radians to rotate about the positive y axis
+	     * @param {Number} psi radians to rotate about the positive z axis
+	     * @return {Transform}
+	     */
+	    Transform.rotate = function rotate(phi, theta, psi) {
+	        var cosPhi = Math.cos(phi);
+	        var sinPhi = Math.sin(phi);
+	        var cosTheta = Math.cos(theta);
+	        var sinTheta = Math.sin(theta);
+	        var cosPsi = Math.cos(psi);
+	        var sinPsi = Math.sin(psi);
+	        var result = [
+	            cosTheta * cosPsi,
+	            cosPhi * sinPsi + sinPhi * sinTheta * cosPsi,
+	            sinPhi * sinPsi - cosPhi * sinTheta * cosPsi,
+	            0,
+	            -cosTheta * sinPsi,
+	            cosPhi * cosPsi - sinPhi * sinTheta * sinPsi,
+	            sinPhi * cosPsi + cosPhi * sinTheta * sinPsi,
+	            0,
+	            sinTheta,
+	            -sinPhi * cosTheta,
+	            cosPhi * cosTheta,
+	            0,
+	            0, 0, 0, 1
+	        ];
+	        return result;
+	    };
+	
+	    /**
+	     * Return a Transform which represents an axis-angle rotation
+	     *
+	     * @method rotateAxis
+	     * @static
+	     * @param {Array.Number} v unit vector representing the axis to rotate about
+	     * @param {Number} theta radians to rotate clockwise about the axis
+	     * @return {Transform}
+	     */
+	    Transform.rotateAxis = function rotateAxis(v, theta) {
+	        var sinTheta = Math.sin(theta);
+	        var cosTheta = Math.cos(theta);
+	        var verTheta = 1 - cosTheta; // versine of theta
+	
+	        var xxV = v[0] * v[0] * verTheta;
+	        var xyV = v[0] * v[1] * verTheta;
+	        var xzV = v[0] * v[2] * verTheta;
+	        var yyV = v[1] * v[1] * verTheta;
+	        var yzV = v[1] * v[2] * verTheta;
+	        var zzV = v[2] * v[2] * verTheta;
+	        var xs = v[0] * sinTheta;
+	        var ys = v[1] * sinTheta;
+	        var zs = v[2] * sinTheta;
+	
+	        var result = [
+	            xxV + cosTheta, xyV + zs, xzV - ys, 0,
+	            xyV - zs, yyV + cosTheta, yzV + xs, 0,
+	            xzV + ys, yzV - xs, zzV + cosTheta, 0,
+	            0, 0, 0, 1
+	        ];
+	        return result;
+	    };
+	
+	    /**
+	     * Return a Transform which represents a transform matrix applied about
+	     * a separate origin point.
+	     *
+	     * @method aboutOrigin
+	     * @static
+	     * @param {Array.Number} v origin point to apply matrix
+	     * @param {Transform} m matrix to apply
+	     * @return {Transform}
+	     */
+	    Transform.aboutOrigin = function aboutOrigin(v, m) {
+	        var t0 = v[0] - (v[0] * m[0] + v[1] * m[4] + v[2] * m[8]);
+	        var t1 = v[1] - (v[0] * m[1] + v[1] * m[5] + v[2] * m[9]);
+	        var t2 = v[2] - (v[0] * m[2] + v[1] * m[6] + v[2] * m[10]);
+	        return Transform.thenMove(m, [t0, t1, t2]);
+	    };
+	
+	    /**
+	     * Return a Transform representation of a skew transformation
+	     *
+	     * @method skew
+	     * @static
+	     * @param {Number} phi scale factor skew in the x axis
+	     * @param {Number} theta scale factor skew in the y axis
+	     * @param {Number} psi scale factor skew in the z axis
+	     * @return {Transform}
+	     */
+	    Transform.skew = function skew(phi, theta, psi) {
+	        return [1, Math.tan(theta), 0, 0, Math.tan(psi), 1, 0, 0, 0, Math.tan(phi), 1, 0, 0, 0, 0, 1];
+	    };
+	
+	    /**
+	     * Return a Transform representation of a skew in the x-direction
+	     *
+	     * @method skewX
+	     * @static
+	     * @param {Number} angle the angle between the top and left sides
+	     * @return {Transform}
+	     */
+	    Transform.skewX = function skewX(angle) {
+	        return [1, 0, 0, 0, Math.tan(angle), 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1];
+	    };
+	
+	    /**
+	     * Return a Transform representation of a skew in the y-direction
+	     *
+	     * @method skewY
+	     * @static
+	     * @param {Number} angle the angle between the top and right sides
+	     * @return {Transform}
+	     */
+	    Transform.skewY = function skewY(angle) {
+	        return [1, Math.tan(angle), 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1];
+	    };
+	
+	    /**
+	     * Returns a perspective Transform matrix
+	     *
+	     * @method perspective
+	     * @static
+	     * @param {Number} focusZ z position of focal point
+	     * @return {Transform}
+	     */
+	    Transform.perspective = function perspective(focusZ) {
+	        return [1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, -1 / focusZ, 0, 0, 0, 1];
+	    };
+	
+	    /**
+	     * Return translation vector component of given Transform
+	     *
+	     * @method getTranslate
+	     * @static
+	     * @param {Transform} m Transform
+	     * @return {Array.Number} the translation vector [t_x, t_y, t_z]
+	     */
+	    Transform.getTranslate = function getTranslate(m) {
+	        return [m[12], m[13], m[14]];
+	    };
+	
+	    /**
+	     * Return inverse affine transform for given Transform.
+	     *   Note: This assumes m[3] = m[7] = m[11] = 0, and m[15] = 1.
+	     *   Will provide incorrect results if not invertible or preconditions not met.
+	     *
+	     * @method inverse
+	     * @static
+	     * @param {Transform} m Transform
+	     * @return {Transform}
+	     */
+	    Transform.inverse = function inverse(m) {
+	        // only need to consider 3x3 section for affine
+	        var c0 = m[5] * m[10] - m[6] * m[9];
+	        var c1 = m[4] * m[10] - m[6] * m[8];
+	        var c2 = m[4] * m[9] - m[5] * m[8];
+	        var c4 = m[1] * m[10] - m[2] * m[9];
+	        var c5 = m[0] * m[10] - m[2] * m[8];
+	        var c6 = m[0] * m[9] - m[1] * m[8];
+	        var c8 = m[1] * m[6] - m[2] * m[5];
+	        var c9 = m[0] * m[6] - m[2] * m[4];
+	        var c10 = m[0] * m[5] - m[1] * m[4];
+	        var detM = m[0] * c0 - m[1] * c1 + m[2] * c2;
+	        var invD = 1 / detM;
+	        var result = [
+	            invD * c0, -invD * c4, invD * c8, 0,
+	            -invD * c1, invD * c5, -invD * c9, 0,
+	            invD * c2, -invD * c6, invD * c10, 0,
+	            0, 0, 0, 1
+	        ];
+	        result[12] = -m[12] * result[0] - m[13] * result[4] - m[14] * result[8];
+	        result[13] = -m[12] * result[1] - m[13] * result[5] - m[14] * result[9];
+	        result[14] = -m[12] * result[2] - m[13] * result[6] - m[14] * result[10];
+	        return result;
+	    };
+	
+	    /**
+	     * Returns the transpose of a 4x4 matrix
+	     *
+	     * @method transpose
+	     * @static
+	     * @param {Transform} m matrix
+	     * @return {Transform} the resulting transposed matrix
+	     */
+	    Transform.transpose = function transpose(m) {
+	        return [m[0], m[4], m[8], m[12], m[1], m[5], m[9], m[13], m[2], m[6], m[10], m[14], m[3], m[7], m[11], m[15]];
+	    };
+	
+	    function _normSquared(v) {
+	        return (v.length === 2) ? v[0] * v[0] + v[1] * v[1] : v[0] * v[0] + v[1] * v[1] + v[2] * v[2];
+	    }
+	    function _norm(v) {
+	        return Math.sqrt(_normSquared(v));
+	    }
+	    function _sign(n) {
+	        return (n < 0) ? -1 : 1;
+	    }
+	
+	    /**
+	     * Decompose Transform into separate .translate, .rotate, .scale,
+	     *    and .skew components.
+	     *
+	     * @method interpret
+	     * @static
+	     * @param {Transform} M transform matrix
+	     * @return {Object} matrix spec object with component matrices .translate,
+	     *    .rotate, .scale, .skew
+	     */
+	    Transform.interpret = function interpret(M) {
+	
+	        // QR decomposition via Householder reflections
+	        //FIRST ITERATION
+	
+	        //default Q1 to the identity matrix;
+	        var x = [M[0], M[1], M[2]];                // first column vector
+	        var sgn = _sign(x[0]);                     // sign of first component of x (for stability)
+	        var xNorm = _norm(x);                      // norm of first column vector
+	        var v = [x[0] + sgn * xNorm, x[1], x[2]];  // v = x + sign(x[0])|x|e1
+	        var mult = 2 / _normSquared(v);            // mult = 2/v'v
+	
+	        //bail out if our Matrix is singular
+	        if (mult >= Infinity) {
+	            return {translate: Transform.getTranslate(M), rotate: [0, 0, 0], scale: [0, 0, 0], skew: [0, 0, 0]};
+	        }
+	
+	        //evaluate Q1 = I - 2vv'/v'v
+	        var Q1 = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1];
+	
+	        //diagonals
+	        Q1[0]  = 1 - mult * v[0] * v[0];    // 0,0 entry
+	        Q1[5]  = 1 - mult * v[1] * v[1];    // 1,1 entry
+	        Q1[10] = 1 - mult * v[2] * v[2];    // 2,2 entry
+	
+	        //upper diagonal
+	        Q1[1] = -mult * v[0] * v[1];        // 0,1 entry
+	        Q1[2] = -mult * v[0] * v[2];        // 0,2 entry
+	        Q1[6] = -mult * v[1] * v[2];        // 1,2 entry
+	
+	        //lower diagonal
+	        Q1[4] = Q1[1];                      // 1,0 entry
+	        Q1[8] = Q1[2];                      // 2,0 entry
+	        Q1[9] = Q1[6];                      // 2,1 entry
+	
+	        //reduce first column of M
+	        var MQ1 = Transform.multiply(Q1, M);
+	
+	        //SECOND ITERATION on (1,1) minor
+	        var x2 = [MQ1[5], MQ1[6]];
+	        var sgn2 = _sign(x2[0]);                    // sign of first component of x (for stability)
+	        var x2Norm = _norm(x2);                     // norm of first column vector
+	        var v2 = [x2[0] + sgn2 * x2Norm, x2[1]];    // v = x + sign(x[0])|x|e1
+	        var mult2 = 2 / _normSquared(v2);           // mult = 2/v'v
+	
+	        //evaluate Q2 = I - 2vv'/v'v
+	        var Q2 = [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1];
+	
+	        //diagonal
+	        Q2[5]  = 1 - mult2 * v2[0] * v2[0]; // 1,1 entry
+	        Q2[10] = 1 - mult2 * v2[1] * v2[1]; // 2,2 entry
+	
+	        //off diagonals
+	        Q2[6] = -mult2 * v2[0] * v2[1];     // 2,1 entry
+	        Q2[9] = Q2[6];                      // 1,2 entry
+	
+	        //calc QR decomposition. Q = Q1*Q2, R = Q'*M
+	        var Q = Transform.multiply(Q2, Q1);      //note: really Q transpose
+	        var R = Transform.multiply(Q, M);
+	
+	        //remove negative scaling
+	        var remover = Transform.scale(R[0] < 0 ? -1 : 1, R[5] < 0 ? -1 : 1, R[10] < 0 ? -1 : 1);
+	        R = Transform.multiply(R, remover);
+	        Q = Transform.multiply(remover, Q);
+	
+	        //decompose into rotate/scale/skew matrices
+	        var result = {};
+	        result.translate = Transform.getTranslate(M);
+	        result.rotate = [Math.atan2(-Q[6], Q[10]), Math.asin(Q[2]), Math.atan2(-Q[1], Q[0])];
+	        if (!result.rotate[0]) {
+	            result.rotate[0] = 0;
+	            result.rotate[2] = Math.atan2(Q[4], Q[5]);
+	        }
+	        result.scale = [R[0], R[5], R[10]];
+	        result.skew = [Math.atan2(R[9], result.scale[2]), Math.atan2(R[8], result.scale[2]), Math.atan2(R[4], result.scale[0])];
+	
+	        //double rotation workaround
+	        if (Math.abs(result.rotate[0]) + Math.abs(result.rotate[2]) > 1.5 * Math.PI) {
+	            result.rotate[1] = Math.PI - result.rotate[1];
+	            if (result.rotate[1] > Math.PI) result.rotate[1] -= 2 * Math.PI;
+	            if (result.rotate[1] < -Math.PI) result.rotate[1] += 2 * Math.PI;
+	            if (result.rotate[0] < 0) result.rotate[0] += Math.PI;
+	            else result.rotate[0] -= Math.PI;
+	            if (result.rotate[2] < 0) result.rotate[2] += Math.PI;
+	            else result.rotate[2] -= Math.PI;
+	        }
+	
+	        return result;
+	    };
+	
+	    /**
+	     * Weighted average between two matrices by averaging their
+	     *     translation, rotation, scale, skew components.
+	     *     f(M1,M2,t) = (1 - t) * M1 + t * M2
+	     *
+	     * @method average
+	     * @static
+	     * @param {Transform} M1 f(M1,M2,0) = M1
+	     * @param {Transform} M2 f(M1,M2,1) = M2
+	     * @param {Number} t
+	     * @return {Transform}
+	     */
+	    Transform.average = function average(M1, M2, t) {
+	        t = (t === undefined) ? 0.5 : t;
+	        var specM1 = Transform.interpret(M1);
+	        var specM2 = Transform.interpret(M2);
+	
+	        var specAvg = {
+	            translate: [0, 0, 0],
+	            rotate: [0, 0, 0],
+	            scale: [0, 0, 0],
+	            skew: [0, 0, 0]
+	        };
+	
+	        for (var i = 0; i < 3; i++) {
+	            specAvg.translate[i] = (1 - t) * specM1.translate[i] + t * specM2.translate[i];
+	            specAvg.rotate[i] = (1 - t) * specM1.rotate[i] + t * specM2.rotate[i];
+	            specAvg.scale[i] = (1 - t) * specM1.scale[i] + t * specM2.scale[i];
+	            specAvg.skew[i] = (1 - t) * specM1.skew[i] + t * specM2.skew[i];
+	        }
+	        return Transform.build(specAvg);
+	    };
+	
+	    /**
+	     * Compose .translate, .rotate, .scale, .skew components into
+	     * Transform matrix
+	     *
+	     * @method build
+	     * @static
+	     * @param {matrixSpec} spec object with component matrices .translate,
+	     *    .rotate, .scale, .skew
+	     * @return {Transform} composed transform
+	     */
+	    Transform.build = function build(spec) {
+	        var scaleMatrix = Transform.scale(spec.scale[0], spec.scale[1], spec.scale[2]);
+	        var skewMatrix = Transform.skew(spec.skew[0], spec.skew[1], spec.skew[2]);
+	        var rotateMatrix = Transform.rotate(spec.rotate[0], spec.rotate[1], spec.rotate[2]);
+	        return Transform.thenMove(Transform.multiply(Transform.multiply(rotateMatrix, skewMatrix), scaleMatrix), spec.translate);
+	    };
+	
+	    /**
+	     * Determine if two Transforms are component-wise equal
+	     *   Warning: breaks on perspective Transforms
+	     *
+	     * @method equals
+	     * @static
+	     * @param {Transform} a matrix
+	     * @param {Transform} b matrix
+	     * @return {boolean}
+	     */
+	    Transform.equals = function equals(a, b) {
+	        return !Transform.notEquals(a, b);
+	    };
+	
+	    /**
+	     * Determine if two Transforms are component-wise unequal
+	     *   Warning: breaks on perspective Transforms
+	     *
+	     * @method notEquals
+	     * @static
+	     * @param {Transform} a matrix
+	     * @param {Transform} b matrix
+	     * @return {boolean}
+	     */
+	    Transform.notEquals = function notEquals(a, b) {
+	        if (a === b) return false;
+	
+	        // shortci
+	        return !(a && b) ||
+	            a[12] !== b[12] || a[13] !== b[13] || a[14] !== b[14] ||
+	            a[0] !== b[0] || a[1] !== b[1] || a[2] !== b[2] ||
+	            a[4] !== b[4] || a[5] !== b[5] || a[6] !== b[6] ||
+	            a[8] !== b[8] || a[9] !== b[9] || a[10] !== b[10];
+	    };
+	
+	    /**
+	     * Constrain angle-trio components to range of [-pi, pi).
+	     *
+	     * @method normalizeRotation
+	     * @static
+	     * @param {Array.Number} rotation phi, theta, psi (array of floats
+	     *    && array.length == 3)
+	     * @return {Array.Number} new phi, theta, psi triplet
+	     *    (array of floats && array.length == 3)
+	     */
+	    Transform.normalizeRotation = function normalizeRotation(rotation) {
+	        var result = rotation.slice(0);
+	        if (result[0] === Math.PI * 0.5 || result[0] === -Math.PI * 0.5) {
+	            result[0] = -result[0];
+	            result[1] = Math.PI - result[1];
+	            result[2] -= Math.PI;
+	        }
+	        if (result[0] > Math.PI * 0.5) {
+	            result[0] = result[0] - Math.PI;
+	            result[1] = Math.PI - result[1];
+	            result[2] -= Math.PI;
+	        }
+	        if (result[0] < -Math.PI * 0.5) {
+	            result[0] = result[0] + Math.PI;
+	            result[1] = -Math.PI - result[1];
+	            result[2] -= Math.PI;
+	        }
+	        while (result[1] < -Math.PI) result[1] += 2 * Math.PI;
+	        while (result[1] >= Math.PI) result[1] -= 2 * Math.PI;
+	        while (result[2] < -Math.PI) result[2] += 2 * Math.PI;
+	        while (result[2] >= Math.PI) result[2] -= 2 * Math.PI;
+	        return result;
+	    };
+	
+	    /**
+	     * (Property) Array defining a translation forward in z by 1
+	     *
+	     * @property {array} inFront
+	     * @static
+	     * @final
+	     */
+	    Transform.inFront = [1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 1e-3, 1];
+	
+	    /**
+	     * (Property) Array defining a translation backwards in z by 1
+	     *
+	     * @property {array} behind
+	     * @static
+	     * @final
+	     */
+	    Transform.behind = [1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, -1e-3, 1];
+	
+	    module.exports = Transform;
+
+
+/***/ },
+/* 301 */
+/***/ function(module, exports, __webpack_require__) {
+
+	/* This Source Code Form is subject to the terms of the Mozilla Public
+	 * License, v. 2.0. If a copy of the MPL was not distributed with this
+	 * file, You can obtain one at http://mozilla.org/MPL/2.0/.
+	 *
+	 * Owner: david@famo.us
+	 * @license MPL 2.0
+	 * @copyright Famous Industries, Inc. 2015
+	 */
+	/*eslint-disable new-cap */
+	    var MultipleTransition = __webpack_require__(302);
+	    var TweenTransition = __webpack_require__(304);
+	
+	    /**
+	     * A state maintainer for a smooth transition between
+	     *    numerically-specified states. Example numeric states include floats or
+	     *    Transform objects.
+	     *
+	     * An initial state is set with the constructor or set(startState). A
+	     *    corresponding end state and transition are set with set(endState,
+	     *    transition). Subsequent calls to set(endState, transition) begin at
+	     *    the last state. Calls to get(timestamp) provide the interpolated state
+	     *    along the way.
+	     *
+	     * Note that there is no event loop here - calls to get() are the only way
+	     *    to find state projected to the current (or provided) time and are
+	     *    the only way to trigger callbacks. Usually this kind of object would
+	     *    be part of the render() path of a visible component.
+	     *
+	     * @class Transitionable
+	     * @constructor
+	     * @param {number|Array.Number|Object.<number|string, number>} start
+	     *    beginning state
+	     */
+	    function Transitionable(start) {
+	        this.currentAction = null;
+	        this.actionQueue = [];
+	        this.callbackQueue = [];
+	
+	        this.state = 0;
+	        this.velocity = undefined;
+	        this._callback = undefined;
+	        this._engineInstance = null;
+	        this._currentMethod = null;
+	
+	        this.set(start);
+	    }
+	
+	    var transitionMethods = {};
+	
+	    Transitionable.register = function register(methods) {
+	        var success = true;
+	        for (var method in methods) {
+	            if (!Transitionable.registerMethod(method, methods[method]))
+	                success = false;
+	        }
+	        return success;
+	    };
+	
+	    Transitionable.registerMethod = function registerMethod(name, engineClass) {
+	        if (!(name in transitionMethods)) {
+	            transitionMethods[name] = engineClass;
+	            return true;
+	        }
+	        else return false;
+	    };
+	
+	    Transitionable.unregisterMethod = function unregisterMethod(name) {
+	        if (name in transitionMethods) {
+	            delete transitionMethods[name];
+	            return true;
+	        }
+	        else return false;
+	    };
+	
+	    function _loadNext() {
+	        if (this._callback) {
+	            var callback = this._callback;
+	            this._callback = undefined;
+	            callback();
+	        }
+	        if (this.actionQueue.length <= 0) {
+	            this.set(this.get()); // no update required
+	            return;
+	        }
+	        this.currentAction = this.actionQueue.shift();
+	        this._callback = this.callbackQueue.shift();
+	
+	        var method = null;
+	        var endValue = this.currentAction[0];
+	        var transition = this.currentAction[1];
+	        if (transition instanceof Object && transition.method) {
+	            method = transition.method;
+	            if (typeof method === 'string') method = transitionMethods[method];
+	        }
+	        else {
+	            method = TweenTransition;
+	        }
+	
+	        if (this._currentMethod !== method) {
+	            if (!(endValue instanceof Object) || method.SUPPORTS_MULTIPLE === true || endValue.length <= method.SUPPORTS_MULTIPLE) {
+	                this._engineInstance = new method();
+	            }
+	            else {
+	                this._engineInstance = new MultipleTransition(method);
+	            }
+	            this._currentMethod = method;
+	        }
+	
+	        this._engineInstance.reset(this.state, this.velocity);
+	        if (this.velocity !== undefined) transition.velocity = this.velocity;
+	        this._engineInstance.set(endValue, transition, _loadNext.bind(this));
+	    }
+	
+	    /**
+	     * Add transition to end state to the queue of pending transitions. Special
+	     *    Use: calling without a transition resets the object to that state with
+	     *    no pending actions
+	     *
+	     * @method set
+	     *
+	     * @param {number|FamousMatrix|Array.Number|Object.<number, number>} endState
+	     *    end state to which we interpolate
+	     * @param {transition=} transition object of type {duration: number, curve:
+	     *    f[0,1] -> [0,1] or name}. If transition is omitted, change will be
+	     *    instantaneous.
+	     * @param {function()=} callback Zero-argument function to call on observed
+	     *    completion (t=1)
+	     */
+	    Transitionable.prototype.set = function set(endState, transition, callback) {
+	        if (!transition) {
+	            this.reset(endState);
+	            if (callback) callback();
+	            return this;
+	        }
+	
+	        var action = [endState, transition];
+	        this.actionQueue.push(action);
+	        this.callbackQueue.push(callback);
+	        if (!this.currentAction) _loadNext.call(this);
+	        return this;
+	    };
+	
+	    /**
+	     * Cancel all transitions and reset to a stable state
+	     *
+	     * @method reset
+	     *
+	     * @param {number|Array.Number|Object.<number, number>} startState
+	     *    stable state to set to
+	     */
+	    Transitionable.prototype.reset = function reset(startState, startVelocity) {
+	        this._currentMethod = null;
+	        this._engineInstance = null;
+	        this._callback = undefined;
+	        this.state = startState;
+	        this.velocity = startVelocity;
+	        this.currentAction = null;
+	        this.actionQueue = [];
+	        this.callbackQueue = [];
+	    };
+	
+	    /**
+	     * Add delay action to the pending action queue queue.
+	     *
+	     * @method delay
+	     *
+	     * @param {number} duration delay time (ms)
+	     * @param {function} callback Zero-argument function to call on observed
+	     *    completion (t=1)
+	     */
+	    Transitionable.prototype.delay = function delay(duration, callback) {
+	        var endValue;
+	        if (this.actionQueue.length) endValue = this.actionQueue[this.actionQueue.length - 1][0];
+	        else if (this.currentAction) endValue = this.currentAction[0];
+	        else endValue = this.get();
+	
+	        return this.set(endValue, { duration: duration,
+	            curve: function() {
+	                return 0;
+	            }},
+	            callback
+	        );
+	    };
+	
+	    /**
+	     * Get interpolated state of current action at provided time. If the last
+	     *    action has completed, invoke its callback.
+	     *
+	     * @method get
+	     *
+	     * @param {number=} timestamp Evaluate the curve at a normalized version of this
+	     *    time. If omitted, use current time. (Unix epoch time)
+	     * @return {number|Object.<number|string, number>} beginning state
+	     *    interpolated to this point in time.
+	     */
+	    Transitionable.prototype.get = function get(timestamp) {
+	        if (this._engineInstance) {
+	            if (this._engineInstance.getVelocity)
+	                this.velocity = this._engineInstance.getVelocity();
+	            this.state = this._engineInstance.get(timestamp);
+	        }
+	        return this.state;
+	    };
+	
+	    /**
+	     * Is there at least one action pending completion?
+	     *
+	     * @method isActive
+	     *
+	     * @return {boolean}
+	     */
+	    Transitionable.prototype.isActive = function isActive() {
+	        return !!this.currentAction;
+	    };
+	
+	    /**
+	     * Halt transition at current state and erase all pending actions.
+	     *
+	     * @method halt
+	     */
+	    Transitionable.prototype.halt = function halt() {
+	        return this.set(this.get());
+	    };
+	
+	    module.exports = Transitionable;
+
+
+/***/ },
+/* 302 */
+/***/ function(module, exports, __webpack_require__) {
+
+	/* This Source Code Form is subject to the terms of the Mozilla Public
+	 * License, v. 2.0. If a copy of the MPL was not distributed with this
+	 * file, You can obtain one at http://mozilla.org/MPL/2.0/.
+	 *
+	 * Owner: david@famo.us
+	 * @license MPL 2.0
+	 * @copyright Famous Industries, Inc. 2015
+	 */
+	/*eslint-disable new-cap */
+	    var Utility = __webpack_require__(303);
+	
+	    /**
+	     * Transition meta-method to support transitioning multiple
+	     *   values with scalar-only methods.
+	     *
+	     *
+	     * @class MultipleTransition
+	     * @constructor
+	     *
+	     * @param {Object} method Transionable class to multiplex
+	     */
+	    function MultipleTransition(method) {
+	        this.method = method;
+	        this._instances = [];
+	        this.state = [];
+	    }
+	
+	    MultipleTransition.SUPPORTS_MULTIPLE = true;
+	
+	    /**
+	     * Get the state of each transition.
+	     *
+	     * @method get
+	     *
+	     * @return state {Number|Array} state array
+	     */
+	    MultipleTransition.prototype.get = function get() {
+	        for (var i = 0; i < this._instances.length; i++) {
+	            this.state[i] = this._instances[i].get();
+	        }
+	        return this.state;
+	    };
+	
+	    /**
+	     * Set the end states with a shared transition, with optional callback.
+	     *
+	     * @method set
+	     *
+	     * @param {Number|Array} endState Final State.  Use a multi-element argument for multiple transitions.
+	     * @param {Object} transition Transition definition, shared among all instances
+	     * @param {Function} callback called when all endStates have been reached.
+	     */
+	    MultipleTransition.prototype.set = function set(endState, transition, callback) {
+	        var _allCallback = Utility.after(endState.length, callback);
+	        for (var i = 0; i < endState.length; i++) {
+	            if (!this._instances[i]) this._instances[i] = new (this.method)();
+	            this._instances[i].set(endState[i], transition, _allCallback);
+	        }
+	    };
+	
+	    /**
+	     * Reset all transitions to start state.
+	     *
+	     * @method reset
+	     *
+	     * @param  {Number|Array} startState Start state
+	     */
+	    MultipleTransition.prototype.reset = function reset(startState) {
+	        for (var i = 0; i < startState.length; i++) {
+	            if (!this._instances[i]) this._instances[i] = new (this.method)();
+	            this._instances[i].reset(startState[i]);
+	        }
+	    };
+	
+	    module.exports = MultipleTransition;
+
+
+/***/ },
+/* 303 */
+/***/ function(module, exports) {
+
+	/* This Source Code Form is subject to the terms of the Mozilla Public
+	 * License, v. 2.0. If a copy of the MPL was not distributed with this
+	 * file, You can obtain one at http://mozilla.org/MPL/2.0/.
+	 *
+	 * Owner: mark@famo.us
+	 * @license MPL 2.0
+	 * @copyright Famous Industries, Inc. 2015
+	 */
+	
+	    /**
+	     * This namespace holds standalone functionality.
+	     *  Currently includes name mapping for transition curves,
+	     *  name mapping for origin pairs, and the after() function.
+	     *
+	     * @class Utility
+	     * @static
+	     */
+	    var Utility = {};
+	
+	    /**
+	     * Table of direction array positions
+	     *
+	     * @property {object} Direction
+	     * @final
+	     */
+	    Utility.Direction = {
+	        X: 0,
+	        Y: 1,
+	        Z: 2
+	    };
+	
+	    /**
+	     * Return wrapper around callback function. Once the wrapper is called N
+	     *   times, invoke the callback function. Arguments and scope preserved.
+	     *
+	     * @method after
+	     *
+	     * @param {number} count number of calls before callback function invoked
+	     * @param {Function} callback wrapped callback function
+	     *
+	     * @return {function} wrapped callback with coundown feature
+	     */
+	    Utility.after = function after(count, callback) {
+	        var counter = count;
+	        return function() {
+	            counter--;
+	            if (counter === 0) callback.apply(this, arguments);
+	        };
+	    };
+	
+	    /**
+	     * Load a URL and return its contents in a callback
+	     *
+	     * @method loadURL
+	     *
+	     * @param {string} url URL of object
+	     * @param {function} callback callback to dispatch with content
+	     */
+	    Utility.loadURL = function loadURL(url, callback) {
+	        var xhr = new XMLHttpRequest();
+	        xhr.onreadystatechange = function onreadystatechange() {
+	            if (this.readyState === 4) {
+	                if (callback) callback(this.responseText);
+	            }
+	        };
+	        xhr.open('GET', url);
+	        xhr.send();
+	    };
+	
+	    /**
+	     * Create a document fragment from a string of HTML
+	     *
+	     * @method createDocumentFragmentFromHTML
+	     *
+	     * @param {string} html HTML to convert to DocumentFragment
+	     *
+	     * @return {DocumentFragment} DocumentFragment representing input HTML
+	     */
+	    Utility.createDocumentFragmentFromHTML = function createDocumentFragmentFromHTML(html) {
+	        var element = document.createElement('div');
+	        element.innerHTML = html;
+	        var result = document.createDocumentFragment();
+	        while (element.hasChildNodes()) result.appendChild(element.firstChild);
+	        return result;
+	    };
+	
+	    /*
+	     *  Deep clone an object.
+	     *  @param b {Object} Object to clone
+	     *  @return a {Object} Cloned object.
+	     */
+	    Utility.clone = function clone(b) {
+	        var a;
+	        if (typeof b === 'object') {
+	            a = (b instanceof Array) ? [] : {};
+	            for (var key in b) {
+	                if (typeof b[key] === 'object' && b[key] !== null) {
+	                    if (b[key] instanceof Array) {
+	                        a[key] = new Array(b[key].length);
+	                        for (var i = 0; i < b[key].length; i++) {
+	                            a[key][i] = Utility.clone(b[key][i]);
+	                        }
+	                    }
+	                    else {
+	                      a[key] = Utility.clone(b[key]);
+	                    }
+	                }
+	                else {
+	                    a[key] = b[key];
+	                }
+	            }
+	        }
+	        else {
+	            a = b;
+	        }
+	        return a;
+	    };
+	
+	    module.exports = Utility;
+
+
+/***/ },
+/* 304 */
+/***/ function(module, exports) {
+
+	/* This Source Code Form is subject to the terms of the Mozilla Public
+	 * License, v. 2.0. If a copy of the MPL was not distributed with this
+	 * file, You can obtain one at http://mozilla.org/MPL/2.0/.
+	 *
+	 * Owner: david@famo.us
+	 * @license MPL 2.0
+	 * @copyright Famous Industries, Inc. 2015
+	 */
+	
+	
+	    /**
+	     *
+	     * A state maintainer for a smooth transition between
+	     *    numerically-specified states.  Example numeric states include floats or
+	     *    Transfornm objects.
+	     *
+	     *    An initial state is set with the constructor or set(startValue). A
+	     *    corresponding end state and transition are set with set(endValue,
+	     *    transition). Subsequent calls to set(endValue, transition) begin at
+	     *    the last state. Calls to get(timestamp) provide the _interpolated state
+	     *    along the way.
+	     *
+	     *   Note that there is no event loop here - calls to get() are the only way
+	     *    to find out state projected to the current (or provided) time and are
+	     *    the only way to trigger callbacks. Usually this kind of object would
+	     *    be part of the render() path of a visible component.
+	     *
+	     * @class TweenTransition
+	     * @constructor
+	     *
+	     * @param {Object} options TODO
+	     *    beginning state
+	     */
+	    function TweenTransition(options) {
+	        this.options = Object.create(TweenTransition.DEFAULT_OPTIONS);
+	        if (options) this.setOptions(options);
+	
+	        this._startTime = 0;
+	        this._startValue = 0;
+	        this._updateTime = 0;
+	        this._endValue = 0;
+	        this._curve = undefined;
+	        this._duration = 0;
+	        this._active = false;
+	        this._callback = undefined;
+	        this.state = 0;
+	        this.velocity = undefined;
+	    }
+	
+	    /**
+	     * Transition curves mapping independent variable t from domain [0,1] to a
+	     *    range within [0,1]. Includes functions 'linear', 'easeIn', 'easeOut',
+	     *    'easeInOut', 'easeOutBounce', 'spring'.
+	     *
+	     * @property {object} Curve
+	     * @final
+	     */
+	    TweenTransition.Curves = {
+	        linear: function(t) {
+	            return t;
+	        },
+	        easeIn: function(t) {
+	            return t*t;
+	        },
+	        easeOut: function(t) {
+	            return t*(2-t);
+	        },
+	        easeInOut: function(t) {
+	            if (t <= 0.5) return 2*t*t;
+	            else return -2*t*t + 4*t - 1;
+	        },
+	        easeOutBounce: function(t) {
+	            return t*(3 - 2*t);
+	        },
+	        spring: function(t) {
+	            return (1 - t) * Math.sin(6 * Math.PI * t) + t;
+	        }
+	    };
+	
+	    TweenTransition.SUPPORTS_MULTIPLE = true;
+	    TweenTransition.DEFAULT_OPTIONS = {
+	        curve: TweenTransition.Curves.linear,
+	        duration: 500,
+	        speed: 0 /* considered only if positive */
+	    };
+	
+	    var registeredCurves = {};
+	
+	    /**
+	     * Add "unit" curve to internal dictionary of registered curves.
+	     *
+	     * @method registerCurve
+	     *
+	     * @static
+	     *
+	     * @param {string} curveName dictionary key
+	     * @param {unitCurve} curve function of one numeric variable mapping [0,1]
+	     *    to range inside [0,1]
+	     * @return {boolean} false if key is taken, else true
+	     */
+	    TweenTransition.registerCurve = function registerCurve(curveName, curve) {
+	        if (!registeredCurves[curveName]) {
+	            registeredCurves[curveName] = curve;
+	            return true;
+	        }
+	        else {
+	            return false;
+	        }
+	    };
+	
+	    /**
+	     * Remove object with key "curveName" from internal dictionary of registered
+	     *    curves.
+	     *
+	     * @method unregisterCurve
+	     *
+	     * @static
+	     *
+	     * @param {string} curveName dictionary key
+	     * @return {boolean} false if key has no dictionary value
+	     */
+	    TweenTransition.unregisterCurve = function unregisterCurve(curveName) {
+	        if (registeredCurves[curveName]) {
+	            delete registeredCurves[curveName];
+	            return true;
+	        }
+	        else {
+	            return false;
+	        }
+	    };
+	
+	    /**
+	     * Retrieve function with key "curveName" from internal dictionary of
+	     *    registered curves. Default curves are defined in the
+	     *    TweenTransition.Curves array, where the values represent
+	     *    unitCurve functions.
+	     *
+	     * @method getCurve
+	     *
+	     * @static
+	     *
+	     * @param {string} curveName dictionary key
+	     * @return {unitCurve} curve function of one numeric variable mapping [0,1]
+	     *    to range inside [0,1]
+	     */
+	    TweenTransition.getCurve = function getCurve(curveName) {
+	        var curve = registeredCurves[curveName];
+	        if (curve !== undefined) return curve;
+	        else throw new Error('curve not registered');
+	    };
+	
+	    /**
+	     * Retrieve all available curves.
+	     *
+	     * @method getCurves
+	     *
+	     * @static
+	     *
+	     * @return {object} curve functions of one numeric variable mapping [0,1]
+	     *    to range inside [0,1]
+	     */
+	    TweenTransition.getCurves = function getCurves() {
+	        return registeredCurves;
+	    };
+	
+	     // Interpolate: If a linear function f(0) = a, f(1) = b, then return f(t)
+	    function _interpolate(a, b, t) {
+	        return ((1 - t) * a) + (t * b);
+	    }
+	
+	    function _clone(obj) {
+	        if (obj instanceof Object) {
+	            if (obj instanceof Array) return obj.slice(0);
+	            else return Object.create(obj);
+	        }
+	        else return obj;
+	    }
+	
+	    // Fill in missing properties in "transition" with those in defaultTransition, and
+	    //   convert internal named curve to function object, returning as new
+	    //   object.
+	    function _normalize(transition, defaultTransition) {
+	        var result = {curve: defaultTransition.curve};
+	        if (defaultTransition.duration) result.duration = defaultTransition.duration;
+	        if (defaultTransition.speed) result.speed = defaultTransition.speed;
+	        if (transition instanceof Object) {
+	            if (transition.duration !== undefined) result.duration = transition.duration;
+	            if (transition.curve) result.curve = transition.curve;
+	            if (transition.speed) result.speed = transition.speed;
+	        }
+	        if (typeof result.curve === 'string') result.curve = TweenTransition.getCurve(result.curve);
+	        return result;
+	    }
+	
+	    /**
+	     * Set internal options, overriding any default options.
+	     *
+	     * @method setOptions
+	     *
+	     *
+	     * @param {Object} options options object
+	     * @param {Object} [options.curve] function mapping [0,1] to [0,1] or identifier
+	     * @param {Number} [options.duration] duration in ms
+	     * @param {Number} [options.speed] speed in pixels per ms
+	     */
+	    TweenTransition.prototype.setOptions = function setOptions(options) {
+	        if (options.curve !== undefined) this.options.curve = options.curve;
+	        if (options.duration !== undefined) this.options.duration = options.duration;
+	        if (options.speed !== undefined) this.options.speed = options.speed;
+	    };
+	
+	    /**
+	     * Add transition to end state to the queue of pending transitions. Special
+	     *    Use: calling without a transition resets the object to that state with
+	     *    no pending actions
+	     *
+	     * @method set
+	     *
+	     *
+	     * @param {number|FamousMatrix|Array.Number|Object.<number, number>} endValue
+	     *    end state to which we _interpolate
+	     * @param {transition=} transition object of type {duration: number, curve:
+	     *    f[0,1] -> [0,1] or name}. If transition is omitted, change will be
+	     *    instantaneous.
+	     * @param {function()=} callback Zero-argument function to call on observed
+	     *    completion (t=1)
+	     */
+	    TweenTransition.prototype.set = function set(endValue, transition, callback) {
+	        if (!transition) {
+	            this.reset(endValue);
+	            if (callback) callback();
+	            return;
+	        }
+	
+	        this._startValue = _clone(this.get());
+	        transition = _normalize(transition, this.options);
+	        if (transition.speed) {
+	            var startValue = this._startValue;
+	            if (startValue instanceof Object) {
+	                var variance = 0;
+	                for (var i in startValue) variance += (endValue[i] - startValue[i]) * (endValue[i] - startValue[i]);
+	                transition.duration = Math.sqrt(variance) / transition.speed;
+	            }
+	            else {
+	                transition.duration = Math.abs(endValue - startValue) / transition.speed;
+	            }
+	        }
+	
+	        this._startTime = Date.now();
+	        this._endValue = _clone(endValue);
+	        this._startVelocity = _clone(transition.velocity);
+	        this._duration = transition.duration;
+	        this._curve = transition.curve;
+	        this._active = true;
+	        this._callback = callback;
+	    };
+	
+	    /**
+	     * Cancel all transitions and reset to a stable state
+	     *
+	     * @method reset
+	     *
+	     * @param {number|Array.Number|Object.<number, number>} startValue
+	     *    starting state
+	     * @param {number} startVelocity
+	     *    starting velocity
+	     */
+	    TweenTransition.prototype.reset = function reset(startValue, startVelocity) {
+	        if (this._callback) {
+	            var callback = this._callback;
+	            this._callback = undefined;
+	            callback();
+	        }
+	        this.state = _clone(startValue);
+	        this.velocity = _clone(startVelocity);
+	        this._startTime = 0;
+	        this._duration = 0;
+	        this._updateTime = 0;
+	        this._startValue = this.state;
+	        this._startVelocity = this.velocity;
+	        this._endValue = this.state;
+	        this._active = false;
+	    };
+	
+	    /**
+	     * Get current velocity
+	     *
+	     * @method getVelocity
+	     *
+	     * @returns {Number} velocity
+	     */
+	    TweenTransition.prototype.getVelocity = function getVelocity() {
+	        return this.velocity;
+	    };
+	
+	    /**
+	     * Get interpolated state of current action at provided time. If the last
+	     *    action has completed, invoke its callback.
+	     *
+	     * @method get
+	     *
+	     *
+	     * @param {number=} timestamp Evaluate the curve at a normalized version of this
+	     *    time. If omitted, use current time. (Unix epoch time)
+	     * @return {number|Object.<number|string, number>} beginning state
+	     *    _interpolated to this point in time.
+	     */
+	    TweenTransition.prototype.get = function get(timestamp) {
+	        this.update(timestamp);
+	        return this.state;
+	    };
+	
+	    function _calculateVelocity(current, start, curve, duration, t) {
+	        var velocity;
+	        var eps = 1e-7;
+	        var speed = (curve(t) - curve(t - eps)) / eps;
+	        if (current instanceof Array) {
+	            velocity = [];
+	            for (var i = 0; i < current.length; i++){
+	                if (typeof current[i] === 'number')
+	                    velocity[i] = speed * (current[i] - start[i]) / duration;
+	                else
+	                    velocity[i] = 0;
+	            }
+	
+	        }
+	        else velocity = speed * (current - start) / duration;
+	        return velocity;
+	    }
+	
+	    function _calculateState(start, end, t) {
+	        var state;
+	        if (start instanceof Array) {
+	            state = [];
+	            for (var i = 0; i < start.length; i++) {
+	                if (typeof start[i] === 'number')
+	                    state[i] = _interpolate(start[i], end[i], t);
+	                else
+	                    state[i] = start[i];
+	            }
+	        }
+	        else state = _interpolate(start, end, t);
+	        return state;
+	    }
+	
+	    /**
+	     * Update internal state to the provided timestamp. This may invoke the last
+	     *    callback and begin a new action.
+	     *
+	     * @method update
+	     *
+	     *
+	     * @param {number=} timestamp Evaluate the curve at a normalized version of this
+	     *    time. If omitted, use current time. (Unix epoch time)
+	     */
+	    TweenTransition.prototype.update = function update(timestamp) {
+	        if (!this._active) {
+	            if (this._callback) {
+	                var callback = this._callback;
+	                this._callback = undefined;
+	                callback();
+	            }
+	            return;
+	        }
+	
+	        if (!timestamp) timestamp = Date.now();
+	        if (this._updateTime >= timestamp) return;
+	        this._updateTime = timestamp;
+	
+	        var timeSinceStart = timestamp - this._startTime;
+	        if (timeSinceStart >= this._duration) {
+	            this.state = this._endValue;
+	            this.velocity = _calculateVelocity(this.state, this._startValue, this._curve, this._duration, 1);
+	            this._active = false;
+	        }
+	        else if (timeSinceStart < 0) {
+	            this.state = this._startValue;
+	            this.velocity = this._startVelocity;
+	        }
+	        else {
+	            var t = timeSinceStart / this._duration;
+	            this.state = _calculateState(this._startValue, this._endValue, this._curve(t));
+	            this.velocity = _calculateVelocity(this.state, this._startValue, this._curve, this._duration, t);
+	        }
+	    };
+	
+	    /**
+	     * Is there at least one action pending completion?
+	     *
+	     * @method isActive
+	     *
+	     *
+	     * @return {boolean}
+	     */
+	    TweenTransition.prototype.isActive = function isActive() {
+	        return this._active;
+	    };
+	
+	    /**
+	     * Halt transition at current state and erase all pending actions.
+	     *
+	     * @method halt
+	     *
+	     */
+	    TweenTransition.prototype.halt = function halt() {
+	        this.reset(this.get());
+	    };
+	
+	    // Register all the default curves
+	    TweenTransition.registerCurve('linear', TweenTransition.Curves.linear);
+	    TweenTransition.registerCurve('easeIn', TweenTransition.Curves.easeIn);
+	    TweenTransition.registerCurve('easeOut', TweenTransition.Curves.easeOut);
+	    TweenTransition.registerCurve('easeInOut', TweenTransition.Curves.easeInOut);
+	    TweenTransition.registerCurve('easeOutBounce', TweenTransition.Curves.easeOutBounce);
+	    TweenTransition.registerCurve('spring', TweenTransition.Curves.spring);
+	
+	    TweenTransition.customCurve = function customCurve(v1, v2) {
+	        v1 = v1 || 0; v2 = v2 || 0;
+	        return function(t) {
+	            return v1*t + (-2*v1 - v2 + 3)*t*t + (v1 + v2 - 2)*t*t*t;
+	        };
+	    };
+	
+	    module.exports = TweenTransition;
+
+
+/***/ },
+/* 305 */
+/***/ function(module, exports) {
+
+	/* This Source Code Form is subject to the terms of the Mozilla Public
+	 * License, v. 2.0. If a copy of the MPL was not distributed with this
+	 * file, You can obtain one at http://mozilla.org/MPL/2.0/.
+	 *
+	 * Owner: david@famo.us
+	 * @license MPL 2.0
+	 * @copyright Famous Industries, Inc. 2015
+	 */
+	
+	
+	    /**
+	     * A library of curves which map an animation explicitly as a function of time.
+	     *
+	     * @class Easing
+	     */
+	    var Easing = {
+	
+	        /**
+	         * @property inQuad
+	         * @static
+	         */
+	        inQuad: function(t) {
+	            return t*t;
+	        },
+	
+	        /**
+	         * @property outQuad
+	         * @static
+	         */
+	        outQuad: function(t) {
+	            return -(t-=1)*t+1;
+	        },
+	
+	        /**
+	         * @property inOutQuad
+	         * @static
+	         */
+	        inOutQuad: function(t) {
+	            if ((t/=.5) < 1) return .5*t*t;
+	            return -.5*((--t)*(t-2) - 1);
+	        },
+	
+	        /**
+	         * @property inCubic
+	         * @static
+	         */
+	        inCubic: function(t) {
+	            return t*t*t;
+	        },
+	
+	        /**
+	         * @property outCubic
+	         * @static
+	         */
+	        outCubic: function(t) {
+	            return ((--t)*t*t + 1);
+	        },
+	
+	        /**
+	         * @property inOutCubic
+	         * @static
+	         */
+	        inOutCubic: function(t) {
+	            if ((t/=.5) < 1) return .5*t*t*t;
+	            return .5*((t-=2)*t*t + 2);
+	        },
+	
+	        /**
+	         * @property inQuart
+	         * @static
+	         */
+	        inQuart: function(t) {
+	            return t*t*t*t;
+	        },
+	
+	        /**
+	         * @property outQuart
+	         * @static
+	         */
+	        outQuart: function(t) {
+	            return -((--t)*t*t*t - 1);
+	        },
+	
+	        /**
+	         * @property inOutQuart
+	         * @static
+	         */
+	        inOutQuart: function(t) {
+	            if ((t/=.5) < 1) return .5*t*t*t*t;
+	            return -.5 * ((t-=2)*t*t*t - 2);
+	        },
+	
+	        /**
+	         * @property inQuint
+	         * @static
+	         */
+	        inQuint: function(t) {
+	            return t*t*t*t*t;
+	        },
+	
+	        /**
+	         * @property outQuint
+	         * @static
+	         */
+	        outQuint: function(t) {
+	            return ((--t)*t*t*t*t + 1);
+	        },
+	
+	        /**
+	         * @property inOutQuint
+	         * @static
+	         */
+	        inOutQuint: function(t) {
+	            if ((t/=.5) < 1) return .5*t*t*t*t*t;
+	            return .5*((t-=2)*t*t*t*t + 2);
+	        },
+	
+	        /**
+	         * @property inSine
+	         * @static
+	         */
+	        inSine: function(t) {
+	            return -1.0*Math.cos(t * (Math.PI/2)) + 1.0;
+	        },
+	
+	        /**
+	         * @property outSine
+	         * @static
+	         */
+	        outSine: function(t) {
+	            return Math.sin(t * (Math.PI/2));
+	        },
+	
+	        /**
+	         * @property inOutSine
+	         * @static
+	         */
+	        inOutSine: function(t) {
+	            return -.5*(Math.cos(Math.PI*t) - 1);
+	        },
+	
+	        /**
+	         * @property inExpo
+	         * @static
+	         */
+	        inExpo: function(t) {
+	            return (t===0) ? 0.0 : Math.pow(2, 10 * (t - 1));
+	        },
+	
+	        /**
+	         * @property outExpo
+	         * @static
+	         */
+	        outExpo: function(t) {
+	            return (t===1.0) ? 1.0 : (-Math.pow(2, -10 * t) + 1);
+	        },
+	
+	        /**
+	         * @property inOutExpo
+	         * @static
+	         */
+	        inOutExpo: function(t) {
+	            if (t===0) return 0.0;
+	            if (t===1.0) return 1.0;
+	            if ((t/=.5) < 1) return .5 * Math.pow(2, 10 * (t - 1));
+	            return .5 * (-Math.pow(2, -10 * --t) + 2);
+	        },
+	
+	        /**
+	         * @property inCirc
+	         * @static
+	         */
+	        inCirc: function(t) {
+	            return -(Math.sqrt(1 - t*t) - 1);
+	        },
+	
+	        /**
+	         * @property outCirc
+	         * @static
+	         */
+	        outCirc: function(t) {
+	            return Math.sqrt(1 - (--t)*t);
+	        },
+	
+	        /**
+	         * @property inOutCirc
+	         * @static
+	         */
+	        inOutCirc: function(t) {
+	            if ((t/=.5) < 1) return -.5 * (Math.sqrt(1 - t*t) - 1);
+	            return .5 * (Math.sqrt(1 - (t-=2)*t) + 1);
+	        },
+	
+	        /**
+	         * @property inElastic
+	         * @static
+	         */
+	        inElastic: function(t) {
+	            var s=1.70158;var p=0;var a=1.0;
+	            if (t===0) return 0.0;  if (t===1) return 1.0;  if (!p) p=.3;
+	            s = p/(2*Math.PI) * Math.asin(1.0/a);
+	            return -(a*Math.pow(2,10*(t-=1)) * Math.sin((t-s)*(2*Math.PI)/ p));
+	        },
+	
+	        /**
+	         * @property outElastic
+	         * @static
+	         */
+	        outElastic: function(t) {
+	            var s=1.70158;var p=0;var a=1.0;
+	            if (t===0) return 0.0;  if (t===1) return 1.0;  if (!p) p=.3;
+	            s = p/(2*Math.PI) * Math.asin(1.0/a);
+	            return a*Math.pow(2,-10*t) * Math.sin((t-s)*(2*Math.PI)/p) + 1.0;
+	        },
+	
+	        /**
+	         * @property inOutElastic
+	         * @static
+	         */
+	        inOutElastic: function(t) {
+	            var s=1.70158;var p=0;var a=1.0;
+	            if (t===0) return 0.0;  if ((t/=.5)===2) return 1.0;  if (!p) p=(.3*1.5);
+	            s = p/(2*Math.PI) * Math.asin(1.0/a);
+	            if (t < 1) return -.5*(a*Math.pow(2,10*(t-=1)) * Math.sin((t-s)*(2*Math.PI)/p));
+	            return a*Math.pow(2,-10*(t-=1)) * Math.sin((t-s)*(2*Math.PI)/p)*.5 + 1.0;
+	        },
+	
+	        /**
+	         * @property inBack
+	         * @static
+	         */
+	        inBack: function(t, s) {
+	            if (s === undefined) s = 1.70158;
+	            return t*t*((s+1)*t - s);
+	        },
+	
+	        /**
+	         * @property outBack
+	         * @static
+	         */
+	        outBack: function(t, s) {
+	            if (s === undefined) s = 1.70158;
+	            return ((--t)*t*((s+1)*t + s) + 1);
+	        },
+	
+	        /**
+	         * @property inOutBack
+	         * @static
+	         */
+	        inOutBack: function(t, s) {
+	            if (s === undefined) s = 1.70158;
+	            if ((t/=.5) < 1) return .5*(t*t*(((s*=(1.525))+1)*t - s));
+	            return .5*((t-=2)*t*(((s*=(1.525))+1)*t + s) + 2);
+	        },
+	
+	        /**
+	         * @property inBounce
+	         * @static
+	         */
+	        inBounce: function(t) {
+	            return 1.0 - Easing.outBounce(1.0-t);
+	        },
+	
+	        /**
+	         * @property outBounce
+	         * @static
+	         */
+	        outBounce: function(t) {
+	            if (t < (1/2.75)) {
+	                return (7.5625*t*t);
+	            } else if (t < (2/2.75)) {
+	                return (7.5625*(t-=(1.5/2.75))*t + .75);
+	            } else if (t < (2.5/2.75)) {
+	                return (7.5625*(t-=(2.25/2.75))*t + .9375);
+	            } else {
+	                return (7.5625*(t-=(2.625/2.75))*t + .984375);
+	            }
+	        },
+	
+	        /**
+	         * @property inOutBounce
+	         * @static
+	         */
+	        inOutBounce: function(t) {
+	            if (t < .5) return Easing.inBounce(t*2) * .5;
+	            return Easing.outBounce(t*2-1.0) * .5 + .5;
+	        }
+	    };
+	
+	    module.exports = Easing;
+
+
+/***/ },
+/* 306 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+	
+	Object.defineProperty(exports, "__esModule", {
+	    value: true
+	});
+	exports.Molecule = undefined;
+	
+	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+	
+	var _Modifier = __webpack_require__(307);
+	
+	var _Modifier2 = _interopRequireDefault(_Modifier);
+	
+	var _RenderNode2 = __webpack_require__(309);
+	
+	var _RenderNode3 = _interopRequireDefault(_RenderNode2);
+	
+	var _TransitionableTransform = __webpack_require__(308);
+	
+	var _TransitionableTransform2 = _interopRequireDefault(_TransitionableTransform);
+	
+	var _EventHandler = __webpack_require__(312);
+	
+	var _EventHandler2 = _interopRequireDefault(_EventHandler);
+	
+	var _utils = __webpack_require__(314);
+	
+	__webpack_require__(319);
+	
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+	
+	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+	
+	function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+	
+	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; } /*
+	                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                * LICENSE
+	                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                *
+	                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                * This Source Code Form is subject to the terms of the Mozilla Public
+	                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                * License, v. 2.0. If a copy of the MPL was not distributed with this
+	                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                * file, You can obtain one at http://mozilla.org/MPL/2.0/.
+	                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                *
+	                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                */
+	
+	/**
+	 * Molecules are the basic building blocks of all UI components. Molecules
+	 * extend [famous/src/core/RenderNode](#famous/src/core/RenderNode), so they can be
+	 * added to any `RenderNode` of a famo.us render tree, and by default they will
+	 * also accept anything that a normal Famo.us `RenderNode` can accept via the
+	 * `add` method.  Classes that extend from `Molecule` might override
+	 * `RenderNode.add` in order to accept things like arrays of renderables in
+	 * stead of a single renderable.
+	 *
+	 * Molecules encapsulate the basic things you need for a component -- a
+	 * [famous/src/transitions/TransitionableTransform](#famous/src/transitions/TransitionableTransform)
+	 * for positioning things in space, and a [famous/src/core/EventHandler](#famous/src/core/EventHandler)
+	 * for capturing user interaction -- exposing a unified API for working with these
+	 * things. For now, [famous/src/core/Modifier](#famous/src/core/Modifier) is used as the interface
+	 * for applying transforms and sizing, but this will change in Mixed Mode
+	 * Famo.us.
+	 *
+	 * All components extend Molecule, but at the same time they can also use any
+	 * number of Molecules internally to do nice things like create layouts and
+	 * position multiple things in space.
+	 *
+	 * @class Molecule
+	 * @extends {module: famous/src/core/RenderNode}
+	 */
+	var Molecule = exports.Molecule = function (_RenderNode) {
+	    _inherits(Molecule, _RenderNode);
+	
+	    /**
+	     * Creates a new `Molecule` and applies `initialOptions` to it's internal
+	     * `famous/src/core/Modifier`. See [famous/src/core/Modifier](#famous/src/core/Modifier)
+	     * for details on what options you can pass.
+	     *
+	     * Note: Mixed Mode Famo.us does away with Modifiers, so this API will
+	     * change slightly, but the change will be in such a way that APIs of
+	     * higher level classes won't change because of this. One of the biggest
+	     * changes in Mixed Mode will be that `size` will be set only on a
+	     * per-Surface basis as far as a render tree is concerned. So if you
+	     * normally put multiple `Surface` instances into a `Modifier` that has a
+	     * size, then instead you'll have to explicitly assign a `size` to each
+	     * `Surface`. This is a good thing, and makes for a cleaner and easier to
+	     * use render tree with a separation of concerns from classes that can
+	     * handle boundaries and group sizing. `Molecule` might then be an example
+	     * of such a class with it's own size API.
+	     *
+	     * @constructor
+	     * @param {Object} initialOptions The options to initialize this Molecule's `Modifier` with.
+	     */
+	    function Molecule(initialOptions) {
+	        _classCallCheck(this, Molecule);
+	
+	        // "private" stuff. Not really, but regard it like so. For example, if
+	        // you see something like obj._.someVariable then you're accessing
+	        // internal stuff that wasn't designed to be accessed directly, and any
+	        // problem you enounter with that is your own problem. :)
+	        //
+	        // TODO: Use a WeakMap to store these at some point.
+	        var _this = _possibleConstructorReturn(this, (Molecule.__proto__ || Object.getPrototypeOf(Molecule)).call(this));
+	
+	        _this._ = {
+	            options: {}, // set and get with this.options
+	            defaultOptions: {}
+	        };
+	
+	        // Add default values for this Molecule
+	        // TODO: Make default options static for the class.
+	        (0, _utils.simpleExtend)(_this._.defaultOptions, {
+	            align: [0.5, 0.5],
+	            origin: [0.5, 0.5],
+	            transform: new _TransitionableTransform2.default(),
+	            handler: new _EventHandler2.default()
+	        });
+	
+	        // set the user's initial options. This automatically creates
+	        // this.modifier, and adds it to this (don't forget, *this* is a
+	        // RenderNode, so a Molecule can add things to itself).
+	        //
+	        // NOTE: this.options is a setter property. This statement applies all
+	        // relevant properties to this.modifier.
+	        _this.options = initialOptions;
+	        return _this;
+	    }
+	
+	    /**
+	     * @property {Object} options The Molecule's options, which get applied to
+	     * `this.modifier`. This may change with Mixed Mode. Setting this property
+	     * overrides existing options. To extend existing options with new options,
+	     * use `setOptions` instead.  Unspecified options will be set to their default
+	     * values.
+	     *
+	     * Note: Anytime `this.options` is assigned a new value, `this.modifier` is set
+	     * to a new [famous/src/core/Modifier](#famous/src/core/Modifier).
+	     */
+	
+	
+	    _createClass(Molecule, [{
+	        key: 'setOptions',
+	
+	
+	        /**
+	         * Compounds `newOptions` into the existing options, similar to extending an
+	         * object and overriding only the desired properties. To override all
+	         * options with a set of new options, set `this.options` directly.
+	         *
+	         * An example of setting just a single option without erasing other options:
+	         *
+	         * ```js
+	         * const myMolecule = new Molecule()
+	         * myMolecule.setOptions({
+	         *   align: [0.2, 0.8]
+	         * })
+	         * ```
+	         *
+	         * @param {Object} newOptions An object containing the new options to apply to this `Molecule`.
+	         */
+	        value: function setOptions(newOptions) {
+	            if (typeof newOptions == 'undefined' || newOptions.constructor.name != "Object") newOptions = {};
+	
+	            for (var prop in newOptions) {
+	                // Subject to change when Famo.us API changes.
+	                if (_Modifier2.default.prototype['' + prop + 'From']) {
+	                    this.modifier['' + prop + 'From'](newOptions[prop]);
+	                }
+	
+	                this._.options[prop] = newOptions[prop];
+	            }
+	        }
+	
+	        /**
+	         * Sets all options back to their defaults.
+	         *
+	         * Note: Anytime this is called, `this.modifier` is set to a new
+	         * [famous/src/core/Modifier](#famous/src/core/Modifier) having the default
+	         * options.
+	         */
+	
+	    }, {
+	        key: 'resetOptions',
+	        value: function resetOptions() {
+	            this.modifier = new _Modifier2.default();
+	            this.set(this.modifier);
+	            this.setOptions(this._.defaultOptions);
+	        }
+	
+	        /**
+	         * Forwards events from this Molecule's [famous/src/core/EventHandler](#famous/src/core/EventHandler) to the given
+	         * target, which can be another `EventHandler` or `Molecule`.
+	         *
+	         * This method is equivalent to [famous/src/core/EventHandler.pipe](#famous/src/core/EventHandler.pipe),
+	         * acting upon `this.handler`.
+	         *
+	         * TODO v0.1.0: Let this method accept a `Molecule`, then stop doing `pipe(this._.handler)` in other places
+	         */
+	
+	    }, {
+	        key: 'pipe',
+	        value: function pipe() {
+	            var args = Array.prototype.splice.call(arguments, 0);
+	            return this.options.handler.pipe.apply(this.options.handler, args);
+	        }
+	
+	        /**
+	         * Stops events from this Molecule's [famous/src/core/EventHandler](#famous/src/core/EventHandler)
+	         * from being sent to the given target.
+	         *
+	         * This method is equivalent to [famous/src/core/EventHandler.unpipe](#famous/src/core/EventHandler.unpipe),
+	         * acting upon `this.handler`.
+	         *
+	         * TODO v0.1.0: Let this method accept a `Molecule`, then stop doing `pipe(this.options.handler)` in other places
+	         */
+	
+	    }, {
+	        key: 'unpipe',
+	        value: function unpipe() {
+	            var args = Array.prototype.splice.call(arguments, 0);
+	            return this.options.handler.unpipe.apply(this.options.handler, args);
+	        }
+	
+	        /**
+	         * Register an event handler for the specified event.
+	         * See [famous/src/core/EventHandler.on](#famous/src/core/EventHandler.on).
+	         */
+	
+	    }, {
+	        key: 'on',
+	        value: function on() {
+	            var args = Array.prototype.splice.call(arguments, 0);
+	            return this.options.handler.on.apply(this.options.handler, args);
+	        }
+	
+	        /**
+	         * Unregister an event handler for the specified event.
+	         * See [famous/src/core/EventHandler.off](#famous/src/core/EventHandler.off).
+	         */
+	
+	    }, {
+	        key: 'off',
+	        value: function off() {
+	            var args = Array.prototype.splice.call(arguments, 0);
+	            return this.options.handler.on.apply(this.options.handler, args);
+	        }
+	    }, {
+	        key: 'options',
+	        set: function set(newOptions) {
+	            this.resetOptions();
+	            this.setOptions(newOptions);
+	        },
+	        get: function get() {
+	            return this._.options;
+	        }
+	
+	        /**
+	         * @property {module: famous/src/transitions/TransitionableTransform} transform
+	         * The transform of this `Molecule`. The default is a
+	         * [famous/src/transitions/TransitionableTransform](#famous/src/transitions/TransitionableTransform).
+	         * Setting this property automatically puts the new transform into effect.
+	         * See [famous/src/core/Modifier.transformFrom](#famous/src/core/Modifier.transformFrom).
+	         */
+	
+	    }, {
+	        key: 'transform',
+	        set: function set(newTransform) {
+	            this.setOptions({ transform: newTransform });
+	        },
+	        get: function get() {
+	            return this.options.transform;
+	        }
+	    }]);
+	
+	    return Molecule;
+	}(_RenderNode3.default);
+	
+	exports.default = Molecule;
+
+/***/ },
+/* 307 */
+/***/ function(module, exports, __webpack_require__) {
+
+	/* This Source Code Form is subject to the terms of the Mozilla Public
+	 * License, v. 2.0. If a copy of the MPL was not distributed with this
+	 * file, You can obtain one at http://mozilla.org/MPL/2.0/.
+	 *
+	 * Owner: mark@famo.us
+	 * @license MPL 2.0
+	 * @copyright Famous Industries, Inc. 2015
+	 */
+	
+	    var Transform = __webpack_require__(300);
+	
+	    /* TODO: remove these dependencies when deprecation complete */
+	    var Transitionable = __webpack_require__(301);
+	    var TransitionableTransform = __webpack_require__(308);
+	
+	    /**
+	     *
+	     *  A collection of visual changes to be
+	     *    applied to another renderable component. This collection includes a
+	     *    transform matrix, an opacity constant, a size, an origin specifier.
+	     *    Modifier objects can be added to any RenderNode or object
+	     *    capable of displaying renderables.  The Modifier's children and descendants
+	     *    are transformed by the amounts specified in the Modifier's properties.
+	     *
+	     * @class Modifier
+	     * @constructor
+	     * @param {Object} [options] overrides of default options
+	     * @param {Transform} [options.transform] affine transformation matrix
+	     * @param {Number} [options.opacity]
+	     * @param {Array.Number} [options.origin] origin adjustment
+	     * @param {Array.Number} [options.size] size to apply to descendants
+	     */
+	    function Modifier(options) {
+	        this._transformGetter = null;
+	        this._opacityGetter = null;
+	        this._originGetter = null;
+	        this._alignGetter = null;
+	        this._sizeGetter = null;
+	        this._proportionGetter = null;
+	
+	        /* TODO: remove this when deprecation complete */
+	        this._legacyStates = {};
+	
+	        this._output = {
+	            transform: Transform.identity,
+	            opacity: 1,
+	            origin: null,
+	            align: null,
+	            size: null,
+	            proportions: null,
+	            target: null
+	        };
+	
+	        if (options) {
+	            if (options.transform) this.transformFrom(options.transform);
+	            if (options.opacity !== undefined) this.opacityFrom(options.opacity);
+	            if (options.origin) this.originFrom(options.origin);
+	            if (options.align) this.alignFrom(options.align);
+	            if (options.size) this.sizeFrom(options.size);
+	            if (options.proportions) this.proportionsFrom(options.proportions);
+	        }
+	    }
+	
+	    /**
+	     * Function, object, or static transform matrix which provides the transform.
+	     *   This is evaluated on every tick of the engine.
+	     *
+	     * @method transformFrom
+	     *
+	     * @param {Object} transform transform provider object
+	     * @return {Modifier} this
+	     */
+	    Modifier.prototype.transformFrom = function transformFrom(transform) {
+	        if (transform instanceof Function) this._transformGetter = transform;
+	        else if (transform instanceof Object && transform.get) this._transformGetter = transform.get.bind(transform);
+	        else {
+	            this._transformGetter = null;
+	            this._output.transform = transform;
+	        }
+	        return this;
+	    };
+	
+	    /**
+	     * Set function, object, or number to provide opacity, in range [0,1].
+	     *
+	     * @method opacityFrom
+	     *
+	     * @param {Object} opacity provider object
+	     * @return {Modifier} this
+	     */
+	    Modifier.prototype.opacityFrom = function opacityFrom(opacity) {
+	        if (opacity instanceof Function) this._opacityGetter = opacity;
+	        else if (opacity instanceof Object && opacity.get) this._opacityGetter = opacity.get.bind(opacity);
+	        else {
+	            this._opacityGetter = null;
+	            this._output.opacity = opacity;
+	        }
+	        return this;
+	    };
+	
+	    /**
+	     * Set function, object, or numerical array to provide origin, as [x,y],
+	     *   where x and y are in the range [0,1].
+	     *
+	     * @method originFrom
+	     *
+	     * @param {Object} origin provider object
+	     * @return {Modifier} this
+	     */
+	    Modifier.prototype.originFrom = function originFrom(origin) {
+	        if (origin instanceof Function) this._originGetter = origin;
+	        else if (origin instanceof Object && origin.get) this._originGetter = origin.get.bind(origin);
+	        else {
+	            this._originGetter = null;
+	            this._output.origin = origin;
+	        }
+	        return this;
+	    };
+	
+	    /**
+	     * Set function, object, or numerical array to provide align, as [x,y],
+	     *   where x and y are in the range [0,1].
+	     *
+	     * @method alignFrom
+	     *
+	     * @param {Object} align provider object
+	     * @return {Modifier} this
+	     */
+	    Modifier.prototype.alignFrom = function alignFrom(align) {
+	        if (align instanceof Function) this._alignGetter = align;
+	        else if (align instanceof Object && align.get) this._alignGetter = align.get.bind(align);
+	        else {
+	            this._alignGetter = null;
+	            this._output.align = align;
+	        }
+	        return this;
+	    };
+	
+	    /**
+	     * Set function, object, or numerical array to provide size, as [width, height].
+	     *
+	     * @method sizeFrom
+	     *
+	     * @param {Object} size provider object
+	     * @return {Modifier} this
+	     */
+	    Modifier.prototype.sizeFrom = function sizeFrom(size) {
+	        if (size instanceof Function) this._sizeGetter = size;
+	        else if (size instanceof Object && size.get) this._sizeGetter = size.get.bind(size);
+	        else {
+	            this._sizeGetter = null;
+	            this._output.size = size;
+	        }
+	        return this;
+	    };
+	
+	    /**
+	     * Set function, object, or numerical array to provide proportions, as [percent of width, percent of height].
+	     *
+	     * @method proportionsFrom
+	     *
+	     * @param {Object} proportions provider object
+	     * @return {Modifier} this
+	     */
+	    Modifier.prototype.proportionsFrom = function proportionsFrom(proportions) {
+	        if (proportions instanceof Function) this._proportionGetter = proportions;
+	        else if (proportions instanceof Object && proportions.get) this._proportionGetter = proportions.get.bind(proportions);
+	        else {
+	            this._proportionGetter = null;
+	            this._output.proportions = proportions;
+	        }
+	        return this;
+	    };
+	
+	     /**
+	     * Deprecated: Prefer transformFrom with static Transform, or use a TransitionableTransform.
+	     * @deprecated
+	     * @method setTransform
+	     *
+	     * @param {Transform} transform Transform to transition to
+	     * @param {Transitionable} transition Valid transitionable object
+	     * @param {Function} callback callback to call after transition completes
+	     * @return {Modifier} this
+	     */
+	    Modifier.prototype.setTransform = function setTransform(transform, transition, callback) {
+	        if (transition || this._legacyStates.transform) {
+	            if (!this._legacyStates.transform) {
+	                this._legacyStates.transform = new TransitionableTransform(this._output.transform);
+	            }
+	            if (!this._transformGetter) this.transformFrom(this._legacyStates.transform);
+	
+	            this._legacyStates.transform.set(transform, transition, callback);
+	            return this;
+	        }
+	        else return this.transformFrom(transform);
+	    };
+	
+	    /**
+	     * Deprecated: Prefer opacityFrom with static opacity array, or use a Transitionable with that opacity.
+	     * @deprecated
+	     * @method setOpacity
+	     *
+	     * @param {Number} opacity Opacity value to transition to.
+	     * @param {Transitionable} transition Valid transitionable object
+	     * @param {Function} callback callback to call after transition completes
+	     * @return {Modifier} this
+	     */
+	    Modifier.prototype.setOpacity = function setOpacity(opacity, transition, callback) {
+	        if (transition || this._legacyStates.opacity) {
+	            if (!this._legacyStates.opacity) {
+	                this._legacyStates.opacity = new Transitionable(this._output.opacity);
+	            }
+	            if (!this._opacityGetter) this.opacityFrom(this._legacyStates.opacity);
+	
+	            return this._legacyStates.opacity.set(opacity, transition, callback);
+	        }
+	        else return this.opacityFrom(opacity);
+	    };
+	
+	    /**
+	     * Deprecated: Prefer originFrom with static origin array, or use a Transitionable with that origin.
+	     * @deprecated
+	     * @method setOrigin
+	     *
+	     * @param {Array.Number} origin two element array with values between 0 and 1.
+	     * @param {Transitionable} transition Valid transitionable object
+	     * @param {Function} callback callback to call after transition completes
+	     * @return {Modifier} this
+	     */
+	    Modifier.prototype.setOrigin = function setOrigin(origin, transition, callback) {
+	        /* TODO: remove this if statement when deprecation complete */
+	        if (transition || this._legacyStates.origin) {
+	
+	            if (!this._legacyStates.origin) {
+	                this._legacyStates.origin = new Transitionable(this._output.origin || [0, 0]);
+	            }
+	            if (!this._originGetter) this.originFrom(this._legacyStates.origin);
+	
+	            this._legacyStates.origin.set(origin, transition, callback);
+	            return this;
+	        }
+	        else return this.originFrom(origin);
+	    };
+	
+	    /**
+	     * Deprecated: Prefer alignFrom with static align array, or use a Transitionable with that align.
+	     * @deprecated
+	     * @method setAlign
+	     *
+	     * @param {Array.Number} align two element array with values between 0 and 1.
+	     * @param {Transitionable} transition Valid transitionable object
+	     * @param {Function} callback callback to call after transition completes
+	     * @return {Modifier} this
+	     */
+	    Modifier.prototype.setAlign = function setAlign(align, transition, callback) {
+	        /* TODO: remove this if statement when deprecation complete */
+	        if (transition || this._legacyStates.align) {
+	
+	            if (!this._legacyStates.align) {
+	                this._legacyStates.align = new Transitionable(this._output.align || [0, 0]);
+	            }
+	            if (!this._alignGetter) this.alignFrom(this._legacyStates.align);
+	
+	            this._legacyStates.align.set(align, transition, callback);
+	            return this;
+	        }
+	        else return this.alignFrom(align);
+	    };
+	
+	    /**
+	     * Deprecated: Prefer sizeFrom with static origin array, or use a Transitionable with that size.
+	     * @deprecated
+	     * @method setSize
+	     * @param {Array.Number} size two element array of [width, height]
+	     * @param {Transitionable} transition Valid transitionable object
+	     * @param {Function} callback callback to call after transition completes
+	     * @return {Modifier} this
+	     */
+	    Modifier.prototype.setSize = function setSize(size, transition, callback) {
+	        if (size && (transition || this._legacyStates.size)) {
+	            if (!this._legacyStates.size) {
+	                this._legacyStates.size = new Transitionable(this._output.size || [0, 0]);
+	            }
+	            if (!this._sizeGetter) this.sizeFrom(this._legacyStates.size);
+	
+	            this._legacyStates.size.set(size, transition, callback);
+	            return this;
+	        }
+	        else return this.sizeFrom(size);
+	    };
+	
+	    /**
+	     * Deprecated: Prefer proportionsFrom with static origin array, or use a Transitionable with those proportions.
+	     * @deprecated
+	     * @method setProportions
+	     * @param {Array.Number} proportions two element array of [percent of width, percent of height]
+	     * @param {Transitionable} transition Valid transitionable object
+	     * @param {Function} callback callback to call after transition completes
+	     * @return {Modifier} this
+	     */
+	    Modifier.prototype.setProportions = function setProportions(proportions, transition, callback) {
+	        if (proportions && (transition || this._legacyStates.proportions)) {
+	            if (!this._legacyStates.proportions) {
+	                this._legacyStates.proportions = new Transitionable(this._output.proportions || [0, 0]);
+	            }
+	            if (!this._proportionGetter) this.proportionsFrom(this._legacyStates.proportions);
+	
+	            this._legacyStates.proportions.set(proportions, transition, callback);
+	            return this;
+	        }
+	        else return this.proportionsFrom(proportions);
+	    };
+	
+	    /**
+	     * Deprecated: Prefer to stop transform in your provider object.
+	     * @deprecated
+	     * @method halt
+	     */
+	    Modifier.prototype.halt = function halt() {
+	        if (this._legacyStates.transform) this._legacyStates.transform.halt();
+	        if (this._legacyStates.opacity) this._legacyStates.opacity.halt();
+	        if (this._legacyStates.origin) this._legacyStates.origin.halt();
+	        if (this._legacyStates.align) this._legacyStates.align.halt();
+	        if (this._legacyStates.size) this._legacyStates.size.halt();
+	        if (this._legacyStates.proportions) this._legacyStates.proportions.halt();
+	        this._transformGetter = null;
+	        this._opacityGetter = null;
+	        this._originGetter = null;
+	        this._alignGetter = null;
+	        this._sizeGetter = null;
+	        this._proportionGetter = null;
+	    };
+	
+	    /**
+	     * Deprecated: Prefer to use your provided transform or output of your transform provider.
+	     * @deprecated
+	     * @method getTransform
+	     * @return {Object} transform provider object
+	     */
+	    Modifier.prototype.getTransform = function getTransform() {
+	        return this._transformGetter();
+	    };
+	
+	    /**
+	     * Deprecated: Prefer to determine the end state of your transform from your transform provider
+	     * @deprecated
+	     * @method getFinalTransform
+	     * @return {Transform} transform matrix
+	     */
+	    Modifier.prototype.getFinalTransform = function getFinalTransform() {
+	        return this._legacyStates.transform ? this._legacyStates.transform.getFinal() : this._output.transform;
+	    };
+	
+	    /**
+	     * Deprecated: Prefer to use your provided opacity or output of your opacity provider.
+	     * @deprecated
+	     * @method getOpacity
+	     * @return {Object} opacity provider object
+	     */
+	    Modifier.prototype.getOpacity = function getOpacity() {
+	        return this._opacityGetter();
+	    };
+	
+	    /**
+	     * Deprecated: Prefer to use your provided origin or output of your origin provider.
+	     * @deprecated
+	     * @method getOrigin
+	     * @return {Object} origin provider object
+	     */
+	    Modifier.prototype.getOrigin = function getOrigin() {
+	        return this._originGetter();
+	    };
+	
+	    /**
+	     * Deprecated: Prefer to use your provided align or output of your align provider.
+	     * @deprecated
+	     * @method getAlign
+	     * @return {Object} align provider object
+	     */
+	    Modifier.prototype.getAlign = function getAlign() {
+	        return this._alignGetter();
+	    };
+	
+	    /**
+	     * Deprecated: Prefer to use your provided size or output of your size provider.
+	     * @deprecated
+	     * @method getSize
+	     * @return {Object} size provider object
+	     */
+	    Modifier.prototype.getSize = function getSize() {
+	        return this._sizeGetter ? this._sizeGetter() : this._output.size;
+	    };
+	
+	    /**
+	     * Deprecated: Prefer to use your provided proportions or output of your proportions provider.
+	     * @deprecated
+	     * @method getProportions
+	     * @return {Object} proportions provider object
+	     */
+	    Modifier.prototype.getProportions = function getProportions() {
+	        return this._proportionGetter ? this._proportionGetter() : this._output.proportions;
+	    };
+	
+	    // call providers on tick to receive render spec elements to apply
+	    function _update() {
+	        if (this._transformGetter) this._output.transform = this._transformGetter();
+	        if (this._opacityGetter) this._output.opacity = this._opacityGetter();
+	        if (this._originGetter) this._output.origin = this._originGetter();
+	        if (this._alignGetter) this._output.align = this._alignGetter();
+	        if (this._sizeGetter) this._output.size = this._sizeGetter();
+	        if (this._proportionGetter) this._output.proportions = this._proportionGetter();
+	    }
+	
+	    /**
+	     * Return render spec for this Modifier, applying to the provided
+	     *    target component.  This is similar to render() for Surfaces.
+	     *
+	     * @private
+	     * @method modify
+	     *
+	     * @param {Object} target (already rendered) render spec to
+	     *    which to apply the transform.
+	     * @return {Object} render spec for this Modifier, including the
+	     *    provided target
+	     */
+	    Modifier.prototype.modify = function modify(target) {
+	        _update.call(this);
+	        this._output.target = target;
+	        return this._output;
+	    };
+	
+	    module.exports = Modifier;
+
+
+/***/ },
+/* 308 */
+/***/ function(module, exports, __webpack_require__) {
+
+	/* This Source Code Form is subject to the terms of the Mozilla Public
+	 * License, v. 2.0. If a copy of the MPL was not distributed with this
+	 * file, You can obtain one at http://mozilla.org/MPL/2.0/.
+	 *
+	 * Owner: david@famo.us
+	 * @license MPL 2.0
+	 * @copyright Famous Industries, Inc. 2015
+	 */
+	
+	    var Transitionable = __webpack_require__(301);
+	    var Transform = __webpack_require__(300);
+	    var Utility = __webpack_require__(303);
+	
+	    /**
+	     * A class for transitioning the state of a Transform by transitioning the
+	     * X, Y, and Z axes of it's translate, scale, skew and rotate components
+	     * independently.
+	     *
+	     * @class TransitionableTransform
+	     * @constructor
+	     *
+	     * @param [transform=Transform.identity] {Transform} The initial transform state
+	     */
+	    function TransitionableTransform(transform) {
+	        this._final = Transform.identity.slice();
+	
+	        this._finalTranslate = [0, 0, 0];
+	        this._finalRotate = [0, 0, 0];
+	        this._finalSkew = [0, 0, 0];
+	        this._finalScale = [1, 1, 1];
+	
+	        this.translate = [];
+	        this.rotate    = [];
+	        this.skew      = [];
+	        this.scale     = [];
+	
+	        for (var i=0; i<3; i+=1) {
+	            this.translate[i] = new Transitionable(this._finalTranslate[i]);
+	            this.rotate[i]    = new Transitionable(this._finalRotate[i]);
+	            this.skew[i]      = new Transitionable(this._finalSkew[i]);
+	            this.scale[i]     = new Transitionable(this._finalScale[i]);
+	        }
+	
+	        if (transform) this.set(transform);
+	    }
+	
+	    function _build() {
+	        return Transform.build({
+	            translate: [this.translate[0].get(), this.translate[1].get(), this.translate[2].get()],
+	            rotate:    [this.rotate[0].get(),    this.rotate[1].get(),    this.rotate[2].get()],
+	            skew:      [this.skew[0].get(),      this.skew[1].get(),      this.skew[2].get()],
+	            scale:     [this.scale[0].get(),     this.scale[1].get(),     this.scale[2].get()]
+	        });
+	    }
+	
+	    function _buildFinal() {
+	        return Transform.build({
+	            translate: this._finalTranslate,
+	            rotate: this._finalRotate,
+	            skew: this._finalSkew,
+	            scale: this._finalScale
+	        });
+	    }
+	
+	    function _countOfType(array, type) {
+	        var count = 0;
+	        for (var i=0; i<array.length; i+=1) {
+	            if (typeof array[i] === type+'') {
+	                count+=1;
+	            }
+	        }
+	        return count;
+	    }
+	
+	    /**
+	     * An optimized way of setting only the translation component of a Transform. Axes who's values are null will not be affected.
+	     *
+	     * @method setTranslate
+	     * @chainable
+	     *
+	     * @param translate {Array}     New translation state
+	     * @param [transition] {Object} Transition definition
+	     * @param [callback] {Function} Callback
+	     * @return {TransitionableTransform}
+	     */
+	    TransitionableTransform.prototype.setTranslate = function setTranslate(translate, transition, callback) {
+	        var numberOfAxes = _countOfType(translate, 'number');
+	        var _callback = callback ? Utility.after(numberOfAxes, callback) : null;
+	        for (var i=0; i<translate.length; i+=1) {
+	            if (typeof translate[i] === 'number') {
+	                this.translate[i].set(translate[i], transition, _callback);
+	                this._finalTranslate[i] = translate[i];
+	            }
+	        }
+	        this._final = _buildFinal.call(this);
+	        return this;
+	    };
+	
+	    /**
+	     * Translate only along the X axis of the translation component of a Transform.
+	     *
+	     * @method setTranslateX
+	     * @chainable
+	     *
+	     * @param translate {Number}     New translation state
+	     * @param [transition] {Object} Transition definition
+	     * @param [callback] {Function} Callback
+	     * @return {TransitionableTransform}
+	     */
+	    TransitionableTransform.prototype.setTranslateX = function setTranslateX(translate, transition, callback) {
+	        this.translate[0].set(translate, transition, callback);
+	        this._finalTranslate[0] = translate;
+	        this._final = _buildFinal.call(this);
+	        return this;
+	    };
+	
+	    /**
+	     * Translate only along the Y axis of the translation component of a Transform.
+	     *
+	     * @method setTranslateY
+	     * @chainable
+	     *
+	     * @param translate {Number}     New translation state
+	     * @param [transition] {Object} Transition definition
+	     * @param [callback] {Function} Callback
+	     * @return {TransitionableTransform}
+	     */
+	    TransitionableTransform.prototype.setTranslateY = function setTranslateY(translate, transition, callback) {
+	        this.translate[1].set(translate, transition, callback);
+	        this._finalTranslate[1] = translate;
+	        this._final = _buildFinal.call(this);
+	        return this;
+	    };
+	
+	    /**
+	     * Translate only along the Z axis of the translation component of a Transform.
+	     *
+	     * @method setTranslateZ
+	     * @chainable
+	     *
+	     * @param translate {Number}     New translation state
+	     * @param [transition] {Object} Transition definition
+	     * @param [callback] {Function} Callback
+	     * @return {TransitionableTransform}
+	     */
+	    TransitionableTransform.prototype.setTranslateZ = function setTranslateZ(translate, transition, callback) {
+	        this.translate[2].set(translate, transition, callback);
+	        this._finalTranslate[2] = translate;
+	        this._final = _buildFinal.call(this);
+	        return this;
+	    };
+	
+	    /**
+	     * An optimized way of setting only the scale component of a Transform. Axes who's values are null will not be affected.
+	     *
+	     * @method setScale
+	     * @chainable
+	     *
+	     * @param scale {Array}         New scale state
+	     * @param [transition] {Object} Transition definition
+	     * @param [callback] {Function} Callback
+	     * @return {TransitionableTransform}
+	     */
+	    TransitionableTransform.prototype.setScale = function setScale(scale, transition, callback) {
+	        var numberOfAxes = _countOfType(scale, 'number');
+	        var _callback = callback ? Utility.after(numberOfAxes, callback) : null;
+	        for (var i=0; i<scale.length; i+=1) {
+	            if (typeof scale[i] === 'number') {
+	                this.scale[i].set(scale[i], transition, _callback);
+	                this._finalScale[i] = scale[i];
+	            }
+	        }
+	        this._final = _buildFinal.call(this);
+	        return this;
+	    };
+	
+	    /**
+	     * Scale only along the X axis of the scale component of a Transform.
+	     *
+	     * @method setScaleX
+	     * @chainable
+	     *
+	     * @param scale {Number}     New scale state
+	     * @param [transition] {Object} Transition definition
+	     * @param [callback] {Function} Callback
+	     * @return {TransitionableTransform}
+	     */
+	    TransitionableTransform.prototype.setScaleX = function setScaleX(scale, transition, callback) {
+	        this.scale[0].set(scale, transition, callback);
+	        this._finalScale[0] = scale;
+	        this._final = _buildFinal.call(this);
+	        return this;
+	    };
+	
+	    /**
+	     * Scale only along the Y axis of the scale component of a Transform.
+	     *
+	     * @method setScaleY
+	     * @chainable
+	     *
+	     * @param scale {Number}     New scale state
+	     * @param [transition] {Object} Transition definition
+	     * @param [callback] {Function} Callback
+	     * @return {TransitionableTransform}
+	     */
+	    TransitionableTransform.prototype.setScaleY = function setScaleY(scale, transition, callback) {
+	        this.scale[1].set(scale, transition, callback);
+	        this._finalScale[1] = scale;
+	        this._final = _buildFinal.call(this);
+	        return this;
+	    };
+	
+	    /**
+	     * Scale only along the Z axis of the scale component of a Transform.
+	     *
+	     * @method setScaleZ
+	     * @chainable
+	     *
+	     * @param scale {Number}     New scale state
+	     * @param [transition] {Object} Transition definition
+	     * @param [callback] {Function} Callback
+	     * @return {TransitionableTransform}
+	     */
+	    TransitionableTransform.prototype.setScaleZ = function setScaleZ(scale, transition, callback) {
+	        this.scale[2].set(scale, transition, callback);
+	        this._finalScale[2] = scale;
+	        this._final = _buildFinal.call(this);
+	        return this;
+	    };
+	
+	    /**
+	     * An optimized way of setting only the rotational component of a Transform. Axes who's values are null will not be affected.
+	     *
+	     * @method setRotate
+	     * @chainable
+	     *
+	     * @param eulerAngles {Array}   Euler angles for new rotation state
+	     * @param [transition] {Object} Transition definition
+	     * @param [callback] {Function} Callback
+	     * @return {TransitionableTransform}
+	     */
+	    TransitionableTransform.prototype.setRotate = function setRotate(eulerAngles, transition, callback) {
+	        var numberOfAxes = _countOfType(eulerAngles, 'number');
+	        var _callback = callback ? Utility.after(numberOfAxes, callback) : null;
+	        for (var i=0; i<eulerAngles.length; i+=1) {
+	            if (typeof eulerAngles[i] === 'number') {
+	                this.rotate[i].set(eulerAngles[i], transition, _callback);
+	                this._finalRotate[i] = eulerAngles[i];
+	            }
+	        }
+	        this._final = _buildFinal.call(this);
+	        return this;
+	    };
+	
+	    /**
+	     * Rotate only about the X axis of the rotational component of a Transform.
+	     *
+	     * @method setScaleX
+	     * @chainable
+	     *
+	     * @param eulerAngle {Number}     New rotational state
+	     * @param [transition] {Object} Transition definition
+	     * @param [callback] {Function} Callback
+	     * @return {TransitionableTransform}
+	     */
+	    TransitionableTransform.prototype.setRotateX = function setRotateX(eulerAngle, transition, callback) {
+	        this.rotate[0].set(eulerAngle, transition, callback);
+	        this._finalRotate[0] = eulerAngle;
+	        this._final = _buildFinal.call(this);
+	        return this;
+	    };
+	
+	    /**
+	     * Rotate only about the Y axis of the rotational component of a Transform.
+	     *
+	     * @method setScaleY
+	     * @chainable
+	     *
+	     * @param eulerAngle {Number}     New rotational state
+	     * @param [transition] {Object} Transition definition
+	     * @param [callback] {Function} Callback
+	     * @return {TransitionableTransform}
+	     */
+	    TransitionableTransform.prototype.setRotateY = function setRotateY(eulerAngle, transition, callback) {
+	        this.rotate[1].set(eulerAngle, transition, callback);
+	        this._finalRotate[1] = eulerAngle;
+	        this._final = _buildFinal.call(this);
+	        return this;
+	    };
+	
+	    /**
+	     * Rotate only about the Z axis of the rotational component of a Transform.
+	     *
+	     * @method setScaleZ
+	     * @chainable
+	     *
+	     * @param eulerAngle {Number}     New rotational state
+	     * @param [transition] {Object} Transition definition
+	     * @param [callback] {Function} Callback
+	     * @return {TransitionableTransform}
+	     */
+	    TransitionableTransform.prototype.setRotateZ = function setRotateZ(eulerAngle, transition, callback) {
+	        this.rotate[2].set(eulerAngle, transition, callback);
+	        this._finalRotate[2] = eulerAngle;
+	        this._final = _buildFinal.call(this);
+	        return this;
+	    };
+	
+	    /**
+	     * An optimized way of setting only the skew component of a Transform. Axes who's values are null will not be affected.
+	     *
+	     * @method setSkew
+	     * @chainable
+	     *
+	     * @param skewAngles {Array}    New skew state. Axes who's values are null will not be affected.
+	     * @param [transition] {Object} Transition definition
+	     * @param [callback] {Function} Callback
+	     * @return {TransitionableTransform}
+	     */
+	    TransitionableTransform.prototype.setSkew = function setSkew(skewAngles, transition, callback) {
+	        var numberOfAxes = _countOfType(skewAngles, 'number');
+	        var _callback = callback ? Utility.after(numberOfAxes, callback) : null;
+	        for (var i=0; i<skewAngles.length; i+=1) {
+	            if (typeof skewAngles[i] === 'number') {
+	                this.skew[i].set(skewAngles[i], transition, _callback);
+	                this._finalSkew[i] = skewAngles[i];
+	            }
+	        }
+	        this._final = _buildFinal.call(this);
+	        return this;
+	    };
+	
+	    /**
+	     * Skew only about the X axis of the skew component of a Transform.
+	     *
+	     * @method setSkewX
+	     * @chainable
+	     *
+	     * @param skewAngle {Number}     New skew state
+	     * @param [transition] {Object} Transition definition
+	     * @param [callback] {Function} Callback
+	     * @return {TransitionableTransform}
+	     */
+	    TransitionableTransform.prototype.setSkewX = function setSkewX(skewAngle, transition, callback) {
+	        this.skew[0].set(skewAngle, transition, callback);
+	        this._finalSkew[0] = skewAngle;
+	        this._final = _buildFinal.call(this);
+	        return this;
+	    };
+	
+	    /**
+	     * Skew only about the Y axis of the skew component of a Transform.
+	     *
+	     * @method setSkewY
+	     * @chainable
+	     *
+	     * @param skewAngle {Number}     New skew state
+	     * @param [transition] {Object} Transition definition
+	     * @param [callback] {Function} Callback
+	     * @return {TransitionableTransform}
+	     */
+	    TransitionableTransform.prototype.setSkewY = function setSkewY(skewAngle, transition, callback) {
+	        this.skew[1].set(skewAngle, transition, callback);
+	        this._finalSkew[1] = skewAngle;
+	        this._final = _buildFinal.call(this);
+	        return this;
+	    };
+	
+	    /**
+	     * Skew only about the Z axis of the skew component of a Transform.
+	     *
+	     * @method setSkewZ
+	     * @chainable
+	     *
+	     * @param skewAngle {Number}     New skew state
+	     * @param [transition] {Object} Transition definition
+	     * @param [callback] {Function} Callback
+	     * @return {TransitionableTransform}
+	     */
+	    TransitionableTransform.prototype.setSkewZ = function setSkewZ(skewAngle, transition, callback) {
+	        this.skew[2].set(skewAngle, transition, callback);
+	        this._finalSkew[2] = skewAngle;
+	        this._final = _buildFinal.call(this);
+	        return this;
+	    };
+	
+	    /**
+	     * Setter for a TransitionableTransform with optional parameters to transition
+	     * between Transforms. Animates all axes of all components.
+	     *
+	     * @method set
+	     * @chainable
+	     *
+	     * @param transform {Array}     New transform state
+	     * @param [transition] {Object} Transition definition
+	     * @param [callback] {Function} Callback
+	     * @return {TransitionableTransform}
+	     */
+	    TransitionableTransform.prototype.set = function set(transform, transition, callback) {
+	        var components = Transform.interpret(transform);
+	
+	        this._finalTranslate = components.translate;
+	        this._finalRotate = components.rotate;
+	        this._finalSkew = components.skew;
+	        this._finalScale = components.scale;
+	        this._final = transform;
+	
+	        var _callback = callback ? Utility.after(12, callback) : null;
+	        for (var i=0; i<3; i+=1) {
+	            this.translate[i].set(components.translate[i], transition, _callback);
+	            this.rotate[i].set(components.rotate[i], transition, _callback);
+	            this.skew[i].set(components.skew[i], transition, _callback);
+	            this.scale[i].set(components.scale[i], transition, _callback);
+	        }
+	        return this;
+	    };
+	
+	    /**
+	     * Sets the default transition to use for transitioning betwen Transform states
+	     *
+	     * @method setDefaultTransition
+	     *
+	     * @param transition {Object} Transition definition
+	     */
+	    TransitionableTransform.prototype.setDefaultTransition = function setDefaultTransition(transition) {
+	        for (var i=0; i<3; i+=1) {
+	            this.translate[i].setDefault(transition);
+	            this.rotate[i].setDefault(transition);
+	            this.skew[i].setDefault(transition);
+	            this.scale[i].setDefault(transition);
+	        }
+	    };
+	
+	    /**
+	     * Getter. Returns the current state of the Transform
+	     *
+	     * @method get
+	     *
+	     * @return {Transform}
+	     */
+	    TransitionableTransform.prototype.get = function get() {
+	        if (this.isActive()) {
+	            return _build.call(this);
+	        }
+	        else return this._final;
+	    };
+	
+	    /**
+	     * Get the destination state of the Transform
+	     *
+	     * @method getFinal
+	     *
+	     * @return Transform {Transform}
+	     */
+	    TransitionableTransform.prototype.getFinal = function getFinal() {
+	        return this._final;
+	    };
+	
+	    /**
+	     * Determine if the TransitionableTransform is currently transitioning
+	     *
+	     * @method isActive
+	     *
+	     * @return {Boolean}
+	     */
+	    TransitionableTransform.prototype.isActive = function isActive() {
+	        var isActive = false;
+	
+	        for (var i=0; i<3; i+=1) {
+	            if (
+	                this.translate[i].isActive()
+	                || this.rotate[i].isActive()
+	                || this.skew[i].isActive()
+	                || this.scale[i].isActive()
+	            ) {
+	                isActive = true; break;
+	            }
+	        }
+	        return isActive;
+	    };
+	
+	    /**
+	     * Halts the transition
+	     *
+	     * @method halt
+	     */
+	    TransitionableTransform.prototype.halt = function halt() {
+	        for (var i=0; i<3; i+=1) {
+	            this.translate[i].halt();
+	            this.rotate[i].halt();
+	            this.skew[i].halt();
+	            this.scale[i].halt();
+	
+	            this._finalTranslate[i] = this.translate[i].get();
+	            this._finalRotate[i] = this.rotate[i].get();
+	            this._finalSkew[i] = this.skew[i].get();
+	            this._finalScale[i] = this.scale[i].get();
+	        }
+	
+	        this._final = this.get();
+	
+	        return this;
+	    };
+	
+	    module.exports = TransitionableTransform;
+
+
+/***/ },
+/* 309 */
+/***/ function(module, exports, __webpack_require__) {
+
+	/* This Source Code Form is subject to the terms of the Mozilla Public
+	 * License, v. 2.0. If a copy of the MPL was not distributed with this
+	 * file, You can obtain one at http://mozilla.org/MPL/2.0/.
+	 *
+	 * Owner: mark@famo.us
+	 * @license MPL 2.0
+	 * @copyright Famous Industries, Inc. 2015
+	 */
+	
+	    var Entity = __webpack_require__(310);
+	    var SpecParser = __webpack_require__(311);
+	
+	    /**
+	     * A wrapper for inserting a renderable component (like a Modifer or
+	     *   Surface) into the render tree.
+	     *
+	     * @class RenderNode
+	     * @constructor
+	     *
+	     * @param {Object} object Target renderable component
+	     */
+	    function RenderNode(object) {
+	        this._object = null;
+	        this._child = null;
+	        this._hasMultipleChildren = false;
+	        this._isRenderable = false;
+	        this._isModifier = false;
+	
+	        this._resultCache = {};
+	        this._prevResults = {};
+	
+	        this._childResult = null;
+	
+	        if (object) this.set(object);
+	    }
+	
+	    /**
+	     * Append a renderable to the list of this node's children.
+	     *   This produces a new RenderNode in the tree.
+	     *   Note: Does not double-wrap if child is a RenderNode already.
+	     *
+	     * @method add
+	     * @param {Object} child renderable object
+	     * @return {RenderNode} new render node wrapping child
+	     */
+	    RenderNode.prototype.add = function add(child) {
+	        var childNode = (child instanceof RenderNode) ? child : new RenderNode(child);
+	        if (this._child instanceof Array) this._child.push(childNode);
+	        else if (this._child) {
+	            this._child = [this._child, childNode];
+	            this._hasMultipleChildren = true;
+	            this._childResult = []; // to be used later
+	        }
+	        else this._child = childNode;
+	
+	        return childNode;
+	    };
+	
+	    /**
+	     * Return the single wrapped object.  Returns null if this node has multiple child nodes.
+	     *
+	     * @method get
+	     *
+	     * @return {Ojbect} contained renderable object
+	     */
+	    RenderNode.prototype.get = function get() {
+	        return this._object || (this._hasMultipleChildren ? null : (this._child ? this._child.get() : null));
+	    };
+	
+	    /**
+	     * Overwrite the list of children to contain the single provided object
+	     *
+	     * @method set
+	     * @param {Object} child renderable object
+	     * @return {RenderNode} this render node, or child if it is a RenderNode
+	     */
+	    RenderNode.prototype.set = function set(child) {
+	        this._childResult = null;
+	        this._hasMultipleChildren = false;
+	        this._isRenderable = child.render ? true : false;
+	        this._isModifier = child.modify ? true : false;
+	        this._object = child;
+	        this._child = null;
+	        if (child instanceof RenderNode) return child;
+	        else return this;
+	    };
+	
+	    /**
+	     * Get render size of contained object.
+	     *
+	     * @method getSize
+	     * @return {Array.Number} size of this or size of single child.
+	     */
+	    RenderNode.prototype.getSize = function getSize() {
+	        var result = null;
+	        var target = this.get();
+	        if (target && target.getSize) result = target.getSize();
+	        if (!result && this._child && this._child.getSize) result = this._child.getSize();
+	        return result;
+	    };
+	
+	    // apply results of rendering this subtree to the document
+	    function _applyCommit(spec, context, cacheStorage) {
+	        var result = SpecParser.parse(spec, context);
+	        var keys = Object.keys(result);
+	        for (var i = 0; i < keys.length; i++) {
+	            var id = keys[i];
+	            var childNode = Entity.get(id);
+	            var commitParams = result[id];
+	            commitParams.allocator = context.allocator;
+	            var commitResult = childNode.commit(commitParams);
+	            if (commitResult) _applyCommit(commitResult, context, cacheStorage);
+	            else cacheStorage[id] = commitParams;
+	        }
+	    }
+	
+	    /**
+	     * Commit the content change from this node to the document.
+	     *
+	     * @private
+	     * @method commit
+	     * @param {Context} context render context
+	     */
+	    RenderNode.prototype.commit = function commit(context) {
+	        // free up some divs from the last loop
+	        var prevKeys = Object.keys(this._prevResults);
+	        for (var i = 0; i < prevKeys.length; i++) {
+	            var id = prevKeys[i];
+	            if (this._resultCache[id] === undefined) {
+	                var object = Entity.get(id);
+	                if (object.cleanup) object.cleanup(context.allocator);
+	            }
+	        }
+	
+	        this._prevResults = this._resultCache;
+	        this._resultCache = {};
+	        _applyCommit(this.render(), context, this._resultCache);
+	    };
+	
+	    /**
+	     * Generate a render spec from the contents of the wrapped component.
+	     *
+	     * @private
+	     * @method render
+	     *
+	     * @return {Object} render specification for the component subtree
+	     *    only under this node.
+	     */
+	    RenderNode.prototype.render = function render() {
+	        if (this._isRenderable) return this._object.render();
+	
+	        var result = null;
+	        if (this._hasMultipleChildren) {
+	            result = this._childResult;
+	            var children = this._child;
+	            for (var i = 0; i < children.length; i++) {
+	                result[i] = children[i].render();
+	            }
+	        }
+	        else if (this._child) result = this._child.render();
+	
+	        return this._isModifier ? this._object.modify(result) : result;
+	    };
+	
+	    module.exports = RenderNode;
+
+
+/***/ },
+/* 310 */
+/***/ function(module, exports) {
+
+	/* This Source Code Form is subject to the terms of the Mozilla Public
+	 * License, v. 2.0. If a copy of the MPL was not distributed with this
+	 * file, You can obtain one at http://mozilla.org/MPL/2.0/.
+	 *
+	 * Owner: mark@famo.us
+	 * @license MPL 2.0
+	 * @copyright Famous Industries, Inc. 2015
+	 */
+	
+	    /**
+	     * A singleton that maintains a global registry of Surfaces.
+	     *   Private.
+	     *
+	     * @private
+	     * @static
+	     * @class Entity
+	     */
+	
+	    var entities = [];
+	
+	    /**
+	     * Get entity from global index.
+	     *
+	     * @private
+	     * @method get
+	     * @param {Number} id entity registration id
+	     * @return {Surface} entity in the global index
+	     */
+	    function get(id) {
+	        return entities[id];
+	    }
+	
+	    /**
+	     * Overwrite entity in the global index
+	     *
+	     * @private
+	     * @method set
+	     * @param {Number} id entity registration id
+	     * @param {Surface} entity to add to the global index
+	     */
+	    function set(id, entity) {
+	        entities[id] = entity;
+	    }
+	
+	    /**
+	     * Add entity to global index
+	     *
+	     * @private
+	     * @method register
+	     * @param {Surface} entity to add to global index
+	     * @return {Number} new id
+	     */
+	    function register(entity) {
+	        var id = entities.length;
+	        set(id, entity);
+	        return id;
+	    }
+	
+	    /**
+	     * Remove entity from global index
+	     *
+	     * @private
+	     * @method unregister
+	     * @param {Number} id entity registration id
+	     */
+	    function unregister(id) {
+	        set(id, null);
+	    }
+	
+	    module.exports = {
+	        register: register,
+	        unregister: unregister,
+	        get: get,
+	        set: set
+	    };
+
+
+/***/ },
+/* 311 */
+/***/ function(module, exports, __webpack_require__) {
+
+	/* This Source Code Form is subject to the terms of the Mozilla Public
+	 * License, v. 2.0. If a copy of the MPL was not distributed with this
+	 * file, You can obtain one at http://mozilla.org/MPL/2.0/.
+	 *
+	 * Owner: mark@famo.us
+	 * @license MPL 2.0
+	 * @copyright Famous Industries, Inc. 2015
+	 */
+	
+	    var Transform = __webpack_require__(300);
+	
+	    /**
+	     *
+	     * This object translates the rendering instructions ("render specs")
+	     *   that renderable components generate into document update
+	     *   instructions ("update specs").  Private.
+	     *
+	     * @private
+	     * @class SpecParser
+	     * @constructor
+	     */
+	    function SpecParser() {
+	        this.result = {};
+	    }
+	    SpecParser._instance = new SpecParser();
+	
+	    /**
+	     * Convert a render spec coming from the context's render chain to an
+	     *    update spec for the update chain. This is the only major entry point
+	     *    for a consumer of this class.
+	     *
+	     * @method parse
+	     * @static
+	     * @private
+	     *
+	     * @param {renderSpec} spec input render spec
+	     * @param {Object} context context to do the parse in
+	     * @return {Object} the resulting update spec (if no callback
+	     *   specified, else none)
+	     */
+	    SpecParser.parse = function parse(spec, context) {
+	        return SpecParser._instance.parse(spec, context);
+	    };
+	
+	    /**
+	     * Convert a renderSpec coming from the context's render chain to an update
+	     *    spec for the update chain. This is the only major entrypoint for a
+	     *    consumer of this class.
+	     *
+	     * @method parse
+	     *
+	     * @private
+	     * @param {renderSpec} spec input render spec
+	     * @param {Context} context
+	     * @return {updateSpec} the resulting update spec
+	     */
+	    SpecParser.prototype.parse = function parse(spec, context) {
+	        this.reset();
+	        this._parseSpec(spec, context, Transform.identity);
+	        return this.result;
+	    };
+	
+	    /**
+	     * Prepare SpecParser for re-use (or first use) by setting internal state
+	     *  to blank.
+	     *
+	     * @private
+	     * @method reset
+	     */
+	    SpecParser.prototype.reset = function reset() {
+	        this.result = {};
+	    };
+	
+	    // Multiply matrix M by vector v
+	    function _vecInContext(v, m) {
+	        return [
+	            v[0] * m[0] + v[1] * m[4] + v[2] * m[8],
+	            v[0] * m[1] + v[1] * m[5] + v[2] * m[9],
+	            v[0] * m[2] + v[1] * m[6] + v[2] * m[10]
+	        ];
+	    }
+	
+	    var _zeroZero = [0, 0];
+	
+	    // From the provided renderSpec tree, recursively compose opacities,
+	    //    origins, transforms, and sizes corresponding to each surface id from
+	    //    the provided renderSpec tree structure. On completion, those
+	    //    properties of 'this' object should be ready to use to build an
+	    //    updateSpec.
+	    SpecParser.prototype._parseSpec = function _parseSpec(spec, parentContext, sizeContext) {
+	        var id;
+	        var target;
+	        var transform;
+	        var opacity;
+	        var origin;
+	        var align;
+	        var size;
+	
+	        if (typeof spec === 'number') {
+	            id = spec;
+	            transform = parentContext.transform;
+	            align = parentContext.align || _zeroZero;
+	            if (parentContext.size && align && (align[0] || align[1])) {
+	                var alignAdjust = [align[0] * parentContext.size[0], align[1] * parentContext.size[1], 0];
+	                transform = Transform.thenMove(transform, _vecInContext(alignAdjust, sizeContext));
+	            }
+	            this.result[id] = {
+	                transform: transform,
+	                opacity: parentContext.opacity,
+	                origin: parentContext.origin || _zeroZero,
+	                align: parentContext.align || _zeroZero,
+	                size: parentContext.size
+	            };
+	        }
+	        else if (!spec) { // placed here so 0 will be cached earlier
+	            return;
+	        }
+	        else if (spec instanceof Array) {
+	            for (var i = 0; i < spec.length; i++) {
+	                this._parseSpec(spec[i], parentContext, sizeContext);
+	            }
+	        }
+	        else {
+	            target = spec.target;
+	            transform = parentContext.transform;
+	            opacity = parentContext.opacity;
+	            origin = parentContext.origin;
+	            align = parentContext.align;
+	            size = parentContext.size;
+	            var nextSizeContext = sizeContext;
+	
+	            if (spec.opacity !== undefined) opacity = parentContext.opacity * spec.opacity;
+	            if (spec.transform) transform = Transform.multiply(parentContext.transform, spec.transform);
+	            if (spec.origin) {
+	                origin = spec.origin;
+	                nextSizeContext = parentContext.transform;
+	            }
+	            if (spec.align) align = spec.align;
+	
+	            if (spec.size || spec.proportions) {
+	                var parentSize = size;
+	                size = [size[0], size[1]];
+	
+	                if (spec.size) {
+	                    if (spec.size[0] !== undefined) size[0] = spec.size[0];
+	                    if (spec.size[1] !== undefined) size[1] = spec.size[1];
+	                }
+	
+	                if (spec.proportions) {
+	                    if (spec.proportions[0] !== undefined) size[0] = size[0] * spec.proportions[0];
+	                    if (spec.proportions[1] !== undefined) size[1] = size[1] * spec.proportions[1];
+	                }
+	
+	                if (parentSize) {
+	                    if (align && (align[0] || align[1])) transform = Transform.thenMove(transform, _vecInContext([align[0] * parentSize[0], align[1] * parentSize[1], 0], sizeContext));
+	                    if (origin && (origin[0] || origin[1])) transform = Transform.moveThen([-origin[0] * size[0], -origin[1] * size[1], 0], transform);
+	                }
+	
+	                nextSizeContext = parentContext.transform;
+	                origin = null;
+	                align = null;
+	            }
+	
+	            this._parseSpec(target, {
+	                transform: transform,
+	                opacity: opacity,
+	                origin: origin,
+	                align: align,
+	                size: size
+	            }, nextSizeContext);
+	        }
+	    };
+	
+	    module.exports = SpecParser;
+
+
+/***/ },
+/* 312 */
+/***/ function(module, exports, __webpack_require__) {
+
+	/* This Source Code Form is subject to the terms of the Mozilla Public
+	 * License, v. 2.0. If a copy of the MPL was not distributed with this
+	 * file, You can obtain one at http://mozilla.org/MPL/2.0/.
+	 *
+	 * Owner: mark@famo.us
+	 * @license MPL 2.0
+	 * @copyright Famous Industries, Inc. 2015
+	 */
+	
+	    var EventEmitter = __webpack_require__(313);
+	
+	    /**
+	     * EventHandler forwards received events to a set of provided callback functions.
+	     * It allows events to be captured, processed, and optionally piped through to other event handlers.
+	     *
+	     * @class EventHandler
+	     * @extends EventEmitter
+	     * @constructor
+	     */
+	    function EventHandler() {
+	        EventEmitter.apply(this, arguments);
+	
+	        this.downstream = []; // downstream event handlers
+	        this.downstreamFn = []; // downstream functions
+	
+	        this.upstream = []; // upstream event handlers
+	        this.upstreamListeners = {}; // upstream listeners
+	    }
+	    EventHandler.prototype = Object.create(EventEmitter.prototype);
+	    EventHandler.prototype.constructor = EventHandler;
+	
+	    /**
+	     * Assign an event handler to receive an object's input events.
+	     *
+	     * @method setInputHandler
+	     * @static
+	     *
+	     * @param {Object} object object to mix trigger, subscribe, and unsubscribe functions into
+	     * @param {EventHandler} handler assigned event handler
+	     */
+	    EventHandler.setInputHandler = function setInputHandler(object, handler) {
+	        object.trigger = handler.trigger.bind(handler);
+	        if (handler.subscribe && handler.unsubscribe) {
+	            object.subscribe = handler.subscribe.bind(handler);
+	            object.unsubscribe = handler.unsubscribe.bind(handler);
+	        }
+	    };
+	
+	    /**
+	     * Assign an event handler to receive an object's output events.
+	     *
+	     * @method setOutputHandler
+	     * @static
+	     *
+	     * @param {Object} object object to mix pipe, unpipe, on, addListener, and removeListener functions into
+	     * @param {EventHandler} handler assigned event handler
+	     */
+	    EventHandler.setOutputHandler = function setOutputHandler(object, handler) {
+	        if (handler instanceof EventHandler) handler.bindThis(object);
+	        object.pipe = handler.pipe.bind(handler);
+	        object.unpipe = handler.unpipe.bind(handler);
+	        object.on = handler.on.bind(handler);
+	        object.addListener = object.on;
+	        object.removeListener = handler.removeListener.bind(handler);
+	    };
+	
+	    /**
+	     * Trigger an event, sending to all downstream handlers
+	     *   listening for provided 'type' key.
+	     *
+	     * @method emit
+	     *
+	     * @param {string} type event type key (for example, 'click')
+	     * @param {Object} event event data
+	     * @return {EventHandler} this
+	     */
+	    EventHandler.prototype.emit = function emit(type, event) {
+	        EventEmitter.prototype.emit.apply(this, arguments);
+	        var i = 0;
+	        for (i = 0; i < this.downstream.length; i++) {
+	            if (this.downstream[i].trigger) this.downstream[i].trigger(type, event);
+	        }
+	        for (i = 0; i < this.downstreamFn.length; i++) {
+	            this.downstreamFn[i](type, event);
+	        }
+	        return this;
+	    };
+	
+	    /**
+	     * Alias for emit
+	     * @method addListener
+	     */
+	    EventHandler.prototype.trigger = EventHandler.prototype.emit;
+	
+	    /**
+	     * Add event handler object to set of downstream handlers.
+	     *
+	     * @method pipe
+	     *
+	     * @param {EventHandler} target event handler target object
+	     * @return {EventHandler} passed event handler
+	     */
+	    EventHandler.prototype.pipe = function pipe(target) {
+	        if (target.subscribe instanceof Function) return target.subscribe(this);
+	
+	        var downstreamCtx = (target instanceof Function) ? this.downstreamFn : this.downstream;
+	        var index = downstreamCtx.indexOf(target);
+	        if (index < 0) downstreamCtx.push(target);
+	
+	        if (target instanceof Function) target('pipe', null);
+	        else if (target.trigger) target.trigger('pipe', null);
+	
+	        return target;
+	    };
+	
+	    /**
+	     * Remove handler object from set of downstream handlers.
+	     *   Undoes work of "pipe".
+	     *
+	     * @method unpipe
+	     *
+	     * @param {EventHandler} target target handler object
+	     * @return {EventHandler} provided target
+	     */
+	    EventHandler.prototype.unpipe = function unpipe(target) {
+	        if (target.unsubscribe instanceof Function) return target.unsubscribe(this);
+	
+	        var downstreamCtx = (target instanceof Function) ? this.downstreamFn : this.downstream;
+	        var index = downstreamCtx.indexOf(target);
+	        if (index >= 0) {
+	            downstreamCtx.splice(index, 1);
+	            if (target instanceof Function) target('unpipe', null);
+	            else if (target.trigger) target.trigger('unpipe', null);
+	            return target;
+	        }
+	        else return false;
+	    };
+	
+	    /**
+	     * Bind a callback function to an event type handled by this object.
+	     *
+	     * @method "on"
+	     *
+	     * @param {string} type event type key (for example, 'click')
+	     * @param {function(string, Object)} handler callback
+	     * @return {EventHandler} this
+	     */
+	    EventHandler.prototype.on = function on(type, handler) {
+	        EventEmitter.prototype.on.apply(this, arguments);
+	        if (!(type in this.upstreamListeners)) {
+	            var upstreamListener = this.trigger.bind(this, type);
+	            this.upstreamListeners[type] = upstreamListener;
+	            for (var i = 0; i < this.upstream.length; i++) {
+	                this.upstream[i].on(type, upstreamListener);
+	            }
+	        }
+	        return this;
+	    };
+	
+	    /**
+	     * Alias for "on"
+	     * @method addListener
+	     */
+	    EventHandler.prototype.addListener = EventHandler.prototype.on;
+	
+	    /**
+	     * Listen for events from an upstream event handler.
+	     *
+	     * @method subscribe
+	     *
+	     * @param {EventEmitter} source source emitter object
+	     * @return {EventHandler} this
+	     */
+	    EventHandler.prototype.subscribe = function subscribe(source) {
+	        var index = this.upstream.indexOf(source);
+	        if (index < 0) {
+	            this.upstream.push(source);
+	            for (var type in this.upstreamListeners) {
+	                source.on(type, this.upstreamListeners[type]);
+	            }
+	        }
+	        return this;
+	    };
+	
+	    /**
+	     * Stop listening to events from an upstream event handler.
+	     *
+	     * @method unsubscribe
+	     *
+	     * @param {EventEmitter} source source emitter object
+	     * @return {EventHandler} this
+	     */
+	    EventHandler.prototype.unsubscribe = function unsubscribe(source) {
+	        var index = this.upstream.indexOf(source);
+	        if (index >= 0) {
+	            this.upstream.splice(index, 1);
+	            for (var type in this.upstreamListeners) {
+	                source.removeListener(type, this.upstreamListeners[type]);
+	            }
+	        }
+	        return this;
+	    };
+	
+	    module.exports = EventHandler;
+
+
+/***/ },
+/* 313 */
+/***/ function(module, exports) {
+
+	/* This Source Code Form is subject to the terms of the Mozilla Public
+	 * License, v. 2.0. If a copy of the MPL was not distributed with this
+	 * file, You can obtain one at http://mozilla.org/MPL/2.0/.
+	 *
+	 * Owner: mark@famo.us
+	 * @license MPL 2.0
+	 * @copyright Famous Industries, Inc. 2015
+	 */
+	
+	    /**
+	     * EventEmitter represents a channel for events.
+	     *
+	     * @class EventEmitter
+	     * @constructor
+	     */
+	    function EventEmitter() {
+	        this.listeners = {};
+	        this._owner = this;
+	    }
+	
+	    /**
+	     * Trigger an event, sending to all downstream handlers
+	     *   listening for provided 'type' key.
+	     *
+	     * @method emit
+	     *
+	     * @param {string} type event type key (for example, 'click')
+	     * @param {Object} event event data
+	     * @return {EventHandler} this
+	     */
+	    EventEmitter.prototype.emit = function emit(type, event) {
+	        var handlers = this.listeners[type];
+	        if (handlers) {
+	            for (var i = 0; i < handlers.length; i++) {
+	                handlers[i].call(this._owner, event);
+	            }
+	        }
+	        return this;
+	    };
+	
+	    /**
+	     * Bind a callback function to an event type handled by this object.
+	     *
+	     * @method "on"
+	     *
+	     * @param {string} type event type key (for example, 'click')
+	     * @param {function(string, Object)} handler callback
+	     * @return {EventHandler} this
+	     */
+	   EventEmitter.prototype.on = function on(type, handler) {
+	        if (!(type in this.listeners)) this.listeners[type] = [];
+	        var index = this.listeners[type].indexOf(handler);
+	        if (index < 0) this.listeners[type].push(handler);
+	        return this;
+	    };
+	
+	    /**
+	     * Alias for "on".
+	     * @method addListener
+	     */
+	    EventEmitter.prototype.addListener = EventEmitter.prototype.on;
+	
+	   /**
+	     * Unbind an event by type and handler.
+	     *   This undoes the work of "on".
+	     *
+	     * @method removeListener
+	     *
+	     * @param {string} type event type key (for example, 'click')
+	     * @param {function} handler function object to remove
+	     * @return {EventEmitter} this
+	     */
+	    EventEmitter.prototype.removeListener = function removeListener(type, handler) {
+	        var listener = this.listeners[type];
+	        if (listener !== undefined) {
+	            var index = listener.indexOf(handler);
+	            if (index >= 0) listener.splice(index, 1);
+	        }
+	        return this;
+	    };
+	
+	    /**
+	     * Call event handlers with this set to owner.
+	     *
+	     * @method bindThis
+	     *
+	     * @param {Object} owner object this EventEmitter belongs to
+	     */
+	    EventEmitter.prototype.bindThis = function bindThis(owner) {
+	        this._owner = owner;
+	    };
+	
+	    module.exports = EventEmitter;
+
+
+/***/ },
+/* 314 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+	
+	Object.defineProperty(exports, "__esModule", {
+	    value: true
+	});
+	exports.contextWithPerspective = contextWithPerspective;
+	exports.simpleExtend = simpleExtend;
+	
+	var _Engine = __webpack_require__(315);
+	
+	var _Engine2 = _interopRequireDefault(_Engine);
+	
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+	
+	/**
+	 * Creates a [famous/src/core/Context](#famous/src/core/Context) having the specified 3D perspective.
+	 *
+	 * @param {Number} perspective The integer amount of perspective to apply to the `Context`.
+	 * @returns {module: famous/src/core/Context} The `Context` with the applied perspective.
+	 */
+	function contextWithPerspective(perspective) {
+	    var context = _Engine2.default.createContext();
+	    context.setPerspective(perspective);
+	    return context;
+	} /*
+	   * @overview Utility functions used by infamous.
+	   *
+	   * LICENSE
+	   *
+	   * This Source Code Form is subject to the terms of the Mozilla Public
+	   * License, v. 2.0. If a copy of the MPL was not distributed with this
+	   * file, You can obtain one at http://mozilla.org/MPL/2.0/.
+	   *
+	   */
+	
+	function simpleExtend(object) {
+	    for (var _len = arguments.length, others = Array(_len > 1 ? _len - 1 : 0), _key = 1; _key < _len; _key++) {
+	        others[_key - 1] = arguments[_key];
+	    }
+	
+	    others.forEach(function (other) {
+	        for (var prop in other) {
+	            object[prop] = other[prop];
+	        }
+	    });
+	}
+
+/***/ },
+/* 315 */
+/***/ function(module, exports, __webpack_require__) {
+
+	/* This Source Code Form is subject to the terms of the Mozilla Public
+	 * License, v. 2.0. If a copy of the MPL was not distributed with this
+	 * file, You can obtain one at http://mozilla.org/MPL/2.0/.
+	 *
+	 * Owner: mark@famo.us
+	 * @license MPL 2.0
+	 * @copyright Famous Industries, Inc. 2015
+	 */
+	
+	
+	    /**
+	     * The singleton object initiated upon process
+	     *   startup which manages all active Context instances, runs
+	     *   the render dispatch loop, and acts as a listener and dispatcher
+	     *   for events.  All methods are therefore static.
+	     *
+	     *   On static initialization, window.requestAnimationFrame is called with
+	     *     the event loop function.
+	     *
+	     *   Note: Any window in which Engine runs will prevent default
+	     *     scrolling behavior on the 'touchmove' event.
+	     *
+	     * @static
+	     * @class Engine
+	     */
+	    var Context = __webpack_require__(316);
+	    var EventHandler = __webpack_require__(312);
+	    var OptionsManager = __webpack_require__(318);
+	
+	    var Engine = {};
+	
+	    var contexts = [];
+	
+	    var nextTickQueue = [];
+	
+	    var currentFrame = 0;
+	    var nextTickFrame = 0;
+	
+	    var deferQueue = [];
+	
+	    var lastTime = Date.now();
+	    var frameTime;
+	    var frameTimeLimit;
+	    var loopEnabled = true;
+	    var eventForwarders = {};
+	    var eventHandler = new EventHandler();
+	
+	    var options = {
+	        containerType: 'div',
+	        containerClass: 'famous-container',
+	        fpsCap: undefined,
+	        runLoop: true,
+	        appMode: true
+	    };
+	    var optionsManager = new OptionsManager(options);
+	
+	    /** @const */
+	    var MAX_DEFER_FRAME_TIME = 10;
+	
+	    /**
+	     * Inside requestAnimationFrame loop, step() is called, which:
+	     *   calculates current FPS (throttling loop if it is over limit set in setFPSCap),
+	     *   emits dataless 'prerender' event on start of loop,
+	     *   calls in order any one-shot functions registered by nextTick on last loop,
+	     *   calls Context.update on all Context objects registered,
+	     *   and emits dataless 'postrender' event on end of loop.
+	     *
+	     * @static
+	     * @private
+	     * @method step
+	     */
+	    Engine.step = function step() {
+	        currentFrame++;
+	        nextTickFrame = currentFrame;
+	
+	        var currentTime = Date.now();
+	
+	        // skip frame if we're over our framerate cap
+	        if (frameTimeLimit && currentTime - lastTime < frameTimeLimit) return;
+	
+	        var i = 0;
+	
+	        frameTime = currentTime - lastTime;
+	        lastTime = currentTime;
+	
+	        eventHandler.emit('prerender');
+	
+	        // empty the queue
+	        var numFunctions = nextTickQueue.length;
+	        while (numFunctions--) (nextTickQueue.shift())(currentFrame);
+	
+	        // limit total execution time for deferrable functions
+	        while (deferQueue.length && (Date.now() - currentTime) < MAX_DEFER_FRAME_TIME) {
+	            deferQueue.shift().call(this);
+	        }
+	
+	        for (i = 0; i < contexts.length; i++) contexts[i].update();
+	
+	        eventHandler.emit('postrender');
+	    };
+	
+	    // engage requestAnimationFrame
+	    function loop() {
+	        if (options.runLoop) {
+	            Engine.step();
+	            window.requestAnimationFrame(loop);
+	        }
+	        else loopEnabled = false;
+	    }
+	    window.requestAnimationFrame(loop);
+	
+	    //
+	    // Upon main document window resize (unless on an "input" HTML element):
+	    //   scroll to the top left corner of the window,
+	    //   and for each managed Context: emit the 'resize' event and update its size.
+	    // @param {Object=} event document event
+	    //
+	    function handleResize(event) {
+	        for (var i = 0; i < contexts.length; i++) {
+	            contexts[i].emit('resize');
+	        }
+	        eventHandler.emit('resize');
+	    }
+	    window.addEventListener('resize', handleResize, false);
+	    handleResize();
+	
+	    /**
+	     * Initialize famous for app mode
+	     *
+	     * @static
+	     * @private
+	     * @method initialize
+	     */
+	    function initialize() {
+	        // prevent scrolling via browser
+	        window.addEventListener('touchmove', function(event) {
+	            event.preventDefault();
+	        }, true);
+	
+	        addRootClasses();
+	    }
+	    var initialized = false;
+	
+	    function addRootClasses() {
+	        if (!document.body) {
+	            Engine.nextTick(addRootClasses);
+	            return;
+	        }
+	
+	        document.body.classList.add('famous-root');
+	        document.documentElement.classList.add('famous-root');
+	    }
+	
+	    /**
+	     * Add event handler object to set of downstream handlers.
+	     *
+	     * @method pipe
+	     *
+	     * @param {EventHandler} target event handler target object
+	     * @return {EventHandler} passed event handler
+	     */
+	    Engine.pipe = function pipe(target) {
+	        if (target.subscribe instanceof Function) return target.subscribe(Engine);
+	        else return eventHandler.pipe(target);
+	    };
+	
+	    /**
+	     * Remove handler object from set of downstream handlers.
+	     *   Undoes work of "pipe".
+	     *
+	     * @method unpipe
+	     *
+	     * @param {EventHandler} target target handler object
+	     * @return {EventHandler} provided target
+	     */
+	    Engine.unpipe = function unpipe(target) {
+	        if (target.unsubscribe instanceof Function) return target.unsubscribe(Engine);
+	        else return eventHandler.unpipe(target);
+	    };
+	
+	    /**
+	     * Bind a callback function to an event type handled by this object.
+	     *
+	     * @static
+	     * @method "on"
+	     *
+	     * @param {string} type event type key (for example, 'click')
+	     * @param {function(string, Object)} handler callback
+	     * @return {EventHandler} this
+	     */
+	    Engine.on = function on(type, handler) {
+	        if (!(type in eventForwarders)) {
+	            eventForwarders[type] = eventHandler.emit.bind(eventHandler, type);
+	
+	            addEngineListener(type, eventForwarders[type]);
+	        }
+	        return eventHandler.on(type, handler);
+	    };
+	
+	    function addEngineListener(type, forwarder) {
+	        if (!document.body) {
+	            Engine.nextTick(addEventListener.bind(this, type, forwarder));
+	            return;
+	        }
+	
+	        document.body.addEventListener(type, forwarder);
+	    }
+	
+	    /**
+	     * Trigger an event, sending to all downstream handlers
+	     *   listening for provided 'type' key.
+	     *
+	     * @method emit
+	     *
+	     * @param {string} type event type key (for example, 'click')
+	     * @param {Object} event event data
+	     * @return {EventHandler} this
+	     */
+	    Engine.emit = function emit(type, event) {
+	        return eventHandler.emit(type, event);
+	    };
+	
+	    /**
+	     * Unbind an event by type and handler.
+	     *   This undoes the work of "on".
+	     *
+	     * @static
+	     * @method removeListener
+	     *
+	     * @param {string} type event type key (for example, 'click')
+	     * @param {function} handler function object to remove
+	     * @return {EventHandler} internal event handler object (for chaining)
+	     */
+	    Engine.removeListener = function removeListener(type, handler) {
+	        return eventHandler.removeListener(type, handler);
+	    };
+	
+	    /**
+	     * Return the current calculated frames per second of the Engine.
+	     *
+	     * @static
+	     * @method getFPS
+	     *
+	     * @return {Number} calculated fps
+	     */
+	    Engine.getFPS = function getFPS() {
+	        return 1000 / frameTime;
+	    };
+	
+	    /**
+	     * Set the maximum fps at which the system should run. If internal render
+	     *    loop is called at a greater frequency than this FPSCap, Engine will
+	     *    throttle render and update until this rate is achieved.
+	     *
+	     * @static
+	     * @method setFPSCap
+	     *
+	     * @param {Number} fps maximum frames per second
+	     */
+	    Engine.setFPSCap = function setFPSCap(fps) {
+	        frameTimeLimit = Math.floor(1000 / fps);
+	    };
+	
+	    /**
+	     * Return engine options.
+	     *
+	     * @static
+	     * @method getOptions
+	     * @param {string} key
+	     * @return {Object} engine options
+	     */
+	    Engine.getOptions = function getOptions(key) {
+	        return optionsManager.getOptions(key);
+	    };
+	
+	    /**
+	     * Set engine options
+	     *
+	     * @static
+	     * @method setOptions
+	     *
+	     * @param {Object} [options] overrides of default options
+	     * @param {Number} [options.fpsCap]  maximum fps at which the system should run
+	     * @param {boolean} [options.runLoop=true] whether the run loop should continue
+	     * @param {string} [options.containerType="div"] type of container element.  Defaults to 'div'.
+	     * @param {string} [options.containerClass="famous-container"] type of container element.  Defaults to 'famous-container'.
+	     */
+	    Engine.setOptions = function setOptions(options) {
+	        return optionsManager.setOptions.apply(optionsManager, arguments);
+	    };
+	
+	    /**
+	     * Creates a new Context for rendering and event handling with
+	     *    provided document element as top of each tree. This will be tracked by the
+	     *    process-wide Engine.
+	     *
+	     * @static
+	     * @method createContext
+	     *
+	     * @param {Node} el will be top of Famo.us document element tree
+	     * @return {Context} new Context within el
+	     */
+	    Engine.createContext = function createContext(el) {
+	        if (!initialized && options.appMode) Engine.nextTick(initialize);
+	
+	        var needMountContainer = false;
+	        if (!el) {
+	            el = document.createElement(options.containerType);
+	            el.classList.add(options.containerClass);
+	            needMountContainer = true;
+	        }
+	
+	        var context = new Context(el);
+	        Engine.registerContext(context);
+	
+	        if (needMountContainer) mount(context, el);
+	
+	        return context;
+	    };
+	
+	    function mount(context, el) {
+	        if (!document.body) {
+	            Engine.nextTick(mount.bind(this, context, el));
+	            return;
+	        }
+	
+	        document.body.appendChild(el);
+	        context.emit('resize');
+	    }
+	
+	    /**
+	     * Registers an existing context to be updated within the run loop.
+	     *
+	     * @static
+	     * @method registerContext
+	     *
+	     * @param {Context} context Context to register
+	     * @return {FamousContext} provided context
+	     */
+	    Engine.registerContext = function registerContext(context) {
+	        contexts.push(context);
+	        return context;
+	    };
+	
+	    /**
+	     * Returns a list of all contexts.
+	     *
+	     * @static
+	     * @method getContexts
+	     * @return {Array} contexts that are updated on each tick
+	     */
+	    Engine.getContexts = function getContexts() {
+	        return contexts;
+	    };
+	
+	    /**
+	     * Removes a context from the run loop. Note: this does not do any
+	     *     cleanup.
+	     *
+	     * @static
+	     * @method deregisterContext
+	     *
+	     * @param {Context} context Context to deregister
+	     */
+	    Engine.deregisterContext = function deregisterContext(context) {
+	        var i = contexts.indexOf(context);
+	        if (i >= 0) contexts.splice(i, 1);
+	    };
+	
+	    /**
+	     * Queue a function to be executed on the next tick of the
+	     *    Engine.
+	     *
+	     * @static
+	     * @method nextTick
+	     *
+	     * @param {function(Object)} fn function accepting window object
+	     */
+	    Engine.nextTick = function nextTick(fn) {
+	        nextTickQueue.push(fn);
+	    };
+	
+	    /**
+	     * Queue a function to be executed sometime soon, at a time that is
+	     *    unlikely to affect frame rate.
+	     *
+	     * @static
+	     * @method defer
+	     *
+	     * @param {Function} fn
+	     */
+	    Engine.defer = function defer(fn) {
+	        deferQueue.push(fn);
+	    };
+	
+	    optionsManager.on('change', function(data) {
+	        if (data.id === 'fpsCap') Engine.setFPSCap(data.value);
+	        else if (data.id === 'runLoop') {
+	            // kick off the loop only if it was stopped
+	            if (!loopEnabled && data.value) {
+	                loopEnabled = true;
+	                window.requestAnimationFrame(loop);
+	            }
+	        }
+	    });
+	
+	    module.exports = Engine;
+
+
+/***/ },
+/* 316 */
+/***/ function(module, exports, __webpack_require__) {
+
+	/* This Source Code Form is subject to the terms of the Mozilla Public
+	 * License, v. 2.0. If a copy of the MPL was not distributed with this
+	 * file, You can obtain one at http://mozilla.org/MPL/2.0/.
+	 *
+	 * Owner: mark@famo.us
+	 * @license MPL 2.0
+	 * @copyright Famous Industries, Inc. 2015
+	 */
+	
+	    var RenderNode = __webpack_require__(309);
+	    var EventHandler = __webpack_require__(312);
+	    var ElementAllocator = __webpack_require__(317);
+	    var Transform = __webpack_require__(300);
+	    var Transitionable = __webpack_require__(301);
+	
+	    var _zeroZero = [0, 0];
+	    var usePrefix = !('perspective' in document.documentElement.style);
+	
+	    function _getElementSize() {
+	        var element = this.container;
+	        return [element.clientWidth, element.clientHeight];
+	    }
+	
+	    var _setPerspective = usePrefix ? function(element, perspective) {
+	        element.style.webkitPerspective = perspective ? perspective.toFixed() + 'px' : '';
+	    } : function(element, perspective) {
+	        element.style.perspective = perspective ? perspective.toFixed() + 'px' : '';
+	    };
+	
+	    /**
+	     * The top-level container for a Famous-renderable piece of the document.
+	     *   It is directly updated by the process-wide Engine object, and manages one
+	     *   render tree root, which can contain other renderables.
+	     *
+	     * @class Context
+	     * @constructor
+	     * @private
+	     * @param {Node} container Element in which content will be inserted
+	     */
+	    function Context(container) {
+	        this.container = container;
+	        this._allocator = new ElementAllocator(container);
+	
+	        this._node = new RenderNode();
+	        this._eventOutput = new EventHandler();
+	        this._size = _getElementSize.call(this);
+	
+	        this._perspectiveState = new Transitionable(0);
+	        this._perspective = undefined;
+	
+	        this._nodeContext = {
+	            allocator: this._allocator,
+	            transform: Transform.identity,
+	            opacity: 1,
+	            origin: _zeroZero,
+	            align: _zeroZero,
+	            size: this._size
+	        };
+	
+	        this._eventOutput.on('resize', function() {
+	            this.setSize(_getElementSize.call(this));
+	        }.bind(this));
+	
+	    }
+	
+	    // Note: Unused
+	    Context.prototype.getAllocator = function getAllocator() {
+	        return this._allocator;
+	    };
+	
+	    /**
+	     * Add renderables to this Context's render tree.
+	     *
+	     * @method add
+	     *
+	     * @param {Object} obj renderable object
+	     * @return {RenderNode} RenderNode wrapping this object, if not already a RenderNode
+	     */
+	    Context.prototype.add = function add(obj) {
+	        return this._node.add(obj);
+	    };
+	
+	    /**
+	     * Move this Context to another containing document element.
+	     *
+	     * @method migrate
+	     *
+	     * @param {Node} container Element to which content will be migrated
+	     */
+	    Context.prototype.migrate = function migrate(container) {
+	        if (container === this.container) return;
+	        this.container = container;
+	        this._allocator.migrate(container);
+	    };
+	
+	    /**
+	     * Gets viewport size for Context.
+	     *
+	     * @method getSize
+	     *
+	     * @return {Array.Number} viewport size as [width, height]
+	     */
+	    Context.prototype.getSize = function getSize() {
+	        return this._size;
+	    };
+	
+	    /**
+	     * Sets viewport size for Context.
+	     *
+	     * @method setSize
+	     *
+	     * @param {Array.Number} size [width, height].  If unspecified, use size of root document element.
+	     */
+	    Context.prototype.setSize = function setSize(size) {
+	        if (!size) size = _getElementSize.call(this);
+	        this._size[0] = size[0];
+	        this._size[1] = size[1];
+	    };
+	
+	    /**
+	     * Commit this Context's content changes to the document.
+	     *
+	     * @private
+	     * @method update
+	     * @param {Object} contextParameters engine commit specification
+	     */
+	    Context.prototype.update = function update(contextParameters) {
+	        if (contextParameters) {
+	            if (contextParameters.transform) this._nodeContext.transform = contextParameters.transform;
+	            if (contextParameters.opacity) this._nodeContext.opacity = contextParameters.opacity;
+	            if (contextParameters.origin) this._nodeContext.origin = contextParameters.origin;
+	            if (contextParameters.align) this._nodeContext.align = contextParameters.align;
+	            if (contextParameters.size) this._nodeContext.size = contextParameters.size;
+	        }
+	        var perspective = this._perspectiveState.get();
+	        if (perspective !== this._perspective) {
+	            _setPerspective(this.container, perspective);
+	            this._perspective = perspective;
+	        }
+	
+	        this._node.commit(this._nodeContext);
+	    };
+	
+	    /**
+	     * Get current perspective of this context in pixels.
+	     *
+	     * @method getPerspective
+	     * @return {Number} depth perspective in pixels
+	     */
+	    Context.prototype.getPerspective = function getPerspective() {
+	        return this._perspectiveState.get();
+	    };
+	
+	    /**
+	     * Set current perspective of this context in pixels.
+	     *
+	     * @method setPerspective
+	     * @param {Number} perspective in pixels
+	     * @param {Object} [transition] Transitionable object for applying the change
+	     * @param {function(Object)} callback function called on completion of transition
+	     */
+	    Context.prototype.setPerspective = function setPerspective(perspective, transition, callback) {
+	        return this._perspectiveState.set(perspective, transition, callback);
+	    };
+	
+	    /**
+	     * Trigger an event, sending to all downstream handlers
+	     *   listening for provided 'type' key.
+	     *
+	     * @method emit
+	     *
+	     * @param {string} type event type key (for example, 'click')
+	     * @param {Object} event event data
+	     * @return {EventHandler} this
+	     */
+	    Context.prototype.emit = function emit(type, event) {
+	        return this._eventOutput.emit(type, event);
+	    };
+	
+	    /**
+	     * Bind a callback function to an event type handled by this object.
+	     *
+	     * @method "on"
+	     *
+	     * @param {string} type event type key (for example, 'click')
+	     * @param {function(string, Object)} handler callback
+	     * @return {EventHandler} this
+	     */
+	    Context.prototype.on = function on(type, handler) {
+	        return this._eventOutput.on(type, handler);
+	    };
+	
+	    /**
+	     * Unbind an event by type and handler.
+	     *   This undoes the work of "on".
+	     *
+	     * @method removeListener
+	     *
+	     * @param {string} type event type key (for example, 'click')
+	     * @param {function} handler function object to remove
+	     * @return {EventHandler} internal event handler object (for chaining)
+	     */
+	    Context.prototype.removeListener = function removeListener(type, handler) {
+	        return this._eventOutput.removeListener(type, handler);
+	    };
+	
+	    /**
+	     * Add event handler object to set of downstream handlers.
+	     *
+	     * @method pipe
+	     *
+	     * @param {EventHandler} target event handler target object
+	     * @return {EventHandler} passed event handler
+	     */
+	    Context.prototype.pipe = function pipe(target) {
+	        return this._eventOutput.pipe(target);
+	    };
+	
+	    /**
+	     * Remove handler object from set of downstream handlers.
+	     *   Undoes work of "pipe".
+	     *
+	     * @method unpipe
+	     *
+	     * @param {EventHandler} target target handler object
+	     * @return {EventHandler} provided target
+	     */
+	    Context.prototype.unpipe = function unpipe(target) {
+	        return this._eventOutput.unpipe(target);
+	    };
+	
+	    module.exports = Context;
+
+
+/***/ },
+/* 317 */
+/***/ function(module, exports) {
+
+	/* This Source Code Form is subject to the terms of the Mozilla Public
+	 * License, v. 2.0. If a copy of the MPL was not distributed with this
+	 * file, You can obtain one at http://mozilla.org/MPL/2.0/.
+	 *
+	 * Owner: mark@famo.us
+	 * @license MPL 2.0
+	 * @copyright Famous Industries, Inc. 2015
+	 */
+	
+	
+	    /**
+	     * Internal helper object to Context that handles the process of
+	     *   creating and allocating DOM elements within a managed div.
+	     *   Private.
+	     *
+	     * @class ElementAllocator
+	     * @constructor
+	     * @private
+	     * @param {Node} container document element in which Famo.us content will be inserted
+	     */
+	    function ElementAllocator(container) {
+	        if (!container) container = document.createDocumentFragment();
+	        this.container = container;
+	        this.detachedNodes = {};
+	        this.nodeCount = 0;
+	    }
+	
+	    /**
+	     * Move the document elements from their original container to a new one.
+	     *
+	     * @private
+	     * @method migrate
+	     *
+	     * @param {Node} container document element to which Famo.us content will be migrated
+	     */
+	    ElementAllocator.prototype.migrate = function migrate(container) {
+	        var oldContainer = this.container;
+	        if (container === oldContainer) return;
+	
+	        if (oldContainer instanceof DocumentFragment) {
+	            container.appendChild(oldContainer);
+	        }
+	        else {
+	            while (oldContainer.hasChildNodes()) {
+	                container.appendChild(oldContainer.firstChild);
+	            }
+	        }
+	
+	        this.container = container;
+	    };
+	
+	    /**
+	     * Allocate an element of specified type from the pool.
+	     *
+	     * @private
+	     * @method allocate
+	     *
+	     * @param {string} type type of element, e.g. 'div'
+	     * @return {Node} allocated document element
+	     */
+	    ElementAllocator.prototype.allocate = function allocate(type) {
+	        type = type.toLowerCase();
+	        if (!(type in this.detachedNodes)) this.detachedNodes[type] = [];
+	        var nodeStore = this.detachedNodes[type];
+	        var result;
+	        if (nodeStore.length > 0) {
+	            result = nodeStore.pop();
+	        }
+	        else {
+	            result = document.createElement(type);
+	            this.container.appendChild(result);
+	        }
+	        this.nodeCount++;
+	        return result;
+	    };
+	
+	    /**
+	     * De-allocate an element of specified type to the pool.
+	     *
+	     * @private
+	     * @method deallocate
+	     *
+	     * @param {Node} element document element to deallocate
+	     */
+	    ElementAllocator.prototype.deallocate = function deallocate(element) {
+	        var nodeType = element.nodeName.toLowerCase();
+	        var nodeStore = this.detachedNodes[nodeType];
+	        nodeStore.push(element);
+	        this.nodeCount--;
+	    };
+	
+	    /**
+	     * Get count of total allocated nodes in the document.
+	     *
+	     * @private
+	     * @method getNodeCount
+	     *
+	     * @return {Number} total node count
+	     */
+	    ElementAllocator.prototype.getNodeCount = function getNodeCount() {
+	        return this.nodeCount;
+	    };
+	
+	    module.exports = ElementAllocator;
+
+
+/***/ },
+/* 318 */
+/***/ function(module, exports, __webpack_require__) {
+
+	/* This Source Code Form is subject to the terms of the Mozilla Public
+	 * License, v. 2.0. If a copy of the MPL was not distributed with this
+	 * file, You can obtain one at http://mozilla.org/MPL/2.0/.
+	 *
+	 * Owner: mark@famo.us
+	 * @license MPL 2.0
+	 * @copyright Famous Industries, Inc. 2015
+	 */
+	
+	    var EventHandler = __webpack_require__(312);
+	
+	    /**
+	     *  A collection of methods for setting options which can be extended
+	     *  onto other classes.
+	     *
+	     *
+	     *  **** WARNING ****
+	     *  You can only pass through objects that will compile into valid JSON.
+	     *
+	     *  Valid options:
+	     *      Strings,
+	     *      Arrays,
+	     *      Objects,
+	     *      Numbers,
+	     *      Nested Objects,
+	     *      Nested Arrays.
+	     *
+	     *    This excludes:
+	     *        Document Fragments,
+	     *        Functions
+	     * @class OptionsManager
+	     * @constructor
+	     * @param {Object} value options dictionary
+	     */
+	    function OptionsManager(value) {
+	        this._value = value;
+	        this.eventOutput = null;
+	    }
+	
+	    /**
+	     * Create options manager from source dictionary with arguments overriden by patch dictionary.
+	     *
+	     * @static
+	     * @method OptionsManager.patch
+	     *
+	     * @param {Object} source source arguments
+	     * @param {...Object} data argument additions and overwrites
+	     * @return {Object} source object
+	     */
+	    OptionsManager.patch = function patchObject(source, data) {
+	        var manager = new OptionsManager(source);
+	        for (var i = 1; i < arguments.length; i++) manager.patch(arguments[i]);
+	        return source;
+	    };
+	
+	    function _createEventOutput() {
+	        this.eventOutput = new EventHandler();
+	        this.eventOutput.bindThis(this);
+	        EventHandler.setOutputHandler(this, this.eventOutput);
+	    }
+	
+	    /**
+	     * Create OptionsManager from source with arguments overriden by patches.
+	     *   Triggers 'change' event on this object's event handler if the state of
+	     *   the OptionsManager changes as a result.
+	     *
+	     * @method patch
+	     *
+	     * @param {...Object} arguments list of patch objects
+	     * @return {OptionsManager} this
+	     */
+	    OptionsManager.prototype.patch = function patch() {
+	        var myState = this._value;
+	        for (var i = 0; i < arguments.length; i++) {
+	            var data = arguments[i];
+	            for (var k in data) {
+	                if ((k in myState) && (data[k] && data[k].constructor === Object) && (myState[k] && myState[k].constructor === Object)) {
+	                    if (!myState.hasOwnProperty(k)) myState[k] = Object.create(myState[k]);
+	                    this.key(k).patch(data[k]);
+	                    if (this.eventOutput) this.eventOutput.emit('change', {id: k, value: this.key(k).value()});
+	                }
+	                else this.set(k, data[k]);
+	            }
+	        }
+	        return this;
+	    };
+	
+	    /**
+	     * Alias for patch
+	     *
+	     * @method setOptions
+	     *
+	     */
+	    OptionsManager.prototype.setOptions = OptionsManager.prototype.patch;
+	
+	    /**
+	     * Return OptionsManager based on sub-object retrieved by key
+	     *
+	     * @method key
+	     *
+	     * @param {string} identifier key
+	     * @return {OptionsManager} new options manager with the value
+	     */
+	    OptionsManager.prototype.key = function key(identifier) {
+	        var result = new OptionsManager(this._value[identifier]);
+	        if (!(result._value instanceof Object) || result._value instanceof Array) result._value = {};
+	        return result;
+	    };
+	
+	    /**
+	     * Look up value by key or get the full options hash
+	     * @method get
+	     *
+	     * @param {string} key key
+	     * @return {Object} associated object or full options hash
+	     */
+	    OptionsManager.prototype.get = function get(key) {
+	        return key ? this._value[key] : this._value;
+	    };
+	
+	    /**
+	     * Alias for get
+	     * @method getOptions
+	     */
+	    OptionsManager.prototype.getOptions = OptionsManager.prototype.get;
+	
+	    /**
+	     * Set key to value.  Outputs 'change' event if a value is overwritten.
+	     *
+	     * @method set
+	     *
+	     * @param {string} key key string
+	     * @param {Object} value value object
+	     * @return {OptionsManager} new options manager based on the value object
+	     */
+	    OptionsManager.prototype.set = function set(key, value) {
+	        var originalValue = this.get(key);
+	        this._value[key] = value;
+	        if (this.eventOutput && value !== originalValue) this.eventOutput.emit('change', {id: key, value: value});
+	        return this;
+	    };
+	
+	    /**
+	     * Bind a callback function to an event type handled by this object.
+	     *
+	     * @method "on"
+	     *
+	     * @param {string} type event type key (for example, 'change')
+	     * @param {function(string, Object)} handler callback
+	     * @return {EventHandler} this
+	     */
+	    OptionsManager.prototype.on = function on() {
+	        _createEventOutput.call(this);
+	        return this.on.apply(this, arguments);
+	    };
+	
+	    /**
+	     * Unbind an event by type and handler.
+	     *   This undoes the work of "on".
+	     *
+	     * @method removeListener
+	     *
+	     * @param {string} type event type key (for example, 'change')
+	     * @param {function} handler function object to remove
+	     * @return {EventHandler} internal event handler object (for chaining)
+	     */
+	    OptionsManager.prototype.removeListener = function removeListener() {
+	        _createEventOutput.call(this);
+	        return this.removeListener.apply(this, arguments);
+	    };
+	
+	    /**
+	     * Add event handler object to set of downstream handlers.
+	     *
+	     * @method pipe
+	     *
+	     * @param {EventHandler} target event handler target object
+	     * @return {EventHandler} passed event handler
+	     */
+	    OptionsManager.prototype.pipe = function pipe() {
+	        _createEventOutput.call(this);
+	        return this.pipe.apply(this, arguments);
+	    };
+	
+	    /**
+	     * Remove handler object from set of downstream handlers.
+	     * Undoes work of "pipe"
+	     *
+	     * @method unpipe
+	     *
+	     * @param {EventHandler} target target handler object
+	     * @return {EventHandler} provided target
+	     */
+	    OptionsManager.prototype.unpipe = function unpipe() {
+	        _createEventOutput.call(this);
+	        return this.unpipe.apply(this, arguments);
+	    };
+	
+	    module.exports = OptionsManager;
+
+
+/***/ },
+/* 319 */
+/***/ function(module, exports) {
+
+	"use strict";
+	
+	// Polyfill for Function.name on browsers that do not support it (IE):
+	// See: http://stackoverflow.com/questions/6903762/function-name-not-supported-in-ie
+	if (!(function f() {}).name) {
+	    Object.defineProperty(Function.prototype, "name", {
+	        get: function () {
+	            var name = this.toString().match(/^\s*function\s*(\S*)\s*\(/)[1];
+	
+	            // For better performance only parse once, and then cache the
+	            // result through a new accessor for repeated access.
+	            Object.defineProperty(this, "name", { value: name });
+	
+	            return name;
+	        }
+	    });
+	}
+	//# sourceMappingURL=polyfill.Function.name.js.map
+
+/***/ },
+/* 320 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+	
+	Object.defineProperty(exports, "__esModule", {
+	    value: true
+	});
+	exports.Grid = undefined;
+	
+	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+	
+	var _Modifier = __webpack_require__(307);
+	
+	var _Modifier2 = _interopRequireDefault(_Modifier);
+	
+	var _Transform = __webpack_require__(300);
+	
+	var _Transform2 = _interopRequireDefault(_Transform);
+	
+	var _Molecule2 = __webpack_require__(306);
+	
+	var _Molecule3 = _interopRequireDefault(_Molecule2);
+	
+	var _forLength = __webpack_require__(321);
+	
+	var _forLength2 = _interopRequireDefault(_forLength);
+	
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+	
+	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+	
+	function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+	
+	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; } /*
+	                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                * LICENSE
+	                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                *
+	                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                * This Source Code Form is subject to the terms of the Mozilla Public
+	                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                * License, v. 2.0. If a copy of the MPL was not distributed with this
+	                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                * file, You can obtain one at http://mozilla.org/MPL/2.0/.
+	                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                *
+	                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                */
+	
+	/**
+	 * A scenegraph tree with a variable number of leaf node Modifiers (the grid
+	 * cells) that are arranged in a grid. Add any [famous/src/core/RenderNode](#famous/src/core/RenderNode)-compatible
+	 * item to each leafnode of the grid.
+	 *
+	 * TODO: Use Molecule instead of Modifier for the grid cells.
+	 * TODO: Add an options parameter, that the Molecule constructor will handle.
+	 *
+	 * @class Grid
+	 * @extends Molecule
+	 */
+	var Grid = exports.Grid = function (_Molecule) {
+	    _inherits(Grid, _Molecule);
+	
+	    /**
+	     * Creates a new Grid having the specified number of columns, number of rows,
+	     * and famo.us-style size.
+	     *
+	     * @constructor
+	     * @param {Number} columns The integer number of columns.
+	     * @param {Number} rows The integer number of rows.
+	     * @param {Array} size A famo.us-style width/height size array.
+	     */
+	    function Grid(columns, rows, size) {
+	        _classCallCheck(this, Grid);
+	
+	        var _this = _possibleConstructorReturn(this, (Grid.__proto__ || Object.getPrototypeOf(Grid)).call(this, { size: size }));
+	
+	        _this.columns = columns;
+	        _this.rows = rows;
+	        _this.cellNodes = [];
+	
+	        if (typeof _this.options.size === 'undefined') {
+	            _this.setOptions({ size: [undefined, undefined] });
+	        }
+	
+	        (0, _forLength2.default)(_this.columns * _this.rows, _this._createGridCell.bind(_this));
+	        return _this;
+	    }
+	
+	    /**
+	     * Creates a grid cell at the given index.
+	     *
+	     * @private
+	     * @param {Number} index The integer index of the grid cell.
+	     */
+	
+	
+	    _createClass(Grid, [{
+	        key: '_createGridCell',
+	        value: function _createGridCell(index) {
+	            var column = index % this.columns;
+	            var row = Math.floor(index / this.columns);
+	
+	            var cellSize = null;
+	            if (typeof this.options.size[0] != 'undefined' && typeof this.options.size[1] != 'undefined') {
+	                cellSize = [];
+	                cellSize[0] = this.options.size[0] / this.columns;
+	                cellSize[1] = this.options.size[1] / this.rows;
+	            }
+	
+	            var mod = new _Modifier2.default({
+	                align: [0, 0],
+	                origin: [0, 0],
+	                size: cellSize ? [cellSize[0], cellSize[1]] : [undefined, undefined],
+	                transform: _Transform2.default.translate(column * cellSize[0], row * cellSize[1], 0)
+	            });
+	            var mod2 = new _Modifier2.default({
+	                //transform: Transform.rotateY(Math.PI/10),
+	                align: [0.5, 0.5],
+	                origin: [0.5, 0.5]
+	            });
+	            // FIXME: ^^^ Why do I need an extra Modifier to align stuff in the middle of the grid cells?????
+	            this.cellNodes.push(this.add(mod).add(mod2));
+	        }
+	
+	        /**
+	         * Sets the items to be layed out in the grid.
+	         *
+	         * @param {Array} children An array of [famous/src/core/RenderNode](#famous/src/core/RenderNode)-compatible items.
+	         */
+	
+	    }, {
+	        key: 'setChildren',
+	        value: function setChildren(children) {
+	            (0, _forLength2.default)(this.columns * this.rows, function (index) {
+	                //this.cellNodes[index].set(null); // TODO: how do we erase previous children?
+	                this.cellNodes[index].add(children[index]);
+	            }.bind(this));
+	            return this;
+	        }
+	    }]);
+	
+	    return Grid;
+	}(_Molecule3.default);
+	
+	exports.default = Grid;
+
+/***/ },
+/* 321 */
+/***/ function(module, exports) {
+
+	"use strict";
+	
+	// loop for a given length, performing action each loop iteration. action receives the index of the loop.
+	exports.forLength = forLength;
+	function forLength(length, action) {
+	    for (var i = 0; i < length; i += 1) {
+	        action(i);
+	    }
+	}
+	exports["default"] = forLength;
+	exports.__esModule = true;
+	//# sourceMappingURL=forLength.js.map
+
+/***/ },
+/* 322 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+	
+	Object.defineProperty(exports, "__esModule", {
 	  value: true
 	});
-	exports.XYZValues = exports.Utility = exports.TreeNode = exports.Transformable = exports.Sizeable = exports.Scene = exports.PushPaneLayout = exports.Node = exports.Motor = exports.ElementManager = exports.Curves = undefined;
+	exports.DoubleSidedPlane = undefined;
 	
-	var _Curves2 = __webpack_require__(300);
+	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+	
+	var _Transform = __webpack_require__(300);
+	
+	var _Transform2 = _interopRequireDefault(_Transform);
+	
+	var _Molecule2 = __webpack_require__(306);
+	
+	var _Molecule3 = _interopRequireDefault(_Molecule2);
+	
+	var _Plane = __webpack_require__(323);
+	
+	var _Plane2 = _interopRequireDefault(_Plane);
+	
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+	
+	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+	
+	function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+	
+	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; } /*
+	                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                * LICENSE
+	                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                *
+	                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                * This Source Code Form is subject to the terms of the Mozilla Public
+	                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                * License, v. 2.0. If a copy of the MPL was not distributed with this
+	                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                * file, You can obtain one at http://mozilla.org/MPL/2.0/.
+	                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                *
+	                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                */
+	
+	/**
+	 * A scenegraph tree who's two leaf nodes are [Plane](#Plane) instances facing
+	 * opposite directions. For the purposes of these docs, in a brand new app with
+	 * only a single `DoubleSidedPlane` added to the context, and having no
+	 * rotation, "plane1" faces you and "plane2" faces away.
+	 *
+	 * @class DoubleSidedPlane
+	 * @extends Molecule
+	 */
+	var DoubleSidedPlane = exports.DoubleSidedPlane = function (_Molecule) {
+	  _inherits(DoubleSidedPlane, _Molecule);
+	
+	  /**
+	   * Creates a new `DoubleSidedPlane` who's `initialOptions` get passed to
+	   * both [Plane](#Plane) instances, as well as this DoubleSidedPlane's parent
+	   * [Molecule](#Molecule) constructor.
+	   *
+	   * @constructor
+	   * @param {Object} initialOptions The options to initiate the `DoubleSidedPlane` with.
+	   */
+	  function DoubleSidedPlane(initialOptions) {
+	    _classCallCheck(this, DoubleSidedPlane);
+	
+	    var _this = _possibleConstructorReturn(this, (DoubleSidedPlane.__proto__ || Object.getPrototypeOf(DoubleSidedPlane)).call(this, initialOptions));
+	
+	    _this.children = [];
+	    _this.plane1 = new _Plane2.default(_this.options);
+	    _this.plane1.transform.set(_Transform2.default.rotate(0, 0, 0));
+	    _this.setOptions({ properties: { background: 'orange' } });
+	    _this.plane2 = new _Plane2.default(_this.options);
+	    _this.plane2.transform.set(_Transform2.default.rotate(0, Math.PI, 0));
+	
+	    _this.children.push(_this.plane1);
+	    _this.children.push(_this.plane2);
+	    _this.add(_this.plane2);
+	    _this.add(_this.plane1);
+	    _this.plane1.pipe(_this.options.handler);
+	    _this.plane2.pipe(_this.options.handler);
+	
+	    return _this;
+	  }
+	
+	  /**
+	   * Get the content of the [famous/src/core/Surface](#famous/src/core/Surface) of each [Plane](#Plane).
+	   *
+	   * @returns {Array} An array containing two items, the content of each
+	   * `Plane`. The first item is from "plane1".
+	   */
+	
+	
+	  _createClass(DoubleSidedPlane, [{
+	    key: 'getContent',
+	    value: function getContent() {
+	      return [this.plane1.getContent(), this.plane2.getContent()];
+	    }
+	
+	    /**
+	     * Set the content of both [Plane](#Plane) instances.
+	     *
+	     * @param {Array} content An array of content, one item per `Plane`. The
+	     * first item is for "plane1".
+	     */
+	
+	  }, {
+	    key: 'setContent',
+	    value: function setContent(content) {
+	      this.plane1.setContent(content[0]);
+	      this.plane2.setContent(content[1]);
+	    }
+	  }]);
+	
+	  return DoubleSidedPlane;
+	}(_Molecule3.default);
+	
+	exports.default = DoubleSidedPlane;
+
+/***/ },
+/* 323 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+	
+	Object.defineProperty(exports, "__esModule", {
+	  value: true
+	});
+	exports.Plane = undefined;
+	
+	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+	
+	var _Surface = __webpack_require__(324);
+	
+	var _Surface2 = _interopRequireDefault(_Surface);
+	
+	var _Molecule2 = __webpack_require__(306);
+	
+	var _Molecule3 = _interopRequireDefault(_Molecule2);
+	
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+	
+	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+	
+	function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+	
+	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; } /*
+	                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                * LICENSE
+	                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                *
+	                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                * This Source Code Form is subject to the terms of the Mozilla Public
+	                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                * License, v. 2.0. If a copy of the MPL was not distributed with this
+	                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                * file, You can obtain one at http://mozilla.org/MPL/2.0/.
+	                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                *
+	                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                */
+	
+	/**
+	 * Planes have the properties of [Molecules](#Molecule), plus they contain a
+	 * [famous/src/core/Surface](#famous/src/core/Surface) so that they ultimately render
+	 * onto the screen. A Surface's events are automatically piped to it's
+	 * [famous/src/core/EventHandler](#famous/src/core/EventHandler), inherited from
+	 * `Molecule`.
+	 *
+	 * @class Plane
+	 * @extends Molecule
+	 */
+	var Plane = exports.Plane = function (_Molecule) {
+	  _inherits(Plane, _Molecule);
+	
+	  /**
+	   * Creates a new `Plane`. Properties from the `initialOptions` parameter
+	   * are applied to this Plane's [famous/src/core/Surface](#famous/src/core/Surface) as well as to
+	   * to this Plane's [famous/src/core/Modifier](#famous/src/core/Modifier), hence the API of a Plane
+	   * is currently the combination of the Famo.us `Modifier` and `Surface` APIs.
+	   *
+	   * @constructor
+	   * @param {Object} initialOptions Options for the new Plane.
+	   */
+	  function Plane(initialOptions) {
+	    _classCallCheck(this, Plane);
+	
+	    var _this = _possibleConstructorReturn(this, (Plane.__proto__ || Object.getPrototypeOf(Plane)).call(this, initialOptions));
+	
+	    _this.surface = new _Surface2.default(_this.options);
+	    _this.add(_this.surface);
+	    _this.surface.pipe(_this.options.handler);
+	    return _this;
+	  }
+	
+	  /**
+	   * Get the content of this Plane's [famous/src/core/Surface](#famous/src/core/Surface).
+	   * See [famous/src/core/Surface.getContent](#famous/src/core/Surface.getContent).
+	   */
+	
+	
+	  _createClass(Plane, [{
+	    key: 'getContent',
+	    value: function getContent() {
+	      var args = Array.prototype.splice.call(arguments, 0);
+	      return this.surface.getContent.apply(this.surface, args);
+	    }
+	
+	    /**
+	     * Set the content of this Plane's [famous/src/core/Surface](#famous/src/core/Surface).
+	     * See [famous/src/core/Surface.setContent](#famous/src/core/Surface.setContent).
+	     */
+	
+	  }, {
+	    key: 'setContent',
+	    value: function setContent() {
+	      var args = Array.prototype.splice.call(arguments, 0);
+	      return this.surface.setContent.apply(this.surface, args);
+	    }
+	  }]);
+	
+	  return Plane;
+	}(_Molecule3.default);
+	
+	exports.default = Plane;
+
+/***/ },
+/* 324 */
+/***/ function(module, exports, __webpack_require__) {
+
+	/* This Source Code Form is subject to the terms of the Mozilla Public
+	 * License, v. 2.0. If a copy of the MPL was not distributed with this
+	 * file, You can obtain one at http://mozilla.org/MPL/2.0/.
+	 *
+	 * Owner: mark@famo.us
+	 * @license MPL 2.0
+	 * @copyright Famous Industries, Inc. 2015
+	 */
+	
+	    var ElementOutput = __webpack_require__(325);
+	
+	    /**
+	     * A base class for viewable content and event
+	     *   targets inside a Famo.us application, containing a renderable document
+	     *   fragment. Like an HTML div, it can accept internal markup,
+	     *   properties, classes, and handle events.
+	     *
+	     * @class Surface
+	     * @constructor
+	     *
+	     * @param {Object} [options] default option overrides
+	     * @param {Array.Number} [options.size] [width, height] in pixels
+	     * @param {Array.string} [options.classes] CSS classes to set on target div
+	     * @param {Array} [options.properties] string dictionary of CSS properties to set on target div
+	     * @param {Array} [options.attributes] string dictionary of HTML attributes to set on target div
+	     * @param {string} [options.content] inner (HTML) content of surface
+	     */
+	    function Surface(options) {
+	        ElementOutput.call(this);
+	
+	        this.options = {};
+	
+	        this.properties = {};
+	        this.attributes = {};
+	        this.content = '';
+	        this.classList = [];
+	        this.size = null;
+	
+	        this._classesDirty = true;
+	        this._stylesDirty = true;
+	        this._attributesDirty = true;
+	        this._sizeDirty = true;
+	        this._contentDirty = true;
+	        this._trueSizeCheck = true;
+	
+	        this._dirtyClasses = [];
+	
+	        if (options) this.setOptions(options);
+	
+	        this._currentTarget = null;
+	    }
+	    Surface.prototype = Object.create(ElementOutput.prototype);
+	    Surface.prototype.constructor = Surface;
+	    Surface.prototype.elementType = 'div';
+	    Surface.prototype.elementClass = 'famous-surface';
+	
+	    /**
+	     * Set HTML attributes on this Surface. Note that this will cause
+	     *    dirtying and thus re-rendering, even if values do not change.
+	     *
+	     * @method setAttributes
+	    * @param {Object} attributes property dictionary of "key" => "value"
+	     */
+	    Surface.prototype.setAttributes = function setAttributes(attributes) {
+	        for (var n in attributes) {
+	            if (n === 'style') throw new Error('Cannot set styles via "setAttributes" as it will break Famo.us.  Use "setProperties" instead.');
+	            this.attributes[n] = attributes[n];
+	        }
+	        this._attributesDirty = true;
+	    };
+	
+	    /**
+	     * Get HTML attributes on this Surface.
+	     *
+	     * @method getAttributes
+	     *
+	     * @return {Object} Dictionary of this Surface's attributes.
+	     */
+	    Surface.prototype.getAttributes = function getAttributes() {
+	        return this.attributes;
+	    };
+	
+	    /**
+	     * Set CSS-style properties on this Surface. Note that this will cause
+	     *    dirtying and thus re-rendering, even if values do not change.
+	     *
+	     * @method setProperties
+	     * @chainable
+	     * @param {Object} properties property dictionary of "key" => "value"
+	     */
+	    Surface.prototype.setProperties = function setProperties(properties) {
+	        for (var n in properties) {
+	            this.properties[n] = properties[n];
+	        }
+	        this._stylesDirty = true;
+	        return this;
+	    };
+	
+	    /**
+	     * Get CSS-style properties on this Surface.
+	     *
+	     * @method getProperties
+	     *
+	     * @return {Object} Dictionary of this Surface's properties.
+	     */
+	    Surface.prototype.getProperties = function getProperties() {
+	        return this.properties;
+	    };
+	
+	    /**
+	     * Add CSS-style class to the list of classes on this Surface. Note
+	     *   this will map directly to the HTML property of the actual
+	     *   corresponding rendered <div>.
+	     *
+	     * @method addClass
+	     * @chainable
+	     * @param {string} className name of class to add
+	     */
+	    Surface.prototype.addClass = function addClass(className) {
+	        if (this.classList.indexOf(className) < 0) {
+	            this.classList.push(className);
+	            this._classesDirty = true;
+	        }
+	        return this;
+	    };
+	
+	    /**
+	     * Remove CSS-style class from the list of classes on this Surface.
+	     *   Note this will map directly to the HTML property of the actual
+	     *   corresponding rendered <div>.
+	     *
+	     * @method removeClass
+	     * @chainable
+	     * @param {string} className name of class to remove
+	     */
+	    Surface.prototype.removeClass = function removeClass(className) {
+	        var i = this.classList.indexOf(className);
+	        if (i >= 0) {
+	            this._dirtyClasses.push(this.classList.splice(i, 1)[0]);
+	            this._classesDirty = true;
+	        }
+	        return this;
+	    };
+	
+	    /**
+	     * Toggle CSS-style class from the list of classes on this Surface.
+	     *   Note this will map directly to the HTML property of the actual
+	     *   corresponding rendered <div>.
+	     *
+	     * @method toggleClass
+	     * @param {string} className name of class to toggle
+	     */
+	    Surface.prototype.toggleClass = function toggleClass(className) {
+	        var i = this.classList.indexOf(className);
+	        if (i >= 0) {
+	            this.removeClass(className);
+	        } else {
+	            this.addClass(className);
+	        }
+	        return this;
+	    };
+	
+	    /**
+	     * Reset class list to provided dictionary.
+	     * @method setClasses
+	     * @chainable
+	     * @param {Array.string} classList
+	     */
+	    Surface.prototype.setClasses = function setClasses(classList) {
+	        var i = 0;
+	        var removal = [];
+	        for (i = 0; i < this.classList.length; i++) {
+	            if (classList.indexOf(this.classList[i]) < 0) removal.push(this.classList[i]);
+	        }
+	        for (i = 0; i < removal.length; i++) this.removeClass(removal[i]);
+	        // duplicates are already checked by addClass()
+	        for (i = 0; i < classList.length; i++) this.addClass(classList[i]);
+	        return this;
+	    };
+	
+	    /**
+	     * Get array of CSS-style classes attached to this div.
+	     *
+	     * @method getClasslist
+	     * @return {Array.string} array of class names
+	     */
+	    Surface.prototype.getClassList = function getClassList() {
+	        return this.classList;
+	    };
+	
+	    /**
+	     * Set or overwrite inner (HTML) content of this surface. Note that this
+	     *    causes a re-rendering if the content has changed.
+	     *
+	     * @method setContent
+	     * @chainable
+	     * @param {string|Document Fragment} content HTML content
+	     */
+	    Surface.prototype.setContent = function setContent(content) {
+	        if (this.content !== content) {
+	            this.content = content;
+	            this._contentDirty = true;
+	        }
+	        return this;
+	    };
+	
+	    /**
+	     * Return inner (HTML) content of this surface.
+	     *
+	     * @method getContent
+	     *
+	     * @return {string} inner (HTML) content
+	     */
+	    Surface.prototype.getContent = function getContent() {
+	        return this.content;
+	    };
+	
+	    /**
+	     * Set options for this surface
+	     *
+	     * @method setOptions
+	     * @chainable
+	     * @param {Object} [options] overrides for default options.  See constructor.
+	     */
+	    Surface.prototype.setOptions = function setOptions(options) {
+	        if (options.size) this.setSize(options.size);
+	        if (options.classes) this.setClasses(options.classes);
+	        if (options.properties) this.setProperties(options.properties);
+	        if (options.attributes) this.setAttributes(options.attributes);
+	        if (options.content) this.setContent(options.content);
+	        return this;
+	    };
+	
+	    //  Apply to document all changes from removeClass() since last setup().
+	    function _cleanupClasses(target) {
+	        for (var i = 0; i < this._dirtyClasses.length; i++) target.classList.remove(this._dirtyClasses[i]);
+	        this._dirtyClasses = [];
+	    }
+	
+	    // Apply values of all Famous-managed styles to the document element.
+	    //  These will be deployed to the document on call to #setup().
+	    function _applyStyles(target) {
+	        for (var n in this.properties) {
+	            target.style[n] = this.properties[n];
+	        }
+	    }
+	
+	    // Clear all Famous-managed styles from the document element.
+	    // These will be deployed to the document on call to #setup().
+	    function _cleanupStyles(target) {
+	        for (var n in this.properties) {
+	            target.style[n] = '';
+	        }
+	    }
+	
+	    // Apply values of all Famous-managed attributes to the document element.
+	    //  These will be deployed to the document on call to #setup().
+	    function _applyAttributes(target) {
+	        for (var n in this.attributes) {
+	            target.setAttribute(n, this.attributes[n]);
+	        }
+	    }
+	
+	    // Clear all Famous-managed attributes from the document element.
+	    // These will be deployed to the document on call to #setup().
+	    function _cleanupAttributes(target) {
+	        for (var n in this.attributes) {
+	            target.removeAttribute(n);
+	        }
+	    }
+	
+	    function _xyNotEquals(a, b) {
+	        return (a && b) ? (a[0] !== b[0] || a[1] !== b[1]) : a !== b;
+	    }
+	
+	    /**
+	     * One-time setup for an element to be ready for commits to document.
+	     *
+	     * @private
+	     * @method setup
+	     *
+	     * @param {ElementAllocator} allocator document element pool for this context
+	     */
+	    Surface.prototype.setup = function setup(allocator) {
+	        var target = allocator.allocate(this.elementType);
+	        if (this.elementClass) {
+	            if (this.elementClass instanceof Array) {
+	                for (var i = 0; i < this.elementClass.length; i++) {
+	                    target.classList.add(this.elementClass[i]);
+	                }
+	            }
+	            else {
+	                target.classList.add(this.elementClass);
+	            }
+	        }
+	        target.style.display = '';
+	        this.attach(target);
+	        this._opacity = null;
+	        this._currentTarget = target;
+	        this._stylesDirty = true;
+	        this._classesDirty = true;
+	        this._attributesDirty = true;
+	        this._sizeDirty = true;
+	        this._contentDirty = true;
+	        this._originDirty = true;
+	        this._transformDirty = true;
+	    };
+	
+	    /**
+	     * Apply changes from this component to the corresponding document element.
+	     * This includes changes to classes, styles, size, content, opacity, origin,
+	     * and matrix transforms.
+	     *
+	     * @private
+	     * @method commit
+	     * @param {Context} context commit context
+	     */
+	    Surface.prototype.commit = function commit(context) {
+	        if (!this._currentTarget) this.setup(context.allocator);
+	        var target = this._currentTarget;
+	        var size = context.size;
+	
+	        if (this._classesDirty) {
+	            _cleanupClasses.call(this, target);
+	            var classList = this.getClassList();
+	            for (var i = 0; i < classList.length; i++) target.classList.add(classList[i]);
+	            this._classesDirty = false;
+	            this._trueSizeCheck = true;
+	        }
+	
+	        if (this._stylesDirty) {
+	            _applyStyles.call(this, target);
+	            this._stylesDirty = false;
+	            this._trueSizeCheck = true;
+	        }
+	
+	        if (this._attributesDirty) {
+	            _applyAttributes.call(this, target);
+	            this._attributesDirty = false;
+	            this._trueSizeCheck = true;
+	        }
+	
+	        if (this.size) {
+	            var origSize = context.size;
+	            size = [this.size[0], this.size[1]];
+	            if (size[0] === undefined) size[0] = origSize[0];
+	            if (size[1] === undefined) size[1] = origSize[1];
+	            if (size[0] === true || size[1] === true) {
+	                if (size[0] === true){
+	                    if (this._trueSizeCheck || (this._size[0] === 0)) {
+	                        var width = target.offsetWidth;
+	                        if (this._size && this._size[0] !== width) {
+	                            this._size[0] = width;
+	                            this._sizeDirty = true;
+	                        }
+	                        size[0] = width;
+	                    } else {
+	                        if (this._size) size[0] = this._size[0];
+	                    }
+	                }
+	                if (size[1] === true){
+	                    if (this._trueSizeCheck || (this._size[1] === 0)) {
+	                        var height = target.offsetHeight;
+	                        if (this._size && this._size[1] !== height) {
+	                            this._size[1] = height;
+	                            this._sizeDirty = true;
+	                        }
+	                        size[1] = height;
+	                    } else {
+	                        if (this._size) size[1] = this._size[1];
+	                    }
+	                }
+	                this._trueSizeCheck = false;
+	            }
+	        }
+	
+	        if (_xyNotEquals(this._size, size)) {
+	            if (!this._size) this._size = [0, 0];
+	            this._size[0] = size[0];
+	            this._size[1] = size[1];
+	
+	            this._sizeDirty = true;
+	        }
+	
+	        if (this._sizeDirty) {
+	            if (this._size) {
+	                target.style.width = (this.size && this.size[0] === true) ? '' : this._size[0] + 'px';
+	                target.style.height = (this.size && this.size[1] === true) ?  '' : this._size[1] + 'px';
+	            }
+	
+	            this._eventOutput.emit('resize');
+	        }
+	
+	        if (this._contentDirty) {
+	            this.deploy(target);
+	            this._eventOutput.emit('deploy');
+	            this._contentDirty = false;
+	            this._trueSizeCheck = true;
+	        }
+	
+	        ElementOutput.prototype.commit.call(this, context);
+	    };
+	
+	    /**
+	     *  Remove all Famous-relevant attributes from a document element.
+	     *    This is called by SurfaceManager's detach().
+	     *    This is in some sense the reverse of .deploy().
+	     *
+	     * @private
+	     * @method cleanup
+	     * @param {ElementAllocator} allocator
+	     */
+	    Surface.prototype.cleanup = function cleanup(allocator) {
+	        var i = 0;
+	        var target = this._currentTarget;
+	        this._eventOutput.emit('recall');
+	        this.recall(target);
+	        target.style.display = 'none';
+	        target.style.opacity = '';
+	        target.style.width = '';
+	        target.style.height = '';
+	        _cleanupStyles.call(this, target);
+	        _cleanupAttributes.call(this, target);
+	        var classList = this.getClassList();
+	        _cleanupClasses.call(this, target);
+	        for (i = 0; i < classList.length; i++) target.classList.remove(classList[i]);
+	        if (this.elementClass) {
+	            if (this.elementClass instanceof Array) {
+	                for (i = 0; i < this.elementClass.length; i++) {
+	                    target.classList.remove(this.elementClass[i]);
+	                }
+	            }
+	            else {
+	                target.classList.remove(this.elementClass);
+	            }
+	        }
+	        this.detach(target);
+	        this._currentTarget = null;
+	        allocator.deallocate(target);
+	    };
+	
+	    /**
+	     * Place the document element that this component manages into the document.
+	     *
+	     * @private
+	     * @method deploy
+	     * @param {Node} target document parent of this container
+	     */
+	    Surface.prototype.deploy = function deploy(target) {
+	        var content = this.getContent();
+	        if (content instanceof Node) {
+	            while (target.hasChildNodes()) target.removeChild(target.firstChild);
+	            target.appendChild(content);
+	        }
+	        else target.innerHTML = content;
+	    };
+	
+	    /**
+	     * Remove any contained document content associated with this surface
+	     *   from the actual document.
+	     *
+	     * @private
+	     * @method recall
+	     */
+	    Surface.prototype.recall = function recall(target) {
+	        var df = document.createDocumentFragment();
+	        while (target.hasChildNodes()) df.appendChild(target.firstChild);
+	        this.setContent(df);
+	    };
+	
+	    /**
+	     *  Get the x and y dimensions of the surface.
+	     *
+	     * @method getSize
+	     * @return {Array.Number} [x,y] size of surface
+	     */
+	    Surface.prototype.getSize = function getSize() {
+	        return this._size ? this._size : this.size;
+	    };
+	
+	    /**
+	     * Set x and y dimensions of the surface.
+	     *
+	     * @method setSize
+	     * @chainable
+	     * @param {Array.Number} size as [width, height]
+	     */
+	    Surface.prototype.setSize = function setSize(size) {
+	        this.size = size ? [size[0], size[1]] : null;
+	        this._sizeDirty = true;
+	        return this;
+	    };
+	
+	    module.exports = Surface;
+
+
+/***/ },
+/* 325 */
+/***/ function(module, exports, __webpack_require__) {
+
+	/* This Source Code Form is subject to the terms of the Mozilla Public
+	 * License, v. 2.0. If a copy of the MPL was not distributed with this
+	 * file, You can obtain one at http://mozilla.org/MPL/2.0/.
+	 *
+	 * Owner: mark@famo.us
+	 * @license MPL 2.0
+	 * @copyright Famous Industries, Inc. 2015
+	 */
+	
+	    var Entity = __webpack_require__(310);
+	    var EventHandler = __webpack_require__(312);
+	    var Transform = __webpack_require__(300);
+	
+	    var usePrefix = !('transform' in document.documentElement.style);
+	    var devicePixelRatio = window.devicePixelRatio || 1;
+	
+	    /**
+	     * A base class for viewable content and event
+	     *   targets inside a Famo.us application, containing a renderable document
+	     *   fragment. Like an HTML div, it can accept internal markup,
+	     *   properties, classes, and handle events.
+	     *
+	     * @class ElementOutput
+	     * @constructor
+	     *
+	     * @param {Node} element document parent of this container
+	     */
+	    function ElementOutput(element) {
+	        this._matrix = null;
+	        this._opacity = 1;
+	        this._origin = null;
+	        this._size = null;
+	
+	        this._eventOutput = new EventHandler();
+	        this._eventOutput.bindThis(this);
+	
+	        /** @ignore */
+	        this.eventForwarder = function eventForwarder(event) {
+	            this._eventOutput.emit(event.type, event);
+	        }.bind(this);
+	
+	        this.id = Entity.register(this);
+	        this._element = null;
+	        this._sizeDirty = false;
+	        this._originDirty = false;
+	        this._transformDirty = false;
+	
+	        this._invisible = false;
+	        if (element) this.attach(element);
+	    }
+	
+	    /**
+	     * Bind a callback function to an event type handled by this object.
+	     *
+	     * @method "on"
+	     *
+	     * @param {string} type event type key (for example, 'click')
+	     * @param {function(string, Object)} fn handler callback
+	     * @return {EventHandler} this
+	     */
+	    ElementOutput.prototype.on = function on(type, fn) {
+	        if (this._element) this._element.addEventListener(type, this.eventForwarder);
+	        this._eventOutput.on(type, fn);
+	    };
+	
+	    /**
+	     * Unbind an event by type and handler.
+	     *   This undoes the work of "on"
+	     *
+	     * @method removeListener
+	     * @param {string} type event type key (for example, 'click')
+	     * @param {function(string, Object)} fn handler
+	     */
+	    ElementOutput.prototype.removeListener = function removeListener(type, fn) {
+	        this._eventOutput.removeListener(type, fn);
+	    };
+	
+	    /**
+	     * Trigger an event, sending to all downstream handlers
+	     *   listening for provided 'type' key.
+	     *
+	     * @method emit
+	     *
+	     * @param {string} type event type key (for example, 'click')
+	     * @param {Object} [event] event data
+	     * @return {EventHandler} this
+	     */
+	    ElementOutput.prototype.emit = function emit(type, event) {
+	        if (event && !event.origin) event.origin = this;
+	        var handled = this._eventOutput.emit(type, event);
+	        if (handled && event && event.stopPropagation) event.stopPropagation();
+	        return handled;
+	    };
+	
+	    /**
+	     * Add event handler object to set of downstream handlers.
+	     *
+	     * @method pipe
+	     *
+	     * @param {EventHandler} target event handler target object
+	     * @return {EventHandler} passed event handler
+	     */
+	    ElementOutput.prototype.pipe = function pipe(target) {
+	        return this._eventOutput.pipe(target);
+	    };
+	
+	    /**
+	     * Remove handler object from set of downstream handlers.
+	     *   Undoes work of "pipe"
+	     *
+	     * @method unpipe
+	     *
+	     * @param {EventHandler} target target handler object
+	     * @return {EventHandler} provided target
+	     */
+	    ElementOutput.prototype.unpipe = function unpipe(target) {
+	        return this._eventOutput.unpipe(target);
+	    };
+	
+	    /**
+	     * Return spec for this surface. Note that for a base surface, this is
+	     *    simply an id.
+	     *
+	     * @method render
+	     * @private
+	     * @return {Object} render spec for this surface (spec id)
+	     */
+	    ElementOutput.prototype.render = function render() {
+	        return this.id;
+	    };
+	
+	    //  Attach Famous event handling to document events emanating from target
+	    //    document element.  This occurs just after attachment to the document.
+	    //    Calling this enables methods like #on and #pipe.
+	    function _addEventListeners(target) {
+	        for (var i in this._eventOutput.listeners) {
+	            target.addEventListener(i, this.eventForwarder);
+	        }
+	    }
+	
+	    //  Detach Famous event handling from document events emanating from target
+	    //  document element.  This occurs just before detach from the document.
+	    function _removeEventListeners(target) {
+	        for (var i in this._eventOutput.listeners) {
+	            target.removeEventListener(i, this.eventForwarder);
+	        }
+	    }
+	
+	    /**
+	     * Return a Matrix's webkit css representation to be used with the
+	     *    CSS3 -webkit-transform style.
+	     *    Example: -webkit-transform: matrix3d(1,0,0,0,0,1,0,0,0,0,1,0,716,243,0,1)
+	     *
+	     * @method _formatCSSTransform
+	     * @private
+	     * @param {FamousMatrix} m matrix
+	     * @return {string} matrix3d CSS style representation of the transform
+	     */
+	    function _formatCSSTransform(m) {
+	        m[12] = Math.round(m[12] * devicePixelRatio) / devicePixelRatio;
+	        m[13] = Math.round(m[13] * devicePixelRatio) / devicePixelRatio;
+	
+	        var result = 'matrix3d(';
+	        for (var i = 0; i < 15; i++) {
+	            result += (m[i] < 0.000001 && m[i] > -0.000001) ? '0,' : m[i] + ',';
+	        }
+	        result += m[15] + ')';
+	        return result;
+	    }
+	
+	    /**
+	     * Directly apply given FamousMatrix to the document element as the
+	     *   appropriate webkit CSS style.
+	     *
+	     * @method setMatrix
+	     *
+	     * @static
+	     * @private
+	     * @param {Element} element document element
+	     * @param {FamousMatrix} matrix
+	     */
+	
+	    var _setMatrix;
+	    if (usePrefix) {
+	        _setMatrix = function(element, matrix) {
+	            element.style.webkitTransform = _formatCSSTransform(matrix);
+	        };
+	    }
+	    else {
+	        _setMatrix = function(element, matrix) {
+	            element.style.transform = _formatCSSTransform(matrix);
+	        };
+	    }
+	
+	    // format origin as CSS percentage string
+	    function _formatCSSOrigin(origin) {
+	        return (100 * origin[0]) + '% ' + (100 * origin[1]) + '%';
+	    }
+	
+	    // Directly apply given origin coordinates to the document element as the
+	    // appropriate webkit CSS style.
+	    var _setOrigin = usePrefix ? function(element, origin) {
+	        element.style.webkitTransformOrigin = _formatCSSOrigin(origin);
+	    } : function(element, origin) {
+	        element.style.transformOrigin = _formatCSSOrigin(origin);
+	    };
+	
+	    // Shrink given document element until it is effectively invisible.
+	    var _setInvisible = usePrefix ? function(element) {
+	        element.style.webkitTransform = 'scale3d(0.0001,0.0001,0.0001)';
+	        element.style.opacity = 0;
+	    } : function(element) {
+	        element.style.transform = 'scale3d(0.0001,0.0001,0.0001)';
+	        element.style.opacity = 0;
+	    };
+	
+	    function _xyNotEquals(a, b) {
+	        return (a && b) ? (a[0] !== b[0] || a[1] !== b[1]) : a !== b;
+	    }
+	
+	    /**
+	     * Apply changes from this component to the corresponding document element.
+	     * This includes changes to classes, styles, size, content, opacity, origin,
+	     * and matrix transforms.
+	     *
+	     * @private
+	     * @method commit
+	     * @param {Context} context commit context
+	     */
+	    ElementOutput.prototype.commit = function commit(context) {
+	        var target = this._element;
+	        if (!target) return;
+	
+	        var matrix = context.transform;
+	        var opacity = context.opacity;
+	        var origin = context.origin;
+	        var size = context.size;
+	
+	        if (!matrix && this._matrix) {
+	            this._matrix = null;
+	            this._opacity = 0;
+	            _setInvisible(target);
+	            return;
+	        }
+	
+	        if (_xyNotEquals(this._origin, origin)) this._originDirty = true;
+	        if (Transform.notEquals(this._matrix, matrix)) this._transformDirty = true;
+	
+	        if (this._invisible) {
+	            this._invisible = false;
+	            this._element.style.display = '';
+	        }
+	
+	        if (this._opacity !== opacity) {
+	            this._opacity = opacity;
+	            target.style.opacity = (opacity >= 1) ? '0.999999' : opacity;
+	        }
+	
+	        if (this._transformDirty || this._originDirty || this._sizeDirty) {
+	            if (this._sizeDirty) this._sizeDirty = false;
+	
+	            if (this._originDirty) {
+	                if (origin) {
+	                    if (!this._origin) this._origin = [0, 0];
+	                    this._origin[0] = origin[0];
+	                    this._origin[1] = origin[1];
+	                }
+	                else this._origin = null;
+	                _setOrigin(target, this._origin);
+	                this._originDirty = false;
+	            }
+	
+	            if (!matrix) matrix = Transform.identity;
+	            this._matrix = matrix;
+	            var aaMatrix = this._size ? Transform.thenMove(matrix, [-this._size[0]*origin[0], -this._size[1]*origin[1], 0]) : matrix;
+	            _setMatrix(target, aaMatrix);
+	            this._transformDirty = false;
+	        }
+	    };
+	
+	    ElementOutput.prototype.cleanup = function cleanup() {
+	        if (this._element) {
+	            this._invisible = true;
+	            this._element.style.display = 'none';
+	        }
+	    };
+	
+	    /**
+	     * Place the document element that this component manages into the document.
+	     *
+	     * @private
+	     * @method attach
+	     * @param {Node} target document parent of this container
+	     */
+	    ElementOutput.prototype.attach = function attach(target) {
+	        this._element = target;
+	        _addEventListeners.call(this, target);
+	    };
+	
+	    /**
+	     * Remove any contained document content associated with this surface
+	     *   from the actual document.
+	     *
+	     * @private
+	     * @method detach
+	     */
+	    ElementOutput.prototype.detach = function detach() {
+	        var target = this._element;
+	        if (target) {
+	            _removeEventListeners.call(this, target);
+	            if (this._invisible) {
+	                this._invisible = false;
+	                this._element.style.display = '';
+	            }
+	        }
+	        this._element = null;
+	        return target;
+	    };
+	
+	    module.exports = ElementOutput;
+
+
+/***/ },
+/* 326 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+	
+	Object.defineProperty(exports, "__esModule", {
+	    value: true
+	});
+	exports.Cube = undefined;
+	
+	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+	
+	var _Transform = __webpack_require__(300);
+	
+	var _Transform2 = _interopRequireDefault(_Transform);
+	
+	var _MouseSync = __webpack_require__(327);
+	
+	var _MouseSync2 = _interopRequireDefault(_MouseSync);
+	
+	var _TouchSync = __webpack_require__(328);
+	
+	var _TouchSync2 = _interopRequireDefault(_TouchSync);
+	
+	var _GenericSync = __webpack_require__(330);
+	
+	var _GenericSync2 = _interopRequireDefault(_GenericSync);
+	
+	var _Molecule2 = __webpack_require__(306);
+	
+	var _Molecule3 = _interopRequireDefault(_Molecule2);
+	
+	var _Plane = __webpack_require__(323);
+	
+	var _Plane2 = _interopRequireDefault(_Plane);
+	
+	var _forLength = __webpack_require__(321);
+	
+	var _forLength2 = _interopRequireDefault(_forLength);
+	
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+	
+	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+	
+	function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+	
+	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; } /*
+	                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                * LICENSE
+	                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                *
+	                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                * This Source Code Form is subject to the terms of the Mozilla Public
+	                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                * License, v. 2.0. If a copy of the MPL was not distributed with this
+	                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                * file, You can obtain one at http://mozilla.org/MPL/2.0/.
+	                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                *
+	                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                */
+	
+	/**
+	 * A scenegraph tree that lays things out in a cube form. The leaf nodes of the
+	 * scenegraph (the cube sides) are Molecules. Add anything to the leaf nodes
+	 * that a [famous/src/core/RenderNode](#famous/src/core/RenderNode) would normally accept.
+	 *
+	 * @class Cube
+	 * @extends Molecule
+	 */
+	var Cube = exports.Cube = function (_Molecule) {
+	    _inherits(Cube, _Molecule);
+	
+	    /**
+	     * Create a new Cube.
+	     *
+	     * @constructor
+	     * @param {Number} cubeWidth The integer width of the cube.
+	     */
+	    function Cube(cubeWidth) {
+	        _classCallCheck(this, Cube);
+	
+	        var _this = _possibleConstructorReturn(this, (Cube.__proto__ || Object.getPrototypeOf(Cube)).call(this, { size: cubeWidth }));
+	
+	        _GenericSync2.default.register({
+	            mouse: _MouseSync2.default,
+	            touch: _TouchSync2.default
+	        });
+	
+	        _this.cubeWidth = cubeWidth;
+	
+	        _this.cubeSideNodes = [];
+	        _this.cubeSides = [];
+	
+	        // TODO: v0.1.0: Put this in a function.
+	        (0, _forLength2.default)(6, _this._createCubeSide.bind(_this));
+	        return _this;
+	    }
+	
+	    /**
+	     * Creates the 6 sides of the cube (the leafnodes of the scenegraph).
+	     *
+	     * TODO v0.1.0: Rename to CubeLayout.
+	     * TODO v0.1.0: Don't create Planes for each side, let the user specify their own content for each side using this.setChildren.
+	     *
+	     * @private
+	     * @param {Number} index The index (a integer between 0 and 5) that specifies which side to create.
+	     */
+	
+	
+	    _createClass(Cube, [{
+	        key: '_createCubeSide',
+	        value: function _createCubeSide(index) {
+	            var T = _Transform2.default;
+	            var sideMol = new _Molecule3.default();
+	            var side = new _Plane2.default({
+	                size: [this.cubeWidth, this.cubeWidth],
+	                properties: {
+	                    background: 'pink',
+	                    backfaceVisibility: 'visible'
+	                }
+	            });
+	            var sync = new _GenericSync2.default(['mouse', 'touch']);
+	
+	            this.cubeSides.push(side);
+	
+	            side.pipe(sync);
+	            sync.pipe(this.options.handler);
+	
+	            // rotate and place each side.
+	            if (index < 4) {
+	                // sides
+	                sideMol.modifier.transformFrom(T.multiply(T.rotate(0, Math.PI / 2 * index, 0), T.translate(0, 0, this.cubeWidth / 2)));
+	            } else {
+	                // top/bottom
+	                sideMol.modifier.transformFrom(T.multiply(T.rotate(Math.PI / 2 * (index % 2 ? -1 : 1), 0, 0), T.translate(0, 0, this.cubeWidth / 2)));
+	            }
+	
+	            this.cubeSideNodes.push(this.add(sideMol));
+	            sideMol.add(side);
+	        }
+	
+	        /**
+	         * Set the content for the sides of the cube.
+	         *
+	         * @param {Array} children An array containing anything that a
+	         * [famous/src/core/RenderNode](#famous/src/core/RenderNode) would accept in it's `add` method. Only the
+	         * first 6 items are used, the rest are ignored.
+	         */
+	
+	    }, {
+	        key: 'setChildren',
+	        value: function setChildren(children) {
+	            (0, _forLength2.default)(6, function (index) {
+	                //this.cubeSideNodes[index].set(null); // TODO: how do we erase previous children?
+	                this.cubeSideNodes[index].add(children[index]);
+	            }.bind(this));
+	            return this;
+	        }
+	    }]);
+	
+	    return Cube;
+	}(_Molecule3.default);
+	
+	exports.default = Cube;
+
+/***/ },
+/* 327 */
+/***/ function(module, exports, __webpack_require__) {
+
+	/* This Source Code Form is subject to the terms of the Mozilla Public
+	 * License, v. 2.0. If a copy of the MPL was not distributed with this
+	 * file, You can obtain one at http://mozilla.org/MPL/2.0/.
+	 *
+	 * Owner: mark@famo.us
+	 * @license MPL 2.0
+	 * @copyright Famous Industries, Inc. 2015
+	 */
+	    var EventHandler = __webpack_require__(312);
+	    var OptionsManager = __webpack_require__(318);
+	
+	    /**
+	     * Handles piped in mouse drag events. Outputs an object with the position delta from last frame, position from start,
+	     * current velocity averaged out over the velocitySampleLength (set via options), clientX, clientY, offsetX, and offsetY.
+	     *
+	     * Emits 'start', 'update' and 'end' events. Designed to be used either as a standalone MouseSync, or as part of a
+	     * GenericSync.
+	     *
+	     * @class MouseSync
+	     * @constructor
+	     *
+	     * @example
+	     *   var Surface = require('../core/Surface');
+	     *   var MouseSync = require('../inputs/MouseSync');
+	     *
+	     *   var surface = new Surface({ size: [100, 100] });
+	     *   var mouseSync = new MouseSync();
+	     *   surface.pipe(mouseSync);
+	     *
+	     *   mouseSync.on('start', function (e) { // react to start });
+	     *   mouseSync.on('update', function (e) { // react to update });
+	     *   mouseSync.on('end', function (e) { // react to end });
+	     *
+	     * @param [options] {Object}                An object of the following configurable options.
+	     * @param [options.clickThreshold] {Number} Absolute distance from click origin that will still trigger a click.
+	     * @param [options.direction] {Number}      Read from a particular axis. Valid options are: undefined, 0 or 1. 0 corresponds to x, and 1 to y. Default is undefined, which allows both x and y.
+	     * @param [options.rails] {Boolean}         Read from axis with the greatest differential.
+	     * @param [options.velocitySampleLength] {Number}  Number of previous frames to check velocity against.
+	     * @param [options.propogate] {Boolean}     Add a listener to document on mouseleave. This allows drag events to continue across the entire page.
+	     */
+	    function MouseSync(options) {
+	        this.options =  Object.create(MouseSync.DEFAULT_OPTIONS);
+	        this._optionsManager = new OptionsManager(this.options);
+	
+	        if (options) this.setOptions(options);
+	
+	        this._eventInput = new EventHandler();
+	        this._eventOutput = new EventHandler();
+	
+	        EventHandler.setInputHandler(this, this._eventInput);
+	        EventHandler.setOutputHandler(this, this._eventOutput);
+	
+	        this._eventInput.on('mousedown', _handleStart.bind(this));
+	        this._eventInput.on('mousemove', _handleMove.bind(this));
+	        this._eventInput.on('mouseup', _handleEnd.bind(this));
+	
+	        if (this.options.propogate) this._eventInput.on('mouseleave', _handleLeave.bind(this));
+	        else this._eventInput.on('mouseleave', _handleEnd.bind(this));
+	
+	        if (this.options.clickThreshold) {
+	            window.addEventListener('click', function(event) {
+	                if (Math.sqrt(Math.pow(this._displacement[0], 2) + Math.pow(this._displacement[1], 2)) > this.options.clickThreshold) {
+	                    event.stopPropagation();
+	                }
+	            }.bind(this), true);
+	        }
+	
+	        this._payload = {
+	            delta    : null,
+	            position : null,
+	            velocity : null,
+	            clientX  : 0,
+	            clientY  : 0,
+	            offsetX  : 0,
+	            offsetY  : 0
+	        };
+	
+	        this._positionHistory = [];
+	        this._position = null;      // to be deprecated
+	        this._prevCoord = undefined;
+	        this._prevTime = undefined;
+	        this._down = false;
+	        this._moved = false;
+	        this._displacement = [0,0];
+	        this._documentActive = false;
+	    }
+	
+	    MouseSync.DEFAULT_OPTIONS = {
+	        clickThreshold: undefined,
+	        direction: undefined,
+	        rails: false,
+	        scale: 1,
+	        propogate: true,  // events piped to document on mouseleave
+	        velocitySampleLength: 10,
+	        preventDefault: true
+	    };
+	
+	    MouseSync.DIRECTION_X = 0;
+	    MouseSync.DIRECTION_Y = 1;
+	
+	    var MINIMUM_TICK_TIME = 8;
+	
+	    /**
+	     *  Triggered by mousedown.
+	     *
+	     *  @method _handleStart
+	     *  @private
+	     */
+	    function _handleStart(event) {
+	        var delta;
+	        var velocity;
+	        if (this.options.preventDefault) event.preventDefault(); // prevent drag
+	
+	        var x = event.clientX;
+	        var y = event.clientY;
+	
+	        this._prevCoord = [x, y];
+	        this._prevTime = Date.now();
+	        this._down = true;
+	        this._move = false;
+	
+	        if (this.options.direction !== undefined) {
+	            this._position = 0;
+	            delta = 0;
+	            velocity = 0;
+	        }
+	        else {
+	            this._position = [0, 0];
+	            delta = [0, 0];
+	            velocity = [0, 0];
+	        }
+	
+	        if (this.options.clickThreshold) {
+	            this._displacement = [0,0];
+	        }
+	
+	        var payload = this._payload;
+	        payload.delta = delta;
+	        payload.position = this._position;
+	        payload.velocity = velocity;
+	        payload.clientX = x;
+	        payload.clientY = y;
+	        payload.offsetX = event.offsetX;
+	        payload.offsetY = event.offsetY;
+	
+	        this._positionHistory.push({
+	            position: payload.position.slice ? payload.position.slice(0) : payload.position,
+	            time: this._prevTime
+	        });
+	
+	        this._eventOutput.emit('start', payload);
+	        this._documentActive = false;
+	    }
+	
+	    /**
+	     *  Triggered by mousemove.
+	     *
+	     *  @method _handleMove
+	     *  @private
+	     */
+	    function _handleMove(event) {
+	        if (!this._prevCoord) return;
+	
+	        var prevCoord = this._prevCoord;
+	        var prevTime = this._prevTime;
+	
+	        var x = event.clientX;
+	        var y = event.clientY;
+	
+	        var currTime = Date.now();
+	
+	        var diffX = x - prevCoord[0];
+	        var diffY = y - prevCoord[1];
+	
+	        if (this.options.rails) {
+	            if (Math.abs(diffX) > Math.abs(diffY)) diffY = 0;
+	            else diffX = 0;
+	        }
+	
+	        var diffTime = Math.max(currTime - this._positionHistory[0].time, MINIMUM_TICK_TIME); // minimum tick time
+	
+	        var scale = this.options.scale;
+	        var nextVel;
+	        var nextDelta;
+	
+	        if (this.options.direction === MouseSync.DIRECTION_X) {
+	            nextDelta = scale * diffX;
+	            this._position += nextDelta;
+	            nextVel = scale * (this._position - this._positionHistory[0].position) / diffTime;
+	        }
+	        else if (this.options.direction === MouseSync.DIRECTION_Y) {
+	            nextDelta = scale * diffY;
+	            this._position += nextDelta;
+	            nextVel = scale * (this._position - this._positionHistory[0].position) / diffTime;
+	        }
+	        else {
+	            nextDelta = [scale * diffX, scale * diffY];
+	            nextVel = [
+	                scale * (this._position[0] - this._positionHistory[0].position[0]) / diffTime,
+	                scale * (this._position[1] - this._positionHistory[0].position[1]) / diffTime
+	            ];
+	            this._position[0] += nextDelta[0];
+	            this._position[1] += nextDelta[1];
+	        }
+	
+	        if (this.options.clickThreshold !== false) {
+	            this._displacement[0] += diffX;
+	            this._displacement[1] += diffY;
+	        }
+	
+	        var payload = this._payload;
+	        payload.delta    = nextDelta;
+	        payload.position = this._position;
+	        payload.velocity = nextVel;
+	        payload.clientX  = x;
+	        payload.clientY  = y;
+	        payload.offsetX  = event.offsetX;
+	        payload.offsetY  = event.offsetY;
+	
+	        if (this._positionHistory.length === this.options.velocitySampleLength) {
+	          this._positionHistory.shift();
+	        }
+	
+	        this._positionHistory.push({
+	          position: payload.position.slice ? payload.position.slice(0) : payload.position,
+	          time: currTime
+	        });
+	
+	        this._eventOutput.emit('update', payload);
+	
+	        this._prevCoord = [x, y];
+	        this._prevTime = currTime;
+	        this._move = true;
+	    }
+	
+	    /**
+	     *  Triggered by mouseup on the element or document body if propagation is enabled, or
+	     *  mouseleave if propagation is off.
+	     *
+	     *  @method _handleEnd
+	     *  @private
+	     */
+	    function _handleEnd(event) {
+	        if (!this._down) return;
+	
+	        this._eventOutput.emit('end', this._payload);
+	        this._prevCoord = undefined;
+	        this._prevTime = undefined;
+	        this._down = false;
+	        this._move = false;
+	        this._positionHistory = [];
+	    }
+	
+	    /**
+	     *  Switches the mousemove listener to the document body, if propagation is enabled.
+	     *  @method _handleLeave
+	     *  @private
+	     */
+	    function _handleLeave(event) {
+	        if (!this._down || !this._move) return;
+	
+	        if (!this._documentActive) {
+	          var boundMove = _handleMove.bind(this);
+	          var boundEnd = function(event) {
+	              _handleEnd.call(this, event);
+	              document.removeEventListener('mousemove', boundMove);
+	              document.removeEventListener('mouseup', boundEnd);
+	          }.bind(this, event);
+	          document.addEventListener('mousemove', boundMove);
+	          document.addEventListener('mouseup', boundEnd);
+	          this._documentActive = true;
+	        }
+	    }
+	
+	    /**
+	     * Return entire options dictionary, including defaults.
+	     *
+	     * @method getOptions
+	     * @return {Object} configuration options
+	     */
+	    MouseSync.prototype.getOptions = function getOptions() {
+	        return this.options;
+	    };
+	
+	    /**
+	     * Set internal options, overriding any default options
+	     *
+	     * @method setOptions
+	     *
+	     * @param [options] {Object}             default options overrides
+	     * @param [options.direction] {Number}   read from a particular axis
+	     * @param [options.rails] {Boolean}      read from axis with greatest differential
+	     * @param [options.propogate] {Boolean}  add listened to document on mouseleave
+	     */
+	    MouseSync.prototype.setOptions = function setOptions(options) {
+	        return this._optionsManager.setOptions(options);
+	    };
+	
+	    module.exports = MouseSync;
+
+
+/***/ },
+/* 328 */
+/***/ function(module, exports, __webpack_require__) {
+
+	/* This Source Code Form is subject to the terms of the Mozilla Public
+	 * License, v. 2.0. If a copy of the MPL was not distributed with this
+	 * file, You can obtain one at http://mozilla.org/MPL/2.0/.
+	 *
+	 * Owner: mark@famo.us
+	 * @license MPL 2.0
+	 * @copyright Famous Industries, Inc. 2015
+	 */
+	    var TouchTracker = __webpack_require__(329);
+	    var EventHandler = __webpack_require__(312);
+	    var OptionsManager = __webpack_require__(318);
+	
+	    /**
+	     * Handles piped in touch events. Emits 'start', 'update', and 'events'
+	     *   events with delta, position, velocity, acceleration, clientX, clientY, count, and touch id.
+	     *   Useful for dealing with inputs on touch devices. Designed to be used either as standalone, or
+	     *   included in a GenericSync.
+	     *
+	     * @class TouchSync
+	     * @constructor
+	     *
+	     * @example
+	     *   var Surface = require('../core/Surface');
+	     *   var TouchSync = require('../inputs/TouchSync');
+	     *
+	     *   var surface = new Surface({ size: [100, 100] });
+	     *   var touchSync = new TouchSync();
+	     *   surface.pipe(touchSync);
+	     *
+	     *   touchSync.on('start', function (e) { // react to start });
+	     *   touchSync.on('update', function (e) { // react to update });
+	     *   touchSync.on('end', function (e) { // react to end });*
+	     *
+	     * @param [options] {Object}             default options overrides
+	     * @param [options.direction] {Number}   read from a particular axis
+	     * @param [options.rails] {Boolean}      read from axis with greatest differential
+	     * @param [options.velocitySampleLength] {Number}  Number of previous frames to check velocity against.
+	     * @param [options.scale] {Number}       constant factor to scale velocity output
+	     * @param [options.touchLimit] {Number}  touchLimit upper bound for emitting events based on number of touches
+	     */
+	    function TouchSync(options) {
+	        this.options =  Object.create(TouchSync.DEFAULT_OPTIONS);
+	        this._optionsManager = new OptionsManager(this.options);
+	        if (options) this.setOptions(options);
+	
+	        this._eventOutput = new EventHandler();
+	        this._touchTracker = new TouchTracker({
+	            touchLimit: this.options.touchLimit
+	        });
+	
+	        EventHandler.setOutputHandler(this, this._eventOutput);
+	        EventHandler.setInputHandler(this, this._touchTracker);
+	
+	        this._touchTracker.on('trackstart', _handleStart.bind(this));
+	        this._touchTracker.on('trackmove', _handleMove.bind(this));
+	        this._touchTracker.on('trackend', _handleEnd.bind(this));
+	
+	        this._payload = {
+	            delta    : null,
+	            position : null,
+	            velocity : null,
+	            clientX  : undefined,
+	            clientY  : undefined,
+	            count    : 0,
+	            touch    : undefined
+	        };
+	
+	        this._position = null; // to be deprecated
+	    }
+	
+	    TouchSync.DEFAULT_OPTIONS = {
+	        direction: undefined,
+	        rails: false,
+	        touchLimit: 1,
+	        velocitySampleLength: 10,
+	        scale: 1
+	    };
+	
+	    TouchSync.DIRECTION_X = 0;
+	    TouchSync.DIRECTION_Y = 1;
+	
+	    var MINIMUM_TICK_TIME = 8;
+	
+	    /**
+	     *  Triggered by trackstart.
+	     *  @method _handleStart
+	     *  @private
+	     */
+	    function _handleStart(data) {
+	        var velocity;
+	        var delta;
+	        if (this.options.direction !== undefined){
+	            this._position = 0;
+	            velocity = 0;
+	            delta = 0;
+	        }
+	        else {
+	            this._position = [0, 0];
+	            velocity = [0, 0];
+	            delta = [0, 0];
+	        }
+	
+	        var payload = this._payload;
+	        payload.delta = delta;
+	        payload.position = this._position;
+	        payload.velocity = velocity;
+	        payload.clientX = data.x;
+	        payload.clientY = data.y;
+	        payload.count = data.count;
+	        payload.touch = data.identifier;
+	
+	        this._eventOutput.emit('start', payload);
+	    }
+	
+	    /**
+	     *  Triggered by trackmove.
+	     *  @method _handleMove
+	     *  @private
+	     */
+	    function _handleMove(data) {
+	        var history = data.history;
+	
+	        var currHistory = history[history.length - 1];
+	        var prevHistory = history[history.length - 2];
+	
+	        var distantHistory = history[history.length - this.options.velocitySampleLength] ?
+	          history[history.length - this.options.velocitySampleLength] :
+	          history[history.length - 2];
+	
+	        var distantTime = distantHistory.timestamp;
+	        var currTime = currHistory.timestamp;
+	
+	        var diffX = currHistory.x - prevHistory.x;
+	        var diffY = currHistory.y - prevHistory.y;
+	
+	        var velDiffX = currHistory.x - distantHistory.x;
+	        var velDiffY = currHistory.y - distantHistory.y;
+	
+	        if (this.options.rails) {
+	            if (Math.abs(diffX) > Math.abs(diffY)) diffY = 0;
+	            else diffX = 0;
+	
+	            if (Math.abs(velDiffX) > Math.abs(velDiffY)) velDiffY = 0;
+	            else velDiffX = 0;
+	        }
+	
+	        var diffTime = Math.max(currTime - distantTime, MINIMUM_TICK_TIME);
+	
+	        var velX = velDiffX / diffTime;
+	        var velY = velDiffY / diffTime;
+	
+	        var scale = this.options.scale;
+	        var nextVel;
+	        var nextDelta;
+	
+	        if (this.options.direction === TouchSync.DIRECTION_X) {
+	            nextDelta = scale * diffX;
+	            nextVel = scale * velX;
+	            this._position += nextDelta;
+	        }
+	        else if (this.options.direction === TouchSync.DIRECTION_Y) {
+	            nextDelta = scale * diffY;
+	            nextVel = scale * velY;
+	            this._position += nextDelta;
+	        }
+	        else {
+	            nextDelta = [scale * diffX, scale * diffY];
+	            nextVel = [scale * velX, scale * velY];
+	            this._position[0] += nextDelta[0];
+	            this._position[1] += nextDelta[1];
+	        }
+	
+	        var payload = this._payload;
+	        payload.delta    = nextDelta;
+	        payload.velocity = nextVel;
+	        payload.position = this._position;
+	        payload.clientX  = data.x;
+	        payload.clientY  = data.y;
+	        payload.count    = data.count;
+	        payload.touch    = data.identifier;
+	
+	        this._eventOutput.emit('update', payload);
+	    }
+	
+	    /**
+	     *  Triggered by trackend.
+	     *  @method _handleEnd
+	     *  @private
+	     */
+	    function _handleEnd(data) {
+	        this._payload.count = data.count;
+	        this._eventOutput.emit('end', this._payload);
+	    }
+	
+	    /**
+	     * Set internal options, overriding any default options
+	     *
+	     * @method setOptions
+	     *
+	     * @param [options] {Object}             default options overrides
+	     * @param [options.direction] {Number}   read from a particular axis
+	     * @param [options.rails] {Boolean}      read from axis with greatest differential
+	     * @param [options.scale] {Number}       constant factor to scale velocity output
+	     */
+	    TouchSync.prototype.setOptions = function setOptions(options) {
+	        return this._optionsManager.setOptions(options);
+	    };
+	
+	    /**
+	     * Return entire options dictionary, including defaults.
+	     *
+	     * @method getOptions
+	     * @return {Object} configuration options
+	     */
+	    TouchSync.prototype.getOptions = function getOptions() {
+	        return this.options;
+	    };
+	
+	    module.exports = TouchSync;
+
+
+/***/ },
+/* 329 */
+/***/ function(module, exports, __webpack_require__) {
+
+	/* This Source Code Form is subject to the terms of the Mozilla Public
+	 * License, v. 2.0. If a copy of the MPL was not distributed with this
+	 * file, You can obtain one at http://mozilla.org/MPL/2.0/.
+	 *
+	 * Owner: mark@famo.us
+	 * @license MPL 2.0
+	 * @copyright Famous Industries, Inc. 2015
+	 */
+	    var EventHandler = __webpack_require__(312);
+	
+	    var _now = Date.now;
+	
+	    function _timestampTouch(touch, event, history) {
+	        return {
+	            x: touch.clientX,
+	            y: touch.clientY,
+	            identifier : touch.identifier,
+	            origin: event.origin,
+	            timestamp: _now(),
+	            count: event.touches.length,
+	            history: history
+	        };
+	    }
+	
+	    function _handleStart(event) {
+	        if (event.touches.length > this.touchLimit) return;
+	        this.isTouched = true;
+	
+	        for (var i = 0; i < event.changedTouches.length; i++) {
+	            var touch = event.changedTouches[i];
+	            var data = _timestampTouch(touch, event, null);
+	            this.eventOutput.emit('trackstart', data);
+	            if (!this.selective && !this.touchHistory[touch.identifier]) this.track(data);
+	        }
+	    }
+	
+	    function _handleMove(event) {
+	        if (event.touches.length > this.touchLimit) return;
+	
+	        for (var i = 0; i < event.changedTouches.length; i++) {
+	            var touch = event.changedTouches[i];
+	            var history = this.touchHistory[touch.identifier];
+	            if (history) {
+	                var data = _timestampTouch(touch, event, history);
+	                this.touchHistory[touch.identifier].push(data);
+	                this.eventOutput.emit('trackmove', data);
+	            }
+	        }
+	    }
+	
+	    function _handleEnd(event) {
+	        if (!this.isTouched) return;
+	
+	        for (var i = 0; i < event.changedTouches.length; i++) {
+	            var touch = event.changedTouches[i];
+	            var history = this.touchHistory[touch.identifier];
+	            if (history) {
+	                var data = _timestampTouch(touch, event, history);
+	                this.eventOutput.emit('trackend', data);
+	                delete this.touchHistory[touch.identifier];
+	            }
+	        }
+	
+	        this.isTouched = false;
+	    }
+	
+	    function _handleUnpipe() {
+	        for (var i in this.touchHistory) {
+	            var history = this.touchHistory[i];
+	            this.eventOutput.emit('trackend', {
+	                touch: history[history.length - 1].touch,
+	                timestamp: Date.now(),
+	                count: 0,
+	                history: history
+	            });
+	            delete this.touchHistory[i];
+	        }
+	    }
+	
+	    /**
+	     * Helper to TouchSync – tracks piped in touch events, organizes touch
+	     *   events by ID, and emits track events back to TouchSync.
+	     *   Emits 'trackstart', 'trackmove', and 'trackend' events upstream.
+	     *
+	     * @class TouchTracker
+	     * @constructor
+	     * @param {Object} options default options overrides
+	     * @param [options.selective] {Boolean} selective if false, saves state for each touch
+	     * @param [options.touchLimit] {Number} touchLimit upper bound for emitting events based on number of touches
+	     */
+	    function TouchTracker(options) {
+	        this.selective = options.selective;
+	        this.touchLimit = options.touchLimit || 1;
+	
+	        this.touchHistory = {};
+	
+	        this.eventInput = new EventHandler();
+	        this.eventOutput = new EventHandler();
+	
+	        EventHandler.setInputHandler(this, this.eventInput);
+	        EventHandler.setOutputHandler(this, this.eventOutput);
+	
+	        this.eventInput.on('touchstart', _handleStart.bind(this));
+	        this.eventInput.on('touchmove', _handleMove.bind(this));
+	        this.eventInput.on('touchend', _handleEnd.bind(this));
+	        this.eventInput.on('touchcancel', _handleEnd.bind(this));
+	        this.eventInput.on('unpipe', _handleUnpipe.bind(this));
+	
+	        this.isTouched = false;
+	    }
+	
+	    /**
+	     * Record touch data, if selective is false.
+	     * @private
+	     * @method track
+	     * @param {Object} data touch data
+	     */
+	    TouchTracker.prototype.track = function track(data) {
+	        this.touchHistory[data.identifier] = [data];
+	    };
+	
+	    module.exports = TouchTracker;
+
+
+/***/ },
+/* 330 */
+/***/ function(module, exports, __webpack_require__) {
+
+	/* This Source Code Form is subject to the terms of the Mozilla Public
+	 * License, v. 2.0. If a copy of the MPL was not distributed with this
+	 * file, You can obtain one at http://mozilla.org/MPL/2.0/.
+	 *
+	 * Owner: mark@famo.us
+	 * @license MPL 2.0
+	 * @copyright Famous Industries, Inc. 2015
+	 */
+	
+	    var EventHandler = __webpack_require__(312);
+	
+	    /**
+	     * Combines multiple types of sync classes (e.g. mouse, touch,
+	     *  scrolling) into one standardized interface for inclusion in widgets.
+	     *
+	     *  Sync classes are first registered with a key, and then can be accessed
+	     *  globally by key.
+	     *
+	     *  Emits 'start', 'update' and 'end' events as a union of the sync class
+	     *  providers.
+	     *
+	     * @class GenericSync
+	     * @constructor
+	     * @param syncs {Object|Array} object with fields {sync key : sync options}
+	     *    or an array of registered sync keys
+	     * @param [options] {Object|Array} options object to set on all syncs
+	     */
+	    function GenericSync(syncs, options) {
+	        this._eventInput = new EventHandler();
+	        this._eventOutput = new EventHandler();
+	
+	        EventHandler.setInputHandler(this, this._eventInput);
+	        EventHandler.setOutputHandler(this, this._eventOutput);
+	
+	        this._syncs = {};
+	        if (syncs) this.addSync(syncs);
+	        if (options) this.setOptions(options);
+	    }
+	
+	    GenericSync.DIRECTION_X = 0;
+	    GenericSync.DIRECTION_Y = 1;
+	    GenericSync.DIRECTION_Z = 2;
+	
+	    // Global registry of sync classes. Append only.
+	    var registry = {};
+	
+	    /**
+	     * Register a global sync class with an identifying key
+	     *
+	     * @static
+	     * @method register
+	     *
+	     * @param syncObject {Object} an object of {sync key : sync options} fields
+	     */
+	    GenericSync.register = function register(syncObject) {
+	        for (var key in syncObject){
+	            if (registry[key]){ // skip redundant registration
+	                if (registry[key] !== syncObject[key]) // only if same registered class
+	                    throw new Error('Conflicting sync classes for key: ' + key);
+	            }
+	            else registry[key] = syncObject[key];
+	        }
+	    };
+	
+	    /**
+	     * Helper to set options on all sync instances
+	     *
+	     * @method setOptions
+	     * @param options {Object} options object
+	     */
+	    GenericSync.prototype.setOptions = function(options) {
+	        for (var key in this._syncs){
+	            this._syncs[key].setOptions(options);
+	        }
+	    };
+	
+	    /**
+	     * Pipe events to a sync class
+	     *
+	     * @method pipeSync
+	     * @param key {String} identifier for sync class
+	     */
+	    GenericSync.prototype.pipeSync = function pipeToSync(key) {
+	        var sync = this._syncs[key];
+	        this._eventInput.pipe(sync);
+	        sync.pipe(this._eventOutput);
+	    };
+	
+	    /**
+	     * Unpipe events from a sync class
+	     *
+	     * @method unpipeSync
+	     * @param key {String} identifier for sync class
+	     */
+	    GenericSync.prototype.unpipeSync = function unpipeFromSync(key) {
+	        var sync = this._syncs[key];
+	        this._eventInput.unpipe(sync);
+	        sync.unpipe(this._eventOutput);
+	    };
+	
+	    function _addSingleSync(key, options) {
+	        if (!registry[key]) return;
+	        this._syncs[key] = new (registry[key])(options);
+	        this.pipeSync(key);
+	    }
+	
+	    /**
+	     * Add a sync class to from the registered classes
+	     *
+	     * @method addSync
+	     * @param syncs {Object|Array.String} an array of registered sync keys
+	     *    or an object with fields {sync key : sync options}
+	     */
+	    GenericSync.prototype.addSync = function addSync(syncs) {
+	        if (syncs instanceof Array)
+	            for (var i = 0; i < syncs.length; i++)
+	                _addSingleSync.call(this, syncs[i]);
+	        else if (syncs instanceof Object)
+	            for (var key in syncs)
+	                _addSingleSync.call(this, key, syncs[key]);
+	    };
+	
+	    module.exports = GenericSync;
+
+
+/***/ },
+/* 331 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+	
+	Object.defineProperty(exports, "__esModule", {
+	    value: true
+	});
+	exports.PushMenuLayout = undefined;
+	
+	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+	
+	var _get = function get(object, property, receiver) { if (object === null) object = Function.prototype; var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { return get(parent, property, receiver); } } else if ("value" in desc) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } };
+	
+	var _jss = __webpack_require__(332);
+	
+	var _jss2 = _interopRequireDefault(_jss);
+	
+	var _Surface = __webpack_require__(324);
+	
+	var _Surface2 = _interopRequireDefault(_Surface);
+	
+	var _Transitionable = __webpack_require__(301);
+	
+	var _Transitionable2 = _interopRequireDefault(_Transitionable);
+	
+	var _Easing = __webpack_require__(305);
+	
+	var _Easing2 = _interopRequireDefault(_Easing);
+	
+	var _TouchSync = __webpack_require__(328);
+	
+	var _TouchSync2 = _interopRequireDefault(_TouchSync);
+	
+	var _GenericSync = __webpack_require__(330);
+	
+	var _GenericSync2 = _interopRequireDefault(_GenericSync);
+	
+	var _Plane = __webpack_require__(323);
+	
+	var _Plane2 = _interopRequireDefault(_Plane);
+	
+	var _Molecule2 = __webpack_require__(306);
+	
+	var _Molecule3 = _interopRequireDefault(_Molecule2);
+	
+	var _utils = __webpack_require__(314);
+	
+	var _callAfter = __webpack_require__(360);
+	
+	var _callAfter2 = _interopRequireDefault(_callAfter);
+	
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+	
+	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+	
+	function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+	
+	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; } /*
+	                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                * LICENSE
+	                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                *
+	                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                * This Source Code Form is subject to the terms of the Mozilla Public
+	                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                * License, v. 2.0. If a copy of the MPL was not distributed with this
+	                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                * file, You can obtain one at http://mozilla.org/MPL/2.0/.
+	                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                *
+	                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                */
+	
+	/**
+	 * A scenegraph with two Molecule leafnodes: the menu area and the content
+	 * area. The menu area is hidden beyond the edge of the screen while the
+	 * content area is visible. Swiping in from the edge of the screen reveals the
+	 * menu, putting the content area out of focus. A mouse can also be used, and
+	 * hovering near the edge of the screen also reveals the menu.
+	 *
+	 * Note: This layout is mostly useful if it exists at the root of a context so
+	 * that the menu is clipped when it is closed (off to the side), otherwise the
+	 * menu will be visible beyond the boundary of the container that contains the
+	 * PushMenuLayout.
+	 *
+	 * Note: If you've called `openMenu` or `closeMenu` with a callback, the callback
+	 * will be canceled if a drag or hover on the menu happens before the animation
+	 * has completed. Please open an issue on GitHub if you have any opinion
+	 * against this. :) Maybe we can add a boolean option for this behavior.
+	 *
+	 * TODO: Embed working example here.
+	 *
+	 * @class PushMenuLayout
+	 * @extends Molecule
+	 */
+	var PushMenuLayout = exports.PushMenuLayout = function (_Molecule) {
+	    _inherits(PushMenuLayout, _Molecule);
+	
+	    /**
+	     * Creates a new PushMenuLayout.
+	     *
+	     * @constructor
+	     * @param {Object} options The options to instantiate a `PushMenuLayout` with.
+	     *
+	     * TODO v0.1.0: Handle `PushMenuLayout`-specific user options. Currently they
+	     * just get passed into super() for the Molecule constructor to handle.
+	     */
+	    function PushMenuLayout(initialOptions) {
+	        _classCallCheck(this, PushMenuLayout);
+	
+	        // Add default values for this PushMenuLayout
+	        // TODO: Make default options static for the class.
+	        var _this = _possibleConstructorReturn(this, (PushMenuLayout.__proto__ || Object.getPrototypeOf(PushMenuLayout)).call(this, initialOptions));
+	
+	        (0, _utils.simpleExtend)(_this._.defaultOptions, {
+	            menuSide: 'left', // left or right
+	            menuWidth: 200,
+	            menuHintSize: 10, // the amount of the menu that is visible before opening the menu.
+	            pushAreaWidth: 40, // the area on the screen edge that the user can touch and drag to push out the menu.
+	            animationDuration: 1000,
+	            animationType: 'foldDown', // options: foldDown moveBack
+	
+	            // TODO: Background color for the whole layout should be the color that the fade fades to.
+	            // TODO: Replace fade star/end colors with a fog color value and intensity.
+	            fade: true, // when content recedes, it fades into the fog.
+	            fadeStartColor: 'rgba(255,255,255,0)',
+	            fadeEndColor: 'rgba(255,255,255,1)',
+	
+	            blur: false, // XXX: WIP, so false by default.
+	            blurRadius: 5
+	        });
+	
+	        // TODO: performance hit, this setter is invoked in the Molecule constructor, then here again.
+	        _this.options = initialOptions;
+	
+	        // TODO v0.1.0: Mark these as private.
+	        // TODO v0.1.0: this.contentWidth should be the width of whatever is containing
+	        // the layout, but we're just using it as a whole-page app for now. Get
+	        // size from a commit? UPDATE: See the new famous/src/views/SizeAwareView
+	        _this.contentWidth = document.body.clientWidth - _this.options.menuHintSize;
+	
+	        // Changing these values outside of an instance of PushMenuLayout might
+	        // cause the layout to break. They are designed to be modified
+	        // internally only.
+	        _this.isOpen = false;
+	        _this.isOpening = false;
+	        _this.isClosing = false;
+	        _this.isAnimating = false; // keep track of whether the menu is opening or closing.
+	        _this.isBeingDragged = false; // whether the user is dragging/pushing the menu or not.
+	        _this.transitionCallback = undefined; // holds the callback to the current open or close menu animation.
+	
+	        // Set the touch sync for pulling/pushing the menu open/closed.
+	        _GenericSync2.default.register({
+	            touch: _TouchSync2.default
+	        });
+	
+	        _this._createComponents();
+	        _this._initializeEvents();
+	        return _this;
+	    }
+	
+	    /**
+	     * See Molecule.setOptions
+	     *
+	     * @override
+	     */
+	
+	
+	    _createClass(PushMenuLayout, [{
+	        key: 'setOptions',
+	        value: function setOptions(newOptions) {
+	            _get(PushMenuLayout.prototype.__proto__ || Object.getPrototypeOf(PushMenuLayout.prototype), 'setOptions', this).call(this, newOptions);
+	        }
+	
+	        /**
+	         * See Molecule.resetOptions
+	         *
+	         * @override
+	         */
+	
+	    }, {
+	        key: 'resetOptions',
+	        value: function resetOptions() {
+	            _get(PushMenuLayout.prototype.__proto__ || Object.getPrototypeOf(PushMenuLayout.prototype), 'resetOptions', this).call(this);
+	        }
+	
+	        /**
+	         * Creates the menu area, content area, `Plane` for the fade effect, etc.
+	         *
+	         * @private
+	         */
+	
+	    }, {
+	        key: '_createComponents',
+	        value: function _createComponents() {
+	            var layout = this;
+	
+	            this.touchSync = new _GenericSync2.default(['touch']);
+	
+	            this.alignment = this.options.menuSide == "left" ? 0 : 1;
+	            this.animationTransition = new _Transitionable2.default(0);
+	
+	            this.mainMol = new _Molecule3.default();
+	
+	            this.menuMol = new _Molecule3.default({
+	                size: [this.options.menuWidth, undefined]
+	            });
+	            this.menuMol.oldTransform = this.menuMol.transform;
+	            this.menuMol.transform = function () {
+	                // override
+	                var currentPosition = layout.animationTransition.get();
+	                switch (layout.options.animationType) {
+	                    case "foldDown":
+	                        // XXX: this is depending on my modifications for TransitionableTransform.
+	                        this.oldTransform.setTranslateX(layout.options.menuSide == 'left' ? currentPosition * (layout.options.menuWidth - layout.options.menuHintSize) /*range*/ - (layout.options.menuWidth - layout.options.menuHintSize) /*offset*/ : currentPosition * -(layout.options.menuWidth - layout.options.menuHintSize) /*range*/ + (layout.options.menuWidth - layout.options.menuHintSize) /*offset*/
+	                        );
+	                        break;
+	                    case "moveBack":
+	                        // XXX: this is depending on my modifications for TransitionableTransform.
+	                        this.oldTransform.setTranslateX(layout.options.menuSide == 'left' ? currentPosition * (layout.options.menuWidth - layout.options.menuHintSize) /*range*/ - (layout.options.menuWidth - layout.options.menuHintSize) /*offset*/ : currentPosition * -(layout.options.menuWidth - layout.options.menuHintSize) /*range*/ + (layout.options.menuWidth - layout.options.menuHintSize) /*offset*/
+	                        );
+	                        break;
+	                }
+	                return this.oldTransform.get();
+	            }.bind(this.menuMol);
+	
+	            // contains the user's menu content.
+	            this.menuContentMol = new _Molecule3.default();
+	
+	            this.contentMol = new _Molecule3.default({
+	                size: [this.contentWidth, undefined]
+	            });
+	            this.contentMol.oldTransform = this.contentMol.transform;
+	            this.contentMol.transform = function () {
+	                // override
+	                var currentPosition = layout.animationTransition.get();
+	                switch (layout.options.animationType) {
+	                    case "foldDown":
+	                        // XXX: this is depending on my modifications for TransitionableTransform.
+	                        this.oldTransform.setTranslateX(layout.options.menuSide == 'left' ? currentPosition * (layout.options.menuWidth - layout.options.menuHintSize) /*range*/ + layout.options.menuHintSize /*offset*/ : currentPosition * -(layout.options.menuWidth - layout.options.menuHintSize) /*range*/ - layout.options.menuHintSize /*offset*/
+	                        );
+	                        // XXX: this is depending on my modifications for TransitionableTransform.
+	                        this.oldTransform.setRotateY(layout.options.menuSide == 'left' ? currentPosition * Math.PI / 8 : currentPosition * -Math.PI / 8);
+	                        break;
+	                    case "moveBack":
+	                        var depth = 100;
+	                        // XXX: this is depending on my modifications for TransitionableTransform.
+	                        this.oldTransform.setTranslateX(layout.options.menuSide == 'left' ? layout.options.menuHintSize : -layout.options.menuHintSize);
+	                        this.oldTransform.setTranslateZ(currentPosition * -depth);
+	                        break;
+	                }
+	                return this.oldTransform.get();
+	            }.bind(this.contentMol);
+	
+	            this.menuTouchPlane = new _Plane2.default({
+	                size: [this.options.menuWidth + this.options.pushAreaWidth - this.options.menuHintSize, undefined],
+	                properties: {
+	                    zIndex: '-1000' // below everything
+	                }
+	            });
+	
+	            this.mainMol.setOptions({
+	                origin: [this.alignment, 0.5],
+	                align: [this.alignment, 0.5]
+	            });
+	            this.menuMol.setOptions({
+	                origin: [this.alignment, 0.5],
+	                align: [this.alignment, 0.5]
+	            });
+	            this.contentMol.setOptions({
+	                origin: [this.alignment, 0.5],
+	                align: [this.alignment, 0.5]
+	            });
+	
+	            // FIXME: WHY THE EFF must I also set align and origin on menuTouchPlane
+	            // when I've already set it on it's parent (this.menuMol)?????
+	            this.menuTouchPlane.setOptions({
+	                origin: [this.alignment, 0.5],
+	                align: [this.alignment, 0.5]
+	            });
+	
+	            // Bring the menu content molecule and touch plane forward just
+	            // slightly so they're just above the content and content's fade plane,
+	            // so touch and mouse interaction works. HTML, the bad parts. ;)
+	            this.menuContentMol.transform.setTranslateZ(2);
+	            this.menuTouchPlane.transform.setTranslateZ(2);
+	
+	            /*
+	             * Styles for the fadePlane
+	             */
+	            // TODO: move this somewhere else . it's specific for each animation
+	            this.updateStyles = function () {
+	                var startColor;
+	                var endColor;
+	
+	                switch (this.options.animationType) {
+	                    case "foldDown":
+	                        startColor = this.options.fadeStartColor;
+	                        endColor = this.options.fadeEndColor;
+	                        break;
+	                    case "moveBack":
+	                        startColor = endColor = this.options.fadeEndColor;
+	                        break;
+	                }
+	
+	                var styles = {
+	                    '.infamous-fadeLeft': {
+	                        background: [endColor, '-moz-linear-gradient(left, ' + endColor + ' 0%, ' + startColor + ' 100%)', '-webkit-gradient(left top, right top, color-stop(0%, ' + endColor + '), color-stop(100%, ' + startColor + '))', '-webkit-linear-gradient(left, ' + endColor + ' 0%, ' + startColor + ' 100%)', '-o-linear-gradient(left, ' + endColor + ' 0%, ' + startColor + ' 100%)', '-ms-linear-gradient(left, ' + endColor + ' 0%, ' + startColor + ' 100%)', 'linear-gradient(to right, ' + endColor + ' 0%, ' + startColor + ' 100%)'],
+	                        filter: 'progid:DXImageTransform.Microsoft.gradient( startColorstr=\'#cc000000\', endColorstr=\'#4d000000\', GradientType=1 )'
+	                    },
+	                    '.infamous-fadeRight': {
+	                        background: [startColor, '-moz-linear-gradient(left, ' + startColor + ' 0%, ' + endColor + ' 100%)', '-webkit-gradient(left top, right top, color-stop(0%, ' + startColor + '), color-stop(100%, ' + endColor + '))', '-webkit-linear-gradient(left, ' + startColor + ' 0%, ' + endColor + ' 100%)', '-o-linear-gradient(left, ' + startColor + ' 0%, ' + endColor + ' 100%)', '-ms-linear-gradient(left, ' + startColor + ' 0%, ' + endColor + ' 100%)', 'linear-gradient(to right, ' + startColor + ' 0%, ' + endColor + ' 100%)'],
+	                        filter: 'progid:DXImageTransform.Microsoft.gradient( startColorstr=\'#4d000000\', endColorstr=\'#cc000000\', GradientType=1 )'
+	                    }
+	                };
+	
+	                if (this.fadeStylesheet) {
+	                    this.fadeStylesheet.detach();
+	                }
+	                this.fadeStylesheet = _jss2.default.createStyleSheet(styles);
+	                this.fadeStylesheet.attach();
+	            };
+	
+	            if (this.options.fade) {
+	                this.updateStyles();
+	
+	                this.fadePlane = new _Plane2.default({
+	                    size: [undefined, undefined],
+	                    classes: [
+	                    // TODO: switch to jss namespace.
+	                    this.options.menuSide == 'left' ? 'infamous-fadeRight' : 'infamous-fadeLeft'],
+	                    properties: {
+	                        zIndex: '1000',
+	                        pointerEvents: 'none'
+	                    }
+	                });
+	
+	                // FIXME: Why the EFF must I also set align and origin on fadePlane when
+	                // I've already set it on it's parent (this.contentMol)?????
+	                this.fadePlane.setOptions({
+	                    origin: [this.alignment, 0.5],
+	                    align: [this.alignment, 0.5]
+	                });
+	
+	                // move the fadePlane forward by 1px so it doesn't glitch out.
+	                // Chrome will make the fadePlane and the surface in the content
+	                // area (if any) blink randomly when the two surfaces are in the
+	                // same exact position together.
+	                this.fadePlane.transform.setTranslateZ(1);
+	
+	                this.fadePlane.setOptions({
+	                    opacity: this.animationTransition
+	                });
+	
+	                // TODO: Make fadePlane a sibling to menuMol and contentMol so that
+	                // contentMol contains only the user;s content. This will affect
+	                // the code in this.render().
+	                this.contentMol.add(this.fadePlane);
+	            }
+	
+	            this.add(this.mainMol);
+	            this.mainMol.add(this.contentMol);
+	            this.menuMol.add(this.menuTouchPlane);
+	            this.menuMol.add(this.menuContentMol);
+	            this.mainMol.add(this.menuMol);
+	            // TODO: Also create and add a background plane for the menu area so it will catch events that might fall through the menu content.
+	        }
+	
+	        /**
+	         * Sets up the events for the touch and mouse interaction that opens and
+	         * closes the menu.
+	         *
+	         * @private
+	         */
+	
+	    }, {
+	        key: '_initializeEvents',
+	        value: function _initializeEvents() {
+	
+	            // move the menu, following the user's drag. Don't let the user drag the menu past the menu width.
+	            this.options.handler.on('update', function (event) {
+	                // update == drag
+	                this.isBeingDragged = true;
+	
+	                // stop the current transitions if any, along with the current callback if any.
+	                this._haltAnimation(true);
+	
+	                var currentPosition = this.animationTransition.get();
+	
+	                // TODO: handle the right-side menu.
+	                switch (this.options.animationType) {
+	                    case "foldDown":
+	                        this.animationTransition.set(currentPosition + event.delta[0] / (this.options.menuWidth - this.options.menuHintSize));
+	                        break;
+	                    case "moveBack":
+	                        this.animationTransition.set(currentPosition + event.delta[0] / (this.options.menuWidth - this.options.menuHintSize));
+	                        break;
+	                }
+	
+	                currentPosition = this.animationTransition.get();
+	
+	                if (currentPosition > 1) {
+	                    this.animationTransition.set(1);
+	                } else if (currentPosition < 0) {
+	                    this.animationTransition.set(0);
+	                }
+	            }.bind(this));
+	
+	            this.options.handler.on('end', function (event) {
+	                this.isBeingDragged = false;
+	
+	                var currentPosition = this.animationTransition.get();
+	
+	                if (currentPosition < 0.5) {
+	                    this.closeMenu();
+	                } else {
+	                    this.openMenu();
+	                }
+	            }.bind(this));
+	
+	            // TODO v0.1.0: Use a SizeAwareView instead of relying on the body, since we
+	            // might not be directly in the body.
+	            window.addEventListener('resize', function (event) {
+	                this.contentWidth = document.body.clientWidth - this.options.menuHintSize;
+	                this.contentMol.setOptions({ size: [this.contentWidth, undefined] });
+	            }.bind(this));
+	
+	            /*
+	             * Wire up events
+	             * TODO: consolidate dup code here and in setMenu
+	             */
+	            this.menuTouchPlane.pipe(this.touchSync);
+	            this.menuTouchPlane.on('mouseenter', function () {
+	                if (!this.isOpening) {
+	                    this.openMenu();
+	                }
+	            }.bind(this));
+	            this.menuTouchPlane.on('mouseleave', function () {
+	                if (!this.isClosing) {
+	                    this.closeMenu();
+	                }
+	            }.bind(this));
+	            this.touchSync.pipe(this.options.handler);
+	        }
+	
+	        /**
+	         * Add a scenegraph to the content area of the PushMenuLayout. You can put
+	         * anything you want into the content area (magical 3D things for example),
+	         * just be careful not to let them cover the menu or you'll block the user
+	         * from interacting with the menu.
+	         *
+	         * @param {module: famous/src/core/RenderNode} node A scenegraph, i.e. a
+	         * RenderNode with stuff in it.
+	         *
+	         * TODO: Accept plain renderables, f.e. Surfaces, etc. This change requires
+	         * also modifying the code in this.render() to account for renderables.
+	         *
+	         * TODO: Make a sibling method to reset the content area.
+	         */
+	
+	    }, {
+	        key: 'setContent',
+	        value: function setContent(node) {
+	            this.contentMol.add(node);
+	        }
+	
+	        /**
+	         * Add a scenegraph to the menu area of the PushMenuLayout. If the object
+	         * that you pass into setMenu is an infamous component, or a famo.us
+	         * Surface, then it's events will be piped to this PushMenuLayout's input
+	         * sync so that the user can open and close the menu with touch or mouse.
+	         * General advice here would be to keep whatever you put into the menu
+	         * contained within the boundaries of the menu or you might have touch and
+	         * mouse interaction outside of the menu.
+	         *
+	         * @param {module: famous/src/core/RenderNode} node A scenegraph, i.e. a
+	         * RenderNode with stuff in it.
+	         *
+	         * TODO: Accept plain renderables, f.e. Surfaces, etc.
+	         *
+	         * TODO: Remove old content before adding new content.
+	         */
+	
+	    }, {
+	        key: 'setMenu',
+	        value: function setMenu(node) {
+	            this.menuContentMol.add(node);
+	            if (node instanceof _Molecule3.default) {
+	                node.pipe(this.touchSync);
+	                node.on('mouseenter', function () {
+	                    if (!this.isOpening) {
+	                        this.openMenu();
+	                    }
+	                }.bind(this));
+	                node.on('mouseleave', function () {
+	                    if (!this.isClosing) {
+	                        this.closeMenu();
+	                    }
+	                }.bind(this));
+	            }
+	        }
+	
+	        // TODO: replace menu easing with physics so the user can throw the menu,
+	        // using initial velocity and drag to slow it down, and stop immediately
+	        // when it hits the fully-open or fully-closed positions.
+	
+	        /**
+	         * Opens the menu.
+	         *
+	         * @param {Function} callback The function to be called when the animation finishes.
+	         * @param {boolean} [cancelPreviousCallback=false] This is optional. If
+	         * true, then the callback of a previous open or close animation will be
+	         * canceled if that animation was still inprogress when this method is
+	         * called, otherwise the callback of the previous open or close animation
+	         * will be fired immediately before the animation for this animation begins.
+	         */
+	
+	    }, {
+	        key: 'openMenu',
+	        value: function openMenu(callback, cancelPreviousCallback) {
+	            this._haltAnimation(cancelPreviousCallback);
+	
+	            this.isClosing = false;
+	            this.isOpening = true;
+	
+	            this._animate('open', callback);
+	        }
+	
+	        /**
+	         * Closes the menu.
+	         *
+	         * @param {Function} callback The function to be called when the animation finishes.
+	         * @param {boolean} [cancelPreviousCallback=false] This is optional. If
+	         * true, then the callback of a previous open or close animation will be
+	         * canceled if that animation was still inprogress when this method is
+	         * called, otherwise the callback of the previous open or close animation
+	         * will be fired immediately before the animation for this animation begins.
+	         */
+	
+	    }, {
+	        key: 'closeMenu',
+	        value: function closeMenu(callback, cancelPreviousCallback) {
+	            this._haltAnimation(cancelPreviousCallback);
+	
+	            this.isClosing = true;
+	            this.isOpening = false;
+	
+	            this._animate('close', callback);
+	        }
+	
+	        /**
+	         * Toggles the menu open or closed. If the menu is open or is opening, then it will now start
+	         * closing, and vice versa.
+	         *
+	         * @param {Function} callback The function to be called when the animation finishes.
+	         * @param {boolean} [cancelPreviousCallback=false] This is optional. If
+	         * true, then the callback of a previous open or close animation will be
+	         * canceled if that animation was still inprogress when this method is
+	         * called, otherwise the callback of the previous open or close animation
+	         * will be fired immediately before the animation for this animation begins.
+	         */
+	
+	    }, {
+	        key: 'toggleMenu',
+	        value: function toggleMenu(callback, cancelPreviousCallback) {
+	            if (this.isOpen || this.isOpening) {
+	                this.closeMenu(callback, cancelPreviousCallback);
+	            } else if (!this.isOpen || this.isClosing) {
+	                this.openMenu(callback, cancelPreviousCallback);
+	            }
+	        }
+	
+	        /**
+	         * Animates the menu to it's target state.
+	         *
+	         * @private
+	         * @param {String} targetState The name of the state to animate to.
+	         * @param {Function} callback The function to call after the animation completes.
+	         */
+	
+	    }, {
+	        key: '_animate',
+	        value: function _animate(targetState, callback) {
+	            this.isAnimating = true;
+	            this.transitionCallback = callback;
+	            var _callback;
+	
+	            var self = this;
+	            function setupCallback(numberOfTransitions) {
+	                // Fire callback after numberOfTransitions calls, when the 4 transitions are complete.
+	                _callback = (0, _callAfter2.default)(numberOfTransitions, function () {
+	                    self.isAnimating = self.isOpening = self.isClosing = false;
+	                    self.isOpen = targetState == 'open' ? true : false;
+	                    if (typeof self.transitionCallback == 'function') {
+	                        self.transitionCallback();
+	                    }
+	                    self.transitionCallback = undefined;
+	                }.bind(self));
+	            }
+	
+	            setupCallback(1);
+	            if (targetState == 'open') {
+	                this.animationTransition.set(1, { duration: this.options.animationDuration, curve: _Easing2.default.outExpo }, _callback);
+	            } else if (targetState == 'close') {
+	                this.animationTransition.set(0, { duration: this.options.animationDuration, curve: _Easing2.default.outExpo }, _callback);
+	            }
+	        }
+	
+	        /**
+	         * Halts the current animation, if any.
+	         *
+	         * @private
+	         * @param {boolean} [cancelCallback=false] Defaults to false. If true, the
+	         * halted animation's callback won't fire, otherwise it will be fired.
+	         */
+	
+	    }, {
+	        key: '_haltAnimation',
+	        value: function _haltAnimation(cancelCallback) {
+	            if (this.isAnimating) {
+	                if (!cancelCallback && typeof this.transitionCallback == 'function') {
+	                    this.transitionCallback();
+	                }
+	                this.transitionCallback = undefined;
+	                this.animationTransition.halt();
+	            }
+	        }
+	
+	        /**
+	         * @override
+	         */
+	
+	    }, {
+	        key: 'render',
+	        value: function render() {
+	
+	            // Blur the content if this.options.blur is true, and the animation is moveBack.
+	            //
+	            // TODO: Make the item to to be blur specifiable, perhaps with a method on
+	            // this.
+	            if (this.options.blur && this.options.fade && this.options.animationType == 'moveBack') {
+	                var momentaryBlur = this.animationTransition.get() * this.options.blurRadius;
+	                var filter = {
+	                    "-webkit-filter": 'blur(' + momentaryBlur + 'px)',
+	                    "-moz-filter": 'blur(' + momentaryBlur + 'px)',
+	                    "-ms-filter": 'blur(' + momentaryBlur + 'px)',
+	                    "-o-filter": 'blur(' + momentaryBlur + 'px)',
+	                    filter: 'blur(' + momentaryBlur + 'px)'
+	                };
+	
+	                // TODO TODO TODO v0.1.0: Make fadePlane a sibling with menu and
+	                // content molecules or the following breaks if fade is false.
+	                // Then remove the check for this.options.fade in the previous if
+	                // statement above.
+	                if (this.contentMol._child[1].get() instanceof _Surface2.default) {
+	                    this.contentMol.get().setProperties(filter);
+	                } else if (this.contentMol._child[1] instanceof _Plane2.default) {
+	                    this.contentMol._child[1].surface.setProperties(filter);
+	                }
+	            }
+	
+	            return _get(PushMenuLayout.prototype.__proto__ || Object.getPrototypeOf(PushMenuLayout.prototype), 'render', this).call(this);
+	        }
+	    }]);
+	
+	    return PushMenuLayout;
+	}(_Molecule3.default);
+	
+	exports.default = PushMenuLayout;
+
+/***/ },
+/* 332 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+	
+	Object.defineProperty(exports, "__esModule", {
+	  value: true
+	});
+	
+	var _jss = __webpack_require__(333);
+	
+	var _jss2 = _interopRequireDefault(_jss);
+	
+	var _jssNested = __webpack_require__(348);
+	
+	var _jssNested2 = _interopRequireDefault(_jssNested);
+	
+	var _jssExtend = __webpack_require__(349);
+	
+	var _jssExtend2 = _interopRequireDefault(_jssExtend);
+	
+	var _jssPx = __webpack_require__(350);
+	
+	var _jssPx2 = _interopRequireDefault(_jssPx);
+	
+	var _jssVendorPrefixer = __webpack_require__(351);
+	
+	var _jssVendorPrefixer2 = _interopRequireDefault(_jssVendorPrefixer);
+	
+	var _jssCamelCase = __webpack_require__(358);
+	
+	var _jssCamelCase2 = _interopRequireDefault(_jssCamelCase);
+	
+	var _jssPropsSort = __webpack_require__(359);
+	
+	var _jssPropsSort2 = _interopRequireDefault(_jssPropsSort);
+	
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+	
+	var jss = _jss2.default.create();
+	
+	jss.use((0, _jssNested2.default)());
+	jss.use((0, _jssExtend2.default)());
+	jss.use((0, _jssPx2.default)());
+	jss.use((0, _jssVendorPrefixer2.default)());
+	jss.use((0, _jssCamelCase2.default)());
+	jss.use((0, _jssPropsSort2.default)());
+	
+	exports.default = jss;
+
+/***/ },
+/* 333 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+	
+	Object.defineProperty(exports, "__esModule", {
+	  value: true
+	});
+	exports.Rule = exports.StyleSheet = exports.Jss = undefined;
+	
+	var _Jss = __webpack_require__(334);
+	
+	var _Jss2 = _interopRequireDefault(_Jss);
+	
+	var _StyleSheet = __webpack_require__(335);
+	
+	var _StyleSheet2 = _interopRequireDefault(_StyleSheet);
+	
+	var _Rule = __webpack_require__(338);
+	
+	var _Rule2 = _interopRequireDefault(_Rule);
+	
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+	
+	var jss = new _Jss2.default();
+	
+	// Hotfix for babel 5 migration, will be removed in version 4.0.0
+	/**
+	 * StyleSheets written in javascript.
+	 *
+	 * @copyright Oleg Slobodskoi 2014-2016
+	 * @website https://github.com/jsstyles/jss
+	 * @license MIT
+	 */
+	module.exports = exports = jss;
+	
+	// For testing only.
+	exports.Jss = _Jss2.default;
+	exports.StyleSheet = _StyleSheet2.default;
+	exports.Rule = _Rule2.default;
+	exports.default = jss;
+
+/***/ },
+/* 334 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+	
+	Object.defineProperty(exports, "__esModule", {
+	  value: true
+	});
+	
+	var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol ? "symbol" : typeof obj; };
+	
+	var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
+	
+	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+	
+	var _StyleSheet = __webpack_require__(335);
+	
+	var _StyleSheet2 = _interopRequireDefault(_StyleSheet);
+	
+	var _PluginsRegistry = __webpack_require__(346);
+	
+	var _PluginsRegistry2 = _interopRequireDefault(_PluginsRegistry);
+	
+	var _SheetsRegistry = __webpack_require__(347);
+	
+	var _SheetsRegistry2 = _interopRequireDefault(_SheetsRegistry);
+	
+	var _utils = __webpack_require__(336);
+	
+	var _createRule2 = __webpack_require__(337);
+	
+	var _createRule3 = _interopRequireDefault(_createRule2);
+	
+	var _findRenderer = __webpack_require__(343);
+	
+	var _findRenderer2 = _interopRequireDefault(_findRenderer);
+	
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+	
+	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+	
+	/**
+	 * Main Jss class.
+	 *
+	 * @api public
+	 */
+	
+	var Jss = function () {
+	  function Jss() {
+	    _classCallCheck(this, Jss);
+	
+	    this.sheets = new _SheetsRegistry2.default();
+	    this.plugins = new _PluginsRegistry2.default();
+	    this.uid = _utils.uid;
+	    this.version = '3.11.1';
+	  }
+	
+	  /**
+	   * Creates a new instance of Jss.
+	   *
+	   * @see Jss
+	   * @api public
+	   */
+	
+	
+	  _createClass(Jss, [{
+	    key: 'create',
+	    value: function create() {
+	      return new Jss();
+	    }
+	
+	    /**
+	     * Create a stylesheet.
+	     *
+	     * @see StyleSheet
+	     * @api public
+	     */
+	
+	  }, {
+	    key: 'createStyleSheet',
+	    value: function createStyleSheet(rules, options) {
+	      var sheet = new _StyleSheet2.default(rules, _extends({}, options, { jss: this }));
+	      this.sheets.add(sheet);
+	      return sheet;
+	    }
+	
+	    /**
+	     * Create a rule.
+	     *
+	     * @see createRule
+	     * @api public
+	     */
+	
+	  }, {
+	    key: 'createRule',
+	    value: function createRule(selector, style, options) {
+	      // Enable rule without selector.
+	      if ((typeof selector === 'undefined' ? 'undefined' : _typeof(selector)) == 'object') {
+	        options = style;
+	        style = selector;
+	        selector = null;
+	      }
+	      var rule = (0, _createRule3.default)(selector, style, _extends({}, options, {
+	        jss: this,
+	        Renderer: (0, _findRenderer2.default)(options)
+	      }));
+	      this.plugins.run(rule);
+	      return rule;
+	    }
+	
+	    /**
+	     * Register plugin. Passed function will be invoked with a rule instance.
+	     *
+	     * @param {Function} plugins
+	     * @api public
+	     */
+	
+	  }, {
+	    key: 'use',
+	    value: function use() {
+	      var _this = this;
+	
+	      for (var _len = arguments.length, plugins = Array(_len), _key = 0; _key < _len; _key++) {
+	        plugins[_key] = arguments[_key];
+	      }
+	
+	      plugins.forEach(function (plugin) {
+	        return _this.plugins.use(plugin);
+	      });
+	      return this;
+	    }
+	  }]);
+	
+	  return Jss;
+	}();
+	
+	exports.default = Jss;
+
+/***/ },
+/* 335 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+	
+	Object.defineProperty(exports, "__esModule", {
+	  value: true
+	});
+	
+	var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
+	
+	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+	
+	var _utils = __webpack_require__(336);
+	
+	var _createRule2 = __webpack_require__(337);
+	
+	var _createRule3 = _interopRequireDefault(_createRule2);
+	
+	var _findRenderer = __webpack_require__(343);
+	
+	var _findRenderer2 = _interopRequireDefault(_findRenderer);
+	
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+	
+	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+	
+	/**
+	 * StyleSheet model.
+	 *
+	 * Options:
+	 *
+	 * - `media` media query - attribute of style element.
+	 * - `meta` meta information about this style - attribute of style element, for e.g. you could pass
+	 * component name for easier debugging.
+	 * - `named` true by default - keys are names, selectors will be generated, if false - keys are
+	 * global selectors.
+	 * - `link` link jss `Rule` instances with DOM `CSSRule` instances so that styles, can be modified
+	 * dynamically, false by default because it has some performance cost.
+	 * - `element` style element, will create one by default
+	 *
+	 * @param {Object} [rules] object with selectors and declarations
+	 * @param {Object} [options]
+	 * @api public
+	 */
+	
+	var StyleSheet = function () {
+	  function StyleSheet(rules, options) {
+	    _classCallCheck(this, StyleSheet);
+	
+	    this.options = _extends({}, options);
+	    if (this.options.named == null) this.options.named = true;
+	    this.rules = Object.create(null);
+	    this.classes = Object.create(null);
+	    this.attached = false;
+	    this.deployed = false;
+	    this.linked = false;
+	
+	    var Renderer = (0, _findRenderer2.default)(this.options);
+	    this.options.Renderer = Renderer;
+	    this.renderer = new Renderer(this.options);
+	
+	    for (var name in rules) {
+	      this.createRule(name, rules[name]);
+	    }
+	  }
+	
+	  /**
+	   * Attach renderable to the render tree.
+	   *
+	   * @api public
+	   * @return {StyleSheet}
+	   */
+	
+	
+	  _createClass(StyleSheet, [{
+	    key: 'attach',
+	    value: function attach() {
+	      if (this.attached) return this;
+	      if (!this.deployed) this.deploy();
+	      this.renderer.attach();
+	      if (!this.linked && this.options.link) this.link();
+	      this.attached = true;
+	      return this;
+	    }
+	
+	    /**
+	     * Remove renderable from render tree.
+	     *
+	     * @return {StyleSheet}
+	     * @api public
+	     */
+	
+	  }, {
+	    key: 'detach',
+	    value: function detach() {
+	      if (!this.attached) return this;
+	      this.renderer.detach();
+	      this.attached = false;
+	      return this;
+	    }
+	
+	    /**
+	     * Add a rule to the current stylesheet. Will insert a rule also after the stylesheet
+	     * has been rendered first time.
+	     *
+	     * @param {Object} [name] can be selector or name if ´options.named is true
+	     * @param {Object} style property/value hash
+	     * @return {Rule}
+	     * @api public
+	     */
+	
+	  }, {
+	    key: 'addRule',
+	    value: function addRule(name, style) {
+	      var rule = this.createRule(name, style);
+	      // Don't insert rule directly if there is no stringified version yet.
+	      // It will be inserted all together when .attach is called.
+	      if (this.deployed) {
+	        var renderable = this.renderer.insertRule(rule);
+	        if (this.options.link) rule.renderable = renderable;
+	      }
+	      return rule;
+	    }
+	
+	    /**
+	     * Create rules, will render also after stylesheet was rendered the first time.
+	     *
+	     * @param {Object} rules name:style hash.
+	     * @return {Array} array of added rules
+	     * @api public
+	     */
+	
+	  }, {
+	    key: 'addRules',
+	    value: function addRules(rules) {
+	      var added = [];
+	      for (var name in rules) {
+	        added.push(this.addRule(name, rules[name]));
+	      }
+	      return added;
+	    }
+	
+	    /**
+	     * Get a rule.
+	     *
+	     * @param {String} name can be selector or name if `named` option is true.
+	     * @return {Rule}
+	     * @api public
+	     */
+	
+	  }, {
+	    key: 'getRule',
+	    value: function getRule(name) {
+	      return this.rules[name];
+	    }
+	
+	    /**
+	     * Convert rules to a CSS string.
+	     *
+	     * @param {Object} options
+	     * @return {String}
+	     * @api public
+	     */
+	
+	  }, {
+	    key: 'toString',
+	    value: function toString(options) {
+	      var rules = this.rules;
+	
+	      var stringified = Object.create(null);
+	      var str = '';
+	      for (var name in rules) {
+	        var rule = rules[name];
+	        // We have the same rule referenced twice if using named rules.
+	        // By name and by selector.
+	        if (stringified[rule.id]) {
+	          continue;
+	        }
+	
+	        if (rule.style && (0, _utils.isEmptyObject)(rule.style)) {
+	          continue;
+	        }
+	
+	        if (rule.rules && (0, _utils.isEmptyObject)(rule.rules)) {
+	          continue;
+	        }
+	
+	        if (str) str += '\n';
+	
+	        str += rule.toString(options);
+	        stringified[rule.id] = true;
+	      }
+	      return str;
+	    }
+	
+	    /**
+	     * Create a rule, will not render after stylesheet was rendered the first time.
+	     * Will link the rule in `this.rules`.
+	     *
+	     * @see createRule
+	     * @api private
+	     */
+	
+	  }, {
+	    key: 'createRule',
+	    value: function createRule(name, style, options) {
+	      options = _extends({}, options, {
+	        sheet: this,
+	        jss: this.options.jss,
+	        Renderer: this.options.Renderer
+	      });
+	      // Scope options overwrite instance options.
+	      if (options.named == null) options.named = this.options.named;
+	      var rule = (0, _createRule3.default)(name, style, options);
+	      this.registerRule(rule);
+	      options.jss.plugins.run(rule);
+	      return rule;
+	    }
+	
+	    /**
+	     * Register a rule in `sheet.rules` and `sheet.classes` maps.
+	     *
+	     * @param {Rule} rule
+	     * @api public
+	     */
+	
+	  }, {
+	    key: 'registerRule',
+	    value: function registerRule(rule) {
+	      // Children of container rules should not be registered.
+	      if (rule.options.parent) {
+	        // We need to register child rules of conditionals in classes, otherwise
+	        // user can't access generated class name if it doesn't overrides
+	        // a regular rule.
+	        if (rule.name && rule.className) {
+	          this.classes[rule.name] = rule.className;
+	        }
+	        return this;
+	      }
+	
+	      if (rule.name) {
+	        this.rules[rule.name] = rule;
+	        if (rule.className) this.classes[rule.name] = rule.className;
+	      }
+	      if (rule.selector) {
+	        this.rules[rule.selector] = rule;
+	      }
+	      return this;
+	    }
+	
+	    /**
+	     * Unregister a rule.
+	     *
+	     * @param {Rule} rule
+	     * @api public
+	     */
+	
+	  }, {
+	    key: 'unregisterRule',
+	    value: function unregisterRule(rule) {
+	      // Children of a conditional rule are not registered.
+	      if (!rule.options.parent) {
+	        delete this.rules[rule.name];
+	        delete this.rules[rule.selector];
+	      }
+	      delete this.classes[rule.name];
+	      return this;
+	    }
+	
+	    /**
+	     * Deploy pure CSS string to a renderable.
+	     *
+	     * @return {StyleSheet}
+	     * @api private
+	     */
+	
+	  }, {
+	    key: 'deploy',
+	    value: function deploy() {
+	      this.renderer.deploy(this);
+	      this.deployed = true;
+	      return this;
+	    }
+	
+	    /**
+	     * Link renderable CSS rules with their corresponding models.
+	     *
+	     * @return {StyleSheet}
+	     * @api private
+	     */
+	
+	  }, {
+	    key: 'link',
+	    value: function link() {
+	      var renderables = this.renderer.getRules();
+	      for (var selector in renderables) {
+	        var rule = this.rules[selector];
+	        if (rule) rule.renderable = renderables[selector];
+	      }
+	      this.linked = true;
+	      return this;
+	    }
+	  }]);
+	
+	  return StyleSheet;
+	}();
+	
+	exports.default = StyleSheet;
+
+/***/ },
+/* 336 */
+/***/ function(module, exports) {
+
+	/* WEBPACK VAR INJECTION */(function(global) {'use strict';
+	
+	Object.defineProperty(exports, "__esModule", {
+	  value: true
+	});
+	exports.clone = clone;
+	exports.isEmptyObject = isEmptyObject;
+	exports.toCSS = toCSS;
+	var stringify = JSON.stringify;
+	var parse = JSON.parse;
+	
+	/**
+	 * Deeply clone object using serialization.
+	 * Expects object to be plain and without cyclic dependencies.
+	 *
+	 * http://jsperf.com/lodash-deepclone-vs-jquery-extend-deep/6
+	 *
+	 * @type {Object} obj
+	 * @return {Object}
+	 */
+	function clone(obj) {
+	  return parse(stringify(obj));
+	}
+	
+	/**
+	 * Determine whether an object is empty or not.
+	 * More performant than a `Object.keys(obj).length > 0`
+	 *
+	 * @type {Object} obj
+	 * @return {Boolean}
+	 */
+	function isEmptyObject(obj) {
+	  for (var key in obj) {
+	    return false;
+	  } // eslint-disable-line no-unused-vars
+	
+	  return true;
+	}
+	
+	/**
+	 * Simple very fast UID generation based on a global counter.
+	 */
+	var uid = exports.uid = function () {
+	  var globalReference = typeof window == 'undefined' ? global : window;
+	  var namespace = '__JSS_VERSION_COUNTER__';
+	  if (globalReference[namespace] == null) globalReference[namespace] = 0;
+	
+	  // In case we have more than one jss version.
+	  var versionCounter = globalReference[namespace]++;
+	  var ruleCounter = 0;
+	
+	  /**
+	   * Returns a uid.
+	   * Ensures uniqueness if more than 1 jss version is used.
+	   *
+	   * @api public
+	   * @return {String}
+	   */
+	  function get() {
+	    return 'jss-' + versionCounter + '-' + ruleCounter++;
+	  }
+	
+	  /**
+	   * Resets the counter.
+	   *
+	   * @api public
+	   */
+	  function reset() {
+	    ruleCounter = 0;
+	  }
+	
+	  return { get: get, reset: reset };
+	}();
+	
+	/**
+	 * Indent a string.
+	 *
+	 * http://jsperf.com/array-join-vs-for
+	 *
+	 * @param {Number} level
+	 * @param {String} str
+	 * @return {String}
+	 */
+	function indent(level, str) {
+	  var indentStr = '';
+	  for (var index = 0; index < level; index++) {
+	    indentStr += '  ';
+	  }return indentStr + str;
+	}
+	
+	/**
+	 * Converts a Rule to CSS string.
+	 *
+	 * Options:
+	 * - `selector` use `false` to get a rule without selector
+	 * - `indentationLevel` level of indentation
+	 *
+	 * @param {String} selector
+	 * @param {Object} style
+	 * @param {Object} options
+	 * @return {String}
+	 */
+	function toCSS(selector, style) {
+	  var options = arguments.length <= 2 || arguments[2] === undefined ? {} : arguments[2];
+	
+	  var indentationLevel = options.indentationLevel || 0;
+	  var str = '';
+	
+	  if (options.selector !== false) {
+	    str += indent(indentationLevel, selector + ' {');
+	    indentationLevel++;
+	  }
+	
+	  for (var prop in style) {
+	    var value = style[prop];
+	    // We want to generate multiple style with identical property names.
+	    if (Array.isArray(value)) {
+	      for (var index = 0; index < value.length; index++) {
+	        str += '\n' + indent(indentationLevel, prop + ': ' + value[index] + ';');
+	      }
+	    } else str += '\n' + indent(indentationLevel, prop + ': ' + value + ';');
+	  }
+	
+	  if (options.selector !== false) str += '\n' + indent(--indentationLevel, '}');
+	
+	  return str;
+	}
+	
+	/**
+	 * Get class names from a selector.
+	 *
+	 * @param {String} selector
+	 * @return {String}
+	 */
+	var findClassNames = exports.findClassNames = function () {
+	  var dotsRegExp = /[.]/g;
+	  var classesRegExp = /[.][^ ,]+/g;
+	
+	  return function (selector) {
+	    var classes = selector.match(classesRegExp);
+	
+	    if (!classes) return '';
+	
+	    return classes.join(' ').replace(dotsRegExp, '');
+	  };
+	}();
+	/* WEBPACK VAR INJECTION */}.call(exports, (function() { return this; }())))
+
+/***/ },
+/* 337 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+	
+	Object.defineProperty(exports, "__esModule", {
+	  value: true
+	});
+	exports.default = createRule;
+	
+	var _Rule = __webpack_require__(338);
+	
+	var _Rule2 = _interopRequireDefault(_Rule);
+	
+	var _SimpleRule = __webpack_require__(339);
+	
+	var _SimpleRule2 = _interopRequireDefault(_SimpleRule);
+	
+	var _KeyframeRule = __webpack_require__(340);
+	
+	var _KeyframeRule2 = _interopRequireDefault(_KeyframeRule);
+	
+	var _ConditionalRule = __webpack_require__(341);
+	
+	var _ConditionalRule2 = _interopRequireDefault(_ConditionalRule);
+	
+	var _FontFaceRule = __webpack_require__(342);
+	
+	var _FontFaceRule2 = _interopRequireDefault(_FontFaceRule);
+	
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+	
+	/**
+	 * Map of at rules to corresponding implementation class.
+	 *
+	 * @type {Object}
+	 */
+	var atRuleClassMap = {
+	  '@charset': _SimpleRule2.default,
+	  '@import': _SimpleRule2.default,
+	  '@namespace': _SimpleRule2.default,
+	  '@keyframes': _KeyframeRule2.default,
+	  '@media': _ConditionalRule2.default,
+	  '@supports': _ConditionalRule2.default,
+	  '@font-face': _FontFaceRule2.default
+	};
+	
+	var atRuleNameRegExp = /^@[^ ]+/;
+	
+	/**
+	 * Create rule factory.
+	 *
+	 * @param {Object} [selector] if you don't pass selector - it will be generated
+	 * @param {Object} [style] declarations block
+	 * @param {Object} [options] rule options
+	 * @return {Object} rule
+	 * @api private
+	 */
+	function createRule(selector) {
+	  var style = arguments.length <= 1 || arguments[1] === undefined ? {} : arguments[1];
+	  var options = arguments.length <= 2 || arguments[2] === undefined ? {} : arguments[2];
+	
+	  // Is an at-rule.
+	  if (selector && selector[0] === '@') {
+	    var name = atRuleNameRegExp.exec(selector)[0];
+	    var AtRule = atRuleClassMap[name];
+	    return new AtRule(selector, style, options);
+	  }
+	
+	  if (options.named == null) options.named = true;
+	  return new _Rule2.default(selector, style, options);
+	}
+
+/***/ },
+/* 338 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+	
+	Object.defineProperty(exports, "__esModule", {
+	  value: true
+	});
+	
+	var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol ? "symbol" : typeof obj; };
+	
+	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+	
+	var _utils = __webpack_require__(336);
+	
+	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+	
+	/**
+	 * Regular rules.
+	 *
+	 * @api public
+	 */
+	
+	var Rule = function () {
+	  function Rule(selector, style, options) {
+	    _classCallCheck(this, Rule);
+	
+	    this.id = _utils.uid.get();
+	    this.type = 'regular';
+	    this.options = options;
+	    this.selectorText = selector || '';
+	    this.className = options.className || '';
+	    this.originalStyle = style;
+	    // We expect style to be plain object.
+	    this.style = (0, _utils.clone)(style);
+	    if (options.named) {
+	      this.name = selector;
+	      if (!this.className) {
+	        this.className = this.name ? this.name + '--' + this.id : this.id;
+	      }
+	      this.selectorText = '.' + this.className;
+	    }
+	  }
+	
+	  /**
+	   * Set selector string.
+	   * Attenition: use this with caution. Most browser didn't implement selector
+	   * text setter, so this will result in rerendering of entire style sheet.
+	   *
+	   * @param {String} selector
+	   * @api public
+	   */
+	
+	
+	  _createClass(Rule, [{
+	    key: 'prop',
+	
+	
+	    /**
+	     * Get or set a style property.
+	     *
+	     * @param {String} name
+	     * @param {String|Number} [value]
+	     * @return {Rule|String|Number}
+	     * @api public
+	     */
+	    value: function prop(name, value) {
+	      var style = this.options.Renderer.style;
+	      // Its a setter.
+	
+	      if (value != null) {
+	        this.style[name] = value;
+	        // Only defined if option linked is true.
+	        if (this.renderable) style(this.renderable, name, value);
+	        return this;
+	      }
+	      // Its a getter, read the value from the DOM if its not cached.
+	      if (this.renderable && this.style[name] == null) {
+	        // Cache the value after we have got it from the DOM once.
+	        this.style[name] = style(this.renderable, name);
+	      }
+	      return this.style[name];
+	    }
+	
+	    /**
+	     * Apply rule to an element inline.
+	     *
+	     * @param {Element} renderable
+	     * @return {Rule}
+	     * @api public
+	     */
+	
+	  }, {
+	    key: 'applyTo',
+	    value: function applyTo(renderable) {
+	      for (var prop in this.style) {
+	        var value = this.style[prop];
+	        var style = this.options.Renderer.style;
+	
+	        if (Array.isArray(value)) {
+	          for (var index = 0; index < value.length; index++) {
+	            style(renderable, prop, value[index]);
+	          }
+	        } else style(renderable, prop, value);
+	      }
+	      return this;
+	    }
+	
+	    /**
+	     * Returns JSON representation of the rule.
+	     * Array of values is not supported.
+	     *
+	     * @return {Object}
+	     * @api public
+	     */
+	
+	  }, {
+	    key: 'toJSON',
+	    value: function toJSON() {
+	      var style = Object.create(null);
+	      for (var prop in this.style) {
+	        if (_typeof(this.style[prop]) != 'object') {
+	          style[prop] = this.style[prop];
+	        }
+	      }
+	      return style;
+	    }
+	
+	    /**
+	     * Generates a CSS string.
+	     *
+	     * @see toCSS
+	     * @api public
+	     */
+	
+	  }, {
+	    key: 'toString',
+	    value: function toString(options) {
+	      return (0, _utils.toCSS)(this.selector, this.style, options);
+	    }
+	  }, {
+	    key: 'selector',
+	    set: function set() {
+	      var selector = arguments.length <= 0 || arguments[0] === undefined ? '' : arguments[0];
+	      var _options = this.options;
+	      var Renderer = _options.Renderer;
+	      var sheet = _options.sheet;
+	
+	      // After we modify selector, ref by old selector needs to be removed.
+	
+	      if (sheet) sheet.unregisterRule(this);
+	
+	      this.selectorText = selector;
+	      this.className = (0, _utils.findClassNames)(selector);
+	
+	      if (!this.renderable) {
+	        // Register the rule with new selector.
+	        if (sheet) sheet.registerRule(this);
+	        return;
+	      }
+	
+	      var changed = Renderer.setSelector(this.renderable, selector);
+	
+	      if (changed) {
+	        sheet.registerRule(this);
+	        return;
+	      }
+	
+	      // If selector setter is not implemented, rerender the sheet.
+	      // We need to delete renderable from the rule, because when sheet.deploy()
+	      // calls rule.toString, it will get the old selector.
+	      delete this.renderable;
+	      sheet.registerRule(this).deploy().link();
+	    }
+	
+	    /**
+	     * Get selector string.
+	     *
+	     * @return {String}
+	     * @api public
+	     */
+	    ,
+	    get: function get() {
+	      if (this.renderable) {
+	        return this.options.Renderer.getSelector(this.renderable);
+	      }
+	
+	      return this.selectorText;
+	    }
+	  }]);
+	
+	  return Rule;
+	}();
+	
+	exports.default = Rule;
+
+/***/ },
+/* 339 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+	
+	Object.defineProperty(exports, "__esModule", {
+	  value: true
+	});
+	
+	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+	
+	var _utils = __webpack_require__(336);
+	
+	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+	
+	/**
+	 * Rule like @charset, @import, @namespace.
+	 *
+	 * @api public
+	 */
+	
+	var SimpleRule = function () {
+	  function SimpleRule(name, value, options) {
+	    _classCallCheck(this, SimpleRule);
+	
+	    this.id = _utils.uid.get();
+	    this.type = 'simple';
+	    this.name = name;
+	    this.value = value;
+	    this.options = options;
+	  }
+	
+	  /**
+	   * Generates a CSS string.
+	   *
+	   * @return {String}
+	   * @api public
+	   */
+	
+	
+	  _createClass(SimpleRule, [{
+	    key: 'toString',
+	    value: function toString() {
+	      if (Array.isArray(this.value)) {
+	        var str = '';
+	        for (var index = 0; index < this.value.length; index++) {
+	          str += this.name + ' ' + this.value[index] + ';';
+	          if (this.value[index + 1]) str += '\n';
+	        }
+	        return str;
+	      }
+	
+	      return this.name + ' ' + this.value + ';';
+	    }
+	  }]);
+	
+	  return SimpleRule;
+	}();
+	
+	exports.default = SimpleRule;
+
+/***/ },
+/* 340 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+	
+	Object.defineProperty(exports, "__esModule", {
+	  value: true
+	});
+	
+	var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
+	
+	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+	
+	var _utils = __webpack_require__(336);
+	
+	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+	
+	/**
+	 * Keyframe rule.
+	 *
+	 * @api private
+	 */
+	
+	var KeyframeRule = function () {
+	  function KeyframeRule(selector, frames, options) {
+	    _classCallCheck(this, KeyframeRule);
+	
+	    this.id = _utils.uid.get();
+	    this.type = 'keyframe';
+	    this.selector = selector;
+	    this.options = options;
+	    this.frames = this.formatFrames(frames);
+	  }
+	
+	  /**
+	   * Creates formatted frames where every frame value is a rule instance.
+	   *
+	   * @api private
+	   */
+	
+	
+	  _createClass(KeyframeRule, [{
+	    key: 'formatFrames',
+	    value: function formatFrames(frames) {
+	      var newFrames = Object.create(null);
+	      for (var name in frames) {
+	        var options = _extends({}, this.options, { named: false, parent: this });
+	        newFrames[name] = this.options.jss.createRule(name, frames[name], options);
+	      }
+	      return newFrames;
+	    }
+	
+	    /**
+	     * Generates a CSS string.
+	     *
+	     * @return {String}
+	     * @api private
+	     */
+	
+	  }, {
+	    key: 'toString',
+	    value: function toString() {
+	      var str = this.selector + ' {\n';
+	      var options = { indentationLevel: 1 };
+	      for (var name in this.frames) {
+	        str += this.frames[name].toString(options) + '\n';
+	      }
+	      str += '}';
+	      return str;
+	    }
+	  }]);
+	
+	  return KeyframeRule;
+	}();
+	
+	exports.default = KeyframeRule;
+
+/***/ },
+/* 341 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+	
+	Object.defineProperty(exports, "__esModule", {
+	  value: true
+	});
+	
+	var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
+	
+	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+	
+	var _utils = __webpack_require__(336);
+	
+	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+	
+	/**
+	 * Conditional rule for @media, @supports
+	 *
+	 * @api public
+	 */
+	
+	var ConditionalRule = function () {
+	  function ConditionalRule(selector, styles, options) {
+	    _classCallCheck(this, ConditionalRule);
+	
+	    this.id = _utils.uid.get();
+	    this.type = 'conditional';
+	    this.selector = selector;
+	    this.options = options;
+	    this.rules = Object.create(null);
+	    for (var name in styles) {
+	      this.createRule(name, styles[name]);
+	    }
+	  }
+	
+	  /**
+	   * A conditional rule always contains child rules.
+	   *
+	   * @param {Object} styles
+	   * @return {Array} rules
+	   * @api public
+	   */
+	
+	
+	  _createClass(ConditionalRule, [{
+	    key: 'createRule',
+	    value: function createRule(name, style, options) {
+	      var newOptions = _extends({}, this.options, { parent: this });
+	      var _newOptions = newOptions;
+	      var sheet = _newOptions.sheet;
+	      var jss = _newOptions.jss;
+	      // We have already a rule in the current style sheet with this name,
+	      // This new rule is supposed to overwrite the first one, for this we need
+	      // to ensure it will have the same className/selector.
+	
+	      var existingRule = sheet && sheet.getRule(name);
+	      var className = existingRule ? existingRule.className : null;
+	      if (className || options) {
+	        newOptions = _extends({}, newOptions, { className: className }, options);
+	      }
+	      var rule = (sheet || jss).createRule(name, style, newOptions);
+	      this.rules[name] = rule;
+	      return rule;
+	    }
+	
+	    /**
+	     * Generates a CSS string.
+	     *
+	     * @return {String}
+	     * @api public
+	     */
+	
+	  }, {
+	    key: 'toString',
+	    value: function toString() {
+	      var str = this.selector + ' {\n';
+	      for (var name in this.rules) {
+	        var rule = this.rules[name];
+	        if (rule.style && (0, _utils.isEmptyObject)(rule.style)) {
+	          continue;
+	        }
+	        var ruleStr = rule.toString({ indentationLevel: 1 });
+	        str += ruleStr + '\n';
+	      }
+	      str += '}';
+	      return str;
+	    }
+	  }]);
+	
+	  return ConditionalRule;
+	}();
+	
+	exports.default = ConditionalRule;
+
+/***/ },
+/* 342 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+	
+	Object.defineProperty(exports, "__esModule", {
+	  value: true
+	});
+	
+	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+	
+	var _utils = __webpack_require__(336);
+	
+	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+	
+	/**
+	 * Font-face rules.
+	 *
+	 * @api public
+	 */
+	
+	var Rule = function () {
+	  function Rule(selector, style, options) {
+	    _classCallCheck(this, Rule);
+	
+	    this.id = _utils.uid.get();
+	    this.type = 'font-face';
+	    this.options = options;
+	    this.selector = selector;
+	    this.style = style;
+	  }
+	
+	  /**
+	   * Generates a CSS string.
+	   *
+	   * @see toCSS
+	   * @api public
+	   */
+	
+	
+	  _createClass(Rule, [{
+	    key: 'toString',
+	    value: function toString(options) {
+	      if (Array.isArray(this.style)) {
+	        var str = '';
+	        for (var index = 0; index < this.style.length; index++) {
+	          str += (0, _utils.toCSS)(this.selector, this.style[index], options);
+	          if (this.style[index + 1]) str += '\n';
+	        }
+	        return str;
+	      }
+	
+	      return (0, _utils.toCSS)(this.selector, this.style, options);
+	    }
+	  }]);
+	
+	  return Rule;
+	}();
+	
+	exports.default = Rule;
+
+/***/ },
+/* 343 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+	
+	Object.defineProperty(exports, "__esModule", {
+	  value: true
+	});
+	exports.default = findRenderer;
+	
+	var _DomRenderer = __webpack_require__(344);
+	
+	var _DomRenderer2 = _interopRequireDefault(_DomRenderer);
+	
+	var _VirtualRenderer = __webpack_require__(345);
+	
+	var _VirtualRenderer2 = _interopRequireDefault(_VirtualRenderer);
+	
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+	
+	/**
+	 * Find proper renderer.
+	 * Option `virtual` is used to force use of VirtualRenderer even if DOM is
+	 * detected, used for testing only.
+	 *
+	 * @param {Object} options
+	 * @return {Renderer}
+	 * @api private
+	 */
+	function findRenderer() {
+	  var options = arguments.length <= 0 || arguments[0] === undefined ? {} : arguments[0];
+	
+	  if (options.Renderer) return options.Renderer;
+	  return options.virtual || typeof document == 'undefined' ? _VirtualRenderer2.default : _DomRenderer2.default;
+	}
+
+/***/ },
+/* 344 */
+/***/ function(module, exports) {
+
+	'use strict';
+	
+	Object.defineProperty(exports, "__esModule", {
+	  value: true
+	});
+	
+	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+	
+	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+	
+	/**
+	 * DOM rendering backend for StyleSheet.
+	 *
+	 * @api private
+	 */
+	
+	var DomRenderer = function () {
+	  _createClass(DomRenderer, null, [{
+	    key: 'style',
+	    value: function style(element, name, value) {
+	      try {
+	        if (value == null) return element.style[name];
+	        element.style[name] = value;
+	      } catch (err) {
+	        // IE8 may throw if property is unknown.
+	        return false;
+	      }
+	      return true;
+	    }
+	  }, {
+	    key: 'setSelector',
+	    value: function setSelector(cssRule, selector) {
+	      cssRule.selectorText = selector;
+	
+	      // Return false if setter was not successful.
+	      // Currently works in chrome only.
+	      return cssRule.selectorText === selector;
+	    }
+	  }, {
+	    key: 'getSelector',
+	    value: function getSelector(cssRule) {
+	      return cssRule.selectorText;
+	    }
+	  }]);
+	
+	  function DomRenderer(options) {
+	    _classCallCheck(this, DomRenderer);
+	
+	    this.head = document.head || document.getElementsByTagName('head')[0];
+	    this.element = options.element || document.createElement('style');
+	    // IE8 will not have `styleSheet` prop without `type and `styleSheet.cssText`
+	    // is the only way to render on IE8.
+	    this.element.type = 'text/css';
+	    if (options.media) this.element.setAttribute('media', options.media);
+	    if (options.meta) this.element.setAttribute('data-meta', options.meta);
+	  }
+	
+	  /**
+	   * Insert style element into render tree.
+	   *
+	   * @api private
+	   */
+	
+	
+	  _createClass(DomRenderer, [{
+	    key: 'attach',
+	    value: function attach() {
+	      if (this.element.parendNode) return;
+	      this.head.appendChild(this.element);
+	    }
+	
+	    /**
+	     * Remove style element from render tree.
+	     *
+	     * @api private
+	     */
+	
+	  }, {
+	    key: 'detach',
+	    value: function detach() {
+	      this.element.parentNode.removeChild(this.element);
+	    }
+	
+	    /**
+	     * Inject CSS string into element.
+	     *
+	     * @param {String} cssStr
+	     * @api private
+	     */
+	
+	  }, {
+	    key: 'deploy',
+	    value: function deploy(sheet) {
+	      var css = '\n' + sheet.toString() + '\n';
+	      if ('sheet' in this.element) this.element.innerHTML = css;
+	      // On IE8 the only way to render is `styleSheet.cssText`.
+	      else if ('styleSheet' in this.element) this.element.styleSheet.cssText = css;
+	    }
+	
+	    /**
+	     * Insert a rule into element.
+	     *
+	     * @param {Rule} rule
+	     * @return {CSSStyleRule}
+	     * @api private
+	     */
+	
+	  }, {
+	    key: 'insertRule',
+	    value: function insertRule(rule) {
+	      // IE8 has only `styleSheet` and `styleSheet.rules`
+	      var sheet = this.element.sheet || this.element.styleSheet;
+	      var cssRules = sheet.cssRules || sheet.rules;
+	      var nextIndex = cssRules.length;
+	      if (sheet.insertRule) sheet.insertRule(rule.toString(), nextIndex);else sheet.addRule(rule.selector, rule.toString({ selector: false }), nextIndex);
+	      return cssRules[nextIndex];
+	    }
+	
+	    /**
+	     * Get all rules elements.
+	     *
+	     * @return {Object} rules map, where key is selector, CSSStyleRule is value.
+	     * @api private
+	     */
+	
+	  }, {
+	    key: 'getRules',
+	    value: function getRules() {
+	      // IE8 has only `styleSheet` and `styleSheet.rules`
+	      var sheet = this.element.sheet || this.element.styleSheet;
+	      var cssRules = sheet.rules || sheet.cssRules;
+	      var rules = Object.create(null);
+	      for (var index = 0; index < cssRules.length; index++) {
+	        var cssRule = cssRules[index];
+	        rules[cssRule.selectorText] = cssRule;
+	      }
+	      return rules;
+	    }
+	  }]);
+	
+	  return DomRenderer;
+	}();
+	
+	exports.default = DomRenderer;
+
+/***/ },
+/* 345 */
+/***/ function(module, exports) {
+
+	"use strict";
+	
+	Object.defineProperty(exports, "__esModule", {
+	  value: true
+	});
+	
+	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+	
+	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+	
+	/**
+	 * Rendering backend to do nothing in nodejs.
+	 */
+	
+	var VirtualRenderer = function () {
+	  function VirtualRenderer() {
+	    _classCallCheck(this, VirtualRenderer);
+	  }
+	
+	  _createClass(VirtualRenderer, [{
+	    key: "attach",
+	    value: function attach() {}
+	  }, {
+	    key: "detach",
+	    value: function detach() {}
+	  }, {
+	    key: "deploy",
+	    value: function deploy() {}
+	  }, {
+	    key: "insertRule",
+	    value: function insertRule() {}
+	  }, {
+	    key: "getRules",
+	    value: function getRules() {
+	      return {};
+	    }
+	  }], [{
+	    key: "style",
+	    value: function style() {}
+	  }, {
+	    key: "setSelector",
+	    value: function setSelector() {}
+	  }, {
+	    key: "getSelector",
+	    value: function getSelector() {}
+	  }]);
+	
+	  return VirtualRenderer;
+	}();
+	
+	exports.default = VirtualRenderer;
+
+/***/ },
+/* 346 */
+/***/ function(module, exports) {
+
+	"use strict";
+	
+	Object.defineProperty(exports, "__esModule", {
+	  value: true
+	});
+	
+	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+	
+	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+	
+	/**
+	 * Register a plugin, run a plugin.
+	 *
+	 * @api public
+	 */
+	
+	var PluginsRegistry = function () {
+	  function PluginsRegistry() {
+	    _classCallCheck(this, PluginsRegistry);
+	
+	    this.registry = [];
+	  }
+	
+	  /**
+	   * Register plugin. Passed function will be invoked with a rule instance.
+	   *
+	   * @param {Function} fn
+	   * @api public
+	   */
+	
+	
+	  _createClass(PluginsRegistry, [{
+	    key: "use",
+	    value: function use(fn) {
+	      this.registry.push(fn);
+	    }
+	
+	    /**
+	     * Execute all registered plugins.
+	     *
+	     * @param {Rule} rule
+	     * @api private
+	     */
+	
+	  }, {
+	    key: "run",
+	    value: function run(rule) {
+	      for (var index = 0; index < this.registry.length; index++) {
+	        this.registry[index](rule);
+	      }
+	    }
+	  }]);
+	
+	  return PluginsRegistry;
+	}();
+	
+	exports.default = PluginsRegistry;
+
+/***/ },
+/* 347 */
+/***/ function(module, exports) {
+
+	'use strict';
+	
+	Object.defineProperty(exports, "__esModule", {
+	  value: true
+	});
+	
+	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+	
+	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+	
+	/**
+	 * Sheets registry to access them all at one place.
+	 *
+	 * @api public
+	 */
+	
+	var SheetsRegistry = function () {
+	  function SheetsRegistry() {
+	    _classCallCheck(this, SheetsRegistry);
+	
+	    this.registry = [];
+	  }
+	
+	  /**
+	   * Register a style sheet.
+	   *
+	   * @param {StyleSheet} sheet
+	   * @api public
+	   */
+	
+	
+	  _createClass(SheetsRegistry, [{
+	    key: 'add',
+	    value: function add(sheet) {
+	      this.registry.push(sheet);
+	    }
+	
+	    /**
+	     * Returns CSS string with all Style Sheets.
+	     *
+	     * @param {StyleSheet} sheet
+	     * @api public
+	     */
+	
+	  }, {
+	    key: 'toString',
+	    value: function toString(options) {
+	      return this.registry.map(function (sheet) {
+	        return sheet.toString(options);
+	      }).join('\n');
+	    }
+	  }]);
+	
+	  return SheetsRegistry;
+	}();
+	
+	exports.default = SheetsRegistry;
+
+/***/ },
+/* 348 */
+/***/ function(module, exports) {
+
+	'use strict';
+	
+	Object.defineProperty(exports, "__esModule", {
+	  value: true
+	});
+	
+	var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
+	
+	exports.default = jssNested;
+	var regExp = /&/g;
+	
+	/**
+	 * Convert nested rules to separate, remove them from original styles.
+	 *
+	 * @param {Rule} rule
+	 * @api public
+	 */
+	function jssNested() {
+	  return function (rule) {
+	    if (rule.type !== 'regular') return;
+	    var _rule$options = rule.options;
+	    var sheet = _rule$options.sheet;
+	    var jss = _rule$options.jss;
+	    var parent = _rule$options.parent;
+	
+	    var container = sheet || jss;
+	    var options = void 0;
+	
+	    if (parent && parent.type === 'conditional') {
+	      container = parent;
+	    }
+	
+	    for (var prop in rule.style) {
+	      if (prop[0] === '&') {
+	        if (!options) options = _extends({}, rule.options, { named: false });
+	        var name = prop.replace(regExp, rule.selector);
+	        container.createRule(name, rule.style[prop], options);
+	        delete rule.style[prop];
+	      }
+	    }
+	  };
+	}
+
+/***/ },
+/* 349 */
+/***/ function(module, exports) {
+
+	'use strict';
+	
+	Object.defineProperty(exports, "__esModule", {
+	  value: true
+	});
+	exports.default = jssExtend;
+	/**
+	 * Handle `extend` property.
+	 *
+	 * @param {Rule} rule
+	 * @api public
+	 */
+	function jssExtend() {
+	  function extend(rule, newStyle, style) {
+	    if (typeof style.extend == 'string') {
+	      if (rule.options && rule.options.sheet) {
+	        var refRule = rule.options.sheet.getRule(style.extend);
+	        if (refRule) extend(rule, newStyle, refRule.originalStyle);
+	      }
+	    } else if (Array.isArray(style.extend)) {
+	      for (var index = 0; index < style.extend.length; index++) {
+	        extend(rule, newStyle, style.extend[index]);
+	      }
+	    } else {
+	      for (var prop in style.extend) {
+	        if (prop === 'extend') extend(rule, newStyle, style.extend.extend);else newStyle[prop] = style.extend[prop];
+	      }
+	    }
+	
+	    // Copy base style.
+	    for (var _prop in style) {
+	      if (_prop !== 'extend') newStyle[_prop] = style[_prop];
+	    }
+	
+	    return newStyle;
+	  }
+	
+	  return function (rule) {
+	    if (!rule.style || !rule.style.extend) return;
+	    rule.style = extend(rule, {}, rule.style);
+	  };
+	}
+
+/***/ },
+/* 350 */
+/***/ function(module, exports) {
+
+	// Don't automatically add 'px' to these possibly-unitless properties.
+	// Borrowed from jquery.
+	'use strict';
+	
+	exports.__esModule = true;
+	exports['default'] = jssPx;
+	var cssNumber = {
+	  'animation-iteration-count': true,
+	  'box-ordinal-group': true,
+	  'column-count': true,
+	  'fill-opacity': true,
+	  'flex': true,
+	  'flex-grow': true,
+	  'flex-order': true,
+	  'flex-shrink': true,
+	  'font-weight': true,
+	  'line-height': true,
+	  'opacity': true,
+	  'order': true,
+	  'orphans': true,
+	  'stop-opacity': true,
+	  'tab-size': 1,
+	  'widows': true,
+	  'z-index': true,
+	  'zoom': true
+	};
+	
+	/**
+	 * Add px to numeric values.
+	 *
+	 * @param {Rule} rule
+	 * @api public
+	 */
+	
+	function jssPx() {
+	  return function (rule) {
+	    var style = rule.style;
+	
+	    if (!style) return;
+	    for (var prop in style) {
+	      if (!cssNumber[prop] && typeof style[prop] == 'number') {
+	        style[prop] += 'px';
+	      }
+	    }
+	  };
+	}
+	
+	module.exports = exports['default'];
+
+/***/ },
+/* 351 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+	
+	exports.__esModule = true;
+	exports['default'] = jssVendorPrefixer;
+	
+	function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj['default'] = obj; return newObj; } }
+	
+	var _cssVendor = __webpack_require__(352);
+	
+	var vendor = _interopRequireWildcard(_cssVendor);
+	
+	/**
+	 * Add vendor prefix to a property name when needed.
+	 *
+	 * @param {Rule} rule
+	 * @api public
+	 */
+	
+	function jssVendorPrefixer() {
+	  return function (rule) {
+	    if (rule.type === 'keyframe') {
+	      rule.selector = '@' + vendor.prefix.css + 'keyframes' + rule.selector.substr(10);
+	      return;
+	    }
+	
+	    if (rule.type !== 'regular') return;
+	
+	    for (var prop in rule.style) {
+	      var value = rule.style[prop];
+	
+	      var changeProp = false;
+	      var supportedProp = vendor.supportedProperty(prop);
+	      if (supportedProp && supportedProp !== prop) changeProp = true;
+	
+	      var changeValue = false;
+	      var supportedValue = vendor.supportedValue(supportedProp, value);
+	      if (supportedValue && supportedValue !== value) changeValue = true;
+	
+	      if (changeProp || changeValue) {
+	        if (changeProp) delete rule.style[prop];
+	        rule.style[supportedProp || prop] = supportedValue || value;
+	      }
+	    }
+	  };
+	}
+	
+	module.exports = exports['default'];
+
+/***/ },
+/* 352 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+	
+	Object.defineProperty(exports, "__esModule", {
+	  value: true
+	});
+	exports.supportedValue = exports.supportedProperty = exports.prefix = undefined;
+	
+	var _prefix = __webpack_require__(353);
+	
+	var _prefix2 = _interopRequireDefault(_prefix);
+	
+	var _supportedProperty = __webpack_require__(355);
+	
+	var _supportedProperty2 = _interopRequireDefault(_supportedProperty);
+	
+	var _supportedValue = __webpack_require__(357);
+	
+	var _supportedValue2 = _interopRequireDefault(_supportedValue);
+	
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
+	
+	exports['default'] = {
+	  prefix: _prefix2['default'],
+	  supportedProperty: _supportedProperty2['default'],
+	  supportedValue: _supportedValue2['default']
+	}; /**
+	    * CSS Vendor prefix detection and property feature testing.
+	    *
+	    * @copyright Oleg Slobodskoi 2015
+	    * @website https://github.com/jsstyles/css-vendor
+	    * @license MIT
+	    */
+	
+	exports.prefix = _prefix2['default'];
+	exports.supportedProperty = _supportedProperty2['default'];
+	exports.supportedValue = _supportedValue2['default'];
+
+/***/ },
+/* 353 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+	
+	Object.defineProperty(exports, "__esModule", {
+	  value: true
+	});
+	
+	var _isInBrowser = __webpack_require__(354);
+	
+	var _isInBrowser2 = _interopRequireDefault(_isInBrowser);
+	
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
+	
+	var js = ''; /**
+	              * Export javascript style and css style vendor prefixes.
+	              * Based on "transform" support test.
+	              */
+	
+	var css = '';
+	
+	// We should not do anything if required serverside.
+	if (_isInBrowser2['default']) {
+	  // Order matters. We need to check Webkit the last one because
+	  // other vendors use to add Webkit prefixes to some properties
+	  var jsCssMap = {
+	    Moz: '-moz-',
+	    // IE did it wrong again ...
+	    ms: '-ms-',
+	    O: '-o-',
+	    Webkit: '-webkit-'
+	  };
+	  var style = document.createElement('p').style;
+	  var testProp = 'Transform';
+	
+	  for (var key in jsCssMap) {
+	    if (key + testProp in style) {
+	      js = key;
+	      css = jsCssMap[key];
+	      break;
+	    }
+	  }
+	}
+	
+	/**
+	 * Vendor prefix string for the current browser.
+	 *
+	 * @type {{js: String, css: String}}
+	 * @api public
+	 */
+	exports['default'] = { js: js, css: css };
+
+/***/ },
+/* 354 */
+/***/ function(module, exports) {
+
+	"use strict";
+	
+	Object.defineProperty(exports, "__esModule", {
+	    value: true
+	});
+	
+	var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; };
+	
+	var isBrowser = exports.isBrowser = (typeof window === "undefined" ? "undefined" : _typeof(window)) === "object" && (typeof document === "undefined" ? "undefined" : _typeof(document)) === 'object' && document.nodeType === 9;
+	
+	exports.default = isBrowser;
+
+/***/ },
+/* 355 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+	
+	Object.defineProperty(exports, "__esModule", {
+	  value: true
+	});
+	exports['default'] = supportedProperty;
+	
+	var _isInBrowser = __webpack_require__(354);
+	
+	var _isInBrowser2 = _interopRequireDefault(_isInBrowser);
+	
+	var _prefix = __webpack_require__(353);
+	
+	var _prefix2 = _interopRequireDefault(_prefix);
+	
+	var _camelize = __webpack_require__(356);
+	
+	var _camelize2 = _interopRequireDefault(_camelize);
+	
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
+	
+	var el = void 0;
+	var cache = {};
+	
+	if (_isInBrowser2['default']) {
+	  el = document.createElement('p');
+	
+	  /**
+	   * We test every property on vendor prefix requirement.
+	   * Once tested, result is cached. It gives us up to 70% perf boost.
+	   * http://jsperf.com/element-style-object-access-vs-plain-object
+	   *
+	   * Prefill cache with known css properties to reduce amount of
+	   * properties we need to feature test at runtime.
+	   * http://davidwalsh.name/vendor-prefix
+	   */
+	  var computed = window.getComputedStyle(document.documentElement, '');
+	  for (var key in computed) {
+	    if (!isNaN(key)) cache[computed[key]] = computed[key];
+	  }
+	}
+	
+	/**
+	 * Test if a property is supported, returns supported property with vendor
+	 * prefix if required. Returns `false` if not supported.
+	 *
+	 * @param {String} prop dash separated
+	 * @return {String|Boolean}
+	 * @api public
+	 */
+	function supportedProperty(prop) {
+	  // For server-side rendering.
+	  if (!el) return prop;
+	
+	  // We have not tested this prop yet, lets do the test.
+	  if (cache[prop] != null) return cache[prop];
+	
+	  // Camelization is required because we can't test using
+	  // css syntax for e.g. in FF.
+	  // Test if property is supported as it is.
+	  if ((0, _camelize2['default'])(prop) in el.style) {
+	    cache[prop] = prop;
+	  }
+	  // Test if property is supported with vendor prefix.
+	  else if (_prefix2['default'].js + (0, _camelize2['default'])('-' + prop) in el.style) {
+	      cache[prop] = _prefix2['default'].css + prop;
+	    } else {
+	      cache[prop] = false;
+	    }
+	
+	  return cache[prop];
+	}
+
+/***/ },
+/* 356 */
+/***/ function(module, exports) {
+
+	'use strict';
+	
+	Object.defineProperty(exports, "__esModule", {
+	  value: true
+	});
+	exports['default'] = camelize;
+	var regExp = /[-\s]+(.)?/g;
+	
+	/**
+	 * Convert dash separated strings to camel cased.
+	 *
+	 * @param {String} str
+	 * @return {String}
+	 */
+	function camelize(str) {
+	  return str.replace(regExp, toUpper);
+	}
+	
+	function toUpper(match, c) {
+	  return c ? c.toUpperCase() : '';
+	}
+
+/***/ },
+/* 357 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+	
+	Object.defineProperty(exports, "__esModule", {
+	  value: true
+	});
+	exports['default'] = supportedValue;
+	
+	var _isInBrowser = __webpack_require__(354);
+	
+	var _isInBrowser2 = _interopRequireDefault(_isInBrowser);
+	
+	var _prefix = __webpack_require__(353);
+	
+	var _prefix2 = _interopRequireDefault(_prefix);
+	
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
+	
+	var cache = {};
+	var el = void 0;
+	
+	if (_isInBrowser2['default']) el = document.createElement('p');
+	
+	/**
+	 * Returns prefixed value if needed. Returns `false` if value is not supported.
+	 *
+	 * @param {String} property
+	 * @param {String} value
+	 * @return {String|Boolean}
+	 * @api public
+	 */
+	function supportedValue(property, value) {
+	  // For server-side rendering.
+	  if (!el) return value;
+	
+	  // It is a string or a number as a string like '1'.
+	  // We want only prefixable values here.
+	  if (typeof value !== 'string' || !isNaN(parseInt(value, 10))) return value;
+	
+	  var cacheKey = property + value;
+	
+	  if (cache[cacheKey] != null) return cache[cacheKey];
+	
+	  // IE can even throw an error in some cases, for e.g. style.content = 'bar'
+	  try {
+	    // Test value as it is.
+	    el.style[property] = value;
+	  } catch (err) {
+	    cache[cacheKey] = false;
+	    return false;
+	  }
+	
+	  // Value is supported as it is.
+	  if (el.style[property] !== '') {
+	    cache[cacheKey] = value;
+	  } else {
+	    // Test value with vendor prefix.
+	    value = _prefix2['default'].css + value;
+	
+	    // Hardcode test to convert "flex" to "-ms-flexbox" for IE10.
+	    if (value === '-ms-flex') value = '-ms-flexbox';
+	
+	    el.style[property] = value;
+	
+	    // Value is supported with vendor prefix.
+	    if (el.style[property] !== '') cache[cacheKey] = value;
+	  }
+	
+	  if (!cache[cacheKey]) cache[cacheKey] = false;
+	
+	  // Reset style value.
+	  el.style[property] = '';
+	
+	  return cache[cacheKey];
+	}
+
+/***/ },
+/* 358 */
+/***/ function(module, exports) {
+
+	'use strict';
+	
+	Object.defineProperty(exports, "__esModule", {
+	  value: true
+	});
+	var regExp = /([A-Z])/g;
+	
+	/**
+	 * Replace a string passed from String#replace.
+	 * @param {String} str
+	 * @return {String}
+	 */
+	function replace(str) {
+	  return '-' + str.toLowerCase();
+	}
+	
+	/**
+	 * Convert camel cased properties of a single style to dasherized.
+	 *
+	 * @param {Object} style
+	 * @return {Object} convertedStyle
+	 */
+	function convertCase(style) {
+	  var convertedStyle = {};
+	  for (var prop in style) {
+	    var value = style[prop];
+	    prop = prop.replace(regExp, replace);
+	    convertedStyle[prop] = value;
+	  }
+	  return convertedStyle;
+	}
+	
+	/**
+	 * Allow camel cased property names by converting them back to dasherized.
+	 *
+	 * @param {Rule} rule
+	 */
+	
+	exports.default = function () {
+	  return function jssCamelCase(rule) {
+	    var style = rule.style;
+	
+	    if (!style) return;
+	    if (Array.isArray(style)) {
+	      // Handle rules like @font-face, which can have multiple styles in an array
+	      for (var index = 0; index < style.length; index++) {
+	        style[index] = convertCase(style[index]);
+	      }
+	    } else {
+	      rule.style = convertCase(style);
+	    }
+	  };
+	};
+
+/***/ },
+/* 359 */
+/***/ function(module, exports) {
+
+	'use strict';
+	
+	Object.defineProperty(exports, "__esModule", {
+	  value: true
+	});
+	exports.default = jssPropsSort;
+	/**
+	 * Sort props by length.
+	 *
+	 * @param {Rule} rule
+	 * @api public
+	 */
+	function jssPropsSort() {
+	  function sort(prop0, prop1) {
+	    return prop0.length > prop1.length;
+	  }
+	
+	  return function (rule) {
+	    var style = rule.style;
+	    var type = rule.type;
+	
+	    if (!style || type !== 'regular') return;
+	    var newStyle = {};
+	    var props = Object.keys(style).sort(sort);
+	    for (var prop in props) {
+	      newStyle[props[prop]] = style[props[prop]];
+	    }
+	    rule.style = newStyle;
+	  };
+	}
+
+/***/ },
+/* 360 */
+/***/ function(module, exports) {
+
+	"use strict";
+	
+	exports.callAfter = callAfter;
+	function callAfter(times, callback) {
+	    var count = 0;
+	    return function () {
+	        if (++count == times) {
+	            if (typeof callback == "function") {
+	                callback.apply(this, arguments);
+	            }
+	        }
+	    };
+	}
+	exports["default"] = callAfter;
+	exports.__esModule = true;
+	//# sourceMappingURL=callAfter.js.map
+
+/***/ },
+/* 361 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+	
+	Object.defineProperty(exports, "__esModule", {
+	    value: true
+	});
+	exports.Utility = exports.XYZValues = exports.TreeNode = exports.Transformable = exports.Sizeable = exports.Scene = exports.PushPaneLayout = exports.Node = exports.Motor = exports.ElementManager = exports.Curves = undefined;
+	
+	var _Curves2 = __webpack_require__(362);
 	
 	var _Curves3 = _interopRequireDefault(_Curves2);
 	
-	var _ElementManager2 = __webpack_require__(302);
+	var _ElementManager2 = __webpack_require__(364);
 	
 	var _ElementManager3 = _interopRequireDefault(_ElementManager2);
 	
-	var _Motor2 = __webpack_require__(385);
+	var _Motor2 = __webpack_require__(447);
 	
 	var _Motor3 = _interopRequireDefault(_Motor2);
 	
-	var _Node2 = __webpack_require__(303);
+	var _Node2 = __webpack_require__(365);
 	
 	var _Node3 = _interopRequireDefault(_Node2);
 	
-	var _PushPaneLayout2 = __webpack_require__(419);
+	var _PushPaneLayout2 = __webpack_require__(453);
 	
 	var _PushPaneLayout3 = _interopRequireDefault(_PushPaneLayout2);
 	
-	var _Scene2 = __webpack_require__(381);
+	var _Scene2 = __webpack_require__(443);
 	
 	var _Scene3 = _interopRequireDefault(_Scene2);
 	
-	var _Sizeable2 = __webpack_require__(378);
+	var _Sizeable2 = __webpack_require__(440);
 	
 	var _Sizeable3 = _interopRequireDefault(_Sizeable2);
 	
-	var _Transformable2 = __webpack_require__(305);
+	var _Transformable2 = __webpack_require__(367);
 	
 	var _Transformable3 = _interopRequireDefault(_Transformable2);
 	
-	var _TreeNode2 = __webpack_require__(379);
+	var _TreeNode2 = __webpack_require__(441);
 	
 	var _TreeNode3 = _interopRequireDefault(_TreeNode2);
 	
-	var _Utility2 = __webpack_require__(307);
-	
-	var _Utility = _interopRequireWildcard(_Utility2);
-	
-	var _XYZValues2 = __webpack_require__(306);
+	var _XYZValues2 = __webpack_require__(368);
 	
 	var _XYZValues3 = _interopRequireDefault(_XYZValues2);
+	
+	var _Utility = __webpack_require__(369);
+	
+	var Utility = _interopRequireWildcard(_Utility);
 	
 	function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
 	
@@ -7301,11 +17425,11 @@ return /******/ (function(modules) { // webpackBootstrap
 	exports.Sizeable = _Sizeable3.default;
 	exports.Transformable = _Transformable3.default;
 	exports.TreeNode = _TreeNode3.default;
-	exports.Utility = _Utility;
 	exports.XYZValues = _XYZValues3.default;
+	exports.Utility = Utility;
 
 /***/ },
-/* 300 */
+/* 362 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -7314,7 +17438,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	    value: true
 	});
 	
-	var _tween = __webpack_require__(301);
+	var _tween = __webpack_require__(363);
 	
 	var _tween2 = _interopRequireDefault(_tween);
 	
@@ -7377,7 +17501,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	};
 
 /***/ },
-/* 301 */
+/* 363 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;/* WEBPACK VAR INJECTION */(function(process) {/**
@@ -8266,7 +18390,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(294)))
 
 /***/ },
-/* 302 */
+/* 364 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -8278,11 +18402,11 @@ return /******/ (function(modules) { // webpackBootstrap
 	
 	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 	
-	var _Node = __webpack_require__(303);
+	var _Node = __webpack_require__(365);
 	
 	var _Node2 = _interopRequireDefault(_Node);
 	
-	var _Motor = __webpack_require__(385);
+	var _Motor = __webpack_require__(447);
 	
 	var _Motor2 = _interopRequireDefault(_Motor);
 	
@@ -8455,7 +18579,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	exports.default = ElementManager;
 
 /***/ },
-/* 303 */
+/* 365 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -8469,21 +18593,21 @@ return /******/ (function(modules) { // webpackBootstrap
 	
 	var _get = function get(object, property, receiver) { if (object === null) object = Function.prototype; var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { return get(parent, property, receiver); } } else if ("value" in desc) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } };
 	
-	__webpack_require__(304);
+	__webpack_require__(366);
 	
-	var _Transformable = __webpack_require__(305);
+	var _Transformable = __webpack_require__(367);
 	
 	var _Transformable2 = _interopRequireDefault(_Transformable);
 	
-	var _ImperativeBase = __webpack_require__(380);
+	var _ImperativeBase = __webpack_require__(442);
 	
 	var _ImperativeBase2 = _interopRequireDefault(_ImperativeBase);
 	
-	var _node = __webpack_require__(417);
+	var _node = __webpack_require__(451);
 	
 	var _node2 = _interopRequireDefault(_node);
 	
-	var _Scene = __webpack_require__(381);
+	var _Scene = __webpack_require__(443);
 	
 	var _Scene2 = _interopRequireDefault(_Scene);
 	
@@ -8796,7 +18920,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	exports.default = Node;
 
 /***/ },
-/* 304 */
+/* 366 */
 /***/ function(module, exports, __webpack_require__) {
 
 	(function webpackUniversalModuleDefinition(root, factory) {
@@ -9727,7 +19851,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	//# sourceMappingURL=global.js.map
 
 /***/ },
-/* 305 */
+/* 367 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -9743,15 +19867,15 @@ return /******/ (function(modules) { // webpackBootstrap
 	
 	var _get = function get(object, property, receiver) { if (object === null) object = Function.prototype; var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { return get(parent, property, receiver); } } else if ("value" in desc) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } };
 	
-	var _XYZValues = __webpack_require__(306);
+	var _XYZValues = __webpack_require__(368);
 	
 	var _XYZValues2 = _interopRequireDefault(_XYZValues);
 	
-	var _Sizeable = __webpack_require__(378);
+	var _Sizeable = __webpack_require__(440);
 	
 	var _Sizeable2 = _interopRequireDefault(_Sizeable);
 	
-	var _Utility = __webpack_require__(307);
+	var _Utility = __webpack_require__(369);
 	
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 	
@@ -10105,7 +20229,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	exports.default = Transformable;
 
 /***/ },
-/* 306 */
+/* 368 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -10117,9 +20241,9 @@ return /******/ (function(modules) { // webpackBootstrap
 	
 	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 	
-	var _Utility = __webpack_require__(307);
+	var _Utility = __webpack_require__(369);
 	
-	var _Observable2 = __webpack_require__(377);
+	var _Observable2 = __webpack_require__(439);
 	
 	var _Observable3 = _interopRequireDefault(_Observable2);
 	
@@ -10197,7 +20321,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	exports.default = XYZValues;
 
 /***/ },
-/* 307 */
+/* 369 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -10243,7 +20367,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	    };
 	}();
 	
-	var _windowLoaded = __webpack_require__(308);
+	var _windowLoaded = __webpack_require__(370);
 	
 	var _windowLoaded2 = _interopRequireDefault(_windowLoaded);
 	
@@ -10730,7 +20854,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	exports.traverse = traverse;
 
 /***/ },
-/* 308 */
+/* 370 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -10739,15 +20863,15 @@ return /******/ (function(modules) { // webpackBootstrap
 	    value: true
 	});
 	
-	var _regenerator = __webpack_require__(309);
+	var _regenerator = __webpack_require__(371);
 	
 	var _regenerator2 = _interopRequireDefault(_regenerator);
 	
-	var _promise = __webpack_require__(311);
+	var _promise = __webpack_require__(373);
 	
 	var _promise2 = _interopRequireDefault(_promise);
 	
-	var _asyncToGenerator2 = __webpack_require__(376);
+	var _asyncToGenerator2 = __webpack_require__(438);
 	
 	var _asyncToGenerator3 = _interopRequireDefault(_asyncToGenerator2);
 	
@@ -10800,14 +20924,14 @@ return /******/ (function(modules) { // webpackBootstrap
 	//# sourceMappingURL=windowLoaded.js.map
 
 /***/ },
-/* 309 */
+/* 371 */
 /***/ function(module, exports, __webpack_require__) {
 
-	module.exports = __webpack_require__(310);
+	module.exports = __webpack_require__(372);
 
 
 /***/ },
-/* 310 */
+/* 372 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function(global) {// This method of obtaining a reference to the global object needs to be
@@ -10845,51 +20969,51 @@ return /******/ (function(modules) { // webpackBootstrap
 	/* WEBPACK VAR INJECTION */}.call(exports, (function() { return this; }())))
 
 /***/ },
-/* 311 */
+/* 373 */
 /***/ function(module, exports, __webpack_require__) {
 
-	module.exports = { "default": __webpack_require__(312), __esModule: true };
+	module.exports = { "default": __webpack_require__(374), __esModule: true };
 
 /***/ },
-/* 312 */
+/* 374 */
 /***/ function(module, exports, __webpack_require__) {
 
-	__webpack_require__(313);
-	__webpack_require__(314);
-	__webpack_require__(358);
-	__webpack_require__(362);
-	module.exports = __webpack_require__(322).Promise;
+	__webpack_require__(375);
+	__webpack_require__(376);
+	__webpack_require__(420);
+	__webpack_require__(424);
+	module.exports = __webpack_require__(384).Promise;
 
 /***/ },
-/* 313 */
+/* 375 */
 /***/ function(module, exports) {
 
 
 
 /***/ },
-/* 314 */
-[447, 315, 318],
-/* 315 */
-[448, 316, 317],
-/* 316 */
+/* 376 */
+[481, 377, 380],
+/* 377 */
+[482, 378, 379],
+/* 378 */
 38,
-/* 317 */
+/* 379 */
 35,
-/* 318 */
-[449, 319, 320, 335, 325, 336, 337, 338, 354, 356, 355],
-/* 319 */
+/* 380 */
+[483, 381, 382, 397, 387, 398, 399, 400, 416, 418, 417],
+/* 381 */
 /***/ function(module, exports) {
 
 	module.exports = true;
 
 /***/ },
-/* 320 */
+/* 382 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var global    = __webpack_require__(321)
-	  , core      = __webpack_require__(322)
-	  , ctx       = __webpack_require__(323)
-	  , hide      = __webpack_require__(325)
+	var global    = __webpack_require__(383)
+	  , core      = __webpack_require__(384)
+	  , ctx       = __webpack_require__(385)
+	  , hide      = __webpack_require__(387)
 	  , PROTOTYPE = 'prototype';
 	
 	var $export = function(type, name, source){
@@ -10949,92 +21073,92 @@ return /******/ (function(modules) { // webpackBootstrap
 	module.exports = $export;
 
 /***/ },
-/* 321 */
+/* 383 */
 4,
-/* 322 */
+/* 384 */
 9,
-/* 323 */
-[429, 324],
-/* 324 */
+/* 385 */
+[463, 386],
+/* 386 */
 21,
-/* 325 */
-[423, 326, 334, 330],
-/* 326 */
-[424, 327, 329, 333, 330],
-/* 327 */
-[425, 328],
-/* 328 */
+/* 387 */
+[457, 388, 396, 392],
+/* 388 */
+[458, 389, 391, 395, 392],
+/* 389 */
+[459, 390],
+/* 390 */
 13,
-/* 329 */
-[426, 330, 331, 332],
-/* 330 */
-[422, 331],
-/* 331 */
+/* 391 */
+[460, 392, 393, 394],
+/* 392 */
+[456, 393],
+/* 393 */
 7,
-/* 332 */
-[427, 328, 321],
-/* 333 */
-[428, 328],
-/* 334 */
+/* 394 */
+[461, 390, 383],
+/* 395 */
+[462, 390],
+/* 396 */
 17,
-/* 335 */
+/* 397 */
 /***/ function(module, exports, __webpack_require__) {
 
-	module.exports = __webpack_require__(325);
+	module.exports = __webpack_require__(387);
 
 /***/ },
-/* 336 */
+/* 398 */
 5,
-/* 337 */
+/* 399 */
 129,
-/* 338 */
-[450, 339, 334, 354, 325, 355],
-/* 339 */
-[441, 327, 340, 352, 349, 332, 353],
-/* 340 */
-[442, 326, 327, 341, 330],
-/* 341 */
-[433, 342, 352],
-/* 342 */
-[434, 336, 343, 346, 349],
-/* 343 */
-[435, 344, 317],
-/* 344 */
-[436, 345],
-/* 345 */
+/* 400 */
+[484, 401, 396, 416, 387, 417],
+/* 401 */
+[475, 389, 402, 414, 411, 394, 415],
+/* 402 */
+[476, 388, 389, 403, 392],
+/* 403 */
+[467, 404, 414],
+/* 404 */
+[468, 398, 405, 408, 411],
+/* 405 */
+[469, 406, 379],
+/* 406 */
+[470, 407],
+/* 407 */
 34,
-/* 346 */
-[437, 343, 347, 348],
-/* 347 */
-[438, 316],
-/* 348 */
-[439, 316],
-/* 349 */
-[440, 350, 351],
-/* 350 */
-[430, 321],
-/* 351 */
+/* 408 */
+[471, 405, 409, 410],
+/* 409 */
+[472, 378],
+/* 410 */
+[473, 378],
+/* 411 */
+[474, 412, 413],
+/* 412 */
+[464, 383],
+/* 413 */
 19,
-/* 352 */
+/* 414 */
 41,
-/* 353 */
-[443, 321],
-/* 354 */
-[431, 326, 336, 355],
-/* 355 */
-[432, 350, 351, 321],
-/* 356 */
-[445, 336, 357, 349],
-/* 357 */
-[444, 317],
-/* 358 */
+/* 415 */
+[477, 383],
+/* 416 */
+[465, 388, 398, 417],
+/* 417 */
+[466, 412, 413, 383],
+/* 418 */
+[479, 398, 419, 411],
+/* 419 */
+[478, 379],
+/* 420 */
 /***/ function(module, exports, __webpack_require__) {
 
-	__webpack_require__(359);
-	var global        = __webpack_require__(321)
-	  , hide          = __webpack_require__(325)
-	  , Iterators     = __webpack_require__(337)
-	  , TO_STRING_TAG = __webpack_require__(355)('toStringTag');
+	__webpack_require__(421);
+	var global        = __webpack_require__(383)
+	  , hide          = __webpack_require__(387)
+	  , Iterators     = __webpack_require__(399)
+	  , TO_STRING_TAG = __webpack_require__(417)('toStringTag');
 	
 	for(var collections = ['NodeList', 'DOMTokenList', 'MediaList', 'StyleSheetList', 'CSSRuleList'], i = 0; i < 5; i++){
 	  var NAME       = collections[i]
@@ -11045,42 +21169,42 @@ return /******/ (function(modules) { // webpackBootstrap
 	}
 
 /***/ },
-/* 359 */
-[455, 360, 361, 337, 343, 318],
-/* 360 */
+/* 421 */
+[489, 422, 423, 399, 405, 380],
+/* 422 */
 /***/ function(module, exports) {
 
 	module.exports = function(){ /* empty */ };
 
 /***/ },
-/* 361 */
+/* 423 */
 194,
-/* 362 */
-[456, 319, 321, 323, 363, 320, 328, 324, 364, 365, 369, 370, 372, 355, 373, 354, 374, 322, 375],
-/* 363 */
-[446, 345, 355],
-/* 364 */
+/* 424 */
+[490, 381, 383, 385, 425, 382, 390, 386, 426, 427, 431, 432, 434, 417, 435, 416, 436, 384, 437],
+/* 425 */
+[480, 407, 417],
+/* 426 */
 205,
-/* 365 */
-[457, 323, 366, 367, 327, 347, 368],
-/* 366 */
-[451, 327],
-/* 367 */
-[452, 337, 355],
-/* 368 */
-[453, 363, 355, 337, 322],
-/* 369 */
-[458, 327, 324, 355],
-/* 370 */
-[459, 323, 371, 353, 332, 321, 345],
-/* 371 */
+/* 427 */
+[491, 385, 428, 429, 389, 409, 430],
+/* 428 */
+[485, 389],
+/* 429 */
+[486, 399, 417],
+/* 430 */
+[487, 425, 417, 399, 384],
+/* 431 */
+[492, 389, 386, 417],
+/* 432 */
+[493, 385, 433, 415, 394, 383, 407],
+/* 433 */
 78,
-/* 372 */
-[460, 321, 370, 345],
-/* 373 */
+/* 434 */
+[494, 383, 432, 407],
+/* 435 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var hide = __webpack_require__(325);
+	var hide = __webpack_require__(387);
 	module.exports = function(target, src, safe){
 	  for(var key in src){
 	    if(safe && target[key])target[key] = src[key];
@@ -11089,15 +21213,15 @@ return /******/ (function(modules) { // webpackBootstrap
 	};
 
 /***/ },
-/* 374 */
+/* 436 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
-	var global      = __webpack_require__(321)
-	  , core        = __webpack_require__(322)
-	  , dP          = __webpack_require__(326)
-	  , DESCRIPTORS = __webpack_require__(330)
-	  , SPECIES     = __webpack_require__(355)('species');
+	var global      = __webpack_require__(383)
+	  , core        = __webpack_require__(384)
+	  , dP          = __webpack_require__(388)
+	  , DESCRIPTORS = __webpack_require__(392)
+	  , SPECIES     = __webpack_require__(417)('species');
 	
 	module.exports = function(KEY){
 	  var C = typeof core[KEY] == 'function' ? core[KEY] : global[KEY];
@@ -11108,16 +21232,16 @@ return /******/ (function(modules) { // webpackBootstrap
 	};
 
 /***/ },
-/* 375 */
-[454, 355],
-/* 376 */
+/* 437 */
+[488, 417],
+/* 438 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
 	
 	exports.__esModule = true;
 	
-	var _promise = __webpack_require__(311);
+	var _promise = __webpack_require__(373);
 	
 	var _promise2 = _interopRequireDefault(_promise);
 	
@@ -11153,7 +21277,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	};
 
 /***/ },
-/* 377 */
+/* 439 */
 /***/ function(module, exports) {
 
 	'use strict';
@@ -11259,7 +21383,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	exports.default = Observable;
 
 /***/ },
-/* 378 */
+/* 440 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -11271,17 +21395,17 @@ return /******/ (function(modules) { // webpackBootstrap
 	
 	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 	
-	var _Utility = __webpack_require__(307);
+	var _Utility = __webpack_require__(369);
 	
-	var _TreeNode = __webpack_require__(379);
+	var _TreeNode = __webpack_require__(441);
 	
 	var _TreeNode2 = _interopRequireDefault(_TreeNode);
 	
-	var _XYZValues = __webpack_require__(306);
+	var _XYZValues = __webpack_require__(368);
 	
 	var _XYZValues2 = _interopRequireDefault(_XYZValues);
 	
-	var _Observable = __webpack_require__(377);
+	var _Observable = __webpack_require__(439);
 	
 	var _Observable2 = _interopRequireDefault(_Observable);
 	
@@ -11566,7 +21690,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	exports.default = Sizeable;
 
 /***/ },
-/* 379 */
+/* 441 */
 /***/ function(module, exports) {
 
 	'use strict';
@@ -11767,7 +21891,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	exports.default = TreeNode;
 
 /***/ },
-/* 380 */
+/* 442 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -11785,19 +21909,19 @@ return /******/ (function(modules) { // webpackBootstrap
 	
 	exports.initImperativeBase = initImperativeBase;
 	
-	var _ElementManager = __webpack_require__(302);
+	var _ElementManager = __webpack_require__(364);
 	
 	var _ElementManager2 = _interopRequireDefault(_ElementManager);
 	
-	var _Node = __webpack_require__(303);
+	var _Node = __webpack_require__(365);
 	
 	var _Node2 = _interopRequireDefault(_Node);
 	
-	var _Scene = __webpack_require__(381);
+	var _Scene = __webpack_require__(443);
 	
 	var _Scene2 = _interopRequireDefault(_Scene);
 	
-	var _Motor = __webpack_require__(385);
+	var _Motor = __webpack_require__(447);
 	
 	var _Motor2 = _interopRequireDefault(_Motor);
 	
@@ -12167,7 +22291,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	exports.default = ImperativeBase;
 
 /***/ },
-/* 381 */
+/* 443 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -12183,25 +22307,25 @@ return /******/ (function(modules) { // webpackBootstrap
 	
 	var _get = function get(object, property, receiver) { if (object === null) object = Function.prototype; var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { return get(parent, property, receiver); } } else if ("value" in desc) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } };
 	
-	var _Utility = __webpack_require__(307);
+	var _Utility = __webpack_require__(369);
 	
-	var _Sizeable = __webpack_require__(378);
+	var _Sizeable = __webpack_require__(440);
 	
 	var _Sizeable2 = _interopRequireDefault(_Sizeable);
 	
-	var _ImperativeBase = __webpack_require__(380);
+	var _ImperativeBase = __webpack_require__(442);
 	
 	var _ImperativeBase2 = _interopRequireDefault(_ImperativeBase);
 	
-	var _XYZValues = __webpack_require__(306);
+	var _XYZValues = __webpack_require__(368);
 	
 	var _XYZValues2 = _interopRequireDefault(_XYZValues);
 	
-	var _scene = __webpack_require__(382);
+	var _scene = __webpack_require__(444);
 	
 	var _scene2 = _interopRequireDefault(_scene);
 	
-	var _documentReady = __webpack_require__(386);
+	var _documentReady = __webpack_require__(448);
 	
 	var _documentReady2 = _interopRequireDefault(_documentReady);
 	
@@ -12413,7 +22537,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	exports.default = Scene;
 
 /***/ },
-/* 382 */
+/* 444 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -12427,31 +22551,31 @@ return /******/ (function(modules) { // webpackBootstrap
 	
 	var _get = function get(object, property, receiver) { if (object === null) object = Function.prototype; var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { return get(parent, property, receiver); } } else if ("value" in desc) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } };
 	
-	var _sceneStyle = __webpack_require__(383);
+	var _sceneStyle = __webpack_require__(445);
 	
 	var _sceneStyle2 = _interopRequireDefault(_sceneStyle);
 	
-	var _Motor = __webpack_require__(385);
+	var _Motor = __webpack_require__(447);
 	
 	var _Motor2 = _interopRequireDefault(_Motor);
 	
-	var _Scene = __webpack_require__(381);
+	var _Scene = __webpack_require__(443);
 	
 	var _Scene2 = _interopRequireDefault(_Scene);
 	
-	var _Observable = __webpack_require__(377);
+	var _Observable = __webpack_require__(439);
 	
 	var _Observable2 = _interopRequireDefault(_Observable);
 	
-	var _Sizeable = __webpack_require__(378);
+	var _Sizeable = __webpack_require__(440);
 	
 	var _Sizeable2 = _interopRequireDefault(_Sizeable);
 	
-	var _base = __webpack_require__(387);
+	var _base = __webpack_require__(449);
 	
 	var _base2 = _interopRequireDefault(_base);
 	
-	__webpack_require__(418);
+	__webpack_require__(452);
 	
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 	
@@ -12573,7 +22697,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	exports.default = MotorHTMLScene;
 
 /***/ },
-/* 383 */
+/* 445 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -12582,7 +22706,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	    value: true
 	});
 	
-	var _nodeStyle = __webpack_require__(384);
+	var _nodeStyle = __webpack_require__(446);
 	
 	var _nodeStyle2 = _interopRequireDefault(_nodeStyle);
 	
@@ -12599,7 +22723,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	});
 
 /***/ },
-/* 384 */
+/* 446 */
 /***/ function(module, exports) {
 
 	'use strict';
@@ -12626,7 +22750,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	};
 
 /***/ },
-/* 385 */
+/* 447 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -12637,11 +22761,11 @@ return /******/ (function(modules) { // webpackBootstrap
 	
 	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 	
-	var _documentReady = __webpack_require__(386);
+	var _documentReady = __webpack_require__(448);
 	
 	var _documentReady2 = _interopRequireDefault(_documentReady);
 	
-	__webpack_require__(307);
+	__webpack_require__(369);
 	
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 	
@@ -12871,7 +22995,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	exports.default = new Motor();
 
 /***/ },
-/* 386 */
+/* 448 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -12880,15 +23004,15 @@ return /******/ (function(modules) { // webpackBootstrap
 	    value: true
 	});
 	
-	var _regenerator = __webpack_require__(309);
+	var _regenerator = __webpack_require__(371);
 	
 	var _regenerator2 = _interopRequireDefault(_regenerator);
 	
-	var _promise = __webpack_require__(311);
+	var _promise = __webpack_require__(373);
 	
 	var _promise2 = _interopRequireDefault(_promise);
 	
-	var _asyncToGenerator2 = __webpack_require__(376);
+	var _asyncToGenerator2 = __webpack_require__(438);
 	
 	var _asyncToGenerator3 = _interopRequireDefault(_asyncToGenerator2);
 	
@@ -12941,7 +23065,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	//# sourceMappingURL=documentReady.js.map
 
 /***/ },
-/* 387 */
+/* 449 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -12958,15 +23082,15 @@ return /******/ (function(modules) { // webpackBootstrap
 	exports.initMotorHTMLBase = initMotorHTMLBase;
 	exports.proxyGettersSetters = proxyGettersSetters;
 	
-	var _webComponent = __webpack_require__(388);
+	var _webComponent = __webpack_require__(450);
 	
 	var _webComponent2 = _interopRequireDefault(_webComponent);
 	
-	var _node = __webpack_require__(417);
+	var _node = __webpack_require__(451);
 	
 	var _node2 = _interopRequireDefault(_node);
 	
-	var _Utility = __webpack_require__(307);
+	var _Utility = __webpack_require__(369);
 	
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 	
@@ -13495,7 +23619,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	exports.default = DeclarativeBase;
 
 /***/ },
-/* 388 */
+/* 450 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -13510,9 +23634,9 @@ return /******/ (function(modules) { // webpackBootstrap
 	
 	exports.default = WebComponentMixin;
 	
-	var _Utility = __webpack_require__(307);
+	var _Utility = __webpack_require__(369);
 	
-	var _jss = __webpack_require__(389);
+	var _jss = __webpack_require__(332);
 	
 	var _jss2 = _interopRequireDefault(_jss);
 	
@@ -13850,2224 +23974,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	}
 
 /***/ },
-/* 389 */
-/***/ function(module, exports, __webpack_require__) {
-
-	'use strict';
-	
-	Object.defineProperty(exports, "__esModule", {
-	  value: true
-	});
-	
-	var _jss = __webpack_require__(390);
-	
-	var _jss2 = _interopRequireDefault(_jss);
-	
-	var _jssNested = __webpack_require__(405);
-	
-	var _jssNested2 = _interopRequireDefault(_jssNested);
-	
-	var _jssExtend = __webpack_require__(406);
-	
-	var _jssExtend2 = _interopRequireDefault(_jssExtend);
-	
-	var _jssPx = __webpack_require__(407);
-	
-	var _jssPx2 = _interopRequireDefault(_jssPx);
-	
-	var _jssVendorPrefixer = __webpack_require__(408);
-	
-	var _jssVendorPrefixer2 = _interopRequireDefault(_jssVendorPrefixer);
-	
-	var _jssCamelCase = __webpack_require__(415);
-	
-	var _jssCamelCase2 = _interopRequireDefault(_jssCamelCase);
-	
-	var _jssPropsSort = __webpack_require__(416);
-	
-	var _jssPropsSort2 = _interopRequireDefault(_jssPropsSort);
-	
-	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-	
-	var jss = _jss2.default.create();
-	
-	jss.use((0, _jssNested2.default)());
-	jss.use((0, _jssExtend2.default)());
-	jss.use((0, _jssPx2.default)());
-	jss.use((0, _jssVendorPrefixer2.default)());
-	jss.use((0, _jssCamelCase2.default)());
-	jss.use((0, _jssPropsSort2.default)());
-	
-	exports.default = jss;
-
-/***/ },
-/* 390 */
-/***/ function(module, exports, __webpack_require__) {
-
-	'use strict';
-	
-	Object.defineProperty(exports, "__esModule", {
-	  value: true
-	});
-	exports.Rule = exports.StyleSheet = exports.Jss = undefined;
-	
-	var _Jss = __webpack_require__(391);
-	
-	var _Jss2 = _interopRequireDefault(_Jss);
-	
-	var _StyleSheet = __webpack_require__(392);
-	
-	var _StyleSheet2 = _interopRequireDefault(_StyleSheet);
-	
-	var _Rule = __webpack_require__(395);
-	
-	var _Rule2 = _interopRequireDefault(_Rule);
-	
-	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-	
-	var jss = new _Jss2.default();
-	
-	// Hotfix for babel 5 migration, will be removed in version 4.0.0
-	/**
-	 * StyleSheets written in javascript.
-	 *
-	 * @copyright Oleg Slobodskoi 2014-2016
-	 * @website https://github.com/jsstyles/jss
-	 * @license MIT
-	 */
-	module.exports = exports = jss;
-	
-	// For testing only.
-	exports.Jss = _Jss2.default;
-	exports.StyleSheet = _StyleSheet2.default;
-	exports.Rule = _Rule2.default;
-	exports.default = jss;
-
-/***/ },
-/* 391 */
-/***/ function(module, exports, __webpack_require__) {
-
-	'use strict';
-	
-	Object.defineProperty(exports, "__esModule", {
-	  value: true
-	});
-	
-	var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol ? "symbol" : typeof obj; };
-	
-	var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
-	
-	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
-	
-	var _StyleSheet = __webpack_require__(392);
-	
-	var _StyleSheet2 = _interopRequireDefault(_StyleSheet);
-	
-	var _PluginsRegistry = __webpack_require__(403);
-	
-	var _PluginsRegistry2 = _interopRequireDefault(_PluginsRegistry);
-	
-	var _SheetsRegistry = __webpack_require__(404);
-	
-	var _SheetsRegistry2 = _interopRequireDefault(_SheetsRegistry);
-	
-	var _utils = __webpack_require__(393);
-	
-	var _createRule2 = __webpack_require__(394);
-	
-	var _createRule3 = _interopRequireDefault(_createRule2);
-	
-	var _findRenderer = __webpack_require__(400);
-	
-	var _findRenderer2 = _interopRequireDefault(_findRenderer);
-	
-	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-	
-	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-	
-	/**
-	 * Main Jss class.
-	 *
-	 * @api public
-	 */
-	
-	var Jss = function () {
-	  function Jss() {
-	    _classCallCheck(this, Jss);
-	
-	    this.sheets = new _SheetsRegistry2.default();
-	    this.plugins = new _PluginsRegistry2.default();
-	    this.uid = _utils.uid;
-	    this.version = '3.11.1';
-	  }
-	
-	  /**
-	   * Creates a new instance of Jss.
-	   *
-	   * @see Jss
-	   * @api public
-	   */
-	
-	
-	  _createClass(Jss, [{
-	    key: 'create',
-	    value: function create() {
-	      return new Jss();
-	    }
-	
-	    /**
-	     * Create a stylesheet.
-	     *
-	     * @see StyleSheet
-	     * @api public
-	     */
-	
-	  }, {
-	    key: 'createStyleSheet',
-	    value: function createStyleSheet(rules, options) {
-	      var sheet = new _StyleSheet2.default(rules, _extends({}, options, { jss: this }));
-	      this.sheets.add(sheet);
-	      return sheet;
-	    }
-	
-	    /**
-	     * Create a rule.
-	     *
-	     * @see createRule
-	     * @api public
-	     */
-	
-	  }, {
-	    key: 'createRule',
-	    value: function createRule(selector, style, options) {
-	      // Enable rule without selector.
-	      if ((typeof selector === 'undefined' ? 'undefined' : _typeof(selector)) == 'object') {
-	        options = style;
-	        style = selector;
-	        selector = null;
-	      }
-	      var rule = (0, _createRule3.default)(selector, style, _extends({}, options, {
-	        jss: this,
-	        Renderer: (0, _findRenderer2.default)(options)
-	      }));
-	      this.plugins.run(rule);
-	      return rule;
-	    }
-	
-	    /**
-	     * Register plugin. Passed function will be invoked with a rule instance.
-	     *
-	     * @param {Function} plugins
-	     * @api public
-	     */
-	
-	  }, {
-	    key: 'use',
-	    value: function use() {
-	      var _this = this;
-	
-	      for (var _len = arguments.length, plugins = Array(_len), _key = 0; _key < _len; _key++) {
-	        plugins[_key] = arguments[_key];
-	      }
-	
-	      plugins.forEach(function (plugin) {
-	        return _this.plugins.use(plugin);
-	      });
-	      return this;
-	    }
-	  }]);
-	
-	  return Jss;
-	}();
-	
-	exports.default = Jss;
-
-/***/ },
-/* 392 */
-/***/ function(module, exports, __webpack_require__) {
-
-	'use strict';
-	
-	Object.defineProperty(exports, "__esModule", {
-	  value: true
-	});
-	
-	var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
-	
-	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
-	
-	var _utils = __webpack_require__(393);
-	
-	var _createRule2 = __webpack_require__(394);
-	
-	var _createRule3 = _interopRequireDefault(_createRule2);
-	
-	var _findRenderer = __webpack_require__(400);
-	
-	var _findRenderer2 = _interopRequireDefault(_findRenderer);
-	
-	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-	
-	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-	
-	/**
-	 * StyleSheet model.
-	 *
-	 * Options:
-	 *
-	 * - `media` media query - attribute of style element.
-	 * - `meta` meta information about this style - attribute of style element, for e.g. you could pass
-	 * component name for easier debugging.
-	 * - `named` true by default - keys are names, selectors will be generated, if false - keys are
-	 * global selectors.
-	 * - `link` link jss `Rule` instances with DOM `CSSRule` instances so that styles, can be modified
-	 * dynamically, false by default because it has some performance cost.
-	 * - `element` style element, will create one by default
-	 *
-	 * @param {Object} [rules] object with selectors and declarations
-	 * @param {Object} [options]
-	 * @api public
-	 */
-	
-	var StyleSheet = function () {
-	  function StyleSheet(rules, options) {
-	    _classCallCheck(this, StyleSheet);
-	
-	    this.options = _extends({}, options);
-	    if (this.options.named == null) this.options.named = true;
-	    this.rules = Object.create(null);
-	    this.classes = Object.create(null);
-	    this.attached = false;
-	    this.deployed = false;
-	    this.linked = false;
-	
-	    var Renderer = (0, _findRenderer2.default)(this.options);
-	    this.options.Renderer = Renderer;
-	    this.renderer = new Renderer(this.options);
-	
-	    for (var name in rules) {
-	      this.createRule(name, rules[name]);
-	    }
-	  }
-	
-	  /**
-	   * Attach renderable to the render tree.
-	   *
-	   * @api public
-	   * @return {StyleSheet}
-	   */
-	
-	
-	  _createClass(StyleSheet, [{
-	    key: 'attach',
-	    value: function attach() {
-	      if (this.attached) return this;
-	      if (!this.deployed) this.deploy();
-	      this.renderer.attach();
-	      if (!this.linked && this.options.link) this.link();
-	      this.attached = true;
-	      return this;
-	    }
-	
-	    /**
-	     * Remove renderable from render tree.
-	     *
-	     * @return {StyleSheet}
-	     * @api public
-	     */
-	
-	  }, {
-	    key: 'detach',
-	    value: function detach() {
-	      if (!this.attached) return this;
-	      this.renderer.detach();
-	      this.attached = false;
-	      return this;
-	    }
-	
-	    /**
-	     * Add a rule to the current stylesheet. Will insert a rule also after the stylesheet
-	     * has been rendered first time.
-	     *
-	     * @param {Object} [name] can be selector or name if ´options.named is true
-	     * @param {Object} style property/value hash
-	     * @return {Rule}
-	     * @api public
-	     */
-	
-	  }, {
-	    key: 'addRule',
-	    value: function addRule(name, style) {
-	      var rule = this.createRule(name, style);
-	      // Don't insert rule directly if there is no stringified version yet.
-	      // It will be inserted all together when .attach is called.
-	      if (this.deployed) {
-	        var renderable = this.renderer.insertRule(rule);
-	        if (this.options.link) rule.renderable = renderable;
-	      }
-	      return rule;
-	    }
-	
-	    /**
-	     * Create rules, will render also after stylesheet was rendered the first time.
-	     *
-	     * @param {Object} rules name:style hash.
-	     * @return {Array} array of added rules
-	     * @api public
-	     */
-	
-	  }, {
-	    key: 'addRules',
-	    value: function addRules(rules) {
-	      var added = [];
-	      for (var name in rules) {
-	        added.push(this.addRule(name, rules[name]));
-	      }
-	      return added;
-	    }
-	
-	    /**
-	     * Get a rule.
-	     *
-	     * @param {String} name can be selector or name if `named` option is true.
-	     * @return {Rule}
-	     * @api public
-	     */
-	
-	  }, {
-	    key: 'getRule',
-	    value: function getRule(name) {
-	      return this.rules[name];
-	    }
-	
-	    /**
-	     * Convert rules to a CSS string.
-	     *
-	     * @param {Object} options
-	     * @return {String}
-	     * @api public
-	     */
-	
-	  }, {
-	    key: 'toString',
-	    value: function toString(options) {
-	      var rules = this.rules;
-	
-	      var stringified = Object.create(null);
-	      var str = '';
-	      for (var name in rules) {
-	        var rule = rules[name];
-	        // We have the same rule referenced twice if using named rules.
-	        // By name and by selector.
-	        if (stringified[rule.id]) {
-	          continue;
-	        }
-	
-	        if (rule.style && (0, _utils.isEmptyObject)(rule.style)) {
-	          continue;
-	        }
-	
-	        if (rule.rules && (0, _utils.isEmptyObject)(rule.rules)) {
-	          continue;
-	        }
-	
-	        if (str) str += '\n';
-	
-	        str += rule.toString(options);
-	        stringified[rule.id] = true;
-	      }
-	      return str;
-	    }
-	
-	    /**
-	     * Create a rule, will not render after stylesheet was rendered the first time.
-	     * Will link the rule in `this.rules`.
-	     *
-	     * @see createRule
-	     * @api private
-	     */
-	
-	  }, {
-	    key: 'createRule',
-	    value: function createRule(name, style, options) {
-	      options = _extends({}, options, {
-	        sheet: this,
-	        jss: this.options.jss,
-	        Renderer: this.options.Renderer
-	      });
-	      // Scope options overwrite instance options.
-	      if (options.named == null) options.named = this.options.named;
-	      var rule = (0, _createRule3.default)(name, style, options);
-	      this.registerRule(rule);
-	      options.jss.plugins.run(rule);
-	      return rule;
-	    }
-	
-	    /**
-	     * Register a rule in `sheet.rules` and `sheet.classes` maps.
-	     *
-	     * @param {Rule} rule
-	     * @api public
-	     */
-	
-	  }, {
-	    key: 'registerRule',
-	    value: function registerRule(rule) {
-	      // Children of container rules should not be registered.
-	      if (rule.options.parent) {
-	        // We need to register child rules of conditionals in classes, otherwise
-	        // user can't access generated class name if it doesn't overrides
-	        // a regular rule.
-	        if (rule.name && rule.className) {
-	          this.classes[rule.name] = rule.className;
-	        }
-	        return this;
-	      }
-	
-	      if (rule.name) {
-	        this.rules[rule.name] = rule;
-	        if (rule.className) this.classes[rule.name] = rule.className;
-	      }
-	      if (rule.selector) {
-	        this.rules[rule.selector] = rule;
-	      }
-	      return this;
-	    }
-	
-	    /**
-	     * Unregister a rule.
-	     *
-	     * @param {Rule} rule
-	     * @api public
-	     */
-	
-	  }, {
-	    key: 'unregisterRule',
-	    value: function unregisterRule(rule) {
-	      // Children of a conditional rule are not registered.
-	      if (!rule.options.parent) {
-	        delete this.rules[rule.name];
-	        delete this.rules[rule.selector];
-	      }
-	      delete this.classes[rule.name];
-	      return this;
-	    }
-	
-	    /**
-	     * Deploy pure CSS string to a renderable.
-	     *
-	     * @return {StyleSheet}
-	     * @api private
-	     */
-	
-	  }, {
-	    key: 'deploy',
-	    value: function deploy() {
-	      this.renderer.deploy(this);
-	      this.deployed = true;
-	      return this;
-	    }
-	
-	    /**
-	     * Link renderable CSS rules with their corresponding models.
-	     *
-	     * @return {StyleSheet}
-	     * @api private
-	     */
-	
-	  }, {
-	    key: 'link',
-	    value: function link() {
-	      var renderables = this.renderer.getRules();
-	      for (var selector in renderables) {
-	        var rule = this.rules[selector];
-	        if (rule) rule.renderable = renderables[selector];
-	      }
-	      this.linked = true;
-	      return this;
-	    }
-	  }]);
-	
-	  return StyleSheet;
-	}();
-	
-	exports.default = StyleSheet;
-
-/***/ },
-/* 393 */
-/***/ function(module, exports) {
-
-	/* WEBPACK VAR INJECTION */(function(global) {'use strict';
-	
-	Object.defineProperty(exports, "__esModule", {
-	  value: true
-	});
-	exports.clone = clone;
-	exports.isEmptyObject = isEmptyObject;
-	exports.toCSS = toCSS;
-	var stringify = JSON.stringify;
-	var parse = JSON.parse;
-	
-	/**
-	 * Deeply clone object using serialization.
-	 * Expects object to be plain and without cyclic dependencies.
-	 *
-	 * http://jsperf.com/lodash-deepclone-vs-jquery-extend-deep/6
-	 *
-	 * @type {Object} obj
-	 * @return {Object}
-	 */
-	function clone(obj) {
-	  return parse(stringify(obj));
-	}
-	
-	/**
-	 * Determine whether an object is empty or not.
-	 * More performant than a `Object.keys(obj).length > 0`
-	 *
-	 * @type {Object} obj
-	 * @return {Boolean}
-	 */
-	function isEmptyObject(obj) {
-	  for (var key in obj) {
-	    return false;
-	  } // eslint-disable-line no-unused-vars
-	
-	  return true;
-	}
-	
-	/**
-	 * Simple very fast UID generation based on a global counter.
-	 */
-	var uid = exports.uid = function () {
-	  var globalReference = typeof window == 'undefined' ? global : window;
-	  var namespace = '__JSS_VERSION_COUNTER__';
-	  if (globalReference[namespace] == null) globalReference[namespace] = 0;
-	
-	  // In case we have more than one jss version.
-	  var versionCounter = globalReference[namespace]++;
-	  var ruleCounter = 0;
-	
-	  /**
-	   * Returns a uid.
-	   * Ensures uniqueness if more than 1 jss version is used.
-	   *
-	   * @api public
-	   * @return {String}
-	   */
-	  function get() {
-	    return 'jss-' + versionCounter + '-' + ruleCounter++;
-	  }
-	
-	  /**
-	   * Resets the counter.
-	   *
-	   * @api public
-	   */
-	  function reset() {
-	    ruleCounter = 0;
-	  }
-	
-	  return { get: get, reset: reset };
-	}();
-	
-	/**
-	 * Indent a string.
-	 *
-	 * http://jsperf.com/array-join-vs-for
-	 *
-	 * @param {Number} level
-	 * @param {String} str
-	 * @return {String}
-	 */
-	function indent(level, str) {
-	  var indentStr = '';
-	  for (var index = 0; index < level; index++) {
-	    indentStr += '  ';
-	  }return indentStr + str;
-	}
-	
-	/**
-	 * Converts a Rule to CSS string.
-	 *
-	 * Options:
-	 * - `selector` use `false` to get a rule without selector
-	 * - `indentationLevel` level of indentation
-	 *
-	 * @param {String} selector
-	 * @param {Object} style
-	 * @param {Object} options
-	 * @return {String}
-	 */
-	function toCSS(selector, style) {
-	  var options = arguments.length <= 2 || arguments[2] === undefined ? {} : arguments[2];
-	
-	  var indentationLevel = options.indentationLevel || 0;
-	  var str = '';
-	
-	  if (options.selector !== false) {
-	    str += indent(indentationLevel, selector + ' {');
-	    indentationLevel++;
-	  }
-	
-	  for (var prop in style) {
-	    var value = style[prop];
-	    // We want to generate multiple style with identical property names.
-	    if (Array.isArray(value)) {
-	      for (var index = 0; index < value.length; index++) {
-	        str += '\n' + indent(indentationLevel, prop + ': ' + value[index] + ';');
-	      }
-	    } else str += '\n' + indent(indentationLevel, prop + ': ' + value + ';');
-	  }
-	
-	  if (options.selector !== false) str += '\n' + indent(--indentationLevel, '}');
-	
-	  return str;
-	}
-	
-	/**
-	 * Get class names from a selector.
-	 *
-	 * @param {String} selector
-	 * @return {String}
-	 */
-	var findClassNames = exports.findClassNames = function () {
-	  var dotsRegExp = /[.]/g;
-	  var classesRegExp = /[.][^ ,]+/g;
-	
-	  return function (selector) {
-	    var classes = selector.match(classesRegExp);
-	
-	    if (!classes) return '';
-	
-	    return classes.join(' ').replace(dotsRegExp, '');
-	  };
-	}();
-	/* WEBPACK VAR INJECTION */}.call(exports, (function() { return this; }())))
-
-/***/ },
-/* 394 */
-/***/ function(module, exports, __webpack_require__) {
-
-	'use strict';
-	
-	Object.defineProperty(exports, "__esModule", {
-	  value: true
-	});
-	exports.default = createRule;
-	
-	var _Rule = __webpack_require__(395);
-	
-	var _Rule2 = _interopRequireDefault(_Rule);
-	
-	var _SimpleRule = __webpack_require__(396);
-	
-	var _SimpleRule2 = _interopRequireDefault(_SimpleRule);
-	
-	var _KeyframeRule = __webpack_require__(397);
-	
-	var _KeyframeRule2 = _interopRequireDefault(_KeyframeRule);
-	
-	var _ConditionalRule = __webpack_require__(398);
-	
-	var _ConditionalRule2 = _interopRequireDefault(_ConditionalRule);
-	
-	var _FontFaceRule = __webpack_require__(399);
-	
-	var _FontFaceRule2 = _interopRequireDefault(_FontFaceRule);
-	
-	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-	
-	/**
-	 * Map of at rules to corresponding implementation class.
-	 *
-	 * @type {Object}
-	 */
-	var atRuleClassMap = {
-	  '@charset': _SimpleRule2.default,
-	  '@import': _SimpleRule2.default,
-	  '@namespace': _SimpleRule2.default,
-	  '@keyframes': _KeyframeRule2.default,
-	  '@media': _ConditionalRule2.default,
-	  '@supports': _ConditionalRule2.default,
-	  '@font-face': _FontFaceRule2.default
-	};
-	
-	var atRuleNameRegExp = /^@[^ ]+/;
-	
-	/**
-	 * Create rule factory.
-	 *
-	 * @param {Object} [selector] if you don't pass selector - it will be generated
-	 * @param {Object} [style] declarations block
-	 * @param {Object} [options] rule options
-	 * @return {Object} rule
-	 * @api private
-	 */
-	function createRule(selector) {
-	  var style = arguments.length <= 1 || arguments[1] === undefined ? {} : arguments[1];
-	  var options = arguments.length <= 2 || arguments[2] === undefined ? {} : arguments[2];
-	
-	  // Is an at-rule.
-	  if (selector && selector[0] === '@') {
-	    var name = atRuleNameRegExp.exec(selector)[0];
-	    var AtRule = atRuleClassMap[name];
-	    return new AtRule(selector, style, options);
-	  }
-	
-	  if (options.named == null) options.named = true;
-	  return new _Rule2.default(selector, style, options);
-	}
-
-/***/ },
-/* 395 */
-/***/ function(module, exports, __webpack_require__) {
-
-	'use strict';
-	
-	Object.defineProperty(exports, "__esModule", {
-	  value: true
-	});
-	
-	var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol ? "symbol" : typeof obj; };
-	
-	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
-	
-	var _utils = __webpack_require__(393);
-	
-	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-	
-	/**
-	 * Regular rules.
-	 *
-	 * @api public
-	 */
-	
-	var Rule = function () {
-	  function Rule(selector, style, options) {
-	    _classCallCheck(this, Rule);
-	
-	    this.id = _utils.uid.get();
-	    this.type = 'regular';
-	    this.options = options;
-	    this.selectorText = selector || '';
-	    this.className = options.className || '';
-	    this.originalStyle = style;
-	    // We expect style to be plain object.
-	    this.style = (0, _utils.clone)(style);
-	    if (options.named) {
-	      this.name = selector;
-	      if (!this.className) {
-	        this.className = this.name ? this.name + '--' + this.id : this.id;
-	      }
-	      this.selectorText = '.' + this.className;
-	    }
-	  }
-	
-	  /**
-	   * Set selector string.
-	   * Attenition: use this with caution. Most browser didn't implement selector
-	   * text setter, so this will result in rerendering of entire style sheet.
-	   *
-	   * @param {String} selector
-	   * @api public
-	   */
-	
-	
-	  _createClass(Rule, [{
-	    key: 'prop',
-	
-	
-	    /**
-	     * Get or set a style property.
-	     *
-	     * @param {String} name
-	     * @param {String|Number} [value]
-	     * @return {Rule|String|Number}
-	     * @api public
-	     */
-	    value: function prop(name, value) {
-	      var style = this.options.Renderer.style;
-	      // Its a setter.
-	
-	      if (value != null) {
-	        this.style[name] = value;
-	        // Only defined if option linked is true.
-	        if (this.renderable) style(this.renderable, name, value);
-	        return this;
-	      }
-	      // Its a getter, read the value from the DOM if its not cached.
-	      if (this.renderable && this.style[name] == null) {
-	        // Cache the value after we have got it from the DOM once.
-	        this.style[name] = style(this.renderable, name);
-	      }
-	      return this.style[name];
-	    }
-	
-	    /**
-	     * Apply rule to an element inline.
-	     *
-	     * @param {Element} renderable
-	     * @return {Rule}
-	     * @api public
-	     */
-	
-	  }, {
-	    key: 'applyTo',
-	    value: function applyTo(renderable) {
-	      for (var prop in this.style) {
-	        var value = this.style[prop];
-	        var style = this.options.Renderer.style;
-	
-	        if (Array.isArray(value)) {
-	          for (var index = 0; index < value.length; index++) {
-	            style(renderable, prop, value[index]);
-	          }
-	        } else style(renderable, prop, value);
-	      }
-	      return this;
-	    }
-	
-	    /**
-	     * Returns JSON representation of the rule.
-	     * Array of values is not supported.
-	     *
-	     * @return {Object}
-	     * @api public
-	     */
-	
-	  }, {
-	    key: 'toJSON',
-	    value: function toJSON() {
-	      var style = Object.create(null);
-	      for (var prop in this.style) {
-	        if (_typeof(this.style[prop]) != 'object') {
-	          style[prop] = this.style[prop];
-	        }
-	      }
-	      return style;
-	    }
-	
-	    /**
-	     * Generates a CSS string.
-	     *
-	     * @see toCSS
-	     * @api public
-	     */
-	
-	  }, {
-	    key: 'toString',
-	    value: function toString(options) {
-	      return (0, _utils.toCSS)(this.selector, this.style, options);
-	    }
-	  }, {
-	    key: 'selector',
-	    set: function set() {
-	      var selector = arguments.length <= 0 || arguments[0] === undefined ? '' : arguments[0];
-	      var _options = this.options;
-	      var Renderer = _options.Renderer;
-	      var sheet = _options.sheet;
-	
-	      // After we modify selector, ref by old selector needs to be removed.
-	
-	      if (sheet) sheet.unregisterRule(this);
-	
-	      this.selectorText = selector;
-	      this.className = (0, _utils.findClassNames)(selector);
-	
-	      if (!this.renderable) {
-	        // Register the rule with new selector.
-	        if (sheet) sheet.registerRule(this);
-	        return;
-	      }
-	
-	      var changed = Renderer.setSelector(this.renderable, selector);
-	
-	      if (changed) {
-	        sheet.registerRule(this);
-	        return;
-	      }
-	
-	      // If selector setter is not implemented, rerender the sheet.
-	      // We need to delete renderable from the rule, because when sheet.deploy()
-	      // calls rule.toString, it will get the old selector.
-	      delete this.renderable;
-	      sheet.registerRule(this).deploy().link();
-	    }
-	
-	    /**
-	     * Get selector string.
-	     *
-	     * @return {String}
-	     * @api public
-	     */
-	    ,
-	    get: function get() {
-	      if (this.renderable) {
-	        return this.options.Renderer.getSelector(this.renderable);
-	      }
-	
-	      return this.selectorText;
-	    }
-	  }]);
-	
-	  return Rule;
-	}();
-	
-	exports.default = Rule;
-
-/***/ },
-/* 396 */
-/***/ function(module, exports, __webpack_require__) {
-
-	'use strict';
-	
-	Object.defineProperty(exports, "__esModule", {
-	  value: true
-	});
-	
-	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
-	
-	var _utils = __webpack_require__(393);
-	
-	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-	
-	/**
-	 * Rule like @charset, @import, @namespace.
-	 *
-	 * @api public
-	 */
-	
-	var SimpleRule = function () {
-	  function SimpleRule(name, value, options) {
-	    _classCallCheck(this, SimpleRule);
-	
-	    this.id = _utils.uid.get();
-	    this.type = 'simple';
-	    this.name = name;
-	    this.value = value;
-	    this.options = options;
-	  }
-	
-	  /**
-	   * Generates a CSS string.
-	   *
-	   * @return {String}
-	   * @api public
-	   */
-	
-	
-	  _createClass(SimpleRule, [{
-	    key: 'toString',
-	    value: function toString() {
-	      if (Array.isArray(this.value)) {
-	        var str = '';
-	        for (var index = 0; index < this.value.length; index++) {
-	          str += this.name + ' ' + this.value[index] + ';';
-	          if (this.value[index + 1]) str += '\n';
-	        }
-	        return str;
-	      }
-	
-	      return this.name + ' ' + this.value + ';';
-	    }
-	  }]);
-	
-	  return SimpleRule;
-	}();
-	
-	exports.default = SimpleRule;
-
-/***/ },
-/* 397 */
-/***/ function(module, exports, __webpack_require__) {
-
-	'use strict';
-	
-	Object.defineProperty(exports, "__esModule", {
-	  value: true
-	});
-	
-	var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
-	
-	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
-	
-	var _utils = __webpack_require__(393);
-	
-	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-	
-	/**
-	 * Keyframe rule.
-	 *
-	 * @api private
-	 */
-	
-	var KeyframeRule = function () {
-	  function KeyframeRule(selector, frames, options) {
-	    _classCallCheck(this, KeyframeRule);
-	
-	    this.id = _utils.uid.get();
-	    this.type = 'keyframe';
-	    this.selector = selector;
-	    this.options = options;
-	    this.frames = this.formatFrames(frames);
-	  }
-	
-	  /**
-	   * Creates formatted frames where every frame value is a rule instance.
-	   *
-	   * @api private
-	   */
-	
-	
-	  _createClass(KeyframeRule, [{
-	    key: 'formatFrames',
-	    value: function formatFrames(frames) {
-	      var newFrames = Object.create(null);
-	      for (var name in frames) {
-	        var options = _extends({}, this.options, { named: false, parent: this });
-	        newFrames[name] = this.options.jss.createRule(name, frames[name], options);
-	      }
-	      return newFrames;
-	    }
-	
-	    /**
-	     * Generates a CSS string.
-	     *
-	     * @return {String}
-	     * @api private
-	     */
-	
-	  }, {
-	    key: 'toString',
-	    value: function toString() {
-	      var str = this.selector + ' {\n';
-	      var options = { indentationLevel: 1 };
-	      for (var name in this.frames) {
-	        str += this.frames[name].toString(options) + '\n';
-	      }
-	      str += '}';
-	      return str;
-	    }
-	  }]);
-	
-	  return KeyframeRule;
-	}();
-	
-	exports.default = KeyframeRule;
-
-/***/ },
-/* 398 */
-/***/ function(module, exports, __webpack_require__) {
-
-	'use strict';
-	
-	Object.defineProperty(exports, "__esModule", {
-	  value: true
-	});
-	
-	var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
-	
-	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
-	
-	var _utils = __webpack_require__(393);
-	
-	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-	
-	/**
-	 * Conditional rule for @media, @supports
-	 *
-	 * @api public
-	 */
-	
-	var ConditionalRule = function () {
-	  function ConditionalRule(selector, styles, options) {
-	    _classCallCheck(this, ConditionalRule);
-	
-	    this.id = _utils.uid.get();
-	    this.type = 'conditional';
-	    this.selector = selector;
-	    this.options = options;
-	    this.rules = Object.create(null);
-	    for (var name in styles) {
-	      this.createRule(name, styles[name]);
-	    }
-	  }
-	
-	  /**
-	   * A conditional rule always contains child rules.
-	   *
-	   * @param {Object} styles
-	   * @return {Array} rules
-	   * @api public
-	   */
-	
-	
-	  _createClass(ConditionalRule, [{
-	    key: 'createRule',
-	    value: function createRule(name, style, options) {
-	      var newOptions = _extends({}, this.options, { parent: this });
-	      var _newOptions = newOptions;
-	      var sheet = _newOptions.sheet;
-	      var jss = _newOptions.jss;
-	      // We have already a rule in the current style sheet with this name,
-	      // This new rule is supposed to overwrite the first one, for this we need
-	      // to ensure it will have the same className/selector.
-	
-	      var existingRule = sheet && sheet.getRule(name);
-	      var className = existingRule ? existingRule.className : null;
-	      if (className || options) {
-	        newOptions = _extends({}, newOptions, { className: className }, options);
-	      }
-	      var rule = (sheet || jss).createRule(name, style, newOptions);
-	      this.rules[name] = rule;
-	      return rule;
-	    }
-	
-	    /**
-	     * Generates a CSS string.
-	     *
-	     * @return {String}
-	     * @api public
-	     */
-	
-	  }, {
-	    key: 'toString',
-	    value: function toString() {
-	      var str = this.selector + ' {\n';
-	      for (var name in this.rules) {
-	        var rule = this.rules[name];
-	        if (rule.style && (0, _utils.isEmptyObject)(rule.style)) {
-	          continue;
-	        }
-	        var ruleStr = rule.toString({ indentationLevel: 1 });
-	        str += ruleStr + '\n';
-	      }
-	      str += '}';
-	      return str;
-	    }
-	  }]);
-	
-	  return ConditionalRule;
-	}();
-	
-	exports.default = ConditionalRule;
-
-/***/ },
-/* 399 */
-/***/ function(module, exports, __webpack_require__) {
-
-	'use strict';
-	
-	Object.defineProperty(exports, "__esModule", {
-	  value: true
-	});
-	
-	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
-	
-	var _utils = __webpack_require__(393);
-	
-	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-	
-	/**
-	 * Font-face rules.
-	 *
-	 * @api public
-	 */
-	
-	var Rule = function () {
-	  function Rule(selector, style, options) {
-	    _classCallCheck(this, Rule);
-	
-	    this.id = _utils.uid.get();
-	    this.type = 'font-face';
-	    this.options = options;
-	    this.selector = selector;
-	    this.style = style;
-	  }
-	
-	  /**
-	   * Generates a CSS string.
-	   *
-	   * @see toCSS
-	   * @api public
-	   */
-	
-	
-	  _createClass(Rule, [{
-	    key: 'toString',
-	    value: function toString(options) {
-	      if (Array.isArray(this.style)) {
-	        var str = '';
-	        for (var index = 0; index < this.style.length; index++) {
-	          str += (0, _utils.toCSS)(this.selector, this.style[index], options);
-	          if (this.style[index + 1]) str += '\n';
-	        }
-	        return str;
-	      }
-	
-	      return (0, _utils.toCSS)(this.selector, this.style, options);
-	    }
-	  }]);
-	
-	  return Rule;
-	}();
-	
-	exports.default = Rule;
-
-/***/ },
-/* 400 */
-/***/ function(module, exports, __webpack_require__) {
-
-	'use strict';
-	
-	Object.defineProperty(exports, "__esModule", {
-	  value: true
-	});
-	exports.default = findRenderer;
-	
-	var _DomRenderer = __webpack_require__(401);
-	
-	var _DomRenderer2 = _interopRequireDefault(_DomRenderer);
-	
-	var _VirtualRenderer = __webpack_require__(402);
-	
-	var _VirtualRenderer2 = _interopRequireDefault(_VirtualRenderer);
-	
-	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-	
-	/**
-	 * Find proper renderer.
-	 * Option `virtual` is used to force use of VirtualRenderer even if DOM is
-	 * detected, used for testing only.
-	 *
-	 * @param {Object} options
-	 * @return {Renderer}
-	 * @api private
-	 */
-	function findRenderer() {
-	  var options = arguments.length <= 0 || arguments[0] === undefined ? {} : arguments[0];
-	
-	  if (options.Renderer) return options.Renderer;
-	  return options.virtual || typeof document == 'undefined' ? _VirtualRenderer2.default : _DomRenderer2.default;
-	}
-
-/***/ },
-/* 401 */
-/***/ function(module, exports) {
-
-	'use strict';
-	
-	Object.defineProperty(exports, "__esModule", {
-	  value: true
-	});
-	
-	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
-	
-	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-	
-	/**
-	 * DOM rendering backend for StyleSheet.
-	 *
-	 * @api private
-	 */
-	
-	var DomRenderer = function () {
-	  _createClass(DomRenderer, null, [{
-	    key: 'style',
-	    value: function style(element, name, value) {
-	      try {
-	        if (value == null) return element.style[name];
-	        element.style[name] = value;
-	      } catch (err) {
-	        // IE8 may throw if property is unknown.
-	        return false;
-	      }
-	      return true;
-	    }
-	  }, {
-	    key: 'setSelector',
-	    value: function setSelector(cssRule, selector) {
-	      cssRule.selectorText = selector;
-	
-	      // Return false if setter was not successful.
-	      // Currently works in chrome only.
-	      return cssRule.selectorText === selector;
-	    }
-	  }, {
-	    key: 'getSelector',
-	    value: function getSelector(cssRule) {
-	      return cssRule.selectorText;
-	    }
-	  }]);
-	
-	  function DomRenderer(options) {
-	    _classCallCheck(this, DomRenderer);
-	
-	    this.head = document.head || document.getElementsByTagName('head')[0];
-	    this.element = options.element || document.createElement('style');
-	    // IE8 will not have `styleSheet` prop without `type and `styleSheet.cssText`
-	    // is the only way to render on IE8.
-	    this.element.type = 'text/css';
-	    if (options.media) this.element.setAttribute('media', options.media);
-	    if (options.meta) this.element.setAttribute('data-meta', options.meta);
-	  }
-	
-	  /**
-	   * Insert style element into render tree.
-	   *
-	   * @api private
-	   */
-	
-	
-	  _createClass(DomRenderer, [{
-	    key: 'attach',
-	    value: function attach() {
-	      if (this.element.parendNode) return;
-	      this.head.appendChild(this.element);
-	    }
-	
-	    /**
-	     * Remove style element from render tree.
-	     *
-	     * @api private
-	     */
-	
-	  }, {
-	    key: 'detach',
-	    value: function detach() {
-	      this.element.parentNode.removeChild(this.element);
-	    }
-	
-	    /**
-	     * Inject CSS string into element.
-	     *
-	     * @param {String} cssStr
-	     * @api private
-	     */
-	
-	  }, {
-	    key: 'deploy',
-	    value: function deploy(sheet) {
-	      var css = '\n' + sheet.toString() + '\n';
-	      if ('sheet' in this.element) this.element.innerHTML = css;
-	      // On IE8 the only way to render is `styleSheet.cssText`.
-	      else if ('styleSheet' in this.element) this.element.styleSheet.cssText = css;
-	    }
-	
-	    /**
-	     * Insert a rule into element.
-	     *
-	     * @param {Rule} rule
-	     * @return {CSSStyleRule}
-	     * @api private
-	     */
-	
-	  }, {
-	    key: 'insertRule',
-	    value: function insertRule(rule) {
-	      // IE8 has only `styleSheet` and `styleSheet.rules`
-	      var sheet = this.element.sheet || this.element.styleSheet;
-	      var cssRules = sheet.cssRules || sheet.rules;
-	      var nextIndex = cssRules.length;
-	      if (sheet.insertRule) sheet.insertRule(rule.toString(), nextIndex);else sheet.addRule(rule.selector, rule.toString({ selector: false }), nextIndex);
-	      return cssRules[nextIndex];
-	    }
-	
-	    /**
-	     * Get all rules elements.
-	     *
-	     * @return {Object} rules map, where key is selector, CSSStyleRule is value.
-	     * @api private
-	     */
-	
-	  }, {
-	    key: 'getRules',
-	    value: function getRules() {
-	      // IE8 has only `styleSheet` and `styleSheet.rules`
-	      var sheet = this.element.sheet || this.element.styleSheet;
-	      var cssRules = sheet.rules || sheet.cssRules;
-	      var rules = Object.create(null);
-	      for (var index = 0; index < cssRules.length; index++) {
-	        var cssRule = cssRules[index];
-	        rules[cssRule.selectorText] = cssRule;
-	      }
-	      return rules;
-	    }
-	  }]);
-	
-	  return DomRenderer;
-	}();
-	
-	exports.default = DomRenderer;
-
-/***/ },
-/* 402 */
-/***/ function(module, exports) {
-
-	"use strict";
-	
-	Object.defineProperty(exports, "__esModule", {
-	  value: true
-	});
-	
-	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
-	
-	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-	
-	/**
-	 * Rendering backend to do nothing in nodejs.
-	 */
-	
-	var VirtualRenderer = function () {
-	  function VirtualRenderer() {
-	    _classCallCheck(this, VirtualRenderer);
-	  }
-	
-	  _createClass(VirtualRenderer, [{
-	    key: "attach",
-	    value: function attach() {}
-	  }, {
-	    key: "detach",
-	    value: function detach() {}
-	  }, {
-	    key: "deploy",
-	    value: function deploy() {}
-	  }, {
-	    key: "insertRule",
-	    value: function insertRule() {}
-	  }, {
-	    key: "getRules",
-	    value: function getRules() {
-	      return {};
-	    }
-	  }], [{
-	    key: "style",
-	    value: function style() {}
-	  }, {
-	    key: "setSelector",
-	    value: function setSelector() {}
-	  }, {
-	    key: "getSelector",
-	    value: function getSelector() {}
-	  }]);
-	
-	  return VirtualRenderer;
-	}();
-	
-	exports.default = VirtualRenderer;
-
-/***/ },
-/* 403 */
-/***/ function(module, exports) {
-
-	"use strict";
-	
-	Object.defineProperty(exports, "__esModule", {
-	  value: true
-	});
-	
-	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
-	
-	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-	
-	/**
-	 * Register a plugin, run a plugin.
-	 *
-	 * @api public
-	 */
-	
-	var PluginsRegistry = function () {
-	  function PluginsRegistry() {
-	    _classCallCheck(this, PluginsRegistry);
-	
-	    this.registry = [];
-	  }
-	
-	  /**
-	   * Register plugin. Passed function will be invoked with a rule instance.
-	   *
-	   * @param {Function} fn
-	   * @api public
-	   */
-	
-	
-	  _createClass(PluginsRegistry, [{
-	    key: "use",
-	    value: function use(fn) {
-	      this.registry.push(fn);
-	    }
-	
-	    /**
-	     * Execute all registered plugins.
-	     *
-	     * @param {Rule} rule
-	     * @api private
-	     */
-	
-	  }, {
-	    key: "run",
-	    value: function run(rule) {
-	      for (var index = 0; index < this.registry.length; index++) {
-	        this.registry[index](rule);
-	      }
-	    }
-	  }]);
-	
-	  return PluginsRegistry;
-	}();
-	
-	exports.default = PluginsRegistry;
-
-/***/ },
-/* 404 */
-/***/ function(module, exports) {
-
-	'use strict';
-	
-	Object.defineProperty(exports, "__esModule", {
-	  value: true
-	});
-	
-	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
-	
-	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-	
-	/**
-	 * Sheets registry to access them all at one place.
-	 *
-	 * @api public
-	 */
-	
-	var SheetsRegistry = function () {
-	  function SheetsRegistry() {
-	    _classCallCheck(this, SheetsRegistry);
-	
-	    this.registry = [];
-	  }
-	
-	  /**
-	   * Register a style sheet.
-	   *
-	   * @param {StyleSheet} sheet
-	   * @api public
-	   */
-	
-	
-	  _createClass(SheetsRegistry, [{
-	    key: 'add',
-	    value: function add(sheet) {
-	      this.registry.push(sheet);
-	    }
-	
-	    /**
-	     * Returns CSS string with all Style Sheets.
-	     *
-	     * @param {StyleSheet} sheet
-	     * @api public
-	     */
-	
-	  }, {
-	    key: 'toString',
-	    value: function toString(options) {
-	      return this.registry.map(function (sheet) {
-	        return sheet.toString(options);
-	      }).join('\n');
-	    }
-	  }]);
-	
-	  return SheetsRegistry;
-	}();
-	
-	exports.default = SheetsRegistry;
-
-/***/ },
-/* 405 */
-/***/ function(module, exports) {
-
-	'use strict';
-	
-	Object.defineProperty(exports, "__esModule", {
-	  value: true
-	});
-	
-	var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
-	
-	exports.default = jssNested;
-	var regExp = /&/g;
-	
-	/**
-	 * Convert nested rules to separate, remove them from original styles.
-	 *
-	 * @param {Rule} rule
-	 * @api public
-	 */
-	function jssNested() {
-	  return function (rule) {
-	    if (rule.type !== 'regular') return;
-	    var _rule$options = rule.options;
-	    var sheet = _rule$options.sheet;
-	    var jss = _rule$options.jss;
-	    var parent = _rule$options.parent;
-	
-	    var container = sheet || jss;
-	    var options = void 0;
-	
-	    if (parent && parent.type === 'conditional') {
-	      container = parent;
-	    }
-	
-	    for (var prop in rule.style) {
-	      if (prop[0] === '&') {
-	        if (!options) options = _extends({}, rule.options, { named: false });
-	        var name = prop.replace(regExp, rule.selector);
-	        container.createRule(name, rule.style[prop], options);
-	        delete rule.style[prop];
-	      }
-	    }
-	  };
-	}
-
-/***/ },
-/* 406 */
-/***/ function(module, exports) {
-
-	'use strict';
-	
-	Object.defineProperty(exports, "__esModule", {
-	  value: true
-	});
-	exports.default = jssExtend;
-	/**
-	 * Handle `extend` property.
-	 *
-	 * @param {Rule} rule
-	 * @api public
-	 */
-	function jssExtend() {
-	  function extend(rule, newStyle, style) {
-	    if (typeof style.extend == 'string') {
-	      if (rule.options && rule.options.sheet) {
-	        var refRule = rule.options.sheet.getRule(style.extend);
-	        if (refRule) extend(rule, newStyle, refRule.originalStyle);
-	      }
-	    } else if (Array.isArray(style.extend)) {
-	      for (var index = 0; index < style.extend.length; index++) {
-	        extend(rule, newStyle, style.extend[index]);
-	      }
-	    } else {
-	      for (var prop in style.extend) {
-	        if (prop === 'extend') extend(rule, newStyle, style.extend.extend);else newStyle[prop] = style.extend[prop];
-	      }
-	    }
-	
-	    // Copy base style.
-	    for (var _prop in style) {
-	      if (_prop !== 'extend') newStyle[_prop] = style[_prop];
-	    }
-	
-	    return newStyle;
-	  }
-	
-	  return function (rule) {
-	    if (!rule.style || !rule.style.extend) return;
-	    rule.style = extend(rule, {}, rule.style);
-	  };
-	}
-
-/***/ },
-/* 407 */
-/***/ function(module, exports) {
-
-	// Don't automatically add 'px' to these possibly-unitless properties.
-	// Borrowed from jquery.
-	'use strict';
-	
-	exports.__esModule = true;
-	exports['default'] = jssPx;
-	var cssNumber = {
-	  'animation-iteration-count': true,
-	  'box-ordinal-group': true,
-	  'column-count': true,
-	  'fill-opacity': true,
-	  'flex': true,
-	  'flex-grow': true,
-	  'flex-order': true,
-	  'flex-shrink': true,
-	  'font-weight': true,
-	  'line-height': true,
-	  'opacity': true,
-	  'order': true,
-	  'orphans': true,
-	  'stop-opacity': true,
-	  'tab-size': 1,
-	  'widows': true,
-	  'z-index': true,
-	  'zoom': true
-	};
-	
-	/**
-	 * Add px to numeric values.
-	 *
-	 * @param {Rule} rule
-	 * @api public
-	 */
-	
-	function jssPx() {
-	  return function (rule) {
-	    var style = rule.style;
-	
-	    if (!style) return;
-	    for (var prop in style) {
-	      if (!cssNumber[prop] && typeof style[prop] == 'number') {
-	        style[prop] += 'px';
-	      }
-	    }
-	  };
-	}
-	
-	module.exports = exports['default'];
-
-/***/ },
-/* 408 */
-/***/ function(module, exports, __webpack_require__) {
-
-	'use strict';
-	
-	exports.__esModule = true;
-	exports['default'] = jssVendorPrefixer;
-	
-	function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj['default'] = obj; return newObj; } }
-	
-	var _cssVendor = __webpack_require__(409);
-	
-	var vendor = _interopRequireWildcard(_cssVendor);
-	
-	/**
-	 * Add vendor prefix to a property name when needed.
-	 *
-	 * @param {Rule} rule
-	 * @api public
-	 */
-	
-	function jssVendorPrefixer() {
-	  return function (rule) {
-	    if (rule.type === 'keyframe') {
-	      rule.selector = '@' + vendor.prefix.css + 'keyframes' + rule.selector.substr(10);
-	      return;
-	    }
-	
-	    if (rule.type !== 'regular') return;
-	
-	    for (var prop in rule.style) {
-	      var value = rule.style[prop];
-	
-	      var changeProp = false;
-	      var supportedProp = vendor.supportedProperty(prop);
-	      if (supportedProp && supportedProp !== prop) changeProp = true;
-	
-	      var changeValue = false;
-	      var supportedValue = vendor.supportedValue(supportedProp, value);
-	      if (supportedValue && supportedValue !== value) changeValue = true;
-	
-	      if (changeProp || changeValue) {
-	        if (changeProp) delete rule.style[prop];
-	        rule.style[supportedProp || prop] = supportedValue || value;
-	      }
-	    }
-	  };
-	}
-	
-	module.exports = exports['default'];
-
-/***/ },
-/* 409 */
-/***/ function(module, exports, __webpack_require__) {
-
-	'use strict';
-	
-	Object.defineProperty(exports, "__esModule", {
-	  value: true
-	});
-	exports.supportedValue = exports.supportedProperty = exports.prefix = undefined;
-	
-	var _prefix = __webpack_require__(410);
-	
-	var _prefix2 = _interopRequireDefault(_prefix);
-	
-	var _supportedProperty = __webpack_require__(412);
-	
-	var _supportedProperty2 = _interopRequireDefault(_supportedProperty);
-	
-	var _supportedValue = __webpack_require__(414);
-	
-	var _supportedValue2 = _interopRequireDefault(_supportedValue);
-	
-	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
-	
-	exports['default'] = {
-	  prefix: _prefix2['default'],
-	  supportedProperty: _supportedProperty2['default'],
-	  supportedValue: _supportedValue2['default']
-	}; /**
-	    * CSS Vendor prefix detection and property feature testing.
-	    *
-	    * @copyright Oleg Slobodskoi 2015
-	    * @website https://github.com/jsstyles/css-vendor
-	    * @license MIT
-	    */
-	
-	exports.prefix = _prefix2['default'];
-	exports.supportedProperty = _supportedProperty2['default'];
-	exports.supportedValue = _supportedValue2['default'];
-
-/***/ },
-/* 410 */
-/***/ function(module, exports, __webpack_require__) {
-
-	'use strict';
-	
-	Object.defineProperty(exports, "__esModule", {
-	  value: true
-	});
-	
-	var _isInBrowser = __webpack_require__(411);
-	
-	var _isInBrowser2 = _interopRequireDefault(_isInBrowser);
-	
-	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
-	
-	var js = ''; /**
-	              * Export javascript style and css style vendor prefixes.
-	              * Based on "transform" support test.
-	              */
-	
-	var css = '';
-	
-	// We should not do anything if required serverside.
-	if (_isInBrowser2['default']) {
-	  // Order matters. We need to check Webkit the last one because
-	  // other vendors use to add Webkit prefixes to some properties
-	  var jsCssMap = {
-	    Moz: '-moz-',
-	    // IE did it wrong again ...
-	    ms: '-ms-',
-	    O: '-o-',
-	    Webkit: '-webkit-'
-	  };
-	  var style = document.createElement('p').style;
-	  var testProp = 'Transform';
-	
-	  for (var key in jsCssMap) {
-	    if (key + testProp in style) {
-	      js = key;
-	      css = jsCssMap[key];
-	      break;
-	    }
-	  }
-	}
-	
-	/**
-	 * Vendor prefix string for the current browser.
-	 *
-	 * @type {{js: String, css: String}}
-	 * @api public
-	 */
-	exports['default'] = { js: js, css: css };
-
-/***/ },
-/* 411 */
-/***/ function(module, exports) {
-
-	"use strict";
-	
-	Object.defineProperty(exports, "__esModule", {
-	    value: true
-	});
-	
-	var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; };
-	
-	var isBrowser = exports.isBrowser = (typeof window === "undefined" ? "undefined" : _typeof(window)) === "object" && (typeof document === "undefined" ? "undefined" : _typeof(document)) === 'object' && document.nodeType === 9;
-	
-	exports.default = isBrowser;
-
-/***/ },
-/* 412 */
-/***/ function(module, exports, __webpack_require__) {
-
-	'use strict';
-	
-	Object.defineProperty(exports, "__esModule", {
-	  value: true
-	});
-	exports['default'] = supportedProperty;
-	
-	var _isInBrowser = __webpack_require__(411);
-	
-	var _isInBrowser2 = _interopRequireDefault(_isInBrowser);
-	
-	var _prefix = __webpack_require__(410);
-	
-	var _prefix2 = _interopRequireDefault(_prefix);
-	
-	var _camelize = __webpack_require__(413);
-	
-	var _camelize2 = _interopRequireDefault(_camelize);
-	
-	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
-	
-	var el = void 0;
-	var cache = {};
-	
-	if (_isInBrowser2['default']) {
-	  el = document.createElement('p');
-	
-	  /**
-	   * We test every property on vendor prefix requirement.
-	   * Once tested, result is cached. It gives us up to 70% perf boost.
-	   * http://jsperf.com/element-style-object-access-vs-plain-object
-	   *
-	   * Prefill cache with known css properties to reduce amount of
-	   * properties we need to feature test at runtime.
-	   * http://davidwalsh.name/vendor-prefix
-	   */
-	  var computed = window.getComputedStyle(document.documentElement, '');
-	  for (var key in computed) {
-	    if (!isNaN(key)) cache[computed[key]] = computed[key];
-	  }
-	}
-	
-	/**
-	 * Test if a property is supported, returns supported property with vendor
-	 * prefix if required. Returns `false` if not supported.
-	 *
-	 * @param {String} prop dash separated
-	 * @return {String|Boolean}
-	 * @api public
-	 */
-	function supportedProperty(prop) {
-	  // For server-side rendering.
-	  if (!el) return prop;
-	
-	  // We have not tested this prop yet, lets do the test.
-	  if (cache[prop] != null) return cache[prop];
-	
-	  // Camelization is required because we can't test using
-	  // css syntax for e.g. in FF.
-	  // Test if property is supported as it is.
-	  if ((0, _camelize2['default'])(prop) in el.style) {
-	    cache[prop] = prop;
-	  }
-	  // Test if property is supported with vendor prefix.
-	  else if (_prefix2['default'].js + (0, _camelize2['default'])('-' + prop) in el.style) {
-	      cache[prop] = _prefix2['default'].css + prop;
-	    } else {
-	      cache[prop] = false;
-	    }
-	
-	  return cache[prop];
-	}
-
-/***/ },
-/* 413 */
-/***/ function(module, exports) {
-
-	'use strict';
-	
-	Object.defineProperty(exports, "__esModule", {
-	  value: true
-	});
-	exports['default'] = camelize;
-	var regExp = /[-\s]+(.)?/g;
-	
-	/**
-	 * Convert dash separated strings to camel cased.
-	 *
-	 * @param {String} str
-	 * @return {String}
-	 */
-	function camelize(str) {
-	  return str.replace(regExp, toUpper);
-	}
-	
-	function toUpper(match, c) {
-	  return c ? c.toUpperCase() : '';
-	}
-
-/***/ },
-/* 414 */
-/***/ function(module, exports, __webpack_require__) {
-
-	'use strict';
-	
-	Object.defineProperty(exports, "__esModule", {
-	  value: true
-	});
-	exports['default'] = supportedValue;
-	
-	var _isInBrowser = __webpack_require__(411);
-	
-	var _isInBrowser2 = _interopRequireDefault(_isInBrowser);
-	
-	var _prefix = __webpack_require__(410);
-	
-	var _prefix2 = _interopRequireDefault(_prefix);
-	
-	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
-	
-	var cache = {};
-	var el = void 0;
-	
-	if (_isInBrowser2['default']) el = document.createElement('p');
-	
-	/**
-	 * Returns prefixed value if needed. Returns `false` if value is not supported.
-	 *
-	 * @param {String} property
-	 * @param {String} value
-	 * @return {String|Boolean}
-	 * @api public
-	 */
-	function supportedValue(property, value) {
-	  // For server-side rendering.
-	  if (!el) return value;
-	
-	  // It is a string or a number as a string like '1'.
-	  // We want only prefixable values here.
-	  if (typeof value !== 'string' || !isNaN(parseInt(value, 10))) return value;
-	
-	  var cacheKey = property + value;
-	
-	  if (cache[cacheKey] != null) return cache[cacheKey];
-	
-	  // IE can even throw an error in some cases, for e.g. style.content = 'bar'
-	  try {
-	    // Test value as it is.
-	    el.style[property] = value;
-	  } catch (err) {
-	    cache[cacheKey] = false;
-	    return false;
-	  }
-	
-	  // Value is supported as it is.
-	  if (el.style[property] !== '') {
-	    cache[cacheKey] = value;
-	  } else {
-	    // Test value with vendor prefix.
-	    value = _prefix2['default'].css + value;
-	
-	    // Hardcode test to convert "flex" to "-ms-flexbox" for IE10.
-	    if (value === '-ms-flex') value = '-ms-flexbox';
-	
-	    el.style[property] = value;
-	
-	    // Value is supported with vendor prefix.
-	    if (el.style[property] !== '') cache[cacheKey] = value;
-	  }
-	
-	  if (!cache[cacheKey]) cache[cacheKey] = false;
-	
-	  // Reset style value.
-	  el.style[property] = '';
-	
-	  return cache[cacheKey];
-	}
-
-/***/ },
-/* 415 */
-/***/ function(module, exports) {
-
-	'use strict';
-	
-	Object.defineProperty(exports, "__esModule", {
-	  value: true
-	});
-	var regExp = /([A-Z])/g;
-	
-	/**
-	 * Replace a string passed from String#replace.
-	 * @param {String} str
-	 * @return {String}
-	 */
-	function replace(str) {
-	  return '-' + str.toLowerCase();
-	}
-	
-	/**
-	 * Convert camel cased properties of a single style to dasherized.
-	 *
-	 * @param {Object} style
-	 * @return {Object} convertedStyle
-	 */
-	function convertCase(style) {
-	  var convertedStyle = {};
-	  for (var prop in style) {
-	    var value = style[prop];
-	    prop = prop.replace(regExp, replace);
-	    convertedStyle[prop] = value;
-	  }
-	  return convertedStyle;
-	}
-	
-	/**
-	 * Allow camel cased property names by converting them back to dasherized.
-	 *
-	 * @param {Rule} rule
-	 */
-	
-	exports.default = function () {
-	  return function jssCamelCase(rule) {
-	    var style = rule.style;
-	
-	    if (!style) return;
-	    if (Array.isArray(style)) {
-	      // Handle rules like @font-face, which can have multiple styles in an array
-	      for (var index = 0; index < style.length; index++) {
-	        style[index] = convertCase(style[index]);
-	      }
-	    } else {
-	      rule.style = convertCase(style);
-	    }
-	  };
-	};
-
-/***/ },
-/* 416 */
-/***/ function(module, exports) {
-
-	'use strict';
-	
-	Object.defineProperty(exports, "__esModule", {
-	  value: true
-	});
-	exports.default = jssPropsSort;
-	/**
-	 * Sort props by length.
-	 *
-	 * @param {Rule} rule
-	 * @api public
-	 */
-	function jssPropsSort() {
-	  function sort(prop0, prop1) {
-	    return prop0.length > prop1.length;
-	  }
-	
-	  return function (rule) {
-	    var style = rule.style;
-	    var type = rule.type;
-	
-	    if (!style || type !== 'regular') return;
-	    var newStyle = {};
-	    var props = Object.keys(style).sort(sort);
-	    for (var prop in props) {
-	      newStyle[props[prop]] = style[props[prop]];
-	    }
-	    rule.style = newStyle;
-	  };
-	}
-
-/***/ },
-/* 417 */
+/* 451 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -16081,27 +23988,27 @@ return /******/ (function(modules) { // webpackBootstrap
 	
 	var _get = function get(object, property, receiver) { if (object === null) object = Function.prototype; var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { return get(parent, property, receiver); } } else if ("value" in desc) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } };
 	
-	var _nodeStyle = __webpack_require__(384);
+	var _nodeStyle = __webpack_require__(446);
 	
 	var _nodeStyle2 = _interopRequireDefault(_nodeStyle);
 	
-	var _Node = __webpack_require__(303);
+	var _Node = __webpack_require__(365);
 	
 	var _Node2 = _interopRequireDefault(_Node);
 	
-	var _Transformable = __webpack_require__(305);
+	var _Transformable = __webpack_require__(367);
 	
 	var _Transformable2 = _interopRequireDefault(_Transformable);
 	
-	var _Sizeable = __webpack_require__(378);
+	var _Sizeable = __webpack_require__(440);
 	
 	var _Sizeable2 = _interopRequireDefault(_Sizeable);
 	
-	var _base = __webpack_require__(387);
+	var _base = __webpack_require__(449);
 	
 	var _base2 = _interopRequireDefault(_base);
 	
-	__webpack_require__(418);
+	__webpack_require__(452);
 	
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 	
@@ -16235,14 +24142,14 @@ return /******/ (function(modules) { // webpackBootstrap
 	exports.default = MotorHTMLNode;
 
 /***/ },
-/* 418 */
+/* 452 */
 /***/ function(module, exports) {
 
 	/*! (C) WebReflection Mit Style License */
 	(function(e,t,n,r){"use strict";function ot(e,t){for(var n=0,r=e.length;n<r;n++)yt(e[n],t)}function ut(e){for(var t=0,n=e.length,r;t<n;t++)r=e[t],st(r,b[ft(r)])}function at(e){return function(t){j(t)&&(yt(t,e),ot(t.querySelectorAll(w),e))}}function ft(e){var t=R.call(e,"is"),n=e.nodeName.toUpperCase(),r=S.call(y,t?v+t.toUpperCase():d+n);return t&&-1<r&&!lt(n,t)?-1:r}function lt(e,t){return-1<w.indexOf(e+'[is="'+t+'"]')}function ct(e){var t=e.currentTarget,n=e.attrChange,r=e.attrName,i=e.target;Z&&(!i||i===t)&&t.attributeChangedCallback&&r!=="style"&&e.prevValue!==e.newValue&&t.attributeChangedCallback(r,n===e[a]?null:e.prevValue,n===e[l]?null:e.newValue)}function ht(e){var t=at(e);return function(e){J.push(t,e.target)}}function pt(e){Y&&(Y=!1,e.currentTarget.removeEventListener(h,pt)),ot((e.target||t).querySelectorAll(w),e.detail===o?o:s),B&&mt()}function dt(e,t){var n=this;W.call(n,e,t),et.call(n,{target:n})}function vt(e,t){D(e,t),rt?rt.observe(e,V):(G&&(e.setAttribute=dt,e[i]=nt(e),e.addEventListener(p,et)),e.addEventListener(c,ct)),e.createdCallback&&Z&&(e.created=!0,e.createdCallback(),e.created=!1)}function mt(){for(var e,t=0,n=F.length;t<n;t++)e=F[t],E.contains(e)||(n--,F.splice(t--,1),yt(e,o))}function gt(e){throw new Error("A "+e+" type is already registered")}function yt(e,t){var n,r=ft(e);-1<r&&(it(e,b[r]),r=0,t===s&&!e[s]?(e[o]=!1,e[s]=!0,r=1,B&&S.call(F,e)<0&&F.push(e)):t===o&&!e[o]&&(e[s]=!1,e[o]=!0,r=1),r&&(n=e[t+"Callback"])&&n.call(e))}if(r in t)return;var i="__"+r+(Math.random()*1e5>>0),s="attached",o="detached",u="extends",a="ADDITION",f="MODIFICATION",l="REMOVAL",c="DOMAttrModified",h="DOMContentLoaded",p="DOMSubtreeModified",d="<",v="=",m=/^[A-Z][A-Z0-9]*(?:-[A-Z0-9]+)+$/,g=["ANNOTATION-XML","COLOR-PROFILE","FONT-FACE","FONT-FACE-SRC","FONT-FACE-URI","FONT-FACE-FORMAT","FONT-FACE-NAME","MISSING-GLYPH"],y=[],b=[],w="",E=t.documentElement,S=y.indexOf||function(e){for(var t=this.length;t--&&this[t]!==e;);return t},x=n.prototype,T=x.hasOwnProperty,N=x.isPrototypeOf,C=n.defineProperty,k=n.getOwnPropertyDescriptor,L=n.getOwnPropertyNames,A=n.getPrototypeOf,O=n.setPrototypeOf,M=!!n.__proto__,_=n.create||function bt(e){return e?(bt.prototype=e,new bt):this},D=O||(M?function(e,t){return e.__proto__=t,e}:L&&k?function(){function e(e,t){for(var n,r=L(t),i=0,s=r.length;i<s;i++)n=r[i],T.call(e,n)||C(e,n,k(t,n))}return function(t,n){do e(t,n);while((n=A(n))&&!N.call(n,t));return t}}():function(e,t){for(var n in t)e[n]=t[n];return e}),P=e.MutationObserver||e.WebKitMutationObserver,H=(e.HTMLElement||e.Element||e.Node).prototype,B=!N.call(H,E),j=B?function(e){return e.nodeType===1}:function(e){return N.call(H,e)},F=B&&[],I=H.cloneNode,q=H.dispatchEvent,R=H.getAttribute,U=H.hasAttribute,z=H.removeAttribute,W=H.setAttribute,X=t.createElement,V=P&&{attributes:!0,characterData:!0,attributeOldValue:!0},$=P||function(e){G=!1,E.removeEventListener(c,$)},J,K=e.requestAnimationFrame||e.webkitRequestAnimationFrame||e.mozRequestAnimationFrame||e.msRequestAnimationFrame||function(e){setTimeout(e,10)},Q=!1,G=!0,Y=!0,Z=!0,et,tt,nt,rt,it,st;O||M?(it=function(e,t){N.call(t,e)||vt(e,t)},st=vt):(it=function(e,t){e[i]||(e[i]=n(!0),vt(e,t))},st=it),B?(G=!1,function(){var e=k(H,"addEventListener"),t=e.value,n=function(e){var t=new CustomEvent(c,{bubbles:!0});t.attrName=e,t.prevValue=R.call(this,e),t.newValue=null,t[l]=t.attrChange=2,z.call(this,e),q.call(this,t)},r=function(e,t){var n=U.call(this,e),r=n&&R.call(this,e),i=new CustomEvent(c,{bubbles:!0});W.call(this,e,t),i.attrName=e,i.prevValue=n?r:null,i.newValue=t,n?i[f]=i.attrChange=1:i[a]=i.attrChange=0,q.call(this,i)},s=function(e){var t=e.currentTarget,n=t[i],r=e.propertyName,s;n.hasOwnProperty(r)&&(n=n[r],s=new CustomEvent(c,{bubbles:!0}),s.attrName=n.name,s.prevValue=n.value||null,s.newValue=n.value=t[r]||null,s.prevValue==null?s[a]=s.attrChange=0:s[f]=s.attrChange=1,q.call(t,s))};e.value=function(e,o,u){e===c&&this.attributeChangedCallback&&this.setAttribute!==r&&(this[i]={className:{name:"class",value:this.className}},this.setAttribute=r,this.removeAttribute=n,t.call(this,"propertychange",s)),t.call(this,e,o,u)},C(H,"addEventListener",e)}()):P||(E.addEventListener(c,$),E.setAttribute(i,1),E.removeAttribute(i),G&&(et=function(e){var t=this,n,r,s;if(t===e.target){n=t[i],t[i]=r=nt(t);for(s in r){if(!(s in n))return tt(0,t,s,n[s],r[s],a);if(r[s]!==n[s])return tt(1,t,s,n[s],r[s],f)}for(s in n)if(!(s in r))return tt(2,t,s,n[s],r[s],l)}},tt=function(e,t,n,r,i,s){var o={attrChange:e,currentTarget:t,attrName:n,prevValue:r,newValue:i};o[s]=e,ct(o)},nt=function(e){for(var t,n,r={},i=e.attributes,s=0,o=i.length;s<o;s++)t=i[s],n=t.name,n!=="setAttribute"&&(r[n]=t.value);return r})),t[r]=function(n,r){c=n.toUpperCase(),Q||(Q=!0,P?(rt=function(e,t){function n(e,t){for(var n=0,r=e.length;n<r;t(e[n++]));}return new P(function(r){for(var i,s,o,u=0,a=r.length;u<a;u++)i=r[u],i.type==="childList"?(n(i.addedNodes,e),n(i.removedNodes,t)):(s=i.target,Z&&s.attributeChangedCallback&&i.attributeName!=="style"&&(o=R.call(s,i.attributeName),o!==i.oldValue&&s.attributeChangedCallback(i.attributeName,i.oldValue,o)))})}(at(s),at(o)),rt.observe(t,{childList:!0,subtree:!0})):(J=[],K(function E(){while(J.length)J.shift().call(null,J.shift());K(E)}),t.addEventListener("DOMNodeInserted",ht(s)),t.addEventListener("DOMNodeRemoved",ht(o))),t.addEventListener(h,pt),t.addEventListener("readystatechange",pt),t.createElement=function(e,n){var r=typeof n=="string"?n:"",i=r?X.call(t,e,r):X.call(t,e),s=""+e,o=S.call(y,(r?v:d)+(r||s).toUpperCase()),u=-1<o;return r&&(i.setAttribute("is",r=r.toLowerCase()),u&&(u=lt(s.toUpperCase(),r))),Z=!t.createElement.innerHTMLHelper,u&&st(i,b[o]),i},H.cloneNode=function(e){var t=I.call(this,!!e),n=ft(t);return-1<n&&st(t,b[n]),e&&ut(t.querySelectorAll(w)),t}),-2<S.call(y,v+c)+S.call(y,d+c)&&gt(n);if(!m.test(c)||-1<S.call(g,c))throw new Error("The type "+n+" is invalid");var i=function(){return f?t.createElement(l,c):t.createElement(l)},a=r||x,f=T.call(a,u),l=f?r[u].toUpperCase():c,c,p;return f&&-1<S.call(y,d+l)&&gt(l),p=y.push((f?v:d)+c)-1,w=w.concat(w.length?",":"",f?l+'[is="'+n.toLowerCase()+'"]':l),i.prototype=b[p]=T.call(a,"prototype")?a.prototype:_(H),ot(t.querySelectorAll(w),s),i}})(window,document,Object,"registerElement");
 
 /***/ },
-/* 419 */
+/* 453 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -16251,7 +24158,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	    value: true
 	});
 	
-	var _Node2 = __webpack_require__(303);
+	var _Node2 = __webpack_require__(365);
 	
 	var _Node3 = _interopRequireDefault(_Node2);
 	
@@ -16286,7 +24193,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	exports.default = PushPaneLayout;
 
 /***/ },
-/* 420 */
+/* 454 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -16296,23 +24203,23 @@ return /******/ (function(modules) { // webpackBootstrap
 	});
 	exports.WebComponent = exports.MotorHTMLScene = exports.MotorHTMLPushPaneLayout = exports.MotorHTMLNode = exports.MotorHTMLBase = undefined;
 	
-	var _base = __webpack_require__(387);
+	var _base = __webpack_require__(449);
 	
 	var _base2 = _interopRequireDefault(_base);
 	
-	var _node = __webpack_require__(417);
+	var _node = __webpack_require__(451);
 	
 	var _node2 = _interopRequireDefault(_node);
 	
-	var _pushPaneLayout = __webpack_require__(421);
+	var _pushPaneLayout = __webpack_require__(455);
 	
 	var _pushPaneLayout2 = _interopRequireDefault(_pushPaneLayout);
 	
-	var _scene = __webpack_require__(382);
+	var _scene = __webpack_require__(444);
 	
 	var _scene2 = _interopRequireDefault(_scene);
 	
-	var _webComponent = __webpack_require__(388);
+	var _webComponent = __webpack_require__(450);
 	
 	var _webComponent2 = _interopRequireDefault(_webComponent);
 	
@@ -16325,7 +24232,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	exports.WebComponent = _webComponent2.default;
 
 /***/ },
-/* 421 */
+/* 455 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -16339,11 +24246,11 @@ return /******/ (function(modules) { // webpackBootstrap
 	
 	var _get = function get(object, property, receiver) { if (object === null) object = Function.prototype; var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { return get(parent, property, receiver); } } else if ("value" in desc) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } };
 	
-	var _node = __webpack_require__(417);
+	var _node = __webpack_require__(451);
 	
 	var _node2 = _interopRequireDefault(_node);
 	
-	var _PushPaneLayout = __webpack_require__(419);
+	var _PushPaneLayout = __webpack_require__(453);
 	
 	var _PushPaneLayout2 = _interopRequireDefault(_PushPaneLayout);
 	
@@ -16386,7 +24293,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	exports.default = MotorHTMLPushPaneLayout;
 
 /***/ },
-/* 422 */
+/* 456 */
 /***/ function(module, exports, __webpack_require__, __webpack_module_template_argument_0__) {
 
 	// Thank's IE8 for his funny defineProperty
@@ -16395,7 +24302,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	});
 
 /***/ },
-/* 423 */
+/* 457 */
 /***/ function(module, exports, __webpack_require__, __webpack_module_template_argument_0__, __webpack_module_template_argument_1__, __webpack_module_template_argument_2__) {
 
 	var dP         = __webpack_require__(__webpack_module_template_argument_0__)
@@ -16408,7 +24315,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	};
 
 /***/ },
-/* 424 */
+/* 458 */
 /***/ function(module, exports, __webpack_require__, __webpack_module_template_argument_0__, __webpack_module_template_argument_1__, __webpack_module_template_argument_2__, __webpack_module_template_argument_3__) {
 
 	var anObject       = __webpack_require__(__webpack_module_template_argument_0__)
@@ -16429,7 +24336,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	};
 
 /***/ },
-/* 425 */
+/* 459 */
 /***/ function(module, exports, __webpack_require__, __webpack_module_template_argument_0__) {
 
 	var isObject = __webpack_require__(__webpack_module_template_argument_0__);
@@ -16439,7 +24346,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	};
 
 /***/ },
-/* 426 */
+/* 460 */
 /***/ function(module, exports, __webpack_require__, __webpack_module_template_argument_0__, __webpack_module_template_argument_1__, __webpack_module_template_argument_2__) {
 
 	module.exports = !__webpack_require__(__webpack_module_template_argument_0__) && !__webpack_require__(__webpack_module_template_argument_1__)(function(){
@@ -16447,7 +24354,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	});
 
 /***/ },
-/* 427 */
+/* 461 */
 /***/ function(module, exports, __webpack_require__, __webpack_module_template_argument_0__, __webpack_module_template_argument_1__) {
 
 	var isObject = __webpack_require__(__webpack_module_template_argument_0__)
@@ -16459,7 +24366,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	};
 
 /***/ },
-/* 428 */
+/* 462 */
 /***/ function(module, exports, __webpack_require__, __webpack_module_template_argument_0__) {
 
 	// 7.1.1 ToPrimitive(input [, PreferredType])
@@ -16476,7 +24383,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	};
 
 /***/ },
-/* 429 */
+/* 463 */
 /***/ function(module, exports, __webpack_require__, __webpack_module_template_argument_0__) {
 
 	// optional / simple context binding
@@ -16501,7 +24408,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	};
 
 /***/ },
-/* 430 */
+/* 464 */
 /***/ function(module, exports, __webpack_require__, __webpack_module_template_argument_0__) {
 
 	var global = __webpack_require__(__webpack_module_template_argument_0__)
@@ -16512,7 +24419,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	};
 
 /***/ },
-/* 431 */
+/* 465 */
 /***/ function(module, exports, __webpack_require__, __webpack_module_template_argument_0__, __webpack_module_template_argument_1__, __webpack_module_template_argument_2__) {
 
 	var def = __webpack_require__(__webpack_module_template_argument_0__).f
@@ -16524,7 +24431,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	};
 
 /***/ },
-/* 432 */
+/* 466 */
 /***/ function(module, exports, __webpack_require__, __webpack_module_template_argument_0__, __webpack_module_template_argument_1__, __webpack_module_template_argument_2__) {
 
 	var store      = __webpack_require__(__webpack_module_template_argument_0__)('wks')
@@ -16540,7 +24447,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	$exports.store = store;
 
 /***/ },
-/* 433 */
+/* 467 */
 /***/ function(module, exports, __webpack_require__, __webpack_module_template_argument_0__, __webpack_module_template_argument_1__) {
 
 	// 19.1.2.14 / 15.2.3.14 Object.keys(O)
@@ -16552,7 +24459,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	};
 
 /***/ },
-/* 434 */
+/* 468 */
 /***/ function(module, exports, __webpack_require__, __webpack_module_template_argument_0__, __webpack_module_template_argument_1__, __webpack_module_template_argument_2__, __webpack_module_template_argument_3__) {
 
 	var has          = __webpack_require__(__webpack_module_template_argument_0__)
@@ -16574,7 +24481,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	};
 
 /***/ },
-/* 435 */
+/* 469 */
 /***/ function(module, exports, __webpack_require__, __webpack_module_template_argument_0__, __webpack_module_template_argument_1__) {
 
 	// to indexed object, toObject with fallback for non-array-like ES3 strings
@@ -16585,7 +24492,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	};
 
 /***/ },
-/* 436 */
+/* 470 */
 /***/ function(module, exports, __webpack_require__, __webpack_module_template_argument_0__) {
 
 	// fallback for non-array-like ES3 and non-enumerable old V8 strings
@@ -16595,7 +24502,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	};
 
 /***/ },
-/* 437 */
+/* 471 */
 /***/ function(module, exports, __webpack_require__, __webpack_module_template_argument_0__, __webpack_module_template_argument_1__, __webpack_module_template_argument_2__) {
 
 	// false -> Array#indexOf
@@ -16621,7 +24528,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	};
 
 /***/ },
-/* 438 */
+/* 472 */
 /***/ function(module, exports, __webpack_require__, __webpack_module_template_argument_0__) {
 
 	// 7.1.15 ToLength
@@ -16632,7 +24539,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	};
 
 /***/ },
-/* 439 */
+/* 473 */
 /***/ function(module, exports, __webpack_require__, __webpack_module_template_argument_0__) {
 
 	var toInteger = __webpack_require__(__webpack_module_template_argument_0__)
@@ -16644,7 +24551,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	};
 
 /***/ },
-/* 440 */
+/* 474 */
 /***/ function(module, exports, __webpack_require__, __webpack_module_template_argument_0__, __webpack_module_template_argument_1__) {
 
 	var shared = __webpack_require__(__webpack_module_template_argument_0__)('keys')
@@ -16654,7 +24561,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	};
 
 /***/ },
-/* 441 */
+/* 475 */
 /***/ function(module, exports, __webpack_require__, __webpack_module_template_argument_0__, __webpack_module_template_argument_1__, __webpack_module_template_argument_2__, __webpack_module_template_argument_3__, __webpack_module_template_argument_4__, __webpack_module_template_argument_5__) {
 
 	// 19.1.2.2 / 15.2.3.5 Object.create(O [, Properties])
@@ -16701,7 +24608,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 442 */
+/* 476 */
 /***/ function(module, exports, __webpack_require__, __webpack_module_template_argument_0__, __webpack_module_template_argument_1__, __webpack_module_template_argument_2__, __webpack_module_template_argument_3__) {
 
 	var dP       = __webpack_require__(__webpack_module_template_argument_0__)
@@ -16719,13 +24626,13 @@ return /******/ (function(modules) { // webpackBootstrap
 	};
 
 /***/ },
-/* 443 */
+/* 477 */
 /***/ function(module, exports, __webpack_require__, __webpack_module_template_argument_0__) {
 
 	module.exports = __webpack_require__(__webpack_module_template_argument_0__).document && document.documentElement;
 
 /***/ },
-/* 444 */
+/* 478 */
 /***/ function(module, exports, __webpack_require__, __webpack_module_template_argument_0__) {
 
 	// 7.1.13 ToObject(argument)
@@ -16735,7 +24642,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	};
 
 /***/ },
-/* 445 */
+/* 479 */
 /***/ function(module, exports, __webpack_require__, __webpack_module_template_argument_0__, __webpack_module_template_argument_1__, __webpack_module_template_argument_2__) {
 
 	// 19.1.2.9 / 15.2.3.2 Object.getPrototypeOf(O)
@@ -16753,7 +24660,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	};
 
 /***/ },
-/* 446 */
+/* 480 */
 /***/ function(module, exports, __webpack_require__, __webpack_module_template_argument_0__, __webpack_module_template_argument_1__) {
 
 	// getting tag from 19.1.3.6 Object.prototype.toString()
@@ -16781,7 +24688,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	};
 
 /***/ },
-/* 447 */
+/* 481 */
 /***/ function(module, exports, __webpack_require__, __webpack_module_template_argument_0__, __webpack_module_template_argument_1__) {
 
 	'use strict';
@@ -16803,7 +24710,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	});
 
 /***/ },
-/* 448 */
+/* 482 */
 /***/ function(module, exports, __webpack_require__, __webpack_module_template_argument_0__, __webpack_module_template_argument_1__) {
 
 	var toInteger = __webpack_require__(__webpack_module_template_argument_0__)
@@ -16825,7 +24732,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	};
 
 /***/ },
-/* 449 */
+/* 483 */
 /***/ function(module, exports, __webpack_require__, __webpack_module_template_argument_0__, __webpack_module_template_argument_1__, __webpack_module_template_argument_2__, __webpack_module_template_argument_3__, __webpack_module_template_argument_4__, __webpack_module_template_argument_5__, __webpack_module_template_argument_6__, __webpack_module_template_argument_7__, __webpack_module_template_argument_8__, __webpack_module_template_argument_9__) {
 
 	'use strict';
@@ -16900,7 +24807,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	};
 
 /***/ },
-/* 450 */
+/* 484 */
 /***/ function(module, exports, __webpack_require__, __webpack_module_template_argument_0__, __webpack_module_template_argument_1__, __webpack_module_template_argument_2__, __webpack_module_template_argument_3__, __webpack_module_template_argument_4__) {
 
 	'use strict';
@@ -16918,7 +24825,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	};
 
 /***/ },
-/* 451 */
+/* 485 */
 /***/ function(module, exports, __webpack_require__, __webpack_module_template_argument_0__) {
 
 	// call something on iterator step with safe closing on error
@@ -16935,7 +24842,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	};
 
 /***/ },
-/* 452 */
+/* 486 */
 /***/ function(module, exports, __webpack_require__, __webpack_module_template_argument_0__, __webpack_module_template_argument_1__) {
 
 	// check on default Array iterator
@@ -16948,7 +24855,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	};
 
 /***/ },
-/* 453 */
+/* 487 */
 /***/ function(module, exports, __webpack_require__, __webpack_module_template_argument_0__, __webpack_module_template_argument_1__, __webpack_module_template_argument_2__, __webpack_module_template_argument_3__) {
 
 	var classof   = __webpack_require__(__webpack_module_template_argument_0__)
@@ -16961,7 +24868,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	};
 
 /***/ },
-/* 454 */
+/* 488 */
 /***/ function(module, exports, __webpack_require__, __webpack_module_template_argument_0__) {
 
 	var ITERATOR     = __webpack_require__(__webpack_module_template_argument_0__)('iterator')
@@ -16987,7 +24894,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	};
 
 /***/ },
-/* 455 */
+/* 489 */
 /***/ function(module, exports, __webpack_require__, __webpack_module_template_argument_0__, __webpack_module_template_argument_1__, __webpack_module_template_argument_2__, __webpack_module_template_argument_3__, __webpack_module_template_argument_4__) {
 
 	'use strict';
@@ -17026,7 +24933,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	addToUnscopables('entries');
 
 /***/ },
-/* 456 */
+/* 490 */
 /***/ function(module, exports, __webpack_require__, __webpack_module_template_argument_0__, __webpack_module_template_argument_1__, __webpack_module_template_argument_2__, __webpack_module_template_argument_3__, __webpack_module_template_argument_4__, __webpack_module_template_argument_5__, __webpack_module_template_argument_6__, __webpack_module_template_argument_7__, __webpack_module_template_argument_8__, __webpack_module_template_argument_9__, __webpack_module_template_argument_10__, __webpack_module_template_argument_11__, __webpack_module_template_argument_12__, __webpack_module_template_argument_13__, __webpack_module_template_argument_14__, __webpack_module_template_argument_15__, __webpack_module_template_argument_16__, __webpack_module_template_argument_17__) {
 
 	'use strict';
@@ -17330,7 +25237,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	});
 
 /***/ },
-/* 457 */
+/* 491 */
 /***/ function(module, exports, __webpack_require__, __webpack_module_template_argument_0__, __webpack_module_template_argument_1__, __webpack_module_template_argument_2__, __webpack_module_template_argument_3__, __webpack_module_template_argument_4__, __webpack_module_template_argument_5__) {
 
 	var ctx         = __webpack_require__(__webpack_module_template_argument_0__)
@@ -17360,7 +25267,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	exports.RETURN = RETURN;
 
 /***/ },
-/* 458 */
+/* 492 */
 /***/ function(module, exports, __webpack_require__, __webpack_module_template_argument_0__, __webpack_module_template_argument_1__, __webpack_module_template_argument_2__) {
 
 	// 7.3.20 SpeciesConstructor(O, defaultConstructor)
@@ -17373,7 +25280,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	};
 
 /***/ },
-/* 459 */
+/* 493 */
 /***/ function(module, exports, __webpack_require__, __webpack_module_template_argument_0__, __webpack_module_template_argument_1__, __webpack_module_template_argument_2__, __webpack_module_template_argument_3__, __webpack_module_template_argument_4__, __webpack_module_template_argument_5__) {
 
 	var ctx                = __webpack_require__(__webpack_module_template_argument_0__)
@@ -17453,7 +25360,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	};
 
 /***/ },
-/* 460 */
+/* 494 */
 /***/ function(module, exports, __webpack_require__, __webpack_module_template_argument_0__, __webpack_module_template_argument_1__, __webpack_module_template_argument_2__) {
 
 	var global    = __webpack_require__(__webpack_module_template_argument_0__)
