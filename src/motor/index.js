@@ -7,5 +7,9 @@ export Scene from './Scene'
 export Sizeable from './Sizeable'
 export Transformable from './Transformable'
 export TreeNode from './TreeNode'
-export * as Utility from './Utility'
 export XYZValues from './XYZValues'
+
+import * as Utility from './Utility'
+export {
+    Utility
+}

@@ -5,7 +5,12 @@ export Grid from './Grid'
 export Molecule from './Molecule'
 export Plane from './Plane'
 export PushMenuLayout from './PushMenuLayout'
-export * as utils from './utils'
 
-export * from './motor'
-export * from './motor-html'
+import * as utils from './utils'
+import * as motor from './motor'
+import * as motorHtml from './motor-html'
+export {
+    utils,
+    motor,
+    motorHtml,
+}
