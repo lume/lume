@@ -11,15 +11,20 @@ Getting Started
 ---------------
 
 The following sample workflows show possible ways to install and start using
-infamous using a few different build tools that are popular today. These
-examples will refer to the [snippets](#snippets) at the end of the README. The
-examples use [`tween.js`](https://github.com/tweenjs/tween.js), a popular library
+infamous using a few different build tools that are popular today, and they
+will refer to the [snippets](#snippets) at the end of the README. The examples
+all use [`tween.js`](https://github.com/tweenjs/tween.js), a popular library
 for animating numbers using "easing curves".
 
 Supported browsers are Chrome, Firefox, Opera, and Edge, and basically any
 browser that supports the `transform-style:preserve-3d` CSS property.
 
 <!--Also read the [docs](http://infamous.github.io/infamous).-->
+
+### Global Workflow (easiest)
+
+Make a file `index.html` containing [Snippet 4](#snippet-4). Now use `File >
+Open` in your browser to open the `index.html` file and see the result.
 
 ### Browserify Workflow
 
@@ -166,6 +171,57 @@ let tween = new Tween(node.rotation)
 Motor.addRenderTask(function(timestamp) {
     tween.update(timestamp)
 })
+```
+
+### Snippet 4
+
+```html
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Project with infamous</title>
+        <style>
+            html, body {
+                width: 100%;
+                height: 100%;
+                margin: 0;
+                padding: 0;
+            }
+        </style>
+    </head>
+    <body>
+        <script src="https://cdn.rawgit.com/trusktr/infamous/v15.0.0/global.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/tween.js/16.3.5/Tween.min.js"></script>
+        <script>
+            const {Motor, Node, Scene} = infamous.motor
+
+            const scene = new Scene
+            scene.mount(document.body)
+
+            const node = new Node({
+                absoluteSize: {x:200, y:200},
+
+                // place it in the middle of it's parent
+                align: {x:0.5, y:0.5},
+                mountPoint: {x:0.5, y:0.5},
+            })
+
+            node.element.innerHTML = 'Hello.'
+            node.element.style.cssText = ' backface-visibility: visible; background: pink; padding: 5px; '
+
+            scene.addChild(node)
+
+            let tween = new TWEEN.Tween(node.rotation)
+              .to({y: 360}, 5000)
+              .easing(TWEEN.Easing.Elastic.InOut)
+              .start()
+
+            Motor.addRenderTask(now => {
+                tween.update(now)
+            })
+        </script>
+    </body>
+</html>
 ```
 
 ---
