@@ -110,7 +110,8 @@ class Motor {
 
     _runRenderTasks(timestamp) {
         for (const task of this._allRenderTasks) {
-            task(timestamp)
+            if (task(timestamp) === false)
+                this.removeRenderTask(task)
         }
     }
 
