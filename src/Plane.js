@@ -36,7 +36,7 @@ export class Plane extends Molecule {
         super(initialOptions);
 
         this.surface = new Surface(this.options);
-        this.node.add(this.surface);
+        this.add(this.surface);
         this.surface.pipe(this.options.handler);
     }
 

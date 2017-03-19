@@ -85,9 +85,9 @@ export class Cube extends Molecule {
         }
 
         this.cubeSideNodes.push(
-            this.node.add(sideMol.node)
+            this.add(sideMol)
         );
-        sideMol.node.add(side.node);
+        sideMol.add(side);
     }
 
     /**

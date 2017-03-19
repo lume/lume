@@ -10,7 +10,6 @@
 import jss from './jss';
 
 import Surface from 'famous/src/core/Surface';
-import RenderNode from 'famous/src/core/RenderNode';
 import Transitionable from 'famous/src/transitions/Transitionable';
 import Easing from 'famous/src/transitions/Easing';
 import TouchSync from 'famous/src/inputs/TouchSync';
@@ -104,8 +103,6 @@ export class PushMenuLayout extends Molecule {
 
         this._createComponents();
         this._initializeEvents();
-
-        this.monkeyPatchNodeRenderMethod()
     }
 
     /**
@@ -230,7 +227,6 @@ export class PushMenuLayout extends Molecule {
 
         // FIXME: WHY THE EFF must I also set align and origin on menuTouchPlane
         // when I've already set it on it's parent (this.menuMol)?????
-        // ^ I think that's a bug in Famous 0.3.x.
         this.menuTouchPlane.setOptions({
             origin: [this.alignment, 0.5],
             align: [this.alignment, 0.5]
@@ -298,7 +294,7 @@ export class PushMenuLayout extends Molecule {
             this.fadePlane = new Plane({
                 size: [undefined,undefined],
                 classes: [
-                    // TODO: switch to jss namespaces.
+                    // TODO: switch to jss namespace.
                     (this.options.menuSide == 'left'? 'infamous-fadeRight': 'infamous-fadeLeft')
                 ],
                 properties: {
@@ -327,14 +323,14 @@ export class PushMenuLayout extends Molecule {
             // TODO: Make fadePlane a sibling to menuMol and contentMol so that
             // contentMol contains only the user;s content. This will affect
             // the code in this.render().
-            this.contentMol.node.add(this.fadePlane.node);
+            this.contentMol.add(this.fadePlane);
         }
 
-        this.node.add(this.mainMol.node);
-        this.mainMol.node.add(this.contentMol.node);
-        this.menuMol.node.add(this.menuTouchPlane.node);
-        this.menuMol.node.add(this.menuContentMol.node);
-        this.mainMol.node.add(this.menuMol.node);
+        this.add(this.mainMol);
+        this.mainMol.add(this.contentMol);
+        this.menuMol.add(this.menuTouchPlane);
+        this.menuMol.add(this.menuContentMol);
+        this.mainMol.add(this.menuMol);
         // TODO: Also create and add a background plane for the menu area so it will catch events that might fall through the menu content.
     }
 
@@ -427,13 +423,8 @@ export class PushMenuLayout extends Molecule {
      *
      * TODO: Make a sibling method to reset the content area.
      */
-    setContent(content) {
-        if (content instanceof Molecule) {
-            this.contentMol.node.add(content.node)
-        }
-        else if (content instanceof RenderNode) {
-            this.contentMol.node.add(content)
-        }
+    setContent(node) {
+        this.contentMol.add(node)
     }
 
     /**
@@ -452,24 +443,20 @@ export class PushMenuLayout extends Molecule {
      *
      * TODO: Remove old content before adding new content.
      */
-    setMenu(content) {
-        if (content instanceof Molecule) {
-            this.menuContentMol.node.add(content.node)
-
-            content.pipe(this.touchSync)
-            content.on('mouseenter', function() {
+    setMenu(node) {
+        this.menuContentMol.add(node)
+        if (node instanceof Molecule) {
+            node.pipe(this.touchSync)
+            node.on('mouseenter', function() {
                 if (!this.isOpening) {
                     this.openMenu();
                 }
             }.bind(this))
-            content.on('mouseleave', function() {
+            node.on('mouseleave', function() {
                 if (!this.isClosing) {
                     this.closeMenu();
                 }
             }.bind(this))
-        }
-        else if (content instanceof RenderNode) {
-            this.menuContentMol.node.add(content)
         }
     }
 
@@ -589,41 +576,35 @@ export class PushMenuLayout extends Molecule {
     /**
      * @override
      */
-    monkeyPatchNodeRenderMethod() {
+    render() {
 
-        const oldRender = this.node.render
-        const layout = this // "this" is this PushMenuLayout
-
-        this.node.render = function() {
-
-            // Blur the content if layout.options.blur is true, and the animation is moveBack.
-            //
-            // TODO: Make the item to be blurred specifiable, perhaps with a method on
-            // layout.
-            if (layout.options.blur && layout.options.fade && layout.options.animationType == 'moveBack') {
-                const momentaryBlur = (layout.animationTransition.get() * layout.options.blurRadius)
-                const filter = {
-                    "-webkit-filter": 'blur('+momentaryBlur+'px)',
-                    "-moz-filter":    'blur('+momentaryBlur+'px)',
-                    "-ms-filter":     'blur('+momentaryBlur+'px)',
-                    "-o-filter":      'blur('+momentaryBlur+'px)',
-                    filter:           'blur('+momentaryBlur+'px)'
-                }
-
-                // TODO TODO TODO v0.1.0: Make fadePlane a sibling with menu and
-                // content molecules or the following breaks if fade is false.
-                // Then remove the check for layout.options.fade in the previous if
-                // statement above.
-                if (layout.contentMol.node._child[1].get() instanceof Surface) {
-                    layout.contentMol.node.get().setProperties(filter)
-                }
-                else if (layout.contentMol.node._child[1] instanceof Plane) {
-                    layout.contentMol.node._child[1].surface.setProperties(filter)
-                }
+        // Blur the content if this.options.blur is true, and the animation is moveBack.
+        //
+        // TODO: Make the item to to be blur specifiable, perhaps with a method on
+        // this.
+        if (this.options.blur && this.options.fade && this.options.animationType == 'moveBack') {
+            let momentaryBlur = (this.animationTransition.get() * this.options.blurRadius)
+            let filter = {
+                "-webkit-filter": 'blur('+momentaryBlur+'px)',
+                "-moz-filter":    'blur('+momentaryBlur+'px)',
+                "-ms-filter":     'blur('+momentaryBlur+'px)',
+                "-o-filter":      'blur('+momentaryBlur+'px)',
+                filter:           'blur('+momentaryBlur+'px)'
             }
 
-            return oldRender.call(this) // "this" here is the actual node, as intended.
+            // TODO TODO TODO v0.1.0: Make fadePlane a sibling with menu and
+            // content molecules or the following breaks if fade is false.
+            // Then remove the check for this.options.fade in the previous if
+            // statement above.
+            if (this.contentMol._child[1].get() instanceof Surface) {
+                this.contentMol.get().setProperties(filter)
+            }
+            else if (this.contentMol._child[1] instanceof Plane) {
+                this.contentMol._child[1].surface.setProperties(filter)
+            }
         }
+
+        return super.render()
     }
 }
 export default PushMenuLayout;

@@ -77,8 +77,7 @@ export class Grid extends Molecule {
             origin: [0.5,0.5]
         });
         // FIXME: ^^^ Why do I need an extra Modifier to align stuff in the middle of the grid cells?????
-        // ^ I think this is a Famous 0.3 bug.
-        this.cellNodes.push(this.node.add(mod).add(mod2));
+        this.cellNodes.push(this.add(mod).add(mod2));
     }
 
     /**
