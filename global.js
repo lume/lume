@@ -17376,7 +17376,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	
 	var _ElementManager3 = _interopRequireDefault(_ElementManager2);
 	
-	var _Motor2 = __webpack_require__(447);
+	var _Motor2 = __webpack_require__(442);
 	
 	var _Motor3 = _interopRequireDefault(_Motor2);
 	
@@ -17388,7 +17388,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	
 	var _PushPaneLayout3 = _interopRequireDefault(_PushPaneLayout2);
 	
-	var _Scene2 = __webpack_require__(443);
+	var _Scene2 = __webpack_require__(445);
 	
 	var _Scene3 = _interopRequireDefault(_Scene2);
 	
@@ -18406,7 +18406,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	
 	var _Node2 = _interopRequireDefault(_Node);
 	
-	var _Motor = __webpack_require__(447);
+	var _Motor = __webpack_require__(442);
 	
 	var _Motor2 = _interopRequireDefault(_Motor);
 	
@@ -18599,7 +18599,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	
 	var _Transformable2 = _interopRequireDefault(_Transformable);
 	
-	var _ImperativeBase = __webpack_require__(442);
+	var _ImperativeBase = __webpack_require__(444);
 	
 	var _ImperativeBase2 = _interopRequireDefault(_ImperativeBase);
 	
@@ -18607,7 +18607,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	
 	var _node2 = _interopRequireDefault(_node);
 	
-	var _Scene = __webpack_require__(443);
+	var _Scene = __webpack_require__(445);
 	
 	var _Scene2 = _interopRequireDefault(_Scene);
 	
@@ -20016,13 +20016,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	        }, {
 	            key: 'position',
 	            set: function set(newValue) {
-	                if (!(newValue instanceof Object)) throw new TypeError('Invalid value for Transformable#position.');
-	
-	                if (typeof newValue.x != 'undefined') this._properties.position._x = newValue.x;
-	                if (typeof newValue.y != 'undefined') this._properties.position._y = newValue.y;
-	                if (typeof newValue.z != 'undefined') this._properties.position._z = newValue.z;
-	
-	                this.triggerEvent('propertychange', 'position');
+	                this._setPropertyXYZ(Transformable, 'position', newValue);
 	            },
 	            get: function get() {
 	                return this._properties.position;
@@ -20038,13 +20032,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	        }, {
 	            key: 'rotation',
 	            set: function set(newValue) {
-	                if (!(newValue instanceof Object)) throw new TypeError('Invalid value for Node#rotation.');
-	
-	                if (typeof newValue.x != 'undefined') this._properties.rotation._x = newValue.x;
-	                if (typeof newValue.y != 'undefined') this._properties.rotation._y = newValue.y;
-	                if (typeof newValue.z != 'undefined') this._properties.rotation._z = newValue.z;
-	
-	                this.triggerEvent('propertychange', 'rotation');
+	                this._setPropertyXYZ(Transformable, 'rotation', newValue);
 	            },
 	            get: function get() {
 	                return this._properties.rotation;
@@ -20060,13 +20048,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	        }, {
 	            key: 'scale',
 	            set: function set(newValue) {
-	                if (!(newValue instanceof Object)) throw new TypeError('Invalid value for Node#scale.');
-	
-	                if (typeof newValue.x != 'undefined') this._properties.scale._x = newValue.x;
-	                if (typeof newValue.y != 'undefined') this._properties.scale._y = newValue.y;
-	                if (typeof newValue.z != 'undefined') this._properties.scale._z = newValue.z;
-	
-	                this.triggerEvent('propertychange', 'scale');
+	                this._setPropertyXYZ(Transformable, 'scale', newValue);
 	            },
 	            get: function get() {
 	                return this._properties.scale;
@@ -20081,10 +20063,9 @@ return /******/ (function(modules) { // webpackBootstrap
 	
 	        }, {
 	            key: 'opacity',
-	            set: function set(opacity) {
-	                if (!isRealNumber(opacity)) throw new Error('Expected a real number for Node#opacity.');
-	                this._properties.opacity = opacity;
-	                this.triggerEvent('propertychange', 'opacity');
+	            set: function set(newValue) {
+	                if (!isRealNumber(newValue)) newValue = undefined;
+	                this._setPropertySingle(Transformable, 'opacity', newValue, 'number');
 	            },
 	            get: function get() {
 	                return this._properties.opacity;
@@ -20103,13 +20084,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	        }, {
 	            key: 'align',
 	            set: function set(newValue) {
-	                if (!(newValue instanceof Object)) throw new TypeError('Invalid value for Node#align.');
-	
-	                if (typeof newValue.x != 'undefined') this._properties.align._x = newValue.x;
-	                if (typeof newValue.y != 'undefined') this._properties.align._y = newValue.y;
-	                if (typeof newValue.z != 'undefined') this._properties.align._z = newValue.z;
-	
-	                this.triggerEvent('propertychange', 'align');
+	                this._setPropertyXYZ(Transformable, 'align', newValue);
 	            },
 	            get: function get() {
 	                return this._properties.align;
@@ -20127,13 +20102,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	        }, {
 	            key: 'mountPoint',
 	            set: function set(newValue) {
-	                if (!(newValue instanceof Object)) throw new TypeError('Invalid value for Node#mountPoint.');
-	
-	                if (typeof newValue.x != 'undefined') this._properties.mountPoint._x = newValue.x;
-	                if (typeof newValue.y != 'undefined') this._properties.mountPoint._y = newValue.y;
-	                if (typeof newValue.z != 'undefined') this._properties.mountPoint._z = newValue.z;
-	
-	                this.triggerEvent('propertychange', 'mountPoint');
+	                this._setPropertyXYZ(Transformable, 'mountPoint', newValue);
 	            },
 	            get: function get() {
 	                return this._properties.mountPoint;
@@ -21393,6 +21362,8 @@ return /******/ (function(modules) { // webpackBootstrap
 	});
 	exports.default = undefined;
 	
+	var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; };
+	
 	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 	
 	var _Utility = __webpack_require__(369);
@@ -21408,6 +21379,10 @@ return /******/ (function(modules) { // webpackBootstrap
 	var _Observable = __webpack_require__(439);
 	
 	var _Observable2 = _interopRequireDefault(_Observable);
+	
+	var _Motor = __webpack_require__(442);
+	
+	var _Motor2 = _interopRequireDefault(_Motor);
 	
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 	
@@ -21540,6 +21515,62 @@ return /******/ (function(modules) { // webpackBootstrap
 	             */
 	
 	        }, {
+	            key: '_setPropertyXYZ',
+	
+	            // no need for a properties getter.
+	
+	            value: function _setPropertyXYZ(Class, name, newValue) {
+	                var _this3 = this;
+	
+	                if (!(newValue instanceof Object || newValue instanceof Function)) throw new TypeError('Invalid value for ' + Class.name + '#' + name + '.');
+	
+	                if (newValue instanceof Function) {
+	                    // remove previous task if any.
+	                    _Motor2.default.addRenderTask(function (time) {
+	                        var result = newValue(_this3._properties[name]._x, _this3._properties[name]._y, _this3._properties[name]._z, time);
+	
+	                        if (result === false) return false;
+	
+	                        _this3[name] = result;
+	                    });
+	                } else {
+	                    var change = false;
+	
+	                    if (typeof newValue.x != 'undefined') {
+	                        this._properties[name]._x = newValue.x;change = true;
+	                    }
+	                    if (typeof newValue.y != 'undefined') {
+	                        this._properties[name]._y = newValue.y;change = true;
+	                    }
+	                    if (typeof newValue.z != 'undefined') {
+	                        this._properties[name]._z = newValue.z;change = true;
+	                    }
+	
+	                    if (change) this.triggerEvent('propertychange', name);
+	                }
+	            }
+	        }, {
+	            key: '_setPropertySingle',
+	            value: function _setPropertySingle(Class, name, newValue, type) {
+	                var _this4 = this;
+	
+	                if (!((typeof newValue === 'undefined' ? 'undefined' : _typeof(newValue)) == type || newValue instanceof Function)) throw new TypeError('Invalid value for ' + Class.name + '#' + name + '.');
+	
+	                if (newValue instanceof Function) {
+	                    // remove previous task if any.
+	                    _Motor2.default.addRenderTask(function (time) {
+	                        var result = newValue(_this4._properties[name], time);
+	
+	                        if (result === false) return false;
+	
+	                        _this4[name] = result;
+	                    });
+	                } else {
+	                    this._properties[name] = newValue;
+	                    this.triggerEvent('propertychange', name);
+	                }
+	            }
+	        }, {
 	            key: 'sizeMode',
 	            set: function set(newValue) {
 	                if (!(newValue instanceof Object)) throw new TypeError('Invalid value for Node#sizeMode.');
@@ -21641,8 +21672,6 @@ return /******/ (function(modules) { // webpackBootstrap
 	
 	                if (properties.proportionalSize) this.proportionalSize = properties.proportionalSize;
 	            }
-	            // no need for a properties getter.
-	
 	        }]);
 	
 	        return Sizeable;
@@ -21899,6 +21928,321 @@ return /******/ (function(modules) { // webpackBootstrap
 	Object.defineProperty(exports, "__esModule", {
 	    value: true
 	});
+	
+	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+	
+	var _documentReady = __webpack_require__(443);
+	
+	var _documentReady2 = _interopRequireDefault(_documentReady);
+	
+	__webpack_require__(369);
+	
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+	
+	function _asyncToGenerator(fn) { return function () { var gen = fn.apply(this, arguments); return new Promise(function (resolve, reject) { function step(key, arg) { try { var info = gen[key](arg); var value = info.value; } catch (error) { reject(error); return; } if (info.done) { resolve(value); } else { return Promise.resolve(value).then(function (value) { step("next", value); }, function (err) { step("throw", err); }); } } return step("next"); }); }; }
+	
+	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+	
+	var documentIsReady = false;
+	
+	var Motor = function () {
+	    function Motor() {
+	        _classCallCheck(this, Motor);
+	
+	        this._inFrame = false; // true when inside a requested animation frame.
+	        this._rAF = null; // the current animation frame, or null.
+	        this._animationLoopStarted = false;
+	        this._allRenderTasks = new Set();
+	        this._nodesToBeRendered = new Set();
+	    }
+	
+	    /**
+	     * Starts an rAF loop and runs the render tasks in the _renderTasks stack.
+	     * As long as there are tasks in the stack, the loop continues. When the
+	     * stack becomes empty due to removal of tasks, the rAF stops and the app
+	     * sits there doing nothing -- silence, crickets.
+	     */
+	
+	
+	    _createClass(Motor, [{
+	        key: '_startAnimationLoop',
+	        value: function () {
+	            var _ref = _asyncToGenerator(regeneratorRuntime.mark(function _callee() {
+	                var _this = this;
+	
+	                var motorLoop;
+	                return regeneratorRuntime.wrap(function _callee$(_context) {
+	                    while (1) {
+	                        switch (_context.prev = _context.next) {
+	                            case 0:
+	                                if (!this._animationLoopStarted) {
+	                                    _context.next = 2;
+	                                    break;
+	                                }
+	
+	                                return _context.abrupt('return');
+	
+	                            case 2:
+	
+	                                this._animationLoopStarted = true;
+	
+	                                if (documentIsReady) {
+	                                    _context.next = 7;
+	                                    break;
+	                                }
+	
+	                                _context.next = 6;
+	                                return (0, _documentReady2.default)();
+	
+	                            case 6:
+	                                documentIsReady = true;
+	
+	                            case 7:
+	
+	                                // DIRECT ANIMATION LOOP ///////////////////////////////////
+	                                // So now we can render after the scene is mounted.
+	                                motorLoop = function motorLoop(timestamp) {
+	                                    _this._inFrame = true;
+	
+	                                    _this._runRenderTasks(timestamp);
+	                                    _this._renderNodes(timestamp);
+	
+	                                    // If any tasks are left to run, continue the animation loop.
+	                                    if (_this._allRenderTasks.size) _this._rAF = requestAnimationFrame(motorLoop);else {
+	                                        _this._rAF = null;
+	                                        _this._animationLoopStarted = false;
+	                                    }
+	
+	                                    _this._inFrame = false;
+	                                };
+	
+	                                this._rAF = requestAnimationFrame(motorLoop);
+	
+	                                // ANIMATION LOOP USING WHILE AND AWAIT ///////////////////////////////////
+	                                //this._rAF = true
+	                                //let timestamp = null
+	                                //while (this._rAF) {
+	                                //timestamp = await animationFrame()
+	                                //this._inFrame = true
+	
+	                                //this._runRenderTasks(timestamp)
+	                                //this._renderNodes(timestamp)
+	
+	                                //// If any tasks are left to run, continue the animation loop.
+	                                //if (!this._allRenderTasks.size) {
+	                                //this._rAF = null
+	                                //this._animationLoopStarted = false
+	                                //}
+	
+	                                //this._inFrame = false
+	                                //}
+	
+	                            case 9:
+	                            case 'end':
+	                                return _context.stop();
+	                        }
+	                    }
+	                }, _callee, this);
+	            }));
+	
+	            function _startAnimationLoop() {
+	                return _ref.apply(this, arguments);
+	            }
+	
+	            return _startAnimationLoop;
+	        }()
+	
+	        /**
+	         * When a render tasks is added a new rAF loop will be started if there
+	         * isn't one currently.
+	         *
+	         * A render task is simply a function that will be called over and over
+	         * again, in the Motor's animation loop. That's all, nothing special.
+	         * However, if a Node setter is used inside of a render task, then the Node
+	         * will tell Motor that it needs to be re-rendered, which will happen at
+	         * the end of the current frame. If a Node setter is used outside of a
+	         * render task (i.e. outside of the Motor's animation loop), then the Node
+	         * tells Motor to re-render the Node on the next animation loop tick.
+	         * Basically, regardless of where the Node's setters are used (inside or
+	         * outside of the Motor's animation loop), rendering always happens inside
+	         * the loop.
+	         *
+	         * @param {Function} fn The render task to add.
+	         * @return {Function} A reference to the render task. Useful for saving to
+	         * a variable so that it can later be passed to Motor.removeRenderTask().
+	         */
+	
+	    }, {
+	        key: 'addRenderTask',
+	        value: function addRenderTask(fn) {
+	            if (typeof fn != 'function') throw new Error('Render task must be a function.');
+	
+	            this._allRenderTasks.add(fn);
+	
+	            // If the render loop isn't started, start it.
+	            if (!this._animationLoopStarted) this._startAnimationLoop();
+	
+	            return fn;
+	        }
+	    }, {
+	        key: 'removeRenderTask',
+	        value: function removeRenderTask(fn) {
+	            this._allRenderTasks.delete(fn);
+	        }
+	    }, {
+	        key: '_runRenderTasks',
+	        value: function _runRenderTasks(timestamp) {
+	            var _iteratorNormalCompletion = true;
+	            var _didIteratorError = false;
+	            var _iteratorError = undefined;
+	
+	            try {
+	                for (var _iterator = this._allRenderTasks[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
+	                    var task = _step.value;
+	
+	                    if (task(timestamp) === false) this.removeRenderTask(task);
+	                }
+	            } catch (err) {
+	                _didIteratorError = true;
+	                _iteratorError = err;
+	            } finally {
+	                try {
+	                    if (!_iteratorNormalCompletion && _iterator.return) {
+	                        _iterator.return();
+	                    }
+	                } finally {
+	                    if (_didIteratorError) {
+	                        throw _iteratorError;
+	                    }
+	                }
+	            }
+	        }
+	    }, {
+	        key: '_setNodeToBeRendered',
+	        value: function _setNodeToBeRendered(node) {
+	            if (!this._nodesToBeRendered.has(node)) this._nodesToBeRendered.add(node);
+	
+	            if (!this._inFrame) this._startAnimationLoop();
+	        }
+	    }, {
+	        key: '_renderNodes',
+	        value: function _renderNodes(timestamp) {
+	            var _iteratorNormalCompletion2 = true;
+	            var _didIteratorError2 = false;
+	            var _iteratorError2 = undefined;
+	
+	            try {
+	                for (var _iterator2 = this._nodesToBeRendered[Symbol.iterator](), _step2; !(_iteratorNormalCompletion2 = (_step2 = _iterator2.next()).done); _iteratorNormalCompletion2 = true) {
+	                    var node = _step2.value;
+	
+	                    node._render(timestamp);
+	                }
+	            } catch (err) {
+	                _didIteratorError2 = true;
+	                _iteratorError2 = err;
+	            } finally {
+	                try {
+	                    if (!_iteratorNormalCompletion2 && _iterator2.return) {
+	                        _iterator2.return();
+	                    }
+	                } finally {
+	                    if (_didIteratorError2) {
+	                        throw _iteratorError2;
+	                    }
+	                }
+	            }
+	
+	            this._nodesToBeRendered.clear();
+	        }
+	    }]);
+	
+	    return Motor;
+	}();
+	
+	// export a singleton instance rather than the class directly.
+	
+	
+	exports.default = new Motor();
+
+/***/ },
+/* 443 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+	
+	Object.defineProperty(exports, "__esModule", {
+	    value: true
+	});
+	
+	var _regenerator = __webpack_require__(371);
+	
+	var _regenerator2 = _interopRequireDefault(_regenerator);
+	
+	var _promise = __webpack_require__(373);
+	
+	var _promise2 = _interopRequireDefault(_promise);
+	
+	var _asyncToGenerator2 = __webpack_require__(438);
+	
+	var _asyncToGenerator3 = _interopRequireDefault(_asyncToGenerator2);
+	
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+	
+	/**
+	 * Await for this to run code after the DOM has been parsed and loaded (but not
+	 * sub-resources like images, scripts, etc).
+	 *
+	 * @example
+	 * ```js
+	 * async function main() {
+	 *     await documentReady()
+	 *     console.log('Document ready!')
+	 * }
+	 * main()
+	 * ```
+	 */
+	
+	exports.default = function () {
+	    var _ref = (0, _asyncToGenerator3.default)(_regenerator2.default.mark(function _callee() {
+	        return _regenerator2.default.wrap(function _callee$(_context) {
+	            while (1) {
+	                switch (_context.prev = _context.next) {
+	                    case 0:
+	                        if (!(document.readyState === 'loading')) {
+	                            _context.next = 3;
+	                            break;
+	                        }
+	
+	                        _context.next = 3;
+	                        return new _promise2.default(function (resolve) {
+	                            document.addEventListener('DOMContentLoaded', resolve);
+	                        });
+	
+	                    case 3:
+	                    case 'end':
+	                        return _context.stop();
+	                }
+	            }
+	        }, _callee, this);
+	    }));
+	
+	    function documentReady() {
+	        return _ref.apply(this, arguments);
+	    }
+	
+	    return documentReady;
+	}();
+	//# sourceMappingURL=documentReady.js.map
+
+/***/ },
+/* 444 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+	
+	Object.defineProperty(exports, "__esModule", {
+	    value: true
+	});
 	exports.default = undefined;
 	
 	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
@@ -21917,11 +22261,11 @@ return /******/ (function(modules) { // webpackBootstrap
 	
 	var _Node2 = _interopRequireDefault(_Node);
 	
-	var _Scene = __webpack_require__(443);
+	var _Scene = __webpack_require__(445);
 	
 	var _Scene2 = _interopRequireDefault(_Scene);
 	
-	var _Motor = __webpack_require__(447);
+	var _Motor = __webpack_require__(442);
 	
 	var _Motor2 = _interopRequireDefault(_Motor);
 	
@@ -22291,7 +22635,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	exports.default = ImperativeBase;
 
 /***/ },
-/* 443 */
+/* 445 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -22313,7 +22657,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	
 	var _Sizeable2 = _interopRequireDefault(_Sizeable);
 	
-	var _ImperativeBase = __webpack_require__(442);
+	var _ImperativeBase = __webpack_require__(444);
 	
 	var _ImperativeBase2 = _interopRequireDefault(_ImperativeBase);
 	
@@ -22321,11 +22665,11 @@ return /******/ (function(modules) { // webpackBootstrap
 	
 	var _XYZValues2 = _interopRequireDefault(_XYZValues);
 	
-	var _scene = __webpack_require__(444);
+	var _scene = __webpack_require__(446);
 	
 	var _scene2 = _interopRequireDefault(_scene);
 	
-	var _documentReady = __webpack_require__(448);
+	var _documentReady = __webpack_require__(443);
 	
 	var _documentReady2 = _interopRequireDefault(_documentReady);
 	
@@ -22537,7 +22881,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	exports.default = Scene;
 
 /***/ },
-/* 444 */
+/* 446 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -22551,15 +22895,15 @@ return /******/ (function(modules) { // webpackBootstrap
 	
 	var _get = function get(object, property, receiver) { if (object === null) object = Function.prototype; var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { return get(parent, property, receiver); } } else if ("value" in desc) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } };
 	
-	var _sceneStyle = __webpack_require__(445);
+	var _sceneStyle = __webpack_require__(447);
 	
 	var _sceneStyle2 = _interopRequireDefault(_sceneStyle);
 	
-	var _Motor = __webpack_require__(447);
+	var _Motor = __webpack_require__(442);
 	
 	var _Motor2 = _interopRequireDefault(_Motor);
 	
-	var _Scene = __webpack_require__(443);
+	var _Scene = __webpack_require__(445);
 	
 	var _Scene2 = _interopRequireDefault(_Scene);
 	
@@ -22697,7 +23041,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	exports.default = MotorHTMLScene;
 
 /***/ },
-/* 445 */
+/* 447 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -22706,7 +23050,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	    value: true
 	});
 	
-	var _nodeStyle = __webpack_require__(446);
+	var _nodeStyle = __webpack_require__(448);
 	
 	var _nodeStyle2 = _interopRequireDefault(_nodeStyle);
 	
@@ -22723,7 +23067,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	});
 
 /***/ },
-/* 446 */
+/* 448 */
 /***/ function(module, exports) {
 
 	'use strict';
@@ -22748,321 +23092,6 @@ return /******/ (function(modules) { // webpackBootstrap
 	
 	    transformStyle: 'preserve-3d'
 	};
-
-/***/ },
-/* 447 */
-/***/ function(module, exports, __webpack_require__) {
-
-	'use strict';
-	
-	Object.defineProperty(exports, "__esModule", {
-	    value: true
-	});
-	
-	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
-	
-	var _documentReady = __webpack_require__(448);
-	
-	var _documentReady2 = _interopRequireDefault(_documentReady);
-	
-	__webpack_require__(369);
-	
-	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-	
-	function _asyncToGenerator(fn) { return function () { var gen = fn.apply(this, arguments); return new Promise(function (resolve, reject) { function step(key, arg) { try { var info = gen[key](arg); var value = info.value; } catch (error) { reject(error); return; } if (info.done) { resolve(value); } else { return Promise.resolve(value).then(function (value) { step("next", value); }, function (err) { step("throw", err); }); } } return step("next"); }); }; }
-	
-	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-	
-	var documentIsReady = false;
-	
-	var Motor = function () {
-	    function Motor() {
-	        _classCallCheck(this, Motor);
-	
-	        this._inFrame = false; // true when inside a requested animation frame.
-	        this._rAF = null; // the current animation frame, or null.
-	        this._animationLoopStarted = false;
-	        this._allRenderTasks = new Set();
-	        this._nodesToBeRendered = new Set();
-	    }
-	
-	    /**
-	     * Starts an rAF loop and runs the render tasks in the _renderTasks stack.
-	     * As long as there are tasks in the stack, the loop continues. When the
-	     * stack becomes empty due to removal of tasks, the rAF stops and the app
-	     * sits there doing nothing -- silence, crickets.
-	     */
-	
-	
-	    _createClass(Motor, [{
-	        key: '_startAnimationLoop',
-	        value: function () {
-	            var _ref = _asyncToGenerator(regeneratorRuntime.mark(function _callee() {
-	                var _this = this;
-	
-	                var motorLoop;
-	                return regeneratorRuntime.wrap(function _callee$(_context) {
-	                    while (1) {
-	                        switch (_context.prev = _context.next) {
-	                            case 0:
-	                                if (!this._animationLoopStarted) {
-	                                    _context.next = 2;
-	                                    break;
-	                                }
-	
-	                                return _context.abrupt('return');
-	
-	                            case 2:
-	
-	                                this._animationLoopStarted = true;
-	
-	                                if (documentIsReady) {
-	                                    _context.next = 7;
-	                                    break;
-	                                }
-	
-	                                _context.next = 6;
-	                                return (0, _documentReady2.default)();
-	
-	                            case 6:
-	                                documentIsReady = true;
-	
-	                            case 7:
-	
-	                                // DIRECT ANIMATION LOOP ///////////////////////////////////
-	                                // So now we can render after the scene is mounted.
-	                                motorLoop = function motorLoop(timestamp) {
-	                                    _this._inFrame = true;
-	
-	                                    _this._runRenderTasks(timestamp);
-	                                    _this._renderNodes(timestamp);
-	
-	                                    // If any tasks are left to run, continue the animation loop.
-	                                    if (_this._allRenderTasks.size) _this._rAF = requestAnimationFrame(motorLoop);else {
-	                                        _this._rAF = null;
-	                                        _this._animationLoopStarted = false;
-	                                    }
-	
-	                                    _this._inFrame = false;
-	                                };
-	
-	                                this._rAF = requestAnimationFrame(motorLoop);
-	
-	                                // ANIMATION LOOP USING WHILE AND AWAIT ///////////////////////////////////
-	                                //this._rAF = true
-	                                //let timestamp = null
-	                                //while (this._rAF) {
-	                                //timestamp = await animationFrame()
-	                                //this._inFrame = true
-	
-	                                //this._runRenderTasks(timestamp)
-	                                //this._renderNodes(timestamp)
-	
-	                                //// If any tasks are left to run, continue the animation loop.
-	                                //if (!this._allRenderTasks.size) {
-	                                //this._rAF = null
-	                                //this._animationLoopStarted = false
-	                                //}
-	
-	                                //this._inFrame = false
-	                                //}
-	
-	                            case 9:
-	                            case 'end':
-	                                return _context.stop();
-	                        }
-	                    }
-	                }, _callee, this);
-	            }));
-	
-	            function _startAnimationLoop() {
-	                return _ref.apply(this, arguments);
-	            }
-	
-	            return _startAnimationLoop;
-	        }()
-	
-	        /**
-	         * When a render tasks is added a new rAF loop will be started if there
-	         * isn't one currently.
-	         *
-	         * A render task is simply a function that will be called over and over
-	         * again, in the Motor's animation loop. That's all, nothing special.
-	         * However, if a Node setter is used inside of a render task, then the Node
-	         * will tell Motor that it needs to be re-rendered, which will happen at
-	         * the end of the current frame. If a Node setter is used outside of a
-	         * render task (i.e. outside of the Motor's animation loop), then the Node
-	         * tells Motor to re-render the Node on the next animation loop tick.
-	         * Basically, regardless of where the Node's setters are used (inside or
-	         * outside of the Motor's animation loop), rendering always happens inside
-	         * the loop.
-	         *
-	         * @param {Function} fn The render task to add.
-	         * @return {Function} A reference to the render task. Useful for saving to
-	         * a variable so that it can later be passed to Motor.removeRenderTask().
-	         */
-	
-	    }, {
-	        key: 'addRenderTask',
-	        value: function addRenderTask(fn) {
-	            if (typeof fn != 'function') throw new Error('Render task must be a function.');
-	
-	            this._allRenderTasks.add(fn);
-	
-	            // If the render loop isn't started, start it.
-	            if (!this._animationLoopStarted) this._startAnimationLoop();
-	
-	            return fn;
-	        }
-	    }, {
-	        key: 'removeRenderTask',
-	        value: function removeRenderTask(fn) {
-	            this._allRenderTasks.delete(fn);
-	        }
-	    }, {
-	        key: '_runRenderTasks',
-	        value: function _runRenderTasks(timestamp) {
-	            var _iteratorNormalCompletion = true;
-	            var _didIteratorError = false;
-	            var _iteratorError = undefined;
-	
-	            try {
-	                for (var _iterator = this._allRenderTasks[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
-	                    var task = _step.value;
-	
-	                    task(timestamp);
-	                }
-	            } catch (err) {
-	                _didIteratorError = true;
-	                _iteratorError = err;
-	            } finally {
-	                try {
-	                    if (!_iteratorNormalCompletion && _iterator.return) {
-	                        _iterator.return();
-	                    }
-	                } finally {
-	                    if (_didIteratorError) {
-	                        throw _iteratorError;
-	                    }
-	                }
-	            }
-	        }
-	    }, {
-	        key: '_setNodeToBeRendered',
-	        value: function _setNodeToBeRendered(node) {
-	            if (!this._nodesToBeRendered.has(node)) this._nodesToBeRendered.add(node);
-	
-	            if (!this._inFrame) this._startAnimationLoop();
-	        }
-	    }, {
-	        key: '_renderNodes',
-	        value: function _renderNodes(timestamp) {
-	            var _iteratorNormalCompletion2 = true;
-	            var _didIteratorError2 = false;
-	            var _iteratorError2 = undefined;
-	
-	            try {
-	                for (var _iterator2 = this._nodesToBeRendered[Symbol.iterator](), _step2; !(_iteratorNormalCompletion2 = (_step2 = _iterator2.next()).done); _iteratorNormalCompletion2 = true) {
-	                    var node = _step2.value;
-	
-	                    node._render(timestamp);
-	                }
-	            } catch (err) {
-	                _didIteratorError2 = true;
-	                _iteratorError2 = err;
-	            } finally {
-	                try {
-	                    if (!_iteratorNormalCompletion2 && _iterator2.return) {
-	                        _iterator2.return();
-	                    }
-	                } finally {
-	                    if (_didIteratorError2) {
-	                        throw _iteratorError2;
-	                    }
-	                }
-	            }
-	
-	            this._nodesToBeRendered.clear();
-	        }
-	    }]);
-	
-	    return Motor;
-	}();
-	
-	// export a singleton instance rather than the class directly.
-	
-	
-	exports.default = new Motor();
-
-/***/ },
-/* 448 */
-/***/ function(module, exports, __webpack_require__) {
-
-	'use strict';
-	
-	Object.defineProperty(exports, "__esModule", {
-	    value: true
-	});
-	
-	var _regenerator = __webpack_require__(371);
-	
-	var _regenerator2 = _interopRequireDefault(_regenerator);
-	
-	var _promise = __webpack_require__(373);
-	
-	var _promise2 = _interopRequireDefault(_promise);
-	
-	var _asyncToGenerator2 = __webpack_require__(438);
-	
-	var _asyncToGenerator3 = _interopRequireDefault(_asyncToGenerator2);
-	
-	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-	
-	/**
-	 * Await for this to run code after the DOM has been parsed and loaded (but not
-	 * sub-resources like images, scripts, etc).
-	 *
-	 * @example
-	 * ```js
-	 * async function main() {
-	 *     await documentReady()
-	 *     console.log('Document ready!')
-	 * }
-	 * main()
-	 * ```
-	 */
-	
-	exports.default = function () {
-	    var _ref = (0, _asyncToGenerator3.default)(_regenerator2.default.mark(function _callee() {
-	        return _regenerator2.default.wrap(function _callee$(_context) {
-	            while (1) {
-	                switch (_context.prev = _context.next) {
-	                    case 0:
-	                        if (!(document.readyState === 'loading')) {
-	                            _context.next = 3;
-	                            break;
-	                        }
-	
-	                        _context.next = 3;
-	                        return new _promise2.default(function (resolve) {
-	                            document.addEventListener('DOMContentLoaded', resolve);
-	                        });
-	
-	                    case 3:
-	                    case 'end':
-	                        return _context.stop();
-	                }
-	            }
-	        }, _callee, this);
-	    }));
-	
-	    function documentReady() {
-	        return _ref.apply(this, arguments);
-	    }
-	
-	    return documentReady;
-	}();
-	//# sourceMappingURL=documentReady.js.map
 
 /***/ },
 /* 449 */
@@ -23988,7 +24017,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	
 	var _get = function get(object, property, receiver) { if (object === null) object = Function.prototype; var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { return get(parent, property, receiver); } } else if ("value" in desc) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } };
 	
-	var _nodeStyle = __webpack_require__(446);
+	var _nodeStyle = __webpack_require__(448);
 	
 	var _nodeStyle2 = _interopRequireDefault(_nodeStyle);
 	
@@ -24215,7 +24244,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	
 	var _pushPaneLayout2 = _interopRequireDefault(_pushPaneLayout);
 	
-	var _scene = __webpack_require__(444);
+	var _scene = __webpack_require__(446);
 	
 	var _scene2 = _interopRequireDefault(_scene);
 	
