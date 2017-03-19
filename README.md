@@ -11,203 +11,97 @@ Getting Started
 ---------------
 
 The following sample workflows show possible ways to install and start using
-infamous. These examples will refer to the [snippets](#snippets) at the end of
-the README.
+infamous using a few different build tools that are popular today. These
+examples will refer to the [snippets](#snippets) at the end of the README. The
+examples use [`tween.js`](https://github.com/tweenjs/tween.js), a popular library
+for animating numbers using "easing curves".
 
-Also read the [docs](http://infamous.github.io/infamous).
+Supported browsers are Chrome, Firefox, Opera, and Edge, and basically any
+browser that supports the `transform-style:preserve-3d` CSS property.
 
-### browserify workflow
+<!--Also read the [docs](http://infamous.github.io/infamous).-->
 
-Install [nodejs](http://nodejs.org), then create `package.json` for your
-project.
+### Browserify Workflow
 
-```
-npm init # creates package.json
-```
-
-Install [`browserify`](http://browserify.org) globally.
-
-```
-npm install -g browserify
-```
-
-Install infamous along with famous, famousify, and cssify into your project.
+Install [Node.js](http://nodejs.org), then create `package.json` for your
+project:
 
 ```
-npm install infamous famous famousify cssify --save
+echo {} > package.json
 ```
 
-Add the famousify and cssify transforms to your package.json so it looks
-similar to the following.
-
-```json
-{
-  "dependencies": {
-    "cssify": "^0.6.0",
-    "famous": "^0.3.4",
-    "famousify": "^0.1.5",
-    "infamous": "^0.0.15"
-  },
-  "browserify": {
-    "transform": [
-      "famousify",
-      "cssify"
-    ]
-  }
-}
-```
-
-Suppose you have `src/app.js` containing [Snippet 1](#snippet-1) and
-`public/index.html` containing [Snippet 2](#snippet-2). Compile a bundle for
-production.
+Install [`browserify`](http://browserify.org) globally:
 
 ```
-browserify src/app.js -o public/app.js
+> npm install -g "browserify@^14"
 ```
 
-Alternatively, use [watchify](https://github.com/substack/watchify) to watch
-the filesystem for changes and re-compile automatically.
+Install `infamous` and `tween.js` into your project:
 
 ```
-watchify src/app.js -o public/app.js
+> npm install infamous tween.js --save
 ```
 
-Install `serve` globally.
+This updated your `package.json` file with the latest versions of `infamous`
+and `tween.js`.
+
+Make a file `app.js` containing [Snippet 1](#snippet-1) and `public/index.html`
+containing [Snippet 2](#snippet-2) then compile a bundle that we'll run in the
+browser:
 
 ```
-npm install -g serve
+browserify app.js -o public/app.js
 ```
 
-Serve the contents of the public folder.
+Now use `File > Open` in your browser to open the `index.html` file and see the
+result.
+
+### Webpack Workflow
+
+Install [Node.js](http://nodejs.org), then create `package.json` for your
+project:
 
 ```
-serve public
+echo {} > package.json
 ```
 
-Visit `localhost:3000` in your browser.
-
-### webpack workflow
-
-Install [nodejs](http://nodejs.org), then create `package.json` for your
-project.
+Install [`webpack`](http://webpack.github.io) globally:
 
 ```
-npm init # creates package.json
+npm install -g "webpack@^2"
 ```
 
-Install [`webpack`](http://webpack.github.io) globally.
+Install `infamous` and `tween.js` into your project:
 
 ```
-npm install -g webpack
+> npm install infamous tween.js --save
 ```
 
-Install infamous along with famous, webpack, css-loader, and style-loader into
-your project.
+This updated your `package.json` file with the latest versions of `infamous`
+and `tween.js`.
 
-```
-npm install infamous webpack famous css-loader style-loader --save
-```
-
-Create `webpack.config.js` to configure webpack.
+Create a file `webpack.config.js` to configure webpack:
 
 ```js
-var webpack = require('webpack')
 module.exports = {
-    entry: "./src/app.js",
+    entry: "./app.js",
     output: {
         path: './public',
         filename: "app.js"
     },
-    module: {
-        loaders: [
-            { test: /\.css$/, loader: "style!css" }
-        ]
-    },
-    resolve: {
-        alias: {
-            // add this alias only for famous <0.3.5
-            famous: 'famous/src'
-        }
-    }
 }
 ```
 
-Suppose you have `src/app.js` containing [Snippet 1](#snippet-1) and
-`public/index.html` containing [Snippet 2](#snippet-2). Compile a bundle for
-production.
+Make a file `app.js` containing [Snippet 3](#snippet-3) and `public/index.html`
+containing [Snippet 2](#snippet-2) then compile a bundle that we'll run in the
+browser:
 
-```
+```sh
 webpack
 ```
 
-Alternatively, watch the filesystem for changes and re-compile automatically.
-
-```
-webpack --watch
-```
-
-Install `serve` globally.
-
-```
-npm install -g serve
-```
-
-Serve the contents of the public folder.
-
-```
-serve public
-```
-
-Visit `localhost:3000` in your browser.
-
-### jspm workflow
-
-Install [nodejs](http://nodejs.org), then create `package.json` for your
-project.
-
-```
-npm init # creates package.json
-```
-
-Install [`jspm`](http://jspm.io) globally.
-
-```
-npm install -g jspm
-```
-
-Set `jspm.directories.baseURL` in your package.json to `"src"`, similar to the
-following.
-
-```json
-{
-  "jspm": {
-    "directories": {
-      "baseURL": "src"
-    }
-  }
-}
-```
-
-Install infamous along with famous and css into your project.
-
-```
-jspm install -y infamous famous css
-```
-
-Suppose you have `src/app.js` containing [Snippet 3](#snippet-3) and
-`src/index.html` containing [Snippet 4](#snippet-4). Install `serve` globally.
-
-```
-npm install -g serve
-```
-
-Serve the contents of the `src` folder.
-
-```
-serve src
-```
-
-Visit `localhost:3000` in your browser.
+Now use `File > Open` in your browser to open the `index.html` file and see the
+result.
 
 Snippets
 --------
@@ -215,37 +109,47 @@ Snippets
 ### Snippet 1
 
 ```js
-var style                  = require('famous/core/famous.css') // needed by famous
-var Plane                  = require('infamous/Plane')
-var contextWithPerspective = require('infamous/utils').contextWithPerspective
+const Motor = require('infamous/motor/Motor')
+const Node = require('infamous/motor/Node')
+const Scene = require('infamous/motor/Scene')
+const TWEEN = require('tween.js')
 
-var ctx = contextWithPerspective(1000)
-var square = new Plane({
-    size: [200,200],
-    content: 'Hello.',
-    properties: {
-        backfaceVisibility: 'visible',
-        background: 'pink',
-        padding: '5px'
-    }
+const scene = new Scene
+scene.mount(document.body)
+
+const node = new Node({
+    absoluteSize: {x:200, y:200},
+
+    // place it in the middle of the scene
+    align: {x:0.5, y:0.5},
+    mountPoint: {x:0.5, y:0.5},
 })
 
-ctx.add(square)
-square.transform.setRotate([0,2*Math.PI,0], {duration: 5000, curve: 'easeInOut'})
+node.element.textContent = 'Hello.'
+node.element.style.cssText = 'backface-visibility: visible; background: pink; padding: 5px;'
+
+scene.addChild(node)
+
+let tween = new TWEEN.Tween(node.rotation)
+    .to({y: 360}, 5000)
+    .easing(TWEEN.Easing.Elastic.InOut)
+    .start()
+
+Motor.addRenderTask(function(timestamp) {
+    tween.update(timestamp)
+})
 ```
 
 ### Snippet 2
 
 ```html
-<!-- public/index.html -->
 <!DOCTYPE html>
 <html>
     <head>
         <title>Project with infamous</title>
-        <meta charset="utf-8" />
     </head>
     <body>
-        <script type="text/javascript" charset="utf-8" src="app.js"></script>
+        <script src="app.js"></script>
     </body>
 </html>
 ```
@@ -253,43 +157,33 @@ square.transform.setRotate([0,2*Math.PI,0], {duration: 5000, curve: 'easeInOut'}
 ### Snippet 3
 
 ```js
-import 'famous/core/famous.css!'
+import {Motor, Node, Scene} from 'infamous/motor'
+import {Tween, Easing} from 'tween.js'
 
-import Plane from 'infamous/Plane'
-import {contextWithPerspective} from 'infamous/utils'
+const scene = new Scene
+scene.mount(document.body)
 
-var ctx = contextWithPerspective(1000)
-var square = new Plane({
-    size: [200,200],
-    content: 'Hello.',
-    properties: {
-        backfaceVisibility: 'visible',
-        background: 'pink',
-        padding: '5px'
-    }
+const node = new Node({
+    absoluteSize: {x:200, y:200},
+
+    // place it in the middle of the scene
+    align: {x:0.5, y:0.5},
+    mountPoint: {x:0.5, y:0.5},
 })
 
-ctx.add(square)
-square.transform.setRotate([0,2*Math.PI,0], {duration: 5000, curve: 'easeInOut'})
-```
+node.element.textContent = 'Hello.'
+node.element.style.cssText = 'backface-visibility: visible; background: pink; padding: 5px;'
 
-### Snippet 4
+scene.addChild(node)
 
-```html
-<!DOCTYPE html>
-<html>
-    <head>
-        <title>Project with infamous</title>
-        <meta charset="utf-8" />
-    </head>
-    <body>
-        <script src='jspm_packages/system.src.js'></script>
-        <script src='config.js'></script>
-        <script type="module">
-            System.import('app');
-        </script>
-    </body>
-</html>
+let tween = new Tween(node.rotation)
+    .to({y: 360}, 5000)
+    .easing(Easing.Elastic.InOut)
+    .start()
+
+Motor.addRenderTask(function(timestamp) {
+    tween.update(timestamp)
+})
 ```
 
 ---
