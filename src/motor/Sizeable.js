@@ -2,6 +2,7 @@ import { makeLowercaseSetterAliases, makeAccessorsEnumerable } from './Utility'
 import TreeNode from './TreeNode'
 import XYZValues from './XYZValues'
 import Observable from './Observable'
+import Motor from './Motor'
 
 // fallback to experimental CSS transform if browser doesn't have it (fix for Safari 9)
 if (typeof document.createElement('div').style.transform == 'undefined') {
@@ -196,6 +197,59 @@ const SizeableMixin = base => {
                 this.proportionalSize = properties.proportionalSize
         }
         // no need for a properties getter.
+
+        _setPropertyXYZ(Class, name, newValue) {
+            if (!(newValue instanceof Object || newValue instanceof Function))
+                throw new TypeError(`Invalid value for ${Class.name}#${name}.`)
+
+            if (newValue instanceof Function) {
+                // remove previous task if any.
+                Motor.addRenderTask(time => {
+                    const result = newValue(
+                        this._properties[name]._x,
+                        this._properties[name]._y,
+                        this._properties[name]._z,
+                        time
+                    )
+
+                    if (result === false) return false
+
+                    this[name] = result
+                })
+            }
+            else {
+                let change = false
+
+                if (typeof newValue.x != 'undefined') { this._properties[name]._x = newValue.x; change = true }
+                if (typeof newValue.y != 'undefined') { this._properties[name]._y = newValue.y; change = true }
+                if (typeof newValue.z != 'undefined') { this._properties[name]._z = newValue.z; change = true }
+
+                if (change) this.triggerEvent('propertychange', name)
+            }
+        }
+
+        _setPropertySingle(Class, name, newValue, type) {
+            if (!(typeof newValue == type || newValue instanceof Function))
+                throw new TypeError(`Invalid value for ${Class.name}#${name}.`)
+
+            if (newValue instanceof Function) {
+                // remove previous task if any.
+                Motor.addRenderTask(time => {
+                    const result = newValue(
+                        this._properties[name],
+                        time
+                    )
+
+                    if (result === false) return false
+
+                    this[name] = result
+                })
+            }
+            else {
+                this._properties[name] = newValue
+                this.triggerEvent('propertychange', name)
+            }
+        }
     }
 
     Object.defineProperty(Sizeable, Symbol.hasInstance, {

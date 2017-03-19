@@ -51,14 +51,7 @@ const TransformableMixin = base => {
          * @param {number} [newValue.z] The z-axis position to apply.
          */
         set position(newValue) {
-            if (!(newValue instanceof Object))
-                throw new TypeError('Invalid value for Transformable#position.')
-
-            if (typeof newValue.x != 'undefined') this._properties.position._x = newValue.x
-            if (typeof newValue.y != 'undefined') this._properties.position._y = newValue.y
-            if (typeof newValue.z != 'undefined') this._properties.position._z = newValue.z
-
-            this.triggerEvent('propertychange', 'position')
+            this._setPropertyXYZ(Transformable, 'position', newValue)
         }
         get position() {
             return this._properties.position
@@ -71,14 +64,7 @@ const TransformableMixin = base => {
          * @param {number} [newValue.z] The z-axis rotation to apply.
          */
         set rotation(newValue) {
-            if (!(newValue instanceof Object))
-                throw new TypeError('Invalid value for Node#rotation.')
-
-            if (typeof newValue.x != 'undefined') this._properties.rotation._x = newValue.x
-            if (typeof newValue.y != 'undefined') this._properties.rotation._y = newValue.y
-            if (typeof newValue.z != 'undefined') this._properties.rotation._z = newValue.z
-
-            this.triggerEvent('propertychange', 'rotation')
+            this._setPropertyXYZ(Transformable, 'rotation', newValue)
         }
         get rotation() {
             return this._properties.rotation
@@ -91,14 +77,7 @@ const TransformableMixin = base => {
          * @param {number} [newValue.z] The z-axis scale to apply.
          */
         set scale(newValue) {
-            if (!(newValue instanceof Object))
-                throw new TypeError('Invalid value for Node#scale.')
-
-            if (typeof newValue.x != 'undefined') this._properties.scale._x = newValue.x
-            if (typeof newValue.y != 'undefined') this._properties.scale._y = newValue.y
-            if (typeof newValue.z != 'undefined') this._properties.scale._z = newValue.z
-
-            this.triggerEvent('propertychange', 'scale')
+            this._setPropertyXYZ(Transformable, 'scale', newValue)
         }
         get scale() {
             return this._properties.scale
@@ -110,10 +89,9 @@ const TransformableMixin = base => {
          * @param {number} opacity A floating point number between 0 and 1
          * (inclusive). 0 is fully transparent, 1 is fully opaque.
          */
-        set opacity(opacity) {
-            if (!isRealNumber(opacity)) throw new Error('Expected a real number for Node#opacity.')
-            this._properties.opacity = opacity;
-            this.triggerEvent('propertychange', 'opacity')
+        set opacity(newValue) {
+            if (!isRealNumber(newValue)) newValue = undefined
+            this._setPropertySingle(Transformable, 'opacity', newValue, 'number')
         }
         get opacity() {
             return this._properties.opacity
@@ -129,14 +107,7 @@ const TransformableMixin = base => {
          * @param {number} [newValue.z] The z-axis align to apply.
          */
         set align(newValue) {
-            if (!(newValue instanceof Object))
-                throw new TypeError('Invalid value for Node#align.')
-
-            if (typeof newValue.x != 'undefined') this._properties.align._x = newValue.x
-            if (typeof newValue.y != 'undefined') this._properties.align._y = newValue.y
-            if (typeof newValue.z != 'undefined') this._properties.align._z = newValue.z
-
-            this.triggerEvent('propertychange', 'align')
+            this._setPropertyXYZ(Transformable, 'align', newValue)
         }
         get align() {
             return this._properties.align
@@ -151,14 +122,7 @@ const TransformableMixin = base => {
          * @param {number} [newValue.z] The z-axis mountPoint to apply.
          */
         set mountPoint(newValue) {
-            if (!(newValue instanceof Object))
-                throw new TypeError('Invalid value for Node#mountPoint.')
-
-            if (typeof newValue.x != 'undefined') this._properties.mountPoint._x = newValue.x
-            if (typeof newValue.y != 'undefined') this._properties.mountPoint._y = newValue.y
-            if (typeof newValue.z != 'undefined') this._properties.mountPoint._z = newValue.z
-
-            this.triggerEvent('propertychange', 'mountPoint')
+            this._setPropertyXYZ(Transformable, 'mountPoint', newValue)
         }
         get mountPoint() {
             return this._properties.mountPoint
