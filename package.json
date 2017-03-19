@@ -40,8 +40,6 @@
     "tween.js": "^16.3.1"
   },
   "devDependencies": {
-    "browserify": "^12.0.0",
-    "babelify": "^7.0.0",
     "webpack": "^1.12.1",
     "babel-loader": "^6.0.0",
     "regenerator": "^0.8.0",
