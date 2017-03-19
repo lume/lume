@@ -63,7 +63,7 @@ export class Molecule extends RenderNode {
      * @param {Object} initialOptions The options to initialize this Molecule's `Modifier` with.
      */
     constructor(initialOptions) {
-        super(RenderNode)
+        super()
 
         // "private" stuff. Not really, but regard it like so. For example, if
         // you see something like obj._.someVariable then you're accessing
