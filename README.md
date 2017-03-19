@@ -23,33 +23,24 @@ browser that supports the `transform-style:preserve-3d` CSS property.
 
 ### Browserify Workflow
 
-Install [Node.js](http://nodejs.org), then create `package.json` for your
-project:
+Install [Node.js](http://nodejs.org), then install
+[`browserify`](http://browserify.org) globally:
 
-```
-echo {} > package.json
-```
-
-Install [`browserify`](http://browserify.org) globally:
-
-```
-> npm install -g "browserify@^14"
+```sh
+npm install -g "browserify@^14"
 ```
 
 Install `infamous` and `tween.js` into your project:
 
+```sh
+npm install infamous tween.js --save
 ```
-> npm install infamous tween.js --save
-```
-
-This updated your `package.json` file with the latest versions of `infamous`
-and `tween.js`.
 
 Make a file `app.js` containing [Snippet 1](#snippet-1) and `public/index.html`
 containing [Snippet 2](#snippet-2) then compile a bundle that we'll run in the
 browser:
 
-```
+```sh
 browserify app.js -o public/app.js
 ```
 
@@ -58,27 +49,18 @@ result.
 
 ### Webpack Workflow
 
-Install [Node.js](http://nodejs.org), then create `package.json` for your
-project:
+Install [Node.js](http://nodejs.org), then install
+[`webpack`](http://webpack.github.io) globally:
 
-```
-echo {} > package.json
-```
-
-Install [`webpack`](http://webpack.github.io) globally:
-
-```
+```sh
 npm install -g "webpack@^2"
 ```
 
 Install `infamous` and `tween.js` into your project:
 
+```sh
+npm install infamous tween.js --save
 ```
-> npm install infamous tween.js --save
-```
-
-This updated your `package.json` file with the latest versions of `infamous`
-and `tween.js`.
 
 Create a file `webpack.config.js` to configure webpack:
 
