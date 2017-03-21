@@ -21424,6 +21424,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	
 	            var _this = _possibleConstructorReturn(this, (Sizeable.__proto__ || Object.getPrototypeOf(Sizeable)).call(this, options));
 	
+	            _this._propertyFunctions = null;
 	            _this._calculatedSize = { x: 0, y: 0, z: 0 };
 	            _this._properties = {};
 	            _this._setDefaultProperties();
@@ -21522,20 +21523,39 @@ return /******/ (function(modules) { // webpackBootstrap
 	            value: function _setPropertyXYZ(Class, name, newValue) {
 	                var _this3 = this;
 	
-	                if (!(newValue instanceof Object || newValue instanceof Function)) throw new TypeError('Invalid value for ' + Class.name + '#' + name + '.');
+	                if (!(newValue instanceof Object || newValue instanceof Array || newValue instanceof Function)) {
+	                    throw new TypeError('Invalid value for ' + Class.name + '#' + name + '.');
+	                }
+	
+	                var change = false;
 	
 	                if (newValue instanceof Function) {
 	                    // remove previous task if any.
-	                    _Motor2.default.addRenderTask(function (time) {
+	                    if (!this._propertyFunctions) this._propertyFunctions = new Map();
+	
+	                    if (this._propertyFunctions.has(name)) _Motor2.default.removeRenderTask(this._propertyFunctions.get(name));
+	
+	                    this._propertyFunctions.set(name, _Motor2.default.addRenderTask(function (time) {
 	                        var result = newValue(_this3._properties[name]._x, _this3._properties[name]._y, _this3._properties[name]._z, time);
 	
-	                        if (result === false) return false;
+	                        if (result === false) {
+	                            _this3._propertyFunctions.delete(name);
+	                            return false;
+	                        }
 	
 	                        _this3[name] = result;
-	                    });
+	                    }));
+	                } else if (newValue instanceof Array) {
+	                    if (typeof newValue[0] != 'undefined') {
+	                        this._properties[name]._x = newValue[0];change = true;
+	                    }
+	                    if (typeof newValue[1] != 'undefined') {
+	                        this._properties[name]._y = newValue[1];change = true;
+	                    }
+	                    if (typeof newValue[2] != 'undefined') {
+	                        this._properties[name]._z = newValue[2];change = true;
+	                    }
 	                } else {
-	                    var change = false;
-	
 	                    if (typeof newValue.x != 'undefined') {
 	                        this._properties[name]._x = newValue.x;change = true;
 	                    }
@@ -21545,9 +21565,9 @@ return /******/ (function(modules) { // webpackBootstrap
 	                    if (typeof newValue.z != 'undefined') {
 	                        this._properties[name]._z = newValue.z;change = true;
 	                    }
-	
-	                    if (change) this.triggerEvent('propertychange', name);
 	                }
+	
+	                if (change) this.triggerEvent('propertychange', name);
 	            }
 	        }, {
 	            key: '_setPropertySingle',
@@ -21573,13 +21593,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	        }, {
 	            key: 'sizeMode',
 	            set: function set(newValue) {
-	                if (!(newValue instanceof Object)) throw new TypeError('Invalid value for Node#sizeMode.');
-	
-	                if (typeof newValue.x != 'undefined') this._properties.sizeMode._x = newValue.x;
-	                if (typeof newValue.y != 'undefined') this._properties.sizeMode._y = newValue.y;
-	                if (typeof newValue.z != 'undefined') this._properties.sizeMode._z = newValue.z;
-	
-	                this.triggerEvent('propertychange', 'sizeMode');
+	                this._setPropertyXYZ(Sizeable, 'sizeMode', newValue);
 	            },
 	            get: function get() {
 	                return this._properties.sizeMode;
@@ -21587,13 +21601,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	        }, {
 	            key: 'absoluteSize',
 	            set: function set(newValue) {
-	                if (!(newValue instanceof Object)) throw new TypeError('Invalid value for Node#absoluteSize.');
-	
-	                if (typeof newValue.x != 'undefined') this._properties.absoluteSize._x = newValue.x;
-	                if (typeof newValue.y != 'undefined') this._properties.absoluteSize._y = newValue.y;
-	                if (typeof newValue.z != 'undefined') this._properties.absoluteSize._z = newValue.z;
-	
-	                this.triggerEvent('propertychange', 'absoluteSize');
+	                this._setPropertyXYZ(Sizeable, 'absoluteSize', newValue);
 	            },
 	            get: function get() {
 	                return this._properties.absoluteSize;
@@ -21636,13 +21644,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	        }, {
 	            key: 'proportionalSize',
 	            set: function set(newValue) {
-	                if (!(newValue instanceof Object)) throw new TypeError('Invalid value for Node#proportionalSize.');
-	
-	                if (typeof newValue.x != 'undefined') this._properties.proportionalSize._x = newValue.x;
-	                if (typeof newValue.y != 'undefined') this._properties.proportionalSize._y = newValue.y;
-	                if (typeof newValue.z != 'undefined') this._properties.proportionalSize._z = newValue.z;
-	
-	                this.triggerEvent('propertychange', 'proportionalSize');
+	                this._setPropertyXYZ(Sizeable, 'proportionalSize', newValue);
 	            },
 	            get: function get() {
 	                return this._properties.proportionalSize;
@@ -24140,30 +24142,30 @@ return /******/ (function(modules) { // webpackBootstrap
 	
 	function parseNumberArray(str) {
 	    checkIsNumberArrayString(str);
-	    var numbers = str.split(',');
-	    return {
-	        x: window.parseFloat(numbers[0]),
-	        y: window.parseFloat(numbers[1]),
-	        z: window.parseFloat(numbers[2])
-	    };
+	    var numbers = str.trim().split(/(?:\s*,\s*)|(?:\s+)/g);
+	    var length = numbers.length;
+	    if (length > 0) numbers[0] = window.parseFloat(numbers[0]);
+	    if (length > 1) numbers[1] = window.parseFloat(numbers[1]);
+	    if (length > 2) numbers[2] = window.parseFloat(numbers[2]);
+	    return numbers;
 	}
 	
 	function parseStringArray(str) {
 	    checkIsSizeArrayString(str);
-	    var strings = str.split(',');
-	    return {
-	        x: strings[0].trim(),
-	        y: strings[1].trim(),
-	        z: strings[2].trim()
-	    };
+	    var strings = str.trim().toLowerCase().split(/(?:\s*,\s*)|(?:\s+)/g);
+	    var length = strings.length;
+	    if (length > 0) strings[0] = window.parseFloat(strings[0]);
+	    if (length > 1) strings[1] = window.parseFloat(strings[1]);
+	    if (length > 2) strings[2] = window.parseFloat(strings[2]);
+	    return strings;
 	}
 	
 	function checkIsNumberArrayString(str) {
-	    if (!str.match(/^\s*(-?((\d+\.\d+)|(\d+))(\s*,\s*)?){3}\s*$/g)) throw new Error('Invalid array. Must be an array of numbers of length 3, for example "1, 2.5,3" without brackets. Yours was ' + str + '.');
+	    if (!str.match(/^\s*(((\s*(-|\+)?((\.\d+)|(\d+\.\d+)|(\d+))\s*,){0,2}(\s*(-|\+)?((\.\d+)|(\d+\.\d+)|(\d+))))|((\s*(-|\+)?((\.\d+)|(\d+\.\d+)|(\d+))\s){0,2}(\s*(-|\+)?((\.\d+)|(\d+\.\d+)|(\d+)))))\s*$/g)) throw new Error('Attribute must be a comma- or space-separated sequence of up to three numbers, for example "1 2.5 3". Yours was "' + str + '".');
 	}
 	
 	function checkIsSizeArrayString(str) {
-	    return;
+	    if (!str.match(/^\s*(((\s*([a-zA-Z]+)\s*,){0,2}(\s*([a-zA-Z]+)))|((\s*([a-zA-Z]+)\s*){1,3}))\s*$/g)) throw new Error('Attribute must be a comma- or space-separated sequence of up to three strings, for example "absolute absolute". Yours was "' + str + '".');
 	}
 	
 	exports.default = MotorHTMLNode = document.registerElement('motor-node', MotorHTMLNode);
