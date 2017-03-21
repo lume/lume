@@ -61,14 +61,7 @@ const SizeableMixin = base => {
          * @param {number} [newValue.z] The z-axis sizeMode to apply.
          */
         set sizeMode(newValue) {
-            if (!(newValue instanceof Object))
-                throw new TypeError('Invalid value for Node#sizeMode.')
-
-            if (typeof newValue.x != 'undefined') this._properties.sizeMode._x = newValue.x
-            if (typeof newValue.y != 'undefined') this._properties.sizeMode._y = newValue.y
-            if (typeof newValue.z != 'undefined') this._properties.sizeMode._z = newValue.z
-
-            this.triggerEvent('propertychange', 'sizeMode')
+            this._setPropertyXYZ(Sizeable, 'sizeMode', newValue)
         }
         get sizeMode() {
             return this._properties.sizeMode
@@ -121,14 +114,7 @@ const SizeableMixin = base => {
          * @param {number} [newValue.z] The z-axis absoluteSize to apply.
          */
         set absoluteSize(newValue) {
-            if (!(newValue instanceof Object))
-                throw new TypeError('Invalid value for Node#absoluteSize.')
-
-            if (typeof newValue.x != 'undefined') this._properties.absoluteSize._x = newValue.x
-            if (typeof newValue.y != 'undefined') this._properties.absoluteSize._y = newValue.y
-            if (typeof newValue.z != 'undefined') this._properties.absoluteSize._z = newValue.z
-
-            this.triggerEvent('propertychange', 'absoluteSize')
+            this._setPropertyXYZ(Sizeable, 'absoluteSize', newValue)
         }
         get absoluteSize() {
             return this._properties.absoluteSize
@@ -161,14 +147,7 @@ const SizeableMixin = base => {
          * @param {number} [newValue.z] The z-axis proportionalSize to apply.
          */
         set proportionalSize(newValue) {
-            if (!(newValue instanceof Object))
-                throw new TypeError('Invalid value for Node#proportionalSize.')
-
-            if (typeof newValue.x != 'undefined') this._properties.proportionalSize._x = newValue.x
-            if (typeof newValue.y != 'undefined') this._properties.proportionalSize._y = newValue.y
-            if (typeof newValue.z != 'undefined') this._properties.proportionalSize._z = newValue.z
-
-            this.triggerEvent('propertychange', 'proportionalSize')
+            this._setPropertyXYZ(Sizeable, 'proportionalSize', newValue)
         }
         get proportionalSize() {
             return this._properties.proportionalSize
