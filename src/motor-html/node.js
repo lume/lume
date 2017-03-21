@@ -64,31 +64,32 @@ proxyGettersSetters(Sizeable, MotorHTMLNode)
 
 function parseNumberArray(str) {
     checkIsNumberArrayString(str)
-    const numbers = str.split(',')
-    return {
-        x: window.parseFloat(numbers[0]),
-        y: window.parseFloat(numbers[1]),
-        z: window.parseFloat(numbers[2]),
-    }
+    const numbers = str.trim().split(/(?:\s*,\s*)|(?:\s+)/g)
+    const length = numbers.length
+    if (length > 0) numbers[0] = window.parseFloat(numbers[0])
+    if (length > 1) numbers[1] = window.parseFloat(numbers[1])
+    if (length > 2) numbers[2] = window.parseFloat(numbers[2])
+    return numbers
 }
 
 function parseStringArray(str) {
     checkIsSizeArrayString(str)
-    const strings = str.split(',')
-    return {
-        x: strings[0].trim(),
-        y: strings[1].trim(),
-        z: strings[2].trim(),
-    }
+    const strings = str.trim().toLowerCase().split(/(?:\s*,\s*)|(?:\s+)/g)
+    const length = strings.length
+    if (length > 0) strings[0] = window.parseFloat(strings[0])
+    if (length > 1) strings[1] = window.parseFloat(strings[1])
+    if (length > 2) strings[2] = window.parseFloat(strings[2])
+    return strings
 }
 
 function checkIsNumberArrayString(str) {
-    if (!str.match(/^\s*(-?((\d+\.\d+)|(\d+))(\s*,\s*)?){3}\s*$/g))
-        throw new Error(`Invalid array. Must be an array of numbers of length 3, for example "1, 2.5,3" without brackets. Yours was ${str}.`)
+    if (!str.match(/^\s*(((\s*(-|\+)?((\.\d+)|(\d+\.\d+)|(\d+))\s*,){0,2}(\s*(-|\+)?((\.\d+)|(\d+\.\d+)|(\d+))))|((\s*(-|\+)?((\.\d+)|(\d+\.\d+)|(\d+))\s){0,2}(\s*(-|\+)?((\.\d+)|(\d+\.\d+)|(\d+)))))\s*$/g))
+        throw new Error(`Attribute must be a comma- or space-separated sequence of up to three numbers, for example "1 2.5 3". Yours was "${str}".`)
 }
 
 function checkIsSizeArrayString(str) {
-    return
+    if (!str.match(/^\s*(((\s*([a-zA-Z]+)\s*,){0,2}(\s*([a-zA-Z]+)))|((\s*([a-zA-Z]+)\s*){1,3}))\s*$/g))
+        throw new Error(`Attribute must be a comma- or space-separated sequence of up to three strings, for example "absolute absolute". Yours was "${str}".`)
 }
 
 import 'document-register-element'
