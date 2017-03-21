@@ -28,6 +28,7 @@ const SizeableMixin = base => {
         constructor(options = {}) {
             super(options)
 
+            this._propertyFunctions = null
             this._calculatedSize = { x:0, y:0, z:0 }
             this._properties = {}
             this._setDefaultProperties()
@@ -190,18 +191,28 @@ const SizeableMixin = base => {
 
             if (newValue instanceof Function) {
                 // remove previous task if any.
-                Motor.addRenderTask(time => {
-                    const result = newValue(
-                        this._properties[name]._x,
-                        this._properties[name]._y,
-                        this._properties[name]._z,
-                        time
-                    )
+                if (!this._propertyFunctions) this._propertyFunctions = new Map
 
-                    if (result === false) return false
+                if (this._propertyFunctions.has(name))
+                    Motor.removeRenderTask(this._propertyFunctions.get(name))
 
-                    this[name] = result
-                })
+                this._propertyFunctions.set(name,
+                    Motor.addRenderTask(time => {
+                        const result = newValue(
+                            this._properties[name]._x,
+                            this._properties[name]._y,
+                            this._properties[name]._z,
+                            time
+                        )
+
+                        if (result === false) {
+                            this._propertyFunctions.delete(name)
+                            return false
+                        }
+
+                        this[name] = result
+                    })
+                )
             }
             else if (newValue instanceof Array) {
                 if (typeof newValue[0] != 'undefined') { this._properties[name]._x = newValue[0]; change = true }
