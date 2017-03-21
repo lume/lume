@@ -178,8 +178,15 @@ const SizeableMixin = base => {
         // no need for a properties getter.
 
         _setPropertyXYZ(Class, name, newValue) {
-            if (!(newValue instanceof Object || newValue instanceof Function))
+            if (!(
+                newValue instanceof Object ||
+                newValue instanceof Array ||
+                newValue instanceof Function
+            )) {
                 throw new TypeError(`Invalid value for ${Class.name}#${name}.`)
+            }
+
+            let change = false
 
             if (newValue instanceof Function) {
                 // remove previous task if any.
@@ -196,15 +203,18 @@ const SizeableMixin = base => {
                     this[name] = result
                 })
             }
+            else if (newValue instanceof Array) {
+                if (typeof newValue[0] != 'undefined') { this._properties[name]._x = newValue[0]; change = true }
+                if (typeof newValue[1] != 'undefined') { this._properties[name]._y = newValue[1]; change = true }
+                if (typeof newValue[2] != 'undefined') { this._properties[name]._z = newValue[2]; change = true }
+            }
             else {
-                let change = false
-
                 if (typeof newValue.x != 'undefined') { this._properties[name]._x = newValue.x; change = true }
                 if (typeof newValue.y != 'undefined') { this._properties[name]._y = newValue.y; change = true }
                 if (typeof newValue.z != 'undefined') { this._properties[name]._z = newValue.z; change = true }
-
-                if (change) this.triggerEvent('propertychange', name)
             }
+
+            if (change) this.triggerEvent('propertychange', name)
         }
 
         _setPropertySingle(Class, name, newValue, type) {
