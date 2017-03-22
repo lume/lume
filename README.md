@@ -28,7 +28,8 @@ npm install infamous
 console.log(require('infamous'))
 ```
 
-### Workflows
+Workflows
+---------
 
 The following sample workflows show possible ways to install and start using
 infamous using a few different build tools that are popular today.
@@ -43,7 +44,7 @@ browser that supports the `transform-style:preserve-3d` CSS property.
 
 <!--Also read the [docs](http://infamous.github.io/infamous).-->
 
-#### Global Workflow (easiest)
+### Global Workflow (easiest)
 
 Make a file `index.html` containing the following:
 
@@ -89,7 +90,7 @@ Make a file `index.html` containing the following:
 Now use `File > Open` in your browser to open the `index.html` file and see the
 result.
 
-#### Browserify Workflow
+### Browserify Workflow
 
 Install [Node.js](http://nodejs.org), then install
 [`browserify`](http://browserify.org) globally:
@@ -160,7 +161,7 @@ browserify app.js -o public/app.js
 Now use `File > Open` in your browser to open the `index.html` file and see the
 result.
 
-#### Webpack Workflow
+### Webpack Workflow
 
 Install [Node.js](http://nodejs.org), then install
 [`webpack`](http://webpack.github.io) globally:
