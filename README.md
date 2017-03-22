@@ -10,23 +10,86 @@ Visit the [site](http://infamous.io), discuss in the [forums](http://forums.infa
 Getting Started
 ---------------
 
+Use the "global" version of infamous via script tag in your HTML page:
+
+```html
+<script src="https://unpkg.com/infamous@15.2.0/global.js"></script>
+<script>
+    console.log(infamous)
+</script>
+```
+
+Or install from NPM:
+
+```sh
+npm install infamous
+```
+```js
+console.log(require('infamous'))
+```
+
+### Workflows
+
 The following sample workflows show possible ways to install and start using
-infamous using a few different build tools that are popular today, and they
-will refer to the [snippets](#snippets) at the end of the README. The examples
-all use [`tween.js`](https://github.com/tweenjs/tween.js), a popular library
-for animating numbers using "easing curves".
+infamous using a few different build tools that are popular today.
+
+They will all show how to make this demo: https://jsfiddle.net/trusktr/52zzLx6e.
+
+The examples all use [`tween.js`](https://github.com/tweenjs/tween.js), a
+library for animating numbers using "easing curves".
 
 Supported browsers are Chrome, Firefox, Opera, and Edge, and basically any
 browser that supports the `transform-style:preserve-3d` CSS property.
 
 <!--Also read the [docs](http://infamous.github.io/infamous).-->
 
-### Global Workflow (easiest)
+#### Global Workflow (easiest)
 
-Make a file `index.html` containing [Snippet 4](#snippet-4). Now use `File >
-Open` in your browser to open the `index.html` file and see the result.
+Make a file `index.html` containing the following:
 
-### Browserify Workflow
+```html
+<!DOCTYPE html>
+<style>
+    html, body {
+        width: 100%;
+        height: 100%;
+        margin: 0;
+        padding: 0;
+    }
+</style>
+
+<script src="https://cdn.rawgit.com/trusktr/infamous/v15.2.0/global.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/tween.js/16.3.5/Tween.min.js"></script>
+
+<motor-scene>
+    <motor-node
+        absoluteSize="200 200" align="0.5 0.5" mountPoint="0.5 0.5"
+        style=" backface-visibility: visible; background: pink; padding: 5px; "
+        >
+
+        Hello.
+
+    </motor-node>
+</motor-scene>
+
+<script>
+    var Motor = infamous.motor.Motor
+    var node = document.querySelector('motor-node')
+    var tween = new TWEEN.Tween(node.rotation)
+      .to({y: 360}, 5000)
+      .easing(TWEEN.Easing.Elastic.InOut)
+      .start()
+
+    Motor.addRenderTask(now => {
+        tween.update(now)
+    })
+</script>
+```
+
+Now use `File > Open` in your browser to open the `index.html` file and see the
+result.
+
+#### Browserify Workflow
 
 Install [Node.js](http://nodejs.org), then install
 [`browserify`](http://browserify.org) globally:
@@ -41,9 +104,54 @@ Install `infamous` and `tween.js` into your project:
 npm install infamous tween.js --save
 ```
 
-Make a file `app.js` containing [Snippet 1](#snippet-1) and `public/index.html`
-containing [Snippet 2](#snippet-2) then compile a bundle that we'll run in the
-browser:
+Make a file `app.js` containing the following:
+
+```js
+const Motor = require('infamous/motor/Motor')
+const Node = require('infamous/motor/Node')
+const Scene = require('infamous/motor/Scene')
+const TWEEN = require('tween.js')
+
+const scene = new Scene
+scene.mount(document.body)
+
+const node = new Node({
+    absoluteSize: {x:200, y:200}, // object notation
+    // place it in the middle of the scene:
+    align: {x:0.5, y:0.5},
+    mountPoint: {x:0.5, y:0.5},
+})
+
+node.element.textContent = 'Hello.'
+node.element.style.cssText = 'backface-visibility: visible; background: pink; padding: 5px;'
+
+scene.addChild(node)
+
+let tween = new TWEEN.Tween(node.rotation)
+    .to({y: 360}, 5000)
+    .easing(TWEEN.Easing.Elastic.InOut)
+    .start()
+
+Motor.addRenderTask(function(timestamp) {
+    tween.update(timestamp)
+})
+```
+
+Make a file `public/index.html` containing the following:
+
+```html
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Project with infamous</title>
+    </head>
+    <body>
+        <script src="app.js"></script>
+    </body>
+</html>
+```
+
+then compile a bundle that we'll run in the browser:
 
 ```sh
 browserify app.js -o public/app.js
@@ -52,7 +160,7 @@ browserify app.js -o public/app.js
 Now use `File > Open` in your browser to open the `index.html` file and see the
 result.
 
-### Webpack Workflow
+#### Webpack Workflow
 
 Install [Node.js](http://nodejs.org), then install
 [`webpack`](http://webpack.github.io) globally:
@@ -79,69 +187,7 @@ module.exports = {
 }
 ```
 
-Make a file `app.js` containing [Snippet 3](#snippet-3) and `public/index.html`
-containing [Snippet 2](#snippet-2) then compile a bundle that we'll run in the
-browser:
-
-```sh
-webpack
-```
-
-Now use `File > Open` in your browser to open the `index.html` file and see the
-result.
-
-Snippets
---------
-
-### Snippet 1
-
-```js
-const Motor = require('infamous/motor/Motor')
-const Node = require('infamous/motor/Node')
-const Scene = require('infamous/motor/Scene')
-const TWEEN = require('tween.js')
-
-const scene = new Scene
-scene.mount(document.body)
-
-const node = new Node({
-    absoluteSize: {x:200, y:200},
-
-    // place it in the middle of the scene
-    align: {x:0.5, y:0.5},
-    mountPoint: {x:0.5, y:0.5},
-})
-
-node.element.textContent = 'Hello.'
-node.element.style.cssText = 'backface-visibility: visible; background: pink; padding: 5px;'
-
-scene.addChild(node)
-
-let tween = new TWEEN.Tween(node.rotation)
-    .to({y: 360}, 5000)
-    .easing(TWEEN.Easing.Elastic.InOut)
-    .start()
-
-Motor.addRenderTask(function(timestamp) {
-    tween.update(timestamp)
-})
-```
-
-### Snippet 2
-
-```html
-<!DOCTYPE html>
-<html>
-    <head>
-        <title>Project with infamous</title>
-    </head>
-    <body>
-        <script src="app.js"></script>
-    </body>
-</html>
-```
-
-### Snippet 3
+Make a file `app.js` containing the following:
 
 ```js
 import {Motor, Node, Scene} from 'infamous/motor'
@@ -151,11 +197,10 @@ const scene = new Scene
 scene.mount(document.body)
 
 const node = new Node({
-    absoluteSize: {x:200, y:200},
-
-    // place it in the middle of the scene
-    align: {x:0.5, y:0.5},
-    mountPoint: {x:0.5, y:0.5},
+    absoluteSize: [200, 200], // array notation
+    // place it in the middle of the scene:
+    align: [0.5, 0.5],
+    mountPoint: [0.5, 0.5],
 })
 
 node.element.textContent = 'Hello.'
@@ -173,56 +218,28 @@ Motor.addRenderTask(function(timestamp) {
 })
 ```
 
-### Snippet 4
+Makea a file `public/index.html` containing the following:
 
 ```html
 <!DOCTYPE html>
 <html>
     <head>
         <title>Project with infamous</title>
-        <style>
-            html, body {
-                width: 100%;
-                height: 100%;
-                margin: 0;
-                padding: 0;
-            }
-        </style>
     </head>
     <body>
-        <script src="https://cdn.rawgit.com/trusktr/infamous/v15.0.0/global.js"></script>
-        <script src="https://cdnjs.cloudflare.com/ajax/libs/tween.js/16.3.5/Tween.min.js"></script>
-        <script>
-            const {Motor, Node, Scene} = infamous.motor
-
-            const scene = new Scene
-            scene.mount(document.body)
-
-            const node = new Node({
-                absoluteSize: {x:200, y:200},
-
-                // place it in the middle of it's parent
-                align: {x:0.5, y:0.5},
-                mountPoint: {x:0.5, y:0.5},
-            })
-
-            node.element.innerHTML = 'Hello.'
-            node.element.style.cssText = ' backface-visibility: visible; background: pink; padding: 5px; '
-
-            scene.addChild(node)
-
-            let tween = new TWEEN.Tween(node.rotation)
-              .to({y: 360}, 5000)
-              .easing(TWEEN.Easing.Elastic.InOut)
-              .start()
-
-            Motor.addRenderTask(now => {
-                tween.update(now)
-            })
-        </script>
+        <script src="app.js"></script>
     </body>
 </html>
 ```
+
+then compile a bundle that we'll run in the browser:
+
+```sh
+webpack
+```
+
+Now use `File > Open` in your browser to open the `index.html` file and see the
+result.
 
 ---
 
