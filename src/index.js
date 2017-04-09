@@ -14,3 +14,5 @@ export {
     motor,
     motorHtml,
 }
+
+export const version = '15.2.1'
