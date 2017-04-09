@@ -7208,7 +7208,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	Object.defineProperty(exports, "__esModule", {
 	    value: true
 	});
-	exports.motorHtml = exports.motor = exports.utils = exports.PushMenuLayout = exports.Plane = exports.Molecule = exports.Grid = exports.DoubleSidedPlane = exports.Cube = exports.Calendar = undefined;
+	exports.version = exports.motorHtml = exports.motor = exports.utils = exports.PushMenuLayout = exports.Plane = exports.Molecule = exports.Grid = exports.DoubleSidedPlane = exports.Cube = exports.Calendar = undefined;
 	
 	var _Calendar2 = __webpack_require__(299);
 	
@@ -7264,6 +7264,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	exports.utils = utils;
 	exports.motor = motor;
 	exports.motorHtml = motorHtml;
+	var version = exports.version = '15.2.2';
 
 /***/ },
 /* 299 */
