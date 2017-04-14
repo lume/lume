@@ -7264,7 +7264,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	exports.motor = motor;
 	exports.motorHtml = motorHtml;
 	exports.components = components;
-	var version = exports.version = '16.0.0';
+	var version = exports.version = '16.0.1';
 
 /***/ },
 /* 299 */
