@@ -7264,7 +7264,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	exports.utils = utils;
 	exports.motor = motor;
 	exports.motorHtml = motorHtml;
-	var version = exports.version = '15.2.2';
+	var version = exports.version = '15.2.3';
 
 /***/ },
 /* 299 */
@@ -22805,7 +22805,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	                            case 3:
 	
 	                                // if no mountPoint was provided, just mount onto the <body> element.
-	                                if (!mountPoint) mountPoint = document.body;
+	                                if (mountPoint === undefined) mountPoint = document.body;
 	
 	                                // if the user supplied a selector, mount there.
 	                                else if (typeof mountPoint === 'string') mountPoint = document.querySelector(mountPoint);
@@ -22965,7 +22965,11 @@ return /******/ (function(modules) { // webpackBootstrap
 	            // MotorHTMLNodes get their parent connection from their parent in
 	            // childConnectedCallback.
 	            this._imperativeCounterpartPromise.then(function () {
-	                return _this2.imperativeCounterpart.mount(_this2.parentNode);
+	
+	                // return if
+	                if (_this2.imperativeCounterpart._mounted) return;
+	
+	                if (_this2.parentNode) _this2.imperativeCounterpart.mount(_this2.parentNode);
 	            });
 	        }
 	    }, {
