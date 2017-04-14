@@ -9,6 +9,7 @@ docs
 !/webpack.config.js
 
 # ignore build folders
+/components
 /motor
 /motor-html
 /jss
