@@ -28,7 +28,14 @@ class MotorHTMLScene extends Observable.mixin(MotorHTMLBase) {
         // MotorHTMLNodes get their parent connection from their parent in
         // childConnectedCallback.
         this._imperativeCounterpartPromise
-            .then(() => this.imperativeCounterpart.mount(this.parentNode))
+            .then(() => {
+
+                // return if
+                if (this.imperativeCounterpart._mounted) return
+
+                if (this.parentNode)
+                    this.imperativeCounterpart.mount(this.parentNode)
+            })
     }
 
     _startSizePolling() {

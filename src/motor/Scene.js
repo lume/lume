@@ -99,7 +99,7 @@ class Scene extends ImperativeBase.mixin(Sizeable) {
         if (document.readyState == 'loading') await documentReady()
 
         // if no mountPoint was provided, just mount onto the <body> element.
-        if (!mountPoint) mountPoint = document.body
+        if (mountPoint === undefined) mountPoint = document.body
 
         // if the user supplied a selector, mount there.
         else if (typeof mountPoint === 'string')
