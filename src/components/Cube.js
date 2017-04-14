@@ -7,7 +7,7 @@
  *
  */
 import forLength from 'army-knife/forLength';
-import Node from './motor/Node'
+import Node from '../motor/Node'
 
 /**
  * A scenegraph tree that lays things out in a cube form.
