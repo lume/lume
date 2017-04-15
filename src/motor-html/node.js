@@ -76,9 +76,9 @@ function parseStringArray(str) {
     checkIsSizeArrayString(str)
     const strings = str.trim().toLowerCase().split(/(?:\s*,\s*)|(?:\s+)/g)
     const length = strings.length
-    if (length > 0) strings[0] = window.parseFloat(strings[0])
-    if (length > 1) strings[1] = window.parseFloat(strings[1])
-    if (length > 2) strings[2] = window.parseFloat(strings[2])
+    if (length > 0) strings[0] = strings[0]
+    if (length > 1) strings[1] = strings[1]
+    if (length > 2) strings[2] = strings[2]
     return strings
 }
 
