@@ -7264,7 +7264,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	exports.motor = motor;
 	exports.motorHtml = motorHtml;
 	exports.components = components;
-	var version = exports.version = '16.0.2';
+	var version = exports.version = '16.0.3';
 
 /***/ },
 /* 299 */
@@ -23694,9 +23694,9 @@ return /******/ (function(modules) { // webpackBootstrap
 	    checkIsSizeArrayString(str);
 	    var strings = str.trim().toLowerCase().split(/(?:\s*,\s*)|(?:\s+)/g);
 	    var length = strings.length;
-	    if (length > 0) strings[0] = window.parseFloat(strings[0]);
-	    if (length > 1) strings[1] = window.parseFloat(strings[1]);
-	    if (length > 2) strings[2] = window.parseFloat(strings[2]);
+	    if (length > 0) strings[0] = strings[0];
+	    if (length > 1) strings[1] = strings[1];
+	    if (length > 2) strings[2] = strings[2];
 	    return strings;
 	}
 	
