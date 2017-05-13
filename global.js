@@ -7091,7 +7091,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	exports.motor = motor;
 	exports.motorHtml = motorHtml;
 	exports.components = components;
-	var version = exports.version = '16.0.5';
+	var version = exports.version = '16.0.6';
 
 /***/ }),
 /* 298 */
@@ -19014,7 +19014,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	
 		        var length = numberSequence.length;
 	
-		        if (length === undefined || length !== 6 || length !== 16) throw new TypeError('DOMMatrix constructor argument "numberSequence" must be an array-like with 6 or 16 numbers.');
+		        if (length === undefined || !(length === 6 || length === 16)) throw new TypeError('DOMMatrix constructor argument "numberSequence" must be an array-like with 6 or 16 numbers.');
 	
 		        this._matrix = new Float64Array(identity);
 		        this._isIdentity = true;
