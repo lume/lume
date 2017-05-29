@@ -1,3 +1,5 @@
+**Note**: _This project is not being developed further at the moment. I hope to return to it soon._
+
 <p align="center"><img src="http://i.imgur.com/VOiEqxD.png"></p>
 
 <p align="center">
