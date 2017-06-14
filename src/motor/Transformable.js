@@ -10,6 +10,12 @@ const TransformableMixin = base => {
     // needs to be aware of its _parent when calculating align adjustments.
     class Transformable extends Sizeable.mixin(base) {
 
+        constructor(options = {}) {
+            super(options)
+
+            this._worldMatrix = null
+        }
+
         _setDefaultProperties() {
             super._setDefaultProperties()
 
@@ -217,6 +223,33 @@ const TransformableMixin = base => {
             // - move by positive origin after rotating.
 
             return matrix
+        }
+
+        // TODO: fix _isIdentity in DOMMatrix, it is returning true even if false.
+        _calculateWorldMatricesInSubtree() {
+            this._calculateWorldMatrixFromParent()
+
+            for (const child of this._children) {
+                child._calculateWorldMatricesInSubtree()
+            }
+        }
+
+        _calculateWorldMatrixFromParent() {
+            //console.log('calc world matrix from parent', this.element.id)
+            const parent = this._parent
+
+            if (parent instanceof Transformable)
+                this._worldMatrix = parent._worldMatrix.multiply(this._properties.transform)
+            else // otherwise parent is the Scene, which is Sizeable, not Transformable
+                this._worldMatrix = this._properties.transform
+        }
+
+        _render() {
+            super._render()
+
+            // TODO: only run this when necessary (f.e. not if only opacity
+            // changed)
+            this._properties.transform = this._calculateMatrix()
         }
     }
 

@@ -1,4 +1,5 @@
 import documentReady from 'awaitbox/dom/documentReady'
+import Transformable from './Transformable'
 
 import {
     //animationFrame,
@@ -13,6 +14,10 @@ class Motor {
         this._animationLoopStarted = false
         this._allRenderTasks = new Set
         this._nodesToBeRendered = new Set
+
+        // A set of nodes that are the root nodes of subtrees where all nodes
+        // in each subtree need to have their world matrices updated.
+        this._worldMatrixRootNodes = new Set
     }
 
     /**
@@ -123,8 +128,37 @@ class Motor {
     }
 
     _renderNodes(timestamp) {
+        if (!this._nodesToBeRendered.size) return
+
         for (const node of this._nodesToBeRendered) {
             node._render(timestamp)
+
+            // If the node is root of a subtree containing updated nodes, then
+            // add it to the _worldMatrixRootNodes set so we can update the
+            // subtree's node's world matrices.
+            //console.log('instanceof Transformable and not ancestor to be rendered?', node instanceof Transformable, !(node._getAncestorToBeRendered() instanceof Transformable))
+            if (
+                node instanceof Transformable &&
+
+                // if not instanceof Transformable, f.e. `false` if no ancestor
+                // to be rendered, or Sizeable if the Scene is returned.
+                !(node._getAncestorToBeRendered() instanceof Transformable)
+            ) {
+                this._worldMatrixRootNodes.add(node)
+            }
+        }
+
+        //console.log('world matrix subtree roots', Array.from(this._worldMatrixRootNodes).map(n => n.element.id))
+
+        // Update world matrices of the subtrees.
+        for (const subtreeRoot of this._worldMatrixRootNodes) {
+            subtreeRoot._calculateWorldMatricesInSubtree()
+        }
+
+        this._worldMatrixRootNodes.clear()
+
+        for (const node of this._nodesToBeRendered) {
+            node._willBeRendered = false
         }
         this._nodesToBeRendered.clear()
     }

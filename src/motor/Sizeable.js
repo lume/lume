@@ -22,7 +22,8 @@ const instanceofSymbol = Symbol('instanceofSymbol')
 const SizeableMixin = base => {
 
     // Sizeable extends TreeNode because Sizeable knows about its _parent when
-    // calculating proportionalSize.
+    // calculating proportionalSize. Also Transformable knows about it's parent
+    // in order to calculate it's world matrix based on it's parent's.
     class Sizeable extends TreeNode.mixin(Observable.mixin(base)) {
 
         constructor(options = {}) {
@@ -249,6 +250,13 @@ const SizeableMixin = base => {
                 this._properties[name] = newValue
                 this.triggerEvent('propertychange', name)
             }
+        }
+
+        _render() {
+            // nothing yet, but needed because ImperativeBase calls
+            // `super._render()`, which will call either Transformable's
+            // _render or Sizeable's _render for Node and Scene classes,
+            // respectively.
         }
     }
 
