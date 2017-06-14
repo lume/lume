@@ -235,7 +235,6 @@ const TransformableMixin = base => {
         }
 
         _calculateWorldMatrixFromParent() {
-            //console.log('calc world matrix from parent', this.element.id)
             const parent = this._parent
 
             if (parent instanceof Transformable)

@@ -136,7 +136,6 @@ class Motor {
             // If the node is root of a subtree containing updated nodes, then
             // add it to the _worldMatrixRootNodes set so we can update the
             // subtree's node's world matrices.
-            //console.log('instanceof Transformable and not ancestor to be rendered?', node instanceof Transformable, !(node._getAncestorToBeRendered() instanceof Transformable))
             if (
                 node instanceof Transformable &&
 
@@ -147,8 +146,6 @@ class Motor {
                 this._worldMatrixRootNodes.add(node)
             }
         }
-
-        //console.log('world matrix subtree roots', Array.from(this._worldMatrixRootNodes).map(n => n.element.id))
 
         // Update world matrices of the subtrees.
         for (const subtreeRoot of this._worldMatrixRootNodes) {
