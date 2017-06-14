@@ -100,7 +100,7 @@ const SizeableMixin = base => {
                 || previousSize.y !== calculatedSize.y
                 || previousSize.z !== calculatedSize.z
             ) {
-                this.triggerEvent('sizechange', Object.assign({}, calculatedSize))
+                this.triggerEvent('sizechange', {...calculatedSize})
             }
         }
 
