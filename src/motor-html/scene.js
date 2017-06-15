@@ -155,7 +155,7 @@ class MotorHTMLScene extends Observable.mixin(MotorHTMLBase) {
             colorAttributeLocation, colorSize, colorType, normalizeColorData, colorStride, colorOffset)
         // }
 
-        // TODO... colors per object.
+        // TODO... normals per object.
         // For now we'll just re-use the same colors. {
         const vertexNormals = new Float32Array(cube.verts.length)
 
@@ -283,18 +283,6 @@ class MotorHTMLScene extends Observable.mixin(MotorHTMLBase) {
         this.lightWorldPosition = [20,30,50]
         this.cameraAngle = 0
         this.cameraRadius   = 500
-
-        // TODO: move to node
-        const angle  = {theta: 0}
-        const origin = [0.5, 0.5, 0.5]
-        const originMatrix      = m4.translation(cube.width * origin[0], -cube.width * origin[1], -cube.width * origin[2])
-        const scaleMatrix       = m4.scaling(1,1,1)
-        const translationMatrix = m4.translation(0, 0, 0)
-
-        //await sleep(1000)
-        //Motor.addRenderTask(time => {
-            //this._drawGLScene()
-        //})
     }
 
     _drawGLScene() {
