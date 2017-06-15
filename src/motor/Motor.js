@@ -14,6 +14,7 @@ class Motor {
         this._animationLoopStarted = false
         this._allRenderTasks = new Set
         this._nodesToBeRendered = new Set
+        this._modifiedScenes = new Set
 
         // A set of nodes that are the root nodes of subtrees where all nodes
         // in each subtree need to have their world matrices updated.
@@ -145,14 +146,30 @@ class Motor {
             ) {
                 this._worldMatrixRootNodes.add(node)
             }
+
+            // keep track of which scenes are modified so we can render webgl
+            // only for those scenes.
+            // TODO FIXME: at this point, a node should always have a scene,
+            // otherwise it should not ever be rendered here, but turns out
+            // some nodes are getting into this queue without a scene. We
+            // shouldn't need the conditional check for _scene.
+            if (node._scene && !this._modifiedScenes.has(node._scene))
+                this._modifiedScenes.add(node._scene)
         }
 
         // Update world matrices of the subtrees.
         for (const subtreeRoot of this._worldMatrixRootNodes) {
             subtreeRoot._calculateWorldMatricesInSubtree()
         }
-
         this._worldMatrixRootNodes.clear()
+
+        // render webgl of modified scenes.
+        for (const scene of this._modifiedScenes) {
+            // TODO temporarily storing stuff on the .element, but we don't
+            // want that, we will move it to WebGLRenderer.
+            scene.element._drawGLScene()
+        }
+        this._modifiedScenes.clear()
 
         for (const node of this._nodesToBeRendered) {
             node._willBeRendered = false

@@ -5,7 +5,6 @@ import Scene from '../motor/Scene'
 import Observable from '../motor/Observable'
 import Sizeable from '../motor/Sizeable'
 import MotorHTMLBase, {initMotorHTMLBase, proxyGettersSetters} from './base'
-import TWEEN from 'tween.js'
 import sleep from 'awaitbox/timers/sleep'
 
 import {
@@ -37,21 +36,6 @@ class MotorHTMLScene extends Observable.mixin(MotorHTMLBase) {
         this._sizePollTask = null
         this._parentSize = {x:0, y:0, z:0}
 
-        //////////////////////////////////////////////////////////////////////////////
-        //////////////////////////////////////////////////////////////////////////////
-
-        // TODO: maybe call this in `init()`, and removeWebGLContext in `deinit()`
-        this._gl = createWebGLContext(this)
-        if (!this._gl) { console.log('You need WebGL.') }
-
-        // For now, use the same program (with shaders) for all objects.
-        // Basically it has position, frag colors, point light, directional
-        // light, and ambient light.
-        this.makeGlProgram()
-
-        //////////////////////////////////////////////////////////////////////////////
-        //////////////////////////////////////////////////////////////////////////////
-
         // After the imperativeCounterpart is available it needs to register
         // mount into DOM. This is only for MotorHTMLScenes because their
         // imperativeCounterparts are not added to a parent Node.
@@ -60,16 +44,27 @@ class MotorHTMLScene extends Observable.mixin(MotorHTMLBase) {
         this._imperativeCounterpartPromise
             .then(() => {
 
-                // return if
                 if (this.imperativeCounterpart._mounted) return
 
                 if (this.parentNode)
                     this.imperativeCounterpart.mount(this.parentNode)
             })
+
+        // For now, use the same program (with shaders) for all objects.
+        // Basically it has position, frag colors, point light, directional
+        // light, and ambient light.
+        // TODO: maybe call this in `init()`, and destroy webgl stuff in `deinit()`
+        this.makeGlProgram()
     }
 
     async makeGlProgram() {
-        const gl = this._gl
+        await this.mountPromise
+
+        const gl = createWebGLContext(this)
+        this.gl = gl
+
+        if (!gl) { console.log('You need WebGL.') }
+
         const vertShader = createShader(gl, gl.VERTEX_SHADER, vertShaderSource)
         const fragShader = createShader(gl, gl.FRAGMENT_SHADER, fragShaderSource)
         const program = createProgram(gl, vertShader, fragShader)
@@ -87,12 +82,12 @@ class MotorHTMLScene extends Observable.mixin(MotorHTMLBase) {
         const type = gl.FLOAT;   // the data is 32bit floats
         const normalizeVertexData = false; // don't normalize the data
         const stride = 0;        // 0 = move forward vertexSize * sizeof(type) each iteration to get the next vertex
-        const offset = 0;        // start at the beginning of the buffer
-        const count = 2/*triangles per side*/ * 3/*vertices per triangle*/ * 6/*sides*/
+        this.offset = 0;        // start at the beginning of the buffer
+        this.count = 2/*triangles per side*/ * 3/*vertices per triangle*/ * 6/*sides*/
         const vertexAttributeLocation = gl.getAttribLocation(program, "a_vertexPosition")
         gl.enableVertexAttribArray(vertexAttributeLocation)
         gl.vertexAttribPointer(
-            vertexAttributeLocation, vertexSize, type, normalizeVertexData, stride, offset)
+            vertexAttributeLocation, vertexSize, type, normalizeVertexData, stride, this.offset)
         // }
 
         // TODO... colors per object.
@@ -245,10 +240,9 @@ class MotorHTMLScene extends Observable.mixin(MotorHTMLBase) {
         //gl.enable(gl.BLEND)
         //gl.disable(gl.DEPTH_TEST)
 
-        let projectionMatrix
+        this.projectionMatrix = m4.identity
 
-        updateResolution()
-        function updateResolution() {
+        const updateResolution = () => {
             const resolution = [
                 parseFloat(getComputedStyle(gl.canvas).width) * window.devicePixelRatio,
                 parseFloat(getComputedStyle(gl.canvas).height) * window.devicePixelRatio,
@@ -256,20 +250,19 @@ class MotorHTMLScene extends Observable.mixin(MotorHTMLBase) {
             ]
 
             setGlResolution(gl, ...resolution)
-            projectionMatrix = m4.perspective(45, resolution[0] / resolution[1], 1, 2000)
+            this.projectionMatrix = m4.perspective(45, resolution[0] / resolution[1], 1, 2000)
         }
 
-        this.on('parentsizechange', () => {
-            updateResolution()
-        })
+        updateResolution()
+        this.on('parentsizechange', updateResolution)
 
-        const worldViewProjectionMatrixLocation = gl.getUniformLocation(program, 'u_worldViewProjectionMatrix')
+        this.worldViewProjectionMatrixLocation = gl.getUniformLocation(program, 'u_worldViewProjectionMatrix')
         //const worldInverseTransposeMatrixLocation = gl.getUniformLocation(program, 'u_worldInverseTransposeMatrix')
-        const worldMatrixLocation = gl.getUniformLocation(program, 'u_worldMatrix')
+        this.worldMatrixLocation = gl.getUniformLocation(program, 'u_worldMatrix')
         const reverseLightDirectionLocation = gl.getUniformLocation(program, 'reverseLightDirection')
         gl.uniform3fv(reverseLightDirectionLocation, v3.normalize([0.5, 0.7, 1]))
-        const lightWorldPositionLocation = gl.getUniformLocation(program, 'u_lightWorldPosition')
-        const cameraWorldPositionLocation = gl.getUniformLocation(program, 'u_cameraWorldPosition')
+        this.lightWorldPositionLocation = gl.getUniformLocation(program, 'u_lightWorldPosition')
+        this.cameraWorldPositionLocation = gl.getUniformLocation(program, 'u_cameraWorldPosition')
         const shininessLocation = gl.getUniformLocation(program, 'u_shininess')
         const lightColorLocation = gl.getUniformLocation(program, 'u_lightColor')
         const specularColorLocation = gl.getUniformLocation(program, 'u_specularColor')
@@ -286,120 +279,70 @@ class MotorHTMLScene extends Observable.mixin(MotorHTMLBase) {
         gl.uniform3fv(specularColorLocation, v3.normalize(specularColor))
 
 
-        let lightAnimParam = 0
-        window.lightWorldPosition = [20,30,50]
-        window.cameraAngle = 0
-        window.cameraRadius   = 500
-        window.rootRotationY = 0
-        window.rootRotationX = 0
-        window.zpos = 0
+        this.lightAnimParam = 0
+        this.lightWorldPosition = [20,30,50]
+        this.cameraAngle = 0
+        this.cameraRadius   = 500
 
         // TODO: move to node
         const angle  = {theta: 0}
         const origin = [0.5, 0.5, 0.5]
         const originMatrix      = m4.translation(cube.width * origin[0], -cube.width * origin[1], -cube.width * origin[2])
         const scaleMatrix       = m4.scaling(1,1,1)
-        let   zRotationMatrix   = m4.zRotation(angle.theta)
-        let   yRotationMatrix   = m4.yRotation(angle.theta)
         const translationMatrix = m4.translation(0, 0, 0)
 
-        let done = false
-        const tween = new TWEEN.Tween(angle)
-            .to({theta: 360}, 2000)
-            .easing(TWEEN.Easing.Elastic.InOut)
-            .onComplete(() => done = true)
-            .start()
-
-        await sleep(5000)
-        Motor.addRenderTask(time => {
-            //tween.update(time)
-            //if (done) return false // stop the loop
-            //console.log('gl tick')
-
-            lightAnimParam += 0.1
-            lightWorldPosition = [600*Math.sin(lightAnimParam), 0, 600*Math.cos(lightAnimParam)]
-            gl.uniform3fv(lightWorldPositionLocation, lightWorldPosition)
-
-            gl.clearColor(0.2, 0.04, 0.1, 1)
-            gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT) // why do we need to do this?
-
-            zRotationMatrix = m4.zRotation(angle.theta)
-            yRotationMatrix = m4.yRotation(angle.theta)
-
-            //cameraAngle++
-            let cameraMatrix  = m4.identity
-            cameraMatrix      = m4.multiply(cameraMatrix, m4.yRotation(cameraAngle))
-            cameraMatrix      = m4.multiply(cameraMatrix, m4.translation(0, 0, cameraRadius * 1.5))
-            const viewMatrix  = m4.inverse(cameraMatrix)
-
-            const viewProjectionMatrix = m4.multiply(projectionMatrix, viewMatrix)
-
-            const cameraWorldPosition = [cameraMatrix[12], cameraMatrix[13], cameraMatrix[14]]
-            gl.uniform3fv(cameraWorldPositionLocation, cameraWorldPosition)
-
-/*
- *            //let worldMatrix = m4.identity
- *
- *            // TODO: move to node
- *            // Node (root object)
- *            //
- *            // place everything where we want it near the center. the new
- *            // projectionMatrix puts the X andY origin in the center of the screen,
- *            // and Z is 0 at the screen and goes  negative away from the screen.
- *            worldMatrix = m4.multiply(worldMatrix, m4.translation(0, 0, zpos))
- *            //rootRotationY++
- *            worldMatrix = m4.multiply(worldMatrix, m4.yRotation(rootRotationY))
- *            worldMatrix = m4.multiply(worldMatrix, m4.xRotation(rootRotationX))
- *
- *            // TODO: move to node
- *            // Node > Node
- *            //
- *            // matrix math is written in the opposite direction now, so that we can
- *            // apply the previous projection matrix only once, before all
- *            // drawArrays calls. For each matrix applied, think of them as happening
- *            // from the lastone to the first one.
- *            worldMatrix = m4.multiply(worldMatrix, translationMatrix)
- *            worldMatrix = m4.multiply(worldMatrix, zRotationMatrix)
- *            worldMatrix = m4.multiply(worldMatrix, yRotationMatrix)
- *            worldMatrix = m4.multiply(worldMatrix, scaleMatrix)
- *            worldMatrix = m4.multiply(worldMatrix, originMatrix)
- *
- *            gl.uniformMatrix4fv(worldMatrixLocation, false, worldMatrix)
- *
- *            // for correct lighting normals
- *            const worldInverseTransposeMatrix = m4.transpose(m4.inverse(worldMatrix))
- *            gl.uniformMatrix4fv(worldInverseTransposeMatrixLocation, false, worldInverseTransposeMatrix)
- *
- *            const worldViewProjectionMatrix = m4.multiply(viewProjectionMatrix, worldMatrix)
- *            gl.uniformMatrix4fv(worldViewProjectionMatrixLocation, false, worldViewProjectionMatrix)
- *
- *            gl.drawArrays(gl.TRIANGLES, offset, count)
- */
-
-            for (const child of this.imperativeCounterpart._children) {
-                drawGLScene(child)
-            }
-
-            function drawGLScene(node) {
-                gl.uniformMatrix4fv(worldMatrixLocation, false, node._worldMatrix.toFloat32Array())
-
-                // for correct lighting normals
-                // TODO: waiting for transpose() method on DOMMatrix
-                //const worldInverseTransposeMatrix = m4.transpose(m4.inverse(node._worldMatrix))
-                //gl.uniformMatrix4fv(worldInverseTransposeMatrixLocation, false, worldInverseTransposeMatrix)
-
-                const worldViewProjectionMatrix = m4.multiply(viewProjectionMatrix, node._worldMatrix.toFloat32Array())
-                gl.uniformMatrix4fv(worldViewProjectionMatrixLocation, false, worldViewProjectionMatrix)
-
-                gl.drawArrays(gl.TRIANGLES, offset, count)
-
-                for (const child of node._children) {
-                    drawGLScene(child)
-                }
-            }
-        })
+        //await sleep(1000)
+        //Motor.addRenderTask(time => {
+            //this._drawGLScene()
+        //})
     }
 
+    _drawGLScene() {
+        const {gl} = this
+
+        this.lightAnimParam += 0.1
+        this.lightWorldPosition = [600*Math.sin(this.lightAnimParam), 0, 600*Math.cos(this.lightAnimParam)]
+
+        gl.uniform3fv(this.lightWorldPositionLocation, this.lightWorldPosition)
+
+        gl.clearColor(0.2, 0.04, 0.1, 1)
+        gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT) // why do we need to do this?
+
+        //this.cameraAngle++
+        let cameraMatrix  = m4.identity
+        cameraMatrix      = m4.multiply(cameraMatrix, m4.yRotation(this.cameraAngle))
+        cameraMatrix      = m4.multiply(cameraMatrix, m4.translation(0, 0, this.cameraRadius * 1.5))
+        const viewMatrix  = m4.inverse(cameraMatrix)
+
+        this.viewProjectionMatrix = m4.multiply(this.projectionMatrix, viewMatrix)
+
+        const cameraWorldPosition = [cameraMatrix[12], cameraMatrix[13], cameraMatrix[14]]
+        gl.uniform3fv(this.cameraWorldPositionLocation, cameraWorldPosition)
+
+        for (const child of this.imperativeCounterpart._children) {
+            this._drawAndRecurse(child)
+        }
+    }
+
+    _drawAndRecurse(node) {
+        const {gl} = this
+
+        gl.uniformMatrix4fv(this.worldMatrixLocation, false, node._worldMatrix.toFloat32Array())
+
+        // for correct lighting normals
+        // TODO: waiting for transpose() method on DOMMatrix
+        //const worldInverseTransposeMatrix = m4.transpose(m4.inverse(node._worldMatrix))
+        //gl.uniformMatrix4fv(worldInverseTransposeMatrixLocation, false, worldInverseTransposeMatrix)
+
+        const worldViewProjectionMatrix = m4.multiply(this.viewProjectionMatrix, node._worldMatrix.toFloat32Array())
+        gl.uniformMatrix4fv(this.worldViewProjectionMatrixLocation, false, worldViewProjectionMatrix)
+
+        gl.drawArrays(gl.TRIANGLES, this.offset, this.count)
+
+        for (const child of node._children) {
+            this._drawAndRecurse(child)
+        }
+    }
 
     _startSizePolling() {
         // NOTE Polling is currently required because there's no other way to do this
