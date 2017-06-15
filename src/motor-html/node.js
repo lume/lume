@@ -83,7 +83,7 @@ function parseStringArray(str) {
 }
 
 function checkIsNumberArrayString(str) {
-    if (!str.match(/^\s*(((\s*(-|\+)?((\.\d+)|(\d+\.\d+)|(\d+))\s*,){0,2}(\s*(-|\+)?((\.\d+)|(\d+\.\d+)|(\d+))))|((\s*(-|\+)?((\.\d+)|(\d+\.\d+)|(\d+))\s){0,2}(\s*(-|\+)?((\.\d+)|(\d+\.\d+)|(\d+)))))\s*$/g))
+    if (!str.match(/^\s*(((\s*(-|\+)?((\.\d+)|(\d+\.\d+)|(\d+)|(\d+(\.\d+)?e(-|\+)?(\d+)))\s*,){0,2}(\s*(-|\+)?((\.\d+)|(\d+\.\d+)|(\d+)|(\d+(\.\d+)?e(-|\+)?(\d+)))))|((\s*(-|\+)?((\.\d+)|(\d+\.\d+)|(\d+)|(\d+(\.\d+)?e(-|\+)?(\d+)))\s){0,2}(\s*(-|\+)?((\.\d+)|(\d+\.\d+)|(\d+)|(\d+(\.\d+)?e(-|\+)?(\d+))))))\s*$/g))
         throw new Error(`Attribute must be a comma- or space-separated sequence of up to three numbers, for example "1 2.5 3". Yours was "${str}".`)
 }
 

@@ -152,7 +152,8 @@ class Motor {
             // TODO FIXME: at this point, a node should always have a scene,
             // otherwise it should not ever be rendered here, but turns out
             // some nodes are getting into this queue without a scene. We
-            // shouldn't need the conditional check for _scene.
+            // shouldn't need the conditional check for node._scene, and it
+            // will save CPU.
             if (node._scene && !this._modifiedScenes.has(node._scene))
                 this._modifiedScenes.add(node._scene)
         }
@@ -165,8 +166,8 @@ class Motor {
 
         // render webgl of modified scenes.
         for (const scene of this._modifiedScenes) {
-            // TODO temporarily storing stuff on the .element, but we don't
-            // want that, we will move it to WebGLRenderer.
+            // TODO we're temporarily storing stuff on the .element, but we
+            // don't want that, we will move it to WebGLRenderer.
             scene.element._drawGLScene()
         }
         this._modifiedScenes.clear()
