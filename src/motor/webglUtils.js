@@ -618,7 +618,9 @@ export
 const vertShaderSource = `
     attribute vec4 a_vertexPosition;
     uniform mat4 u_worldViewProjectionMatrix;
-    uniform mat4 u_worldInverseTransposeMatrix; // used for correct lighting normals
+
+    // TODO: awaiting on transpose() method for DOMMatrix
+    //uniform mat4 u_worldInverseTransposeMatrix; // used for correct lighting normals
 
     attribute vec4 a_color;
     varying vec4 v_fragColor;
@@ -651,8 +653,9 @@ const vertShaderSource = `
         //v_fragColor = gl_Position * 0.5 + 0.5;
 
         // orient the normals and pass to the fragment shader
-        v_vertNormal = mat3(u_worldInverseTransposeMatrix) * a_normal;
+        //v_vertNormal = mat3(u_worldInverseTransposeMatrix) * a_normal; // TODO waiting for transpose() method on DOMMatrix
         //alternate: v_vertNormal = (u_worldInverseTransposeMatrix * vec4(a_normal, 0)).xyz;
+        v_vertNormal = mat3(u_worldMatrix) * a_normal;
     }
 `
 

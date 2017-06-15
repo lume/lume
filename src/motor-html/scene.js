@@ -6,6 +6,7 @@ import Observable from '../motor/Observable'
 import Sizeable from '../motor/Sizeable'
 import MotorHTMLBase, {initMotorHTMLBase, proxyGettersSetters} from './base'
 import TWEEN from 'tween.js'
+import sleep from 'awaitbox/timers/sleep'
 
 import {
     createWebGLContext,
@@ -67,7 +68,7 @@ class MotorHTMLScene extends Observable.mixin(MotorHTMLBase) {
             })
     }
 
-    makeGlProgram() {
+    async makeGlProgram() {
         const gl = this._gl
         const vertShader = createShader(gl, gl.VERTEX_SHADER, vertShaderSource)
         const fragShader = createShader(gl, gl.FRAGMENT_SHADER, fragShaderSource)
@@ -263,7 +264,7 @@ class MotorHTMLScene extends Observable.mixin(MotorHTMLBase) {
         })
 
         const worldViewProjectionMatrixLocation = gl.getUniformLocation(program, 'u_worldViewProjectionMatrix')
-        const worldInverseTransposeMatrixLocation = gl.getUniformLocation(program, 'u_worldInverseTransposeMatrix')
+        //const worldInverseTransposeMatrixLocation = gl.getUniformLocation(program, 'u_worldInverseTransposeMatrix')
         const worldMatrixLocation = gl.getUniformLocation(program, 'u_worldMatrix')
         const reverseLightDirectionLocation = gl.getUniformLocation(program, 'reverseLightDirection')
         gl.uniform3fv(reverseLightDirectionLocation, v3.normalize([0.5, 0.7, 1]))
@@ -309,9 +310,10 @@ class MotorHTMLScene extends Observable.mixin(MotorHTMLBase) {
             .onComplete(() => done = true)
             .start()
 
+        await sleep(5000)
         Motor.addRenderTask(time => {
-            tween.update(time)
-            if (done) return false // stop the loop
+            //tween.update(time)
+            //if (done) return false // stop the loop
             //console.log('gl tick')
 
             lightAnimParam += 0.1
@@ -335,65 +337,69 @@ class MotorHTMLScene extends Observable.mixin(MotorHTMLBase) {
             const cameraWorldPosition = [cameraMatrix[12], cameraMatrix[13], cameraMatrix[14]]
             gl.uniform3fv(cameraWorldPositionLocation, cameraWorldPosition)
 
-            let worldMatrix = m4.identity
+/*
+ *            //let worldMatrix = m4.identity
+ *
+ *            // TODO: move to node
+ *            // Node (root object)
+ *            //
+ *            // place everything where we want it near the center. the new
+ *            // projectionMatrix puts the X andY origin in the center of the screen,
+ *            // and Z is 0 at the screen and goes  negative away from the screen.
+ *            worldMatrix = m4.multiply(worldMatrix, m4.translation(0, 0, zpos))
+ *            //rootRotationY++
+ *            worldMatrix = m4.multiply(worldMatrix, m4.yRotation(rootRotationY))
+ *            worldMatrix = m4.multiply(worldMatrix, m4.xRotation(rootRotationX))
+ *
+ *            // TODO: move to node
+ *            // Node > Node
+ *            //
+ *            // matrix math is written in the opposite direction now, so that we can
+ *            // apply the previous projection matrix only once, before all
+ *            // drawArrays calls. For each matrix applied, think of them as happening
+ *            // from the lastone to the first one.
+ *            worldMatrix = m4.multiply(worldMatrix, translationMatrix)
+ *            worldMatrix = m4.multiply(worldMatrix, zRotationMatrix)
+ *            worldMatrix = m4.multiply(worldMatrix, yRotationMatrix)
+ *            worldMatrix = m4.multiply(worldMatrix, scaleMatrix)
+ *            worldMatrix = m4.multiply(worldMatrix, originMatrix)
+ *
+ *            gl.uniformMatrix4fv(worldMatrixLocation, false, worldMatrix)
+ *
+ *            // for correct lighting normals
+ *            const worldInverseTransposeMatrix = m4.transpose(m4.inverse(worldMatrix))
+ *            gl.uniformMatrix4fv(worldInverseTransposeMatrixLocation, false, worldInverseTransposeMatrix)
+ *
+ *            const worldViewProjectionMatrix = m4.multiply(viewProjectionMatrix, worldMatrix)
+ *            gl.uniformMatrix4fv(worldViewProjectionMatrixLocation, false, worldViewProjectionMatrix)
+ *
+ *            gl.drawArrays(gl.TRIANGLES, offset, count)
+ */
 
-            // TODO: move to node
-            // Node (root object)
-            //
-            // place everything where we want it near the center. the new
-            // projectionMatrix puts the X andY origin in the center of the screen,
-            // and Z is 0 at the screen and goes  negative away from the screen.
-            worldMatrix = m4.multiply(worldMatrix, m4.translation(0, 0, zpos))
-            //rootRotationY++
-            worldMatrix = m4.multiply(worldMatrix, m4.yRotation(rootRotationY))
-            worldMatrix = m4.multiply(worldMatrix, m4.xRotation(rootRotationX))
+            for (const child of this.imperativeCounterpart._children) {
+                drawGLScene(child)
+            }
 
-            // TODO: move to node
-            // Node > Node
-            //
-            // matrix math is written in the opposite direction now, so that we can
-            // apply the previous projection matrix only once, before all
-            // drawArrays calls. For each matrix applied, think of them as happening
-            // from the lastone to the first one.
-            worldMatrix = m4.multiply(worldMatrix, translationMatrix)
-            worldMatrix = m4.multiply(worldMatrix, zRotationMatrix)
-            worldMatrix = m4.multiply(worldMatrix, yRotationMatrix)
-            worldMatrix = m4.multiply(worldMatrix, scaleMatrix)
-            worldMatrix = m4.multiply(worldMatrix, originMatrix)
-
-            gl.uniformMatrix4fv(worldMatrixLocation, false, worldMatrix)
-
-            // for correct lighting normals
-            const worldInverseTransposeMatrix = m4.transpose(m4.inverse(worldMatrix))
-            gl.uniformMatrix4fv(worldInverseTransposeMatrixLocation, false, worldInverseTransposeMatrix)
-
-            const worldViewProjectionMatrix = m4.multiply(viewProjectionMatrix, worldMatrix)
-            gl.uniformMatrix4fv(worldViewProjectionMatrixLocation, false, worldViewProjectionMatrix)
-
-            gl.drawArrays(gl.TRIANGLES, offset, count)
-
-            for (let i = 0; i < 5; ++i) {
-                // TODO: move to node
-                // Node > Node > Node > etc
-                worldMatrix = m4.multiply(worldMatrix, translationMatrix)
-                worldMatrix = m4.multiply(worldMatrix, zRotationMatrix)
-                worldMatrix = m4.multiply(worldMatrix, yRotationMatrix)
-                worldMatrix = m4.multiply(worldMatrix, scaleMatrix)
-                worldMatrix = m4.multiply(worldMatrix, originMatrix)
-
-                gl.uniformMatrix4fv(worldMatrixLocation, false, worldMatrix)
+            function drawGLScene(node) {
+                gl.uniformMatrix4fv(worldMatrixLocation, false, node._worldMatrix.toFloat32Array())
 
                 // for correct lighting normals
-                const worldInverseTransposeMatrix = m4.transpose(m4.inverse(worldMatrix))
-                gl.uniformMatrix4fv(worldInverseTransposeMatrixLocation, false, worldInverseTransposeMatrix)
+                // TODO: waiting for transpose() method on DOMMatrix
+                //const worldInverseTransposeMatrix = m4.transpose(m4.inverse(node._worldMatrix))
+                //gl.uniformMatrix4fv(worldInverseTransposeMatrixLocation, false, worldInverseTransposeMatrix)
 
-                const worldViewProjectionMatrix = m4.multiply(viewProjectionMatrix, worldMatrix)
+                const worldViewProjectionMatrix = m4.multiply(viewProjectionMatrix, node._worldMatrix.toFloat32Array())
                 gl.uniformMatrix4fv(worldViewProjectionMatrixLocation, false, worldViewProjectionMatrix)
 
                 gl.drawArrays(gl.TRIANGLES, offset, count)
+
+                for (const child of node._children) {
+                    drawGLScene(child)
+                }
             }
         })
     }
+
 
     _startSizePolling() {
         // NOTE Polling is currently required because there's no other way to do this
