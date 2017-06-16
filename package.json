@@ -20,8 +20,7 @@
     "preversion": "git reset HEAD global.js && git checkout -- global.js && git add . && git stash && git clean -xfd -e node_modules",
     "version": "npm run add-version-to-source && npm run build && git add -f global.js",
     "add-version-to-source": ".scripts/version-to-source.js && git add src/index.js",
-    "postversion": "npm publish && git push && git push --tags && git stash pop && git reset HEAD",
-    "prepare": "npm run build"
+    "postversion": "npm publish && git push && git push --tags && git stash pop && git reset HEAD"
   },
   "dependencies": {
     "army-knife": "^0.2.1",
