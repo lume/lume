@@ -168,7 +168,7 @@ class Motor {
         for (const scene of this._modifiedScenes) {
             // TODO we're temporarily storing stuff on the .element, but we
             // don't want that, we will move it to WebGLRenderer.
-            scene.element._drawGLScene()
+            if (scene.element.webglEnabled) scene.element._drawGLScene()
         }
         this._modifiedScenes.clear()
 

@@ -59,6 +59,9 @@ class MotorHTMLScene extends Observable.mixin(MotorHTMLBase) {
 
     async makeGlProgram() {
         await this.mountPromise
+        this.webglEnabled = !!this.getAttribute('webglenabled')
+        console.log(' ---- webgl enabled?', this.webglEnabled)
+        if (!this.webglEnabled) return
 
         const gl = createWebGLContext(this)
         this.gl = gl
@@ -72,7 +75,7 @@ class MotorHTMLScene extends Observable.mixin(MotorHTMLBase) {
 
         // TODO... we need to fill vertexBuffer with each objects vertices.
         // For now we'll just re-use the cube verts. {
-        const cube = new Cube(0,0,100)
+        const cube = new Cube(0,0,10)
         const vertexBuffer = gl.createBuffer()
         gl.bindBuffer(gl.ARRAY_BUFFER, vertexBuffer)
         gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(cube.verts), gl.STATIC_DRAW)
@@ -282,7 +285,7 @@ class MotorHTMLScene extends Observable.mixin(MotorHTMLBase) {
         this.lightAnimParam = 0
         this.lightWorldPosition = [20,30,50]
         this.cameraAngle = 0
-        this.cameraRadius   = 500
+        this.cameraRadius   = 200
     }
 
     _drawGLScene() {
