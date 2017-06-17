@@ -105,7 +105,7 @@ function createProgram(gl, vertexShader, fragmentShader) {
         return program
     }
 
-    console.log(gl.getProgramInfoLog(program))
+    console.log(' --- Error making program. GL Program Info Log:', gl.getProgramInfoLog(program))
     gl.deleteProgram(program)
 }
 
@@ -149,8 +149,6 @@ class Quad {
         verts[15] = x
         verts[16] = y
         verts[17] = 0
-
-        return verts
     }
 }
 
@@ -158,22 +156,26 @@ export
 class Cube {
     constructor(x, y, width) {
         // the top front left corner
-        this.x = x
-        this.y = y
+        this.x = x // number
+        this.y = y // number
 
-        this.width = width
-        this.verts = []
+        this.width = width // number
+        this.verts = null // Float32Array
+        this.normals = null // Float32Array
+        this.colors = null // Float32Array
+        this._color = null
 
         this.calcVerts()
+        this.color = [ 0.5, 0.5, 0.5 ]
     }
 
     calcVerts() {
-        const {x,y, width, verts} = this
+        const {x,y, width} = this
 
         const x2 = x + width
         const y2 = y + width
 
-        this.verts = [
+        const verts = this.verts = new Float32Array([
             // front face
             x, y, 0,
             x2, y, 0,
@@ -221,9 +223,103 @@ class Cube {
             x2, y2, -width,
             x2, y2, 0,
             x, y2, 0,
+        ])
+
+        const normals = this.normals = new Float32Array(verts.length)
+
+        const faceNormals = [
+            [0,0,1, ], // front face
+            [-1,0,0, ], // left face
+            [1,0,0,], // right face
+            [0,0,-1,], // back face
+            [0,-1,0, ], // top face
+            [0,1,0,], // bottom face
         ]
 
-        return verts
+        for (let side=0, i=0, l=verts.length; i<l; i+=6*3, side+=1) { // 6 vertices per side, 3 numbers per vertex normal
+
+            // first vertex
+            normals[i+0]  = faceNormals[side][0]
+            normals[i+1]  = faceNormals[side][1]
+            normals[i+2]  = faceNormals[side][2]
+
+            // second vertex
+            normals[i+3]  = faceNormals[side][0]
+            normals[i+4]  = faceNormals[side][1]
+            normals[i+5]  = faceNormals[side][2]
+
+            // third vertex
+            normals[i+6]  = faceNormals[side][0]
+            normals[i+7]  = faceNormals[side][1]
+            normals[i+8]  = faceNormals[side][2]
+
+            // fourth vertex
+            normals[i+9]  = faceNormals[side][0]
+            normals[i+10] = faceNormals[side][1]
+            normals[i+11] = faceNormals[side][2]
+
+            // fifth vertex
+            normals[i+12] = faceNormals[side][0]
+            normals[i+13] = faceNormals[side][1]
+            normals[i+14] = faceNormals[side][2]
+
+            // sixth vertex
+            normals[i+15] = faceNormals[side][0]
+            normals[i+16] = faceNormals[side][1]
+            normals[i+17] = faceNormals[side][2]
+        }
+    }
+
+    // TODO handle CSS color strings with tinycolor2 from NPM
+    set color(value) {
+        if (!value) return
+
+        this._color = value
+
+        let color = null
+
+        if (typeof value == 'string')
+            color = value.split(' ').map(rgbPart => parseFloat(rgbPart))
+        else
+            color = value
+
+        const colors = this.colors = new Float32Array(this.verts.length)
+
+        for (let i=0, l=this.verts.length; i<l; i+=6*3) { //  6 vertices per side, 3 color parts per vertex
+
+            // first vertex
+            colors[i+0]  = color[0]
+            colors[i+1]  = color[1]
+            colors[i+2]  = color[2]
+
+            // second vertex
+            colors[i+3]  = color[0]
+            colors[i+4]  = color[1]
+            colors[i+5]  = color[2]
+
+            // third vertex
+            colors[i+6]  = color[0]
+            colors[i+7]  = color[1]
+            colors[i+8]  = color[2]
+
+            // fourth vertex
+            colors[i+9]  = color[0]
+            colors[i+10] = color[1]
+            colors[i+11] = color[2]
+
+            // fifth vertex
+            colors[i+12] = color[0]
+            colors[i+13] = color[1]
+            colors[i+14] = color[2]
+
+            // sixth vertex
+            colors[i+15] = color[0]
+            colors[i+16] = color[1]
+            colors[i+17] = color[2]
+        }
+    }
+    get color() {
+        return this._color
     }
 }
 

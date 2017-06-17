@@ -73,156 +73,18 @@ class MotorHTMLScene extends Observable.mixin(MotorHTMLBase) {
         const program = createProgram(gl, vertShader, fragShader)
         gl.useProgram(program)
 
-        // TODO... we need to fill vertexBuffer with each objects vertices.
-        // For now we'll just re-use the cube verts. {
-        const cube = new Cube(0,0,10)
-        const vertexBuffer = gl.createBuffer()
-        gl.bindBuffer(gl.ARRAY_BUFFER, vertexBuffer)
-        gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(cube.verts), gl.STATIC_DRAW)
 
-        // Tell the attribute how to get data out of vertexBuffer (ARRAY_BUFFER)
-        const vertexSize = 3;          // 2 components per iteration
-        const type = gl.FLOAT;   // the data is 32bit floats
-        const normalizeVertexData = false; // don't normalize the data
-        const stride = 0;        // 0 = move forward vertexSize * sizeof(type) each iteration to get the next vertex
-        this.offset = 0;        // start at the beginning of the buffer
-        this.count = 2/*triangles per side*/ * 3/*vertices per triangle*/ * 6/*sides*/
-        const vertexAttributeLocation = gl.getAttribLocation(program, "a_vertexPosition")
-        gl.enableVertexAttribArray(vertexAttributeLocation)
-        gl.vertexAttribPointer(
-            vertexAttributeLocation, vertexSize, type, normalizeVertexData, stride, this.offset)
-        // }
+        this.colorsBuffer = gl.createBuffer()
+        this.colorAttributeLocation = gl.getAttribLocation(program, 'a_color')
+        gl.enableVertexAttribArray(this.colorAttributeLocation)
 
-        // TODO... colors per object.
-        // For now we'll just re-use the same colors. {
-        const vertexColors = new Float32Array(cube.verts.length)
+        this.vertexBuffer = gl.createBuffer()
+        this.vertexAttributeLocation = gl.getAttribLocation(program, "a_vertexPosition")
+        gl.enableVertexAttribArray(this.vertexAttributeLocation)
 
-        chooseRandomColors()
-        function chooseRandomColors() {
-            for (let i=0, l=cube.verts.length; i<l; i+=6*3) { //  6 vertices per side, 3 color parts per vertex
-
-                // four random colors, one for each corner of a quad (two corners
-                // have two vertices)
-                const colors = [
-                    [Math.random(), Math.random(), Math.random()],
-                    [Math.random(), Math.random(), Math.random()],
-                    [Math.random(), Math.random(), Math.random()],
-                    [Math.random(), Math.random(), Math.random()],
-                ]
-
-                // first vertex
-                vertexColors[i+0]  = colors[0][0]
-                vertexColors[i+1]  = colors[0][1]
-                vertexColors[i+2]  = colors[0][2]
-
-                // second vertex
-                vertexColors[i+3]  = colors[1][0]
-                vertexColors[i+4]  = colors[1][1]
-                vertexColors[i+5]  = colors[1][2]
-
-                // third vertex
-                vertexColors[i+6]  = colors[2][0]
-                vertexColors[i+7]  = colors[2][1]
-                vertexColors[i+8]  = colors[2][2]
-
-                // fourth vertex
-                vertexColors[i+9]  = colors[2][0]
-                vertexColors[i+10] = colors[2][1]
-                vertexColors[i+11] = colors[2][2]
-
-                // fifth vertex
-                vertexColors[i+12] = colors[3][0]
-                vertexColors[i+13] = colors[3][1]
-                vertexColors[i+14] = colors[3][2]
-
-                // sixth vertex
-                vertexColors[i+15] = colors[0][0]
-                vertexColors[i+16] = colors[0][1]
-                vertexColors[i+17] = colors[0][2]
-            }
-        }
-
-        const colorsBuffer = gl.createBuffer()
-        gl.bindBuffer(gl.ARRAY_BUFFER, colorsBuffer)
-        gl.bufferData(gl.ARRAY_BUFFER, vertexColors, gl.STATIC_DRAW)
-
-        // Tell the attribute how to get data out of vertexBuffer (ARRAY_BUFFER)
-        const colorSize = 3;          // 2 components per iteration
-        const colorType = gl.FLOAT;   // the data is 32bit floats
-        const normalizeColorData = false; // don't normalize the data
-        const colorStride = 0;        // 0 = move forward colorSize * sizeof(colorType) each iteration to get the next vertex
-        const colorOffset = 0;        // start at the beginning of the buffer
-        const colorAttributeLocation = gl.getAttribLocation(program, 'a_color')
-        gl.enableVertexAttribArray(colorAttributeLocation)
-        gl.vertexAttribPointer(
-            colorAttributeLocation, colorSize, colorType, normalizeColorData, colorStride, colorOffset)
-        // }
-
-        // TODO... normals per object.
-        // For now we'll just re-use the same colors. {
-        const vertexNormals = new Float32Array(cube.verts.length)
-
-        makeNormals()
-        function makeNormals() {
-            const normals = [
-                [0,0,1, ], // front face
-                [-1,0,0, ], // left face
-                [1,0,0,], // right face
-                [0,0,-1,], // back face
-                [0,-1,0, ], // top face
-                [0,1,0,], // bottom face
-            ]
-
-            for (let side=0, i=0, l=cube.verts.length; i<l; i+=6*3, side+=1) { // 6 vertices per side, 3 numbers per vertex normal
-                console.log('side:', side)
-
-                // first vertex
-                vertexNormals[i+0]  = normals[side][0]
-                vertexNormals[i+1]  = normals[side][1]
-                vertexNormals[i+2]  = normals[side][2]
-
-                // second vertex
-                vertexNormals[i+3]  = normals[side][0]
-                vertexNormals[i+4]  = normals[side][1]
-                vertexNormals[i+5]  = normals[side][2]
-
-                // third vertex
-                vertexNormals[i+6]  = normals[side][0]
-                vertexNormals[i+7]  = normals[side][1]
-                vertexNormals[i+8]  = normals[side][2]
-
-                // fourth vertex
-                vertexNormals[i+9]  = normals[side][0]
-                vertexNormals[i+10] = normals[side][1]
-                vertexNormals[i+11] = normals[side][2]
-
-                // fifth vertex
-                vertexNormals[i+12] = normals[side][0]
-                vertexNormals[i+13] = normals[side][1]
-                vertexNormals[i+14] = normals[side][2]
-
-                // sixth vertex
-                vertexNormals[i+15] = normals[side][0]
-                vertexNormals[i+16] = normals[side][1]
-                vertexNormals[i+17] = normals[side][2]
-            }
-        }
-
-        const normalsBuffer = gl.createBuffer()
-        gl.bindBuffer(gl.ARRAY_BUFFER, normalsBuffer)
-        gl.bufferData(gl.ARRAY_BUFFER, vertexNormals, gl.STATIC_DRAW)
-
-        // Tell the attribute how to get data out of vertexBuffer (ARRAY_BUFFER)
-        const normalSize = 3;          // 2 components per iteration
-        const normalType = gl.FLOAT;   // the data is 32bit floats
-        const normalizeNormalsData = false; // don't normalize the data
-        const normalStride = 0;        // 0 = move forward normalSize * sizeof(normalType) each iteration to get the next vertex
-        const normalOffset = 0;        // start at the beginning of the buffer
-        const normalAttributeLocation = gl.getAttribLocation(program, 'a_normal')
-        gl.enableVertexAttribArray(normalAttributeLocation)
-        gl.vertexAttribPointer(
-            normalAttributeLocation, normalSize, normalType, normalizeNormalsData, normalStride, normalOffset)
-        // }
+        this.normalsBuffer = gl.createBuffer()
+        this.normalAttributeLocation = gl.getAttribLocation(program, 'a_normal')
+        gl.enableVertexAttribArray(this.normalAttributeLocation)
 
         // cull_face doesn't work, because I've drawn my vertices in the wrong
         // order. They should be clockwise to be front facing (I seem to have done
@@ -288,6 +150,8 @@ class MotorHTMLScene extends Observable.mixin(MotorHTMLBase) {
         this.cameraRadius   = 200
     }
 
+    // This is called by Motor in each tick, only if any part of the Scene's
+    // graph was modified.
     _drawGLScene() {
         const {gl} = this
 
@@ -296,7 +160,14 @@ class MotorHTMLScene extends Observable.mixin(MotorHTMLBase) {
 
         gl.uniform3fv(this.lightWorldPositionLocation, this.lightWorldPosition)
 
-        gl.clearColor(0.2, 0.04, 0.1, 1)
+        let backgroundColor = this.getAttribute('background')
+
+        if (typeof backgroundColor == 'string')
+            backgroundColor = backgroundColor.split(' ').map(rgbPart => parseFloat(rgbPart))
+        else
+            backgroundColor = [0, 0, 0, 0]
+
+        gl.clearColor(...backgroundColor)
         gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT) // why do we need to do this?
 
         //this.cameraAngle++
@@ -318,17 +189,71 @@ class MotorHTMLScene extends Observable.mixin(MotorHTMLBase) {
     _drawAndRecurse(node) {
         const {gl} = this
 
-        gl.uniformMatrix4fv(this.worldMatrixLocation, false, node._worldMatrix.toFloat32Array())
+        const meshAttr = node.element.getAttribute('mesh')
 
-        // for correct lighting normals
-        // TODO: waiting for transpose() method on DOMMatrix
-        //const worldInverseTransposeMatrix = m4.transpose(m4.inverse(node._worldMatrix))
-        //gl.uniformMatrix4fv(worldInverseTransposeMatrixLocation, false, worldInverseTransposeMatrix)
+        if (meshAttr) {
+            if (meshAttr == 'cube') {
+                if (!(node.__shape instanceof Cube)) node.__shape = new Cube(0,0,10)
+            }
+            else node.__shape = null
 
-        const worldViewProjectionMatrix = m4.multiply(this.viewProjectionMatrix, node._worldMatrix.toFloat32Array())
-        gl.uniformMatrix4fv(this.worldViewProjectionMatrixLocation, false, worldViewProjectionMatrix)
+            if (node.__shape) {
+                // COLORS /////////////////////////////////
+                node.__shape.color = node.element.getAttribute('color')
 
-        gl.drawArrays(gl.TRIANGLES, this.offset, this.count)
+                gl.bindBuffer(gl.ARRAY_BUFFER, this.colorsBuffer)
+                gl.bufferData(gl.ARRAY_BUFFER, node.__shape.colors, gl.STATIC_DRAW)
+
+                // Tell the attribute how to get data out of vertexBuffer (ARRAY_BUFFER)
+                const colorSize = 3;          // 2 components per iteration
+                const colorType = gl.FLOAT;   // the data is 32bit floats
+                const normalizeColorData = false; // don't normalize the data
+                const colorStride = 0;        // 0 = move forward colorSize * sizeof(colorType) each iteration to get the next vertex
+                const colorOffset = 0;        // start at the beginning of the buffer
+                gl.vertexAttribPointer(
+                    this.colorAttributeLocation, colorSize, colorType, normalizeColorData, colorStride, colorOffset)
+
+                // VERTICES /////////////////////////////////
+                gl.bindBuffer(gl.ARRAY_BUFFER, this.vertexBuffer)
+                gl.bufferData(gl.ARRAY_BUFFER, node.__shape.verts, gl.STATIC_DRAW)
+
+                // Tell the attribute how to get data out of vertexBuffer (ARRAY_BUFFER)
+                const vertexSize = 3;          // 2 components per iteration
+                const type = gl.FLOAT;   // the data is 32bit floats
+                const normalizeVertexData = false; // don't normalize the data
+                const stride = 0;        // 0 = move forward vertexSize * sizeof(type) each iteration to get the next vertex
+                this.offset = 0;        // start at the beginning of the buffer
+                this.count = 2/*triangles per side*/ * 3/*vertices per triangle*/ * 6/*sides*/
+                gl.vertexAttribPointer(
+                    this.vertexAttributeLocation, vertexSize, type, normalizeVertexData, stride, this.offset)
+
+                // NORMALS /////////////////////////////////
+                gl.bindBuffer(gl.ARRAY_BUFFER, this.normalsBuffer)
+                gl.bufferData(gl.ARRAY_BUFFER, node.__shape.normals, gl.STATIC_DRAW)
+
+                // Tell the attribute how to get data out of vertexBuffer (ARRAY_BUFFER)
+                const normalSize = 3;          // 2 components per iteration
+                const normalType = gl.FLOAT;   // the data is 32bit floats
+                const normalizeNormalsData = false; // don't normalize the data
+                const normalStride = 0;        // 0 = move forward normalSize * sizeof(normalType) each iteration to get the next vertex
+                const normalOffset = 0;        // start at the beginning of the buffer
+                gl.vertexAttribPointer(
+                    this.normalAttributeLocation, normalSize, normalType, normalizeNormalsData, normalStride, normalOffset)
+
+                // TRANFORMS /////////////////////////////////
+                gl.uniformMatrix4fv(this.worldMatrixLocation, false, node._worldMatrix.toFloat32Array())
+
+                // for correct lighting normals
+                // TODO: waiting for transpose() method on DOMMatrix
+                //const worldInverseTransposeMatrix = m4.transpose(m4.inverse(node._worldMatrix))
+                //gl.uniformMatrix4fv(worldInverseTransposeMatrixLocation, false, worldInverseTransposeMatrix)
+
+                const worldViewProjectionMatrix = m4.multiply(this.viewProjectionMatrix, node._worldMatrix.toFloat32Array())
+                gl.uniformMatrix4fv(this.worldViewProjectionMatrixLocation, false, worldViewProjectionMatrix)
+
+                gl.drawArrays(gl.TRIANGLES, this.offset, this.count)
+            }
+        }
 
         for (const child of node._children) {
             this._drawAndRecurse(child)
