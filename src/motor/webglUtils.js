@@ -767,8 +767,8 @@ const fragShaderSource = `
 
     varying vec3 v_surfaceToLightVector;
 
-    // TODO: use this for directional lighting (f.e. sunlight or moonlight).
-    uniform vec3 reverseLightDirection;
+    //// TODO: use this for directional lighting (f.e. sunlight or moonlight).
+    //uniform vec3 reverseLightDirection;
 
     varying vec3 v_surfaceToCameraVector;
 
@@ -792,7 +792,7 @@ const fragShaderSource = `
         vec3 halfVector = normalize(surfaceToLightDirection + surfaceToCameraDirection);
 
         float pointLight = dot(normal, surfaceToLightDirection);
-        float directionalLight = dot(normal, reverseLightDirection);
+        //float directionalLight = dot(normal, reverseLightDirection);
 
         //float specular = dot(normal, halfVector);
         float specular = 0.0;
@@ -812,7 +812,7 @@ const fragShaderSource = `
         //gl_FragColor.rgb *= directionalLight; // directional light only.
         //gl_FragColor.rgb *= ambientLight; // ambient light only.
         gl_FragColor.rgb *=
-            clamp(directionalLight, 0.0, 1.0) +
+            //clamp(directionalLight, 0.0, 1.0) +
             clamp(pointLight, 0.0, 1.0) * u_lightColor +
             ambientLight * ambientLightIntensity;
 
