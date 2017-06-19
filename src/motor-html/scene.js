@@ -17,7 +17,10 @@ import {
     fragShaderSource,
     createShader,
     createProgram,
-    Cube
+    Cube,
+    Quad,
+    FourSidedPyramid,
+    IsoscelesTriangle,
 } from '../motor/webglUtils'
 
 initMotorHTMLBase()
@@ -192,8 +195,23 @@ class MotorHTMLScene extends Observable.mixin(MotorHTMLBase) {
         const meshAttr = node.element.getAttribute('mesh')
 
         if (meshAttr) {
+            const size = node._calculatedSize
+
             if (meshAttr == 'cube') {
-                if (!(node.__shape instanceof Cube)) node.__shape = new Cube(0,0,10)
+                if (!(node.__shape instanceof Cube))
+                    node.__shape = new Cube(0, 0, size.x)
+            }
+            else if (meshAttr == 'quad') {
+                if (!(node.__shape instanceof Quad))
+                    node.__shape = new Quad(0, 0, size.x, size.y)
+            }
+            else if (meshAttr == 'isotriangle') {
+                if (!(node.__shape instanceof IsoscelesTriangle))
+                    node.__shape = new IsoscelesTriangle(size.x, size.y)
+            }
+            else if (meshAttr == 'pyramid4') {
+                if (!(node.__shape instanceof FourSidedPyramid))
+                    node.__shape = new FourSidedPyramid(size.x, size.y)
             }
             else node.__shape = null
 
@@ -205,7 +223,7 @@ class MotorHTMLScene extends Observable.mixin(MotorHTMLBase) {
                 gl.bufferData(gl.ARRAY_BUFFER, node.__shape.colors, gl.STATIC_DRAW)
 
                 // Tell the attribute how to get data out of vertexBuffer (ARRAY_BUFFER)
-                const colorSize = 3;          // 2 components per iteration
+                const colorSize = 3;          // 3 components per iteration
                 const colorType = gl.FLOAT;   // the data is 32bit floats
                 const normalizeColorData = false; // don't normalize the data
                 const colorStride = 0;        // 0 = move forward colorSize * sizeof(colorType) each iteration to get the next vertex
@@ -222,10 +240,9 @@ class MotorHTMLScene extends Observable.mixin(MotorHTMLBase) {
                 const type = gl.FLOAT;   // the data is 32bit floats
                 const normalizeVertexData = false; // don't normalize the data
                 const stride = 0;        // 0 = move forward vertexSize * sizeof(type) each iteration to get the next vertex
-                this.offset = 0;        // start at the beginning of the buffer
-                this.count = 2/*triangles per side*/ * 3/*vertices per triangle*/ * 6/*sides*/
+                const offset = 0;        // start at the beginning of the buffer
                 gl.vertexAttribPointer(
-                    this.vertexAttributeLocation, vertexSize, type, normalizeVertexData, stride, this.offset)
+                    this.vertexAttributeLocation, vertexSize, type, normalizeVertexData, stride, offset)
 
                 // NORMALS /////////////////////////////////
                 gl.bindBuffer(gl.ARRAY_BUFFER, this.normalsBuffer)
@@ -251,7 +268,8 @@ class MotorHTMLScene extends Observable.mixin(MotorHTMLBase) {
                 const worldViewProjectionMatrix = m4.multiply(this.viewProjectionMatrix, node._worldMatrix.toFloat32Array())
                 gl.uniformMatrix4fv(this.worldViewProjectionMatrixLocation, false, worldViewProjectionMatrix)
 
-                gl.drawArrays(gl.TRIANGLES, this.offset, this.count)
+                const count = node.__shape.verts.length / 3
+                gl.drawArrays(gl.TRIANGLES, offset, count)
             }
         }
 

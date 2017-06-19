@@ -110,66 +110,150 @@ function createProgram(gl, vertexShader, fragmentShader) {
 }
 
 export
-class Quad {
-    constructor(x, y, width, height) {
-        this.x = x
-        this.y = y
-        this.width = width
-        this.height = height
-        this.verts = []
+const v3 = {
+    cross(a, b) {
+        return [
+            a[1] * b[2] - a[2] * b[1],
+            a[2] * b[0] - a[0] * b[2],
+            a[0] * b[1] - a[1] * b[0],
+        ]
+    },
 
-        this.calcVerts()
-    }
+    subtract(a, b) {
+        return [a[0] - b[0], a[1] - b[1], a[2] - b[2]]
+    },
 
-    calcVerts() {
-        const {x,y, width, height, verts} = this
-        const x2 = x + width
-        const y2 = y + height
+    add(a, b) {
+        return [a[0] + b[0], a[1] + b[1], a[2] + b[2]]
+    },
 
-        verts[0] = x
-        verts[1] = y
-        verts[2] = 0
-
-        verts[3] = x2
-        verts[4] = y
-        verts[5] = 0
-
-        verts[6] = x2
-        verts[7] = y2
-        verts[8] = 0
-
-        verts[9] = x2
-        verts[10] = y2
-        verts[11] = 0
-
-        verts[12] = x
-        verts[13] = y2
-        verts[14] = 0
-
-        verts[15] = x
-        verts[16] = y
-        verts[17] = 0
-    }
+    normalize(v) {
+        const length = Math.sqrt(v[0] * v[0] + v[1] * v[1] + v[2] * v[2])
+        // make sure we don't divide by 0.
+        if (length > 0.00001) {
+            return [v[0] / length, v[1] / length, v[2] / length]
+        } else {
+            return [0, 0, 0]
+        }
+    },
 }
 
-export
-class Cube {
-    constructor(x, y, width) {
-        // the top front left corner
-        this.x = x // number
-        this.y = y // number
+class Geometry {
+    constructor(...args) {
+        this._init(...args)
+    }
 
-        this.width = width // number
+    _init() {
         this.verts = null // Float32Array
         this.normals = null // Float32Array
         this.colors = null // Float32Array
         this._color = null
 
-        this.calcVerts()
+        this._calcVerts()
         this.color = [ 0.5, 0.5, 0.5 ]
     }
 
-    calcVerts() {
+    // TODO handle CSS color strings with tinycolor2 from NPM
+    set color(value) {
+        if (!value) return
+
+        this._color = value
+        let color = null
+
+        if (typeof value == 'string')
+            color = value.split(' ').map(rgbPart => parseFloat(rgbPart))
+        else color = value
+
+        const colors = this.colors = new Float32Array(this.verts.length)
+
+        for (let i=0, l=this.verts.length; i<l; i+=3) { // 3 color parts per vertex
+            colors[i+0]  = color[0]
+            colors[i+1]  = color[1]
+            colors[i+2]  = color[2]
+        }
+    }
+    get color() {
+        return this._color
+    }
+}
+
+export
+class IsoscelesTriangle extends Geometry {
+    _init(width, height) {
+        this.width = width // number
+        this.height = height // number
+
+        super._init()
+    }
+
+    _calcVerts() {
+        const {width, height} = this
+
+        const verts = this.verts = new Float32Array([
+            -width/2, 0, 0,
+            width/2, 0, 0,
+            0, height, 0,
+        ])
+
+        const normal = [0,0,1] // pointing along Z
+        const normals = this.normals = new Float32Array(verts.length)
+
+        for (let i=0, l=verts.length; i<l; i+=3) { // 3 numbers per vertex
+            normals[i+0] = normal[0]
+            normals[i+1] = normal[1]
+            normals[i+2] = normal[2]
+        }
+    }
+}
+
+export
+class Quad extends Geometry {
+    _init(x, y, width, height) {
+        this.x = x // number
+        this.y = y // number
+        this.width = width // number
+        this.height = height // number
+
+        super._init()
+    }
+
+    _calcVerts() {
+        const {x,y, width, height} = this
+        const x2 = x + width
+        const y2 = y + height
+
+        const verts = this.verts = new Float32Array([
+            x, y, 0,
+            x2, y, 0,
+            x2, y2, 0,
+            x2, y2, 0,
+            x, y2, 0,
+            x, y, 0,
+        ])
+
+        const normal = [0,0,1] // pointing along Z
+        const normals = this.normals = new Float32Array(verts.length)
+
+        for (let i=0, l=verts.length; i<l; i+=3) { // 3 numbers per vertex
+            normals[i+0] = normal[0]
+            normals[i+1] = normal[1]
+            normals[i+2] = normal[2]
+        }
+    }
+}
+
+export
+class Cube extends Geometry {
+    _init(x, y, width) {
+        // the top front left corner
+        this.x = x // number
+        this.y = y // number
+        this.width = width // number
+
+        super._init()
+    }
+
+    _calcVerts() {
         const {x,y, width} = this
 
         const x2 = x + width
@@ -225,8 +309,6 @@ class Cube {
             x, y2, 0,
         ])
 
-        const normals = this.normals = new Float32Array(verts.length)
-
         const faceNormals = [
             [0,0,1, ], // front face
             [-1,0,0, ], // left face
@@ -235,6 +317,8 @@ class Cube {
             [0,-1,0, ], // top face
             [0,1,0,], // bottom face
         ]
+
+        const normals = this.normals = new Float32Array(verts.length)
 
         for (let side=0, i=0, l=verts.length; i<l; i+=6*3, side+=1) { // 6 vertices per side, 3 numbers per vertex normal
 
@@ -269,57 +353,223 @@ class Cube {
             normals[i+17] = faceNormals[side][2]
         }
     }
+}
 
-    // TODO handle CSS color strings with tinycolor2 from NPM
-    set color(value) {
-        if (!value) return
+export
+class ThreeSidedPyramid extends Geometry {
+    _init(base, height) {
+        this.base = base
+        this.height = height
 
-        this._color = value
-
-        let color = null
-
-        if (typeof value == 'string')
-            color = value.split(' ').map(rgbPart => parseFloat(rgbPart))
-        else
-            color = value
-
-        const colors = this.colors = new Float32Array(this.verts.length)
-
-        for (let i=0, l=this.verts.length; i<l; i+=6*3) { //  6 vertices per side, 3 color parts per vertex
-
-            // first vertex
-            colors[i+0]  = color[0]
-            colors[i+1]  = color[1]
-            colors[i+2]  = color[2]
-
-            // second vertex
-            colors[i+3]  = color[0]
-            colors[i+4]  = color[1]
-            colors[i+5]  = color[2]
-
-            // third vertex
-            colors[i+6]  = color[0]
-            colors[i+7]  = color[1]
-            colors[i+8]  = color[2]
-
-            // fourth vertex
-            colors[i+9]  = color[0]
-            colors[i+10] = color[1]
-            colors[i+11] = color[2]
-
-            // fifth vertex
-            colors[i+12] = color[0]
-            colors[i+13] = color[1]
-            colors[i+14] = color[2]
-
-            // sixth vertex
-            colors[i+15] = color[0]
-            colors[i+16] = color[1]
-            colors[i+17] = color[2]
-        }
+        super._init()
     }
-    get color() {
-        return this._color
+
+    _calcVerts() {
+        const {base, height} = this
+
+        // base is hypotenuse in following calculations
+
+        // TODO: this can be replaced with a loop that can make any-sided
+        // pyramid.
+        const verts = this.verts = new Float32Array([
+            // base
+            0, 0, 0, // bottom front left
+            base, 0, 0, // bottom front right
+            base/2, 0, -Math.sin(degToRad(60)) * base, // bottom back
+
+            // front
+            base, 0, 0, // bottom front right
+            0, 0, 0, // bottom front left
+            base/2, height, ((Math.sin(degToRad(60)) * base) / (base/2)) * (base/2), // tip top
+
+            // back left
+            0, 0, 0, // bottom front left
+            base/2, 0, -Math.sin(degToRad(60)) * base, // bottom back
+            base/2, height, ((Math.sin(degToRad(60)) * base) / (base/2)) * (base/2), // tip top
+
+            // back right
+            base/2, 0, -Math.sin(degToRad(60)) * base, // bottom back
+            base, 0, 0, // bottom front right
+            base/2, height, ((Math.sin(degToRad(60)) * base) / (base/2)) * (base/2), // tip top
+        ])
+
+        // TODO: normals
+    }
+}
+
+export
+class FourSidedPyramid extends Geometry {
+    //_init(base, height) {
+        //this.base = base
+        //this.height = height
+
+        //super._init()
+    //}
+
+    //_calcVerts() {
+        //const {base, height} = this
+
+        //// base is hypotenuse in following calculations
+
+        //// TODO: this can be replaced with a loop that can make any-sided
+        //// pyramid.
+        //const verts = this.verts = new Float32Array([
+            //// base
+            //0, 0, 0, // bottom front left
+            //base, 0, 0, // bottom front right
+            //base, 0, -base, // bottom back right
+            //base, 0, -base, // bottom back right
+            //0, 0, -base, // bottom back left
+            //0, 0, 0, // bottom front left
+
+            //// front
+            //0, 0, 0, // bottom front left
+            //base, 0, 0, // bottom front right
+            //base/2, height, -base/2, // tip top
+
+            //// right
+            //base, 0, 0, // bottom front right
+            //base, 0, -base, // bottom back right
+            //base/2, height, -base/2, // tip top
+
+            //// back
+            //base, 0, -base, // bottom back right
+            //0, 0, -base, // bottom back left
+            //base/2, height, -base/2, // tip top
+
+            //// left
+            //0, 0, -base, // bottom back left
+            //0, 0, 0, // bottom front left
+            //base/2, height, -base/2, // tip top
+        //])
+
+        //const faceNormals = [
+            //// bottom
+            //[0, -1, 0],
+
+            //// front
+            //v3.cross(
+                //[base, 0, 0], // bottom front right
+                //[base/2, height, -base/2] // tip top
+            //),
+
+            //// right
+            //v3.cross(
+                //[base, 0, -base], // bottom back right
+                //[-base/2, height, -base/2] // tip top (-x)
+            //),
+
+            //// left
+            //v3.cross(
+                //[-base, 0, 0], // bottom front right (-x)
+                //[-base/2, height, base/2] // tip top (-x, +z)
+            //),
+
+            //// right
+            //v3.cross(
+                //[0, 0, base], // bottom back left (+z)
+                //[base/2, height, base/2] // tip top (+z)
+            //),
+        //]
+
+        //const normals = this.normals = new Float32Array(verts.length)
+
+        //// bottom (6 verts)
+        //for (let side=0, i=0, l=6*3; i<l; i+=6*3, side+=1) { // 6 vertices per side, 3 numbers per vertex normal
+
+            //// first vertex
+            //normals[i+0]  = faceNormals[side][0]
+            //normals[i+1]  = faceNormals[side][1]
+            //normals[i+2]  = faceNormals[side][2]
+
+            //// second vertex
+            //normals[i+3]  = faceNormals[side][0]
+            //normals[i+4]  = faceNormals[side][1]
+            //normals[i+5]  = faceNormals[side][2]
+
+            //// third vertex
+            //normals[i+6]  = faceNormals[side][0]
+            //normals[i+7]  = faceNormals[side][1]
+            //normals[i+8]  = faceNormals[side][2]
+
+            //// fourth vertex
+            //normals[i+9]  = faceNormals[side][0]
+            //normals[i+10] = faceNormals[side][1]
+            //normals[i+11] = faceNormals[side][2]
+
+            //// fifth vertex
+            //normals[i+12] = faceNormals[side][0]
+            //normals[i+13] = faceNormals[side][1]
+            //normals[i+14] = faceNormals[side][2]
+
+            //// sixth vertex
+            //normals[i+15] = faceNormals[side][0]
+            //normals[i+16] = faceNormals[side][1]
+            //normals[i+17] = faceNormals[side][2]
+        //}
+
+        //// sides (3 verts each)
+        //for (let side=0+1, i=0, l=verts.length - 6*3; i<l; i+=3*3, side+=1) { // 3 vertices per side, 3 numbers per vertex normal
+
+            //// first vertex
+            //normals[i+0]  = faceNormals[side][0]
+            //normals[i+1]  = faceNormals[side][1]
+            //normals[i+2]  = faceNormals[side][2]
+
+            //// second vertex
+            //normals[i+3]  = faceNormals[side][0]
+            //normals[i+4]  = faceNormals[side][1]
+            //normals[i+5]  = faceNormals[side][2]
+
+            //// third vertex
+            //normals[i+6]  = faceNormals[side][0]
+            //normals[i+7]  = faceNormals[side][1]
+            //normals[i+8]  = faceNormals[side][2]
+        //}
+    //}
+
+    _init() {
+        super._init()
+    }
+
+    _calcVerts() {
+        this.verts = new Float32Array([
+            -100 ,0.087303 ,-100
+            ,100 ,0.087303 ,-100
+            ,100 ,0.087303 ,100
+            ,-100 ,0.087303 ,100
+            ,100 ,0.087303 ,100
+            ,100 ,0.087303 ,-100
+            ,0 ,200.087 ,0
+            ,100 ,0.087303 ,-100
+            ,-100 ,0.087303 ,-100
+            ,0 ,200.087 ,0
+            ,-100 ,0.087303 ,-100
+            ,-100 ,0.087303 ,100
+            ,0 ,200.087 ,0
+            ,-100 ,0.087303 ,100
+            ,100 ,0.087303 ,100
+            ,0 ,200.087 ,0
+        ])
+
+        this.normals = new Float32Array([
+            0 ,-1 ,0
+            ,0 ,-1 ,0
+            ,0 ,-1 ,0
+            ,0 ,-1 ,0
+            ,0.894427 ,0.447214 ,0
+            ,0.894427 ,0.447214 ,0
+            ,0.894427 ,0.447214 ,0
+            ,0 ,0.447214 ,-0.894427
+            ,0 ,0.447214 ,-0.894427
+            ,0 ,0.447214 ,-0.894427
+            ,-0.894427 ,0.447214 ,0
+            ,-0.894427 ,0.447214 ,0
+            ,-0.894427 ,0.447214 ,0
+            ,0 ,0.447214 ,0.894427
+            ,0 ,0.447214 ,0.894427
+            ,0 ,0.447214 ,0.894427
+        ])
     }
 }
 
@@ -406,31 +656,6 @@ const m3 = {
             b20 * a01 + b21 * a11 + b22 * a21,
             b20 * a02 + b21 * a12 + b22 * a22,
         ]
-    },
-}
-
-export
-const v3 = {
-    cross(a, b) {
-        return [
-            a[1] * b[2] - a[2] * b[1],
-            a[2] * b[0] - a[0] * b[2],
-            a[0] * b[1] - a[1] * b[0],
-        ]
-    },
-
-    subtract(a, b) {
-        return [a[0] - b[0], a[1] - b[1], a[2] - b[2]]
-    },
-
-    normalize(v) {
-        const length = Math.sqrt(v[0] * v[0] + v[1] * v[1] + v[2] * v[2])
-        // make sure we don't divide by 0.
-        if (length > 0.00001) {
-            return [v[0] / length, v[1] / length, v[2] / length]
-        } else {
-            return [0, 0, 0]
-        }
     },
 }
 
