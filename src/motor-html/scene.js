@@ -158,8 +158,12 @@ class MotorHTMLScene extends Observable.mixin(MotorHTMLBase) {
     _drawGLScene() {
         const {gl} = this
 
-        this.lightAnimParam += 0.1
-        this.lightWorldPosition = [600*Math.sin(this.lightAnimParam), 0, 600*Math.cos(this.lightAnimParam)]
+        this.lightAnimParam += 0.05
+        this.lightWorldPosition = [
+            600*Math.sin(this.lightAnimParam),
+            600*Math.sin(this.lightAnimParam*2),
+            Math.abs(600*Math.cos(this.lightAnimParam))
+        ]
 
         gl.uniform3fv(this.lightWorldPositionLocation, this.lightWorldPosition)
 
