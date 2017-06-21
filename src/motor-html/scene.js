@@ -21,6 +21,7 @@ import {
     Quad,
     FourSidedPyramid,
     IsoscelesTriangle,
+    SymmetricTrapezoid,
 } from '../motor/webglUtils'
 
 initMotorHTMLBase()
@@ -160,9 +161,11 @@ class MotorHTMLScene extends Observable.mixin(MotorHTMLBase) {
 
         this.lightAnimParam += 0.05
         this.lightWorldPosition = [
-            600*Math.sin(this.lightAnimParam),
-            600*Math.sin(this.lightAnimParam*2),
-            Math.abs(600*Math.cos(this.lightAnimParam))
+            300*Math.sin(this.lightAnimParam),
+            300*Math.sin(this.lightAnimParam*2),
+
+            //Math.abs(600*Math.cos(this.lightAnimParam))
+            300
         ]
 
         gl.uniform3fv(this.lightWorldPositionLocation, this.lightWorldPosition)
@@ -207,7 +210,7 @@ class MotorHTMLScene extends Observable.mixin(MotorHTMLBase) {
             }
             else if (meshAttr == 'quad') {
                 if (!(node.__shape instanceof Quad))
-                    node.__shape = new Quad(0, 0, size.x, size.y)
+                    node.__shape = new Quad(size.x, size.y)
             }
             else if (meshAttr == 'isotriangle') {
                 if (!(node.__shape instanceof IsoscelesTriangle))
@@ -217,7 +220,12 @@ class MotorHTMLScene extends Observable.mixin(MotorHTMLBase) {
                 if (!(node.__shape instanceof FourSidedPyramid))
                     node.__shape = new FourSidedPyramid(size.x, size.y)
             }
-            else node.__shape = null
+            else if (meshAttr == 'symtrap') {
+                if (!(node.__shape instanceof SymmetricTrapezoid))
+                    node.__shape = new SymmetricTrapezoid(size.x/2, size.x, size.y)
+            }
+            //else node.__shape = null
+            else node.__shape = new Cube(0, 0, size.x)
 
             if (node.__shape) {
                 // COLORS /////////////////////////////////

@@ -207,10 +207,41 @@ class IsoscelesTriangle extends Geometry {
 }
 
 export
+class SymmetricTrapezoid extends Geometry { // extends from TwoDeePolygon, which has same normals code.
+    _init(baseWidth, topWidth, height) {
+        this.baseWidth = baseWidth // number
+        this.topWidth = topWidth // number
+        this.height = height // number
+
+        super._init()
+    }
+
+    _calcVerts() {
+        const {baseWidth, topWidth, height} = this
+
+        const verts = this.verts = new Float32Array([
+            -baseWidth/2, 0, 0,
+            baseWidth/2, 0, 0,
+            topWidth/2, height, 0,
+            topWidth/2, height, 0,
+            -topWidth/2, height, 0,
+            -baseWidth/2, 0, 0,
+        ])
+
+        const normal = [0,0,1] // pointing along Z
+        const normals = this.normals = new Float32Array(verts.length)
+
+        for (let i=0, l=verts.length; i<l; i+=3) { // 3 numbers per vertex
+            normals[i+0] = normal[0]
+            normals[i+1] = normal[1]
+            normals[i+2] = normal[2]
+        }
+    }
+}
+
+export
 class Quad extends Geometry {
-    _init(x, y, width, height) {
-        this.x = x // number
-        this.y = y // number
+    _init(width, height) {
         this.width = width // number
         this.height = height // number
 
@@ -218,17 +249,15 @@ class Quad extends Geometry {
     }
 
     _calcVerts() {
-        const {x,y, width, height} = this
-        const x2 = x + width
-        const y2 = y + height
+        const {width, height} = this
 
         const verts = this.verts = new Float32Array([
-            x, y, 0,
-            x2, y, 0,
-            x2, y2, 0,
-            x2, y2, 0,
-            x, y2, 0,
-            x, y, 0,
+            -width/2, -height/2, 0,
+            width/2, -height/2, 0,
+            width/2, height/2, 0,
+            width/2, height/2, 0,
+            -width/2, height/2, 0,
+            -width/2, -height/2, 0,
         ])
 
         const normal = [0,0,1] // pointing along Z
