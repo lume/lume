@@ -223,6 +223,12 @@ class MotorHTMLScene extends Observable.mixin(MotorHTMLBase) {
             else if (meshAttr == 'symtrap') {
                 if (!(node.__shape instanceof SymmetricTrapezoid))
                     node.__shape = new SymmetricTrapezoid(size.x/2, size.x, size.y)
+                else {
+                    node.__shape.baseWidth = size.x/2
+                    node.__shape.topWidth = size.x
+                    node.__shape.height = size.y
+                    node.__shape._calcVerts()
+                }
             }
             //else node.__shape = null
             else node.__shape = new Cube(0, 0, size.x)
