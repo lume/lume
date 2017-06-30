@@ -64,7 +64,6 @@ class MotorHTMLScene extends Observable.mixin(MotorHTMLBase) {
     async makeGlProgram() {
         await this.mountPromise
         this.webglEnabled = !!this.getAttribute('webglenabled')
-        console.log(' ---- webgl enabled?', this.webglEnabled)
         if (!this.webglEnabled) return
 
         const gl = createWebGLContext(this)
