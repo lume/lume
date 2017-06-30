@@ -146,7 +146,7 @@ class Geometry {
     _init() {
         this.verts = null // Float32Array
         this.normals = null // Float32Array
-        this.colors = null // Float32Array
+        this._colors = null // Float32Array
         this._color = null
 
         this._calcVerts()
@@ -154,6 +154,8 @@ class Geometry {
     }
 
     // TODO handle CSS color strings with tinycolor2 from NPM
+    // @param {Array.number} value - array of four color values r, g, b, and a.
+    // TODO: don't use accept values for color alpha, use node's opacity.
     set color(value) {
         if (!value) return
 
@@ -161,15 +163,23 @@ class Geometry {
         let color = null
 
         if (typeof value == 'string')
-            color = value.split(' ').map(rgbPart => parseFloat(rgbPart))
+            color = value.trim().split(' ').map(rgbPart => parseFloat(rgbPart))
         else color = value
 
-        const colors = this.colors = new Float32Array(this.verts.length)
+        // length of _colors array, considering it is four numbers per color,
+        // for each vertex.
+        // TODO: use a uniform instead of attributes that are all the same
+        // value.
+        const l = this.verts.length
+        const _colorsLength = l + l/3
 
-        for (let i=0, l=this.verts.length; i<l; i+=3) { // 3 color parts per vertex
-            colors[i+0]  = color[0]
-            colors[i+1]  = color[1]
-            colors[i+2]  = color[2]
+        const _colors = this._colors = new Float32Array(_colorsLength)
+
+        for (let i=0; i<_colorsLength; i+=4) { // 4 color parts per vertex
+            _colors[i+0]  = color[0] // r
+            _colors[i+1]  = color[1] // g
+            _colors[i+2]  = color[2] // b
+            _colors[i+3]  = typeof color[3] == 'undefined' ? 1 : color[3] // a
         }
     }
     get color() {

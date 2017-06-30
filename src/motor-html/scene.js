@@ -104,8 +104,8 @@ class MotorHTMLScene extends Observable.mixin(MotorHTMLBase) {
         // blending, or vice versa, depending on the object we want to draw...
         // ...Or perhaps we must draw things in a certain order, from back to front,
         // so we can have depth testing AND blending at the same time.
-        //gl.blendFunc(gl.SRC_ALPHA, gl.ONE)
-        //gl.enable(gl.BLEND)
+        gl.blendFunc(gl.SRC_ALPHA, gl.ONE)
+        gl.enable(gl.BLEND)
         //gl.disable(gl.DEPTH_TEST)
 
         this.projectionMatrix = m4.identity
@@ -243,10 +243,10 @@ class MotorHTMLScene extends Observable.mixin(MotorHTMLBase) {
                 node.__shape.color = node.element.getAttribute('color')
 
                 gl.bindBuffer(gl.ARRAY_BUFFER, this.colorsBuffer)
-                gl.bufferData(gl.ARRAY_BUFFER, node.__shape.colors, gl.STATIC_DRAW)
+                gl.bufferData(gl.ARRAY_BUFFER, node.__shape._colors, gl.STATIC_DRAW)
 
                 // Tell the attribute how to get data out of vertexBuffer (ARRAY_BUFFER)
-                const colorSize = 3;          // 3 components per iteration
+                const colorSize = 4;          // 3 components per iteration
                 const colorType = gl.FLOAT;   // the data is 32bit floats
                 const normalizeColorData = false; // don't normalize the data
                 const colorStride = 0;        // 0 = move forward colorSize * sizeof(colorType) each iteration to get the next vertex
