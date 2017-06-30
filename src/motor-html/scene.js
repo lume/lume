@@ -140,11 +140,12 @@ class MotorHTMLScene extends Observable.mixin(MotorHTMLBase) {
         gl.uniform1f(shininessLocation, shininess)
 
         const red = [1, 0.6, 0.6]
+        const white = [1, 1, 1]
 
-        let lightColor = red
+        let lightColor = white
         gl.uniform3fv(lightColorLocation, v3.normalize(lightColor))
 
-        let specularColor = red
+        let specularColor = white
         gl.uniform3fv(specularColorLocation, v3.normalize(specularColor))
 
 
@@ -159,13 +160,13 @@ class MotorHTMLScene extends Observable.mixin(MotorHTMLBase) {
     _drawGLScene() {
         const {gl} = this
 
-        this.lightAnimParam += 0.05
+        this.lightAnimParam += 0.1
         this.lightWorldPosition = [
             300*Math.sin(this.lightAnimParam),
             300*Math.sin(this.lightAnimParam*2),
 
-            //Math.abs(600*Math.cos(this.lightAnimParam))
-            300
+            Math.abs(300*Math.cos(this.lightAnimParam))
+            //300
         ]
 
         gl.uniform3fv(this.lightWorldPositionLocation, this.lightWorldPosition)
@@ -211,6 +212,11 @@ class MotorHTMLScene extends Observable.mixin(MotorHTMLBase) {
             else if (meshAttr == 'quad') {
                 if (!(node.__shape instanceof Quad))
                     node.__shape = new Quad(size.x, size.y)
+                else {
+                    node.__shape.width = size.x
+                    node.__shape.height = size.y
+                    node.__shape._calcVerts()
+                }
             }
             else if (meshAttr == 'isotriangle') {
                 if (!(node.__shape instanceof IsoscelesTriangle))

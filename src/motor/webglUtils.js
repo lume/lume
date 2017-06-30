@@ -1046,6 +1046,7 @@ const fragShaderSource = `
         vec3 halfVector = normalize(surfaceToLightDirection + surfaceToCameraDirection);
 
         float pointLight = dot(normal, surfaceToLightDirection);
+        float pointLightIntensity = 2.0;
         //float directionalLight = dot(normal, reverseLightDirection);
 
         //float specular = dot(normal, halfVector);
@@ -1056,7 +1057,7 @@ const fragShaderSource = `
 
         //vec3 ambientLight = vec3(0.361, 0.184, 0.737); // teal
         vec3 ambientLight = vec3(1.0, 1.0, 1.0); // white
-        float ambientLightIntensity = 0.6;
+        float ambientLightIntensity = 0.7;
 
         gl_FragColor = v_fragColor;
 
@@ -1067,7 +1068,7 @@ const fragShaderSource = `
         //gl_FragColor.rgb *= ambientLight; // ambient light only.
         gl_FragColor.rgb *=
             //clamp(directionalLight, 0.0, 1.0) +
-            clamp(pointLight, 0.0, 1.0) * u_lightColor +
+            clamp(pointLight, 0.0, 1.0) * u_lightColor * pointLightIntensity +
             ambientLight * ambientLightIntensity;
 
         // Just add in the specular
