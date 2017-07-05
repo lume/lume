@@ -1,8 +1,8 @@
 
 import styles from './node-style'
-import Node from '../motor/Node'
-import Transformable from '../motor/Transformable'
-import Sizeable from '../motor/Sizeable'
+import Node from '../core/Node'
+import Transformable from '../core/Transformable'
+import Sizeable from '../core/Sizeable'
 import MotorHTMLBase, {initMotorHTMLBase, proxyGettersSetters} from './base'
 
 initMotorHTMLBase()

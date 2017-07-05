@@ -7,7 +7,7 @@
  *
  */
 
-import jss from './jss';
+import jss from './lib/jss';
 
 import Surface from 'famous/src/core/Surface';
 import Transitionable from 'famous/src/transitions/Transitionable';

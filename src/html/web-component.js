@@ -1,7 +1,7 @@
 /* global customElements */
 
-import { observeChildren } from '../motor/Utility'
-import jss from '../jss'
+import { observeChildren } from '../core/Utility'
+import jss from '../lib/jss'
 
 // Very very stupid hack needed for Safari in order for us to be able to extend
 // the HTMLElement class. See:
@@ -206,8 +206,9 @@ function WebComponentMixin(elementClass) {
             }
         }
 
-        attributeChangedCallback() {
-            if (super.attributeChangedCallback) super.attributeChangedCallback()
+        attributeChangedCallback(...args) {
+            //console.log(' --- attributeChangedCallback', typeof args[2])
+            if (super.attributeChangedCallback) super.attributeChangedCallback(...args)
             this._initialAttributeChange = true
         }
 

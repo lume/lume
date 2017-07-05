@@ -1,7 +1,7 @@
 import 'geometry-interfaces'
 import Transformable from './Transformable'
 import ImperativeBase, {initImperativeBase} from './ImperativeBase'
-import MotorHTMLNode from '../motor-html/node'
+import MotorHTMLNode from '../html/node'
 import Scene from './Scene'
 
 initImperativeBase()

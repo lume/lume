@@ -2,7 +2,7 @@ import { makeAccessorsEnumerable } from './Utility'
 import Sizeable from './Sizeable'
 import ImperativeBase, {initImperativeBase} from './ImperativeBase'
 import XYZValues from './XYZValues'
-import MotorHTMLScene from '../motor-html/scene'
+import MotorHTMLScene from '../html/scene'
 import documentReady from 'awaitbox/dom/documentReady'
 
 initImperativeBase()

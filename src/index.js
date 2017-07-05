@@ -6,13 +6,13 @@ export Plane from './Plane'
 export PushMenuLayout from './PushMenuLayout'
 
 import * as utils from './utils'
-import * as motor from './motor'
-import * as motorHtml from './motor-html'
+import * as core from './core'
+import * as html from './html'
 import * as components from './components'
 export {
     utils,
-    motor,
-    motorHtml,
+    core,
+    html,
     components,
 }
 

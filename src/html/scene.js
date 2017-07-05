@@ -1,9 +1,9 @@
 
 import styles from './scene-style'
-import Motor from '../motor/Motor'
-import Scene from '../motor/Scene'
-import Observable from '../motor/Observable'
-import Sizeable from '../motor/Sizeable'
+import Motor from '../core/Motor'
+import Scene from '../core/Scene'
+import Observable from '../core/Observable'
+import Sizeable from '../core/Sizeable'
 import MotorHTMLBase, {initMotorHTMLBase, proxyGettersSetters} from './base'
 import sleep from 'awaitbox/timers/sleep'
 
@@ -22,7 +22,7 @@ import {
     FourSidedPyramid,
     IsoscelesTriangle,
     SymmetricTrapezoid,
-} from '../motor/webglUtils'
+} from '../core/webglUtils'
 
 initMotorHTMLBase()
 
@@ -314,7 +314,7 @@ class MotorHTMLScene extends Observable.mixin(MotorHTMLBase) {
     _checkSize() {
 
         // The scene has a parent by the time this is called (see
-        // src/motor/Scene#mount where _startSizePolling is called)
+        // src/core/Scene#mount where _startSizePolling is called)
         const parent = this.parentNode
         const parentSize = this._parentSize
         const style = getComputedStyle(parent)

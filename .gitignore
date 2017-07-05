@@ -10,6 +10,6 @@ docs
 
 # ignore build folders
 /components
-/motor
-/motor-html
-/jss
+/core
+/html
+/lib

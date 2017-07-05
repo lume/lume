@@ -1,4 +1,3 @@
-export Curves from './Curves'
 export ElementManager from './ElementManager'
 export Motor from './Motor'
 export Node from './Node'

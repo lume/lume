@@ -3,7 +3,7 @@
 import WebComponent from './web-component'
 import MotorHTMLNode from './node'
 import { observeChildren, /*getShadowRootVersion,*/ hasShadowDomV0,
-    hasShadowDomV1, getAncestorShadowRoot } from '../motor/Utility'
+    hasShadowDomV1, getAncestorShadowRoot } from '../core/Utility'
 
 var DeclarativeBase
 
@@ -360,6 +360,12 @@ export function initMotorHTMLBase() {
                 this._handleDistributedChildren(child)
                 this._slotElementsAssignedNodes.delete(child)
             }
+        }
+
+        setAttribute(attr, value) {
+            //if (this.tagName.toLowerCase() == 'motor-scene')
+                //console.log('setting attribute', arguments[1])
+            super.setAttribute(attr, value)
         }
     }
 }
