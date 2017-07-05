@@ -36,8 +36,7 @@
     "jss-nested": "^1.0.0",
     "jss-props-sort": "^1.0.0",
     "jss-px": "^1.0.0",
-    "jss-vendor-prefixer": "^1.0.0",
-    "tween.js": "^16.3.1"
+    "jss-vendor-prefixer": "^1.0.0"
   },
   "devDependencies": {
     "webpack": "^1.12.1",
