@@ -1,16 +1,20 @@
 #!/usr/bin/env node
 
-const fs = require('fs')
-const path = require('path')
-const version = require(path.resolve('package.json')).version
+~function() {
+    "use strict"
 
-let data = fs.readFileSync(path.resolve('src', 'index.js')).toString()
+    const fs = require('fs')
+    const path = require('path')
+    const version = require(path.resolve('package.json')).version
 
-const lines = data.trim().split('\n')
-lines.pop() // delete last line
+    let data = fs.readFileSync(path.resolve('src', 'index.js')).toString()
 
-lines.push(`export const version = '${version}'`)
+    const lines = data.trim().split('\n')
+    lines.pop() // delete last line
 
-data = lines.join('\n') + '\n'
+    lines.push(`export const version = '${version}'`)
 
-fs.writeFileSync(path.resolve('src', 'index.js'), data)
+    data = lines.join('\n') + '\n'
+
+    fs.writeFileSync(path.resolve('src', 'index.js'), data)
+}()
