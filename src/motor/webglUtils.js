@@ -1,8 +1,6 @@
 // TODO:
 //  - Finish lookAt from the camera tutorial.
 
-import TWEEN from 'tween.js'
-
 let targetContextMap = new WeakMap
 
 export
