@@ -181,12 +181,6 @@ class Node extends ImperativeBase.mixin(Transformable) {
             childNode._resetSceneRef();
         }
     }
-
-    _render(timestamp) {
-        // applies the transform matrix to the element's style property.
-        this._properties.transform = this._calculateMatrix()
-        super._render(timestamp)
-    }
 }
 
 export {Node as default}

@@ -46,6 +46,8 @@ export function initImperativeBase() {
 
                 super(options)
 
+                this._willBeRendered = false
+
                 // Here we create the DOM HTMLElement associated with this
                 // Imperative-API Node.
                 this._elementManager = new ElementManager(
@@ -221,10 +223,25 @@ export function initImperativeBase() {
                     }
                 }
 
+                this._willBeRendered = true
                 Motor._setNodeToBeRendered(this)
             }
 
+            // This method is used by Motor._renderNodes().
+            _getAncestorToBeRendered() {
+                let parent = this._parent
+
+                while (parent) {
+                    if (parent._willBeRendered) return parent
+                    parent = parent._parent
+                }
+
+                return false
+            }
+
             _render(timestamp) {
+                super._render()
+                // applies the transform matrix to the element's style property.
                 this._elementManager.applyImperativeNodeProperties(this)
             }
         }

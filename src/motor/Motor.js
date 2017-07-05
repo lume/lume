@@ -1,4 +1,5 @@
 import documentReady from 'awaitbox/dom/documentReady'
+import Transformable from './Transformable'
 
 import {
     //animationFrame,
@@ -13,6 +14,11 @@ class Motor {
         this._animationLoopStarted = false
         this._allRenderTasks = new Set
         this._nodesToBeRendered = new Set
+        this._modifiedScenes = new Set
+
+        // A set of nodes that are the root nodes of subtrees where all nodes
+        // in each subtree need to have their world matrices updated.
+        this._worldMatrixRootNodes = new Set
     }
 
     /**
@@ -123,8 +129,51 @@ class Motor {
     }
 
     _renderNodes(timestamp) {
+        if (!this._nodesToBeRendered.size) return
+
         for (const node of this._nodesToBeRendered) {
             node._render(timestamp)
+
+            // If the node is root of a subtree containing updated nodes, then
+            // add it to the _worldMatrixRootNodes set so we can update the
+            // subtree's node's world matrices.
+            if (
+                node instanceof Transformable &&
+
+                // if not instanceof Transformable, f.e. `false` if no ancestor
+                // to be rendered, or Sizeable if the Scene is returned.
+                !(node._getAncestorToBeRendered() instanceof Transformable)
+            ) {
+                this._worldMatrixRootNodes.add(node)
+            }
+
+            // keep track of which scenes are modified so we can render webgl
+            // only for those scenes.
+            // TODO FIXME: at this point, a node should always have a scene,
+            // otherwise it should not ever be rendered here, but turns out
+            // some nodes are getting into this queue without a scene. We
+            // shouldn't need the conditional check for node._scene, and it
+            // will save CPU.
+            if (node._scene && !this._modifiedScenes.has(node._scene))
+                this._modifiedScenes.add(node._scene)
+        }
+
+        // Update world matrices of the subtrees.
+        for (const subtreeRoot of this._worldMatrixRootNodes) {
+            subtreeRoot._calculateWorldMatricesInSubtree()
+        }
+        this._worldMatrixRootNodes.clear()
+
+        // render webgl of modified scenes.
+        for (const scene of this._modifiedScenes) {
+            // TODO we're temporarily storing stuff on the .element, but we
+            // don't want that, we will move it to WebGLRenderer.
+            if (scene.element.webglEnabled) scene.element._drawGLScene()
+        }
+        this._modifiedScenes.clear()
+
+        for (const node of this._nodesToBeRendered) {
+            node._willBeRendered = false
         }
         this._nodesToBeRendered.clear()
     }
