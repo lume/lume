@@ -93,43 +93,7 @@ class MotorHTMLScene extends Observable.mixin(MotorHTMLBase) {
 
         this.textureCoordinatesBuffer = gl.createBuffer()
         this.textureCoordinateLocation = gl.getAttribLocation(program, 'a_textureCoordinate')
-        gl.enableVertexAttribArray(this.textureCoordinateLocation)
-
-        // TODO we would create one per Geometry (and eventually multiple per
-        // geometry), but for now just one texture for all quads to get it working.
-        this.texture = gl.createTexture()
-        gl.bindTexture(gl.TEXTURE_2D, this.texture)
-        // Fill the texture with a 1x1 blue pixel to start with.
-        gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, 1, 1, 0, gl.RGBA, gl.UNSIGNED_BYTE, new Uint8Array([0, 0, 255, 255]))
-        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
-        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
-        const image = new Image
-        const isPowerOf2 = value => (value & (value - 1)) == 0
-        image.addEventListener('load', () => {
-            // Now that the image has loaded copy it to the texture.
-            gl.bindTexture(gl.TEXTURE_2D, this.texture)
-            gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGB, gl.RGB, gl.UNSIGNED_BYTE, image)
-
-            // Mip maps can only be generated on images whose width and height are a power of 2.
-            if (isPowerOf2(image.width) && isPowerOf2(image.height)) {
-                gl.generateMipmap(gl.TEXTURE_2D)
-                // TODO make filters configurable?
-                gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR)
-                gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR_MIPMAP_LINEAR)
-            }
-            else {
-                gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE)
-                gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE)
-                // TODO make filters configurable?
-                gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR)
-                gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR)
-            }
-
-            //setTimeout(() => {
-                //document.body.innerHTML = `<img src="${imageUrl}" />`
-            //}, 2000)
-        })
-        image.src = imageUrl
+        //gl.enableVertexAttribArray(this.textureCoordinateLocation) this is enabled per node instead.
 
         // cull_face doesn't work, because I've drawn my vertices in the wrong
         // order. They should be clockwise to be front facing (I seem to have done
@@ -177,6 +141,7 @@ class MotorHTMLScene extends Observable.mixin(MotorHTMLBase) {
         const lightColorLocation = gl.getUniformLocation(program, 'u_lightColor')
         const specularColorLocation = gl.getUniformLocation(program, 'u_specularColor')
         this.textureLocation = gl.getUniformLocation(program, 'u_texture')
+        this.hasTextureLocation = gl.getUniformLocation(program, 'u_hasTexture')
 
         let shininess = 200
         gl.uniform1f(shininessLocation, shininess)
@@ -202,7 +167,8 @@ class MotorHTMLScene extends Observable.mixin(MotorHTMLBase) {
     _drawGLScene() {
         const {gl} = this
 
-        this.lightAnimParam += 0.1
+        // TODO: light does not affect the back side of polygons?...
+        this.lightAnimParam += 0.05
         this.lightWorldPosition = [
             300*Math.sin(this.lightAnimParam),
             300*Math.sin(this.lightAnimParam*2),
@@ -247,6 +213,9 @@ class MotorHTMLScene extends Observable.mixin(MotorHTMLBase) {
         if (meshAttr) {
             const size = node._calculatedSize
 
+            const hasTexture = Array.from(node.element.children)
+                .find(child => child instanceof SVGSVGElement)
+
             if (meshAttr == 'cube') {
                 if (!(node.__shape instanceof Cube))
                     node.__shape = new Cube(0, 0, size.x)
@@ -261,14 +230,54 @@ class MotorHTMLScene extends Observable.mixin(MotorHTMLBase) {
                     node.__shape._calcVerts()
                 }
                 // TODO this will eventually be set with a texture map feature
-                node.__shape.textureCoordinates = new Float32Array([
-                    0, 0,
-                    1, 0,
-                    1, 1,
-                    1, 1,
-                    0, 1,
-                    0, 0,
-                ])
+                if (hasTexture) {
+                    node.__shape.textureCoordinates = new Float32Array([
+                        0, 0,
+                        1, 0,
+                        1, 1,
+                        1, 1,
+                        0, 1,
+                        0, 0,
+                    ])
+
+                    // TODO we would create one per Geometry (and eventually multiple per
+                    // geometry), but for now just one texture for all quads to get it working.
+                    // TODO Make the texture only once, not each tick.
+                    if (!node.__texture) {
+                        node.__texture = gl.createTexture()
+                        gl.bindTexture(gl.TEXTURE_2D, node.__texture)
+                        // Fill the texture with a 1x1 blue pixel to start with.
+                        gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, 1, 1, 0, gl.RGBA, gl.UNSIGNED_BYTE, new Uint8Array([0, 0, 255, 255]))
+                        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
+                        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
+                        const image = new Image
+                        const isPowerOf2 = value => (value & (value - 1)) == 0
+                        image.addEventListener('load', () => {
+                            // Now that the image has loaded copy it to the texture.
+                            gl.bindTexture(gl.TEXTURE_2D, node.__texture)
+                            gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGB, gl.RGB, gl.UNSIGNED_BYTE, image)
+
+                            // TODO: unbind from buffers and textures when done
+                            // using them, to prevent modification from outside
+
+                            // Mip maps can only be generated on images whose width and height are a power of 2.
+                            if (isPowerOf2(image.width) && isPowerOf2(image.height)) {
+                                gl.generateMipmap(gl.TEXTURE_2D)
+                                // TODO make filters configurable?
+                                gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR)
+                                gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR_MIPMAP_LINEAR)
+                            }
+                            else {
+                                gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE)
+                                gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE)
+                                // TODO make filters configurable?
+                                gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR)
+                                gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR)
+                            }
+                        })
+                        image.src = imageUrl
+                    }
+                }
             }
             else if (meshAttr == 'isotriangle') {
                 if (!(node.__shape instanceof IsoscelesTriangle))
@@ -300,14 +309,16 @@ class MotorHTMLScene extends Observable.mixin(MotorHTMLBase) {
                     node.__shape._calcVerts()
                 }
                 // TODO this will eventually be set with a texture map feature
-                node.__shape.textureCoordinates = new Float32Array([
-                    0, 0,
-                    1, 0,
-                    1, 1,
-                    1, 1,
-                    0, 1,
-                    0, 0,
-                ])
+                if (hasTexture) {
+                    node.__shape.textureCoordinates = new Float32Array([
+                        0, 0,
+                        1, 0,
+                        1, 1,
+                        1, 1,
+                        0, 1,
+                        0, 0,
+                    ])
+                }
             }
 
             if (node.__shape) {
@@ -353,20 +364,30 @@ class MotorHTMLScene extends Observable.mixin(MotorHTMLBase) {
                     this.normalAttributeLocation, normalSize, normalType, normalizeNormalsData, normalStride, normalOffset)
 
                 // TEXTURE COORDINATES /////////////////////////////////
-                gl.bindBuffer(gl.ARRAY_BUFFER, this.textureCoordinatesBuffer)
-                gl.bufferData(gl.ARRAY_BUFFER, node.__shape.textureCoordinates, gl.STATIC_DRAW)
+                if (hasTexture) {
+                    gl.uniform1i(this.hasTextureLocation, +true)
 
-                // Tell the attribute how to get data out of vertexBuffer (ARRAY_BUFFER)
-                const textureCoordinateSize = 2          // components per iteration
-                const textureCoordinateType = gl.FLOAT
-                const normalizeTextureCoordinateData = false // don't normalize the data
-                const textureCoordinateStride = 0        // 0 = move forward textureCoordinateSize * sizeof(textureCoordinateType) each iteration to get the next vertex
-                const textureCoordinateOffset = 0        // start at the beginning of the buffer
-                gl.vertexAttribPointer(
-                    this.textureCoordinateLocation, textureCoordinateSize, textureCoordinateType, normalizeTextureCoordinateData, textureCoordinateStride, textureCoordinateOffset)
+                    gl.bindBuffer(gl.ARRAY_BUFFER, this.textureCoordinatesBuffer)
+                    gl.bufferData(gl.ARRAY_BUFFER, node.__shape.textureCoordinates, gl.STATIC_DRAW)
 
-                // Tell the shader to use texture unit 0 for u_texture
-                gl.uniform1i(this.textureLocation, 0)
+                    // Tell the attribute how to get data out of vertexBuffer (ARRAY_BUFFER)
+                    const textureCoordinateSize = 2          // components per iteration
+                    const textureCoordinateType = gl.FLOAT
+                    const normalizeTextureCoordinateData = false // don't normalize the data
+                    const textureCoordinateStride = 0        // 0 = move forward textureCoordinateSize * sizeof(textureCoordinateType) each iteration to get the next vertex
+                    const textureCoordinateOffset = 0        // start at the beginning of the buffer
+                    gl.enableVertexAttribArray(this.textureCoordinateLocation)
+                    gl.vertexAttribPointer(
+                        this.textureCoordinateLocation, textureCoordinateSize, textureCoordinateType, normalizeTextureCoordinateData, textureCoordinateStride, textureCoordinateOffset)
+
+                    // Tell the shader to use texture unit 0 for u_texture
+                    // TODO: Get index of the node's texture, but right now there's only one texture.
+                    gl.uniform1i(this.textureLocation, 0)
+                }
+                else {
+                    gl.uniform1i(this.hasTextureLocation, +false)
+                    gl.disableVertexAttribArray(this.textureCoordinateLocation)
+                }
 
                 // TRANFORMS /////////////////////////////////
                 gl.uniformMatrix4fv(this.worldMatrixLocation, false, node._worldMatrix.toFloat32Array())

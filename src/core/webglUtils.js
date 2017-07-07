@@ -1045,6 +1045,7 @@ const fragShaderSource = `
 
     varying vec2 v_textureCoordinate;
     uniform sampler2D u_texture;
+    uniform bool u_hasTexture;
 
     void main(void) {
 
@@ -1062,7 +1063,7 @@ const fragShaderSource = `
         vec3 halfVector = normalize(surfaceToLightDirection + surfaceToCameraDirection);
 
         float pointLight = dot(normal, surfaceToLightDirection);
-        float pointLightIntensity = 2.0;
+        float pointLightIntensity = 1.0;
         //float directionalLight = dot(normal, reverseLightDirection);
 
         //float specular = dot(normal, halfVector);
@@ -1073,11 +1074,14 @@ const fragShaderSource = `
 
         //vec3 ambientLight = vec3(0.361, 0.184, 0.737); // teal
         vec3 ambientLight = vec3(1.0, 1.0, 1.0); // white
-        float ambientLightIntensity = 0.7;
+        float ambientLightIntensity = 0.3;
 
-        // TODO: choose color or texture, default to a color if no texture, etc.
+        // TODO: user can choose color or texture, default to a color if no texture, etc.
+        // TODO: blend texture on top of color, if texture has alpha.
         gl_FragColor = v_fragColor;
-        gl_FragColor = texture2D(u_texture, v_textureCoordinate);
+        if (u_hasTexture) {
+            gl_FragColor = texture2D(u_texture, v_textureCoordinate);
+        }
 
         // Lets multiply just the color portion (not the alpha) of
         // gl_FragColor by the pointLight + directionalLight
