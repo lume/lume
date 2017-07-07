@@ -994,6 +994,9 @@ const vertShaderSource = `
     uniform vec3 u_cameraWorldPosition;
     varying vec3 v_surfaceToCameraVector;
 
+    attribute vec2 a_textureCoordinate;
+    varying vec2 v_textureCoordinate;
+
     void main() {
         vec3 surfaceWorldPosition = (u_worldMatrix * a_vertexPosition).xyz;
 
@@ -1014,6 +1017,8 @@ const vertShaderSource = `
         //v_vertNormal = mat3(u_worldInverseTransposeMatrix) * a_normal; // TODO waiting for transpose() method on DOMMatrix
         //alternate: v_vertNormal = (u_worldInverseTransposeMatrix * vec4(a_normal, 0)).xyz;
         v_vertNormal = mat3(u_worldMatrix) * a_normal;
+
+        v_textureCoordinate = a_textureCoordinate;
     }
 `
 
@@ -1037,6 +1042,9 @@ const fragShaderSource = `
     uniform float u_shininess;
     uniform vec3 u_lightColor;
     uniform vec3 u_specularColor;
+
+    varying vec2 v_textureCoordinate;
+    uniform sampler2D u_texture;
 
     void main(void) {
 
@@ -1067,7 +1075,9 @@ const fragShaderSource = `
         vec3 ambientLight = vec3(1.0, 1.0, 1.0); // white
         float ambientLightIntensity = 0.7;
 
+        // TODO: choose color or texture, default to a color if no texture, etc.
         gl_FragColor = v_fragColor;
+        gl_FragColor = texture2D(u_texture, v_textureCoordinate);
 
         // Lets multiply just the color portion (not the alpha) of
         // gl_FragColor by the pointLight + directionalLight

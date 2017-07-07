@@ -24,6 +24,8 @@ import {
     SymmetricTrapezoid,
 } from '../core/webglUtils'
 
+import imageUrl from './image'
+
 initMotorHTMLBase()
 
 const privates = new WeakMap()
@@ -89,6 +91,46 @@ class MotorHTMLScene extends Observable.mixin(MotorHTMLBase) {
         this.normalAttributeLocation = gl.getAttribLocation(program, 'a_normal')
         gl.enableVertexAttribArray(this.normalAttributeLocation)
 
+        this.textureCoordinatesBuffer = gl.createBuffer()
+        this.textureCoordinateLocation = gl.getAttribLocation(program, 'a_textureCoordinate')
+        gl.enableVertexAttribArray(this.textureCoordinateLocation)
+
+        // TODO we would create one per Geometry (and eventually multiple per
+        // geometry), but for now just one texture for all quads to get it working.
+        this.texture = gl.createTexture()
+        gl.bindTexture(gl.TEXTURE_2D, this.texture)
+        // Fill the texture with a 1x1 blue pixel to start with.
+        gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, 1, 1, 0, gl.RGBA, gl.UNSIGNED_BYTE, new Uint8Array([0, 0, 255, 255]))
+        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
+        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
+        const image = new Image
+        const isPowerOf2 = value => (value & (value - 1)) == 0
+        image.addEventListener('load', () => {
+            // Now that the image has loaded copy it to the texture.
+            gl.bindTexture(gl.TEXTURE_2D, this.texture)
+            gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGB, gl.RGB, gl.UNSIGNED_BYTE, image)
+
+            // Mip maps can only be generated on images whose width and height are a power of 2.
+            if (isPowerOf2(image.width) && isPowerOf2(image.height)) {
+                gl.generateMipmap(gl.TEXTURE_2D)
+                // TODO make filters configurable?
+                gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR)
+                gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR_MIPMAP_LINEAR)
+            }
+            else {
+                gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE)
+                gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE)
+                // TODO make filters configurable?
+                gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR)
+                gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR)
+            }
+
+            //setTimeout(() => {
+                //document.body.innerHTML = `<img src="${imageUrl}" />`
+            //}, 2000)
+        })
+        image.src = imageUrl
+
         // cull_face doesn't work, because I've drawn my vertices in the wrong
         // order. They should be clockwise to be front facing (I seem to have done
         // them counter-clockwise). See "CULL_FACE" at
@@ -134,6 +176,7 @@ class MotorHTMLScene extends Observable.mixin(MotorHTMLBase) {
         const shininessLocation = gl.getUniformLocation(program, 'u_shininess')
         const lightColorLocation = gl.getUniformLocation(program, 'u_lightColor')
         const specularColorLocation = gl.getUniformLocation(program, 'u_specularColor')
+        this.textureLocation = gl.getUniformLocation(program, 'u_texture')
 
         let shininess = 200
         gl.uniform1f(shininessLocation, shininess)
@@ -207,6 +250,7 @@ class MotorHTMLScene extends Observable.mixin(MotorHTMLBase) {
             if (meshAttr == 'cube') {
                 if (!(node.__shape instanceof Cube))
                     node.__shape = new Cube(0, 0, size.x)
+                // TODO else, like quad or symtrap
             }
             else if (meshAttr == 'quad') {
                 if (!(node.__shape instanceof Quad))
@@ -216,14 +260,25 @@ class MotorHTMLScene extends Observable.mixin(MotorHTMLBase) {
                     node.__shape.height = size.y
                     node.__shape._calcVerts()
                 }
+                // TODO this will eventually be set with a texture map feature
+                node.__shape.textureCoordinates = new Float32Array([
+                    0, 0,
+                    1, 0,
+                    1, 1,
+                    1, 1,
+                    0, 1,
+                    0, 0,
+                ])
             }
             else if (meshAttr == 'isotriangle') {
                 if (!(node.__shape instanceof IsoscelesTriangle))
                     node.__shape = new IsoscelesTriangle(size.x, size.y)
+                // TODO else, like quad or symtrap
             }
             else if (meshAttr == 'pyramid4') {
                 if (!(node.__shape instanceof FourSidedPyramid))
                     node.__shape = new FourSidedPyramid(size.x, size.y)
+                // TODO else, like quad or symtrap
             }
             else if (meshAttr == 'symtrap') {
                 if (!(node.__shape instanceof SymmetricTrapezoid))
@@ -236,7 +291,24 @@ class MotorHTMLScene extends Observable.mixin(MotorHTMLBase) {
                 }
             }
             //else node.__shape = null
-            else node.__shape = new Cube(0, 0, size.x)
+            else {
+                if (!(node.__shape instanceof Quad))
+                    node.__shape = new Quad(size.x, size.y)
+                else {
+                    node.__shape.width = size.x
+                    node.__shape.height = size.y
+                    node.__shape._calcVerts()
+                }
+                // TODO this will eventually be set with a texture map feature
+                node.__shape.textureCoordinates = new Float32Array([
+                    0, 0,
+                    1, 0,
+                    1, 1,
+                    1, 1,
+                    0, 1,
+                    0, 0,
+                ])
+            }
 
             if (node.__shape) {
                 // COLORS /////////////////////////////////
@@ -246,11 +318,11 @@ class MotorHTMLScene extends Observable.mixin(MotorHTMLBase) {
                 gl.bufferData(gl.ARRAY_BUFFER, node.__shape._colors, gl.STATIC_DRAW)
 
                 // Tell the attribute how to get data out of vertexBuffer (ARRAY_BUFFER)
-                const colorSize = 4;          // 3 components per iteration
-                const colorType = gl.FLOAT;   // the data is 32bit floats
-                const normalizeColorData = false; // don't normalize the data
-                const colorStride = 0;        // 0 = move forward colorSize * sizeof(colorType) each iteration to get the next vertex
-                const colorOffset = 0;        // start at the beginning of the buffer
+                const colorSize = 4          // components per iteration
+                const colorType = gl.FLOAT
+                const normalizeColorData = false // don't normalize the data
+                const colorStride = 0        // 0 = move forward colorSize * sizeof(colorType) each iteration to get the next vertex
+                const colorOffset = 0        // start at the beginning of the buffer
                 gl.vertexAttribPointer(
                     this.colorAttributeLocation, colorSize, colorType, normalizeColorData, colorStride, colorOffset)
 
@@ -259,11 +331,11 @@ class MotorHTMLScene extends Observable.mixin(MotorHTMLBase) {
                 gl.bufferData(gl.ARRAY_BUFFER, node.__shape.verts, gl.STATIC_DRAW)
 
                 // Tell the attribute how to get data out of vertexBuffer (ARRAY_BUFFER)
-                const vertexSize = 3;          // 2 components per iteration
-                const type = gl.FLOAT;   // the data is 32bit floats
-                const normalizeVertexData = false; // don't normalize the data
-                const stride = 0;        // 0 = move forward vertexSize * sizeof(type) each iteration to get the next vertex
-                const offset = 0;        // start at the beginning of the buffer
+                const vertexSize = 3          // components per iteration
+                const type = gl.FLOAT
+                const normalizeVertexData = false // don't normalize the data
+                const stride = 0        // 0 = move forward vertexSize * sizeof(type) each iteration to get the next vertex
+                const offset = 0        // start at the beginning of the buffer
                 gl.vertexAttribPointer(
                     this.vertexAttributeLocation, vertexSize, type, normalizeVertexData, stride, offset)
 
@@ -272,13 +344,29 @@ class MotorHTMLScene extends Observable.mixin(MotorHTMLBase) {
                 gl.bufferData(gl.ARRAY_BUFFER, node.__shape.normals, gl.STATIC_DRAW)
 
                 // Tell the attribute how to get data out of vertexBuffer (ARRAY_BUFFER)
-                const normalSize = 3;          // 2 components per iteration
-                const normalType = gl.FLOAT;   // the data is 32bit floats
-                const normalizeNormalsData = false; // don't normalize the data
-                const normalStride = 0;        // 0 = move forward normalSize * sizeof(normalType) each iteration to get the next vertex
-                const normalOffset = 0;        // start at the beginning of the buffer
+                const normalSize = 3          // components per iteration
+                const normalType = gl.FLOAT
+                const normalizeNormalsData = false // don't normalize the data
+                const normalStride = 0        // 0 = move forward normalSize * sizeof(normalType) each iteration to get the next vertex
+                const normalOffset = 0        // start at the beginning of the buffer
                 gl.vertexAttribPointer(
                     this.normalAttributeLocation, normalSize, normalType, normalizeNormalsData, normalStride, normalOffset)
+
+                // TEXTURE COORDINATES /////////////////////////////////
+                gl.bindBuffer(gl.ARRAY_BUFFER, this.textureCoordinatesBuffer)
+                gl.bufferData(gl.ARRAY_BUFFER, node.__shape.textureCoordinates, gl.STATIC_DRAW)
+
+                // Tell the attribute how to get data out of vertexBuffer (ARRAY_BUFFER)
+                const textureCoordinateSize = 2          // components per iteration
+                const textureCoordinateType = gl.FLOAT
+                const normalizeTextureCoordinateData = false // don't normalize the data
+                const textureCoordinateStride = 0        // 0 = move forward textureCoordinateSize * sizeof(textureCoordinateType) each iteration to get the next vertex
+                const textureCoordinateOffset = 0        // start at the beginning of the buffer
+                gl.vertexAttribPointer(
+                    this.textureCoordinateLocation, textureCoordinateSize, textureCoordinateType, normalizeTextureCoordinateData, textureCoordinateStride, textureCoordinateOffset)
+
+                // Tell the shader to use texture unit 0 for u_texture
+                gl.uniform1i(this.textureLocation, 0)
 
                 // TRANFORMS /////////////////////////////////
                 gl.uniformMatrix4fv(this.worldMatrixLocation, false, node._worldMatrix.toFloat32Array())
