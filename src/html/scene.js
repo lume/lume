@@ -25,6 +25,7 @@ import {
 } from '../core/webglUtils'
 
 import imageUrl from './image'
+import * as PIXI from 'pixi.js'
 
 initMotorHTMLBase()
 
@@ -229,53 +230,116 @@ class MotorHTMLScene extends Observable.mixin(MotorHTMLBase) {
                     node.__shape.height = size.y
                     node.__shape._calcVerts()
                 }
-                // TODO this will eventually be set with a texture map feature
-                if (hasTexture) {
-                    node.__shape.textureCoordinates = new Float32Array([
-                        0, 0,
-                        1, 0,
-                        1, 1,
-                        1, 1,
-                        0, 1,
-                        0, 0,
-                    ])
 
+                if (hasTexture) {
                     // TODO we would create one per Geometry (and eventually multiple per
                     // geometry), but for now just one texture for all quads to get it working.
                     // TODO Make the texture only once, not each tick.
                     if (!node.__texture) {
+
+                        // XXX this will eventually be set with a texture map feature
+                        // TODO: for now, we should at least set default
+                        // coordinates for each geometry, even if that's not
+                        // ideal; it's more ideal than nothing.
+                        node.__shape.textureCoordinates = new Float32Array([
+                            0, 0,
+                            1, 0,
+                            1, 1,
+                            1, 1,
+                            0, 1,
+                            0, 0,
+                        ])
+
                         node.__texture = gl.createTexture()
                         gl.bindTexture(gl.TEXTURE_2D, node.__texture)
                         // Fill the texture with a 1x1 blue pixel to start with.
                         gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, 1, 1, 0, gl.RGBA, gl.UNSIGNED_BYTE, new Uint8Array([0, 0, 255, 255]))
                         gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
                         gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
-                        const image = new Image
+
+                        ///// TEXTURE FROM PIXI-SVG {
+                        const renderer = PIXI.autoDetectRenderer({
+
+                          width: node._calculatedSize.x * window.devicePixelRatio,
+                          height: node._calculatedSize.y * window.devicePixelRatio,
+                          //width: 300 * window.devicePixelRatio,
+                          //height: 300 * window.devicePixelRatio,
+
+                          resolution: window.devicePixelRatio,
+                        });
+
+                        //root.appendChild(renderer.view);
+                        //renderer.view.style = 'width: 100%; height: 100%;';
+
+                        const stage = new PIXI.Container();
+
+                        var graphic = new PIXI.Graphics();
+                        graphic.beginFill(0x9966FF);
+                        graphic.drawCircle(0, 0, 32);
+                        graphic.endFill();
+                        graphic.x = node._calculatedSize.x;
+                        graphic.y = node._calculatedSize.y;
+                        //graphic.x = 300;
+                        //graphic.y = 300;
+                        stage.addChild(graphic);
+
+                        renderer.render(stage);
+
+                        const image = renderer.view
                         const isPowerOf2 = value => (value & (value - 1)) == 0
-                        image.addEventListener('load', () => {
-                            // Now that the image has loaded copy it to the texture.
-                            gl.bindTexture(gl.TEXTURE_2D, node.__texture)
-                            gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGB, gl.RGB, gl.UNSIGNED_BYTE, image)
 
-                            // TODO: unbind from buffers and textures when done
-                            // using them, to prevent modification from outside
+                        // copy the pixi canvas image to the texture.
+                        gl.bindTexture(gl.TEXTURE_2D, node.__texture)
+                        gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGB, gl.RGB, gl.UNSIGNED_BYTE, image)
 
-                            // Mip maps can only be generated on images whose width and height are a power of 2.
-                            if (isPowerOf2(image.width) && isPowerOf2(image.height)) {
-                                gl.generateMipmap(gl.TEXTURE_2D)
-                                // TODO make filters configurable?
-                                gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR)
-                                gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR_MIPMAP_LINEAR)
-                            }
-                            else {
-                                gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE)
-                                gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE)
-                                // TODO make filters configurable?
-                                gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR)
-                                gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR)
-                            }
-                        })
-                        image.src = imageUrl
+                        // TODO: unbind from buffers and textures when done
+                        // using them, to prevent modification from outside
+
+                        // Mip maps can only be generated on images whose width and height are a power of 2.
+                        if (isPowerOf2(image.width) && isPowerOf2(image.height)) {
+                            gl.generateMipmap(gl.TEXTURE_2D)
+                            // TODO make filters configurable?
+                            gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR)
+                            gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR_MIPMAP_LINEAR)
+                        }
+                        else {
+                            gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE)
+                            gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE)
+                            // TODO make filters configurable?
+                            gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR)
+                            gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR)
+                        }
+
+                        ///// }
+
+                        ///// TEXTURE FROM IMAGE {
+                        //const image = new Image
+                        //const isPowerOf2 = value => (value & (value - 1)) == 0
+                        //image.addEventListener('load', () => {
+                            //// Now that the image has loaded copy it to the texture.
+                            //gl.bindTexture(gl.TEXTURE_2D, node.__texture)
+                            //gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGB, gl.RGB, gl.UNSIGNED_BYTE, image)
+
+                            //// TODO: unbind from buffers and textures when done
+                            //// using them, to prevent modification from outside
+
+                            //// Mip maps can only be generated on images whose width and height are a power of 2.
+                            //if (isPowerOf2(image.width) && isPowerOf2(image.height)) {
+                                //gl.generateMipmap(gl.TEXTURE_2D)
+                                //// TODO make filters configurable?
+                                //gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR)
+                                //gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR_MIPMAP_LINEAR)
+                            //}
+                            //else {
+                                //gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE)
+                                //gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE)
+                                //// TODO make filters configurable?
+                                //gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR)
+                                //gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR)
+                            //}
+                        //})
+                        //image.src = imageUrl
+                        //// }
                     }
                 }
             }

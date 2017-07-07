@@ -1063,8 +1063,8 @@ const fragShaderSource = `
         vec3 halfVector = normalize(surfaceToLightDirection + surfaceToCameraDirection);
 
         float pointLight = dot(normal, surfaceToLightDirection);
-        float pointLightIntensity = 1.0;
-        //float directionalLight = dot(normal, reverseLightDirection);
+        float pointLightIntensity = 1.0; // TODO make configurable
+        //float directionalLight = dot(normal, reverseLightDirection); // TODO make configurable
 
         //float specular = dot(normal, halfVector);
         float specular = 0.0;
@@ -1072,6 +1072,7 @@ const fragShaderSource = `
             specular = pow(dot(normal, halfVector), u_shininess);
         }
 
+        // TODO make configurable
         //vec3 ambientLight = vec3(0.361, 0.184, 0.737); // teal
         vec3 ambientLight = vec3(1.0, 1.0, 1.0); // white
         float ambientLightIntensity = 0.3;
