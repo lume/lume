@@ -156,12 +156,20 @@ function WebComponentMixin(elementClass) {
 
 
         /**
-         * Init is called exactly once, the first time this element is connected
-         * into the DOM. When an element is disconnected then connected right
-         * away within the same tick, init() is not fired again. However, if an
-         * element is disconnected and then some time passes and the current
-         * tick completes, then deinit() will be called, and the next time that
-         * the element is connected back into DOM init() will be called again.
+         * Init is called exactly once, the first time this element is
+         * connected into the DOM. When an element is disconnected then
+         * connected right away within the same synchronous tick, init() is not
+         * fired again. However, if an element is disconnected and the current
+         * tick completes before the element is connected again, then deinit()
+         * will be called (i.e. the element was not simply moved to a new
+         * location, it was actually removed), then the next time that the
+         * element is connected back into DOM init() will be called again.
+         *
+         * This is in contrast to connectedCallback and disconnectedCallback:
+         * connectedCallback is guaranteed to always fire even if the elemet
+         * was previously disconnected in the same synchronous tick.
+         *
+         * For example, ...
          *
          * Subclasses should extend this to add such logic.
          */
@@ -173,7 +181,9 @@ function WebComponentMixin(elementClass) {
             // custom elements were registered and which would therefore not be
             // detected by the following MutationObserver).
             if (!this._childObserver) {
-                if (this.childNodes.length) {
+
+                const children = this.childNodes
+                if (children.length) {
 
                     // Timeout needed in case the Custom Element classes are
                     // registered after the elements are already defined in the
@@ -184,9 +194,16 @@ function WebComponentMixin(elementClass) {
                     // because parents are upgraded first and their
                     // connectedCallbacks fired before their children are
                     // upgraded.
+                    //
+                    // TODO FIXME PERFORMANCE: This causes a possibly "buggy" effect where
+                    // elements in a tree will appear in intervals of 5
+                    // milliseconds. We want elements to be rendered instantly,
+                    // in the first frame that they are present in the scene
+                    // graph.
+                    // How can we fix this? Maybe we can switch to a Promise microtask.
                     setTimeout(() => {
-                        for (const node of this.childNodes) {
-                            this.childConnectedCallback(node)
+                        for (let l=children.length, i=0; i<l; i+=1) {
+                            this.childConnectedCallback(children[i])
                         }
                     }, 5)
                 }
@@ -201,8 +218,9 @@ function WebComponentMixin(elementClass) {
                 // HTMLElement#attributes is a NamedNodeMap which is not an
                 // iterable, so we use Array.from. See:
                 // https://github.com/zloirock/core-js/issues/234
-                for (const attr of Array.from(this.attributes))
-                    this.attributeChangedCallback(attr.name, null, attr.value)
+                const {attributes} = this
+                for (let l=attributes.length, i=0; i<l; i+=1)
+                    this.attributeChangedCallback(attributes[i].name, null, attributes[i].value)
             }
         }
 

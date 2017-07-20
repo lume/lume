@@ -39,6 +39,7 @@ function animationFrame() {
 // Create lowercase versions of each setter property.
 function makeLowercaseSetterAliases(object) {
     const props = Object.getOwnPropertyNames(object)
+    // XXX performance-friendly for..of
     for (const prop of props) {
         const lowercaseProp = prop.toLowerCase()
         if (lowercaseProp != prop) {
@@ -52,6 +53,7 @@ function makeLowercaseSetterAliases(object) {
 
 function makeAccessorsEnumerable(object) {
     const props = Object.getOwnPropertyNames(object)
+    // XXX performance-friendly for..of
     for (const prop of props) {
         const descriptor = Object.getOwnPropertyDescriptor(object, prop)
         if (descriptor && (descriptor.set || descriptor.get)) {
@@ -61,9 +63,6 @@ function makeAccessorsEnumerable(object) {
     }
 }
 
-// NOTE: If a child is disconnected then connected to the same parent in the
-// same turn, then the onConnect and onDisconnect callbacks won't be called
-// because the DOM tree will be back in the exact state as before.
 let childObservationHandlers = null
 let childObserver = null
 function observeChildren(ctx, onConnect, onDisconnect) {
@@ -73,11 +72,20 @@ function observeChildren(ctx, onConnect, onDisconnect) {
     childObserver.observe(ctx, { childList: true })
     return true
 }
+
+// NOTE: If a child is disconnected then connected to the same parent in the
+// same turn, then the onConnect and onDisconnect callbacks won't be called
+// because the DOM tree will be back in the exact state as before (this is
+// possible thanks to the logic associated with weightsPerTarget).
 function createChildObserver() {
     return new MutationObserver(async (changes) => {
         const weightsPerTarget = new Map
 
-        for (const change of changes) {
+        // We're just counting how many times each child node was added and
+        // removed from the parent we're observing.
+        for (let i=0, l=changes.length; i<l; i+=1) {
+            const change = changes[i]
+
             if (change.type != 'childList') continue
 
             if (!weightsPerTarget.has(change.target))
@@ -85,21 +93,35 @@ function createChildObserver() {
 
             const weights = weightsPerTarget.get(change.target)
 
-            for (const addedNode of change.addedNodes)
-                weights.set(addedNode, (weights.get(addedNode) || 0) + 1)
+            const {addedNodes} = change
+            for (let l=addedNodes.length, i=0; i<l; i+=1)
+                weights.set(addedNodes[i], (weights.get(addedNodes[i]) || 0) + 1)
 
-            for (const removedNode of change.removedNodes)
-                weights.set(removedNode, (weights.get(removedNode) || 0) - 1)
+            const {removedNodes} = change
+            for (let l=removedNodes.length, i=0; i<l; i+=1)
+                weights.set(removedNodes[i], (weights.get(removedNodes[i]) || 0) - 1)
         }
 
+        // TODO PERFORMANCE: Can these for..of loops be converted to regular for loops?
         for (const [target, weights] of weightsPerTarget) {
             const {onConnect, onDisconnect} = childObservationHandlers.get(target)
 
             for (const [node, weight] of weights) {
+                // If the number of times a child was added is greater than the
+                // number of times it was removed, then the net result is that
+                // it was added, so we call onConnect just once.
                 if (weight > 0 && typeof onConnect == 'function')
                     onConnect.call(target, node)
+
+                // If the number of times a child was added is less than the
+                // number of times it was removed, then the net result is that
+                // it was removed, so we call onConnect just once.
                 else if (weight < 0 && typeof onDisconnect == 'function')
                     onDisconnect.call(target, node)
+
+                // If the number of times a child was added is equal to the
+                // number of times it was removed, then it was essentially left
+                // in place, so we don't call anything.
             }
         }
     })
@@ -144,16 +166,18 @@ const hasHtmlApi = true
 function traverse(node, isShadowChild) {
     console.log(isShadowChild ? 'distributedNode:' : 'node:', node)
 
-    for (const child of node.children) {
+    const {children} = node
+    for (let l=children.length, i=0; i<l; i+=1) {
         // skip nodes that are possiblyDistributed, i.e. they have a parent
         // that has a ShadowRoot.
-        if (!hasHtmlApi || !child._elementManager.element._isPossiblyDistributed)
-            traverse(child)
+        if (!hasHtmlApi || !children[i]._elementManager.element._isPossiblyDistributed)
+            traverse(children[i])
     }
 
-    if (hasHtmlApi && node._elementManager.element._shadowChildren) {
-        for (const shadowChild of node._elementManager.element._shadowChildren)
-            traverse(shadowChild.imperativeCounterpart, true)
+    const shadowChildren = node._elementManager.element._shadowChildren
+    if (hasHtmlApi && shadowChildren) {
+        for (let l=shadowChildren.length, i=0; i<l; i+=1)
+            traverse(shadowChildren[i].imperativeCounterpart, true)
     }
 }
 

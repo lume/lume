@@ -12,13 +12,15 @@ class Motor {
         this._inFrame = false // true when inside a requested animation frame.
         this._rAF = null // the current animation frame, or null.
         this._animationLoopStarted = false
-        this._allRenderTasks = new Set
-        this._nodesToBeRendered = new Set
-        this._modifiedScenes = new Set
+        this._allRenderTasks = []
+        this._taskIterationIndex = 0
+        this._numberOfTasks = 0
+        this._nodesToBeRendered = []
+        this._modifiedScenes = []
 
         // A set of nodes that are the root nodes of subtrees where all nodes
         // in each subtree need to have their world matrices updated.
-        this._worldMatrixRootNodes = new Set
+        this._worldMatrixRootNodes = []
     }
 
     /**
@@ -46,7 +48,7 @@ class Motor {
             this._renderNodes(timestamp)
 
             // If any tasks are left to run, continue the animation loop.
-            if (this._allRenderTasks.size)
+            if (this._allRenderTasks.length)
                 this._rAF = requestAnimationFrame(motorLoop)
             else {
                 this._rAF = null
@@ -69,7 +71,7 @@ class Motor {
             //this._renderNodes(timestamp)
 
             //// If any tasks are left to run, continue the animation loop.
-            //if (!this._allRenderTasks.size) {
+            //if (!this._allRenderTasks.length) {
                 //this._rAF = null
                 //this._animationLoopStarted = false
             //}
@@ -101,7 +103,10 @@ class Motor {
         if (typeof fn != 'function')
             throw new Error('Render task must be a function.')
 
-        this._allRenderTasks.add(fn)
+        if (this._allRenderTasks.includes(fn)) return
+
+        this._allRenderTasks.push(fn)
+        this._numberOfTasks += 1
 
         // If the render loop isn't started, start it.
         if (!this._animationLoopStarted)
@@ -111,40 +116,55 @@ class Motor {
     }
 
     removeRenderTask(fn) {
-        this._allRenderTasks.delete(fn)
+        const taskIndex = this._allRenderTasks.indexOf(fn)
+
+        if (taskIndex == -1) return
+
+        this._allRenderTasks.splice(taskIndex, 1)
+        this._numberOfTasks -= 1
+        this._taskIterationIndex -= 1
     }
 
     _runRenderTasks(timestamp) {
-        for (const task of this._allRenderTasks) {
+        for (this._taskIterationIndex = 0; this._taskIterationIndex < this._numberOfTasks; this._taskIterationIndex += 1) {
+            const task = this._allRenderTasks[this._taskIterationIndex]
+
             if (task(timestamp) === false)
                 this.removeRenderTask(task)
         }
     }
 
     _setNodeToBeRendered(node) {
-        if (!this._nodesToBeRendered.has(node))
-            this._nodesToBeRendered.add(node)
-
+        if (this._nodesToBeRendered.includes(node)) return
+        this._nodesToBeRendered.push(node)
         if (!this._inFrame) this._startAnimationLoop()
     }
 
     _renderNodes(timestamp) {
-        if (!this._nodesToBeRendered.size) return
+        if (!this._nodesToBeRendered.length) return
 
-        for (const node of this._nodesToBeRendered) {
+        for (let i=0, l=this._nodesToBeRendered.length; i<l; i+=1) {
+            const node = this._nodesToBeRendered[i]
+
             node._render(timestamp)
 
-            // If the node is root of a subtree containing updated nodes, then
-            // add it to the _worldMatrixRootNodes set so we can update the
-            // subtree's node's world matrices.
+            // If the node is root of a subtree containing updated nodes and
+            // has no ancestors that were modified, then add it to the
+            // _worldMatrixRootNodes set so we can update the world matrices of
+            // all the nodes in the root node's subtree.
             if (
+                // a node could be a Scene, which is not Transformable
                 node instanceof Transformable &&
 
-                // if not instanceof Transformable, f.e. `false` if no ancestor
-                // to be rendered, or Sizeable if the Scene is returned.
-                !(node._getAncestorToBeRendered() instanceof Transformable)
+                // and if ancestor is not instanceof Transformable, f.e.
+                // `false` if there is no ancestor to be rendered, or Sizeable
+                // if the Scene is returned.
+                !(node._getAncestorToBeRendered() instanceof Transformable) &&
+
+                // and the node isn't already added.
+                !this._worldMatrixRootNodes.includes(node)
             ) {
-                this._worldMatrixRootNodes.add(node)
+                this._worldMatrixRootNodes.push(node)
             }
 
             // keep track of which scenes are modified so we can render webgl
@@ -153,29 +173,31 @@ class Motor {
             // otherwise it should not ever be rendered here, but turns out
             // some nodes are getting into this queue without a scene. We
             // shouldn't need the conditional check for node._scene, and it
-            // will save CPU.
-            if (node._scene && !this._modifiedScenes.has(node._scene))
-                this._modifiedScenes.add(node._scene)
+            // will save CPU by not allowing the code to get here in that case.
+            if (node._scene && !this._modifiedScenes.includes(node._scene))
+                this._modifiedScenes.push(node._scene)
         }
 
         // Update world matrices of the subtrees.
-        for (const subtreeRoot of this._worldMatrixRootNodes) {
+        for (let i=0, l=this._worldMatrixRootNodes.length; i<l; i+=1) {
+            const subtreeRoot = this._worldMatrixRootNodes[i]
             subtreeRoot._calculateWorldMatricesInSubtree()
         }
-        this._worldMatrixRootNodes.clear()
+        this._worldMatrixRootNodes.length = 0
 
         // render webgl of modified scenes.
-        for (const scene of this._modifiedScenes) {
+        for (let i=0, l=this._modifiedScenes.length; i<l; i+=1) {
+            const scene = this._modifiedScenes[i]
             // TODO we're temporarily storing stuff on the .element, but we
             // don't want that, we will move it to WebGLRenderer.
             if (scene.element.webglEnabled) scene.element._drawGLScene()
         }
-        this._modifiedScenes.clear()
+        this._modifiedScenes.length = 0
 
-        for (const node of this._nodesToBeRendered) {
-            node._willBeRendered = false
+        for (let i=0, l=this._nodesToBeRendered.length; i<l; i+=1) {
+            this._nodesToBeRendered[i]._willBeRendered = false
         }
-        this._nodesToBeRendered.clear()
+        this._nodesToBeRendered.length = 0
     }
 }
 

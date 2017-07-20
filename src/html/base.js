@@ -7,10 +7,10 @@ import { observeChildren, /*getShadowRootVersion,*/ hasShadowDomV0,
 
 var DeclarativeBase
 
-// Override HTMLElement.prototype.attachShadow in v1, and
-// HTMLElement.prototype.createShadowRoot in v0, so that we can make a Map of
-// motor- elements to their shadow roots, so we can always get a reference to
-// the element's shadow root even if it is closed.
+// We use this to Override HTMLElement.prototype.attachShadow in v1, and
+// HTMLElement.prototype.createShadowRoot in v0, so that we can make the
+// connection between parent and child on the iperative side when the HTML side
+// is using shadow roots.
 const observers = new WeakMap
 function hijack(original) {
     return function(...args) {
@@ -32,14 +32,16 @@ function hijack(original) {
             const observer = observeChildren(root, shadowRootChildAdded.bind(this), shadowRootChildRemoved.bind(this))
             observers.set(root, observer)
 
-            for (const child of this.children) {
-                if (!(child instanceof DeclarativeBase)) continue
-                child._isPossiblyDistributed = true
+            const {children} = this
+            for (let l=children.length, i=0; i<l; i+=1) {
+                if (!(children[i] instanceof DeclarativeBase)) continue
+                children[i]._isPossiblyDistributed = true
             }
         }
         return root
     }
 }
+
 function shadowRootChildAdded(child) {
 
     // NOTE Logic here is similar to childConnectedCallback
@@ -61,6 +63,7 @@ function shadowRootChildAdded(child) {
         this._handleDistributedChildren(child)
     }
 }
+
 function shadowRootChildRemoved(child) {
 
     // NOTE Logic here is similar to childDisconnectedCallback
@@ -83,11 +86,18 @@ function shadowRootChildRemoved(child) {
         this._slotElementsAssignedNodes.delete(child)
     }
 }
+
 function onV0ShadowRootReplaced(oldRoot) {
     observers.get(oldRoot).disconnect()
     observers.delete(oldRoot)
     let i = 0
-    for (const child of oldRoot.childNodes) {
+    // NOTE We're relying on the special behavior of for..of loop here because
+    // oldRoot.childNodes is modified in-place. TODO PERFORMANCE: allow
+    // ImperativeBase.removeChild to accept a non-document extra arg that tells
+    // it not to disconnect the DOM element, then we don't have to re-insert
+    // it, and we can switch to a faster regular-for loop.
+    const {childNodes} = oldRoot
+    for (const child of childNodes) { // XXX for..of loop required
         if (!(child instanceof DeclarativeBase)) { i += 1; continue }
 
         // We should disconnect the imperative connection (f.e. so it is
@@ -99,11 +109,12 @@ function onV0ShadowRootReplaced(oldRoot) {
         // element. Due to the fact that the observer on the oldRoot was
         // removed, adding the element back to the oldRoot won't cause it
         // to be reconnected on the imperative side.
-        oldRoot.insertBefore(child, oldRoot.childNodes[i])
+        oldRoot.insertBefore(child, childNodes[i])
 
         i += 1
     }
 }
+
 if (HTMLElement.prototype.createShadowRoot instanceof Function)
     HTMLElement.prototype.createShadowRoot = hijack(HTMLElement.prototype.createShadowRoot)
 if (HTMLElement.prototype.attachShadow instanceof Function)
@@ -258,7 +269,10 @@ export function initMotorHTMLBase() {
         _handleDistributedChildren(slot) {
             const diff = this._getDistributedChildDifference(slot)
 
-            for (const addedNode of diff.added) {
+            const {added} = diff
+            for (let l=added.length, i=0; i<l; i+=1) {
+                const addedNode = added[i]
+
                 if (!(addedNode instanceof DeclarativeBase)) continue
 
                 // We do this because if the given slot is assigned to another
@@ -269,19 +283,25 @@ export function initMotorHTMLBase() {
                 // exist in multiple shadowChildren lists when there is a
                 // chain of assigned slots. For more info, see
                 // https://github.com/w3c/webcomponents/issues/611
-                if (addedNode._shadowParent && addedNode._shadowParent._shadowChildren) {
-                    addedNode._shadowParent._shadowChildren.delete(addedNode)
-                    if (!addedNode._shadowParent._shadowChildren.size)
-                        addedNode._shadowParent._shadowChildren = null
+                const shadowParent = addedNode._shadowParent
+                if (shadowParent && shadowParent._shadowChildren) {
+                    const shadowChildren = shadowParent._shadowChildren
+                    shadowChildren.splice(shadowChildren.indexOf(addedNode), 1)
+                    if (!shadowChildren.length)
+                        shadowParent._shadowChildren = null
                 }
 
                 addedNode._shadowParent = this
-                if (!this._shadowChildren) this._shadowChildren = new Set
+                if (!this._shadowChildren) this._shadowChildren = []
                 this._shadowChildren.add(addedNode)
             }
 
-            for (const removedNode of diff.removed) {
+            const {removed} = diff
+            for (let l=removed.length, i=0; i<l; i+=1) {
+                const removedNode = removed[i]
+
                 if (!(removedNode instanceof DeclarativeBase)) continue
+
                 removedNode._shadowParent = null
                 this._shadowChildren.delete(removedNode)
                 if (!this._shadowChildren.size) this._shadowChildren = null
@@ -390,6 +410,7 @@ export function proxyGettersSetters(SourceClass, TargetClass) {
 
     const props = Object.getOwnPropertyNames(SourceClass.prototype)
 
+    // XXX performance-friendly for..of
     for (const prop of props) {
         if (
             // skip the blacklisted properties

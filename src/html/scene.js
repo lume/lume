@@ -203,8 +203,9 @@ class MotorHTMLScene extends Observable.mixin(MotorHTMLBase) {
         const cameraWorldPosition = [cameraMatrix[12], cameraMatrix[13], cameraMatrix[14]]
         gl.uniform3fv(this.cameraWorldPositionLocation, cameraWorldPosition)
 
-        for (const child of this.imperativeCounterpart._children) {
-            this._drawAndRecurse(child)
+        const children = this.imperativeCounterpart._children
+        for (let i=0, l=children.length; i<l; i+=1) {
+            this._drawAndRecurse(children[i])
         }
     }
 
@@ -525,8 +526,9 @@ class MotorHTMLScene extends Observable.mixin(MotorHTMLBase) {
             }
         }
 
-        for (const child of node._children) {
-            this._drawAndRecurse(child)
+        const children = node._children
+        for (let i=0, l=children.length; i<l; i+=1) {
+            this._drawAndRecurse(children[i])
         }
     }
 

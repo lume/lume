@@ -229,8 +229,9 @@ const TransformableMixin = base => {
         _calculateWorldMatricesInSubtree() {
             this._calculateWorldMatrixFromParent()
 
-            for (const child of this._children) {
-                child._calculateWorldMatricesInSubtree()
+            const children = this._children
+            for (let i=0, l=children.length; i<l; i+=1) {
+                children[i]._calculateWorldMatricesInSubtree()
             }
         }
 

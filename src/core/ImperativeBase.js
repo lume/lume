@@ -186,8 +186,9 @@ export function initImperativeBase() {
                 this._mountPromise = null
                 this._resolveMountPromise = null
                 this._rejectMountPromise = null
-                for (const childNode of this._children) {
-                    childNode._resetMountPromise();
+                const children = this._children
+                for (let i=0, l=children.length; i<l; i+=1) {
+                    children[i]._resetMountPromise();
                 }
             }
 

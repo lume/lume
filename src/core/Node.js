@@ -165,7 +165,9 @@ class Node extends ImperativeBase.mixin(Transformable) {
      * Resolves the _scenePromise for all children of the tree of this Node.
      */
     _giveSceneRefToChildren() {
-        for (const childNode of this._children) {
+        const children = this._children;
+        for (let i=0, l=children.length; i<l; i+=1) {
+            const childNode = children[i]
             childNode._scene = this._scene
             if (childNode._resolveScenePromise)
                 childNode._resolveScenePromise(childNode._scene)
@@ -177,8 +179,9 @@ class Node extends ImperativeBase.mixin(Transformable) {
         this._scene = null
         this._scenePromise = null
         this._resolveScenePromise = null
-        for (const childNode of this._children) {
-            childNode._resetSceneRef();
+        const children = this._children;
+        for (let i=0, l=children.length; i<l; i+=1) {
+            children[i]._resetSceneRef();
         }
     }
 }
