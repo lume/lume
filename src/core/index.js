@@ -1,7 +1,6 @@
 export ElementManager from './ElementManager'
 export Motor from './Motor'
 export Node from './Node'
-export PushPaneLayout from './PushPaneLayout'
 export Scene from './Scene'
 export Sizeable from './Sizeable'
 export Transformable from './Transformable'
