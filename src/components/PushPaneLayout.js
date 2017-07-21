@@ -1,4 +1,4 @@
-import Node from './Node'
+import Node from '../core/Node'
 
 export default
 class PushPaneLayout extends Node {
