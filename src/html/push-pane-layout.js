@@ -1,5 +1,5 @@
 import MotorHTMLNode from './node'
-import PushPaneLayout from '../core/PushPaneLayout'
+import PushPaneLayout from '../components/PushPaneLayout'
 
 class MotorHTMLPushPaneLayout extends MotorHTMLNode {
     createdCallback() {
