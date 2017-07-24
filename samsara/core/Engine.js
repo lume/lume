@@ -10,7 +10,7 @@ define(function(require, exports, module) {
     var Timer = require('./Timer');
 
     var rafId = Number.NaN;
-    var isMobile = /mobi/i.test(window.navigator.userAgent);
+    var isMobile = /Android|webOS|iPhone|iPad|Windows Phone|Opera Mini|IEMobile|Mobile/i.test(navigator.userAgent);
     var orientation = Number.NaN;
     var windowWidth = Number.NaN;
     var windowHeight = Number.NaN;
