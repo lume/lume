@@ -49,7 +49,7 @@ define(function(require, exports, module) {
      */
     function ContainerSurface(options) {
         Surface.call(this, options);
-        this.context = new Context();
+        this.context = new Context({enableScroll : options.enableScroll});
         this.context.elementClass = ContainerSurface.prototype.elementClass;
         this.context._size.subscribe(this.size);
 
