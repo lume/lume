@@ -1,5 +1,6 @@
 import documentReady from 'awaitbox/dom/documentReady'
 import Transformable from './Transformable'
+import getWebGlRenderer from './WebGlRenderer'
 
 import {
     //animationFrame,
@@ -179,25 +180,28 @@ class Motor {
         }
 
         // Update world matrices of the subtrees.
-        for (let i=0, l=this._worldMatrixRootNodes.length; i<l; i+=1) {
-            const subtreeRoot = this._worldMatrixRootNodes[i]
+        const worldMatrixRootNodes = this._worldMatrixRootNodes
+        for (let i=0, l=worldMatrixRootNodes.length; i<l; i+=1) {
+            const subtreeRoot = worldMatrixRootNodes[i]
             subtreeRoot._calculateWorldMatricesInSubtree()
         }
-        this._worldMatrixRootNodes.length = 0
+        worldMatrixRootNodes.length = 0
 
         // render webgl of modified scenes.
-        for (let i=0, l=this._modifiedScenes.length; i<l; i+=1) {
-            const scene = this._modifiedScenes[i]
+        const modifiedScenes = this._modifiedScenes
+        for (let i=0, l=modifiedScenes.length; i<l; i+=1) {
+            const scene = modifiedScenes[i]
             // TODO we're temporarily storing stuff on the .element, but we
             // don't want that, we will move it to WebGLRenderer.
-            if (scene.element.webglEnabled) scene.element._drawGLScene()
+            if (scene.element.webglEnabled) getWebGlRenderer().drawScene(scene.element)
         }
-        this._modifiedScenes.length = 0
+        modifiedScenes.length = 0
 
-        for (let i=0, l=this._nodesToBeRendered.length; i<l; i+=1) {
-            this._nodesToBeRendered[i]._willBeRendered = false
+        const nodesToBeRendered = this._nodesToBeRendered
+        for (let i=0, l=nodesToBeRendered.length; i<l; i+=1) {
+            nodesToBeRendered[i]._willBeRendered = false
         }
-        this._nodesToBeRendered.length = 0
+        nodesToBeRendered.length = 0
     }
 }
 
