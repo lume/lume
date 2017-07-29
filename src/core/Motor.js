@@ -7,6 +7,7 @@ import {
 } from './Utility'
 
 let documentIsReady = false
+let webGLRenderer = null
 
 class Motor {
     constructor() {
@@ -189,11 +190,18 @@ class Motor {
 
         // render webgl of modified scenes.
         const modifiedScenes = this._modifiedScenes
+        // TODO PERFORMANCE: store a list of webgl-enabled modified scenes, and
+        // iterate only through those so we don't iterate over non-webgl
+        // scenes.
         for (let i=0, l=modifiedScenes.length; i<l; i+=1) {
             const sceneElement = modifiedScenes[i].element
             // TODO we're temporarily storing stuff on the .element, but we
             // don't want that, we will move it to WebGLRenderer.
-            if (sceneElement.webglEnabled) getWebGlRenderer().drawScene(sceneElement)
+            if (
+                sceneElement.webglEnabled &&
+                ( webGLRenderer || (webGLRenderer = getWebGlRenderer()) ) // only ever call getWebGlRenderer once
+            )
+                webGLRenderer.drawScene(sceneElement)
         }
         modifiedScenes.length = 0
 
