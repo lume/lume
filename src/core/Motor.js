@@ -190,10 +190,10 @@ class Motor {
         // render webgl of modified scenes.
         const modifiedScenes = this._modifiedScenes
         for (let i=0, l=modifiedScenes.length; i<l; i+=1) {
-            const scene = modifiedScenes[i]
+            const sceneElement = modifiedScenes[i].element
             // TODO we're temporarily storing stuff on the .element, but we
             // don't want that, we will move it to WebGLRenderer.
-            if (scene.element.webglEnabled) getWebGlRenderer().drawScene(scene.element)
+            if (sceneElement.webglEnabled) getWebGlRenderer().drawScene(sceneElement)
         }
         modifiedScenes.length = 0
 
