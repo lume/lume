@@ -16,4 +16,4 @@ export {
     components,
 }
 
-export const version = '17.0.0'
+export const version = '17.0.1'
