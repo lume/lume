@@ -1,6 +1,6 @@
 import documentReady from 'awaitbox/dom/documentReady'
 import Transformable from './Transformable'
-import getWebGlRenderer from './WebGlRenderer'
+import getWebGlRenderer from './WebGLRenderer'
 
 import {
     //animationFrame,

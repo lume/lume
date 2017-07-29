@@ -4,7 +4,7 @@ import Motor from '../core/Motor'
 import Scene from '../core/Scene'
 import Observable from '../core/Observable'
 import Sizeable from '../core/Sizeable'
-import getWebGlRenderer from '../core/WebGlRenderer'
+import getWebGlRenderer from '../core/WebGLRenderer'
 import MotorHTMLBase, {initMotorHTMLBase, proxyGettersSetters} from './base'
 import sleep from 'awaitbox/timers/sleep'
 
