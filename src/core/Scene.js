@@ -1,4 +1,13 @@
 import { makeAccessorsEnumerable } from './Utility'
+
+// although Transformable is not used in this file, importing it first prevent
+// a cyclical dependeny problem when an App imports Scene before Node (Sizeable
+// imports Motor imports Transformable). See:
+// https://esdiscuss.org/topic/how-to-solve-this-basic-es6-module-circular-dependency-problem
+// TODO: write a test that imports public interfaces in every possible
+// permutation to detect circular dependency errors.
+import Transformable from './Transformable'
+
 import Sizeable from './Sizeable'
 import ImperativeBase, {initImperativeBase} from './ImperativeBase'
 import XYZValues from './XYZValues'
