@@ -48,6 +48,7 @@ define(function(require, exports, module) {
      * @param [options.roundToPixel=false] {Boolean}  Prevents text-blurring if set to true, at the cost to jittery animation
      */
     function ContainerSurface(options) {
+        if (options === undefined) options = {};
         Surface.call(this, options);
         this.context = new Context({enableScroll : options.enableScroll});
         this.context.elementClass = ContainerSurface.prototype.elementClass;
