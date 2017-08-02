@@ -8,7 +8,6 @@ import getWebGlRenderer from '../core/WebGLRenderer'
 import MotorHTMLBase, {initMotorHTMLBase, proxyGettersSetters} from './base'
 import sleep from 'awaitbox/timers/sleep'
 
-import imageUrl from './image'
 //import * as PIXI from 'pixi.js' // also sets the PIXI global.
 //import SVG from 'pixi-svg' // uses the PIXI global, won't work if you don't import the main `pixi.js module`.
 import Two from 'two.js/build/two'

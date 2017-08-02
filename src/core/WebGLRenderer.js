@@ -345,7 +345,7 @@ class WebGlRenderer {
                             //gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR)
                         //}
                     //})
-                    //image.src = imageUrl
+                    //image.src = imageUrl // imageUrl should be a data URL
                     //// }
                 }
             }
