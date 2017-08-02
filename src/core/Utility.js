@@ -1,5 +1,3 @@
-import windowLoaded from 'awaitbox/dom/windowLoaded'
-
 function epsilon(value) {
     return Math.abs(value) < 0.000001 ? 0 : value;
 }
@@ -63,7 +61,7 @@ function observeChildren(ctx, onConnect, onDisconnect) {
 // because the DOM tree will be back in the exact state as before (this is
 // possible thanks to the logic associated with weightsPerTarget).
 function createChildObserver() {
-    return new MutationObserver(async (changes) => {
+    return new MutationObserver(changes => {
         const weightsPerTarget = new Map
 
         // We're just counting how many times each child node was added and
