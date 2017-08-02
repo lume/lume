@@ -23,11 +23,25 @@ class MotorHTMLNode extends MotorHTMLBase {
         })
     }
 
-    async attributeChangedCallback(...args) {
+    attributeChangedCallback(...args) {
         super.attributeChangedCallback(...args)
-        await this._imperativeCounterpartPromise
-        this._updateNodeProperty(...args)
+
+        // TODO PERFORMANCE: we could possibly not stack a promise every
+        // attribute change, and just cache the latest value to set it when the
+        // imperativeCounterpart is ready.
+        this._imperativeCounterpartPromise.then(() => {
+            this._updateNodeProperty(...args)
+        })
     }
+    //async attributeChangedCallback(...args) {
+        //super.attributeChangedCallback(...args)
+
+        //// TODO PERFORMANCE: we could possibly not stack a promise every
+        //// attribute change, and just cache the latest value to set it when the
+        //// imperativeCounterpart is ready.
+        //await this._imperativeCounterpartPromise
+        //this._updateNodeProperty(...args)
+    //}
 
     _updateNodeProperty(attribute, oldValue, newValue) {
         // attributes on our HTML elements are the same name as those on

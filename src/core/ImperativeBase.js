@@ -209,24 +209,59 @@ export function initImperativeBase() {
                     this._elementManager.setClasses(...properties.classes);
             }
 
-            async _needsToBeRendered() {
-                if (this._awaitingMountPromiseToRender) return
+            _needsToBeRendered() {
+                if (this._awaitingMountPromiseToRender) return Promise.resolve()
 
-                if (!this._mounted) {
-                    try {
-                        this._awaitingMountPromiseToRender = true
-                        await this.mountPromise
-                    } catch(e) {
-                        if (e == 'mountcancel') return
-                        else throw e
-                    } finally {
-                        this._awaitingMountPromiseToRender = false
-                    }
+                const logic = () => {
+                    this._willBeRendered = true
+                    Motor._setNodeToBeRendered(this)
                 }
 
-                this._willBeRendered = true
-                Motor._setNodeToBeRendered(this)
+                if (!this._mounted) {
+                    this._awaitingMountPromiseToRender = true
+
+                    let possibleError = undefined
+
+                    // try
+                    return this.mountPromise
+
+                    .then(logic)
+
+                    // catch
+                    .catch(() => {
+                        if (e == 'mountcancel') return
+                        else possibleError = e
+                    })
+
+                    // finally
+                    .then(() => {
+                        this._awaitingMountPromiseToRender = false
+
+                        if (possibleError) throw possibleError
+                    })
+                }
+
+                logic()
+                return Promise.resolve()
             }
+            //async _needsToBeRendered() {
+                //if (this._awaitingMountPromiseToRender) return
+
+                //if (!this._mounted) {
+                    //try {
+                        //this._awaitingMountPromiseToRender = true
+                        //await this.mountPromise
+                    //} catch(e) {
+                        //if (e == 'mountcancel') return
+                        //else throw e
+                    //} finally {
+                        //this._awaitingMountPromiseToRender = false
+                    //}
+                //}
+
+                //this._willBeRendered = true
+                //Motor._setNodeToBeRendered(this)
+            //}
 
             // This method is used by Motor._renderNodes().
             _getAncestorToBeRendered() {

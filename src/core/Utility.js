@@ -14,21 +14,6 @@ function applyCSSLabel(value, label) {
     }
 }
 
-/**
- * Get the dimensions of the body element.
- * @async
- * @return {Object} An object containing `width` and `height` properties.
- */
-async function getBodySize() {
-    await windowLoaded()
-
-    const body = document.body
-    const width = window.parseInt(window.getComputedStyle(body).getPropertyValue('width'))
-    const height = window.parseInt(window.getComputedStyle(body).getPropertyValue('height'))
-
-    return { width, height }
-}
-
 function animationFrame() {
     let resolve = null
     const promise = new Promise(r => resolve = r)
@@ -184,7 +169,6 @@ function traverse(node, isShadowChild) {
 export {
   epsilon,
   applyCSSLabel,
-  getBodySize,
   animationFrame,
   makeLowercaseSetterAliases,
   makeAccessorsEnumerable,

@@ -80,23 +80,55 @@ class Node extends ImperativeBase.mixin(Transformable) {
     /**
      * @private
      */
-    async _waitForMountThenResolveMountPromise() {
-        if (this._awaitingScenePromise) return
-        try {
-            this._awaitingScenePromise = true
-            await this._getScenePromise()
-            await this._scene.mountPromise
-        } catch (e) {
-            if (e == 'mountcancel') return
-            else throw e
-        } finally {
-            this._awaitingScenePromise = false
+    _waitForMountThenResolveMountPromise() {
+        if (this._awaitingScenePromise) return Promise.resolve()
+
+        const logic = () => {
+            this._mounted = true
+            this._resolveMountPromise()
+            this._elementManager.shouldRender()
         }
 
-        this._mounted = true
-        this._resolveMountPromise()
-        this._elementManager.shouldRender()
+        this._awaitingScenePromise = true
+
+        let possibleError = undefined
+
+        // try
+        return this._getScenePromise()
+        .then(() => this._scene.mountPromise)
+
+        .then(logic)
+
+        // catch
+        .catch(() => {
+            if (e == 'mountcancel') return
+            else possibleError = e
+        })
+
+        // finally
+        .then(() => {
+            this._awaitingScenePromise = false
+
+            if (possibleError) throw possibleError
+        })
     }
+    //async _waitForMountThenResolveMountPromise() {
+        //if (this._awaitingScenePromise) return
+        //try {
+            //this._awaitingScenePromise = true
+            //await this._getScenePromise()
+            //await this._scene.mountPromise
+        //} catch (e) {
+            //if (e == 'mountcancel') return
+            //else throw e
+        //} finally {
+            //this._awaitingScenePromise = false
+        //}
+
+        //this._mounted = true
+        //this._resolveMountPromise()
+        //this._elementManager.shouldRender()
+    //}
 
     /**
      * @override

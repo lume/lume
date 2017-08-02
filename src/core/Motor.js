@@ -31,56 +31,94 @@ class Motor {
      * stack becomes empty due to removal of tasks, the rAF stops and the app
      * sits there doing nothing -- silence, crickets.
      */
-    async _startAnimationLoop() {
-        if (this._animationLoopStarted) return
+    _startAnimationLoop() {
+        if (this._animationLoopStarted) return Promise.resolve()
 
         this._animationLoopStarted = true
 
-        if (!documentIsReady) {
-            await documentReady()
-            documentIsReady = true
-        }
+        const logic = () => {
+            // DIRECT ANIMATION LOOP ///////////////////////////////////
+            // So now we can render after the scene is mounted.
+            const motorLoop = timestamp => {
+                this._inFrame = true
 
-        // DIRECT ANIMATION LOOP ///////////////////////////////////
-        // So now we can render after the scene is mounted.
-        const motorLoop = timestamp => {
-            this._inFrame = true
+                this._runRenderTasks(timestamp)
+                this._renderNodes(timestamp)
 
-            this._runRenderTasks(timestamp)
-            this._renderNodes(timestamp)
+                // If any tasks are left to run, continue the animation loop.
+                if (this._allRenderTasks.length)
+                    this._rAF = requestAnimationFrame(motorLoop)
+                else {
+                    this._rAF = null
+                    this._animationLoopStarted = false
+                }
 
-            // If any tasks are left to run, continue the animation loop.
-            if (this._allRenderTasks.length)
-                this._rAF = requestAnimationFrame(motorLoop)
-            else {
-                this._rAF = null
-                this._animationLoopStarted = false
+                this._inFrame = false
             }
 
-            this._inFrame = false
+            this._rAF = requestAnimationFrame(motorLoop)
         }
 
-        this._rAF = requestAnimationFrame(motorLoop)
+        if (!documentIsReady) {
+            return documentReady().then(() => {
+                documentIsReady = true
+                logic()
+            })
+        }
 
-        // ANIMATION LOOP USING WHILE AND AWAIT ///////////////////////////////////
-        //this._rAF = true
-        //let timestamp = null
-        //while (this._rAF) {
-            //timestamp = await animationFrame()
+        logic()
+        return Promise.resolve()
+    }
+    //async _startAnimationLoop() {
+        //if (this._animationLoopStarted) return
+
+        //this._animationLoopStarted = true
+
+        //if (!documentIsReady) {
+            //await documentReady()
+            //documentIsReady = true
+        //}
+
+        //// DIRECT ANIMATION LOOP ///////////////////////////////////
+        //// So now we can render after the scene is mounted.
+        //const motorLoop = timestamp => {
             //this._inFrame = true
 
             //this._runRenderTasks(timestamp)
             //this._renderNodes(timestamp)
 
             //// If any tasks are left to run, continue the animation loop.
-            //if (!this._allRenderTasks.length) {
+            //if (this._allRenderTasks.length)
+                //this._rAF = requestAnimationFrame(motorLoop)
+            //else {
                 //this._rAF = null
                 //this._animationLoopStarted = false
             //}
 
             //this._inFrame = false
         //}
-    }
+
+        //this._rAF = requestAnimationFrame(motorLoop)
+
+        //// ANIMATION LOOP USING WHILE AND AWAIT ///////////////////////////////////
+        ////this._rAF = true
+        ////let timestamp = null
+        ////while (this._rAF) {
+            ////timestamp = await animationFrame()
+            ////this._inFrame = true
+
+            ////this._runRenderTasks(timestamp)
+            ////this._renderNodes(timestamp)
+
+            ////// If any tasks are left to run, continue the animation loop.
+            ////if (!this._allRenderTasks.length) {
+                ////this._rAF = null
+                ////this._animationLoopStarted = false
+            ////}
+
+            ////this._inFrame = false
+        ////}
+    //}
 
     /**
      * When a render tasks is added a new rAF loop will be started if there

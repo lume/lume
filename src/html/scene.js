@@ -46,17 +46,34 @@ class MotorHTMLScene extends Observable.mixin(MotorHTMLBase) {
         // For now, use the same program (with shaders) for all objects.
         // Basically it has position, frag colors, point light, directional
         // light, and ambient light.
-        // TODO: maybe call this in `init()`, and destroy webgl stuff in `deinit()`
+        // TODO: maybe call this in `init()`, and destroy webgl stuff in
+        // `deinit()`.
+        // TODO: The user might enable this by setting the attribute later, so
+        // we can't simply rely on having it in createdCallback, we need a
+        // getter/setter like node properties.
         this.initWebGl()
     }
 
-    async initWebGl() {
-        await this.mountPromise
-        this.webglEnabled = !!this.getAttribute('webglenabled')
-        if (!this.webglEnabled) return
-        this.webGlRendererState = {}
-        getWebGlRenderer().initGl(this)
+    // TODO: we need to deinit webgl too.
+    initWebGl() {
+        // TODO: this needs to be cancelable too, search other codes for
+        // "mountcancel" to see.
+        this.mountPromise.then(() => {
+            this.webglEnabled = !!this.getAttribute('webglenabled')
+            if (!this.webglEnabled) return
+            this.webGlRendererState = {}
+            getWebGlRenderer().initGl(this)
+        })
     }
+    //async initWebGl() {
+        //// TODO: this needs to be cancelable too, search other codes for
+        //// "mountcancel" to see.
+        //await this.mountPromise
+        //this.webglEnabled = !!this.getAttribute('webglenabled')
+        //if (!this.webglEnabled) return
+        //this.webGlRendererState = {}
+        //getWebGlRenderer().initGl(this)
+    //}
 
     _startSizePolling() {
         // NOTE Polling is currently required because there's no other way to do this
