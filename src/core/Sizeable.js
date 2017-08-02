@@ -71,7 +71,7 @@ const SizeableMixin = base => {
 
         _calcSize() {
             const calculatedSize = this._calculatedSize
-            const {...previousSize} = calculatedSize
+            const previousSize = {...calculatedSize}
             const props = this._properties
             const parentSize = this._getParentSize()
 
