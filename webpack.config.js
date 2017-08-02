@@ -1,11 +1,8 @@
 const DedupePlugin = require('webpack/lib/optimize/DedupePlugin')
+const UglifyJsPlugin = require('webpack/lib/optimize/UglifyJsPlugin')
 
 module.exports = {
-    entry: [
-        // Using this instead of transform-runtime,
-        // see babel config below.
-        'babel-polyfill',
-    ],
+    entry: [ ],
     resolve: {
         extensions: [ "", ".js", ".jsx", ]
     },
@@ -23,17 +20,15 @@ module.exports = {
                         'stage-1',
                     ],
                     plugins: [
-                        // broken in Webpack, doesn't work. Instead we load
-                        // babel-polyfill as an entry, above. See
-                        // https://discuss.babeljs.io/t/regeneratorruntime-is-not-defined-in-webpack-build/202
-                        //'transform-runtime'
+                        'transform-runtime'
                     ],
                 },
             },
         ],
     },
     plugins: [
-        new DedupePlugin()
+        new DedupePlugin(),
+        new UglifyJsPlugin(),
     ],
     devtool: "source-map",
 }
