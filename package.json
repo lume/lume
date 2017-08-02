@@ -17,10 +17,10 @@
     "build-amd": "./.scripts/build-amd.sh",
     "build-global": "./.scripts/build-global.sh",
     "watch": "./.scripts/build-cjs.sh --watch & P1=$!; ./.scripts/build-global.sh --watch & P2=$!; wait $P1 $P2",
-    "preversion": "git reset HEAD global.js && git checkout -- global.js && git add . && git stash && git clean -xfd -e node_modules",
-    "version": "npm run add-version-to-source && npm run build && git add -f global.js",
-    "add-version-to-source": ".scripts/version-to-source.js && git add src/index.js",
-    "postversion": "npm publish && git push && git push --tags && git stash pop && git reset HEAD"
+    "preversion": "echo '--- PREVERSION' && git reset HEAD global.js && git checkout -- global.js && git add . && git stash && git clean -xfd -e node_modules",
+    "version": "echo '--- VERSION' && npm run add-version-to-source && npm run build && git add -f global.js",
+    "add-version-to-source": "echo '--- VERSION-TO-SOURCE' && .scripts/version-to-source.js && git add src/index.js",
+    "postversion": "echo '--- POSTVERSION' && npm publish && git push && git push --tags && git stash pop && git reset HEAD"
   },
   "dependencies": {
     "army-knife": "^0.2.1",
