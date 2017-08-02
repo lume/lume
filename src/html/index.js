@@ -1,5 +1,13 @@
-export MotorHTMLBase from './base'
-export MotorHTMLNode from './node'
-export MotorHTMLPushPaneLayout from './push-pane-layout'
-export MotorHTMLScene from './scene'
-export WebComponent from './web-component'
+import MotorHTMLBase from './base'
+import MotorHTMLNode from './node'
+import MotorHTMLPushPaneLayout from './push-pane-layout'
+import MotorHTMLScene from './scene'
+import WebComponent from './web-component'
+
+export {
+    MotorHTMLBase,
+    MotorHTMLNode,
+    MotorHTMLPushPaneLayout,
+    MotorHTMLScene,
+    WebComponent,
+}
