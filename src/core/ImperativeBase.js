@@ -165,7 +165,7 @@ export function initImperativeBase() {
                 return this
             }
 
-            removeChild(childNode) {
+            removeChild(childNode, /*private use*/leaveInDom) {
                 if (!(childNode instanceof Node)) return
 
                 super.removeChild(childNode)
@@ -178,7 +178,8 @@ export function initImperativeBase() {
                 if (childNode._mounted) childNode._elementManager.shouldNotRender()
                 childNode._resetMountPromise()
 
-                this._elementManager.disconnectChildElement(childNode)
+                if (!leaveInDom)
+                    this._elementManager.disconnectChildElement(childNode)
             }
 
             _resetMountPromise() {

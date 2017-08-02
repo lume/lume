@@ -90,28 +90,15 @@ function shadowRootChildRemoved(child) {
 function onV0ShadowRootReplaced(oldRoot) {
     observers.get(oldRoot).disconnect()
     observers.delete(oldRoot)
-    let i = 0
-    // NOTE We're relying on the special behavior of for..of loop here because
-    // oldRoot.childNodes is modified in-place. TODO PERFORMANCE: allow
-    // ImperativeBase.removeChild to accept a non-document extra arg that tells
-    // it not to disconnect the DOM element, then we don't have to re-insert
-    // it, and we can switch to a faster regular-for loop.
     const {childNodes} = oldRoot
-    for (const child of childNodes) { // XXX for..of loop required
-        if (!(child instanceof DeclarativeBase)) { i += 1; continue }
+    for (let l=childNodes.length, i=0; i<l; i+=1) {
+        const child = childNodes[i]
 
-        // We should disconnect the imperative connection (f.e. so it is
-        // not rendered in WebGL)...
-        this.imperativeCounterpart.removeChild(child.imperativeCounterpart)
+        if (!(child instanceof DeclarativeBase)) continue
 
-        // ...but we should place the element back where it was so there's
-        // no surprises to the HTML-API user who might go looking for the
-        // element. Due to the fact that the observer on the oldRoot was
-        // removed, adding the element back to the oldRoot won't cause it
-        // to be reconnected on the imperative side.
-        oldRoot.insertBefore(child, childNodes[i])
-
-        i += 1
+        // We should disconnect the imperative connection (f.e. so it is not
+        // rendered in WebGL)
+        this.imperativeCounterpart.removeChild(child.imperativeCounterpart, true)
     }
 }
 
@@ -410,8 +397,8 @@ export function proxyGettersSetters(SourceClass, TargetClass) {
 
     const props = Object.getOwnPropertyNames(SourceClass.prototype)
 
-    // XXX performance-friendly for..of
-    for (const prop of props) {
+    for (let l=props.length, i=0; i<l; i+=1) {
+        const prop = props[i]
         if (
             // skip the blacklisted properties
             methodProxyBlacklist.indexOf(prop) >= 0

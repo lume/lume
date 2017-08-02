@@ -24,8 +24,8 @@ function animationFrame() {
 // Create lowercase versions of each setter property.
 function makeLowercaseSetterAliases(object) {
     const props = Object.getOwnPropertyNames(object)
-    // XXX performance-friendly for..of
-    for (const prop of props) {
+    for (let l=props.length, i=0; i<l; i+=1) {
+        const prop = props[i]
         const lowercaseProp = prop.toLowerCase()
         if (lowercaseProp != prop) {
             const descriptor = Object.getOwnPropertyDescriptor(object, prop)
@@ -38,8 +38,8 @@ function makeLowercaseSetterAliases(object) {
 
 function makeAccessorsEnumerable(object) {
     const props = Object.getOwnPropertyNames(object)
-    // XXX performance-friendly for..of
-    for (const prop of props) {
+    for (let l=props.length, i=0; i<l; i+=1) {
+        const prop = props[i]
         const descriptor = Object.getOwnPropertyDescriptor(object, prop)
         if (descriptor && (descriptor.set || descriptor.get)) {
             descriptor.enumerable = true
