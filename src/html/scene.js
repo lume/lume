@@ -99,7 +99,7 @@ class MotorHTMLScene extends Observable.mixin(MotorHTMLBase) {
             parentSize.x = width
             parentSize.y = height
 
-            this.triggerEvent('parentsizechange', {...parentSize})
+            this.triggerEvent('parentsizechange', Object.assign({}, parentSize))
         }
     }
 
