@@ -1,1 +1,2 @@
-babel src --source-maps --out-dir . --plugins=transform-es2015-modules-amd
+npm run transpile $1
+babel src --source-maps --out-dir . --plugins=transform-es2015-modules-amd $1
