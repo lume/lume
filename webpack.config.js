@@ -13,18 +13,6 @@ module.exports = {
                 use: [
 
                     {
-                        loader: 'babel-loader',
-                        options: {
-                            cacheDirectory: true,
-                            babelrc: false,
-                            plugins: [
-                                'transform-runtime',
-                                'transform-es2015-modules-commonjs'
-                            ],
-                        },
-                    },
-
-                    {
                         loader: 'buble-loader',
                         options: {
                             target: { ie: 11 },
