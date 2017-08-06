@@ -1,34 +1,47 @@
-const DedupePlugin = require('webpack/lib/optimize/DedupePlugin')
-const UglifyJsPlugin = require('webpack/lib/optimize/UglifyJsPlugin')
+const BabiliPlugin = require("babili-webpack-plugin");
 
 module.exports = {
     entry: [ ],
     resolve: {
-        extensions: [ "", ".js", ".jsx", ]
+        extensions: [ ".js", ".jsx", ]
     },
     module: {
-        loaders: [
+        rules: [
             {
                 test: /\.jsx?$/,
-                loader: 'babel',
                 exclude: /node_modules/,
-                query: {
-                    cacheDirectory: true,
-                    babelrc: false,
-                    presets: [
-                        'es2015',
-                        'stage-1',
-                    ],
-                    plugins: [
-                        'transform-runtime'
-                    ],
-                },
+                use: [
+
+                    {
+                        loader: 'babel-loader',
+                        options: {
+                            cacheDirectory: true,
+                            babelrc: false,
+                            plugins: [
+                                'transform-runtime',
+                                'transform-es2015-modules-commonjs'
+                            ],
+                        },
+                    },
+
+                    {
+                        loader: 'buble-loader',
+                        options: {
+                            target: { ie: 11 },
+                            objectAssign: 'Object.assign',
+                            transforms: {
+                                modules: false,
+                                dangerousForOf: true,
+                            },
+                        },
+                    },
+
+                ],
             },
         ],
     },
     plugins: [
-        new DedupePlugin(),
-        new UglifyJsPlugin(),
+        new BabiliPlugin()
     ],
     devtool: "source-map",
 }
