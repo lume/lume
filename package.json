@@ -4,6 +4,7 @@
   "description": "A UI library.",
   "format": "es6",
   "main": "index.js",
+  "module": "src/index.js",
   "browser": "index.js",
   "global": "global.js",
   "license": "MIT",
