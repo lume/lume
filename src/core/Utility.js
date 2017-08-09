@@ -20,6 +20,7 @@ function animationFrame() {
 }
 
 // Create lowercase versions of each setter property.
+// we care only about the setters, for now.
 function makeLowercaseSetterAliases(object) {
     const props = Object.getOwnPropertyNames(object)
     for (let l=props.length, i=0; i<l; i+=1) {
@@ -27,21 +28,9 @@ function makeLowercaseSetterAliases(object) {
         const lowercaseProp = prop.toLowerCase()
         if (lowercaseProp != prop) {
             const descriptor = Object.getOwnPropertyDescriptor(object, prop)
-            if (Object.getOwnPropertyNames(descriptor).indexOf('set') >= 0) { // we care only about the setters.
+            if (typeof descriptor.set != 'undefined') {
                 Object.defineProperty(object, lowercaseProp, descriptor)
             }
-        }
-    }
-}
-
-function makeAccessorsEnumerable(object) {
-    const props = Object.getOwnPropertyNames(object)
-    for (let l=props.length, i=0; i<l; i+=1) {
-        const prop = props[i]
-        const descriptor = Object.getOwnPropertyDescriptor(object, prop)
-        if (descriptor && (descriptor.set || descriptor.get)) {
-            descriptor.enumerable = true
-            Object.defineProperty(object, prop, descriptor)
         }
     }
 }
@@ -169,7 +158,6 @@ export {
   applyCSSLabel,
   animationFrame,
   makeLowercaseSetterAliases,
-  makeAccessorsEnumerable,
   observeChildren,
   getShadowRootVersion,
   hasShadowDomV0,

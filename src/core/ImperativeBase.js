@@ -1,4 +1,5 @@
 import ElementManager from './ElementManager'
+import Sizeable from './Sizeable'
 import Node from './Node'
 import Scene from './Scene'
 import Motor from './Motor'
@@ -34,7 +35,8 @@ export function initImperativeBase() {
      * at least one of those to render with.
      */
     const ImperativeBaseMixin = base => {
-        class ImperativeBase extends base {
+        const ParentClass = base
+        class ImperativeBase extends ParentClass {
             constructor(options = {}) {
 
                 // The presence of a _motorHtmlCounterpart argument signifies that
@@ -193,23 +195,6 @@ export function initImperativeBase() {
                 }
             }
 
-            /**
-             * Set all properties of an ImperativeBase instance in one method.
-             *
-             * @param {Object} properties Properties object - see example.
-             *
-             * @example
-             * node.properties = {
-             *   classes: ['open', 'big'],
-             * }
-             */
-            set properties (properties = {}) {
-                super.properties = properties
-
-                if (properties.classes)
-                    this._elementManager.setClasses(...properties.classes);
-            }
-
             _needsToBeRendered() {
                 if (this._awaitingMountPromiseToRender) return Promise.resolve()
 
@@ -283,6 +268,31 @@ export function initImperativeBase() {
             }
         }
 
+        const {set: superPropertiesSet} = Object.getOwnPropertyDescriptor(ParentClass.prototype, 'properties')
+
+        Object.defineProperties(ImperativeBase.prototype, {
+
+            /**
+             * Set all properties of an ImperativeBase instance in one method.
+             *
+             * @param {Object} properties Properties object - see example.
+             *
+             * @example
+             * node.properties = {
+             *   classes: ['open', 'big'],
+             * }
+             */
+            properties: {
+                set(properties = {}) {
+                    superPropertiesSet.call(this, properties)
+
+                    if (properties.classes)
+                        this._elementManager.setClasses(...properties.classes);
+                },
+                configurable: true,
+            },
+        })
+
         Object.defineProperty(ImperativeBase, Symbol.hasInstance, {
             value: function(obj) {
                 if (this !== ImperativeBase) return Object.getPrototypeOf(ImperativeBase)[Symbol.hasInstance].call(this, obj)
@@ -307,7 +317,7 @@ export function initImperativeBase() {
         return ImperativeBase
     }
 
-    ImperativeBase = ImperativeBaseMixin(class{})
+    ImperativeBase = ImperativeBaseMixin(Sizeable)
     ImperativeBase.mixin = ImperativeBaseMixin
 
 }

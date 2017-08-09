@@ -1,4 +1,3 @@
-import { makeAccessorsEnumerable } from './Utility'
 
 // although Transformable is not used in this file, importing it first prevent
 // a cyclical dependeny problem when an App imports Scene before Node (Sizeable
@@ -17,7 +16,8 @@ import documentReady from 'awaitbox/dom/documentReady'
 initImperativeBase()
 
 // Scene is Sizeable, which is currently a subset of Transformable.
-class Scene extends ImperativeBase.mixin(Sizeable) {
+const ParentClass = ImperativeBase.mixin(Sizeable)
+class Scene extends ParentClass {
     constructor(options = {}) {
         super(options)
 
@@ -40,16 +40,6 @@ class Scene extends ImperativeBase.mixin(Sizeable) {
         Object.assign(this._properties, {
             sizeMode: new XYZValues('proportional', 'proportional', 'absolute'),
         })
-    }
-
-    // When we set the scene's size mode, we should start polling if it has
-    // proportional sizing.
-    set sizeMode(newValue) {
-        super.sizeMode = newValue
-        this._startOrStopSizePolling()
-    }
-    get sizeMode() {
-        return super.sizeMode
     }
 
     _startOrStopSizePolling() {
@@ -184,6 +174,25 @@ class Scene extends ImperativeBase.mixin(Sizeable) {
 
 }
 
-makeAccessorsEnumerable(Scene.prototype)
+// Here we know that `super` is Sizeable
+const {set: superSizeModeSet, get: superSizeModeGet} = Object.getOwnPropertyDescriptor(Sizeable.prototype, 'sizeMode')
+
+Object.defineProperties(Scene.prototype, {
+
+    // When we set the scene's size mode, we should start polling if it has
+    // proportional sizing.
+    sizeMode: {
+        set: function(value) {
+            superSizeModeSet.call(this, value)
+            this._startOrStopSizePolling()
+        },
+        get: function() {
+            return superSizeModeGet.call(this)
+        },
+        configurable: true,
+        enumerable: true,
+    }
+
+})
 
 export {Scene as default}

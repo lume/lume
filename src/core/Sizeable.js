@@ -1,4 +1,4 @@
-import { makeLowercaseSetterAliases, makeAccessorsEnumerable } from './Utility'
+import { makeLowercaseSetterAliases } from './Utility'
 import TreeNode from './TreeNode'
 import XYZValues from './XYZValues'
 import Observable from './Observable'
@@ -54,21 +54,6 @@ const SizeableMixin = base => {
                 () => this.triggerEvent('propertychange', 'proportionalSize'))
         }
 
-        /**
-         * Set the size mode for each axis. Possible size modes are "absolute" and "proportional".
-         *
-         * @param {Object} newValue
-         * @param {number} [newValue.x] The x-axis sizeMode to apply.
-         * @param {number} [newValue.y] The y-axis sizeMode to apply.
-         * @param {number} [newValue.z] The z-axis sizeMode to apply.
-         */
-        set sizeMode(newValue) {
-            this._setPropertyXYZ(Sizeable, 'sizeMode', newValue)
-        }
-        get sizeMode() {
-            return this._properties.sizeMode
-        }
-
         _calcSize() {
             const calculatedSize = this._calculatedSize
             const previousSize = {...calculatedSize}
@@ -108,76 +93,6 @@ const SizeableMixin = base => {
         _getParentSize() {
             return this._parent ? this._parent._calculatedSize : {x:0,y:0,z:0}
         }
-
-        /**
-         * @param {Object} newValue
-         * @param {number} [newValue.x] The x-axis absoluteSize to apply.
-         * @param {number} [newValue.y] The y-axis absoluteSize to apply.
-         * @param {number} [newValue.z] The z-axis absoluteSize to apply.
-         */
-        set absoluteSize(newValue) {
-            this._setPropertyXYZ(Sizeable, 'absoluteSize', newValue)
-        }
-        get absoluteSize() {
-            return this._properties.absoluteSize
-        }
-
-        /**
-         * Get the actual size of the Node. This can be useful when size is
-         * proportional, as the actual size of the Node depends on the size of
-         * it's parent.
-         *
-         * @readonly
-         *
-         * @return {Array.number} An Oject with x, y, and z properties, each
-         * property representing the computed size of the x, y, and z axes
-         * respectively.
-         */
-        get actualSize() {
-            const {x,y,z} = this._calculatedSize
-            return {x,y,z}
-        }
-
-        /**
-         * Set the size of a Node proportional to the size of it's parent Node. The
-         * values are a real number between 0 and 1 inclusive where 0 means 0% of
-         * the parent size and 1 means 100% of the parent size.
-         *
-         * @param {Object} newValue
-         * @param {number} [newValue.x] The x-axis proportionalSize to apply.
-         * @param {number} [newValue.y] The y-axis proportionalSize to apply.
-         * @param {number} [newValue.z] The z-axis proportionalSize to apply.
-         */
-        set proportionalSize(newValue) {
-            this._setPropertyXYZ(Sizeable, 'proportionalSize', newValue)
-        }
-        get proportionalSize() {
-            return this._properties.proportionalSize
-        }
-
-        /**
-         * Set all properties of a Sizeable in one method.
-         *
-         * @param {Object} properties Properties object - see example
-         *
-         * @example
-         * node.properties = {
-         *   sizeMode: {x:'absolute', y:'proportional', z:'absolute'},
-         *   absoluteSize: {x:300, y:100, z:200},
-         *   proportionalSize: {x:1, z:0.5}
-         * }
-         */
-        set properties (properties = {}) {
-            if (properties.sizeMode)
-                this.sizeMode = properties.sizeMode
-
-            if (properties.absoluteSize)
-                this.absoluteSize = properties.absoluteSize
-
-            if (properties.proportionalSize)
-                this.proportionalSize = properties.proportionalSize
-        }
-        // no need for a properties getter.
 
         _setPropertyXYZ(Class, name, newValue) {
             if (!(
@@ -260,6 +175,120 @@ const SizeableMixin = base => {
         }
     }
 
+    // We set accessors manually because Buble doesn't make them configurable
+    // as per spec. Additionally we're maing these ones enumerable.
+    Object.defineProperties(Sizeable.prototype, {
+
+        /**
+         * Set the size mode for each axis. Possible size modes are "absolute" and "proportional".
+         *
+         * @param {Object} newValue
+         * @param {number} [newValue.x] The x-axis sizeMode to apply.
+         * @param {number} [newValue.y] The y-axis sizeMode to apply.
+         * @param {number} [newValue.z] The z-axis sizeMode to apply.
+         */
+        sizeMode: {
+            set(newValue) {
+                this._setPropertyXYZ(Sizeable, 'sizeMode', newValue)
+            },
+            get() {
+                return this._properties.sizeMode
+            },
+            configurable: true,
+            enumerable: true,
+        },
+
+        /**
+         * @param {Object} newValue
+         * @param {number} [newValue.x] The x-axis absoluteSize to apply.
+         * @param {number} [newValue.y] The y-axis absoluteSize to apply.
+         * @param {number} [newValue.z] The z-axis absoluteSize to apply.
+         */
+        absoluteSize: {
+            set(newValue) {
+                this._setPropertyXYZ(Sizeable, 'absoluteSize', newValue)
+            },
+            get() {
+                return this._properties.absoluteSize
+            },
+            configurable: true,
+            enumerable: true,
+        },
+
+        /**
+         * Get the actual size of the Node. This can be useful when size is
+         * proportional, as the actual size of the Node depends on the size of
+         * it's parent.
+         *
+         * @readonly
+         *
+         * @return {Array.number} An Oject with x, y, and z properties, each
+         * property representing the computed size of the x, y, and z axes
+         * respectively.
+         */
+        actualSize: {
+            get() {
+                const {x,y,z} = this._calculatedSize
+                return {x,y,z}
+            },
+            configurable: true,
+            enumerable: true,
+        },
+
+        /**
+         * Set the size of a Node proportional to the size of it's parent Node. The
+         * values are a real number between 0 and 1 inclusive where 0 means 0% of
+         * the parent size and 1 means 100% of the parent size.
+         *
+         * @param {Object} newValue
+         * @param {number} [newValue.x] The x-axis proportionalSize to apply.
+         * @param {number} [newValue.y] The y-axis proportionalSize to apply.
+         * @param {number} [newValue.z] The z-axis proportionalSize to apply.
+         */
+        proportionalSize: {
+            set(newValue) {
+                this._setPropertyXYZ(Sizeable, 'proportionalSize', newValue)
+            },
+            get() {
+                return this._properties.proportionalSize
+            },
+            configurable: true,
+            enumerable: true,
+        },
+
+        /**
+         * Set all properties of a Sizeable in one method.
+         *
+         * @param {Object} properties Properties object - see example
+         *
+         * @example
+         * node.properties = {
+         *   sizeMode: {x:'absolute', y:'proportional', z:'absolute'},
+         *   absoluteSize: {x:300, y:100, z:200},
+         *   proportionalSize: {x:1, z:0.5}
+         * }
+         */
+        properties: {
+            set(properties = {}) {
+                if (properties.sizeMode)
+                    this.sizeMode = properties.sizeMode
+
+                if (properties.absoluteSize)
+                    this.absoluteSize = properties.absoluteSize
+
+                if (properties.proportionalSize)
+                    this.proportionalSize = properties.proportionalSize
+            },
+            // no need for a properties getter.
+            configurable: true,
+        },
+    })
+
+    // for use by MotorHTML, convenient since HTMLElement attributes are all
+    // converted to lowercase by default, so if we don't do this then we won't be
+    // able to map attributes to Node setters as easily.
+    makeLowercaseSetterAliases(Sizeable.prototype)
+
     Object.defineProperty(Sizeable, Symbol.hasInstance, {
         value: function(obj) {
             if (this !== Sizeable) return Object.getPrototypeOf(Sizeable)[Symbol.hasInstance].call(this, obj)
@@ -280,13 +309,6 @@ const SizeableMixin = base => {
     })
 
     Sizeable[instanceofSymbol] = true
-
-    // for use by MotorHTML, convenient since HTMLElement attributes are all
-    // converted to lowercase by default, so if we don't do this then we won't be
-    // able to map attributes to Node setters as easily.
-    makeLowercaseSetterAliases(Sizeable.prototype)
-
-    makeAccessorsEnumerable(Sizeable.prototype)
 
     return Sizeable
 }
