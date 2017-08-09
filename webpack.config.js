@@ -1,4 +1,5 @@
 const BabiliPlugin = require("babili-webpack-plugin");
+const ModuleConcatenationPlugin = require('webpack/lib/optimize/ModuleConcatenationPlugin')
 
 module.exports = {
     entry: [ ],
@@ -29,7 +30,10 @@ module.exports = {
         ],
     },
     plugins: [
-        new BabiliPlugin()
+        new ModuleConcatenationPlugin,
+        new BabiliPlugin({}, {
+            comments: false,
+        }),
     ],
     devtool: "source-map",
 }
