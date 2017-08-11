@@ -22,8 +22,7 @@
     "preversion": "echo '--- PREVERSION' && git reset HEAD global.js && git checkout -- global.js && git add . && git stash && git clean -xfd -e node_modules",
     "version": "echo '--- VERSION' && npm run add-version-to-source && npm run build && git add -f global.js",
     "add-version-to-source": "echo '--- VERSION-TO-SOURCE' && ./.scripts/version-to-source.js && git add src/index.js",
-    "postversion": "echo '--- POSTVERSION' && npm publish && git push && git push --tags && git stash pop && git reset HEAD",
-    "postinstall": "./.scripts/fixTwo.js"
+    "postversion": "echo '--- POSTVERSION' && npm publish && git push && git push --tags && git stash pop && git reset HEAD"
   },
   "dependencies": {
     "army-knife": "^0.2.1",
