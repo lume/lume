@@ -163,11 +163,11 @@ define(function(require, exports, module) {
         var diffY = scale * (y - prevData.y);
 
         if (this.options.rails){
-            if ((direction === TouchInput.DIRECTION.X && Math.abs(diffY) > Math.abs(diffX)))
-                diffY = 0;
+            if ((direction === TouchInput.DIRECTION.X && Math.abs(diffY) > 0.25 * Math.abs(diffX)))
+                return;
 
-            if (direction === TouchInput.DIRECTION.Y && Math.abs(diffX) > Math.abs(diffY))
-                diffX = 0;
+            if (direction === TouchInput.DIRECTION.Y && Math.abs(diffX) > 0.25 * Math.abs(diffY))
+                return;
         }
 
         var dt = Math.max(currTime - prevTime, MINIMUM_TICK_TIME);
