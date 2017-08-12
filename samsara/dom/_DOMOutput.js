@@ -157,6 +157,8 @@ define(function(require, exports, module) {
     DOMOutput.applyProperties = function applyProperties(element, properties) {
         for (var key in properties)
             element.style[key] = properties[key];
+
+        element.style.pointerEvents = this._pointerEventStyle;
     };
 
     DOMOutput.applyAttributes = function applyAttributes(element, attributes) {
