@@ -12,7 +12,6 @@
   "scripts": {
     "test": "./.scripts/test.sh",
     "clean": "./.scripts/clean.sh",
-    "transpile": "./.scripts/transpile.sh",
     "build": "./.scripts/build.sh",
     "build-umd": "./.scripts/build-umd.sh",
     "build-cjs": "./.scripts/build-cjs.sh",
