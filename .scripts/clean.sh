@@ -8,6 +8,8 @@ mv \
     src \
     .scripts \
     webpack.config.js \
+    rollup.config.js \
+    global.js \
 save/
 
 # STOP HERE (unless you know what you're doing) -----------------------------
