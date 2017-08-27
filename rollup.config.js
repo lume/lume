@@ -23,6 +23,10 @@ export default {
                 modules: false,
                 dangerousForOf: true,
             },
+
+            namedExports: {
+                'core-js/library/modules/es6.object.to-string.js': 'default',
+            },
         }),
 
         babili({
