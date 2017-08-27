@@ -1,13 +1,18 @@
 
-// although Transformable is not used in this file, importing it first prevent
-// a cyclical dependeny problem when an App imports Scene before Node (Sizeable
-// imports Motor imports Transformable). See:
+// although Transformable is not used in this file, importing it first prevents
+// a cyclical dependeny problem when an app entrypoint imports ./Scene.js
+// before ./Node.js (Sizeable imports Motor which imports Transformable which
+// imports Sizeable). See:
 // https://esdiscuss.org/topic/how-to-solve-this-basic-es6-module-circular-dependency-problem
 // TODO: write a test that imports public interfaces in every possible
 // permutation to detect circular dependency errors.
+//
+// Transformable is not used in this file, but importing here solves the
+// circular dependency problem.
 import Transformable from './Transformable'
-
+// Sizeable is used in this file.
 import Sizeable from './Sizeable'
+
 import ImperativeBase, {initImperativeBase} from './ImperativeBase'
 import XYZValues from './XYZValues'
 import MotorHTMLScene from '../html/scene'
