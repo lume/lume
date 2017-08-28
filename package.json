@@ -26,8 +26,6 @@
   "dependencies": {
     "army-knife": "^0.2.1",
     "awaitbox": "^1.0.0",
-    "babel-runtime": "^6.0.0",
-    "buble": "^0.15.2",
     "document-register-element": "^0.6.1",
     "famous": "trusktr/famous#commonjs",
     "famousify": "^0.1.5",
@@ -53,6 +51,7 @@
     "babel-plugin-transform-es2015-modules-umd": "^6.0.0",
     "babel-plugin-transform-runtime": "^6.0.0",
     "babili-webpack-plugin": "^0.1.2",
+    "buble": "^0.15.2",
     "buble-loader": "^0.4.1",
     "rollup": "^0.45.2",
     "rollup-plugin-babili": "^3.1.0",

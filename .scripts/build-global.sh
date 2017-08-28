@@ -7,7 +7,14 @@
 # browser).
 package_name='infamous'
 
-webpack --display-optimization-bailout --progress --colors --output-library-target umd src/index.js global.js --output-library $package_name $1
+webpack \
+    --display-optimization-bailout \
+    --progress \
+    --colors \
+    --output-library-target umd \
+    src/index.js \
+    global.js \
+    --output-library $package_name $1
 
 # TODO FIXME: When we enable Rollup instead of Webpack we get this error:
 #
