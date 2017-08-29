@@ -4,7 +4,7 @@
   "description": "A CSS3D/WebGL UI library.",
   "format": "es6",
   "main": "index.js",
-  "module": "src/index.js",
+  "module": "esmodule",
   "browser": "index.js",
   "global": "global.js",
   "license": "MIT",

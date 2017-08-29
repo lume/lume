@@ -7,7 +7,6 @@ mv \
     node_modules \
     src \
     .scripts \
-    webpack.config.js \
     rollup.config.js \
     global.js \
 save/
