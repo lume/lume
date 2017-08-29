@@ -7,7 +7,6 @@ docs
 /*.js
 /*.js.map
 !/global.js
-!/webpack.config.js
 !/rollup.config.js
 
 # ignore build folders
