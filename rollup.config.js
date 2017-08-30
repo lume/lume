@@ -17,7 +17,13 @@ export default {
         commonjs(),
 
         buble({
-            target: { ie: 11 },
+
+            // we only support back to IE11, but here we transpile for IE10
+            // (which uses `var` instead of `let`or `const`) to avoid a Safari
+            // problem for the time being. See:
+            // https://github.com/babel/minify/issues/681
+            target: { ie: 10 },
+
             objectAssign: 'Object.assign',
             transforms: {
                 modules: false,
