@@ -21,7 +21,9 @@
     "preversion": "echo '--- PREVERSION' && git reset HEAD global.js && git checkout -- global.js && git add . && git stash && git clean -xfd -e node_modules",
     "version": "echo '--- VERSION' && npm run add-version-to-source && npm run build && git add -f global.js",
     "add-version-to-source": "echo '--- VERSION-TO-SOURCE' && ./.scripts/version-to-source.js && git add src/index.js",
-    "postversion": "echo '--- POSTVERSION' && npm publish && git push && git push --tags && git stash pop && git reset HEAD"
+    "postversion": "echo '--- POSTVERSION' && npm publish && git push && git push --tags && git stash pop && git reset HEAD",
+    "addcontributor": "all-contributors add",
+    "generatecontributors": "all-contributors generate"
   },
   "dependencies": {
     "army-knife": "^0.2.1",
@@ -42,6 +44,7 @@
     "two.js": "jonobr1/two.js#dev"
   },
   "devDependencies": {
+    "all-contributors-cli": "^4.4.0",
     "babel-cli": "^6.0.0",
     "babel-core": "^6.0.0",
     "babel-plugin-add-module-exports": "^0.2.1",
