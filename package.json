@@ -22,8 +22,8 @@
     "version": "echo '--- VERSION' && npm run add-version-to-source && npm run build && git add -f global.js",
     "add-version-to-source": "echo '--- VERSION-TO-SOURCE' && ./.scripts/version-to-source.js && git add src/index.js",
     "postversion": "echo '--- POSTVERSION' && npm publish && git push && git push --tags && git stash pop && git reset HEAD",
-    "addcontributor": "all-contributors add",
-    "generatecontributors": "all-contributors generate"
+    "add-contributor": "all-contributors add",
+    "generate-contributors": "all-contributors generate"
   },
   "dependencies": {
     "army-knife": "^0.2.1",
