@@ -87,9 +87,10 @@ define(function(require, exports, module){
         var timesFired = 0;
 
         var cache;
-        var hasTicked = false;
         var hasSentLock = false;
+        var hasSentUnlock = false;
         var hasReceivedEvent = false;
+        var hasTicked = false;
         var hasResolved = false;
 
         var states = {
@@ -104,20 +105,17 @@ define(function(require, exports, module){
             timesFired++;
 
             if (timesFired > 1) {
-                // console.log('fired twice', this.id)
-                //debugger
-                // return false;
+                console.log('fired twice', this.id)
             }
 
-            // console.log(data);
+            if (hasSentLock && !hasSentUnlock){
+                this.emit('unlock');
+                hasSentLock = false;
+                hasSentUnlock = true;
+            }
 
             hasReceivedEvent = false;
             hasResolved = true;
-
-            if (hasSentLock){
-                this.emit('unlock', this);
-                hasSentLock = false;
-            }
 
             if (startCounter === 0 && states.update && states.end && !states.start){
                 // console.log('potential second update?')
@@ -146,9 +144,9 @@ define(function(require, exports, module){
                 this._output.emit(EVENTS.START, data);
                 states.prev = EVENTS.START;
             }
-            else if (states.prev !== EVENTS.START && startCounter === 0 && states.end && !states.start){
+            // else if (states.prev !== EVENTS.START && startCounter === 0 && states.end && !states.start){
+            else if (startCounter === 0 && states.end && !states.start){
                 if (states.prev === EVENTS.END) console.log('crap end');
-                if (states.prev === EVENTS.START ) console.log('crap end 2')
                 // call end if all have ended
                 this._output.emit(EVENTS.END, data);
                 states.prev = EVENTS.END;
@@ -198,65 +196,46 @@ define(function(require, exports, module){
             delay(data);
         });
 
-        this._input.on('subscribe', function(){
-            this.emit('dep', this);
+        this._input.on('lock', function(){
+            this.lockedCounter++;
+            this.locked = true;
+            if (!hasSentLock) {
+                this._output.emit('lock');
+                hasSentLock = true;
+            }
         }.bind(this));
 
-        this._input.on('unsubscribe', function(){
-            this.emit('undep', this);
+        this._input.on('unlock', function(){
+            this.lockedCounter--;
+            if (this.lockedCounter < 0){
+                console.log('lock counter negative', this.lockedCounter)
+            }
+            if (this.lockedCounter == 0){
+                this.locked = false;
+                if (!hasSentUnlock){
+                    this._output.emit('unlock');
+                    hasSentUnlock = true;
+                }
+            }
         }.bind(this));
-
-        this._input.on('dep', function(dep){
-            dep.on('lock', depLock);
-            dep.on('unlock', depUnlock);
-        });
-
-        this._input.on('undep', function(dep){
-            dep.off('lock', depLock);
-            dep.off('unlock', depUnlock);
-        });
-
-        function depLock(dep){
-            if (dep instanceof Stream) {
-                self.locked = true;
-                self.lockedCounter++;
-                if (self.lockedCounter === 1){
-                    self._output.emit('lock', self);
-                }
-            }
-        }
-
-        function depUnlock(dep){
-            if (dep instanceof Stream) {
-                self.lockedCounter--;
-                if (self.lockedCounter === 0){
-                    self.locked = false;
-                    self._output.emit('unlock', self)
-                }
-            }
-        }
 
         var delay = function delay(data){
             hasReceivedEvent = true;
-
-            if (data === false) return;
-
             cache = data;
 
-            if (!hasSentLock){
+            if (hasTicked && !this.locked && !hasResolved){
+                // if received event after resolution phase and not locked
+                resolve.call(this, data);
+            }
+            else if (!hasTicked && !hasSentLock){
+                // if received event before resolution phase for the first time
                 this._output.emit('lock', this);
                 hasSentLock = true;
-            }
-
-            // console.log(data)
-            if (!this.locked && hasTicked){
-                resolve.call(this, data);
             }
         }.bind(this);
 
         tick.on('tick', function(){
             hasTicked = true;
-
             if (!this.locked && hasReceivedEvent) {
                 resolve.call(this, cache);
             }
@@ -266,7 +245,8 @@ define(function(require, exports, module){
             timesFired = 0;
             hasTicked = false;
             hasResolved = false;
-            // hasReceivedEvent = false;
+            hasSentLock = false;
+            hasSentUnlock = false;
         });
     }
 
