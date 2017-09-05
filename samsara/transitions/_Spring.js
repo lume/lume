@@ -75,13 +75,12 @@ define(function (require, exports, module) {
 
         var energy = this.energy(this.end, this.value, this.velocity);
 
-        this.emit('update', this.value);
-
         if (energy < this.energyTolerance) {
             this.reset(this.end);
             this._active = false;
             this.emit('end', this.end);
         }
+        else this.emit('update', this.value);
     };
 
     function getSpread(x0, value){

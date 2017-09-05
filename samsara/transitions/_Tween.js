@@ -177,7 +177,7 @@ define(function(require, exports, module) {
             this.emit('update', this.value);
         }
         else {
-            this.emit('update', this.end);
+            // this.emit('update', this.end);
 
             this.reset(this.end);
             this._active = false;

@@ -65,13 +65,12 @@ define(function (require, exports, module) {
 
         var energy = 0.5 * this.value * this.value;
 
-        this.emit('update', this.value);
-
         if (energy < tolerance) {
             this.reset(this.value);
             this._active = false;
             this.emit('end', this.value);
         }
+        else this.emit('update', this.value);
     };
 
     module.exports = Damp;
