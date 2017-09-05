@@ -6,4 +6,5 @@ define(function(require) {
     // require('events/EventHandler');
     // require('streams/Differential');
     // require('dom/Removal');
+    require('raw/streams')
 });
