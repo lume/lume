@@ -23,7 +23,10 @@
       "avatar_url": "https://avatars3.githubusercontent.com/u/297678?v=4",
       "profile": "http://trusktr.io",
       "contributions": [
-        "code"
+        "code",
+        "bug",
+        "doc",
+        "example"
       ]
     }
   ]
