@@ -1,0 +1,33 @@
+{
+  "projectName": "infamous",
+  "projectOwner": "trusktr",
+  "files": [
+    "README.md"
+  ],
+  "imageSize": 100,
+  "commit": true,
+  "contributors": [
+    {
+      "login": "corruptedzulu",
+      "name": "corruptedzulu",
+      "avatar_url": "https://avatars0.githubusercontent.com/u/2830402?v=4",
+      "profile": "https://github.com/corruptedzulu",
+      "contributions": [
+        "code",
+        "doc"
+      ]
+    },
+    {
+      "login": "trusktr",
+      "name": "Joseph Orbegoso Pea",
+      "avatar_url": "https://avatars3.githubusercontent.com/u/297678?v=4",
+      "profile": "http://trusktr.io",
+      "contributions": [
+        "code",
+        "bug",
+        "doc",
+        "example"
+      ]
+    }
+  ]
+}

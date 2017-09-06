@@ -1,4 +1,5 @@
 infamous
+[![All Contributors](https://img.shields.io/badge/all_contributors-2-orange.svg?style=flat-square)](#contributors)
 ========
 
 A famous UI library.
@@ -247,3 +248,14 @@ result.
 Testing powered by:
 
 [![BrowserStack](https://cloud.githubusercontent.com/assets/297678/18807024/f6a2ed04-81f1-11e6-94d7-b4205ed77db8.png)](https://www.browserstack.com/)
+
+## Contributors
+
+Thanks goes to these wonderful people ([emoji key](https://github.com/kentcdodds/all-contributors#emoji-key)):
+
+<!-- ALL-CONTRIBUTORS-LIST:START - Do not remove or modify this section -->
+| [<img src="https://avatars0.githubusercontent.com/u/2830402?v=4" width="100px;"/><br /><sub>corruptedzulu</sub>](https://github.com/corruptedzulu)<br />[💻](https://github.com/trusktr/infamous/commits?author=corruptedzulu "Code") [📖](https://github.com/trusktr/infamous/commits?author=corruptedzulu "Documentation") | [<img src="https://avatars3.githubusercontent.com/u/297678?v=4" width="100px;"/><br /><sub>Joseph Orbegoso Pea</sub>](http://trusktr.io)<br />[💻](https://github.com/trusktr/infamous/commits?author=trusktr "Code") [🐛](https://github.com/trusktr/infamous/issues?q=author%3Atrusktr "Bug reports") [📖](https://github.com/trusktr/infamous/commits?author=trusktr "Documentation") [💡](#example-trusktr "Examples") |
+| :---: | :---: |
+<!-- ALL-CONTRIBUTORS-LIST:END -->
+
+This project follows the [all-contributors](https://github.com/kentcdodds/all-contributors) specification. Contributions of any kind welcome!
