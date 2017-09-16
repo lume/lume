@@ -153,15 +153,25 @@ function traverse(node, isShadowChild) {
     }
 }
 
+// helper function to use instead of instanceof for classes that implement the
+// static Symbol.hasInstance method, because the behavior of instanceof isn't
+// polyfillable.
+function isInstanceof(lhs, rhs) {
+    if (typeof rhs == 'function' && rhs[Symbol.hasInstance])
+        return rhs[Symbol.hasInstance](lhs)
+    else return lhs instanceof rhs
+}
+
 export {
-  epsilon,
-  applyCSSLabel,
-  animationFrame,
-  makeLowercaseSetterAliases,
-  observeChildren,
-  getShadowRootVersion,
-  hasShadowDomV0,
-  hasShadowDomV1,
-  getAncestorShadowRoot,
-  traverse,
+    epsilon,
+    applyCSSLabel,
+    animationFrame,
+    makeLowercaseSetterAliases,
+    observeChildren,
+    getShadowRootVersion,
+    hasShadowDomV0,
+    hasShadowDomV1,
+    getAncestorShadowRoot,
+    traverse,
+    isInstanceof,
 }

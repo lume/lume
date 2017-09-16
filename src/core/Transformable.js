@@ -1,6 +1,7 @@
 import XYZValues from './XYZValues'
 import Sizeable from './Sizeable'
 import { makeLowercaseSetterAliases } from './Utility'
+import {isInstanceof} from './Utility'
 
 const instanceofSymbol = Symbol('instanceofSymbol')
 
@@ -114,7 +115,7 @@ const TransformableMixin = base => {
         _calculateWorldMatrixFromParent() {
             const parent = this._parent
 
-            if (parent instanceof Transformable)
+            if (isInstanceof(parent, Transformable))
                 //this._worldMatrix = parent._worldMatrix.multiply(this._properties.transform)
                 this._worldMatrix = this._properties.transform.multiply(parent._worldMatrix)
             else // otherwise parent is the Scene, which is Sizeable, not Transformable
