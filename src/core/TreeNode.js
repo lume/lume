@@ -1,3 +1,5 @@
+import {isInstanceof} from './Utility'
+
 const instanceofSymbol = Symbol('instanceofSymbol')
 
 const TreeNodeMixin = base => {
@@ -36,7 +38,7 @@ const TreeNodeMixin = base => {
          */
         addChild (childNode) {
 
-            if (! (childNode instanceof TreeNode))
+            if (! isInstanceof(childNode, TreeNode))
                 throw new TypeError('TreeNode.addChild expects the childNode argument to be a TreeNode instance.')
 
             if (childNode._parent === this)
@@ -68,7 +70,7 @@ const TreeNodeMixin = base => {
          * @param {TreeNode} childNode The node to remove.
          */
         removeChild(childNode) {
-            if (! (childNode instanceof TreeNode))
+            if (! isInstanceof(childNode, TreeNode))
                 throw new Error(`
                     TreeNode.removeChild expects the childNode argument to be an
                     instance of TreeNode. There should only be TreeNodes in the

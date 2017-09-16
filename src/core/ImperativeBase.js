@@ -3,6 +3,7 @@ import Sizeable from './Sizeable'
 import Node from './Node'
 import Scene from './Scene'
 import Motor from './Motor'
+import {isInstanceof} from './Utility'
 
 // We explicitly use `var` instead of `let` here because it is hoisted for the
 // Node and Scene modules. This, along with the following initImperativeBase
@@ -133,7 +134,7 @@ export function initImperativeBase() {
              * @override
              */
             addChild(childNode) {
-                if (!(childNode instanceof ImperativeBase)) return
+                if (!isInstanceof(childNode, ImperativeBase)) return
 
                 // We cannot add Scenes to Nodes, for now.
                 if (childNode instanceof Scene) {

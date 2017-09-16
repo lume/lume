@@ -1,6 +1,7 @@
 import documentReady from 'awaitbox/dom/documentReady'
 import Transformable from './Transformable'
 import getWebGlRenderer from './WebGLRenderer'
+import {isInstanceof} from './Utility'
 
 import {
     //animationFrame,
@@ -194,12 +195,12 @@ class Motor {
             // all the nodes in the root node's subtree.
             if (
                 // a node could be a Scene, which is not Transformable
-                node instanceof Transformable &&
+                isInstanceof(node, Transformable) &&
 
                 // and if ancestor is not instanceof Transformable, f.e.
                 // `false` if there is no ancestor to be rendered, or Sizeable
                 // if the Scene is returned.
-                !(node._getAncestorToBeRendered() instanceof Transformable) &&
+                !isInstanceof(node._getAncestorToBeRendered(), Transformable) &&
 
                 // and the node isn't already added.
                 !this._worldMatrixRootNodes.includes(node)
