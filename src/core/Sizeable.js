@@ -17,6 +17,50 @@ if (typeof document.createElement('div').style.transform == 'undefined') {
     })
 }
 
+class XYZNonNegativeValues extends XYZValues {
+
+    constructor(x = 0, y = 0, z = 0) {
+        super(x, y, z)
+    }
+
+    _checkForNegative(axisName, value) {
+        if(value < 0) {
+            throw new Error(axisName + " value was " + value + ". Size values cannot be negative.")
+        }
+    }
+
+}
+
+const {set: superXSet} = Object.getOwnPropertyDescriptor(XYZValues.prototype, 'x')
+const {set: superYSet} = Object.getOwnPropertyDescriptor(XYZValues.prototype, 'y')
+const {set: superZSet} = Object.getOwnPropertyDescriptor(XYZValues.prototype, 'z')
+
+
+Object.defineProperties(XYZNonNegativeValues.prototype, {
+    x: {
+        set(value) {
+            this._checkForNegative("X", value)
+            superXSet.call(this, value)
+        }
+    },
+
+    y: {
+        set(value) {
+            this._checkForNegative("Y", value)
+            superYSet.call(this, value)
+      }
+    },
+
+    z: {
+        set(value) {
+            this._checkForNegative("Z", value)
+            superZSet.call(this, value)
+      }
+    },
+})
+
+
+
 const instanceofSymbol = Symbol('instanceofSymbol')
 
 const SizeableMixin = base => {
@@ -40,8 +84,8 @@ const SizeableMixin = base => {
         _setDefaultProperties() {
             Object.assign(this._properties, {
                 sizeMode:         new XYZValues('absolute', 'absolute', 'absolute'),
-                absoluteSize:     new XYZValues(0, 0, 0),
-                proportionalSize: new XYZValues(1, 1, 1),
+                absoluteSize:     new XYZNonNegativeValues(0, 0, 0),
+                proportionalSize: new XYZNonNegativeValues(1, 1, 1),
             })
         }
 
