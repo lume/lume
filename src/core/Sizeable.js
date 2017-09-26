@@ -159,9 +159,9 @@ const SizeableMixin = base => {
                 this._propertyFunctions.set(name,
                     Motor.addRenderTask(time => {
                         const result = newValue(
-                            this._properties[name]._x,
-                            this._properties[name]._y,
-                            this._properties[name]._z,
+                            this._properties[name].x,
+                            this._properties[name].y,
+                            this._properties[name].z,
                             time
                         )
 
@@ -175,14 +175,14 @@ const SizeableMixin = base => {
                 )
             }
             else if (newValue instanceof Array) {
-                if (typeof newValue[0] != 'undefined') { this._properties[name]._x = newValue[0]; change = true }
-                if (typeof newValue[1] != 'undefined') { this._properties[name]._y = newValue[1]; change = true }
-                if (typeof newValue[2] != 'undefined') { this._properties[name]._z = newValue[2]; change = true }
+                if (typeof newValue[0] != 'undefined') { this._properties[name].x = newValue[0]; change = true }
+                if (typeof newValue[1] != 'undefined') { this._properties[name].y = newValue[1]; change = true }
+                if (typeof newValue[2] != 'undefined') { this._properties[name].z = newValue[2]; change = true }
             }
             else {
-                if (typeof newValue.x != 'undefined') { this._properties[name]._x = newValue.x; change = true }
-                if (typeof newValue.y != 'undefined') { this._properties[name]._y = newValue.y; change = true }
-                if (typeof newValue.z != 'undefined') { this._properties[name]._z = newValue.z; change = true }
+                if (typeof newValue.x != 'undefined') { this._properties[name].x = newValue.x; change = true }
+                if (typeof newValue.y != 'undefined') { this._properties[name].y = newValue.y; change = true }
+                if (typeof newValue.z != 'undefined') { this._properties[name].z = newValue.z; change = true }
             }
 
             if (change) this.triggerEvent('propertychange', name)
