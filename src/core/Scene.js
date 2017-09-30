@@ -10,8 +10,9 @@
 // Transformable is not used in this file, but importing here solves the
 // circular dependency problem.
 import Transformable from './Transformable'
-// Sizeable is used in this file.
+// Sizeable on the other hand is used in this file.
 import Sizeable from './Sizeable'
+import Motor from './Motor'
 
 import getWebGlRenderer from './WebGLRenderer'
 import ImperativeBase, {initImperativeBase} from './ImperativeBase'
@@ -33,6 +34,11 @@ const SceneMixin = base => {
 
         construct(options = {}) {
             super.construct(options)
+
+            // Used by the this.scene getter in ImperativeBase
+            // Motor's loop checks _scene on Nodes and Scenes when determining
+            // modified scenes.
+            this._scene = this
 
             // NOTE: z size is always 0, since native DOM elements are always flat.
             this._elementParentSize = {x:0, y:0, z:0}
@@ -62,10 +68,13 @@ const SceneMixin = base => {
             // TODO: this needs to be cancelable too, search other codes for
             // "mountcancel" to see.
             await this.mountPromise
-            this.webglEnabled = !!this.getAttribute('webglenabled')
+            this.webglEnabled = !!this.element.hasAttribute('experimental-webgl')
             if (!this.webglEnabled) return
-            this.webGlRendererState = {}
-            getWebGlRenderer().initGl(this)
+            Motor.initWebGlRender(this, 'three')
+        }
+
+        // TODO
+        destroyWebGl() {
         }
 
         _setDefaultProperties() {

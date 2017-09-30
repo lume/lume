@@ -207,7 +207,9 @@ export function initDeclarativeBase() {
 
                 if (!(addedNode instanceof DeclarativeBase)) continue
 
-                // We do this because if the given slot is assigned to another
+                // Keep track of the final distribution of a node.
+                //
+                // If the given slot is assigned to another
                 // slot, then this logic will run again for the next slot on
                 // that next slot's slotchange, so we remove the distributed
                 // node from the previous shadowParent and add it to the next
@@ -223,6 +225,7 @@ export function initDeclarativeBase() {
                         shadowParent._shadowChildren = null
                 }
 
+                // The node is now distributed to `this` element.
                 addedNode._shadowParent = this
                 if (!this._shadowChildren) this._shadowChildren = []
                 this._shadowChildren.add(addedNode)
@@ -329,6 +332,8 @@ export function proxyGettersSetters(SourceClass, TargetClass) {
 
     // Node methods not to proxy (private underscored methods are also detected and
     // ignored).
+    // TODO: convert to a whitelist rather than a blacklist, so that we
+    // explicitly know which accessors we proxy.
     const methodProxyBlacklist = [
         'constructor',
         'parent',
