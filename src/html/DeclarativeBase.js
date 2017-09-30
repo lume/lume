@@ -1,7 +1,7 @@
 /* global HTMLSlotElement */
 
-import WebComponent from './web-component'
-import MotorHTMLNode from './node'
+import WebComponent from './WebComponent'
+import HTMLNode from './HTMLNode'
 import { observeChildren, /*getShadowRootVersion,*/ hasShadowDomV0,
     hasShadowDomV1, getAncestorShadowRoot } from '../core/Utility'
 
@@ -107,8 +107,8 @@ if (HTMLElement.prototype.createShadowRoot instanceof Function)
 if (HTMLElement.prototype.attachShadow instanceof Function)
     HTMLElement.prototype.attachShadow = hijack(HTMLElement.prototype.attachShadow)
 
-initMotorHTMLBase()
-export function initMotorHTMLBase() {
+initDeclarativeBase()
+export function initDeclarativeBase() {
     if (DeclarativeBase) return
 
     /**
@@ -171,7 +171,7 @@ export function initMotorHTMLBase() {
         }
 
         /**
-         * This method creates the association between this MotorHTMLNode instance
+         * This method creates the association between this HTMLNode instance
          * and the imperative Node instance.
          *
          * This method may get called by this.init, but can also be called by
@@ -213,7 +213,7 @@ export function initMotorHTMLBase() {
         childConnectedCallback(child) {
 
             // mirror the DOM connections in the imperative API's virtual scene graph.
-            if (child instanceof MotorHTMLNode) {
+            if (child instanceof HTMLNode) {
                 if (this._hasShadowRoot) child._isPossiblyDistributed = true
 
                 // If ImperativeBase#addChild was called first, child's
@@ -336,7 +336,7 @@ export function initMotorHTMLBase() {
 
         childDisconnectedCallback(child) {
             // mirror the connection in the imperative API's virtual scene graph.
-            if (child instanceof MotorHTMLNode) {
+            if (child instanceof HTMLNode) {
                 child._isPossiblyDistributed = false
 
                 // If ImperativeBase#removeChild was called first, child's

@@ -1,7 +1,7 @@
 import 'geometry-interfaces'
 import Transformable from './Transformable'
 import ImperativeBase, {initImperativeBase} from './ImperativeBase'
-import MotorHTMLNode from '../html/node'
+import HTMLNode from '../html/HTMLNode'
 import Scene from './Scene'
 
 initImperativeBase()
@@ -134,7 +134,7 @@ class Node extends ImperativeBase.mixin(Transformable) {
      * @override
      */
     _makeElement() {
-        return new MotorHTMLNode
+        return new HTMLNode
     }
 
     /**

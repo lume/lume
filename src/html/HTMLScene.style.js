@@ -1,4 +1,4 @@
-import nodeStyles from './node-style'
+import nodeStyles from './HTMLNode.style'
 
 export default {
     ...nodeStyles,

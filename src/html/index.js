@@ -1,13 +1,20 @@
-import MotorHTMLBase from './base'
-import MotorHTMLNode from './node'
-import MotorHTMLPushPaneLayout from './push-pane-layout'
-import MotorHTMLScene from './scene'
-import WebComponent from './web-component'
+import DeclarativeBase from './DeclarativeBase'
+import HTMLNode from './HTMLNode'
+import HTMLPushPaneLayout from './HTMLPushPaneLayout'
+import HTMLScene from './HTMLScene'
+import WebComponent from './WebComponent'
+
+import 'document-register-element'
+function useDefaultNames() {
+    document.registerElement('i-node', HTMLNode)
+    document.registerElement('i-scene', HTMLScene)
+}
 
 export {
-    MotorHTMLBase,
-    MotorHTMLNode,
-    MotorHTMLPushPaneLayout,
-    MotorHTMLScene,
+    DeclarativeBase,
+    HTMLNode,
+    HTMLPushPaneLayout,
+    HTMLScene,
     WebComponent,
+    useDefaultNames,
 }

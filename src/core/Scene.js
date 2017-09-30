@@ -15,7 +15,7 @@ import Sizeable from './Sizeable'
 
 import ImperativeBase, {initImperativeBase} from './ImperativeBase'
 import XYZValues from './XYZValues'
-import MotorHTMLScene from '../html/scene'
+import HTMLScene from '../html/HTMLScene'
 import documentReady from 'awaitbox/dom/documentReady'
 
 initImperativeBase()
@@ -84,7 +84,7 @@ class Scene extends ParentClass {
      * @override
      */
     _makeElement() {
-        return new MotorHTMLScene
+        return new HTMLScene
     }
 
     /**
