@@ -1,4 +1,0 @@
-# see https://help.github.com/articles/about-codeowners/ for formatting
-# We need at least two global code owners, otherwise we can't merge our PRs.
-* @trusktr
-* @corruptedzulu
