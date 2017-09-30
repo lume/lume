@@ -17,6 +17,50 @@ if (typeof document.createElement('div').style.transform == 'undefined') {
     })
 }
 
+class XYZNonNegativeValues extends XYZValues {
+
+    constructor(x = 0, y = 0, z = 0) {
+        super(x, y, z)
+    }
+
+    _checkForNegative(axisName, value) {
+        if(value < 0) {
+            throw new Error(axisName + " value was " + value + ". Size values cannot be negative.")
+        }
+    }
+
+}
+
+const {set: superXSet} = Object.getOwnPropertyDescriptor(XYZValues.prototype, 'x')
+const {set: superYSet} = Object.getOwnPropertyDescriptor(XYZValues.prototype, 'y')
+const {set: superZSet} = Object.getOwnPropertyDescriptor(XYZValues.prototype, 'z')
+
+
+Object.defineProperties(XYZNonNegativeValues.prototype, {
+    x: {
+        set(value) {
+            this._checkForNegative("X", value)
+            superXSet.call(this, value)
+        }
+    },
+
+    y: {
+        set(value) {
+            this._checkForNegative("Y", value)
+            superYSet.call(this, value)
+      }
+    },
+
+    z: {
+        set(value) {
+            this._checkForNegative("Z", value)
+            superZSet.call(this, value)
+      }
+    },
+})
+
+
+
 const instanceofSymbol = Symbol('instanceofSymbol')
 
 const SizeableMixin = base => {
@@ -40,8 +84,8 @@ const SizeableMixin = base => {
         _setDefaultProperties() {
             Object.assign(this._properties, {
                 sizeMode:         new XYZValues('absolute', 'absolute', 'absolute'),
-                absoluteSize:     new XYZValues(0, 0, 0),
-                proportionalSize: new XYZValues(1, 1, 1),
+                absoluteSize:     new XYZNonNegativeValues(0, 0, 0),
+                proportionalSize: new XYZNonNegativeValues(1, 1, 1),
             })
         }
 
@@ -103,8 +147,6 @@ const SizeableMixin = base => {
                 throw new TypeError(`Invalid value for ${Class.name}#${name}.`)
             }
 
-            let change = false
-
             if (newValue instanceof Function) {
                 // remove previous task if any.
                 if (!this._propertyFunctions) this._propertyFunctions = new Map
@@ -115,9 +157,9 @@ const SizeableMixin = base => {
                 this._propertyFunctions.set(name,
                     Motor.addRenderTask(time => {
                         const result = newValue(
-                            this._properties[name]._x,
-                            this._properties[name]._y,
-                            this._properties[name]._z,
+                            this._properties[name].x,
+                            this._properties[name].y,
+                            this._properties[name].z,
                             time
                         )
 
@@ -131,17 +173,15 @@ const SizeableMixin = base => {
                 )
             }
             else if (newValue instanceof Array) {
-                if (typeof newValue[0] != 'undefined') { this._properties[name]._x = newValue[0]; change = true }
-                if (typeof newValue[1] != 'undefined') { this._properties[name]._y = newValue[1]; change = true }
-                if (typeof newValue[2] != 'undefined') { this._properties[name]._z = newValue[2]; change = true }
+                if (typeof newValue[0] != 'undefined') this._properties[name].x = newValue[0]
+                if (typeof newValue[1] != 'undefined') this._properties[name].y = newValue[1]
+                if (typeof newValue[2] != 'undefined') this._properties[name].z = newValue[2]
             }
             else {
-                if (typeof newValue.x != 'undefined') { this._properties[name]._x = newValue.x; change = true }
-                if (typeof newValue.y != 'undefined') { this._properties[name]._y = newValue.y; change = true }
-                if (typeof newValue.z != 'undefined') { this._properties[name]._z = newValue.z; change = true }
+                if (typeof newValue.x != 'undefined') this._properties[name].x = newValue.x
+                if (typeof newValue.y != 'undefined') this._properties[name].y = newValue.y
+                if (typeof newValue.z != 'undefined') this._properties[name].z = newValue.z
             }
-
-            if (change) this.triggerEvent('propertychange', name)
         }
 
         _setPropertySingle(Class, name, newValue, type) {
