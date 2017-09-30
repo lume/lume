@@ -1,18 +1,18 @@
 
-import styles from './scene-style'
+import styles from './HTMLScene.style'
 import Motor from '../core/Motor'
 import Scene from '../core/Scene'
 import Observable from '../core/Observable'
 import Sizeable from '../core/Sizeable'
 import getWebGlRenderer from '../core/WebGLRenderer'
-import MotorHTMLBase, {initMotorHTMLBase, proxyGettersSetters} from './base'
+import DeclarativeBase, {initDeclarativeBase, proxyGettersSetters} from './DeclarativeBase'
 import sleep from 'awaitbox/timers/sleep'
 
 //import * as PIXI from 'pixi.js' // also sets the PIXI global.
 //import SVG from 'pixi-svg' // uses the PIXI global, won't work if you don't import the main `pixi.js module`.
 import Two from 'two.js/build/two'
 
-initMotorHTMLBase()
+initDeclarativeBase()
 
 const privates = new WeakMap()
 const _ = instance => {
@@ -20,7 +20,7 @@ const _ = instance => {
     return privates.get(instance)
 }
 
-class MotorHTMLScene extends Observable.mixin(MotorHTMLBase) {
+class HTMLScene extends Observable.mixin(DeclarativeBase) {
 
     createdCallback() {
         super.createdCallback()
@@ -128,9 +128,6 @@ class MotorHTMLScene extends Observable.mixin(MotorHTMLBase) {
 
 // This associates the Transformable getters/setters with the HTML-API classes,
 // so that the same getters/setters can be called from HTML side of the API.
-proxyGettersSetters(Sizeable, MotorHTMLScene)
+proxyGettersSetters(Sizeable, HTMLScene)
 
-import 'document-register-element'
-MotorHTMLScene = document.registerElement('motor-scene', MotorHTMLScene)
-
-export {MotorHTMLScene as default}
+export {HTMLScene as default}

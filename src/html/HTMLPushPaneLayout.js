@@ -1,9 +1,9 @@
-import MotorHTMLNode from './node'
+import HTMLNode from './HTMLNode'
 import PushPaneLayout from '../components/PushPaneLayout'
 
-class MotorHTMLPushPaneLayout extends MotorHTMLNode {
+class HTMLPushPaneLayout extends HTMLNode {
     createdCallback() {
-        console.log(' -- MotorHTMLPushPaneLayout created')
+        console.log(' -- HTMLPushPaneLayout created')
         super.createdCallback()
     }
 
@@ -13,4 +13,4 @@ class MotorHTMLPushPaneLayout extends MotorHTMLNode {
     }
 }
 
-export {MotorHTMLPushPaneLayout as default}
+export {HTMLPushPaneLayout as default}

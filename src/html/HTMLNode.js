@@ -1,13 +1,13 @@
 
-import styles from './node-style'
+import styles from './HTMLNode.style'
 import Node from '../core/Node'
 import Transformable from '../core/Transformable'
 import Sizeable from '../core/Sizeable'
-import MotorHTMLBase, {initMotorHTMLBase, proxyGettersSetters} from './base'
+import DeclarativeBase, {initDeclarativeBase, proxyGettersSetters} from './DeclarativeBase'
 
-initMotorHTMLBase()
+initDeclarativeBase()
 
-class MotorHTMLNode extends MotorHTMLBase {
+class HTMLNode extends DeclarativeBase {
 
     getStyles() {
         return styles
@@ -21,6 +21,13 @@ class MotorHTMLNode extends MotorHTMLBase {
         return new Node({
             _motorHtmlCounterpart: this
         })
+    }
+
+    setAttribute(attribute, value) {
+        //if (!window.count) window.count = 0
+        //if (window.count++ % 100 === 0)
+            //console.log(' ------ setAttribute', value)
+        super.setAttribute(attribute, ""+value)
     }
 
     attributeChangedCallback(...args) {
@@ -73,8 +80,8 @@ class MotorHTMLNode extends MotorHTMLBase {
 
 // This associates the Transformable getters/setters with the HTML-API classes,
 // so that the same getters/setters can be called from HTML side of the API.
-proxyGettersSetters(Transformable, MotorHTMLNode)
-proxyGettersSetters(Sizeable, MotorHTMLNode)
+proxyGettersSetters(Transformable, HTMLNode)
+proxyGettersSetters(Sizeable, HTMLNode)
 
 function parseNumberArray(str) {
     checkIsNumberArrayString(str)
@@ -106,7 +113,4 @@ function checkIsSizeArrayString(str) {
         throw new Error(`Attribute must be a comma- or space-separated sequence of up to three strings, for example "absolute absolute". Yours was "${str}".`)
 }
 
-import 'document-register-element'
-MotorHTMLNode = document.registerElement('motor-node', MotorHTMLNode)
-
-export {MotorHTMLNode as default}
+export {HTMLNode as default}
