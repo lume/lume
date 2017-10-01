@@ -50,44 +50,18 @@ function WebComponentMixin(elementClass) {
     // otherwise, create it.
     class WebComponent extends elementClass {
 
-        // constructor() is used in v1 Custom Elements instead of
-        // createdCallback() as in v0.
         constructor() {
             super()
 
-            // If the following is true, then we know the user should be using
-            // `document.registerElement()` to define an element from this class.
-            // `document.registerElement()` creates a new constructor, so if the
-            // constructor here is being called then that means the user is not
-            // instantiating a DOM HTMLElement as expected because it is required
-            // that the constructor returned from `document.registerElement` be used
-            // instead (this is a flaw of Custom Elements v0 which is fixed in v1
-            // where class constructors can be used directly).
-            if ('registerElement' in document && !('customElements' in window)) {
-                throw new Error(`
-                    You cannot instantiate this class directly without first registering it
-                    with \`document.registerElement(...)\`. See an example at http://....
-                `)
-            }
-
-            // Throw an error if no Custom Elements API exists.
-            if (!('registerElement' in document) && !('customElements' in window)) {
+            // Throw an error if no Custom Elements v1 API exists.
+            if (!('customElements' in window)) {
                 throw new Error(`
                     Your browser does not support the Custom Elements API. You'll
                     need to install a polyfill. See how at http://....
                 `)
             }
 
-            // otherwise the V1 API exists, so call the createdCallback, which
-            // is what Custom Elements v0 would call by default. Subclasses of
-            // WebComponent should put instantiation logic in createdCallback
-            // instead of in a custom constructor if backwards compatibility is
-            // to be maintained.
-            this.createdCallback()
-        }
-
-        createdCallback() {
-            this._attached = false
+            this._connected = false
             this._initialized = false
             this._initialAttributeChange = false
             this._childObserver = null
@@ -95,19 +69,18 @@ function WebComponentMixin(elementClass) {
         }
 
         // Subclasses can implement these.
-        childConnectedCallback(child) {}
-        childDisconnectedCallback(child) {}
+        childConnectedCallback(child) { }
+        childDisconnectedCallback(child) { }
 
         connectedCallback() {
             if (super.connectedCallback) super.connectedCallback()
-            this._attached = true
+            this._connected = true
 
             if (!this._initialized) {
                 this.init()
                 this._initialized = true
             }
         }
-        attachedCallback() { this.connectedCallback() } // back-compat
 
         _createStyles() {
             const rule = jss.createRule(this.getStyles())
@@ -119,7 +92,7 @@ function WebComponentMixin(elementClass) {
 
         disconnectedCallback() {
             if (super.disconnectedCallback) super.disconnectedCallback()
-            this._attached = false
+            this._connected = false
 
             // Deferr to the next tick before cleaning up in case the
             // element is actually being re-attached somewhere else within this
@@ -138,14 +111,14 @@ function WebComponentMixin(elementClass) {
                 // As mentioned in the previous comment, if the element was not
                 // re-attached in the last tick (for example, it was moved to
                 // another element), then clean up.
-                if (!this._attached && this._initialized) {
+                if (!this._connected && this._initialized) {
                     this.deinit()
                 }
             })
         }
         //async disconnectedCallback() {
             //if (super.disconnectedCallback) super.disconnectedCallback()
-            //this._attached = false
+            //this._connected = false
 
             //// Deferr to the next tick before cleaning up in case the
             //// element is actually being re-attached somewhere else within this
@@ -164,11 +137,10 @@ function WebComponentMixin(elementClass) {
             //// As mentioned in the previous comment, if the element was not
             //// re-attached in the last tick (for example, it was moved to
             //// another element), then clean up.
-            //if (!this._attached && this._initialized) {
+            //if (!this._connected && this._initialized) {
                 //this.deinit()
             //}
         //}
-        detachedCallback() { this.disconnectedCallback() } // back-compat
 
         /**
          * This method can be overridden by extending classes, it should return
@@ -248,6 +220,10 @@ function WebComponentMixin(elementClass) {
                 for (let l=attributes.length, i=0; i<l; i+=1)
                     this.attributeChangedCallback(attributes[i].name, null, attributes[i].value)
             }
+        }
+
+        static get observedAttributes() {
+            console.warn(`WebComponent: Your custom element (${ this.name }) should specify observed attributes or attributeChangedCallback won't be called`)
         }
 
         attributeChangedCallback(...args) {

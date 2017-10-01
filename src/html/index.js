@@ -4,10 +4,11 @@ import HTMLPushPaneLayout from './HTMLPushPaneLayout'
 import HTMLScene from './HTMLScene'
 import WebComponent from './WebComponent'
 
-import 'document-register-element'
+//import 'document-register-element'
 function useDefaultNames() {
-    document.registerElement('i-node', HTMLNode)
-    document.registerElement('i-scene', HTMLScene)
+    HTMLNode.define()
+    HTMLScene.define()
+    HTMLPushPaneLayout.define()
 }
 
 export {

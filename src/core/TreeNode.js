@@ -37,7 +37,6 @@ const TreeNodeMixin = base => {
          * @param {TreeNode} childNode The child node to add.
          */
         addChild (childNode) {
-
             if (! isInstanceof(childNode, TreeNode))
                 throw new TypeError('TreeNode.addChild expects the childNode argument to be a TreeNode instance.')
 

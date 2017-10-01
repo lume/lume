@@ -21,9 +21,12 @@ const _ = instance => {
 }
 
 class HTMLScene extends Observable.mixin(DeclarativeBase) {
+    static define(name) {
+        customElements.define(name || 'i-scene', HTMLScene)
+    }
 
-    createdCallback() {
-        super.createdCallback()
+    constructor() {
+        super()
 
         this._sizePollTask = null
         this._parentSize = {x:0, y:0, z:0}
@@ -35,7 +38,6 @@ class HTMLScene extends Observable.mixin(DeclarativeBase) {
         // childConnectedCallback.
         this._imperativeCounterpartPromise
             .then(() => {
-
                 if (this.imperativeCounterpart._mounted) return
 
                 if (this.parentNode)
@@ -48,7 +50,7 @@ class HTMLScene extends Observable.mixin(DeclarativeBase) {
         // TODO: maybe call this in `init()`, and destroy webgl stuff in
         // `deinit()`.
         // TODO: The user might enable this by setting the attribute later, so
-        // we can't simply rely on having it in createdCallback, we need a
+        // we can't simply rely on having it in constructor, we need a
         // getter/setter like node properties.
         this.initWebGl()
     }
