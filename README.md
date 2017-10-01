@@ -2,11 +2,62 @@ infamous
 [![All Contributors](https://img.shields.io/badge/all_contributors-2-orange.svg?style=flat-square)](#contributors)
 ========
 
-A famous UI library.
+Create 2D or 3D applications declaratively with HTML.
+
+Visit the [site](http://infamous.io), discuss in the [forums](http://forums.infamous.io).
 
 [![NPM](https://nodei.co/npm/infamous.png)](https://nodei.co/npm/infamous/)
 
-Visit the [site](http://infamous.io), discuss in the [forums](http://forums.infamous.io).
+About
+-----
+
+Infamous gives you general-purpose [Custom HTML
+Elements](https://developers.google.com/web/fundamentals/architecture/building-components/customelements)
+that the browser understands, for defining 2D or 3D scenes rendered with CSS3D
+or WebGL.
+
+If you prefer imperative JavaScript, you can also use the JavaScript-only API.
+
+WebGL is currently in "experimental" mode. Augmented/virtual reality (AR/VR) as well as combining CSS3D DOM
+elements and WebGL objects in the same 3D space ("mixed mode") are work in
+progress.
+
+Infamous is built on the [Web Component
+standards](https://www.w3.org/standards/techs/components#w3c_all), making it
+possible to write 3D scenes declaratively using custom HTML elements,
+regardless of which view layer you prefer. This makes it possible for you write
+3D scenes using popular HTML frameworks like (but not limited to)
+[React](https://facebook.github.io/react), [Vue.js](https://vuejs.org),
+[Meteor](http://meteor.com), [Angular](https://angular.io),
+[Ember.js](https://www.emberjs.com), or even the great
+[jQuery](http://jquery.com).
+
+Live Examples
+-------------
+
+- [Polydance](https://trusktr.io/polydance)
+    - Presented at 3DWebFest 2017 in collaboration with [Anastasiia Vedernikova](https://vnastasia.myportfolio.com)
+    - The 3D scene is defined with declarative HTML
+    - The HTML is manipulated with [Vue.js](https://vuejs.org) ([see the source code](https://github.com/trusktr/trusktr.io/blob/master/meteor-app/client/imports/apps/polydance.vue#L385-L513))
+    - Rendering: experimental WebGL
+- [Imperative Seed](https://codepen.io/trusktr/pen/yoWQOe)
+    - The 3D scene is defined and animated with imperative JavaScript
+    - Rendering: CSS3D
+- [Declarative Seed](https://codepen.io/trusktr/pen/veXNZj)
+    - The 3D scene is defined with declarative HTML
+    - A sprinkle of JavaScript is used for animation
+    - Rendering: CSS3D
+- [RippleFlip](https://codepen.io/trusktr/pen/bWwdqR)
+    - The 3D scene is defined with imperative JavaScript
+    - Rendering: CSS3D
+- [Geometric Rotation](https://trusktr.io/geometricRotation)
+    - The 3D scene is defined with declarative HTML
+    - The HTML is manipulated with [React](https://facebook.github.io/react) ([see the source code](https://github.com/trusktr/trusktr.io/blob/master/meteor-app/client/imports/apps/geometricRotation.js#L27-L53))
+    - Rendering: experimental WebGL
+- [DOM Buggy](http://fiddle.jshell.net/trusktr/ymonmo70/15/embedded/result,html,css,js)
+    - The 3D scene is defined with declarative HTML
+    - The HTML is manipulated with plain JS.
+    - Rendering: CSS3D
 
 Getting Started
 ---------------
@@ -17,6 +68,7 @@ Use the "global" version of infamous via script tag in your HTML page:
 <script src="https://unpkg.com/infamous@17.0.5/global.js"></script>
 <script>
     console.log(infamous)
+    // use infamous
 </script>
 ```
 
@@ -26,7 +78,9 @@ Or install from NPM:
 npm install infamous
 ```
 ```js
-console.log(require('infamous'))
+const infamous = require('infamous')
+console.log(infamous)
+// use infamous
 ```
 
 Workflows
@@ -80,7 +134,7 @@ Make a file `index.html` containing the following:
 </i-scene>
 
 <script>
-    var Motor = infamous.motor.Motor
+    var Motor = infamous.core.Motor
     var node = document.querySelector('i-node')
     var tween = new TWEEN.Tween(node.rotation)
       .to({y: 360}, 5000)
