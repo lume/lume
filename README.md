@@ -14,7 +14,7 @@ Getting Started
 Use the "global" version of infamous via script tag in your HTML page:
 
 ```html
-<script src="https://unpkg.com/infamous@15.2.0/global.js"></script>
+<script src="https://unpkg.com/infamous@17.0.5/global.js"></script>
 <script>
     console.log(infamous)
 </script>
@@ -60,23 +60,28 @@ Make a file `index.html` containing the following:
     }
 </style>
 
-<script src="https://cdn.rawgit.com/trusktr/infamous/v15.2.0/global.js"></script>
+<script src="https://cdn.rawgit.com/trusktr/infamous/v17.0.5/global.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/tween.js/16.3.5/Tween.min.js"></script>
 
-<motor-scene>
-    <motor-node
+<script>
+    // use the default names for the custom elements (i-node and i-scene):
+    infamous.html.useDefaultNames()
+</script>
+
+<i-scene>
+    <i-node
         absoluteSize="200 200" align="0.5 0.5" mountPoint="0.5 0.5"
         style=" backface-visibility: visible; background: pink; padding: 5px; "
         >
 
         Hello.
 
-    </motor-node>
-</motor-scene>
+    </i-node>
+</i-scene>
 
 <script>
     var Motor = infamous.motor.Motor
-    var node = document.querySelector('motor-node')
+    var node = document.querySelector('i-node')
     var tween = new TWEEN.Tween(node.rotation)
       .to({y: 360}, 5000)
       .easing(TWEEN.Easing.Elastic.InOut)
@@ -86,6 +91,28 @@ Make a file `index.html` containing the following:
         tween.update(now)
     })
 </script>
+```
+
+Alternatively, we can give the elements any name we want:
+
+```html
+<script>
+    // Give the elements our own names:
+    const { HTMLScene, HTMLNode } = infamous.html
+    HTMLScene.define('infamous-scene')
+    HTMLNode.define('object-3d')
+</script>
+
+<infamous-scene>
+    <object-3d
+        absoluteSize="200 200" align="0.5 0.5" mountPoint="0.5 0.5"
+        style=" backface-visibility: visible; background: pink; padding: 5px; "
+        >
+
+        Hello.
+
+    </object-3d>
+</infamous-scene>
 ```
 
 Now use `File > Open` in your browser to open the `index.html` file and see the
@@ -109,9 +136,9 @@ npm install infamous tween.js --save
 Make a file `app.js` containing the following:
 
 ```js
-const Motor = require('infamous/motor/Motor')
-const Node = require('infamous/motor/Node')
-const Scene = require('infamous/motor/Scene')
+const Motor = require('infamous/core/Motor')
+const Node = require('infamous/core/Node')
+const Scene = require('infamous/core/Scene')
 const TWEEN = require('tween.js')
 
 const scene = new Scene
@@ -192,7 +219,7 @@ module.exports = {
 Make a file `app.js` containing the following:
 
 ```js
-import {Motor, Node, Scene} from 'infamous/motor'
+import {Motor, Node, Scene} from 'infamous/core'
 import {Tween, Easing} from 'tween.js'
 
 const scene = new Scene
