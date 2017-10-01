@@ -8,6 +8,9 @@ import DeclarativeBase, {initDeclarativeBase, proxyGettersSetters} from './Decla
 initDeclarativeBase()
 
 class HTMLNode extends DeclarativeBase {
+    static define(name) {
+        customElements.define(name || 'i-node', HTMLNode)
+    }
 
     getStyles() {
         return styles
@@ -29,6 +32,22 @@ class HTMLNode extends DeclarativeBase {
             //console.log(' ------ setAttribute', value)
         super.setAttribute(attribute, ""+value)
     }
+
+    // TODO: get these from somewhere dynamically, and do same for
+    // proxyGettersSetters and _updateNodeProperty
+    static get observedAttributes() { return [
+        'sizeMode',
+        'absoluteSize',
+        'proportionalSize',
+        'align',
+        'mountPoint',
+        'rotation',
+        'position',
+        'scale',
+        'origin',
+        'skew',
+        'opacity',
+    ].map(a => a.toLowerCase())}
 
     attributeChangedCallback(...args) {
         super.attributeChangedCallback(...args)

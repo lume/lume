@@ -115,8 +115,8 @@ export function initDeclarativeBase() {
      * @implements {EventListener}
      */
     DeclarativeBase = class DeclarativeBase extends WebComponent(window.HTMLElement) {
-        createdCallback() {
-            super.createdCallback()
+        constructor() {
+            super()
 
             this.imperativeCounterpart = null // to hold the imperative API Node instance.
 

@@ -83,24 +83,11 @@ class ElementManager {
      * Apply the DOMMatrix value to the style of this Node's element.
      */
     applyTransform (domMatrix) {
-        var cssMatrixString = `matrix3d(
-            ${ domMatrix.m11 },
-            ${ domMatrix.m12 },
-            ${ domMatrix.m13 },
-            ${ domMatrix.m14 },
-            ${ domMatrix.m21 },
-            ${ domMatrix.m22 },
-            ${ domMatrix.m23 },
-            ${ domMatrix.m24 },
-            ${ domMatrix.m31 },
-            ${ domMatrix.m32 },
-            ${ domMatrix.m33 },
-            ${ domMatrix.m34 },
-            ${ domMatrix.m41 },
-            ${ domMatrix.m42 },
-            ${ domMatrix.m43 },
-            ${ domMatrix.m44 }
-        )`;
+
+        // for now, template strings need to be on one line, otherwise Meteor
+        // users will have bugs from Meteor's injected line numbers. See:
+        // https://github.com/meteor/meteor/issues/9160
+        var cssMatrixString = `matrix3d( ${ domMatrix.m11 }, ${ domMatrix.m12 }, ${ domMatrix.m13 }, ${ domMatrix.m14 }, ${ domMatrix.m21 }, ${ domMatrix.m22 }, ${ domMatrix.m23 }, ${ domMatrix.m24 }, ${ domMatrix.m31 }, ${ domMatrix.m32 }, ${ domMatrix.m33 }, ${ domMatrix.m34 }, ${ domMatrix.m41 }, ${ domMatrix.m42 }, ${ domMatrix.m43 }, ${ domMatrix.m44 })`;
 
         this.applyStyle('transform', cssMatrixString)
     }

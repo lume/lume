@@ -139,14 +139,6 @@ const SizeableMixin = base => {
         }
 
         _setPropertyXYZ(Class, name, newValue) {
-            if (!(
-                newValue instanceof Object ||
-                newValue instanceof Array ||
-                newValue instanceof Function
-            )) {
-                throw new TypeError(`Invalid value for ${Class.name}#${name}.`)
-            }
-
             if (newValue instanceof Function) {
                 // remove previous task if any.
                 if (!this._propertyFunctions) this._propertyFunctions = new Map
@@ -177,10 +169,13 @@ const SizeableMixin = base => {
                 if (typeof newValue[1] != 'undefined') this._properties[name].y = newValue[1]
                 if (typeof newValue[2] != 'undefined') this._properties[name].z = newValue[2]
             }
-            else {
+            else if (newValue instanceof Object) {
                 if (typeof newValue.x != 'undefined') this._properties[name].x = newValue.x
                 if (typeof newValue.y != 'undefined') this._properties[name].y = newValue.y
                 if (typeof newValue.z != 'undefined') this._properties[name].z = newValue.z
+            }
+            else {
+                throw new TypeError(`Invalid value for ${Class.name}#${name}.`)
             }
         }
 
