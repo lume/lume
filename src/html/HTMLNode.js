@@ -26,13 +26,6 @@ class HTMLNode extends DeclarativeBase {
         })
     }
 
-    setAttribute(attribute, value) {
-        //if (!window.count) window.count = 0
-        //if (window.count++ % 100 === 0)
-            //console.log(' ------ setAttribute', value)
-        super.setAttribute(attribute, ""+value)
-    }
-
     // TODO: get these from somewhere dynamically, and do same for
     // proxyGettersSetters and _updateNodeProperty
     static get observedAttributes() { return [
