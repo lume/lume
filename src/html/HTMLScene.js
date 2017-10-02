@@ -14,12 +14,6 @@ import Two from 'two.js/build/two'
 
 initDeclarativeBase()
 
-const privates = new WeakMap()
-const _ = instance => {
-    if (!privates.get(instance)) privates.set(instance, {})
-    return privates.get(instance)
-}
-
 class HTMLScene extends Observable.mixin(DeclarativeBase) {
     static define(name) {
         customElements.define(name || 'i-scene', HTMLScene)
