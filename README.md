@@ -38,7 +38,7 @@ Live Examples
 - [Polydance](https://trusktr.io/polydance)
     - Presented at 3DWebFest 2017 in collaboration with [Anastasiia Vedernikova](https://vnastasia.myportfolio.com)
     - The 3D scene is defined with declarative HTML
-    - The HTML is manipulated with [Vue.js](https://vuejs.org) ([see the source code](https://github.com/trusktr/trusktr.io/blob/master/meteor-app/client/imports/apps/polydance.vue#L385-L513))
+    - The HTML is manipulated with [Vue.js](https://vuejs.org) ([see the source code](https://github.com/trusktr/trusktr.io/blob/master/meteor-app/client/imports/apps/polydance.vue))
     - Rendering: experimental WebGL
 - [Imperative Seed](https://codepen.io/trusktr/pen/yoWQOe)
     - The 3D scene is defined and animated with imperative JavaScript
@@ -52,7 +52,7 @@ Live Examples
     - Rendering: CSS3D
 - [Geometric Rotation](https://trusktr.io/geometricRotation)
     - The 3D scene is defined with declarative HTML
-    - The HTML is manipulated with [React](https://facebook.github.io/react) ([see the source code](https://github.com/trusktr/trusktr.io/blob/master/meteor-app/client/imports/apps/geometricRotation.js#L27-L53))
+    - The HTML is manipulated with [React](https://facebook.github.io/react) ([see the source code](https://github.com/trusktr/trusktr.io/blob/master/meteor-app/client/imports/apps/geometricRotation.js))
     - Rendering: experimental WebGL
 - [DOM Buggy](http://fiddle.jshell.net/trusktr/ymonmo70/15/embedded/result,html,css,js)
     - The 3D scene is defined with declarative HTML
