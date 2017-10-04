@@ -20,7 +20,7 @@ class XYZValues extends Observable {
         this._x = value
         this.triggerEvent('valuechanged', {x: value})
     }
-    get() { return this._x }
+    get x() { return this._x }
 
     set y(value) {
         this._y = value
