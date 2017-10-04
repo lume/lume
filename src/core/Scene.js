@@ -177,27 +177,11 @@ class Scene extends ParentClass {
         this._resetMountPromise()
     }
 
-}
-
-// Here we know that `super` is Sizeable
-const {set: superSizeModeSet, get: superSizeModeGet} = Object.getOwnPropertyDescriptor(Sizeable.prototype, 'sizeMode')
-
-Object.defineProperties(Scene.prototype, {
-
-    // When we set the scene's size mode, we should start polling if it has
-    // proportional sizing.
-    sizeMode: {
-        set: function(value) {
-            superSizeModeSet.call(this, value)
-            this._startOrStopSizePolling()
-        },
-        get: function() {
-            return superSizeModeGet.call(this)
-        },
-        configurable: true,
-        enumerable: true,
+    set sizeMode(value) {
+        super.sizeMode = value
+        this._startOrStopSizePolling()
     }
 
-})
+}
 
 export {Scene as default}

@@ -15,40 +15,24 @@ class XYZValues extends Observable {
         this._y = y
         this._z = z
     }
+
+    set x(value) {
+        this._x = value
+        this.triggerEvent('valuechanged', {x: value})
+    }
+    get() { return this._x }
+
+    set y(value) {
+        this._y = value
+        this.triggerEvent('valuechanged', {y: value})
+    }
+    get y() { return this._y }
+
+    set z(value) {
+        this._z = value
+        this.triggerEvent('valuechanged', {z: value})
+    }
+    get z() { return this._z }
 }
-
-// We set accessors manually because Buble doesn't make them configurable
-// as per spec. Additionally we're maing these ones enumerable.
-Object.defineProperties(XYZValues.prototype, {
-    x: {
-        set(value) {
-            this._x = value
-            this.triggerEvent('valuechanged', {x: value})
-        },
-        get() { return this._x },
-        configurable: true,
-        enumerable: true,
-    },
-
-    y: {
-        set(value) {
-            this._y = value
-            this.triggerEvent('valuechanged', {y: value})
-        },
-        get() { return this._y },
-        configurable: true,
-        enumerable: true,
-    },
-
-    z: {
-        set(value) {
-            this._z = value
-            this.triggerEvent('valuechanged', {z: value})
-        },
-        get() { return this._z },
-        configurable: true,
-        enumerable: true,
-    },
-})
 
 export {XYZValues as default}

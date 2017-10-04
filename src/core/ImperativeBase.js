@@ -267,11 +267,6 @@ export function initImperativeBase() {
                 // applies the transform matrix to the element's style property.
                 this._elementManager.applyImperativeNodeProperties(this)
             }
-        }
-
-        const {set: superPropertiesSet} = Object.getOwnPropertyDescriptor(ParentClass.prototype, 'properties')
-
-        Object.defineProperties(ImperativeBase.prototype, {
 
             /**
              * Set all properties of an ImperativeBase instance in one method.
@@ -283,16 +278,13 @@ export function initImperativeBase() {
              *   classes: ['open', 'big'],
              * }
              */
-            properties: {
-                set(properties = {}) {
-                    superPropertiesSet.call(this, properties)
+            set properties(properties = {}) {
+                super.properties = properties
 
-                    if (properties.classes)
-                        this._elementManager.setClasses(...properties.classes);
-                },
-                configurable: true,
-            },
-        })
+                if (properties.classes)
+                    this._elementManager.setClasses(...properties.classes);
+            }
+        }
 
         Object.defineProperty(ImperativeBase, Symbol.hasInstance, {
             value: function(obj) {

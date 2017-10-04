@@ -129,13 +129,6 @@ const TransformableMixin = base => {
             // changed)
             this._properties.transform = this._calculateMatrix()
         }
-    }
-
-    const {set: superPropertiesSet} = Object.getOwnPropertyDescriptor(ParentClass.prototype, 'properties')
-
-    // We set accessors manually because Buble doesn't make them configurable
-    // as per spec. Additionally we're maing these ones enumerable.
-    Object.defineProperties(Transformable.prototype, {
 
         /**
          * Set the position of the Transformable.
@@ -145,16 +138,12 @@ const TransformableMixin = base => {
          * @param {number} [newValue.y] The y-axis position to apply.
          * @param {number} [newValue.z] The z-axis position to apply.
          */
-        position: {
-            set(newValue) {
-                this._setPropertyXYZ(Transformable, 'position', newValue)
-            },
-            get() {
-                return this._properties.position
-            },
-            configurable: true,
-            enumerable: true,
-        },
+        set position(newValue) {
+            this._setPropertyXYZ(Transformable, 'position', newValue)
+        }
+        get position() {
+            return this._properties.position
+        }
 
         /**
          * @param {Object} newValue
@@ -162,16 +151,12 @@ const TransformableMixin = base => {
          * @param {number} [newValue.y] The y-axis rotation to apply.
          * @param {number} [newValue.z] The z-axis rotation to apply.
          */
-        rotation: {
-            set(newValue) {
-                this._setPropertyXYZ(Transformable, 'rotation', newValue)
-            },
-            get() {
-                return this._properties.rotation
-            },
-            configurable: true,
-            enumerable: true,
-        },
+        set rotation(newValue) {
+            this._setPropertyXYZ(Transformable, 'rotation', newValue)
+        }
+        get rotation() {
+            return this._properties.rotation
+        }
 
         /**
          * @param {Object} newValue
@@ -179,16 +164,12 @@ const TransformableMixin = base => {
          * @param {number} [newValue.y] The y-axis scale to apply.
          * @param {number} [newValue.z] The z-axis scale to apply.
          */
-        scale: {
-            set(newValue) {
-                this._setPropertyXYZ(Transformable, 'scale', newValue)
-            },
-            get() {
-                return this._properties.scale
-            },
-            configurable: true,
-            enumerable: true,
-        },
+        set scale(newValue) {
+            this._setPropertyXYZ(Transformable, 'scale', newValue)
+        }
+        get scale() {
+            return this._properties.scale
+        }
 
         /**
          * Set this Node's opacity.
@@ -196,17 +177,13 @@ const TransformableMixin = base => {
          * @param {number} opacity A floating point number between 0 and 1
          * (inclusive). 0 is fully transparent, 1 is fully opaque.
          */
-        opacity: {
-            set(newValue) {
-                if (!isRealNumber(newValue)) newValue = undefined
-                this._setPropertySingle(Transformable, 'opacity', newValue, 'number')
-            },
-            get() {
-                return this._properties.opacity
-            },
-            configurable: true,
-            enumerable: true,
-        },
+        set opacity(newValue) {
+            if (!isRealNumber(newValue)) newValue = undefined
+            this._setPropertySingle(Transformable, 'opacity', newValue, 'number')
+        }
+        get opacity() {
+            return this._properties.opacity
+        }
 
         /**
          * Set the alignment of the Node. This determines at which point in this
@@ -217,16 +194,12 @@ const TransformableMixin = base => {
          * @param {number} [newValue.y] The y-axis align to apply.
          * @param {number} [newValue.z] The z-axis align to apply.
          */
-        align: {
-            set(newValue) {
-                this._setPropertyXYZ(Transformable, 'align', newValue)
-            },
-            get() {
-                return this._properties.align
-            },
-            configurable: true,
-            enumerable: true,
-        },
+        set align(newValue) {
+            this._setPropertyXYZ(Transformable, 'align', newValue)
+        }
+        get align() {
+            return this._properties.align
+        }
 
         /**
          * Set the mount point of the Node.
@@ -236,16 +209,12 @@ const TransformableMixin = base => {
          * @param {number} [newValue.y] The y-axis mountPoint to apply.
          * @param {number} [newValue.z] The z-axis mountPoint to apply.
          */
-        mountPoint: {
-            set(newValue) {
-                this._setPropertyXYZ(Transformable, 'mountPoint', newValue)
-            },
-            get() {
-                return this._properties.mountPoint
-            },
-            configurable: true,
-            enumerable: true,
-        },
+        set mountPoint(newValue) {
+            this._setPropertyXYZ(Transformable, 'mountPoint', newValue)
+        }
+        get mountPoint() {
+            return this._properties.mountPoint
+        }
 
         /**
          * Set all properties of a Transformable in one method.
@@ -260,35 +229,32 @@ const TransformableMixin = base => {
          *   opacity: .9,
          * }
          */
-        properties: {
-            set(properties = {}) {
-                superPropertiesSet.call(this, properties)
+        set properties(properties = {}) {
+            super.properties = properties
 
-                if (properties.position)
-                    this.position = properties.position
+            if (properties.position)
+                this.position = properties.position
 
-                if (properties.rotation)
-                    this.rotation = properties.rotation
+            if (properties.rotation)
+                this.rotation = properties.rotation
 
-                if (properties.scale)
-                    this.scale = properties.scale
+            if (properties.scale)
+                this.scale = properties.scale
 
-                if (properties.origin)
-                    this.origin = properties.origin
+            if (properties.origin)
+                this.origin = properties.origin
 
-                if (properties.align)
-                    this.align = properties.align
+            if (properties.align)
+                this.align = properties.align
 
-                if (properties.mountPoint)
-                    this.mountPoint = properties.mountPoint
+            if (properties.mountPoint)
+                this.mountPoint = properties.mountPoint
 
-                if (properties.opacity)
-                    this.opacity = properties.opacity
-            },
-            // no need for a properties getter.
-            configurable: true,
-        },
-    })
+            if (properties.opacity)
+                this.opacity = properties.opacity
+        }
+        // no need for a properties getter?
+    }
 
     // for use by MotorHTML, convenient since HTMLElement attributes are all
     // converted to lowercase by default, so if we don't do this then we won't be
