@@ -33,11 +33,11 @@ class ElementManager {
         this.element.style[property] = value
     }
 
-    addChild(childElementManager) {
+    add(childElementManager) {
         this.element.appendChild(childElementManager.element)
     }
 
-    removeChild(childElementManager) {
+    remove(childElementManager) {
         // This conditional check is needed incase the element was already
         // removed from the HTML-API side.
         if (childElementManager.element.parentNode === this.element)
@@ -67,16 +67,16 @@ class ElementManager {
             // everything is already as expected, so the following
             // conditional body is skipped.
         ) {
-            this.addChild(childImperativeNode._elementManager)
+            this.add(childImperativeNode._elementManager)
         }
     }
 
     disconnectChildElement(childImperativeNode) {
-        // If DeclarativeBase#removeChild was called first, we don't need to
+        // If DeclarativeBase#remove was called first, we don't need to
         // call this again.
         if (!childImperativeNode._elementManager.element.parentNode) return
 
-        this.removeChild(childImperativeNode._elementManager)
+        this.remove(childImperativeNode._elementManager)
     }
 
     /**

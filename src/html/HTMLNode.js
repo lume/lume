@@ -1,6 +1,5 @@
 
 import styles from './HTMLNode.style'
-import Node from '../core/Node'
 import Transformable from '../core/Transformable'
 import Sizeable from '../core/Sizeable'
 import DeclarativeBase, {initDeclarativeBase, proxyGettersSetters} from './DeclarativeBase'
@@ -8,22 +7,8 @@ import DeclarativeBase, {initDeclarativeBase, proxyGettersSetters} from './Decla
 initDeclarativeBase()
 
 class HTMLNode extends DeclarativeBase {
-    static define(name) {
-        customElements.define(name || 'i-node', HTMLNode)
-    }
-
     getStyles() {
         return styles
-    }
-
-    // this is called by DeclarativeBase#init, which is called by
-    // WebComponent#connectedCallback, at which point this element has a
-    // parentNode.
-    // @override
-    _makeImperativeCounterpart() {
-        return new Node({
-            _motorHtmlCounterpart: this
-        })
     }
 
     // TODO: get these from somewhere dynamically, and do same for
@@ -44,21 +29,10 @@ class HTMLNode extends DeclarativeBase {
 
     attributeChangedCallback(...args) {
         super.attributeChangedCallback(...args)
-
-        // TODO PERFORMANCE: we could possibly not stack a promise every
-        // attribute change, and just cache the latest value to set it when the
-        // imperativeCounterpart is ready.
-        this._imperativeCounterpartPromise.then(() => {
-            this._updateNodeProperty(...args)
-        })
+        this._updateNodeProperty(...args)
     }
     //async attributeChangedCallback(...args) {
         //super.attributeChangedCallback(...args)
-
-        //// TODO PERFORMANCE: we could possibly not stack a promise every
-        //// attribute change, and just cache the latest value to set it when the
-        //// imperativeCounterpart is ready.
-        //await this._imperativeCounterpartPromise
         //this._updateNodeProperty(...args)
     //}
 

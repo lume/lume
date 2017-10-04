@@ -1,10 +1,8 @@
 
 import styles from './HTMLScene.style'
 import Motor from '../core/Motor'
-import Scene from '../core/Scene'
 import Observable from '../core/Observable'
 import Sizeable from '../core/Sizeable'
-import getWebGlRenderer from '../core/WebGLRenderer'
 import DeclarativeBase, {initDeclarativeBase, proxyGettersSetters} from './DeclarativeBase'
 import sleep from 'awaitbox/timers/sleep'
 
@@ -21,52 +19,12 @@ class HTMLScene extends Observable.mixin(DeclarativeBase) {
         this._sizePollTask = null
         this._parentSize = {x:0, y:0, z:0}
 
-        // After the imperativeCounterpart is available it needs to register
-        // mount into DOM. This is only for MotorHTMLScenes because their
-        // imperativeCounterparts are not added to a parent Node.
-        // MotorHTMLNodes get their parent connection from their parent in
-        // childConnectedCallback.
-        this._imperativeCounterpartPromise
-            .then(() => {
-                if (this.imperativeCounterpart._mounted) return
-
-                if (this.parentNode)
-                    this.imperativeCounterpart.mount(this.parentNode)
-            })
-
-        // For now, use the same program (with shaders) for all objects.
-        // Basically it has position, frag colors, point light, directional
-        // light, and ambient light.
-        // TODO: maybe call this in `init()`, and destroy webgl stuff in
-        // `deinit()`.
-        // TODO: The user might enable this by setting the attribute later, so
-        // we can't simply rely on having it in constructor, we need a
-        // getter/setter like node properties.
-        this.initWebGl()
+        // If the scene is already in the DOM, make it be "mounted".
+        if (!this.imperativeCounterpart._mounted && this.parentNode)
+            this.imperativeCounterpart.mount(this.parentNode)
     }
 
-    // TODO: we need to deinit webgl too.
-    initWebGl() {
-        // TODO: this needs to be cancelable too, search other codes for
-        // "mountcancel" to see.
-        this.mountPromise.then(() => {
-            this.webglEnabled = !!this.getAttribute('webglenabled')
-            if (!this.webglEnabled) return
-            this.webGlRendererState = {}
-            getWebGlRenderer().initGl(this)
-        })
-    }
-    //async initWebGl() {
-        //// TODO: this needs to be cancelable too, search other codes for
-        //// "mountcancel" to see.
-        //await this.mountPromise
-        //this.webglEnabled = !!this.getAttribute('webglenabled')
-        //if (!this.webglEnabled) return
-        //this.webGlRendererState = {}
-        //getWebGlRenderer().initGl(this)
-    //}
-
-    _startSizePolling() {
+    __startSizePolling() {
         // NOTE Polling is currently required because there's no other way to do this
         // reliably, not even with MutationObserver. ResizeObserver hasn't
         // landed in browsers yet.
@@ -95,12 +53,6 @@ class HTMLScene extends Observable.mixin(DeclarativeBase) {
         }
     }
 
-    _makeImperativeCounterpart() {
-        return new Scene({
-            _motorHtmlCounterpart: this
-        })
-    }
-
     /** @override */
     getStyles() {
         return styles
@@ -112,9 +64,17 @@ class HTMLScene extends Observable.mixin(DeclarativeBase) {
         this.imperativeCounterpart.unmount()
     }
 
-    _stopSizePolling() {
+    __stopSizePolling() {
         Motor.removeRenderTask(this._sizePollTask)
         this._sizePollTask = null
+    }
+
+    connectedCallback() {
+        super.connectedCallback()
+
+        // When the HTMLScene gets addded to the DOM, make it be "mounted".
+        if (!this.imperativeCounterpart._mounted)
+            this.imperativeCounterpart.mount(this.parentNode)
     }
 }
 

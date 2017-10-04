@@ -61,7 +61,7 @@ export class Cube extends Node {
 
         this.sides.push(side)
 
-        rotator.addChild(side)
+        rotator.add(side)
 
         // XXX: make a new GenericSync-like thing?
         //const sync = new GenericSync(['mouse','touch']);
@@ -76,7 +76,7 @@ export class Cube extends Node {
 
         side.position.z = this.size / 2
 
-        this.addChild(rotator)
+        this.add(rotator)
     }
 
     /**
@@ -89,7 +89,7 @@ export class Cube extends Node {
     setContent(content) {
         forLength(6, index => {
             //this.cubeSideNodes[index].set(null); // TODO: how do we erase previous content?
-            this.sides[index].addChild(content[index])
+            this.sides[index].add(content[index])
         })
         return this;
     }

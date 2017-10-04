@@ -13,6 +13,7 @@ import Transformable from './Transformable'
 // Sizeable is used in this file.
 import Sizeable from './Sizeable'
 
+import getWebGlRenderer from './WebGLRenderer'
 import ImperativeBase, {initImperativeBase} from './ImperativeBase'
 import XYZValues from './XYZValues'
 import HTMLScene from '../html/HTMLScene'
@@ -22,9 +23,15 @@ initImperativeBase()
 
 const instanceofSymbol = Symbol('instanceofSymbol')
 
+let Scene = null
+
 const SceneMixin = base => {
     // Scene is Sizeable, which is currently a subset of Transformable.
-    class Scene extends ImperativeBase.mixin(Sizeable.mixin(base)) {
+    class _Scene extends ImperativeBase.mixin(Sizeable.mixin(base)) {
+        static define(name) {
+            customElements.define(name || 'i-scene', Scene)
+        }
+
         constructor(options = {}) {
             super(options)
 
@@ -39,7 +46,38 @@ const SceneMixin = base => {
 
             this._calcSize()
             this._needsToBeRendered()
+
+            // For now, use the same program (with shaders) for all objects.
+            // Basically it has position, frag colors, point light, directional
+            // light, and ambient light.
+            // TODO: maybe call this in `init()`, and destroy webgl stuff in
+            // `deinit()`.
+            // TODO: The user might enable this by setting the attribute later, so
+            // we can't simply rely on having it in constructor, we need a
+            // getter/setter like node properties.
+            this.initWebGl()
         }
+
+        // TODO: we need to deinit webgl too.
+        initWebGl() {
+            // TODO: this needs to be cancelable too, search other codes for
+            // "mountcancel" to see.
+            this.mountPromise.then(() => {
+                this.webglEnabled = !!this.getAttribute('webglenabled')
+                if (!this.webglEnabled) return
+                this.webGlRendererState = {}
+                getWebGlRenderer().initGl(this)
+            })
+        }
+        //async initWebGl() {
+            //// TODO: this needs to be cancelable too, search other codes for
+            //// "mountcancel" to see.
+            //await this.mountPromise
+            //this.webglEnabled = !!this.getAttribute('webglenabled')
+            //if (!this.webglEnabled) return
+            //this.webGlRendererState = {}
+            //getWebGlRenderer().initGl(this)
+        //}
 
         _setDefaultProperties() {
             super._setDefaultProperties()
@@ -66,7 +104,7 @@ const SceneMixin = base => {
         // observe size changes on the scene element.
         _startSizePolling() {
             if (!this._elementManager) return
-            this._elementManager.element._startSizePolling()
+            this._elementManager.element.__startSizePolling()
             this._elementManager.element.on('parentsizechange', this._onElementParentSizeChange)
         }
 
@@ -74,19 +112,12 @@ const SceneMixin = base => {
         _stopSizePolling() {
             if (!this._elementManager) return
             this._elementManager.element.off('parentsizechange', this._onElementParentSizeChange)
-            this._elementManager.element._stopSizePolling()
+            this._elementManager.element.__stopSizePolling()
         }
 
         /** @override */
         _getParentSize() {
             return this._mounted ? this._elementParentSize : {x:0,y:0,z:0}
-        }
-
-        /**
-         * @override
-         */
-        _makeElement() {
-            return new HTMLScene
         }
 
         /**
@@ -186,9 +217,9 @@ const SceneMixin = base => {
 
     }
 
-    Object.defineProperty(Scene, Symbol.hasInstance, {
+    Object.defineProperty(_Scene, Symbol.hasInstance, {
         value: function(obj) {
-            if (this !== Scene) return Object.getPrototypeOf(Scene)[Symbol.hasInstance].call(this, obj)
+            if (this !== _Scene) return Object.getPrototypeOf(_Scene)[Symbol.hasInstance].call(this, obj)
 
             let currentProto = obj
 
@@ -205,12 +236,15 @@ const SceneMixin = base => {
         }
     })
 
-    Scene[instanceofSymbol] = true
+    _Scene[instanceofSymbol] = true
 
-    return Scene
+    return _Scene
 }
 
-const Scene = SceneMixin(class{})
+Scene = SceneMixin(class{})
 Scene.mixin = SceneMixin
+
+// for now, hard-mixin the HTMLScene class. We'll do this automatically later.
+Scene = Scene.mixin(HTMLScene)
 
 export {Scene as default}

@@ -8,8 +8,14 @@ initImperativeBase()
 
 const instanceofSymbol = Symbol('instanceofSymbol')
 
+let Node = null
+
 const NodeMixin = base => {
-    class Node extends ImperativeBase.mixin(Transformable.mixin(base)) {
+
+    class _Node extends ImperativeBase.mixin(Transformable.mixin(base)) {
+        static define(name) {
+            customElements.define(name || 'i-node', Node)
+        }
 
         /**
          * @constructor
@@ -51,8 +57,8 @@ const NodeMixin = base => {
              * it were a prototype method, then it would need to be bound when
              * passed to Observable#on, which would require keeping track of the
              * bound function reference in order to be able to pass it to
-             * Observable#off later. See ImperativeBase#addChild and
-             * ImperativeBase#removeChild.
+             * Observable#off later. See ImperativeBase#add and
+             * ImperativeBase#remove.
              */
             this._onParentSizeChange = () => {
 
@@ -134,13 +140,6 @@ const NodeMixin = base => {
         //}
 
         /**
-         * @override
-         */
-        _makeElement() {
-            return new HTMLNode
-        }
-
-        /**
          * @private
          * Get a promise for the node's eventual scene.
          */
@@ -163,7 +162,7 @@ const NodeMixin = base => {
          *
          * This traverses up the scene graph tree starting at this Node and finds
          * the root Scene, if any. It caches the value for performance. If this
-         * Node is removed from a parent node with parent.removeChild(), then the
+         * Node is removed from a parent node with parent.remove(), then the
          * cache is invalidated so the traversal can happen again when this Node is
          * eventually added to a new tree. This way, if the scene is cached on a
          * parent Node that we're adding this Node to then we can get that cached
@@ -221,9 +220,9 @@ const NodeMixin = base => {
         }
     }
 
-    Object.defineProperty(Node, Symbol.hasInstance, {
+    Object.defineProperty(_Node, Symbol.hasInstance, {
         value: function(obj) {
-            if (this !== Node) return Object.getPrototypeOf(Node)[Symbol.hasInstance].call(this, obj)
+            if (this !== _Node) return Object.getPrototypeOf(_Node)[Symbol.hasInstance].call(this, obj)
 
             let currentProto = obj
 
@@ -240,12 +239,15 @@ const NodeMixin = base => {
         }
     })
 
-    Node[instanceofSymbol] = true
+    _Node[instanceofSymbol] = true
 
-    return Node
+    return _Node
 }
 
-const Node = NodeMixin(class{})
+Node = NodeMixin(class{})
 Node.mixin = NodeMixin
+
+// for now, hard-mixin the HTMLNode class. We'll do this automatically later.
+Node = Node.mixin(HTMLNode)
 
 export {Node as default}

@@ -40,22 +40,13 @@ export function initImperativeBase() {
         class ImperativeBase extends ParentClass {
             constructor(options = {}) {
 
-                // The presence of a _motorHtmlCounterpart argument signifies that
-                // the HTML interface is being used, otherwise the imperative interface
-                // here is being used. For example, see MotorHTMLNode. This means the
-                // Node and MotorHTMLNode classes are coupled together, but it's in the
-                // name of the API that we're supporting.
-                const {_motorHtmlCounterpart} = options
-
                 super(options)
 
                 this._willBeRendered = false
 
                 // Here we create the DOM HTMLElement associated with this
                 // Imperative-API Node.
-                this._elementManager = new ElementManager(
-                    _motorHtmlCounterpart || this._makeElement()
-                )
+                this._elementManager = new ElementManager(this)
                 this._elementManager.element._associateImperativeNode(this)
 
                 // For Nodes, true when this Node is added to a parent AND it
@@ -133,7 +124,7 @@ export function initImperativeBase() {
             /**
              * @override
              */
-            addChild(childNode) {
+            add(childNode) {
                 if (!isInstanceof(childNode, ImperativeBase)) return
 
                 // We cannot add Scenes to Nodes, for now.
@@ -145,7 +136,7 @@ export function initImperativeBase() {
                     `)
                 }
 
-                super.addChild(childNode)
+                super.add(childNode)
 
                 // Pass this parent node's Scene reference (if any, checking this cache
                 // first) to the new child and the child's children.
@@ -168,10 +159,10 @@ export function initImperativeBase() {
                 return this
             }
 
-            removeChild(childNode, /*private use*/leaveInDom) {
+            remove(childNode, /*private use*/leaveInDom) {
                 if (!(childNode instanceof Node)) return
 
-                super.removeChild(childNode)
+                super.remove(childNode)
 
                 this.off('sizechange', childNode._onParentSizeChange)
 
