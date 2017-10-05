@@ -15,6 +15,10 @@ import {
     SymmetricTrapezoid,
 } from './webglUtils'
 
+//import * as PIXI from 'pixi.js' // also sets the PIXI global.
+//import SVG from 'pixi-svg' // uses the PIXI global, won't work if you don't import the main `pixi.js module`.
+//import Two from 'two.js/build/two'
+
 const updateResolution = state => {
     const resolution = [
         parseFloat(getComputedStyle(state.gl.canvas).width) * window.devicePixelRatio,
