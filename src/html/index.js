@@ -4,7 +4,7 @@ import HTMLPushPaneLayout from './HTMLPushPaneLayout'
 import HTMLScene from './HTMLScene'
 import WebComponent from './WebComponent'
 
-//import 'document-register-element'
+import 'document-register-element'
 function useDefaultNames() {
     HTMLNode.define()
     HTMLScene.define()

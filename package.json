@@ -28,7 +28,7 @@
   "dependencies": {
     "army-knife": "^0.2.1",
     "awaitbox": "^1.0.0",
-    "document-register-element": "^0.6.1",
+    "document-register-element": "^1.7.0",
     "famous": "trusktr/famous#commonjs",
     "famousify": "^0.1.5",
     "geometry-interfaces": "^1.1.3",
