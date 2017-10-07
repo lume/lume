@@ -9,11 +9,10 @@ const TransformableMixin = base => {
 
     // Transformable extends TreeNode (indirectly through Sizeable) because it
     // needs to be aware of its _parent when calculating align adjustments.
-    const ParentClass = Sizeable.mixin(base)
-    class Transformable extends ParentClass {
+    class Transformable extends Sizeable.mixin(base) {
 
-        constructor(options = {}) {
-            super(options)
+        construct(options = {}) {
+            super.construct(options)
 
             this._worldMatrix = null
         }

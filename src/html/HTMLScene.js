@@ -13,15 +13,17 @@ class HTMLScene extends Observable.mixin(DeclarativeBase) {
         customElements.define(name || 'i-scene', HTMLScene)
     }
 
-    constructor() {
-        super()
+    constructor(...args) {
+        const _this = super(...args)
 
-        this._sizePollTask = null
-        this._parentSize = {x:0, y:0, z:0}
+        _this._sizePollTask = null
+        _this._parentSize = {x:0, y:0, z:0}
 
         // If the scene is already in the DOM, make it be "mounted".
-        if (!this.imperativeCounterpart._mounted && this.parentNode)
-            this.imperativeCounterpart.mount(this.parentNode)
+        if (!_this.imperativeCounterpart._mounted && _this.parentNode)
+            _this.imperativeCounterpart.mount(_this.parentNode)
+
+        return _this
     }
 
     __startSizePolling() {

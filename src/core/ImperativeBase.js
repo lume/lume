@@ -36,11 +36,9 @@ export function initImperativeBase() {
      * at least one of those to render with.
      */
     const ImperativeBaseMixin = base => {
-        const ParentClass = base
-        class ImperativeBase extends ParentClass {
-            constructor(options = {}) {
-
-                super(options)
+        class ImperativeBase extends base {
+            construct(options = {}) {
+                super.construct(options)
 
                 this._willBeRendered = false
 

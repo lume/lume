@@ -2,6 +2,7 @@
 
 import { observeChildren } from '../core/Utility'
 import jss from '../lib/jss'
+import './polyfillCustomElements'
 
 // Very very stupid hack needed for Safari in order for us to be able to extend
 // the HTMLElement class. See:
@@ -17,7 +18,7 @@ const classCache = new Map
 function classExtendsHTMLElement(constructor) {
     if (!constructor) return false
     if (constructor === HTMLElement) return true
-    else return classExtendsHTMLElement(constructor.prototype.__proto__ ? constructor.prototype.__proto__.constructor : null)
+    else return classExtendsHTMLElement( constructor.__proto__ )
 }
 
 /**
@@ -34,8 +35,12 @@ function classExtendsHTMLElement(constructor) {
  */
 export default
 function WebComponentMixin(elementClass) {
-    if (!elementClass) elementClass = HTMLElement
+    // the extra `class extends` is necessary here so that
+    // babel-plugin-transform-builtin-classes can work properly.
+    if (!elementClass) elementClass = class extends HTMLElement {}
 
+    // XXX: In the future, possibly check for Element if other things besides
+    // HTML are supported (f.e. SVGElements)
     if (!classExtendsHTMLElement(elementClass)) {
         throw new TypeError(
             'The argument to WebComponentMixin must be a constructor that extends from or is HTMLElement.'
@@ -50,9 +55,7 @@ function WebComponentMixin(elementClass) {
     // otherwise, create it.
     class WebComponent extends elementClass {
 
-        constructor() {
-            super()
-
+        constructor(...args) {
             // Throw an error if no Custom Elements v1 API exists.
             if (!('customElements' in window)) {
                 throw new Error(`
@@ -61,11 +64,17 @@ function WebComponentMixin(elementClass) {
                 `)
             }
 
-            this._connected = false
-            this._initialized = false
-            this._initialAttributeChange = false
-            this._childObserver = null
-            this._style = null
+            // arguments needed in case ImperativeDeclarativeAdapter passes
+            // args. See the constructor there.
+            const _this = super(...args)
+
+            _this._connected = false
+            _this._initialized = false
+            _this._initialAttributeChange = false
+            _this._childObserver = null
+            _this._style = null
+
+            return _this
         }
 
         // Subclasses can implement these.

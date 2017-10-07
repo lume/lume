@@ -1,8 +1,9 @@
 import 'geometry-interfaces'
 import Transformable from './Transformable'
 import ImperativeBase, {initImperativeBase} from './ImperativeBase'
-import HTMLNode from '../html/HTMLNode'
+import { default as HTMLInterface } from '../html/HTMLNode'
 import Scene from './Scene'
+import ImperativeDeclarativeAdapter from './ImperativeDeclarativeAdapter'
 
 initImperativeBase()
 
@@ -30,8 +31,8 @@ const NodeMixin = base => {
          *   rotation: {x:30, y:20, z:25}
          * })
          */
-        constructor (options = {}) {
-            super(options)
+        construct(options = {}) {
+            super.construct(options)
 
             // This was when using my `multiple()` implementation, we could call
             // specific constructors using specific arguments. But, we're using
@@ -247,7 +248,7 @@ const NodeMixin = base => {
 Node = NodeMixin(class{})
 Node.mixin = NodeMixin
 
-// for now, hard-mixin the HTMLNode class. We'll do this automatically later.
-Node = Node.mixin(HTMLNode)
+// TODO for now, hard-mixin the HTMLInterface class. We'll do this automatically later.
+Node = Node.mixin(ImperativeDeclarativeAdapter.mixin(HTMLInterface))
 
 export {Node as default}

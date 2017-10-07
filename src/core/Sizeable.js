@@ -55,8 +55,8 @@ const SizeableMixin = base => {
     // in order to calculate it's world matrix based on it's parent's.
     class Sizeable extends TreeNode.mixin(Observable.mixin(base)) {
 
-        constructor(options = {}) {
-            super(options)
+        construct(options = {}) {
+            super.construct(options)
 
             this._propertyFunctions = null
             this._calculatedSize = { x:0, y:0, z:0 }

@@ -16,7 +16,8 @@ import Sizeable from './Sizeable'
 import getWebGlRenderer from './WebGLRenderer'
 import ImperativeBase, {initImperativeBase} from './ImperativeBase'
 import XYZValues from './XYZValues'
-import HTMLScene from '../html/HTMLScene'
+import ImperativeDeclarativeAdapter from './ImperativeDeclarativeAdapter'
+import { default as HTMLInterface } from '../html/HTMLScene'
 import documentReady from 'awaitbox/dom/documentReady'
 
 initImperativeBase()
@@ -32,8 +33,8 @@ const SceneMixin = base => {
             customElements.define(name || 'i-scene', Scene)
         }
 
-        constructor(options = {}) {
-            super(options)
+        construct(options = {}) {
+            super.construct(options)
 
             // NOTE: z size is always 0, since native DOM elements are always flat.
             this._elementParentSize = {x:0, y:0, z:0}
@@ -244,7 +245,7 @@ const SceneMixin = base => {
 Scene = SceneMixin(class{})
 Scene.mixin = SceneMixin
 
-// for now, hard-mixin the HTMLScene class. We'll do this automatically later.
-Scene = Scene.mixin(HTMLScene)
+// TODO for now, hard-mixin the HTMLInterface class. We'll do this automatically later.
+Scene = Scene.mixin(ImperativeDeclarativeAdapter.mixin(HTMLInterface))
 
 export {Scene as default}

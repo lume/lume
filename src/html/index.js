@@ -7,7 +7,6 @@ import Scene from '../core/Scene'
 import PushPaneLayout from '../components/PushPaneLayout'
 import WebComponent from './WebComponent'
 
-import 'document-register-element'
 function useDefaultNames() {
     if (!customElements.get('i-node')) Node.define()
     if (!customElements.get('i-scene')) Scene.define()

@@ -5,8 +5,8 @@ const instanceofSymbol = Symbol('instanceofSymbol')
 const TreeNodeMixin = base => {
     class TreeNode extends base {
 
-        constructor(options = {}) {
-            super(options)
+        construct(options = {}) {
+            super.construct(options)
             this._parent = null // default to no parent.
             this._children = [];
         }
