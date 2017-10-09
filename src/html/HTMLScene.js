@@ -8,22 +8,27 @@ import sleep from 'awaitbox/timers/sleep'
 
 initDeclarativeBase()
 
-class HTMLScene extends Observable.mixin(DeclarativeBase) {
-    static define(name) {
-        customElements.define(name || 'i-scene', HTMLScene)
-    }
+class HTMLScene extends DeclarativeBase {
 
-    constructor(...args) {
-        const _this = super(...args)
+    construct() {
+        super.construct()
 
-        _this._sizePollTask = null
-        _this._parentSize = {x:0, y:0, z:0}
+        this._sizePollTask = null
+        this._parentSize = {x:0, y:0, z:0}
 
         // If the scene is already in the DOM, make it be "mounted".
-        if (!_this.imperativeCounterpart._mounted && _this.parentNode)
-            _this.imperativeCounterpart.mount(_this.parentNode)
+        if (!this.imperativeCounterpart._mounted && this.parentNode) {
 
-        return _this
+            // defer so that the construct() call stack can finish
+            //
+            // TODO: clean up the code so that this isn't required. It's
+            // just that combining the imperative/declarative classes
+            // into a single class has introduced a small difference in
+            // logic order.
+            Promise.resolve().then(() =>
+                this.imperativeCounterpart.mount(this.parentNode)
+            )
+        }
     }
 
     __startSizePolling() {

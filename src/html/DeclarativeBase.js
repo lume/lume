@@ -115,20 +115,25 @@ export function initDeclarativeBase() {
      * @implements {EventListener}
      */
     DeclarativeBase = class DeclarativeBase extends WebComponent() {
-        constructor(...args) {
-            var _this = super(...args)
+        static define(name) {
+            name = name || this.defaultElementName
+            customElements.define(name, this._Class)
+        }
 
-            _this.imperativeCounterpart = null // to hold the imperative API Node instance.
+        construct() {
+            super.construct()
+
+            this.imperativeCounterpart = null // to hold the imperative API Node instance.
 
             // true if this node has a shadow root (even if it is "closed", see
             // hijack function above). Once true always true because shadow
             // roots cannot be removed.
-            _this._hasShadowRoot = false
+            this._hasShadowRoot = false
 
             // True when this node has a parent that has a shadow root. When
             // using the HTML API, Imperative API can look at this to determine
             // whether to render this node or not, in the case of WebGL.
-            _this._isPossiblyDistributed = false
+            this._isPossiblyDistributed = false
 
             // A map of the slot elements that are children of this node and
             // their last-known assigned nodes. When a slotchange happens while
@@ -136,24 +141,22 @@ export function initDeclarativeBase() {
             // detect what the difference is between the last known and the new
             // assignments, and notate the new distribution of child nodes. See
             // issue #40 for background on why we do this.
-            _this._slotElementsAssignedNodes = new WeakMap
+            this._slotElementsAssignedNodes = new WeakMap
 
             // If this node is distributed into a shadow tree, this will
             // reference the parent of the <slot> or <content> element.
             // Basically, this node will render as a child of that parent node
             // in the flat tree.
-            _this._shadowParent = null
+            this._shadowParent = null
 
             // If this element has a child <slot> or <content> element while in
             // a shadow root, then this will be a Set of the nodes distributed
             // into the <slot> or <content>, and those nodes render relatively
             // to this node in the flat tree. We instantiate this later, only
             // when/if needed.
-            _this._shadowChildren = null
+            this._shadowChildren = null
 
-            _this._associateImperativeNode()
-
-            return _this
+            this._associateImperativeNode()
         }
 
         /**
@@ -340,6 +343,7 @@ export function initDeclarativeBase() {
             }
         }
 
+        // TODO: make setAttribute accept non-string values.
         setAttribute(attr, value) {
             //if (this.tagName.toLowerCase() == 'motor-scene')
                 //console.log('setting attribute', arguments[1])

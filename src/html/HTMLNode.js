@@ -7,6 +7,10 @@ import DeclarativeBase, {initDeclarativeBase, proxyGettersSetters} from './Decla
 initDeclarativeBase()
 
 class HTMLNode extends DeclarativeBase {
+    construct() {
+        super.construct()
+    }
+
     getStyles() {
         return styles
     }

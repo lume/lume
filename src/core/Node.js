@@ -3,7 +3,6 @@ import Transformable from './Transformable'
 import ImperativeBase, {initImperativeBase} from './ImperativeBase'
 import { default as HTMLInterface } from '../html/HTMLNode'
 import Scene from './Scene'
-import ImperativeDeclarativeAdapter from './ImperativeDeclarativeAdapter'
 
 initImperativeBase()
 
@@ -14,9 +13,8 @@ let Node = null
 const NodeMixin = base => {
 
     class _Node extends ImperativeBase.mixin(Transformable.mixin(base)) {
-        static define(name) {
-            customElements.define(name || 'i-node', Node)
-        }
+        static get defaultElementName() { return 'i-node' }
+        static get _Class() { return Node }
 
         /**
          * @constructor
@@ -110,7 +108,7 @@ const NodeMixin = base => {
             .then(logic)
 
             // catch
-            .catch(() => {
+            .catch(e => {
                 if (e == 'mountcancel') return
                 else possibleError = e
             })
@@ -249,6 +247,6 @@ Node = NodeMixin(class{})
 Node.mixin = NodeMixin
 
 // TODO for now, hard-mixin the HTMLInterface class. We'll do this automatically later.
-Node = Node.mixin(ImperativeDeclarativeAdapter.mixin(HTMLInterface))
+Node = Node.mixin(HTMLInterface)
 
 export {Node as default}

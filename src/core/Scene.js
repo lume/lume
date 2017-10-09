@@ -16,7 +16,6 @@ import Sizeable from './Sizeable'
 import getWebGlRenderer from './WebGLRenderer'
 import ImperativeBase, {initImperativeBase} from './ImperativeBase'
 import XYZValues from './XYZValues'
-import ImperativeDeclarativeAdapter from './ImperativeDeclarativeAdapter'
 import { default as HTMLInterface } from '../html/HTMLScene'
 import documentReady from 'awaitbox/dom/documentReady'
 
@@ -29,9 +28,8 @@ let Scene = null
 const SceneMixin = base => {
     // Scene is Sizeable, which is currently a subset of Transformable.
     class _Scene extends ImperativeBase.mixin(Sizeable.mixin(base)) {
-        static define(name) {
-            customElements.define(name || 'i-scene', Scene)
-        }
+        static get defaultElementName() { return 'i-scene' }
+        static get _Class() { return Scene }
 
         construct(options = {}) {
             super.construct(options)
@@ -246,6 +244,6 @@ Scene = SceneMixin(class{})
 Scene.mixin = SceneMixin
 
 // TODO for now, hard-mixin the HTMLInterface class. We'll do this automatically later.
-Scene = Scene.mixin(ImperativeDeclarativeAdapter.mixin(HTMLInterface))
+Scene = Scene.mixin(HTMLInterface)
 
 export {Scene as default}

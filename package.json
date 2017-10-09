@@ -57,11 +57,14 @@
     "babel-plugin-transform-object-rest-spread": "^6.26.0",
     "babel-plugin-transform-runtime": "^6.0.0",
     "buble": "^0.16.0",
-    "rollup": "^0.45.2",
+    "gulp": "^3.9.1",
+    "gulp-babel": "^7.0.0",
+    "gulp-buble": "^0.8.0",
+    "rollup": "^0.50.0",
     "rollup-plugin-babel": "^3.0.2",
     "rollup-plugin-babili": "^3.1.0",
     "rollup-plugin-buble": "^0.16.0",
-    "rollup-plugin-commonjs": "^8.1.0",
+    "rollup-plugin-commonjs": "^8.2.1",
     "rollup-plugin-node-resolve": "^3.0.0"
   },
   "jspm": {
