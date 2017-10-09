@@ -57,6 +57,7 @@
     "babel-plugin-transform-object-rest-spread": "^6.26.0",
     "babel-plugin-transform-runtime": "^6.0.0",
     "buble": "^0.16.0",
+    "fast-async": "^6.3.0",
     "gulp": "^3.9.1",
     "gulp-babel": "^7.0.0",
     "gulp-buble": "^0.8.0",

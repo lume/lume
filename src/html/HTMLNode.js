@@ -35,10 +35,6 @@ class HTMLNode extends DeclarativeBase {
         super.attributeChangedCallback(...args)
         this._updateNodeProperty(...args)
     }
-    //async attributeChangedCallback(...args) {
-        //super.attributeChangedCallback(...args)
-        //this._updateNodeProperty(...args)
-    //}
 
     _updateNodeProperty(attribute, oldValue, newValue) {
         // attributes on our HTML elements are the same name as those on

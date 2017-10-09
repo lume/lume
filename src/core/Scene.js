@@ -58,25 +58,15 @@ const SceneMixin = base => {
         }
 
         // TODO: we need to deinit webgl too.
-        initWebGl() {
+        async initWebGl() {
             // TODO: this needs to be cancelable too, search other codes for
             // "mountcancel" to see.
-            this.mountPromise.then(() => {
-                this.webglEnabled = !!this.getAttribute('webglenabled')
-                if (!this.webglEnabled) return
-                this.webGlRendererState = {}
-                getWebGlRenderer().initGl(this)
-            })
+            await this.mountPromise
+            this.webglEnabled = !!this.getAttribute('webglenabled')
+            if (!this.webglEnabled) return
+            this.webGlRendererState = {}
+            getWebGlRenderer().initGl(this)
         }
-        //async initWebGl() {
-            //// TODO: this needs to be cancelable too, search other codes for
-            //// "mountcancel" to see.
-            //await this.mountPromise
-            //this.webglEnabled = !!this.getAttribute('webglenabled')
-            //if (!this.webglEnabled) return
-            //this.webGlRendererState = {}
-            //getWebGlRenderer().initGl(this)
-        //}
 
         _setDefaultProperties() {
             super._setDefaultProperties()
@@ -129,68 +119,34 @@ const SceneMixin = base => {
          * provided, that will be the mount point. If no mount point is provided,
          * the scene will be mounted into document.body.
          */
-        mount(mountPoint) {
-            const mountLogic = () => {
-                // if no mountPoint was provided, just mount onto the <body> element.
-                if (mountPoint === undefined) mountPoint = document.body
-
-                // if the user supplied a selector, mount there.
-                else if (typeof mountPoint === 'string')
-                    mountPoint = document.querySelector(mountPoint)
-
-                // if we have an actual mount point (the user may have supplied one)
-                if (!(mountPoint instanceof window.HTMLElement))
-                    throw new Error('Invalid mount point specified in Scene.mount() call. Pass a selector, an actual HTMLElement, or don\'t pass anything to mount to <body>.')
-
-                if (this._mounted) this.unmount()
-
-                if (mountPoint !== this._elementManager.element.parentNode)
-                    mountPoint.appendChild(this._elementManager.element)
-
-                this._mounted = true
-
-                if (this._mountPromise) this._resolveMountPromise()
-
-                this._elementManager.shouldRender()
-                this._startOrStopSizePolling()
-            }
-
+        async mount(mountPoint) {
             // Wait for the document to be ready before mounting, otherwise the
             // target mount point might not exist yet when this function is called.
-            if (document.readyState == 'loading') return documentReady().then(mountLogic)
-            else {
-                mountLogic()
-                return Promise.resolve()
-            }
+            if (document.readyState == 'loading') await documentReady()
+
+            // if no mountPoint was provided, just mount onto the <body> element.
+            if (mountPoint === undefined) mountPoint = document.body
+
+            // if the user supplied a selector, mount there.
+            else if (typeof mountPoint === 'string')
+                mountPoint = document.querySelector(mountPoint)
+
+            // if we have an actual mount point (the user may have supplied one)
+            if (!(mountPoint instanceof window.HTMLElement))
+                throw new Error('Invalid mount point specified in Scene.mount() call. Pass a selector, an actual HTMLElement, or don\'t pass anything to mount to <body>.')
+
+            if (this._mounted) this.unmount()
+
+            if (mountPoint !== this._elementManager.element.parentNode)
+                mountPoint.appendChild(this._elementManager.element)
+
+            this._mounted = true
+
+            if (this._mountPromise) this._resolveMountPromise()
+
+            this._elementManager.shouldRender()
+            this._startOrStopSizePolling()
         }
-        //async mount(mountPoint) {
-            //// Wait for the document to be ready before mounting, otherwise the
-            //// target mount point might not exist yet when this function is called.
-            //if (document.readyState == 'loading') await documentReady()
-
-            //// if no mountPoint was provided, just mount onto the <body> element.
-            //if (mountPoint === undefined) mountPoint = document.body
-
-            //// if the user supplied a selector, mount there.
-            //else if (typeof mountPoint === 'string')
-                //mountPoint = document.querySelector(mountPoint)
-
-            //// if we have an actual mount point (the user may have supplied one)
-            //if (!(mountPoint instanceof window.HTMLElement))
-                //throw new Error('Invalid mount point specified in Scene.mount() call. Pass a selector, an actual HTMLElement, or don\'t pass anything to mount to <body>.')
-
-            //if (this._mounted) this.unmount()
-
-            //if (mountPoint !== this._elementManager.element.parentNode)
-                //mountPoint.appendChild(this._elementManager.element)
-
-            //this._mounted = true
-
-            //if (this._mountPromise) this._resolveMountPromise()
-
-            //this._elementManager.shouldRender()
-            //this._startOrStopSizePolling()
-        //}
 
         /**
          * Unmount the scene from it's mount point. Resets the Scene's

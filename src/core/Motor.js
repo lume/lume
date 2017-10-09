@@ -32,43 +32,36 @@ class Motor {
      * stack becomes empty due to removal of tasks, the rAF stops and the app
      * sits there doing nothing -- silence, crickets.
      */
-    _startAnimationLoop() {
-        if (this._animationLoopStarted) return Promise.resolve()
+    async _startAnimationLoop() {
+        if (this._animationLoopStarted) return
 
         this._animationLoopStarted = true
 
-        const logic = () => {
-            // DIRECT ANIMATION LOOP ///////////////////////////////////
-            // So now we can render after the scene is mounted.
-            const motorLoop = timestamp => {
-                this._inFrame = true
+        if (!documentIsReady) {
+            await documentReady()
+            documentIsReady = true
+        }
 
-                this._runRenderTasks(timestamp)
-                this._renderNodes(timestamp)
+        // DIRECT ANIMATION LOOP ///////////////////////////////////
+        // So now we can render after the scene is mounted.
+        const motorLoop = timestamp => {
+            this._inFrame = true
 
-                // If any tasks are left to run, continue the animation loop.
-                if (this._allRenderTasks.length)
-                    this._rAF = requestAnimationFrame(motorLoop)
-                else {
-                    this._rAF = null
-                    this._animationLoopStarted = false
-                }
+            this._runRenderTasks(timestamp)
+            this._renderNodes(timestamp)
 
-                this._inFrame = false
+            // If any tasks are left to run, continue the animation loop.
+            if (this._allRenderTasks.length)
+                this._rAF = requestAnimationFrame(motorLoop)
+            else {
+                this._rAF = null
+                this._animationLoopStarted = false
             }
 
-            this._rAF = requestAnimationFrame(motorLoop)
+            this._inFrame = false
         }
 
-        if (!documentIsReady) {
-            return documentReady().then(() => {
-                documentIsReady = true
-                logic()
-            })
-        }
-
-        logic()
-        return Promise.resolve()
+        this._rAF = requestAnimationFrame(motorLoop)
     }
     //async _startAnimationLoop() {
         //if (this._animationLoopStarted) return
@@ -80,45 +73,24 @@ class Motor {
             //documentIsReady = true
         //}
 
-        //// DIRECT ANIMATION LOOP ///////////////////////////////////
-        //// So now we can render after the scene is mounted.
-        //const motorLoop = timestamp => {
+        //// ANIMATION LOOP USING WHILE AND AWAIT ///////////////////////////////////
+        //this._rAF = true
+        //let timestamp = null
+        //while (this._rAF) {
+            //timestamp = await animationFrame()
             //this._inFrame = true
 
             //this._runRenderTasks(timestamp)
             //this._renderNodes(timestamp)
 
             //// If any tasks are left to run, continue the animation loop.
-            //if (this._allRenderTasks.length)
-                //this._rAF = requestAnimationFrame(motorLoop)
-            //else {
+            //if (!this._allRenderTasks.length) {
                 //this._rAF = null
                 //this._animationLoopStarted = false
             //}
 
             //this._inFrame = false
         //}
-
-        //this._rAF = requestAnimationFrame(motorLoop)
-
-        //// ANIMATION LOOP USING WHILE AND AWAIT ///////////////////////////////////
-        ////this._rAF = true
-        ////let timestamp = null
-        ////while (this._rAF) {
-            ////timestamp = await animationFrame()
-            ////this._inFrame = true
-
-            ////this._runRenderTasks(timestamp)
-            ////this._renderNodes(timestamp)
-
-            ////// If any tasks are left to run, continue the animation loop.
-            ////if (!this._allRenderTasks.length) {
-                ////this._rAF = null
-                ////this._animationLoopStarted = false
-            ////}
-
-            ////this._inFrame = false
-        ////}
     //}
 
     /**

@@ -88,55 +88,23 @@ const NodeMixin = base => {
         /**
          * @private
          */
-        _waitForMountThenResolveMountPromise() {
-            if (this._awaitingScenePromise) return Promise.resolve()
-
-            const logic = () => {
-                this._mounted = true
-                this._resolveMountPromise()
-                this._elementManager.shouldRender()
+        async _waitForMountThenResolveMountPromise() {
+            if (this._awaitingScenePromise) return
+            try {
+                this._awaitingScenePromise = true
+                await this._getScenePromise()
+                await this._scene.mountPromise
+            } catch (e) {
+                if (e == 'mountcancel') return
+                else throw e
+            } finally {
+                this._awaitingScenePromise = false
             }
 
-            this._awaitingScenePromise = true
-
-            let possibleError = undefined
-
-            // try
-            return this._getScenePromise()
-            .then(() => this._scene.mountPromise)
-
-            .then(logic)
-
-            // catch
-            .catch(e => {
-                if (e == 'mountcancel') return
-                else possibleError = e
-            })
-
-            // finally
-            .then(() => {
-                this._awaitingScenePromise = false
-
-                if (possibleError) throw possibleError
-            })
+            this._mounted = true
+            this._resolveMountPromise()
+            this._elementManager.shouldRender()
         }
-        //async _waitForMountThenResolveMountPromise() {
-            //if (this._awaitingScenePromise) return
-            //try {
-                //this._awaitingScenePromise = true
-                //await this._getScenePromise()
-                //await this._scene.mountPromise
-            //} catch (e) {
-                //if (e == 'mountcancel') return
-                //else throw e
-            //} finally {
-                //this._awaitingScenePromise = false
-            //}
-
-            //this._mounted = true
-            //this._resolveMountPromise()
-            //this._elementManager.shouldRender()
-        //}
 
         /**
          * @private

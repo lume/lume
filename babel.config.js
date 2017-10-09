@@ -15,5 +15,22 @@ module.exports = {
             // generator functions.
             regenerator: false,
         }],
+        ['fast-async', {
+
+            //// broken in Meteor, see https://github.com/MatAtBread/nodent/issues/102
+            //compiler: {
+            //    promises: false,
+            //    noRuntime: false,
+            //},
+            //// similar to Babel transform-runtime to prevent duplication.
+            //useRuntimeModule: true,
+
+            // we'll use this for now until the above works in Meteor.  The
+            // previous config leads to better performance I think.
+            compiler: {
+                promises: true,
+                noRuntime: true,
+            },
+        }],
     ],
 }

@@ -130,7 +130,7 @@ function WebComponentMixin(elementClass) {
             return rule
         }
 
-        disconnectedCallback() {
+        async disconnectedCallback() {
             if (super.disconnectedCallback) super.disconnectedCallback()
             this._connected = false
 
@@ -146,41 +146,15 @@ function WebComponentMixin(elementClass) {
             // (for example, gets moved), then we want to preserve the
             // stuff that would be cleaned up by an extending class' deinit
             // method by not running the following this.deinit() call.
-            Promise.resolve().then(() => { // deferr to the next tick.
+            await Promise.resolve() // deferr to the next tick.
 
-                // As mentioned in the previous comment, if the element was not
-                // re-attached in the last tick (for example, it was moved to
-                // another element), then clean up.
-                if (!this._connected && this._initialized) {
-                    this.deinit()
-                }
-            })
+            // As mentioned in the previous comment, if the element was not
+            // re-attached in the last tick (for example, it was moved to
+            // another element), then clean up.
+            if (!this._connected && this._initialized) {
+                this.deinit()
+            }
         }
-        //async disconnectedCallback() {
-            //if (super.disconnectedCallback) super.disconnectedCallback()
-            //this._connected = false
-
-            //// Deferr to the next tick before cleaning up in case the
-            //// element is actually being re-attached somewhere else within this
-            //// same tick (detaching and attaching is synchronous, so by
-            //// deferring to the next tick we'll be able to know if the element
-            //// was re-attached or not in order to clean up or not). Note that
-            //// appendChild can be used to move an element to another parent
-            //// element, in which case connectedCallback and disconnectedCallback
-            //// both get called, and in which case we don't necessarily want to
-            //// clean up. If the element gets re-attached before the next tick
-            //// (for example, gets moved), then we want to preserve the
-            //// stuff that would be cleaned up by an extending class' deinit
-            //// method by not running the following this.deinit() call.
-            //await Promise.resolve() // deferr to the next tick.
-
-            //// As mentioned in the previous comment, if the element was not
-            //// re-attached in the last tick (for example, it was moved to
-            //// another element), then clean up.
-            //if (!this._connected && this._initialized) {
-                //this.deinit()
-            //}
-        //}
 
         /**
          * This method can be overridden by extending classes, it should return
