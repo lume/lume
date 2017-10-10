@@ -17,7 +17,7 @@ class HTMLScene extends DeclarativeBase {
         this._parentSize = {x:0, y:0, z:0}
 
         // If the scene is already in the DOM, make it be "mounted".
-        if (!this.imperativeCounterpart._mounted && this.parentNode) {
+        if (!this._mounted && this.parentNode) {
 
             // defer so that the construct() call stack can finish
             //
@@ -26,7 +26,7 @@ class HTMLScene extends DeclarativeBase {
             // into a single class has introduced a small difference in
             // logic order.
             Promise.resolve().then(() =>
-                this.imperativeCounterpart.mount(this.parentNode)
+                this.mount(this.parentNode)
             )
         }
     }
@@ -68,7 +68,7 @@ class HTMLScene extends DeclarativeBase {
     deinit() {
         super.deinit()
 
-        this.imperativeCounterpart.unmount()
+        this.unmount()
     }
 
     __stopSizePolling() {
@@ -80,8 +80,8 @@ class HTMLScene extends DeclarativeBase {
         super.connectedCallback()
 
         // When the HTMLScene gets addded to the DOM, make it be "mounted".
-        if (!this.imperativeCounterpart._mounted)
-            this.imperativeCounterpart.mount(this.parentNode)
+        if (!this._mounted)
+            this.mount(this.parentNode)
     }
 }
 

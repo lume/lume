@@ -47,7 +47,7 @@ function shadowRootChildAdded(child) {
     // NOTE Logic here is similar to childConnectedCallback
 
     if (child instanceof DeclarativeBase) {
-        this.imperativeCounterpart.add(child.imperativeCounterpart)
+        this.add(child)
     }
     else if (
         hasShadowDomV0
@@ -69,7 +69,7 @@ function shadowRootChildRemoved(child) {
     // NOTE Logic here is similar to childDisconnectedCallback
 
     if (child instanceof DeclarativeBase) {
-        this.imperativeCounterpart.remove(child.imperativeCounterpart)
+        this.remove(child)
     }
     else if (
         hasShadowDomV0
@@ -98,7 +98,7 @@ function onV0ShadowRootReplaced(oldRoot) {
 
         // We should disconnect the imperative connection (f.e. so it is not
         // rendered in WebGL)
-        this.imperativeCounterpart.remove(child.imperativeCounterpart, true)
+        this.remove(child, true)
     }
 }
 
@@ -122,8 +122,6 @@ export function initDeclarativeBase() {
 
         construct() {
             super.construct()
-
-            this.imperativeCounterpart = null // to hold the imperative API Node instance.
 
             // true if this node has a shadow root (even if it is "closed", see
             // hijack function above). Once true always true because shadow
@@ -155,33 +153,6 @@ export function initDeclarativeBase() {
             // to this node in the flat tree. We instantiate this later, only
             // when/if needed.
             this._shadowChildren = null
-
-            this._associateImperativeNode()
-        }
-
-        /**
-         * This method creates the association between this HTMLNode instance
-         * and the imperative Node instance.
-         *
-         * This method may get called by this.init, but can also be called by
-         * the Node class if Node is used imperatively. See Node#constructor.
-         *
-         * @private
-         *
-         * @param {Object} imperativeCounterpart The imperative counterpart to
-         * associate with this MotorHTML element. This parameter is only used in the
-         * imperative API constructors, and this happens when using the imperative
-         * form of infamous instead of the HTML interface to infamous. When the HTML
-         * interface is used, this gets called first without an
-         * imperativeCounterpart argument and the call to this in an imperative
-         * constructor will be a noop. Basically, either this gets called first by a
-         * MotorHTML element, or first by an imperative instance, depending on which
-         * API is used first.
-         */
-        _associateImperativeNode(imperativeCounterpart) {
-            // if the association is made already, noop
-            if (this.imperativeCounterpart) return
-            this.imperativeCounterpart = this
         }
 
         childConnectedCallback(child) {
@@ -192,9 +163,9 @@ export function initDeclarativeBase() {
 
                 // If ImperativeBase#add was called first, child's
                 // _parent will already be set, so prevent recursion.
-                if (child.imperativeCounterpart._parent) return
+                if (child._parent) return
 
-                this.imperativeCounterpart.add(child.imperativeCounterpart)
+                this.add(child)
             }
             else if (
                 hasShadowDomV0
@@ -315,9 +286,9 @@ export function initDeclarativeBase() {
 
                 // If ImperativeBase#remove was called first, child's
                 // _parent will already be null, so prevent recursion.
-                if (!child.imperativeCounterpart._parent) return
+                if (!child._parent) return
 
-                this.imperativeCounterpart.remove(child.imperativeCounterpart)
+                this.remove(child)
             }
             else if (
                 hasShadowDomV0
@@ -392,7 +363,7 @@ export function proxyGettersSetters(SourceClass, TargetClass) {
         if (sourceDescriptor.set) {
             Object.assign(targetDescriptor, {
                 set(value) {
-                    this.imperativeCounterpart[prop] = value
+                    this[prop] = value
                 }
             })
         }
@@ -401,7 +372,7 @@ export function proxyGettersSetters(SourceClass, TargetClass) {
         if (sourceDescriptor.get) {
             Object.assign(targetDescriptor, {
                 get() {
-                    return this.imperativeCounterpart[prop]
+                    return this[prop]
                 }
             })
         }

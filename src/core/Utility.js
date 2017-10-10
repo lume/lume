@@ -149,7 +149,7 @@ function traverse(node, isShadowChild) {
     const shadowChildren = node._elementManager.element._shadowChildren
     if (hasHtmlApi && shadowChildren) {
         for (let l=shadowChildren.length, i=0; i<l; i+=1)
-            traverse(shadowChildren[i].imperativeCounterpart, true)
+            traverse(shadowChildren[i], true)
     }
 }
 

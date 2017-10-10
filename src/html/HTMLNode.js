@@ -41,9 +41,9 @@ class HTMLNode extends DeclarativeBase {
         // the Node class (the setters).
         if (newValue !== oldValue) {
             if (attribute.match(/opacity/i))
-                this.imperativeCounterpart[attribute] = window.parseFloat(newValue)
+                this[attribute] = window.parseFloat(newValue)
             else if (attribute.match(/sizeMode/i))
-                this.imperativeCounterpart[attribute] = parseStringArray(newValue)
+                this[attribute] = parseStringArray(newValue)
             else if (
                 attribute.match(/rotation/i)
                 || attribute.match(/scale/i)
@@ -55,7 +55,7 @@ class HTMLNode extends DeclarativeBase {
                 || attribute.match(/origin/i)
                 || attribute.match(/skew/i)
             ) {
-                this.imperativeCounterpart[attribute] = parseNumberArray(newValue)
+                this[attribute] = parseNumberArray(newValue)
             }
             else {
                 /* nothing, ignore other attributes */

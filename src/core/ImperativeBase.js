@@ -40,12 +40,15 @@ export function initImperativeBase() {
             construct(options = {}) {
                 super.construct(options)
 
+                // we don't need this, keep for backward compatibility (mainly
+                // all my demos at trusktr.io).
+                this.imperativeCounterpart = this
+
                 this._willBeRendered = false
 
                 // Here we create the DOM HTMLElement associated with this
                 // Imperative-API Node.
                 this._elementManager = new ElementManager(this)
-                this._elementManager.element._associateImperativeNode(this)
 
                 // For Nodes, true when this Node is added to a parent AND it
                 // has an anancestor Scene that is mounted into DOM. For
