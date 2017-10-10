@@ -31,20 +31,43 @@ class HTMLScene extends DeclarativeBase {
         }
     }
 
-    __startSizePolling() {
+    _startOrStopSizePolling() {
+        if (
+            this._mounted &&
+            (this._properties.sizeMode.x == 'proportional'
+            || this._properties.sizeMode.y == 'proportional'
+            || this._properties.sizeMode.z == 'proportional')
+        ) {
+            this._startSizePolling()
+        }
+        else {
+            this._stopSizePolling()
+        }
+    }
+
+    // observe size changes on the scene element.
+    // HTML
+    _startSizePolling() {
         // NOTE Polling is currently required because there's no other way to do this
         // reliably, not even with MutationObserver. ResizeObserver hasn't
         // landed in browsers yet.
         if (!this._sizePollTask)
             this._sizePollTask = Motor.addRenderTask(this._checkSize.bind(this))
+        this.on('parentsizechange', this._onElementParentSizeChange)
+    }
+
+    // Don't observe size changes on the scene element.
+    // HTML
+    _stopSizePolling() {
+        this.off('parentsizechange', this._onElementParentSizeChange)
+        Motor.removeRenderTask(this._sizePollTask)
+        this._sizePollTask = null
     }
 
     // NOTE, the Z dimension of a scene doesn't matter, it's a flat plane, so
     // we haven't taken that into consideration here.
+    // HTML
     _checkSize() {
-
-        // The scene has a parent by the time this is called (see
-        // src/core/Scene#mount where _startSizePolling is called)
         const parent = this.parentNode
         const parentSize = this._parentSize
         const style = getComputedStyle(parent)
@@ -69,11 +92,6 @@ class HTMLScene extends DeclarativeBase {
         super.deinit()
 
         this.unmount()
-    }
-
-    __stopSizePolling() {
-        Motor.removeRenderTask(this._sizePollTask)
-        this._sizePollTask = null
     }
 
     connectedCallback() {

@@ -103,7 +103,7 @@ const NodeMixin = base => {
 
             this._mounted = true
             this._resolveMountPromise()
-            this._elementManager.shouldRender()
+            this._elementOperations.shouldRender()
         }
 
         /**

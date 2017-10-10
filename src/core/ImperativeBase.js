@@ -1,4 +1,4 @@
-import ElementManager from './ElementManager'
+import ElementOperations from './ElementOperations'
 import Sizeable from './Sizeable'
 import Node from './Node'
 import Scene from './Scene'
@@ -48,7 +48,7 @@ export function initImperativeBase() {
 
                 // Here we create the DOM HTMLElement associated with this
                 // Imperative-API Node.
-                this._elementManager = new ElementManager(this)
+                this._elementOperations = new ElementOperations(this)
 
                 // For Nodes, true when this Node is added to a parent AND it
                 // has an anancestor Scene that is mounted into DOM. For
@@ -119,7 +119,7 @@ export function initImperativeBase() {
              * @readonly
              */
             get element() {
-                return this._elementManager.element
+                return this._elementOperations.element
             }
 
             /**
@@ -155,7 +155,7 @@ export function initImperativeBase() {
                 // child should watch the parent for size changes.
                 this.on('sizechange', childNode._onParentSizeChange)
 
-                this._elementManager.connectChildElement(childNode)
+                this._elementOperations.connectChildElement(childNode)
 
                 return this
             }
@@ -170,11 +170,11 @@ export function initImperativeBase() {
                 childNode._resetSceneRef()
 
                 if (childNode._mountPromise) childNode._rejectMountPromise('mountcancel')
-                if (childNode._mounted) childNode._elementManager.shouldNotRender()
+                if (childNode._mounted) childNode._elementOperations.shouldNotRender()
                 childNode._resetMountPromise()
 
                 if (!leaveInDom)
-                    this._elementManager.disconnectChildElement(childNode)
+                    this._elementOperations.disconnectChildElement(childNode)
             }
 
             _resetMountPromise() {
@@ -222,7 +222,7 @@ export function initImperativeBase() {
             _render(timestamp) {
                 super._render()
                 // applies the transform matrix to the element's style property.
-                this._elementManager.applyImperativeNodeProperties(this)
+                this._elementOperations.applyImperativeNodeProperties(this)
             }
 
             /**
@@ -239,7 +239,7 @@ export function initImperativeBase() {
                 super.properties = properties
 
                 if (properties.classes)
-                    this._elementManager.setClasses(...properties.classes);
+                    this._elementOperations.setClasses(...properties.classes);
             }
         }
 

@@ -76,34 +76,6 @@ const SceneMixin = base => {
             })
         }
 
-        _startOrStopSizePolling() {
-            if (
-                this._mounted &&
-                (this._properties.sizeMode.x == 'proportional'
-                || this._properties.sizeMode.y == 'proportional'
-                || this._properties.sizeMode.z == 'proportional')
-            ) {
-                this._startSizePolling()
-            }
-            else {
-                this._stopSizePolling()
-            }
-        }
-
-        // observe size changes on the scene element.
-        _startSizePolling() {
-            if (!this._elementManager) return
-            this._elementManager.element.__startSizePolling()
-            this._elementManager.element.on('parentsizechange', this._onElementParentSizeChange)
-        }
-
-        // Don't observe size changes on the scene element.
-        _stopSizePolling() {
-            if (!this._elementManager) return
-            this._elementManager.element.off('parentsizechange', this._onElementParentSizeChange)
-            this._elementManager.element.__stopSizePolling()
-        }
-
         /** @override */
         _getParentSize() {
             return this._mounted ? this._elementParentSize : {x:0,y:0,z:0}
@@ -137,14 +109,14 @@ const SceneMixin = base => {
 
             if (this._mounted) this.unmount()
 
-            if (mountPoint !== this._elementManager.element.parentNode)
-                mountPoint.appendChild(this._elementManager.element)
+            if (mountPoint !== this.parentNode)
+                mountPoint.appendChild(this)
 
             this._mounted = true
 
             if (this._mountPromise) this._resolveMountPromise()
 
-            this._elementManager.shouldRender()
+            this._elementOperations.shouldRender()
             this._startOrStopSizePolling()
         }
 
@@ -155,11 +127,11 @@ const SceneMixin = base => {
         unmount() {
             if (!this._mounted) return
 
-            this._elementManager.shouldNotRender()
+            this._elementOperations.shouldNotRender()
             this._stopSizePolling()
 
-            if (this._elementManager.element.parentNode)
-                this._elementManager.element.parentNode.removeChild(this._elementManager.element)
+            if (this.parentNode)
+                this.parentNode.removeChild(this)
 
             if (this._mountPromise) this._rejectMountPromise('mountcancel')
             this._resetMountPromise()

@@ -5,7 +5,7 @@ import Motor from './Motor'
  * Manages a DOM element. Exposes a set of recommended APIs for working with
  * DOM efficiently. Currently doesn't do much yet...
  */
-class ElementManager {
+class ElementOperations {
     constructor(element) {
         this.element = element
     }
@@ -33,23 +33,23 @@ class ElementManager {
         this.element.style[property] = value
     }
 
-    add(childElementManager) {
-        this.element.appendChild(childElementManager.element)
+    add(child) {
+        this.element.appendChild(child)
     }
 
-    remove(childElementManager) {
+    remove(child) {
         // This conditional check is needed incase the element was already
         // removed from the HTML-API side.
-        if (childElementManager.element.parentNode === this.element)
-            this.element.removeChild(childElementManager.element)
+        if (child.parentNode === this.element)
+            this.element.removeChild(child)
     }
 
-    connectChildElement(childImperativeNode) {
+    connectChildElement(child) {
         if (
 
             // When using the imperative API, this statement is
             // true, so the DOM elements need to be connected.
-            !childImperativeNode._elementManager.element.parentNode
+            !child.parentNode
 
             // This condition is irrelevant when strictly using the
             // imperative API. However, it is possible that when
@@ -58,8 +58,8 @@ class ElementManager {
             // imperative Node can be gotten and used to add the
             // node to another imperative Node. In this case, the
             // HTML-API node will be added to the proper HTMLparent.
-            || (childImperativeNode._elementManager.element.parentElement &&
-                childImperativeNode._elementManager.element.parentElement !== this.element)
+            || (child.parentElement &&
+                child.parentElement !== this.element)
 
             // When an HTML-API node is already child of the
             // relevant parent, or it is child of a shadow root of
@@ -67,16 +67,16 @@ class ElementManager {
             // everything is already as expected, so the following
             // conditional body is skipped.
         ) {
-            this.add(childImperativeNode._elementManager)
+            this.add(child)
         }
     }
 
-    disconnectChildElement(childImperativeNode) {
+    disconnectChildElement(child) {
         // If DeclarativeBase#remove was called first, we don't need to
         // call this again.
-        if (!childImperativeNode._elementManager.element.parentNode) return
+        if (!child.parentNode) return
 
-        this.remove(childImperativeNode._elementManager)
+        this.remove(child)
     }
 
     /**
@@ -135,4 +135,4 @@ class ElementManager {
     }
 }
 
-export {ElementManager as default}
+export {ElementOperations as default}
