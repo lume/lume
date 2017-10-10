@@ -5,8 +5,8 @@ const instanceofSymbol = Symbol('instanceofSymbol')
 const TreeNodeMixin = base => {
     class TreeNode extends base {
 
-        construct(options = {}) {
-            super.construct(options)
+        construct(...args) {
+            super.construct(...args)
             this._parent = null // default to no parent.
             this._children = [];
         }
@@ -50,6 +50,11 @@ const TreeNodeMixin = base => {
 
             this._children.push(childNode);
 
+            Promise.resolve().then(() => {
+                childNode.connected()
+                this.childDisconnected(childNode)
+            })
+
             return this
         }
 
@@ -82,6 +87,11 @@ const TreeNodeMixin = base => {
             childNode._parent = null
             this._children.splice(this._children.indexOf(childNode), 1);
 
+            Promise.resolve().then(() => {
+                childNode.disconnected()
+                this.childConnected(childNode)
+            })
+
             return this
         }
 
@@ -110,6 +120,13 @@ const TreeNodeMixin = base => {
         get childCount() {
             return this._children.length
         }
+
+        // generic life cycle methods
+        connected() {}
+        disconnected() {}
+        childConnected(child) {}
+        childDisconnected(child) {}
+        propertyChanged() {}
     }
 
     Object.defineProperty(TreeNode, Symbol.hasInstance, {
