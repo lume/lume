@@ -8,13 +8,13 @@ initImperativeBase()
 
 const instanceofSymbol = Symbol('instanceofSymbol')
 
-let Node = null
+let _Node = null
 
 const NodeMixin = base => {
 
-    class _Node extends ImperativeBase.mixin(Transformable.mixin(base)) {
+    class Node extends ImperativeBase.mixin(Transformable.mixin(base)) {
         static get defaultElementName() { return 'i-node' }
-        static get _Class() { return Node }
+        static get _Class() { return _Node }
 
         /**
          * @constructor
@@ -187,9 +187,9 @@ const NodeMixin = base => {
         }
     }
 
-    Object.defineProperty(_Node, Symbol.hasInstance, {
+    Object.defineProperty(Node, Symbol.hasInstance, {
         value: function(obj) {
-            if (this !== _Node) return Object.getPrototypeOf(_Node)[Symbol.hasInstance].call(this, obj)
+            if (this !== Node) return Object.getPrototypeOf(Node)[Symbol.hasInstance].call(this, obj)
 
             let currentProto = obj
 
@@ -206,15 +206,15 @@ const NodeMixin = base => {
         }
     })
 
-    _Node[instanceofSymbol] = true
+    Node[instanceofSymbol] = true
 
-    return _Node
+    return Node
 }
 
-Node = NodeMixin(class{})
-Node.mixin = NodeMixin
+_Node = NodeMixin(class{})
+_Node.mixin = NodeMixin
 
 // TODO for now, hard-mixin the HTMLInterface class. We'll do this automatically later.
-Node = Node.mixin(HTMLInterface)
+_Node = _Node.mixin(HTMLInterface)
 
-export {Node as default}
+export {_Node as default}
