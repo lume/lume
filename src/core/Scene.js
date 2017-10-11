@@ -14,7 +14,6 @@ import Transformable from './Transformable'
 import Sizeable from './Sizeable'
 import Motor from './Motor'
 
-import getWebGlRenderer from './WebGLRenderer'
 import ImperativeBase, {initImperativeBase} from './ImperativeBase'
 import XYZValues from './XYZValues'
 import { default as HTMLInterface } from '../html/HTMLScene'
