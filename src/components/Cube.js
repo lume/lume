@@ -12,7 +12,10 @@ import Node from '../core/Node'
 /**
  * A scenegraph tree that lays things out in a cube form.
  *
- * XXX: Rename to CubeLayout?
+ * TODO: extend from i-mesh, using a Cube geometry? Or perhaps this is a
+ * CubeLayout, not necessarily a Cube mesh.
+ *
+ * TODO: this is written imperatively. How would it be declaratively?
  *
  * @class Cube
  * @extends Node
@@ -28,7 +31,7 @@ export class Cube extends Node {
     construct(size, options) {
 
         // cubes, the same size on all sides
-        super.construct({absoluteSize: [size, size, size], ...options});
+        super.construct({size: [size, size, size], ...options});
 
         //GenericSync.register({
             //mouse: MouseSync,
@@ -56,14 +59,14 @@ export class Cube extends Node {
         const side = new Node({
             align: [0.5, 0.5],
             mountPoint: [0.5, 0.5],
-            absoluteSize: [this.size, this.size],
+            size: [this.size, this.size],
         })
 
         this.sides.push(side)
 
         rotator.add(side)
 
-        // XXX: make a new GenericSync-like thing?
+        // TODO: make a new GenericSync-like thing based on Famous?
         //const sync = new GenericSync(['mouse','touch']);
         //side.pipe(sync);
         //sync.pipe(this.options.handler);

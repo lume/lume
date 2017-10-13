@@ -71,12 +71,9 @@ export function initImperativeBase() {
                 this._waitingForMountConditions = false
 
                 // See Transformable/Sizeable propertychange event.
+                // TODO: defer size calculation to render task
                 this.on('propertychange', prop => {
-                    if (
-                        prop == 'sizeMode' ||
-                        prop == 'absoluteSize' ||
-                        prop == 'proportionalSize'
-                    ) {
+                    if ( prop == 'sizeMode' || prop == 'size' ) {
                         this._calcSize()
                     }
 

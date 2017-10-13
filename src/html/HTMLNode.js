@@ -19,8 +19,7 @@ class HTMLNode extends DeclarativeBase {
     // proxyGettersSetters and _updateNodeProperty
     static get observedAttributes() { return [
         'sizeMode',
-        'absoluteSize',
-        'proportionalSize',
+        'size',
         'align',
         'mountPoint',
         'rotation',
@@ -48,8 +47,7 @@ class HTMLNode extends DeclarativeBase {
                 attribute.match(/rotation/i)
                 || attribute.match(/scale/i)
                 || attribute.match(/position/i)
-                || attribute.match(/absoluteSize/i)
-                || attribute.match(/proportionalSize/i)
+                || attribute.match(/size/i)
                 || attribute.match(/align/i)
                 || attribute.match(/mountPoint/i)
                 || attribute.match(/origin/i)
@@ -96,7 +94,7 @@ function checkIsNumberArrayString(str) {
 
 function checkIsSizeArrayString(str) {
     if (!str.match(/^\s*(((\s*([a-zA-Z]+)\s*,){0,2}(\s*([a-zA-Z]+)))|((\s*([a-zA-Z]+)\s*){1,3}))\s*$/g))
-        throw new Error(`Attribute must be a comma- or space-separated sequence of up to three strings, for example "absolute absolute". Yours was "${str}".`)
+        throw new Error(`Attribute must be a comma- or space-separated sequence of up to three strings, for example "literal proportional". Yours was "${str}".`)
 }
 
 export {HTMLNode as default}

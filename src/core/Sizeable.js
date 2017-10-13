@@ -1,6 +1,7 @@
 import { makeLowercaseSetterAliases } from './Utility'
 import TreeNode from './TreeNode'
 import XYZValues from './XYZValues'
+import XYZNonNegativeValues from './XYZNonNegativeValues'
 import Observable from './Observable'
 import Motor from './Motor'
 
@@ -17,41 +18,12 @@ if (typeof document.createElement('div').style.transform == 'undefined') {
     })
 }
 
-class XYZNonNegativeValues extends XYZValues {
-
-    constructor(x = 0, y = 0, z = 0) {
-        super(x, y, z)
-    }
-
-    _checkForNegative(axisName, value) {
-        if(value < 0) {
-            throw new Error(axisName + " value was " + value + ". Size values cannot be negative.")
-        }
-    }
-
-    set x(value) {
-        this._checkForNegative("X", value)
-        super.x = value
-    }
-
-    set y(value) {
-        this._checkForNegative("Y", value)
-        super.y = value
-    }
-
-    set z(value) {
-        this._checkForNegative("Z", value)
-        super.z = value
-    }
-
-}
-
 const instanceofSymbol = Symbol('instanceofSymbol')
 
 const SizeableMixin = base => {
 
     // Sizeable extends TreeNode because Sizeable knows about its _parent when
-    // calculating proportionalSize. Also Transformable knows about it's parent
+    // calculating proportional sizes. Also Transformable knows about it's parent
     // in order to calculate it's world matrix based on it's parent's.
     class Sizeable extends Observable.mixin(TreeNode.mixin(base)) {
 
@@ -68,19 +40,18 @@ const SizeableMixin = base => {
 
         _setDefaultProperties() {
             Object.assign(this._properties, {
-                sizeMode:         new XYZValues('absolute', 'absolute', 'absolute'),
-                absoluteSize:     new XYZNonNegativeValues(0, 0, 0),
-                proportionalSize: new XYZNonNegativeValues(1, 1, 1),
+                sizeMode: new XYZValues('literal', 'literal', 'literal'),
+                size:     new XYZNonNegativeValues(100, 100, 100),
             })
         }
 
+        // TODO change all event values to objects. See here for reasoning:
+        // https://github.com/airbnb/javascript#events
         _setPropertyObservers() {
             this._properties.sizeMode.on('valuechanged',
                 () => this.triggerEvent('propertychange', 'sizeMode'))
-            this._properties.absoluteSize.on('valuechanged',
-                () => this.triggerEvent('propertychange', 'absoluteSize'))
-            this._properties.proportionalSize.on('valuechanged',
-                () => this.triggerEvent('propertychange', 'proportionalSize'))
+            this._properties.size.on('valuechanged',
+                () => this.triggerEvent('propertychange', 'size'))
         }
 
         _calcSize() {
@@ -89,25 +60,25 @@ const SizeableMixin = base => {
             const props = this._properties
             const parentSize = this._getParentSize()
 
-            if (props.sizeMode._x == 'absolute') {
-                calculatedSize.x = props.absoluteSize._x
+            if (props.sizeMode._x == 'literal') {
+                calculatedSize.x = props.size._x
             }
             else { // proportional
-                calculatedSize.x = parentSize.x * props.proportionalSize._x
+                calculatedSize.x = parentSize.x * props.size._x
             }
 
-            if (props.sizeMode._y == 'absolute') {
-                calculatedSize.y = props.absoluteSize._y
+            if (props.sizeMode._y == 'literal') {
+                calculatedSize.y = props.size._y
             }
             else { // proportional
-                calculatedSize.y = parentSize.y * props.proportionalSize._y
+                calculatedSize.y = parentSize.y * props.size._y
             }
 
-            if (props.sizeMode._z == 'absolute') {
-                calculatedSize.z = props.absoluteSize._z
+            if (props.sizeMode._z == 'literal') {
+                calculatedSize.z = props.size._z
             }
             else { // proportional
-                calculatedSize.z = parentSize.z * props.proportionalSize._z
+                calculatedSize.z = parentSize.z * props.size._z
             }
 
             if (
@@ -195,12 +166,13 @@ const SizeableMixin = base => {
         }
 
         /**
-         * Set the size mode for each axis. Possible size modes are "absolute" and "proportional".
+         * Set the size mode for each axis. Possible size modes are "literal"
+         * and "proportional". The default values are "literal" for all axes.
          *
          * @param {Object} newValue
-         * @param {number} [newValue.x] The x-axis sizeMode to apply.
-         * @param {number} [newValue.y] The y-axis sizeMode to apply.
-         * @param {number} [newValue.z] The z-axis sizeMode to apply.
+         * @param {number} [newValue.x] The x-axis sizeMode to apply. Default: `"literal"`
+         * @param {number} [newValue.y] The y-axis sizeMode to apply. Default: `"literal"`
+         * @param {number} [newValue.z] The z-axis sizeMode to apply. Default: `"literal"`
          */
         set sizeMode(newValue) {
             this._setPropertyXYZ(Sizeable, 'sizeMode', newValue)
@@ -209,17 +181,39 @@ const SizeableMixin = base => {
             return this._properties.sizeMode
         }
 
+        // TODO: A "differential" size would be cool. Good for padding,
+        // borders, etc. Inspired from Famous' differential sizing.
+        //
+        // TODO: A "target" size where sizing can be relative to another node.
+        // This would be tricky though, because there could be circular size
+        // dependencies. Maybe we'd throw an error in that case, because there'd be no original size to base off of.
+
         /**
+         * Set the size of each axis. The size for each axis depends on the
+         * sizeMode for each axis. For example, if node.sizeMode is set to
+         * `sizeMode = ['literal', 'proportional', 'literal']`, then setting
+         * `size = [20, 0.5, 30]` means that X size is a literal value of 20,
+         * Y size is 0.5 of it's parent Y size, and Z size is a literal value
+         * of 30. It is easy this way to mix literal and proportional sizes for
+         * the different axes.
+         *
+         * Literal sizes can be any value (the literal size that you want) and
+         * proportional sizes are a number between 0 and 1 representing a
+         * proportion of the parent node size. 0 means 0% of the parent size,
+         * and 1.0 means 100% of the parent size.
+         *
+         * All size values must be positive numbers.
+         *
          * @param {Object} newValue
-         * @param {number} [newValue.x] The x-axis absoluteSize to apply.
-         * @param {number} [newValue.y] The y-axis absoluteSize to apply.
-         * @param {number} [newValue.z] The z-axis absoluteSize to apply.
+         * @param {number} [newValue.x] The x-axis size to apply.
+         * @param {number} [newValue.y] The y-axis size to apply.
+         * @param {number} [newValue.z] The z-axis size to apply.
          */
-        set absoluteSize(newValue) {
-            this._setPropertyXYZ(Sizeable, 'absoluteSize', newValue)
+        set size(newValue) {
+            this._setPropertyXYZ(Sizeable, 'size', newValue)
         }
-        get absoluteSize() {
-            return this._properties.absoluteSize
+        get size() {
+            return this._properties.size
         }
 
         /**
@@ -233,26 +227,9 @@ const SizeableMixin = base => {
          * property representing the computed size of the x, y, and z axes
          * respectively.
          */
-        get actualSize() {
+        get calculatedSize() {
             const {x,y,z} = this._calculatedSize
             return {x,y,z}
-        }
-
-        /**
-         * Set the size of a Node proportional to the size of it's parent Node. The
-         * values are a real number between 0 and 1 inclusive where 0 means 0% of
-         * the parent size and 1 means 100% of the parent size.
-         *
-         * @param {Object} newValue
-         * @param {number} [newValue.x] The x-axis proportionalSize to apply.
-         * @param {number} [newValue.y] The y-axis proportionalSize to apply.
-         * @param {number} [newValue.z] The z-axis proportionalSize to apply.
-         */
-        set proportionalSize(newValue) {
-            this._setPropertyXYZ(Sizeable, 'proportionalSize', newValue)
-        }
-        get proportionalSize() {
-            return this._properties.proportionalSize
         }
 
         /**
@@ -262,22 +239,20 @@ const SizeableMixin = base => {
          *
          * @example
          * node.properties = {
-         *   sizeMode: {x:'absolute', y:'proportional', z:'absolute'},
-         *   absoluteSize: {x:300, y:100, z:200},
-         *   proportionalSize: {x:1, z:0.5}
+         *   sizeMode: {x:'literal', y:'proportional', z:'literal'},
+         *   size: {x:300, y:0.2, z:200},
          * }
          */
         set properties(properties = {}) {
             if (properties.sizeMode)
                 this.sizeMode = properties.sizeMode
 
-            if (properties.absoluteSize)
-                this.absoluteSize = properties.absoluteSize
-
-            if (properties.proportionalSize)
-                this.proportionalSize = properties.proportionalSize
+            if (properties.size)
+                this.size = properties.size
         }
         // no need for a properties getter?
+        // TODO: maybe getting properties is a good way to serialize to JSON,
+        // for people that might want that.
     }
 
     // for use by MotorHTML, convenient since HTMLElement attributes are all

@@ -16,6 +16,7 @@ import Motor from './Motor'
 
 import ImperativeBase, {initImperativeBase} from './ImperativeBase'
 import XYZValues from './XYZValues'
+import XYZNonNegativeValues from './XYZNonNegativeValues'
 import { default as HTMLInterface } from '../html/HTMLScene'
 import documentReady from 'awaitbox/dom/documentReady'
 
@@ -90,11 +91,13 @@ const SceneMixin = base => {
         destroyWebGl() {
         }
 
+        // TODO PERFORMANCE: make this static for better performance.
         _setDefaultProperties() {
             super._setDefaultProperties()
 
             Object.assign(this._properties, {
-                sizeMode: new XYZValues('proportional', 'proportional', 'absolute'),
+                sizeMode: new XYZValues('proportional', 'proportional', 'proportional'),
+                size: new XYZNonNegativeValues(1, 1, 1),
             })
         }
 

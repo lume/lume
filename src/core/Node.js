@@ -30,7 +30,7 @@ const NodeMixin = base => {
          *
          * @example
          * var node = new Node({
-         *   absoluteSize: {x:100, y:100, z:100},
+         *   size: {x:100, y:100, z:100},
          *   rotation: {x:30, y:20, z:25}
          * })
          */
@@ -71,7 +71,7 @@ const NodeMixin = base => {
                 // align, and mountPoint). mountPoint isn't obvious: if this node
                 // is proportionally sized, then the mountPoint will depend on the
                 // size of this element which depends on the size of this element's
-                // parent.
+                // parent. Align also depends on parent sizing.
                 if (
                     this._properties.sizeMode.x === "proportional"
                     || this._properties.sizeMode.y === "proportional"
