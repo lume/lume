@@ -1,6 +1,6 @@
 import {
-    Scene as ThreeScene, // so as not to confuse with Infamous Scene.
-    PerspectiveCamera,
+    //Scene as ThreeScene, // so as not to confuse with Infamous Scene.
+    //PerspectiveCamera,
     WebGLRenderer,
     BoxGeometry,
     MeshBasicMaterial,
@@ -17,15 +17,17 @@ class WebGLRendererThree {
 
         if (sceneState) sceneState = sceneStates.get(scene)
         else sceneStates.set(scene, sceneState = {
-            scene: new ThreeScene,
+            //scene: new ThreeScene,
 
-            // TODO: camera needs to be updated in updateResolution method.
-            // Full window scene only for now.
-            // TODO camera will be positioned relative to a Node.
-            camera: new PerspectiveCamera( 75, 16/9, 0.1, 1000 ),
+            //// TODO: camera needs to be updated in updateResolution method.
+            //// Full window scene only for now.
+            //// TODO camera will be positioned relative to a Node.
+            //camera: new PerspectiveCamera( 75, 16/9, 0.1, 1000 ),
 
             renderer: new WebGLRenderer,
         })
+
+        sceneState.renderer.setClearColor( 0xff6600, 1 )
 
         // TODO: update this on scene's sizechange event instead.
         this.updateResolution(scene)
@@ -36,16 +38,16 @@ class WebGLRendererThree {
         // encapsulated there?
         scene.element.appendChild( sceneState.renderer.domElement )
 
-        var geometry = new BoxGeometry( 1, 1, 1 )
-        var material = new MeshBasicMaterial( { color: 0x00ff00 } )
-        var cube = new Mesh( geometry, material )
-        sceneState.scene.add( cube )
-        sceneState.camera.position.z = 5
+        //var geometry = new BoxGeometry( 1, 1, 1 )
+        //var material = new MeshBasicMaterial( { color: 0x00ff00 } )
+        //var cube = new Mesh( geometry, material )
+        //sceneState.scene.add( cube )
+        scene.threeCamera.position.z = 5
     }
 
     drawScene(scene) {
-        const {renderer, scene: threeScene, camera} = sceneStates.get(scene)
-        renderer.render(threeScene, camera)
+        const {renderer /* , scene: threeScene, camera */} = sceneStates.get(scene)
+        renderer.render(scene.threeObject3d, scene.threeCamera)
     }
 
     // FIXME This is tied to the `sizechange` event of Scene, which means
@@ -56,8 +58,8 @@ class WebGLRendererThree {
     updateResolution(scene) {
         const state = sceneStates.get(scene)
 
-        state.camera.aspect = scene._calculatedSize.x / scene._calculatedSize.y
-        state.camera.updateProjectionMatrix()
+        scene.threeCamera.aspect = scene._calculatedSize.x / scene._calculatedSize.y
+        scene.threeCamera.updateProjectionMatrix()
 
         // TODO does Three handle window.devicePixelRatio?
         state.renderer.setSize( scene._calculatedSize.x, scene._calculatedSize.y )

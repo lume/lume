@@ -82,6 +82,23 @@ export function initImperativeBase() {
 
                     this._needsToBeRendered()
                 })
+
+                this.initWebGl()
+            }
+
+            initWebGl() {
+                this.threeObject3d = this.makeThreeObject3d()
+            }
+            makeThreeObject3d() {}
+
+            connected() {
+                // THREE
+                console.log('parent', this.parent.threeObject3d)
+                this.parent.threeObject3d.add(this.threeObject3d)
+            }
+            disconnected() {
+                // THREE
+                this.parent.threeObject3d.add(this.threeObject3d)
             }
 
             /**

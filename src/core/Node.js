@@ -3,12 +3,17 @@ import Transformable from './Transformable'
 import ImperativeBase, {initImperativeBase} from './ImperativeBase'
 import { default as HTMLInterface } from '../html/HTMLNode'
 import Scene from './Scene'
+import {
+    Object3D,
+} from 'three'
+
+// cache variables to avoid making new memory
+const radiansPerDegree = 1 / 360 * 2*Math.PI
+let threeObject3d = null
 
 initImperativeBase()
 
 const instanceofSymbol = Symbol('instanceofSymbol')
-
-let _Node = null
 
 const NodeMixin = base => {
 
@@ -83,6 +88,40 @@ const NodeMixin = base => {
 
             this._calcSize()
             this._needsToBeRendered()
+
+            // THREE
+            // TODO if no geometry or material behavior is detected, add default ones.
+        }
+
+        initWebGl() {
+            super.initWebGl()
+
+            // would be cool to have scene extend Node
+            // (like before) so the root Scene node also
+            // has these properties, and can be nested
+            // in other scenes.
+            this.propertyChange('position')
+            this.propertyChange('rotation')
+            this.on('propertychange', prop => this.propertyChange(prop))
+        }
+
+        makeThreeObject3d() {
+            return new Object3D
+        }
+
+        propertyChange(prop) {
+            threeObject3d = this.threeObject3d
+
+            if (prop == 'position') {
+                threeObject3d.position.x = this.position.x
+                threeObject3d.position.y = this.position.y
+                threeObject3d.position.z = this.position.z
+            }
+            else if (prop == 'rotation') {
+                threeObject3d.rotation.x = this.rotation.x * radiansPerDegree
+                threeObject3d.rotation.y = this.rotation.y * radiansPerDegree
+                threeObject3d.rotation.z = this.rotation.z * radiansPerDegree
+            }
         }
 
         /**
@@ -211,7 +250,7 @@ const NodeMixin = base => {
     return Node
 }
 
-_Node = NodeMixin(class{})
+let _Node = NodeMixin(class{})
 _Node.mixin = NodeMixin
 
 // TODO for now, hard-mixin the HTMLInterface class. We'll do this automatically later.

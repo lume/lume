@@ -118,6 +118,11 @@ export function initDeclarativeBase() {
         static define(name) {
             name = name || this.defaultElementName
             customElements.define(name, this._Class)
+            this._definedElementName = name
+        }
+
+        static get definedElementName() {
+            return this._definedElementName || null
         }
 
         construct() {
