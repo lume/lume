@@ -2,7 +2,7 @@ const commonjs    = require('rollup-plugin-commonjs')
 const nodeResolve = require('rollup-plugin-node-resolve')
 const buble       = require('rollup-plugin-buble')
 const babel       = require('rollup-plugin-babel')
-const babili      = require('rollup-plugin-babili')
+//const babili      = require('rollup-plugin-babili')
 
 // using `require` because `import` makes it utterly fail.
 const babelConfig = require('./babel.config')
@@ -21,6 +21,9 @@ module.exports = {
             main: true
         }),
 
+        // TODO: we should exclude packages with ES modules, and transpile
+        // those, so we can control quality of the transpiled code that goes
+        // into our bundle..
         commonjs({
             exclude: [ 'src/**' ], // no CommonJS in here.
             include: [ 'node_modules/**' ], // CommonJS is in here only
@@ -36,8 +39,8 @@ module.exports = {
         })),
         buble(bubleConfig),
 
-        babili({
-            comments: false,
-        }),
+        //babili({
+            //comments: false,
+        //}),
     ]
 };
