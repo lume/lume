@@ -1,4 +1,4 @@
-import ElementManager from './ElementManager'
+import ElementOperations from './ElementOperations'
 import Motor from './Motor'
 import Node from './Node'
 import Scene from './Scene'
@@ -10,7 +10,7 @@ import XYZValues from './XYZValues'
 import * as Utility from './Utility'
 
 export {
-    ElementManager,
+    ElementOperations,
     Motor,
     Node,
     Scene,

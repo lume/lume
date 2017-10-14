@@ -1,85 +1,73 @@
 
 import styles from './HTMLScene.style'
 import Motor from '../core/Motor'
-import Scene from '../core/Scene'
 import Observable from '../core/Observable'
 import Sizeable from '../core/Sizeable'
-import getWebGlRenderer from '../core/WebGLRenderer'
 import DeclarativeBase, {initDeclarativeBase, proxyGettersSetters} from './DeclarativeBase'
 import sleep from 'awaitbox/timers/sleep'
 
 initDeclarativeBase()
 
-class HTMLScene extends Observable.mixin(DeclarativeBase) {
-    static define(name) {
-        customElements.define(name || 'i-scene', HTMLScene)
-    }
+class HTMLScene extends DeclarativeBase {
 
-    constructor() {
-        super()
+    construct() {
+        super.construct()
 
         this._sizePollTask = null
         this._parentSize = {x:0, y:0, z:0}
 
-        // After the imperativeCounterpart is available it needs to register
-        // mount into DOM. This is only for MotorHTMLScenes because their
-        // imperativeCounterparts are not added to a parent Node.
-        // MotorHTMLNodes get their parent connection from their parent in
-        // childConnectedCallback.
-        this._imperativeCounterpartPromise
-            .then(() => {
-                if (this.imperativeCounterpart._mounted) return
+        // If the scene is already in the DOM, make it be "mounted".
+        if (!this._mounted && this.parentNode) {
 
-                if (this.parentNode)
-                    this.imperativeCounterpart.mount(this.parentNode)
-            })
-
-        // For now, use the same program (with shaders) for all objects.
-        // Basically it has position, frag colors, point light, directional
-        // light, and ambient light.
-        // TODO: maybe call this in `init()`, and destroy webgl stuff in
-        // `deinit()`.
-        // TODO: The user might enable this by setting the attribute later, so
-        // we can't simply rely on having it in constructor, we need a
-        // getter/setter like node properties.
-        this.initWebGl()
+            // defer so that the construct() call stack can finish
+            //
+            // TODO: clean up the code so that this isn't required. It's
+            // just that combining the imperative/declarative classes
+            // into a single class has introduced a small difference in
+            // logic order.
+            Promise.resolve().then(() =>
+                this.mount(this.parentNode)
+            )
+        }
     }
 
-    // TODO: we need to deinit webgl too.
-    initWebGl() {
-        // TODO: this needs to be cancelable too, search other codes for
-        // "mountcancel" to see.
-        this.mountPromise.then(() => {
-            this.webglEnabled = !!this.getAttribute('webglenabled')
-            if (!this.webglEnabled) return
-            this.webGlRendererState = {}
-            getWebGlRenderer().initGl(this)
-        })
+    _startOrStopSizePolling() {
+        if (
+            this._mounted &&
+            (this._properties.sizeMode.x == 'proportional'
+            || this._properties.sizeMode.y == 'proportional'
+            || this._properties.sizeMode.z == 'proportional')
+        ) {
+            this._startSizePolling()
+        }
+        else {
+            this._stopSizePolling()
+        }
     }
-    //async initWebGl() {
-        //// TODO: this needs to be cancelable too, search other codes for
-        //// "mountcancel" to see.
-        //await this.mountPromise
-        //this.webglEnabled = !!this.getAttribute('webglenabled')
-        //if (!this.webglEnabled) return
-        //this.webGlRendererState = {}
-        //getWebGlRenderer().initGl(this)
-    //}
 
+    // observe size changes on the scene element.
+    // HTML
     _startSizePolling() {
         // NOTE Polling is currently required because there's no other way to do this
         // reliably, not even with MutationObserver. ResizeObserver hasn't
         // landed in browsers yet.
         if (!this._sizePollTask)
             this._sizePollTask = Motor.addRenderTask(this._checkSize.bind(this))
+        this.on('parentsizechange', this._onElementParentSizeChange)
+    }
+
+    // Don't observe size changes on the scene element.
+    // HTML
+    _stopSizePolling() {
+        this.off('parentsizechange', this._onElementParentSizeChange)
+        Motor.removeRenderTask(this._sizePollTask)
+        this._sizePollTask = null
     }
 
     // NOTE, the Z dimension of a scene doesn't matter, it's a flat plane, so
     // we haven't taken that into consideration here.
+    // HTML
     _checkSize() {
-
-        // The scene has a parent by the time this is called (see
-        // src/core/Scene#mount where _startSizePolling is called)
         const parent = this.parentNode
         const parentSize = this._parentSize
         const style = getComputedStyle(parent)
@@ -95,12 +83,6 @@ class HTMLScene extends Observable.mixin(DeclarativeBase) {
         }
     }
 
-    _makeImperativeCounterpart() {
-        return new Scene({
-            _motorHtmlCounterpart: this
-        })
-    }
-
     /** @override */
     getStyles() {
         return styles
@@ -109,12 +91,15 @@ class HTMLScene extends Observable.mixin(DeclarativeBase) {
     deinit() {
         super.deinit()
 
-        this.imperativeCounterpart.unmount()
+        this.unmount()
     }
 
-    _stopSizePolling() {
-        Motor.removeRenderTask(this._sizePollTask)
-        this._sizePollTask = null
+    connectedCallback() {
+        super.connectedCallback()
+
+        // When the HTMLScene gets addded to the DOM, make it be "mounted".
+        if (!this._mounted)
+            this.mount(this.parentNode)
     }
 }
 

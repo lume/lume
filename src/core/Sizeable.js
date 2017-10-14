@@ -53,10 +53,10 @@ const SizeableMixin = base => {
     // Sizeable extends TreeNode because Sizeable knows about its _parent when
     // calculating proportionalSize. Also Transformable knows about it's parent
     // in order to calculate it's world matrix based on it's parent's.
-    class Sizeable extends TreeNode.mixin(Observable.mixin(base)) {
+    class Sizeable extends Observable.mixin(TreeNode.mixin(base)) {
 
-        constructor(options = {}) {
-            super(options)
+        construct(options = {}) {
+            super.construct(options)
 
             this._propertyFunctions = null
             this._calculatedSize = { x:0, y:0, z:0 }

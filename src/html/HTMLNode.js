@@ -1,6 +1,5 @@
 
 import styles from './HTMLNode.style'
-import Node from '../core/Node'
 import Transformable from '../core/Transformable'
 import Sizeable from '../core/Sizeable'
 import DeclarativeBase, {initDeclarativeBase, proxyGettersSetters} from './DeclarativeBase'
@@ -8,29 +7,12 @@ import DeclarativeBase, {initDeclarativeBase, proxyGettersSetters} from './Decla
 initDeclarativeBase()
 
 class HTMLNode extends DeclarativeBase {
-    static define(name) {
-        customElements.define(name || 'i-node', HTMLNode)
+    construct() {
+        super.construct()
     }
 
     getStyles() {
         return styles
-    }
-
-    // this is called by DeclarativeBase#init, which is called by
-    // WebComponent#connectedCallback, at which point this element has a
-    // parentNode.
-    // @override
-    _makeImperativeCounterpart() {
-        return new Node({
-            _motorHtmlCounterpart: this
-        })
-    }
-
-    setAttribute(attribute, value) {
-        //if (!window.count) window.count = 0
-        //if (window.count++ % 100 === 0)
-            //console.log(' ------ setAttribute', value)
-        super.setAttribute(attribute, ""+value)
     }
 
     // TODO: get these from somewhere dynamically, and do same for
@@ -51,32 +33,17 @@ class HTMLNode extends DeclarativeBase {
 
     attributeChangedCallback(...args) {
         super.attributeChangedCallback(...args)
-
-        // TODO PERFORMANCE: we could possibly not stack a promise every
-        // attribute change, and just cache the latest value to set it when the
-        // imperativeCounterpart is ready.
-        this._imperativeCounterpartPromise.then(() => {
-            this._updateNodeProperty(...args)
-        })
+        this._updateNodeProperty(...args)
     }
-    //async attributeChangedCallback(...args) {
-        //super.attributeChangedCallback(...args)
-
-        //// TODO PERFORMANCE: we could possibly not stack a promise every
-        //// attribute change, and just cache the latest value to set it when the
-        //// imperativeCounterpart is ready.
-        //await this._imperativeCounterpartPromise
-        //this._updateNodeProperty(...args)
-    //}
 
     _updateNodeProperty(attribute, oldValue, newValue) {
         // attributes on our HTML elements are the same name as those on
         // the Node class (the setters).
         if (newValue !== oldValue) {
             if (attribute.match(/opacity/i))
-                this.imperativeCounterpart[attribute] = window.parseFloat(newValue)
+                this[attribute] = window.parseFloat(newValue)
             else if (attribute.match(/sizeMode/i))
-                this.imperativeCounterpart[attribute] = parseStringArray(newValue)
+                this[attribute] = parseStringArray(newValue)
             else if (
                 attribute.match(/rotation/i)
                 || attribute.match(/scale/i)
@@ -88,7 +55,7 @@ class HTMLNode extends DeclarativeBase {
                 || attribute.match(/origin/i)
                 || attribute.match(/skew/i)
             ) {
-                this.imperativeCounterpart[attribute] = parseNumberArray(newValue)
+                this[attribute] = parseNumberArray(newValue)
             }
             else {
                 /* nothing, ignore other attributes */

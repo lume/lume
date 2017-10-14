@@ -5,15 +5,15 @@ const instanceofSymbol = Symbol('instanceofSymbol')
 const TreeNodeMixin = base => {
     class TreeNode extends base {
 
-        constructor(options = {}) {
-            super(options)
+        construct(...args) {
+            super.construct(...args)
             this._parent = null // default to no parent.
             this._children = [];
         }
 
         /**
          * this._parent is protected (node's can access other node._parent).
-         * The user should use the addChild methods, which automatically handles
+         * The user should use the add() method, which automatically handles
          * setting a parent.
          *
          * @readonly
@@ -36,19 +36,24 @@ const TreeNodeMixin = base => {
          *
          * @param {TreeNode} childNode The child node to add.
          */
-        addChild (childNode) {
+        add(childNode) {
             if (! isInstanceof(childNode, TreeNode))
-                throw new TypeError('TreeNode.addChild expects the childNode argument to be a TreeNode instance.')
+                throw new TypeError('TreeNode.add() expects the childNode argument to be a TreeNode instance.')
 
             if (childNode._parent === this)
                 throw new ReferenceError('childNode is already a child of this parent.')
 
             if (childNode._parent)
-                childNode._parent.removeChild(childNode)
+                childNode._parent.remove(childNode)
 
             childNode._parent = this;
 
             this._children.push(childNode);
+
+            Promise.resolve().then(() => {
+                childNode.connected()
+                this.childDisconnected(childNode)
+            })
 
             return this
         }
@@ -59,7 +64,7 @@ const TreeNodeMixin = base => {
          * @param {Array.TreeNode} nodes The nodes to add.
          */
         addChildren(nodes) {
-            nodes.forEach(node => this.addChild(node))
+            nodes.forEach(node => this.add()(node))
             return this
         }
 
@@ -68,10 +73,10 @@ const TreeNodeMixin = base => {
          *
          * @param {TreeNode} childNode The node to remove.
          */
-        removeChild(childNode) {
+        remove(childNode) {
             if (! isInstanceof(childNode, TreeNode))
                 throw new Error(`
-                    TreeNode.removeChild expects the childNode argument to be an
+                    TreeNode.remove expects the childNode argument to be an
                     instance of TreeNode. There should only be TreeNodes in the
                     tree.
                 `)
@@ -82,6 +87,11 @@ const TreeNodeMixin = base => {
             childNode._parent = null
             this._children.splice(this._children.indexOf(childNode), 1);
 
+            Promise.resolve().then(() => {
+                childNode.disconnected()
+                this.childConnected(childNode)
+            })
+
             return this
         }
 
@@ -91,7 +101,7 @@ const TreeNodeMixin = base => {
          * @param {Array.TreeNode} nodes The nodes to remove.
          */
         removeChildren(nodes) {
-            nodes.forEach(node => this.removeChild(node))
+            nodes.forEach(node => this.remove(node))
             return this
         }
 
@@ -110,6 +120,13 @@ const TreeNodeMixin = base => {
         get childCount() {
             return this._children.length
         }
+
+        // generic life cycle methods
+        connected() {}
+        disconnected() {}
+        childConnected(child) {}
+        childDisconnected(child) {}
+        propertyChanged() {}
     }
 
     Object.defineProperty(TreeNode, Symbol.hasInstance, {

@@ -4,8 +4,8 @@ const instanceofSymbol = Symbol('instanceofSymbol')
 const ObservableMixin = base => {
     class Observable extends base {
 
-        constructor(options = {}) {
-            super(options)
+        construct(...args) {
+            super.construct(...args)
         }
 
         on(eventName, callback) {

@@ -1,4 +1,4 @@
-import ElementManager from './ElementManager'
+import ElementOperations from './ElementOperations'
 import Sizeable from './Sizeable'
 import Node from './Node'
 import Scene from './Scene'
@@ -36,27 +36,19 @@ export function initImperativeBase() {
      * at least one of those to render with.
      */
     const ImperativeBaseMixin = base => {
-        const ParentClass = base
-        class ImperativeBase extends ParentClass {
-            constructor(options = {}) {
+        class ImperativeBase extends base {
+            construct(options = {}) {
+                super.construct(options)
 
-                // The presence of a _motorHtmlCounterpart argument signifies that
-                // the HTML interface is being used, otherwise the imperative interface
-                // here is being used. For example, see MotorHTMLNode. This means the
-                // Node and MotorHTMLNode classes are coupled together, but it's in the
-                // name of the API that we're supporting.
-                const {_motorHtmlCounterpart} = options
-
-                super(options)
+                // we don't need this, keep for backward compatibility (mainly
+                // all my demos at trusktr.io).
+                this.imperativeCounterpart = this
 
                 this._willBeRendered = false
 
                 // Here we create the DOM HTMLElement associated with this
                 // Imperative-API Node.
-                this._elementManager = new ElementManager(
-                    _motorHtmlCounterpart || this._makeElement()
-                )
-                this._elementManager.element._associateImperativeNode(this)
+                this._elementOperations = new ElementOperations(this)
 
                 // For Nodes, true when this Node is added to a parent AND it
                 // has an anancestor Scene that is mounted into DOM. For
@@ -127,13 +119,13 @@ export function initImperativeBase() {
              * @readonly
              */
             get element() {
-                return this._elementManager.element
+                return this._elementOperations.element
             }
 
             /**
              * @override
              */
-            addChild(childNode) {
+            add(childNode) {
                 if (!isInstanceof(childNode, ImperativeBase)) return
 
                 // We cannot add Scenes to Nodes, for now.
@@ -145,7 +137,7 @@ export function initImperativeBase() {
                     `)
                 }
 
-                super.addChild(childNode)
+                super.add(childNode)
 
                 // Pass this parent node's Scene reference (if any, checking this cache
                 // first) to the new child and the child's children.
@@ -163,26 +155,26 @@ export function initImperativeBase() {
                 // child should watch the parent for size changes.
                 this.on('sizechange', childNode._onParentSizeChange)
 
-                this._elementManager.connectChildElement(childNode)
+                this._elementOperations.connectChildElement(childNode)
 
                 return this
             }
 
-            removeChild(childNode, /*private use*/leaveInDom) {
+            remove(childNode, /*private use*/leaveInDom) {
                 if (!(childNode instanceof Node)) return
 
-                super.removeChild(childNode)
+                super.remove(childNode)
 
                 this.off('sizechange', childNode._onParentSizeChange)
 
                 childNode._resetSceneRef()
 
                 if (childNode._mountPromise) childNode._rejectMountPromise('mountcancel')
-                if (childNode._mounted) childNode._elementManager.shouldNotRender()
+                if (childNode._mounted) childNode._elementOperations.shouldNotRender()
                 childNode._resetMountPromise()
 
                 if (!leaveInDom)
-                    this._elementManager.disconnectChildElement(childNode)
+                    this._elementOperations.disconnectChildElement(childNode)
             }
 
             _resetMountPromise() {
@@ -196,59 +188,24 @@ export function initImperativeBase() {
                 }
             }
 
-            _needsToBeRendered() {
-                if (this._awaitingMountPromiseToRender) return Promise.resolve()
-
-                const logic = () => {
-                    this._willBeRendered = true
-                    Motor._setNodeToBeRendered(this)
-                }
+            async _needsToBeRendered() {
+                if (this._awaitingMountPromiseToRender) return
 
                 if (!this._mounted) {
-                    this._awaitingMountPromiseToRender = true
-
-                    let possibleError = undefined
-
-                    // try
-                    return this.mountPromise
-
-                    .then(logic)
-
-                    // catch
-                    .catch(() => {
+                    try {
+                        this._awaitingMountPromiseToRender = true
+                        await this.mountPromise
+                    } catch(e) {
                         if (e == 'mountcancel') return
-                        else possibleError = e
-                    })
-
-                    // finally
-                    .then(() => {
+                        else throw e
+                    } finally {
                         this._awaitingMountPromiseToRender = false
-
-                        if (possibleError) throw possibleError
-                    })
+                    }
                 }
 
-                logic()
-                return Promise.resolve()
+                this._willBeRendered = true
+                Motor._setNodeToBeRendered(this)
             }
-            //async _needsToBeRendered() {
-                //if (this._awaitingMountPromiseToRender) return
-
-                //if (!this._mounted) {
-                    //try {
-                        //this._awaitingMountPromiseToRender = true
-                        //await this.mountPromise
-                    //} catch(e) {
-                        //if (e == 'mountcancel') return
-                        //else throw e
-                    //} finally {
-                        //this._awaitingMountPromiseToRender = false
-                    //}
-                //}
-
-                //this._willBeRendered = true
-                //Motor._setNodeToBeRendered(this)
-            //}
 
             // This method is used by Motor._renderNodes().
             _getAncestorToBeRendered() {
@@ -265,7 +222,7 @@ export function initImperativeBase() {
             _render(timestamp) {
                 super._render()
                 // applies the transform matrix to the element's style property.
-                this._elementManager.applyImperativeNodeProperties(this)
+                this._elementOperations.applyImperativeNodeProperties(this)
             }
 
             /**
@@ -282,7 +239,7 @@ export function initImperativeBase() {
                 super.properties = properties
 
                 if (properties.classes)
-                    this._elementManager.setClasses(...properties.classes);
+                    this._elementOperations.setClasses(...properties.classes);
             }
         }
 

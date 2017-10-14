@@ -1,35 +1,40 @@
-import commonjs from 'rollup-plugin-commonjs';
-import nodeResolve from 'rollup-plugin-node-resolve';
-import buble from 'rollup-plugin-buble'
-import babili from 'rollup-plugin-babili'
+const commonjs    = require('rollup-plugin-commonjs')
+const nodeResolve = require('rollup-plugin-node-resolve')
+const buble       = require('rollup-plugin-buble')
+const babel       = require('rollup-plugin-babel')
+const babili      = require('rollup-plugin-babili')
 
-export default {
-    entry: 'src/index.js',
-    dest: 'global.js',
-    format: 'iife',
-    moduleName: 'infamous',
+// using `require` because `import` makes it utterly fail.
+const babelConfig = require('./babel.config')
+const bubleConfig = require('./buble.config')
+
+module.exports = {
+    input: 'src/index.js',
+    name: 'infamous',
+    output: {
+        file: 'global.js',
+        format: 'iife',
+    },
     plugins: [
         nodeResolve({
             jsnext: true,
             main: true
         }),
 
-        commonjs(),
-
-        buble({
-
-            // we only support back to IE11, but here we transpile for IE10
-            // (which uses `var` instead of `let`or `const`) to avoid a Safari
-            // problem for the time being. See:
-            // https://github.com/babel/minify/issues/681
-            target: { ie: 10 },
-
-            objectAssign: 'Object.assign',
-            transforms: {
-                modules: false,
-                dangerousForOf: true,
-            },
+        commonjs({
+            exclude: [ 'src/**' ], // no CommonJS in here.
+            include: [ 'node_modules/**' ], // CommonJS is in here only
         }),
+
+        // We have to transpile class syntax with Babel first in order to get
+        // it work with document-register-element if we want to support IE
+        // 10/11, otherwise buble's class transpiled class code won't work with
+        // document-register-element
+        babel(Object.assign(babelConfig, {
+            runtimeHelpers: true,
+            exclude: [ 'node_modules/**' ],
+        })),
+        buble(bubleConfig),
 
         babili({
             comments: false,

@@ -156,7 +156,7 @@ class WebGlRenderer {
         gl.uniform3fv(state.cameraWorldPositionLocation, cameraWorldPosition)
 
         // TODO: we need to use the traversal that takes into consideration ShadowDOM.
-        const children = scene.imperativeCounterpart._children
+        const children = scene._children
         for (let i=0, l=children.length; i<l; i+=1) {
             this.drawNodeAndRecurse(state, children[i])
         }

@@ -1,221 +1,220 @@
 import 'geometry-interfaces'
 import Transformable from './Transformable'
 import ImperativeBase, {initImperativeBase} from './ImperativeBase'
-import HTMLNode from '../html/HTMLNode'
+import { default as HTMLInterface } from '../html/HTMLNode'
 import Scene from './Scene'
 
 initImperativeBase()
 
-class Node extends ImperativeBase.mixin(Transformable) {
+const instanceofSymbol = Symbol('instanceofSymbol')
 
-    /**
-     * @constructor
-     *
-     * @param {Object} options Initial properties that the node will
-     * have. This can be used when creating a node, alternatively to using the
-     * setters/getters for position, rotation, etc.
-     *
-     * @example
-     * var node = new Node({
-     *   absoluteSize: {x:100, y:100, z:100},
-     *   rotation: {x:30, y:20, z:25}
-     * })
-     */
-    constructor (options = {}) {
-        super(options)
+let _Node = null
 
-        // This was when using my `multiple()` implementation, we could call
-        // specific constructors using specific arguments. But, we're using
-        // class-factory style mixins for now, so we don't have control over the
-        // specific arguments we can pass to the constructors, so we're just
-        // using a single `options` parameter in all the constructors.
-        //this.callSuperConstructor(Transformable, options)
-        //this.callSuperConstructor(TreeNode)
-        //this.callSuperConstructor(ImperativeBase)
+const NodeMixin = base => {
 
-        this._scene = null // stores a ref to this Node's root Scene.
+    class Node extends ImperativeBase.mixin(Transformable.mixin(base)) {
+        static get defaultElementName() { return 'i-node' }
+        static get _Class() { return _Node }
 
-        // This is an internal promise that resolves when this Node is added to
-        // to a scene graph that has a root Scene TreeNode. The resolved value
-        // is the root Scene.
-        this._scenePromise = null
-        this._resolveScenePromise = null
+        /**
+         * @constructor
+         *
+         * @param {Object} options Initial properties that the node will
+         * have. This can be used when creating a node, alternatively to using the
+         * setters/getters for position, rotation, etc.
+         *
+         * @example
+         * var node = new Node({
+         *   absoluteSize: {x:100, y:100, z:100},
+         *   rotation: {x:30, y:20, z:25}
+         * })
+         */
+        construct(options = {}) {
+            super.construct(options)
+
+            // This was when using my `multiple()` implementation, we could call
+            // specific constructors using specific arguments. But, we're using
+            // class-factory style mixins for now, so we don't have control over the
+            // specific arguments we can pass to the constructors, so we're just
+            // using a single `options` parameter in all the constructors.
+            //this.callSuperConstructor(Transformable, options)
+            //this.callSuperConstructor(TreeNode)
+            //this.callSuperConstructor(ImperativeBase)
+
+            this._scene = null // stores a ref to this Node's root Scene.
+
+            // This is an internal promise that resolves when this Node is added to
+            // to a scene graph that has a root Scene TreeNode. The resolved value
+            // is the root Scene.
+            this._scenePromise = null
+            this._resolveScenePromise = null
+
+            /**
+             * @private
+             * This method is defined here in the consructor as an arrow function
+             * because parent Nodes pass it to Observable#on and Observable#off. If
+             * it were a prototype method, then it would need to be bound when
+             * passed to Observable#on, which would require keeping track of the
+             * bound function reference in order to be able to pass it to
+             * Observable#off later. See ImperativeBase#add and
+             * ImperativeBase#remove.
+             */
+            this._onParentSizeChange = () => {
+
+                // We only need to recalculate sizing and matrices if this node has
+                // properties that depend on parent sizing (proportional size,
+                // align, and mountPoint). mountPoint isn't obvious: if this node
+                // is proportionally sized, then the mountPoint will depend on the
+                // size of this element which depends on the size of this element's
+                // parent.
+                if (
+                    this._properties.sizeMode.x === "proportional"
+                    || this._properties.sizeMode.y === "proportional"
+                    || this._properties.sizeMode.z === "proportional"
+
+                    || this._properties.align.x !== 0
+                    || this._properties.align.y !== 0
+                    || this._properties.align.z !== 0
+                ) {
+                    this._calcSize()
+                    this._needsToBeRendered()
+                }
+            }
+
+            this._calcSize()
+            this._needsToBeRendered()
+        }
 
         /**
          * @private
-         * This method is defined here in the consructor as an arrow function
-         * because parent Nodes pass it to Observable#on and Observable#off. If
-         * it were a prototype method, then it would need to be bound when
-         * passed to Observable#on, which would require keeping track of the
-         * bound function reference in order to be able to pass it to
-         * Observable#off later. See ImperativeBase#addChild and
-         * ImperativeBase#removeChild.
          */
-        this._onParentSizeChange = () => {
+        async _waitForMountThenResolveMountPromise() {
+            if (this._awaitingScenePromise) return
+            try {
+                this._awaitingScenePromise = true
+                await this._getScenePromise()
+                await this._scene.mountPromise
+            } catch (e) {
+                if (e == 'mountcancel') return
+                else throw e
+            } finally {
+                this._awaitingScenePromise = false
+            }
 
-            // We only need to recalculate sizing and matrices if this node has
-            // properties that depend on parent sizing (proportional size,
-            // align, and mountPoint). mountPoint isn't obvious: if this node
-            // is proportionally sized, then the mountPoint will depend on the
-            // size of this element which depends on the size of this element's
-            // parent.
-            if (
-                this._properties.sizeMode.x === "proportional"
-                || this._properties.sizeMode.y === "proportional"
-                || this._properties.sizeMode.z === "proportional"
+            this._mounted = true
+            this._resolveMountPromise()
+            this._elementOperations.shouldRender()
+        }
 
-                || this._properties.align.x !== 0
-                || this._properties.align.y !== 0
-                || this._properties.align.z !== 0
-            ) {
-                this._calcSize()
-                this._needsToBeRendered()
+        /**
+         * @private
+         * Get a promise for the node's eventual scene.
+         */
+        _getScenePromise() {
+            if (!this._scenePromise) {
+                this._scenePromise = new Promise((a, b) => {
+                    this._resolveScenePromise = a
+                })
+            }
+
+            if (this._scene)
+                this._resolveScenePromise()
+
+            return this._scenePromise
+        }
+
+        /**
+         * Get the Scene that this Node is in, null if no Scene. This is recursive
+         * at first, then cached.
+         *
+         * This traverses up the scene graph tree starting at this Node and finds
+         * the root Scene, if any. It caches the value for performance. If this
+         * Node is removed from a parent node with parent.remove(), then the
+         * cache is invalidated so the traversal can happen again when this Node is
+         * eventually added to a new tree. This way, if the scene is cached on a
+         * parent Node that we're adding this Node to then we can get that cached
+         * value instead of traversing the tree.
+         *
+         * @readonly
+         */
+        get scene() {
+            // NOTE: this._scene is initally null, created in the constructor.
+
+            // if already cached, return it. Or if no parent, return it (it'll be null).
+            if (this._scene || !this._parent) return this._scene
+
+            // if the parent node already has a ref to the scene, use that.
+            if (this._parent._scene) {
+                this._scene = this._parent._scene
+            }
+            else if (this._parent instanceof Scene) {
+                this._scene = this._parent
+            }
+            // otherwise call the scene getter on the parent, which triggers
+            // traversal up the scene graph in order to find the root scene (null
+            // if none).
+            else {
+                this._scene = this._parent.scene
+            }
+
+            return this._scene
+        }
+
+        /**
+         * @private
+         * This method to be called only when this Node has this.scene.
+         * Resolves the _scenePromise for all children of the tree of this Node.
+         */
+        _giveSceneRefToChildren() {
+            const children = this._children;
+            for (let i=0, l=children.length; i<l; i+=1) {
+                const childNode = children[i]
+                childNode._scene = this._scene
+                if (childNode._resolveScenePromise)
+                    childNode._resolveScenePromise(childNode._scene)
+                childNode._giveSceneRefToChildren();
             }
         }
 
-        this._calcSize()
-        this._needsToBeRendered()
-    }
-
-    /**
-     * @private
-     */
-    _waitForMountThenResolveMountPromise() {
-        if (this._awaitingScenePromise) return Promise.resolve()
-
-        const logic = () => {
-            this._mounted = true
-            this._resolveMountPromise()
-            this._elementManager.shouldRender()
-        }
-
-        this._awaitingScenePromise = true
-
-        let possibleError = undefined
-
-        // try
-        return this._getScenePromise()
-        .then(() => this._scene.mountPromise)
-
-        .then(logic)
-
-        // catch
-        .catch(() => {
-            if (e == 'mountcancel') return
-            else possibleError = e
-        })
-
-        // finally
-        .then(() => {
-            this._awaitingScenePromise = false
-
-            if (possibleError) throw possibleError
-        })
-    }
-    //async _waitForMountThenResolveMountPromise() {
-        //if (this._awaitingScenePromise) return
-        //try {
-            //this._awaitingScenePromise = true
-            //await this._getScenePromise()
-            //await this._scene.mountPromise
-        //} catch (e) {
-            //if (e == 'mountcancel') return
-            //else throw e
-        //} finally {
-            //this._awaitingScenePromise = false
-        //}
-
-        //this._mounted = true
-        //this._resolveMountPromise()
-        //this._elementManager.shouldRender()
-    //}
-
-    /**
-     * @override
-     */
-    _makeElement() {
-        return new HTMLNode
-    }
-
-    /**
-     * @private
-     * Get a promise for the node's eventual scene.
-     */
-    _getScenePromise() {
-        if (!this._scenePromise) {
-            this._scenePromise = new Promise((a, b) => {
-                this._resolveScenePromise = a
-            })
-        }
-
-        if (this._scene)
-            this._resolveScenePromise()
-
-        return this._scenePromise
-    }
-
-    /**
-     * Get the Scene that this Node is in, null if no Scene. This is recursive
-     * at first, then cached.
-     *
-     * This traverses up the scene graph tree starting at this Node and finds
-     * the root Scene, if any. It caches the value for performance. If this
-     * Node is removed from a parent node with parent.removeChild(), then the
-     * cache is invalidated so the traversal can happen again when this Node is
-     * eventually added to a new tree. This way, if the scene is cached on a
-     * parent Node that we're adding this Node to then we can get that cached
-     * value instead of traversing the tree.
-     *
-     * @readonly
-     */
-    get scene() {
-        // NOTE: this._scene is initally null, created in the constructor.
-
-        // if already cached, return it. Or if no parent, return it (it'll be null).
-        if (this._scene || !this._parent) return this._scene
-
-        // if the parent node already has a ref to the scene, use that.
-        if (this._parent._scene) {
-            this._scene = this._parent._scene
-        }
-        else if (this._parent instanceof Scene) {
-            this._scene = this._parent
-        }
-        // otherwise call the scene getter on the parent, which triggers
-        // traversal up the scene graph in order to find the root scene (null
-        // if none).
-        else {
-            this._scene = this._parent.scene
-        }
-
-        return this._scene
-    }
-
-    /**
-     * @private
-     * This method to be called only when this Node has this.scene.
-     * Resolves the _scenePromise for all children of the tree of this Node.
-     */
-    _giveSceneRefToChildren() {
-        const children = this._children;
-        for (let i=0, l=children.length; i<l; i+=1) {
-            const childNode = children[i]
-            childNode._scene = this._scene
-            if (childNode._resolveScenePromise)
-                childNode._resolveScenePromise(childNode._scene)
-            childNode._giveSceneRefToChildren();
+        _resetSceneRef() {
+            this._scene = null
+            this._scenePromise = null
+            this._resolveScenePromise = null
+            const children = this._children;
+            for (let i=0, l=children.length; i<l; i+=1) {
+                children[i]._resetSceneRef();
+            }
         }
     }
 
-    _resetSceneRef() {
-        this._scene = null
-        this._scenePromise = null
-        this._resolveScenePromise = null
-        const children = this._children;
-        for (let i=0, l=children.length; i<l; i+=1) {
-            children[i]._resetSceneRef();
+    Object.defineProperty(Node, Symbol.hasInstance, {
+        value: function(obj) {
+            if (this !== Node) return Object.getPrototypeOf(Node)[Symbol.hasInstance].call(this, obj)
+
+            let currentProto = obj
+
+            while(currentProto) {
+                const desc = Object.getOwnPropertyDescriptor(currentProto, "constructor")
+
+                if (desc && desc.value && desc.value.hasOwnProperty(instanceofSymbol))
+                    return true
+
+                currentProto = Object.getPrototypeOf(currentProto)
+            }
+
+            return false
         }
-    }
+    })
+
+    Node[instanceofSymbol] = true
+
+    return Node
 }
 
-export {Node as default}
+_Node = NodeMixin(class{})
+_Node.mixin = NodeMixin
+
+// TODO for now, hard-mixin the HTMLInterface class. We'll do this automatically later.
+_Node = _Node.mixin(HTMLInterface)
+
+export {_Node as default}

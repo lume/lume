@@ -8,6 +8,9 @@ mv \
     src \
     .scripts \
     rollup.config.js \
+    buble.config.js \
+    babel.config.js \
+    gulpfile.js \
     global.js \
 save/
 

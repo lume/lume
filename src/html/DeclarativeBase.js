@@ -47,7 +47,7 @@ function shadowRootChildAdded(child) {
     // NOTE Logic here is similar to childConnectedCallback
 
     if (child instanceof DeclarativeBase) {
-        this.imperativeCounterpart.addChild(child.imperativeCounterpart)
+        this.add(child)
     }
     else if (
         hasShadowDomV0
@@ -69,7 +69,7 @@ function shadowRootChildRemoved(child) {
     // NOTE Logic here is similar to childDisconnectedCallback
 
     if (child instanceof DeclarativeBase) {
-        this.imperativeCounterpart.removeChild(child.imperativeCounterpart)
+        this.remove(child)
     }
     else if (
         hasShadowDomV0
@@ -98,7 +98,7 @@ function onV0ShadowRootReplaced(oldRoot) {
 
         // We should disconnect the imperative connection (f.e. so it is not
         // rendered in WebGL)
-        this.imperativeCounterpart.removeChild(child.imperativeCounterpart, true)
+        this.remove(child, true)
     }
 }
 
@@ -114,11 +114,14 @@ export function initDeclarativeBase() {
     /**
      * @implements {EventListener}
      */
-    DeclarativeBase = class DeclarativeBase extends WebComponent(window.HTMLElement) {
-        constructor() {
-            super()
+    DeclarativeBase = class DeclarativeBase extends WebComponent() {
+        static define(name) {
+            name = name || this.defaultElementName
+            customElements.define(name, this._Class)
+        }
 
-            this.imperativeCounterpart = null // to hold the imperative API Node instance.
+        construct() {
+            super.construct()
 
             // true if this node has a shadow root (even if it is "closed", see
             // hijack function above). Once true always true because shadow
@@ -150,64 +153,6 @@ export function initDeclarativeBase() {
             // to this node in the flat tree. We instantiate this later, only
             // when/if needed.
             this._shadowChildren = null
-
-            // We use Promise.resolve here to defer to the next microtask.
-            // While we support Custom Elements v0, this is necessary because
-            // the imperative Node counterpart will have already called the
-            // `_associateImperativeNode` method on this element, causing the
-            // next microtask's call to be a no-op. When this MotorHTML element
-            // API is used instead of the Imperative counterpart, then the next
-            // microtask's `_associateImperativeNode` call will not be a no-op.
-            // When we drop support for v0 Custom Elements at some point, we
-            // can rely on passing a constructor argument similarly to how we
-            // do with motor/Node in order to detect that the constructor is
-            // being called from the reciprocal API. See the constructor in
-            // motor/Node.js to get see the idea.
-            // TODO: renewable promise after unmount.
-            this._imperativeCounterpartPromise = Promise.resolve()
-                .then(() => this._associateImperativeNode())
-            this.mountPromise = this._imperativeCounterpartPromise
-                .then(() => this.imperativeCounterpart.mountPromise)
-        }
-
-        /**
-         * This method creates the association between this HTMLNode instance
-         * and the imperative Node instance.
-         *
-         * This method may get called by this.init, but can also be called by
-         * the Node class if Node is used imperatively. See Node#constructor.
-         *
-         * @private
-         *
-         * @param {Object} imperativeCounterpart The imperative counterpart to
-         * associate with this MotorHTML element. This parameter is only used in the
-         * imperative API constructors, and this happens when using the imperative
-         * form of infamous instead of the HTML interface to infamous. When the HTML
-         * interface is used, this gets called first without an
-         * imperativeCounterpart argument and the call to this in an imperative
-         * constructor will be a noop. Basically, either this gets called first by a
-         * MotorHTML element, or first by an imperative instance, depending on which
-         * API is used first.
-         */
-        _associateImperativeNode(imperativeCounterpart) {
-            // if the association is made already, noop
-            if (this.imperativeCounterpart) return
-
-            // if called from an imperative-side class' constructor, associate
-            // the passed instance.
-            if (imperativeCounterpart) this.imperativeCounterpart = imperativeCounterpart
-
-            // otherwise if called from a MotorHTML class without an argument
-            else this.imperativeCounterpart = this._makeImperativeCounterpart()
-        }
-
-        /**
-         * This method should be overriden by child classes. It should return the
-         * imperative-side instance that the HTML-side class (this) corresponds to.
-         * @abstract
-         */
-        _makeImperativeCounterpart() {
-            throw new TypeError('This method should be implemented by classes extending DeclarativeBase.')
         }
 
         childConnectedCallback(child) {
@@ -216,11 +161,11 @@ export function initDeclarativeBase() {
             if (child instanceof HTMLNode) {
                 if (this._hasShadowRoot) child._isPossiblyDistributed = true
 
-                // If ImperativeBase#addChild was called first, child's
+                // If ImperativeBase#add was called first, child's
                 // _parent will already be set, so prevent recursion.
-                if (child.imperativeCounterpart._parent) return
+                if (child._parent) return
 
-                this.imperativeCounterpart.addChild(child.imperativeCounterpart)
+                this.add(child)
             }
             else if (
                 hasShadowDomV0
@@ -339,11 +284,11 @@ export function initDeclarativeBase() {
             if (child instanceof HTMLNode) {
                 child._isPossiblyDistributed = false
 
-                // If ImperativeBase#removeChild was called first, child's
+                // If ImperativeBase#remove was called first, child's
                 // _parent will already be null, so prevent recursion.
-                if (!child.imperativeCounterpart._parent) return
+                if (!child._parent) return
 
-                this.imperativeCounterpart.removeChild(child.imperativeCounterpart)
+                this.remove(child)
             }
             else if (
                 hasShadowDomV0
@@ -369,6 +314,7 @@ export function initDeclarativeBase() {
             }
         }
 
+        // TODO: make setAttribute accept non-string values.
         setAttribute(attr, value) {
             //if (this.tagName.toLowerCase() == 'motor-scene')
                 //console.log('setting attribute', arguments[1])
@@ -389,9 +335,9 @@ export function proxyGettersSetters(SourceClass, TargetClass) {
         'children', // proxying this one would really break stuff (f.e. React)
         'element',
         'scene',
-        'addChild',
+        'add',
         'addChildren',
-        'removeChild',
+        'remove',
         'removeChildren',
     ]
 
@@ -417,7 +363,7 @@ export function proxyGettersSetters(SourceClass, TargetClass) {
         if (sourceDescriptor.set) {
             Object.assign(targetDescriptor, {
                 set(value) {
-                    this.imperativeCounterpart[prop] = value
+                    this[prop] = value
                 }
             })
         }
@@ -426,7 +372,7 @@ export function proxyGettersSetters(SourceClass, TargetClass) {
         if (sourceDescriptor.get) {
             Object.assign(targetDescriptor, {
                 get() {
-                    return this.imperativeCounterpart[prop]
+                    return this[prop]
                 }
             })
         }
