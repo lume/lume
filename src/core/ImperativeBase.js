@@ -55,6 +55,10 @@ export function initImperativeBase() {
                 // Scenes, true when mounted into DOM.
                 this._mounted = false;
 
+                // stores a ref to this Node's root Scene when/if this Node is
+                // in a scene.
+                this._scene = null
+
                 // For Nodes, a promise that resolves when this Node is
                 // attached to a tree that has a root Scene TreeNode *and* when
                 // that root Scene has been mounted into the DOM. For Scenes,
@@ -78,6 +82,23 @@ export function initImperativeBase() {
 
                     this._needsToBeRendered()
                 })
+
+                this.initWebGl()
+            }
+
+            initWebGl() {
+                this.threeObject3d = this.makeThreeObject3d()
+            }
+            makeThreeObject3d() {}
+
+            connected() {
+                // THREE
+                console.log('parent', this.parent.threeObject3d)
+                this.parent.threeObject3d.add(this.threeObject3d)
+            }
+            disconnected() {
+                // THREE
+                this.parent.threeObject3d.add(this.threeObject3d)
             }
 
             /**
@@ -120,6 +141,44 @@ export function initImperativeBase() {
              */
             get element() {
                 return this._elementOperations.element
+            }
+
+            /**
+             * Get the Scene that this Node is in, null if no Scene. This is recursive
+             * at first, then cached.
+             *
+             * This traverses up the scene graph tree starting at this Node and finds
+             * the root Scene, if any. It caches the value for performance. If this
+             * Node is removed from a parent node with parent.removeChild(), then the
+             * cache is invalidated so the traversal can happen again when this Node is
+             * eventually added to a new tree. This way, if the scene is cached on a
+             * parent Node that we're adding this Node to then we can get that cached
+             * value instead of traversing the tree.
+             *
+             * @readonly
+             */
+            get scene() {
+                // NOTE: this._scene is initally null, created in the constructor.
+
+                // if already cached, return it. Or if no parent, return it (it'll be null).
+                // Additionally, Scenes have this._scene already set to themselves.
+                if (this._scene || !this._parent) return this._scene
+
+                // if the parent node already has a ref to the scene, use that.
+                if (this._parent._scene) {
+                    this._scene = this._parent._scene
+                }
+                else if (this._parent instanceof Scene) {
+                    this._scene = this._parent
+                }
+                // otherwise call the scene getter on the parent, which triggers
+                // traversal up the scene graph in order to find the root scene (null
+                // if none).
+                else {
+                    this._scene = this._parent.scene
+                }
+
+                return this._scene
             }
 
             /**

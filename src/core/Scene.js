@@ -10,14 +10,19 @@
 // Transformable is not used in this file, but importing here solves the
 // circular dependency problem.
 import Transformable from './Transformable'
-// Sizeable is used in this file.
+// Sizeable on the other hand is used in this file.
 import Sizeable from './Sizeable'
+import Motor from './Motor'
 
-import getWebGlRenderer from './WebGLRenderer'
 import ImperativeBase, {initImperativeBase} from './ImperativeBase'
 import XYZValues from './XYZValues'
 import { default as HTMLInterface } from '../html/HTMLScene'
 import documentReady from 'awaitbox/dom/documentReady'
+
+import {
+    Scene as ThreeScene, // so as not to confuse with Infamous Scene.
+    PerspectiveCamera,
+} from 'three'
 
 initImperativeBase()
 
@@ -34,6 +39,11 @@ const SceneMixin = base => {
         construct(options = {}) {
             super.construct(options)
 
+            // Used by the this.scene getter in ImperativeBase
+            // Motor's loop checks _scene on Nodes and Scenes when determining
+            // modified scenes.
+            this._scene = this
+
             // NOTE: z size is always 0, since native DOM elements are always flat.
             this._elementParentSize = {x:0, y:0, z:0}
 
@@ -45,27 +55,39 @@ const SceneMixin = base => {
 
             this._calcSize()
             this._needsToBeRendered()
-
-            // For now, use the same program (with shaders) for all objects.
-            // Basically it has position, frag colors, point light, directional
-            // light, and ambient light.
-            // TODO: maybe call this in `init()`, and destroy webgl stuff in
-            // `deinit()`.
-            // TODO: The user might enable this by setting the attribute later, so
-            // we can't simply rely on having it in constructor, we need a
-            // getter/setter like node properties.
-            this.initWebGl()
         }
 
+        // For now, use the same program (with shaders) for all objects.
+        // Basically it has position, frag colors, point light, directional
+        // light, and ambient light.
+        // TODO: maybe call this in `init()`, and destroy webgl stuff in
+        // `deinit()`.
+        // TODO: The user might enable this by setting the attribute later, so
+        // we can't simply rely on having it in constructor, we need a
+        // getter/setter like node properties.
         // TODO: we need to deinit webgl too.
         async initWebGl() {
+            // THREE
+            // maybe keep this in sceneState in WebGLRendererThree
+            super.initWebGl()
+
+            this.threeCamera = new PerspectiveCamera( 75, 16/9, 0.1, 1000 ),
+
             // TODO: this needs to be cancelable too, search other codes for
             // "mountcancel" to see.
             await this.mountPromise
-            this.webglEnabled = !!this.getAttribute('webglenabled')
+
+            this.webglEnabled = !!this.element.hasAttribute('experimental-webgl')
             if (!this.webglEnabled) return
-            this.webGlRendererState = {}
-            getWebGlRenderer().initGl(this)
+            Motor.initWebGlRender(this, 'three')
+        }
+
+        makeThreeObject3d() {
+            return new ThreeScene
+        }
+
+        // TODO
+        destroyWebGl() {
         }
 
         _setDefaultProperties() {

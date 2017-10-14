@@ -28,6 +28,7 @@
   "dependencies": {
     "army-knife": "^0.2.1",
     "awaitbox": "^1.0.0",
+    "custom-attributes": "^1.1.3",
     "document-register-element": "^1.7.0",
     "famous": "trusktr/famous#commonjs",
     "famousify": "^0.1.5",
@@ -41,10 +42,12 @@
     "jss-vendor-prefixer": "^1.0.0",
     "pixi-svg": "^1.0.1",
     "pixi.js": "^4.5.3",
+    "three": "^0.87.1",
     "two.js": "trusktr/two.js#patch-2"
   },
   "devDependencies": {
     "all-contributors-cli": "^4.4.0",
+    "async-csp": "^0.5.0",
     "babel-cli": "^6.0.0",
     "babel-core": "^6.0.0",
     "babel-plugin-add-module-exports": "^0.2.1",

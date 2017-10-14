@@ -1,6 +1,6 @@
 import documentReady from 'awaitbox/dom/documentReady'
 import Transformable from './Transformable'
-import getWebGlRenderer from './WebGLRenderer'
+import {getWebGLRendererThree, destroyWebGLRendererThree} from './WebGLRendererThree'
 import {isInstanceof} from './Utility'
 
 import {
@@ -8,7 +8,9 @@ import {
 } from './Utility'
 
 let documentIsReady = false
-let webGLRenderer = null
+
+// TODO use Array if IE11 doesn't have Map.
+const webGLRenderers = new Map
 
 class Motor {
     constructor() {
@@ -200,19 +202,14 @@ class Motor {
         worldMatrixRootNodes.length = 0
 
         // render webgl of modified scenes.
-        const modifiedScenes = this._modifiedScenes
         // TODO PERFORMANCE: store a list of webgl-enabled modified scenes, and
         // iterate only through those so we don't iterate over non-webgl
         // scenes.
+        const modifiedScenes = this._modifiedScenes
         for (let i=0, l=modifiedScenes.length; i<l; i+=1) {
-            const sceneElement = modifiedScenes[i].element
-            // TODO we're temporarily storing stuff on the .element, but we
-            // don't want that, we will move it to WebGLRenderer.
-            if (
-                sceneElement.webglEnabled &&
-                ( webGLRenderer || (webGLRenderer = getWebGlRenderer()) ) // only ever call getWebGlRenderer once
-            )
-                webGLRenderer.drawScene(sceneElement)
+            const scene = modifiedScenes[i]
+            if (scene.webglEnabled)
+                webGLRenderers.get(scene).drawScene(scene)
         }
         modifiedScenes.length = 0
 
@@ -221,6 +218,21 @@ class Motor {
             nodesToBeRendered[i]._willBeRendered = false
         }
         nodesToBeRendered.length = 0
+    }
+
+
+    // in the future we might have "babylon", "playcanvas", etc, on a
+    // per scene basis.
+    initWebGlRender(scene, type) {
+        let rendererGetter = null
+
+        if (type === "three")
+            rendererGetter = getWebGLRendererThree
+        else throw new Error('invalid WebGL renderer')
+
+        const renderer = rendererGetter()
+        webGLRenderers.set(scene, renderer)
+        renderer.initGl(scene)
     }
 }
 
