@@ -1,26 +1,43 @@
 import './HasAttribute'
-import { BoxGeometry, Geometry } from 'three'
+import { BoxGeometry } from 'three'
 import BaseMeshBehavior from './BaseMeshBehavior'
 
 export default
 class BoxGeometryBehavior extends BaseMeshBehavior {
-    async connectedCallback( element ) {
-        if ( ! await this.checkElementIsMesh(element) ) return
+    static get observedAttributes() {
+        return [ 'size' ]
+    }
 
-        this.setMeshComponent( element, 'geometry', new BoxGeometry(1, 1, 1) )
+    async connectedCallback( element ) {
+        if ( ! await this.checkElementIsMesh( element ) ) return
+
+        this.setMeshComponent( element, 'geometry', new BoxGeometry(
+            element.calculatedSize.x,
+            element.calculatedSize.y,
+            element.calculatedSize.z
+        ) )
         element._needsToBeRendered()
     }
 
     async disconnectedCallback( element ) {
-        if ( ! await this.checkElementIsMesh(element) ) return
+        if ( ! await this.checkElementIsMesh( element ) ) return
 
         this.setDefaultComponent( element, 'geometry' )
         element._needsToBeRendered()
     }
 
     // TODO
-    attributeChangedCallback() {
-        // set size, etc.
+    attributeChangedCallback(element, attr, oldValue, newValue) {
+        if ( attr == 'size' ) {
+            this.setMeshComponent( element, 'geometry', new BoxGeometry(
+                element.calculatedSize.x,
+                element.calculatedSize.y,
+                element.calculatedSize.z,
+            ) )
+
+            // not needed because triggered by the attributeChangedCallback of the element.
+            //element._needsToBeRendered()
+        }
     }
 }
 

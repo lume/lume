@@ -1,11 +1,10 @@
 import './HasAttribute'
-import { SphereGeometry, Geometry } from 'three'
+import { SphereGeometry } from 'three'
 import BaseMeshBehavior from './BaseMeshBehavior'
 
 export default
 class SphereGeometryBehavior extends BaseMeshBehavior {
     static get observedAttributes() {
-        // TODO: update when we change to `size` attribute.
         return [ 'size' ]
     }
 
@@ -13,14 +12,16 @@ class SphereGeometryBehavior extends BaseMeshBehavior {
         if ( ! await this.checkElementIsMesh(element) ) return
 
         // TODO might have to defer so that calculatedSize is already calculated
-        this.initialSize = element.calculatedSize // determines sphere diameter
-        console.log(' @@@@@ SphereGeometryBehavior initialSize', this.initialSize)
-        this.setMeshComponent( element, 'geometry', new SphereGeometry( this.initialSize.x / 2, 32, 32 ) )
+        this.setMeshComponent( element, 'geometry', new SphereGeometry(
+            element.calculatedSize.x / 2,
+            32,
+            32
+        ) )
         element._needsToBeRendered()
     }
 
     async disconnectedCallback( element ) {
-        if ( ! await this.checkElementIsMesh(element) ) return
+        if ( ! await this.checkElementIsMesh( element ) ) return
 
         this.setDefaultComponent( element, 'geometry' )
         element._needsToBeRendered()
@@ -28,8 +29,6 @@ class SphereGeometryBehavior extends BaseMeshBehavior {
 
     // TODO
     attributeChangedCallback(element, attr, oldValue, newValue) {
-        console.log(' ---- SphereGeometryBehavior attributeChangedCallback', attr, oldValue, newValue)
-
         if ( attr == 'size' ) {
             // TODO We currently don't rely on the actual attribute values, but
             // on the calculatedSize that is calculated by the Sizeable class that
@@ -46,12 +45,14 @@ class SphereGeometryBehavior extends BaseMeshBehavior {
             // order it is happening...
             // TODO: how does scaling affect textures? Maybe we have to scale
             // textures, or maybe we have to just generate a new Sphere? Or
-            // maybe we can hack it and somehow modify the existing geometry to
+            // maybe we can hack it and somehow modify the existing geometry so
             // Three sees it as having a new size.
-            const scale = element.calculatedSize.x / this.initialSize.x
-            element.threeObject3d.scale.x = scale
-            element.threeObject3d.scale.y = scale
-            element.threeObject3d.scale.z = scale
+
+            this.setMeshComponent( element, 'geometry', new SphereGeometry(
+                element.calculatedSize.x / 2,
+                32,
+                32
+            ) )
 
             // not needed because triggered by the attributeChangedCallback of the element.
             //element._needsToBeRendered()
