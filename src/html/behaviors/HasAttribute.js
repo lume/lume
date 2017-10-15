@@ -28,8 +28,9 @@ window.elementBehaviors = new BehaviorRegistry
 // One instance of is instantiated per element with has="" attribute.
 class HasAttribute {
     constructor() {
-        // this is confusing because this.ownerElement doesn't exist.
-        //this.ownerElement.behaviors = new Map()
+        // TODO constructor confusing because this.ownerElement doesn't exist. Report to custom-attributes
+
+        this.observers = new Map
     }
 
     connectedCallback() {
@@ -89,6 +90,14 @@ class HasAttribute {
                 behavior.disconnectedCallback( this.ownerElement )
             }
 
+            // We can't rely on checking observedAttributes here because that
+            // could change after the fact, we only ever check it when we add
+            // the behavior. If it had observedAttributes, then it will have an
+            // observer.
+            if ( this.observers.has( behavior ) ) {
+                this.destroyAttributeObserver( behavior )
+            }
+
             this.ownerElement.behaviors.delete( name )
         }
 
@@ -107,36 +116,40 @@ class HasAttribute {
             }
 
             if ( Array.isArray( behavior.constructor.observedAttributes ) ) {
-
                 this.fireInitialAttributeChangedCallbacks( behavior )
-
-                console.log(' $$$$$$ creating attribute observer', name, behavior.constructor.observedAttributes, this.ownerElement.constructor.name)
-
-                // used for observing attributes of elements that have behaviors, so we can
-                // trigger attributeChangedCallbacks of the behaviors.
-                const observer = new MutationObserver( records => {
-                    console.log( ' %%%%%%% attribute change records', records )
-
-                    // TODO: why does this MO callback fire twice for a single
-                    // attribute change?????
-                    for (const record of records) {
-                        behavior.attributeChangedCallback(
-                            this.ownerElement,
-                            record.attributeName,
-                            record.oldValue,
-                            this.ownerElement.getAttribute(record.attributeName)
-                        )
-                    }
-                } )
-
-                observer.observe( this.ownerElement, {
-                    attributes: true,
-                    attributeOldValue: true,
-                    attributeFilter: behavior.constructor.observedAttributes
-                } )
-
+                this.createAttributeObserver( behavior )
             }
         }
+    }
+
+    destroyAttributeObserver( behavior ) {
+        this.observers.get( behavior ).disconnect()
+        this.observers.delete( behavior )
+    }
+
+    createAttributeObserver( behavior ) {
+        // used for observing attributes of elements that have behaviors, so we can
+        // trigger attributeChangedCallbacks of the behaviors.
+        const observer = new MutationObserver( records => {
+
+            for (const record of records) {
+                behavior.attributeChangedCallback(
+                    this.ownerElement,
+                    record.attributeName,
+                    record.oldValue,
+                    this.ownerElement.getAttribute( record.attributeName )
+                )
+            }
+
+        } )
+
+        observer.observe( this.ownerElement, {
+            attributes: true,
+            attributeOldValue: true,
+            attributeFilter: behavior.constructor.observedAttributes
+        } )
+
+        this.observers.set( behavior, observer )
     }
 
     fireInitialAttributeChangedCallbacks( behavior ) {
