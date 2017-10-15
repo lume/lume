@@ -44,10 +44,15 @@ class HasAttribute {
     }
 
     changedCallback( oldVal, newVal ) {
-        const newBehaviors = newVal.split( /\s+/ )
-        const previousBehaviors = Array.from(this.ownerElement.behaviors.keys())
+        const newBehaviors = this.getBehaviorNames( newVal )
+        const previousBehaviors = Array.from( this.ownerElement.behaviors.keys() )
         const { removed, added } = this.getDiff( previousBehaviors, newBehaviors )
         this.handleDiff( removed, added )
+    }
+
+    getBehaviorNames( string ) {
+        if ( string.trim() == '' ) return []
+        else return string.split( /\s+/ )
     }
 
     getDiff( previousBehaviors, newBehaviors ) {
