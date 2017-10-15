@@ -26,7 +26,6 @@ class BehaviorRegistry {
 window.elementBehaviors = new BehaviorRegistry
 
 // One instance of is instantiated per element with has="" attribute.
-// TODO split by \s white space, not " ".
 class HasAttribute {
     constructor() {
         // this is confusing because this.ownerElement doesn't exist.
@@ -39,15 +38,13 @@ class HasAttribute {
     }
 
     disconnectedCallback() {
-        console.log( ' ^^^^^^ disconnected HasAttribute' )
         this.changedCallback( this.value, '' )
         delete this.ownerElement.behaviors
     }
 
     changedCallback( oldVal, newVal ) {
-        console.log( ' ^^^^^^ changed HasAttribute', ' - old: ', oldVal, ' - new: ', newVal )
-        const newBehaviors = newVal.split( ' ' )
-        const previousBehaviors = this.ownerElement.behaviors.keys()
+        const newBehaviors = newVal.split( /\s+/ )
+        const previousBehaviors = Array.from(this.ownerElement.behaviors.keys())
         const { removed, added } = this.getDiff( previousBehaviors, newBehaviors )
         this.handleDiff( removed, added )
     }
@@ -55,6 +52,7 @@ class HasAttribute {
     getDiff( previousBehaviors, newBehaviors ) {
         const diff = {
             removed: [],
+            added: newBehaviors,
         }
 
         for ( let i=0, l=previousBehaviors.length; i<l; i+=1 ) {
@@ -62,18 +60,17 @@ class HasAttribute {
 
             // if it exists in the previousBehaviors but not the newBehaviors, then
             // the node was removed.
-            if (! newBehaviors.includes( oldBehavior ) ) {
+            if (! diff.added.includes( oldBehavior ) ) {
                 diff.removed.push( oldBehavior )
             }
 
-            // otherwise the node wasn't added or removed.
+            // otherwise the old value also exists in the set of new values, so
+            // therefore it wasn't added or removed, so let's remove it so we
+            // don't count it as added
             else {
-                newBehaviors.splice( i, 1 )
+                diff.added.splice( diff.added.indexOf(oldBehavior), 1 )
             }
         }
-
-        // The remaining nodes in newBehaviors must have been added.
-        diff.added = newBehaviors
 
         return diff
     }
@@ -113,7 +110,7 @@ class HasAttribute {
 
                 this.fireInitialAttributeChangedCallbacks( behavior )
 
-                console.log(' $$$$$$ creating attribute observer', behavior.constructor.observedAttributes, name, this.ownerElement.constructor.name)
+                console.log(' $$$$$$ creating attribute observer', name, behavior.constructor.observedAttributes, this.ownerElement.constructor.name)
 
                 // used for observing attributes of elements that have behaviors, so we can
                 // trigger attributeChangedCallbacks of the behaviors.
