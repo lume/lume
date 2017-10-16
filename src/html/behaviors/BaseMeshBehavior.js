@@ -1,11 +1,6 @@
 import { BoxGeometry, MeshPhongMaterial } from 'three'
 import Mesh from '../../core/Mesh'
 
-const defaults = {
-    geometry: BoxGeometry,
-    material: MeshPhongMaterial,
-}
-
 // base class for Geometry and Material behaviors
 export default
 class BaseMeshBehavior {
@@ -40,13 +35,26 @@ class BaseMeshBehavior {
     }
 
     setMeshComponent(element, name, newComponent) {
-        element[name].dispose()
-        element[name] = newComponent
+        if ( element.threeObject3d[ name ] )
+            element.threeObject3d[ name ].dispose()
+
         element.threeObject3d[name] = newComponent
     }
 
-    setDefaultComponent(element, name) {
-        const Component = defaults[name]
-        this.setMeshComponent(element, name, Component)
+    setDefaultComponent( element, name ) {
+        this.setMeshComponent( element, name, this.makeDefaultComponent( element, name ) )
+    }
+
+    makeDefaultComponent( element, name ) {
+        if (name == 'geometry') {
+            return new BoxGeometry(
+                element.calculatedSize.x,
+                element.calculatedSize.y,
+                element.calculatedSize.z,
+            )
+        }
+        else if (name == 'material') {
+            return new MeshPhongMaterial( { color: 0xff6600 } )
+        }
     }
 }

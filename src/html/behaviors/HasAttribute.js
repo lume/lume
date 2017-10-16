@@ -46,6 +46,11 @@ class HasAttribute {
     changedCallback( oldVal, newVal ) {
         const newBehaviors = this.getBehaviorNames( newVal )
         const previousBehaviors = Array.from( this.ownerElement.behaviors.keys() )
+
+        // small optimization: if no previous or new behaviors, just quit
+        // early. It would still function the same without this.
+        if ( newBehaviors.length == 0 && previousBehaviors.length == 0 ) return
+
         const { removed, added } = this.getDiff( previousBehaviors, newBehaviors )
         this.handleDiff( removed, added )
     }
@@ -132,9 +137,12 @@ class HasAttribute {
         this.observers.delete( behavior )
     }
 
+    // Behaviors observe attribute changes, implemented with MutationObserver
+    //
+    // We have to create one observer per behavior because otherwise
+    // MutationObserver doesn't have an API for disconnecting from a single
+    // element, only for disconnecting from all elements.
     createAttributeObserver( behavior ) {
-        // used for observing attributes of elements that have behaviors, so we can
-        // trigger attributeChangedCallbacks of the behaviors.
         const observer = new MutationObserver( records => {
 
             for (const record of records) {
