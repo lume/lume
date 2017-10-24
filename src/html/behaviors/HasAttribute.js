@@ -25,6 +25,19 @@ class BehaviorRegistry {
 
 window.elementBehaviors = new BehaviorRegistry
 
+// stores the behaviors associated to each element.
+const behaviorMaps = new Map
+
+// All elements have a `behaviors` property. If null, it the element has no
+// behaviors, otherwise the property is a map of behavior names to behavior
+// instances.
+Object.defineProperty( Element.prototype, 'behaviors', {
+    get() {
+        if ( ! behaviorMaps.has( this ) ) return null
+        else return behaviorMaps.get( this )
+    },
+} )
+
 // One instance of is instantiated per element with has="" attribute.
 class HasAttribute {
     constructor() {
@@ -34,13 +47,13 @@ class HasAttribute {
     }
 
     connectedCallback() {
-        this.ownerElement.behaviors = new Map()
+        behaviorMaps.set( this.ownerElement, new Map )
         this.changedCallback( '', this.value )
     }
 
     disconnectedCallback() {
         this.changedCallback( this.value, '' )
-        delete this.ownerElement.behaviors
+        behaviorMaps.delete( this.ownerElement )
     }
 
     changedCallback( oldVal, newVal ) {
@@ -145,7 +158,7 @@ class HasAttribute {
     createAttributeObserver( behavior ) {
         const observer = new MutationObserver( records => {
 
-            for (const record of records) {
+            for ( const record of records ) {
                 behavior.attributeChangedCallback(
                     this.ownerElement,
                     record.attributeName,
