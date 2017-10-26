@@ -4,6 +4,7 @@ import { observeChildren } from '../core/Utility'
 import jss from '../lib/jss'
 import './polyfillCustomElements'
 import documentReady from 'awaitbox/dom/documentReady'
+import DefaultBehaviorsMixin from './behaviors/DefaultBehaviors'
 
 // Very very stupid hack needed for Safari in order for us to be able to extend
 // the HTMLElement class. See:
@@ -54,7 +55,7 @@ function WebComponentMixin(elementClass) {
         return classCache.get(elementClass)
 
     // otherwise, create it.
-    class WebComponent extends elementClass {
+    class WebComponent extends DefaultBehaviorsMixin(elementClass) {
 
         // All imperative API constructors assume an object (options) was
         // passed in, but due to using document-register-element that isn't
@@ -101,6 +102,7 @@ function WebComponentMixin(elementClass) {
         // subclasses extend this, and they should not use `constructor`
         // directly.
         construct() {
+            super.construct()
             this._connected = false
             this._initialized = false
             this._initialAttributeChange = false
