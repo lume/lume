@@ -25,14 +25,6 @@ class Mesh extends Node {
     static get defaultElementName() { return 'i-mesh' }
     static get _Class() { return Mesh }
 
-    construct( options = {} ) {
-        super.construct(options)
-    }
-
-    initWebGl() {
-        super.initWebGl()
-    }
-
     makeThreeObject3d() {
         return new ThreeMesh
     }
