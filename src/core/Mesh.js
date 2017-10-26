@@ -25,6 +25,13 @@ class Mesh extends Node {
     static get defaultElementName() { return 'i-mesh' }
     static get _Class() { return Mesh }
 
+    static get defaultBehaviors() {
+        return [
+            'box-geometry',
+            'phong-material',
+        ]
+    }
+
     makeThreeObject3d() {
         return new ThreeMesh
     }

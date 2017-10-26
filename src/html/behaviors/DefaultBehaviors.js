@@ -1,16 +1,4 @@
 
-// TODO get these from somewhere dynamically, obvsiouly.
-// Perhaps there will be an API for registering geometries and
-// materials.
-const geometryBehaviorNames = [
-    'box-geometry',
-    'sphere-geometry',
-]
-const materialBehaviorNames = [
-    'basic-material',
-    'phong-material',
-]
-
 export default
 function DefaultBehaviorsMixin(ElementClass) {
 
@@ -18,6 +6,11 @@ function DefaultBehaviorsMixin(ElementClass) {
     // element-behaviors so that it can be applied to any element
     // generically.
     return class DefaultBehaviors extends ElementClass {
+
+        // override in subclasses
+        static get defaultBehaviors() {
+            return []
+        }
 
         construct(...args) {
             if (super.construct) super.construct(...args)
@@ -36,49 +29,57 @@ function DefaultBehaviorsMixin(ElementClass) {
             // everything in the engine can hook into it. Otherwise if different
             // call sites use setTimeout, logic will be firing at random and in
             // different order.
-            setTimeout( () => this.setDefaultBehaviorsIfNeeded(), 0 )
+            setTimeout( () => this._setDefaultBehaviorsIfNeeded(), 0 )
         }
 
-        async setDefaultBehaviorsIfNeeded() {
-            const initialBehaviors = Array.from( this.behaviors.keys() )
+        _setDefaultBehaviorsIfNeeded() {
+            const defaultBehaviorNames = this.constructor.defaultBehaviors
 
-            // small optimization: if there are no values, obviously we don't
-            // have a geometry or material, just make them
-            if ( initialBehaviors.length == 0 ) {
-                this.setAttribute( 'has', this.getAttribute( 'has' ) + ' box-geometry phong-material' )
+            // do nothing if there's no defaults
+            if (defaultBehaviorNames.length == 0) return
+
+            const initialBehaviorNames = Array.from( this.behaviors.keys() )
+
+            // small optimization: if there are no initial behaviors and we
+            // have default behaviors, just set the default behaviors.
+            if ( initialBehaviorNames.length == 0 ) {
+                this.setAttribute( 'has', this.getAttribute( 'has' ) + ` ${defaultBehaviorNames.join(' ')}`)
             }
-            // otherwise detect which behavior(s) to add
+            // otherwise detect which default behavior(s) to add
             else {
 
-                let hasGeometry = false
-                let hasMaterial = false
+                let behaviorNamesToAdd = ''
 
-                for ( const behavior of initialBehaviors ) {
-                    if ( geometryBehaviorNames.includes( behavior) ) hasGeometry = true
-                    if ( materialBehaviorNames.includes( behavior) ) hasMaterial = true
+                for (const defaultBehaviorName of this.constructor.defaultBehaviors) {
+
+                    let hasBehavior = false
+
+                    for ( const initialBehaviorName of initialBehaviorNames ) {
+                        if ( defaultBehaviorName == initialBehaviorName ) {
+                            hasBehavior = true
+                            break
+                        }
+                    }
+
+                    if (hasBehavior) continue
+                    else {
+                        // TODO programmatic API:
+                        //this.behaviors.add('box-geometry')
+
+                        // add a space in front of each name except the first
+                        if ( behaviorNamesToAdd ) behaviorNamesToAdd += ' '
+
+                        behaviorNamesToAdd += defaultBehaviorName
+                    }
                 }
 
-                // small optimization?: set both behaviors at once if we can.
-                if ( ! hasGeometry && ! hasMaterial ) {
-                    // TODO programmatic API:
-                    //this.behaviors.add('box-geometry')
+                // add the needed behaviors all at once.
+                if (behaviorNamesToAdd) {
+                    let currentHasValue = this.getAttribute('has')
 
-                    this.setAttribute( 'has', this.getAttribute( 'has' ) + ' box-geometry phong-material' )
-                    return
-                }
+                    if (currentHasValue) currentHasValue + ' '
 
-                if ( ! hasGeometry ) {
-                    // TODO programmatic API:
-                    //this.behaviors.add('box-geometry')
-
-                    this.setAttribute( 'has', this.getAttribute( 'has' ) + ' box-geometry' )
-                }
-
-                if ( ! hasMaterial ) {
-                    // TODO programmatic API:
-                    //this.behaviors.add('phong-material')
-
-                    this.setAttribute( 'has', this.getAttribute( 'has' ) + ' phong-material' )
+                    this.setAttribute( 'has', currentHasValue + behaviorNamesToAdd )
                 }
             }
 
