@@ -26,7 +26,6 @@ class BoxGeometryBehavior extends BaseMeshBehavior {
         element._needsToBeRendered()
     }
 
-    // TODO
     attributeChangedCallback(element, attr, oldValue, newValue) {
         if ( attr == 'size' ) {
             this.setMeshComponent( element, 'geometry', new BoxGeometry(

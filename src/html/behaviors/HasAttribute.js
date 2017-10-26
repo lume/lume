@@ -25,16 +25,25 @@ class BehaviorRegistry {
 
 window.elementBehaviors = new BehaviorRegistry
 
+// for semantic purpose
+class BehaviorMap extends Map {}
+
 // stores the behaviors associated to each element.
-const behaviorMaps = new Map
+const behaviorMaps = new WeakMap
 
 // All elements have a `behaviors` property. If null, it the element has no
 // behaviors, otherwise the property is a map of behavior names to behavior
 // instances.
 Object.defineProperty( Element.prototype, 'behaviors', {
     get() {
-        if ( ! behaviorMaps.has( this ) ) return null
-        else return behaviorMaps.get( this )
+        let thisBehaviors = null;
+
+        if ( ! behaviorMaps.has( this ) ) {
+            behaviorMaps.set( this, thisBehaviors = new BehaviorMap )
+        }
+        else thisBehaviors = behaviorMaps.get( this )
+
+        return thisBehaviors
     },
 } )
 
@@ -47,18 +56,18 @@ class HasAttribute {
     }
 
     connectedCallback() {
-        behaviorMaps.set( this.ownerElement, new Map )
+        this.behaviors = this.ownerElement.behaviors
         this.changedCallback( '', this.value )
     }
 
     disconnectedCallback() {
         this.changedCallback( this.value, '' )
-        behaviorMaps.delete( this.ownerElement )
+        delete this.behaviors
     }
 
     changedCallback( oldVal, newVal ) {
         const newBehaviors = this.getBehaviorNames( newVal )
-        const previousBehaviors = Array.from( this.ownerElement.behaviors.keys() )
+        const previousBehaviors = Array.from( this.behaviors.keys() )
 
         // small optimization: if no previous or new behaviors, just quit
         // early. It would still function the same without this.
@@ -104,7 +113,7 @@ class HasAttribute {
         for ( const name of removed ) {
             if ( ! elementBehaviors.has( name ) ) continue
 
-            const behavior = this.ownerElement.behaviors.get( name )
+            const behavior = this.behaviors.get( name )
 
             // TODO fire this disconnectedCallback only if the element is in a
             // document, not if it merely has a parent (the naive easy way for
@@ -121,7 +130,7 @@ class HasAttribute {
                 this.destroyAttributeObserver( behavior )
             }
 
-            this.ownerElement.behaviors.delete( name )
+            this.behaviors.delete( name )
         }
 
         for ( const name of added ) {
@@ -129,7 +138,7 @@ class HasAttribute {
 
             const Behavior = elementBehaviors.get( name )
             const behavior = new Behavior( this.ownerElement )
-            this.ownerElement.behaviors.set( name, behavior )
+            this.behaviors.set( name, behavior )
 
             // TODO fire this connectedCallback only if the element is in a
             // document, not if it merely has a parent (the naive easy way for
