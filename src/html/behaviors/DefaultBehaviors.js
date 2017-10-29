@@ -110,7 +110,7 @@ function DefaultBehaviorsMixin(ElementClass) {
                 if (behaviorNamesToAdd) {
                     let currentHasValue = this.getAttribute('has')
 
-                    if (currentHasValue) currentHasValue + ' '
+                    if (currentHasValue) currentHasValue += ' '
 
                     this.setAttribute( 'has', currentHasValue + behaviorNamesToAdd )
                 }
