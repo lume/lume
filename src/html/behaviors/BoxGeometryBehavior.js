@@ -34,7 +34,7 @@ class BoxGeometryBehavior extends BaseMeshBehavior {
                 element.calculatedSize.z,
             ) )
 
-            // not needed because triggered by the attributeChangedCallback of the element.
+            // not needed because triggered by the attributeChangedCallback of the element for the 'size' attribute.
             //element._needsToBeRendered()
         }
     }

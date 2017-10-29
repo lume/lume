@@ -102,6 +102,10 @@ const NodeMixin = base => {
             // in other scenes.
             this.propertyChange('position')
             this.propertyChange('rotation')
+
+            // TODO: propertychange is fired once per axis, which may be a bit
+            // much. Maybe we can fire it once per XYZValues, and
+            // perhaps anychronously in the next frame.
             this.on('propertychange', prop => this.propertyChange(prop))
         }
 

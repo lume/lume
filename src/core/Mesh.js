@@ -27,10 +27,14 @@ class Mesh extends Node {
     // as well, so that it can be agnostic of the naming. Either way should
     // work.
     static get defaultBehaviors() {
-        return [
-            'box-geometry',
-            'phong-material',
-        ]
+        return {
+            'box-geometry': initialBehaviors => {
+                return !initialBehaviors.some( b => b.endsWith( '-geometry' ) )
+            },
+            'phong-material': initialBehaviors => {
+                return !initialBehaviors.some( b => b.endsWith( '-material' ) )
+            },
+        }
     }
 
     makeThreeObject3d() {

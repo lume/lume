@@ -33,43 +33,76 @@ function DefaultBehaviorsMixin(ElementClass) {
         }
 
         _setDefaultBehaviorsIfNeeded() {
-            const defaultBehaviorNames = this.constructor.defaultBehaviors
+            let defaultBehaviors = this.constructor.defaultBehaviors
 
             // do nothing if there's no defaults
-            if (defaultBehaviorNames.length == 0) return
+            if (!defaultBehaviors) return
+            if (Object.keys(defaultBehaviors).length == 0) return
 
             const initialBehaviorNames = Array.from( this.behaviors.keys() )
 
             // small optimization: if there are no initial behaviors and we
             // have default behaviors, just set the default behaviors.
             if ( initialBehaviorNames.length == 0 ) {
-                this.setAttribute( 'has', this.getAttribute( 'has' ) + ` ${defaultBehaviorNames.join(' ')}`)
+
+                // if not an array, then it's an object.
+                if (!defaultBehaviors instanceof Array) defaultBehaviors = Object.keys(defaultBehaviors)
+
+                this.setAttribute( 'has', this.getAttribute( 'has' ) + ` ${defaultBehaviors.join(' ')}`)
             }
+
             // otherwise detect which default behavior(s) to add
             else {
 
                 let behaviorNamesToAdd = ''
 
-                for (const defaultBehaviorName of this.constructor.defaultBehaviors) {
+                // if defaultBehaviors is an array, use default logic to add
+                // behaviors that aren't already added.
+                if (defaultBehaviors instanceof Array) {
+                    for (const defaultBehaviorName of defaultBehaviors) {
 
-                    let hasBehavior = false
+                        let hasBehavior = false
 
-                    for ( const initialBehaviorName of initialBehaviorNames ) {
-                        if ( defaultBehaviorName == initialBehaviorName ) {
-                            hasBehavior = true
-                            break
+                        for ( const initialBehaviorName of initialBehaviorNames ) {
+                            if ( defaultBehaviorName == initialBehaviorName ) {
+                                hasBehavior = true
+                                break
+                            }
+                        }
+
+                        if (hasBehavior) continue
+                        else {
+                            // TODO programmatic API:
+                            //this.behaviors.add('box-geometry')
+
+                            // add a space in front of each name except the first
+                            if ( behaviorNamesToAdd ) behaviorNamesToAdd += ' '
+
+                            behaviorNamesToAdd += defaultBehaviorName
                         }
                     }
+                }
 
-                    if (hasBehavior) continue
-                    else {
-                        // TODO programmatic API:
-                        //this.behaviors.add('box-geometry')
+                // if defaultBehaviors is an object, then behaviors are added
+                // based on conditions.
+                else if (typeof defaultBehaviors == 'object') {
+                    const defaultBehaviorNames = Object.keys(defaultBehaviors)
 
-                        // add a space in front of each name except the first
-                        if ( behaviorNamesToAdd ) behaviorNamesToAdd += ' '
+                    for (const defaultBehaviorName of defaultBehaviorNames) {
+                        const condition = defaultBehaviors[defaultBehaviorName]
 
-                        behaviorNamesToAdd += defaultBehaviorName
+                        if (
+                            (typeof condition == 'function' && condition( initialBehaviorNames ) ) ||
+                            (typeof condition != 'function' && condition )
+                        ) {
+
+                            // add a space in front of each name except the first
+                            if ( behaviorNamesToAdd ) behaviorNamesToAdd += ' '
+
+                            behaviorNamesToAdd += defaultBehaviorName
+
+                        }
+
                     }
                 }
 
