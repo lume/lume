@@ -96,11 +96,17 @@ const SizeableMixin = base => {
 
         _setPropertyXYZ(Class, name, newValue) {
             if (newValue instanceof Array) {
+                // remove previous task if any.
+                if (!this._propertyFunctions) this._propertyFunctions = new Map
+
                 if (typeof newValue[0] != 'undefined') this._properties[name].x = newValue[0]
                 if (typeof newValue[1] != 'undefined') this._properties[name].y = newValue[1]
                 if (typeof newValue[2] != 'undefined') this._properties[name].z = newValue[2]
             }
             else if (typeof newValue == 'object') {
+                // remove previous task if any.
+                if (!this._propertyFunctions) this._propertyFunctions = new Map
+
                 if (typeof newValue.x != 'undefined') this._properties[name].x = newValue.x
                 if (typeof newValue.y != 'undefined') this._properties[name].y = newValue.y
                 if (typeof newValue.z != 'undefined') this._properties[name].z = newValue.z
