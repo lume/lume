@@ -29,7 +29,7 @@ class PointLight extends Node {
 
             // if a triplet space-separated of RGB numbers
             if ( newVal.match( /^\s*\d+\s+\d+\s+\d+\s*$/ ) ) {
-                newVal = newVal.trim().split( /\s+/ ).map( n => parseInt(n) )
+                newVal = newVal.trim().split( /\s+/ ).map( n => parseFloat(n)/255 )
                 this.threeObject3d.color = new Color( ...newVal )
             }
             // otherwise a CSS-style color string
@@ -58,7 +58,7 @@ class PointLight extends Node {
 
             console.warn( (
                 `The value for the "${ attr }" attribute should be a
-                number. It will be passed to window.parseInt. Your value
+                number. It will be passed to window.parseFloat. Your value
                 ("${ value }") will be converted to the number ${ number }.`
             ).replace( /\s+/g, ' ' ) )
 

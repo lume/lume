@@ -90,7 +90,6 @@ export function initImperativeBase() {
 
             connected() {
                 // THREE
-                console.log('parent', this.parent.threeObject3d)
                 this.parent.threeObject3d.add(this.threeObject3d)
             }
             disconnected() {
