@@ -6,6 +6,9 @@ export default
 class BaseMeshBehavior {
     constructor(element) {
 
+        this.checkedElementIsMesh = false
+        this.elementIsMesh = false
+
         // records the initial size of the geometry, so that we have a
         // reference for how much scale to apply when accepting new sizes from
         // the user.
@@ -27,11 +30,12 @@ class BaseMeshBehavior {
     }
 
     async checkElementIsMesh(element) {
-        const isMesh = await this.isMeshPromise
-        if ( ! isMesh ) {
+        this.elementIsMesh = await this.isMeshPromise
+        this.checkedElementIsMesh = true
+
+        if ( ! this.elementIsMesh ) {
             console.warn( `${this.constructor.name} is only for use on elements of type Mesh, otherwise it won't do anything. You element was:`, element )
         }
-        return isMesh
     }
 
     setMeshComponent(element, name, newComponent) {

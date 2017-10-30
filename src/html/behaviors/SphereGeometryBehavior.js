@@ -9,7 +9,8 @@ class SphereGeometryBehavior extends BaseMeshBehavior {
     }
 
     async connectedCallback( element ) {
-        if ( ! await this.checkElementIsMesh(element) ) return
+        if ( ! this.checkedElementIsMesh ) await this.checkElementIsMesh(element)
+        if ( ! this.elementIsMesh ) return
 
         // TODO might have to defer so that calculatedSize is already calculated
         this.setMeshComponent( element, 'geometry', new SphereGeometry(
@@ -21,14 +22,18 @@ class SphereGeometryBehavior extends BaseMeshBehavior {
     }
 
     async disconnectedCallback( element ) {
-        if ( ! await this.checkElementIsMesh( element ) ) return
+        if ( ! this.checkedElementIsMesh ) await this.checkElementIsMesh(element)
+        if ( ! this.elementIsMesh ) return
 
         this.setDefaultComponent( element, 'geometry' )
         element._needsToBeRendered()
     }
 
-    // TODO
-    attributeChangedCallback(element, attr, oldValue, newValue) {
+    // TODO: fix duplicated code here and in attributeChangedCallback of the other geometry.
+    async attributeChangedCallback(element, attr, oldValue, newValue) {
+        if ( ! this.checkedElementIsMesh ) await this.checkElementIsMesh(element)
+        if ( ! this.elementIsMesh ) return
+
         if ( attr == 'size' ) {
             // TODO We currently don't rely on the actual attribute values, but
             // on the calculatedSize that is calculated by the Sizeable class that

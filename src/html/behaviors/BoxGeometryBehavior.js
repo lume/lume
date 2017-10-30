@@ -9,7 +9,8 @@ class BoxGeometryBehavior extends BaseMeshBehavior {
     }
 
     async connectedCallback( element ) {
-        if ( ! await this.checkElementIsMesh( element ) ) return
+        if ( ! this.checkedElementIsMesh ) await this.checkElementIsMesh(element)
+        if ( ! this.elementIsMesh ) return
 
         this.setMeshComponent( element, 'geometry', new BoxGeometry(
             element.calculatedSize.x,
@@ -20,13 +21,17 @@ class BoxGeometryBehavior extends BaseMeshBehavior {
     }
 
     async disconnectedCallback( element ) {
-        if ( ! await this.checkElementIsMesh( element ) ) return
+        if ( ! this.checkedElementIsMesh ) await this.checkElementIsMesh(element)
+        if ( ! this.elementIsMesh ) return
 
         this.setDefaultComponent( element, 'geometry' )
         element._needsToBeRendered()
     }
 
-    attributeChangedCallback(element, attr, oldValue, newValue) {
+    async attributeChangedCallback(element, attr, oldValue, newValue) {
+        if ( ! this.checkedElementIsMesh ) await this.checkElementIsMesh(element)
+        if ( ! this.elementIsMesh ) return
+
         if ( attr == 'size' ) {
             this.setMeshComponent( element, 'geometry', new BoxGeometry(
                 element.calculatedSize.x,
