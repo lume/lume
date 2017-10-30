@@ -188,10 +188,10 @@ class HasAttribute {
     }
 
     fireInitialAttributeChangedCallbacks( behavior ) {
-        if (! Array.isArray( behavior.observedAttributes ) ) return
+        if (! Array.isArray( behavior.constructor.observedAttributes ) ) return
 
         for ( const attr of Array.from( this.ownerElement.attributes ) ) {
-            if ( ! behavior.observedAttributes.includes( attr.name ) ) continue
+            if ( ! behavior.constructor.observedAttributes.includes( attr.name ) ) continue
             if ( behavior.attributeChangedCallback )
                 behavior.attributeChangedCallback( this.ownerElement, attr.name, undefined, attr.value )
         }
