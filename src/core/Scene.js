@@ -23,6 +23,7 @@ import documentReady from 'awaitbox/dom/documentReady'
 import {
     Scene as ThreeScene, // so as not to confuse with Infamous Scene.
     PerspectiveCamera,
+    AmbientLight,
 } from 'three'
 
 initImperativeBase()
@@ -72,7 +73,12 @@ const SceneMixin = base => {
             // maybe keep this in sceneState in WebGLRendererThree
             super.initWebGl()
 
-            this.threeCamera = new PerspectiveCamera( 75, 16/9, 0.1, 1000 ),
+            // TODO camera will be a Node in the Scene
+            this.threeCamera = new PerspectiveCamera( 75, 16/9, 0.1, 1000 )
+            this.threeCamera.position.z = 5
+
+            const ambientLight = new AmbientLight( 0x404040 )
+            this.threeObject3d.add( ambientLight )
 
             // TODO: this needs to be cancelable too, search other codes for
             // "mountcancel" to see.

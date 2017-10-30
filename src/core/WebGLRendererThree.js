@@ -1,10 +1,6 @@
 import {
-    //Scene as ThreeScene, // so as not to confuse with Infamous Scene.
     //PerspectiveCamera,
     WebGLRenderer,
-    BoxGeometry,
-    MeshBasicMaterial,
-    Mesh,
 } from 'three'
 
 const sceneStates = new WeakMap
@@ -17,11 +13,7 @@ class WebGLRendererThree {
 
         if (sceneState) sceneState = sceneStates.get(scene)
         else sceneStates.set(scene, sceneState = {
-            //scene: new ThreeScene,
-
-            //// TODO: camera needs to be updated in updateResolution method.
-            //// Full window scene only for now.
-            //// TODO camera will be positioned relative to a Node.
+            // TODO: get the active camera from the scene
             //camera: new PerspectiveCamera( 75, 16/9, 0.1, 1000 ),
 
             renderer: new WebGLRenderer,
@@ -37,12 +29,6 @@ class WebGLRendererThree {
         // element should be responsible for making this, so that DOM logic is
         // encapsulated there?
         scene.element.appendChild( sceneState.renderer.domElement )
-
-        //var geometry = new BoxGeometry( 1, 1, 1 )
-        //var material = new MeshBasicMaterial( { color: 0x00ff00 } )
-        //var cube = new Mesh( geometry, material )
-        //sceneState.scene.add( cube )
-        scene.threeCamera.position.z = 5
     }
 
     drawScene(scene) {
@@ -50,7 +36,7 @@ class WebGLRendererThree {
         renderer.render(scene.threeObject3d, scene.threeCamera)
     }
 
-    // FIXME This is tied to the `sizechange` event of Scene, which means
+    // TODO FIXME This is tied to the `sizechange` event of Scene, which means
     // camera and renderer resize happens outside of the animation loop, but as
     // with _calcSize, we want to see if we can put this in the nimation loop
     // as well. Putting this logic in the loop depends on putting _calcSize in
