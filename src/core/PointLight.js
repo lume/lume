@@ -54,7 +54,7 @@ class PointLight extends Node {
             attr == 'distance' ||
             attr == 'decay'
         ) {
-            this.processNumberValue( attr, value )
+            this.processNumberValue( attr, newVal )
             this._needsToBeRendered()
         }
     }
