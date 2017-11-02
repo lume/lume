@@ -17,15 +17,18 @@ class XYZNonNegativeValues extends XYZValues {
         this._checkForNegative("X", value)
         super.x = value
     }
+    get x() { return super.x }
 
     set y(value) {
         this._checkForNegative("Y", value)
         super.y = value
     }
+    get y() { return super.y }
 
     set z(value) {
         this._checkForNegative("Z", value)
         super.z = value
     }
+    get z() { return super.z }
 
 }
