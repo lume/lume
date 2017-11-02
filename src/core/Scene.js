@@ -24,6 +24,7 @@ import {
     Scene as ThreeScene, // so as not to confuse with Infamous Scene.
     PerspectiveCamera,
     AmbientLight,
+    Color,
 } from 'three'
 
 initImperativeBase()
@@ -45,6 +46,15 @@ const SceneMixin = base => {
             // Motor's loop checks _scene on Nodes and Scenes when determining
             // modified scenes.
             this._scene = this
+
+            // holds the renderer for this scene, renderers have scene-specific
+            // settings so having this reference is okay.
+            this._renderer = null
+
+            // a default orange background color. Use the backgroundColor and
+            // backgroundOpacity attributes to customize.
+            this._glBackgroundColor = new Color( 0xff6600 )
+            this._glBackgroundOpacity = 1
 
             // NOTE: z size is always 0, since native DOM elements are always flat.
             this._elementParentSize = {x:0, y:0, z:0}
@@ -86,14 +96,18 @@ const SceneMixin = base => {
 
             this.webglEnabled = !!this.element.hasAttribute('experimental-webgl')
             if (!this.webglEnabled) return
-            Motor.initWebGlRender(this, 'three')
+
+            this._renderer = Motor.getWebGLRenderer(this, 'three')
+
+            // set default colors
+            this._renderer.setClearColor( this, this._glBackgroundColor, this._glBackgroundOpacity )
         }
 
         makeThreeObject3d() {
             return new ThreeScene
         }
 
-        // TODO
+        // TODO ability init and destroy webgl for the whole scene.
         destroyWebGl() {
         }
 
@@ -171,6 +185,74 @@ const SceneMixin = base => {
         set sizeMode(value) {
             super.sizeMode = value
             this._startOrStopSizePolling()
+        }
+
+        static get observedAttributes() {
+            const superAttrs = super.observedAttributes || []
+            return superAttrs.concat( [
+                'backgroundColor',
+                'backgroundOpacity',
+            ].map( a => a.toLowerCase() ) )
+        }
+
+        async attributeChangedCallback(attr, oldVal, newVal) {
+            super.attributeChangedCallback(attr, oldVal, newVal)
+
+            // We need to await mountPromise here so that we set values *after*
+            // values are set in initWebGl
+            //
+            // TODO: this needs to be cancelable too, search other codes for
+            // "mountcancel" to see.
+            await this.mountPromise
+
+            if ( attr == 'backgroundcolor' ) {
+
+                // TODO: generic type system for attributes. It will eliminate
+                // duplication here.
+
+                this.processClearColorValue( attr, newVal )
+                console.log(' Scene attributeChangedCallback !!!!!!!!!!!!!!!!', attr, newVal)
+                this._needsToBeRendered()
+
+            }
+            else if ( attr == 'backgroundopacity' ) {
+                this.processClearAlphaValue( attr, newVal )
+                console.log(' Scene attributeChangedCallback !!!!!!!!!!!!!!!!', attr, newVal)
+                this._needsToBeRendered()
+            }
+        }
+
+        processClearColorValue( attr, value ) {
+
+            // if a triplet of space-separated RGB numbers
+            if ( value.match( /^\s*\d+\s+\d+\s+\d+\s*$/ ) ) {
+                value = value.trim().split( /\s+/ ).map( n => parseFloat(n)/255 )
+                this._glBackgroundColor = new Color( ...value )
+            }
+            // otherwise a CSS-style color string
+            else {
+                this._glBackgroundColor = new Color( value )
+            }
+
+            this._renderer.setClearColor( this, this._glBackgroundColor, this._glBackgroundOpacity )
+
+        }
+
+        // TODO this is mostly duplicated from PointLight.processNumberValue, consolidate, needs typing.
+        processClearAlphaValue( attr, value ) {
+            const alpha = this._glBackgroundOpacity = parseFloat( value )
+
+            if ( ! value.match( /^\s*(\d+|\d*(.\d+)|(\d+.)\d*)\s*$/ ) ) {
+
+                console.warn( (
+                    `The value for the "${ attr }" attribute should be a
+                    number. It will be passed to window.parseFloat. Your value
+                    ("${ value }") will be converted to the number ${ alpha }.`
+                ).replace( /\s+/g, ' ' ) )
+
+            }
+
+            this._renderer.setClearAlpha( this, alpha)
         }
 
     }

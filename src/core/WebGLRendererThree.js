@@ -16,10 +16,15 @@ class WebGLRendererThree {
             // TODO: get the active camera from the scene
             //camera: new PerspectiveCamera( 75, 16/9, 0.1, 1000 ),
 
-            renderer: new WebGLRenderer,
-        })
+            renderer: new WebGLRenderer( {
+                // TODO: how do we change alpha:true to alpha:false after the
+                // fact?
+                alpha: true,
 
-        sceneState.renderer.setClearColor( 0xff6600, 1 )
+                // TODO: when do we want premultipliedAlpha for the background?
+                premultipliedAlpha: false,
+            } ),
+        })
 
         // TODO: update this on scene's sizechange event instead.
         this.updateResolution(scene)
@@ -55,12 +60,20 @@ class WebGLRendererThree {
         // will make sure it runs in an animation frame.
         scene._needsToBeRendered()
     }
+
+    setClearColor( scene, color, opacity ) {
+        sceneStates.get( scene ).renderer.setClearColor( color, opacity )
+    }
+
+    setClearAlpha( scene, opacity ) {
+        sceneStates.get( scene ).renderer.setClearAlpha( opacity )
+    }
 }
 
 let instance = null
 
 export
-function getWebGLRendererThree() {
+function getWebGLRendererThree(scene) {
     if (instance) return instance
     else return instance = new WebGLRendererThree
 }
