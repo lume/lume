@@ -121,6 +121,7 @@ const TransformableMixin = base => {
                 this._worldMatrix = this._properties.transform
         }
 
+        // TODO rename "render" to "update".
         _render() {
             super._render()
 

@@ -95,37 +95,19 @@ const NodeMixin = base => {
 
         initWebGl() {
             super.initWebGl()
-
-            // would be cool to have scene extend Node
-            // (like before) so the root Scene node also
-            // has these properties, and can be nested
-            // in other scenes.
-            this.propertyChange('position')
-            this.propertyChange('rotation')
-
-            // TODO: propertychange is fired once per axis, which may be a bit
-            // much. Maybe we can fire it once per XYZValues, and
-            // perhaps anychronously in the next frame.
-            this.on('propertychange', prop => this.propertyChange(prop))
+            this.threeObject3d.matrixAutoUpdate = false
         }
 
         makeThreeObject3d() {
             return new Object3D
         }
 
-        propertyChange(prop) {
-            threeObject3d = this.threeObject3d
+        _render() {
+            super._render()
 
-            if (prop == 'position') {
-                threeObject3d.position.x = this.position.x
-                threeObject3d.position.y = this.position.y
-                threeObject3d.position.z = this.position.z
-            }
-            else if (prop == 'rotation') {
-                threeObject3d.rotation.x = this.rotation.x * radiansPerDegree
-                threeObject3d.rotation.y = this.rotation.y * radiansPerDegree
-                threeObject3d.rotation.z = this.rotation.z * radiansPerDegree
-            }
+            // TODO: when we use native DOMMatrix, the _matrix property won't
+            // be available.
+            this.threeObject3d.matrix.set(...this._properties.transform._matrix)
         }
 
         /**

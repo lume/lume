@@ -211,13 +211,11 @@ const SceneMixin = base => {
                 // duplication here.
 
                 this.processClearColorValue( attr, newVal )
-                console.log(' Scene attributeChangedCallback !!!!!!!!!!!!!!!!', attr, newVal)
                 this._needsToBeRendered()
 
             }
             else if ( attr == 'backgroundopacity' ) {
                 this.processClearAlphaValue( attr, newVal )
-                console.log(' Scene attributeChangedCallback !!!!!!!!!!!!!!!!', attr, newVal)
                 this._needsToBeRendered()
             }
         }
