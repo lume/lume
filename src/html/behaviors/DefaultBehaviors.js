@@ -46,7 +46,7 @@ function DefaultBehaviorsMixin(ElementClass) {
             if ( initialBehaviorNames.length == 0 ) {
 
                 // if not an array, then it's an object.
-                if (!defaultBehaviors instanceof Array) defaultBehaviors = Object.keys(defaultBehaviors)
+                if (! ( defaultBehaviors instanceof Array ) ) defaultBehaviors = Object.keys( defaultBehaviors )
 
                 this.setAttribute( 'has', this.getAttribute( 'has' ) + ` ${defaultBehaviors.join(' ')}`)
             }
