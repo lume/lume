@@ -223,16 +223,20 @@ class Motor {
 
     // in the future we might have "babylon", "playcanvas", etc, on a
     // per scene basis.
-    initWebGlRender(scene, type) {
+    getWebGLRenderer(scene, type) {
+        if ( webGLRenderers.has(scene) ) return webGLRenderers.get(scene)
+
         let rendererGetter = null
 
         if (type === "three")
             rendererGetter = getWebGLRendererThree
         else throw new Error('invalid WebGL renderer')
 
-        const renderer = rendererGetter()
+        const renderer = rendererGetter(scene)
         webGLRenderers.set(scene, renderer)
         renderer.initGl(scene)
+
+        return renderer
     }
 }
 
