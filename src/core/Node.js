@@ -102,12 +102,14 @@ const NodeMixin = base => {
             return new Object3D
         }
 
-        _render() {
-            super._render()
+        _calculateWorldMatrixFromParent() {
+            super._calculateWorldMatrixFromParent()
 
-            // TODO: when we use native DOMMatrix, the _matrix property won't
-            // be available.
-            this.threeObject3d.matrix.set(...this._properties.transform._matrix)
+            // Three Matrix4#elements is in the same major order as our
+            // DOMMatrix#_matrix. If we were to use Matrix4#set here, we'd have
+            // to swap the order when passing in our DOMMatrix#_matrix.
+            // Three.js r88, Issue #12602
+            this.threeObject3d.matrixWorld.elements = this._worldMatrix._matrix
         }
 
         /**
