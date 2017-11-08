@@ -83,6 +83,10 @@ const SceneMixin = base => {
             // maybe keep this in sceneState in WebGLRendererThree
             super.initWebGl()
 
+            // We don't let Three update any matrices, we supply our own world
+            // matrices.
+            this.threeObject3d.autoUpdate = false
+
             // TODO camera will be a Node in the Scene
             this.threeCamera = new PerspectiveCamera( 75, 16/9, 0.1, 1000 )
             this.threeCamera.position.z = 5

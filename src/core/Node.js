@@ -88,14 +88,6 @@ const NodeMixin = base => {
 
             this._calcSize()
             this._needsToBeRendered()
-
-            // THREE
-            // TODO if no geometry or material behavior is detected, add default ones.
-        }
-
-        initWebGl() {
-            super.initWebGl()
-            this.threeObject3d.matrixAutoUpdate = false
         }
 
         makeThreeObject3d() {

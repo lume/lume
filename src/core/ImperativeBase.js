@@ -85,8 +85,15 @@ export function initImperativeBase() {
 
             initWebGl() {
                 this.threeObject3d = this.makeThreeObject3d()
+
+                // we don't let Three update local matrices, we provide world
+                // matrices ourselves.
+                this.threeObject3d.matrixAutoUpdate = false
             }
-            makeThreeObject3d() {}
+
+            makeThreeObject3d() {
+                throw new Error('The makeThreeObject3d method should be defined by sub classes.')
+            }
 
             connected() {
                 // THREE
