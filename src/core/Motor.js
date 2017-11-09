@@ -172,9 +172,10 @@ class Motor {
                 isInstanceof(node, Transformable) &&
 
                 // and if ancestor is not instanceof Transformable, f.e.
-                // `false` if there is no ancestor to be rendered, or Sizeable
-                // if the Scene is returned.
-                !isInstanceof(node._getAncestorToBeRendered(), Transformable) &&
+                // `false` if there is no ancestor that should be rendered or
+                // no Transformable parent which means the current node is the
+                // root node
+                !isInstanceof(node._getAncestorThatShouldBeRendered(), Transformable) &&
 
                 // and the node isn't already added.
                 !this._worldMatrixRootNodes.includes(node)
@@ -199,8 +200,7 @@ class Motor {
         // Update world matrices of the subtrees.
         const worldMatrixRootNodes = this._worldMatrixRootNodes
         for (let i=0, l=worldMatrixRootNodes.length; i<l; i+=1) {
-            const subtreeRoot = worldMatrixRootNodes[i]
-            subtreeRoot._calculateWorldMatricesInSubtree()
+            worldMatrixRootNodes[i]._calculateWorldMatricesInSubtree()
         }
         worldMatrixRootNodes.length = 0
 

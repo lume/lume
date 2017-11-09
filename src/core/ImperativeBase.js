@@ -270,7 +270,7 @@ export function initImperativeBase() {
             }
 
             // This method is used by Motor._renderNodes().
-            _getAncestorToBeRendered() {
+            _getAncestorThatShouldBeRendered() {
                 let parent = this._parent
 
                 while (parent) {

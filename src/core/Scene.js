@@ -35,7 +35,7 @@ let Scene = null
 
 const SceneMixin = base => {
     // Scene is Sizeable, which is currently a subset of Transformable.
-    class _Scene extends ImperativeBase.mixin(Sizeable.mixin(base)) {
+    class _Scene extends ImperativeBase.mixin(Transformable.mixin(base)) {
         static get defaultElementName() { return 'i-scene' }
         static get _Class() { return Scene }
 
