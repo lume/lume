@@ -9,6 +9,7 @@ import Scene from '../core/Scene'
 import Node from '../core/Node'
 import Mesh from '../core/Mesh'
 import PointLight from '../core/PointLight'
+import Camera from '../core/Camera'
 
 function useDefaultNames() {
     // TODO replace with a loop
@@ -16,6 +17,7 @@ function useDefaultNames() {
     if (!customElements.get(Node.defaultElementName)) Node.define()
     if (!customElements.get(Mesh.defaultElementName)) Mesh.define()
     if (!customElements.get(PointLight.defaultElementName)) PointLight.define()
+    if (!customElements.get(Camera.defaultElementName)) Camera.define()
     //PushPaneLayout.define()
 }
 

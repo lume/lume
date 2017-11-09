@@ -5,6 +5,7 @@ import { default as HTMLInterface } from '../html/HTMLNode'
 import Scene from './Scene'
 import {
     Object3D,
+    Camera as ThreeCamera,
 } from 'three'
 
 // cache variables to avoid making new memory
@@ -97,11 +98,18 @@ const NodeMixin = base => {
         _calculateWorldMatrixFromParent() {
             super._calculateWorldMatrixFromParent()
 
+            threeObject3d = this.threeObject3d
+
             // Three Matrix4#elements is in the same major order as our
             // DOMMatrix#_matrix. If we were to use Matrix4#set here, we'd have
             // to swap the order when passing in our DOMMatrix#_matrix.
             // Three.js r88, Issue #12602
-            this.threeObject3d.matrixWorld.elements = this._worldMatrix._matrix
+            threeObject3d.matrixWorld.elements = this._worldMatrix._matrix
+
+            // Since we're not letting Three auto update matrices, we also need
+            // to update the inverse matrix for cameras.
+            if ( threeObject3d instanceof ThreeCamera )
+                threeObject3d.matrixWorldInverse.getInverse( threeObject3d.matrixWorld );
         }
 
         /**
