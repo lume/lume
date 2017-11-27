@@ -49,8 +49,7 @@ class WebGLRendererThree {
     updateResolution(scene) {
         const state = sceneStates.get(scene)
 
-        scene.threeCamera.aspect = scene._calculatedSize.x / scene._calculatedSize.y
-        scene.threeCamera.updateProjectionMatrix()
+        this.updateCameraProjection(scene)
 
         // TODO does Three handle window.devicePixelRatio?
         state.renderer.setSize( scene._calculatedSize.x, scene._calculatedSize.y )
@@ -59,6 +58,11 @@ class WebGLRendererThree {
         // call this rather than just this.drawScene() directly because Motor
         // will make sure it runs in an animation frame.
         scene._needsToBeRendered()
+    }
+
+    updateCameraProjection(scene) {
+        scene.threeCamera.aspect = scene._calculatedSize.x / scene._calculatedSize.y
+        scene.threeCamera.updateProjectionMatrix()
     }
 
     setClearColor( scene, color, opacity ) {

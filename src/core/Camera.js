@@ -1,4 +1,5 @@
 import Node from './Node'
+import Motor from './Motor'
 
 import { PerspectiveCamera as ThreePerspectiveCamera } from 'three'
 
@@ -79,8 +80,7 @@ class Camera extends Node {
         }
     }
 
-    // TODO: get default values from somewhere because we use them in other
-    // places too.
+    // TODO CAMERA-DEFAULTS, get defaults from somewhere common.
     attributeRemoved(attr, newVal) {
         if ( attr == 'fov' ) {
             this.threeObject3d.fov = 75
@@ -129,6 +129,9 @@ class Camera extends Node {
     }
 
     async setActiveCamera( unset ) {
+
+        // wait to be mounted, because otherwise there isn't a scene to
+        // set the active camera on.
         await this.mountPromise
 
         // TODO
@@ -140,6 +143,8 @@ class Camera extends Node {
 
         console.log('Set active camera')
         this.scene.threeCamera = this.threeObject3d
+        Motor.getWebGLRenderer(this.scene, 'three')
+            .updateCameraProjection(this.scene)
         this.scene._needsToBeRendered()
     }
 }
