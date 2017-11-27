@@ -4,6 +4,11 @@ import Node from './Node'
 import Scene from './Scene'
 import Motor from './Motor'
 import {isInstanceof} from './Utility'
+import {
+    Camera as ThreeCamera,
+} from 'three'
+
+let threeObject3d = null
 
 // We explicitly use `var` instead of `let` here because it is hoisted for the
 // Node and Scene modules. This, along with the following initImperativeBase
@@ -102,6 +107,24 @@ export function initImperativeBase() {
             disconnected() {
                 // THREE
                 this.parent.threeObject3d.add(this.threeObject3d)
+            }
+
+            _calculateWorldMatrixFromParent() {
+                super._calculateWorldMatrixFromParent()
+
+                threeObject3d = this.threeObject3d
+
+                // Three Matrix4#elements is in the same major order as our
+                // DOMMatrix#_matrix. If we were to use Matrix4#set here, we'd have
+                // to swap the order when passing in our DOMMatrix#_matrix.
+                // Three.js r88, Issue #12602
+                for (let i=0; i<16; i+=1)
+                    threeObject3d.matrixWorld.elements[i] = this._worldMatrix._matrix[i]
+
+                // Since we're not letting Three auto update matrices, we also need
+                // to update the inverse matrix for cameras.
+                if ( threeObject3d instanceof ThreeCamera )
+                    threeObject3d.matrixWorldInverse.getInverse( threeObject3d.matrixWorld );
             }
 
             /**

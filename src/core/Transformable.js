@@ -114,10 +114,10 @@ const TransformableMixin = base => {
         _calculateWorldMatrixFromParent() {
             const parent = this._parent
 
-            if (isInstanceof(parent, Transformable))
+            if (parent)
                 //this._worldMatrix = parent._worldMatrix.multiply(this._properties.transform)
                 this._worldMatrix = this._properties.transform.multiply(parent._worldMatrix)
-            else // otherwise parent is the Scene, which is Sizeable, not Transformable
+            else
                 this._worldMatrix = this._properties.transform
         }
 

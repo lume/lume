@@ -1,17 +1,9 @@
 
-// although Transformable is not used in this file, importing it first prevents
-// a cyclical dependeny problem when an app entrypoint imports ./Scene.js
-// before ./Node.js (Sizeable imports Motor which imports Transformable which
-// imports Sizeable). See:
-// https://esdiscuss.org/topic/how-to-solve-this-basic-es6-module-circular-dependency-problem
 // TODO: write a test that imports public interfaces in every possible
 // permutation to detect circular dependency errors.
-//
-// Transformable is not used in this file, but importing here solves the
-// circular dependency problem.
+// See: https://esdiscuss.org/topic/how-to-solve-this-basic-es6-module-circular-dependency-problem
+
 import Transformable from './Transformable'
-// Sizeable on the other hand is used in this file.
-import Sizeable from './Sizeable'
 import Motor from './Motor'
 
 import ImperativeBase, {initImperativeBase} from './ImperativeBase'
@@ -34,7 +26,6 @@ const instanceofSymbol = Symbol('instanceofSymbol')
 let Scene = null
 
 const SceneMixin = base => {
-    // Scene is Sizeable, which is currently a subset of Transformable.
     class _Scene extends ImperativeBase.mixin(Transformable.mixin(base)) {
         static get defaultElementName() { return 'i-scene' }
         static get _Class() { return Scene }
