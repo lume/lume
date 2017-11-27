@@ -84,7 +84,10 @@ const TransformableMixin = base => {
             appliedPosition[1] = position.y + alignAdjustment[1] - mountPointAdjustment[1]
             appliedPosition[2] = position.z + alignAdjustment[2] - mountPointAdjustment[2]
 
-            matrix.translateSelf(appliedPosition[0], appliedPosition[1], appliedPosition[2])
+            // THREE-COORDS-TO-DOM-COORDS
+            // negate the Y value so that Three.js' positive Y is
+            // downward.
+            matrix.translateSelf(appliedPosition[0], -appliedPosition[1], appliedPosition[2])
 
             // origin calculation will go here:
             // - move by negative origin before rotating.
