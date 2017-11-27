@@ -52,37 +52,75 @@ class Camera extends Node {
         ].map( a => a.toLowerCase() ) )
     }
 
-    attributeChangedCallback(attr, oldVal, newVal) {
-        super.attributeChangedCallback(attr, oldVal, newVal)
-
+    attributeAddedOrChanged(attr, newVal) {
         if ( attr == 'fov' ) {
-            console.log('camera attr changed, ', attr)
             this.threeObject3d.fov = parseFloat(newVal)
             this.threeObject3d.updateProjectionMatrix()
         }
         else if ( attr == 'aspect' ) {
-            console.log('camera attr changed, ', attr)
             this.threeObject3d.aspect = parseFloat(newVal)
             this.threeObject3d.updateProjectionMatrix()
         }
         else if ( attr == 'near' ) {
-            console.log('camera attr changed, ', attr)
             this.threeObject3d.near = parseFloat(newVal)
             this.threeObject3d.updateProjectionMatrix()
         }
         else if ( attr == 'far' ) {
-            console.log('camera attr changed, ', attr)
             this.threeObject3d.far = parseFloat(newVal)
             this.threeObject3d.updateProjectionMatrix()
         }
         else if ( attr == 'zoom' ) {
-            console.log('camera attr changed, ', attr)
             this.threeObject3d.zoom = parseFloat(newVal)
-            //this.threeObject3d.updateProjectionMatrix()?
+            this.threeObject3d.updateProjectionMatrix()
         }
-        else if ( attr == 'active' && typeof newVal == 'string' ) {
+        else if ( attr == 'active' ) {
             console.log('camera attr changed, ', attr)
             this.setActiveCamera()
+        }
+    }
+
+    // TODO: get default values from somewhere because we use them in other
+    // places too.
+    attributeRemoved(attr, newVal) {
+        if ( attr == 'fov' ) {
+            this.threeObject3d.fov = 75
+            this.threeObject3d.updateProjectionMatrix()
+        }
+        else if ( attr == 'aspect' ) {
+            this.threeObject3d.aspect = this.getDefaultAspect()
+            this.threeObject3d.updateProjectionMatrix()
+        }
+        else if ( attr == 'near' ) {
+            this.threeObject3d.near = 0.1
+            this.threeObject3d.updateProjectionMatrix()
+        }
+        else if ( attr == 'far' ) {
+            this.threeObject3d.far = 1000
+            this.threeObject3d.updateProjectionMatrix()
+        }
+        else if ( attr == 'zoom' ) {
+            this.threeObject3d.zoom = 1
+            this.threeObject3d.updateProjectionMatrix()
+        }
+        else if ( attr == 'active' ) {
+            this.setActiveCamera( 'unset' )
+        }
+    }
+
+    getDefaultAspect() {
+        if ( this.scene )
+            return this.scene.calculatedSize.x / this.scene.calculatedSize.y
+        else return 16/9
+    }
+
+    attributeChangedCallback( attr, oldVal, newVal ) {
+        super.attributeChangedCallback( attr, oldVal, newVal )
+
+        if ( typeof newVal == 'string' ) {
+            this.attributeAddedOrChanged( attr, newVal )
+        }
+        else {
+            this.attributeRemoved( attr )
         }
     }
 
@@ -90,8 +128,16 @@ class Camera extends Node {
         this.threeObject3d.matrixWorldInverse.getInverse( this.threeObject3d.matrixWorld );
     }
 
-    async setActiveCamera() {
+    async setActiveCamera( unset ) {
         await this.mountPromise
+
+        // TODO
+        //if ( unset ) {
+        //    set a default camera if the scene has no more cameras, or
+        //    possibly if it has no active cameras deterministically determine
+        //    a default camera from the available cameras.
+        //}
+
         console.log('Set active camera')
         this.scene.threeCamera = this.threeObject3d
         this.scene._needsToBeRendered()
