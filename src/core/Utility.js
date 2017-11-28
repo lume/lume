@@ -38,6 +38,7 @@ function makeLowercaseSetterAliases(object) {
 let childObservationHandlers = null
 let childObserver = null
 function observeChildren(ctx, onConnect, onDisconnect) {
+    // TODO this Map is never cleaned, leaks memory.
     if (!childObservationHandlers) childObservationHandlers = new Map
     if (!childObserver) childObserver = createChildObserver()
     childObservationHandlers.set(ctx, {onConnect, onDisconnect})
@@ -74,11 +75,10 @@ function createChildObserver() {
                 weights.set(removedNodes[i], (weights.get(removedNodes[i]) || 0) - 1)
         }
 
-        // TODO PERFORMANCE: Can these for..of loops be converted to regular for loops?
-        for (const [target, weights] of weightsPerTarget) {
+        for (const [target, weights] of Array.from(weightsPerTarget)) {
             const {onConnect, onDisconnect} = childObservationHandlers.get(target)
 
-            for (const [node, weight] of weights) {
+            for (const [node, weight] of Array.from(weights)) {
                 // If the number of times a child was added is greater than the
                 // number of times it was removed, then the net result is that
                 // it was added, so we call onConnect just once.
