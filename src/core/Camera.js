@@ -134,17 +134,7 @@ class Camera extends Node {
         // set the active camera on.
         await this.mountPromise
 
-        // TODO
-        //if ( unset ) {
-        //    set a default camera if the scene has no more cameras, or
-        //    possibly if it has no active cameras deterministically determine
-        //    a default camera from the available cameras.
-        //}
-
-        console.log('Set active camera')
-        this.scene.threeCamera = this.threeObject3d
-        Motor.getWebGLRenderer(this.scene, 'three')
-            .updateCameraProjection(this.scene)
-        this.scene._needsToBeRendered()
+        if ( unset ) this.scene.setActiveCamera()
+        else this.scene.setActiveCamera( this )
     }
 }

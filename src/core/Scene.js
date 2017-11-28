@@ -116,6 +116,22 @@ const SceneMixin = base => {
             })
         }
 
+        setActiveCamera( camera ) {
+            // TODO
+            //if ( !camera ) {
+            //    set a default camera if the scene has no more cameras, or
+            //    possibly if it has no active cameras deterministically determine
+            //    a default camera from the available cameras.
+            //}
+
+            // TODO?: implement an changecamera event/method and emit/call that here, then
+            // move this logic to the renderer handler/method?
+            this.threeCamera = camera.threeObject3d
+            Motor.getWebGLRenderer( this, 'three' )
+                .updateCameraProjection( this )
+            this._needsToBeRendered()
+        }
+
         /** @override */
         _getParentSize() {
             return this._mounted ? this._elementParentSize : {x:0,y:0,z:0}
