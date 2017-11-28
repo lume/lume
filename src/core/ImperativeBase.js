@@ -45,6 +45,8 @@ export function initImperativeBase() {
             construct(options = {}) {
                 super.construct(options)
 
+                this._lastKnownParent = null
+
                 // we don't need this, keep for backward compatibility (mainly
                 // all my demos at trusktr.io).
                 this.imperativeCounterpart = this
@@ -101,12 +103,11 @@ export function initImperativeBase() {
             }
 
             connected() {
-                // THREE
+                this._lastKnownParent = this.parent
                 this.parent.threeObject3d.add(this.threeObject3d)
             }
             disconnected() {
-                // THREE
-                this.parent.threeObject3d.add(this.threeObject3d)
+                this._lastKnownParent.threeObject3d.remove(this.threeObject3d)
             }
 
             _calculateWorldMatrixFromParent() {
