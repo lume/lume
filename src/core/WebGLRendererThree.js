@@ -23,6 +23,8 @@ class WebGLRendererThree {
 
                 // TODO: when do we want premultipliedAlpha for the background?
                 premultipliedAlpha: false,
+
+                antialias: true,
             } ),
         })
 
