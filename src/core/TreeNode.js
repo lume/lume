@@ -52,7 +52,7 @@ const TreeNodeMixin = base => {
 
             Promise.resolve().then(() => {
                 childNode.connected()
-                this.childDisconnected(childNode)
+                this.childConnected(childNode)
             })
 
             return this
@@ -89,7 +89,7 @@ const TreeNodeMixin = base => {
 
             Promise.resolve().then(() => {
                 childNode.disconnected()
-                this.childConnected(childNode)
+                this.childDisconnected(childNode)
             })
 
             return this
