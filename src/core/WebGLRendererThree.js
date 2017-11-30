@@ -28,7 +28,6 @@ class WebGLRendererThree {
             } ),
         })
 
-        // TODO: update this on scene's sizechange event instead.
         this.updateResolution(scene)
         scene.on('sizechange', () => this.updateResolution(scene))
 
@@ -51,7 +50,7 @@ class WebGLRendererThree {
     updateResolution(scene) {
         const state = sceneStates.get(scene)
 
-        this.updateCameraProjection(scene)
+        scene._updateCameraProjection()
 
         // TODO does Three handle window.devicePixelRatio?
         state.renderer.setSize( scene._calculatedSize.x, scene._calculatedSize.y )
@@ -60,11 +59,6 @@ class WebGLRendererThree {
         // call this rather than just this.drawScene() directly because Motor
         // will make sure it runs in an animation frame.
         scene._needsToBeRendered()
-    }
-
-    updateCameraProjection(scene) {
-        scene.threeCamera.aspect = scene._calculatedSize.x / scene._calculatedSize.y
-        scene.threeCamera.updateProjectionMatrix()
     }
 
     setClearColor( scene, color, opacity ) {

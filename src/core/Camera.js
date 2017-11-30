@@ -11,7 +11,9 @@ class Camera extends Node {
     async construct(options = {}) {
         super.construct(options)
 
-        // TODO: abstract away having to use mountPromise with a
+        this._lastKnownScene = null
+
+        // TODO TODO: abstract away having to use mountPromise with a
         // mountedCallback that is called everytime a node is added to a scene.
         // Right now, this will only be called the first time a node is added
         // to a scene, but not to any subsequent scenes.
@@ -36,9 +38,21 @@ class Camera extends Node {
             this.threeObject3d.aspect = width / height
         }
 
+        this._lastKnownScene = this.scene
     }
 
-    // TODO, unmountedCallback functionality.
+    // TODO replace with unmountedCallback #150
+    deinit() {
+        super.deinit()
+        console.log('deinit', this.scene)
+
+        // TODO we want to call this in the upcoming
+        // unmountedCallback, but for now it's harmless but
+        // will run unnecessary logic. #150
+        this._setSceneCamera( 'unset' )
+    }
+
+    // TODO, unmountedCallback functionality. issue #150
     unmountedCallback() {}
 
     static get observedAttributes() {
@@ -76,7 +90,7 @@ class Camera extends Node {
         }
         else if ( attr == 'active' ) {
             console.log('camera attr changed, ', attr)
-            this.setActiveCamera()
+            this._setSceneCamera()
         }
     }
 
@@ -103,7 +117,7 @@ class Camera extends Node {
             this.threeObject3d.updateProjectionMatrix()
         }
         else if ( attr == 'active' ) {
-            this.setActiveCamera( 'unset' )
+            this._setSceneCamera( 'unset' )
         }
     }
 
@@ -124,17 +138,24 @@ class Camera extends Node {
         }
     }
 
-    updateCamera() {
-        this.threeObject3d.matrixWorldInverse.getInverse( this.threeObject3d.matrixWorld );
-    }
+    async _setSceneCamera( unset ) {
 
-    async setActiveCamera( unset ) {
+        if ( unset ) {
 
-        // wait to be mounted, because otherwise there isn't a scene to
-        // set the active camera on.
-        await this.mountPromise
+            // TODO: unset might be triggered before the scene was mounted, so
+            // there might not be a last known scene. We won't need this check
+            // when we add unmountedCallback. #150
+            if ( this._lastKnownScene )
+                this._lastKnownScene._removeCamera( this )
+        }
+        else {
 
-        if ( unset ) this.scene.setActiveCamera()
-        else this.scene.setActiveCamera( this )
+            // wait to be mounted, because otherwise there isn't a scene to
+            // set the active camera on.
+            // TODO: needs to be cancellable. #150
+            if (! this._mounted ) await this.mountPromise
+
+            this.scene._addCamera( this )
+        }
     }
 }

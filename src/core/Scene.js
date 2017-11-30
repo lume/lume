@@ -47,6 +47,8 @@ const SceneMixin = base => {
             this._glBackgroundColor = new Color( 0xff6600 )
             this._glBackgroundOpacity = 1
 
+            this._activeCameras = new Set
+
             // NOTE: z size is always 0, since native DOM elements are always flat.
             this._elementParentSize = {x:0, y:0, z:0}
 
@@ -82,6 +84,15 @@ const SceneMixin = base => {
             this.threeCamera = new PerspectiveCamera( 75, 16/9, 0.1, 1000 )
             this.threeCamera.position.z = 5
 
+            // this.threeCamera holds the active camera. There can be many
+            // cameras in the scene tree, but the last one with active="true"
+            // will be the one referenced here.
+            // If there are no cameras in the tree, a virtual default camera is
+            // referenced here, who's perspective is that of the scene's
+            // perspective attribute.
+            this.threeCamera = null
+            this._createDefaultCamera()
+
             const ambientLight = new AmbientLight( 0x404040 )
             this.threeObject3d.add( ambientLight )
 
@@ -102,7 +113,7 @@ const SceneMixin = base => {
             return new ThreeScene
         }
 
-        // TODO ability init and destroy webgl for the whole scene.
+        // TODO ability to init and destroy webgl for the whole scene.
         destroyWebGl() {
         }
 
@@ -116,20 +127,47 @@ const SceneMixin = base => {
             })
         }
 
-        setActiveCamera( camera ) {
-            // TODO
-            //if ( !camera ) {
-            //    set a default camera if the scene has no more cameras, or
-            //    possibly if it has no active cameras deterministically determine
-            //    a default camera from the available cameras.
-            //}
+        _setCamera( camera ) {
+            if ( !camera ) {
+                this._createDefaultCamera()
+            }
+            else {
+                // TODO?: implement an changecamera event/method and emit/call
+                // that here, then move this logic to the renderer
+                // handler/method?
+                this.threeCamera = camera.threeObject3d
+            }
 
-            // TODO?: implement an changecamera event/method and emit/call that here, then
-            // move this logic to the renderer handler/method?
-            this.threeCamera = camera.threeObject3d
-            Motor.getWebGLRenderer( this, 'three' )
-                .updateCameraProjection( this )
+            this._updateCameraProjection()
             this._needsToBeRendered()
+        }
+
+        _createDefaultCamera() {
+            // TODO CAMERA-DEFAULTS, get defaults from somewhere common.
+            this.threeCamera = new PerspectiveCamera( 75, 16/9, 0.1, 1000 )
+            this.threeCamera.position.z = 5
+        }
+
+        _updateCameraProjection() {
+            this.threeCamera.aspect = this._calculatedSize.x / this._calculatedSize.y
+            this.threeCamera.updateProjectionMatrix()
+        }
+
+        _addCamera( camera ) {
+            this._activeCameras.add( camera )
+            this._setCamera( camera )
+        }
+
+        _removeCamera( camera ) {
+            this._activeCameras.delete( camera )
+
+            if ( this._activeCameras.size ) {
+                // get the last camera in the Set
+                this._activeCameras.forEach(c => camera = c)
+            }
+            else camera = null
+
+            this._setCamera( camera )
         }
 
         /** @override */
