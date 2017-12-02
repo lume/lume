@@ -38,17 +38,6 @@ const SceneMixin = base => {
             // modified scenes.
             this._scene = this
 
-            // holds the renderer for this scene, renderers have scene-specific
-            // settings so having this reference is okay.
-            this._renderer = null
-
-            // a default orange background color. Use the backgroundColor and
-            // backgroundOpacity attributes to customize.
-            this._glBackgroundColor = new Color( 0xff6600 )
-            this._glBackgroundOpacity = 1
-
-            this._activeCameras = new Set
-
             // NOTE: z size is always 0, since native DOM elements are always flat.
             this._elementParentSize = {x:0, y:0, z:0}
 
@@ -95,6 +84,21 @@ const SceneMixin = base => {
 
             const ambientLight = new AmbientLight( 0x404040 )
             this.threeObject3d.add( ambientLight )
+
+            // holds the renderer for this scene, renderers have scene-specific
+            // settings so having this reference is okay.
+            this._renderer = null
+
+            // a default orange background color. Use the backgroundColor and
+            // backgroundOpacity attributes to customize.
+            this._glBackgroundColor = new Color( 0xff6600 )
+            this._glBackgroundOpacity = 1
+
+            // holds active cameras found in the DOM tree (if this is empty, it
+            // means no camera elements are in the DOM, but this.threeCamera
+            // will still have a reference to the default camera that scenes
+            // are rendered with when no camera elements exist).
+            this._activeCameras = new Set
 
             // TODO: this needs to be cancelable too, search other codes for
             // "mountcancel" to see.
