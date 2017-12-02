@@ -148,8 +148,10 @@ const SceneMixin = base => {
 
         _createDefaultCamera() {
             // TODO CAMERA-DEFAULTS, get defaults from somewhere common.
-            this.threeCamera = new PerspectiveCamera( 75, 16/9, 0.1, 1000 )
-            this.threeCamera.position.z = 5
+            const perspective = 1000
+            const fov = 180 * ( 2 * Math.atan( innerHeight / 2 / perspective ) ) / Math.PI
+            this.threeCamera = new PerspectiveCamera( fov, innerWidth / innerHeight, 0.1, 1000 )
+            this.threeCamera.position.z = perspective
         }
 
         _updateCameraProjection() {
