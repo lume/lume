@@ -57,14 +57,37 @@ const TransformableMixin = base => {
          * @method
          * @private
          * @memberOf Node
+         *
+         * TODO #66: make sure this is called after size calculations when we
+         * move _calcSize to a render task.
          */
         _calculateMatrix () {
             const matrix = new window.DOMMatrix
             const properties = this._properties
+            const thisSize = this._calculatedSize
+
+            // THREE-COORDS-TO-DOM-COORDS
+            // translate the "mount point" back to the top/left of the element.
+            // We offset this in ElementOperations#applyTransform. The Y value
+            // is inverted because we invert it below.
+            matrix.translateSelf( thisSize.x/2, -thisSize.y/2, 0 )
 
             const alignAdjustment = [0,0,0]
-            if (this._parent) { // The root Scene doesn't have a parent, for example.
+
+            // TODO If a Scene has a _parent, it is not mounted directly into a
+            // regular DOM element but rather it is child of a Node. In this
+            // case we don't want the scene size to be based on observed size
+            // of a regular DOM element, but relative to a parent Node just
+            // like for all other Nodes.
+            if (this._parent) {
                 const parentSize = this._parent._calculatedSize
+
+                // THREE-COORDS-TO-DOM-COORDS
+                // translate the "align" back to the top/left of the parent element.
+                // We offset this in ElementOperations#applyTransform. The Y
+                // value is inverted because we invert it below.
+                matrix.translateSelf( -parentSize.x/2, parentSize.y/2, 0 )
+
                 const {align} = properties
                 alignAdjustment[0] = parentSize.x * align.x
                 alignAdjustment[1] = parentSize.y * align.y
@@ -72,7 +95,6 @@ const TransformableMixin = base => {
             }
 
             const mountPointAdjustment = [0,0,0]
-            const thisSize = this._calculatedSize
             const {mountPoint} = properties
             mountPointAdjustment[0] = thisSize.x * mountPoint.x
             mountPointAdjustment[1] = thisSize.y * mountPoint.y
@@ -93,6 +115,7 @@ const TransformableMixin = base => {
             // - move by negative origin before rotating.
 
             // apply each axis rotation, in the x,y,z order.
+            // TODO #151: make rotation order configurable
             const {rotation} = properties
             matrix.rotateAxisAngleSelf(1,0,0, rotation.x)
             matrix.rotateAxisAngleSelf(0,1,0, rotation.y)
