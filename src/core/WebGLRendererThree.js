@@ -52,8 +52,8 @@ class WebGLRendererThree {
 
         scene._updateCameraProjection()
 
-        // TODO does Three handle window.devicePixelRatio?
         state.renderer.setSize( scene._calculatedSize.x, scene._calculatedSize.y )
+        state.renderer.setPixelRatio(window.devicePixelRatio)
 
         // Indirectly causes Motor to call this.drawScene(). It's important to
         // call this rather than just this.drawScene() directly because Motor
