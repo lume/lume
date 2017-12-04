@@ -69,10 +69,6 @@ const SceneMixin = base => {
             // matrices.
             this.threeObject3d.autoUpdate = false
 
-            // TODO camera will be a Node in the Scene
-            this.threeCamera = new PerspectiveCamera( 75, 16/9, 0.1, 1000 )
-            this.threeCamera.position.z = 5
-
             // this.threeCamera holds the active camera. There can be many
             // cameras in the scene tree, but the last one with active="true"
             // will be the one referenced here.
@@ -147,10 +143,13 @@ const SceneMixin = base => {
         }
 
         _createDefaultCamera() {
+            // THREE-COORDS-TO-DOM-COORDS
+            // We apply Three perspective the same way as CSS3D perspective here.
             // TODO CAMERA-DEFAULTS, get defaults from somewhere common.
             const perspective = 1000
             const fov = 180 * ( 2 * Math.atan( innerHeight / 2 / perspective ) ) / Math.PI
-            this.threeCamera = new PerspectiveCamera( fov, innerWidth / innerHeight, 0.1, 1000 )
+            // TODO the "far" arg will be auto-calculated to encompass the furthest objects (like CSS3D).
+            this.threeCamera = new PerspectiveCamera( fov, innerWidth / innerHeight, 0.1, 10000 )
             this.threeCamera.position.z = perspective
         }
 

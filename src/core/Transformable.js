@@ -62,6 +62,8 @@ const TransformableMixin = base => {
          * move _calcSize to a render task.
          */
         _calculateMatrix () {
+            if (!this._parent) return this._properties.transform
+
             const matrix = new window.DOMMatrix
             const properties = this._properties
             const thisSize = this._calculatedSize
@@ -70,7 +72,7 @@ const TransformableMixin = base => {
             // translate the "mount point" back to the top/left of the element.
             // We offset this in ElementOperations#applyTransform. The Y value
             // is inverted because we invert it below.
-            matrix.translateSelf( thisSize.x/2, -thisSize.y/2, 0 )
+            const threeJsPostAdjustment = [ thisSize.x/2, thisSize.y/2, 0 ]
 
             const alignAdjustment = [0,0,0]
 
@@ -79,20 +81,19 @@ const TransformableMixin = base => {
             // case we don't want the scene size to be based on observed size
             // of a regular DOM element, but relative to a parent Node just
             // like for all other Nodes.
-            if (this._parent) {
-                const parentSize = this._parent._calculatedSize
+            const parentSize = this._parent._calculatedSize
 
-                // THREE-COORDS-TO-DOM-COORDS
-                // translate the "align" back to the top/left of the parent element.
-                // We offset this in ElementOperations#applyTransform. The Y
-                // value is inverted because we invert it below.
-                matrix.translateSelf( -parentSize.x/2, parentSize.y/2, 0 )
+            // THREE-COORDS-TO-DOM-COORDS
+            // translate the "align" back to the top/left of the parent element.
+            // We offset this in ElementOperations#applyTransform. The Y
+            // value is inverted because we invert it below.
+            threeJsPostAdjustment[0] += -parentSize.x/2
+            threeJsPostAdjustment[1] += -parentSize.y/2
 
-                const {align} = properties
-                alignAdjustment[0] = parentSize.x * align.x
-                alignAdjustment[1] = parentSize.y * align.y
-                alignAdjustment[2] = parentSize.z * align.z
-            }
+            const {align} = properties
+            alignAdjustment[0] = parentSize.x * align.x
+            alignAdjustment[1] = parentSize.y * align.y
+            alignAdjustment[2] = parentSize.z * align.z
 
             const mountPointAdjustment = [0,0,0]
             const {mountPoint} = properties
@@ -106,10 +107,17 @@ const TransformableMixin = base => {
             appliedPosition[1] = position.y + alignAdjustment[1] - mountPointAdjustment[1]
             appliedPosition[2] = position.z + alignAdjustment[2] - mountPointAdjustment[2]
 
-            // THREE-COORDS-TO-DOM-COORDS
-            // negate the Y value so that Three.js' positive Y is
-            // downward.
-            matrix.translateSelf(appliedPosition[0], -appliedPosition[1], appliedPosition[2])
+            // TODO FIXME For some reason, the root node (i.e. the Scene)
+            // should not be translated or else the WebGL rendering glitches
+            // out (this happened with my vanilla WebGL implementation as well
+            // as with Three.js).
+            matrix.translateSelf(
+                appliedPosition[0] + threeJsPostAdjustment[0],
+                // THREE-COORDS-TO-DOM-COORDS negate the Y value so that
+                // Three.js' positive Y is downward.
+                -(appliedPosition[1] + threeJsPostAdjustment[1]),
+                appliedPosition[2] + threeJsPostAdjustment[2]
+            )
 
             // origin calculation will go here:
             // - move by negative origin before rotating.
