@@ -23,9 +23,10 @@ const TreeNodeMixin = base => {
         }
 
         /**
+         * Named "subnodes" to avoid conflict with HTML Elements' "children"
          * @readonly
          */
-        get children() {
+        get subnodes() {
             // return a new array, so that the user modifying it doesn't affect
             // this node's actual children.
             return [...this._children]
