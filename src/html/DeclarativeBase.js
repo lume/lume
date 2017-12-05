@@ -337,8 +337,9 @@ export function proxyGettersSetters(SourceClass, TargetClass) {
 
     // Node methods not to proxy (private underscored methods are also detected and
     // ignored).
-    // TODO: convert to a whitelist rather than a blacklist, so that we
-    // explicitly know which accessors we proxy.
+    // TODO TODO: convert to a whitelist rather than a blacklist, so that
+    // we explicitly know which accessors we proxy. This already caused a
+    // hard-to-debug error, we really need to change to a whitelist.
     const methodProxyBlacklist = [
         'constructor',
         'parent',

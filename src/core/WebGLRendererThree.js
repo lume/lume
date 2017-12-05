@@ -16,6 +16,7 @@ class WebGLRendererThree {
             // TODO: get the active camera from the scene
             //camera: new PerspectiveCamera( 75, 16/9, 0.1, 1000 ),
 
+            // TODO: options controlled by HTML attributes on scene elements.
             renderer: new WebGLRenderer( {
                 // TODO: how do we change alpha:true to alpha:false after the
                 // fact?

@@ -44,7 +44,6 @@ class PerspectiveCamera extends Node {
     // TODO replace with unmountedCallback #150
     deinit() {
         super.deinit()
-        console.log('deinit', this.scene)
 
         // TODO we want to call this in the upcoming
         // unmountedCallback, but for now it's harmless but

@@ -62,9 +62,18 @@ const TransformableMixin = base => {
          * move _calcSize to a render task.
          */
         _calculateMatrix () {
-            if (!this._parent) return this._properties.transform
-
+            // NOTE The only way to get an identity matrix with DOMMatrix API
+            // in the current spec is to make a new DOMMatrix. This is wasteful
+            // because it creates new memory. It'd be nice to have an
+            // identity() method or similar.
             const matrix = new window.DOMMatrix
+
+            // TODO FIXME For some reason, the root node (i.e. the Scene)
+            // should not be translated or else the WebGL rendering glitches
+            // out (this happened with my vanilla WebGL implementation as well
+            // as with Three.js), so we return Identity if there's no parent.
+            if (!this._parent) return matrix
+
             const properties = this._properties
             const thisSize = this._calculatedSize
 
@@ -107,10 +116,6 @@ const TransformableMixin = base => {
             appliedPosition[1] = position.y + alignAdjustment[1] - mountPointAdjustment[1]
             appliedPosition[2] = position.z + alignAdjustment[2] - mountPointAdjustment[2]
 
-            // TODO FIXME For some reason, the root node (i.e. the Scene)
-            // should not be translated or else the WebGL rendering glitches
-            // out (this happened with my vanilla WebGL implementation as well
-            // as with Three.js).
             matrix.translateSelf(
                 appliedPosition[0] + threeJsPostAdjustment[0],
                 // THREE-COORDS-TO-DOM-COORDS negate the Y value so that
