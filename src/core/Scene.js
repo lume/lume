@@ -38,6 +38,9 @@ const SceneMixin = base => {
             // modified scenes.
             this._scene = this
 
+            // TODO get default camera values from somewhere.
+            this._perspective = 1000
+
             // NOTE: z size is always 0, since native DOM elements are always flat.
             this._elementParentSize = {x:0, y:0, z:0}
 
@@ -136,25 +139,45 @@ const SceneMixin = base => {
                 // that here, then move this logic to the renderer
                 // handler/method?
                 this.threeCamera = camera.threeObject3d
+                this._updateCameraAspect()
+                this._updateCameraProjection()
+                this._needsToBeRendered()
             }
-
-            this._updateCameraProjection()
-            this._needsToBeRendered()
         }
 
         _createDefaultCamera() {
+            const size = this._calculatedSize
             // THREE-COORDS-TO-DOM-COORDS
             // We apply Three perspective the same way as CSS3D perspective here.
             // TODO CAMERA-DEFAULTS, get defaults from somewhere common.
-            const perspective = 1000
-            const fov = 180 * ( 2 * Math.atan( innerHeight / 2 / perspective ) ) / Math.PI
             // TODO the "far" arg will be auto-calculated to encompass the furthest objects (like CSS3D).
-            this.threeCamera = new PerspectiveCamera( fov, innerWidth / innerHeight, 0.1, 10000 )
+            this.threeCamera = new PerspectiveCamera( 45, size.x / size.y || 1, 0.1, 10000 )
+            this.perspective = 1000
+        }
+
+        // TODO can this be moved to a render task like _calcSize? It depends
+        // on size values.
+        _updateCameraPerspective() {
+            const perspective = this._perspective
+            this.threeCamera.fov = 180 * ( 2 * Math.atan( this._calculatedSize.y / 2 / perspective ) ) / Math.PI
             this.threeCamera.position.z = perspective
         }
 
+        set perspective(value) {
+            this._perspective = value
+            this._updateCameraPerspective()
+            this._updateCameraProjection()
+            this._needsToBeRendered()
+        }
+        get perspective() {
+            return this._perspective
+        }
+
+        _updateCameraAspect() {
+            this.threeCamera.aspect = this._calculatedSize.x / this._calculatedSize.y || 1
+        }
+
         _updateCameraProjection() {
-            this.threeCamera.aspect = this._calculatedSize.x / this._calculatedSize.y
             this.threeCamera.updateProjectionMatrix()
         }
 

@@ -51,6 +51,8 @@ class WebGLRendererThree {
     updateResolution(scene) {
         const state = sceneStates.get(scene)
 
+        scene._updateCameraAspect()
+        scene._updateCameraPerspective()
         scene._updateCameraProjection()
 
         state.renderer.setSize( scene._calculatedSize.x, scene._calculatedSize.y )
