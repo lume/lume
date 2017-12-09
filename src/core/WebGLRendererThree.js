@@ -1,6 +1,9 @@
 import {
     //PerspectiveCamera,
     WebGLRenderer,
+    BasicShadowMap,
+    PCFSoftShadowMap,
+    PCFShadowMap,
 } from 'three'
 
 const sceneStates = new WeakMap
@@ -28,6 +31,12 @@ class WebGLRendererThree {
                 antialias: true,
             } ),
         })
+
+        const { renderer } = sceneState
+
+        // TODO: make configurable by property/attribute
+        renderer.shadowMap.enabled = true
+        renderer.shadowMap.type = PCFSoftShadowMap; // default PCFShadowMap
 
         this.updateResolution(scene)
         scene.on('sizechange', () => this.updateResolution(scene))
@@ -70,6 +79,23 @@ class WebGLRendererThree {
 
     setClearAlpha( scene, opacity ) {
         sceneStates.get( scene ).renderer.setClearAlpha( opacity )
+    }
+
+    setShadowMapType(scene, type) {
+        type = type.toLowerCase()
+
+        if ( type == 'pcf' ) {
+            sceneStates.get( scene ).renderer.shadowMap.type = PCFShadowMap
+        }
+        else if ( type == 'pcfsoft' ) {
+            sceneStates.get( scene ).renderer.shadowMap.type = PCFSoftShadowMap
+        }
+        else if ( type == 'basic' ) {
+            sceneStates.get( scene ).renderer.shadowMap.type = BasicShadowMap
+        }
+        else { // default
+            sceneStates.get( scene ).renderer.shadowMap.type = PCFShadowMap
+        }
     }
 }
 

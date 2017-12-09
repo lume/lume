@@ -267,9 +267,13 @@ const SceneMixin = base => {
         static get observedAttributes() {
             const superAttrs = super.observedAttributes || []
             return superAttrs.concat( [
-                'backgroundColor',
-                'backgroundOpacity',
-            ].map( a => a.toLowerCase() ) )
+                'backgroundcolor',
+                'background-color',
+                'backgroundopacity',
+                'background-opacity',
+                'shadowmaptype',
+                'shadowmap-type',
+            ] )
         }
 
         async attributeChangedCallback(attr, oldVal, newVal) {
@@ -293,6 +297,10 @@ const SceneMixin = base => {
             }
             else if ( attr == 'backgroundopacity' ) {
                 this.processClearAlphaValue( attr, newVal )
+                this._needsToBeRendered()
+            }
+            else if ( attr == 'shadowmaptype' || attr == 'shadowmap-type' ) {
+                this._renderer.setShadowMapType(this, newVal)
                 this._needsToBeRendered()
             }
         }
