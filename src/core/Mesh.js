@@ -38,6 +38,48 @@ class Mesh extends Node {
     }
 
     makeThreeObject3d() {
-        return new ThreeMesh
+        const mesh = new ThreeMesh
+        mesh.castShadow = true
+        mesh.receiveShadow = true
+        return mesh
+    }
+
+    static get observedAttributes() {
+
+        return super.observedAttributes.concat( [
+
+            'castshadow',
+            'cast-shadow',
+            'receiveshadow',
+            'receive-shadow',
+
+        ] )
+
+    }
+
+    attributeChangedCallback( attr, oldVal, newVal ) {
+        super.attributeChangedCallback( attr, oldVal, newVal )
+
+        if ( attr == 'castshadow' || attr == 'cast-shadow' ) {
+
+            if ( newVal == 'false' || newVal == null )
+                this.threeObject3d.castShadow = false
+            else
+                this.threeObject3d.castShadow = true
+
+            this._needsToBeRendered()
+
+        }
+        else if ( attr == 'receiveshadow' || attr == 'receive-shadow' ) {
+
+            if ( newVal == 'false' || newVal == null )
+                this.threeObject3d.receiveShadow = false
+            else
+                this.threeObject3d.receiveShadow = true
+
+            this._needsToBeRendered()
+
+        }
+
     }
 }
