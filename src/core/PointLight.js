@@ -14,6 +14,8 @@ class PointLight extends Node {
             'intensity',
             'distance',
             'decay',
+            'castshadow',
+            'cast-shadow',
         ])
     }
 
@@ -22,7 +24,17 @@ class PointLight extends Node {
     }
 
     makeThreeObject3d() {
-        return new ThreePointLight
+        const light = new ThreePointLight
+        light.intensity = 1 // default
+        light.castShadow = true // default false
+        light.shadow.mapSize.width = 512 // default
+        light.shadow.mapSize.height = 512 // default
+        light.shadow.camera.near = 1 // default
+        // TODO: auto-adjust far like we will with Camera, unless the user
+        // supplies a manual value.
+        light.shadow.camera.far = 10000 // default 2000
+
+        return light
     }
 
     // TODO: common way to map attributes to properties.
@@ -56,6 +68,17 @@ class PointLight extends Node {
         ) {
             this.processNumberValue( attr, newVal )
             this._needsToBeRendered()
+        }
+
+        else if ( attr == 'castshadow' || attr == 'cast-shadow' ) {
+
+            if ( newVal == 'false' || newVal == null )
+                this.threeObject3d.castShadow = false
+            else
+                this.threeObject3d.castShadow = true
+
+            this._needsToBeRendered()
+
         }
     }
 
