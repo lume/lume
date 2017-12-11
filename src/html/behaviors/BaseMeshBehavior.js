@@ -1,7 +1,7 @@
 import { BoxGeometry, MeshPhongMaterial } from 'three'
 import Mesh from '../../core/Mesh'
 
-// base class for Geometry and Material behaviors
+// base class for Geometry and Material behaviors, not to be used directly
 export default
 class BaseMeshBehavior {
     constructor(element) {
@@ -15,15 +15,15 @@ class BaseMeshBehavior {
         this.initialSize = null;
 
         this.isMeshPromise = null
-        this.resolveIsMeshPromise = null
+        let resolveIsMeshPromise = null
         // TODO cancellable promise, or it may leak
 
         if ( element.nodeName.includes('-') ) {
-            this.isMeshPromise = new Promise(r => this.resolveIsMeshPromise = r)
+            this.isMeshPromise = new Promise(r => resolveIsMeshPromise = r)
             customElements.whenDefined(element.nodeName.toLowerCase())
             .then(() => {
-                if (element instanceof Mesh) this.resolveIsMeshPromise(true)
-                else this.resolveIsMeshPromise(false)
+                if (element instanceof Mesh) resolveIsMeshPromise(true)
+                else resolveIsMeshPromise(false)
             })
         }
         else this.isMeshPromise = Promise.resolve(false)
