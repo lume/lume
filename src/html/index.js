@@ -11,6 +11,7 @@ import Mesh from '../core/Mesh'
 import Box from '../core/Box'
 import Sphere from '../core/Sphere'
 import PointLight from '../core/PointLight'
+import AmbientLight from '../core/AmbientLight'
 import Camera from '../core/Camera'
 
 function useDefaultNames() {
@@ -21,6 +22,7 @@ function useDefaultNames() {
     if (!customElements.get(Box.defaultElementName)) Box.define()
     if (!customElements.get(Sphere.defaultElementName)) Sphere.define()
     if (!customElements.get(PointLight.defaultElementName)) PointLight.define()
+    if (!customElements.get(AmbientLight.defaultElementName)) AmbientLight.define()
     if (!customElements.get(Camera.defaultElementName)) Camera.define()
     //PushPaneLayout.define()
 }
