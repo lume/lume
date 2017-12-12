@@ -25,9 +25,6 @@ class WebGLRendererThree {
                 // fact?
                 alpha: true,
 
-                // TODO: when do we want premultipliedAlpha for the background?
-                premultipliedAlpha: false,
-
                 antialias: true,
             } ),
         })
@@ -55,7 +52,7 @@ class WebGLRendererThree {
     // camera and renderer resize happens outside of the animation loop, but as
     // with _calcSize, we want to see if we can put this in the nimation loop
     // as well. Putting this logic in the loop depends on putting _calcSize in
-    // the loop.
+    // the loop. #66
     updateResolution(scene) {
         const state = sceneStates.get(scene)
 

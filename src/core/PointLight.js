@@ -85,6 +85,8 @@ class PointLight extends Node {
     processNumberValue( attr, value ) {
         const number = parseFloat( value )
 
+        // TODO PERFORMANCE this check might be too heavy (users will hit this
+        // every frame).
         if ( ! value.match( /^\s*(\d+|\d*(.\d+)|(\d+.)\d*)\s*$/ ) ) {
 
             console.warn( (
