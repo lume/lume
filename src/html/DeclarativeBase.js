@@ -223,6 +223,49 @@ export function initDeclarativeBase() {
             }
         }
 
+        childDisconnectedCallback(child) {
+            // mirror the connection in the imperative API's virtual scene graph.
+            if (child instanceof HTMLNode) {
+                child._isPossiblyDistributed = false
+
+                // If ImperativeBase#remove was called first, child's
+                // _parent will already be null, so prevent recursion.
+                if (!child._parent) return
+
+                this.remove(child)
+            }
+            else if (
+                hasShadowDomV0
+                && child instanceof HTMLContentElement
+                &&
+                //getShadowRootVersion(
+                    getAncestorShadowRoot(this)
+                //) == 'v0'
+            ) {
+                // unobserve <content> element
+            }
+            else if (
+                hasShadowDomV1
+                && child instanceof HTMLSlotElement
+                &&
+                //getShadowRootVersion(
+                    getAncestorShadowRoot(this)
+                //) == 'v1'
+            ) {
+                child.removeEventListener('slotchange', this)
+                this._handleDistributedChildren(child)
+                this._slotElementsAssignedNodes.delete(child)
+            }
+            else { // if non-library content was removed (div, img, etc).
+                if ( this instanceof HTMLNode && (
+                    !( child instanceof Text ) ||
+                    ( child instanceof Text && child.textContent.trim().length > 0 )
+                ) ) {
+                    this._possiblyDestroyDOMPlane()
+                }
+            }
+        }
+
         _possiblyCreateDOMPlane() {
             if ( !this._nonLibraryElementCount ) {
                 this._nonLibraryElementCount = 0
@@ -359,49 +402,6 @@ export function initDeclarativeBase() {
             diff.added = newNodes
 
             return diff
-        }
-
-        childDisconnectedCallback(child) {
-            // mirror the connection in the imperative API's virtual scene graph.
-            if (child instanceof HTMLNode) {
-                child._isPossiblyDistributed = false
-
-                // If ImperativeBase#remove was called first, child's
-                // _parent will already be null, so prevent recursion.
-                if (!child._parent) return
-
-                this.remove(child)
-            }
-            else if (
-                hasShadowDomV0
-                && child instanceof HTMLContentElement
-                &&
-                //getShadowRootVersion(
-                    getAncestorShadowRoot(this)
-                //) == 'v0'
-            ) {
-                // unobserve <content> element
-            }
-            else if (
-                hasShadowDomV1
-                && child instanceof HTMLSlotElement
-                &&
-                //getShadowRootVersion(
-                    getAncestorShadowRoot(this)
-                //) == 'v1'
-            ) {
-                child.removeEventListener('slotchange', this)
-                this._handleDistributedChildren(child)
-                this._slotElementsAssignedNodes.delete(child)
-            }
-            else { // if non-library content was removed (div, img, etc).
-                if ( this instanceof HTMLNode && (
-                    !( child instanceof Text ) ||
-                    ( child instanceof Text && child.textContent.trim().length > 0 )
-                ) ) {
-                    this._possiblyDestroyDOMPlane()
-                }
-            }
         }
 
         // TODO: make setAttribute accept non-string values.
