@@ -1,17 +1,15 @@
 
-import Node from './Node'
+import LightBase from './LightBase'
 
-import { PointLight as ThreePointLight, Color } from 'three'
+import { PointLight as ThreePointLight } from 'three'
 
 export default
-class PointLight extends Node {
+class PointLight extends LightBase {
     static get defaultElementName() { return 'i-point-light' }
     static get _Class() { return PointLight }
 
     static get observedAttributes() {
         return super.observedAttributes.concat([
-            'color',
-            'intensity',
             'distance',
             'decay',
             'castshadow',
@@ -37,32 +35,11 @@ class PointLight extends Node {
         return light
     }
 
-    // TODO: common way to map attributes to properties.
+    // TODO: make way to map attributes to properties.
     attributeChangedCallback( attr, oldVal, newVal ) {
         super.attributeChangedCallback( attr, oldVal, newVal )
 
-        // TODO belongs in Light base class
-        if ( attr == 'color' ) {
-
-            // TODO: generic type system for attributes. It will eliminate
-            // duplication here.
-
-            // if a triplet space-separated of RGB numbers
-            if ( newVal.match( /^\s*\d+\s+\d+\s+\d+\s*$/ ) ) {
-                newVal = newVal.trim().split( /\s+/ ).map( n => parseFloat(n)/255 )
-                this.threeObject3d.color = new Color( ...newVal )
-            }
-            // otherwise a CSS-style color string
-            else {
-                this.threeObject3d.color = new Color( newVal )
-            }
-
-            this._needsToBeRendered()
-
-        }
-
-        else if (
-            attr == 'intensity' ||
+        if (
             attr == 'distance' ||
             attr == 'decay'
         ) {
@@ -80,23 +57,5 @@ class PointLight extends Node {
             this._needsToBeRendered()
 
         }
-    }
-
-    processNumberValue( attr, value ) {
-        const number = parseFloat( value )
-
-        // TODO PERFORMANCE this check might be too heavy (users will hit this
-        // every frame).
-        if ( ! value.match( /^\s*(\d+|\d*(.\d+)|(\d+.)\d*)\s*$/ ) ) {
-
-            console.warn( (
-                `The value for the "${ attr }" attribute should be a
-                number. It will be passed to window.parseFloat. Your value
-                ("${ value }") will be converted to the number ${ number }.`
-            ).replace( /\s+/g, ' ' ) )
-
-        }
-
-        this.threeObject3d[ attr ] = number
     }
 }
