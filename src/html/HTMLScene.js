@@ -33,22 +33,19 @@ class HTMLScene extends DeclarativeBase {
         this._root = this.attachShadow({ mode: 'open' })
         this._root.innerHTML = `
             <style>
-                div {
-                    margin: 0;
-                    padding: 0;
+                div, canvas {
+                    margin: 0; padding: 0;
                 }
-                .i-scene-dom {
+                .i-scene-dom, .i-scene-canvas {
                     position: absolute; top: 0; left: 0;
                     width: 100%; height: 100%;
                 }
                 .i-scene-canvas {
-                    position: absolute; top: 0; left: 0;
-                    width: 100%; height: 100%;
+                    pointer-events: none;
                 }
-                ::slotted(canvas) {
+                .i-scene-canvas > canvas {
                     display: block;
                     width: 100%; height: 100%;
-                    pointer-events: none;
                 }
             </style>
             <div class="i-scene-dom">
