@@ -29,6 +29,37 @@ class BaseMeshBehavior {
         else this.isMeshPromise = Promise.resolve(false)
     }
 
+    async connectedCallback( element ) {
+        if ( ! this.checkedElementIsMesh ) await this.checkElementIsMesh(element)
+        if ( ! this.elementIsMesh ) return false
+
+        // TODO might have to defer so that calculatedSize is already calculated
+        this.setMeshComponent( element, this.constructor.type, this.createComponent(element) )
+        element._needsToBeRendered()
+
+        return true
+    }
+
+    async disconnectedCallback( element ) {
+        if ( ! this.checkedElementIsMesh ) await this.checkElementIsMesh(element)
+        if ( ! this.elementIsMesh ) return false
+
+        this.setDefaultComponent( element, this.constructor.type )
+        element._needsToBeRendered()
+
+        return true
+    }
+
+    async attributeChangedCallback( element, attr, oldValue, newValue ) {
+        if ( ! this.checkedElementIsMesh ) await this.checkElementIsMesh(element)
+        if ( ! this.elementIsMesh ) return false
+        return true
+    }
+
+    createComponent() {
+        throw new Error('`createComponent()` is not implemented by subclass.')
+    }
+
     async checkElementIsMesh(element) {
         this.elementIsMesh = await this.isMeshPromise
         this.checkedElementIsMesh = true
