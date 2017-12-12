@@ -4,6 +4,14 @@ import WebComponent from './WebComponent'
 import HTMLNode from './HTMLNode'
 import { observeChildren, /*getShadowRootVersion,*/ hasShadowDomV0,
     hasShadowDomV1, getAncestorShadowRoot } from '../core/Utility'
+import {
+    Mesh,
+    BoxGeometry,
+    MeshPhongMaterial,
+    Color,
+    NoBlending,
+    DoubleSide,
+} from 'three'
 
 var DeclarativeBase
 
@@ -158,6 +166,13 @@ export function initDeclarativeBase() {
             // to this node in the flat tree. We instantiate this later, only
             // when/if needed.
             this._shadowChildren = null
+
+            // If this HTMLNode needs to be visible (f.e. it has non-library
+            // HTML children like div, span, img, etc), then we store here a
+            // reference to a WebGL plane that is aligned with the DOM element
+            // in order to achieve "mixed mode" features like the DOM element
+            // intersecting with WebGL meshes.
+            this._threeDOMPlane = null
         }
 
         childConnectedCallback(child) {
@@ -192,6 +207,65 @@ export function initDeclarativeBase() {
             ) {
                 child.addEventListener('slotchange', this)
                 this._handleDistributedChildren(child)
+            }
+            else { // if non-library content was added (div, img, etc).
+
+                // TODO: replace this check with a more general one that
+                // detects if anything is visible including from styling, not
+                // just content. Perhaps make a specific API for defining that
+                // a node should have DOM content, to make it clear.
+                if ( this instanceof HTMLNode && (
+                    !( child instanceof Text ) ||
+                    ( child instanceof Text && child.textContent.trim().length > 0 )
+                ) ) {
+                    this._possiblyCreateDOMPlane()
+                }
+            }
+        }
+
+        _possiblyCreateDOMPlane() {
+            if ( !this._nonLibraryElementCount ) {
+                this._nonLibraryElementCount = 0
+
+                console.log(' create DOM plane ', this)
+
+                // We have to use a BoxGeometry instead of a
+                // PlaneGeometry because Three.js is not capable of
+                // casting shadows from Planes, at least until we find
+                // another way. Unfortunately, this increases polygon
+                // count by a factor of 6. See issue
+                // https://github.com/mrdoob/three.js/issues/9315
+                const geometry = new BoxGeometry( this._calculatedSize.x, this._calculatedSize.y, 1 )
+                // TODO PERFORMANCE we can re-use a single material for
+                // all the DOM planes rather than a new material per
+                // plane.
+                // TODO in the future we may also want to make the DOM
+                // plane configurable because people might like to make
+                // special effects with it.
+                const material = new MeshPhongMaterial({
+                    opacity	: 0.5,
+                    color	: new Color( 0x111111 ),
+                    blending: NoBlending,
+                    //side	: DoubleSide,
+                })
+                const mesh = this._threeDOMPlane = new Mesh( geometry, material )
+                mesh.castShadow = true
+                mesh.receiveShadow = true
+                this.threeObject3d.add(mesh)
+
+            }
+            this._nonLibraryElementCount++
+        }
+
+        _possiblyDestroyDOMPlane() {
+            this._nonLibraryElementCount--
+            if ( !this._nonLibraryElementCount ) {
+                console.log(' destroy DOM plane ', this)
+
+                this.threeObject3d.remove(this._threeDOMPlane)
+                this._threeDOMPlane.geometry.dispose()
+                this._threeDOMPlane.material.dispose()
+                this._threeDOMPlane = null
             }
         }
 
@@ -319,6 +393,14 @@ export function initDeclarativeBase() {
                 child.removeEventListener('slotchange', this)
                 this._handleDistributedChildren(child)
                 this._slotElementsAssignedNodes.delete(child)
+            }
+            else { // if non-library content was removed (div, img, etc).
+                if ( this instanceof HTMLNode && (
+                    !( child instanceof Text ) ||
+                    ( child instanceof Text && child.textContent.trim().length > 0 )
+                ) ) {
+                    this._possiblyDestroyDOMPlane()
+                }
             }
         }
 
