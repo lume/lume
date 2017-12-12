@@ -81,8 +81,10 @@ const SceneMixin = base => {
             this.threeCamera = null
             this._createDefaultCamera()
 
-            const ambientLight = new AmbientLight( 0x353535 )
-            this.threeObject3d.add( ambientLight )
+            // TODO: default ambient light when no AmbientLight elements are
+            // present in the Scene.
+            //const ambientLight = new AmbientLight( 0x353535 )
+            //this.threeObject3d.add( ambientLight )
 
             // holds the renderer for this scene, renderers have scene-specific
             // settings so having this reference is okay.
