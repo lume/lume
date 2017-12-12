@@ -41,10 +41,9 @@ class WebGLRendererThree {
         this.updateResolution(scene)
         scene.on('sizechange', () => this.updateResolution(scene))
 
-        // TODO? this needs to be managed better. Maybe the html/scene.js
-        // element should be responsible for making this, so that DOM logic is
-        // encapsulated there?
-        scene.element.appendChild( sceneState.renderer.domElement )
+        // TODO? Maybe the html/scene.js element should be responsible for
+        // making this, so that DOM logic is encapsulated there?
+        scene._canvasContainer.appendChild( renderer.domElement )
     }
 
     drawScene(scene) {
