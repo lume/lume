@@ -270,8 +270,6 @@ export function initDeclarativeBase() {
             if ( !this._nonLibraryElementCount ) {
                 this._nonLibraryElementCount = 0
 
-                console.log(' create DOM plane ', this)
-
                 // We have to use a BoxGeometry instead of a
                 // PlaneGeometry because Three.js is not capable of
                 // casting shadows from Planes, at least until we find
@@ -303,8 +301,6 @@ export function initDeclarativeBase() {
         _possiblyDestroyDOMPlane() {
             this._nonLibraryElementCount--
             if ( !this._nonLibraryElementCount ) {
-                console.log(' destroy DOM plane ', this)
-
                 this.threeObject3d.remove(this._threeDOMPlane)
                 this._threeDOMPlane.geometry.dispose()
                 this._threeDOMPlane.material.dispose()
