@@ -32,6 +32,7 @@ class WebGLRendererThree {
         const { renderer } = sceneState
 
         // TODO: make configurable by property/attribute
+        renderer.setPixelRatio(window.devicePixelRatio)
         renderer.shadowMap.enabled = true
         renderer.shadowMap.type = PCFSoftShadowMap; // default PCFShadowMap
 
@@ -61,7 +62,6 @@ class WebGLRendererThree {
         scene._updateCameraProjection()
 
         state.renderer.setSize( scene._calculatedSize.x, scene._calculatedSize.y )
-        state.renderer.setPixelRatio(window.devicePixelRatio)
 
         // Indirectly causes Motor to call this.drawScene(). It's important to
         // call this rather than just this.drawScene() directly because Motor
