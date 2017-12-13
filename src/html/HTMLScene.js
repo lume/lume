@@ -107,7 +107,7 @@ class HTMLScene extends DeclarativeBase {
             parentSize.x = width
             parentSize.y = height
 
-            this.triggerEvent('parentsizechange', Object.assign({}, parentSize))
+            this.trigger('parentsizechange', Object.assign({}, parentSize))
         }
     }
 

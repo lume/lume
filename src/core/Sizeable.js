@@ -49,9 +49,9 @@ const SizeableMixin = base => {
         // https://github.com/airbnb/javascript#events
         _setPropertyObservers() {
             this._properties.sizeMode.on('valuechanged',
-                () => this.triggerEvent('propertychange', 'sizeMode'))
+                () => this.trigger('propertychange', 'sizeMode'))
             this._properties.size.on('valuechanged',
-                () => this.triggerEvent('propertychange', 'size'))
+                () => this.trigger('propertychange', 'size'))
         }
 
         _calcSize() {
@@ -86,7 +86,7 @@ const SizeableMixin = base => {
                 || previousSize.y !== calculatedSize.y
                 || previousSize.z !== calculatedSize.z
             ) {
-                this.triggerEvent('sizechange', {...calculatedSize})
+                this.trigger('sizechange', {...calculatedSize})
             }
         }
 
@@ -160,7 +160,7 @@ const SizeableMixin = base => {
             }
             else {
                 this._properties[name] = newValue
-                this.triggerEvent('propertychange', name)
+                this.trigger('propertychange', name)
             }
         }
 

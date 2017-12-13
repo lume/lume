@@ -18,19 +18,19 @@ class XYZValues extends Observable {
 
     set x(value) {
         this._x = value
-        this.triggerEvent('valuechanged', {x: value})
+        this.trigger('valuechanged', {x: value})
     }
     get x() { return this._x }
 
     set y(value) {
         this._y = value
-        this.triggerEvent('valuechanged', {y: value})
+        this.trigger('valuechanged', {y: value})
     }
     get y() { return this._y }
 
     set z(value) {
         this._z = value
-        this.triggerEvent('valuechanged', {z: value})
+        this.trigger('valuechanged', {z: value})
     }
     get z() { return this._z }
 }

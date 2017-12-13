@@ -36,17 +36,17 @@ const TransformableMixin = base => {
             super._setPropertyObservers()
 
             this._properties.position.on('valuechanged',
-                () => this.triggerEvent('propertychange', 'position'))
+                () => this.trigger('propertychange', 'position'))
             this._properties.rotation.on('valuechanged',
-                () => this.triggerEvent('propertychange', 'rotation'))
+                () => this.trigger('propertychange', 'rotation'))
             this._properties.scale.on('valuechanged',
-                () => this.triggerEvent('propertychange', 'scale'))
+                () => this.trigger('propertychange', 'scale'))
             this._properties.origin.on('valuechanged',
-                () => this.triggerEvent('propertychange', 'origin'))
+                () => this.trigger('propertychange', 'origin'))
             this._properties.align.on('valuechanged',
-                () => this.triggerEvent('propertychange', 'align'))
+                () => this.trigger('propertychange', 'align'))
             this._properties.mountPoint.on('valuechanged',
-                () => this.triggerEvent('propertychange', 'mountPoint'))
+                () => this.trigger('propertychange', 'mountPoint'))
         }
 
         /**
