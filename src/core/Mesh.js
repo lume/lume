@@ -10,6 +10,7 @@ import '../html/behaviors/PhongMaterialBehavior'
 import '../html/behaviors/DOMPlaneMaterialBehavior'
 import '../html/behaviors/BoxGeometryBehavior'
 import '../html/behaviors/SphereGeometryBehavior'
+import '../html/behaviors/PlaneGeometryBehavior'
 import '../html/behaviors/DOMPlaneGeometryBehavior'
 
 // TODO:

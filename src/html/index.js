@@ -10,6 +10,7 @@ import Node from '../core/Node'
 import Mesh from '../core/Mesh'
 import Box from '../core/Box'
 import Sphere from '../core/Sphere'
+import Plane from '../core/Plane'
 import PointLight from '../core/PointLight'
 import DOMPlane from '../core/DOMPlane'
 import AmbientLight from '../core/AmbientLight'
@@ -22,6 +23,7 @@ function useDefaultNames() {
     if (!customElements.get(Mesh.defaultElementName)) Mesh.define()
     if (!customElements.get(Box.defaultElementName)) Box.define()
     if (!customElements.get(Sphere.defaultElementName)) Sphere.define()
+    if (!customElements.get(Plane.defaultElementName)) Plane.define()
     if (!customElements.get(PointLight.defaultElementName)) PointLight.define()
     if (!customElements.get(DOMPlane.defaultElementName)) DOMPlane.define()
     if (!customElements.get(AmbientLight.defaultElementName)) AmbientLight.define()
