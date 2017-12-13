@@ -40,6 +40,9 @@ class HTMLScene extends DeclarativeBase {
                     position: absolute; top: 0; left: 0;
                     width: 100%; height: 100%;
                 }
+                .i-scene-dom {
+                    transform-style: preserve-3d;
+                }
                 .i-scene-canvas {
                     pointer-events: none;
                 }
