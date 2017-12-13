@@ -3,6 +3,8 @@ import Motor from './Motor'
 
 import { PerspectiveCamera as ThreePerspectiveCamera } from 'three'
 
+// TODO: update this to have a CSS3D-perspective-like API like with the Scene's
+// default camera.
 export default
 class PerspectiveCamera extends Node {
     static get defaultElementName() { return 'i-perspective-camera' }

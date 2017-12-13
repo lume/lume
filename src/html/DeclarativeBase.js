@@ -214,8 +214,8 @@ export function initDeclarativeBase() {
                 // detects if anything is visible including from styling, not
                 // just content. Perhaps make a specific API for defining that
                 // a node should have DOM content, to make it clear.
-                if ( this instanceof HTMLNode && (
-                    !( child instanceof Text ) ||
+                if ( this instanceof HTMLNode && !this.isDOMPlane && (
+                    ( !( child instanceof Text ) && !( child instanceof Comment ) ) ||
                     ( child instanceof Text && child.textContent.trim().length > 0 )
                 ) ) {
                     this._possiblyCreateDOMPlane()
@@ -257,8 +257,8 @@ export function initDeclarativeBase() {
                 this._slotElementsAssignedNodes.delete(child)
             }
             else { // if non-library content was removed (div, img, etc).
-                if ( this instanceof HTMLNode && (
-                    !( child instanceof Text ) ||
+                if ( this instanceof HTMLNode && !this.isDOMPlane && (
+                    ( !( child instanceof Text ) && !( child instanceof Comment ) ) ||
                     ( child instanceof Text && child.textContent.trim().length > 0 )
                 ) ) {
                     this._possiblyDestroyDOMPlane()
@@ -280,9 +280,6 @@ export function initDeclarativeBase() {
                 // TODO PERFORMANCE we can re-use a single material for
                 // all the DOM planes rather than a new material per
                 // plane.
-                // TODO in the future we may also want to make the DOM
-                // plane configurable because people might like to make
-                // special effects with it.
                 const material = new MeshPhongMaterial({
                     opacity	: 0.5,
                     color	: new Color( 0x111111 ),
