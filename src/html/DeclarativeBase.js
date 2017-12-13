@@ -173,6 +173,10 @@ export function initDeclarativeBase() {
             // in order to achieve "mixed mode" features like the DOM element
             // intersecting with WebGL meshes.
             this._threeDOMPlane = null
+
+            // when needed, an arrow function as listener for sizechange
+            // events, referenced so that we can clean up.
+            this._updateDOMPlaneOnSizeChange = null
         }
 
         childConnectedCallback(child) {
@@ -270,27 +274,7 @@ export function initDeclarativeBase() {
             if ( !this._nonLibraryElementCount ) {
                 this._nonLibraryElementCount = 0
 
-                // We have to use a BoxGeometry instead of a
-                // PlaneGeometry because Three.js is not capable of
-                // casting shadows from Planes, at least until we find
-                // another way. Unfortunately, this increases polygon
-                // count by a factor of 6. See issue
-                // https://github.com/mrdoob/three.js/issues/9315
-                const geometry = new BoxGeometry( this._calculatedSize.x, this._calculatedSize.y, 1 )
-                // TODO PERFORMANCE we can re-use a single material for
-                // all the DOM planes rather than a new material per
-                // plane.
-                const material = new MeshPhongMaterial({
-                    opacity	: 0.5,
-                    color	: new Color( 0x111111 ),
-                    blending: NoBlending,
-                    //side	: DoubleSide,
-                })
-                const mesh = this._threeDOMPlane = new Mesh( geometry, material )
-                mesh.castShadow = true
-                mesh.receiveShadow = true
-                this.threeObject3d.add(mesh)
-
+                this._createDOMPlane()
             }
             this._nonLibraryElementCount++
         }
@@ -298,11 +282,51 @@ export function initDeclarativeBase() {
         _possiblyDestroyDOMPlane() {
             this._nonLibraryElementCount--
             if ( !this._nonLibraryElementCount ) {
-                this.threeObject3d.remove(this._threeDOMPlane)
-                this._threeDOMPlane.geometry.dispose()
-                this._threeDOMPlane.material.dispose()
-                this._threeDOMPlane = null
+                this._destroyDOMPlane()
             }
+        }
+
+        _createDOMPlane() {
+            // We have to use a BoxGeometry instead of a
+            // PlaneGeometry because Three.js is not capable of
+            // casting shadows from Planes, at least until we find
+            // another way. Unfortunately, this increases polygon
+            // count by a factor of 6. See issue
+            // https://github.com/mrdoob/three.js/issues/9315
+            const geometry = this._createDOMPlaneGeometry()
+            // TODO PERFORMANCE we can re-use a single material for
+            // all the DOM planes rather than a new material per
+            // plane.
+            const material = new MeshPhongMaterial({
+                opacity	: 0.5,
+                color	: new Color( 0x111111 ),
+                blending: NoBlending,
+                //side	: DoubleSide,
+            })
+            const mesh = this._threeDOMPlane = new Mesh( geometry, material )
+            mesh.castShadow = true
+            mesh.receiveShadow = true
+            this.threeObject3d.add(mesh)
+
+            this._updateDOMPlaneOnSizeChange = ({ x, y, z }) => {
+                this._threeDOMPlane.geometry.dispose()
+                this._threeDOMPlane.geometry = this._createDOMPlaneGeometry()
+            }
+            this.on('sizechange', this._updateDOMPlaneOnSizeChange)
+        }
+
+        _destroyDOMPlane() {
+            this.threeObject3d.remove(this._threeDOMPlane)
+            this._threeDOMPlane.geometry.dispose()
+            this._threeDOMPlane.material.dispose()
+            this._threeDOMPlane = null
+
+            this.off('sizechange', this._updateDOMPlaneOnSizeChange)
+            this._updateDOMPlaneOnSizeChange = null
+        }
+
+        _createDOMPlaneGeometry() {
+            return new BoxGeometry( this._calculatedSize.x, this._calculatedSize.y, 1 )
         }
 
         // This method is part of the EventListener interface.
