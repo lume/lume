@@ -35,6 +35,18 @@ regardless of which view layer you prefer. This makes it possible for you write
 Live Examples
 -------------
 
+- [DOM+WebGL "Mixed Mode" 2](https://codepen.io/trusktr/pen/rpaQqK)
+    - The 3D scene is defined using HTML
+    - Minimal JavaScript used for animation
+    - Rendering: experimental WebGL and CSS3D together, "Mixed Mode". Regular
+      DOM elements (CSS3D) and WebGL objects are rendered together in the same
+      3D space with lighting and shadow
+- [DOM+WebGL "Mixed Mode" 1](https://codepen.io/trusktr/pen/OzJJJN)
+    - Same description as the previous example.
+- [WebGL Cube with Lights](https://codepen.io/trusktr/pen/bYKXLd)
+    - The 3D scene is defined with declarative HTML
+    - Minimal JavaScript used for animation
+    - Rendering: experimental WebGL
 - [Polydance](https://trusktr.io/polydance)
     - Presented at 3DWebFest 2017 in collaboration with [Anastasiia Vedernikova](https://vnastasia.myportfolio.com)
     - The 3D scene is defined with declarative HTML
