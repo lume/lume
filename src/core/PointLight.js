@@ -23,14 +23,15 @@ class PointLight extends LightBase {
 
     makeThreeObject3d() {
         const light = new ThreePointLight
-        light.intensity = 1 // default
+        light.intensity = 1 // default 1
         light.castShadow = true // default false
-        light.shadow.mapSize.width = 512 // default
-        light.shadow.mapSize.height = 512 // default
-        light.shadow.camera.near = 1 // default
+        light.shadow.mapSize.width = 512 // default 512
+        light.shadow.mapSize.height = 512 // default 512
+        light.shadow.camera.near = 1 // default 1
+        light.shadow.radius = 1 // default 1
         // TODO: auto-adjust far like we will with Camera, unless the user
         // supplies a manual value.
-        light.shadow.camera.far = 10000 // default 2000
+        light.shadow.camera.far = 2000 // default 2000
 
         return light
     }
