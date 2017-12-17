@@ -22,7 +22,7 @@ Infamous' "mixed mode" let's us combine traditional HTML elements with new ones
 that render to WebGL, which means we can render traditional elements and 3D
 objects like spheres and cubes (and soon any 3D model) together in the same 3D
 space (with lighting and shadow not just on the WebGL objects, but on the DOM
-too!).
+elements too!).
 
 Unlike traditional CSS `box-shadow` which is flat and boring, with Infamous we
 can give UIs __*real*__ shadows! [See for
