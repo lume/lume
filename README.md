@@ -2,7 +2,7 @@ infamous
 [![All Contributors](https://img.shields.io/badge/all_contributors-2-orange.svg?style=flat-square)](#contributors)
 ========
 
-Create 2D or 3D applications declaratively with HTML.
+Create CSS3D/WebGL applications declaratively with HTML.
 
 Visit the [site](http://infamous.io), discuss in the [forums](http://forums.infamous.io).
 
@@ -13,14 +13,20 @@ About
 
 Infamous gives you general-purpose [Custom HTML
 Elements](https://developers.google.com/web/fundamentals/architecture/building-components/customelements)
-that the browser understands, for defining 2D or 3D scenes rendered with CSS3D
-or WebGL.
+that the browser understands, for defining 2D or 3D scenes rendered with CSS3D,
+WebGL, or both mixed together.
 
 If you prefer imperative JavaScript, you can also use the JavaScript-only API.
 
-WebGL is currently in "experimental" mode. Augmented/virtual reality (AR/VR) as well as combining CSS3D DOM
-elements and WebGL objects in the same 3D space ("mixed mode") are work in
-progress.
+Infamous' "mixed mode" let's us combine traditional HTML elements with new ones
+that render to WebGL, which means we can render traditional elements and 3D
+objects like spheres and cubes (and soon any 3D model) together in the same 3D
+space (with lighting and shadow not just on the WebGL objects, but on the DOM
+too!).
+
+Unlike traditional CSS `box-shadow` which is flat and boring, with Infamous we
+can give UIs __*real*__ shadows! [See for
+yourself!](https://codepen.io/trusktr/pen/rpaQqK)
 
 Infamous is built on the [Web Component
 standards](https://www.w3.org/standards/techs/components#w3c_all), making it
@@ -31,6 +37,37 @@ regardless of which view layer you prefer. This makes it possible for you write
 [Meteor](http://meteor.com), [Angular](https://angular.io),
 [Ember.js](https://www.emberjs.com), or even the great
 [jQuery](http://jquery.com).
+
+Notes
+-----
+
+- WebGL rendering is currently in "experimental" mode because the API isn't
+  entirely finished, though many parts of it are stable.
+  - This requires the `experimental-webgl="true"` attribute on root Scene
+    elements, otherwise only CSS3D rendering is enabled by default.
+- CSS3D rendering is stable.
+- WebGL rendering is currently powered by [Three.js](https://threejs.org). All
+  elements have a `.threeObject3d` property that you can access if you want to
+  do custom things with the Three.js parts.
+- Augmented and virtual reality modes (AR, VR) are not yet implemented, coming soon!
+  - Implementing this should be a simple matter of taking advantage of builtin
+    VR mode that ships with Three.js.
+  - CSS3D doesn't support WebVR (at least not yet), therefore the only form of
+    AR/VR that we can achieve with CSS3D rendering will be the type that splits
+    the web page into two halves (one for each eye), which means CSS3D AR/VR
+    will work only on headsets that carry mobile devices like Google Cardboard
+    or Google Daydream. It may be possible to maps halves of a web page to
+    specific eyes on other devices like Oculus, but this is a little way off.
+- CSS3D objects can not be bent or distorted in 3D space at the moment (Adobe's
+  CSS Shaders proposal was rejected due to security concerns), meaning
+  traditional HTML elements can currently only be rendered as flat planes and
+  nothing else.
+  <!--
+  - However, in the near future, we might be able to expose the hacky utility
+    of tools like html2canvas via our API in order to manipulate textures
+    generated from HTML content within WebGL directly. This has limitations,
+    and some CSS styling may not work.
+  -->
 
 Live Examples
 -------------
