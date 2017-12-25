@@ -14,6 +14,18 @@ class PointLight extends LightBase {
             'decay',
             'castshadow',
             'cast-shadow',
+            'shadowmapwidth',
+            'shadow-map-width',
+            'shadowmapheight',
+            'shadow-map-height',
+            'shadowradius',
+            'shadow-radius',
+            'shadowbias',
+            'shadow-bias',
+            'shadowcameranear',
+            'shadow-camera-near',
+            'shadowcamerafar',
+            'shadow-camera-far',
         ])
     }
 
@@ -25,6 +37,7 @@ class PointLight extends LightBase {
         const light = new ThreePointLight
         light.intensity = 1 // default 1
         light.distance = 0 // default 0
+        light.decay = 1 // default 1
         light.castShadow = true // default false
         light.shadow.mapSize.width = 512 // default 512
         light.shadow.mapSize.height = 512 // default 512
@@ -52,6 +65,7 @@ class PointLight extends LightBase {
 
         else if ( attr == 'castshadow' || attr == 'cast-shadow' ) {
 
+            // TODO: generic function to handle boolean attributes
             if ( newVal == 'false' || newVal == null )
                 this.threeObject3d.castShadow = false
             else
@@ -59,6 +73,37 @@ class PointLight extends LightBase {
 
             this._needsToBeRendered()
 
+        }
+
+        else if ( attr == 'shadowmapwidth' || attr == 'shadow-map-width' ) {
+            this.processNumberValue( 'width', newVal, this.threeObject3d.shadow.mapSize )
+            this._needsToBeRendered()
+        }
+
+        else if ( attr == 'shadowmapheight' || attr == 'shadow-map-height' ) {
+            this.processNumberValue( 'height', newVal, this.threeObject3d.shadow.mapSize )
+            this._needsToBeRendered()
+        }
+
+        else if ( attr == 'shadowradius' || attr == 'shadow-radius' ) {
+            this.processNumberValue( 'radius', newVal, this.threeObject3d.shadow )
+            this._needsToBeRendered()
+            console.log(' --- set light shadow radius', this.threeObject3d.shadow.radius)
+        }
+
+        else if ( attr == 'shadowbias' || attr == 'shadow-bias' ) {
+            this.processNumberValue( 'bias', newVal, this.threeObject3d.shadow )
+            this._needsToBeRendered()
+        }
+
+        else if ( attr == 'shadowcameranear' || attr == 'shadow-camera-near' ) {
+            this.processNumberValue( 'near', newVal, this.threeObject3d.shadow.camera )
+            this._needsToBeRendered()
+        }
+
+        else if ( attr == 'shadowcamerafar' || attr == 'shadow-camera-far' ) {
+            this.processNumberValue( 'far', newVal, this.threeObject3d.shadow.camera )
+            this._needsToBeRendered()
         }
     }
 }

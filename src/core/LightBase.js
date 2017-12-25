@@ -42,7 +42,8 @@ class LightBase extends Node {
         }
     }
 
-    processNumberValue( attr, value ) {
+    processNumberValue( attr, value, context ) {
+        context = context || this.threeObject3d
         const number = parseFloat( value )
 
         // TODO PERFORMANCE this check might be too heavy (users will hit this
@@ -57,6 +58,6 @@ class LightBase extends Node {
 
         }
 
-        this.threeObject3d[ attr ] = number
+        context[ attr ] = number
     }
 }
