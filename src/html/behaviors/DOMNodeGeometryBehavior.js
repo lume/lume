@@ -3,7 +3,7 @@ import { BoxGeometry } from 'three'
 import BaseGeometryBehavior from './BaseGeometryBehavior'
 
 export default
-class DOMPlaneGeometryBehavior extends BaseGeometryBehavior {
+class DOMNodeGeometryBehavior extends BaseGeometryBehavior {
 
     createComponent(element) {
 
@@ -23,4 +23,4 @@ class DOMPlaneGeometryBehavior extends BaseGeometryBehavior {
 
 }
 
-elementBehaviors.define('domplane-geometry', DOMPlaneGeometryBehavior)
+elementBehaviors.define('domnode-geometry', DOMNodeGeometryBehavior)

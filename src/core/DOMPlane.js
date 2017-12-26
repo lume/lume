@@ -1,20 +1,8 @@
-import Mesh from './Mesh'
+import DOMNode from './DOMNode'
 
+// This class is an alias for DOMNode/i-dom-node
 export default
-class DOMPlane extends Mesh {
+class DOMPlane extends DOMNode {
     static get defaultElementName() { return 'i-dom-plane' }
     static get _Class() { return DOMPlane }
-
-    get isDOMPlane() { return true }
-
-    static get defaultBehaviors() {
-        return {
-            'domplane-geometry': initialBehaviors => {
-                return !initialBehaviors.some( b => b.endsWith( '-geometry' ) )
-            },
-            'domplane-material': initialBehaviors => {
-                return !initialBehaviors.some( b => b.endsWith( '-material' ) )
-            },
-        }
-    }
 }

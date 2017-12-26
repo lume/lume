@@ -4,7 +4,7 @@ import BaseMaterialBehavior from './BaseMaterialBehavior'
 import { Color, NoBlending, /*DoubleSide*/ } from 'three'
 
 export default
-class DOMPlaneMaterialBehavior extends BaseMaterialBehavior {
+class DOMNodeMaterialBehavior extends BaseMaterialBehavior {
 
     createComponent(element) {
         // TODO PERFORMANCE we can re-use a single material for
@@ -20,4 +20,4 @@ class DOMPlaneMaterialBehavior extends BaseMaterialBehavior {
 
 }
 
-elementBehaviors.define('domplane-material', DOMPlaneMaterialBehavior)
+elementBehaviors.define('domnode-material', DOMNodeMaterialBehavior)

@@ -7,11 +7,11 @@ import { Mesh as ThreeMesh } from 'three'
 // choose names for better flexibility. See TODO NAMING below.
 import '../html/behaviors/BasicMaterialBehavior'
 import '../html/behaviors/PhongMaterialBehavior'
-import '../html/behaviors/DOMPlaneMaterialBehavior'
+import '../html/behaviors/DOMNodeMaterialBehavior'
 import '../html/behaviors/BoxGeometryBehavior'
 import '../html/behaviors/SphereGeometryBehavior'
 import '../html/behaviors/PlaneGeometryBehavior'
-import '../html/behaviors/DOMPlaneGeometryBehavior'
+import '../html/behaviors/DOMNodeGeometryBehavior'
 
 // TODO:
 // - API for registering new behaviors as they pertain to our API, built on top
