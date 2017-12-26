@@ -88,7 +88,6 @@ class PointLight extends LightBase {
         else if ( attr == 'shadowradius' || attr == 'shadow-radius' ) {
             this.processNumberValue( 'radius', newVal, this.threeObject3d.shadow )
             this._needsToBeRendered()
-            console.log(' --- set light shadow radius', this.threeObject3d.shadow.radius)
         }
 
         else if ( attr == 'shadowbias' || attr == 'shadow-bias' ) {
