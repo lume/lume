@@ -1,11 +1,9 @@
 import Node from './Node'
-import { Color } from 'three'
-
-const twoOrMoreSpaces = /\s\s+/g
+import ValueProcessor from './ValueProcessor'
 
 // base class for light elements.
 export default
-class LightBase extends Node {
+class LightBase extends ValueProcessor( Node ) {
 
     static get observedAttributes() {
         return super.observedAttributes.concat([
@@ -31,27 +29,5 @@ class LightBase extends Node {
             this.processNumberValue( attr, newVal )
             this._needsToBeRendered()
         }
-    }
-
-    processColorValue( value, context ) {
-        context = context || this.threeObject3d
-        context.color = new Color( value )
-    }
-
-    processNumberValue( attr, value, context ) {
-        context = context || this.threeObject3d
-        const number = parseFloat( value )
-
-        if ( isNaN( number ) ) {
-
-            console.warn( (
-                `The value for the "${ attr }" attribute should be a number. It
-                is passed to window.parseFloat. Your value ("${ value }")
-                cannot be parsed into a number (it becomes NaN).`
-            ).replace( twoOrMoreSpaces, ' ' ) )
-
-        }
-
-        context[ attr ] = number
     }
 }

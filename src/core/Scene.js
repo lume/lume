@@ -9,13 +9,14 @@ import Motor from './Motor'
 import ImperativeBase, {initImperativeBase} from './ImperativeBase'
 import XYZValues from './XYZValues'
 import XYZNonNegativeValues from './XYZNonNegativeValues'
+import ValueProcessor from './ValueProcessor'
 import { default as HTMLInterface } from '../html/HTMLScene'
 import documentReady from 'awaitbox/dom/documentReady'
 
 import {
     Scene as ThreeScene, // so as not to confuse with Infamous Scene.
     PerspectiveCamera,
-    AmbientLight,
+    //AmbientLight,
     Color,
 } from 'three'
 
@@ -26,7 +27,7 @@ const instanceofSymbol = Symbol('instanceofSymbol')
 let Scene = null
 
 const SceneMixin = base => {
-    class _Scene extends ImperativeBase.mixin(Transformable.mixin(base)) {
+    class _Scene extends ValueProcessor( ImperativeBase.mixin( Transformable.mixin( base ) ) ) {
         static get defaultElementName() { return 'i-scene' }
         static get _Class() { return Scene }
 
@@ -278,6 +279,7 @@ const SceneMixin = base => {
             ] )
         }
 
+        // TODO: generic type system for attributes.
         async attributeChangedCallback(attr, oldVal, newVal) {
             super.attributeChangedCallback(attr, oldVal, newVal)
 
@@ -289,13 +291,8 @@ const SceneMixin = base => {
             await this.mountPromise
 
             if ( attr == 'backgroundcolor' ) {
-
-                // TODO: generic type system for attributes. It will eliminate
-                // duplication here.
-
                 this.processClearColorValue( attr, newVal )
                 this._needsToBeRendered()
-
             }
             else if ( attr == 'backgroundopacity' ) {
                 this.processClearAlphaValue( attr, newVal )
@@ -308,36 +305,13 @@ const SceneMixin = base => {
         }
 
         processClearColorValue( attr, value ) {
-
-            // if a triplet of space-separated RGB numbers
-            if ( value.match( /^\s*\d+\s+\d+\s+\d+\s*$/ ) ) {
-                value = value.trim().split( /\s+/ ).map( n => parseFloat(n)/255 )
-                this._glBackgroundColor = new Color( ...value )
-            }
-            // otherwise a CSS-style color string
-            else {
-                this._glBackgroundColor = new Color( value )
-            }
-
+            this.processColorValue( value, this, '_glBackgroundColor' )
             this._renderer.setClearColor( this, this._glBackgroundColor, this._glBackgroundOpacity )
-
         }
 
-        // TODO this is mostly duplicated from PointLight.processNumberValue, consolidate, needs typing.
         processClearAlphaValue( attr, value ) {
-            const alpha = this._glBackgroundOpacity = parseFloat( value )
-
-            if ( ! value.match( /^\s*(\d+|\d*(.\d+)|(\d+.)\d*)\s*$/ ) ) {
-
-                console.warn( (
-                    `The value for the "${ attr }" attribute should be a
-                    number. It will be passed to window.parseFloat. Your value
-                    ("${ value }") will be converted to the number ${ alpha }.`
-                ).replace( /\s+/g, ' ' ) )
-
-            }
-
-            this._renderer.setClearAlpha( this, alpha)
+            this.processNumberValue( '_glBackgroundOpacity', value, this )
+            this._renderer.setClearAlpha( this, this._glBackgroundOpacity)
         }
 
     }
