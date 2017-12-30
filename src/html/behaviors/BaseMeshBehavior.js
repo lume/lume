@@ -1,10 +1,12 @@
 import { BoxGeometry, MeshPhongMaterial } from 'three'
 import Mesh from '../../core/Mesh'
+import ValueProcessor from '../../core/ValueProcessor'
 
 // base class for Geometry and Material behaviors, not to be used directly
 export default
-class BaseMeshBehavior {
+class BaseMeshBehavior extends ValueProcessor() {
     constructor(element) {
+        super()
 
         this.checkedElementIsMesh = false
         this.elementIsMesh = false
