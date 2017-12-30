@@ -94,7 +94,7 @@ const SceneMixin = base => {
             // a default orange background color. Use the backgroundColor and
             // backgroundOpacity attributes to customize.
             this._glBackgroundColor = new Color( 0xff6600 )
-            this._glBackgroundOpacity = 1
+            this._glBackgroundOpacity = 0
 
             // holds active cameras found in the DOM tree (if this is empty, it
             // means no camera elements are in the DOM, but this.threeCamera
