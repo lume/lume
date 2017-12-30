@@ -1,6 +1,8 @@
 import Node from './Node'
 import { Color } from 'three'
 
+const twoOrMoreSpaces = /\s\s+/g
+
 // base class for light elements.
 export default
 class LightBase extends Node {
@@ -46,15 +48,13 @@ class LightBase extends Node {
         context = context || this.threeObject3d
         const number = parseFloat( value )
 
-        // TODO PERFORMANCE this check might be too heavy (users will hit this
-        // every frame).
-        if ( ! value.match( /^\s*(\d+|\d*(.\d+)|(\d+.)\d*)\s*$/ ) ) {
+        if ( isNaN( number ) ) {
 
             console.warn( (
-                `The value for the "${ attr }" attribute should be a
-                number. It will be passed to window.parseFloat. Your value
-                ("${ value }") will be converted to the number ${ number }.`
-            ).replace( /\s+/g, ' ' ) )
+                `The value for the "${ attr }" attribute should be a number. It
+                is passed to window.parseFloat. Your value ("${ value }")
+                cannot be parsed into a number (it becomes NaN).`
+            ).replace( twoOrMoreSpaces, ' ' ) )
 
         }
 
