@@ -11,27 +11,13 @@ class BaseMaterialBehavior extends BaseMeshBehavior {
         return [ 'color', 'material-opacity' ]
     }
 
+    // TODO: generic type system for attributes.
     async attributeChangedCallback( element, attr, oldVal, newVal ) {
         if (! ( await super.attributeChangedCallback( element ) ) ) return
 
         if ( attr == 'color' ) {
-
-            // TODO: generic type system for attributes. It will eliminate
-            // duplication in many places (f.e. see duplicated code in
-            // PointLight class).
-
-            // if a triplet space-separated of RGB numbers
-            if ( newVal.match( /^\s*\d+\s+\d+\s+\d+\s*$/ ) ) {
-                newVal = newVal.trim().split( /\s+/ ).map( n => parseFloat(n)/255 )
-                element.threeObject3d.material.color = new Color( ...newVal )
-            }
-            // otherwise a CSS-style color string
-            else {
-                element.threeObject3d.material.color = new Color( newVal )
-            }
-
+            this.processColorValue( newVal, element.threeObject3d.material )
             element._needsToBeRendered()
-
         }
 
         // Note, Node elements also react to this, and apply it to the DOM
