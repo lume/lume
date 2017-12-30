@@ -23,25 +23,19 @@ class LightBase extends Node {
 
         // TODO belongs in Light base class
         if ( attr == 'color' ) {
-
-            // if a triplet space-separated of RGB numbers
-            if ( newVal.match( /^\s*\d+\s+\d+\s+\d+\s*$/ ) ) {
-                newVal = newVal.trim().split( /\s+/ ).map( n => parseFloat(n)/255 )
-                this.threeObject3d.color = new Color( ...newVal )
-            }
-            // otherwise a CSS-style color string
-            else {
-                this.threeObject3d.color = new Color( newVal )
-            }
-
+            this.processColorValue( newVal )
             this._needsToBeRendered()
-
         }
 
         else if ( attr == 'intensity' ) {
             this.processNumberValue( attr, newVal )
             this._needsToBeRendered()
         }
+    }
+
+    processColorValue( value, context ) {
+        context = context || this.threeObject3d
+        context.color = new Color( value )
     }
 
     processNumberValue( attr, value, context ) {
