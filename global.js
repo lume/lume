@@ -76,6 +76,8 @@ var core = module.exports = { version: '2.5.3' };
 if (typeof __e == 'number') { __e = core; } // eslint-disable-line no-undef
 });
 
+var _core_1 = _core.version;
+
 var _aFunction = function (it) {
   if (typeof it != 'function') { throw TypeError(it + ' is not a function!'); }
   return it;
@@ -270,8 +272,6 @@ module.exports = { "default": getPrototypeOf$1, __esModule: true };
 var _Object$getPrototypeOf = unwrapExports(getPrototypeOf);
 
 var classCallCheck = createCommonjsModule(function (module, exports) {
-"use strict";
-
 exports.__esModule = true;
 
 exports.default = function (instance, Constructor) {
@@ -298,8 +298,6 @@ module.exports = { "default": defineProperty$1, __esModule: true };
 var _Object$defineProperty = unwrapExports(defineProperty);
 
 var createClass = createCommonjsModule(function (module, exports) {
-"use strict";
-
 exports.__esModule = true;
 
 
@@ -522,10 +520,6 @@ var _setToStringTag = function (it, tag, stat) {
   if (it && !_has(it = stat ? it : it.prototype, TAG)) { def(it, TAG, { configurable: true, value: tag }); }
 };
 
-'use strict';
-
-
-
 var IteratorPrototype = {};
 
 // 25.1.2.1.1 %IteratorPrototype%[@@iterator]()
@@ -535,16 +529,6 @@ var _iterCreate = function (Constructor, NAME, next) {
   Constructor.prototype = _objectCreate(IteratorPrototype, { next: _propertyDesc(1, next) });
   _setToStringTag(Constructor, NAME + ' Iterator');
 };
-
-'use strict';
-
-
-
-
-
-
-
-
 
 var ITERATOR = _wks('iterator');
 var BUGGY = !([].keys && 'next' in [].keys()); // Safari has buggy iterators w/o `next`
@@ -607,7 +591,6 @@ var _iterDefine = function (Base, NAME, Constructor, next, DEFAULT, IS_SET, FORC
   return methods;
 };
 
-'use strict';
 var $at = _stringAt(true);
 
 // 21.1.3.27 String.prototype[@@iterator]()
@@ -628,12 +611,6 @@ _iterDefine(String, 'String', function (iterated) {
 var _iterStep = function (done, value) {
   return { value: value, done: !!done };
 };
-
-'use strict';
-
-
-
-
 
 // 22.1.3.4 Array.prototype.entries()
 // 22.1.3.13 Array.prototype.keys()
@@ -746,6 +723,12 @@ var meta = module.exports = {
 };
 });
 
+var _meta_1 = _meta.KEY;
+var _meta_2 = _meta.NEED;
+var _meta_3 = _meta.fastKey;
+var _meta_4 = _meta.getWeak;
+var _meta_5 = _meta.onFreeze;
+
 var defineProperty$3 = _objectDp.f;
 var _wksDefine = function (name) {
   var $Symbol = _core.Symbol || (_core.Symbol = _library ? {} : _global.Symbol || {});
@@ -837,7 +820,6 @@ var _objectGopd = {
 	f: f$6
 };
 
-'use strict';
 // ECMAScript 6 symbols shim
 
 
@@ -1087,8 +1069,6 @@ module.exports = { "default": symbol$1, __esModule: true };
 var _Symbol = unwrapExports(symbol);
 
 var _typeof_1 = createCommonjsModule(function (module, exports) {
-"use strict";
-
 exports.__esModule = true;
 
 
@@ -1113,8 +1093,6 @@ exports.default = typeof _symbol2.default === "function" && _typeof(_iterator2.d
 unwrapExports(_typeof_1);
 
 var possibleConstructorReturn = createCommonjsModule(function (module, exports) {
-"use strict";
-
 exports.__esModule = true;
 
 
@@ -1187,8 +1165,6 @@ module.exports = { "default": create$3, __esModule: true };
 unwrapExports(create$1);
 
 var inherits = createCommonjsModule(function (module, exports) {
-"use strict";
-
 exports.__esModule = true;
 
 
@@ -5724,8 +5700,6 @@ var utils = Object.freeze({
 	simpleExtend: simpleExtend
 });
 
-"use strict";
-
 // Polyfill for Function.name on browsers that do not support it (IE):
 // See: http://stackoverflow.com/questions/6903762/function-name-not-supported-in-ie
 if (!(function f() {}).name) {
@@ -5984,9 +5958,6 @@ var Molecule = function (_RenderNode) {
 }(RenderNode_1);
 
 var forLength_1 = createCommonjsModule(function (module, exports) {
-"use strict";
-
-// loop for a given length, performing action each loop iteration. action receives the index of the loop.
 exports.forLength = forLength;
 function forLength(length, action) {
     for (var i = 0; i < length; i += 1) {
@@ -5999,6 +5970,7 @@ exports.__esModule = true;
 });
 
 var forLength = unwrapExports(forLength_1);
+var forLength_2 = forLength_1.forLength;
 
 /*
  * LICENSE
@@ -6345,6 +6317,8 @@ var Grid = function (_Molecule) {
         var matrix = context.transform;
         var opacity = context.opacity;
         var origin = context.origin;
+        var size = context.size;
+
         if (!matrix && this._matrix) {
             this._matrix = null;
             this._opacity = 0;
@@ -7251,8 +7225,6 @@ module.exports = { "default": getOwnPropertyDescriptor$1, __esModule: true };
 var _Object$getOwnPropertyDescriptor = unwrapExports(getOwnPropertyDescriptor);
 
 var get$1 = createCommonjsModule(function (module, exports) {
-"use strict";
-
 exports.__esModule = true;
 
 
@@ -7294,8 +7266,6 @@ exports.default = function get(object, property, receiver) {
 var _get = unwrapExports(get$1);
 
 var utils$1 = createCommonjsModule(function (module, exports) {
-'use strict';
-
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
@@ -7443,10 +7413,13 @@ var findClassNames = exports.findClassNames = function () {
 });
 
 unwrapExports(utils$1);
+var utils_1 = utils$1.clone;
+var utils_2 = utils$1.isEmptyObject;
+var utils_3 = utils$1.toCSS;
+var utils_4 = utils$1.uid;
+var utils_5 = utils$1.findClassNames;
 
 var Rule_1 = createCommonjsModule(function (module, exports) {
-'use strict';
-
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
@@ -7646,8 +7619,6 @@ exports.default = Rule;
 unwrapExports(Rule_1);
 
 var SimpleRule_1 = createCommonjsModule(function (module, exports) {
-'use strict';
-
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
@@ -7710,8 +7681,6 @@ exports.default = SimpleRule;
 unwrapExports(SimpleRule_1);
 
 var KeyframeRule_1 = createCommonjsModule(function (module, exports) {
-'use strict';
-
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
@@ -7794,8 +7763,6 @@ exports.default = KeyframeRule;
 unwrapExports(KeyframeRule_1);
 
 var ConditionalRule_1 = createCommonjsModule(function (module, exports) {
-'use strict';
-
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
@@ -7897,8 +7864,6 @@ exports.default = ConditionalRule;
 unwrapExports(ConditionalRule_1);
 
 var FontFaceRule = createCommonjsModule(function (module, exports) {
-'use strict';
-
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
@@ -7961,8 +7926,6 @@ exports.default = Rule;
 unwrapExports(FontFaceRule);
 
 var createRule_1 = createCommonjsModule(function (module, exports) {
-'use strict';
-
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
@@ -8035,8 +7998,6 @@ function createRule(selector) {
 unwrapExports(createRule_1);
 
 var DomRenderer_1 = createCommonjsModule(function (module, exports) {
-'use strict';
-
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
@@ -8184,8 +8145,6 @@ exports.default = DomRenderer;
 unwrapExports(DomRenderer_1);
 
 var VirtualRenderer_1 = createCommonjsModule(function (module, exports) {
-"use strict";
-
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
@@ -8240,8 +8199,6 @@ exports.default = VirtualRenderer;
 unwrapExports(VirtualRenderer_1);
 
 var findRenderer_1 = createCommonjsModule(function (module, exports) {
-'use strict';
-
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
@@ -8277,8 +8234,6 @@ function findRenderer() {
 unwrapExports(findRenderer_1);
 
 var StyleSheet_1 = createCommonjsModule(function (module, exports) {
-'use strict';
-
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
@@ -8596,8 +8551,6 @@ exports.default = StyleSheet;
 unwrapExports(StyleSheet_1);
 
 var PluginsRegistry_1 = createCommonjsModule(function (module, exports) {
-"use strict";
-
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
@@ -8660,8 +8613,6 @@ exports.default = PluginsRegistry;
 unwrapExports(PluginsRegistry_1);
 
 var SheetsRegistry_1 = createCommonjsModule(function (module, exports) {
-'use strict';
-
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
@@ -8722,8 +8673,6 @@ exports.default = SheetsRegistry;
 unwrapExports(SheetsRegistry_1);
 
 var Jss_1 = createCommonjsModule(function (module, exports) {
-'use strict';
-
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
@@ -8865,8 +8814,6 @@ exports.default = Jss;
 unwrapExports(Jss_1);
 
 var lib = createCommonjsModule(function (module, exports) {
-'use strict';
-
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
@@ -8906,10 +8853,11 @@ exports.default = jss;
 });
 
 var Jss = unwrapExports(lib);
+var lib_1 = lib.Rule;
+var lib_2 = lib.StyleSheet;
+var lib_3 = lib.Jss;
 
 var lib$1 = createCommonjsModule(function (module, exports) {
-'use strict';
-
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
@@ -8957,8 +8905,6 @@ function jssNested() {
 var jssNested = unwrapExports(lib$1);
 
 var lib$2 = createCommonjsModule(function (module, exports) {
-'use strict';
-
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
@@ -9006,8 +8952,6 @@ var jssExtend = unwrapExports(lib$2);
 var lib$3 = createCommonjsModule(function (module, exports) {
 // Don't automatically add 'px' to these possibly-unitless properties.
 // Borrowed from jquery.
-'use strict';
-
 exports.__esModule = true;
 exports['default'] = jssPx;
 var cssNumber = {
@@ -9071,8 +9015,6 @@ var module$1 = Object.freeze({
 var _isInBrowser = ( module$1 && isBrowser ) || module$1;
 
 var prefix = createCommonjsModule(function (module, exports) {
-'use strict';
-
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
@@ -9125,8 +9067,6 @@ exports['default'] = { js: js, css: css };
 unwrapExports(prefix);
 
 var camelize_1 = createCommonjsModule(function (module, exports) {
-'use strict';
-
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
@@ -9151,8 +9091,6 @@ function toUpper(match, c) {
 unwrapExports(camelize_1);
 
 var supportedProperty_1 = createCommonjsModule(function (module, exports) {
-'use strict';
-
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
@@ -9228,8 +9166,6 @@ function supportedProperty(prop) {
 unwrapExports(supportedProperty_1);
 
 var supportedValue_1 = createCommonjsModule(function (module, exports) {
-'use strict';
-
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
@@ -9307,8 +9243,6 @@ function supportedValue(property, value) {
 unwrapExports(supportedValue_1);
 
 var lib$5 = createCommonjsModule(function (module, exports) {
-'use strict';
-
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
@@ -9346,10 +9280,11 @@ exports.supportedValue = _supportedValue2['default'];
 });
 
 unwrapExports(lib$5);
+var lib_1$1 = lib$5.supportedValue;
+var lib_2$1 = lib$5.supportedProperty;
+var lib_3$1 = lib$5.prefix;
 
 var lib$4 = createCommonjsModule(function (module, exports) {
-'use strict';
-
 exports.__esModule = true;
 exports['default'] = jssVendorPrefixer;
 
@@ -9400,8 +9335,6 @@ module.exports = exports['default'];
 var jssVendorPrefixer = unwrapExports(lib$4);
 
 var lib$6 = createCommonjsModule(function (module, exports) {
-'use strict';
-
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
@@ -9458,8 +9391,6 @@ exports.default = function () {
 var jssCamelCase = unwrapExports(lib$6);
 
 var lib$7 = createCommonjsModule(function (module, exports) {
-'use strict';
-
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
@@ -9981,8 +9912,6 @@ jss.use(jssPropsSort());
     var GenericSync_1 = GenericSync;
 
 var callAfter_1 = createCommonjsModule(function (module, exports) {
-"use strict";
-
 exports.callAfter = callAfter;
 function callAfter(times, callback) {
     var count = 0;
@@ -10000,6 +9929,7 @@ exports.__esModule = true;
 });
 
 var callAfter = unwrapExports(callAfter_1);
+var callAfter_2 = callAfter_1.callAfter;
 
 /*
  * LICENSE
@@ -10604,9 +10534,6 @@ var PushMenuLayout = function (_Molecule) {
     return PushMenuLayout;
 }(Molecule);
 
-'use strict';
-
-
 var HAS_INSTANCE = _wks('hasInstance');
 var FunctionProto = Function.prototype;
 // 19.2.3.6 Function.prototype[@@hasInstance](V)
@@ -10889,7 +10816,6 @@ var _microtask = function () {
   };
 };
 
-'use strict';
 // 25.4.1.5 NewPromiseCapability(C)
 
 
@@ -10936,11 +10862,6 @@ var _redefineAll = function (target, src, safe) {
   } return target;
 };
 
-'use strict';
-
-
-
-
 var SPECIES$1 = _wks('species');
 
 var _setSpecies = function (KEY) {
@@ -10973,17 +10894,6 @@ var _iterDetect = function (exec, skipClosing) {
   } catch (e) { /* empty */ }
   return safe;
 };
-
-'use strict';
-
-
-
-
-
-
-
-
-
 
 var task = _task.set;
 var microtask = _microtask();
@@ -11251,14 +11161,6 @@ _export(_export.S + _export.F * !(USE_NATIVE$1 && _iterDetect(function (iter) {
   }
 });
 
-// https://github.com/tc39/proposal-promise-finally
-'use strict';
-
-
-
-
-
-
 _export(_export.P + _export.R, 'Promise', { 'finally': function (onFinally) {
   var C = _speciesConstructor(this, _core.Promise || _global.Promise);
   var isFunction = typeof onFinally == 'function';
@@ -11272,7 +11174,6 @@ _export(_export.P + _export.R, 'Promise', { 'finally': function (onFinally) {
   );
 } });
 
-'use strict';
 // https://github.com/tc39/proposal-promise-try
 
 
@@ -11934,7 +11835,6 @@ module.exports = { "default": is$2, __esModule: true };
 
 var _Object$is = unwrapExports(is$1);
 
-'use strict';
 // 19.1.2.1 Object.assign(target, source, ...)
 
 
@@ -11985,8 +11885,6 @@ module.exports = { "default": assign$1, __esModule: true };
 var _Object$assign = unwrapExports(assign);
 
 var set$1 = createCommonjsModule(function (module, exports) {
-"use strict";
-
 exports.__esModule = true;
 
 
@@ -12029,7 +11927,6 @@ var _validateCollection = function (it, TYPE) {
   return it;
 };
 
-'use strict';
 var dP$2 = _objectDp.f;
 
 
@@ -12097,7 +11994,7 @@ var _collectionStrong = {
       },
       // 23.2.3.6 Set.prototype.forEach(callbackfn, thisArg = undefined)
       // 23.1.3.5 Map.prototype.forEach(callbackfn, thisArg = undefined)
-      forEach: function forEach(callbackfn /* , that = undefined */) {
+      forEach: function forEach(callbackfn /*  that = undefined */) {
         var this$1 = this;
 
         _validateCollection(this, NAME);
@@ -12243,17 +12140,6 @@ var _arrayMethods = function (TYPE, $create) {
   };
 };
 
-'use strict';
-
-
-
-
-
-
-
-
-
-
 var dP$3 = _objectDp.f;
 var each = _arrayMethods(0);
 
@@ -12303,9 +12189,6 @@ var _collection = function (NAME, wrapper, methods, common, IS_MAP, IS_WEAK) {
   return C;
 };
 
-'use strict';
-
-
 var MAP = 'Map';
 
 // 23.1 Map Objects
@@ -12344,7 +12227,6 @@ var _collectionToJson = function (NAME) {
 
 _export(_export.P + _export.R, 'Map', { toJSON: _collectionToJson('Map') });
 
-'use strict';
 // https://tc39.github.io/proposal-setmap-offrom/
 
 
@@ -12362,7 +12244,6 @@ var _setCollectionOf = function (COLLECTION) {
 // https://tc39.github.io/proposal-setmap-offrom/#sec-map.of
 _setCollectionOf('Map');
 
-'use strict';
 // https://tc39.github.io/proposal-setmap-offrom/
 
 
@@ -12370,7 +12251,7 @@ _setCollectionOf('Map');
 
 
 var _setCollectionFrom = function (COLLECTION) {
-  _export(_export.S, COLLECTION, { from: function from(source /* , mapFn, thisArg */) {
+  _export(_export.S, COLLECTION, { from: function from(source /*  mapFn, thisArg */) {
     var mapFn = arguments[1];
     var mapping, A, n, cb;
     _aFunction(this);
@@ -12564,8 +12445,6 @@ var XYZValues = function (_Observable) {
 }(Observable);
 
 var _extends = createCommonjsModule(function (module, exports) {
-"use strict";
-
 exports.__esModule = true;
 
 
@@ -12593,28 +12472,14 @@ exports.default = _assign2.default || function (target) {
 
 var _extends$1 = unwrapExports(_extends);
 
-'use strict';
-
-
-
 var _createProperty = function (object, index, value) {
   if (index in object) { _objectDp.f(object, index, _propertyDesc(0, value)); }
   else { object[index] = value; }
 };
 
-'use strict';
-
-
-
-
-
-
-
-
-
 _export(_export.S + _export.F * !_iterDetect(function (iter) {  }), 'Array', {
   // 22.1.2.1 Array.from(arrayLike, mapfn = undefined, thisArg = undefined)
-  from: function from(arrayLike /* , mapfn = undefined, thisArg = undefined */) {
+  from: function from(arrayLike /*  mapfn = undefined, thisArg = undefined */) {
     var O = _toObject(arrayLike);
     var C = typeof this == 'function' ? this : Array;
     var aLen = arguments.length;
@@ -12738,22 +12603,22 @@ function createChildObserver() {
             for (var l$2 = removedNodes.length, i$2 = 0; i$2 < l$2; i$2 += 1) { weights.set(removedNodes[i$2], (weights.get(removedNodes[i$2]) || 0) - 1); }
         }
 
-        for (var i$3 = 0, list = _Array$from(weightsPerTarget); i$3 < list.length; i$3 += 1) {
-            var ref = list[i$3];
-            var target = ref[0];
-            var weights$1 = ref[1];
+        for (var i$4 = 0, list$1 = _Array$from(weightsPerTarget); i$4 < list$1.length; i$4 += 1) {
+            var ref$2 = list$1[i$4];
+            var target = ref$2[0];
+            var weights$1 = ref$2[1];
 
-            var ref$1 = childObservationHandlers.get(target);
-            var onConnect = ref$1.onConnect;
-            var onDisconnect = ref$1.onDisconnect;
+            var ref = childObservationHandlers.get(target);
+            var onConnect = ref.onConnect;
+            var onDisconnect = ref.onDisconnect;
 
-            for (var i$4 = 0, list$1 = _Array$from(weights$1); i$4 < list$1.length; i$4 += 1) {
+            for (var i$3 = 0, list = _Array$from(weights$1); i$3 < list.length; i$3 += 1) {
                 // If the number of times a child was added is greater than the
                 // number of times it was removed, then the net result is that
                 // it was added, so we call onConnect just once.
-                var ref$2 = list$1[i$4];
-                var node = ref$2[0];
-                var weight = ref$2[1];
+                var ref$1 = list[i$3];
+                var node = ref$1[0];
+                var weight = ref$1[1];
 
                 if (weight > 0 && typeof onConnect == 'function') { onConnect.call(target, node); }
 
@@ -13112,8 +12977,6 @@ var runtime = createCommonjsModule(function (module) {
  */
 
 !(function(global) {
-  "use strict";
-
   var Op = Object.prototype;
   var hasOwn = Op.hasOwnProperty;
   var undefined; // More compressible than void 0.
@@ -13882,8 +13745,6 @@ if (hadRuntime) {
 var regenerator = runtimeModule;
 
 var asyncToGenerator = createCommonjsModule(function (module, exports) {
-"use strict";
-
 exports.__esModule = true;
 
 
@@ -13925,8 +13786,6 @@ exports.default = function (fn) {
 unwrapExports(asyncToGenerator);
 
 var documentReady = createCommonjsModule(function (module, exports) {
-'use strict';
-
 Object.defineProperty(exports, "__esModule", {
     value: true
 });
@@ -13993,8 +13852,6 @@ exports.default = function () {
 });
 
 var documentReady$1 = unwrapExports(documentReady);
-
-'use strict';
 
 var getWeak = _meta.getWeak;
 
@@ -14081,7 +13938,6 @@ var _collectionWeak = {
 };
 
 var es6_weakMap = createCommonjsModule(function (module) {
-'use strict';
 var each = _arrayMethods(0);
 
 
@@ -14217,7 +14073,6 @@ if ( Object.assign === undefined ) {
 
 		Object.assign = function ( target ) {
 
-			'use strict';
 			var arguments$1 = arguments;
 
 
@@ -46367,7 +46222,7 @@ DiscreteInterpolant.prototype = Object.assign( Object.create( Interpolant.protot
 
 	constructor: DiscreteInterpolant,
 
-	interpolate_: function ( i1 /*, t0, t, t1 */ ) {
+	interpolate_: function ( i1 /* t0, t, t1 */ ) {
 
 		return this.copySampleValue_( i1 - 1 );
 
@@ -51075,13 +50930,7 @@ Object.assign( Font.prototype, {
 								cpx0 = laste.x;
 								cpy0 = laste.y;
 
-								for ( var i2 = 1; i2 <= divisions; i2 ++ ) {
-
-									var t = i2 / divisions;
-									QuadraticBezier( t, cpx0, cpx1, cpx );
-									QuadraticBezier( t, cpy0, cpy1, cpy );
-
-								}
+								
 
 							}
 
@@ -51105,13 +50954,7 @@ Object.assign( Font.prototype, {
 								cpx0 = laste.x;
 								cpy0 = laste.y;
 
-								for ( var i2 = 1; i2 <= divisions; i2 ++ ) {
-
-									var t = i2 / divisions;
-									CubicBezier( t, cpx0, cpx1, cpx2, cpx );
-									CubicBezier( t, cpy0, cpy1, cpy2, cpy );
-
-								}
+								
 
 							}
 
@@ -57562,7 +57405,7 @@ Object.assign( Matrix3.prototype, {
 		console.error( 'THREE.Matrix3: .multiplyVector3Array() has been removed.' );
 
 	},
-	applyToBuffer: function ( buffer /*, offset, length */ ) {
+	applyToBuffer: function ( buffer /* offset, length */ ) {
 
 		console.warn( 'THREE.Matrix3: .applyToBuffer() has been removed. Use matrix.applyToBufferAttribute( attribute ) instead.' );
 		return this.applyToBufferAttribute( buffer );
@@ -57668,7 +57511,7 @@ Object.assign( Matrix4.prototype, {
 		console.error( 'THREE.Matrix4: .rotateByAxis() has been removed.' );
 
 	},
-	applyToBuffer: function ( buffer /*, offset, length */ ) {
+	applyToBuffer: function ( buffer /* offset, length */ ) {
 
 		console.warn( 'THREE.Matrix4: .applyToBuffer() has been removed. Use matrix.applyToBufferAttribute( attribute ) instead.' );
 		return this.applyToBufferAttribute( buffer );
@@ -59669,9 +59512,6 @@ var Transformable = TransformableMixin(function () {
 }());
 Transformable.mixin = TransformableMixin;
 
-'use strict';
-
-
 var SET = 'Set';
 
 // 23.2 Set Objects
@@ -59777,10 +59617,6 @@ var styles = _extends$1({}, styles$1, {
     //perspectiveOrigin: '25%',
 });
 
-'use strict';
-
-
-
 var arraySlice = [].slice;
 var factories = {};
 
@@ -59792,7 +59628,7 @@ var construct$3 = function (F, len, args) {
   } return factories[len](F, args);
 };
 
-var _bind = Function.bind || function bind(that /* , ...args */) {
+var _bind = Function.bind || function bind(that /*  ...args */) {
   var fn = _aFunction(this);
   var partArgs = arraySlice.call(arguments, 1);
   var bound = function (/* args... */) {
@@ -59824,7 +59660,7 @@ var ARGS_BUG = !_fails(function () {
 });
 
 _export(_export.S + _export.F * (NEW_TARGET_BUG || ARGS_BUG), 'Reflect', {
-  construct: function construct(Target, args /* , newTarget */) {
+  construct: function construct(Target, args /*  newTarget */) {
     _aFunction(Target);
     _anObject(args);
     var newTarget = arguments.length < 3 ? Target : _aFunction(arguments[2]);
@@ -59979,14 +59815,14 @@ function DefaultBehaviorsMixin(ElementClass) {
                         // if defaultBehaviors is an array, use default logic to add
                         // behaviors that aren't already added.
                         if (defaultBehaviors instanceof Array) {
-                            for (var i = 0, list = defaultBehaviors; i < list.length; i += 1) {
+                            for (var i$1 = 0, list$1 = defaultBehaviors; i$1 < list$1.length; i$1 += 1) {
 
-                                var defaultBehaviorName = list[i];
+                                var defaultBehaviorName = list$1[i$1];
 
                                 var hasBehavior = false;
 
-                                for (var i$1 = 0, list$1 = initialBehaviorNames; i$1 < list$1.length; i$1 += 1) {
-                                    var initialBehaviorName = list$1[i$1];
+                                for (var i = 0, list = initialBehaviorNames; i < list.length; i += 1) {
+                                    var initialBehaviorName = list[i];
 
                                     if (defaultBehaviorName == initialBehaviorName) {
                                         hasBehavior = true;
@@ -60759,6 +60595,10 @@ function initDeclarativeBase() {
                 this.threeObject3d.add(mesh);
 
                 this._updateDOMPlaneOnSizeChange = function (ref) {
+                    var x = ref.x;
+                    var y = ref.y;
+                    var z = ref.z;
+
                     this$1._threeDOMPlane.geometry.dispose();
                     this$1._threeDOMPlane.geometry = this$1._createDOMPlaneGeometry();
                 };
@@ -60957,8 +60797,6 @@ function proxyGettersSetters(SourceClass, TargetClass) {
 }
 
 var sleep_1 = createCommonjsModule(function (module, exports) {
-"use strict";
-
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
@@ -61962,6 +61800,8 @@ function initImperativeBase() {
     ImperativeBase.mixin = ImperativeBaseMixin;
 }
 
+var radiansPerDegree = 1 / 360 * 2 * Math.PI;
+
 initImperativeBase();
 
 var instanceofSymbol = _Symbol('instanceofSymbol');
@@ -62509,8 +62349,6 @@ var HTMLPushPaneLayout = function (_HTMLNode) {
 }(HTMLNode);
 
 (function () {
-'use strict';
-
 var forEach = Array.prototype.forEach;
 
 var CustomAttributeRegistry = function CustomAttributeRegistry(ownerDocument){
@@ -63254,6 +63092,10 @@ var BaseGeometryBehavior = function (_BaseMeshBehavior) {
                         if (!$await_1) { return $return(); }
 
                         this._updateGeometryOnSizeChange = function (ref) {
+                            var x = ref.x;
+                            var y = ref.y;
+                            var z = ref.z;
+
                             this$1.setMeshComponent(element, 'geometry', this$1.createComponent(element));
                         };
                         element.on('sizechange', this._updateGeometryOnSizeChange);
@@ -64165,7 +64007,7 @@ var index$3 = Object.freeze({
 	PushPaneLayout: PushPaneLayout
 });
 
-var version = '18.0.1';
+var version = '18.0.2';
 
 exports.Calendar = Calendar;
 exports.DoubleSidedPlane = DoubleSidedPlane;
