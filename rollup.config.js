@@ -2,7 +2,7 @@ const commonjs    = require('rollup-plugin-commonjs')
 const nodeResolve = require('rollup-plugin-node-resolve')
 const buble       = require('rollup-plugin-buble')
 const babel       = require('rollup-plugin-babel')
-//const babili      = require('rollup-plugin-babili')
+//const babelMinify      = require('rollup-plugin-babel-minify')
 
 // using `require` because `import` makes it utterly fail.
 const babelConfig = require('./babel.config')
@@ -10,8 +10,8 @@ const bubleConfig = require('./buble.config')
 
 module.exports = {
     input: 'src/index.js',
-    name: 'infamous',
     output: {
+        name: 'infamous',
         file: 'global.js',
         format: 'iife',
     },
@@ -39,7 +39,7 @@ module.exports = {
         })),
         buble(bubleConfig),
 
-        //babili({
+        //babelMinify({
             //comments: false,
         //}),
     ]
