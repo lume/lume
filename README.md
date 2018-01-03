@@ -2,7 +2,7 @@ infamous
 [![All Contributors](https://img.shields.io/badge/all_contributors-2-orange.svg?style=flat-square)](#contributors)
 ========
 
-Create CSS3D/WebGL applications declaratively with HTML.
+Create 3D CSS+WebGL apps declaratively with HTML.
 
 Visit the [site](http://infamous.io), discuss in the [forums](http://forums.infamous.io).
 
@@ -16,13 +16,14 @@ Elements](https://developers.google.com/web/fundamentals/architecture/building-c
 that the browser understands, for defining 2D or 3D scenes rendered with CSS3D,
 WebGL, or both mixed together.
 
-If you prefer imperative JavaScript, you can also use the JavaScript-only API.
+If you prefer imperative JavaScript, you can also use the imperative JavaScript
+API.
 
 Infamous' "mixed mode" let's us combine traditional HTML elements with new ones
-that render to WebGL, which means we can render traditional elements and 3D
-objects like spheres and cubes (and soon any 3D model) together in the same 3D
-space (with lighting and shadow not just on the WebGL objects, but on the DOM
-elements too!).
+that render to WebGL (powered by Three.js), which means we can render
+traditional elements and 3D objects like spheres and cubes (and soon any 3D
+model) together in the same 3D space (with lighting and shadow not just on the
+WebGL objects, but on the DOM elements too!).
 
 Unlike traditional CSS `box-shadow` which is flat and boring, with Infamous we
 can give UIs __*real*__ shadows! [See for
@@ -38,57 +39,25 @@ regardless of which view layer you prefer. This makes it possible for you write
 [Ember.js](https://www.emberjs.com), or even the great
 [jQuery](http://jquery.com).
 
-Notes
------
-
-- WebGL rendering is currently in "experimental" mode because the API isn't
-  entirely finished, though many parts of it are stable.
-  - This requires the `experimental-webgl="true"` attribute on root Scene
-    elements, otherwise only CSS3D rendering is enabled by default.
-- CSS3D rendering is stable.
-- WebGL rendering is currently powered by [Three.js](https://threejs.org). All
-  elements have a `.threeObject3d` property that you can access if you want to
-  do custom things with the Three.js parts.
-- Augmented and virtual reality modes (AR, VR) are not yet implemented, coming soon!
-  - Implementing this should be a simple matter of taking advantage of builtin
-    VR mode that ships with Three.js.
-  - CSS3D doesn't support WebVR (at least not yet), therefore the only form of
-    AR/VR that we can achieve with CSS3D rendering will be the type that splits
-    the web page into two halves (one for each eye), which means CSS3D AR/VR
-    will work only on headsets that carry mobile devices like Google Cardboard
-    or Google Daydream. It may be possible to maps halves of a web page to
-    specific eyes on other devices like Oculus, but this is a little way off.
-- CSS3D objects can not be bent or distorted in 3D space at the moment (Adobe's
-  CSS Shaders proposal was rejected due to security concerns), meaning
-  traditional HTML elements can currently only be rendered as flat planes and
-  nothing else.
-  <!--
-  - However, in the near future, we might be able to expose the hacky utility
-    of tools like html2canvas via our API in order to manipulate textures
-    generated from HTML content within WebGL directly. This has limitations,
-    and some CSS styling may not work.
-  -->
-
 Live Examples
 -------------
 
-- [DOM+WebGL "Mixed Mode" 2](https://codepen.io/trusktr/pen/rpaQqK)
+- [HTML Buttons with Real Shadow!](https://codepen.io/trusktr/pen/rpegZR)
     - The 3D scene is defined using HTML
-    - Minimal JavaScript used for animation
-    - Rendering: experimental WebGL and CSS3D together, "Mixed Mode". Regular
-      DOM elements (CSS3D) and WebGL objects are rendered together in the same
-      3D space with lighting and shadow
-- [DOM+WebGL "Mixed Mode" 1](https://codepen.io/trusktr/pen/OzJJJN)
-    - Same description as the previous example.
+    - A "Picked" pen on CodePen!
+    - JavaScript used for event handling and animating with Tween.js.
+    - Rendering: experimental WebGL (powered by Three.js) and CSS3D, blended together in "mixed mode", where
+      regular DOM elements (CSS3D) and WebGL objects are rendered together in
+      the same 3D space with lighting and shadow
 - [WebGL Cube with Lights](https://codepen.io/trusktr/pen/bYKXLd)
     - The 3D scene is defined with declarative HTML
     - Minimal JavaScript used for animation
-    - Rendering: experimental WebGL
+    - Rendering: experimental WebGL (powered by Three.js)
 - [Polydance](https://trusktr.io/polydance)
     - Presented at 3DWebFest 2017 in collaboration with [Anastasiia Vedernikova](https://vnastasia.myportfolio.com)
     - The 3D scene is defined with declarative HTML
     - The HTML is manipulated with [Vue.js](https://vuejs.org) ([see the source code](https://github.com/trusktr/trusktr.io/blob/master/meteor-app/client/imports/apps/polydance.vue))
-    - Rendering: experimental WebGL
+    - Rendering: experimental WebGL (powered by an earlier webgl-from-scratch implementation)
 - [Imperative Seed](https://codepen.io/trusktr/pen/yoWQOe)
     - The 3D scene is defined and animated with imperative JavaScript
     - Rendering: CSS3D
@@ -102,7 +71,7 @@ Live Examples
 - [Geometric Rotation](https://trusktr.io/geometricRotation)
     - The 3D scene is defined with declarative HTML
     - The HTML is manipulated with [React](https://facebook.github.io/react) ([see the source code](https://github.com/trusktr/trusktr.io/blob/master/meteor-app/client/imports/apps/geometricRotation.js))
-    - Rendering: experimental WebGL
+    - Rendering: experimental WebGL (powered by an earlier webgl-from-scratch implementation)
 - [DOM Buggy](http://fiddle.jshell.net/trusktr/ymonmo70/15/embedded/result,html,css,js)
     - The 3D scene is defined with declarative HTML
     - The HTML is manipulated with plain JS.
@@ -373,11 +342,45 @@ webpack
 Now use `File > Open` in your browser to open the `index.html` file and see the
 result.
 
+Notes
+-----
+
+- WebGL rendering is currently in "experimental" mode because the API isn't
+  entirely finished, though many parts of it are stable.
+  - This requires the `experimental-webgl="true"` attribute on root Scene
+    elements, otherwise only CSS3D rendering is enabled by default.
+- CSS3D rendering is stable.
+- WebGL rendering is currently powered by [Three.js](https://threejs.org). All
+  elements have a `.threeObject3d` property that you can access if you want to
+  do custom things with the Three.js parts.
+- Augmented and virtual reality modes (AR, VR) are not yet implemented, coming soon!
+  - Implementing this should be a simple matter of taking advantage of builtin
+    VR mode that ships with Three.js.
+  - CSS3D doesn't support WebVR (at least not yet), therefore the only form of
+    AR/VR that we can achieve with CSS3D rendering will be the type that splits
+    the web page into two halves (one for each eye), which means CSS3D AR/VR
+    will work only on headsets that carry mobile devices like Google Cardboard
+    or Google Daydream. It may be possible to maps halves of a web page to
+    specific eyes on other devices like Oculus, but this is a little way off.
+- CSS3D objects can not be bent or distorted in 3D space at the moment (Adobe's
+  CSS Shaders proposal was rejected due to security concerns), meaning
+  traditional HTML elements can currently only be rendered as flat planes and
+  nothing else.
+  <!--
+  - However, in the near future, we might be able to expose the hacky utility
+    of tools like html2canvas via our API in order to manipulate textures
+    generated from HTML content within WebGL directly. This has limitations,
+    and some CSS styling may not work.
+  -->
+
 ---
 
 Testing powered by:
+-------------------
 
 [![BrowserStack](https://cloud.githubusercontent.com/assets/297678/18807024/f6a2ed04-81f1-11e6-94d7-b4205ed77db8.png)](https://www.browserstack.com/)
+
+(Tests will be added to the repo soon.)
 
 ## Contributors
 
