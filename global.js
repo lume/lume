@@ -72,7 +72,7 @@ var _objectGpo = Object.getPrototypeOf || function (O) {
 };
 
 var _core = createCommonjsModule(function (module) {
-var core = module.exports = { version: '2.5.0' };
+var core = module.exports = { version: '2.5.3' };
 if (typeof __e == 'number') { __e = core; } // eslint-disable-line no-undef
 });
 
@@ -568,7 +568,7 @@ var _iterDefine = function (Base, NAME, Constructor, next, DEFAULT, IS_SET, FORC
   var VALUES_BUG = false;
   var proto = Base.prototype;
   var $native = proto[ITERATOR] || proto[FF_ITERATOR] || DEFAULT && proto[DEFAULT];
-  var $default = $native || getMethod(DEFAULT);
+  var $default = (!BUGGY && $native) || getMethod(DEFAULT);
   var $entries = DEFAULT ? !DEF_VALUES ? $default : getMethod('entries') : undefined;
   var $anyNative = NAME == 'Array' ? proto.entries || $native : $native;
   var methods, key, IteratorPrototype;
@@ -750,15 +750,6 @@ var defineProperty$3 = _objectDp.f;
 var _wksDefine = function (name) {
   var $Symbol = _core.Symbol || (_core.Symbol = _library ? {} : _global.Symbol || {});
   if (name.charAt(0) != '_' && !(name in $Symbol)) { defineProperty$3($Symbol, name, { value: _wksExt.f(name) }); }
-};
-
-var _keyof = function (object, el) {
-  var O = _toIobject(object);
-  var keys = _objectKeys(O);
-  var length = keys.length;
-  var index = 0;
-  var key;
-  while (length > index) { if (O[key = keys[index++]] === el) { return key; } }
 };
 
 var f$2 = Object.getOwnPropertySymbols;
@@ -1025,9 +1016,9 @@ _export(_export.S + _export.F * !USE_NATIVE, 'Symbol', {
       : SymbolRegistry[key] = $Symbol(key);
   },
   // 19.4.2.5 Symbol.keyFor(sym)
-  keyFor: function keyFor(key) {
-    if (isSymbol(key)) { return _keyof(SymbolRegistry, key); }
-    throw TypeError(key + ' is not a symbol!');
+  keyFor: function keyFor(sym) {
+    if (!isSymbol(sym)) { throw TypeError(sym + ' is not a symbol!'); }
+    for (var key in SymbolRegistry) { if (SymbolRegistry[key] === sym) { return key; } }
   },
   useSetter: function () { setter = true; },
   useSimple: function () { setter = false; }
@@ -1059,15 +1050,14 @@ $JSON && _export(_export.S + _export.F * (!USE_NATIVE || _fails(function () {
   stringify: function stringify(it) {
     var arguments$1 = arguments;
 
-    if (it === undefined || isSymbol(it)) { return; } // IE8 returns string on undefined
     var args = [it];
     var i = 1;
     var replacer, $replacer;
     while (arguments.length > i) { args.push(arguments$1[i++]); }
-    replacer = args[1];
-    if (typeof replacer == 'function') { $replacer = replacer; }
-    if ($replacer || !_isArray(replacer)) { replacer = function (key, value) {
-      if ($replacer) { value = $replacer.call(this, key, value); }
+    $replacer = replacer = args[1];
+    if (!_isObject(replacer) && it === undefined || isSymbol(it)) { return; } // IE8 returns string on undefined
+    if (!_isArray(replacer)) { replacer = function (key, value) {
+      if (typeof $replacer == 'function') { value = $replacer.call(this, key, value); }
       if (!isSymbol(value)) { return value; }
     }; }
     args[1] = replacer;
@@ -10862,8 +10852,8 @@ var _microtask = function () {
     notify = function () {
       process$2.nextTick(flush);
     };
-  // browsers with MutationObserver
-  } else if (Observer) {
+  // browsers with MutationObserver, except iOS Safari - https://github.com/zloirock/core-js/issues/339
+  } else if (Observer && !(_global.navigator && _global.navigator.standalone)) {
     var toggle = true;
     var node = document.createTextNode('');
     new Observer(flush).observe(node, { characterData: true }); // eslint-disable-line no-new
@@ -10931,6 +10921,8 @@ var _perform = function (exec) {
 };
 
 var _promiseResolve = function (C, x) {
+  _anObject(C);
+  if (_isObject(x) && x.constructor === C) { return x; }
   var promiseCapability = _newPromiseCapability.f(C);
   var resolve = promiseCapability.resolve;
   resolve(x);
@@ -11023,12 +11015,6 @@ var USE_NATIVE$1 = !!function () {
 }();
 
 // helpers
-var sameConstructor = _library ? function (a, b) {
-  // with library wrapper special case
-  return a === b || a === $Promise && b === Wrapper;
-} : function (a, b) {
-  return a === b;
-};
 var isThenable = function (it) {
   var then;
   return _isObject(it) && typeof (then = it.then) == 'function' ? then : false;
@@ -11097,14 +11083,7 @@ var onUnhandled = function (promise) {
   });
 };
 var isUnhandled = function (promise) {
-  if (promise._h == 1) { return false; }
-  var chain = promise._a || promise._c;
-  var i = 0;
-  var reaction;
-  while (chain.length > i) {
-    reaction = chain[i++];
-    if (reaction.fail || !isUnhandled(reaction.promise)) { return false; }
-  } return true;
+  return promise._h !== 1 && (promise._a || promise._c).length === 0;
 };
 var onHandleUnhandled = function (promise) {
   task.call(_global, function () {
@@ -11200,7 +11179,7 @@ if (!USE_NATIVE$1) {
     this.reject = _ctx($reject, promise, 1);
   };
   _newPromiseCapability.f = newPromiseCapability = function (C) {
-    return sameConstructor($Promise, C)
+    return C === $Promise || C === Wrapper
       ? new OwnPromiseCapability(C)
       : newGenericPromiseCapability(C);
   };
@@ -11224,9 +11203,7 @@ _export(_export.S + _export.F * !USE_NATIVE$1, PROMISE, {
 _export(_export.S + _export.F * (_library || !USE_NATIVE$1), PROMISE, {
   // 25.4.4.6 Promise.resolve(x)
   resolve: function resolve(x) {
-    // instanceof instead of internal slot check because we should fix it without replacement native Promise core
-    if (x instanceof $Promise && sameConstructor(x.constructor, this)) { return x; }
-    return _promiseResolve(this, x);
+    return _promiseResolve(_library && this === Wrapper ? $Promise : this, x);
   }
 });
 _export(_export.S + _export.F * !(USE_NATIVE$1 && _iterDetect(function (iter) {
@@ -12376,7 +12353,7 @@ var _setCollectionOf = function (COLLECTION) {
     var arguments$1 = arguments;
 
     var length = arguments.length;
-    var A = Array(length);
+    var A = new Array(length);
     while (length--) { A[length] = arguments$1[length]; }
     return new this(A);
   } });
@@ -13128,13 +13105,10 @@ var XYZNonNegativeValues = function (_XYZValues) {
 
 var runtime = createCommonjsModule(function (module) {
 /**
- * Copyright (c) 2014, Facebook, Inc.
- * All rights reserved.
+ * Copyright (c) 2014-present, Facebook, Inc.
  *
- * This source code is licensed under the BSD-style license found in the
- * https://raw.github.com/facebook/regenerator/master/LICENSE file. An
- * additional grant of patent rights can be found in the PATENTS file in
- * the same directory.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  */
 
 !(function(global) {
@@ -13317,10 +13291,6 @@ var runtime = createCommonjsModule(function (module) {
           resolve(result);
         }, reject);
       }
-    }
-
-    if (typeof global.process === "object" && global.process.domain) {
-      invoke = global.process.domain.bind(invoke);
     }
 
     var previousPromise;
@@ -13866,21 +13836,23 @@ var runtime = createCommonjsModule(function (module) {
     }
   };
 })(
-  // Among the various tricks for obtaining a reference to the global
-  // object, this seems to be the most reliable technique that does not
-  // use indirect eval (which violates Content Security Policy).
-  typeof commonjsGlobal === "object" ? commonjsGlobal :
-  typeof window === "object" ? window :
-  typeof self === "object" ? self : commonjsGlobal
+  // In sloppy mode, unbound `this` refers to the global object, fallback to
+  // Function constructor if we're in global strict mode. That is sadly a form
+  // of indirect eval which violates Content Security Policy.
+  (function() { return this })() || Function("return this")()
 );
 });
 
+/**
+ * Copyright (c) 2014-present, Facebook, Inc.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ */
+
 // This method of obtaining a reference to the global object needs to be
 // kept identical to the way it is obtained in runtime.js
-var g =
-  typeof commonjsGlobal === "object" ? commonjsGlobal :
-  typeof window === "object" ? window :
-  typeof self === "object" ? self : commonjsGlobal;
+var g = (function() { return this })() || Function("return this")();
 
 // Use `getOwnPropertyNames` because not all browsers support calling
 // `hasOwnProperty` on the global `self` object in a worker. See #183.
@@ -59457,9 +59429,13 @@ var TransformableMixin = function (base) {
                 // - move by negative origin before rotating.
 
                 // apply each axis rotation, in the x,y,z order.
+                // THREE-COORDS-TO-DOM-COORDS: X rotation is negated here so that
+                // Three rotates on X in the same direction as CSS 3D. It is
+                // negated again when applied to DOM elements so they rotate as
+                // expected in CSS 3D.
                 // TODO #151: make rotation order configurable
                 var rotation = properties.rotation;
-                matrix.rotateAxisAngleSelf(1, 0, 0, rotation.x);
+                matrix.rotateAxisAngleSelf(1, 0, 0, -rotation.x);
                 matrix.rotateAxisAngleSelf(0, 1, 0, rotation.y);
                 matrix.rotateAxisAngleSelf(0, 0, 1, rotation.z);
 
@@ -59726,6 +59702,52 @@ module.exports = { "default": set$3, __esModule: true };
 });
 
 var _Set = unwrapExports(set$2);
+
+var twoOrMoreSpaces = /\s\s+/g;
+
+function ValueProcessor(Base) {
+    Base = Base || function () {
+        function _class() {
+            _classCallCheck(this, _class);
+        }
+
+        return _class;
+    }();
+
+    return function (_Base) {
+        _inherits(ValueProcessor, _Base);
+
+        function ValueProcessor() {
+            _classCallCheck(this, ValueProcessor);
+
+            return _possibleConstructorReturn(this, (ValueProcessor.__proto__ || _Object$getPrototypeOf(ValueProcessor)).apply(this, arguments));
+        }
+
+        _createClass(ValueProcessor, [{
+            key: 'processColorValue',
+            value: function processColorValue(value, context, prop) {
+                context = context || this.threeObject3d;
+                prop = prop || 'color';
+                context[prop] = new Color(value);
+            }
+        }, {
+            key: 'processNumberValue',
+            value: function processNumberValue(prop, value, context) {
+                context = context || this.threeObject3d;
+                var number = parseFloat(value);
+
+                if (isNaN(number)) {
+
+                    console.warn(("The value for the \"" + prop + "\" attribute should be a number. It\n                    is passed to window.parseFloat. Your value (\"" + value + "\")\n                    cannot be parsed into a number (it becomes NaN).").replace(twoOrMoreSpaces, ' '));
+                }
+
+                context[prop] = number;
+            }
+        }]);
+
+        return ValueProcessor;
+    }(Base);
+}
 
 var styles$1 = {
 
@@ -61112,8 +61134,8 @@ var instanceofSymbol$5 = _Symbol('instanceofSymbol');
 var Scene$1 = null;
 
 var SceneMixin = function (base) {
-    var _Scene = function (_ImperativeBase$mixin) {
-        _inherits(_Scene, _ImperativeBase$mixin);
+    var _Scene = function (_ValueProcessor) {
+        _inherits(_Scene, _ValueProcessor);
 
         function _Scene() {
             _classCallCheck(this, _Scene);
@@ -61193,7 +61215,7 @@ var SceneMixin = function (base) {
                     // a default orange background color. Use the backgroundColor and
                     // backgroundOpacity attributes to customize.
                     this._glBackgroundColor = new Color(0xff6600);
-                    this._glBackgroundOpacity = 1;
+                    this._glBackgroundOpacity = 0;
 
                     // holds active cameras found in the DOM tree (if this is empty, it
                     // means no camera elements are in the DOM, but this.threeCamera
@@ -61393,6 +61415,9 @@ var SceneMixin = function (base) {
             }
         }, {
             key: 'attributeChangedCallback',
+
+
+            // TODO: generic type system for attributes.
             value: function attributeChangedCallback(attr, oldVal, newVal) {
                 return new Promise(function ($return, $error) {
                     _get(_Scene.prototype.__proto__ || _Object$getPrototypeOf(_Scene.prototype), 'attributeChangedCallback', this).call(this, attr, oldVal, newVal);
@@ -61406,10 +61431,6 @@ var SceneMixin = function (base) {
                         try {
 
                             if (attr == 'backgroundcolor') {
-
-                                // TODO: generic type system for attributes. It will eliminate
-                                // duplication here.
-
                                 this.processClearColorValue(attr, newVal);
                                 this._needsToBeRendered();
                             } else if (attr == 'backgroundopacity') {
@@ -61429,33 +61450,14 @@ var SceneMixin = function (base) {
         }, {
             key: 'processClearColorValue',
             value: function processClearColorValue(attr, value) {
-
-                // if a triplet of space-separated RGB numbers
-                if (value.match(/^\s*\d+\s+\d+\s+\d+\s*$/)) {
-                    value = value.trim().split(/\s+/).map(function (n) { return parseFloat(n) / 255; });
-                    this._glBackgroundColor = new (Function.prototype.bind.apply( Color, [ null ].concat( value) ));
-                }
-                // otherwise a CSS-style color string
-                else {
-                        this._glBackgroundColor = new Color(value);
-                    }
-
+                this.processColorValue(value, this, '_glBackgroundColor');
                 this._renderer.setClearColor(this, this._glBackgroundColor, this._glBackgroundOpacity);
             }
-
-            // TODO this is mostly duplicated from PointLight.processNumberValue, consolidate, needs typing.
-
         }, {
             key: 'processClearAlphaValue',
             value: function processClearAlphaValue(attr, value) {
-                var alpha = this._glBackgroundOpacity = parseFloat(value);
-
-                if (!value.match(/^\s*(\d+|\d*(.\d+)|(\d+.)\d*)\s*$/)) {
-
-                    console.warn(("The value for the \"" + attr + "\" attribute should be a\n                    number. It will be passed to window.parseFloat. Your value\n                    (\"" + value + "\") will be converted to the number " + alpha + ".").replace(/\s+/g, ' '));
-                }
-
-                this._renderer.setClearAlpha(this, alpha);
+                this.processNumberValue('_glBackgroundOpacity', value, this);
+                this._renderer.setClearAlpha(this, this._glBackgroundOpacity);
             }
         }, {
             key: 'perspective',
@@ -61493,7 +61495,7 @@ var SceneMixin = function (base) {
         }]);
 
         return _Scene;
-    }(ImperativeBase.mixin(Transformable.mixin(base)));
+    }(ValueProcessor(ImperativeBase.mixin(Transformable.mixin(base))));
 
     _Object$defineProperty(_Scene, _Symbol$hasInstance, {
         value: function (obj) {
@@ -62361,6 +62363,8 @@ var ElementOperations = function () {
             // element is aligned with the Three mesh in the middle of the view,
             // then in Transformable#_calculateMatrix we adjust the world matrix
             // back into DOM coordinates at the top/left.
+            // -- We apply opposite X rotation to counter the negated X rotation in
+            // Transformable for the Three.js objects.
             //
             // TODO #66: moving _calcSize to a render task affets this code
             var el = this.element;
@@ -62372,6 +62376,9 @@ var ElementOperations = function () {
             // in Transformable moves both the pre-adjusted DOM element and the
             // Three objects into the top/left coordinate space.
             var threeJsPreAdjustment = "translate3d(calc(" + (parentSize.x / 2) + "px - " + (elSize.x / 2) + "px), calc(" + (parentSize.y / 2) + "px - " + (elSize.y / 2) + "px), 0px)";
+
+            // counter the negated X rotation from Transformable
+            matrix.rotateAxisAngleSelf(1, 0, 0, 2 * el.rotation.x);
 
             var cssMatrixString = threeJsPreAdjustment + " matrix3d( " + (domMatrix.m11) + ", " + (domMatrix.m12) + ", " + (domMatrix.m13) + ", " + (domMatrix.m14) + ", " + (domMatrix.m21) + ", " + (domMatrix.m22) + ", " + (domMatrix.m23) + ", " + (domMatrix.m24) + ", " + (domMatrix.m31) + ", " + (domMatrix.m32) + ", " + (domMatrix.m33) + ", " + (domMatrix.m34) + ", " + (domMatrix.m41) + ", " + (-domMatrix.m42) + ", " + (domMatrix.m43) + ", " + (domMatrix.m44) + ")";
 
@@ -62919,28 +62926,33 @@ customAttributes.define('has', HasAttribute);
 
 // base class for Geometry and Material behaviors, not to be used directly
 
-var BaseMeshBehavior = function () {
+var BaseMeshBehavior = function (_ValueProcessor) {
+    _inherits(BaseMeshBehavior, _ValueProcessor);
+
     function BaseMeshBehavior(element) {
         _classCallCheck(this, BaseMeshBehavior);
 
-        this.checkedElementIsMesh = false;
-        this.elementIsMesh = false;
+        var _this = _possibleConstructorReturn(this, (BaseMeshBehavior.__proto__ || _Object$getPrototypeOf(BaseMeshBehavior)).call(this));
+
+        _this.checkedElementIsMesh = false;
+        _this.elementIsMesh = false;
 
         // records the initial size of the geometry, so that we have a
         // reference for how much scale to apply when accepting new sizes from
         // the user.
-        this.initialSize = null;
+        _this.initialSize = null;
 
-        this.isMeshPromise = null;
+        _this.isMeshPromise = null;
         var resolveIsMeshPromise = null;
         // TODO cancellable promise, or it may leak
 
         if (element.nodeName.indexOf('-') !== -1) {
-            this.isMeshPromise = new _Promise(function (r) { return resolveIsMeshPromise = r; });
+            _this.isMeshPromise = new _Promise(function (r) { return resolveIsMeshPromise = r; });
             customElements.whenDefined(element.nodeName.toLowerCase()).then(function () {
                 if (element instanceof Mesh$1) { resolveIsMeshPromise(true); }else { resolveIsMeshPromise(false); }
             });
-        } else { this.isMeshPromise = _Promise.resolve(false); }
+        } else { _this.isMeshPromise = _Promise.resolve(false); }
+        return _this;
     }
 
     _createClass(BaseMeshBehavior, [{
@@ -63066,7 +63078,7 @@ var BaseMeshBehavior = function () {
     }]);
 
     return BaseMeshBehavior;
-}();
+}(ValueProcessor());
 
 // base class for geometry behaviors
 
@@ -63081,30 +63093,42 @@ var BaseMaterialBehavior = function (_BaseMeshBehavior) {
 
     _createClass(BaseMaterialBehavior, [{
         key: 'attributeChangedCallback',
+
+
+        // TODO: generic type system for attributes.
         value: function attributeChangedCallback(element, attr, oldVal, newVal) {
             return new Promise(function ($return, $error) {
+                var material, opacity;
                 return _get(BaseMaterialBehavior.prototype.__proto__ || _Object$getPrototypeOf(BaseMaterialBehavior.prototype), 'attributeChangedCallback', this).call(this, element).then(function ($await_1) {
                     try {
                         if (!$await_1) { return $return(); }
 
                         if (attr == 'color') {
-
-                            // TODO: generic type system for attributes. It will eliminate
-                            // duplication in many places (f.e. see duplicated code in
-                            // PointLight class).
-
-                            // if a triplet space-separated of RGB numbers
-                            if (newVal.match(/^\s*\d+\s+\d+\s+\d+\s*$/)) {
-                                newVal = newVal.trim().split(/\s+/).map(function (n) { return parseFloat(n) / 255; });
-                                element.threeObject3d.material.color = new (Function.prototype.bind.apply( Color, [ null ].concat( newVal) ));
-                            }
-                            // otherwise a CSS-style color string
-                            else {
-                                    element.threeObject3d.material.color = new Color(newVal);
-                                }
-
+                            this.processColorValue(newVal, element.threeObject3d.material);
                             element._needsToBeRendered();
                         }
+
+                        // Note, Node elements also react to this, and apply it to the DOM
+                        // elements.
+                        // TODO: it'd be nice to implement a sort of opacity that multiplies
+                        // down the tree. We need something good enough for now.  We'll make
+                        // the plain "opacity" attribute be the multiplicative hierarchical
+                        // opacity, while material-opacity could be just for the material.
+                        // Material opacity would be multiplied to the hierarchical opacity.
+                        else if (attr == 'material-opacity') {
+                                material = element.threeObject3d.material;
+
+                                this.processNumberValue('opacity', newVal, material);
+                                opacity = material.opacity;
+
+
+                                if (opacity < 1) { material.transparent = true; }else { material.transparent = false; }
+
+                                element._needsToBeRendered();
+                            }
+
+                        // we can make a lot more attributes as needed...
+
                         return $return();
                     } catch ($boundEx) {
                         return $error($boundEx);
@@ -63120,7 +63144,7 @@ var BaseMaterialBehavior = function (_BaseMeshBehavior) {
     }, {
         key: 'observedAttributes',
         get: function () {
-            return ['color'];
+            return ['color', 'material-opacity'];
         }
     }]);
 
@@ -63169,16 +63193,16 @@ var PhongMaterialBehavior = function (_BaseMaterialBehavior) {
 
 elementBehaviors.define('phong-material', PhongMaterialBehavior);
 
-var DOMPlaneMaterialBehavior = function (_BaseMaterialBehavior) {
-    _inherits(DOMPlaneMaterialBehavior, _BaseMaterialBehavior);
+var DOMNodeMaterialBehavior = function (_BaseMaterialBehavior) {
+    _inherits(DOMNodeMaterialBehavior, _BaseMaterialBehavior);
 
-    function DOMPlaneMaterialBehavior() {
-        _classCallCheck(this, DOMPlaneMaterialBehavior);
+    function DOMNodeMaterialBehavior() {
+        _classCallCheck(this, DOMNodeMaterialBehavior);
 
-        return _possibleConstructorReturn(this, (DOMPlaneMaterialBehavior.__proto__ || _Object$getPrototypeOf(DOMPlaneMaterialBehavior)).apply(this, arguments));
+        return _possibleConstructorReturn(this, (DOMNodeMaterialBehavior.__proto__ || _Object$getPrototypeOf(DOMNodeMaterialBehavior)).apply(this, arguments));
     }
 
-    _createClass(DOMPlaneMaterialBehavior, [{
+    _createClass(DOMNodeMaterialBehavior, [{
         key: 'createComponent',
         value: function createComponent(element) {
             // TODO PERFORMANCE we can re-use a single material for
@@ -63193,10 +63217,10 @@ var DOMPlaneMaterialBehavior = function (_BaseMaterialBehavior) {
         }
     }]);
 
-    return DOMPlaneMaterialBehavior;
+    return DOMNodeMaterialBehavior;
 }(BaseMaterialBehavior);
 
-elementBehaviors.define('domplane-material', DOMPlaneMaterialBehavior);
+elementBehaviors.define('domnode-material', DOMNodeMaterialBehavior);
 
 // base class for geometry behaviors
 
@@ -63325,16 +63349,16 @@ var PlaneGeometryBehavior = function (_BaseGeometryBehavior) {
 
 elementBehaviors.define('plane-geometry', PlaneGeometryBehavior);
 
-var DOMPlaneGeometryBehavior = function (_BaseGeometryBehavior) {
-    _inherits(DOMPlaneGeometryBehavior, _BaseGeometryBehavior);
+var DOMNodeGeometryBehavior = function (_BaseGeometryBehavior) {
+    _inherits(DOMNodeGeometryBehavior, _BaseGeometryBehavior);
 
-    function DOMPlaneGeometryBehavior() {
-        _classCallCheck(this, DOMPlaneGeometryBehavior);
+    function DOMNodeGeometryBehavior() {
+        _classCallCheck(this, DOMNodeGeometryBehavior);
 
-        return _possibleConstructorReturn(this, (DOMPlaneGeometryBehavior.__proto__ || _Object$getPrototypeOf(DOMPlaneGeometryBehavior)).apply(this, arguments));
+        return _possibleConstructorReturn(this, (DOMNodeGeometryBehavior.__proto__ || _Object$getPrototypeOf(DOMNodeGeometryBehavior)).apply(this, arguments));
     }
 
-    _createClass(DOMPlaneGeometryBehavior, [{
+    _createClass(DOMNodeGeometryBehavior, [{
         key: 'createComponent',
         value: function createComponent(element) {
 
@@ -63348,10 +63372,10 @@ var DOMPlaneGeometryBehavior = function (_BaseGeometryBehavior) {
         }
     }]);
 
-    return DOMPlaneGeometryBehavior;
+    return DOMNodeGeometryBehavior;
 }(BaseGeometryBehavior);
 
-elementBehaviors.define('domplane-geometry', DOMPlaneGeometryBehavior);
+elementBehaviors.define('domnode-geometry', DOMNodeGeometryBehavior);
 
 // register behaviors that can be used with this class.
 // TODO: maybe useDefaultNames() should register these, otherwise the user can
@@ -63546,8 +63570,8 @@ var Plane$3 = function (_Mesh) {
 
 // base class for light elements.
 
-var LightBase = function (_Node$$1) {
-    _inherits(LightBase, _Node$$1);
+var LightBase = function (_ValueProcessor) {
+    _inherits(LightBase, _ValueProcessor);
 
     function LightBase() {
         _classCallCheck(this, LightBase);
@@ -63569,36 +63593,12 @@ var LightBase = function (_Node$$1) {
 
             // TODO belongs in Light base class
             if (attr == 'color') {
-
-                // if a triplet space-separated of RGB numbers
-                if (newVal.match(/^\s*\d+\s+\d+\s+\d+\s*$/)) {
-                    newVal = newVal.trim().split(/\s+/).map(function (n) { return parseFloat(n) / 255; });
-                    this.threeObject3d.color = new (Function.prototype.bind.apply( Color, [ null ].concat( newVal) ));
-                }
-                // otherwise a CSS-style color string
-                else {
-                        this.threeObject3d.color = new Color(newVal);
-                    }
-
+                this.processColorValue(newVal);
                 this._needsToBeRendered();
             } else if (attr == 'intensity') {
                 this.processNumberValue(attr, newVal);
                 this._needsToBeRendered();
             }
-        }
-    }, {
-        key: 'processNumberValue',
-        value: function processNumberValue(attr, value) {
-            var number = parseFloat(value);
-
-            // TODO PERFORMANCE this check might be too heavy (users will hit this
-            // every frame).
-            if (!value.match(/^\s*(\d+|\d*(.\d+)|(\d+.)\d*)\s*$/)) {
-
-                console.warn(("The value for the \"" + attr + "\" attribute should be a\n                number. It will be passed to window.parseFloat. Your value\n                (\"" + value + "\") will be converted to the number " + number + ".").replace(/\s+/g, ' '));
-            }
-
-            this.threeObject3d[attr] = number;
         }
     }], [{
         key: 'observedAttributes',
@@ -63608,7 +63608,7 @@ var LightBase = function (_Node$$1) {
     }]);
 
     return LightBase;
-}(_Node);
+}(ValueProcessor(_Node));
 
 var PointLight$1 = function (_LightBase) {
     _inherits(PointLight$$1, _LightBase);
@@ -63631,13 +63631,16 @@ var PointLight$1 = function (_LightBase) {
         value: function makeThreeObject3d() {
             var light = new PointLight();
             light.intensity = 1; // default 1
+            light.distance = 0; // default 0
+            light.decay = 1; // default 1
             light.castShadow = true; // default false
             light.shadow.mapSize.width = 512; // default 512
             light.shadow.mapSize.height = 512; // default 512
+            light.shadow.radius = 3; // default 1
+            light.shadow.bias = 0; // default 0
+            // TODO: auto-adjust near and far planes like we will with Camera,
+            // unless the user supplies a manual value.
             light.shadow.camera.near = 1; // default 1
-            light.shadow.radius = 1; // default 1
-            // TODO: auto-adjust far like we will with Camera, unless the user
-            // supplies a manual value.
             light.shadow.camera.far = 2000; // default 2000
 
             return light;
@@ -63655,8 +63658,27 @@ var PointLight$1 = function (_LightBase) {
                 this._needsToBeRendered();
             } else if (attr == 'castshadow' || attr == 'cast-shadow') {
 
+                // TODO: generic function to handle boolean attributes
                 if (newVal == 'false' || newVal == null) { this.threeObject3d.castShadow = false; }else { this.threeObject3d.castShadow = true; }
 
+                this._needsToBeRendered();
+            } else if (attr == 'shadowmapwidth' || attr == 'shadow-map-width') {
+                this.processNumberValue('width', newVal, this.threeObject3d.shadow.mapSize);
+                this._needsToBeRendered();
+            } else if (attr == 'shadowmapheight' || attr == 'shadow-map-height') {
+                this.processNumberValue('height', newVal, this.threeObject3d.shadow.mapSize);
+                this._needsToBeRendered();
+            } else if (attr == 'shadowradius' || attr == 'shadow-radius') {
+                this.processNumberValue('radius', newVal, this.threeObject3d.shadow);
+                this._needsToBeRendered();
+            } else if (attr == 'shadowbias' || attr == 'shadow-bias') {
+                this.processNumberValue('bias', newVal, this.threeObject3d.shadow);
+                this._needsToBeRendered();
+            } else if (attr == 'shadowcameranear' || attr == 'shadow-camera-near') {
+                this.processNumberValue('near', newVal, this.threeObject3d.shadow.camera);
+                this._needsToBeRendered();
+            } else if (attr == 'shadowcamerafar' || attr == 'shadow-camera-far') {
+                this.processNumberValue('far', newVal, this.threeObject3d.shadow.camera);
                 this._needsToBeRendered();
             }
         }
@@ -63673,15 +63695,58 @@ var PointLight$1 = function (_LightBase) {
     }, {
         key: 'observedAttributes',
         get: function () {
-            return _get(PointLight$$1.__proto__ || _Object$getPrototypeOf(PointLight$$1), 'observedAttributes', this).concat(['distance', 'decay', 'castshadow', 'cast-shadow']);
+            return _get(PointLight$$1.__proto__ || _Object$getPrototypeOf(PointLight$$1), 'observedAttributes', this).concat(['distance', 'decay', 'castshadow', 'cast-shadow', 'shadowmapwidth', 'shadow-map-width', 'shadowmapheight', 'shadow-map-height', 'shadowradius', 'shadow-radius', 'shadowbias', 'shadow-bias', 'shadowcameranear', 'shadow-camera-near', 'shadowcamerafar', 'shadow-camera-far']);
         }
     }]);
 
     return PointLight$$1;
 }(LightBase);
 
-var DOMPlane = function (_Mesh) {
-    _inherits(DOMPlane, _Mesh);
+var DOMNode = function (_Mesh) {
+    _inherits(DOMNode, _Mesh);
+
+    function DOMNode() {
+        _classCallCheck(this, DOMNode);
+
+        return _possibleConstructorReturn(this, (DOMNode.__proto__ || _Object$getPrototypeOf(DOMNode)).apply(this, arguments));
+    }
+
+    _createClass(DOMNode, [{
+        key: 'isDOMNode',
+        get: function () {
+            return true;
+        }
+    }], [{
+        key: 'defaultElementName',
+        get: function () {
+            return 'i-dom-node';
+        }
+    }, {
+        key: '_Class',
+        get: function () {
+            return DOMNode;
+        }
+    }, {
+        key: 'defaultBehaviors',
+        get: function () {
+            return {
+                'domnode-geometry': function (initialBehaviors) {
+                    return !initialBehaviors.some(function (b) { return b.endsWith('-geometry'); });
+                },
+                'domnode-material': function (initialBehaviors) {
+                    return !initialBehaviors.some(function (b) { return b.endsWith('-material'); });
+                }
+            };
+        }
+    }]);
+
+    return DOMNode;
+}(Mesh$1);
+
+// This class is an alias for DOMNode/i-dom-node
+
+var DOMPlane = function (_DOMNode) {
+    _inherits(DOMPlane, _DOMNode);
 
     function DOMPlane() {
         _classCallCheck(this, DOMPlane);
@@ -63689,12 +63754,7 @@ var DOMPlane = function (_Mesh) {
         return _possibleConstructorReturn(this, (DOMPlane.__proto__ || _Object$getPrototypeOf(DOMPlane)).apply(this, arguments));
     }
 
-    _createClass(DOMPlane, [{
-        key: 'isDOMPlane',
-        get: function () {
-            return true;
-        }
-    }], [{
+    _createClass(DOMPlane, null, [{
         key: 'defaultElementName',
         get: function () {
             return 'i-dom-plane';
@@ -63704,22 +63764,10 @@ var DOMPlane = function (_Mesh) {
         get: function () {
             return DOMPlane;
         }
-    }, {
-        key: 'defaultBehaviors',
-        get: function () {
-            return {
-                'domplane-geometry': function (initialBehaviors) {
-                    return !initialBehaviors.some(function (b) { return b.endsWith('-geometry'); });
-                },
-                'domplane-material': function (initialBehaviors) {
-                    return !initialBehaviors.some(function (b) { return b.endsWith('-material'); });
-                }
-            };
-        }
     }]);
 
     return DOMPlane;
-}(Mesh$1);
+}(DOMNode);
 
 var AmbientLight$1 = function (_LightBase) {
     _inherits(AmbientLight$$1, _LightBase);
@@ -63972,6 +64020,7 @@ function useDefaultNames() {
     if (!customElements.get(Sphere$1.defaultElementName)) { Sphere$1.define(); }
     if (!customElements.get(Plane$3.defaultElementName)) { Plane$3.define(); }
     if (!customElements.get(PointLight$1.defaultElementName)) { PointLight$1.define(); }
+    if (!customElements.get(DOMNode.defaultElementName)) { DOMNode.define(); }
     if (!customElements.get(DOMPlane.defaultElementName)) { DOMPlane.define(); }
     if (!customElements.get(AmbientLight$1.defaultElementName)) { AmbientLight$1.define(); }
     if (!customElements.get(PerspectiveCamera$1.defaultElementName)) { PerspectiveCamera$1.define(); }
@@ -64116,7 +64165,7 @@ var index$3 = Object.freeze({
 	PushPaneLayout: PushPaneLayout
 });
 
-var version = '18.0.0';
+var version = '18.0.1';
 
 exports.Calendar = Calendar;
 exports.DoubleSidedPlane = DoubleSidedPlane;
