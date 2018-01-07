@@ -134,7 +134,7 @@ const TransformableMixin = base => {
             // expected in CSS 3D.
             // TODO #151: make rotation order configurable
             const {rotation} = properties
-            matrix.rotateAxisAngleSelf(1,0,0, -rotation.x)
+            matrix.rotateAxisAngleSelf(1,0,0, rotation.x)
             matrix.rotateAxisAngleSelf(0,1,0, rotation.y)
             matrix.rotateAxisAngleSelf(0,0,1, rotation.z)
 

@@ -106,16 +106,17 @@ class ElementOperations {
         const elSize = el._calculatedSize
         const parentSize = el.parent._calculatedSize
 
-        // moves DOM elements to the Three.js coordinate space (align and
-        // mountPoint are in the middle of the view). The threeJsPostAdjustment
-        // in Transformable moves both the pre-adjusted DOM element and the
-        // Three objects into the top/left coordinate space.
+        // THREE-COORDS-TO-DOM-COORDS: moves DOM elements to the Three.js
+        // coordinate space (align and mountPoint are in the middle of the
+        // view). The threeJsPostAdjustment in Transformable moves both the
+        // pre-adjusted DOM element and the Three objects into the top/left
+        // coordinate space.
         const threeJsPreAdjustment = `translate3d(calc(${parentSize.x/2}px - ${elSize.x/2}px), calc(${parentSize.y/2}px - ${elSize.y/2}px), 0px)`
 
-        // counter the negated X rotation from Transformable
-        matrix.rotateAxisAngleSelf( 1, 0, 0, 2 * el.rotation.x )
-
         const cssMatrixString = `${threeJsPreAdjustment} matrix3d( ${ domMatrix.m11 }, ${ domMatrix.m12 }, ${ domMatrix.m13 }, ${ domMatrix.m14 }, ${ domMatrix.m21 }, ${ domMatrix.m22 }, ${ domMatrix.m23 }, ${ domMatrix.m24 }, ${ domMatrix.m31 }, ${ domMatrix.m32 }, ${ domMatrix.m33 }, ${ domMatrix.m34 }, ${ domMatrix.m41 }, ${ -domMatrix.m42 }, ${ domMatrix.m43 }, ${ domMatrix.m44 })`;
+
+        // THREE-COORDS-TO-DOM-COORDS: rotate X the opposite direction for Three.js
+        domMatrix.rotateAxisAngleSelf( 1, 0, 0, -2 * el.rotation.x )
 
         this.applyStyle('transform', cssMatrixString)
     }
