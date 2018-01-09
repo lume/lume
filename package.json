@@ -17,6 +17,7 @@
     "build-cjs": "./.scripts/build-cjs.sh",
     "build-amd": "./.scripts/build-amd.sh",
     "build-global": "./.scripts/build-global.sh",
+    "docpress": "docpress serve",
     "watch": "./.scripts/build-cjs.sh --watch & P1=$!; ./.scripts/build-global.sh --watch & P2=$!; wait $P1 $P2",
     "preversion": "echo '--- PREVERSION' && git reset HEAD global.js && git checkout -- global.js && git add . && git stash && git clean -xfd -e node_modules",
     "version": "echo '--- VERSION' && npm run add-version-to-source && npm run build && git add -f global.js",
@@ -60,6 +61,7 @@
     "babel-plugin-transform-object-rest-spread": "^6.26.0",
     "babel-plugin-transform-runtime": "^6.0.0",
     "buble": "^0.18.0",
+    "docpress": "0.7.1",
     "fast-async": "^6.3.0",
     "gulp": "^3.9.1",
     "gulp-babel": "^7.0.0",
@@ -70,6 +72,12 @@
     "rollup-plugin-buble": "^0.18.0",
     "rollup-plugin-commonjs": "^8.2.1",
     "rollup-plugin-node-resolve": "^3.0.0"
+  },
+  "docpress": {
+    "docs": "docs",
+    "dist": ".docpress",
+    "github": "trusktr/infamous",
+    "markdown": {}
   },
   "jspm": {
     "registry": "jspm",
