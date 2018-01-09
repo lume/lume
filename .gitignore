@@ -1,7 +1,7 @@
 node_modules
 npm-debug.log
 
-.docpress
+docs
 
 # ignore build files
 /*.js
