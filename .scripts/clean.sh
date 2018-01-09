@@ -5,6 +5,7 @@ mkdir save
 mv \
     .git \
     node_modules \
+    docs \
     src \
     .scripts \
     rollup.config.js \
