@@ -11,6 +11,12 @@ FlowRouter.route('/', {
     },
 });
 
+FlowRouter.route('/docs/index.html', {
+    action() {
+        window.location = '/docs/index.html'
+    },
+})
+
 
 
 function titleTemplate(description) {

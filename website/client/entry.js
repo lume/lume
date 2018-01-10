@@ -17,7 +17,7 @@ const demos = _.shuffle([
     //'//trusktr.io/clobe', // JSS broken, FIXME
     //'//jsfiddle.net/trusktr/ymonmo70/15/embedded/result,js,html,css', // DOM car, FIXME in firefox
     //'//trusktr.io/pyramids', // WIP
-    
+
     '//trusktr.io/rippleFlip',
     '//trusktr.io/geometricRotation',
     '//trusktr.io/worms',
@@ -28,13 +28,6 @@ const demos = _.shuffle([
     '//trusktr.io/rainbowTriangles',
 ])
 
-let demoIndex = 0
-function getNextDemo() {
-    const demo = demos[demoIndex]
-    demoIndex = ++demoIndex % demos.length
-    return demo
-}
-
 main()
 async function main() {
     const footerHeight = 50
@@ -42,9 +35,6 @@ async function main() {
     class App extends React.Component {
         constructor(props) {
             super(props)
-            this.state = {
-                currentDemo: getNextDemo()
-            }
         }
         render() {
             return (
@@ -54,7 +44,7 @@ async function main() {
                         sizeMode="proportional proportional"
                         proportionalSize="1 1"
                     >
-                        <iframe ref="iframe" className="background-iframe" src={this.state.currentDemo}></iframe>
+                        TODO replace me with nice background
                     </motor-node>
 
                     <motor-node
@@ -92,7 +82,7 @@ async function main() {
                             class="centerText"
                             sizeMode="proportional absolute"
                             absoluteSize="0 20"
-                            proportionalSize="0.333"
+                            proportionalSize="0.333333"
                             align="0 0.5"
                             mountPoint="0 0.5"
                         >
@@ -103,23 +93,22 @@ async function main() {
                             class="centerText"
                             sizeMode="proportional absolute"
                             absoluteSize="0 20"
-                            proportionalSize="0.333"
-                            align="0.333 0.5"
+                            proportionalSize="0.333333"
+                            align="0.333333 0.5"
                             mountPoint="0 0.5"
                         >
-                            <a href="http://github.com/trusktr/infamous">GitHub</a>
+                            <a href="/docs/index.html">Docs</a>
                         </motor-node>
 
                         <motor-node
                             class="centerText"
-                            sizeMode="proportional proportional"
-                            proportionalSize="0.333 1"
-                            align="1 0.5"
-                            mountPoint="1 0.5"
+                            sizeMode="proportional absolute"
+                            absoluteSize="0 20"
+                            proportionalSize="0.333333"
+                            align="0.666666 0.5"
+                            mountPoint="0 0.5"
                         >
-                            <a className="centerText" href="https://www.browserstack.com" target="_blank">
-                                <span className="centerText">Testing powered by </span><img className="centerText" src="https://cloud.githubusercontent.com/assets/297678/18809725/8fc020f6-8238-11e6-9505-8a6db92f700a.png" />
-                            </a>
+                            <a href="http://github.com/trusktr/infamous">GitHub</a>
                         </motor-node>
 
                     </motor-node>
@@ -130,9 +119,6 @@ async function main() {
 
         componentDidMount() {
             console.log('hello')
-            setInterval(() => {
-                this.setState({currentDemo: getNextDemo()})
-            }, 10000)
         }
     }
 
