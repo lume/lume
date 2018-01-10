@@ -76,7 +76,7 @@
   },
   "docpress": {
     "docs": "docs",
-    "dist": ".docpress",
+    "dist": "website/public/docs",
     "github": "trusktr/infamous",
     "markdown": {}
   },
