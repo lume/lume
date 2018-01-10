@@ -19,7 +19,6 @@ ecmascript@0.8.1              # Enable ECMAScript2015+ syntax in app code
 autopublish@1.0.7             # Publish all data to the clients (for prototyping)
 insecure@1.0.7                # Allow all DB writes from clients (for prototyping)
 
-kadira:flow-router
 react-meteor-data
 shell-server
 dynamic-import
