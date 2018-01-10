@@ -5,6 +5,7 @@ import * as ReactDOM from 'react-dom'
 import '../imports/routes'
 
 import 'infamous/html'
+import Motor from 'infamous/core/Motor'
 
 Tracker.autorun(function() {
     document.title = Session.get('appTitle')
@@ -30,42 +31,92 @@ const demos = _.shuffle([
 
 main()
 async function main() {
-    const footerHeight = 50
+    const footerHeight = 44.5
 
     class App extends React.Component {
         constructor(props) {
             super(props)
+
+            this.state = {
+                rotation: 0,
+            }
+
+            const nodes = Array(400).fill(0)
+
+            this.staticInnerScene = (
+                <motor-scene id="spiral-inner-scene">
+                    {nodes.map((n, i) => (
+                        <motor-node
+                            key={i}
+                            absoluteSize="0 0 0"
+                            align="0.5 0.5"
+                            rotation={[0, 0, i*10]}
+                        >
+                            <motor-node
+                                absoluteSize={[50-i%50, 50-i%50, 0]}
+                                mountPoint="0.5 0.5"
+                                position={[0, i*2, 0]}
+                                style={{
+                                    background: `hsl( ${ (i*2)%360 }, 90%, 78%)`,
+                                    borderRadius: `${ i%50 }px`,
+                                }}
+                            >
+                            </motor-node>
+                        </motor-node>
+                    ))}
+                </motor-scene>
+            )
+
         }
         render() {
             return (
-                <motor-scene>
+                <motor-scene ref="scene">
 
                     <motor-node
-                        sizeMode="proportional proportional"
-                        proportionalSize="1 1"
-                    >
-                        TODO replace me with nice background
-                    </motor-node>
-
-                    <motor-node
-                        class="gradient-background"
-                        sizeMode="proportional proportional"
-                        proportionalSize="1 1"
-                        opacity="0.7"
-                    >
-                    </motor-node>
-
-                    <motor-node
-                        id="titleNode"
-                        class="centerText"
                         sizeMode="proportional absolute"
-                        absoluteSize="0 50"
-                        proportionalSize="1"
-                        align="0 0.2"
-                        mountPoint="0 0.2"
-                        position={`0 ${-footerHeight}`}
+                        proportionalSize="1 1"
+                        ref="titleArea"
                     >
-                        <h1>INFAMOUS</h1>
+                        <motor-node
+                            sizeMode="proportional proportional"
+                            proportionalSize="1 1"
+                        >
+
+                            <motor-scene id="spiral-outer-scene" style={{background:'#333',}}>
+                                <motor-node
+                                    absoluteSize="1630 1630"
+                                    align="0.5 0.5"
+                                    mountPoint="0.5 0.5"
+                                    rotation={[0, 0, this.state.rotation]}
+                                >
+
+                                    {this.staticInnerScene}
+
+                                </motor-node>
+                            </motor-scene>
+                            {/*<iframe src="https://codepen.io/trusktr/live/JMMXPB" className="background-iframe"></iframe>*/}
+
+                        </motor-node>
+
+                        <motor-node
+                            class="gradient-background"
+                            sizeMode="proportional proportional"
+                            proportionalSize="1 1"
+                            opacity="0.95"
+                        >
+                        </motor-node>
+
+                        <motor-node
+                            id="titleNode"
+                            class="centerText"
+                            sizeMode="proportional absolute"
+                            absoluteSize="0 50"
+                            proportionalSize="1"
+                            align="0 0.5"
+                            mountPoint="0 0.5"
+                        >
+                            <h1>INFAMOUS</h1>
+                        </motor-node>
                     </motor-node>
 
                     <motor-node
@@ -117,8 +168,24 @@ async function main() {
             )
         }
 
+        updateSize() {
+            const {titleArea, scene} = this.refs
+            const sceneHeight = scene.actualSize.y
+            console.log('???', sceneHeight, sceneHeight - footerHeight)
+            titleArea.absoluteSize.y = sceneHeight - footerHeight
+        }
+
         componentDidMount() {
-            console.log('hello')
+            setTimeout(() => {
+                this.updateSize()
+                this.refs.scene.imperativeCounterpart.on('sizechange', () => this.updateSize())
+            }, 0)
+
+            Motor.addRenderTask(() => {
+                this.setState({
+                    rotation: this.state.rotation - 9.8
+                })
+            })
         }
     }
 

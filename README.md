@@ -43,7 +43,8 @@ should at least work in IE11 but it might require some additional transpile
 steps and WebGL feature detection guards. CSS3D rendering may even work in IE10
 with scenes that only have one level of nesting. PRs welcome!
 
-## Contributors
+Contributors
+------------
 
 Thanks goes to these wonderful people ([emoji key](https://github.com/kentcdodds/all-contributors#emoji-key)):
 
