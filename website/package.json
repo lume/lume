@@ -1,0 +1,15 @@
+{
+    "dependencies": {
+        "react": "^15.6.1",
+        "react-dom": "^15.6.1",
+        "tween.js": "^16.3.1",
+        "jss": "^3.0.0",
+        "jss-nested": "^1.0.0",
+        "jss-extend": "^1.0.0",
+        "jss-px": "^1.0.0",
+        "jss-vendor-prefixer": "^1.0.0",
+        "jss-camel-case": "^1.0.0",
+        "jss-props-sort": "^1.0.0",
+        "infamous": "^17.0.1"
+    }
+}
