@@ -20,6 +20,7 @@
     "docs-serve": "docpress serve",
     "docs-build": "docpress build",
     "website-dev": "cd website && meteor",
+    "build-website": "npm i && npm run docs-build && cd website && npm i",
     "watch": "./.scripts/build-cjs.sh --watch & P1=$!; ./.scripts/build-global.sh --watch & P2=$!; wait $P1 $P2",
     "preversion": "echo '--- PREVERSION' && git reset HEAD global.js && git checkout -- global.js && git add . && git stash && git clean -xfd -e node_modules",
     "version": "echo '--- VERSION' && npm run add-version-to-source && npm run build && git add -f global.js",
