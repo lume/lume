@@ -6,8 +6,7 @@ Create 3D CSS+WebGL apps declaratively with HTML.
 
 [Site](http://infamous.io) — [Forums](http://forums.infamous.io) — [Examples](./docs/examples.md) — [Docs](./docs/README.md)
 
-About
------
+<h2> About </h2>
 
 Infamous gives you general-purpose [Custom HTML
 Elements](https://developers.google.com/web/fundamentals/architecture/building-components/customelements)
@@ -43,8 +42,7 @@ should at least work in IE11 but it might require some additional transpile
 steps and WebGL feature detection guards. CSS3D rendering may even work in IE10
 with scenes that only have one level of nesting. PRs welcome!
 
-Contributors
-------------
+<h2> Contributors </h2>
 
 Thanks goes to these wonderful people ([emoji key](https://github.com/kentcdodds/all-contributors#emoji-key)):
 

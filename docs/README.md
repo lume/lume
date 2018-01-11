@@ -2,13 +2,14 @@
 Table of Contents
 =================
 
-* [Infamous](/README.md)
-* [Examples](/docs/examples.md)
-* [Getting Started](/docs/getting-started.md)
-  * [Install](/docs/install.md)
-  * [Workflows](/docs/workflows.md)
-* Reference
-  * core
-    * [AmbientLight](/src/core/AmbientLight.md)
-* [Notes](/docs/notes.md)
-* [](/docs/README.md)
+* [Infamous](../README.md)
+* [Examples](./examples.md)
+* [Getting Started](./getting-started.md)
+  * [Install](./install.md)
+  * [Workflows](./workflows.md)
+* [Guide](./guide.md)
+  * coming soon...
+* [API Reference](./api-reference.md)
+  * coming soon...
+* [Miscellaneous Notes](./notes.md)
+* [](./README.md)
