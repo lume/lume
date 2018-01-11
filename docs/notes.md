@@ -1,6 +1,6 @@
 
-Notes
-=====
+Miscellaneous Notes
+===================
 
 - WebGL rendering is currently in "experimental" mode because the API isn't
   entirely finished, though many parts of it are stable.
@@ -20,9 +20,10 @@ Notes
     or Google Daydream. It may be possible to maps halves of a web page to
     specific eyes on other devices like Oculus, but this is a little way off.
 - CSS3D objects can not be bent or distorted in 3D space at the moment (Adobe's
-  CSS Shaders proposal was rejected due to security concerns), meaning
-  traditional HTML elements can currently only be rendered as flat planes and
-  nothing else.
+  CSS Shaders (later called CSS Custom Filters) proposal [was
+  dropped](https://lists.webkit.org/pipermail/webkit-dev/2014-January/026098.html)),
+  meaning traditional HTML elements can currently only be rendered as flat
+  planes and nothing else.
   <!--
   - However, in the near future, we might be able to expose the hacky utility
     of tools like html2canvas via our API in order to manipulate textures

@@ -28,7 +28,7 @@ infamous.html.useDefaultNames()
 You *must* register the infamous HTML elements with your browser, using default
 names (easier), or custom names.
 
-### with default names
+<h3> with default names </h3>
 
 The fastest way to get up and running is to tell infamous to use default naming
 for all of its HTML elements:
@@ -77,7 +77,7 @@ scene.mount(document.body)
 
 The documentation will refer to all the elements by their default names.
 
-### with custom names
+<h3> with custom names </h3>
 
 But sometimes you might like to use different element names (f.e. to avoid a
 naming conflict, or just because you feel like it). You can do this using the
