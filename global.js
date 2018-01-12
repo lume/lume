@@ -6,7 +6,7 @@ var commonjsGlobal = typeof window !== 'undefined' ? window : typeof global !== 
 
 
 function unwrapExports (x) {
-	return x && x.__esModule ? x['default'] : x;
+	return x && x.__esModule && Object.prototype.hasOwnProperty.call(x, 'default') ? x['default'] : x;
 }
 
 function createCommonjsModule(fn, module) {
@@ -64008,7 +64008,7 @@ var index$3 = Object.freeze({
 	PushPaneLayout: PushPaneLayout
 });
 
-var version = '18.0.3';
+var version = '18.0.4';
 
 exports.Calendar = Calendar;
 exports.DoubleSidedPlane = DoubleSidedPlane;
