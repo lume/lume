@@ -2,7 +2,6 @@
 
 import { observeChildren } from '../core/Utility'
 import jss from '../lib/jss'
-import './polyfillCustomElements'
 import documentReady from 'awaitbox/dom/documentReady'
 import DefaultBehaviorsMixin from './behaviors/DefaultBehaviors'
 
@@ -57,46 +56,22 @@ function WebComponentMixin(elementClass) {
     // otherwise, create it.
     class WebComponent extends DefaultBehaviorsMixin(elementClass) {
 
-        // All imperative API constructors assume an object (options) was
-        // passed in, but due to using document-register-element that isn't
-        // always the case, so we instead start handling of options after all
-        // the constructors have been called (this.construct here in the
-        // base-most imperative class). If the DOM instantiated our class,
-        // there won't be an options argument passed in, but rather there will
-        // be an Element instance passed in, and we detect this to call super()
-        // appropriately for document-register-element to function properly.
-        //
-        // If the constructor doesn't receive an Element argument, then it means the
-        // class is being used imperatively, or that native Custom Elements v1 is being
-        // used. In either of these two cases, we don't need to pass anything to
-        // super().
         constructor(...args) {
             // Throw an error if no Custom Elements v1 API exists.
             if (!('customElements' in window)) {
+
+                // TODO: provide a link to the Docs.
                 throw new Error(`
                     Your browser does not support the Custom Elements API. You'll
                     need to install a polyfill. See how at http://....
                 `)
+
             }
 
-            let self = args[0] // possibly undefined
-
-            // call super in a way that works for document-register-element,
-            // but still works with native Custom Elements.  If `arg` has
-            // `.nodeName`, then it is an Element and needs to be passed to
-            // document-register-element's monkey-patched HTMLElement
-            // constructor.
-            if (self && self.nodeName) {
-                self = super(self)
-                self.construct()
-            }
-            else {
-                // else we're using the class imperatively or with native CE v1.
-                self = super()
-                self.construct(...args)
-            }
-
-            return self
+            // we are using `construct` because we were previously using the
+            // document-register-element Custom Elements v1 polyfill.
+            super(...args)
+            this.construct(...args)
         }
 
         // subclasses extend this, and they should not use `constructor`

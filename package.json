@@ -34,7 +34,6 @@
     "army-knife": "^0.2.1",
     "awaitbox": "^1.0.0",
     "custom-attributes": "trusktr/custom-attributes#patch-1",
-    "document-register-element": "^1.7.0",
     "famous": "trusktr/famous#commonjs",
     "famousify": "^0.1.5",
     "geometry-interfaces": "^1.1.3",
