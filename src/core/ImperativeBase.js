@@ -311,7 +311,7 @@ export function initImperativeBase() {
             }
 
             _render(timestamp) {
-                super._render()
+                if ( super._render ) super._render()
                 // applies the transform matrix to the element's style property.
                 this._elementOperations.applyImperativeNodeProperties(this)
             }

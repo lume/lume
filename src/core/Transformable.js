@@ -166,7 +166,7 @@ const TransformableMixin = base => {
 
         // TODO rename "render" to "update".
         _render() {
-            super._render()
+            if ( super._render ) super._render()
 
             // TODO: only run this when necessary (f.e. not if only opacity
             // changed)

@@ -164,13 +164,6 @@ const SizeableMixin = base => {
             }
         }
 
-        _render() {
-            // nothing yet, but needed because ImperativeBase calls
-            // `super._render()`, which will call either Transformable's
-            // _render or Sizeable's _render for Node and Scene classes,
-            // respectively.
-        }
-
         /**
          * Set the size mode for each axis. Possible size modes are "literal"
          * and "proportional". The default values are "literal" for all axes.
