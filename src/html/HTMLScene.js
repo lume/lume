@@ -32,30 +32,29 @@ class HTMLScene extends DeclarativeBase {
         this._root = this.attachShadow({ mode: 'open' })
         this._root.innerHTML = `
             <style>
-                div, canvas {
+                .i-scene-CSS3DLayer,
+                .i-scene-WebGLLayer,
+                .i-scene-WebGLLayer > canvas  {
                     margin: 0; padding: 0;
-                }
-                .i-scene-dom, .i-scene-canvas {
-                    position: absolute; top: 0; left: 0;
                     width: 100%; height: 100%;
+                    display: block;
                 }
-                .i-scene-dom {
+                .i-scene-CSS3DLayer, .i-scene-WebGLLayer {
+                    position: absolute; top: 0; left: 0;
+                }
+                .i-scene-CSS3DLayer {
                     transform-style: preserve-3d;
                 }
-                .i-scene-canvas {
+                .i-scene-WebGLLayer {
                     pointer-events: none;
                 }
-                .i-scene-canvas > canvas {
-                    display: block;
-                    width: 100%; height: 100%;
-                }
             </style>
-            <div class="i-scene-dom">
+            <div class="i-scene-CSS3DLayer">
                 <slot></slot>
             </div>
-            <div class="i-scene-canvas"></div>
+            <div class="i-scene-WebGLLayer"></div>
         `
-        this._canvasContainer = this._root.querySelector('.i-scene-canvas')
+        this._canvasContainer = this._root.querySelector('.i-scene-WebGLLayer')
     }
 
     _startOrStopSizePolling() {
