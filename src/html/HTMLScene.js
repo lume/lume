@@ -4,7 +4,6 @@ import Motor from '../core/Motor'
 import Observable from '../core/Observable'
 import Sizeable from '../core/Sizeable'
 import DeclarativeBase, {initDeclarativeBase, proxyGettersSetters} from './DeclarativeBase'
-import sleep from 'awaitbox/timers/sleep'
 
 initDeclarativeBase()
 

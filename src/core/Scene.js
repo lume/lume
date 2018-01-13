@@ -11,7 +11,7 @@ import XYZValues from './XYZValues'
 import XYZNonNegativeValues from './XYZNonNegativeValues'
 import ValueProcessor from './ValueProcessor'
 import { default as HTMLInterface } from '../html/HTMLScene'
-import documentReady from 'awaitbox/dom/documentReady'
+import documentReady from '@awaitbox/document-ready'
 
 import {
     Scene as ThreeScene, // so as not to confuse with Infamous Scene.
@@ -229,7 +229,7 @@ const SceneMixin = base => {
                 mountPoint = document.querySelector(mountPoint)
 
             // if we have an actual mount point (the user may have supplied one)
-            if (!(mountPoint instanceof window.HTMLElement))
+            if (!(mountPoint instanceof HTMLElement))
                 throw new Error('Invalid mount point specified in Scene.mount() call. Pass a selector, an actual HTMLElement, or don\'t pass anything to mount to <body>.')
 
             if (this._mounted) this.unmount()

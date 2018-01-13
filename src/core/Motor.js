@@ -1,4 +1,4 @@
-import documentReady from 'awaitbox/dom/documentReady'
+import documentReady from '@awaitbox/document-ready'
 import Transformable from './Transformable'
 import {getWebGLRendererThree, destroyWebGLRendererThree} from './WebGLRendererThree'
 import {isInstanceof} from './Utility'

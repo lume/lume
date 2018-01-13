@@ -2,7 +2,7 @@
 
 import { observeChildren } from '../core/Utility'
 import jss from '../lib/jss'
-import documentReady from 'awaitbox/dom/documentReady'
+import documentReady from '@awaitbox/document-ready'
 import DefaultBehaviorsMixin from './behaviors/DefaultBehaviors'
 
 // Very very stupid hack needed for Safari in order for us to be able to extend
