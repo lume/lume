@@ -8,7 +8,9 @@ npm-debug.log
 /*.js
 /*.js.map
 !/global.js
-!/rollup.config.js
+!/webpack.config.js
+!/buble.config.js
+!/babel.config.js
 
 # ignore build folders
 /components

@@ -8,7 +8,7 @@ mv \
     docs \
     src \
     .scripts \
-    rollup.config.js \
+    webpack.config.js \
     buble.config.js \
     babel.config.js \
     gulpfile.js \

@@ -1,4 +1,5 @@
 module.exports = {
+    babelrc: false,
     plugins: [
         // this has to go before transform-es2015-classes.
         // makes super() calls to native constructors work properly. We
