@@ -115,7 +115,8 @@ class ElementOperations {
 
         const cssMatrixString = `${threeJsPreAdjustment} matrix3d( ${ domMatrix.m11 }, ${ domMatrix.m12 }, ${ domMatrix.m13 }, ${ domMatrix.m14 }, ${ domMatrix.m21 }, ${ domMatrix.m22 }, ${ domMatrix.m23 }, ${ domMatrix.m24 }, ${ domMatrix.m31 }, ${ domMatrix.m32 }, ${ domMatrix.m33 }, ${ domMatrix.m34 }, ${ domMatrix.m41 }, ${ -domMatrix.m42 }, ${ domMatrix.m43 }, ${ domMatrix.m44 })`;
 
-        // THREE-COORDS-TO-DOM-COORDS: rotate X the opposite direction for Three.js
+        // THREE-COORDS-TO-DOM-COORDS: rotate X and Z the opposite direction for Three.js
+        domMatrix.rotateAxisAngleSelf( 0, 0, 1, -2 * el.rotation.z )
         domMatrix.rotateAxisAngleSelf( 1, 0, 0, -2 * el.rotation.x )
 
         this.applyStyle('transform', cssMatrixString)
