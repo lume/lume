@@ -1,1 +1,1 @@
-webpack $1
+webpack "$@"
