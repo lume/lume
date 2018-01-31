@@ -1,6 +1,6 @@
 {
   "name": "infamous",
-  "version": "18.0.8",
+  "version": "18.0.9",
   "description": "A CSS3D/WebGL UI library.",
   "format": "es6",
   "main": "index.js",
