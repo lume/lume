@@ -3,6 +3,13 @@ const babelConfig = require('./babel.config')
 const bubleConfig = require('./buble.config')
 const BabelMinify = require("babel-minify-webpack-plugin");
 
+let DEV = false
+
+// --watch option means dev mode
+if (process.argv.includes('--watch')) {
+    DEV = true
+}
+
 module.exports = {
     entry: './src/index.js',
     output: {
@@ -32,7 +39,7 @@ module.exports = {
             },
         ],
     },
-    plugins: [
+    plugins: DEV ? [] : [
         new BabelMinify({}, {
             comments: false,
         })
