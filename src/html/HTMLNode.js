@@ -43,7 +43,16 @@ class HTMLNode extends DeclarativeBase {
                 this[attribute] = window.parseFloat(newValue)
             else if (attribute == 'sizemode')
                 this[attribute] = parseStringArray(newValue)
-            else {
+            else if (
+                attribute == 'size'
+                || attribute == 'align'
+                || attribute == 'mountpoint'
+                || attribute == 'rotation'
+                || attribute == 'position'
+                || attribute == 'scale'
+                || attribute == 'origin'
+                || attribute == 'skew'
+            ) {
                 this[attribute] = parseNumberArray(newValue)
             }
         }
