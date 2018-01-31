@@ -18,17 +18,17 @@ class HTMLNode extends DeclarativeBase {
     // TODO: get these from somewhere dynamically, and do same for
     // proxyGettersSetters and _updateNodeProperty
     static get observedAttributes() { return [
-        'sizeMode',
+        'opacity',
+        'sizemode',
         'size',
         'align',
-        'mountPoint',
+        'mountpoint',
         'rotation',
         'position',
         'scale',
         'origin',
         'skew',
-        'opacity',
-    ].map(a => a.toLowerCase())}
+    ]}
 
     attributeChangedCallback(...args) {
         super.attributeChangedCallback(...args)
@@ -39,24 +39,12 @@ class HTMLNode extends DeclarativeBase {
         // attributes on our HTML elements are the same name as those on
         // the Node class (the setters).
         if (newValue !== oldValue) {
-            if (attribute.match(/opacity/i))
+            if (attribute == 'opacity')
                 this[attribute] = window.parseFloat(newValue)
-            else if (attribute.match(/sizeMode/i))
+            else if (attribute == 'sizemode')
                 this[attribute] = parseStringArray(newValue)
-            else if (
-                attribute.match(/rotation/i)
-                || attribute.match(/scale/i)
-                || attribute.match(/position/i)
-                || attribute.match(/size/i)
-                || attribute.match(/align/i)
-                || attribute.match(/mountPoint/i)
-                || attribute.match(/origin/i)
-                || attribute.match(/skew/i)
-            ) {
-                this[attribute] = parseNumberArray(newValue)
-            }
             else {
-                /* nothing, ignore other attributes */
+                this[attribute] = parseNumberArray(newValue)
             }
         }
     }
