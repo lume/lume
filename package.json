@@ -33,6 +33,7 @@
   "dependencies": {
     "@awaitbox/document-ready": "^1.0.9",
     "army-knife": "^0.2.1",
+    "babel-runtime": "^6.26.0",
     "custom-attributes": "trusktr/custom-attributes#patch-1",
     "famous": "trusktr/famous#commonjs",
     "famousify": "^0.1.5",
