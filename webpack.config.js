@@ -17,7 +17,6 @@ module.exports = {
                 test: /\.js$/,
                 include: [
                     path.resolve(__dirname, 'src'),
-                    path.resolve(__dirname, 'node_modules', '@awaitbox'), // ES6+
                     path.resolve(__dirname, 'node_modules', 'custom-attributes'), // ES6+
                 ],
                 use: [

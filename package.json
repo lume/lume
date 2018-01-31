@@ -31,7 +31,7 @@
     "generate-contributors": "all-contributors generate"
   },
   "dependencies": {
-    "@awaitbox/document-ready": "^1.0.9",
+    "@awaitbox/document-ready": "^1.0.10",
     "army-knife": "^0.2.1",
     "babel-runtime": "^6.26.0",
     "custom-attributes": "trusktr/custom-attributes#patch-1",
