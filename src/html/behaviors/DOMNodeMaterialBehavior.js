@@ -1,4 +1,4 @@
-import './HasAttribute'
+import 'element-behaviors'
 import { MeshPhongMaterial } from 'three'
 import BaseMaterialBehavior from './BaseMaterialBehavior'
 import { Color, NoBlending, /*DoubleSide*/ } from 'three'

@@ -1,4 +1,4 @@
-import './HasAttribute'
+import 'element-behaviors'
 import { MeshBasicMaterial } from 'three'
 import BaseMaterialBehavior from './BaseMaterialBehavior'
 

@@ -1,4 +1,4 @@
-import './HasAttribute'
+import 'element-behaviors'
 import { BoxGeometry } from 'three'
 import BaseGeometryBehavior from './BaseGeometryBehavior'
 
