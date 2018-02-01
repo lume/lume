@@ -5,6 +5,8 @@ const BabelMinify = require("babel-minify-webpack-plugin");
 
 let DEV = false
 
+const node_modules = (...p) => path.resolve(__dirname, 'node_modules', ...p)
+
 // --watch option means dev mode
 if (process.argv.includes('--watch')) {
     DEV = true
@@ -24,7 +26,8 @@ module.exports = {
                 test: /\.js$/,
                 include: [
                     path.resolve(__dirname, 'src'),
-                    path.resolve(__dirname, 'node_modules', 'custom-attributes'), // ES6+
+                    node_modules('custom-attributes'), // ES6+
+                    node_modules('element-behaviors'), // ES6+
                 ],
                 use: [
                     {
