@@ -204,7 +204,7 @@ const SceneMixin = base => {
 
         /** @override */
         _getParentSize() {
-            return this._mounted ? this._elementParentSize : {x:0,y:0,z:0}
+            return this._parent ? this._parent._calculatedSize : this._elementParentSize
         }
 
         /**
