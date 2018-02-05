@@ -14,8 +14,11 @@
     "clean": "./.scripts/clean.sh",
     "build": "./.scripts/build.sh",
     "build-umd": "./.scripts/build-umd.sh",
+    "watch-umd": "gulp watch-umd",
     "build-cjs": "./.scripts/build-cjs.sh",
+    "watch-cjs": "gulp watch-cjs",
     "build-amd": "./.scripts/build-amd.sh",
+    "watch-amd": "gulp watch-amd",
     "build-global": "./.scripts/build-global.sh",
     "docs-serve": "docpress serve",
     "docs-build": "docpress build",
@@ -70,9 +73,10 @@
     "buble-loader": "^0.4.1",
     "docpress": "0.7.1",
     "fast-async": "^6.3.0",
-    "gulp": "^3.9.1",
+    "gulp": "^4.0.0",
     "gulp-babel": "^7.0.0",
     "gulp-buble": "^0.9.0",
+    "gulp-cached": "^1.1.1",
     "webpack": "^3.10.0"
   },
   "docpress": {
