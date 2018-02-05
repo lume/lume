@@ -35,12 +35,20 @@ class PerspectiveCamera extends Node {
     mountedCallback() {
 
         // default aspect value based on the scene size.
-        if ( ! this.hasAttribute( 'aspect' ) ) {
-            const { x:width, y:height } = this.scene.calculatedSize
-            this.threeObject3d.aspect = width / height
-        }
+        if ( ! this.hasAttribute( 'aspect' ) ) this._startAutoAspect()
 
         this._lastKnownScene = this.scene
+    }
+
+    _startAutoAspect() {
+        this.scene.on('sizechange', this._updateAspectOnSceneResize, this)
+    }
+    _stopAutoAspect() {
+        this.scene.off('sizechange', this._updateAspectOnSceneResize)
+    }
+
+    _updateAspectOnSceneResize({x, y}) {
+        this.threeObject3d.aspect = x / y
     }
 
     // TODO replace with unmountedCallback #150
@@ -74,6 +82,7 @@ class PerspectiveCamera extends Node {
             this.threeObject3d.updateProjectionMatrix()
         }
         else if ( attr == 'aspect' ) {
+            this._stopAutoAspect()
             this.threeObject3d.aspect = parseFloat(newVal)
             this.threeObject3d.updateProjectionMatrix()
         }
@@ -90,7 +99,6 @@ class PerspectiveCamera extends Node {
             this.threeObject3d.updateProjectionMatrix()
         }
         else if ( attr == 'active' ) {
-            console.log('camera attr changed, ', attr)
             this._setSceneCamera()
         }
     }
@@ -102,7 +110,8 @@ class PerspectiveCamera extends Node {
             this.threeObject3d.updateProjectionMatrix()
         }
         else if ( attr == 'aspect' ) {
-            this.threeObject3d.aspect = this.getDefaultAspect()
+            this._startAutoAspect()
+            this.threeObject3d.aspect = this._getDefaultAspect()
             this.threeObject3d.updateProjectionMatrix()
         }
         else if ( attr == 'near' ) {
@@ -122,10 +131,17 @@ class PerspectiveCamera extends Node {
         }
     }
 
-    getDefaultAspect() {
-        if ( this.scene )
-            return this.scene.calculatedSize.x / this.scene.calculatedSize.y
-        else return 16/9
+    _getDefaultAspect() {
+        let result = 0
+
+        if ( this.scene ) {
+            result = this.scene.calculatedSize.x / this.scene.calculatedSize.y
+        }
+
+        // in case of a 0 or NaN (0 / 0 == NaN)
+        if (!result) result = 16 / 9
+
+        return result
     }
 
     attributeChangedCallback( attr, oldVal, newVal ) {
