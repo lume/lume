@@ -79,7 +79,7 @@ class HTMLScene extends DeclarativeBase {
         // landed in browsers yet.
         if (!this._sizePollTask)
             this._sizePollTask = Motor.addRenderTask(this._checkSize.bind(this))
-        this.on('parentsizechange', this._onElementParentSizeChange)
+        this.on('parentsizechange', this._onElementParentSizeChange, this)
     }
 
     // Don't observe size changes on the scene element.

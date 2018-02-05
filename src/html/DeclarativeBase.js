@@ -307,12 +307,14 @@ export function initDeclarativeBase() {
             mesh.castShadow = true
             mesh.receiveShadow = true
             this.threeObject3d.add(mesh)
+            this.on('sizechange', this._updateDOMPlaneOnSizeChange, this)
+        }
 
-            this._updateDOMPlaneOnSizeChange = ({ x, y, z }) => {
-                this._threeDOMPlane.geometry.dispose()
-                this._threeDOMPlane.geometry = this._createDOMPlaneGeometry()
-            }
-            this.on('sizechange', this._updateDOMPlaneOnSizeChange)
+        _updateDOMPlaneOnSizeChange({ x, y, z }) {
+            // TODO PERFORMANCE, destroying and creating a whole new geometry is
+            // wasteful, but it works for now. Improve this.
+            this._threeDOMPlane.geometry.dispose()
+            this._threeDOMPlane.geometry = this._createDOMPlaneGeometry()
         }
 
         _destroyDOMPlane() {

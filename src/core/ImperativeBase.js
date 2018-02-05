@@ -80,15 +80,17 @@ export function initImperativeBase() {
 
                 // See Transformable/Sizeable propertychange event.
                 // TODO: defer size calculation to render task
-                this.on('propertychange', prop => {
-                    if ( prop == 'sizeMode' || prop == 'size' ) {
-                        this._calcSize()
-                    }
-
-                    this._needsToBeRendered()
-                })
+                this.on('propertychange', this._onPropertyChange, this)
 
                 this.initWebGl()
+            }
+
+            _onPropertyChange(prop) {
+                if ( prop == 'sizeMode' || prop == 'size' ) {
+                    this._calcSize()
+                }
+
+                this._needsToBeRendered()
             }
 
             initWebGl() {

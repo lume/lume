@@ -42,15 +42,16 @@ const SceneMixin = base => {
             // TODO get default camera values from somewhere.
             this._perspective = 1000
 
+            // size of the element where the Scene is mounted
             // NOTE: z size is always 0, since native DOM elements are always flat.
             this._elementParentSize = {x:0, y:0, z:0}
 
-            this._onElementParentSizeChange = (newSize) => {
-                this._elementParentSize = newSize
-                this._calcSize()
-                this._needsToBeRendered()
-            }
+            this._calcSize()
+            this._needsToBeRendered()
+        }
 
+        _onElementParentSizeChange(newSize) {
+            this._elementParentSize = newSize
             this._calcSize()
             this._needsToBeRendered()
         }

@@ -8,15 +8,19 @@ const ObservableMixin = base => {
             super.construct(...args)
         }
 
-        on(eventName, callback) {
+        on(eventName, callback, context) {
             if (!this._eventMap)
                 this._eventMap = new Map
 
+            let callbacks = undefined
+
             if (!this._eventMap.has(eventName))
-                this._eventMap.set(eventName, [])
+                this._eventMap.set(eventName, callbacks = [])
+            else
+                callbacks = this._eventMap.get(eventName)
 
             if (typeof callback == 'function')
-                this._eventMap.get(eventName).push(callback)
+                callbacks.push([callback, context]) // save callback associated with context
             else
                 throw new Error('Expected a function in callback argument of Observable#on.')
         }
@@ -26,11 +30,13 @@ const ObservableMixin = base => {
 
             const callbacks = this._eventMap.get(eventName)
 
-            if (callbacks.indexOf(callback) === -1) return
+            const index = callbacks.findIndex(tuple => tuple[0] === callback)
 
-            callbacks.splice(callbacks.indexOf(callback), 1)
+            if (index == -1) return
 
-            if (callbacks.length === 0) this._eventMap.delete(eventName)
+            callbacks.splice(index, 1)
+
+            if (callbacks.size === 0) this._eventMap.delete(eventName)
 
             if (this._eventMap.size === 0) this._eventMap = null
         }
@@ -40,11 +46,19 @@ const ObservableMixin = base => {
 
             const callbacks = this._eventMap.get(eventName)
 
+            let tuple = undefined
+            let callback = undefined
+            let context = undefined
+
             for (let i=0, len=callbacks.length; i<len; i+=1) {
-                callbacks[i](data)
+                tuple = callbacks[i]
+                callback = tuple[0]
+                context = tuple[1]
+                callback.call(context, data)
             }
         }
 
+        // alias for trigger
         triggerEvent(...args) {
             return this.trigger(...args)
         }
