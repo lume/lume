@@ -7,6 +7,7 @@ mv \
     node_modules \
     docs \
     src \
+    website \
     .scripts \
     webpack.config.js \
     buble.config.js \
