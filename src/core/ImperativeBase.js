@@ -297,7 +297,7 @@ export function initImperativeBase() {
                 }
 
                 this._willBeRendered = true
-                Motor._setNodeToBeRendered(this)
+                Motor.setNodeToBeRendered(this)
             }
 
             // This method is used by Motor._renderNodes().
