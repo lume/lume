@@ -25,7 +25,7 @@
     "website-dev": "cd website && meteor",
     "build-website": "npm i && npm run docs-build && cd website && npm i",
     "setup-website-service": "cd website && ./setup-service.sh",
-    "watch": "./.scripts/build-cjs.sh --watch & P1=$!; ./.scripts/build-global.sh --watch & P2=$!; wait $P1 $P2",
+    "watch": "gulp watch-cjs & P1=$!; ./.scripts/build-global.sh --watch & P2=$!; wait $P1 $P2",
     "preversion": "echo '--- PREVERSION' && git reset HEAD global.js && git checkout -- global.js && git add . && git stash && git clean -xfd -e node_modules",
     "version": "echo '--- VERSION' && npm run add-version-to-source && npm run build && git add -f global.js",
     "add-version-to-source": "echo '--- VERSION-TO-SOURCE' && ./.scripts/version-to-source.js && git add src/index.js",
@@ -101,12 +101,12 @@
     "type": "git",
     "url": "git@github.com:trusktr/infamous.git"
   },
-  "authors": [
-    "Joseph Orbegoso Pea <joe@trusktr.io>"
-  ],
   "bugs": {
     "url": "https://github.com/trusktr/infamous/issues"
   },
+  "authors": [
+    "Joseph Orbegoso Pea <joe@trusktr.io>"
+  ],
   "keywords": [
     "infamous",
     "gui",
