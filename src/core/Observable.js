@@ -12,12 +12,10 @@ const ObservableMixin = base => {
             if (!this._eventMap)
                 this._eventMap = new Map
 
-            let callbacks = undefined
+            let callbacks = this._eventMap.get(eventName)
 
-            if (!this._eventMap.has(eventName))
+            if (!callbacks)
                 this._eventMap.set(eventName, callbacks = [])
-            else
-                callbacks = this._eventMap.get(eventName)
 
             if (typeof callback == 'function')
                 callbacks.push([callback, context]) // save callback associated with context
@@ -36,7 +34,7 @@ const ObservableMixin = base => {
 
             callbacks.splice(index, 1)
 
-            if (callbacks.size === 0) this._eventMap.delete(eventName)
+            if (callbacks.length === 0) this._eventMap.delete(eventName)
 
             if (this._eventMap.size === 0) this._eventMap = null
         }
