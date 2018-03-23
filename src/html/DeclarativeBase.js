@@ -173,10 +173,6 @@ export function initDeclarativeBase() {
             // in order to achieve "mixed mode" features like the DOM element
             // intersecting with WebGL meshes.
             this._threeDOMPlane = null
-
-            // when needed, an arrow function as listener for sizechange
-            // events, referenced so that we can clean up.
-            this._updateDOMPlaneOnSizeChange = null
         }
 
         childConnectedCallback(child) {
@@ -324,7 +320,6 @@ export function initDeclarativeBase() {
             this._threeDOMPlane = null
 
             this.off('sizechange', this._updateDOMPlaneOnSizeChange)
-            this._updateDOMPlaneOnSizeChange = null
         }
 
         _createDOMPlaneGeometry() {
