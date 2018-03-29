@@ -55,26 +55,30 @@ const Motor = Class('Motor', (Public, Protected, Private) => ({
         if (typeof fn != 'function')
             throw new Error('Render task must be a function.')
 
-        if (Private(this).allRenderTasks.includes(fn)) return
+        const self = Private(this)
 
-        Private(this).allRenderTasks.push(fn)
-        Private(this).numberOfTasks += 1
+        if (self.allRenderTasks.includes(fn)) return
+
+        self.allRenderTasks.push(fn)
+        self.numberOfTasks += 1
 
         // If the render loop isn't started, start it.
-        if (!Private(this).animationLoopStarted)
-            Private(this).startAnimationLoop()
+        if (!self.animationLoopStarted)
+            self.startAnimationLoop()
 
         return fn
     },
 
     removeRenderTask(fn) {
-        const taskIndex = Private(this).allRenderTasks.indexOf(fn)
+        const self = Private(this)
+
+        const taskIndex = self.allRenderTasks.indexOf(fn)
 
         if (taskIndex == -1) return
 
-        Private(this).allRenderTasks.splice(taskIndex, 1)
-        Private(this).numberOfTasks -= 1
-        Private(this).taskIterationIndex -= 1
+        self.allRenderTasks.splice(taskIndex, 1)
+        self.numberOfTasks -= 1
+        self.taskIterationIndex -= 1
     },
 
 
@@ -97,9 +101,10 @@ const Motor = Class('Motor', (Public, Protected, Private) => ({
     },
 
     setNodeToBeRendered(node) {
-        if (Private(this).nodesToBeRendered.includes(node)) return
-        Private(this).nodesToBeRendered.push(node)
-        if (!Private(this).inFrame) Private(this).startAnimationLoop()
+        const self = Private(this)
+        if (self.nodesToBeRendered.includes(node)) return
+        self.nodesToBeRendered.push(node)
+        if (!self.inFrame) self.startAnimationLoop()
     },
 
     private: {
