@@ -1,21 +1,38 @@
+# common dev and OS files
 .DS_Store
-node_modules
+node_modules/
+dist/
 npm-debug.log
-package-lock.json
+yarn-error.log
 
-.docpress
+# Editor directories and files
+.idea
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
 
-# ignore build files
-/*.js
-/*.js.map
+# ignore everything
+/*
+
+# but not source code or tests
+!/src
+!/tests
+
+# don't lock dependencies for library packages
+!/package-lock.json
+
+# not global build, to be published
 !/global.js
-!/webpack.config.js
-!/buble.config.js
-!/babel.config.js
 
-# ignore build folders
-/components
-/core
-/html
-/lib
-/esmodule
+# not config files
+!/.builderrc
+!/.npmrc
+!/babel.config.js
+!/buble.config.js
+!/jest.config.js
+!/webpack.config.js
+!/.docpress
+
+# all good projects have a README!
+!/README.md
