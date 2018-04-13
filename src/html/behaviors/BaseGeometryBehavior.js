@@ -8,14 +8,14 @@ class BaseGeometryBehavior extends BaseMeshBehavior {
 
     async connectedCallback( element ) {
         if (! ( await super.connectedCallback( element ) ) ) return
-
+        this.element = element
         element.on('sizechange', this._updateGeometryOnSizeChange, this)
     }
 
     _updateGeometryOnSizeChange({ x, y, z }) {
         // TODO PERFORMANCE, re-creating geometries is wasteful, re-use them
         // when possible, and add instancing
-        this.setMeshComponent( element, 'geometry', this.createComponent(element) )
+        this.setMeshComponent( this.element, 'geometry', this.createComponent(this.element) )
     }
 
     async disconnectedCallback( element ) {
