@@ -6,11 +6,13 @@ import {
     PCFShadowMap,
 } from 'three'
 
+import Class from 'lowclass'
+
 const sceneStates = new WeakMap
 
 // A singleton responsible for setting up and drawing a WebGL scene for a given
 // infamous/core/Scene using Three.js
-class WebGLRendererThree {
+const WebGLRendererThree = Class({
     initGl(scene) {
         let sceneState = sceneStates.has(scene)
 
@@ -42,12 +44,12 @@ class WebGLRendererThree {
         // TODO? Maybe the html/scene.js element should be responsible for
         // making this, so that DOM logic is encapsulated there?
         scene._canvasContainer.appendChild( renderer.domElement )
-    }
+    },
 
     drawScene(scene) {
         const {renderer /* , scene: threeScene, camera */} = sceneStates.get(scene)
         renderer.render(scene.threeObject3d, scene.threeCamera)
-    }
+    },
 
     // TODO FIXME This is tied to the `sizechange` event of Scene, which means
     // camera and renderer resize happens outside of the animation loop, but as
@@ -67,15 +69,15 @@ class WebGLRendererThree {
         // call this rather than just this.drawScene() directly because Motor
         // will make sure it runs in an animation frame.
         scene._needsToBeRendered()
-    }
+    },
 
     setClearColor( scene, color, opacity ) {
         sceneStates.get( scene ).renderer.setClearColor( color, opacity )
-    }
+    },
 
     setClearAlpha( scene, opacity ) {
         sceneStates.get( scene ).renderer.setClearAlpha( opacity )
-    }
+    },
 
     setShadowMapType(scene, type) {
         type = type.toLowerCase()
@@ -92,8 +94,8 @@ class WebGLRendererThree {
         else { // default
             sceneStates.get( scene ).renderer.shadowMap.type = PCFShadowMap
         }
-    }
-}
+    },
+})
 
 let instance = null
 
