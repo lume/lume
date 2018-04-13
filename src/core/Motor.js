@@ -13,7 +13,7 @@ let documentIsReady = false
 // TODO use Array if IE11 doesn't have Map.
 const webGLRenderers = new Map
 
-const Motor = Class('Motor', (Public, Protected, Private) => ({
+const Motor = Class('Motor', ({ Public, Private }) => ({
 
     constructor() {
         const self = Private(this)

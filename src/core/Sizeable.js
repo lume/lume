@@ -60,25 +60,25 @@ const SizeableMixin = base => {
             const props = this._properties
             const parentSize = this._getParentSize()
 
-            if (props.sizeMode._x == 'literal') {
-                calculatedSize.x = props.size._x
+            if (props.sizeMode.x == 'literal') {
+                calculatedSize.x = props.size.x
             }
             else { // proportional
-                calculatedSize.x = parentSize.x * props.size._x
+                calculatedSize.x = parentSize.x * props.size.x
             }
 
-            if (props.sizeMode._y == 'literal') {
-                calculatedSize.y = props.size._y
+            if (props.sizeMode.y == 'literal') {
+                calculatedSize.y = props.size.y
             }
             else { // proportional
-                calculatedSize.y = parentSize.y * props.size._y
+                calculatedSize.y = parentSize.y * props.size.y
             }
 
-            if (props.sizeMode._z == 'literal') {
-                calculatedSize.z = props.size._z
+            if (props.sizeMode.z == 'literal') {
+                calculatedSize.z = props.size.z
             }
             else { // proportional
-                calculatedSize.z = parentSize.z * props.size._z
+                calculatedSize.z = parentSize.z * props.size.z
             }
 
             if (

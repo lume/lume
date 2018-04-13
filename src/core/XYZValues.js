@@ -1,4 +1,6 @@
 import Observable from './Observable'
+import Class from 'lowclass'
+import { native } from 'lowclass/native'
 
 /**
  * Represents a set of values for the X, Y, and Z axes. For example, the
@@ -8,31 +10,32 @@ import Observable from './Observable'
  * The value don't have to be numerical. For example,
  * {x:'foo', y:'bar', z:'baz'}
  */
-class XYZValues extends Observable {
+export default
+Class( 'XYZValues' ).extends( native(Observable), ({ Private, Super }) => ({
     constructor(x = 0, y = 0, z = 0) {
-        super()
-        this._x = x
-        this._y = y
-        this._z = z
-    }
+        Super(this).constructor()
+
+        const self = Private(this)
+        self._x = x
+        self._y = y
+        self._z = z
+    },
 
     set x(value) {
-        this._x = value
+        Private(this)._x = value
         this.trigger('valuechanged', {x: value})
-    }
-    get x() { return this._x }
+    },
+    get x() { return Private(this)._x },
 
     set y(value) {
-        this._y = value
+        Private(this)._y = value
         this.trigger('valuechanged', {y: value})
-    }
-    get y() { return this._y }
+    },
+    get y() { return Private(this)._y },
 
     set z(value) {
-        this._z = value
+        Private(this)._z = value
         this.trigger('valuechanged', {z: value})
-    }
-    get z() { return this._z }
-}
-
-export {XYZValues as default}
+    },
+    get z() { return Private(this)._z },
+}))

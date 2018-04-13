@@ -1,34 +1,31 @@
 import XYZValues from './XYZValues'
+import Class from 'lowclass'
 
 export default
-class XYZNonNegativeValues extends XYZValues {
-
-    constructor(x = 0, y = 0, z = 0) {
-        super(x, y, z)
-    }
+Class( 'XYZNonNegativeValues' ).extends( XYZValues, ({ Private, Super }) => ({
 
     _checkForNegative(axisName, value) {
         if(value < 0) {
             throw new Error(axisName + " value was " + value + ". Size values cannot be negative.")
         }
-    }
+    },
 
     set x(value) {
         this._checkForNegative("X", value)
-        super.x = value
-    }
-    get x() { return super.x }
+        Super(this).x = value
+    },
+    get x() { return Super(this).x },
 
     set y(value) {
         this._checkForNegative("Y", value)
-        super.y = value
-    }
-    get y() { return super.y }
+        Super(this).y = value
+    },
+    get y() { return Super(this).y },
 
     set z(value) {
         this._checkForNegative("Z", value)
-        super.z = value
-    }
-    get z() { return super.z }
+        Super(this).z = value
+    },
+    get z() { return Super(this).z },
 
-}
+}))
