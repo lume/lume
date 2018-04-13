@@ -1,18 +1,20 @@
 import { Color } from 'three'
+import Class from 'lowclass'
+import { native } from 'lowclass/native'
 
 const twoOrMoreSpaces = /\s\s+/g
 
 export default
 function ValueProcessor( Base ) {
-    Base = Base || class {}
+    Base = Base ? native( Base ) : Class()
 
-    return class ValueProcessor extends Base {
+    return Class( 'ValueProcessor' ).extends( Base, {
 
         processColorValue( value, context, prop ) {
             context = context || this.threeObject3d
             prop = prop || 'color'
             context[ prop ] = new Color( value )
-        }
+        },
 
         processNumberValue( prop, value, context ) {
             context = context || this.threeObject3d
@@ -29,8 +31,8 @@ function ValueProcessor( Base ) {
             }
 
             context[ prop ] = number
-        }
+        },
 
-    }
+    })
 
 }
