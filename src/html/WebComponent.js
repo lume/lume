@@ -4,6 +4,8 @@ import { observeChildren } from '../core/Utility'
 import jss from '../lib/jss'
 import documentReady from '@awaitbox/document-ready'
 import DefaultBehaviorsMixin from './behaviors/DefaultBehaviors'
+import Class from 'lowclass'
+import { native } from 'lowclass/native'
 
 // Very very stupid hack needed for Safari in order for us to be able to extend
 // the HTMLElement class. See:
@@ -54,7 +56,7 @@ function WebComponentMixin(elementClass) {
         return classCache.get(elementClass)
 
     // otherwise, create it.
-    class WebComponent extends DefaultBehaviorsMixin(elementClass) {
+    const WebComponent = Class().extends( native( DefaultBehaviorsMixin(elementClass) ), ({ Super, Public, Private }) => ({
 
         constructor(...args) {
             // Throw an error if no Custom Elements v1 API exists.
@@ -70,46 +72,34 @@ function WebComponentMixin(elementClass) {
 
             // we are using `construct` because we were previously using the
             // document-register-element Custom Elements v1 polyfill.
-            super(...args)
-            this.construct(...args)
-        }
+            const self = Super(this).constructor(...args)
+            self.construct(...args)
+            return self
+        },
 
         // subclasses extend this, and they should not use `constructor`
         // directly.
         construct() {
-            super.construct()
-            this._connected = false
-            this._initialized = false
-            this._initialAttributeChange = false
-            this._childObserver = null
-            this._style = null
-        }
+            Super(this).construct()
+        },
 
         // Subclasses can implement these.
-        childConnectedCallback(child) { }
-        childDisconnectedCallback(child) { }
+        childConnectedCallback(child) { },
+        childDisconnectedCallback(child) { },
 
         connectedCallback() {
-            if (super.connectedCallback) super.connectedCallback()
-            this._connected = true
+            if (Super(this).connectedCallback) Super(this).connectedCallback()
+            Private(this).connected = true
 
-            if (!this._initialized) {
+            if (!Private(this).initialized) {
                 this.init()
-                this._initialized = true
+                Private(this).initialized = true
             }
-        }
-
-        _createStyles() {
-            const rule = jss.createRule(this.getStyles())
-
-            rule.applyTo(this)
-
-            return rule
-        }
+        },
 
         async disconnectedCallback() {
-            if (super.disconnectedCallback) super.disconnectedCallback()
-            this._connected = false
+            if (Super(this).disconnectedCallback) Super(this).disconnectedCallback()
+            Private(this).connected = false
 
             // Deferr to the next tick before cleaning up in case the
             // element is actually being re-attached somewhere else within this
@@ -128,10 +118,10 @@ function WebComponentMixin(elementClass) {
             // As mentioned in the previous comment, if the element was not
             // re-attached in the last tick (for example, it was moved to
             // another element), then clean up.
-            if (!this._connected && this._initialized) {
+            if (!Private(this).connected && Private(this).initialized) {
                 this.deinit()
             }
-        }
+        },
 
         /**
          * This method can be overridden by extending classes, it should return
@@ -141,7 +131,7 @@ function WebComponentMixin(elementClass) {
          */
         getStyles() {
             return {}
-        }
+        },
 
 
         /**
@@ -163,7 +153,7 @@ function WebComponentMixin(elementClass) {
          * Subclasses should extend this to add such logic.
          */
         init() {
-            if (!this._style) this._style = this._createStyles()
+            if (!Private(this).style) Private(this).style = Private(this).createStyles()
 
             // Timeout needed in case the Custom Element classes are
             // registered after the elements are already defined in the
@@ -183,21 +173,22 @@ function WebComponentMixin(elementClass) {
                 // was created (f.e. child nodes that were connected before the
                 // custom elements were registered and which would therefore not be
                 // detected by the following MutationObserver).
-                if (!this._childObserver) {
+                if (!Private(this).childObserver) {
 
                     const children = this.childNodes
                     for (let l=children.length, i=0; i<l; i+=1) {
                         this.childConnectedCallback(children[i])
                     }
 
-                    this._childObserver = observeChildren(this, this.childConnectedCallback, this.childDisconnectedCallback)
+                    // TODO: unobserve children on cleanup
+                    Private(this).childObserver = observeChildren(this, this.childConnectedCallback, this.childDisconnectedCallback)
                 }
             })
             //}, 0)
 
             // fire this.attributeChangedCallback in case some attributes have
             // existed before the custom element was upgraded.
-            if (!this._initialAttributeChange && this.hasAttributes()) {
+            if (!Private(this).initialAttributeChange && this.hasAttributes()) {
 
                 // HTMLElement#attributes is a NamedNodeMap which is not an
                 // iterable, so we use Array.from. See:
@@ -206,18 +197,20 @@ function WebComponentMixin(elementClass) {
                 for (let l=attributes.length, i=0; i<l; i+=1)
                     this.attributeChangedCallback(attributes[i].name, null, attributes[i].value)
             }
-        }
+        },
 
-        static get observedAttributes() {
-            console.warn(`WebComponent: Your custom element (${ this.name }) should specify observed attributes or attributeChangedCallback won't be called`)
-        }
+        static: {
+            get observedAttributes() {
+                console.warn(`WebComponent: Your custom element (${ this.name }) should specify observed attributes or attributeChangedCallback won't be called`)
+            },
+        },
 
         // TODO: when we make setAttribute accept non-strings, we need to move
         // logic from attributeChangedCallback
         attributeChangedCallback(...args) {
-            if (super.attributeChangedCallback) super.attributeChangedCallback(...args)
-            this._initialAttributeChange = true
-        }
+            if (Super(this).attributeChangedCallback) Super(this).attributeChangedCallback(...args)
+            Private(this).initialAttributeChange = true
+        },
 
         /**
          * This is the reciprocal of init(). It will be called when an element
@@ -233,9 +226,25 @@ function WebComponentMixin(elementClass) {
             // Nothing much at the moment, but extending classes can extend
             // this to add deintialization logic.
 
-            this._initialized = false
-        }
-    }
+            Private(this).initialized = false
+        },
+
+        private: {
+            style: null,
+            connected: false,
+            initialized: false,
+            initialAttributeChange: false,
+            childObserver: null,
+
+            createStyles() {
+                const rule = jss.createRule(Public(this).getStyles())
+
+                rule.applyTo(Public(this))
+
+                return rule
+            },
+        },
+    }))
 
     classCache.set(elementClass, WebComponent)
     return WebComponent
