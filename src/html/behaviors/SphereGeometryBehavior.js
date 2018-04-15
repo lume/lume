@@ -2,17 +2,22 @@ import 'element-behaviors'
 import { SphereGeometry } from 'three'
 import BaseGeometryBehavior from './BaseGeometryBehavior'
 
-export default
-class SphereGeometryBehavior extends BaseGeometryBehavior {
+const SphereGeometryBehavior = BaseGeometryBehavior.subclass({
 
-    createComponent(element) {
-        return new SphereGeometry(
-            element.calculatedSize.x / 2,
-            32,
-            32
-        )
-    }
+    protected: {
 
-}
+        createComponent(element) {
+            return new SphereGeometry(
+                element.calculatedSize.x / 2,
+                32,
+                32
+            )
+        },
+
+    },
+
+})
 
 elementBehaviors.define('sphere-geometry', SphereGeometryBehavior)
+
+export default SphereGeometryBehavior

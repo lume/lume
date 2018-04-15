@@ -2,13 +2,18 @@ import 'element-behaviors'
 import { MeshPhongMaterial } from 'three'
 import BaseMaterialBehavior from './BaseMaterialBehavior'
 
-export default
-class PhongMaterialBehavior extends BaseMaterialBehavior {
+const PhongMaterialBehavior = BaseMaterialBehavior.subclass({
 
-    createComponent(element) {
-        return new MeshPhongMaterial({ color: 0x00ff00 })
-    }
+    protected: {
 
-}
+        createComponent(element) {
+            return new MeshPhongMaterial({ color: 0x00ff00 })
+        },
+
+    },
+
+})
 
 elementBehaviors.define('phong-material', PhongMaterialBehavior)
+
+export default PhongMaterialBehavior

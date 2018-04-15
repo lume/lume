@@ -1,27 +1,30 @@
 import BaseMeshBehavior from './BaseMeshBehavior'
+import Class from 'lowclass'
 
 // base class for geometry behaviors
 export default
-class BaseGeometryBehavior extends BaseMeshBehavior {
+Class( 'BaseGeometryBehavior' ).extends( BaseMeshBehavior, ({ Protected, Super }) => ({
 
-    static get type() { return 'geometry' }
+    static: {
+        type: 'geometry',
+    },
 
     async connectedCallback( element ) {
-        if (! ( await super.connectedCallback( element ) ) ) return
+        if (! ( await Super(this).connectedCallback( element ) ) ) return
         this.element = element
         element.on('sizechange', this._updateGeometryOnSizeChange, this)
-    }
+    },
 
     _updateGeometryOnSizeChange({ x, y, z }) {
         // TODO PERFORMANCE, re-creating geometries is wasteful, re-use them
         // when possible, and add instancing
-        this.setMeshComponent( this.element, 'geometry', this.createComponent(this.element) )
-    }
+        Protected(this).setMeshComponent( this.element, 'geometry', Protected(this).createComponent(this.element) )
+    },
 
     async disconnectedCallback( element ) {
-        if (! ( await super.disconnectedCallback( element ) ) ) return
+        if (! ( await Super(this).disconnectedCallback( element ) ) ) return
 
         element.off('sizechange', this._updateGeometryOnSizeChange)
-    }
+    },
 
-}
+}))

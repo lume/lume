@@ -2,16 +2,21 @@ import 'element-behaviors'
 import { PlaneGeometry } from 'three'
 import BaseGeometryBehavior from './BaseGeometryBehavior'
 
-export default
-class PlaneGeometryBehavior extends BaseGeometryBehavior {
+const PlaneGeometryBehavior = BaseGeometryBehavior.subclass({
 
-    createComponent(element) {
-        return new PlaneGeometry(
-            element.calculatedSize.x,
-            element.calculatedSize.y,
-        )
-    }
+    protected: {
 
-}
+        createComponent(element) {
+            return new PlaneGeometry(
+                element.calculatedSize.x,
+                element.calculatedSize.y,
+            )
+        },
+
+    },
+
+})
 
 elementBehaviors.define('plane-geometry', PlaneGeometryBehavior)
+
+export default PlaneGeometryBehavior

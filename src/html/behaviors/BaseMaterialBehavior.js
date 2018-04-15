@@ -1,19 +1,19 @@
 import BaseMeshBehavior from './BaseMeshBehavior'
 import { Color } from 'three'
+import Class from 'lowclass'
 
 // base class for geometry behaviors
 export default
-class BaseMaterialBehavior extends BaseMeshBehavior {
+Class( 'BaseMaterialBehavior' ).extends( BaseMeshBehavior, ({ Super }) => ({
 
-    static get type() { return 'material' }
-
-    static get observedAttributes() {
-        return [ 'color', 'material-opacity' ]
-    }
+    static: {
+        type: 'material',
+        observedAttributes: [ 'color', 'material-opacity' ],
+    },
 
     // TODO: generic type system for attributes.
     async attributeChangedCallback( element, attr, oldVal, newVal ) {
-        if (! ( await super.attributeChangedCallback( element ) ) ) return
+        if (! ( await Super(this).attributeChangedCallback( element ) ) ) return
 
         if ( attr == 'color' ) {
             this.processColorValue( newVal, element.threeObject3d.material )
@@ -42,5 +42,5 @@ class BaseMaterialBehavior extends BaseMeshBehavior {
 
         // we can make a lot more attributes as needed...
 
-    }
-}
+    },
+}))
