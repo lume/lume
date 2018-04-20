@@ -1,8 +1,8 @@
-#View Engine (Codename Boxer)
+# View Engine (Codename Boxer)
 
 [![Join the chat at https://gitter.im/infamous/boxer](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/infamous/boxer?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
 
-##A library that uses CSS 3D Transforms to provide highly performant Views to Web Apps.
+## A library that uses CSS 3D Transforms to provide highly performant Views to Web Apps.
 
 The goal of this project is to create a scene graph that contains nodes which handle calculations needed to animate DOM Elements.
 
@@ -11,13 +11,13 @@ The built project is found in dist/boxer.js. Boxer currently operates on the win
 - This project is very early in development.
 
 
-###Coming Soon:
+### Coming Soon:
 
 * UI Event System
 * Responsive Framework
 * ES6 Modules
 
-##Getting Started
+## Getting Started
 
 Examples are provided in a web app built with this Engine in the root directory of the repo and [here](http://devmagnet.net/boxer/demo).
 
@@ -53,13 +53,13 @@ for( var i=0; i<180; i++ ){
 
 ```
 
-##Performance Tips
+## Performance Tips
 
 - Don't use 'position' property to force elements into a layout, this will make the browser repaint Elements unnecessarily. Use float or flexbox instead.
 - Setting the z to either 'translate' or 'align' an Element to 1 will force DOMComponent to draw Matrix3D transforms and leverage GPU.
 
 
-##Development
+## Development
 
 `npm install` - Install only 1 dependency for prototype, XCSSMatrix to get up and running with CSS 3D Transforms.
 
@@ -71,7 +71,7 @@ Lately, I've been relying on `live-server` to setup watchers and give me an inst
 
 If you want to help on this project, join the community on the infamous/boxer Gitter.
 
-##What's Needed
+## What's Needed
 
 * API for timeline to create complex Transitions
 * Event System similar to Famo.us 0.3.5 that allows dev to sync EventListeners
