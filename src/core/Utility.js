@@ -131,28 +131,6 @@ function getAncestorShadowRoot(node) {
     return current
 }
 
-// in the future, the user will be able to toggle the HTML API.
-const hasHtmlApi = true
-
-// Traverses a tree while considering ShadowDOM disribution.
-function traverse(node, isShadowChild) {
-    console.log(isShadowChild ? 'distributedNode:' : 'node:', node)
-
-    const {children} = node
-    for (let l=children.length, i=0; i<l; i+=1) {
-        // skip nodes that are possiblyDistributed, i.e. they have a parent
-        // that has a ShadowRoot.
-        if (!hasHtmlApi || !children[i]._isPossiblyDistributed)
-            traverse(children[i])
-    }
-
-    const shadowChildren = node._shadowChildren
-    if (hasHtmlApi && shadowChildren) {
-        for (let l=shadowChildren.length, i=0; i<l; i+=1)
-            traverse(shadowChildren[i], true)
-    }
-}
-
 // helper function to use instead of instanceof for classes that implement the
 // static Symbol.hasInstance method, because the behavior of instanceof isn't
 // polyfillable.
@@ -172,6 +150,5 @@ export {
     hasShadowDomV0,
     hasShadowDomV1,
     getAncestorShadowRoot,
-    traverse,
     isInstanceof,
 }

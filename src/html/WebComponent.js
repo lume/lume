@@ -1,10 +1,10 @@
 /* global customElements */
 
+import Class from 'lowclass'
 import { observeChildren } from '../core/Utility'
 import jss from '../lib/jss'
 import documentReady from '@awaitbox/document-ready'
 import DefaultBehaviorsMixin from './behaviors/DefaultBehaviors'
-import Class from 'lowclass'
 import { native } from 'lowclass/native'
 
 // Very very stupid hack needed for Safari in order for us to be able to extend

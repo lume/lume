@@ -162,6 +162,8 @@ const TransformableMixin = base => {
                 this._worldMatrix = this._properties.transform.multiply(parent._worldMatrix)
             else
                 this._worldMatrix = this._properties.transform
+
+            this.trigger('worldMatrixUpdate')
         }
 
         // TODO rename "render" to "update".

@@ -2,6 +2,7 @@ const path = require('path')
 const babelConfig = require('./babel.config')
 const bubleConfig = require('./buble.config')
 const BabelMinify = require("babel-minify-webpack-plugin");
+const AsyncAwaitPlugin = require('webpack-async-await')
 
 let DEV = false
 
@@ -30,10 +31,10 @@ module.exports = {
                     node_modules('element-behaviors'), // ES6+
                 ],
                 use: [
-                    {
-                        loader: 'buble-loader',
-                        options: bubleConfig,
-                    },
+                    //{
+                        //loader: 'buble-loader',
+                        //options: bubleConfig,
+                    //},
                     {
                         loader: 'babel-loader',
                         options: babelConfig,
@@ -42,9 +43,12 @@ module.exports = {
             },
         ],
     },
-    plugins: DEV ? [] : [
-        new BabelMinify({}, {
-            comments: false,
-        })
+    plugins: DEV ? [
+        new AsyncAwaitPlugin(),
+    ] : [
+        //new BabelMinify({}, {
+            //comments: false,
+        //}),
+        new AsyncAwaitPlugin(),
     ],
 }
