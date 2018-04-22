@@ -7,13 +7,10 @@ import DeclarativeBase, {initDeclarativeBase, proxyGettersSetters} from './Decla
 
 initDeclarativeBase()
 
-class HTMLScene extends DeclarativeBase {
+const HTMLScene = DeclarativeBase.subclass( ({ Public, Private, Super }) => ({
 
     construct() {
-        super.construct()
-
-        this._sizePollTask = null
-        this._parentSize = {x:0, y:0, z:0}
+        Super(this).construct()
 
         // If the scene is already in the DOM, make it be "mounted".
         if (!this._mounted && this.parentNode) {
@@ -29,8 +26,10 @@ class HTMLScene extends DeclarativeBase {
             )
         }
 
-        this._root = this.attachShadow({ mode: 'open' })
-        this._root.innerHTML = `
+        const privateThis = Private(this)
+
+        privateThis._root = this.attachShadow({ mode: 'open' })
+        privateThis._root.innerHTML = `
             <style>
                 .i-scene-CSS3DLayer,
                 .i-scene-WebGLLayer,
@@ -54,83 +53,109 @@ class HTMLScene extends DeclarativeBase {
             </div>
             <div class="i-scene-WebGLLayer"></div>
         `
-        this._canvasContainer = this._root.querySelector('.i-scene-WebGLLayer')
-    }
 
-    _startOrStopSizePolling() {
-        if (
-            this._mounted &&
-            (this._properties.sizeMode.x == 'proportional'
-            || this._properties.sizeMode.y == 'proportional'
-            || this._properties.sizeMode.z == 'proportional')
-        ) {
-            this._startSizePolling()
-        }
-        else {
-            this._stopSizePolling()
-        }
-    }
-
-    // observe size changes on the scene element.
-    // HTML
-    _startSizePolling() {
-        // NOTE Polling is currently required because there's no other way to do this
-        // reliably, not even with MutationObserver. ResizeObserver hasn't
-        // landed in browsers yet.
-        if (!this._sizePollTask)
-            this._sizePollTask = Motor.addRenderTask(this._checkSize.bind(this))
-        this.on('parentsizechange', this._onElementParentSizeChange, this)
-    }
-
-    // Don't observe size changes on the scene element.
-    // HTML
-    _stopSizePolling() {
-        this.off('parentsizechange', this._onElementParentSizeChange)
-        Motor.removeRenderTask(this._sizePollTask)
-        this._sizePollTask = null
-    }
-
-    // NOTE, the Z dimension of a scene doesn't matter, it's a flat plane, so
-    // we haven't taken that into consideration here.
-    // HTML
-    _checkSize() {
-        const parent = this.parentNode
-        const parentSize = this._parentSize
-        const style = getComputedStyle(parent)
-        const width = parseFloat(style.width)
-        const height = parseFloat(style.height)
-
-        // if we have a size change, trigger parentsizechange
-        if (parentSize.x != width || parentSize.y != height) {
-            parentSize.x = width
-            parentSize.y = height
-
-            this.trigger('parentsizechange', Object.assign({}, parentSize))
-        }
-    }
+        // TODO make this similar to "package protected". It is public for now
+        // because WebGLRendererThree accesses it.
+        this._canvasContainer = privateThis._root.querySelector('.i-scene-WebGLLayer')
+    },
 
     /** @override */
     getStyles() {
         return styles
-    }
+    },
 
     deinit() {
-        super.deinit()
+        Super(this).deinit()
 
         this.unmount()
-    }
+    },
 
     connectedCallback() {
-        super.connectedCallback()
+        Super(this).connectedCallback()
 
         // When the HTMLScene gets addded to the DOM, make it be "mounted".
         if (!this._mounted)
             this.mount(this.parentNode)
-    }
-}
+    },
+
+    // TODO make these next two size-polling at least protected once we convert
+    // the Scene class, or perhaps move the size polling stuff from Scene to
+    // here where it can be colocated with this code.
+    _startOrStopSizePolling() {
+        const publicThis = Public(this)
+
+        if (
+            publicThis._mounted &&
+            (publicThis._properties.sizeMode.x == 'proportional'
+            || publicThis._properties.sizeMode.y == 'proportional'
+            || publicThis._properties.sizeMode.z == 'proportional')
+        ) {
+            Private(this)._startSizePolling()
+        }
+        else {
+            Private(this)._stopSizePolling()
+        }
+    },
+
+    // Don't observe size changes on the scene element.
+    // HTML
+    //
+    // TODO make this at least protected once we convert the Scene class
+    _stopSizePolling() {
+        const publicThis = Public(this)
+        const privateThis = Private(this)
+
+        publicThis.off('parentsizechange', publicThis._onElementParentSizeChange)
+        Motor.removeRenderTask(privateThis._sizePollTask)
+        privateThis._sizePollTask = null
+    },
+
+    private: {
+
+        _sizePollTask: null,
+        _parentSize: {x:0, y:0, z:0},
+        _root: null,
+
+        // observe size changes on the scene element.
+        // HTML
+        _startSizePolling() {
+            const publicThis = Public(this)
+
+            // NOTE Polling is currently required because there's no other way to do this
+            // reliably, not even with MutationObserver. ResizeObserver hasn't
+            // landed in browsers yet.
+            if (!this._sizePollTask)
+                this._sizePollTask = Motor.addRenderTask(this._checkSize.bind(this))
+            publicThis.on('parentsizechange', publicThis._onElementParentSizeChange, publicThis)
+        },
+
+        // NOTE, the Z dimension of a scene doesn't matter, it's a flat plane, so
+        // we haven't taken that into consideration here.
+        // HTML
+        _checkSize() {
+            const publicThis = Public(this)
+
+            const parent = publicThis.parentNode
+            const parentSize = this._parentSize
+            const style = getComputedStyle(parent)
+            const width = parseFloat(style.width)
+            const height = parseFloat(style.height)
+
+            // if we have a size change, trigger parentsizechange
+            if (parentSize.x != width || parentSize.y != height) {
+                parentSize.x = width
+                parentSize.y = height
+
+                publicThis.trigger('parentsizechange', Object.assign({}, parentSize))
+            }
+        },
+
+    },
+
+}))
 
 // This associates the Transformable getters/setters with the HTML-API classes,
 // so that the same getters/setters can be called from HTML side of the API.
-proxyGettersSetters(Sizeable, HTMLScene)
+//proxyGettersSetters(Sizeable, HTMLScene)
 
 export {HTMLScene as default}
