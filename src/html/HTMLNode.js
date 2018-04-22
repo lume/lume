@@ -1,4 +1,5 @@
 
+import Class from 'lowclass'
 import styles from './HTMLNode.style'
 import Transformable from '../core/Transformable'
 import Sizeable from '../core/Sizeable'
@@ -6,58 +7,67 @@ import DeclarativeBase, {initDeclarativeBase, proxyGettersSetters} from './Decla
 
 initDeclarativeBase()
 
-class HTMLNode extends DeclarativeBase {
+const HTMLNode = Class().extends( DeclarativeBase, ({ Public, Private, Super }) => ({
+
     construct() {
-        super.construct()
-    }
+        Super(this).construct()
+    },
 
     getStyles() {
         return styles
-    }
+    },
 
-    // TODO: get these from somewhere dynamically, and do same for
-    // proxyGettersSetters and _updateNodeProperty
-    static get observedAttributes() { return [
-        'opacity',
-        'sizemode',
-        'size',
-        'align',
-        'mountpoint',
-        'rotation',
-        'position',
-        'scale',
-        'origin',
-        'skew',
-    ]}
+    static: {
+
+        // TODO: get these from somewhere dynamically, and do same for
+        // proxyGettersSetters and _updateNodeProperty
+        observedAttributes: [
+            'opacity',
+            'sizemode',
+            'size',
+            'align',
+            'mountpoint',
+            'rotation',
+            'position',
+            'scale',
+            'origin',
+            'skew',
+        ],
+
+    },
 
     attributeChangedCallback(...args) {
-        super.attributeChangedCallback(...args)
-        this._updateNodeProperty(...args)
-    }
+        Super(this).attributeChangedCallback(...args)
+        Private(this)._updateNodeProperty(...args)
+    },
 
-    _updateNodeProperty(attribute, oldValue, newValue) {
-        // attributes on our HTML elements are the same name as those on
-        // the Node class (the setters).
-        if (newValue !== oldValue) {
-            if (attribute == 'opacity')
-                this[attribute] = window.parseFloat(newValue)
-            else if (attribute == 'sizemode')
-                this[attribute] = parseStringArray(newValue)
-            else if (
-                attribute == 'size'
-                || attribute == 'align'
-                || attribute == 'mountpoint'
-                || attribute == 'rotation'
-                || attribute == 'position'
-                || attribute == 'scale'
-                || attribute == 'origin'
-                || attribute == 'skew'
-            ) {
-                this[attribute] = parseNumberArray(newValue)
+    private: {
+
+        _updateNodeProperty(attribute, oldValue, newValue) {
+            // attributes on our HTML elements are the same name as those on
+            // the Node class (the setters).
+            if (newValue !== oldValue) {
+                if (attribute == 'opacity')
+                    Public(this)[attribute] = window.parseFloat(newValue)
+                else if (attribute == 'sizemode')
+                    Public(this)[attribute] = parseStringArray(newValue)
+                else if (
+                    attribute == 'size'
+                    || attribute == 'align'
+                    || attribute == 'mountpoint'
+                    || attribute == 'rotation'
+                    || attribute == 'position'
+                    || attribute == 'scale'
+                    || attribute == 'origin'
+                    || attribute == 'skew'
+                ) {
+                    Public(this)[attribute] = parseNumberArray(newValue)
+                }
             }
-        }
-    }
-}
+        },
+
+    },
+}))
 
 // This associates the Transformable getters/setters with the HTML-API classes,
 // so that the same getters/setters can be called from HTML side of the API.
