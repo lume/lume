@@ -71,8 +71,8 @@ const HTMLNode = Class().extends( DeclarativeBase, ({ Public, Private, Super }) 
 
 // This associates the Transformable getters/setters with the HTML-API classes,
 // so that the same getters/setters can be called from HTML side of the API.
-proxyGettersSetters(Transformable, HTMLNode)
-proxyGettersSetters(Sizeable, HTMLNode)
+//proxyGettersSetters(Transformable, HTMLNode)
+//proxyGettersSetters(Sizeable, HTMLNode)
 
 function parseNumberArray(str) {
     checkIsNumberArrayString(str)
