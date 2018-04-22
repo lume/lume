@@ -108,16 +108,16 @@ export function initImperativeBase() {
             connected() {
                 this._lastKnownParent = this.parent
                 this.parent.threeObject3d.add(this.threeObject3d)
+                this.on('worldMatrixUpdate', this._onWorldMatrixUpdate, this)
             }
             disconnected() {
                 this._lastKnownParent.threeObject3d.remove(this.threeObject3d)
+                this.off('worldMatrixUpdate', this._onWorldMatrixUpdate)
             }
 
-            _calculateWorldMatrixFromParent() {
-                super._calculateWorldMatrixFromParent()
-
+            _onWorldMatrixUpdate() {
                 threeObject3d = this.threeObject3d
-                domPlane = this._threeDOMPlane
+                domPlane = this.threeDOMPlane
 
                 // Three Matrix4#elements is in the same major order as our
                 // DOMMatrix#_matrix. If we were to use Matrix4#set here, we'd have
