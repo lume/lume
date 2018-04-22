@@ -1,6 +1,5 @@
 /* global HTMLSlotElement */
 
-import Class from 'lowclass'
 import WebComponent from './WebComponent'
 import HTMLNode from './HTMLNode'
 import { observeChildren, /*getShadowRootVersion,*/ hasShadowDomV0,
@@ -15,7 +14,6 @@ import {
 } from 'three'
 
 var DeclarativeBase
-var DeclarativeBasePrivate
 
 const observers = new WeakMap
 
@@ -27,7 +25,7 @@ export function initDeclarativeBase() {
     /**
      * @implements {EventListener}
      */
-    DeclarativeBase = Class().extends( WebComponent(), ({ Super, Public, Private }) => ( DeclarativeBasePrivate = Private, {
+    DeclarativeBase = WebComponent().subclass( ({ Super, Public, Private }) => ({
 
         static: {
             define(name) {
@@ -64,7 +62,7 @@ export function initDeclarativeBase() {
             }
             catch (e) { throw e }
 
-            const privateThis = DeclarativeBasePrivate(this)
+            const privateThis = Private(this)
 
             privateThis._hasShadowRoot = true
             if (oldRoot) {
