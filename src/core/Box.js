@@ -1,18 +1,19 @@
+import Class from 'lowclass'
+import {native} from 'lowclass/native'
 import Mesh from './Mesh'
 
 export default
-class Box extends Mesh {
-    static get defaultElementName() { return 'i-box' }
-    static get _Class() { return Box }
+Class('Box').extends( native(Mesh), {
+    static: {
+        defaultElementName: 'i-box',
 
-    static get defaultBehaviors() {
-        return {
+        defaultBehaviors: {
             'box-geometry': initialBehaviors => {
                 return !initialBehaviors.some( b => b.endsWith( '-geometry' ) )
             },
             'phong-material': initialBehaviors => {
                 return !initialBehaviors.some( b => b.endsWith( '-material' ) )
             },
-        }
-    }
-}
+        },
+    },
+})
