@@ -1,19 +1,21 @@
+import Class from 'lowclass'
+import {native} from 'lowclass/native'
 import Mesh from './Mesh'
 
 export default
-class DOMNode extends Mesh {
-    static get defaultElementName() { return 'i-dom-node' }
+Class('DOMNode').extends( native(Mesh), {
+    static: {
+        defaultElementName: 'i-dom-node',
 
-    get isDOMNode() { return true }
-
-    static get defaultBehaviors() {
-        return {
+        defaultBehaviors: {
             'domnode-geometry': initialBehaviors => {
                 return !initialBehaviors.some( b => b.endsWith( '-geometry' ) )
             },
             'domnode-material': initialBehaviors => {
                 return !initialBehaviors.some( b => b.endsWith( '-material' ) )
             },
-        }
-    }
-}
+        },
+    },
+
+    get isDOMNode() { return true },
+})
