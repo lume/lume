@@ -1,14 +1,15 @@
 
+import Class from 'lowclass'
+import {native} from 'lowclass/native'
 import LightBase from './LightBase'
-
 import { PointLight as ThreePointLight } from 'three'
 
 export default
-class PointLight extends LightBase {
-    static get defaultElementName() { return 'i-point-light' }
+Class('PointLight').extends( native(LightBase), ({ Super }) => ({
+    static: {
+        defaultElementName: 'i-point-light',
 
-    static get observedAttributes() {
-        return super.observedAttributes.concat([
+        observedAttributes: LightBase.observedAttributes.concat([
             'distance',
             'decay',
             'castshadow',
@@ -25,12 +26,12 @@ class PointLight extends LightBase {
             'shadow-camera-near',
             'shadowcamerafar',
             'shadow-camera-far',
-        ])
-    }
+        ]),
+    },
 
     construct(options = {}) {
-        super.construct(options)
-    }
+        Super(this).construct(options)
+    },
 
     makeThreeObject3d() {
         const light = new ThreePointLight
@@ -48,11 +49,11 @@ class PointLight extends LightBase {
         light.shadow.camera.far = 2000 // default 2000
 
         return light
-    }
+    },
 
     // TODO: make way to map attributes to properties.
     attributeChangedCallback( attr, oldVal, newVal ) {
-        super.attributeChangedCallback( attr, oldVal, newVal )
+        Super(this).attributeChangedCallback( attr, oldVal, newVal )
 
         if (
             attr == 'distance' ||
@@ -103,5 +104,5 @@ class PointLight extends LightBase {
             this.processNumberValue( 'far', newVal, this.threeObject3d.shadow.camera )
             this._needsToBeRendered()
         }
-    }
-}
+    },
+}))
