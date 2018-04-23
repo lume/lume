@@ -133,6 +133,8 @@ const SceneMixin = base => {
             })
         }
 
+        // TODO FIXME: manual camera doesn't work after we've added the
+        // default-camera feature.
         _setCamera( camera ) {
             if ( !camera ) {
                 this._createDefaultCamera()
