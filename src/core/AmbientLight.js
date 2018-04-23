@@ -1,10 +1,9 @@
 import Class from 'lowclass'
-import {native} from 'lowclass/native'
 import LightBase from './LightBase'
 import { AmbientLight as ThreeAmbientLight } from 'three'
 
 export default
-Class('AmbientLight').extends( native(LightBase), {
+Class('AmbientLight').extends( LightBase, {
     static: {
         defaultElementName: 'i-ambient-light',
     },

@@ -1,25 +1,30 @@
+import Class from 'lowclass'
+import {native} from 'lowclass/native'
 import Node from './Node'
 import ValueProcessor from './ValueProcessor'
 
 // base class for light elements.
 export default
-class LightBase extends ValueProcessor( Node ) {
+Class('LightBase').extends( ValueProcessor( Node ), ({ Super }) => ({
 
-    static get observedAttributes() {
-        return super.observedAttributes.concat([
+    static: {
+        // TODO calling super.observedAttributes doesn't work because
+        // ValueProcessor mixin doesn't do static extension. Abstract away the
+        // mixin pattern, and have it include static inheritance.
+        //observedAttributes: ValueProcessor.observedAttributes.concat([
+        observedAttributes: Node.observedAttributes.concat([
             'color',
             'intensity',
-        ])
-    }
+        ]),
+    },
 
     construct(options = {}) {
-        super.construct(options)
-    }
+        Super(this).construct(options)
+    },
 
     attributeChangedCallback( attr, oldVal, newVal ) {
-        super.attributeChangedCallback( attr, oldVal, newVal )
+        Super(this).attributeChangedCallback( attr, oldVal, newVal )
 
-        // TODO belongs in Light base class
         if ( attr == 'color' ) {
             this.processColorValue( newVal )
             this._needsToBeRendered()
@@ -29,5 +34,5 @@ class LightBase extends ValueProcessor( Node ) {
             this.processNumberValue( attr, newVal )
             this._needsToBeRendered()
         }
-    }
-}
+    },
+}))

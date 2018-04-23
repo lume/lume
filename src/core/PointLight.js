@@ -1,11 +1,10 @@
 
 import Class from 'lowclass'
-import {native} from 'lowclass/native'
 import LightBase from './LightBase'
 import { PointLight as ThreePointLight } from 'three'
 
 export default
-Class('PointLight').extends( native(LightBase), ({ Super }) => ({
+Class('PointLight').extends( LightBase, ({ Super }) => ({
     static: {
         defaultElementName: 'i-point-light',
 
