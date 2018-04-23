@@ -1,18 +1,21 @@
+import Class from 'lowclass'
+import {native} from 'lowclass/native'
 import Mesh from './Mesh'
 
 export default
-class Sphere extends Mesh {
-    static get defaultElementName() { return 'i-sphere' }
-    static get _Class() { return Sphere }
+Class('Sphere').extends( native(Mesh), () => ({
 
-    static get defaultBehaviors() {
-        return {
+    static: {
+        defaultElementName: 'i-sphere',
+
+        defaultBehaviors: {
             'sphere-geometry': initialBehaviors => {
                 return !initialBehaviors.some( b => b.endsWith( '-geometry' ) )
             },
             'phong-material': initialBehaviors => {
                 return !initialBehaviors.some( b => b.endsWith( '-material' ) )
             },
-        }
-    }
-}
+        },
+    },
+
+}))
