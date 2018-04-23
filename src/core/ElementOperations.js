@@ -1,3 +1,5 @@
+import Class from 'lowclass'
+import {native} from 'lowclass/native'
 import Node from './Node'
 import Motor from './Motor'
 
@@ -5,10 +7,13 @@ import Motor from './Motor'
  * Manages a DOM element. Exposes a set of recommended APIs for working with
  * DOM efficiently. Currently doesn't do much yet...
  */
-class ElementOperations {
+export default
+Class('ElementOperations', {
+    element: null,
+
     constructor(element) {
         this.element = element
-    }
+    },
 
     /**
      * @param {Array.string} classes An array of class names to add to the
@@ -20,7 +25,7 @@ class ElementOperations {
     setClasses (...classes) {
         if (classes.length) this.element.classList.add(...classes)
         return this
-    }
+    },
 
     /**
      * Apply a style property to the element.
@@ -31,18 +36,18 @@ class ElementOperations {
      */
     applyStyle(property, value) {
         this.element.style[property] = value
-    }
+    },
 
     add(child) {
         this.element.appendChild(child)
-    }
+    },
 
     remove(child) {
         // This conditional check is needed incase the element was already
         // removed from the HTML-API side.
         if (child.parentNode === this.element)
             this.element.removeChild(child)
-    }
+    },
 
     connectChildElement(child) {
         if (
@@ -69,7 +74,7 @@ class ElementOperations {
         ) {
             this.add(child)
         }
-    }
+    },
 
     disconnectChildElement(child) {
         // If DeclarativeBase#remove was called first, we don't need to
@@ -77,7 +82,7 @@ class ElementOperations {
         if (!child.parentNode) return
 
         this.remove(child)
-    }
+    },
 
     /**
      * Apply the DOMMatrix value to the style of this Node's element.
@@ -120,7 +125,7 @@ class ElementOperations {
         domMatrix.rotateAxisAngleSelf( 1, 0, 0, -2 * el.rotation.x )
 
         this.applyStyle('transform', cssMatrixString)
-    }
+    },
 
     /**
      * [applySize description]
@@ -132,11 +137,11 @@ class ElementOperations {
         this.applyStyle('height', `${y}px`)
 
         // NOTE: we ignore the Z axis on elements, since they are flat.
-    }
+    },
 
     applyOpacity(opacity) {
         this.applyStyle('opacity', opacity)
-    }
+    },
 
     applyImperativeNodeProperties(node) {
 
@@ -148,21 +153,19 @@ class ElementOperations {
 
         // But both Node and Scene are Sizeable
         this.applySize(node._calculatedSize)
-    }
+    },
 
     shouldRender() {
         const task = Motor.addRenderTask(() => {
             this.applyStyle('display', 'block')
             Motor.removeRenderTask(task)
         })
-    }
+    },
 
     shouldNotRender() {
         const task = Motor.addRenderTask(() => {
             this.applyStyle('display', 'none')
             Motor.removeRenderTask(task)
         })
-    }
-}
-
-export {ElementOperations as default}
+    },
+})
