@@ -3,7 +3,6 @@ import Mesh from './Mesh'
 export default
 class DOMNode extends Mesh {
     static get defaultElementName() { return 'i-dom-node' }
-    static get _Class() { return DOMNode }
 
     get isDOMNode() { return true }
 

@@ -3,7 +3,6 @@ import Mesh from './Mesh'
 export default
 class Plane extends Mesh {
     static get defaultElementName() { return 'i-plane' }
-    static get _Class() { return Plane }
 
     static get defaultBehaviors() {
         return {

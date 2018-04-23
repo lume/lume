@@ -4,5 +4,4 @@ import DOMNode from './DOMNode'
 export default
 class DOMPlane extends DOMNode {
     static get defaultElementName() { return 'i-dom-plane' }
-    static get _Class() { return DOMPlane }
 }

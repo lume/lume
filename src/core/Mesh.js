@@ -24,7 +24,6 @@ import '../html/behaviors/DOMNodeGeometryBehavior'
 export default
 class Mesh extends Node {
     static get defaultElementName() { return 'i-mesh' }
-    static get _Class() { return Mesh }
 
     // TODO NAMING: It would be neat to be able to return an array of classes
     // as well, so that it can be agnostic of the naming. Either way should

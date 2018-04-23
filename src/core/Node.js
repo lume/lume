@@ -17,7 +17,6 @@ const NodeMixin = base => {
 
     class Node extends ImperativeBase.mixin(Transformable.mixin(base)) {
         static get defaultElementName() { return 'i-node' }
-        static get _Class() { return _Node }
 
         /**
          * @constructor

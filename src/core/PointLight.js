@@ -6,7 +6,6 @@ import { PointLight as ThreePointLight } from 'three'
 export default
 class PointLight extends LightBase {
     static get defaultElementName() { return 'i-point-light' }
-    static get _Class() { return PointLight }
 
     static get observedAttributes() {
         return super.observedAttributes.concat([

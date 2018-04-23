@@ -29,7 +29,6 @@ let Scene = null
 const SceneMixin = base => {
     class _Scene extends ValueProcessor( ImperativeBase.mixin( Transformable.mixin( base ) ) ) {
         static get defaultElementName() { return 'i-scene' }
-        static get _Class() { return Scene }
 
         construct(options = {}) {
             super.construct(options)

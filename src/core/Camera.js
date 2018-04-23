@@ -8,7 +8,6 @@ import { PerspectiveCamera as ThreePerspectiveCamera } from 'three'
 export default
 class PerspectiveCamera extends Node {
     static get defaultElementName() { return 'i-perspective-camera' }
-    static get _Class() { return PerspectiveCamera }
 
     async construct(options = {}) {
         super.construct(options)

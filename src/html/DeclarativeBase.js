@@ -30,7 +30,7 @@ export function initDeclarativeBase() {
         static: {
             define(name) {
                 name = name || this.defaultElementName
-                customElements.define(name, this._Class)
+                customElements.define(name, this)
                 this._definedElementName = name
             },
 
