@@ -21,7 +21,7 @@ const HTMLNode = Class('HTMLNode').extends( DeclarativeBase, ({ Public, Private,
 
         // TODO: get these from somewhere dynamically, and do same for
         // proxyGettersSetters and _updateNodeProperty
-        observedAttributes: [
+        observedAttributes: (DeclarativeBase.observedAttributes || []).concat([
             'opacity',
             'sizemode',
             'size',
@@ -32,7 +32,7 @@ const HTMLNode = Class('HTMLNode').extends( DeclarativeBase, ({ Public, Private,
             'scale',
             'origin',
             'skew',
-        ],
+        ]),
 
     },
 
