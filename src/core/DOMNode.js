@@ -1,9 +1,8 @@
 import Class from 'lowclass'
-import {native} from 'lowclass/native'
 import Mesh from './Mesh'
 
 export default
-Class('DOMNode').extends( native(Mesh), {
+Class('DOMNode').extends( Mesh, {
     static: {
         defaultElementName: 'i-dom-node',
 

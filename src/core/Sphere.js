@@ -1,9 +1,8 @@
 import Class from 'lowclass'
-import {native} from 'lowclass/native'
 import Mesh from './Mesh'
 
 export default
-Class('Sphere').extends( native(Mesh), () => ({
+Class('Sphere').extends( Mesh, () => ({
 
     static: {
         defaultElementName: 'i-sphere',

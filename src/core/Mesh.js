@@ -1,3 +1,5 @@
+import Class from 'lowclass'
+import {native} from 'lowclass/native'
 import Node from './Node'
 
 import { Mesh as ThreeMesh } from 'three'
@@ -22,45 +24,41 @@ import '../html/behaviors/DOMNodeGeometryBehavior'
 //   Custom Elements. We can use the same mechanism to specify types for behaviors too?
 
 export default
-class Mesh extends Node {
-    static get defaultElementName() { return 'i-mesh' }
+Class('Mesh').extends( native(Node), ({ Super }) => ({
+    static: {
+        defaultElementName: 'i-mesh',
 
-    // TODO NAMING: It would be neat to be able to return an array of classes
-    // as well, so that it can be agnostic of the naming. Either way should
-    // work.
-    static get defaultBehaviors() {
-        return {
+        // TODO NAMING: It would be neat to be able to return an array of classes
+        // as well, so that it can be agnostic of the naming. Either way should
+        // work.
+        defaultBehaviors: {
             'box-geometry': initialBehaviors => {
                 return !initialBehaviors.some( b => b.endsWith( '-geometry' ) )
             },
             'phong-material': initialBehaviors => {
                 return !initialBehaviors.some( b => b.endsWith( '-material' ) )
             },
-        }
-    }
+        },
 
-    makeThreeObject3d() {
-        const mesh = new ThreeMesh
-        mesh.castShadow = true
-        mesh.receiveShadow = true
-        return mesh
-    }
-
-    static get observedAttributes() {
-
-        return super.observedAttributes.concat( [
+        observedAttributes: Node.observedAttributes.concat( [
 
             'castshadow',
             'cast-shadow',
             'receiveshadow',
             'receive-shadow',
 
-        ] )
+        ] ),
+    },
 
-    }
+    makeThreeObject3d() {
+        const mesh = new ThreeMesh
+        mesh.castShadow = true
+        mesh.receiveShadow = true
+        return mesh
+    },
 
     attributeChangedCallback( attr, oldVal, newVal ) {
-        super.attributeChangedCallback( attr, oldVal, newVal )
+        Super(this).attributeChangedCallback( attr, oldVal, newVal )
 
         if ( attr == 'castshadow' || attr == 'cast-shadow' ) {
 
@@ -83,5 +81,5 @@ class Mesh extends Node {
 
         }
 
-    }
-}
+    },
+}))
