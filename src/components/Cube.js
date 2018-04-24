@@ -1,11 +1,4 @@
-/*
- * LICENSE
- *
- * This Source Code Form is subject to the terms of the Mozilla Public
- * License, v. 2.0. If a copy of the MPL was not distributed with this
- * file, You can obtain one at http://mozilla.org/MPL/2.0/.
- *
- */
+import Class from 'lowclass'
 import forLength from 'army-knife/forLength';
 import Node from '../core/Node'
 
@@ -20,7 +13,8 @@ import Node from '../core/Node'
  * @class Cube
  * @extends Node
  */
-export class Cube extends Node {
+export default
+Class('Cube').extends( Node, ({ Super }) => ({
 
     /**
      * Create a new Cube.
@@ -31,7 +25,7 @@ export class Cube extends Node {
     construct(size, options) {
 
         // cubes, the same size on all sides
-        super.construct({size: [size, size, size], ...options});
+        Super(this).construct({size: [size, size, size], ...options});
 
         //GenericSync.register({
             //mouse: MouseSync,
@@ -42,7 +36,7 @@ export class Cube extends Node {
         this.sides = [];
 
         forLength(6, n => this._createCubeSide(n));
-    }
+    },
 
     /**
      * Creates the 6 sides of the cube (the leafnodes of the scenegraph).
@@ -80,7 +74,7 @@ export class Cube extends Node {
         side.position.z = this.size / 2
 
         this.add(rotator)
-    }
+    },
 
     /**
      * Set the content for the sides of the cube.
@@ -95,6 +89,5 @@ export class Cube extends Node {
             this.sides[index].add(content[index])
         })
         return this;
-    }
-}
-export default Cube;
+    },
+}))

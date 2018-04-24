@@ -1,11 +1,11 @@
 /* global customElements */
 
 import Class from 'lowclass'
+import {native} from 'lowclass/native'
 import { observeChildren } from '../core/Utility'
 import jss from '../lib/jss'
 import documentReady from '@awaitbox/document-ready'
 import DefaultBehaviorsMixin from './behaviors/DefaultBehaviors'
-import { native } from 'lowclass/native'
 
 // Very very stupid hack needed for Safari in order for us to be able to extend
 // the HTMLElement class. See:
@@ -38,9 +38,10 @@ function classExtendsHTMLElement(constructor) {
  */
 export default
 function WebComponentMixin(elementClass) {
+
     // the extra `class extends` is necessary here so that
     // babel-plugin-transform-builtin-classes can work properly.
-    if (!elementClass) elementClass = class extends HTMLElement {}
+    elementClass = elementClass || native( HTMLElement )
 
     // XXX: In the future, possibly check for Element if other things besides
     // HTML are supported (f.e. SVGElements)
@@ -56,7 +57,7 @@ function WebComponentMixin(elementClass) {
         return classCache.get(elementClass)
 
     // otherwise, create it.
-    const WebComponent = Class('WebComponent').extends( native( DefaultBehaviorsMixin(elementClass) ), ({ Super, Public, Private }) => ({
+    const WebComponent = Class('WebComponent').extends( DefaultBehaviorsMixin( elementClass ), ({ Super, Public, Private }) => ({
 
         constructor(...args) {
             // Throw an error if no Custom Elements v1 API exists.

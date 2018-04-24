@@ -1,3 +1,4 @@
+import Class from 'lowclass'
 import { makeLowercaseSetterAliases } from './Utility'
 import TreeNode from './TreeNode'
 import XYZValues from './XYZValues'
@@ -21,14 +22,15 @@ if (typeof document.createElement('div').style.transform == 'undefined') {
 const instanceofSymbol = Symbol('instanceofSymbol')
 
 const SizeableMixin = base => {
+    base = base || Class()
 
     // Sizeable extends TreeNode because Sizeable knows about its _parent when
     // calculating proportional sizes. Also Transformable knows about it's parent
     // in order to calculate it's world matrix based on it's parent's.
-    class Sizeable extends Observable.mixin(TreeNode.mixin(base)) {
+    const Sizeable = Class('Sizeable').extends( Observable.mixin(TreeNode.mixin(base)), ({ Super }) => ({
 
         construct(options = {}) {
-            super.construct(options)
+            Super(this).construct(options)
 
             this._propertyFunctions = null
             this._calculatedSize = { x:0, y:0, z:0 }
@@ -36,14 +38,14 @@ const SizeableMixin = base => {
             this._setDefaultProperties()
             this._setPropertyObservers()
             this.properties = options
-        }
+        },
 
         _setDefaultProperties() {
             Object.assign(this._properties, {
                 sizeMode: new XYZValues('literal', 'literal', 'literal'),
                 size:     new XYZNonNegativeValues(100, 100, 100),
             })
-        }
+        },
 
         // TODO change all event values to objects. See here for reasoning:
         // https://github.com/airbnb/javascript#events
@@ -52,7 +54,7 @@ const SizeableMixin = base => {
                 () => this.trigger('propertychange', 'sizeMode'))
             this._properties.size.on('valuechanged',
                 () => this.trigger('propertychange', 'size'))
-        }
+        },
 
         _calcSize() {
             const calculatedSize = this._calculatedSize
@@ -88,11 +90,11 @@ const SizeableMixin = base => {
             ) {
                 this.trigger('sizechange', {...calculatedSize})
             }
-        }
+        },
 
         _getParentSize() {
             return this._parent ? this._parent._calculatedSize : {x:0,y:0,z:0}
-        }
+        },
 
         _setPropertyXYZ(Class, name, newValue) {
             if (newValue instanceof Array) {
@@ -139,7 +141,7 @@ const SizeableMixin = base => {
             else {
                 throw new TypeError(`Invalid value for ${Class.name}#${name}.`)
             }
-        }
+        },
 
         _setPropertySingle(Class, name, newValue, type) {
             if (!(typeof newValue == type || newValue instanceof Function))
@@ -162,7 +164,7 @@ const SizeableMixin = base => {
                 this._properties[name] = newValue
                 this.trigger('propertychange', name)
             }
-        }
+        },
 
         /**
          * Set the size mode for each axis. Possible size modes are "literal"
@@ -175,10 +177,10 @@ const SizeableMixin = base => {
          */
         set sizeMode(newValue) {
             this._setPropertyXYZ(Sizeable, 'sizeMode', newValue)
-        }
+        },
         get sizeMode() {
             return this._properties.sizeMode
-        }
+        },
 
         // TODO: A "differential" size would be cool. Good for padding,
         // borders, etc. Inspired from Famous' differential sizing.
@@ -210,10 +212,10 @@ const SizeableMixin = base => {
          */
         set size(newValue) {
             this._setPropertyXYZ(Sizeable, 'size', newValue)
-        }
+        },
         get size() {
             return this._properties.size
-        }
+        },
 
         /**
          * Get the actual size of the Node. This can be useful when size is
@@ -229,7 +231,7 @@ const SizeableMixin = base => {
         get calculatedSize() {
             const {x,y,z} = this._calculatedSize
             return {x,y,z}
-        }
+        },
 
         /**
          * Set all properties of a Sizeable in one method.
@@ -248,11 +250,11 @@ const SizeableMixin = base => {
 
             if (properties.size)
                 this.size = properties.size
-        }
+        },
         // no need for a properties getter?
         // TODO: maybe getting properties is a good way to serialize to JSON,
         // for people that might want that.
-    }
+    }))
 
     // for use by MotorHTML, convenient since HTMLElement attributes are all
     // converted to lowercase by default, so if we don't do this then we won't be
@@ -283,7 +285,7 @@ const SizeableMixin = base => {
     return Sizeable
 }
 
-const Sizeable = SizeableMixin(class{})
+const Sizeable = SizeableMixin()
 Sizeable.mixin = SizeableMixin
 
 export {Sizeable as default}

@@ -1,12 +1,15 @@
+import Class from 'lowclass'
 
 const instanceofSymbol = Symbol('instanceofSymbol')
 
 const ObservableMixin = base => {
-    class Observable extends base {
+    base = base || Class()
+
+    const Observable = Class('Observable').extends( base, ({ Super }) => ({
 
         construct(...args) {
-            super.construct(...args)
-        }
+            Super(this).construct(...args)
+        },
 
         on(eventName, callback, context) {
             if (!this._eventMap)
@@ -21,7 +24,7 @@ const ObservableMixin = base => {
                 callbacks.push([callback, context]) // save callback associated with context
             else
                 throw new Error('Expected a function in callback argument of Observable#on.')
-        }
+        },
 
         off(eventName, callback) {
             if (!this._eventMap || !this._eventMap.has(eventName)) return
@@ -37,7 +40,7 @@ const ObservableMixin = base => {
             if (callbacks.length === 0) this._eventMap.delete(eventName)
 
             if (this._eventMap.size === 0) this._eventMap = null
-        }
+        },
 
         trigger(eventName, data) {
             if (!this._eventMap || !this._eventMap.has(eventName)) return
@@ -54,13 +57,13 @@ const ObservableMixin = base => {
                 context = tuple[1]
                 callback.call(context, data)
             }
-        }
+        },
 
         // alias for trigger
         triggerEvent(...args) {
             return this.trigger(...args)
-        }
-    }
+        },
+    }))
 
     Object.defineProperty(Observable, Symbol.hasInstance, {
         value: function(obj) {
@@ -86,7 +89,7 @@ const ObservableMixin = base => {
     return Observable
 }
 
-const Observable = ObservableMixin(class{})
+const Observable = ObservableMixin()
 Observable.mixin = ObservableMixin
 
 export {Observable as default}

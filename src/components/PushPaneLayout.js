@@ -1,9 +1,10 @@
+import Class from 'lowclass'
 import Node from '../core/Node'
 
 export default
-class PushPaneLayout extends Node {
+Class('PushPaneLayout').extends( Node, ({ Super }) => ({
     construct(...args) {
         console.log(' -- PushPaneLayout created')
-        super.construct(...args)
+        Super(this).construct(...args)
     }
-}
+}))

@@ -1,15 +1,18 @@
+import Class from 'lowclass'
 import {isInstanceof} from './Utility'
 
 const instanceofSymbol = Symbol('instanceofSymbol')
 
 const TreeNodeMixin = base => {
-    class TreeNode extends base {
+    base = base || Class()
+
+    const TreeNode = Class('TreeNode').extends( base, ({ Super }) => ({
 
         construct(...args) {
-            super.construct(...args)
+            Super(this).construct(...args)
             this._parent = null // default to no parent.
             this._children = [];
-        }
+        },
 
         /**
          * this._parent is protected (node's can access other node._parent).
@@ -20,7 +23,7 @@ const TreeNodeMixin = base => {
          */
         get parent() {
             return this._parent
-        }
+        },
 
         /**
          * Named "subnodes" to avoid conflict with HTML Elements' "children"
@@ -30,7 +33,7 @@ const TreeNodeMixin = base => {
             // return a new array, so that the user modifying it doesn't affect
             // this node's actual children.
             return [...this._children]
-        }
+        },
 
         /**
          * Add a child node to this TreeNode.
@@ -57,7 +60,7 @@ const TreeNodeMixin = base => {
             })
 
             return this
-        }
+        },
 
         /**
          * Add all the child nodes in the given array to this node.
@@ -67,7 +70,7 @@ const TreeNodeMixin = base => {
         addChildren(nodes) {
             nodes.forEach(node => this.add()(node))
             return this
-        }
+        },
 
         /**
          * Remove a child node from this node.
@@ -94,7 +97,7 @@ const TreeNodeMixin = base => {
             })
 
             return this
-        }
+        },
 
         /**
          * Remove all the child nodes in the given array from this node.
@@ -104,7 +107,7 @@ const TreeNodeMixin = base => {
         removeChildren(nodes) {
             nodes.forEach(node => this.remove(node))
             return this
-        }
+        },
 
         /**
          * Shortcut to remove all children.
@@ -112,7 +115,7 @@ const TreeNodeMixin = base => {
         removeAllChildren() {
             this.removeChildren(this._children)
             return this
-        }
+        },
 
         /**
          * @readonly
@@ -120,15 +123,15 @@ const TreeNodeMixin = base => {
          */
         get childCount() {
             return this._children.length
-        }
+        },
 
         // generic life cycle methods
-        connected() {}
-        disconnected() {}
-        childConnected(child) {}
-        childDisconnected(child) {}
-        propertyChanged() {}
-    }
+        connected() {},
+        disconnected() {},
+        childConnected(child) {},
+        childDisconnected(child) {},
+        propertyChanged() {},
+    }))
 
     Object.defineProperty(TreeNode, Symbol.hasInstance, {
         value: function(obj) {
@@ -154,7 +157,7 @@ const TreeNodeMixin = base => {
     return TreeNode
 }
 
-const TreeNode = TreeNodeMixin(class{})
+const TreeNode = TreeNodeMixin()
 TreeNode.mixin = TreeNodeMixin
 
 export {TreeNode as default}

@@ -1,3 +1,4 @@
+import Class from 'lowclass'
 
 export default
 function DefaultBehaviorsMixin(ElementClass) {
@@ -5,15 +6,15 @@ function DefaultBehaviorsMixin(ElementClass) {
     // TODO This is here for now. Make it an extension to
     // element-behaviors so that it can be applied to any element
     // generically.
-    return class DefaultBehaviors extends ElementClass {
+    return Class('DefaultBehaviors').extends( ElementClass, ({ Super }) => ({
 
-        // override in subclasses
-        static get defaultBehaviors() {
-            return []
-        }
+        static: {
+            // override in subclasses
+            defaultBehaviors: [],
+        },
 
         construct(...args) {
-            if (super.construct) super.construct(...args)
+            if (Super(this).construct) Super(this).construct(...args)
 
             // If no geometry or material behavior is detected, add default ones.
             //
@@ -30,7 +31,7 @@ function DefaultBehaviorsMixin(ElementClass) {
             // call sites use setTimeout, logic will be firing at random and in
             // different order.
             setTimeout( () => this._setDefaultBehaviorsIfNeeded(), 0 )
-        }
+        },
 
         _setDefaultBehaviorsIfNeeded() {
             let defaultBehaviors = this.constructor.defaultBehaviors
@@ -116,7 +117,7 @@ function DefaultBehaviorsMixin(ElementClass) {
                 }
             }
 
-        }
+        },
 
-    }
+    }))
 }

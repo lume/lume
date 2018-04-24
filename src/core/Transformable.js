@@ -1,3 +1,4 @@
+import Class from 'lowclass'
 import XYZValues from './XYZValues'
 import Sizeable from './Sizeable'
 import { makeLowercaseSetterAliases } from './Utility'
@@ -6,19 +7,20 @@ import {isInstanceof} from './Utility'
 const instanceofSymbol = Symbol('instanceofSymbol')
 
 const TransformableMixin = base => {
+    base = base || Class()
 
     // Transformable extends TreeNode (indirectly through Sizeable) because it
     // needs to be aware of its _parent when calculating align adjustments.
-    class Transformable extends Sizeable.mixin(base) {
+    const Transformable = Class('Transformable').extends( Sizeable.mixin(base), ({ Super }) => ({
 
         construct(options = {}) {
-            super.construct(options)
+            Super(this).construct(options)
 
             this._worldMatrix = null
-        }
+        },
 
         _setDefaultProperties() {
-            super._setDefaultProperties()
+            Super(this)._setDefaultProperties()
 
             Object.assign(this._properties, {
                 position:   new XYZValues(0, 0, 0),
@@ -30,10 +32,10 @@ const TransformableMixin = base => {
                 opacity:    1,
                 transform:  new window.DOMMatrix,
             })
-        }
+        },
 
         _setPropertyObservers() {
-            super._setPropertyObservers()
+            Super(this)._setPropertyObservers()
 
             this._properties.position.on('valuechanged',
                 () => this.trigger('propertychange', 'position'))
@@ -47,7 +49,7 @@ const TransformableMixin = base => {
                 () => this.trigger('propertychange', 'align'))
             this._properties.mountPoint.on('valuechanged',
                 () => this.trigger('propertychange', 'mountPoint'))
-        }
+        },
 
         /**
          * Takes all the current component values (position, rotation, etc) and
@@ -142,7 +144,7 @@ const TransformableMixin = base => {
             // - move by positive origin after rotating.
 
             return matrix
-        }
+        },
 
         // TODO: fix _isIdentity in DOMMatrix, it is returning true even if false.
         _calculateWorldMatricesInSubtree() {
@@ -152,7 +154,7 @@ const TransformableMixin = base => {
             for (let i=0, l=children.length; i<l; i+=1) {
                 children[i]._calculateWorldMatricesInSubtree()
             }
-        }
+        },
 
         _calculateWorldMatrixFromParent() {
             const parent = this._parent
@@ -164,16 +166,16 @@ const TransformableMixin = base => {
                 this._worldMatrix = this._properties.transform
 
             this.trigger('worldMatrixUpdate')
-        }
+        },
 
         // TODO rename "render" to "update".
         _render() {
-            if ( super._render ) super._render()
+            if ( Super(this)._render ) Super(this)._render()
 
             // TODO: only run this when necessary (f.e. not if only opacity
             // changed)
             this._properties.transform = this._calculateMatrix()
-        }
+        },
 
         /**
          * Set the position of the Transformable.
@@ -185,10 +187,10 @@ const TransformableMixin = base => {
          */
         set position(newValue) {
             this._setPropertyXYZ(Transformable, 'position', newValue)
-        }
+        },
         get position() {
             return this._properties.position
-        }
+        },
 
         /**
          * @param {Object} newValue
@@ -198,10 +200,10 @@ const TransformableMixin = base => {
          */
         set rotation(newValue) {
             this._setPropertyXYZ(Transformable, 'rotation', newValue)
-        }
+        },
         get rotation() {
             return this._properties.rotation
-        }
+        },
 
         /**
          * @param {Object} newValue
@@ -211,10 +213,10 @@ const TransformableMixin = base => {
          */
         set scale(newValue) {
             this._setPropertyXYZ(Transformable, 'scale', newValue)
-        }
+        },
         get scale() {
             return this._properties.scale
-        }
+        },
 
         /**
          * Set this Node's opacity.
@@ -225,10 +227,10 @@ const TransformableMixin = base => {
         set opacity(newValue) {
             if (!isRealNumber(newValue)) newValue = undefined
             this._setPropertySingle(Transformable, 'opacity', newValue, 'number')
-        }
+        },
         get opacity() {
             return this._properties.opacity
-        }
+        },
 
         /**
          * Set the alignment of the Node. This determines at which point in this
@@ -241,10 +243,10 @@ const TransformableMixin = base => {
          */
         set align(newValue) {
             this._setPropertyXYZ(Transformable, 'align', newValue)
-        }
+        },
         get align() {
             return this._properties.align
-        }
+        },
 
         /**
          * Set the mount point of the Node.
@@ -256,10 +258,10 @@ const TransformableMixin = base => {
          */
         set mountPoint(newValue) {
             this._setPropertyXYZ(Transformable, 'mountPoint', newValue)
-        }
+        },
         get mountPoint() {
             return this._properties.mountPoint
-        }
+        },
 
         /**
          * Set all properties of a Transformable in one method.
@@ -275,7 +277,7 @@ const TransformableMixin = base => {
          * }
          */
         set properties(properties = {}) {
-            super.properties = properties
+            Super(this).properties = properties
 
             if (properties.position)
                 this.position = properties.position
@@ -297,9 +299,9 @@ const TransformableMixin = base => {
 
             if (properties.opacity)
                 this.opacity = properties.opacity
-        }
+        },
         // no need for a properties getter?
-    }
+    }))
 
     // for use by MotorHTML, convenient since HTMLElement attributes are all
     // converted to lowercase by default, so if we don't do this then we won't be
@@ -339,7 +341,7 @@ function isRealNumber(num) {
     return true
 }
 
-const Transformable = TransformableMixin(class{})
+const Transformable = TransformableMixin()
 Transformable.mixin = TransformableMixin
 
 export {Transformable as default}

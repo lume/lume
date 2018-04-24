@@ -1,5 +1,4 @@
 import Class from 'lowclass'
-import {native} from 'lowclass/native'
 import 'geometry-interfaces'
 import Transformable from './Transformable'
 import ImperativeBase, {initImperativeBase} from './ImperativeBase'
@@ -16,8 +15,9 @@ initImperativeBase()
 const instanceofSymbol = Symbol('instanceofSymbol')
 
 const NodeMixin = base => {
+    base = base || Class()
 
-    const Node = Class('Node').extends( ImperativeBase.mixin(native(Transformable.mixin(base))), ({ Super }) => ({
+    const Node = Class('Node').extends( ImperativeBase.mixin(Transformable.mixin(base)), ({ Super }) => ({
         static: {
             defaultElementName: 'i-node',
         },
@@ -221,7 +221,7 @@ const NodeMixin = base => {
     return Node
 }
 
-let _Node = NodeMixin(class{})
+let _Node = NodeMixin()
 _Node.mixin = NodeMixin
 
 // TODO for now, hard-mixin the HTMLInterface class. We'll do this automatically later.
