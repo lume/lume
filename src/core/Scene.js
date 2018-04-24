@@ -3,9 +3,9 @@
 // permutation to detect circular dependency errors.
 // See: https://esdiscuss.org/topic/how-to-solve-this-basic-es6-module-circular-dependency-problem
 
+import Class from 'lowclass'
 import Transformable from './Transformable'
 import Motor from './Motor'
-
 import ImperativeBase, {initImperativeBase} from './ImperativeBase'
 import XYZValues from './XYZValues'
 import XYZNonNegativeValues from './XYZNonNegativeValues'
@@ -27,11 +27,26 @@ const instanceofSymbol = Symbol('instanceofSymbol')
 let Scene = null
 
 const SceneMixin = base => {
-    class _Scene extends ValueProcessor( ImperativeBase.mixin( Transformable.mixin( base ) ) ) {
-        static get defaultElementName() { return 'i-scene' }
+
+    const _ImperativeBase = ImperativeBase.mixin( Transformable.mixin( base ) )
+
+    const _Scene = Class('Scene').extends( ValueProcessor( _ImperativeBase ), ({ Super }) => ({
+
+        static: {
+            defaultElementName: 'i-scene',
+
+            observedAttributes: (_ImperativeBase.observedAttributes || []).concat( [
+                'backgroundcolor',
+                'background-color',
+                'backgroundopacity',
+                'background-opacity',
+                'shadowmaptype',
+                'shadowmap-type',
+            ] ),
+        },
 
         construct(options = {}) {
-            super.construct(options)
+            Super(this).construct(options)
 
             // Used by the this.scene getter in ImperativeBase
             // Motor's loop checks _scene on Nodes and Scenes when determining
@@ -47,13 +62,13 @@ const SceneMixin = base => {
 
             this._calcSize()
             this._needsToBeRendered()
-        }
+        },
 
         _onElementParentSizeChange(newSize) {
             this._elementParentSize = newSize
             this._calcSize()
             this._needsToBeRendered()
-        }
+        },
 
         // For now, use the same program (with shaders) for all objects.
         // Basically it has position, frag colors, point light, directional
@@ -67,7 +82,7 @@ const SceneMixin = base => {
         async initWebGl() {
             // THREE
             // maybe keep this in sceneState in WebGLRendererThree
-            super.initWebGl()
+            Super(this).initWebGl()
 
             // We don't let Three update any matrices, we supply our own world
             // matrices.
@@ -113,25 +128,25 @@ const SceneMixin = base => {
 
             // set default colors
             this._renderer.setClearColor( this, this._glBackgroundColor, this._glBackgroundOpacity )
-        }
+        },
 
         makeThreeObject3d() {
             return new ThreeScene
-        }
+        },
 
         // TODO ability to init and destroy webgl for the whole scene.
         destroyWebGl() {
-        }
+        },
 
         // TODO PERFORMANCE: make this static for better performance.
         _setDefaultProperties() {
-            super._setDefaultProperties()
+            Super(this)._setDefaultProperties()
 
             Object.assign(this._properties, {
                 sizeMode: new XYZValues('proportional', 'proportional', 'proportional'),
                 size: new XYZNonNegativeValues(1, 1, 1),
             })
-        }
+        },
 
         // TODO FIXME: manual camera doesn't work after we've added the
         // default-camera feature.
@@ -148,7 +163,7 @@ const SceneMixin = base => {
                 this._updateCameraProjection()
                 this._needsToBeRendered()
             }
-        }
+        },
 
         _createDefaultCamera() {
             const size = this._calculatedSize
@@ -158,7 +173,7 @@ const SceneMixin = base => {
             // TODO the "far" arg will be auto-calculated to encompass the furthest objects (like CSS3D).
             this.threeCamera = new PerspectiveCamera( 45, size.x / size.y || 1, 0.1, 10000 )
             this.perspective = 1000
-        }
+        },
 
         // TODO can this be moved to a render task like _calcSize? It depends
         // on size values.
@@ -166,30 +181,30 @@ const SceneMixin = base => {
             const perspective = this._perspective
             this.threeCamera.fov = 180 * ( 2 * Math.atan( this._calculatedSize.y / 2 / perspective ) ) / Math.PI
             this.threeCamera.position.z = perspective
-        }
+        },
 
         set perspective(value) {
             this._perspective = value
             this._updateCameraPerspective()
             this._updateCameraProjection()
             this._needsToBeRendered()
-        }
+        },
         get perspective() {
             return this._perspective
-        }
+        },
 
         _updateCameraAspect() {
             this.threeCamera.aspect = this._calculatedSize.x / this._calculatedSize.y || 1
-        }
+        },
 
         _updateCameraProjection() {
             this.threeCamera.updateProjectionMatrix()
-        }
+        },
 
         _addCamera( camera ) {
             this._activeCameras.add( camera )
             this._setCamera( camera )
-        }
+        },
 
         _removeCamera( camera ) {
             this._activeCameras.delete( camera )
@@ -201,12 +216,12 @@ const SceneMixin = base => {
             else camera = null
 
             this._setCamera( camera )
-        }
+        },
 
         /** @override */
         _getParentSize() {
             return this._parent ? this._parent._calculatedSize : this._elementParentSize
-        }
+        },
 
         /**
          * Mount the scene into the given target.
@@ -245,7 +260,7 @@ const SceneMixin = base => {
 
             this._elementOperations.shouldRender()
             this._startOrStopSizePolling()
-        }
+        },
 
         /**
          * Unmount the scene from it's mount point. Resets the Scene's
@@ -262,28 +277,16 @@ const SceneMixin = base => {
 
             if (this._mountPromise) this._rejectMountPromise('mountcancel')
             this._resetMountPromise()
-        }
+        },
 
         set sizeMode(value) {
-            super.sizeMode = value
+            Super(this).sizeMode = value
             this._startOrStopSizePolling()
-        }
-
-        static get observedAttributes() {
-            const superAttrs = super.observedAttributes || []
-            return superAttrs.concat( [
-                'backgroundcolor',
-                'background-color',
-                'backgroundopacity',
-                'background-opacity',
-                'shadowmaptype',
-                'shadowmap-type',
-            ] )
-        }
+        },
 
         // TODO: generic type system for attributes.
         async attributeChangedCallback(attr, oldVal, newVal) {
-            super.attributeChangedCallback(attr, oldVal, newVal)
+            Super(this).attributeChangedCallback(attr, oldVal, newVal)
 
             // We need to await mountPromise here so that we set values *after*
             // values are set in initWebGl
@@ -304,19 +307,19 @@ const SceneMixin = base => {
                 this._renderer.setShadowMapType(this, newVal)
                 this._needsToBeRendered()
             }
-        }
+        },
 
         processClearColorValue( attr, value ) {
             this.processColorValue( value, this, '_glBackgroundColor' )
             this._renderer.setClearColor( this, this._glBackgroundColor, this._glBackgroundOpacity )
-        }
+        },
 
         processClearAlphaValue( attr, value ) {
             this.processNumberValue( '_glBackgroundOpacity', value, this )
             this._renderer.setClearAlpha( this, this._glBackgroundOpacity)
-        }
+        },
 
-    }
+    }))
 
     Object.defineProperty(_Scene, Symbol.hasInstance, {
         value: function(obj) {
