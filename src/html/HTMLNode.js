@@ -7,7 +7,7 @@ import DeclarativeBase, {initDeclarativeBase, proxyGettersSetters} from './Decla
 
 initDeclarativeBase()
 
-const HTMLNode = Class().extends( DeclarativeBase, ({ Public, Private, Super }) => ({
+const HTMLNode = Class('HTMLNode').extends( DeclarativeBase, ({ Public, Private, Super }) => ({
 
     construct() {
         Super(this).construct()

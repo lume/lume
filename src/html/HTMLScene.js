@@ -7,7 +7,7 @@ import DeclarativeBase, {initDeclarativeBase, proxyGettersSetters} from './Decla
 
 initDeclarativeBase()
 
-const HTMLScene = DeclarativeBase.subclass( ({ Public, Private, Super }) => ({
+const HTMLScene = DeclarativeBase.subclass('HTMLScene', ({ Public, Private, Super }) => ({
 
     construct() {
         Super(this).construct()

@@ -25,7 +25,7 @@ export function initDeclarativeBase() {
     /**
      * @implements {EventListener}
      */
-    DeclarativeBase = WebComponent().subclass( ({ Super, Public, Private }) => ({
+    DeclarativeBase = WebComponent().subclass('DeclarativeBase', ({ Super, Public, Private }) => ({
 
         static: {
             define(name) {

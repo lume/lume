@@ -56,7 +56,7 @@ function WebComponentMixin(elementClass) {
         return classCache.get(elementClass)
 
     // otherwise, create it.
-    const WebComponent = Class().extends( native( DefaultBehaviorsMixin(elementClass) ), ({ Super, Public, Private }) => ({
+    const WebComponent = Class('WebComponent').extends( native( DefaultBehaviorsMixin(elementClass) ), ({ Super, Public, Private }) => ({
 
         constructor(...args) {
             // Throw an error if no Custom Elements v1 API exists.
