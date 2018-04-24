@@ -1,5 +1,4 @@
 import Class from 'lowclass'
-import {native} from 'lowclass/native'
 import Node from './Node'
 import ValueProcessor from './ValueProcessor'
 

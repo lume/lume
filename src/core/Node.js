@@ -1,3 +1,5 @@
+import Class from 'lowclass'
+import {native} from 'lowclass/native'
 import 'geometry-interfaces'
 import Transformable from './Transformable'
 import ImperativeBase, {initImperativeBase} from './ImperativeBase'
@@ -15,8 +17,10 @@ const instanceofSymbol = Symbol('instanceofSymbol')
 
 const NodeMixin = base => {
 
-    class Node extends ImperativeBase.mixin(Transformable.mixin(base)) {
-        static get defaultElementName() { return 'i-node' }
+    const Node = Class('Node').extends( native(ImperativeBase.mixin(Transformable.mixin(base))), ({ Super }) => ({
+        static: {
+            defaultElementName: 'i-node',
+        },
 
         /**
          * @constructor
@@ -32,7 +36,7 @@ const NodeMixin = base => {
          * })
          */
         construct(options = {}) {
-            super.construct(options)
+            Super(this).construct(options)
 
             // This was when using my `multiple()` implementation, we could call
             // specific constructors using specific arguments. But, we're using
@@ -85,11 +89,11 @@ const NodeMixin = base => {
 
             this._calcSize()
             this._needsToBeRendered()
-        }
+        },
 
         makeThreeObject3d() {
             return new Object3D
-        }
+        },
 
         /**
          * @private
@@ -110,7 +114,7 @@ const NodeMixin = base => {
             this._mounted = true
             this._resolveMountPromise()
             this._elementOperations.shouldRender()
-        }
+        },
 
         /**
          * @private
@@ -127,7 +131,7 @@ const NodeMixin = base => {
                 this._resolveScenePromise()
 
             return this._scenePromise
-        }
+        },
 
         /**
          * Get the Scene that this Node is in, null if no Scene. This is recursive
@@ -164,7 +168,7 @@ const NodeMixin = base => {
             }
 
             return this._scene
-        }
+        },
 
         /**
          * @private
@@ -180,7 +184,7 @@ const NodeMixin = base => {
                     childNode._resolveScenePromise(childNode._scene)
                 childNode._giveSceneRefToChildren();
             }
-        }
+        },
 
         _resetSceneRef() {
             this._scene = null
@@ -190,8 +194,8 @@ const NodeMixin = base => {
             for (let i=0, l=children.length; i<l; i+=1) {
                 children[i]._resetSceneRef();
             }
-        }
-    }
+        },
+    }))
 
     Object.defineProperty(Node, Symbol.hasInstance, {
         value: function(obj) {

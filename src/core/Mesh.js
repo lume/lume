@@ -1,5 +1,4 @@
 import Class from 'lowclass'
-import {native} from 'lowclass/native'
 import Node from './Node'
 
 import { Mesh as ThreeMesh } from 'three'
@@ -24,7 +23,7 @@ import '../html/behaviors/DOMNodeGeometryBehavior'
 //   Custom Elements. We can use the same mechanism to specify types for behaviors too?
 
 export default
-Class('Mesh').extends( native(Node), ({ Super }) => ({
+Class('Mesh').extends( Node, ({ Super }) => ({
     static: {
         defaultElementName: 'i-mesh',
 
