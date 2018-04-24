@@ -1,3 +1,4 @@
+import Class from 'lowclass'
 import ElementOperations from './ElementOperations'
 import Sizeable from './Sizeable'
 import Node from './Node'
@@ -42,9 +43,9 @@ export function initImperativeBase() {
      * at least one of those to render with.
      */
     const ImperativeBaseMixin = base => {
-        class ImperativeBase extends base {
+        const ImperativeBase = Class('ImperativeBase').extends( base, ({ Super }) => ({
             construct(options = {}) {
-                super.construct(options)
+                Super(this).construct(options)
 
                 this._lastKnownParent = null
 
@@ -83,7 +84,7 @@ export function initImperativeBase() {
                 this.on('propertychange', this._onPropertyChange, this)
 
                 this.initWebGl()
-            }
+            },
 
             _onPropertyChange(prop) {
                 if ( prop == 'sizeMode' || prop == 'size' ) {
@@ -91,7 +92,7 @@ export function initImperativeBase() {
                 }
 
                 this._needsToBeRendered()
-            }
+            },
 
             initWebGl() {
                 this.threeObject3d = this.makeThreeObject3d()
@@ -99,21 +100,21 @@ export function initImperativeBase() {
                 // we don't let Three update local matrices, we provide world
                 // matrices ourselves.
                 this.threeObject3d.matrixAutoUpdate = false
-            }
+            },
 
             makeThreeObject3d() {
                 throw new Error('The makeThreeObject3d method should be defined by sub classes.')
-            }
+            },
 
             connected() {
                 this._lastKnownParent = this.parent
                 this.parent.threeObject3d.add(this.threeObject3d)
                 this.on('worldMatrixUpdate', this._onWorldMatrixUpdate, this)
-            }
+            },
             disconnected() {
                 this._lastKnownParent.threeObject3d.remove(this.threeObject3d)
                 this.off('worldMatrixUpdate', this._onWorldMatrixUpdate)
-            }
+            },
 
             _onWorldMatrixUpdate() {
                 threeObject3d = this.threeObject3d
@@ -133,7 +134,7 @@ export function initImperativeBase() {
                 // to update the inverse matrix for cameras.
                 if ( threeObject3d instanceof ThreeCamera )
                     threeObject3d.matrixWorldInverse.getInverse( threeObject3d.matrixWorld );
-            }
+            },
 
             /**
              * Subclasses are required to override this. It should return the HTML-API
@@ -144,7 +145,7 @@ export function initImperativeBase() {
              */
             _makeElement() {
                 throw new Error('Subclasses need to override ImperativeBase#_makeElement.')
-            }
+            },
 
             /**
              * @readonly
@@ -163,19 +164,19 @@ export function initImperativeBase() {
                     this._resolveMountPromise()
 
                 return this._mountPromise
-            }
+            },
 
             _waitForMountThenResolveMountPromise() {
                 // extended in Node or Scene to await for anything that mount
                 // depends on.
-            }
+            },
 
             /**
              * @readonly
              */
             get element() {
                 return this._elementOperations.element
-            }
+            },
 
             /**
              * Get the Scene that this Node is in, null if no Scene. This is recursive
@@ -213,7 +214,7 @@ export function initImperativeBase() {
                 }
 
                 return this._scene
-            }
+            },
 
             /**
              * @override
@@ -230,7 +231,7 @@ export function initImperativeBase() {
                     `)
                 }
 
-                super.add(childNode)
+                Super(this).add(childNode)
 
                 // Pass this parent node's Scene reference (if any, checking this cache
                 // first) to the new child and the child's children.
@@ -251,12 +252,12 @@ export function initImperativeBase() {
                 this._elementOperations.connectChildElement(childNode)
 
                 return this
-            }
+            },
 
             remove(childNode, /*private use*/leaveInDom) {
                 if (!(childNode instanceof Node)) return
 
-                super.remove(childNode)
+                Super(this).remove(childNode)
 
                 this.off('sizechange', childNode._onParentSizeChange)
 
@@ -268,7 +269,7 @@ export function initImperativeBase() {
 
                 if (!leaveInDom)
                     this._elementOperations.disconnectChildElement(childNode)
-            }
+            },
 
             _resetMountPromise() {
                 this._mounted = false
@@ -279,7 +280,7 @@ export function initImperativeBase() {
                 for (let i=0, l=children.length; i<l; i+=1) {
                     children[i]._resetMountPromise();
                 }
-            }
+            },
 
             async _needsToBeRendered() {
                 if (this._awaitingMountPromiseToRender) return
@@ -298,7 +299,7 @@ export function initImperativeBase() {
 
                 this._willBeRendered = true
                 Motor.setNodeToBeRendered(this)
-            }
+            },
 
             // This method is used by Motor._renderNodes().
             _getAncestorThatShouldBeRendered() {
@@ -310,13 +311,13 @@ export function initImperativeBase() {
                 }
 
                 return false
-            }
+            },
 
             _render(timestamp) {
-                if ( super._render ) super._render()
+                if ( Super(this)._render ) Super(this)._render()
                 // applies the transform matrix to the element's style property.
                 this._elementOperations.applyImperativeNodeProperties(this)
-            }
+            },
 
             /**
              * Set all properties of an ImperativeBase instance in one method.
@@ -329,12 +330,12 @@ export function initImperativeBase() {
              * }
              */
             set properties(properties = {}) {
-                super.properties = properties
+                Super(this).properties = properties
 
                 if (properties.classes)
                     this._elementOperations.setClasses(...properties.classes);
-            }
-        }
+            },
+        }))
 
         Object.defineProperty(ImperativeBase, Symbol.hasInstance, {
             value: function(obj) {

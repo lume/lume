@@ -6,7 +6,7 @@ const twoOrMoreSpaces = /\s\s+/g
 
 export default
 function ValueProcessor( Base ) {
-    Base = Base ? native( Base ) : Class()
+    Base = Base || Class()
 
     return Class( 'ValueProcessor' ).extends( Base, {
 

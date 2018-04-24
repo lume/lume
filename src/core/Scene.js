@@ -4,6 +4,7 @@
 // See: https://esdiscuss.org/topic/how-to-solve-this-basic-es6-module-circular-dependency-problem
 
 import Class from 'lowclass'
+import {native} from 'lowclass/native'
 import Transformable from './Transformable'
 import Motor from './Motor'
 import ImperativeBase, {initImperativeBase} from './ImperativeBase'
@@ -28,7 +29,7 @@ let Scene = null
 
 const SceneMixin = base => {
 
-    const _ImperativeBase = ImperativeBase.mixin( Transformable.mixin( base ) )
+    const _ImperativeBase = ImperativeBase.mixin( native( Transformable.mixin( base ) ) )
 
     const _Scene = Class('Scene').extends( ValueProcessor( _ImperativeBase ), ({ Super }) => ({
 

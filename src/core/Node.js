@@ -17,7 +17,7 @@ const instanceofSymbol = Symbol('instanceofSymbol')
 
 const NodeMixin = base => {
 
-    const Node = Class('Node').extends( native(ImperativeBase.mixin(Transformable.mixin(base))), ({ Super }) => ({
+    const Node = Class('Node').extends( ImperativeBase.mixin(native(Transformable.mixin(base))), ({ Super }) => ({
         static: {
             defaultElementName: 'i-node',
         },
