@@ -2,34 +2,23 @@
   "name": "infamous",
   "version": "18.0.11",
   "description": "A CSS3D/WebGL UI library.",
-  "format": "es6",
   "main": "index.js",
-  "module": "esmodule",
-  "browser": "index.js",
-  "global": "global.js",
   "license": "MIT",
   "homepage": "http://infamous.io",
   "scripts": {
-    "test": "./.scripts/test.sh",
-    "clean": "./.scripts/clean.sh",
-    "build": "./.scripts/build.sh",
-    "build-umd": "./.scripts/build-umd.sh",
-    "watch-umd": "gulp watch-umd",
-    "build-cjs": "./.scripts/build-cjs.sh",
-    "watch-cjs": "gulp watch-cjs",
-    "build-amd": "./.scripts/build-amd.sh",
-    "watch-amd": "gulp watch-amd",
-    "build-global": "./.scripts/build-global.sh",
+    "clean": "builder run build:clean",
+    "build": "builder run build:prod",
+    "dev": "builder run build:dev",
+    "test": "builder run npm:test",
+    "preversion": "builder run npm:preversion",
+    "version": "builder run npm:version",
+    "postversion": "builder run npm:postversion",
+    "xxxxxxxxxxxxxxx": "above are builder scripts, below are project-specific scripts",
     "docs-serve": "docpress serve",
     "docs-build": "docpress build",
     "website-dev": "cd website && meteor",
     "build-website": "npm i && npm run docs-build && cd website && npm i",
     "setup-website-service": "cd website && ./setup-service.sh",
-    "watch": "gulp watch-cjs & P1=$!; ./.scripts/build-global.sh --watch & P2=$!; wait $P1 $P2",
-    "preversion": "echo '--- PREVERSION' && git reset HEAD global.js && git checkout -- global.js && git add . && git stash && git clean -xfd -e node_modules",
-    "version": "echo '--- VERSION' && npm run add-version-to-source && npm run build && git add -f global.js",
-    "add-version-to-source": "echo '--- VERSION-TO-SOURCE' && ./.scripts/version-to-source.js && git add src/index.js",
-    "postversion": "echo '--- POSTVERSION' && npm publish && git push && git push --tags && git stash pop && git reset HEAD",
     "add-contributor": "all-contributors add",
     "generate-contributors": "all-contributors generate"
   },
@@ -49,54 +38,20 @@
     "jss-px": "^1.0.0",
     "jss-vendor-prefixer": "^1.0.0",
     "lowclass": "^4.0.0",
-    "pixi-svg": "^1.0.1",
-    "pixi.js": "^4.5.3",
-    "three": "^0.88.0",
-    "two.js": "trusktr/two.js#patch-2"
+    "three": "^0.88.0"
   },
   "devDependencies": {
     "all-contributors-cli": "^4.4.0",
-    "async-csp": "^0.5.0",
-    "babel-cli": "^6.0.0",
-    "babel-core": "^6.0.0",
-    "babel-loader": "^7.1.2",
-    "babel-minify-webpack-plugin": "^0.2.0",
-    "babel-plugin-add-module-exports": "^0.2.1",
-    "babel-plugin-array-includes": "^2.0.3",
-    "babel-plugin-transform-builtin-classes": "^0.4.0",
-    "babel-plugin-transform-es2015-classes": "^6.24.1",
-    "babel-plugin-transform-es2015-modules-amd": "^6.0.0",
-    "babel-plugin-transform-es2015-modules-commonjs": "^6.0.0",
-    "babel-plugin-transform-es2015-modules-umd": "^6.0.0",
-    "babel-plugin-transform-object-rest-spread": "^6.26.0",
-    "babel-plugin-transform-runtime": "^6.0.0",
-    "buble": "^0.18.0",
-    "buble-loader": "^0.4.1",
+    "builder": "^3.2.3",
+    "builder-js-package": "trusktr/builder-js-package",
     "docpress": "0.7.1",
-    "fast-async": "^6.3.4",
-    "gulp": "^4.0.0",
-    "gulp-babel": "^7.0.0",
-    "gulp-buble": "^0.9.0",
-    "gulp-cached": "^1.1.1",
-    "webpack": "^3.10.0"
+    "webpack-async-await": "^1.1.0"
   },
   "docpress": {
     "docs": "docs",
     "dist": "website/public/docs",
     "github": "trusktr/infamous",
     "markdown": {}
-  },
-  "jspm": {
-    "registry": "jspm",
-    "directories": {
-      "lib": "src"
-    }
-  },
-  "browserify": {
-    "TODO": "TODO"
-  },
-  "bower": {
-    "TODO": "TODO"
   },
   "repository": {
     "type": "git",
@@ -105,9 +60,6 @@
   "bugs": {
     "url": "https://github.com/trusktr/infamous/issues"
   },
-  "authors": [
-    "Joseph Orbegoso Pea <joe@trusktr.io>"
-  ],
   "keywords": [
     "infamous",
     "gui",

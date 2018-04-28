@@ -28,11 +28,13 @@ yarn-error.log
 # not config files
 !/.builderrc
 !/.npmrc
+!/.gitignore
+!/.npmignore
+!/package.json
 !/babel.config.js
 !/buble.config.js
 !/jest.config.js
 !/webpack.config.js
-!/.docpress
 
 # all good projects have a README!
 !/README.md
