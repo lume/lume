@@ -1,8 +1,8 @@
 
 import Class from 'lowclass'
 import styles from './HTMLNode.style'
-import Transformable from '../core/Transformable'
-import Sizeable from '../core/Sizeable'
+//import Sizeable from '../core/Sizeable'
+//import Transformable from '../core/Transformable'
 import DeclarativeBase, {initDeclarativeBase, proxyGettersSetters} from './DeclarativeBase'
 
 initDeclarativeBase()

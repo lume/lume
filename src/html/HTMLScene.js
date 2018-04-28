@@ -1,8 +1,7 @@
 
 import styles from './HTMLScene.style'
 import Motor from '../core/Motor'
-import Observable from '../core/Observable'
-import Sizeable from '../core/Sizeable'
+//import Sizeable from '../core/Sizeable'
 import DeclarativeBase, {initDeclarativeBase, proxyGettersSetters} from './DeclarativeBase'
 
 initDeclarativeBase()
