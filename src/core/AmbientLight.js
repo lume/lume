@@ -3,13 +3,13 @@ import LightBase from './LightBase'
 import { AmbientLight as ThreeAmbientLight } from 'three'
 
 export default
-Class('AmbientLight').extends( LightBase, {
+Class('AmbientLight').extends( LightBase, ({ Super }) => ({
     static: {
         defaultElementName: 'i-ambient-light',
     },
 
     construct(options = {}) {
-        super.construct(options)
+        Super(this).construct(options)
     },
 
     makeThreeObject3d() {
@@ -17,4 +17,4 @@ Class('AmbientLight').extends( LightBase, {
         light.intensity = 1 // default
         return light
     },
-})
+}))
