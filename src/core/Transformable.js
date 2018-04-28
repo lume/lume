@@ -9,7 +9,7 @@ export default
 Mixin(base => {
 
     // Transformable extends TreeNode (indirectly through Sizeable) because it
-    // needs to be aware of its _parent when calculating align adjustments.
+    // needs to be aware of its `parent` when calculating align adjustments.
     const Transformable = Class('Transformable').extends( Sizeable.mixin(base), ({ Super }) => ({
 
         construct(options = {}) {
@@ -73,7 +73,7 @@ Mixin(base => {
             // should not be translated or else the WebGL rendering glitches
             // out (this happened with my vanilla WebGL implementation as well
             // as with Three.js), so we return Identity if there's no parent.
-            if (!this._parent) return matrix
+            if (!this.parent) return matrix
 
             const properties = this._properties
             const thisSize = this._calculatedSize
@@ -86,12 +86,12 @@ Mixin(base => {
 
             const alignAdjustment = [0,0,0]
 
-            // TODO If a Scene has a _parent, it is not mounted directly into a
+            // TODO If a Scene has a `parent`, it is not mounted directly into a
             // regular DOM element but rather it is child of a Node. In this
             // case we don't want the scene size to be based on observed size
             // of a regular DOM element, but relative to a parent Node just
             // like for all other Nodes.
-            const parentSize = this._parent._calculatedSize
+            const parentSize = this.parent._calculatedSize
 
             // THREE-COORDS-TO-DOM-COORDS
             // translate the "align" back to the top/left of the parent element.
@@ -149,14 +149,14 @@ Mixin(base => {
         _calculateWorldMatricesInSubtree() {
             this._calculateWorldMatrixFromParent()
 
-            const children = this._children
+            const children = this.subnodes
             for (let i=0, l=children.length; i<l; i+=1) {
                 children[i]._calculateWorldMatricesInSubtree()
             }
         },
 
         _calculateWorldMatrixFromParent() {
-            const parent = this._parent
+            const parent = this.parent
 
             if (parent)
                 //this._worldMatrix = parent._worldMatrix.multiply(this._properties.transform)

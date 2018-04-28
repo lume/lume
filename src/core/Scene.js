@@ -216,7 +216,7 @@ let Scene = Mixin(base => {
 
         /** @override */
         _getParentSize() {
-            return this._parent ? this._parent._calculatedSize : this._elementParentSize
+            return this.parent ? this.parent._calculatedSize : this._elementParentSize
         },
 
         /**

@@ -197,20 +197,20 @@ export function initImperativeBase() {
 
                 // if already cached, return it. Or if no parent, return it (it'll be null).
                 // Additionally, Scenes have this._scene already set to themselves.
-                if (this._scene || !this._parent) return this._scene
+                if (this._scene || !this.parent) return this._scene
 
                 // if the parent node already has a ref to the scene, use that.
-                if (this._parent._scene) {
-                    this._scene = this._parent._scene
+                if (this.parent._scene) {
+                    this._scene = this.parent._scene
                 }
-                else if (this._parent instanceof Scene) {
-                    this._scene = this._parent
+                else if (this.parent instanceof Scene) {
+                    this._scene = this.parent
                 }
                 // otherwise call the scene getter on the parent, which triggers
                 // traversal up the scene graph in order to find the root scene (null
                 // if none).
                 else {
-                    this._scene = this._parent.scene
+                    this._scene = this.parent.scene
                 }
 
                 return this._scene
@@ -276,7 +276,7 @@ export function initImperativeBase() {
                 this._mountPromise = null
                 this._resolveMountPromise = null
                 this._rejectMountPromise = null
-                const children = this._children
+                const children = this.subnodes
                 for (let i=0, l=children.length; i<l; i+=1) {
                     children[i]._resetMountPromise();
                 }
@@ -303,11 +303,11 @@ export function initImperativeBase() {
 
             // This method is used by Motor._renderNodes().
             _getAncestorThatShouldBeRendered() {
-                let parent = this._parent
+                let parent = this.parent
 
                 while (parent) {
                     if (parent._willBeRendered) return parent
-                    parent = parent._parent
+                    parent = parent.parent
                 }
 
                 return false

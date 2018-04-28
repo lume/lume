@@ -148,20 +148,20 @@ let Node = Mixin(base =>
             // NOTE: this._scene is initally null, created in the constructor.
 
             // if already cached, return it. Or if no parent, return it (it'll be null).
-            if (this._scene || !this._parent) return this._scene
+            if (this._scene || !this.parent) return this._scene
 
             // if the parent node already has a ref to the scene, use that.
-            if (this._parent._scene) {
-                this._scene = this._parent._scene
+            if (this.parent._scene) {
+                this._scene = this.parent._scene
             }
-            else if (this._parent instanceof Scene) {
-                this._scene = this._parent
+            else if (this.parent instanceof Scene) {
+                this._scene = this.parent
             }
             // otherwise call the scene getter on the parent, which triggers
             // traversal up the scene graph in order to find the root scene (null
             // if none).
             else {
-                this._scene = this._parent.scene
+                this._scene = this.parent.scene
             }
 
             return this._scene
@@ -173,7 +173,7 @@ let Node = Mixin(base =>
          * Resolves the _scenePromise for all children of the tree of this Node.
          */
         _giveSceneRefToChildren() {
-            const children = this._children;
+            const children = this.subnodes;
             for (let i=0, l=children.length; i<l; i+=1) {
                 const childNode = children[i]
                 childNode._scene = this._scene
@@ -187,7 +187,7 @@ let Node = Mixin(base =>
             this._scene = null
             this._scenePromise = null
             this._resolveScenePromise = null
-            const children = this._children;
+            const children = this.subnodes;
             for (let i=0, l=children.length; i<l; i+=1) {
                 children[i]._resetSceneRef();
             }

@@ -99,8 +99,8 @@ export function initDeclarativeBase() {
                 if (Private(this)._hasShadowRoot) Private(child)._isPossiblyDistributed = true
 
                 // If ImperativeBase#add was called first, child's
-                // _parent will already be set, so prevent recursion.
-                if (child._parent) return
+                // `parent` will already be set, so prevent recursion.
+                if (child.parent) return
 
                 this.add(child)
             }
@@ -146,8 +146,8 @@ export function initDeclarativeBase() {
                 Private(child)._isPossiblyDistributed = false
 
                 // If ImperativeBase#remove was called first, child's
-                // _parent will already be null, so prevent recursion.
-                if (!child._parent) return
+                // `parent` will already be null, so prevent recursion.
+                if (!child.parent) return
 
                 this.remove(child)
             }

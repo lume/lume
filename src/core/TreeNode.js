@@ -6,33 +6,34 @@ import TreeNode from './TreeNode'
 export default
 Mixin(base =>
 
-    Class('TreeNode').extends( base, ({ Super }) => ({
+    Class('TreeNode').extends( base, ({ Super, Public: Private }) => ({
+
+        // TODO, make Private work with Mixin+lowclass
+        //private: {
+            _parent: null,
+            _children: null,
+        //},
 
         construct(...args) {
             Super(this).construct(...args)
-            this._parent = null // default to no parent.
-            this._children = [];
+            Private(this)._children = []
         },
 
         /**
-         * this._parent is protected (node's can access other node._parent).
-         * The user should use the add() method, which automatically handles
-         * setting a parent.
-         *
          * @readonly
          */
         get parent() {
-            return this._parent
+            return Private(this)._parent
         },
 
         /**
-         * Named "subnodes" to avoid conflict with HTML Elements' "children"
+         * This is named "subnodes" to avoid conflict with HTML's Element.children
          * @readonly
          */
         get subnodes() {
             // return a new array, so that the user modifying it doesn't affect
             // this node's actual children.
-            return [...this._children]
+            return [...Private(this)._children]
         },
 
         /**
@@ -44,15 +45,15 @@ Mixin(base =>
             if (! isInstanceof(childNode, TreeNode))
                 throw new TypeError('TreeNode.add() expects the childNode argument to be a TreeNode instance.')
 
-            if (childNode._parent === this)
+            if (Private(childNode)._parent === this)
                 throw new ReferenceError('childNode is already a child of this parent.')
 
-            if (childNode._parent)
-                childNode._parent.remove(childNode)
+            if (Private(childNode)._parent)
+                Private(childNode)._parent.remove(childNode)
 
-            childNode._parent = this;
+            Private(childNode)._parent = this;
 
-            this._children.push(childNode);
+            Private(this)._children.push(childNode);
 
             Promise.resolve().then(() => {
                 childNode.connected()
@@ -85,11 +86,11 @@ Mixin(base =>
                     tree.
                 `)
 
-            if (childNode._parent !== this)
+            if (Private(childNode)._parent !== this)
                 throw new ReferenceError('childNode is not a child of this parent.')
 
-            childNode._parent = null
-            this._children.splice(this._children.indexOf(childNode), 1);
+            Private(childNode)._parent = null
+            Private(this)._children.splice(Private(this)._children.indexOf(childNode), 1);
 
             Promise.resolve().then(() => {
                 childNode.disconnected()
@@ -113,7 +114,7 @@ Mixin(base =>
          * Shortcut to remove all children.
          */
         removeAllChildren() {
-            this.removeChildren(this._children)
+            this.removeChildren(Private(this)._children)
             return this
         },
 
@@ -122,7 +123,7 @@ Mixin(base =>
          * @return {number} How many children this TreeNode has.
          */
         get childCount() {
-            return this._children.length
+            return Private(this)._children.length
         },
 
         // generic life cycle methods
