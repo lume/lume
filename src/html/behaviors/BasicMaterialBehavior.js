@@ -2,7 +2,7 @@ import 'element-behaviors'
 import { MeshBasicMaterial } from 'three'
 import BaseMaterialBehavior from './BaseMaterialBehavior'
 
-const BasicMaterialBehavior = BaseMaterialBehavior.subclass({
+const BasicMaterialBehavior = BaseMaterialBehavior.subclass('BasicMaterialBehavior', {
 
     protected: {
 

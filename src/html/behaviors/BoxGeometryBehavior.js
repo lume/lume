@@ -2,7 +2,7 @@ import 'element-behaviors'
 import { BoxGeometry } from 'three'
 import BaseGeometryBehavior from './BaseGeometryBehavior'
 
-const BoxGeometryBehavior = BaseGeometryBehavior.subclass({
+const BoxGeometryBehavior = BaseGeometryBehavior.subclass('BoxGeometryBehavior', {
 
     protected: {
 

@@ -2,7 +2,7 @@ import 'element-behaviors'
 import { MeshPhongMaterial } from 'three'
 import BaseMaterialBehavior from './BaseMaterialBehavior'
 
-const PhongMaterialBehavior = BaseMaterialBehavior.subclass({
+const PhongMaterialBehavior = BaseMaterialBehavior.subclass('PhongMaterialBehavior', {
 
     protected: {
 

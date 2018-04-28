@@ -3,7 +3,7 @@ import { MeshPhongMaterial } from 'three'
 import BaseMaterialBehavior from './BaseMaterialBehavior'
 import { Color, NoBlending, /*DoubleSide*/ } from 'three'
 
-const DOMNodeMaterialBehavior = BaseMaterialBehavior.subclass({
+const DOMNodeMaterialBehavior = BaseMaterialBehavior.subclass('DOMNodeMaterialBehavior', {
 
     protected: {
 

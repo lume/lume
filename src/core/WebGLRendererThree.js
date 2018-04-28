@@ -12,7 +12,7 @@ const sceneStates = new WeakMap
 
 // A singleton responsible for setting up and drawing a WebGL scene for a given
 // infamous/core/Scene using Three.js
-const WebGLRendererThree = Class({
+const WebGLRendererThree = Class('WebGLRendererThree', {
     initGl(scene) {
         let sceneState = sceneStates.has(scene)
 
