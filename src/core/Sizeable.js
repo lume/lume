@@ -21,12 +21,12 @@ if (typeof document.createElement('div').style.transform == 'undefined') {
 }
 
 export default
-Mixin(base => {
+Mixin(Base => {
 
     // Sizeable extends TreeNode because Sizeable knows about its `parent` when
     // calculating proportional sizes. Also Transformable knows about it's parent
     // in order to calculate it's world matrix based on it's parent's.
-    const Sizeable = Class('Sizeable').extends( Observable.mixin(TreeNode.mixin(base)), ({ Super }) => ({
+    const Sizeable = Class('Sizeable').extends( Observable.mixin(TreeNode.mixin(Base)), ({ Super }) => ({
 
         construct(options = {}) {
             Super(this).construct(options)

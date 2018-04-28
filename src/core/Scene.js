@@ -22,9 +22,9 @@ import {
 
 initImperativeBase()
 
-let Scene = Mixin(base => {
+let Scene = Mixin(Base => {
 
-    const _ImperativeBase = ImperativeBase.mixin( base )
+    const _ImperativeBase = ImperativeBase.mixin( Base )
 
     return Class('Scene').extends( ValueProcessor.mixin( _ImperativeBase ), ({ Super }) => ({
 

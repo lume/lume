@@ -4,9 +4,9 @@ import {isInstanceof} from './Utility'
 import TreeNode from './TreeNode'
 
 export default
-Mixin(base =>
+Mixin(Base =>
 
-    Class('TreeNode').extends( base, ({ Super, Public: Private }) => ({
+    Class('TreeNode').extends( Base, ({ Super, Public: Private }) => ({
 
         // TODO, make Private work with Mixin+lowclass
         //private: {

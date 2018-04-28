@@ -32,26 +32,26 @@ function classExtendsHTMLElement(constructor) {
  * const WebComponent = WebComponentMixin(HTMLButtonElement)
  * class AwesomeButton extends WebComponent { ... }
  *
- * @param {Function} elementClass The class that the generated WebComponent
+ * @param {Function} Base The class that the generated WebComponent
  * base class will extend from.
  */
 export default
-Mixin(elementClass => {
+Mixin(Base => {
 
     // the extra `class extends` is necessary here so that
     // babel-plugin-transform-builtin-classes can work properly.
-    elementClass = elementClass || native( HTMLElement )
+    Base = Base || native( HTMLElement )
 
     // XXX: In the future, possibly check for Element if other things besides
     // HTML are supported (f.e. SVGElements)
-    if (!classExtendsHTMLElement(elementClass)) {
+    if (!classExtendsHTMLElement(Base)) {
         throw new TypeError(
             'The argument to WebComponent.mixin must be a constructor that extends from or is HTMLElement.'
         )
     }
 
     // otherwise, create it.
-    const WebComponent = Class('WebComponent').extends( DefaultBehaviors.mixin( elementClass ), ({ Super, Public, Private }) => ({
+    const WebComponent = Class('WebComponent').extends( DefaultBehaviors.mixin( Base ), ({ Super, Public, Private }) => ({
 
         constructor(...args) {
             // Throw an error if no Custom Elements v1 API exists.

@@ -41,9 +41,9 @@ export function initImperativeBase() {
      * HTML rendering. Disabling both WebGL and HTML won't make sense, as we'll need
      * at least one of those to render with.
      */
-    ImperativeBase = Mixin(base =>
+    ImperativeBase = Mixin(Base =>
 
-        Class('ImperativeBase').extends( Transformable.mixin( base ), ({ Super }) => ({
+        Class('ImperativeBase').extends( Transformable.mixin( Base ), ({ Super }) => ({
             construct(options = {}) {
                 Super(this).construct(options)
 

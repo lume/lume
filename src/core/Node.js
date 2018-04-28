@@ -12,9 +12,9 @@ const radiansPerDegree = 1 / 360 * 2*Math.PI
 
 initImperativeBase()
 
-let Node = Mixin(base =>
+let Node = Mixin(Base =>
 
-    Class('Node').extends( ImperativeBase.mixin( base ), ({ Super }) => ({
+    Class('Node').extends( ImperativeBase.mixin( Base ), ({ Super }) => ({
         static: {
             defaultElementName: 'i-node',
         },

@@ -6,11 +6,11 @@ import { makeLowercaseSetterAliases } from './Utility'
 import {isInstanceof} from './Utility'
 
 export default
-Mixin(base => {
+Mixin(Base => {
 
     // Transformable extends TreeNode (indirectly through Sizeable) because it
     // needs to be aware of its `parent` when calculating align adjustments.
-    const Transformable = Class('Transformable').extends( Sizeable.mixin(base), ({ Super }) => ({
+    const Transformable = Class('Transformable').extends( Sizeable.mixin(Base), ({ Super }) => ({
 
         construct(options = {}) {
             Super(this).construct(options)

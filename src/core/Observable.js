@@ -2,9 +2,9 @@ import Mixin from './Mixin'
 import Class from 'lowclass'
 
 export default
-Mixin(base =>
+Mixin(Base =>
 
-    Class('Observable').extends( base, ({ Super }) => ({
+    Class('Observable').extends( Base, ({ Super }) => ({
 
         construct(...args) {
             Super(this).construct(...args)
