@@ -5,7 +5,7 @@ import Class from 'lowclass'
 
 // base class for Geometry and Material behaviors, not to be used directly
 export default
-Class( 'BaseMeshBehavior' ).extends( ValueProcessor(), ({ Protected, Private, Super }) => ({
+Class( 'BaseMeshBehavior' ).extends( ValueProcessor, ({ Protected, Private, Super }) => ({
     constructor(element) {
         Super(this).constructor()
 

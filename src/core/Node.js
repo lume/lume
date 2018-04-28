@@ -1,6 +1,6 @@
 import Class from 'lowclass'
+import Mixin from './Mixin'
 import 'geometry-interfaces'
-import Transformable from './Transformable'
 import ImperativeBase, {initImperativeBase} from './ImperativeBase'
 import { default as HTMLInterface } from '../html/HTMLNode'
 import Scene from './Scene'
@@ -12,12 +12,9 @@ const radiansPerDegree = 1 / 360 * 2*Math.PI
 
 initImperativeBase()
 
-const instanceofSymbol = Symbol('instanceofSymbol')
+let Node = Mixin(base =>
 
-const NodeMixin = base => {
-    base = base || Class()
-
-    const Node = Class('Node').extends( ImperativeBase.mixin(Transformable.mixin(base)), ({ Super }) => ({
+    Class('Node').extends( ImperativeBase.mixin( base ), ({ Super }) => ({
         static: {
             defaultElementName: 'i-node',
         },
@@ -197,34 +194,9 @@ const NodeMixin = base => {
         },
     }))
 
-    Object.defineProperty(Node, Symbol.hasInstance, {
-        value: function(obj) {
-            if (this !== Node) return Object.getPrototypeOf(Node)[Symbol.hasInstance].call(this, obj)
-
-            let currentProto = obj
-
-            while(currentProto) {
-                const desc = Object.getOwnPropertyDescriptor(currentProto, "constructor")
-
-                if (desc && desc.value && desc.value.hasOwnProperty(instanceofSymbol))
-                    return true
-
-                currentProto = Object.getPrototypeOf(currentProto)
-            }
-
-            return false
-        }
-    })
-
-    Node[instanceofSymbol] = true
-
-    return Node
-}
-
-let _Node = NodeMixin()
-_Node.mixin = NodeMixin
+)
 
 // TODO for now, hard-mixin the HTMLInterface class. We'll do this automatically later.
-_Node = _Node.mixin(HTMLInterface)
+Node = Node.mixin(HTMLInterface)
 
-export {_Node as default}
+export {Node as default}

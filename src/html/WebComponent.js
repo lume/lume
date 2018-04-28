@@ -1,11 +1,12 @@
 /* global customElements */
 
 import Class from 'lowclass'
+import Mixin from '../core/Mixin'
 import {native} from 'lowclass/native'
 import { observeChildren } from '../core/Utility'
 import jss from '../lib/jss'
 import documentReady from '@awaitbox/document-ready'
-import DefaultBehaviorsMixin from './behaviors/DefaultBehaviors'
+import DefaultBehaviors from './behaviors/DefaultBehaviors'
 
 // Very very stupid hack needed for Safari in order for us to be able to extend
 // the HTMLElement class. See:
@@ -15,8 +16,6 @@ if (typeof window.HTMLElement != 'function') {
     _HTMLElement.prototype = window.HTMLElement.prototype
     window.HTMLElement = _HTMLElement
 }
-
-const classCache = new Map
 
 function classExtendsHTMLElement(constructor) {
     if (!constructor) return false
@@ -37,7 +36,7 @@ function classExtendsHTMLElement(constructor) {
  * base class will extend from.
  */
 export default
-function WebComponentMixin(elementClass) {
+Mixin(elementClass => {
 
     // the extra `class extends` is necessary here so that
     // babel-plugin-transform-builtin-classes can work properly.
@@ -47,17 +46,12 @@ function WebComponentMixin(elementClass) {
     // HTML are supported (f.e. SVGElements)
     if (!classExtendsHTMLElement(elementClass)) {
         throw new TypeError(
-            'The argument to WebComponentMixin must be a constructor that extends from or is HTMLElement.'
+            'The argument to WebComponent.mixin must be a constructor that extends from or is HTMLElement.'
         )
     }
 
-    // if a base class that extends the given `elementClass` has already been
-    // created, return it.
-    if (classCache.has(elementClass))
-        return classCache.get(elementClass)
-
     // otherwise, create it.
-    const WebComponent = Class('WebComponent').extends( DefaultBehaviorsMixin( elementClass ), ({ Super, Public, Private }) => ({
+    const WebComponent = Class('WebComponent').extends( DefaultBehaviors.mixin( elementClass ), ({ Super, Public, Private }) => ({
 
         constructor(...args) {
             // Throw an error if no Custom Elements v1 API exists.
@@ -247,6 +241,5 @@ function WebComponentMixin(elementClass) {
         },
     }))
 
-    classCache.set(elementClass, WebComponent)
     return WebComponent
-}
+}, native( HTMLElement ))

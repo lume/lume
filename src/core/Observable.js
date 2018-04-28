@@ -1,11 +1,10 @@
+import Mixin from './Mixin'
 import Class from 'lowclass'
 
-const instanceofSymbol = Symbol('instanceofSymbol')
+export default
+Mixin(base =>
 
-const ObservableMixin = base => {
-    base = base || Class()
-
-    const Observable = Class('Observable').extends( base, ({ Super }) => ({
+    Class('Observable').extends( base, ({ Super }) => ({
 
         construct(...args) {
             Super(this).construct(...args)
@@ -65,31 +64,4 @@ const ObservableMixin = base => {
         },
     }))
 
-    Object.defineProperty(Observable, Symbol.hasInstance, {
-        value: function(obj) {
-            if (this !== Observable) return Object.getPrototypeOf(Observable)[Symbol.hasInstance].call(this, obj)
-
-            let currentProto = obj
-
-            while(currentProto) {
-                const desc = Object.getOwnPropertyDescriptor(currentProto, "constructor")
-
-                if (desc && desc.value && desc.value.hasOwnProperty(instanceofSymbol))
-                    return true
-
-                currentProto = Object.getPrototypeOf(currentProto)
-            }
-
-            return false
-        }
-    })
-
-    Observable[instanceofSymbol] = true
-
-    return Observable
-}
-
-const Observable = ObservableMixin()
-Observable.mixin = ObservableMixin
-
-export {Observable as default}
+)

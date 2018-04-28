@@ -1,9 +1,10 @@
 import Class from 'lowclass'
+import Mixin from './Mixin'
 import { makeLowercaseSetterAliases } from './Utility'
+import Observable from './Observable'
 import TreeNode from './TreeNode'
 import XYZValues from './XYZValues'
 import XYZNonNegativeValues from './XYZNonNegativeValues'
-import Observable from './Observable'
 import Motor from './Motor'
 
 // fallback to experimental CSS transform if browser doesn't have it (fix for Safari 9)
@@ -19,10 +20,8 @@ if (typeof document.createElement('div').style.transform == 'undefined') {
     })
 }
 
-const instanceofSymbol = Symbol('instanceofSymbol')
-
-const SizeableMixin = base => {
-    base = base || Class()
+export default
+Mixin(base => {
 
     // Sizeable extends TreeNode because Sizeable knows about its _parent when
     // calculating proportional sizes. Also Transformable knows about it's parent
@@ -261,31 +260,5 @@ const SizeableMixin = base => {
     // able to map attributes to Node setters as easily.
     makeLowercaseSetterAliases(Sizeable.prototype)
 
-    Object.defineProperty(Sizeable, Symbol.hasInstance, {
-        value: function(obj) {
-            if (this !== Sizeable) return Object.getPrototypeOf(Sizeable)[Symbol.hasInstance].call(this, obj)
-
-            let currentProto = obj
-
-            while (currentProto) {
-                const desc = Object.getOwnPropertyDescriptor(currentProto, "constructor")
-
-                if (desc && desc.value && desc.value.hasOwnProperty(instanceofSymbol))
-                    return true
-
-                currentProto = Object.getPrototypeOf(currentProto)
-            }
-
-            return false
-        }
-    })
-
-    Sizeable[instanceofSymbol] = true
-
     return Sizeable
-}
-
-const Sizeable = SizeableMixin()
-Sizeable.mixin = SizeableMixin
-
-export {Sizeable as default}
+})

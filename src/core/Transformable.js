@@ -1,13 +1,12 @@
 import Class from 'lowclass'
+import Mixin from './Mixin'
 import XYZValues from './XYZValues'
 import Sizeable from './Sizeable'
 import { makeLowercaseSetterAliases } from './Utility'
 import {isInstanceof} from './Utility'
 
-const instanceofSymbol = Symbol('instanceofSymbol')
-
-const TransformableMixin = base => {
-    base = base || Class()
+export default
+Mixin(base => {
 
     // Transformable extends TreeNode (indirectly through Sizeable) because it
     // needs to be aware of its _parent when calculating align adjustments.
@@ -308,29 +307,8 @@ const TransformableMixin = base => {
     // able to map attributes to Node setters as easily.
     makeLowercaseSetterAliases(Transformable.prototype)
 
-    Object.defineProperty(Transformable, Symbol.hasInstance, {
-        value: function(obj) {
-            if (this !== Transformable) return Object.getPrototypeOf(Transformable)[Symbol.hasInstance].call(this, obj)
-
-            let currentProto = obj
-
-            while(currentProto) {
-                const desc = Object.getOwnPropertyDescriptor(currentProto, "constructor")
-
-                if (desc && desc.value && desc.value.hasOwnProperty(instanceofSymbol))
-                    return true
-
-                currentProto = Object.getPrototypeOf(currentProto)
-            }
-
-            return false
-        }
-    })
-
-    Transformable[instanceofSymbol] = true
-
     return Transformable
-}
+})
 
 function isRealNumber(num) {
     if (
@@ -340,8 +318,3 @@ function isRealNumber(num) {
     ) return false
     return true
 }
-
-const Transformable = TransformableMixin()
-Transformable.mixin = TransformableMixin
-
-export {Transformable as default}

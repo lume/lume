@@ -1,8 +1,8 @@
+import Class from 'lowclass'
 import documentReady from '@awaitbox/document-ready'
 import Transformable from './Transformable'
 import {getWebGLRendererThree, destroyWebGLRendererThree} from './WebGLRendererThree'
 import {isInstanceof} from './Utility'
-import Class from 'lowclass'
 
 import {
     //animationFrame,

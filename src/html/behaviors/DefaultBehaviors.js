@@ -1,12 +1,13 @@
 import Class from 'lowclass'
+import Mixin from '../../core/Mixin'
 
 export default
-function DefaultBehaviorsMixin(ElementClass) {
+Mixin(ElementClass =>
 
     // TODO This is here for now. Make it an extension to
     // element-behaviors so that it can be applied to any element
     // generically.
-    return Class('DefaultBehaviors').extends( ElementClass, ({ Super }) => ({
+    Class('DefaultBehaviors').extends( ElementClass, ({ Super }) => ({
 
         static: {
             // override in subclasses
@@ -120,4 +121,4 @@ function DefaultBehaviorsMixin(ElementClass) {
         },
 
     }))
-}
+)

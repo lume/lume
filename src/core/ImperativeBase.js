@@ -1,6 +1,7 @@
 import Class from 'lowclass'
+import Mixin from './Mixin'
 import ElementOperations from './ElementOperations'
-import Sizeable from './Sizeable'
+import Transformable from './Transformable'
 import Node from './Node'
 import Scene from './Scene'
 import Motor from './Motor'
@@ -29,8 +30,6 @@ initImperativeBase()
 export function initImperativeBase() {
     if (ImperativeBase) return
 
-    const instanceofSymbol = Symbol('instanceofSymbol')
-
     /**
      * The ImperativeBase class is the base class for the Imperative version of the
      * API, for people who chose to take the all-JavaScript approach and who will
@@ -42,8 +41,9 @@ export function initImperativeBase() {
      * HTML rendering. Disabling both WebGL and HTML won't make sense, as we'll need
      * at least one of those to render with.
      */
-    const ImperativeBaseMixin = base => {
-        const ImperativeBase = Class('ImperativeBase').extends( base, ({ Super }) => ({
+    ImperativeBase = Mixin(base =>
+
+        Class('ImperativeBase').extends( Transformable.mixin( base ), ({ Super }) => ({
             construct(options = {}) {
                 Super(this).construct(options)
 
@@ -337,32 +337,7 @@ export function initImperativeBase() {
             },
         }))
 
-        Object.defineProperty(ImperativeBase, Symbol.hasInstance, {
-            value: function(obj) {
-                if (this !== ImperativeBase) return Object.getPrototypeOf(ImperativeBase)[Symbol.hasInstance].call(this, obj)
-
-                let currentProto = obj
-
-                while(currentProto) {
-                    const desc = Object.getOwnPropertyDescriptor(currentProto, "constructor")
-
-                    if (desc && desc.value && desc.value.hasOwnProperty(instanceofSymbol))
-                        return true
-
-                    currentProto = Object.getPrototypeOf(currentProto)
-                }
-
-                return false
-            }
-        })
-
-        ImperativeBase[instanceofSymbol] = true
-
-        return ImperativeBase
-    }
-
-    ImperativeBase = ImperativeBaseMixin(Sizeable)
-    ImperativeBase.mixin = ImperativeBaseMixin
+    )
 
 }
 

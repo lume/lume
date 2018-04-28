@@ -1,14 +1,14 @@
 import { Color } from 'three'
 import Class from 'lowclass'
+import Mixin from './Mixin'
 import { native } from 'lowclass/native'
 
 const twoOrMoreSpaces = /\s\s+/g
 
 export default
-function ValueProcessor( Base ) {
-    Base = Base || Class()
+Mixin(Base =>
 
-    return Class( 'ValueProcessor' ).extends( Base, {
+    Class( 'ValueProcessor' ).extends( Base, {
 
         processColorValue( value, context, prop ) {
             context = context || this.threeObject3d
@@ -35,4 +35,4 @@ function ValueProcessor( Base ) {
 
     })
 
-}
+)

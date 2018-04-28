@@ -4,7 +4,7 @@ import ValueProcessor from './ValueProcessor'
 
 // base class for light elements.
 export default
-Class('LightBase').extends( ValueProcessor( Node ), ({ Super }) => ({
+Class('LightBase').extends( ValueProcessor.mixin( Node ), ({ Super }) => ({
 
     static: {
         // TODO calling super.observedAttributes doesn't work because

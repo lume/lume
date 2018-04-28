@@ -1,12 +1,12 @@
 import Class from 'lowclass'
+import Mixin from './Mixin'
 import {isInstanceof} from './Utility'
+import TreeNode from './TreeNode'
 
-const instanceofSymbol = Symbol('instanceofSymbol')
+export default
+Mixin(base =>
 
-const TreeNodeMixin = base => {
-    base = base || Class()
-
-    const TreeNode = Class('TreeNode').extends( base, ({ Super }) => ({
+    Class('TreeNode').extends( base, ({ Super }) => ({
 
         construct(...args) {
             Super(this).construct(...args)
@@ -133,31 +133,4 @@ const TreeNodeMixin = base => {
         propertyChanged() {},
     }))
 
-    Object.defineProperty(TreeNode, Symbol.hasInstance, {
-        value: function(obj) {
-            if (this !== TreeNode) return Object.getPrototypeOf(TreeNode)[Symbol.hasInstance].call(this, obj)
-
-            let currentProto = obj
-
-            while(currentProto) {
-                const desc = Object.getOwnPropertyDescriptor(currentProto, "constructor")
-
-                if (desc && desc.value && desc.value.hasOwnProperty(instanceofSymbol))
-                    return true
-
-                currentProto = Object.getPrototypeOf(currentProto)
-            }
-
-            return false
-        }
-    })
-
-    TreeNode[instanceofSymbol] = true
-
-    return TreeNode
-}
-
-const TreeNode = TreeNodeMixin()
-TreeNode.mixin = TreeNodeMixin
-
-export {TreeNode as default}
+)

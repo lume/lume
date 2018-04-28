@@ -4,7 +4,7 @@
 // See: https://esdiscuss.org/topic/how-to-solve-this-basic-es6-module-circular-dependency-problem
 
 import Class from 'lowclass'
-import Transformable from './Transformable'
+import Mixin from './Mixin'
 import Motor from './Motor'
 import ImperativeBase, {initImperativeBase} from './ImperativeBase'
 import XYZValues from './XYZValues'
@@ -22,16 +22,11 @@ import {
 
 initImperativeBase()
 
-const instanceofSymbol = Symbol('instanceofSymbol')
+let Scene = Mixin(base => {
 
-let Scene = null
+    const _ImperativeBase = ImperativeBase.mixin( base )
 
-const SceneMixin = base => {
-    base = base || Class()
-
-    const _ImperativeBase = ImperativeBase.mixin( Transformable.mixin( base ) )
-
-    const _Scene = Class('Scene').extends( ValueProcessor( _ImperativeBase ), ({ Super }) => ({
+    return Class('Scene').extends( ValueProcessor.mixin( _ImperativeBase ), ({ Super }) => ({
 
         static: {
             defaultElementName: 'i-scene',
@@ -322,32 +317,7 @@ const SceneMixin = base => {
 
     }))
 
-    Object.defineProperty(_Scene, Symbol.hasInstance, {
-        value: function(obj) {
-            if (this !== _Scene) return Object.getPrototypeOf(_Scene)[Symbol.hasInstance].call(this, obj)
-
-            let currentProto = obj
-
-            while(currentProto) {
-                const desc = Object.getOwnPropertyDescriptor(currentProto, "constructor")
-
-                if (desc && desc.value && desc.value.hasOwnProperty(instanceofSymbol))
-                    return true
-
-                currentProto = Object.getPrototypeOf(currentProto)
-            }
-
-            return false
-        }
-    })
-
-    _Scene[instanceofSymbol] = true
-
-    return _Scene
-}
-
-Scene = SceneMixin(Class())
-Scene.mixin = SceneMixin
+})
 
 // TODO for now, hard-mixin the HTMLInterface class. We'll do this automatically later.
 Scene = Scene.mixin(HTMLInterface)
