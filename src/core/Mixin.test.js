@@ -1,21 +1,33 @@
 import Mixin, { HasInstance } from './Mixin'
 import { isInstanceof } from './Utility'
 
-test('TODO: Mixin test', () => {
+test('Mixin returns a Function', () => {
     const Foo = Mixin(Base => class Foo extends Base { })
-
-    expect( typeof Foo ).toBe( 'function' )
-    expect( typeof Foo.mixin ).toBe( 'function' )
-
     class Bar {}
     const Baz = Foo.mixin( Bar )
     const Lorem = Foo.mixin( Bar )
 
+    expect( typeof Foo ).toBe( 'function' )
+    expect( typeof Foo.mixin ).toBe( 'function' )
     expect( typeof Baz ).toBe( 'function' )
     expect( typeof Lorem ).toBe( 'function' )
+})
+
+test('Mixin applications are cached', () => {
+    const Foo = Mixin(Base => class Foo extends Base { })
+    class Bar {}
+    const Baz = Foo.mixin( Bar )
+    const Lorem = Foo.mixin( Bar )
 
     // caching of the same mixin application
     expect( Baz ).toBe( Lorem )
+})
+
+test('instanceof works with multiple classes generated from the same Mixin', () => {
+    const Foo = Mixin(Base => class Foo extends Base { })
+    class Bar {}
+    const Baz = Foo.mixin( Bar )
+    const Lorem = Foo.mixin( Bar )
 
     const baz = new Baz
 
@@ -30,14 +42,39 @@ test('TODO: Mixin test', () => {
 
     expect( baz ).toBeInstanceOf( Lorem )
     expect( isInstanceof( baz, Lorem ) ).toBe( true )
+})
+
+test('HasInstance delegates to super Symbol.hasInstance method, so regular instanceof works', () => {
+    const Foo = Mixin(Base => class Foo extends Base { })
+    class Bar {}
+    const Baz = Foo.mixin( Bar )
+    const Lorem = Foo.mixin( Bar )
 
     expect( {} ).not.toBeInstanceOf( Baz )
 
     class Thing extends Baz {}
 
     expect( new Thing ).toBeInstanceOf( Thing )
+})
 
-    { // When Symbol is supported
+test('When Symbol is supported, instanceof works', () => {
+
+    const Ipsum = Mixin(Base => class Ipsum extends Base { })
+    class Blah {}
+    const One = Ipsum.mixin( Blah )
+
+    const one = new One
+
+    expect( one ).toBeInstanceOf( One )
+
+    // there's two versions of Ipsum in play, the original one, and the one
+    // created when making `One`, but instanceof checks still work:
+    expect( one ).toBeInstanceOf( Ipsum )
+})
+
+test('When Symbol is not supported, instanceof does not work', () => {
+
+    function test() {
         const Ipsum = Mixin(Base => class Ipsum extends Base { })
         class Blah {}
         const One = Ipsum.mixin( Blah )
@@ -46,79 +83,65 @@ test('TODO: Mixin test', () => {
 
         expect( one ).toBeInstanceOf( One )
 
-        // there's two versions of Ipsum in play, the original one, and the one
-        // created when making `One`, but instanceof checks still work:
-        expect( one ).toBeInstanceOf( Ipsum )
+        // Without Symbol.hasInstance, the internal trick doesn't work, so
+        // instanceof won't be useful like we'd like it to be:
+        expect( one ).not.toBeInstanceOf( Ipsum )
     }
 
-    { // when Symbol is not supported
-        function test() {
-            const Ipsum = Mixin(Base => class Ipsum extends Base { })
-            class Blah {}
-            const One = Ipsum.mixin( Blah )
+    const originalSymbol = Symbol
 
-            const one = new One
+    Symbol = () => Math.random()
 
-            expect( one ).toBeInstanceOf( One )
+    test()
 
-            // Without Symbol.hasInstance, the internal trick doesn't work, so
-            // instanceof won't be useful like we'd like it to be:
-            expect( one ).not.toBeInstanceOf( Ipsum )
-        }
+    Symbol = void 0
 
-        const originalSymbol = Symbol
+    test()
 
-        Symbol = () => Math.random()
+    Symbol = originalSymbol
+})
 
-        test()
+test('if a class already has its own Symbol.hasInstance method, we do not override it', () => {
+    function fn() {}
 
-        Symbol = void 0
+    const FooMixin = HasInstance(Base => {
+        const Class = class Foo extends Base {}
 
-        test()
+        Object.defineProperty(Class, Symbol.hasInstance, { value: fn })
 
-        Symbol = originalSymbol
-    }
+        return Class
+    })
 
-    { // if a class already has it's own Symbol.hasInstance method, we don't override it
-        function fn() {}
+    const Foo = FooMixin(class{})
 
-        const FooMixin = HasInstance(Base => {
-            const Class = class Foo extends Base {}
+    expect( Foo[Symbol.hasInstance] ).toBe( fn )
 
-            Object.defineProperty(Class, Symbol.hasInstance, { value: fn })
+    const BarMixin = HasInstance(Base => class Bar extends Base {})
 
-            return Class
-        })
+    const Bar = BarMixin(class{})
 
-        const Foo = FooMixin(class{})
+    expect( Bar[Symbol.hasInstance] ).not.toBe( fn )
+})
 
-        expect( Foo[Symbol.hasInstance] ).toBe( fn )
+test('configuring a default base class', () => {
 
-        const BarMixin = HasInstance(Base => class Bar extends Base {})
+    const Foo = Mixin(Base => class Foo extends Base { }, Map)
+    const Bar = class Bar extends Foo {}
+    const bar = new Bar
+    const Baz = class Baz extends Foo.mixin(WeakMap) {}
+    const baz = new Baz
 
-        const Bar = BarMixin(class{})
+    expect( bar ).toBeInstanceOf( Map )
 
-        expect( Bar[Symbol.hasInstance] ).not.toBe( fn )
-    }
+    expect( baz ).not.toBeInstanceOf( Map )
+    expect( baz ).toBeInstanceOf( WeakMap )
+})
 
-    { // configuring a default base class
-        const Foo = Mixin(Base => class Foo extends Base { }, Map)
-        const Bar = class Bar extends Foo {}
-        const bar = new Bar
-        const Baz = class Baz extends Foo.mixin(WeakMap) {}
-        const baz = new Baz
+test('check there are no duplicate applications of a mixin in a class hierarchy', () => {
 
-        expect( bar ).toBeInstanceOf( Map )
+    const Foo = Mixin(Base => class Foo extends Base { }, Map)
+    class Bar extends Foo {}
 
-        expect( baz ).not.toBeInstanceOf( Map )
-        expect( baz ).toBeInstanceOf( WeakMap )
-    }
-
-    { // check there's no duplicate applications of a mixin in a class hierarchy
-        const Foo = Mixin(Base => class Foo extends Base { }, Map)
-        class Bar extends Foo {}
-
-        // because Bar already has Foo
-        expect( Foo.mixin( Bar ) ).toBe( Bar )
-    }
+    // because Bar already has Foo
+    expect( Foo.mixin( Bar ) ).toBe( Bar )
 })
