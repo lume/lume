@@ -7,19 +7,6 @@ import XYZValues from './XYZValues'
 import XYZNonNegativeValues from './XYZNonNegativeValues'
 import Motor from './Motor'
 
-// fallback to experimental CSS transform if browser doesn't have it (fix for Safari 9)
-if (typeof document.createElement('div').style.transform == 'undefined') {
-    Object.defineProperty(CSSStyleDeclaration.prototype, 'transform', {
-        set(value) {
-            this.webkitTransform = value
-        },
-        get() {
-            return this.webkitTransform
-        },
-        enumerable: true,
-    })
-}
-
 export default
 Mixin(Base => {
 

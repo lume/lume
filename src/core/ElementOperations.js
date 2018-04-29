@@ -3,6 +3,21 @@ import {native} from 'lowclass/native'
 import Node from './Node'
 import Motor from './Motor'
 
+// fallback to experimental CSS transform if browser doesn't have it (fix for Safari 9)
+if (typeof document.createElement('div').style.transform == 'undefined') {
+    if ( typeof CSSStyleDeclaration !== 'undefined' ) { // doesn't exist in Jest+@skatejs/ssr environment
+        Object.defineProperty(CSSStyleDeclaration.prototype, 'transform', {
+            set(value) {
+                this.webkitTransform = value
+            },
+            get() {
+                return this.webkitTransform
+            },
+            enumerable: true,
+        })
+    }
+}
+
 /**
  * Manages a DOM element. Exposes a set of recommended APIs for working with
  * DOM efficiently. Currently doesn't do much yet...
