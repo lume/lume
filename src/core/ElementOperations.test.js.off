@@ -1,0 +1,5 @@
+import ElementOperations from './ElementOperations'
+
+test('TODO: ElementOperations test', () => {
+    expect(ElementOperations).toBe(ElementOperations)
+})

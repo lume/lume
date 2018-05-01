@@ -26,6 +26,7 @@
     "@awaitbox/document-ready": "^1.0.10",
     "army-knife": "^0.2.1",
     "babel-runtime": "^6.26.0",
+    "electron": "^1.8.6",
     "element-behaviors": "^1.0.2",
     "famous": "trusktr/famous#commonjs",
     "famousify": "^0.1.5",
@@ -43,7 +44,7 @@
   "devDependencies": {
     "all-contributors-cli": "^4.4.0",
     "builder": "^3.2.3",
-    "builder-js-package": "trusktr/builder-js-package#7c43a9210ffafe31c4b8491626eae1cbfbab8257",
+    "builder-js-package": "trusktr/builder-js-package#e8136974da51b9f155970030a054d328d6a21191",
     "docpress": "0.7.1",
     "webpack-async-await": "^1.1.0"
   },

@@ -44,21 +44,23 @@ function Cached( classFactory ) {
 function HasInstance( classFactory ) {
     let instanceofSymbol
 
+    console.log(' -- Symbol', window.Symbol, window.Symbol)
+
     return Base => {
         const Class = classFactory( Base )
 
-        if ( typeof Symbol === 'undefined' || !Symbol.hasInstance )
+        if ( typeof window.Symbol === 'undefined' || !window.Symbol.hasInstance )
             return Class
 
-        if ( Object.getOwnPropertySymbols( Class ).includes( Symbol.hasInstance ) )
+        if ( Object.getOwnPropertySymbols( Class ).includes( window.Symbol.hasInstance ) )
             return Class
 
         if ( !instanceofSymbol )
-            instanceofSymbol = Symbol('instanceofSymbol')
+            instanceofSymbol = window.Symbol('instanceofSymbol')
 
         Class[instanceofSymbol] = true
 
-        Object.defineProperty(Class, Symbol.hasInstance, {
+        Object.defineProperty(Class, window.Symbol.hasInstance, {
 
             value: function(obj) {
 
@@ -74,7 +76,7 @@ function HasInstance( classFactory ) {
                 // perform the standard check.
                 if (this !== Class)
                     // This is effectively a `super` call.
-                    return Object.getPrototypeOf(Class)[Symbol.hasInstance].call(this, obj)
+                    return Object.getPrototypeOf(Class)[window.Symbol.hasInstance].call(this, obj)
 
                 let currentProto = obj
 
