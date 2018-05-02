@@ -43,7 +43,7 @@
   "devDependencies": {
     "all-contributors-cli": "^4.4.0",
     "builder": "^3.2.3",
-    "builder-js-package": "trusktr/builder-js-package#7c43a9210ffafe31c4b8491626eae1cbfbab8257",
+    "builder-js-package": "trusktr/builder-js-package#3ec5dc223a6aac8a34d9e644908fc61bba37e744",
     "docpress": "0.7.1",
     "webpack-async-await": "^1.1.0"
   },
