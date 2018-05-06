@@ -44,8 +44,7 @@
     "all-contributors-cli": "^4.4.0",
     "builder": "^3.2.3",
     "builder-js-package": "trusktr/builder-js-package#e562e2de60961936ed35d5b9fe94a5bb7ed9666a",
-    "docpress": "0.7.1",
-    "webpack-async-await": "^1.1.0"
+    "docpress": "0.7.1"
   },
   "docpress": {
     "docs": "docs",
