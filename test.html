@@ -1,0 +1,437 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title> test </title>
+
+        <style>
+            body, html {
+                width: 100%;
+                height: 100%;
+                margin: 0;
+                padding: 0;
+                overflow: hidden;
+            }
+        </style>
+
+        <!-- version 1.1.1+ doesn't work with MutationObservers on ShadowDOM roots. -->
+        <!-- <script src="https://unpkg.com/@webcomponents/webcomponentsjs@2.0.0/bundles/webcomponents-sd-ce.js"></script> -->
+        <!-- <script src="https://unpkg.com/@webcomponents/webcomponentsjs@1.1.0/webcomponents-bundle.js"></script> -->
+
+        <!-- version 1.1.0 is the last version where MutationObserver on a shadow root works. -->
+        <!-- <script src="https://unpkg.com/@webcomponents/webcomponentsjs@1.1.0/webcomponents-sd-ce.js"></script> -->
+        <script src="https://unpkg.com/@webcomponents/webcomponentsjs@1.1.0/webcomponents-lite.js"></script>
+    </head>
+    <body>
+
+        <!-- Render something below the scene to test transparency -->
+        <!--<style> i-scene {position:absolute!important; top:0; left:0;} </style>-->
+        <!--<p>This is some text below the scene.</p>-->
+
+        <!--This script only defines classes.-->
+        <script src="./global.js"></script>
+
+        <script>
+            console.log('--- beginning of body')
+        </script>
+
+        <!-- WORKS ======================================================== -->
+<!--
+   -         <style>
+   -             i-dom-node { text-align: center; }
+   -         </style>
+   - 
+   -         <i-scene
+   -             experimental-webgl="true"
+   -             id="scene"
+   -             TODO-perspective="800"
+   -             backgroundColor="rgb(0,0,0)"
+   -             backgroundOpacity="0"
+   -             style="perspective: 800px; background: #252525"
+   -             shadowmap-type="pcfsoft" // one of basic, pcf, pcfsoft
+   -             >
+   - 
+   -             <i-ambient-light color="#fff" intensity="1"></i-ambient-light>
+   - 
+   -             [><i-plane sizeMode="proportional proportional" size="1 1 0" color="teal" rotation="0 71 0"></i-plane><]
+   -             [><i-mesh id="plane" has="plane-geometry phong-material" sizeMode="proportional proportional" size="1 1 0" color="teal" rotation="0 71 0"></i-mesh><]
+   - 
+   -             [> TODO FIXME using dom-plane instead of node makes time until first paint for WebGL much longer. Why? <]
+   -             [><i-node id="plane" sizeMode="proportional proportional" size="1 1 0" style="background: #ddd" rotation="0 71 0"> <span>Hello</span> </i-node><]
+   -             [><i-dom-plane id="plane" sizeMode="proportional proportional" size="1 1 0" style="background: #ddd" rotation="0 71 0"> <span>Hello</span> </i-dom-plane><]
+   - 
+   -             <i-dom-node sizeMode="proportional proportional" size="1 1 0" style="background: #ddd">
+   -                 <h1> HTML content, with lighting and shadows! </h1>
+   -                 <i-dom-node position="0 100 10" size="70 21 0" align="0.5 0 0" mountPoint="0.5 0 0">
+   -                     <button> A button! </button>
+   -                 </i-dom-node>
+   -             </i-dom-node>
+   - 
+   -             <i-node id="root" align="0.5 0 0.5" size="0 0 0" position="0 180 100">
+   - 
+   -                 <i-dom-node
+   -                     size="200 200 0"
+   -                     mountPoint="0.5 0 0.5"
+   -                     opacity="0.5"
+   -                     style="background: #A1D490">
+   - 
+   -                     <h1>Hello</h1>
+   - 
+   -                 </i-dom-node>
+   - 
+   -                 <i-sphere size="50 50 50" mountPoint="0.5 0 0.5" position="60 120 80" color="#156289" material-opacity="0.9"></i-sphere>
+   -                 <i-plane size="50 50 50" mountPoint="0.5 0 0.5" position="80 110 80" color="pink" rotation="0 30 0"></i-plane>
+   - 
+   -                 <i-dom-node id="little" size="50 50 50" mountPoint="0.5 0 0.5" position="20 120 110" rotation="1140 0 0" style="background: orange" material-opacity="0.3">
+   -                     3D!
+   - 
+   -                     <i-dom-node id="little2" size="50 50 50" mountPoint="0.5 0 0.5" position="20 120 110" style="background: skyblue" material-opacity="0.3">
+   -                         Yeah!
+   -                     </i-dom-node>
+   - 
+   -                 </i-dom-node>
+   - 
+   -                 <i-box id="cube" size="50 50 50" mountPoint="0.5 0 0.5" position="-60 120 80" color="#246157"></i-box>
+   - 
+   -                 <i-mesh id="lightMesh" has="sphere-geometry basic-material"
+   -                     size="10 10 10" color="white"
+   -                     position="10 0 130"
+   -                     receive-shadow="false" cast-shadow="false"
+   -                     >
+   -                     <i-point-light id="light" color="white" position="0 0 0" size="0 0 0"></i-point-light>
+   -                 </i-mesh>
+   - 
+   -             </i-node>
+   - 
+   -         </i-scene>
+   - 
+   -         <script>
+   -             infamous.html.useDefaultNames()
+   - 
+   -             [>lightMesh.position = (x,y,z,time) => [x, 100 * Math.sin(time * 0.002) + 100, z]<]
+   -             [>root.rotation = (x,y,z,time) => [x, 15 * Math.cos(time * 0.002), z]<]
+   -             [>cube.rotation = (x,y,z) => [++x, ++y, z]<]
+   -             [>//little.rotation = (x,y,z) => [++x, y, z]<]
+   -             [>little2.rotation = (x,y,z) => [++x, y, z]<]
+   - 
+   -             setInterval(t => { t = performance.now()
+   -             [>infamous.core.Motor.addRenderTask(t => {<]
+   -                 lightMesh.position.y = 100 * Math.sin(t * 0.002) + 100
+   -                 root.rotation.y = 15 * Math.cos(t * 0.002)
+   -                 cube.rotation.y++
+   -                 cube.rotation.x++
+   -                 //little.rotation.x++
+   -                 little2.rotation.x++
+   -             }, 2800)
+   -             [>})<]
+   -         </script>
+   -->
+
+        <!-- WORKS ======================================================== -->
+        <i-scene
+            experimental-webgl="true"
+            backgroundColor="rgb(0,0,0)"
+            backgroundOpacity="0"
+        >
+            <i-ambient-light color="white"></i-ambient-light>
+            <i-node id="n">
+                <i-plane size="100 250 0" color="white" map="BG_Map.png"></i-plane>
+                <i-node size="100 250 0" position="0 250 0">hello</i-node>
+            </i-node>
+        </i-scene>
+        <script>
+            infamous.html.useDefaultNames()
+            const n = document.querySelector('#n')
+            <!-- n.rotation = (x, y, z) => [x, y++, z] -->
+            infamous.core.Motor.addRenderTask(() => {
+                n.rotation.y++
+            })
+        </script>
+
+        <!-- WORKS ======================================================== -->
+            <!--
+               -<i-scene experimental-webgl="true">
+               -    <i-box size="10 10 10" has="basic-material" color="pink"></i-box>
+               -    <i-perspective-camera
+               -        active="true"
+               -        fov="45"
+               -        aspect="1.9"
+               -        near="0.1"
+               -        far="100"
+               -        position="0 0 -10"
+               -    ></i-perspective-camera>
+               -</i-scene>
+               -<script>
+               -    infamous.html.useDefaultNames()
+               -    const scene = document.querySelector('i-scene')
+               -    const cam = document.querySelector('i-perspective-camera')
+               -</script>
+               -->
+
+        <!-- WORKS ======================================================== -->
+        <!--
+           -<script>
+           -    console.log('  ---- define elements ---- ')
+           -    infamous.html.useDefaultNames()
+           -</script>
+           -<i-scene>
+           -    <i-node size="100 100 100" rotation="30 30 30">
+           -        <p> hello </p>
+           -        <i-node sizeMode="proportional literal" size="0.5 100 100">
+           -            <p> there </p>
+           -        </i-node>
+           -    </i-node>
+           -</i-scene>
+           -->
+
+        <!-- WORKS ======================================================== -->
+        <!--<i-scene>-->
+        <!--    <i-node absoluteSize="100 100 100" rotation="30 30 30">-->
+        <!--        <p> hello </p>-->
+        <!--    </i-node>-->
+        <!--</i-scene>-->
+        <!--<script>-->
+        <!--    console.log('  ---- define elements ---- ')-->
+        <!--    infamous.html.useDefaultNames()-->
+        <!--</script>-->
+
+        <!-- WORKS ======================================================== -->
+        <!--<script>-->
+        <!--    console.log('  ---- define elements ---- ')-->
+        <!--    infamous.html.useDefaultNames()-->
+        <!--</script>-->
+        <!--<script>-->
+        <!--document.body.insertAdjacentHTML('beforeend', `-->
+        <!--    <i-scene>-->
+        <!--        <i-node absoluteSize="100 100 100" rotation="30 30 30">-->
+        <!--            <p> hello </p>-->
+        <!--        </i-node>-->
+        <!--    </i-scene>-->
+        <!--`)-->
+        <!--</script>-->
+
+        <!-- WORKS ======================================================== -->
+        <!--<script>-->
+        <!--document.body.insertAdjacentHTML('beforeend', `-->
+        <!--    <i-scene>-->
+        <!--        <i-node absoluteSize="100 100 100" rotation="30 30 30">-->
+        <!--            <p> hello </p>-->
+        <!--        </i-node>-->
+        <!--    </i-scene>-->
+        <!--`)-->
+        <!--</script>-->
+        <!--<script>-->
+        <!--    console.log('  ---- define elements ---- ')-->
+        <!--    infamous.html.useDefaultNames()-->
+        <!--</script>-->
+
+        <!-- WORKS ======================================================== -->
+        <!--<script>-->
+        <!--    setTimeout(() => {-->
+        <!--        console.log('  ---- define elements ---- ')-->
+        <!--        infamous.html.useDefaultNames()-->
+        <!--    }, 0)-->
+        <!--</script>-->
+        <!--<i-scene>-->
+        <!--    <i-node absoluteSize="100 100 100" rotation="30 30 30">-->
+        <!--        <p> hello </p>-->
+        <!--    </i-node>-->
+        <!--</i-scene>-->
+
+        <!-- WORKS ======================================================== -->
+        <!--<script>-->
+        <!--    setTimeout(() => {-->
+        <!--        console.log('  ---- define elements ---- ')-->
+        <!--        infamous.html.useDefaultNames()-->
+        <!--    }, 0)-->
+        <!--</script>-->
+        <!--<script>-->
+        <!--document.body.insertAdjacentHTML('beforeend', `-->
+        <!--    <i-scene>-->
+        <!--        <i-node absoluteSize="100 100 100" rotation="30 30 30">-->
+        <!--            <p> hello </p>-->
+        <!--        </i-node>-->
+        <!--    </i-scene>-->
+        <!--`)-->
+        <!--</script>-->
+
+        <!-- WORKS ======================================================== -->
+        <!--<script>-->
+        <!--    setTimeout(() => {-->
+        <!--        console.log('  ---- define elements ---- ')-->
+        <!--        infamous.html.useDefaultNames()-->
+        <!--    }, 0)-->
+        <!--</script>-->
+        <!--<script>-->
+        <!--document.write(`-->
+        <!--    <i-scene>-->
+        <!--        <i-node absoluteSize="100 100 100" rotation="30 30 30">-->
+        <!--            <p> hello </p>-->
+        <!--        </i-node>-->
+        <!--    </i-scene>-->
+        <!--`)-->
+        <!--</script>-->
+
+        <!-- WORKS ======================================================== -->
+        <!--<script>-->
+        <!--    console.log('  ---- define elements ---- ')-->
+        <!--    infamous.html.useDefaultNames()-->
+        <!--</script>-->
+        <!--<script>-->
+        <!--document.write(`-->
+        <!--    <i-scene>-->
+        <!--        <i-node absoluteSize="100 100 100" rotation="30 30 30">-->
+        <!--            <p> hello </p>-->
+        <!--        </i-node>-->
+        <!--    </i-scene>-->
+        <!--`)-->
+        <!--</script>-->
+
+        <!-- WORKS ======================================================== -->
+        <!--<script>-->
+        <!--document.write(`-->
+        <!--    <i-scene>-->
+        <!--        <i-node absoluteSize="100 100 100" rotation="30 30 30">-->
+        <!--            <p> hello </p>-->
+        <!--        </i-node>-->
+        <!--    </i-scene>-->
+        <!--`)-->
+        <!--</script>-->
+        <!--<script>-->
+        <!--    console.log('  ---- define elements ---- ')-->
+        <!--    infamous.html.useDefaultNames()-->
+        <!--</script>-->
+
+        <!-- WORKS ======================================================== -->
+        <!--<script>-->
+        <!--    Promise.resolve().then(() => {-->
+        <!--        console.log('  ---- define elements ---- ')-->
+        <!--        infamous.html.useDefaultNames()-->
+        <!--    })-->
+        <!--</script>-->
+        <!--<script>-->
+        <!--document.write(`-->
+        <!--    <i-scene>-->
+        <!--        <i-node absoluteSize="100 100 100" rotation="30 30 30">-->
+        <!--            <p> hello </p>-->
+        <!--        </i-node>-->
+        <!--    </i-scene>-->
+        <!--`)-->
+        <!--</script>-->
+
+        <!-- WORKS ======================================================== -->
+        <!--<script>-->
+        <!--document.write(`-->
+        <!--    <i-scene>-->
+        <!--        <i-node absoluteSize="100 100 100" rotation="30 30 30">-->
+        <!--            <p> hello </p>-->
+        <!--        </i-node>-->
+        <!--    </i-scene>-->
+        <!--`)-->
+        <!--</script>-->
+        <!--<script>-->
+        <!--    Promise.resolve().then(() => {-->
+        <!--        console.log('  ---- define elements ---- ')-->
+        <!--        infamous.html.useDefaultNames()-->
+        <!--    })-->
+        <!--</script>-->
+
+        <!-- WORKS ======================================================== -->
+        <!--<script>-->
+        <!--    Promise.resolve().then(() => {-->
+        <!--        console.log('  ---- define elements ---- ')-->
+        <!--        infamous.html.useDefaultNames()-->
+        <!--    })-->
+        <!--</script>-->
+        <!--<i-scene>-->
+        <!--    <i-node absoluteSize="100 100 100" rotation="30 30 30">-->
+        <!--        <p> hello </p>-->
+        <!--    </i-node>-->
+        <!--</i-scene>-->
+
+        <!-- WORKS ======================================================== -->
+        <!--<i-scene>-->
+        <!--    <i-node absoluteSize="100 100 100" rotation="30 30 30">-->
+        <!--        <p> hello </p>-->
+        <!--    </i-node>-->
+        <!--</i-scene>-->
+        <!--<script>-->
+        <!--    Promise.resolve().then(() => {-->
+        <!--        console.log('  ---- define elements ---- ')-->
+        <!--        infamous.html.useDefaultNames()-->
+        <!--    })-->
+        <!--</script>-->
+
+        <!-- WORKS ======================================================== -->
+        <!--<script>-->
+        <!--    Promise.resolve().then(() => {-->
+        <!--        console.log('  ---- define elements ---- ')-->
+        <!--        infamous.html.useDefaultNames()-->
+        <!--    })-->
+        <!--</script>-->
+        <!--<script>-->
+        <!--document.body.insertAdjacentHTML('beforeend', `-->
+        <!--    <i-scene>-->
+        <!--        <i-node absoluteSize="100 100 100" rotation="30 30 30">-->
+        <!--            <p> hello </p>-->
+        <!--        </i-node>-->
+        <!--    </i-scene>-->
+        <!--`)-->
+        <!--</script>-->
+
+        <!-- WORKS ======================================================== -->
+        <!--<script>-->
+        <!--document.body.insertAdjacentHTML('beforeend', `-->
+        <!--    <i-scene>-->
+        <!--        <i-node absoluteSize="100 100 100" rotation="30 30 30">-->
+        <!--            <p> hello </p>-->
+        <!--        </i-node>-->
+        <!--    </i-scene>-->
+        <!--`)-->
+        <!--</script>-->
+        <!--<script>-->
+        <!--    Promise.resolve().then(() => {-->
+        <!--        console.log('  ---- define elements ---- ')-->
+        <!--        infamous.html.useDefaultNames()-->
+        <!--    })-->
+        <!--</script>-->
+
+        <!-- WORKS ======================================================== -->
+        <!--<script>-->
+        <!--    Promise.resolve().then(() => {-->
+        <!--        console.log('  ---- define elements ---- ')-->
+        <!--        infamous.html.useDefaultNames()-->
+        <!--    })-->
+        <!--</script>-->
+        <!--<script>-->
+        <!--document.body.insertAdjacentHTML('afterbegin', `-->
+        <!--    <i-scene>-->
+        <!--        <i-node absoluteSize="100 100 100" rotation="30 30 30">-->
+        <!--            <p> hello </p>-->
+        <!--        </i-node>-->
+        <!--    </i-scene>-->
+        <!--`)-->
+        <!--</script>-->
+
+        <!-- WORKS ======================================================== -->
+        <!--<script>-->
+        <!--document.body.insertAdjacentHTML('afterbegin', `-->
+        <!--    <i-scene>-->
+        <!--        <i-node absoluteSize="100 100 100" rotation="30 30 30">-->
+        <!--            <p> hello </p>-->
+        <!--        </i-node>-->
+        <!--    </i-scene>-->
+        <!--`)-->
+        <!--</script>-->
+        <!--<script>-->
+        <!--    Promise.resolve().then(() => {-->
+        <!--        console.log('  ---- define elements ---- ')-->
+        <!--        infamous.html.useDefaultNames()-->
+        <!--    })-->
+        <!--</script>-->
+
+        <script>
+            console.log('--- end of body')
+        </script>
+
+    </body>
+</html>
