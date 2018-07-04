@@ -4,10 +4,6 @@ import Transformable from './Transformable'
 import {getWebGLRendererThree, destroyWebGLRendererThree} from './WebGLRendererThree'
 import {isInstanceof} from './Utility'
 
-import {
-    //animationFrame,
-} from './Utility'
-
 let documentIsReady = false
 
 // TODO use Array if IE11 doesn't have Map.
@@ -16,24 +12,14 @@ const webGLRenderers = new Map
 const Motor = Class('Motor', ({ Public, Private }) => ({
 
     constructor() {
-        const self = Private(this)
-
-        self.inFrame = false // true when inside a requested animation frame.
-        self.rAF = null // the current animation frame, or null.
-        self.animationLoopStarted = false
-        self.allRenderTasks = []
-        self.taskIterationIndex = 0
-        self.numberOfTasks = 0
-        self.nodesToBeRendered = []
-        self.modifiedScenes = []
-
-        // A set of nodes that are the root nodes of subtrees where all nodes
-        // in each subtree need to have their world matrices updated.
-        self.worldMatrixRootNodes = []
+        Private(this).allRenderTasks = []
+        Private(this).nodesToBeRendered = []
+        Private(this).modifiedScenes = []
+        Private(this).treesToUpdate = []
     },
 
     /**
-     * When a render tasks is added a new rAF loop will be started if there
+     * When a render tasks is added a new requestAnimationFrame loop will be started if there
      * isn't one currently.
      *
      * A render task is simply a function that will be called over and over
@@ -78,7 +64,9 @@ const Motor = Class('Motor', ({ Public, Private }) => ({
 
         self.allRenderTasks.splice(taskIndex, 1)
         self.numberOfTasks -= 1
-        self.taskIterationIndex -= 1
+
+        if ( taskIndex <= self.taskIterationIndex )
+            self.taskIterationIndex -= 1
     },
 
 
@@ -100,20 +88,36 @@ const Motor = Class('Motor', ({ Public, Private }) => ({
         return renderer
     },
 
+    // A Node calls this any time its properties have been modified (f.e. by the end user).
     setNodeToBeRendered(node) {
         const self = Private(this)
         if (self.nodesToBeRendered.includes(node)) return
         self.nodesToBeRendered.push(node)
-        if (!self.inFrame) self.startAnimationLoop()
+
+        // noop if the loop's already started
+        self.startAnimationLoop()
     },
 
     private: {
 
+        animationLoopStarted: false,
+        taskIterationIndex: null,
+        numberOfTasks: 0,
+
+        allRenderTasks: [],
+        nodesToBeRendered: [],
+        modifiedScenes: [],
+
+        // A set of nodes that are the root nodes of subtrees where all nodes
+        // in each subtree need to have their world matrices updated.
+        treesToUpdate: [],
+
         /**
-         * Starts an rAF loop and runs the render tasks in the _renderTasks stack.
+         * Starts a requestAnimationFrame loop and runs the render tasks in the allRenderTasks stack.
          * As long as there are tasks in the stack, the loop continues. When the
-         * stack becomes empty due to removal of tasks, the rAF stops and the app
-         * sits there doing nothing -- silence, crickets.
+         * stack becomes empty due to removal of tasks, the
+         * requestAnimationFrame loop stops and the app sits there doing nothing
+         * -- silence, crickets.
          */
         async startAnimationLoop() {
             if (this.animationLoopStarted) return
@@ -125,56 +129,26 @@ const Motor = Class('Motor', ({ Public, Private }) => ({
                 documentIsReady = true
             }
 
-            // DIRECT ANIMATION LOOP ///////////////////////////////////
-            // So now we can render after the scene is mounted.
-            const motorLoop = timestamp => {
-                this.inFrame = true
+            let timestamp = null
+
+            while (this.animationLoopStarted) {
+                timestamp = await this.animationFrame()
 
                 this.runRenderTasks(timestamp)
                 this.renderNodes(timestamp)
 
-                // If any tasks are left to run, continue the animation loop.
-                if (this.allRenderTasks.length)
-                    this.rAF = requestAnimationFrame(motorLoop)
-                else {
-                    this.rAF = null
+                // If no tasks are left, stop the animation loop.
+                if (!this.allRenderTasks.length)
                     this.animationLoopStarted = false
-                }
-
-                this.inFrame = false
             }
-
-            this.rAF = requestAnimationFrame(motorLoop)
         },
-        //async startAnimationLoop() {
-            //if (this.animationLoopStarted) return
 
-            //this.animationLoopStarted = true
-
-            //if (!documentIsReady) {
-                //await documentReady()
-                //documentIsReady = true
-            //}
-
-            //// ANIMATION LOOP USING WHILE AND AWAIT ///////////////////////////////////
-            //this.rAF = true
-            //let timestamp = null
-            //while (this.rAF) {
-                //timestamp = await animationFrame()
-                //this.inFrame = true
-
-                //this.runRenderTasks(timestamp)
-                //this.renderNodes(timestamp)
-
-                //// If any tasks are left to run, continue the animation loop.
-                //if (!this.allRenderTasks.length) {
-                    //this.rAF = null
-                    //this.animationLoopStarted = false
-                //}
-
-                //this.inFrame = false
-            //}
-        //},
+        animationFrame() {
+            let resolve = null
+            const promise = new Promise(r => resolve = r)
+            window.requestAnimationFrame(resolve)
+            return promise
+        },
 
         runRenderTasks(timestamp) {
             for (this.taskIterationIndex = 0; this.taskIterationIndex < this.numberOfTasks; this.taskIterationIndex += 1) {
@@ -195,8 +169,8 @@ const Motor = Class('Motor', ({ Public, Private }) => ({
 
                 // If the node is root of a subtree containing updated nodes and
                 // has no ancestors that were modified, then add it to the
-                // worldMatrixRootNodes set so we can update the world matrices of
-                // all the nodes in the root node's subtree.
+                // treesToUpdate set so we can update the world matrices of
+                // all the nodes in the subtree.
                 if (
                     // a node could be a Scene, which is not Transformable
                     isInstanceof(node, Transformable) &&
@@ -208,9 +182,9 @@ const Motor = Class('Motor', ({ Public, Private }) => ({
                     !isInstanceof(node._getAncestorThatShouldBeRendered(), Transformable) &&
 
                     // and the node isn't already added.
-                    !this.worldMatrixRootNodes.includes(node)
+                    !this.treesToUpdate.includes(node)
                 ) {
-                    this.worldMatrixRootNodes.push(node)
+                    this.treesToUpdate.push(node)
                 }
 
                 // keep track of which scenes are modified so we can render webgl
@@ -228,11 +202,11 @@ const Motor = Class('Motor', ({ Public, Private }) => ({
             }
 
             // Update world matrices of the subtrees.
-            const worldMatrixRootNodes = this.worldMatrixRootNodes
-            for (let i=0, l=worldMatrixRootNodes.length; i<l; i+=1) {
-                worldMatrixRootNodes[i]._calculateWorldMatricesInSubtree()
+            const treesToUpdate = this.treesToUpdate
+            for (let i=0, l=treesToUpdate.length; i<l; i+=1) {
+                treesToUpdate[i]._calculateWorldMatricesInSubtree()
             }
-            worldMatrixRootNodes.length = 0
+            treesToUpdate.length = 0
 
             // render webgl of modified scenes.
             // TODO PERFORMANCE: store a list of webgl-enabled modified scenes, and
