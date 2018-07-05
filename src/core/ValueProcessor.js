@@ -33,6 +33,17 @@ Mixin(Base =>
             context[ prop ] = number
         },
 
+        processBooleanValue( prop, value, context ) {
+            checkDefined( prop ) && checkDefined( value )
+            context = context || this
+            context[ prop ] = value === null || value.trim() === 'false' ? false : true
+        },
+
     })
 
 )
+
+function checkDefined( value ) {
+    if ( value === void 0 )
+        throw new TypeError( `value is not defined` )
+}
