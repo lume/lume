@@ -31,13 +31,16 @@ const HTMLScene = DeclarativeBase.subclass('HTMLScene', ({ Public, Private, Supe
         privateThis._root.innerHTML = `
             <style>
                 .i-scene-CSS3DLayer,
+                .i-scene-MiscellaneousLayer,
                 .i-scene-WebGLLayer,
                 .i-scene-WebGLLayer > canvas  {
                     margin: 0; padding: 0;
                     width: 100%; height: 100%;
                     display: block;
                 }
-                .i-scene-CSS3DLayer, .i-scene-WebGLLayer {
+                .i-scene-CSS3DLayer,
+                .i-scene-MiscellaneousLayer,
+                .i-scene-WebGLLayer {
                     position: absolute; top: 0; left: 0;
                 }
                 .i-scene-CSS3DLayer {
@@ -51,6 +54,9 @@ const HTMLScene = DeclarativeBase.subclass('HTMLScene', ({ Public, Private, Supe
                 <slot></slot>
             </div>
             <div class="i-scene-WebGLLayer"></div>
+            <div class="i-scene-MiscellaneousLayer">
+                <slot name="misc"></slot>
+            </div>
         `
 
         // TODO make this similar to "package protected". It is public for now

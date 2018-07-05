@@ -37,6 +37,7 @@ let Scene = Mixin(Base => {
                 'background-opacity',
                 'shadowmaptype',
                 'shadowmap-type',
+                'vr',
             ] ),
         },
 
@@ -279,6 +280,21 @@ let Scene = Mixin(Base => {
             this._startOrStopSizePolling()
         },
 
+        set vr( enabled ) {
+            this._vr = enabled
+            this._renderer.enableVR( this, enabled )
+
+            console.log( 'vr enabled on the scene?', enabled )
+
+            if ( enabled ) {
+
+                Motor.setFrameRequester( fn => this._renderer.requestFrame( this, fn ) )
+                this._renderer.createDefaultWebVREntryUI( this )
+
+            }
+        },
+        get vr() { return this._vr },
+
         // TODO: generic type system for attributes.
         async attributeChangedCallback(attr, oldVal, newVal) {
             Super(this).attributeChangedCallback(attr, oldVal, newVal)
@@ -301,6 +317,9 @@ let Scene = Mixin(Base => {
             else if ( attr == 'shadowmaptype' || attr == 'shadowmap-type' ) {
                 this._renderer.setShadowMapType(this, newVal)
                 this._needsToBeRendered()
+            }
+            else if ( attr == 'vr' ) {
+                this.processBooleanValue( 'vr', newVal )
             }
         },
 

@@ -95,6 +95,57 @@ const WebGLRendererThree = Class('WebGLRendererThree', {
             sceneStates.get( scene ).renderer.shadowMap.type = PCFShadowMap
         }
     },
+
+    requestFrame( scene, fn ) {
+        const renderer = sceneStates.get( scene ).renderer
+
+        if ( renderer.animate ) // < r94
+            renderer.animate( fn )
+        else if ( renderer.setAnimationLoop ) // >= r94
+            renderer.setAnimationLoop( fn )
+    },
+
+    // This needs work: at the moment it has only been tested toggling it on
+    // once and nothing more.
+    enableVR( scene, enable ) {
+        const renderer = sceneStates.get( scene ).renderer
+        renderer.vr.enabled = enable
+    },
+
+    createDefaultWebVREntryUI( scene ) {
+
+        const renderer = sceneStates.get( scene ).renderer
+
+        window.addEventListener( 'vrdisplaypointerrestricted', onPointerRestricted, false );
+        window.addEventListener( 'vrdisplaypointerunrestricted', onPointerUnrestricted, false );
+
+        function onPointerRestricted() {
+            var pointerLockElement = renderer.domElement;
+            if ( pointerLockElement && typeof(pointerLockElement.requestPointerLock) === 'function' ) {
+                pointerLockElement.requestPointerLock();
+            }
+        }
+
+        function onPointerUnrestricted() {
+            var currentPointerLockElement = document.pointerLockElement;
+            var expectedPointerLockElement = renderer.domElement;
+            if ( currentPointerLockElement && currentPointerLockElement === expectedPointerLockElement && typeof(document.exitPointerLock) === 'function' ) {
+                document.exitPointerLock();
+            }
+        }
+
+        const button = WEBVR.createButton( renderer )
+
+        button.setAttribute( 'id', 'vrButton' )
+        button.style.color = 'black'
+        button.style['border-color'] = 'black'
+
+        button.setAttribute( 'slot', 'misc' )
+        scene.appendChild( button )
+
+        return button
+    },
+
 })
 
 let instance = null

@@ -98,6 +98,10 @@ const Motor = Class('Motor', ({ Public, Private }) => ({
         self.startAnimationLoop()
     },
 
+    setFrameRequester( requester ) {
+        Private( this ).requestFrame = requester
+    },
+
     private: {
 
         animationLoopStarted: false,
@@ -111,6 +115,9 @@ const Motor = Class('Motor', ({ Public, Private }) => ({
         // A set of nodes that are the root nodes of subtrees where all nodes
         // in each subtree need to have their world matrices updated.
         treesToUpdate: [],
+
+        // default to requestAnimationFrame for regular non-VR/AR scenes.
+        requestFrame: window.requestAnimationFrame.bind( window ),
 
         /**
          * Starts a requestAnimationFrame loop and runs the render tasks in the allRenderTasks stack.
@@ -144,10 +151,7 @@ const Motor = Class('Motor', ({ Public, Private }) => ({
         },
 
         animationFrame() {
-            let resolve = null
-            const promise = new Promise(r => resolve = r)
-            window.requestAnimationFrame(resolve)
-            return promise
+            return new Promise(r => this.requestFrame(r))
         },
 
         runRenderTasks(timestamp) {
