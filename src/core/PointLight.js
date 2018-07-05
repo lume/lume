@@ -58,20 +58,13 @@ Class('PointLight').extends( LightBase, ({ Super }) => ({
             attr == 'distance' ||
             attr == 'decay'
         ) {
-            this.processNumberValue( attr, newVal )
+            this.processNumberValue( attr, newVal, this.threeObject3d )
             this._needsToBeRendered()
         }
 
         else if ( attr == 'castshadow' || attr == 'cast-shadow' ) {
-
-            // TODO: generic function to handle boolean attributes
-            if ( newVal == 'false' || newVal == null )
-                this.threeObject3d.castShadow = false
-            else
-                this.threeObject3d.castShadow = true
-
+            this.processBooleanValue( 'castShadow', newVal, this.threeObject3d )
             this._needsToBeRendered()
-
         }
 
         else if ( attr == 'shadowmapwidth' || attr == 'shadow-map-width' ) {

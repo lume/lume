@@ -7,6 +7,7 @@ import { observeChildren } from '../core/Utility'
 import jss from '../lib/jss'
 import documentReady from '@awaitbox/document-ready'
 import DefaultBehaviors from './behaviors/DefaultBehaviors'
+import ValueProcessor from '../core/ValueProcessor'
 
 // Very very stupid hack needed for Safari in order for us to be able to extend
 // the HTMLElement class. See:
@@ -51,7 +52,7 @@ Mixin(Base => {
     }
 
     // otherwise, create it.
-    const WebComponent = Class('WebComponent').extends( DefaultBehaviors.mixin( Base ), ({ Super, Public, Private }) => ({
+    const WebComponent = Class('WebComponent').extends( ValueProcessor.mixin( DefaultBehaviors.mixin( Base ) ), ({ Super, Public, Private }) => ({
 
         constructor(...args) {
             // Throw an error if no Custom Elements v1 API exists.

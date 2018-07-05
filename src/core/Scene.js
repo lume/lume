@@ -9,7 +9,6 @@ import Motor from './Motor'
 import ImperativeBase, {initImperativeBase} from './ImperativeBase'
 import XYZValues from './XYZValues'
 import XYZNonNegativeValues from './XYZNonNegativeValues'
-import ValueProcessor from './ValueProcessor'
 import { default as HTMLInterface } from '../html/HTMLScene'
 import documentReady from '@awaitbox/document-ready'
 
@@ -26,7 +25,7 @@ let Scene = Mixin(Base => {
 
     const _ImperativeBase = ImperativeBase.mixin( Base )
 
-    return Class('Scene').extends( ValueProcessor.mixin( _ImperativeBase ), ({ Super }) => ({
+    return Class('Scene').extends( _ImperativeBase, ({ Super }) => ({
 
         static: {
             defaultElementName: 'i-scene',
@@ -38,6 +37,7 @@ let Scene = Mixin(Base => {
                 'background-opacity',
                 'shadowmaptype',
                 'shadowmap-type',
+                'vr',
             ] ),
         },
 
@@ -280,6 +280,21 @@ let Scene = Mixin(Base => {
             this._startOrStopSizePolling()
         },
 
+        set vr( enabled ) {
+            this._vr = enabled
+            this._renderer.enableVR( this, enabled )
+
+            console.log( 'vr enabled on the scene?', enabled )
+
+            if ( enabled ) {
+
+                Motor.setFrameRequester( fn => this._renderer.requestFrame( this, fn ) )
+                this._renderer.createDefaultWebVREntryUI( this )
+
+            }
+        },
+        get vr() { return this._vr },
+
         // TODO: generic type system for attributes.
         async attributeChangedCallback(attr, oldVal, newVal) {
             Super(this).attributeChangedCallback(attr, oldVal, newVal)
@@ -291,17 +306,20 @@ let Scene = Mixin(Base => {
             // "mountcancel" to see.
             await this.mountPromise
 
-            if ( attr == 'backgroundcolor' ) {
+            if ( attr == 'backgroundcolor' || attr == 'background-color' ) {
                 this.processClearColorValue( attr, newVal )
                 this._needsToBeRendered()
             }
-            else if ( attr == 'backgroundopacity' ) {
+            else if ( attr == 'backgroundopacity' || attr == 'background-opacity' ) {
                 this.processClearAlphaValue( attr, newVal )
                 this._needsToBeRendered()
             }
             else if ( attr == 'shadowmaptype' || attr == 'shadowmap-type' ) {
                 this._renderer.setShadowMapType(this, newVal)
                 this._needsToBeRendered()
+            }
+            else if ( attr == 'vr' ) {
+                this.processBooleanValue( 'vr', newVal )
             }
         },
 
@@ -311,7 +329,7 @@ let Scene = Mixin(Base => {
         },
 
         processClearAlphaValue( attr, value ) {
-            this.processNumberValue( '_glBackgroundOpacity', value, this )
+            this.processNumberValue( '_glBackgroundOpacity', value )
             this._renderer.setClearAlpha( this, this._glBackgroundOpacity)
         },
 

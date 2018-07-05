@@ -61,21 +61,13 @@ Class('Mesh').extends( Node, ({ Super }) => ({
 
         if ( attr == 'castshadow' || attr == 'cast-shadow' ) {
 
-            if ( newVal == 'false' || newVal == null )
-                this.threeObject3d.castShadow = false
-            else
-                this.threeObject3d.castShadow = true
-
+            this.processBooleanValue( 'castShadow', newVal, this.threeObject3d )
             this._needsToBeRendered()
 
         }
         else if ( attr == 'receiveshadow' || attr == 'receive-shadow' ) {
 
-            if ( newVal == 'false' || newVal == null )
-                this.threeObject3d.receiveShadow = false
-            else
-                this.threeObject3d.receiveShadow = true
-
+            this.processBooleanValue( 'receiveShadow', newVal, this.threeObject3d )
             this._needsToBeRendered()
 
         }
