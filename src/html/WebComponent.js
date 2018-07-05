@@ -151,19 +151,17 @@ Mixin(Base => {
         init() {
             if (!Private(this).style) Private(this).style = Private(this).createStyles()
 
-            // Timeout needed in case the Custom Element classes are
+            // Deferral needed in case the Custom Element classes are
             // registered after the elements are already defined in the
-            // DOM but not yet upgraded. This means that the `node` arg
-            // might be a `<motor-node>` but if it isn't upgraded then
-            // its API won't be available to the logic inside the
-            // childConnectedCallback. The reason this happens is
+            // DOM (they're not yet upgraded). This means that children of this node
+            // might be a `<motor-node>` but if they aren't upgraded yet then
+            // their API won't be available to the logic inside the following
+            // call to childConnectedCallback. The reason this happens is
             // because parents are upgraded first and their
             // connectedCallbacks fired before their children are
             // upgraded.
             //
-            //setTimeout(() => {
-            //Promise.resolve().then(() => {
-            documentReady().then(() => {
+            documentReady().then(() => { // implies a Promise.resolve() behavior if the DOM is already ready
 
                 // Handle any nodes that may have been connected before `this` node
                 // was created (f.e. child nodes that were connected before the
@@ -180,7 +178,6 @@ Mixin(Base => {
                     Private(this).childObserver = observeChildren(this, this.childConnectedCallback, this.childDisconnectedCallback)
                 }
             })
-            //}, 0)
 
             // fire this.attributeChangedCallback in case some attributes have
             // existed before the custom element was upgraded.
