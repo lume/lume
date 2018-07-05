@@ -11,13 +11,13 @@ Mixin(Base =>
     Class( 'ValueProcessor' ).extends( Base, {
 
         processColorValue( value, context, prop ) {
-            context = context || this.threeObject3d
+            context = context || this
             prop = prop || 'color'
             context[ prop ] = new Color( value )
         },
 
         processNumberValue( prop, value, context ) {
-            context = context || this.threeObject3d
+            context = context || this
             const number = parseFloat( value )
 
             if ( isNaN( number ) ) {

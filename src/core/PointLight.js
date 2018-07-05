@@ -58,7 +58,7 @@ Class('PointLight').extends( LightBase, ({ Super }) => ({
             attr == 'distance' ||
             attr == 'decay'
         ) {
-            this.processNumberValue( attr, newVal )
+            this.processNumberValue( attr, newVal, this.threeObject3d )
             this._needsToBeRendered()
         }
 

@@ -25,12 +25,12 @@ Class('LightBase').extends( ValueProcessor.mixin( Node ), ({ Super }) => ({
         Super(this).attributeChangedCallback( attr, oldVal, newVal )
 
         if ( attr == 'color' ) {
-            this.processColorValue( newVal )
+            this.processColorValue( newVal, this.threeObject3d )
             this._needsToBeRendered()
         }
 
         else if ( attr == 'intensity' ) {
-            this.processNumberValue( attr, newVal )
+            this.processNumberValue( attr, newVal, this.threeObject3d )
             this._needsToBeRendered()
         }
     },

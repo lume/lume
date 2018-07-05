@@ -291,11 +291,11 @@ let Scene = Mixin(Base => {
             // "mountcancel" to see.
             await this.mountPromise
 
-            if ( attr == 'backgroundcolor' ) {
+            if ( attr == 'backgroundcolor' || attr == 'background-color' ) {
                 this.processClearColorValue( attr, newVal )
                 this._needsToBeRendered()
             }
-            else if ( attr == 'backgroundopacity' ) {
+            else if ( attr == 'backgroundopacity' || attr == 'background-opacity' ) {
                 this.processClearAlphaValue( attr, newVal )
                 this._needsToBeRendered()
             }
@@ -311,7 +311,7 @@ let Scene = Mixin(Base => {
         },
 
         processClearAlphaValue( attr, value ) {
-            this.processNumberValue( '_glBackgroundOpacity', value, this )
+            this.processNumberValue( '_glBackgroundOpacity', value )
             this._renderer.setClearAlpha( this, this._glBackgroundOpacity)
         },
 
