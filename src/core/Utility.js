@@ -12,13 +12,6 @@ function applyCSSLabel(value, label) {
     }
 }
 
-function animationFrame() {
-    let resolve = null
-    const promise = new Promise(r => resolve = r)
-    window.requestAnimationFrame(resolve)
-    return promise
-}
-
 // Create lowercase versions of each setter property.
 // we care only about the setters, for now.
 function makeLowercaseSetterAliases(object) {
@@ -143,7 +136,6 @@ function isInstanceof(lhs, rhs) {
 export {
     epsilon,
     applyCSSLabel,
-    animationFrame,
     makeLowercaseSetterAliases,
     observeChildren,
     getShadowRootVersion,
