@@ -1,16 +1,11 @@
 import Class from 'lowclass'
 import Node from './Node'
-import ValueProcessor from './ValueProcessor'
 
 // base class for light elements.
 export default
-Class('LightBase').extends( ValueProcessor.mixin( Node ), ({ Super }) => ({
+Class('LightBase').extends( Node, ({ Super }) => ({
 
     static: {
-        // TODO calling super.observedAttributes doesn't work because
-        // ValueProcessor mixin doesn't do static extension. Abstract away the
-        // mixin pattern, and have it include static inheritance.
-        //observedAttributes: ValueProcessor.observedAttributes.concat([
         observedAttributes: Node.observedAttributes.concat([
             'color',
             'intensity',

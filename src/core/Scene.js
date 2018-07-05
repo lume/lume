@@ -9,7 +9,6 @@ import Motor from './Motor'
 import ImperativeBase, {initImperativeBase} from './ImperativeBase'
 import XYZValues from './XYZValues'
 import XYZNonNegativeValues from './XYZNonNegativeValues'
-import ValueProcessor from './ValueProcessor'
 import { default as HTMLInterface } from '../html/HTMLScene'
 import documentReady from '@awaitbox/document-ready'
 
@@ -26,7 +25,7 @@ let Scene = Mixin(Base => {
 
     const _ImperativeBase = ImperativeBase.mixin( Base )
 
-    return Class('Scene').extends( ValueProcessor.mixin( _ImperativeBase ), ({ Super }) => ({
+    return Class('Scene').extends( _ImperativeBase, ({ Super }) => ({
 
         static: {
             defaultElementName: 'i-scene',
