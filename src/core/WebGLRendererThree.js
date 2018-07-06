@@ -1,3 +1,5 @@
+import WEBVR from './WebVR.js'
+
 import {
     //PerspectiveCamera,
     WebGLRenderer,
