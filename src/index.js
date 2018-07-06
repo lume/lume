@@ -24,4 +24,4 @@ export {
     components,
 }
 
-export const version = '19.0.1'
+export const version = '19.0.2'

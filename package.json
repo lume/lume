@@ -1,6 +1,6 @@
 {
   "name": "infamous",
-  "version": "19.0.1",
+  "version": "19.0.2",
   "description": "A CSS3D/WebGL UI library.",
   "main": "index.js",
   "license": "MIT",
