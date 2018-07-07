@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+    <head>
+        <title>VR mode test</title>
+        <meta charset="utf-8">
+
+        <!-- polyfills -->
+        <script src="https://unpkg.com/promise-polyfill@7.0.0/dist/polyfill.min.js"></script>
+        <script src="https://unpkg.com/@webcomponents/webcomponentsjs@1.0.22/webcomponents-sd-ce.js"></script>
+
+        <!-- <script src="https://unpkg.com/infamous@19.0.4/global.js"></script> -->
+        <script src="./global.js"></script>
+        <script> infamous.html.useDefaultNames() </script>
+
+        <style> body, html { width: 100%; height: 100%; padding: 0; margin: 0; } </style>
+    </head>
+    <body>
+        <i-scene experimental-webgl vr>
+            <i-box id="node" size="80 80 80" align="0.5 0.5 0.5" mountPoint="0.5 0.5 0.5" position="0 0 -500" rotation="30 30 30" color="deeppink"></i-box>
+            <i-point-light align="0.5 0.5 0.5" mountPoint="0.5 0.5 0.5" position="-200 0 0" color="yellow"></i-point-light>
+        </i-scene>
+        <script>
+            window.node.rotation = ( x, y, z, time ) => [ x, ++y, z ]
+        </script>
+    </body>
+</html>
