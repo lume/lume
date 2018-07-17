@@ -6,7 +6,7 @@ const BasicMaterialBehavior = BaseMaterialBehavior.subclass('BasicMaterialBehavi
 
     protected: {
 
-        createComponent(element) {
+        createComponent() {
             return new MeshBasicMaterial({ color: 0x00ff00 })
         },
 

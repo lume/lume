@@ -9,10 +9,9 @@ Class( 'BaseGeometryBehavior' ).extends( BaseMeshBehavior, ({ Protected, Super }
         type: 'geometry',
     },
 
-    async connectedCallback( element ) {
-        if (! ( await Super(this).connectedCallback( element ) ) ) return
-        this.element = element
-        element.on('sizechange', this._updateGeometryOnSizeChange, this)
+    async connectedCallback() {
+        if (! ( await Super(this).connectedCallback() ) ) return
+        this.element.on('sizechange', this._updateGeometryOnSizeChange, this)
     },
 
     _updateGeometryOnSizeChange({ x, y, z }) {
@@ -21,10 +20,10 @@ Class( 'BaseGeometryBehavior' ).extends( BaseMeshBehavior, ({ Protected, Super }
         Protected(this).setMeshComponent( this.element, 'geometry', Protected(this).createComponent(this.element) )
     },
 
-    async disconnectedCallback( element ) {
-        if (! ( await Super(this).disconnectedCallback( element ) ) ) return
+    async disconnectedCallback() {
+        if (! ( await Super(this).disconnectedCallback() ) ) return
 
-        element.off('sizechange', this._updateGeometryOnSizeChange)
+        this.element.off('sizechange', this._updateGeometryOnSizeChange)
     },
 
 }))

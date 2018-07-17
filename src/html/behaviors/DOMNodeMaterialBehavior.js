@@ -7,7 +7,7 @@ const DOMNodeMaterialBehavior = BaseMaterialBehavior.subclass('DOMNodeMaterialBe
 
     protected: {
 
-        createComponent(element) {
+        createComponent() {
             // TODO PERFORMANCE we can re-use a single material for
             // all the DOM planes rather than a new material per
             // plane.

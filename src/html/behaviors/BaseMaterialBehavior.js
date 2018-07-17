@@ -12,12 +12,12 @@ Class( 'BaseMaterialBehavior' ).extends( BaseMeshBehavior, ({ Super }) => ({
     },
 
     // TODO: generic type system for attributes.
-    async attributeChangedCallback( element, attr, oldVal, newVal ) {
-        if (! ( await Super(this).attributeChangedCallback( element ) ) ) return
+    async attributeChangedCallback( attr, oldVal, newVal ) {
+        if (! ( await Super(this).attributeChangedCallback( attr, oldVal, newVal ) ) ) return
 
         if ( attr == 'color' ) {
-            this.processColorValue( newVal, element.threeObject3d.material )
-            element._needsToBeRendered()
+            this.processColorValue( newVal, this.element.threeObject3d.material )
+            this.element._needsToBeRendered()
         }
 
         // Note, Node elements also react to this, and apply it to the DOM
@@ -29,14 +29,14 @@ Class( 'BaseMaterialBehavior' ).extends( BaseMeshBehavior, ({ Super }) => ({
         // Material opacity would be multiplied to the hierarchical opacity.
         else if ( attr == 'material-opacity' ) {
 
-            const material = element.threeObject3d.material
+            const material = this.element.threeObject3d.material
             this.processNumberValue( 'opacity', newVal, material )
             const opacity = material.opacity
 
             if ( opacity < 1 ) material.transparent = true
             else material.transparent = false
 
-            element._needsToBeRendered()
+            this.element._needsToBeRendered()
 
         }
 
