@@ -2,20 +2,20 @@ import 'element-behaviors'
 import { PlaneGeometry } from 'three'
 import BaseGeometryBehavior from './BaseGeometryBehavior'
 
-const PlaneGeometryBehavior = BaseGeometryBehavior.subclass('PlaneGeometryBehavior', {
+const PlaneGeometryBehavior = BaseGeometryBehavior.subclass('PlaneGeometryBehavior', (Public) => ({
 
     protected: {
 
-        createComponent(element) {
+        createComponent() {
             return new PlaneGeometry(
-                element.calculatedSize.x,
-                element.calculatedSize.y,
+                Public(this).element.calculatedSize.x,
+                Public(this).element.calculatedSize.y,
             )
         },
 
     },
 
-})
+}))
 
 elementBehaviors.define('plane-geometry', PlaneGeometryBehavior)
 

@@ -9,6 +9,8 @@ Class( 'BaseMeshBehavior' ).extends( ValueProcessor, ({ Protected, Private, Supe
     constructor(element) {
         Super(this).constructor()
 
+        this.element = element
+
         let resolveIsMeshPromise = null
         // TODO cancellable promise, or it may leak
 
@@ -23,40 +25,40 @@ Class( 'BaseMeshBehavior' ).extends( ValueProcessor, ({ Protected, Private, Supe
         else Private(this).isMeshPromise = Promise.resolve(false)
     },
 
-    async connectedCallback( element ) {
+    async connectedCallback() {
         const self = Private(this)
 
-        if ( ! self.checkedElementIsMesh ) await self.checkElementIsMesh(element)
+        if ( ! self.checkedElementIsMesh ) await self.checkElementIsMesh(this.element)
         if ( ! self.elementIsMesh ) return false
 
         // TODO might have to defer so that calculatedSize is already calculated
         //console.log('hmmmmmmmmmmmmmmmmmmmmmmmmmmmm')
         Protected(this).setMeshComponent(
-            element,
+            this.element,
             this.constructor.type,
-            Protected(this).createComponent(element)
+            Protected(this).createComponent(this.element)
         )
-        element._needsToBeRendered()
+        this.element._needsToBeRendered()
 
         return true
     },
 
-    async disconnectedCallback( element ) {
+    async disconnectedCallback() {
         const self = Private(this)
 
-        if ( ! self.checkedElementIsMesh ) await self.checkElementIsMesh(element)
+        if ( ! self.checkedElementIsMesh ) await self.checkElementIsMesh(this.element)
         if ( ! self.elementIsMesh ) return false
 
-        Protected(this).setDefaultComponent( element, this.constructor.type )
-        element._needsToBeRendered()
+        Protected(this).setDefaultComponent( this.element, this.constructor.type )
+        this.element._needsToBeRendered()
 
         return true
     },
 
-    async attributeChangedCallback( element, attr, oldValue, newValue ) {
+    async attributeChangedCallback( attr, oldValue, newValue ) {
         const self = Private(this)
 
-        if ( ! self.checkedElementIsMesh ) await self.checkElementIsMesh(element)
+        if ( ! self.checkedElementIsMesh ) await self.checkElementIsMesh(this.element)
         if ( ! self.elementIsMesh ) return false
         return true
     },

@@ -2,13 +2,13 @@ import 'element-behaviors'
 import { SphereGeometry } from 'three'
 import BaseGeometryBehavior from './BaseGeometryBehavior'
 
-const SphereGeometryBehavior = BaseGeometryBehavior.subclass('SphereGeometryBehavior', {
+const SphereGeometryBehavior = BaseGeometryBehavior.subclass('SphereGeometryBehavior', (Public) => ({
 
     protected: {
 
-        createComponent(element) {
+        createComponent() {
             return new SphereGeometry(
-                element.calculatedSize.x / 2,
+                Public(this).element.calculatedSize.x / 2,
                 32,
                 32
             )
@@ -16,7 +16,7 @@ const SphereGeometryBehavior = BaseGeometryBehavior.subclass('SphereGeometryBeha
 
     },
 
-})
+}))
 
 elementBehaviors.define('sphere-geometry', SphereGeometryBehavior)
 

@@ -2,11 +2,11 @@ import 'element-behaviors'
 import { BoxGeometry } from 'three'
 import BaseGeometryBehavior from './BaseGeometryBehavior'
 
-const DOMNodeGeometryBehavior = BaseGeometryBehavior.subclass('DOMNodeGeometryBehavior', {
+const DOMNodeGeometryBehavior = BaseGeometryBehavior.subclass('DOMNodeGeometryBehavior', (Public) => ({
 
     protected: {
 
-        createComponent(element) {
+        createComponent() {
 
             // We have to use a BoxGeometry instead of a
             // PlaneGeometry because Three.js is not capable of
@@ -15,8 +15,8 @@ const DOMNodeGeometryBehavior = BaseGeometryBehavior.subclass('DOMNodeGeometryBe
             // count by a factor of 6. See issue
             // https://github.com/mrdoob/three.js/issues/9315
             return new BoxGeometry(
-                element.calculatedSize.x,
-                element.calculatedSize.y,
+                Public(this).element.calculatedSize.x,
+                Public(this).element.calculatedSize.y,
                 1
             )
 
@@ -24,7 +24,7 @@ const DOMNodeGeometryBehavior = BaseGeometryBehavior.subclass('DOMNodeGeometryBe
 
     },
 
-})
+}))
 
 elementBehaviors.define('domnode-geometry', DOMNodeGeometryBehavior)
 

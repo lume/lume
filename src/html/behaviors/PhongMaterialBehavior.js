@@ -6,7 +6,7 @@ const PhongMaterialBehavior = BaseMaterialBehavior.subclass('PhongMaterialBehavi
 
     protected: {
 
-        createComponent(element) {
+        createComponent() {
             return new MeshPhongMaterial({ color: 0x00ff00 })
         },
 
