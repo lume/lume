@@ -26,7 +26,7 @@
     "@awaitbox/document-ready": "^1.0.10",
     "army-knife": "^0.2.1",
     "babel-runtime": "^6.26.0",
-    "element-behaviors": "^2.0.0",
+    "element-behaviors": "^2.0.1",
     "famous": "trusktr/famous#commonjs",
     "famousify": "^0.1.5",
     "geometry-interfaces": "^1.1.3",
