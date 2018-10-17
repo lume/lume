@@ -59933,7 +59933,7 @@ function useDefaultNames() {
 
 
 
-const version = '19.0.5'
+const version = '19.0.6'
 
 
 /***/ }),
