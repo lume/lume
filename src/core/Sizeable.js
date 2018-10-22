@@ -63,10 +63,13 @@ Mixin(Base => {
             // this covers single-valued properties like opacity, but has the
             // sideeffect of trigger propertychange more than needed for
             // XYZValues (here, and in the above valuechanged handlers).
-            // TODO we want to batch Observable updates so that this doesn't happen.
+            //
+            // TODO FIXME we want to batch Observable updates so that this doesn't
+            // happen. Maybe we'll do it by batching events that have the same
+            // name. We should make it possible to choose to have sync or async
+            // events, and whether they should batch or not.
             for (const [prop, modified] of Object.entries(modifiedProps))
-                if (modified)
-                    this.trigger('propertychange', prop)
+                if (modified) this.trigger('propertychange', prop)
         },
 
         _calcSize() {
