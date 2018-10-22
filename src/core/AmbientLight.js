@@ -8,10 +8,6 @@ Class('AmbientLight').extends( LightBase, ({ Super }) => ({
         defaultElementName: 'i-ambient-light',
     },
 
-    construct(options = {}) {
-        Super(this).construct(options)
-    },
-
     makeThreeObject3d() {
         const light = new ThreeAmbientLight
         light.intensity = 1 // default

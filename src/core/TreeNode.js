@@ -1,4 +1,5 @@
 import Class from 'lowclass'
+import {withUpdate} from '@trusktr/skatejs'
 import Mixin from './Mixin'
 import {isInstanceof} from './Utility'
 import TreeNode from './TreeNode'
@@ -6,17 +7,21 @@ import TreeNode from './TreeNode'
 export default
 Mixin(Base =>
 
-    Class('TreeNode').extends( Base, ({ Super, Public: Private }) => ({
+    Class('TreeNode').extends( withUpdate( Base ), ({ Super, Public: Private }) => ({
 
-        // TODO, make Private work with Mixin+lowclass
+        // TODO, make Private work with Mixin+lowclass. The problem is when
+        // using `Private` on instance of the same class created by a different
+        // mixin application. We may have to do something similar to the
+        // hasInstance Mixin helper.
         //private: {
             _parent: null,
             _children: null,
         //},
 
-        construct(...args) {
-            Super(this).construct(...args)
-            Private(this)._children = []
+        constructor(...args) {
+            const self = Super(this).constructor(...args)
+            Private(self)._children = []
+            return self
         },
 
         /**

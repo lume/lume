@@ -1,34 +1,51 @@
 import Class from 'lowclass'
 import Mixin from './Mixin'
-import { makeLowercaseSetterAliases } from './Utility'
 import Observable from './Observable'
 import TreeNode from './TreeNode'
-import XYZValues from './XYZValues'
+import XYZSizeModeValues from './XYZSizeModeValues'
 import XYZNonNegativeValues from './XYZNonNegativeValues'
 import Motor from './Motor'
+import { props } from './props'
+
+// working variables (used synchronously only, to avoid making new variables in
+// repeatedly-called methods)
+let propFunction = null
 
 export default
 Mixin(Base => {
 
+    const Parent = Observable.mixin(TreeNode.mixin(Base))
+
     // Sizeable extends TreeNode because Sizeable knows about its `parent` when
     // calculating proportional sizes. Also Transformable knows about it's parent
     // in order to calculate it's world matrix based on it's parent's.
-    const Sizeable = Class('Sizeable').extends( Observable.mixin(TreeNode.mixin(Base)), ({ Super }) => ({
+    const Sizeable = Class('Sizeable').extends( Parent, ({ Super }) => ({
 
-        construct(options = {}) {
-            Super(this).construct(options)
+        static: {
+            props: {
+                ...(Parent.props ? Parent.props : {}),
+                size: props.XYZNonNegativeValues, // FIXME the whole app breaks on a negative value. Handle the error.
+                sizeMode: props.XYZSizeModeValues,
+            },
+        },
 
-            this._propertyFunctions = null
-            this._calculatedSize = { x:0, y:0, z:0 }
-            this._properties = {}
-            this._setDefaultProperties()
-            this._setPropertyObservers()
-            this.properties = options
+        constructor(options = {}) {
+            const self = Super(this).constructor(options)
+
+            self._propertyFunctions = null
+            self._calculatedSize = { x:0, y:0, z:0 }
+            // self._props = {} // SkateJS now creates this (because TreeNode extends from SkateJS withUpdate).
+            self._properties = self._props // alias to the SkateJS _props cache, so that other code referring to this._properties is unchanged
+            self._setDefaultProperties()
+            self._setPropertyObservers()
+            self.properties = options
+
+            return self
         },
 
         _setDefaultProperties() {
             Object.assign(this._properties, {
-                sizeMode: new XYZValues('literal', 'literal', 'literal'),
+                sizeMode: new XYZSizeModeValues('literal', 'literal', 'literal'),
                 size:     new XYZNonNegativeValues(100, 100, 100),
             })
         },
@@ -40,6 +57,16 @@ Mixin(Base => {
                 () => this.trigger('propertychange', 'sizeMode'))
             this._properties.size.on('valuechanged',
                 () => this.trigger('propertychange', 'size'))
+        },
+
+        updated(oldProps, oldState, modifiedProps) {
+            // this covers single-valued properties like opacity, but has the
+            // sideeffect of trigger propertychange more than needed for
+            // XYZValues (here, and in the above valuechanged handlers).
+            // TODO we want to batch Observable updates so that this doesn't happen.
+            for (const [prop, modified] of Object.entries(modifiedProps))
+                if (modified)
+                    this.trigger('propertychange', prop)
         },
 
         _calcSize() {
@@ -82,73 +109,95 @@ Mixin(Base => {
             return this.parent ? this.parent._calculatedSize : {x:0,y:0,z:0}
         },
 
-        _setPropertyXYZ(Class, name, newValue) {
-            if (newValue instanceof Array) {
-                // remove previous task if any.
-                if (!this._propertyFunctions) this._propertyFunctions = new Map
+        _handleXYZPropertyFunction(fn, name) {
+            if (!this._propertyFunctions) this._propertyFunctions = new Map
 
-                if (typeof newValue[0] != 'undefined') this._properties[name].x = newValue[0]
-                if (typeof newValue[1] != 'undefined') this._properties[name].y = newValue[1]
-                if (typeof newValue[2] != 'undefined') this._properties[name].z = newValue[2]
+            if (propFunction = this._propertyFunctions.get(name)) {
+                Motor.removeRenderTask(propFunction)
+                propFunction = null
             }
-            else if (typeof newValue == 'object') {
-                // remove previous task if any.
-                if (!this._propertyFunctions) this._propertyFunctions = new Map
 
-                if (typeof newValue.x != 'undefined') this._properties[name].x = newValue.x
-                if (typeof newValue.y != 'undefined') this._properties[name].y = newValue.y
-                if (typeof newValue.z != 'undefined') this._properties[name].z = newValue.z
-            }
-            else if (typeof newValue == 'function') {
-                // remove previous task if any.
-                if (!this._propertyFunctions) this._propertyFunctions = new Map
+            this._propertyFunctions.set(name,
+                Motor.addRenderTask(time => {
+                    const result = fn(
+                        this._properties[name].x,
+                        this._properties[name].y,
+                        this._properties[name].z,
+                        time
+                    )
 
-                if (this._propertyFunctions.has(name))
-                    Motor.removeRenderTask(this._propertyFunctions.get(name))
+                    if (result === false) {
+                        this._propertyFunctions.delete(name)
+                        return false
+                    }
 
-                this._propertyFunctions.set(name,
-                    Motor.addRenderTask(time => {
-                        const result = newValue(
-                            this._properties[name].x,
-                            this._properties[name].y,
-                            this._properties[name].z,
-                            time
-                        )
+                    // mark this true, so that the following set of this[name]
+                    // doesn't override the prop function (normally a
+                    // user can set this[name] to a value that isn't a function
+                    // to disable the prop function).
+                    this._settingValueFromPropFunction = true
 
-                        if (result === false) {
-                            this._propertyFunctions.delete(name)
-                            return false
-                        }
-
-                        this[name] = result
-                    })
-                )
-            }
-            else {
-                throw new TypeError(`Invalid value for ${Class.name}#${name}.`)
-            }
+                    this[name] = result
+                })
+            )
         },
 
-        _setPropertySingle(Class, name, newValue, type) {
-            if (!(typeof newValue == type || newValue instanceof Function))
-                throw new TypeError(`Invalid value for ${Class.name}#${name}.`)
+        _handleSinglePropertyFunction(fn, name) {
+            if (!this._propertyFunctions) this._propertyFunctions = new Map
 
-            if (newValue instanceof Function) {
-                // remove previous task if any.
+            if (propFunction = this._propertyFunctions.get(name)) {
+                Motor.removeRenderTask(propFunction)
+                propFunction = null
+            }
+
+            this._propertyFunctions.set(name,
                 Motor.addRenderTask(time => {
-                    const result = newValue(
+                    const result = fn(
                         this._properties[name],
                         time
                     )
 
-                    if (result === false) return false
+                    if (result === false) {
+                        this._propertyFunctions.delete(name)
+                        return false
+                    }
 
+                    this._settingValueFromPropFunction = true
                     this[name] = result
                 })
+            )
+        },
+
+        // remove property function (render task) if any.
+        _removePropertyFunction(name) {
+            if (this._propertyFunctions && (propFunction = this._propertyFunctions.get(name))) {
+                Motor.removeRenderTask(propFunction)
+                this._propertyFunctions.delete(name)
+                propFunction = null
+            }
+        },
+
+        _setPropertyXYZ(Class, name, newValue) {
+            if (typeof newValue === 'function') {
+                this._handleXYZPropertyFunction(newValue, name)
             }
             else {
-                this._properties[name] = newValue
-                this.trigger('propertychange', name)
+                if (!this._settingValueFromPropFunction) this._removePropertyFunction(name)
+                else this._settingValueFromPropFunction = false
+
+                Super(this)[name] = newValue
+            }
+        },
+
+        _setPropertySingle(name, newValue) {
+            if (typeof newValue === 'function') {
+                this._handleSinglePropertyFunction(newValue, name)
+            }
+            else {
+                if (!this._settingValueFromPropFunction) this._removePropertyFunction(name)
+                else this._settingValueFromPropFunction = false
+
+                Super(this)[name] = newValue
             }
         },
 
@@ -162,10 +211,12 @@ Mixin(Base => {
          * @param {number} [newValue.z] The z-axis sizeMode to apply. Default: `"literal"`
          */
         set sizeMode(newValue) {
-            this._setPropertyXYZ(Sizeable, 'sizeMode', newValue)
+            if (typeof newValue === 'function')
+                throw new TypeError('property functions are not allowed for sizeMode')
+            this._setPropertyXYZ(null, 'sizeMode', newValue)
         },
         get sizeMode() {
-            return this._properties.sizeMode
+            return Super(this).sizeMode
         },
 
         // TODO: A "differential" size would be cool. Good for padding,
@@ -200,7 +251,7 @@ Mixin(Base => {
             this._setPropertyXYZ(Sizeable, 'size', newValue)
         },
         get size() {
-            return this._properties.size
+            return Super(this).size
         },
 
         /**
@@ -230,22 +281,13 @@ Mixin(Base => {
          *   size: {x:300, y:0.2, z:200},
          * }
          */
-        set properties(properties = {}) {
-            if (properties.sizeMode)
-                this.sizeMode = properties.sizeMode
-
-            if (properties.size)
-                this.size = properties.size
+        set properties(properties) {
+            properties && Object.assign(this, properties)
         },
-        // no need for a properties getter?
+        // no need for a properties getter
         // TODO: maybe getting properties is a good way to serialize to JSON,
         // for people that might want that.
     }))
-
-    // for use by MotorHTML, convenient since HTMLElement attributes are all
-    // converted to lowercase by default, so if we don't do this then we won't be
-    // able to map attributes to Node setters as easily.
-    makeLowercaseSetterAliases(Sizeable.prototype)
 
     return Sizeable
 })

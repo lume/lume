@@ -1,33 +1,32 @@
 
 import styles from './HTMLScene.style'
 import Motor from '../core/Motor'
-//import Sizeable from '../core/Sizeable'
-import DeclarativeBase, {initDeclarativeBase, proxyGettersSetters} from './DeclarativeBase'
+import DeclarativeBase, {initDeclarativeBase} from './DeclarativeBase'
 
 initDeclarativeBase()
 
 const HTMLScene = DeclarativeBase.subclass('HTMLScene', ({ Public, Private, Super }) => ({
 
-    construct() {
-        Super(this).construct()
+    constructor() {
+        const self = Super(this).constructor()
 
         // If the scene is already in the DOM, make it be "mounted".
-        if (!this._mounted && this.parentNode) {
+        if (!self._mounted && self.parentNode) {
 
-            // defer so that the construct() call stack can finish
+            // defer so that the constructor() call stack can finish
             //
             // TODO: clean up the code so that this isn't required. It's
             // just that combining the imperative/declarative classes
             // into a single class has introduced a small difference in
             // logic order.
             Promise.resolve().then(() =>
-                this.mount(this.parentNode)
+                self.mount(self.parentNode)
             )
         }
 
-        const privateThis = Private(this)
+        const privateThis = Private(self)
 
-        privateThis._root = this.attachShadow({ mode: 'open' })
+        privateThis._root = self.attachShadow({ mode: 'open' })
         privateThis._root.innerHTML = `
             <style>
                 .i-scene-CSS3DLayer,
@@ -46,7 +45,8 @@ const HTMLScene = DeclarativeBase.subclass('HTMLScene', ({ Public, Private, Supe
                 .i-scene-CSS3DLayer {
                     transform-style: preserve-3d;
                 }
-                .i-scene-WebGLLayer {
+                .i-scene-WebGLLayer,
+                .i-scene-MiscellaneousLayer {
                     pointer-events: none;
                 }
             </style>
@@ -61,7 +61,9 @@ const HTMLScene = DeclarativeBase.subclass('HTMLScene', ({ Public, Private, Supe
 
         // TODO make this similar to "package protected". It is public for now
         // because WebGLRendererThree accesses it.
-        this._canvasContainer = privateThis._root.querySelector('.i-scene-WebGLLayer')
+        self._canvasContainer = privateThis._root.querySelector('.i-scene-WebGLLayer')
+
+        return self
     },
 
     /** @override */
@@ -158,9 +160,5 @@ const HTMLScene = DeclarativeBase.subclass('HTMLScene', ({ Public, Private, Supe
     },
 
 }))
-
-// This associates the Transformable getters/setters with the HTML-API classes,
-// so that the same getters/setters can be called from HTML side of the API.
-//proxyGettersSetters(Sizeable, HTMLScene)
 
 export {HTMLScene as default}

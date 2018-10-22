@@ -14,8 +14,12 @@ Mixin(Base =>
             defaultBehaviors: [],
         },
 
-        construct(...args) {
-            if (Super(this).construct) Super(this).construct(...args)
+        constructor(...args) {
+            // Use the constructor return value, because we assume Base must be
+            // a HTML element class, in which case this is currently unavoidable
+            // because lowclass currently uses ES5-style constructors. This may
+            // change when lowclass has `class` syntax option.
+            const self = Super(this).constructor(...args)
 
             // If no geometry or material behavior is detected, add default ones.
             //
@@ -31,7 +35,9 @@ Mixin(Base =>
             // everything in the engine can hook into it. Otherwise if different
             // call sites use setTimeout, logic will be firing at random and in
             // different order.
-            setTimeout( () => this._setDefaultBehaviorsIfNeeded(), 0 )
+            setTimeout( () => self._setDefaultBehaviorsIfNeeded(), 0 )
+
+            return self
         },
 
         _setDefaultBehaviorsIfNeeded() {

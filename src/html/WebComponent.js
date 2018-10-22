@@ -66,17 +66,8 @@ Mixin(Base => {
 
             }
 
-            // we are using `construct` because we were previously using the
-            // document-register-element Custom Elements v1 polyfill.
             const self = Super(this).constructor(...args)
-            self.construct(...args)
             return self
-        },
-
-        // subclasses extend this, and they should not use `constructor`
-        // directly.
-        construct() {
-            Super(this).construct()
         },
 
         // Subclasses can implement these.
@@ -190,12 +181,6 @@ Mixin(Base => {
                 for (let l=attributes.length, i=0; i<l; i+=1)
                     this.attributeChangedCallback(attributes[i].name, null, attributes[i].value)
             }
-        },
-
-        static: {
-            get observedAttributes() {
-                console.warn(`WebComponent: Your custom element (${ this.name }) should specify observed attributes or attributeChangedCallback won't be called`)
-            },
         },
 
         // TODO: when we make setAttribute accept non-strings, we need to move

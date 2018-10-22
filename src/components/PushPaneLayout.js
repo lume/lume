@@ -3,8 +3,9 @@ import Node from '../core/Node'
 
 export default
 Class('PushPaneLayout').extends( Node, ({ Super }) => ({
-    construct(...args) {
+    constructor(...args) {
         console.log(' -- PushPaneLayout created')
-        Super(this).construct(...args)
+        const self = Super(this).constructor(...args)
+        return self
     }
 }))

@@ -7,7 +7,7 @@ import Class from 'lowclass'
 import Mixin from './Mixin'
 import Motor from './Motor'
 import ImperativeBase, {initImperativeBase} from './ImperativeBase'
-import XYZValues from './XYZValues'
+import XYZSizeModeValues from './XYZSizeModeValues'
 import XYZNonNegativeValues from './XYZNonNegativeValues'
 import { default as HTMLInterface } from '../html/HTMLScene'
 import documentReady from '@awaitbox/document-ready'
@@ -41,23 +41,25 @@ let Scene = Mixin(Base => {
             ] ),
         },
 
-        construct(options = {}) {
-            Super(this).construct(options)
+        constructor(options = {}) {
+            const self = Super(this).constructor(options)
 
-            // Used by the this.scene getter in ImperativeBase
+            // Used by the `scene` getter in ImperativeBase
             // Motor's loop checks _scene on Nodes and Scenes when determining
             // modified scenes.
-            this._scene = this
+            self._scene = self
 
             // TODO get default camera values from somewhere.
-            this._perspective = 1000
+            self._perspective = 1000
 
             // size of the element where the Scene is mounted
             // NOTE: z size is always 0, since native DOM elements are always flat.
-            this._elementParentSize = {x:0, y:0, z:0}
+            self._elementParentSize = {x:0, y:0, z:0}
 
-            this._calcSize()
-            this._needsToBeRendered()
+            self._calcSize()
+            self._needsToBeRendered()
+
+            return self
         },
 
         _onElementParentSizeChange(newSize) {
@@ -139,7 +141,7 @@ let Scene = Mixin(Base => {
             Super(this)._setDefaultProperties()
 
             Object.assign(this._properties, {
-                sizeMode: new XYZValues('proportional', 'proportional', 'proportional'),
+                sizeMode: new XYZSizeModeValues('proportional', 'proportional', 'proportional'),
                 size: new XYZNonNegativeValues(1, 1, 1),
             })
         },

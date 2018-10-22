@@ -22,20 +22,22 @@ Class('Cube').extends( Node, ({ Super }) => ({
      * @constructor
      * @param {Number} size The integer width of the cube.
      */
-    construct(size, options) {
+    constructor(size, options) {
 
         // cubes, the same size on all sides
-        Super(this).construct({size: [size, size, size], ...options});
+        const self = Super(this).constructor({size: [size, size, size], ...options});
 
         //GenericSync.register({
             //mouse: MouseSync,
             //touch: TouchSync
         //});
 
-        this.size = size;
-        this.sides = [];
+        self.size = size;
+        self.sides = [];
 
-        forLength(6, n => this._createCubeSide(n));
+        forLength(6, n => self._createCubeSide(n));
+
+        return self
     },
 
     /**

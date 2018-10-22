@@ -1,32 +1,31 @@
 import Class from 'lowclass'
+import {Color} from 'three'
 import Node from './Node'
+import { props } from './props'
+import { mapPropTo } from './Utility'
 
 // base class for light elements.
 export default
 Class('LightBase').extends( Node, ({ Super }) => ({
 
     static: {
-        observedAttributes: Node.observedAttributes.concat([
-            'color',
-            'intensity',
-        ]),
+        props: {
+            ...Node.props,
+            color: mapPropTo({ ...props.THREE.Color, default: new Color('white') }, 'threeObject3d'),
+            intensity: mapPropTo({ ...props.number, default: 1 }, 'threeObject3d'),
+        },
     },
 
-    construct(options = {}) {
-        Super(this).construct(options)
+    // TODO we shouldn't need to define passInitialValuesToThree, the default
+    // value of the props should automatically be in place.
+    passInitialValuesToThree() {
+        this.threeObject3d.color = this.color
+        this.threeObject3d.intensity = this.intensity
     },
 
-    attributeChangedCallback( attr, oldVal, newVal ) {
-        Super(this).attributeChangedCallback( attr, oldVal, newVal )
-
-        if ( attr == 'color' ) {
-            this.processColorValue( newVal, this.threeObject3d )
-            this._needsToBeRendered()
-        }
-
-        else if ( attr == 'intensity' ) {
-            this.processNumberValue( attr, newVal, this.threeObject3d )
-            this._needsToBeRendered()
-        }
+    updated(oldProps, oldState, modifiedProps) {
+        Super(this).updated(oldProps, oldState, modifiedProps)
+        this._needsToBeRendered()
     },
+
 }))

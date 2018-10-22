@@ -1,35 +1,50 @@
 import Class from 'lowclass'
 import Mixin from './Mixin'
-import XYZValues from './XYZValues'
+import XYZNumberValues from './XYZNumberValues'
 import Sizeable from './Sizeable'
-import { makeLowercaseSetterAliases } from './Utility'
 import {isInstanceof} from './Utility'
+import { props } from './props'
 
 export default
 Mixin(Base => {
 
+    const Parent = Sizeable.mixin(Base)
+
     // Transformable extends TreeNode (indirectly through Sizeable) because it
     // needs to be aware of its `parent` when calculating align adjustments.
-    const Transformable = Class('Transformable').extends( Sizeable.mixin(Base), ({ Super }) => ({
+    const Transformable = Class('Transformable').extends( Parent, ({ Super }) => ({
 
-        construct(options = {}) {
-            Super(this).construct(options)
+        static: {
+            props: {
+                ...Parent.props,
+                position:   props.XYZNumberValues,
+                rotation:   props.XYZNumberValues,
+                scale:      props.XYZNumberValues,
+                origin:     props.XYZNumberValues,
+                align:      props.XYZNumberValues,
+                mountPoint: props.XYZNumberValues,
+                opacity:    props.number,
+            },
+        },
 
-            this._worldMatrix = null
+        constructor(options = {}) {
+            const self = Super(this).constructor(options)
+            self._worldMatrix = null
+            return self
         },
 
         _setDefaultProperties() {
             Super(this)._setDefaultProperties()
 
             Object.assign(this._properties, {
-                position:   new XYZValues(0, 0, 0),
-                rotation:   new XYZValues(0, 0, 0),
-                scale:      new XYZValues(1, 1, 1),
-                origin:     new XYZValues(0.5, 0.5, 0.5),
-                align:      new XYZValues(0, 0, 0),
-                mountPoint: new XYZValues(0, 0, 0),
+                position:   new XYZNumberValues(0, 0, 0),
+                rotation:   new XYZNumberValues(0, 0, 0),
+                scale:      new XYZNumberValues(1, 1, 1),
+                origin:     new XYZNumberValues(0.5, 0.5, 0.5),
+                align:      new XYZNumberValues(0, 0, 0),
+                mountPoint: new XYZNumberValues(0, 0, 0),
                 opacity:    1,
-                transform:  new window.DOMMatrix,
+                transform:  new window.DOMMatrix, // untracked by SkateJS
             })
         },
 
@@ -188,7 +203,7 @@ Mixin(Base => {
             this._setPropertyXYZ(Transformable, 'position', newValue)
         },
         get position() {
-            return this._properties.position
+            return Super(this).position
         },
 
         /**
@@ -201,7 +216,7 @@ Mixin(Base => {
             this._setPropertyXYZ(Transformable, 'rotation', newValue)
         },
         get rotation() {
-            return this._properties.rotation
+            return Super(this).rotation
         },
 
         /**
@@ -214,7 +229,7 @@ Mixin(Base => {
             this._setPropertyXYZ(Transformable, 'scale', newValue)
         },
         get scale() {
-            return this._properties.scale
+            return Super(this).scale
         },
 
         /**
@@ -224,11 +239,10 @@ Mixin(Base => {
          * (inclusive). 0 is fully transparent, 1 is fully opaque.
          */
         set opacity(newValue) {
-            if (!isRealNumber(newValue)) newValue = undefined
-            this._setPropertySingle(Transformable, 'opacity', newValue, 'number')
+            this._setPropertySingle('opacity', newValue)
         },
         get opacity() {
-            return this._properties.opacity
+            return Super(this).opacity
         },
 
         /**
@@ -244,7 +258,7 @@ Mixin(Base => {
             this._setPropertyXYZ(Transformable, 'align', newValue)
         },
         get align() {
-            return this._properties.align
+            return Super(this).align
         },
 
         /**
@@ -259,62 +273,9 @@ Mixin(Base => {
             this._setPropertyXYZ(Transformable, 'mountPoint', newValue)
         },
         get mountPoint() {
-            return this._properties.mountPoint
+            return Super(this).mountPoint
         },
-
-        /**
-         * Set all properties of a Transformable in one method.
-         *
-         * @param {Object} properties Properties object - see example.
-         *
-         * @example
-         * node.properties = {
-         *   position: {x:200, y:300, z:100},
-         *   rotation: {z:35},
-         *   scale: {y:2},
-         *   opacity: .9,
-         * }
-         */
-        set properties(properties = {}) {
-            Super(this).properties = properties
-
-            if (properties.position)
-                this.position = properties.position
-
-            if (properties.rotation)
-                this.rotation = properties.rotation
-
-            if (properties.scale)
-                this.scale = properties.scale
-
-            if (properties.origin)
-                this.origin = properties.origin
-
-            if (properties.align)
-                this.align = properties.align
-
-            if (properties.mountPoint)
-                this.mountPoint = properties.mountPoint
-
-            if (properties.opacity)
-                this.opacity = properties.opacity
-        },
-        // no need for a properties getter?
     }))
-
-    // for use by MotorHTML, convenient since HTMLElement attributes are all
-    // converted to lowercase by default, so if we don't do this then we won't be
-    // able to map attributes to Node setters as easily.
-    makeLowercaseSetterAliases(Transformable.prototype)
 
     return Transformable
 })
-
-function isRealNumber(num) {
-    if (
-        typeof num != 'number'
-        || Object.is(num, NaN)
-        || Object.is(num, Infinity)
-    ) return false
-    return true
-}

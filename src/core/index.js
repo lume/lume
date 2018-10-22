@@ -1,5 +1,9 @@
 import ElementOperations from './ElementOperations'
 import XYZValues from './XYZValues'
+import XYZNumberValues from './XYZNumberValues'
+import XYZNonNegativeValues from './XYZNonNegativeValues'
+import XYZStringValues from './XYZStringValues'
+import XYZSizeModeValues from './XYZSizeModeValues'
 import TreeNode from './TreeNode'
 import Sizeable from './Sizeable'
 import Transformable from './Transformable'
@@ -12,6 +16,10 @@ import * as Utility from './Utility'
 export {
     ElementOperations,
     XYZValues,
+    XYZNumberValues,
+    XYZNonNegativeValues,
+    XYZStringValues,
+    XYZSizeModeValues,
     TreeNode,
     Sizeable,
     Transformable,

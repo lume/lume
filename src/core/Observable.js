@@ -5,11 +5,6 @@ export default
 Mixin(Base =>
 
     Class('Observable').extends( Base, ({ Super }) => ({
-
-        construct(...args) {
-            Super(this).construct(...args)
-        },
-
         on(eventName, callback, context) {
             if (!this._eventMap)
                 this._eventMap = new Map

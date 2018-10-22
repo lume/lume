@@ -1,6 +1,9 @@
-import BaseMeshBehavior from './BaseMeshBehavior'
-import { Color } from 'three'
 import Class from 'lowclass'
+import BaseMeshBehavior from './BaseMeshBehavior'
+import { props } from '../../core/props'
+
+import * as THREE from 'three'
+window.THREE = THREE
 
 // base class for geometry behaviors
 export default
@@ -8,39 +11,36 @@ Class( 'BaseMaterialBehavior' ).extends( BaseMeshBehavior, ({ Super }) => ({
 
     static: {
         type: 'material',
-        observedAttributes: [ 'color', 'material-opacity' ],
+        props: {
+            color: props.THREE.Color,
+            opacity: { ...props.number, default: 1 },
+        },
     },
 
-    // TODO: generic type system for attributes.
-    async attributeChangedCallback( attr, oldVal, newVal ) {
-        if (! ( await Super(this).attributeChangedCallback( attr, oldVal, newVal ) ) ) return
+    async updated( oldProps, oldState, modifiedProps ) {
+        const {color, opacity} = modifiedProps
 
-        if ( attr == 'color' ) {
-            this.processColorValue( newVal, this.element.threeObject3d.material )
-            this.element._needsToBeRendered()
+        // TODO maybe there's a way we can eliminate this async/await behavior,
+        // yet still give the user a meaningful error.
+        if (! ( await Super( this ).elementIsMesh() ) ) return
+
+        if (color) this.updateMaterial('color')
+
+        if (opacity) {
+            this.updateMaterial('opacity')
+            this.updateMaterial('transparent')
         }
-
-        // Note, Node elements also react to this, and apply it to the DOM
-        // elements.
-        // TODO: it'd be nice to implement a sort of opacity that multiplies
-        // down the tree. We need something good enough for now.  We'll make
-        // the plain "opacity" attribute be the multiplicative hierarchical
-        // opacity, while material-opacity could be just for the material.
-        // Material opacity would be multiplied to the hierarchical opacity.
-        else if ( attr == 'material-opacity' ) {
-
-            const material = this.element.threeObject3d.material
-            this.processNumberValue( 'opacity', newVal, material )
-            const opacity = material.opacity
-
-            if ( opacity < 1 ) material.transparent = true
-            else material.transparent = false
-
-            this.element._needsToBeRendered()
-
-        }
-
-        // we can make a lot more attributes as needed...
-
     },
+
+    get transparent() {
+        if ( this.opacity < 1 ) return true
+        else return false
+    },
+
+    updateMaterial(propName) {
+        // if (this.element.tagName === 'I-SPHERE') debugger
+        this.element.threeObject3d.material[propName] = this[propName]
+        this.element._needsToBeRendered()
+    },
+
 }))

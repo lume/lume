@@ -32,25 +32,25 @@ let Node = Mixin(Base =>
          *   rotation: {x:30, y:20, z:25}
          * })
          */
-        construct(options = {}) {
-            Super(this).construct(options)
+        constructor(options = {}) {
+            const self = Super(this).constructor(options)
 
             // This was when using my `multiple()` implementation, we could call
             // specific constructors using specific arguments. But, we're using
             // class-factory style mixins for now, so we don't have control over the
             // specific arguments we can pass to the constructors, so we're just
             // using a single `options` parameter in all the constructors.
-            //this.callSuperConstructor(Transformable, options)
-            //this.callSuperConstructor(TreeNode)
-            //this.callSuperConstructor(ImperativeBase)
+            //self.callSuperConstructor(Transformable, options)
+            //self.callSuperConstructor(TreeNode)
+            //self.callSuperConstructor(ImperativeBase)
 
-            this._scene = null // stores a ref to this Node's root Scene.
+            self._scene = null // stores a ref to this Node's root Scene.
 
             // This is an internal promise that resolves when this Node is added to
             // to a scene graph that has a root Scene TreeNode. The resolved value
             // is the root Scene.
-            this._scenePromise = null
-            this._resolveScenePromise = null
+            self._scenePromise = null
+            self._resolveScenePromise = null
 
             /**
              * @private
@@ -62,7 +62,7 @@ let Node = Mixin(Base =>
              * Observable#off later. See ImperativeBase#add and
              * ImperativeBase#remove.
              */
-            this._onParentSizeChange = () => {
+            self._onParentSizeChange = () => {
 
                 // We only need to recalculate sizing and matrices if this node has
                 // properties that depend on parent sizing (proportional size,
@@ -71,21 +71,23 @@ let Node = Mixin(Base =>
                 // size of this element which depends on the size of this element's
                 // parent. Align also depends on parent sizing.
                 if (
-                    this._properties.sizeMode.x === "proportional"
-                    || this._properties.sizeMode.y === "proportional"
-                    || this._properties.sizeMode.z === "proportional"
+                    self._properties.sizeMode.x === "proportional"
+                    || self._properties.sizeMode.y === "proportional"
+                    || self._properties.sizeMode.z === "proportional"
 
-                    || this._properties.align.x !== 0
-                    || this._properties.align.y !== 0
-                    || this._properties.align.z !== 0
+                    || self._properties.align.x !== 0
+                    || self._properties.align.y !== 0
+                    || self._properties.align.z !== 0
                 ) {
-                    this._calcSize()
-                    this._needsToBeRendered()
+                    self._calcSize()
+                    self._needsToBeRendered()
                 }
             }
 
-            this._calcSize()
-            this._needsToBeRendered()
+            self._calcSize()
+            self._needsToBeRendered()
+
+            return self
         },
 
         makeThreeObject3d() {

@@ -1,8 +1,8 @@
 import Class from 'lowclass'
+import { PerspectiveCamera as ThreePerspectiveCamera } from 'three'
 import Node from './Node'
 import Motor from './Motor'
-
-import { PerspectiveCamera as ThreePerspectiveCamera } from 'three'
+import { props } from './props'
 
 // TODO: update this to have a CSS3D-perspective-like API like with the Scene's
 // default camera.
@@ -12,18 +12,32 @@ Class('PerspectiveCamera').extends( Node, ({ Super, Public, Private }) => ({
     static: {
         defaultElementName: 'i-perspective-camera',
 
-        observedAttributes: (Node.observedAttributes || []).concat( [
-            'active',
-            'fov',
-            'near',
-            'far',
-            'aspect',
-            'zoom',
-        ].map( a => a.toLowerCase() ) ),
+        // TODO remove attributeChangedCallback, replace with updated based on these props
+        props: {
+            ...Node.props,
+            fov: { ...props.number, default: 75 },
+            aspect: {
+                ...props.number,
+                default() { return Private(this)._getDefaultAspect() },
+                deserialize(val) { val == null ? this.constructor.props.aspect.default.call(this) : props.number.deserialize(val) },
+            },
+            near: { ...props.number, default: 0.1 },
+            far: { ...props.number, default: 1000 },
+            zoom: { ...props.number, default: 1 },
+            active: { ...props.boolean, default: false },
+        },
     },
 
-    async construct(options = {}) {
-        Super(this).construct(options)
+    updated(oldProps, oldState, modifiedProps) {
+        Super(this).updated(oldProps, oldState, modifiedProps)
+
+        if (modifiedProps.active) {
+            this._setSceneCamera( this.active ? undefined : 'unset' )
+        }
+    },
+
+    constructor(options = {}) {
+        const self = Super(this).constructor(options)
 
         // TODO TODO: abstract away having to use mountPromise with a
         // mountedCallback that is called everytime a node is added to a scene.
@@ -34,8 +48,9 @@ Class('PerspectiveCamera').extends( Node, ({ Super, Public, Private }) => ({
         // canceled in Node to get more ideas on how we can do this and not
         // replicate that canceling logic here.
         // Maybe we write it on top of init/deinit functionality?
-        await this.mountPromise
-        this.mountedCallback()
+        self.mountPromise.then(() => self.mountedCallback())
+
+        return self
     },
 
     makeThreeObject3d() {

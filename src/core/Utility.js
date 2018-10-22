@@ -12,22 +12,6 @@ function applyCSSLabel(value, label) {
     }
 }
 
-// Create lowercase versions of each setter property.
-// we care only about the setters, for now.
-function makeLowercaseSetterAliases(object) {
-    const props = Object.getOwnPropertyNames(object)
-    for (let l=props.length, i=0; i<l; i+=1) {
-        const prop = props[i]
-        const lowercaseProp = prop.toLowerCase()
-        if (lowercaseProp != prop) {
-            const descriptor = Object.getOwnPropertyDescriptor(object, prop)
-            if (typeof descriptor.set != 'undefined') {
-                Object.defineProperty(object, lowercaseProp, descriptor)
-            }
-        }
-    }
-}
-
 let childObservationHandlers = null
 let childObserver = null
 function observeChildren(ctx, onConnect, onDisconnect) {
@@ -124,6 +108,13 @@ function getAncestorShadowRoot(node) {
     return current
 }
 
+// map a SkateJS prop value to a sub-object on the instance
+const mapPropTo = (prop, subObj) => ({
+    ...prop,
+    coerce(val, key) { return this[subObj][key] = prop.coerce(val) },
+    deserialize(val, key) { return this[subObj][key] = prop.deserialize(val) },
+})
+
 // helper function to use instead of instanceof for classes that implement the
 // static Symbol.hasInstance method, because the behavior of instanceof isn't
 // polyfillable.
@@ -133,10 +124,20 @@ function isInstanceof(lhs, rhs) {
     else return lhs instanceof rhs
 }
 
+function checkIsNumberArrayString(str) {
+    if (!str.match(/^\s*(((\s*(-|\+)?((\.\d+)|(\d+\.\d+)|(\d+)|(\d+(\.\d+)?e(-|\+)?(\d+)))\s*,){0,2}(\s*(-|\+)?((\.\d+)|(\d+\.\d+)|(\d+)|(\d+(\.\d+)?e(-|\+)?(\d+)))))|((\s*(-|\+)?((\.\d+)|(\d+\.\d+)|(\d+)|(\d+(\.\d+)?e(-|\+)?(\d+)))\s){0,2}(\s*(-|\+)?((\.\d+)|(\d+\.\d+)|(\d+)|(\d+(\.\d+)?e(-|\+)?(\d+))))))\s*$/g))
+        throw new Error(`Attribute must be a comma- or space-separated sequence of up to three numbers, for example "1 2.5 3". Yours was "${str}".`)
+}
+
+function checkIsSizeArrayString(str) {
+    if (!str.match(/^\s*(((\s*([a-zA-Z]+)\s*,){0,2}(\s*([a-zA-Z]+)))|((\s*([a-zA-Z]+)\s*){1,3}))\s*$/g))
+        throw new Error(`Attribute must be a comma- or space-separated sequence of up to three strings, for example "literal proportional". Yours was "${str}".`)
+}
+
 export {
     epsilon,
     applyCSSLabel,
-    makeLowercaseSetterAliases,
+    mapPropTo,
     observeChildren,
     getShadowRootVersion,
     hasShadowDomV0,

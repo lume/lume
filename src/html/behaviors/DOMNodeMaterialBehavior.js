@@ -1,7 +1,6 @@
 import 'element-behaviors'
-import { MeshPhongMaterial } from 'three'
+import { MeshPhongMaterial, Color, NoBlending, /*DoubleSide*/ } from 'three'
 import BaseMaterialBehavior from './BaseMaterialBehavior'
-import { Color, NoBlending, /*DoubleSide*/ } from 'three'
 
 const DOMNodeMaterialBehavior = BaseMaterialBehavior.subclass('DOMNodeMaterialBehavior', {
 

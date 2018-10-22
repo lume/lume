@@ -1,4 +1,5 @@
 import Class from 'lowclass'
+import {Camera as ThreeCamera} from 'three'
 import Mixin from './Mixin'
 import ElementOperations from './ElementOperations'
 import Transformable from './Transformable'
@@ -6,9 +7,6 @@ import Node from './Node'
 import Scene from './Scene'
 import Motor from './Motor'
 import {isInstanceof} from './Utility'
-import {
-    Camera as ThreeCamera,
-} from 'three'
 
 let threeObject3d = null
 let domPlane = null
@@ -44,46 +42,55 @@ export function initImperativeBase() {
     ImperativeBase = Mixin(Base =>
 
         Class('ImperativeBase').extends( Transformable.mixin( Base ), ({ Super }) => ({
-            construct(options = {}) {
-                Super(this).construct(options)
+            constructor(options = {}) {
+                const self = Super(this).constructor(options)
 
-                this._lastKnownParent = null
+                self._lastKnownParent = null
 
                 // we don't need this, keep for backward compatibility (mainly
                 // all my demos at trusktr.io).
-                this.imperativeCounterpart = this
+                self.imperativeCounterpart = self
 
-                this._willBeRendered = false
+                self._willBeRendered = false
 
                 // Here we create the DOM HTMLElement associated with this
                 // Imperative-API Node.
-                this._elementOperations = new ElementOperations(this)
+                self._elementOperations = new ElementOperations(self)
 
                 // For Nodes, true when this Node is added to a parent AND it
                 // has an anancestor Scene that is mounted into DOM. For
                 // Scenes, true when mounted into DOM.
-                this._mounted = false;
+                self._mounted = false;
 
                 // stores a ref to this Node's root Scene when/if this Node is
                 // in a scene.
-                this._scene = null
+                self._scene = null
 
                 // For Nodes, a promise that resolves when this Node is
                 // attached to a tree that has a root Scene TreeNode *and* when
                 // that root Scene has been mounted into the DOM. For Scenes,
                 // resolves when mounted into DOM.
-                this._mountPromise = null
-                this._resolveMountPromise = null
-                this._rejectMountPromise = null
+                self._mountPromise = null
+                self._resolveMountPromise = null
+                self._rejectMountPromise = null
 
-                this._awaitingMountPromiseToRender = false
-                this._waitingForMountConditions = false
+                self._awaitingMountPromiseToRender = false
+                self._waitingForMountConditions = false
 
                 // See Transformable/Sizeable propertychange event.
                 // TODO: defer size calculation to render task
-                this.on('propertychange', this._onPropertyChange, this)
+                self.on('propertychange', self._onPropertyChange, self)
 
-                this.initWebGl()
+                self.initWebGl()
+
+                return self
+            },
+
+            connectedCallback() {
+                Super(this).connectedCallback()
+
+                // if a subclass needs to pass values, call it.
+                this.passInitialValuesToThree && this.passInitialValuesToThree()
             },
 
             _onPropertyChange(prop) {
@@ -92,6 +99,10 @@ export function initImperativeBase() {
                 }
 
                 this._needsToBeRendered()
+            },
+
+            updated(oldProps, oldState, modifiedProps) {
+                Super(this).updated(oldProps, oldState, modifiedProps)
             },
 
             initWebGl() {
@@ -319,22 +330,13 @@ export function initImperativeBase() {
                 this._elementOperations.applyImperativeNodeProperties(this)
             },
 
-            /**
-             * Set all properties of an ImperativeBase instance in one method.
-             *
-             * @param {Object} properties Properties object - see example.
-             *
-             * @example
-             * node.properties = {
-             *   classes: ['open', 'big'],
-             * }
-             */
-            set properties(properties = {}) {
-                Super(this).properties = properties
-
-                if (properties.classes)
-                    this._elementOperations.setClasses(...properties.classes);
-            },
+            // TODO make a classes prop?
+            // set properties(properties = {}) {
+            //     Super(this).properties = properties
+            //
+            //     if (properties.classes)
+            //         this._elementOperations.setClasses(...properties.classes);
+            // },
         }))
 
     )

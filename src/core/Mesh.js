@@ -1,7 +1,8 @@
 import Class from 'lowclass'
-import Node from './Node'
-
 import { Mesh as ThreeMesh } from 'three'
+import Node from './Node'
+import { props } from './props'
+import { mapPropTo } from './Utility'
 
 // register behaviors that can be used with this class.
 // TODO: maybe useDefaultNames() should register these, otherwise the user can
@@ -15,11 +16,11 @@ import '../html/behaviors/PlaneGeometryBehavior'
 import '../html/behaviors/DOMNodeGeometryBehavior'
 
 // TODO:
-// - API for registering new behaviors as they pertain to our API, built on top
+// - [ ] API for registering new behaviors as they pertain to our API, built on top
 //   of element-behaviors.
-// - Ability specify default initial behaviors. Make this generic, or on top of
+// - [x] Ability specify default initial behaviors. Make this generic, or on top of
 //   element-behaviors?
-// - generic ability to specify custom element attribute types, as an addon to
+// - [x] generic ability to specify custom element attribute types, as an addon to
 //   Custom Elements. We can use the same mechanism to specify types for behaviors too?
 
 export default
@@ -39,38 +40,33 @@ Class('Mesh').extends( Node, ({ Super }) => ({
             },
         },
 
-        observedAttributes: Node.observedAttributes.concat( [
+        props: {
+            ...Node.props,
+            castShadow: { ...mapPropTo(props.boolean, 'threeObject3d'), default: true },
+            receiveShadow: { ...mapPropTo(props.boolean, 'threeObject3d'), default: true },
+        },
 
-            'castshadow',
-            'cast-shadow',
-            'receiveshadow',
-            'receive-shadow',
+    },
 
-        ] ),
+    passInitialValuesToThree() {
+        this.threeObject3d.castShadow = this.castShadow
+        this.threeObject3d.receiveShadow = this.receiveShadow
     },
 
     makeThreeObject3d() {
-        const mesh = new ThreeMesh
-        mesh.castShadow = true
-        mesh.receiveShadow = true
-        return mesh
+        return new ThreeMesh
     },
 
-    attributeChangedCallback( attr, oldVal, newVal ) {
-        Super(this).attributeChangedCallback( attr, oldVal, newVal )
+    updated(oldProps, oldState, modifiedProps) {
+        Super(this).updated(oldProps, oldState, modifiedProps)
 
-        if ( attr == 'castshadow' || attr == 'cast-shadow' ) {
-
-            this.processBooleanValue( 'castShadow', newVal, this.threeObject3d )
+        if ( modifiedProps.castShadow ) {
             this._needsToBeRendered()
-
-        }
-        else if ( attr == 'receiveshadow' || attr == 'receive-shadow' ) {
-
-            this.processBooleanValue( 'receiveShadow', newVal, this.threeObject3d )
-            this._needsToBeRendered()
-
         }
 
+        if ( modifiedProps.receiveShadow ) {
+            this.threeObject3d.material.needsUpdate = true
+            this._needsToBeRendered()
+        }
     },
 }))

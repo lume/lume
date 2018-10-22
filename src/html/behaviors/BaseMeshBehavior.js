@@ -1,31 +1,45 @@
 import { BoxGeometry, MeshPhongMaterial } from 'three'
+import {withUpdate} from '@trusktr/skatejs'
+import Class from 'lowclass'
 import Mesh from '../../core/Mesh'
 import ValueProcessor from '../../core/ValueProcessor'
-import Class from 'lowclass'
+import forwardProps from './forwardProps'
 
 // base class for Geometry and Material behaviors, not to be used directly
 export default
-Class( 'BaseMeshBehavior' ).extends( ValueProcessor, ({ Protected, Private, Super }) => ({
-    constructor(element) {
-        Super(this).constructor()
+Class( 'BaseMeshBehavior' ).extends( forwardProps.mixin( withUpdate( ValueProcessor ) ), ({ Public, Protected, Private, Super }) => ({
 
-        this.element = element
+    constructor(element) {
+        let _this = Super(this).constructor()
+
+        _this.element = element
 
         let resolveIsMeshPromise = null
         // TODO cancellable promise, or it may leak
 
         if ( element.nodeName.includes('-') ) {
-            Private(this).isMeshPromise = new Promise(r => resolveIsMeshPromise = r)
+            Private(_this).isMeshPromise = new Promise(r => resolveIsMeshPromise = r)
             customElements.whenDefined(element.nodeName.toLowerCase())
             .then(() => {
                 if (element instanceof Mesh) resolveIsMeshPromise(true)
                 else resolveIsMeshPromise(false)
             })
         }
-        else Private(this).isMeshPromise = Promise.resolve(false)
+        else Private(_this).isMeshPromise = Promise.resolve(false)
+
+        window.behavior = _this
+
+        return _this
+    },
+
+    // proxy setAttribute to this.element so that SkateJS withUpdate works in certain cases
+    setAttribute(name, value) {
+        this.element.setAttribute(name, value)
     },
 
     async connectedCallback() {
+        Super( this ).connectedCallback()
+
         const self = Private(this)
 
         if ( ! self.checkedElementIsMesh ) await self.checkElementIsMesh(this.element)
@@ -44,6 +58,8 @@ Class( 'BaseMeshBehavior' ).extends( ValueProcessor, ({ Protected, Private, Supe
     },
 
     async disconnectedCallback() {
+        Super( this ).disconnectedCallback && Super( this ).disconnectedCallback()
+
         const self = Private(this)
 
         if ( ! self.checkedElementIsMesh ) await self.checkElementIsMesh(this.element)
@@ -55,7 +71,7 @@ Class( 'BaseMeshBehavior' ).extends( ValueProcessor, ({ Protected, Private, Supe
         return true
     },
 
-    async attributeChangedCallback( attr, oldValue, newValue ) {
+    async elementIsMesh() {
         const self = Private(this)
 
         if ( ! self.checkedElementIsMesh ) await self.checkElementIsMesh(this.element)
@@ -81,12 +97,17 @@ Class( 'BaseMeshBehavior' ).extends( ValueProcessor, ({ Protected, Private, Supe
             self.checkedElementIsMesh = true
 
             if ( ! self.elementIsMesh ) {
-                console.warn( `${this.constructor.name} is only for use on elements of type Mesh, otherwise it won't do anything. You element was:`, element )
+                console.warn( `${this.constructor.name} is only for use on elements of type Mesh, otherwise it won't do anything. Your element was:`, element )
             }
         },
     },
 
     protected: {
+        // used by forwardProps. See forwardProps.js
+        get observedObject() {
+            return Public( this ).element
+        },
+
         createComponent() {
             throw new Error('`createComponent()` is not implemented by subclass.')
         },
