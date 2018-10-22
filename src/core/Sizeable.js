@@ -282,11 +282,11 @@ Mixin(Base => {
          * }
          */
         set properties(properties) {
-            properties && Object.assign(this, properties)
+            this.props = properties
         },
-        // no need for a properties getter
-        // TODO: maybe getting properties is a good way to serialize to JSON,
-        // for people that might want that.
+        get properties() {
+            return this.props
+        },
     }))
 
     return Sizeable
