@@ -24,7 +24,7 @@
   },
   "dependencies": {
     "@awaitbox/document-ready": "^1.0.10",
-    "@babel/runtime": "^7.1.2",
+    "@babel/runtime": "7.0.0-beta.46",
     "army-knife": "^0.2.1",
     "element-behaviors": "^2.0.1",
     "famous": "trusktr/famous#commonjs",
@@ -45,7 +45,7 @@
   "devDependencies": {
     "all-contributors-cli": "^4.4.0",
     "builder": "^3.2.3",
-    "builder-js-package": "trusktr/builder-js-package#4ae362de1c9551dc645911f53f5a5400b9a78dea",
+    "builder-js-package": "trusktr/builder-js-package#infamous",
     "docpress": "0.7.1"
   },
   "docpress": {
