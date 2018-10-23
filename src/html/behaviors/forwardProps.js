@@ -24,7 +24,7 @@ Mixin(Base => Class( 'forwardProps' ).extends( Base, ({ Super, Public, Protected
             const publicThis = Public( this )
             this.propChangedCallback = ( propName, value ) => publicThis[ propName ] = value
             observe( Protected( this ).observedObject, this.getProps(), this.propChangedCallback, {
-                // inherited: true,
+                // inherited: true, // XXX the 'inherited' option doesn't work in this case. Why?
             } )
         },
 

@@ -2,12 +2,11 @@ import { BoxGeometry, MeshPhongMaterial } from 'three'
 import {withUpdate} from '@trusktr/skatejs'
 import Class from 'lowclass'
 import Mesh from '../../core/Mesh'
-import ValueProcessor from '../../core/ValueProcessor'
 import forwardProps from './forwardProps'
 
 // base class for Geometry and Material behaviors, not to be used directly
 export default
-Class( 'BaseMeshBehavior' ).extends( forwardProps.mixin( withUpdate( ValueProcessor ) ), ({ Public, Protected, Private, Super }) => ({
+Class( 'BaseMeshBehavior' ).extends( withUpdate( forwardProps ), ({ Public, Protected, Private, Super }) => ({
 
     constructor(element) {
         let _this = Super(this).constructor()

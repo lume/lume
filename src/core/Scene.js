@@ -4,13 +4,15 @@
 // See: https://esdiscuss.org/topic/how-to-solve-this-basic-es6-module-circular-dependency-problem
 
 import Class from 'lowclass'
+import documentReady from '@awaitbox/document-ready'
+
 import Mixin from './Mixin'
 import Motor from './Motor'
 import ImperativeBase, {initImperativeBase} from './ImperativeBase'
 import XYZSizeModeValues from './XYZSizeModeValues'
 import XYZNonNegativeValues from './XYZNonNegativeValues'
 import { default as HTMLInterface } from '../html/HTMLScene'
-import documentReady from '@awaitbox/document-ready'
+import ValueProcessor from '../core/ValueProcessor'
 
 import {
     Scene as ThreeScene, // so as not to confuse with Infamous Scene.
@@ -23,14 +25,14 @@ initImperativeBase()
 
 let Scene = Mixin(Base => {
 
-    const _ImperativeBase = ImperativeBase.mixin( Base )
+    const Parent = ValueProcessor.mixin( ImperativeBase.mixin( Base ) )
 
-    return Class('Scene').extends( _ImperativeBase, ({ Super }) => ({
+    return Class('Scene').extends( Parent, ({ Super }) => ({
 
         static: {
             defaultElementName: 'i-scene',
 
-            observedAttributes: (_ImperativeBase.observedAttributes || []).concat( [
+            observedAttributes: (Parent.observedAttributes || []).concat( [
                 'backgroundcolor',
                 'background-color',
                 'backgroundopacity',
