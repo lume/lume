@@ -2,7 +2,7 @@ import Class from 'lowclass'
 import {Color} from 'three'
 import Node from './Node'
 import { props } from './props'
-import { mapPropTo } from './Utility'
+import { mapPropTo } from './props'
 
 // base class for light elements.
 export default

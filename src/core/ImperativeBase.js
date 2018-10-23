@@ -101,10 +101,6 @@ export function initImperativeBase() {
                 this._needsToBeRendered()
             },
 
-            updated(oldProps, oldState, modifiedProps) {
-                Super(this).updated(oldProps, oldState, modifiedProps)
-            },
-
             initWebGl() {
                 this.threeObject3d = this.makeThreeObject3d()
 

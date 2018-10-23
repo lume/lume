@@ -108,13 +108,6 @@ function getAncestorShadowRoot(node) {
     return current
 }
 
-// map a SkateJS prop value to a sub-object on the instance
-const mapPropTo = (prop, subObj) => ({
-    ...prop,
-    coerce(val, key) { return this[subObj][key] = prop.coerce(val) },
-    deserialize(val, key) { return this[subObj][key] = prop.deserialize(val) },
-})
-
 // helper function to use instead of instanceof for classes that implement the
 // static Symbol.hasInstance method, because the behavior of instanceof isn't
 // polyfillable.
@@ -137,7 +130,6 @@ function checkIsSizeArrayString(str) {
 export {
     epsilon,
     applyCSSLabel,
-    mapPropTo,
     observeChildren,
     getShadowRootVersion,
     hasShadowDomV0,

@@ -12,7 +12,7 @@ import ImperativeBase, {initImperativeBase} from './ImperativeBase'
 import XYZSizeModeValues from './XYZSizeModeValues'
 import XYZNonNegativeValues from './XYZNonNegativeValues'
 import { default as HTMLInterface } from '../html/HTMLScene'
-import ValueProcessor from '../core/ValueProcessor'
+import { props } from './props'
 
 import {
     Scene as ThreeScene, // so as not to confuse with Infamous Scene.
@@ -25,22 +25,20 @@ initImperativeBase()
 
 let Scene = Mixin(Base => {
 
-    const Parent = ValueProcessor.mixin( ImperativeBase.mixin( Base ) )
+    const Parent = ImperativeBase.mixin( Base )
 
     return Class('Scene').extends( Parent, ({ Super }) => ({
 
         static: {
             defaultElementName: 'i-scene',
 
-            observedAttributes: (Parent.observedAttributes || []).concat( [
-                'backgroundcolor',
-                'background-color',
-                'backgroundopacity',
-                'background-opacity',
-                'shadowmaptype',
-                'shadowmap-type',
-                'vr',
-            ] ),
+            props: {
+                ...Parent.props,
+                backgroundColor: props.THREE.Color,
+                backgroundOpacity: props.number,
+                shadowmapType: props.string,
+                vr: props.boolean,
+            },
         },
 
         constructor(options = {}) {
@@ -183,6 +181,7 @@ let Scene = Mixin(Base => {
             this.threeCamera.position.z = perspective
         },
 
+        // TODO perspective SkateJS prop
         set perspective(value) {
             this._perspective = value
             this._updateCameraPerspective()
@@ -279,62 +278,43 @@ let Scene = Mixin(Base => {
             this._resetMountPromise()
         },
 
-        set sizeMode(value) {
-            Super(this).sizeMode = value
-            this._startOrStopSizePolling()
-        },
-
-        set vr( enabled ) {
-            this._vr = enabled
-            this._renderer.enableVR( this, enabled )
-
-            console.log( 'vr enabled on the scene?', enabled )
-
-            if ( enabled ) {
-
-                Motor.setFrameRequester( fn => this._renderer.requestFrame( this, fn ) )
-                this._renderer.createDefaultWebVREntryUI( this )
-
-            }
-        },
-        get vr() { return this._vr },
-
-        // TODO: generic type system for attributes.
-        async attributeChangedCallback(attr, oldVal, newVal) {
-            Super(this).attributeChangedCallback(attr, oldVal, newVal)
+        async updated(oldProps, oldState, modifiedProps) {
+            Super(this).updated(oldProps, oldState, modifiedProps)
 
             // We need to await mountPromise here so that we set values *after*
             // values are set in initWebGl
             //
-            // TODO: this needs to be cancelable too, search other codes for
-            // "mountcancel" to see.
-            await this.mountPromise
+            // clone modifiedProps because it may be modified in the future
+            // TODO see about getting rid of the async complexity here.
+            const moddedProps = {...modifiedProps}
+            await this.mountPromise;
 
-            if ( attr == 'backgroundcolor' || attr == 'background-color' ) {
-                this.processClearColorValue( attr, newVal )
+            if (moddedProps.backgroundColor) {
+                this._renderer.setClearColor( this, this.backgroundColor, this.backgroundOpacity )
                 this._needsToBeRendered()
             }
-            else if ( attr == 'backgroundopacity' || attr == 'background-opacity' ) {
-                this.processClearAlphaValue( attr, newVal )
+            if (moddedProps.backgroundOpacity) {
+                this._renderer.setClearAlpha( this, this.backgroundOpacity )
                 this._needsToBeRendered()
             }
-            else if ( attr == 'shadowmaptype' || attr == 'shadowmap-type' ) {
-                this._renderer.setShadowMapType(this, newVal)
+            if (moddedProps.shadowmapType) {
+                this._renderer.setShadowMapType(this, this.shadowmapType)
                 this._needsToBeRendered()
             }
-            else if ( attr == 'vr' ) {
-                this.processBooleanValue( 'vr', newVal )
+            if (moddedProps.vr) {
+                this._renderer.enableVR( this, this.vr)
+
+                if ( this.vr ) {
+                    Motor.setFrameRequester( fn => this._renderer.requestFrame( this, fn ) )
+                    this._renderer.createDefaultWebVREntryUI( this )
+                }
+                else {
+                    // TODO else return back to normal requestAnimationFrame
+                }
             }
-        },
-
-        processClearColorValue( attr, value ) {
-            this.processColorValue( value, this, '_glBackgroundColor' )
-            this._renderer.setClearColor( this, this._glBackgroundColor, this._glBackgroundOpacity )
-        },
-
-        processClearAlphaValue( attr, value ) {
-            this.processNumberValue( '_glBackgroundOpacity', value )
-            this._renderer.setClearAlpha( this, this._glBackgroundOpacity)
+            if (moddedProps.sizeMode) {
+                this._startOrStopSizePolling()
+            }
         },
 
     }))

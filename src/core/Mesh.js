@@ -2,7 +2,7 @@ import Class from 'lowclass'
 import { Mesh as ThreeMesh } from 'three'
 import Node from './Node'
 import { props } from './props'
-import { mapPropTo } from './Utility'
+import { mapPropTo } from './props'
 
 // register behaviors that can be used with this class.
 // TODO: maybe useDefaultNames() should register these, otherwise the user can

@@ -3,7 +3,7 @@ import Class from 'lowclass'
 import { PointLight as ThreePointLight } from 'three'
 import LightBase from './LightBase'
 import { props } from './props'
-import { mapPropTo } from './Utility'
+import { mapPropTo } from './props'
 
 export default
 Class('PointLight').extends( LightBase, ({ Super }) => ({
