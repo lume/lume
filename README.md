@@ -4,7 +4,7 @@ infamous
 
 Create 3D CSS+WebGL apps declaratively with HTML.
 
-[Site](http://infamous.io) — [Forums](http://forums.infamous.io) — [Examples](./docs/examples.md) — [Docs](./docs/README.md)
+[Site](https://infamous.io) — [Forums](https://forums.infamous.io) — [Examples](https://infamous.io/docs/examples.html) — [Docs](https://infamous.io/docs/index.html)
 
 <h2> About </h2>
 
