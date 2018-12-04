@@ -13,6 +13,10 @@ import Class from 'lowclass'
 import * as AutoLayout from 'autolayout'
 import Node from '../core/Node'
 
+/**
+ * A Node that lays children out based on an Apple AutoLayout VFL layout
+ * description.
+ */
 const AutoLayoutNode = Class('AutoLayoutNode').extends(Node, ({ Super, Public, Private }) => ({
 
     static: {
@@ -35,6 +39,8 @@ const AutoLayoutNode = Class('AutoLayoutNode').extends(Node, ({ Super, Public, P
 
     	Private(this)._options = {};
     	Private(this)._idToNode = {};
+
+        // TODO replace with Motor render task
     	Private(this)._comp = this.addComponent({
     		onUpdate: _layout.bind(this),
     		onSizeChange: _layout.bind(this)
@@ -240,6 +246,8 @@ const AutoLayoutNode = Class('AutoLayoutNode').extends(Node, ({ Super, Public, P
             }
             if (this._reflowLayout) {
                 this._reflowLayout = false;
+
+                // TODO replace with Motor render task
                 Public(this).requestUpdate(this._comp);
             }
         },
