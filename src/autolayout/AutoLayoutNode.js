@@ -145,7 +145,7 @@ const AutoLayoutNode = Class('AutoLayoutNode').extends(Node, ({ Super, Public, P
                 var subView = this._autoLayoutView.subViews[key];
                 var node = this._idToNode[key];
                 if (subView && node) {
-                    subView.intrinsicWidth = node.getSize()[0];
+                    subView.intrinsicWidth = node.calculatedSize.x; // PORTED
                 }
             }
         },
@@ -155,7 +155,7 @@ const AutoLayoutNode = Class('AutoLayoutNode').extends(Node, ({ Super, Public, P
                 var subView = this._autoLayoutView.subViews[key];
                 var node = this._idToNode[key];
                 if (subView && node) {
-                    subView.intrinsicHeight = node.getSize()[1];
+                    subView.intrinsicHeight = node.calculatedSize.y; // PORTED
                 }
             }
         },
@@ -222,19 +222,19 @@ const AutoLayoutNode = Class('AutoLayoutNode').extends(Node, ({ Super, Public, P
                 if ((key.indexOf('_') !== 0) && (subView.type !== 'stack')) {
         			var node = this._idToNode[key];
         			if (node) {
-                        node.setSizeMode(
-                            (widths && (widths[key] === true)) ? undefined : Node.ABSOLUTE_SIZE,
-                            (heights && (heights[key] === true)) ? undefined : Node.ABSOLUTE_SIZE
-                        );
-        				node.setAbsoluteSize(
-                            (widths && (widths[key] === true)) ? undefined : subView.width,
-                            (heights && (heights[key] === true)) ? undefined : subView.height
-                        );
-        				node.setPosition(
+                        node.sizeMode = [ // PORTED
+                            (widths && (widths[key] === true)) ? 'proportional' : 'literal',
+                            (heights && (heights[key] === true)) ? 'proportional' : 'literal'
+                        ];
+        				node.size = [ // PORTED
+                            (widths && (widths[key] === true)) ? 1 : subView.width,
+                            (heights && (heights[key] === true)) ? 1 : subView.height
+                        ];
+        				node.position = [ // PORTED
                             x + subView.left,
                             y + subView.top,
                             subView.zIndex * 5
-                        );
+                        ];
         			}
                 }
             }
