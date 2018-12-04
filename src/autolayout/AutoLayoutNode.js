@@ -13,7 +13,7 @@ import Class from 'lowclass'
 import * as AutoLayout from 'autolayout'
 import Node from '../core/Node'
 
-const AutoLayoutNode = Class('AutoLayoutNode').extends(Node, ({ Super }) => ({
+const AutoLayoutNode = Class('AutoLayoutNode').extends(Node, ({ Super, Public, Private }) => ({
 
     static: {
         DEFAULT_PARSE_OPTIONS: {
@@ -33,9 +33,9 @@ const AutoLayoutNode = Class('AutoLayoutNode').extends(Node, ({ Super }) => ({
     constructor() {
         Super(this).constructor()
 
-    	this._options = {};
-    	this._idToNode = {};
-    	this._comp = this.addComponent({
+    	Private(this)._options = {};
+    	Private(this)._idToNode = {};
+    	Private(this)._comp = this.addComponent({
     		onUpdate: _layout.bind(this),
     		onSizeChange: _layout.bind(this)
     	});
@@ -56,9 +56,9 @@ const AutoLayoutNode = Class('AutoLayoutNode').extends(Node, ({ Super }) => ({
      * @return {AutoLayoutController} this
      */
     reflowLayout() {
-        if (!this._reflowLayout) {
-            this._reflowLayout = true;
-            this.requestUpdate(this._comp);
+        if (!Private(this)._reflowLayout) {
+            Private(this)._reflowLayout = true;
+            this.requestUpdate(Private(this)._comp);
         }
     },
 
@@ -70,10 +70,10 @@ const AutoLayoutNode = Class('AutoLayoutNode').extends(Node, ({ Super }) => ({
      * @return {AutoLayoutController} this
      */
     setVisualFormat(visualFormat, parseOptions) {
-    	this._visualFormat = visualFormat;
+    	Private(this)._visualFormat = visualFormat;
     	var constraints = AutoLayout.VisualFormat.parse(visualFormat, parseOptions || AutoLayoutNode.DEFAULT_PARSE_OPTIONS);
-    	this._metaInfo = AutoLayout.VisualFormat.parseMetaInfo(visualFormat);
-    	this._autoLayoutView = new AutoLayout.View({
+    	Private(this)._metaInfo = AutoLayout.VisualFormat.parseMetaInfo(visualFormat);
+    	Private(this)._autoLayoutView = new AutoLayout.View({
     		constraints: constraints
     	});
     	this.reflowLayout();
@@ -87,7 +87,7 @@ const AutoLayoutNode = Class('AutoLayoutNode').extends(Node, ({ Super }) => ({
      * @return {AutoLayoutController} this
      */
     setLayoutOptions(options) {
-    	this._options = options || {};
+    	Private(this)._options = options || {};
     	this.reflowLayout();
     	return this;
     },
@@ -103,7 +103,7 @@ const AutoLayoutNode = Class('AutoLayoutNode').extends(Node, ({ Super }) => ({
      */
     addChild(child, id) {
     	child = Super(this).addChild(child);
-    	this._idToNode[id] = child;
+    	Private(this)._idToNode[id] = child;
     	this.reflowLayout();
     	return child;
     },
@@ -120,26 +120,25 @@ const AutoLayoutNode = Class('AutoLayoutNode').extends(Node, ({ Super }) => ({
     	var res = false;
     	if (child && id) {
     		res = Super(this).removeChild(child);
-    		delete this._idToNode[id];
+    		delete Private(this)._idToNode[id];
     	}
     	else if (child) {
-    		for (id in this._idToNode) {
-    			if (this._idToNode[id] === child) {
-    				delete this._idToNode[id];
+    		for (id in Private(this)._idToNode) {
+    			if (Private(this)._idToNode[id] === child) {
+    				delete Private(this)._idToNode[id];
     				break;
     			}
     		}
     		res = Super(this).removeChild(child);
     	}
     	else if (id) {
-    		res = Super(this).removeChild(this._idToNode[id]);
-    		delete this._idToNode[id];
+    		res = Super(this).removeChild(Private(this)._idToNode[id]);
+    		delete Private(this)._idToNode[id];
     	}
     	this.reflowLayout();
     	return res;
     },
 
-    // TODO replace access to `this` with `Public(this)`.
     private: {
         _setIntrinsicWidths(widths) {
             for (var key in widths) {
@@ -196,20 +195,20 @@ const AutoLayoutNode = Class('AutoLayoutNode').extends(Node, ({ Super }) => ({
         	}
             var x;
             var y;
-            var size = this.getSize();
+            var size = Public(this).getSize();
             if (this._options.spacing || this._metaInfo.spacing) {
         		this._autoLayoutView.setSpacing(this._options.spacing || this._metaInfo.spacing);
             }
             var widths = this._options.widths || this._metaInfo.widths;
             if (widths) {
-                _setIntrinsicWidths.call(this, widths);
+                this._setIntrinsicWidths(widths);
             }
             var heights = this._options.heights || this._metaInfo.heights;
             if (heights) {
-                _setIntrinsicHeights.call(this, heights);
+                this._setIntrinsicHeights(heights);
             }
             if (this._options.viewport || this._metaInfo.viewport) {
-        		var restrainedSize = _setViewPortSize.call(this, size, this._options.viewport || this._metaInfo.viewport);
+        		var restrainedSize = this._setViewPortSize(size, this._options.viewport || this._metaInfo.viewport);
         		x = (size[0] - restrainedSize[0]) / 2;
         		y = (size[1] - restrainedSize[1]) / 2;
             }
@@ -241,7 +240,7 @@ const AutoLayoutNode = Class('AutoLayoutNode').extends(Node, ({ Super }) => ({
             }
             if (this._reflowLayout) {
                 this._reflowLayout = false;
-                this.requestUpdate(this._comp);
+                Public(this).requestUpdate(this._comp);
             }
         },
     },
