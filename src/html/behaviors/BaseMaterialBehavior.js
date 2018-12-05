@@ -17,12 +17,8 @@ Class( 'BaseMaterialBehavior' ).extends( BaseMeshBehavior, ({ Super }) => ({
         },
     },
 
-    async updated( oldProps, oldState, modifiedProps ) {
+    updated( oldProps, oldState, modifiedProps ) {
         const {color, opacity} = modifiedProps
-
-        // TODO maybe there's a way we can eliminate this async/await behavior,
-        // yet still give the user a meaningful error.
-        if (! ( await Super( this ).elementIsMesh() ) ) return
 
         if (color) this.updateMaterial('color')
 

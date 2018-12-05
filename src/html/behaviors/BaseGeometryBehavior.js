@@ -17,18 +17,16 @@ Class( 'BaseGeometryBehavior' ).extends( BaseMeshBehavior, ({ Public, Protected,
         },
     },
 
-    async updated( oldProps, oldState, modifiedProps ) {
+    updated( oldProps, oldState, modifiedProps ) {
         const { size, sizeMode } = modifiedProps
-
-        if (! ( await Super( this ).elementIsMesh() ) ) return
 
         if ( size || sizeMode ) {
             this._updateGeometryOnSizeChange(this.size)
         }
     },
 
-    async connectedCallback() {
-        if (!Super(this).connectedCallback()) return
+    connectedCallback() {
+        Super(this).connectedCallback()
 
         // TODO the following three events can be replaced with a single propchange:size event
         this.element.on('sizechange', Private(this).onSizeValueChanged, Private(this))
@@ -37,7 +35,7 @@ Class( 'BaseGeometryBehavior' ).extends( BaseMeshBehavior, ({ Public, Protected,
     },
 
     disconnectedCallback() {
-        if (!Super(this).disconnectedCallback()) return
+        Super(this).disconnectedCallback()
 
         this.element.on('sizechange', Private(this).onSizeValueChanged)
         this.element.size.off('valuechanged', Private(this).onSizeValueChanged)

@@ -13,20 +13,24 @@ Class( 'BaseMeshBehavior' ).extends( withUpdate( forwardProps ), ({ Public, Prot
 
         _this.element = element
 
-        let resolveIsMeshPromise = null
-        // TODO cancellable promise, or it may leak
-
         if ( element.nodeName.includes('-') ) {
-            Private(_this).isMeshPromise = new Promise(r => resolveIsMeshPromise = r)
-            customElements.whenDefined(element.nodeName.toLowerCase())
+            const whenDefined = customElements.whenDefined(element.nodeName.toLowerCase())
             .then(() => {
-                if (element instanceof Mesh) resolveIsMeshPromise(true)
-                else resolveIsMeshPromise(false)
+                if (element instanceof Mesh) return true
+                else return false
+            })
+
+            const sleep = t => new Promise(r => setTimeout(() => r(false), t))
+            const sleepPromise = sleep(10000)
+
+            Promise.race([whenDefined, sleepPromise]).then(isMesh => {
+                if (!isMesh) throw new Error(`
+                    The element you're using the mesh behavior on is not a Mesh
+                    element (or timeout waiting for the Mesh element definition
+                    after 10 seconds).
+                `)
             })
         }
-        else Private(_this).isMeshPromise = Promise.resolve(false)
-
-        window.behavior = _this
 
         return _this
     },
@@ -36,13 +40,8 @@ Class( 'BaseMeshBehavior' ).extends( withUpdate( forwardProps ), ({ Public, Prot
         this.element.setAttribute(name, value)
     },
 
-    async connectedCallback() {
+    connectedCallback() {
         Super( this ).connectedCallback()
-
-        const self = Private(this)
-
-        if ( ! self.checkedElementIsMesh ) await self.checkElementIsMesh(this.element)
-        if ( ! self.elementIsMesh ) return false
 
         // TODO might have to defer so that calculatedSize is already calculated
         //console.log('hmmmmmmmmmmmmmmmmmmmmmmmmmmmm')
@@ -52,53 +51,20 @@ Class( 'BaseMeshBehavior' ).extends( withUpdate( forwardProps ), ({ Public, Prot
             Protected(this).createComponent(this.element)
         )
         this.element._needsToBeRendered()
-
-        return true
     },
 
-    async disconnectedCallback() {
-        Super( this ).disconnectedCallback && Super( this ).disconnectedCallback()
-
-        const self = Private(this)
-
-        if ( ! self.checkedElementIsMesh ) await self.checkElementIsMesh(this.element)
-        if ( ! self.elementIsMesh ) return false
+    disconnectedCallback() {
+        Super( this ).disconnectedCallback()
 
         Protected(this).setDefaultComponent( this.element, this.constructor.type )
         this.element._needsToBeRendered()
-
-        return true
-    },
-
-    async elementIsMesh() {
-        const self = Private(this)
-
-        if ( ! self.checkedElementIsMesh ) await self.checkElementIsMesh(this.element)
-        if ( ! self.elementIsMesh ) return false
-        return true
     },
 
     private: {
-        checkedElementIsMesh: false,
-        elementIsMesh: false,
-
         // records the initial size of the geometry, so that we have a
         // reference for how much scale to apply when accepting new sizes from
         // the user.
         initialSize: null,
-
-        isMeshPromise: null,
-
-        async checkElementIsMesh(element) {
-            const self = Private(this)
-
-            self.elementIsMesh = await self.isMeshPromise
-            self.checkedElementIsMesh = true
-
-            if ( ! self.elementIsMesh ) {
-                console.warn( `${this.constructor.name} is only for use on elements of type Mesh, otherwise it won't do anything. Your element was:`, element )
-            }
-        },
     },
 
     protected: {
