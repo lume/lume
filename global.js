@@ -100,7 +100,7 @@ exports.version = exports.default = exports.staticBlacklist = exports.InvalidAcc
 
 var _getOwnPropertyDescriptors = _interopRequireDefault(__webpack_require__(88));
 
-var _defineProperty = _interopRequireDefault(__webpack_require__(19));
+var _defineProperty = _interopRequireDefault(__webpack_require__(20));
 
 var _getOwnPropertyDescriptor = _interopRequireDefault(__webpack_require__(25));
 
@@ -882,9 +882,9 @@ if (typeof __e == 'number') __e = core; // eslint-disable-line no-undef
 
 var global = __webpack_require__(6);
 var core = __webpack_require__(1);
-var ctx = __webpack_require__(18);
-var hide = __webpack_require__(13);
-var has = __webpack_require__(14);
+var ctx = __webpack_require__(19);
+var hide = __webpack_require__(14);
+var has = __webpack_require__(15);
 var PROTOTYPE = 'prototype';
 
 var $export = function (type, name, source) {
@@ -1695,7 +1695,7 @@ exports.f = __webpack_require__(8) ? Object.defineProperty : function defineProp
 /***/ (function(module, exports, __webpack_require__) {
 
 // Thank's IE8 for his funny defineProperty
-module.exports = !__webpack_require__(11)(function () {
+module.exports = !__webpack_require__(12)(function () {
   return Object.defineProperty({}, 'a', { get: function () { return 7; } }).a != 7;
 });
 
@@ -1718,738 +1718,6 @@ module.exports = function (it) {
 "use strict";
 
 
-// loop for a given length, performing action each loop iteration. action receives the index of the loop.
-exports.forLength = forLength;
-function forLength(length, action) {
-    for (var i = 0; i < length; i += 1) {
-        action(i);
-    }
-}
-exports["default"] = forLength;
-exports.__esModule = true;
-//# sourceMappingURL=forLength.js.map
-
-/***/ }),
-/* 11 */
-/***/ (function(module, exports) {
-
-module.exports = function (exec) {
-  try {
-    return !!exec();
-  } catch (e) {
-    return true;
-  }
-};
-
-
-/***/ }),
-/* 12 */
-/***/ (function(module, exports, __webpack_require__) {
-
-/* This Source Code Form is subject to the terms of the Mozilla Public
- * License, v. 2.0. If a copy of the MPL was not distributed with this
- * file, You can obtain one at http://mozilla.org/MPL/2.0/.
- *
- * Owner: mark@famo.us
- * @license MPL 2.0
- * @copyright Famous Industries, Inc. 2015
- */
-
-    var EventEmitter = __webpack_require__(124);
-
-    /**
-     * EventHandler forwards received events to a set of provided callback functions.
-     * It allows events to be captured, processed, and optionally piped through to other event handlers.
-     *
-     * @class EventHandler
-     * @extends EventEmitter
-     * @constructor
-     */
-    function EventHandler() {
-        EventEmitter.apply(this, arguments);
-
-        this.downstream = []; // downstream event handlers
-        this.downstreamFn = []; // downstream functions
-
-        this.upstream = []; // upstream event handlers
-        this.upstreamListeners = {}; // upstream listeners
-    }
-    EventHandler.prototype = Object.create(EventEmitter.prototype);
-    EventHandler.prototype.constructor = EventHandler;
-
-    /**
-     * Assign an event handler to receive an object's input events.
-     *
-     * @method setInputHandler
-     * @static
-     *
-     * @param {Object} object object to mix trigger, subscribe, and unsubscribe functions into
-     * @param {EventHandler} handler assigned event handler
-     */
-    EventHandler.setInputHandler = function setInputHandler(object, handler) {
-        object.trigger = handler.trigger.bind(handler);
-        if (handler.subscribe && handler.unsubscribe) {
-            object.subscribe = handler.subscribe.bind(handler);
-            object.unsubscribe = handler.unsubscribe.bind(handler);
-        }
-    };
-
-    /**
-     * Assign an event handler to receive an object's output events.
-     *
-     * @method setOutputHandler
-     * @static
-     *
-     * @param {Object} object object to mix pipe, unpipe, on, addListener, and removeListener functions into
-     * @param {EventHandler} handler assigned event handler
-     */
-    EventHandler.setOutputHandler = function setOutputHandler(object, handler) {
-        if (handler instanceof EventHandler) handler.bindThis(object);
-        object.pipe = handler.pipe.bind(handler);
-        object.unpipe = handler.unpipe.bind(handler);
-        object.on = handler.on.bind(handler);
-        object.addListener = object.on;
-        object.removeListener = handler.removeListener.bind(handler);
-    };
-
-    /**
-     * Trigger an event, sending to all downstream handlers
-     *   listening for provided 'type' key.
-     *
-     * @method emit
-     *
-     * @param {string} type event type key (for example, 'click')
-     * @param {Object} event event data
-     * @return {EventHandler} this
-     */
-    EventHandler.prototype.emit = function emit(type, event) {
-        EventEmitter.prototype.emit.apply(this, arguments);
-        var i = 0;
-        for (i = 0; i < this.downstream.length; i++) {
-            if (this.downstream[i].trigger) this.downstream[i].trigger(type, event);
-        }
-        for (i = 0; i < this.downstreamFn.length; i++) {
-            this.downstreamFn[i](type, event);
-        }
-        return this;
-    };
-
-    /**
-     * Alias for emit
-     * @method addListener
-     */
-    EventHandler.prototype.trigger = EventHandler.prototype.emit;
-
-    /**
-     * Add event handler object to set of downstream handlers.
-     *
-     * @method pipe
-     *
-     * @param {EventHandler} target event handler target object
-     * @return {EventHandler} passed event handler
-     */
-    EventHandler.prototype.pipe = function pipe(target) {
-        if (target.subscribe instanceof Function) return target.subscribe(this);
-
-        var downstreamCtx = (target instanceof Function) ? this.downstreamFn : this.downstream;
-        var index = downstreamCtx.indexOf(target);
-        if (index < 0) downstreamCtx.push(target);
-
-        if (target instanceof Function) target('pipe', null);
-        else if (target.trigger) target.trigger('pipe', null);
-
-        return target;
-    };
-
-    /**
-     * Remove handler object from set of downstream handlers.
-     *   Undoes work of "pipe".
-     *
-     * @method unpipe
-     *
-     * @param {EventHandler} target target handler object
-     * @return {EventHandler} provided target
-     */
-    EventHandler.prototype.unpipe = function unpipe(target) {
-        if (target.unsubscribe instanceof Function) return target.unsubscribe(this);
-
-        var downstreamCtx = (target instanceof Function) ? this.downstreamFn : this.downstream;
-        var index = downstreamCtx.indexOf(target);
-        if (index >= 0) {
-            downstreamCtx.splice(index, 1);
-            if (target instanceof Function) target('unpipe', null);
-            else if (target.trigger) target.trigger('unpipe', null);
-            return target;
-        }
-        else return false;
-    };
-
-    /**
-     * Bind a callback function to an event type handled by this object.
-     *
-     * @method "on"
-     *
-     * @param {string} type event type key (for example, 'click')
-     * @param {function(string, Object)} handler callback
-     * @return {EventHandler} this
-     */
-    EventHandler.prototype.on = function on(type, handler) {
-        EventEmitter.prototype.on.apply(this, arguments);
-        if (!(type in this.upstreamListeners)) {
-            var upstreamListener = this.trigger.bind(this, type);
-            this.upstreamListeners[type] = upstreamListener;
-            for (var i = 0; i < this.upstream.length; i++) {
-                this.upstream[i].on(type, upstreamListener);
-            }
-        }
-        return this;
-    };
-
-    /**
-     * Alias for "on"
-     * @method addListener
-     */
-    EventHandler.prototype.addListener = EventHandler.prototype.on;
-
-    /**
-     * Listen for events from an upstream event handler.
-     *
-     * @method subscribe
-     *
-     * @param {EventEmitter} source source emitter object
-     * @return {EventHandler} this
-     */
-    EventHandler.prototype.subscribe = function subscribe(source) {
-        var index = this.upstream.indexOf(source);
-        if (index < 0) {
-            this.upstream.push(source);
-            for (var type in this.upstreamListeners) {
-                source.on(type, this.upstreamListeners[type]);
-            }
-        }
-        return this;
-    };
-
-    /**
-     * Stop listening to events from an upstream event handler.
-     *
-     * @method unsubscribe
-     *
-     * @param {EventEmitter} source source emitter object
-     * @return {EventHandler} this
-     */
-    EventHandler.prototype.unsubscribe = function unsubscribe(source) {
-        var index = this.upstream.indexOf(source);
-        if (index >= 0) {
-            this.upstream.splice(index, 1);
-            for (var type in this.upstreamListeners) {
-                source.removeListener(type, this.upstreamListeners[type]);
-            }
-        }
-        return this;
-    };
-
-    module.exports = EventHandler;
-
-
-/***/ }),
-/* 13 */
-/***/ (function(module, exports, __webpack_require__) {
-
-var dP = __webpack_require__(7);
-var createDesc = __webpack_require__(24);
-module.exports = __webpack_require__(8) ? function (object, key, value) {
-  return dP.f(object, key, createDesc(1, value));
-} : function (object, key, value) {
-  object[key] = value;
-  return object;
-};
-
-
-/***/ }),
-/* 14 */
-/***/ (function(module, exports) {
-
-var hasOwnProperty = {}.hasOwnProperty;
-module.exports = function (it, key) {
-  return hasOwnProperty.call(it, key);
-};
-
-
-/***/ }),
-/* 15 */
-/***/ (function(module, exports, __webpack_require__) {
-
-// to indexed object, toObject with fallback for non-array-like ES3 strings
-var IObject = __webpack_require__(53);
-var defined = __webpack_require__(55);
-module.exports = function (it) {
-  return IObject(defined(it));
-};
-
-
-/***/ }),
-/* 16 */
-/***/ (function(module, exports, __webpack_require__) {
-
-/* This Source Code Form is subject to the terms of the Mozilla Public
- * License, v. 2.0. If a copy of the MPL was not distributed with this
- * file, You can obtain one at http://mozilla.org/MPL/2.0/.
- *
- * Owner: david@famo.us
- * @license MPL 2.0
- * @copyright Famous Industries, Inc. 2015
- */
-/*eslint-disable new-cap */
-    var MultipleTransition = __webpack_require__(121);
-    var TweenTransition = __webpack_require__(122);
-
-    /**
-     * A state maintainer for a smooth transition between
-     *    numerically-specified states. Example numeric states include floats or
-     *    Transform objects.
-     *
-     * An initial state is set with the constructor or set(startState). A
-     *    corresponding end state and transition are set with set(endState,
-     *    transition). Subsequent calls to set(endState, transition) begin at
-     *    the last state. Calls to get(timestamp) provide the interpolated state
-     *    along the way.
-     *
-     * Note that there is no event loop here - calls to get() are the only way
-     *    to find state projected to the current (or provided) time and are
-     *    the only way to trigger callbacks. Usually this kind of object would
-     *    be part of the render() path of a visible component.
-     *
-     * @class Transitionable
-     * @constructor
-     * @param {number|Array.Number|Object.<number|string, number>} start
-     *    beginning state
-     */
-    function Transitionable(start) {
-        this.currentAction = null;
-        this.actionQueue = [];
-        this.callbackQueue = [];
-
-        this.state = 0;
-        this.velocity = undefined;
-        this._callback = undefined;
-        this._engineInstance = null;
-        this._currentMethod = null;
-
-        this.set(start);
-    }
-
-    var transitionMethods = {};
-
-    Transitionable.register = function register(methods) {
-        var success = true;
-        for (var method in methods) {
-            if (!Transitionable.registerMethod(method, methods[method]))
-                success = false;
-        }
-        return success;
-    };
-
-    Transitionable.registerMethod = function registerMethod(name, engineClass) {
-        if (!(name in transitionMethods)) {
-            transitionMethods[name] = engineClass;
-            return true;
-        }
-        else return false;
-    };
-
-    Transitionable.unregisterMethod = function unregisterMethod(name) {
-        if (name in transitionMethods) {
-            delete transitionMethods[name];
-            return true;
-        }
-        else return false;
-    };
-
-    function _loadNext() {
-        if (this._callback) {
-            var callback = this._callback;
-            this._callback = undefined;
-            callback();
-        }
-        if (this.actionQueue.length <= 0) {
-            this.set(this.get()); // no update required
-            return;
-        }
-        this.currentAction = this.actionQueue.shift();
-        this._callback = this.callbackQueue.shift();
-
-        var method = null;
-        var endValue = this.currentAction[0];
-        var transition = this.currentAction[1];
-        if (transition instanceof Object && transition.method) {
-            method = transition.method;
-            if (typeof method === 'string') method = transitionMethods[method];
-        }
-        else {
-            method = TweenTransition;
-        }
-
-        if (this._currentMethod !== method) {
-            if (!(endValue instanceof Object) || method.SUPPORTS_MULTIPLE === true || endValue.length <= method.SUPPORTS_MULTIPLE) {
-                this._engineInstance = new method();
-            }
-            else {
-                this._engineInstance = new MultipleTransition(method);
-            }
-            this._currentMethod = method;
-        }
-
-        this._engineInstance.reset(this.state, this.velocity);
-        if (this.velocity !== undefined) transition.velocity = this.velocity;
-        this._engineInstance.set(endValue, transition, _loadNext.bind(this));
-    }
-
-    /**
-     * Add transition to end state to the queue of pending transitions. Special
-     *    Use: calling without a transition resets the object to that state with
-     *    no pending actions
-     *
-     * @method set
-     *
-     * @param {number|FamousMatrix|Array.Number|Object.<number, number>} endState
-     *    end state to which we interpolate
-     * @param {transition=} transition object of type {duration: number, curve:
-     *    f[0,1] -> [0,1] or name}. If transition is omitted, change will be
-     *    instantaneous.
-     * @param {function()=} callback Zero-argument function to call on observed
-     *    completion (t=1)
-     */
-    Transitionable.prototype.set = function set(endState, transition, callback) {
-        if (!transition) {
-            this.reset(endState);
-            if (callback) callback();
-            return this;
-        }
-
-        var action = [endState, transition];
-        this.actionQueue.push(action);
-        this.callbackQueue.push(callback);
-        if (!this.currentAction) _loadNext.call(this);
-        return this;
-    };
-
-    /**
-     * Cancel all transitions and reset to a stable state
-     *
-     * @method reset
-     *
-     * @param {number|Array.Number|Object.<number, number>} startState
-     *    stable state to set to
-     */
-    Transitionable.prototype.reset = function reset(startState, startVelocity) {
-        this._currentMethod = null;
-        this._engineInstance = null;
-        this._callback = undefined;
-        this.state = startState;
-        this.velocity = startVelocity;
-        this.currentAction = null;
-        this.actionQueue = [];
-        this.callbackQueue = [];
-    };
-
-    /**
-     * Add delay action to the pending action queue queue.
-     *
-     * @method delay
-     *
-     * @param {number} duration delay time (ms)
-     * @param {function} callback Zero-argument function to call on observed
-     *    completion (t=1)
-     */
-    Transitionable.prototype.delay = function delay(duration, callback) {
-        var endValue;
-        if (this.actionQueue.length) endValue = this.actionQueue[this.actionQueue.length - 1][0];
-        else if (this.currentAction) endValue = this.currentAction[0];
-        else endValue = this.get();
-
-        return this.set(endValue, { duration: duration,
-            curve: function() {
-                return 0;
-            }},
-            callback
-        );
-    };
-
-    /**
-     * Get interpolated state of current action at provided time. If the last
-     *    action has completed, invoke its callback.
-     *
-     * @method get
-     *
-     * @param {number=} timestamp Evaluate the curve at a normalized version of this
-     *    time. If omitted, use current time. (Unix epoch time)
-     * @return {number|Object.<number|string, number>} beginning state
-     *    interpolated to this point in time.
-     */
-    Transitionable.prototype.get = function get(timestamp) {
-        if (this._engineInstance) {
-            if (this._engineInstance.getVelocity)
-                this.velocity = this._engineInstance.getVelocity();
-            this.state = this._engineInstance.get(timestamp);
-        }
-        return this.state;
-    };
-
-    /**
-     * Is there at least one action pending completion?
-     *
-     * @method isActive
-     *
-     * @return {boolean}
-     */
-    Transitionable.prototype.isActive = function isActive() {
-        return !!this.currentAction;
-    };
-
-    /**
-     * Halt transition at current state and erase all pending actions.
-     *
-     * @method halt
-     */
-    Transitionable.prototype.halt = function halt() {
-        return this.set(this.get());
-    };
-
-    module.exports = Transitionable;
-
-
-/***/ }),
-/* 17 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-/* WEBPACK VAR INJECTION */(function(global) {
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-exports.clone = clone;
-exports.isEmptyObject = isEmptyObject;
-exports.toCSS = toCSS;
-var stringify = JSON.stringify;
-var parse = JSON.parse;
-
-/**
- * Deeply clone object using serialization.
- * Expects object to be plain and without cyclic dependencies.
- *
- * http://jsperf.com/lodash-deepclone-vs-jquery-extend-deep/6
- *
- * @type {Object} obj
- * @return {Object}
- */
-function clone(obj) {
-  return parse(stringify(obj));
-}
-
-/**
- * Determine whether an object is empty or not.
- * More performant than a `Object.keys(obj).length > 0`
- *
- * @type {Object} obj
- * @return {Boolean}
- */
-function isEmptyObject(obj) {
-  for (var key in obj) {
-    return false;
-  } // eslint-disable-line no-unused-vars
-
-  return true;
-}
-
-/**
- * Simple very fast UID generation based on a global counter.
- */
-var uid = exports.uid = function () {
-  var globalReference = typeof window == 'undefined' ? global : window;
-  var namespace = '__JSS_VERSION_COUNTER__';
-  if (globalReference[namespace] == null) globalReference[namespace] = 0;
-
-  // In case we have more than one jss version.
-  var versionCounter = globalReference[namespace]++;
-  var ruleCounter = 0;
-
-  /**
-   * Returns a uid.
-   * Ensures uniqueness if more than 1 jss version is used.
-   *
-   * @api public
-   * @return {String}
-   */
-  function get() {
-    return 'jss-' + versionCounter + '-' + ruleCounter++;
-  }
-
-  /**
-   * Resets the counter.
-   *
-   * @api public
-   */
-  function reset() {
-    ruleCounter = 0;
-  }
-
-  return { get: get, reset: reset };
-}();
-
-/**
- * Indent a string.
- *
- * http://jsperf.com/array-join-vs-for
- *
- * @param {Number} level
- * @param {String} str
- * @return {String}
- */
-function indent(level, str) {
-  var indentStr = '';
-  for (var index = 0; index < level; index++) {
-    indentStr += '  ';
-  }return indentStr + str;
-}
-
-/**
- * Converts a Rule to CSS string.
- *
- * Options:
- * - `selector` use `false` to get a rule without selector
- * - `indentationLevel` level of indentation
- *
- * @param {String} selector
- * @param {Object} style
- * @param {Object} options
- * @return {String}
- */
-function toCSS(selector, style) {
-  var options = arguments.length <= 2 || arguments[2] === undefined ? {} : arguments[2];
-
-  var indentationLevel = options.indentationLevel || 0;
-  var str = '';
-
-  if (options.selector !== false) {
-    str += indent(indentationLevel, selector + ' {');
-    indentationLevel++;
-  }
-
-  for (var prop in style) {
-    var value = style[prop];
-    // We want to generate multiple style with identical property names.
-    if (Array.isArray(value)) {
-      for (var index = 0; index < value.length; index++) {
-        str += '\n' + indent(indentationLevel, prop + ': ' + value[index] + ';');
-      }
-    } else str += '\n' + indent(indentationLevel, prop + ': ' + value + ';');
-  }
-
-  if (options.selector !== false) str += '\n' + indent(--indentationLevel, '}');
-
-  return str;
-}
-
-/**
- * Get class names from a selector.
- *
- * @param {String} selector
- * @return {String}
- */
-var findClassNames = exports.findClassNames = function () {
-  var dotsRegExp = /[.]/g;
-  var classesRegExp = /[.][^ ,]+/g;
-
-  return function (selector) {
-    var classes = selector.match(classesRegExp);
-
-    if (!classes) return '';
-
-    return classes.join(' ').replace(dotsRegExp, '');
-  };
-}();
-/* WEBPACK VAR INJECTION */}.call(this, __webpack_require__(130)))
-
-/***/ }),
-/* 18 */
-/***/ (function(module, exports, __webpack_require__) {
-
-// optional / simple context binding
-var aFunction = __webpack_require__(33);
-module.exports = function (fn, that, length) {
-  aFunction(fn);
-  if (that === undefined) return fn;
-  switch (length) {
-    case 1: return function (a) {
-      return fn.call(that, a);
-    };
-    case 2: return function (a, b) {
-      return fn.call(that, a, b);
-    };
-    case 3: return function (a, b, c) {
-      return fn.call(that, a, b, c);
-    };
-  }
-  return function (/* ...args */) {
-    return fn.apply(that, arguments);
-  };
-};
-
-
-/***/ }),
-/* 19 */
-/***/ (function(module, exports, __webpack_require__) {
-
-module.exports = __webpack_require__(149);
-
-/***/ }),
-/* 20 */
-/***/ (function(module, exports) {
-
-/**
- * Await for this to run code after the DOM has been parsed and loaded (but not
- * sub-resources like images, scripts, etc).
- *
- * The _passThrough arg is not for public use, it's for making data pass
- * through in promise chains.
- */
-function documentReady( _passThrough ) {
-
-    if ( document.readyState === 'loading' ) {
-        return new Promise( resolve => {
-            document.addEventListener( 'DOMContentLoaded', () => resolve( _passThrough ) )
-        } )
-    }
-
-    return Promise.resolve( _passThrough )
-
-}
-
-documentReady.default = documentReady
-
-module.exports = documentReady
-
-
-/***/ }),
-/* 21 */
-/***/ (function(module, exports, __webpack_require__) {
-
-// 7.1.13 ToObject(argument)
-var defined = __webpack_require__(55);
-module.exports = function (it) {
-  return Object(defined(it));
-};
-
-
-/***/ }),
-/* 22 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
@@ -2462,7 +1730,7 @@ var _getOwnPropertyDescriptor = _interopRequireDefault(__webpack_require__(25));
 
 var _getOwnPropertySymbols = _interopRequireDefault(__webpack_require__(62));
 
-var _defineProperty = _interopRequireDefault(__webpack_require__(19));
+var _defineProperty = _interopRequireDefault(__webpack_require__(20));
 
 var _getOwnPropertyNames = _interopRequireDefault(__webpack_require__(76));
 
@@ -2695,6 +1963,738 @@ function isSyntaxSupported(example, useStrict) {
 }
 
 /***/ }),
+/* 11 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+// loop for a given length, performing action each loop iteration. action receives the index of the loop.
+exports.forLength = forLength;
+function forLength(length, action) {
+    for (var i = 0; i < length; i += 1) {
+        action(i);
+    }
+}
+exports["default"] = forLength;
+exports.__esModule = true;
+//# sourceMappingURL=forLength.js.map
+
+/***/ }),
+/* 12 */
+/***/ (function(module, exports) {
+
+module.exports = function (exec) {
+  try {
+    return !!exec();
+  } catch (e) {
+    return true;
+  }
+};
+
+
+/***/ }),
+/* 13 */
+/***/ (function(module, exports, __webpack_require__) {
+
+/* This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at http://mozilla.org/MPL/2.0/.
+ *
+ * Owner: mark@famo.us
+ * @license MPL 2.0
+ * @copyright Famous Industries, Inc. 2015
+ */
+
+    var EventEmitter = __webpack_require__(124);
+
+    /**
+     * EventHandler forwards received events to a set of provided callback functions.
+     * It allows events to be captured, processed, and optionally piped through to other event handlers.
+     *
+     * @class EventHandler
+     * @extends EventEmitter
+     * @constructor
+     */
+    function EventHandler() {
+        EventEmitter.apply(this, arguments);
+
+        this.downstream = []; // downstream event handlers
+        this.downstreamFn = []; // downstream functions
+
+        this.upstream = []; // upstream event handlers
+        this.upstreamListeners = {}; // upstream listeners
+    }
+    EventHandler.prototype = Object.create(EventEmitter.prototype);
+    EventHandler.prototype.constructor = EventHandler;
+
+    /**
+     * Assign an event handler to receive an object's input events.
+     *
+     * @method setInputHandler
+     * @static
+     *
+     * @param {Object} object object to mix trigger, subscribe, and unsubscribe functions into
+     * @param {EventHandler} handler assigned event handler
+     */
+    EventHandler.setInputHandler = function setInputHandler(object, handler) {
+        object.trigger = handler.trigger.bind(handler);
+        if (handler.subscribe && handler.unsubscribe) {
+            object.subscribe = handler.subscribe.bind(handler);
+            object.unsubscribe = handler.unsubscribe.bind(handler);
+        }
+    };
+
+    /**
+     * Assign an event handler to receive an object's output events.
+     *
+     * @method setOutputHandler
+     * @static
+     *
+     * @param {Object} object object to mix pipe, unpipe, on, addListener, and removeListener functions into
+     * @param {EventHandler} handler assigned event handler
+     */
+    EventHandler.setOutputHandler = function setOutputHandler(object, handler) {
+        if (handler instanceof EventHandler) handler.bindThis(object);
+        object.pipe = handler.pipe.bind(handler);
+        object.unpipe = handler.unpipe.bind(handler);
+        object.on = handler.on.bind(handler);
+        object.addListener = object.on;
+        object.removeListener = handler.removeListener.bind(handler);
+    };
+
+    /**
+     * Trigger an event, sending to all downstream handlers
+     *   listening for provided 'type' key.
+     *
+     * @method emit
+     *
+     * @param {string} type event type key (for example, 'click')
+     * @param {Object} event event data
+     * @return {EventHandler} this
+     */
+    EventHandler.prototype.emit = function emit(type, event) {
+        EventEmitter.prototype.emit.apply(this, arguments);
+        var i = 0;
+        for (i = 0; i < this.downstream.length; i++) {
+            if (this.downstream[i].trigger) this.downstream[i].trigger(type, event);
+        }
+        for (i = 0; i < this.downstreamFn.length; i++) {
+            this.downstreamFn[i](type, event);
+        }
+        return this;
+    };
+
+    /**
+     * Alias for emit
+     * @method addListener
+     */
+    EventHandler.prototype.trigger = EventHandler.prototype.emit;
+
+    /**
+     * Add event handler object to set of downstream handlers.
+     *
+     * @method pipe
+     *
+     * @param {EventHandler} target event handler target object
+     * @return {EventHandler} passed event handler
+     */
+    EventHandler.prototype.pipe = function pipe(target) {
+        if (target.subscribe instanceof Function) return target.subscribe(this);
+
+        var downstreamCtx = (target instanceof Function) ? this.downstreamFn : this.downstream;
+        var index = downstreamCtx.indexOf(target);
+        if (index < 0) downstreamCtx.push(target);
+
+        if (target instanceof Function) target('pipe', null);
+        else if (target.trigger) target.trigger('pipe', null);
+
+        return target;
+    };
+
+    /**
+     * Remove handler object from set of downstream handlers.
+     *   Undoes work of "pipe".
+     *
+     * @method unpipe
+     *
+     * @param {EventHandler} target target handler object
+     * @return {EventHandler} provided target
+     */
+    EventHandler.prototype.unpipe = function unpipe(target) {
+        if (target.unsubscribe instanceof Function) return target.unsubscribe(this);
+
+        var downstreamCtx = (target instanceof Function) ? this.downstreamFn : this.downstream;
+        var index = downstreamCtx.indexOf(target);
+        if (index >= 0) {
+            downstreamCtx.splice(index, 1);
+            if (target instanceof Function) target('unpipe', null);
+            else if (target.trigger) target.trigger('unpipe', null);
+            return target;
+        }
+        else return false;
+    };
+
+    /**
+     * Bind a callback function to an event type handled by this object.
+     *
+     * @method "on"
+     *
+     * @param {string} type event type key (for example, 'click')
+     * @param {function(string, Object)} handler callback
+     * @return {EventHandler} this
+     */
+    EventHandler.prototype.on = function on(type, handler) {
+        EventEmitter.prototype.on.apply(this, arguments);
+        if (!(type in this.upstreamListeners)) {
+            var upstreamListener = this.trigger.bind(this, type);
+            this.upstreamListeners[type] = upstreamListener;
+            for (var i = 0; i < this.upstream.length; i++) {
+                this.upstream[i].on(type, upstreamListener);
+            }
+        }
+        return this;
+    };
+
+    /**
+     * Alias for "on"
+     * @method addListener
+     */
+    EventHandler.prototype.addListener = EventHandler.prototype.on;
+
+    /**
+     * Listen for events from an upstream event handler.
+     *
+     * @method subscribe
+     *
+     * @param {EventEmitter} source source emitter object
+     * @return {EventHandler} this
+     */
+    EventHandler.prototype.subscribe = function subscribe(source) {
+        var index = this.upstream.indexOf(source);
+        if (index < 0) {
+            this.upstream.push(source);
+            for (var type in this.upstreamListeners) {
+                source.on(type, this.upstreamListeners[type]);
+            }
+        }
+        return this;
+    };
+
+    /**
+     * Stop listening to events from an upstream event handler.
+     *
+     * @method unsubscribe
+     *
+     * @param {EventEmitter} source source emitter object
+     * @return {EventHandler} this
+     */
+    EventHandler.prototype.unsubscribe = function unsubscribe(source) {
+        var index = this.upstream.indexOf(source);
+        if (index >= 0) {
+            this.upstream.splice(index, 1);
+            for (var type in this.upstreamListeners) {
+                source.removeListener(type, this.upstreamListeners[type]);
+            }
+        }
+        return this;
+    };
+
+    module.exports = EventHandler;
+
+
+/***/ }),
+/* 14 */
+/***/ (function(module, exports, __webpack_require__) {
+
+var dP = __webpack_require__(7);
+var createDesc = __webpack_require__(24);
+module.exports = __webpack_require__(8) ? function (object, key, value) {
+  return dP.f(object, key, createDesc(1, value));
+} : function (object, key, value) {
+  object[key] = value;
+  return object;
+};
+
+
+/***/ }),
+/* 15 */
+/***/ (function(module, exports) {
+
+var hasOwnProperty = {}.hasOwnProperty;
+module.exports = function (it, key) {
+  return hasOwnProperty.call(it, key);
+};
+
+
+/***/ }),
+/* 16 */
+/***/ (function(module, exports, __webpack_require__) {
+
+// to indexed object, toObject with fallback for non-array-like ES3 strings
+var IObject = __webpack_require__(53);
+var defined = __webpack_require__(55);
+module.exports = function (it) {
+  return IObject(defined(it));
+};
+
+
+/***/ }),
+/* 17 */
+/***/ (function(module, exports, __webpack_require__) {
+
+/* This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at http://mozilla.org/MPL/2.0/.
+ *
+ * Owner: david@famo.us
+ * @license MPL 2.0
+ * @copyright Famous Industries, Inc. 2015
+ */
+/*eslint-disable new-cap */
+    var MultipleTransition = __webpack_require__(121);
+    var TweenTransition = __webpack_require__(122);
+
+    /**
+     * A state maintainer for a smooth transition between
+     *    numerically-specified states. Example numeric states include floats or
+     *    Transform objects.
+     *
+     * An initial state is set with the constructor or set(startState). A
+     *    corresponding end state and transition are set with set(endState,
+     *    transition). Subsequent calls to set(endState, transition) begin at
+     *    the last state. Calls to get(timestamp) provide the interpolated state
+     *    along the way.
+     *
+     * Note that there is no event loop here - calls to get() are the only way
+     *    to find state projected to the current (or provided) time and are
+     *    the only way to trigger callbacks. Usually this kind of object would
+     *    be part of the render() path of a visible component.
+     *
+     * @class Transitionable
+     * @constructor
+     * @param {number|Array.Number|Object.<number|string, number>} start
+     *    beginning state
+     */
+    function Transitionable(start) {
+        this.currentAction = null;
+        this.actionQueue = [];
+        this.callbackQueue = [];
+
+        this.state = 0;
+        this.velocity = undefined;
+        this._callback = undefined;
+        this._engineInstance = null;
+        this._currentMethod = null;
+
+        this.set(start);
+    }
+
+    var transitionMethods = {};
+
+    Transitionable.register = function register(methods) {
+        var success = true;
+        for (var method in methods) {
+            if (!Transitionable.registerMethod(method, methods[method]))
+                success = false;
+        }
+        return success;
+    };
+
+    Transitionable.registerMethod = function registerMethod(name, engineClass) {
+        if (!(name in transitionMethods)) {
+            transitionMethods[name] = engineClass;
+            return true;
+        }
+        else return false;
+    };
+
+    Transitionable.unregisterMethod = function unregisterMethod(name) {
+        if (name in transitionMethods) {
+            delete transitionMethods[name];
+            return true;
+        }
+        else return false;
+    };
+
+    function _loadNext() {
+        if (this._callback) {
+            var callback = this._callback;
+            this._callback = undefined;
+            callback();
+        }
+        if (this.actionQueue.length <= 0) {
+            this.set(this.get()); // no update required
+            return;
+        }
+        this.currentAction = this.actionQueue.shift();
+        this._callback = this.callbackQueue.shift();
+
+        var method = null;
+        var endValue = this.currentAction[0];
+        var transition = this.currentAction[1];
+        if (transition instanceof Object && transition.method) {
+            method = transition.method;
+            if (typeof method === 'string') method = transitionMethods[method];
+        }
+        else {
+            method = TweenTransition;
+        }
+
+        if (this._currentMethod !== method) {
+            if (!(endValue instanceof Object) || method.SUPPORTS_MULTIPLE === true || endValue.length <= method.SUPPORTS_MULTIPLE) {
+                this._engineInstance = new method();
+            }
+            else {
+                this._engineInstance = new MultipleTransition(method);
+            }
+            this._currentMethod = method;
+        }
+
+        this._engineInstance.reset(this.state, this.velocity);
+        if (this.velocity !== undefined) transition.velocity = this.velocity;
+        this._engineInstance.set(endValue, transition, _loadNext.bind(this));
+    }
+
+    /**
+     * Add transition to end state to the queue of pending transitions. Special
+     *    Use: calling without a transition resets the object to that state with
+     *    no pending actions
+     *
+     * @method set
+     *
+     * @param {number|FamousMatrix|Array.Number|Object.<number, number>} endState
+     *    end state to which we interpolate
+     * @param {transition=} transition object of type {duration: number, curve:
+     *    f[0,1] -> [0,1] or name}. If transition is omitted, change will be
+     *    instantaneous.
+     * @param {function()=} callback Zero-argument function to call on observed
+     *    completion (t=1)
+     */
+    Transitionable.prototype.set = function set(endState, transition, callback) {
+        if (!transition) {
+            this.reset(endState);
+            if (callback) callback();
+            return this;
+        }
+
+        var action = [endState, transition];
+        this.actionQueue.push(action);
+        this.callbackQueue.push(callback);
+        if (!this.currentAction) _loadNext.call(this);
+        return this;
+    };
+
+    /**
+     * Cancel all transitions and reset to a stable state
+     *
+     * @method reset
+     *
+     * @param {number|Array.Number|Object.<number, number>} startState
+     *    stable state to set to
+     */
+    Transitionable.prototype.reset = function reset(startState, startVelocity) {
+        this._currentMethod = null;
+        this._engineInstance = null;
+        this._callback = undefined;
+        this.state = startState;
+        this.velocity = startVelocity;
+        this.currentAction = null;
+        this.actionQueue = [];
+        this.callbackQueue = [];
+    };
+
+    /**
+     * Add delay action to the pending action queue queue.
+     *
+     * @method delay
+     *
+     * @param {number} duration delay time (ms)
+     * @param {function} callback Zero-argument function to call on observed
+     *    completion (t=1)
+     */
+    Transitionable.prototype.delay = function delay(duration, callback) {
+        var endValue;
+        if (this.actionQueue.length) endValue = this.actionQueue[this.actionQueue.length - 1][0];
+        else if (this.currentAction) endValue = this.currentAction[0];
+        else endValue = this.get();
+
+        return this.set(endValue, { duration: duration,
+            curve: function() {
+                return 0;
+            }},
+            callback
+        );
+    };
+
+    /**
+     * Get interpolated state of current action at provided time. If the last
+     *    action has completed, invoke its callback.
+     *
+     * @method get
+     *
+     * @param {number=} timestamp Evaluate the curve at a normalized version of this
+     *    time. If omitted, use current time. (Unix epoch time)
+     * @return {number|Object.<number|string, number>} beginning state
+     *    interpolated to this point in time.
+     */
+    Transitionable.prototype.get = function get(timestamp) {
+        if (this._engineInstance) {
+            if (this._engineInstance.getVelocity)
+                this.velocity = this._engineInstance.getVelocity();
+            this.state = this._engineInstance.get(timestamp);
+        }
+        return this.state;
+    };
+
+    /**
+     * Is there at least one action pending completion?
+     *
+     * @method isActive
+     *
+     * @return {boolean}
+     */
+    Transitionable.prototype.isActive = function isActive() {
+        return !!this.currentAction;
+    };
+
+    /**
+     * Halt transition at current state and erase all pending actions.
+     *
+     * @method halt
+     */
+    Transitionable.prototype.halt = function halt() {
+        return this.set(this.get());
+    };
+
+    module.exports = Transitionable;
+
+
+/***/ }),
+/* 18 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+/* WEBPACK VAR INJECTION */(function(global) {
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.clone = clone;
+exports.isEmptyObject = isEmptyObject;
+exports.toCSS = toCSS;
+var stringify = JSON.stringify;
+var parse = JSON.parse;
+
+/**
+ * Deeply clone object using serialization.
+ * Expects object to be plain and without cyclic dependencies.
+ *
+ * http://jsperf.com/lodash-deepclone-vs-jquery-extend-deep/6
+ *
+ * @type {Object} obj
+ * @return {Object}
+ */
+function clone(obj) {
+  return parse(stringify(obj));
+}
+
+/**
+ * Determine whether an object is empty or not.
+ * More performant than a `Object.keys(obj).length > 0`
+ *
+ * @type {Object} obj
+ * @return {Boolean}
+ */
+function isEmptyObject(obj) {
+  for (var key in obj) {
+    return false;
+  } // eslint-disable-line no-unused-vars
+
+  return true;
+}
+
+/**
+ * Simple very fast UID generation based on a global counter.
+ */
+var uid = exports.uid = function () {
+  var globalReference = typeof window == 'undefined' ? global : window;
+  var namespace = '__JSS_VERSION_COUNTER__';
+  if (globalReference[namespace] == null) globalReference[namespace] = 0;
+
+  // In case we have more than one jss version.
+  var versionCounter = globalReference[namespace]++;
+  var ruleCounter = 0;
+
+  /**
+   * Returns a uid.
+   * Ensures uniqueness if more than 1 jss version is used.
+   *
+   * @api public
+   * @return {String}
+   */
+  function get() {
+    return 'jss-' + versionCounter + '-' + ruleCounter++;
+  }
+
+  /**
+   * Resets the counter.
+   *
+   * @api public
+   */
+  function reset() {
+    ruleCounter = 0;
+  }
+
+  return { get: get, reset: reset };
+}();
+
+/**
+ * Indent a string.
+ *
+ * http://jsperf.com/array-join-vs-for
+ *
+ * @param {Number} level
+ * @param {String} str
+ * @return {String}
+ */
+function indent(level, str) {
+  var indentStr = '';
+  for (var index = 0; index < level; index++) {
+    indentStr += '  ';
+  }return indentStr + str;
+}
+
+/**
+ * Converts a Rule to CSS string.
+ *
+ * Options:
+ * - `selector` use `false` to get a rule without selector
+ * - `indentationLevel` level of indentation
+ *
+ * @param {String} selector
+ * @param {Object} style
+ * @param {Object} options
+ * @return {String}
+ */
+function toCSS(selector, style) {
+  var options = arguments.length <= 2 || arguments[2] === undefined ? {} : arguments[2];
+
+  var indentationLevel = options.indentationLevel || 0;
+  var str = '';
+
+  if (options.selector !== false) {
+    str += indent(indentationLevel, selector + ' {');
+    indentationLevel++;
+  }
+
+  for (var prop in style) {
+    var value = style[prop];
+    // We want to generate multiple style with identical property names.
+    if (Array.isArray(value)) {
+      for (var index = 0; index < value.length; index++) {
+        str += '\n' + indent(indentationLevel, prop + ': ' + value[index] + ';');
+      }
+    } else str += '\n' + indent(indentationLevel, prop + ': ' + value + ';');
+  }
+
+  if (options.selector !== false) str += '\n' + indent(--indentationLevel, '}');
+
+  return str;
+}
+
+/**
+ * Get class names from a selector.
+ *
+ * @param {String} selector
+ * @return {String}
+ */
+var findClassNames = exports.findClassNames = function () {
+  var dotsRegExp = /[.]/g;
+  var classesRegExp = /[.][^ ,]+/g;
+
+  return function (selector) {
+    var classes = selector.match(classesRegExp);
+
+    if (!classes) return '';
+
+    return classes.join(' ').replace(dotsRegExp, '');
+  };
+}();
+/* WEBPACK VAR INJECTION */}.call(this, __webpack_require__(130)))
+
+/***/ }),
+/* 19 */
+/***/ (function(module, exports, __webpack_require__) {
+
+// optional / simple context binding
+var aFunction = __webpack_require__(33);
+module.exports = function (fn, that, length) {
+  aFunction(fn);
+  if (that === undefined) return fn;
+  switch (length) {
+    case 1: return function (a) {
+      return fn.call(that, a);
+    };
+    case 2: return function (a, b) {
+      return fn.call(that, a, b);
+    };
+    case 3: return function (a, b, c) {
+      return fn.call(that, a, b, c);
+    };
+  }
+  return function (/* ...args */) {
+    return fn.apply(that, arguments);
+  };
+};
+
+
+/***/ }),
+/* 20 */
+/***/ (function(module, exports, __webpack_require__) {
+
+module.exports = __webpack_require__(149);
+
+/***/ }),
+/* 21 */
+/***/ (function(module, exports) {
+
+/**
+ * Await for this to run code after the DOM has been parsed and loaded (but not
+ * sub-resources like images, scripts, etc).
+ *
+ * The _passThrough arg is not for public use, it's for making data pass
+ * through in promise chains.
+ */
+function documentReady( _passThrough ) {
+
+    if ( document.readyState === 'loading' ) {
+        return new Promise( resolve => {
+            document.addEventListener( 'DOMContentLoaded', () => resolve( _passThrough ) )
+        } )
+    }
+
+    return Promise.resolve( _passThrough )
+
+}
+
+documentReady.default = documentReady
+
+module.exports = documentReady
+
+
+/***/ }),
+/* 22 */
+/***/ (function(module, exports, __webpack_require__) {
+
+// 7.1.13 ToObject(argument)
+var defined = __webpack_require__(55);
+module.exports = function (it) {
+  return Object(defined(it));
+};
+
+
+/***/ }),
 /* 23 */
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -2710,7 +2710,7 @@ function isSyntaxSupported(example, useStrict) {
     var Transform = __webpack_require__(5);
 
     /* TODO: remove these dependencies when deprecation complete */
-    var Transitionable = __webpack_require__(16);
+    var Transitionable = __webpack_require__(17);
     var TransitionableTransform = __webpack_require__(77);
 
     /**
@@ -3218,13 +3218,13 @@ module.exports = Object.keys || function keys(O) {
 
 var META = __webpack_require__(36)('meta');
 var isObject = __webpack_require__(3);
-var has = __webpack_require__(14);
+var has = __webpack_require__(15);
 var setDesc = __webpack_require__(7).f;
 var id = 0;
 var isExtensible = Object.isExtensible || function () {
   return true;
 };
-var FREEZE = !__webpack_require__(11)(function () {
+var FREEZE = !__webpack_require__(12)(function () {
   return isExtensible(Object.preventExtensions({}));
 });
 var setMeta = function (it) {
@@ -3282,7 +3282,7 @@ module.exports = {};
 /* 30 */
 /***/ (function(module, exports, __webpack_require__) {
 
-var ctx = __webpack_require__(18);
+var ctx = __webpack_require__(19);
 var call = __webpack_require__(103);
 var isArrayIter = __webpack_require__(104);
 var anObject = __webpack_require__(9);
@@ -3669,9 +3669,9 @@ exports.f = Object.getOwnPropertySymbols;
 
 var pIE = __webpack_require__(39);
 var createDesc = __webpack_require__(24);
-var toIObject = __webpack_require__(15);
+var toIObject = __webpack_require__(16);
 var toPrimitive = __webpack_require__(51);
-var has = __webpack_require__(14);
+var has = __webpack_require__(15);
 var IE8_DOM_DEFINE = __webpack_require__(89);
 var gOPD = Object.getOwnPropertyDescriptor;
 
@@ -3699,7 +3699,7 @@ exports.f = {}.propertyIsEnumerable;
 // most Object methods by ES6 should accept primitives
 var $export = __webpack_require__(2);
 var core = __webpack_require__(1);
-var fails = __webpack_require__(11);
+var fails = __webpack_require__(12);
 module.exports = function (KEY, exec) {
   var fn = (core.Object || {})[KEY] || Object[KEY];
   var exp = {};
@@ -3713,7 +3713,7 @@ module.exports = function (KEY, exec) {
 /***/ (function(module, exports, __webpack_require__) {
 
 var def = __webpack_require__(7).f;
-var has = __webpack_require__(14);
+var has = __webpack_require__(15);
 var TAG = __webpack_require__(4)('toStringTag');
 
 module.exports = function (it, tag, stat) {
@@ -3758,7 +3758,7 @@ __webpack_require__(65)(String, 'String', function (iterated) {
 
 __webpack_require__(168);
 var global = __webpack_require__(6);
-var hide = __webpack_require__(13);
+var hide = __webpack_require__(14);
 var Iterators = __webpack_require__(29);
 var TO_STRING_TAG = __webpack_require__(4)('toStringTag');
 
@@ -3819,7 +3819,7 @@ var _defineProperties = _interopRequireDefault(__webpack_require__(212));
 
 var _getOwnPropertyDescriptors = _interopRequireDefault(__webpack_require__(88));
 
-var _defineProperty = _interopRequireDefault(__webpack_require__(19));
+var _defineProperty = _interopRequireDefault(__webpack_require__(20));
 
 var _getOwnPropertyDescriptor = _interopRequireDefault(__webpack_require__(25));
 
@@ -4699,7 +4699,7 @@ module.exports = __webpack_require__(156);
 /* 63 */
 /***/ (function(module, exports, __webpack_require__) {
 
-module.exports = __webpack_require__(13);
+module.exports = __webpack_require__(14);
 
 
 /***/ }),
@@ -4726,7 +4726,7 @@ module.exports = function (name) {
 var LIBRARY = __webpack_require__(35);
 var $export = __webpack_require__(2);
 var redefine = __webpack_require__(63);
-var hide = __webpack_require__(13);
+var hide = __webpack_require__(14);
 var Iterators = __webpack_require__(29);
 var $iterCreate = __webpack_require__(167);
 var setToStringTag = __webpack_require__(41);
@@ -4798,8 +4798,8 @@ module.exports = function (Base, NAME, Constructor, next, DEFAULT, IS_SET, FORCE
 /***/ (function(module, exports, __webpack_require__) {
 
 // 19.1.2.9 / 15.2.3.2 Object.getPrototypeOf(O)
-var has = __webpack_require__(14);
-var toObject = __webpack_require__(21);
+var has = __webpack_require__(15);
+var toObject = __webpack_require__(22);
 var IE_PROTO = __webpack_require__(57)('IE_PROTO');
 var ObjectProto = Object.prototype;
 
@@ -4845,7 +4845,7 @@ module.exports = _setPrototypeOf;
 /* 70 */
 /***/ (function(module, exports, __webpack_require__) {
 
-var hide = __webpack_require__(13);
+var hide = __webpack_require__(14);
 module.exports = function (target, src, safe) {
   for (var key in src) {
     if (safe && target[key]) target[key] = src[key];
@@ -4874,8 +4874,8 @@ module.exports = function (it, Constructor, name, forbiddenField) {
 var global = __webpack_require__(6);
 var $export = __webpack_require__(2);
 var meta = __webpack_require__(28);
-var fails = __webpack_require__(11);
-var hide = __webpack_require__(13);
+var fails = __webpack_require__(12);
+var hide = __webpack_require__(14);
 var redefineAll = __webpack_require__(70);
 var forOf = __webpack_require__(30);
 var anInstance = __webpack_require__(71);
@@ -4942,9 +4942,9 @@ module.exports = function (NAME, wrapper, methods, common, IS_MAP, IS_WEAK) {
 // 4 -> Array#every
 // 5 -> Array#find
 // 6 -> Array#findIndex
-var ctx = __webpack_require__(18);
+var ctx = __webpack_require__(19);
 var IObject = __webpack_require__(53);
-var toObject = __webpack_require__(21);
+var toObject = __webpack_require__(22);
 var toLength = __webpack_require__(34);
 var asc = __webpack_require__(184);
 module.exports = function (TYPE, $create) {
@@ -5009,7 +5009,7 @@ module.exports = function (COLLECTION) {
 // https://tc39.github.io/proposal-setmap-offrom/
 var $export = __webpack_require__(2);
 var aFunction = __webpack_require__(33);
-var ctx = __webpack_require__(18);
+var ctx = __webpack_require__(19);
 var forOf = __webpack_require__(30);
 
 module.exports = function (COLLECTION) {
@@ -5054,7 +5054,7 @@ module.exports = __webpack_require__(201);
  * @copyright Famous Industries, Inc. 2015
  */
 
-    var Transitionable = __webpack_require__(16);
+    var Transitionable = __webpack_require__(17);
     var Transform = __webpack_require__(5);
     var Utility = __webpack_require__(81);
 
@@ -5736,7 +5736,7 @@ module.exports = __webpack_require__(201);
  * @copyright Famous Industries, Inc. 2015
  */
 
-    var EventHandler = __webpack_require__(12);
+    var EventHandler = __webpack_require__(13);
 
     /**
      * Combines multiple types of sync classes (e.g. mouse, touch,
@@ -6140,7 +6140,7 @@ exports.version = version;
  * @copyright Famous Industries, Inc. 2015
  */
 
-    var EventHandler = __webpack_require__(12);
+    var EventHandler = __webpack_require__(13);
 
     /**
      *  A collection of methods for setting options which can be extended
@@ -6347,7 +6347,7 @@ var _extends = Object.assign || function (target) { for (var i = 1; i < argument
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
-var _utils = __webpack_require__(17);
+var _utils = __webpack_require__(18);
 
 var _createRule2 = __webpack_require__(85);
 
@@ -6734,7 +6734,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
-var _utils = __webpack_require__(17);
+var _utils = __webpack_require__(18);
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
@@ -6965,7 +6965,7 @@ module.exports = __webpack_require__(144);
 /* 89 */
 /***/ (function(module, exports, __webpack_require__) {
 
-module.exports = !__webpack_require__(8) && !__webpack_require__(11)(function () {
+module.exports = !__webpack_require__(8) && !__webpack_require__(12)(function () {
   return Object.defineProperty(__webpack_require__(90)('div'), 'a', { get: function () { return 7; } }).a != 7;
 });
 
@@ -6987,8 +6987,8 @@ module.exports = function (it) {
 /* 91 */
 /***/ (function(module, exports, __webpack_require__) {
 
-var has = __webpack_require__(14);
-var toIObject = __webpack_require__(15);
+var has = __webpack_require__(15);
+var toIObject = __webpack_require__(16);
 var arrayIndexOf = __webpack_require__(147)(false);
 var IE_PROTO = __webpack_require__(57)('IE_PROTO');
 
@@ -7048,12 +7048,12 @@ module.exports = __webpack_require__(8) ? Object.defineProperties : function def
 
 // ECMAScript 6 symbols shim
 var global = __webpack_require__(6);
-var has = __webpack_require__(14);
+var has = __webpack_require__(15);
 var DESCRIPTORS = __webpack_require__(8);
 var $export = __webpack_require__(2);
 var redefine = __webpack_require__(63);
 var META = __webpack_require__(28).KEY;
-var $fails = __webpack_require__(11);
+var $fails = __webpack_require__(12);
 var shared = __webpack_require__(58);
 var setToStringTag = __webpack_require__(41);
 var uid = __webpack_require__(36);
@@ -7064,7 +7064,7 @@ var enumKeys = __webpack_require__(157);
 var isArray = __webpack_require__(95);
 var anObject = __webpack_require__(9);
 var isObject = __webpack_require__(3);
-var toIObject = __webpack_require__(15);
+var toIObject = __webpack_require__(16);
 var toPrimitive = __webpack_require__(51);
 var createDesc = __webpack_require__(24);
 var _create = __webpack_require__(26);
@@ -7272,7 +7272,7 @@ $JSON && $export($export.S + $export.F * (!USE_NATIVE || $fails(function () {
 });
 
 // 19.4.3.4 Symbol.prototype[@@toPrimitive](hint)
-$Symbol[PROTOTYPE][TO_PRIMITIVE] || __webpack_require__(13)($Symbol[PROTOTYPE], TO_PRIMITIVE, $Symbol[PROTOTYPE].valueOf);
+$Symbol[PROTOTYPE][TO_PRIMITIVE] || __webpack_require__(14)($Symbol[PROTOTYPE], TO_PRIMITIVE, $Symbol[PROTOTYPE].valueOf);
 // 19.4.3.5 Symbol.prototype[@@toStringTag]
 setToStringTag($Symbol, 'Symbol');
 // 20.2.1.9 Math[@@toStringTag]
@@ -7297,7 +7297,7 @@ module.exports = Array.isArray || function isArray(arg) {
 /***/ (function(module, exports, __webpack_require__) {
 
 // fallback for IE11 buggy Object.getOwnPropertyNames with iframe and window
-var toIObject = __webpack_require__(15);
+var toIObject = __webpack_require__(16);
 var gOPN = __webpack_require__(52).f;
 var toString = {}.toString;
 
@@ -7375,7 +7375,7 @@ module.exports = __webpack_require__(181);
 var dP = __webpack_require__(7).f;
 var create = __webpack_require__(26);
 var redefineAll = __webpack_require__(70);
-var ctx = __webpack_require__(18);
+var ctx = __webpack_require__(19);
 var anInstance = __webpack_require__(71);
 var forOf = __webpack_require__(30);
 var $iterDefine = __webpack_require__(65);
@@ -7649,7 +7649,7 @@ module.exports = __webpack_require__(209);
      * @class Engine
      */
     var Context = __webpack_require__(125);
-    var EventHandler = __webpack_require__(12);
+    var EventHandler = __webpack_require__(13);
     var OptionsManager = __webpack_require__(83);
 
     var Engine = {};
@@ -8387,7 +8387,7 @@ function jssPropsSort() {
  * @copyright Famous Industries, Inc. 2015
  */
     var TouchTracker = __webpack_require__(143);
-    var EventHandler = __webpack_require__(12);
+    var EventHandler = __webpack_require__(13);
     var OptionsManager = __webpack_require__(83);
 
     /**
@@ -8642,7 +8642,7 @@ var _getOwnPropertyDescriptor = _interopRequireDefault(__webpack_require__(25));
 
 var _getPrototypeOf = _interopRequireDefault(__webpack_require__(68));
 
-var _defineProperty = _interopRequireDefault(__webpack_require__(19));
+var _defineProperty = _interopRequireDefault(__webpack_require__(20));
 
 var _getOwnPropertySymbols = _interopRequireDefault(__webpack_require__(62));
 
@@ -9576,10 +9576,10 @@ function hasMixin(Class, mixin, map) {
  */
 
     var RenderNode = __webpack_require__(78);
-    var EventHandler = __webpack_require__(12);
+    var EventHandler = __webpack_require__(13);
     var ElementAllocator = __webpack_require__(126);
     var Transform = __webpack_require__(5);
-    var Transitionable = __webpack_require__(16);
+    var Transitionable = __webpack_require__(17);
 
     var _zeroZero = [0, 0];
     var usePrefix = !('perspective' in document.documentElement.style);
@@ -9948,7 +9948,7 @@ if (!(function f() {}).name) {
  */
 
     var Entity = __webpack_require__(82);
-    var EventHandler = __webpack_require__(12);
+    var EventHandler = __webpack_require__(13);
     var Transform = __webpack_require__(5);
 
     var usePrefix = !('transform' in document.documentElement.style);
@@ -10289,7 +10289,7 @@ var _SheetsRegistry = __webpack_require__(138);
 
 var _SheetsRegistry2 = _interopRequireDefault(_SheetsRegistry);
 
-var _utils = __webpack_require__(17);
+var _utils = __webpack_require__(18);
 
 var _createRule2 = __webpack_require__(85);
 
@@ -10439,7 +10439,7 @@ Object.defineProperty(exports, "__esModule", {
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
-var _utils = __webpack_require__(17);
+var _utils = __webpack_require__(18);
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
@@ -10504,7 +10504,7 @@ var _extends = Object.assign || function (target) { for (var i = 1; i < argument
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
-var _utils = __webpack_require__(17);
+var _utils = __webpack_require__(18);
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
@@ -10583,7 +10583,7 @@ var _extends = Object.assign || function (target) { for (var i = 1; i < argument
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
-var _utils = __webpack_require__(17);
+var _utils = __webpack_require__(18);
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
@@ -10679,7 +10679,7 @@ Object.defineProperty(exports, "__esModule", {
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
-var _utils = __webpack_require__(17);
+var _utils = __webpack_require__(18);
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
@@ -11301,7 +11301,7 @@ function supportedValue(property, value) {
  * @license MPL 2.0
  * @copyright Famous Industries, Inc. 2015
  */
-    var EventHandler = __webpack_require__(12);
+    var EventHandler = __webpack_require__(13);
 
     var _now = Date.now;
 
@@ -11432,7 +11432,7 @@ module.exports = __webpack_require__(1).Object.getOwnPropertyDescriptors;
 // https://github.com/tc39/proposal-object-getownpropertydescriptors
 var $export = __webpack_require__(2);
 var ownKeys = __webpack_require__(146);
-var toIObject = __webpack_require__(15);
+var toIObject = __webpack_require__(16);
 var gOPD = __webpack_require__(38);
 var createProperty = __webpack_require__(92);
 
@@ -11475,7 +11475,7 @@ module.exports = Reflect && Reflect.ownKeys || function ownKeys(it) {
 
 // false -> Array#indexOf
 // true  -> Array#includes
-var toIObject = __webpack_require__(15);
+var toIObject = __webpack_require__(16);
 var toLength = __webpack_require__(34);
 var toAbsoluteIndex = __webpack_require__(148);
 module.exports = function (IS_INCLUDES) {
@@ -11547,7 +11547,7 @@ module.exports = function getOwnPropertyDescriptor(it, key) {
 /***/ (function(module, exports, __webpack_require__) {
 
 // 19.1.2.6 Object.getOwnPropertyDescriptor(O, P)
-var toIObject = __webpack_require__(15);
+var toIObject = __webpack_require__(16);
 var $getOwnPropertyDescriptor = __webpack_require__(38).f;
 
 __webpack_require__(40)('getOwnPropertyDescriptor', function () {
@@ -11633,7 +11633,7 @@ module.exports = __webpack_require__(1).Object.keys;
 /***/ (function(module, exports, __webpack_require__) {
 
 // 19.1.2.14 Object.keys(O)
-var toObject = __webpack_require__(21);
+var toObject = __webpack_require__(22);
 var $keys = __webpack_require__(27);
 
 __webpack_require__(40)('keys', function () {
@@ -11647,7 +11647,7 @@ __webpack_require__(40)('keys', function () {
 /* 161 */
 /***/ (function(module, exports, __webpack_require__) {
 
-var _Object$defineProperty = __webpack_require__(19);
+var _Object$defineProperty = __webpack_require__(20);
 
 function _defineProperty(obj, key, value) {
   if (key in obj) {
@@ -11760,7 +11760,7 @@ var setToStringTag = __webpack_require__(41);
 var IteratorPrototype = {};
 
 // 25.1.2.1.1 %IteratorPrototype%[@@iterator]()
-__webpack_require__(13)(IteratorPrototype, __webpack_require__(4)('iterator'), function () { return this; });
+__webpack_require__(14)(IteratorPrototype, __webpack_require__(4)('iterator'), function () { return this; });
 
 module.exports = function (Constructor, NAME, next) {
   Constructor.prototype = create(IteratorPrototype, { next: descriptor(1, next) });
@@ -11777,7 +11777,7 @@ module.exports = function (Constructor, NAME, next) {
 var addToUnscopables = __webpack_require__(169);
 var step = __webpack_require__(98);
 var Iterators = __webpack_require__(29);
-var toIObject = __webpack_require__(15);
+var toIObject = __webpack_require__(16);
 
 // 22.1.3.4 Array.prototype.entries()
 // 22.1.3.13 Array.prototype.keys()
@@ -11868,7 +11868,7 @@ module.exports = __webpack_require__(1).Object.getPrototypeOf;
 /***/ (function(module, exports, __webpack_require__) {
 
 // 19.1.2.9 Object.getPrototypeOf(O)
-var toObject = __webpack_require__(21);
+var toObject = __webpack_require__(22);
 var $getPrototypeOf = __webpack_require__(66);
 
 __webpack_require__(40)('getPrototypeOf', function () {
@@ -11928,7 +11928,7 @@ module.exports = {
   set: Object.setPrototypeOf || ('__proto__' in {} ? // eslint-disable-line
     function (test, buggy, set) {
       try {
-        set = __webpack_require__(18)(Function.call, __webpack_require__(38).f(Object.prototype, '__proto__').set, 2);
+        set = __webpack_require__(19)(Function.call, __webpack_require__(38).f(Object.prototype, '__proto__').set, 2);
         set(test, []);
         buggy = !(test instanceof Array);
       } catch (e) { buggy = true; }
@@ -12170,7 +12170,7 @@ var create = __webpack_require__(26);
 var aFunction = __webpack_require__(33);
 var anObject = __webpack_require__(9);
 var isObject = __webpack_require__(3);
-var fails = __webpack_require__(11);
+var fails = __webpack_require__(12);
 var bind = __webpack_require__(193);
 var rConstruct = (__webpack_require__(6).Reflect || {}).construct;
 
@@ -12291,7 +12291,7 @@ var meta = __webpack_require__(28);
 var assign = __webpack_require__(197);
 var weak = __webpack_require__(198);
 var isObject = __webpack_require__(3);
-var fails = __webpack_require__(11);
+var fails = __webpack_require__(12);
 var validate = __webpack_require__(31);
 var WEAK_MAP = 'WeakMap';
 var getWeak = meta.getWeak;
@@ -12355,12 +12355,12 @@ if (fails(function () { return new $WeakMap().set((Object.freeze || Object)(tmp)
 var getKeys = __webpack_require__(27);
 var gOPS = __webpack_require__(37);
 var pIE = __webpack_require__(39);
-var toObject = __webpack_require__(21);
+var toObject = __webpack_require__(22);
 var IObject = __webpack_require__(53);
 var $assign = Object.assign;
 
 // should work with symbols and should have deterministic property order (V8 bug)
-module.exports = !$assign || __webpack_require__(11)(function () {
+module.exports = !$assign || __webpack_require__(12)(function () {
   var A = {};
   var B = {};
   // eslint-disable-next-line no-undef
@@ -12399,7 +12399,7 @@ var isObject = __webpack_require__(3);
 var anInstance = __webpack_require__(71);
 var forOf = __webpack_require__(30);
 var createArrayMethod = __webpack_require__(73);
-var $has = __webpack_require__(14);
+var $has = __webpack_require__(15);
 var validate = __webpack_require__(31);
 var arrayFind = createArrayMethod(5);
 var arrayFindIndex = createArrayMethod(6);
@@ -12597,9 +12597,9 @@ module.exports = __webpack_require__(1).Array.from;
 
 "use strict";
 
-var ctx = __webpack_require__(18);
+var ctx = __webpack_require__(19);
 var $export = __webpack_require__(2);
-var toObject = __webpack_require__(21);
+var toObject = __webpack_require__(22);
 var call = __webpack_require__(103);
 var isArrayIter = __webpack_require__(104);
 var toLength = __webpack_require__(34);
@@ -12693,7 +12693,7 @@ $export($export.S + $export.F * !__webpack_require__(8), 'Object', { definePrope
 /* 215 */
 /***/ (function(module, exports, __webpack_require__) {
 
-var _Object$defineProperty = __webpack_require__(19);
+var _Object$defineProperty = __webpack_require__(20);
 
 function _defineProperties(target, props) {
   for (var i = 0; i < props.length; i++) {
@@ -12904,7 +12904,7 @@ exports.unobserve = unobserve;
 
 var _objectSpread2 = _interopRequireDefault(__webpack_require__(61));
 
-var _defineProperty = _interopRequireDefault(__webpack_require__(19));
+var _defineProperty = _interopRequireDefault(__webpack_require__(20));
 
 var _from = _interopRequireDefault(__webpack_require__(109));
 
@@ -13495,7 +13495,7 @@ var Transform = __webpack_require__(5);
 var Transform_default = /*#__PURE__*/__webpack_require__.n(Transform);
 
 // EXTERNAL MODULE: ./node_modules/famous/src/transitions/Transitionable.js
-var Transitionable = __webpack_require__(16);
+var Transitionable = __webpack_require__(17);
 var Transitionable_default = /*#__PURE__*/__webpack_require__.n(Transitionable);
 
 // EXTERNAL MODULE: ./node_modules/famous/src/transitions/Easing.js
@@ -13515,7 +13515,7 @@ var TransitionableTransform = __webpack_require__(77);
 var TransitionableTransform_default = /*#__PURE__*/__webpack_require__.n(TransitionableTransform);
 
 // EXTERNAL MODULE: ./node_modules/famous/src/core/EventHandler.js
-var EventHandler = __webpack_require__(12);
+var EventHandler = __webpack_require__(13);
 var EventHandler_default = /*#__PURE__*/__webpack_require__.n(EventHandler);
 
 // EXTERNAL MODULE: ./node_modules/famous/src/core/Engine.js
@@ -13780,7 +13780,7 @@ class Molecule_Molecule extends RenderNode_default.a {
 /* harmony default export */ var src_Molecule = (Molecule_Molecule);
 
 // EXTERNAL MODULE: ./node_modules/army-knife/forLength.js
-var forLength = __webpack_require__(10);
+var forLength = __webpack_require__(11);
 var forLength_default = /*#__PURE__*/__webpack_require__.n(forLength);
 
 // CONCATENATED MODULE: ./src/Grid.js
@@ -14833,7 +14833,8 @@ var lowclass = __webpack_require__(0);
 var lowclass_default = /*#__PURE__*/__webpack_require__.n(lowclass);
 
 // EXTERNAL MODULE: ./node_modules/lowclass/native.js
-var lowclass_native = __webpack_require__(22);
+var lowclass_native = __webpack_require__(10);
+var native_default = /*#__PURE__*/__webpack_require__.n(lowclass_native);
 
 // CONCATENATED MODULE: ./src/core/Mixin.js
 
@@ -60806,9 +60807,10 @@ function checkIsSizeArrayString(str) {
 
 
 
+
 /* harmony default export */ var TreeNode = (Mixin(Base =>
 
-    lowclass_default()('TreeNode').extends( with_update_withUpdate( Base ), ({ Super, Public: Private }) => ({
+    lowclass_default()('TreeNode').extends( native_default()( with_update_withUpdate( Base ) ), ({ Super, Public: Private }) => ({
 
         // TODO, make Private work with Mixin+lowclass. The problem is when
         // using `Private` on instance of the same class created by a different
@@ -60987,7 +60989,7 @@ function checkIsSizeArrayString(str) {
 })));
 
 // EXTERNAL MODULE: ./node_modules/@awaitbox/document-ready/src/index.js
-var src = __webpack_require__(20);
+var src = __webpack_require__(21);
 var src_default = /*#__PURE__*/__webpack_require__.n(src);
 
 // CONCATENATED MODULE: ./src/core/WebVR.js
@@ -64509,8 +64511,9 @@ var utils = __webpack_require__(47);
 
 
 
+
 // base class for Geometry and Material behaviors, not to be used directly
-/* harmony default export */ var BaseMeshBehavior = (lowclass_default()( 'BaseMeshBehavior' ).extends( with_update_withUpdate( forwardProps ), ({ Public, Protected, Private, Super }) => ({
+/* harmony default export */ var BaseMeshBehavior = (lowclass_default()( 'BaseMeshBehavior' ).extends( native_default()( with_update_withUpdate( forwardProps ) ), ({ Public, Protected, Private, Super }) => ({
 
     constructor(element) {
         let _this = Super(this).constructor()
@@ -65554,7 +65557,7 @@ function useDefaultNames() {
 
 
 
-const version = '21.0.4'
+const version = '21.0.5'
 
 
 /***/ })
