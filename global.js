@@ -100,7 +100,7 @@ exports.version = exports.default = exports.staticBlacklist = exports.InvalidAcc
 
 var _getOwnPropertyDescriptors = _interopRequireDefault(__webpack_require__(87));
 
-var _defineProperty = _interopRequireDefault(__webpack_require__(19));
+var _defineProperty = _interopRequireDefault(__webpack_require__(20));
 
 var _getOwnPropertyDescriptor = _interopRequireDefault(__webpack_require__(25));
 
@@ -2400,12 +2400,40 @@ module.exports = function (fn, that, length) {
 
 /***/ }),
 /* 19 */
+/***/ (function(module, exports) {
+
+/**
+ * Await for this to run code after the DOM has been parsed and loaded (but not
+ * sub-resources like images, scripts, etc).
+ *
+ * The _passThrough arg is not for public use, it's for making data pass
+ * through in promise chains.
+ */
+function documentReady( _passThrough ) {
+
+    if ( document.readyState === 'loading' ) {
+        return new Promise( resolve => {
+            document.addEventListener( 'DOMContentLoaded', () => resolve( _passThrough ) )
+        } )
+    }
+
+    return Promise.resolve( _passThrough )
+
+}
+
+documentReady.default = documentReady
+
+module.exports = documentReady
+
+
+/***/ }),
+/* 20 */
 /***/ (function(module, exports, __webpack_require__) {
 
 module.exports = __webpack_require__(92);
 
 /***/ }),
-/* 20 */
+/* 21 */
 /***/ (function(module, exports, __webpack_require__) {
 
 // 7.1.13 ToObject(argument)
@@ -2416,7 +2444,7 @@ module.exports = function (it) {
 
 
 /***/ }),
-/* 21 */
+/* 22 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -2434,7 +2462,7 @@ var _getOwnPropertyDescriptor = _interopRequireDefault(__webpack_require__(25));
 
 var _getOwnPropertySymbols = _interopRequireDefault(__webpack_require__(60));
 
-var _defineProperty = _interopRequireDefault(__webpack_require__(19));
+var _defineProperty = _interopRequireDefault(__webpack_require__(20));
 
 var _getOwnPropertyNames = _interopRequireDefault(__webpack_require__(75));
 
@@ -2665,34 +2693,6 @@ function isSyntaxSupported(example, useStrict) {
     return false;
   }
 }
-
-/***/ }),
-/* 22 */
-/***/ (function(module, exports) {
-
-/**
- * Await for this to run code after the DOM has been parsed and loaded (but not
- * sub-resources like images, scripts, etc).
- *
- * The _passThrough arg is not for public use, it's for making data pass
- * through in promise chains.
- */
-function documentReady( _passThrough ) {
-
-    if ( document.readyState === 'loading' ) {
-        return new Promise( resolve => {
-            document.addEventListener( 'DOMContentLoaded', () => resolve( _passThrough ) )
-        } )
-    }
-
-    return Promise.resolve( _passThrough )
-
-}
-
-documentReady.default = documentReady
-
-module.exports = documentReady
-
 
 /***/ }),
 /* 23 */
@@ -3813,7 +3813,7 @@ var _defineProperties = _interopRequireDefault(__webpack_require__(213));
 
 var _getOwnPropertyDescriptors = _interopRequireDefault(__webpack_require__(87));
 
-var _defineProperty = _interopRequireDefault(__webpack_require__(19));
+var _defineProperty = _interopRequireDefault(__webpack_require__(20));
 
 var _getOwnPropertyDescriptor = _interopRequireDefault(__webpack_require__(25));
 
@@ -4759,7 +4759,7 @@ module.exports = function (Base, NAME, Constructor, next, DEFAULT, IS_SET, FORCE
 
 // 19.1.2.9 / 15.2.3.2 Object.getPrototypeOf(O)
 var has = __webpack_require__(14);
-var toObject = __webpack_require__(20);
+var toObject = __webpack_require__(21);
 var IE_PROTO = __webpack_require__(56)('IE_PROTO');
 var ObjectProto = Object.prototype;
 
@@ -4904,7 +4904,7 @@ module.exports = function (NAME, wrapper, methods, common, IS_MAP, IS_WEAK) {
 // 6 -> Array#findIndex
 var ctx = __webpack_require__(18);
 var IObject = __webpack_require__(52);
-var toObject = __webpack_require__(20);
+var toObject = __webpack_require__(21);
 var toLength = __webpack_require__(34);
 var asc = __webpack_require__(186);
 module.exports = function (TYPE, $create) {
@@ -8709,7 +8709,7 @@ var _getOwnPropertyDescriptor = _interopRequireDefault(__webpack_require__(25));
 
 var _getPrototypeOf = _interopRequireDefault(__webpack_require__(66));
 
-var _defineProperty = _interopRequireDefault(__webpack_require__(19));
+var _defineProperty = _interopRequireDefault(__webpack_require__(20));
 
 var _getOwnPropertySymbols = _interopRequireDefault(__webpack_require__(60));
 
@@ -11662,7 +11662,7 @@ module.exports = __webpack_require__(100);
 /***/ (function(module, exports, __webpack_require__) {
 
 // 19.1.2.14 Object.keys(O)
-var toObject = __webpack_require__(20);
+var toObject = __webpack_require__(21);
 var $keys = __webpack_require__(27);
 
 __webpack_require__(40)('keys', function () {
@@ -11676,7 +11676,7 @@ __webpack_require__(40)('keys', function () {
 /* 163 */
 /***/ (function(module, exports, __webpack_require__) {
 
-var _Object$defineProperty = __webpack_require__(19);
+var _Object$defineProperty = __webpack_require__(20);
 
 function _defineProperty(obj, key, value) {
   if (key in obj) {
@@ -11897,7 +11897,7 @@ module.exports = __webpack_require__(1).Object.getPrototypeOf;
 /***/ (function(module, exports, __webpack_require__) {
 
 // 19.1.2.9 Object.getPrototypeOf(O)
-var toObject = __webpack_require__(20);
+var toObject = __webpack_require__(21);
 var $getPrototypeOf = __webpack_require__(64);
 
 __webpack_require__(40)('getPrototypeOf', function () {
@@ -12364,7 +12364,7 @@ if (fails(function () { return new $WeakMap().set((Object.freeze || Object)(tmp)
 var getKeys = __webpack_require__(27);
 var gOPS = __webpack_require__(37);
 var pIE = __webpack_require__(39);
-var toObject = __webpack_require__(20);
+var toObject = __webpack_require__(21);
 var IObject = __webpack_require__(52);
 var $assign = Object.assign;
 
@@ -12605,7 +12605,7 @@ module.exports = __webpack_require__(114);
 
 var ctx = __webpack_require__(18);
 var $export = __webpack_require__(2);
-var toObject = __webpack_require__(20);
+var toObject = __webpack_require__(21);
 var call = __webpack_require__(107);
 var isArrayIter = __webpack_require__(108);
 var toLength = __webpack_require__(34);
@@ -12699,7 +12699,7 @@ $export($export.S + $export.F * !__webpack_require__(8), 'Object', { definePrope
 /* 216 */
 /***/ (function(module, exports, __webpack_require__) {
 
-var _Object$defineProperty = __webpack_require__(19);
+var _Object$defineProperty = __webpack_require__(20);
 
 function _defineProperties(target, props) {
   for (var i = 0; i < props.length; i++) {
@@ -14932,7 +14932,7 @@ var lowclass = __webpack_require__(0);
 var lowclass_default = /*#__PURE__*/__webpack_require__.n(lowclass);
 
 // EXTERNAL MODULE: ./node_modules/lowclass/native.js
-var lowclass_native = __webpack_require__(21);
+var lowclass_native = __webpack_require__(22);
 
 // CONCATENATED MODULE: ./src/core/Mixin.js
 
@@ -60787,22 +60787,18 @@ function applyCSSLabel(value, label) {
     }
 }
 
-let childObservationHandlers = null
-let childObserver = null
-function observeChildren(ctx, onConnect, onDisconnect) {
-    // TODO this Map is never cleaned, leaks memory.
-    if (!childObservationHandlers) childObservationHandlers = new Map
-    if (!childObserver) childObserver = createChildObserver()
-    childObservationHandlers.set(ctx, {onConnect, onDisconnect})
-    childObserver.observe(ctx, { childList: true })
-    return true
+function observeChildren(target, onConnect, onDisconnect) {
+    // TODO this Map is never cleaned, leaks memory. Maybe use WeakMap
+    const childObserver = createChildObserver(onConnect, onDisconnect)
+    childObserver.observe(target, { childList: true })
+    return childObserver
 }
 
 // NOTE: If a child is disconnected then connected to the same parent in the
 // same turn, then the onConnect and onDisconnect callbacks won't be called
 // because the DOM tree will be back in the exact state as before (this is
 // possible thanks to the logic associated with weightsPerTarget).
-function createChildObserver() {
+function createChildObserver(onConnect, onDisconnect) {
     return new MutationObserver(changes => {
         const weightsPerTarget = new Map
 
@@ -60828,7 +60824,6 @@ function createChildObserver() {
         }
 
         for (const [target, weights] of Array.from(weightsPerTarget)) {
-            const {onConnect, onDisconnect} = childObservationHandlers.get(target)
 
             for (const [node, weight] of Array.from(weights)) {
                 // If the number of times a child was added is greater than the
@@ -61092,7 +61087,7 @@ function checkIsSizeArrayString(str) {
 })));
 
 // EXTERNAL MODULE: ./node_modules/@awaitbox/document-ready/src/index.js
-var src = __webpack_require__(22);
+var src = __webpack_require__(19);
 var src_default = /*#__PURE__*/__webpack_require__.n(src);
 
 // CONCATENATED MODULE: ./src/core/WebVR.js
@@ -61642,7 +61637,7 @@ const Motor = lowclass_default()('Motor', ({ Public, Private }) => ({
             const modifiedScenes = this.modifiedScenes
             for (let i=0, l=modifiedScenes.length; i<l; i+=1) {
                 const scene = modifiedScenes[i]
-                if (scene.webglEnabled)
+                if (scene.experimentalWebgl)
                     webGLRenderers.get(scene).drawScene(scene)
             }
             modifiedScenes.length = 0
@@ -62125,7 +62120,7 @@ let propFunction = null
             // case we don't want the scene size to be based on observed size
             // of a regular DOM element, but relative to a parent Node just
             // like for all other Nodes.
-            const parentSize = this.parent._calculatedSize
+            const parentSize = this._getParentSize()
 
             // THREE-COORDS-TO-DOM-COORDS
             // translate the "align" back to the top/left of the parent element.
@@ -62305,7 +62300,7 @@ let propFunction = null
 
     // all items of the scene graph are hidden until they are mounted in a
     // scene (this changes to `display:block`).
-    display:         'none',
+    display:         'block',
 
     boxSizing:       'border-box',
     position:        'absolute',
@@ -62574,6 +62569,7 @@ function classExtendsHTMLElement(constructor) {
             // another element), then clean up.
             if (!this.isConnected && Private(this).initialized) {
                 this.deinit()
+                Private(this).initialized = false
             }
         },
 
@@ -62632,7 +62628,6 @@ function classExtendsHTMLElement(constructor) {
                         this.childConnectedCallback(children[i])
                     }
 
-                    // TODO: unobserve children on cleanup
                     Private(this).childObserver = observeChildren(this, this.childConnectedCallback, this.childDisconnectedCallback)
                 }
             })
@@ -62641,9 +62636,6 @@ function classExtendsHTMLElement(constructor) {
             // existed before the custom element was upgraded.
             if (!Private(this).initialAttributeChange && this.hasAttributes()) {
 
-                // HTMLElement#attributes is a NamedNodeMap which is not an
-                // iterable, so we use Array.from. See:
-                // https://github.com/zloirock/core-js/issues/234
                 const {attributes} = this
                 for (let l=attributes.length, i=0; i<l; i+=1)
                     this.attributeChangedCallback(attributes[i].name, null, attributes[i].value)
@@ -62670,8 +62662,8 @@ function classExtendsHTMLElement(constructor) {
         deinit() {
             // Nothing much at the moment, but extending classes can extend
             // this to add deintialization logic.
+            Private(this).childObserver.disconnect()
 
-            Private(this).initialized = false
         },
 
         private: {
@@ -63244,8 +63236,8 @@ const HTMLScene = DeclarativeBase.subclass('HTMLScene', ({ Public, Private, Supe
         this.unmount()
     },
 
-    connectedCallback() {
-        Super(this).connectedCallback()
+    init() {
+        Super(this).init()
 
         // When the HTMLScene gets addded to the DOM, make it be "mounted".
         if (!this._mounted)
@@ -63267,7 +63259,7 @@ const HTMLScene = DeclarativeBase.subclass('HTMLScene', ({ Public, Private, Supe
             Private(this)._startSizePolling()
         }
         else {
-            Private(this)._stopSizePolling()
+            publicThis._stopSizePolling()
         }
     },
 
@@ -63366,6 +63358,7 @@ let Scene_Scene = Mixin(Base => {
                 backgroundOpacity: props_props.number,
                 shadowmapType: props_props.string,
                 vr: props_props.boolean,
+                experimentalWebgl: props_props.boolean,
             },
         },
 
@@ -63407,7 +63400,7 @@ let Scene_Scene = Mixin(Base => {
         // we can't simply rely on having it in constructor, we need a
         // getter/setter like node properties.
         // TODO: we need to deinit webgl too.
-        async initWebGl() {
+        initWebGl() {
             // THREE
             // maybe keep this in sceneState in WebGLRendererThree
             Super(this).initWebGl()
@@ -63444,9 +63437,6 @@ let Scene_Scene = Mixin(Base => {
             // will still have a reference to the default camera that scenes
             // are rendered with when no camera elements exist).
             this._activeCameras = new Set
-
-            this.webglEnabled = !!this.element.hasAttribute('experimental-webgl')
-            if (!this.webglEnabled) return
 
             this._renderer = core_Motor.getWebGLRenderer(this, 'three')
 
@@ -63559,21 +63549,34 @@ let Scene_Scene = Mixin(Base => {
          * the scene will be mounted into document.body.
          */
         async mount(mountPoint) {
-            // Wait for the document to be ready before mounting, otherwise the
-            // target mount point might not exist yet when this function is called.
-            if (document.readyState == 'loading') await src_default()()
-
             // if no mountPoint was provided, just mount onto the <body> element.
-            if (mountPoint === undefined) mountPoint = document.body
+            if (mountPoint === undefined) {
+                if (!document.body) await src_default()()
+                mountPoint = document.body
+            }
 
             // if the user supplied a selector, mount there.
-            else if (typeof mountPoint === 'string')
+            else if (typeof mountPoint === 'string') {
                 mountPoint = document.querySelector(mountPoint)
+                if (!mountPoint && document.readyState === 'loading') {
+                    // maybe the element wasn't parsed yet, check again when the
+                    // document is ready.
+                    await src_default()()
+                    mountPoint = document.querySelector(mountPoint)
+                }
+            }
 
             // if we have an actual mount point (the user may have supplied one)
-            if (!(mountPoint instanceof HTMLElement))
-                throw new Error('Invalid mount point specified in Scene.mount() call. Pass a selector, an actual HTMLElement, or don\'t pass anything to mount to <body>.')
+            if (!(mountPoint instanceof HTMLElement)) {
+                throw new Error(`
+                    Invalid mount point specified in Scene.mount() call. Pass a
+                    selector, an actual HTMLElement, or don\'t pass anything to
+                    mount to <body>.
+                `)
+            }
 
+            // The user can mount to a new location without calling unmount
+            // first. Call it automatically in that case.
             if (this._mounted) this.unmount()
 
             if (mountPoint !== this.parentNode)
@@ -63581,7 +63584,6 @@ let Scene_Scene = Mixin(Base => {
 
             this._mounted = true
 
-            this._elementOperations.shouldRender()
             this._startOrStopSizePolling()
         },
 
@@ -63592,7 +63594,6 @@ let Scene_Scene = Mixin(Base => {
         unmount() {
             if (!this._mounted) return
 
-            this._elementOperations.shouldNotRender()
             this._stopSizePolling()
 
             if (this.parentNode)
@@ -63606,29 +63607,37 @@ let Scene_Scene = Mixin(Base => {
 
             if (!this.isConnected) return
 
-            if (moddedProps.backgroundColor) {
-                this._renderer.setClearColor( this, this.backgroundColor, this.backgroundOpacity )
-                this._needsToBeRendered()
+            if (moddedProps.experimentalWebgl) {
+                if (this.experimentalWebgl) this.initWebGl()
+                else this.disposeWebGL()
             }
-            if (moddedProps.backgroundOpacity) {
-                this._renderer.setClearAlpha( this, this.backgroundOpacity )
-                this._needsToBeRendered()
-            }
-            if (moddedProps.shadowmapType) {
-                this._renderer.setShadowMapType(this, this.shadowmapType)
-                this._needsToBeRendered()
-            }
-            if (moddedProps.vr) {
-                this._renderer.enableVR( this, this.vr)
 
-                if ( this.vr ) {
-                    core_Motor.setFrameRequester( fn => this._renderer.requestFrame( this, fn ) )
-                    this._renderer.createDefaultWebVREntryUI( this )
+            if (this.experimentalWebgl) {
+                if (moddedProps.backgroundColor) {
+                    this._renderer.setClearColor( this, this.backgroundColor, this.backgroundOpacity )
+                    this._needsToBeRendered()
                 }
-                else {
-                    // TODO else return back to normal requestAnimationFrame
+                if (moddedProps.backgroundOpacity) {
+                    this._renderer.setClearAlpha( this, this.backgroundOpacity )
+                    this._needsToBeRendered()
+                }
+                if (moddedProps.shadowmapType) {
+                    this._renderer.setShadowMapType(this, this.shadowmapType)
+                    this._needsToBeRendered()
+                }
+                if (moddedProps.vr) {
+                    this._renderer.enableVR( this, this.vr)
+
+                    if ( this.vr ) {
+                        core_Motor.setFrameRequester( fn => this._renderer.requestFrame( this, fn ) )
+                        this._renderer.createDefaultWebVREntryUI( this )
+                    }
+                    else {
+                        // TODO else return back to normal requestAnimationFrame
+                    }
                 }
             }
+
             if (moddedProps.sizeMode) {
                 this._startOrStopSizePolling()
             }
@@ -63711,7 +63720,7 @@ function initImperativeBase() {
                 // TODO: defer size calculation to render task
                 self.on('propertychange', self._onPropertyChange, self)
 
-                self.initWebGl()
+                if (!(self instanceof Scene_Scene)) self.initWebGl()
 
                 return self
             },
@@ -63719,7 +63728,13 @@ function initImperativeBase() {
             connectedCallback() {
                 Super(this).connectedCallback()
 
-                // if a subclass needs to pass values, call it.
+                // If a subclass needs to initialize values in its Three.js
+                // object, it will have the passInitialValuesToThree method for
+                // that.
+                //
+                // TODO we shouldn't need to define passInitialValuesToThree in
+                // sub classes, the default values of the props should
+                // automatically be in place.
                 this.passInitialValuesToThree && this.passInitialValuesToThree()
             },
 
@@ -63739,10 +63754,18 @@ function initImperativeBase() {
                 this.threeObject3d.matrixAutoUpdate = false
             },
 
+            disposeWebGL() {
+                console.log( 'TODO: dispose WebGL when it is no longer needed' )
+            },
+
             makeThreeObject3d() {
                 throw new Error('The makeThreeObject3d method should be defined by sub classes.')
             },
 
+            // TODO use one of init/deinit, or connected/connected, or
+            // connectedCallback/disconnectedCallback, instead of being
+            // inconsistent across classes, so we can better understand order of
+            // operations more easily.
             connected() {
                 this._lastKnownParent = this.parent
                 this.parent.threeObject3d.add(this.threeObject3d)
@@ -64248,20 +64271,6 @@ if (typeof document.createElement('div').style.transform == 'undefined') {
         // But both Node and Scene are Sizeable
         this.applySize(node._calculatedSize)
     },
-
-    shouldRender() {
-        const task = core_Motor.addRenderTask(() => {
-            this.applyStyle('display', 'block')
-            core_Motor.removeRenderTask(task)
-        })
-    },
-
-    shouldNotRender() {
-        const task = core_Motor.addRenderTask(() => {
-            this.applyStyle('display', 'none')
-            core_Motor.removeRenderTask(task)
-        })
-    },
 }));
 
 // CONCATENATED MODULE: ./src/core/index.js
@@ -64608,24 +64617,7 @@ var utils = __webpack_require__(46);
 
         _this.element = element
 
-        if ( element.nodeName.includes('-') ) {
-            const whenDefined = customElements.whenDefined(element.nodeName.toLowerCase())
-            .then(() => {
-                if (element instanceof core_Mesh) return true
-                else return false
-            })
-
-            const sleep = t => new Promise(r => setTimeout(() => r(false), t))
-            const sleepPromise = sleep(10000)
-
-            Promise.race([whenDefined, sleepPromise]).then(isMesh => {
-                if (!isMesh) throw new Error(`
-                    The element you're using the mesh behavior on is not a Mesh
-                    element (or timeout waiting for the Mesh element definition
-                    after 10 seconds).
-                `)
-            })
-        }
+        Private(this)._checkElementIsLibraryElement(element)
 
         return _this
     },
@@ -64660,6 +64652,32 @@ var utils = __webpack_require__(46);
         // reference for how much scale to apply when accepting new sizes from
         // the user.
         initialSize: null,
+
+        // TODO add a test to make sure this check works
+        async _checkElementIsLibraryElement(element) {
+            if ( element.nodeName.includes('-') ) {
+                const whenDefined = customElements.whenDefined(element.nodeName.toLowerCase())
+                    .then(() => {
+                        if (element instanceof core_Mesh) return true
+                        else return false
+                    })
+                const timeout = new Promise(r => setTimeout(r, 10000))
+
+                const isMesh = await Promise.race([whenDefined, timeout])
+
+                if (!isMesh) throw new Error(`
+                    Either the element you're using the mesh behavior on is not
+                    a Mesh element, or there was a 10-second timeout waiting for
+                    the Mesh element to be defined.
+                `)
+            }
+            else {
+                throw new Error(`
+                    The element you're using the mesh behavior on is not a Mesh
+                    element.
+                `)
+            }
+        },
     },
 
     protected: {
@@ -65309,6 +65327,14 @@ elementBehaviors.define('domnode-geometry', DOMNodeGeometryBehavior)
         if (modifiedProps.active) {
             this._setSceneCamera( this.active ? undefined : 'unset' )
         }
+        if (modifiedProps.aspect) {
+            if (!this.aspect)
+                // default aspect value based on the scene size.
+                privateThis._startAutoAspect()
+            else
+                privateThis._stopAutoAspect()
+        }
+        // TODO handle the other props here, remove attributeChangedCallback
     },
 
     makeThreeObject3d() {
@@ -65330,6 +65356,7 @@ elementBehaviors.define('domnode-geometry', DOMNodeGeometryBehavior)
         // unmountedCallback, but for now it's harmless but
         // will run unnecessary logic. #150
         Private(this)._setSceneCamera( 'unset' )
+        Private(this)._lastKnownScene = null
     },
 
     // TODO, unmountedCallback functionality. issue #150
@@ -65627,7 +65654,7 @@ function useDefaultNames() {
 
 
 
-const version = '21.0.1'
+const version = '21.0.2'
 
 
 /***/ })
