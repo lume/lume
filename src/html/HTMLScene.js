@@ -85,7 +85,7 @@ const HTMLScene = DeclarativeBase.subclass('HTMLScene', ({ Public, Private, Supe
             Private(this)._startSizePolling()
         }
         else {
-            Private(this)._stopSizePolling()
+            publicThis._stopSizePolling()
         }
     },
 
