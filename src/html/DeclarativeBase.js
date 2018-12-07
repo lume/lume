@@ -127,7 +127,7 @@ export function initDeclarativeBase() {
                 // detects if anything is visible including from styling, not
                 // just content. Perhaps make a specific API for defining that
                 // a node should have DOM content, to make it clear.
-                if ( this instanceof HTMLNode && !this.isDOMPlane && (
+                if ( this instanceof HTMLNode && !this.isDOMNode && (
                     ( !( child instanceof Text ) && !( child instanceof Comment ) ) ||
                     ( child instanceof Text && child.textContent.trim().length > 0 )
                 ) ) {
@@ -170,7 +170,7 @@ export function initDeclarativeBase() {
                 Private(this)._slotElementsAssignedNodes.delete(child)
             }
             else { // if non-library content was removed (div, img, etc).
-                if ( this instanceof HTMLNode && !this.isDOMPlane && (
+                if ( this instanceof HTMLNode && !this.isDOMNode && (
                     ( !( child instanceof Text ) && !( child instanceof Comment ) ) ||
                     ( child instanceof Text && child.textContent.trim().length > 0 )
                 ) ) {
