@@ -13,24 +13,7 @@ Class( 'BaseMeshBehavior' ).extends( withUpdate( forwardProps ), ({ Public, Prot
 
         _this.element = element
 
-        if ( element.nodeName.includes('-') ) {
-            const whenDefined = customElements.whenDefined(element.nodeName.toLowerCase())
-            .then(() => {
-                if (element instanceof Mesh) return true
-                else return false
-            })
-
-            const sleep = t => new Promise(r => setTimeout(() => r(false), t))
-            const sleepPromise = sleep(10000)
-
-            Promise.race([whenDefined, sleepPromise]).then(isMesh => {
-                if (!isMesh) throw new Error(`
-                    The element you're using the mesh behavior on is not a Mesh
-                    element (or timeout waiting for the Mesh element definition
-                    after 10 seconds).
-                `)
-            })
-        }
+        Private(this)._checkElementIsLibraryElement(element)
 
         return _this
     },
@@ -65,6 +48,32 @@ Class( 'BaseMeshBehavior' ).extends( withUpdate( forwardProps ), ({ Public, Prot
         // reference for how much scale to apply when accepting new sizes from
         // the user.
         initialSize: null,
+
+        // TODO add a test to make sure this check works
+        async _checkElementIsLibraryElement(element) {
+            if ( element.nodeName.includes('-') ) {
+                const whenDefined = customElements.whenDefined(element.nodeName.toLowerCase())
+                    .then(() => {
+                        if (element instanceof Mesh) return true
+                        else return false
+                    })
+                const timeout = new Promise(r => setTimeout(r, 10000))
+
+                const isMesh = await Promise.race([whenDefined, timeout])
+
+                if (!isMesh) throw new Error(`
+                    Either the element you're using the mesh behavior on is not
+                    a Mesh element, or there was a 10-second timeout waiting for
+                    the Mesh element to be defined.
+                `)
+            }
+            else {
+                throw new Error(`
+                    The element you're using the mesh behavior on is not a Mesh
+                    element.
+                `)
+            }
+        },
     },
 
     protected: {
