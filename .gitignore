@@ -19,9 +19,6 @@ yarn-error.log
 !/src
 !/tests
 
-# don't lock dependencies for library packages
-!/package-lock.json
-
 # not global build, to be published
 !/global.js
 !/global.js.map
@@ -37,6 +34,7 @@ yarn-error.log
 !/buble.config.js
 !/jest.config.js
 !/webpack.config.js
+!/builder.config.js
 
 # all good projects have a README!
 !/README.md
