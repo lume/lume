@@ -167,7 +167,6 @@ Mixin(Base => {
                         this.childConnectedCallback(children[i])
                     }
 
-                    // TODO: unobserve children on cleanup
                     Private(this).childObserver = observeChildren(this, this.childConnectedCallback, this.childDisconnectedCallback)
                 }
             })
@@ -202,6 +201,7 @@ Mixin(Base => {
         deinit() {
             // Nothing much at the moment, but extending classes can extend
             // this to add deintialization logic.
+            Private(this).childObserver.disconnect()
 
         },
 

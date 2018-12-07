@@ -12,22 +12,18 @@ function applyCSSLabel(value, label) {
     }
 }
 
-let childObservationHandlers = null
-let childObserver = null
-function observeChildren(ctx, onConnect, onDisconnect) {
-    // TODO this Map is never cleaned, leaks memory.
-    if (!childObservationHandlers) childObservationHandlers = new Map
-    if (!childObserver) childObserver = createChildObserver()
-    childObservationHandlers.set(ctx, {onConnect, onDisconnect})
-    childObserver.observe(ctx, { childList: true })
-    return true
+function observeChildren(target, onConnect, onDisconnect) {
+    // TODO this Map is never cleaned, leaks memory. Maybe use WeakMap
+    const childObserver = createChildObserver(onConnect, onDisconnect)
+    childObserver.observe(target, { childList: true })
+    return childObserver
 }
 
 // NOTE: If a child is disconnected then connected to the same parent in the
 // same turn, then the onConnect and onDisconnect callbacks won't be called
 // because the DOM tree will be back in the exact state as before (this is
 // possible thanks to the logic associated with weightsPerTarget).
-function createChildObserver() {
+function createChildObserver(onConnect, onDisconnect) {
     return new MutationObserver(changes => {
         const weightsPerTarget = new Map
 
@@ -53,7 +49,6 @@ function createChildObserver() {
         }
 
         for (const [target, weights] of Array.from(weightsPerTarget)) {
-            const {onConnect, onDisconnect} = childObservationHandlers.get(target)
 
             for (const [node, weight] of Array.from(weights)) {
                 // If the number of times a child was added is greater than the
