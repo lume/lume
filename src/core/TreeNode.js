@@ -1,4 +1,5 @@
 import Class from 'lowclass'
+import native from 'lowclass/native'
 import {withUpdate} from '@trusktr/skatejs'
 import Mixin from './Mixin'
 import {isInstanceof} from './Utility'
@@ -7,7 +8,7 @@ import TreeNode from './TreeNode'
 export default
 Mixin(Base =>
 
-    Class('TreeNode').extends( withUpdate( Base ), ({ Super, Public: Private }) => ({
+    Class('TreeNode').extends( native( withUpdate( Base ) ), ({ Super, Public: Private }) => ({
 
         // TODO, make Private work with Mixin+lowclass. The problem is when
         // using `Private` on instance of the same class created by a different
