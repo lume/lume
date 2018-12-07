@@ -273,8 +273,8 @@ let Scene = Mixin(Base => {
             this._mounted = false
         },
 
-        updated(oldProps, oldState, modifiedProps) {
-            Super(this).updated(oldProps, oldState, modifiedProps)
+        updated(oldProps, oldState, moddedProps) {
+            Super(this).updated(oldProps, oldState, moddedProps)
 
             if (!this.isConnected) return
 
