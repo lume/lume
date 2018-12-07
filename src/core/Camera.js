@@ -31,38 +31,21 @@ Class('PerspectiveCamera').extends( Node, ({ Super, Public, Private }) => ({
     updated(oldProps, oldState, modifiedProps) {
         Super(this).updated(oldProps, oldState, modifiedProps)
 
+        if (!this.isConnected) return
+
         if (modifiedProps.active) {
             this._setSceneCamera( this.active ? undefined : 'unset' )
         }
-    },
-
-    constructor(options = {}) {
-        const self = Super(this).constructor(options)
-
-        // TODO TODO: abstract away having to use mountPromise with a
-        // mountedCallback that is called everytime a node is added to a scene.
-        // Right now, this will only be called the first time a node is added
-        // to a scene, but not to any subsequent scenes.
-        // We can't just rely on connectedCallback because that can be called
-        // if the node is added to any element. See how mountPromise logic is
-        // canceled in Node to get more ideas on how we can do this and not
-        // replicate that canceling logic here.
-        // Maybe we write it on top of init/deinit functionality?
-        self.mountPromise.then(() => self.mountedCallback())
-
-        return self
     },
 
     makeThreeObject3d() {
         return new ThreePerspectiveCamera(75, 16/9, 1, 1000)
     },
 
-    mountedCallback() {
+    connectedCallback() {
+        Super(this).connectedCallback()
+
         const privateThis = Private(this)
-
-        // default aspect value based on the scene size.
-        if ( ! this.hasAttribute( 'aspect' ) ) privateThis._startAutoAspect()
-
         privateThis._lastKnownScene = this.scene
     },
 
@@ -184,7 +167,7 @@ Class('PerspectiveCamera').extends( Node, ({ Super, Public, Private }) => ({
             return result
         },
 
-        async _setSceneCamera( unset ) {
+        _setSceneCamera( unset ) {
 
             const publicThis = Public(this)
 
@@ -197,11 +180,7 @@ Class('PerspectiveCamera').extends( Node, ({ Super, Public, Private }) => ({
                     this._lastKnownScene._removeCamera( publicThis )
             }
             else {
-
-                // wait to be mounted, because otherwise there isn't a scene to
-                // set the active camera on.
-                // TODO: needs to be cancellable. #150
-                if (! publicThis._mounted ) await publicThis.mountPromise
+                if (!publicThis.scene || !publicThis.isConnected) return
 
                 publicThis.scene._addCamera( publicThis )
             }

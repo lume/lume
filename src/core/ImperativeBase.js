@@ -57,25 +57,9 @@ export function initImperativeBase() {
                 // Imperative-API Node.
                 self._elementOperations = new ElementOperations(self)
 
-                // For Nodes, true when this Node is added to a parent AND it
-                // has an anancestor Scene that is mounted into DOM. For
-                // Scenes, true when mounted into DOM.
-                self._mounted = false;
-
                 // stores a ref to this Node's root Scene when/if this Node is
                 // in a scene.
                 self._scene = null
-
-                // For Nodes, a promise that resolves when this Node is
-                // attached to a tree that has a root Scene TreeNode *and* when
-                // that root Scene has been mounted into the DOM. For Scenes,
-                // resolves when mounted into DOM.
-                self._mountPromise = null
-                self._resolveMountPromise = null
-                self._rejectMountPromise = null
-
-                self._awaitingMountPromiseToRender = false
-                self._waitingForMountConditions = false
 
                 // See Transformable/Sizeable propertychange event.
                 // TODO: defer size calculation to render task
@@ -157,30 +141,6 @@ export function initImperativeBase() {
             /**
              * @readonly
              */
-            get mountPromise() {
-                if (!this._mountPromise) {
-                    this._mountPromise = new Promise((resolve, reject) => {
-                        this._resolveMountPromise = resolve
-                        this._rejectMountPromise = reject
-                    })
-                }
-
-                if (!this._mounted)
-                    this._waitForMountThenResolveMountPromise()
-                else if (this._mounted)
-                    this._resolveMountPromise()
-
-                return this._mountPromise
-            },
-
-            _waitForMountThenResolveMountPromise() {
-                // extended in Node or Scene to await for anything that mount
-                // depends on.
-            },
-
-            /**
-             * @readonly
-             */
             get element() {
                 return this._elementOperations.element
             },
@@ -243,8 +203,6 @@ export function initImperativeBase() {
                 // Pass this parent node's Scene reference (if any, checking this cache
                 // first) to the new child and the child's children.
                 if (childNode._scene || childNode.scene) {
-                    if (childNode._resolveScenePromise)
-                        childNode._resolveScenePromise(childNode._scene)
                     childNode._giveSceneRefToChildren()
                 }
 
@@ -270,39 +228,14 @@ export function initImperativeBase() {
 
                 childNode._resetSceneRef()
 
-                if (childNode._mountPromise) childNode._rejectMountPromise('mountcancel')
-                if (childNode._mounted) childNode._elementOperations.shouldNotRender()
-                childNode._resetMountPromise()
-
                 if (!leaveInDom)
                     this._elementOperations.disconnectChildElement(childNode)
             },
 
-            _resetMountPromise() {
-                this._mounted = false
-                this._mountPromise = null
-                this._resolveMountPromise = null
-                this._rejectMountPromise = null
-                const children = this.subnodes
-                for (let i=0, l=children.length; i<l; i+=1) {
-                    children[i]._resetMountPromise();
-                }
-            },
-
-            async _needsToBeRendered() {
-                if (this._awaitingMountPromiseToRender) return
-
-                if (!this._mounted) {
-                    try {
-                        this._awaitingMountPromiseToRender = true
-                        await this.mountPromise
-                    } catch(e) {
-                        if (e == 'mountcancel') return
-                        else throw e
-                    } finally {
-                        this._awaitingMountPromiseToRender = false
-                    }
-                }
+            _needsToBeRendered() {
+                // we don't need to render until we're connected into a tree with a scene.
+                if (!this.scene || !this.isConnected) return
+                // TODO make sure we render when connected into a tree with a scene
 
                 this._willBeRendered = true
                 Motor.setNodeToBeRendered(this)

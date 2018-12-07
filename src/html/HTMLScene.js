@@ -9,21 +9,6 @@ const HTMLScene = DeclarativeBase.subclass('HTMLScene', ({ Public, Private, Supe
 
     constructor() {
         const self = Super(this).constructor()
-
-        // If the scene is already in the DOM, make it be "mounted".
-        if (!self._mounted && self.parentNode) {
-
-            // defer so that the constructor() call stack can finish
-            //
-            // TODO: clean up the code so that this isn't required. It's
-            // just that combining the imperative/declarative classes
-            // into a single class has introduced a small difference in
-            // logic order.
-            Promise.resolve().then(() =>
-                self.mount(self.parentNode)
-            )
-        }
-
         const privateThis = Private(self)
 
         privateThis._root = self.attachShadow({ mode: 'open' })

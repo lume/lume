@@ -46,12 +46,6 @@ let Node = Mixin(Base =>
 
             self._scene = null // stores a ref to this Node's root Scene.
 
-            // This is an internal promise that resolves when this Node is added to
-            // to a scene graph that has a root Scene TreeNode. The resolved value
-            // is the root Scene.
-            self._scenePromise = null
-            self._resolveScenePromise = null
-
             /**
              * @private
              * This method is defined here in the consructor as an arrow function
@@ -92,44 +86,6 @@ let Node = Mixin(Base =>
 
         makeThreeObject3d() {
             return new Object3D
-        },
-
-        /**
-         * @private
-         */
-        async _waitForMountThenResolveMountPromise() {
-            if (this._awaitingScenePromise) return
-            try {
-                this._awaitingScenePromise = true
-                await this._getScenePromise()
-                await this._scene.mountPromise
-            } catch (e) {
-                if (e == 'mountcancel') return
-                else throw e
-            } finally {
-                this._awaitingScenePromise = false
-            }
-
-            this._mounted = true
-            this._resolveMountPromise()
-            this._elementOperations.shouldRender()
-        },
-
-        /**
-         * @private
-         * Get a promise for the node's eventual scene.
-         */
-        _getScenePromise() {
-            if (!this._scenePromise) {
-                this._scenePromise = new Promise((a, b) => {
-                    this._resolveScenePromise = a
-                })
-            }
-
-            if (this._scene)
-                this._resolveScenePromise()
-
-            return this._scenePromise
         },
 
         /**
@@ -179,16 +135,13 @@ let Node = Mixin(Base =>
             for (let i=0, l=children.length; i<l; i+=1) {
                 const childNode = children[i]
                 childNode._scene = this._scene
-                if (childNode._resolveScenePromise)
-                    childNode._resolveScenePromise(childNode._scene)
                 childNode._giveSceneRefToChildren();
             }
         },
 
         _resetSceneRef() {
             this._scene = null
-            this._scenePromise = null
-            this._resolveScenePromise = null
+
             const children = this.subnodes;
             for (let i=0, l=children.length; i<l; i+=1) {
                 children[i]._resetSceneRef();

@@ -49,6 +49,8 @@ let Scene = Mixin(Base => {
             // modified scenes.
             self._scene = self
 
+            self._mounted = false
+
             // TODO get default camera values from somewhere.
             self._perspective = 1000
 
@@ -114,10 +116,6 @@ let Scene = Mixin(Base => {
             // will still have a reference to the default camera that scenes
             // are rendered with when no camera elements exist).
             this._activeCameras = new Set
-
-            // TODO: this needs to be cancelable too, search other codes for
-            // "mountcancel" to see.
-            await this.mountPromise
 
             this.webglEnabled = !!this.element.hasAttribute('experimental-webgl')
             if (!this.webglEnabled) return
@@ -255,8 +253,6 @@ let Scene = Mixin(Base => {
 
             this._mounted = true
 
-            if (this._mountPromise) this._resolveMountPromise()
-
             this._elementOperations.shouldRender()
             this._startOrStopSizePolling()
         },
@@ -274,20 +270,13 @@ let Scene = Mixin(Base => {
             if (this.parentNode)
                 this.parentNode.removeChild(this)
 
-            if (this._mountPromise) this._rejectMountPromise('mountcancel')
-            this._resetMountPromise()
+            this._mounted = false
         },
 
-        async updated(oldProps, oldState, modifiedProps) {
+        updated(oldProps, oldState, modifiedProps) {
             Super(this).updated(oldProps, oldState, modifiedProps)
 
-            // We need to await mountPromise here so that we set values *after*
-            // values are set in initWebGl
-            //
-            // clone modifiedProps because it may be modified in the future
-            // TODO see about getting rid of the async complexity here.
-            const moddedProps = {...modifiedProps}
-            await this.mountPromise;
+            if (!this.isConnected) return
 
             if (moddedProps.backgroundColor) {
                 this._renderer.setClearColor( this, this.backgroundColor, this.backgroundOpacity )

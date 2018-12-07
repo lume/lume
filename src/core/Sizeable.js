@@ -60,6 +60,8 @@ Mixin(Base => {
         },
 
         updated(oldProps, oldState, modifiedProps) {
+            if (!this.isConnected) return
+
             // this covers single-valued properties like opacity, but has the
             // sideeffect of trigger propertychange more than needed for
             // XYZValues (here, and in the above valuechanged handlers).

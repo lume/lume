@@ -53,6 +53,8 @@ Class('PointLight').extends( LightBase, ({ Super }) => ({
     updated(oldProps, oldState, modifiedProps) {
         Super(this).updated(oldProps, oldState, modifiedProps)
 
+        if (!this.isConnected) return
+
         const shadow = this.threeObject3d.shadow
 
         if (modifiedProps.shadowMapWidth) shadow.mapSize.width = this.shadowMapWidth

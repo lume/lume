@@ -25,6 +25,9 @@ Class('LightBase').extends( Node, ({ Super }) => ({
 
     updated(oldProps, oldState, modifiedProps) {
         Super(this).updated(oldProps, oldState, modifiedProps)
+
+        if (!this.isConnected) return
+
         this._needsToBeRendered()
     },
 

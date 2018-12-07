@@ -60,6 +60,8 @@ Class('Mesh').extends( Node, ({ Super }) => ({
     updated(oldProps, oldState, modifiedProps) {
         Super(this).updated(oldProps, oldState, modifiedProps)
 
+        if (!this.isConnected) return
+
         if ( modifiedProps.castShadow ) {
             this._needsToBeRendered()
         }
