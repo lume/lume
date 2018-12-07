@@ -30,6 +30,8 @@ Class( 'BaseGeometryBehavior' ).extends( BaseMeshBehavior, ({ Public, Protected,
     async connectedCallback() {
         if (!Super(this).connectedCallback()) return
 
+        // TODO the following three events can be replaced with a single propchange:size event
+        this.element.on('sizechange', Private(this).onSizeValueChanged, Private(this))
         this.element.size.on('valuechanged', Private(this).onSizeValueChanged, Private(this))
         this.element.sizeMode.on('valuechanged', Private(this).onSizeValueChanged, Private(this))
     },
@@ -37,6 +39,7 @@ Class( 'BaseGeometryBehavior' ).extends( BaseMeshBehavior, ({ Public, Protected,
     disconnectedCallback() {
         if (!Super(this).disconnectedCallback()) return
 
+        this.element.on('sizechange', Private(this).onSizeValueChanged)
         this.element.size.off('valuechanged', Private(this).onSizeValueChanged)
         this.element.sizeMode.off('valuechanged', Private(this).onSizeValueChanged)
     },

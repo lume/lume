@@ -142,6 +142,15 @@ const Motor = Class('Motor', ({ Public, Private }) => ({
                 timestamp = await this.animationFrame()
 
                 this.runRenderTasks(timestamp)
+
+                // wait for the next microtask before continuing so that SkateJS
+                // updated methods (or any other microtask handlers) have a
+                // chance to handle changes before the next renderNodes call.
+                //
+                // TODO add test to make sure behavior size change doesn't
+                // happen after render
+                await Promise.resolve()
+
                 this.renderNodes(timestamp)
 
                 // If no tasks are left, stop the animation loop.
