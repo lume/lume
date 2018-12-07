@@ -63601,8 +63601,8 @@ let Scene_Scene = Mixin(Base => {
             this._mounted = false
         },
 
-        updated(oldProps, oldState, modifiedProps) {
-            Super(this).updated(oldProps, oldState, modifiedProps)
+        updated(oldProps, oldState, moddedProps) {
+            Super(this).updated(oldProps, oldState, moddedProps)
 
             if (!this.isConnected) return
 
@@ -65627,7 +65627,7 @@ function useDefaultNames() {
 
 
 
-const version = '21.0.0'
+const version = '21.0.1'
 
 
 /***/ })
