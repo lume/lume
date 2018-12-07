@@ -229,21 +229,34 @@ let Scene = Mixin(Base => {
          * the scene will be mounted into document.body.
          */
         async mount(mountPoint) {
-            // Wait for the document to be ready before mounting, otherwise the
-            // target mount point might not exist yet when this function is called.
-            if (document.readyState == 'loading') await documentReady()
-
             // if no mountPoint was provided, just mount onto the <body> element.
-            if (mountPoint === undefined) mountPoint = document.body
+            if (mountPoint === undefined) {
+                if (!document.body) await documentReady()
+                mountPoint = document.body
+            }
 
             // if the user supplied a selector, mount there.
-            else if (typeof mountPoint === 'string')
+            else if (typeof mountPoint === 'string') {
                 mountPoint = document.querySelector(mountPoint)
+                if (!mountPoint && document.readyState === 'loading') {
+                    // maybe the element wasn't parsed yet, check again when the
+                    // document is ready.
+                    await documentReady()
+                    mountPoint = document.querySelector(mountPoint)
+                }
+            }
 
             // if we have an actual mount point (the user may have supplied one)
-            if (!(mountPoint instanceof HTMLElement))
-                throw new Error('Invalid mount point specified in Scene.mount() call. Pass a selector, an actual HTMLElement, or don\'t pass anything to mount to <body>.')
+            if (!(mountPoint instanceof HTMLElement)) {
+                throw new Error(`
+                    Invalid mount point specified in Scene.mount() call. Pass a
+                    selector, an actual HTMLElement, or don\'t pass anything to
+                    mount to <body>.
+                `)
+            }
 
+            // The user can mount to a new location without calling unmount
+            // first. Call it automatically in that case.
             if (this._mounted) this.unmount()
 
             if (mountPoint !== this.parentNode)
