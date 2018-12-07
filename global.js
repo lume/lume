@@ -61780,6 +61780,8 @@ let propFunction = null
         },
 
         updated(oldProps, oldState, modifiedProps) {
+            if (!this.isConnected) return
+
             // this covers single-valued properties like opacity, but has the
             // sideeffect of trigger propertychange more than needed for
             // XYZValues (here, and in the above valuechanged handlers).
@@ -62517,6 +62519,8 @@ function classExtendsHTMLElement(constructor) {
     // otherwise, create it.
     const WebComponent = lowclass_default()('WebComponent').extends( DefaultBehaviors.mixin( Base ), ({ Super, Public, Private }) => ({
 
+        isConnected: false,
+
         constructor(...args) {
             // Throw an error if no Custom Elements v1 API exists.
             if (!('customElements' in window)) {
@@ -62539,7 +62543,7 @@ function classExtendsHTMLElement(constructor) {
 
         connectedCallback() {
             if (Super(this).connectedCallback) Super(this).connectedCallback()
-            Private(this).connected = true
+            this.isConnected = true
 
             if (!Private(this).initialized) {
                 this.init()
@@ -62549,7 +62553,7 @@ function classExtendsHTMLElement(constructor) {
 
         async disconnectedCallback() {
             if (Super(this).disconnectedCallback) Super(this).disconnectedCallback()
-            Private(this).connected = false
+            this.isConnected = false
 
             // Deferr to the next tick before cleaning up in case the
             // element is actually being re-attached somewhere else within this
@@ -62568,7 +62572,7 @@ function classExtendsHTMLElement(constructor) {
             // As mentioned in the previous comment, if the element was not
             // re-attached in the last tick (for example, it was moved to
             // another element), then clean up.
-            if (!Private(this).connected && Private(this).initialized) {
+            if (!this.isConnected && Private(this).initialized) {
                 this.deinit()
             }
         },
@@ -62672,7 +62676,6 @@ function classExtendsHTMLElement(constructor) {
 
         private: {
             style: null,
-            connected: false,
             initialized: false,
             initialAttributeChange: false,
             childObserver: null,
@@ -63188,21 +63191,6 @@ const HTMLScene = DeclarativeBase.subclass('HTMLScene', ({ Public, Private, Supe
 
     constructor() {
         const self = Super(this).constructor()
-
-        // If the scene is already in the DOM, make it be "mounted".
-        if (!self._mounted && self.parentNode) {
-
-            // defer so that the constructor() call stack can finish
-            //
-            // TODO: clean up the code so that this isn't required. It's
-            // just that combining the imperative/declarative classes
-            // into a single class has introduced a small difference in
-            // logic order.
-            Promise.resolve().then(() =>
-                self.mount(self.parentNode)
-            )
-        }
-
         const privateThis = Private(self)
 
         privateThis._root = self.attachShadow({ mode: 'open' })
@@ -63389,6 +63377,8 @@ let Scene_Scene = Mixin(Base => {
             // modified scenes.
             self._scene = self
 
+            self._mounted = false
+
             // TODO get default camera values from somewhere.
             self._perspective = 1000
 
@@ -63454,10 +63444,6 @@ let Scene_Scene = Mixin(Base => {
             // will still have a reference to the default camera that scenes
             // are rendered with when no camera elements exist).
             this._activeCameras = new Set
-
-            // TODO: this needs to be cancelable too, search other codes for
-            // "mountcancel" to see.
-            await this.mountPromise
 
             this.webglEnabled = !!this.element.hasAttribute('experimental-webgl')
             if (!this.webglEnabled) return
@@ -63595,8 +63581,6 @@ let Scene_Scene = Mixin(Base => {
 
             this._mounted = true
 
-            if (this._mountPromise) this._resolveMountPromise()
-
             this._elementOperations.shouldRender()
             this._startOrStopSizePolling()
         },
@@ -63614,20 +63598,13 @@ let Scene_Scene = Mixin(Base => {
             if (this.parentNode)
                 this.parentNode.removeChild(this)
 
-            if (this._mountPromise) this._rejectMountPromise('mountcancel')
-            this._resetMountPromise()
+            this._mounted = false
         },
 
-        async updated(oldProps, oldState, modifiedProps) {
+        updated(oldProps, oldState, modifiedProps) {
             Super(this).updated(oldProps, oldState, modifiedProps)
 
-            // We need to await mountPromise here so that we set values *after*
-            // values are set in initWebGl
-            //
-            // clone modifiedProps because it may be modified in the future
-            // TODO see about getting rid of the async complexity here.
-            const moddedProps = {...modifiedProps}
-            await this.mountPromise;
+            if (!this.isConnected) return
 
             if (moddedProps.backgroundColor) {
                 this._renderer.setClearColor( this, this.backgroundColor, this.backgroundOpacity )
@@ -63726,25 +63703,9 @@ function initImperativeBase() {
                 // Imperative-API Node.
                 self._elementOperations = new ElementOperations(self)
 
-                // For Nodes, true when this Node is added to a parent AND it
-                // has an anancestor Scene that is mounted into DOM. For
-                // Scenes, true when mounted into DOM.
-                self._mounted = false;
-
                 // stores a ref to this Node's root Scene when/if this Node is
                 // in a scene.
                 self._scene = null
-
-                // For Nodes, a promise that resolves when this Node is
-                // attached to a tree that has a root Scene TreeNode *and* when
-                // that root Scene has been mounted into the DOM. For Scenes,
-                // resolves when mounted into DOM.
-                self._mountPromise = null
-                self._resolveMountPromise = null
-                self._rejectMountPromise = null
-
-                self._awaitingMountPromiseToRender = false
-                self._waitingForMountConditions = false
 
                 // See Transformable/Sizeable propertychange event.
                 // TODO: defer size calculation to render task
@@ -63826,30 +63787,6 @@ function initImperativeBase() {
             /**
              * @readonly
              */
-            get mountPromise() {
-                if (!this._mountPromise) {
-                    this._mountPromise = new Promise((resolve, reject) => {
-                        this._resolveMountPromise = resolve
-                        this._rejectMountPromise = reject
-                    })
-                }
-
-                if (!this._mounted)
-                    this._waitForMountThenResolveMountPromise()
-                else if (this._mounted)
-                    this._resolveMountPromise()
-
-                return this._mountPromise
-            },
-
-            _waitForMountThenResolveMountPromise() {
-                // extended in Node or Scene to await for anything that mount
-                // depends on.
-            },
-
-            /**
-             * @readonly
-             */
             get element() {
                 return this._elementOperations.element
             },
@@ -63912,8 +63849,6 @@ function initImperativeBase() {
                 // Pass this parent node's Scene reference (if any, checking this cache
                 // first) to the new child and the child's children.
                 if (childNode._scene || childNode.scene) {
-                    if (childNode._resolveScenePromise)
-                        childNode._resolveScenePromise(childNode._scene)
                     childNode._giveSceneRefToChildren()
                 }
 
@@ -63939,39 +63874,14 @@ function initImperativeBase() {
 
                 childNode._resetSceneRef()
 
-                if (childNode._mountPromise) childNode._rejectMountPromise('mountcancel')
-                if (childNode._mounted) childNode._elementOperations.shouldNotRender()
-                childNode._resetMountPromise()
-
                 if (!leaveInDom)
                     this._elementOperations.disconnectChildElement(childNode)
             },
 
-            _resetMountPromise() {
-                this._mounted = false
-                this._mountPromise = null
-                this._resolveMountPromise = null
-                this._rejectMountPromise = null
-                const children = this.subnodes
-                for (let i=0, l=children.length; i<l; i+=1) {
-                    children[i]._resetMountPromise();
-                }
-            },
-
-            async _needsToBeRendered() {
-                if (this._awaitingMountPromiseToRender) return
-
-                if (!this._mounted) {
-                    try {
-                        this._awaitingMountPromiseToRender = true
-                        await this.mountPromise
-                    } catch(e) {
-                        if (e == 'mountcancel') return
-                        else throw e
-                    } finally {
-                        this._awaitingMountPromiseToRender = false
-                    }
-                }
+            _needsToBeRendered() {
+                // we don't need to render until we're connected into a tree with a scene.
+                if (!this.scene || !this.isConnected) return
+                // TODO make sure we render when connected into a tree with a scene
 
                 this._willBeRendered = true
                 core_Motor.setNodeToBeRendered(this)
@@ -64057,12 +63967,6 @@ let Node = Mixin(Base =>
 
             self._scene = null // stores a ref to this Node's root Scene.
 
-            // This is an internal promise that resolves when this Node is added to
-            // to a scene graph that has a root Scene TreeNode. The resolved value
-            // is the root Scene.
-            self._scenePromise = null
-            self._resolveScenePromise = null
-
             /**
              * @private
              * This method is defined here in the consructor as an arrow function
@@ -64103,44 +64007,6 @@ let Node = Mixin(Base =>
 
         makeThreeObject3d() {
             return new Object3D
-        },
-
-        /**
-         * @private
-         */
-        async _waitForMountThenResolveMountPromise() {
-            if (this._awaitingScenePromise) return
-            try {
-                this._awaitingScenePromise = true
-                await this._getScenePromise()
-                await this._scene.mountPromise
-            } catch (e) {
-                if (e == 'mountcancel') return
-                else throw e
-            } finally {
-                this._awaitingScenePromise = false
-            }
-
-            this._mounted = true
-            this._resolveMountPromise()
-            this._elementOperations.shouldRender()
-        },
-
-        /**
-         * @private
-         * Get a promise for the node's eventual scene.
-         */
-        _getScenePromise() {
-            if (!this._scenePromise) {
-                this._scenePromise = new Promise((a, b) => {
-                    this._resolveScenePromise = a
-                })
-            }
-
-            if (this._scene)
-                this._resolveScenePromise()
-
-            return this._scenePromise
         },
 
         /**
@@ -64190,16 +64056,13 @@ let Node = Mixin(Base =>
             for (let i=0, l=children.length; i<l; i+=1) {
                 const childNode = children[i]
                 childNode._scene = this._scene
-                if (childNode._resolveScenePromise)
-                    childNode._resolveScenePromise(childNode._scene)
                 childNode._giveSceneRefToChildren();
             }
         },
 
         _resetSceneRef() {
             this._scene = null
-            this._scenePromise = null
-            this._resolveScenePromise = null
+
             const children = this.subnodes;
             for (let i=0, l=children.length; i<l; i+=1) {
                 children[i]._resetSceneRef();
@@ -65183,6 +65046,8 @@ elementBehaviors.define('domnode-geometry', DOMNodeGeometryBehavior)
     updated(oldProps, oldState, modifiedProps) {
         Super(this).updated(oldProps, oldState, modifiedProps)
 
+        if (!this.isConnected) return
+
         if ( modifiedProps.castShadow ) {
             this._needsToBeRendered()
         }
@@ -65281,6 +65146,9 @@ elementBehaviors.define('domnode-geometry', DOMNodeGeometryBehavior)
 
     updated(oldProps, oldState, modifiedProps) {
         Super(this).updated(oldProps, oldState, modifiedProps)
+
+        if (!this.isConnected) return
+
         this._needsToBeRendered()
     },
 
@@ -65340,6 +65208,8 @@ elementBehaviors.define('domnode-geometry', DOMNodeGeometryBehavior)
 
     updated(oldProps, oldState, modifiedProps) {
         Super(this).updated(oldProps, oldState, modifiedProps)
+
+        if (!this.isConnected) return
 
         const shadow = this.threeObject3d.shadow
 
@@ -65434,38 +65304,21 @@ elementBehaviors.define('domnode-geometry', DOMNodeGeometryBehavior)
     updated(oldProps, oldState, modifiedProps) {
         Super(this).updated(oldProps, oldState, modifiedProps)
 
+        if (!this.isConnected) return
+
         if (modifiedProps.active) {
             this._setSceneCamera( this.active ? undefined : 'unset' )
         }
-    },
-
-    constructor(options = {}) {
-        const self = Super(this).constructor(options)
-
-        // TODO TODO: abstract away having to use mountPromise with a
-        // mountedCallback that is called everytime a node is added to a scene.
-        // Right now, this will only be called the first time a node is added
-        // to a scene, but not to any subsequent scenes.
-        // We can't just rely on connectedCallback because that can be called
-        // if the node is added to any element. See how mountPromise logic is
-        // canceled in Node to get more ideas on how we can do this and not
-        // replicate that canceling logic here.
-        // Maybe we write it on top of init/deinit functionality?
-        self.mountPromise.then(() => self.mountedCallback())
-
-        return self
     },
 
     makeThreeObject3d() {
         return new PerspectiveCamera(75, 16/9, 1, 1000)
     },
 
-    mountedCallback() {
+    connectedCallback() {
+        Super(this).connectedCallback()
+
         const privateThis = Private(this)
-
-        // default aspect value based on the scene size.
-        if ( ! this.hasAttribute( 'aspect' ) ) privateThis._startAutoAspect()
-
         privateThis._lastKnownScene = this.scene
     },
 
@@ -65587,7 +65440,7 @@ elementBehaviors.define('domnode-geometry', DOMNodeGeometryBehavior)
             return result
         },
 
-        async _setSceneCamera( unset ) {
+        _setSceneCamera( unset ) {
 
             const publicThis = Public(this)
 
@@ -65600,11 +65453,7 @@ elementBehaviors.define('domnode-geometry', DOMNodeGeometryBehavior)
                     this._lastKnownScene._removeCamera( publicThis )
             }
             else {
-
-                // wait to be mounted, because otherwise there isn't a scene to
-                // set the active camera on.
-                // TODO: needs to be cancellable. #150
-                if (! publicThis._mounted ) await publicThis.mountPromise
+                if (!publicThis.scene || !publicThis.isConnected) return
 
                 publicThis.scene._addCamera( publicThis )
             }
@@ -65778,7 +65627,7 @@ function useDefaultNames() {
 
 
 
-const version = '20.0.1'
+const version = '21.0.0'
 
 
 /***/ })
