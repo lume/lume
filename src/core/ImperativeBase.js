@@ -65,7 +65,7 @@ export function initImperativeBase() {
                 // TODO: defer size calculation to render task
                 self.on('propertychange', self._onPropertyChange, self)
 
-                self.initWebGl()
+                if (!(self instanceof Scene)) self.initWebGl()
 
                 return self
             },

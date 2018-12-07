@@ -38,6 +38,7 @@ let Scene = Mixin(Base => {
                 backgroundOpacity: props.number,
                 shadowmapType: props.string,
                 vr: props.boolean,
+                experimentalWebgl: props.boolean,
             },
         },
 
@@ -79,7 +80,7 @@ let Scene = Mixin(Base => {
         // we can't simply rely on having it in constructor, we need a
         // getter/setter like node properties.
         // TODO: we need to deinit webgl too.
-        async initWebGl() {
+        initWebGl() {
             // THREE
             // maybe keep this in sceneState in WebGLRendererThree
             Super(this).initWebGl()
@@ -116,9 +117,6 @@ let Scene = Mixin(Base => {
             // will still have a reference to the default camera that scenes
             // are rendered with when no camera elements exist).
             this._activeCameras = new Set
-
-            this.webglEnabled = !!this.element.hasAttribute('experimental-webgl')
-            if (!this.webglEnabled) return
 
             this._renderer = Motor.getWebGLRenderer(this, 'three')
 
@@ -278,29 +276,37 @@ let Scene = Mixin(Base => {
 
             if (!this.isConnected) return
 
-            if (moddedProps.backgroundColor) {
-                this._renderer.setClearColor( this, this.backgroundColor, this.backgroundOpacity )
-                this._needsToBeRendered()
+            if (moddedProps.experimentalWebgl) {
+                if (this.experimentalWebgl) this.initWebGl()
+                else this.disposeWebGL()
             }
-            if (moddedProps.backgroundOpacity) {
-                this._renderer.setClearAlpha( this, this.backgroundOpacity )
-                this._needsToBeRendered()
-            }
-            if (moddedProps.shadowmapType) {
-                this._renderer.setShadowMapType(this, this.shadowmapType)
-                this._needsToBeRendered()
-            }
-            if (moddedProps.vr) {
-                this._renderer.enableVR( this, this.vr)
 
-                if ( this.vr ) {
-                    Motor.setFrameRequester( fn => this._renderer.requestFrame( this, fn ) )
-                    this._renderer.createDefaultWebVREntryUI( this )
+            if (this.experimentalWebgl) {
+                if (moddedProps.backgroundColor) {
+                    this._renderer.setClearColor( this, this.backgroundColor, this.backgroundOpacity )
+                    this._needsToBeRendered()
                 }
-                else {
-                    // TODO else return back to normal requestAnimationFrame
+                if (moddedProps.backgroundOpacity) {
+                    this._renderer.setClearAlpha( this, this.backgroundOpacity )
+                    this._needsToBeRendered()
+                }
+                if (moddedProps.shadowmapType) {
+                    this._renderer.setShadowMapType(this, this.shadowmapType)
+                    this._needsToBeRendered()
+                }
+                if (moddedProps.vr) {
+                    this._renderer.enableVR( this, this.vr)
+
+                    if ( this.vr ) {
+                        Motor.setFrameRequester( fn => this._renderer.requestFrame( this, fn ) )
+                        this._renderer.createDefaultWebVREntryUI( this )
+                    }
+                    else {
+                        // TODO else return back to normal requestAnimationFrame
+                    }
                 }
             }
+
             if (moddedProps.sizeMode) {
                 this._startOrStopSizePolling()
             }

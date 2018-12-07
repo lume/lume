@@ -228,7 +228,7 @@ const Motor = Class('Motor', ({ Public, Private }) => ({
             const modifiedScenes = this.modifiedScenes
             for (let i=0, l=modifiedScenes.length; i<l; i+=1) {
                 const scene = modifiedScenes[i]
-                if (scene.webglEnabled)
+                if (scene.experimentalWebgl)
                     webGLRenderers.get(scene).drawScene(scene)
             }
             modifiedScenes.length = 0
