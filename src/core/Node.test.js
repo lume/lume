@@ -1,7 +1,7 @@
 import Node from './Node'
 import Scene from './Scene'
 import XYZValues from './XYZValues'
-import {useDefaultNames} from '../../html'
+import {useDefaultNames} from '../html'
 
 useDefaultNames()
 
