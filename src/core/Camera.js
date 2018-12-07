@@ -36,6 +36,14 @@ Class('PerspectiveCamera').extends( Node, ({ Super, Public, Private }) => ({
         if (modifiedProps.active) {
             this._setSceneCamera( this.active ? undefined : 'unset' )
         }
+        if (modifiedProps.aspect) {
+            if (!this.aspect)
+                // default aspect value based on the scene size.
+                privateThis._startAutoAspect()
+            else
+                privateThis._stopAutoAspect()
+        }
+        // TODO handle the other props here, remove attributeChangedCallback
     },
 
     makeThreeObject3d() {
@@ -57,6 +65,7 @@ Class('PerspectiveCamera').extends( Node, ({ Super, Public, Private }) => ({
         // unmountedCallback, but for now it's harmless but
         // will run unnecessary logic. #150
         Private(this)._setSceneCamera( 'unset' )
+        Private(this)._lastKnownScene = null
     },
 
     // TODO, unmountedCallback functionality. issue #150

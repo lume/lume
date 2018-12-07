@@ -108,6 +108,7 @@ Mixin(Base => {
             // another element), then clean up.
             if (!this.isConnected && Private(this).initialized) {
                 this.deinit()
+                Private(this).initialized = false
             }
         },
 
@@ -175,9 +176,6 @@ Mixin(Base => {
             // existed before the custom element was upgraded.
             if (!Private(this).initialAttributeChange && this.hasAttributes()) {
 
-                // HTMLElement#attributes is a NamedNodeMap which is not an
-                // iterable, so we use Array.from. See:
-                // https://github.com/zloirock/core-js/issues/234
                 const {attributes} = this
                 for (let l=attributes.length, i=0; i<l; i+=1)
                     this.attributeChangedCallback(attributes[i].name, null, attributes[i].value)
@@ -205,7 +203,6 @@ Mixin(Base => {
             // Nothing much at the moment, but extending classes can extend
             // this to add deintialization logic.
 
-            Private(this).initialized = false
         },
 
         private: {

@@ -251,7 +251,6 @@ let Scene = Mixin(Base => {
 
             this._mounted = true
 
-            this._elementOperations.shouldRender()
             this._startOrStopSizePolling()
         },
 
@@ -262,7 +261,6 @@ let Scene = Mixin(Base => {
         unmount() {
             if (!this._mounted) return
 
-            this._elementOperations.shouldNotRender()
             this._stopSizePolling()
 
             if (this.parentNode)

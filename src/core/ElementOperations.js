@@ -169,18 +169,4 @@ Class('ElementOperations', {
         // But both Node and Scene are Sizeable
         this.applySize(node._calculatedSize)
     },
-
-    shouldRender() {
-        const task = Motor.addRenderTask(() => {
-            this.applyStyle('display', 'block')
-            Motor.removeRenderTask(task)
-        })
-    },
-
-    shouldNotRender() {
-        const task = Motor.addRenderTask(() => {
-            this.applyStyle('display', 'none')
-            Motor.removeRenderTask(task)
-        })
-    },
 })

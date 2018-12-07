@@ -62,8 +62,8 @@ const HTMLScene = DeclarativeBase.subclass('HTMLScene', ({ Public, Private, Supe
         this.unmount()
     },
 
-    connectedCallback() {
-        Super(this).connectedCallback()
+    init() {
+        Super(this).init()
 
         // When the HTMLScene gets addded to the DOM, make it be "mounted".
         if (!this._mounted)

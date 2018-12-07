@@ -106,7 +106,7 @@ Mixin(Base => {
             // case we don't want the scene size to be based on observed size
             // of a regular DOM element, but relative to a parent Node just
             // like for all other Nodes.
-            const parentSize = this.parent._calculatedSize
+            const parentSize = this._getParentSize()
 
             // THREE-COORDS-TO-DOM-COORDS
             // translate the "align" back to the top/left of the parent element.

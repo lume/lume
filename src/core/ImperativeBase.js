@@ -73,7 +73,13 @@ export function initImperativeBase() {
             connectedCallback() {
                 Super(this).connectedCallback()
 
-                // if a subclass needs to pass values, call it.
+                // If a subclass needs to initialize values in its Three.js
+                // object, it will have the passInitialValuesToThree method for
+                // that.
+                //
+                // TODO we shouldn't need to define passInitialValuesToThree in
+                // sub classes, the default values of the props should
+                // automatically be in place.
                 this.passInitialValuesToThree && this.passInitialValuesToThree()
             },
 
@@ -93,10 +99,18 @@ export function initImperativeBase() {
                 this.threeObject3d.matrixAutoUpdate = false
             },
 
+            disposeWebGL() {
+                console.log( 'TODO: dispose WebGL when it is no longer needed' )
+            },
+
             makeThreeObject3d() {
                 throw new Error('The makeThreeObject3d method should be defined by sub classes.')
             },
 
+            // TODO use one of init/deinit, or connected/connected, or
+            // connectedCallback/disconnectedCallback, instead of being
+            // inconsistent across classes, so we can better understand order of
+            // operations more easily.
             connected() {
                 this._lastKnownParent = this.parent
                 this.parent.threeObject3d.add(this.threeObject3d)

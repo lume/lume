@@ -3,7 +3,7 @@ export default {
 
     // all items of the scene graph are hidden until they are mounted in a
     // scene (this changes to `display:block`).
-    display:         'none',
+    display:         'block',
 
     boxSizing:       'border-box',
     position:        'absolute',
