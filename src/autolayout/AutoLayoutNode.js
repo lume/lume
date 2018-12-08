@@ -12,6 +12,7 @@
 import Class from 'lowclass'
 import * as AutoLayout from 'autolayout'
 import Node from '../core/Node'
+import Motor from '../core/Motor'
 
 /**
  * A Node that lays children out based on an Apple AutoLayout VFL layout
@@ -35,25 +36,33 @@ const AutoLayoutNode = Class('AutoLayoutNode').extends(Node, ({ Super, Public, P
      * @return {AutoLayoutController} this
      */
     constructor() {
-        Super(this).constructor()
+        const self = Super(this).constructor()
 
-    	Private(this)._options = {};
-    	Private(this)._idToNode = {};
+    	Private(self)._layoutOptions = {};
+    	Private(self)._idToNode = {};
 
         // TODO replace with Motor render task
-    	Private(this)._comp = this.addComponent({
-    		onUpdate: _layout.bind(this),
-    		onSizeChange: _layout.bind(this)
-    	});
+    	// Private(self)._comp = self.addComponent({
+    	// 	onUpdate: () => Private(self)._layout(),
+    	// 	onSizeChange: () => Private(self)._layout(),
+    	// });
+
+        // PORTED {
+        Private(self)._layout = Private(self)._layout.bind(Private(self))
+        self.on('sizechange', Private(self)._layout)
+        self.on('reflow', Private(self)._layout)
+        // }
 
     	if (options) {
     		if (options.visualFormat) {
-    			this.setVisualFormat(options.visualFormat);
+    			self.setVisualFormat(options.visualFormat);
     		}
     		if (options.layoutOptions) {
-    			this.setLayoutOptions(options.options);
+    			self.setLayoutOptions(options.layoutOptions);
     		}
     	}
+
+        return self
     },
 
     /**
@@ -64,8 +73,10 @@ const AutoLayoutNode = Class('AutoLayoutNode').extends(Node, ({ Super, Public, P
     reflowLayout() {
         if (!Private(this)._reflowLayout) {
             Private(this)._reflowLayout = true;
-            this.requestUpdate(Private(this)._comp);
+            // this.requestUpdate(Private(this)._comp);
+            Motor.once(() => this.emit('reflow')); // PORTED
         }
+        return this;
     },
 
     /**
@@ -93,7 +104,7 @@ const AutoLayoutNode = Class('AutoLayoutNode').extends(Node, ({ Super, Public, P
      * @return {AutoLayoutController} this
      */
     setLayoutOptions(options) {
-    	Private(this)._options = options || {};
+    	Private(this)._layoutOptions = options || {};
     	this.reflowLayout();
     	return this;
     },
@@ -107,8 +118,8 @@ const AutoLayoutNode = Class('AutoLayoutNode').extends(Node, ({ Super, Public, P
      * @param {String} id Unique id of the node which matches the id used in the Visual format.
      * @return {Node} the appended node.
      */
-    addChild(child, id) {
-    	child = Super(this).addChild(child);
+    add(child, id) { // PORTED
+    	Super(this).add(child); // PORTED
     	Private(this)._idToNode[id] = child;
     	this.reflowLayout();
     	return child;
@@ -120,12 +131,10 @@ const AutoLayoutNode = Class('AutoLayoutNode').extends(Node, ({ Super, Public, P
      *
      * @param {Node} [child] node to be removed
      * @param {String} [id] Unique id of the node which matches the id used in the Visual format.
-     * @return {Boolean} whether or not the node was successfully removed
      */
-    removeChild(child, id) {
-    	var res = false;
+    remove(child, id) { // PORTED
     	if (child && id) {
-    		res = Super(this).removeChild(child);
+    		Super(this).remove(child); // PORTED
     		delete Private(this)._idToNode[id];
     	}
     	else if (child) {
@@ -135,14 +144,13 @@ const AutoLayoutNode = Class('AutoLayoutNode').extends(Node, ({ Super, Public, P
     				break;
     			}
     		}
-    		res = Super(this).removeChild(child);
+    		Super(this).remove(child); // PORTED
     	}
     	else if (id) {
-    		res = Super(this).removeChild(Private(this)._idToNode[id]);
+    		Super(this).remove(Private(this)._idToNode[id]); // PORTED
     		delete Private(this)._idToNode[id];
     	}
     	this.reflowLayout();
-    	return res;
     },
 
     private: {
@@ -201,20 +209,20 @@ const AutoLayoutNode = Class('AutoLayoutNode').extends(Node, ({ Super, Public, P
         	}
             var x;
             var y;
-            var size = Public(this).getSize();
-            if (this._options.spacing || this._metaInfo.spacing) {
-        		this._autoLayoutView.setSpacing(this._options.spacing || this._metaInfo.spacing);
+            var size = Public(this).size.toArray();
+            if (this._layoutOptions.spacing || this._metaInfo.spacing) {
+        		this._autoLayoutView.setSpacing(this._layoutOptions.spacing || this._metaInfo.spacing);
             }
-            var widths = this._options.widths || this._metaInfo.widths;
+            var widths = this._layoutOptions.widths || this._metaInfo.widths;
             if (widths) {
                 this._setIntrinsicWidths(widths);
             }
-            var heights = this._options.heights || this._metaInfo.heights;
+            var heights = this._layoutOptions.heights || this._metaInfo.heights;
             if (heights) {
                 this._setIntrinsicHeights(heights);
             }
-            if (this._options.viewport || this._metaInfo.viewport) {
-        		var restrainedSize = this._setViewPortSize(size, this._options.viewport || this._metaInfo.viewport);
+            if (this._layoutOptions.viewport || this._metaInfo.viewport) {
+        		var restrainedSize = this._setViewPortSize(size, this._layoutOptions.viewport || this._metaInfo.viewport);
         		x = (size[0] - restrainedSize[0]) / 2;
         		y = (size[1] - restrainedSize[1]) / 2;
             }
@@ -247,8 +255,8 @@ const AutoLayoutNode = Class('AutoLayoutNode').extends(Node, ({ Super, Public, P
             if (this._reflowLayout) {
                 this._reflowLayout = false;
 
-                // TODO replace with Motor render task
-                Public(this).requestUpdate(this._comp);
+                // Public(this).requestUpdate(this._comp);
+                Motor.once(() => Public(this).emit('reflow')); // PORTED
             }
         },
     },
