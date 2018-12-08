@@ -27,7 +27,9 @@
   "dependencies": {
     "@awaitbox/document-ready": "^1.0.10",
     "@babel/runtime": "7.0.0-beta.46",
+    "@trusktr/skatejs": "^5.2.40001",
     "army-knife": "^0.2.1",
+    "autolayout": "^0.7.0",
     "element-behaviors": "^2.0.1",
     "famous": "trusktr/famous#commonjs",
     "famousify": "^0.1.5",
@@ -41,7 +43,6 @@
     "jss-px": "^1.0.0",
     "jss-vendor-prefixer": "^1.0.0",
     "lowclass": "^4.2.1",
-    "@trusktr/skatejs": "^5.2.40001",
     "three": "^0.88.0"
   },
   "devDependencies": {

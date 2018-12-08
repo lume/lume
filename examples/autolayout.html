@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title> AutoLayoutNode </title>
+
+		<!-- polyfill for browsers that don't have Custom Elements or ShadowDOM -->
+        <!-- <script src="https://unpkg.com/@webcomponents/webcomponentsjs@1.1.0/webcomponents-lite.js"></script> -->
+
+        <!-- the library -->
+        <script src="../global.js"></script>
+
+    </head>
+    <body>
+
+        <style>
+            body, html {
+                width: 100%;
+                height: 100%;
+                margin: 0;
+                padding: 0;
+                overflow: hidden;
+            }
+        </style>
+
+        <i-scene id="scene" experimental-webgl>
+            <i-ambient-light intensity="0.3"></i-ambient-light>
+
+            <i-point-light
+                id="light"
+                color="white"
+                position="300 300 120"
+                size="0 0 0"
+                cast-shadow="true"
+                intensity="0.5"
+                >
+                <i-sphere
+                    size="10 10 10"
+                    color="white"
+                    receive-shadow="false"
+                    cast-shadow="false"
+                    style="pointer-events: none"
+                    >
+                </i-sphere>
+            </i-point-light>
+        </i-scene>
+
+        <script>
+            // defines the default names for the HTML elements
+            infamous.html.useDefaultNames()
+
+            const {AutoLayoutNode} = infamous.layout
+            const {Box} = infamous.core
+            const scene = document.querySelector('#scene')
+
+            // Using the very useful ES6 template-strings feature (the backtick),
+            // VFL can be easily copy/pasted between code and the editor.
+            // If you can't use the backtick symbol, use an array with strings instead:
+            // const vfl = ['H:|-[row:[red(green,blue)]-[green]-[blue]]-|','V:|[row]|'];
+            const vfl = `
+                //viewport aspect-ratio:3/1 max-height:300
+                H:|-[row:[red(green,blue)]-[green]-[blue]]-|
+                V:|[row]|
+            `;
+
+            // Create autolayout controller with some colored divs
+            const autolayout = new AutoLayoutNode({
+                visualFormat: vfl,
+                // size: [600, 400], // FIXME why does this line cause lowclass stuff to break.
+            });
+
+            autolayout.size = (x,y,z,t) => [600+50*Math.sin(t/1000),400+50*Math.sin(t/1000),z]
+
+            const red = new Box
+            red.size.z = 20
+            red.style.background = 'red'
+            autolayout.add(red, 'red')
+
+            const green = new Box
+            green.size.z = 20
+            green.style.background = 'green'
+            autolayout.add(green, 'green')
+
+            const blue = new Box
+            blue.size.z = 20
+            blue.style.background = 'blue'
+            autolayout.add(blue, 'blue')
+
+            scene.add(autolayout); // add layout to the scene
+
+            const light = document.querySelector('#light')
+
+            document.addEventListener('pointermove', function(e) {
+                e.preventDefault()
+                light.position.x = e.clientX
+                light.position.y = e.clientY
+            })
+        </script>
+
+    </body>
+</html>

@@ -10,6 +10,8 @@ import Transformable from './Transformable'
 import Motor from './Motor'
 import Node from './Node'
 import Scene from './Scene'
+import Box from './Box'
+import Sphere from './Sphere'
 
 import * as Utility from './Utility'
 
@@ -26,6 +28,8 @@ export {
     Motor,
     Node,
     Scene,
+    Box,
+    Sphere,
 
     Utility,
 }

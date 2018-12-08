@@ -21,6 +21,7 @@ import Motor from '../core/Motor'
 const AutoLayoutNode = Class('AutoLayoutNode').extends(Node, ({ Super, Public, Private }) => ({
 
     static: {
+        defaultElementName: 'i-autolayout-node',
         DEFAULT_PARSE_OPTIONS: {
         	extended: true,
         	strict: false,
@@ -33,19 +34,23 @@ const AutoLayoutNode = Class('AutoLayoutNode').extends(Node, ({ Super, Public, P
      * @param {Object} [options] options to set.
      * @param {String|Array} [options.visualFormat] String or array of strings containing VFL.
      * @param {Object} [options.layoutOptions] Options such as viewport, spacing, etc...
-     * @return {AutoLayoutController} this
+     * @return {AutoLayoutNode} this
      */
-    constructor() {
-        const self = Super(this).constructor()
+    constructor(options) {
+        let self
+
+        try {
+            self = Super(this).constructor(options)
+        } catch(e) {
+            // TODO see if error messages differ in other browsers and catch those too.
+            if (e.message === 'Illegal constructor') { // Google Chrome
+                customElements.define(this.constructor.defaultElementName, this.constructor)
+                return new this.constructor(options)
+            }
+        }
 
     	Private(self)._layoutOptions = {};
     	Private(self)._idToNode = {};
-
-        // TODO replace with Motor render task
-    	// Private(self)._comp = self.addComponent({
-    	// 	onUpdate: () => Private(self)._layout(),
-    	// 	onSizeChange: () => Private(self)._layout(),
-    	// });
 
         // PORTED {
         Private(self)._layout = Private(self)._layout.bind(Private(self))
@@ -68,7 +73,7 @@ const AutoLayoutNode = Class('AutoLayoutNode').extends(Node, ({ Super, Public, P
     /**
      * Forces a reflow of the layout.
      *
-     * @return {AutoLayoutController} this
+     * @return {AutoLayoutNode} this
      */
     reflowLayout() {
         if (!Private(this)._reflowLayout) {
@@ -84,7 +89,7 @@ const AutoLayoutNode = Class('AutoLayoutNode').extends(Node, ({ Super, Public, P
      *
      * @param {String|Array} visualFormat String or array of strings containing VFL.
      * @param {Object} [parseOptions] Specify to override the parse options for the VFL.
-     * @return {AutoLayoutController} this
+     * @return {AutoLayoutNode} this
      */
     setVisualFormat(visualFormat, parseOptions) {
     	Private(this)._visualFormat = visualFormat;
@@ -101,7 +106,7 @@ const AutoLayoutNode = Class('AutoLayoutNode').extends(Node, ({ Super, Public, P
      * Sets the options such as viewport, spacing, etc...
      *
      * @param {Object} options Layout-options to set.
-     * @return {AutoLayoutController} this
+     * @return {AutoLayoutNode} this
      */
     setLayoutOptions(options) {
     	Private(this)._layoutOptions = options || {};
@@ -263,5 +268,3 @@ const AutoLayoutNode = Class('AutoLayoutNode').extends(Node, ({ Super, Public, P
 }))
 
 export default AutoLayoutNode
-
-module.exports = AutoLayoutController;
