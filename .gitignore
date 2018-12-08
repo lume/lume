@@ -12,18 +12,21 @@ yarn-error.log
 *.njsproj
 *.sln
 
-# ignore everything
+### ignore everything
 /*
 
-# but not source code or tests
+### except for the following:
+
+# folders
 !/src
 !/tests
+!/examples
 
-# not global build, to be published
+# global build, to be published
 !/global.js
 !/global.js.map
 
-# not config files
+# config files
 !/.builderrc
 !/.editorconfig
 !/.npmrc
