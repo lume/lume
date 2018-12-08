@@ -8,6 +8,17 @@ import Scene from './Scene'
 import Motor from './Motor'
 import {isInstanceof} from './Utility'
 
+window.addEventListener('error', (event) => {
+    const error = event.error
+    if (/Illegal constructor/i.test(error.message)) {
+        console.error(`
+            One of the reasons the following error can happen is if a Custom
+            Element is called with 'new' before being defined.
+            For other reasons, see: https://www.google.com/search?q=chrome%20illegal%20constructor
+        `)
+    }
+})
+
 let threeObject3d = null
 let domPlane = null
 
