@@ -65557,7 +65557,7 @@ function useDefaultNames() {
 
 
 
-const version = '21.0.5'
+const version = '21.0.6'
 
 
 /***/ })
