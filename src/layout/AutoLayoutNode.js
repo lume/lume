@@ -9,6 +9,16 @@
  * @copyright Joe Pea, 2018
  */
 
+// TODO:
+// - Use MutationObserver to watch for className changes and update laid-out nodes.
+// - Perhaps once we get to the ShadowDOM stuff we can use slots instead. It'll
+// be more powerful, letting us distribute any number of nodes into each layout
+// slot. Also it eliminated edge cases that we'll have to handle with the
+// className approach.
+// - Make an <i-visual-format> element that can contain visual format code to
+// re-use in multiple layouts.
+// - Allow visual-format to be fetch by path (like img src attribute).
+
 import Class from 'lowclass'
 import * as AutoLayout from 'autolayout'
 import Node from '../core/Node'
