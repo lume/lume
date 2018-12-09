@@ -16,21 +16,31 @@ import DOMNode from '../core/DOMNode'
 import DOMPlane from '../core/DOMPlane'
 import AmbientLight from '../core/AmbientLight'
 import Camera from '../core/Camera'
+import AutoLayoutNode from '../layout/AutoLayoutNode'
 
 function useDefaultNames() {
-    // TODO replace with a loop
-    if (!customElements.get(Scene.defaultElementName)) Scene.define()
-    if (!customElements.get(Node.defaultElementName)) Node.define()
-    if (!customElements.get(Mesh.defaultElementName)) Mesh.define()
-    if (!customElements.get(Box.defaultElementName)) Box.define()
-    if (!customElements.get(Sphere.defaultElementName)) Sphere.define()
-    if (!customElements.get(Plane.defaultElementName)) Plane.define()
-    if (!customElements.get(PointLight.defaultElementName)) PointLight.define()
-    if (!customElements.get(DOMNode.defaultElementName)) DOMNode.define()
-    if (!customElements.get(DOMPlane.defaultElementName)) DOMPlane.define()
-    if (!customElements.get(AmbientLight.defaultElementName)) AmbientLight.define()
-    if (!customElements.get(Camera.defaultElementName)) Camera.define()
-    //PushPaneLayout.define()
+
+    const classes = [
+        Scene,
+        Node,
+        Mesh,
+        Box,
+        Sphere,
+        Plane,
+        PointLight,
+        DOMNode,
+        DOMPlane,
+        AmbientLight,
+        Camera,
+        AutoLayoutNode,
+        // PushPaneLayout,
+    ]
+
+    for (const constructor of classes) {
+        if (!customElements.get(constructor.defaultElementName))
+            constructor.define()
+    }
+
 }
 
 export {

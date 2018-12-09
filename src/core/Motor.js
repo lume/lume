@@ -69,6 +69,9 @@ const Motor = Class('Motor', ({ Public, Private }) => ({
             self.taskIterationIndex -= 1
     },
 
+    once(fn) {
+        this.addRenderTask(time => (fn(time), false))
+    },
 
     // in the future we might have "babylon", "playcanvas", etc, on a
     // per scene basis.

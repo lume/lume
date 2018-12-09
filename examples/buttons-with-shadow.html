@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title> Buttons with shadow </title>
+
+        <!-- version 1.1.1+ doesn't work with MutationObservers on ShadowDOM roots. -->
+        <!-- <script src="https://unpkg.com/@webcomponents/webcomponentsjs@2.0.0/bundles/webcomponents-sd-ce.js"></script> -->
+        <!-- <script src="https://unpkg.com/@webcomponents/webcomponentsjs@1.1.0/webcomponents-bundle.js"></script> -->
+
+        <!-- version 1.1.0 is the last version where MutationObserver on a shadow root works. -->
+        <!-- <script src="https://unpkg.com/@webcomponents/webcomponentsjs@1.1.0/webcomponents-sd-ce.js"></script> -->
+        <script src="https://unpkg.com/@webcomponents/webcomponentsjs@1.1.0/webcomponents-lite.js"></script>
+
+        <script src="https://unpkg.com/vue@2.5.11/dist/vue.js"></script>
+        <script src="https://unpkg.com/tween.js@16.6.0/src/Tween.js"></script>
+
+        <!-- the library -->
+        <script src="../global.js"></script>
+
+    </head>
+    <body>
+
+        <!-- BUTTONS WITH SHADOW ======================================================== -->
+        <style>
+            body, html {
+                width: 100%;
+                height: 100%;
+                margin: 0;
+                padding: 0;
+                overflow: hidden;
+                font-family: sans-serif;
+                touch-action: none;
+            }
+            body, html {
+            }
+            i-node {
+                text-align: center;
+            }
+            #bg {
+                background: #62b997;
+            }
+            button {
+                width: 100%;
+                height: 100%;
+                white-space: nowrap;
+                border-radius: 0px;
+                border: 1px solid #913503;
+                background: #fc9156;
+                color: #913503;
+                outline: none;
+            }
+            button:focus,
+            button:hover {
+                background: #fa620f;
+                color: #481a01;
+                border-color: #742a02;
+            }
+        </style>
+
+        <template vue>
+            <!-- Lights and shadows are powered by WebGL, but written with HTML: -->
+            <i-scene
+                experimental-webgl="true"
+                id="scene"
+                background-color="black"
+                background-opacity="0"
+                style="perspective: 800px"
+                shadowmap-type="pcfsoft"
+                >
+
+                <i-ambient-light color="#404040" intensity="1"></i-ambient-light>
+
+                <i-dom-plane ref="plane" id="bg" size-mode="proportional proportional" size="1 1 0" color="#333">
+
+                    <i-node
+                        id="button-container"
+                        position="0 0 6"
+                        size="600 31 0"
+                        align="0.5 0.5 0"
+                        mount-point="0.5 0.5 0"
+                        >
+                        <i-dom-plane
+                            v-for="n in [0,1,2,3,4]"
+                            :key="n"
+                            size-mode="literal proportional"
+                            size="100 1 0"
+                            :align="`${n*0.25} 0 0`"
+                            :mount-point="`${n*0.25} 0 0`"
+                            color="#333"
+                            >
+                            <button>button {{n+1}}</button>
+                        </i-dom-plane>
+                    </i-node>
+
+                    <i-point-light
+                        id="light"
+                        color="white"
+                        position="300 300 120"
+                        size="0 0 0"
+                        cast-shadow="true"
+                        intensity="0.5"
+                        >
+                        <i-mesh
+                            has="sphere-geometry basic-material"
+                            size="10 10 10"
+                            color="white"
+                            receive-shadow="false"
+                            cast-shadow="false"
+                            style="pointer-events: none"
+                            >
+                        </i-mesh>
+                    </i-point-light>
+
+                </i-dom-plane>
+            </i-scene>
+        </template>
+
+        <div id="root"></div>
+
+        <script>
+            // defines the default names for the HTML elements
+            infamous.html.useDefaultNames()
+
+            new Vue({
+                el: '#root',
+                template: document.querySelector('[vue]').innerHTML,
+                mounted: function() {
+                    // console.log(' &&&&&&&&&&&&&&&&& rotation:', this.$refs.plane.rotation)
+                    // this.$refs.plane.rotation = (x,y,z) => [x,++y,z]
+                    // this.$refs.plane.size = (x,y,z,t) => [x, Math.abs(Math.sin(t/1000)), z]
+
+                    var light = document.querySelector('#light')
+                    light.threeObject3d.shadow.radius = 3
+                    light.threeObject3d.distance = 20000
+                    light.threeObject3d.shadow.bias = 0.00001
+
+                    // prevent default touch actions so we can move the light with touch
+                    document.querySelector('html').setAttribute('touch-action', 'none')
+                    document.querySelector('body').setAttribute('touch-action', 'none')
+
+                    document.addEventListener('pointermove', function(e) {
+                        e.preventDefault()
+                        light.position.x = e.clientX
+                        light.position.y = e.clientY
+                    })
+
+                    var Motor = infamous.core.Motor
+                    var downTween, upTween, pressedButton
+
+                    // On mouse down animate the button downward
+                    document.addEventListener('pointerdown', function(e) {
+                        if ( is( e.target, 'button' ) ) {
+
+                            pressedButton = e.target
+
+                            if (upTween) {
+                                upTween.stop()
+                                upTween = null
+                            }
+
+                            downTween = new TWEEN.Tween(e.target.parentNode.position)
+                                .to({z: -6}, 75)
+                                .start()
+                                .onComplete(function () { downTween = null })
+
+                            Motor.addRenderTask(function(time) {
+                                if (!downTween) return false
+                                downTween.update(time)
+                            })
+
+                        }
+                    })
+
+                    // On mouse up animate the button upward
+                    document.addEventListener('pointerup', function(e) {
+                        if ( pressedButton ) {
+
+                            if (downTween) {
+                                downTween.stop()
+                                downTween = null
+                            }
+
+                            upTween = new TWEEN.Tween(pressedButton.parentNode.position)
+                                .to({z: 0}, 75)
+                                .start()
+                                .onComplete(function() { upTween = null })
+
+                            Motor.addRenderTask(function(time) {
+                                if (!upTween) return false
+                                upTween.update(time)
+                            })
+
+                        }
+                    })
+
+                    // The following is a temporary hack because opacity isn't
+                    // exposed through the HTML API yet. work-in-progress...
+                    var scene = document.querySelector('#scene')
+                    setTimeout(function() {
+                        // TODO the stuff in this function should be doable via the HTML
+
+                        Array.from( document.querySelectorAll('i-dom-plane') ).forEach(function(n) {
+                            n.threeObject3d.material.opacity = 0.3
+                        })
+
+                        document.querySelector('#bg')
+                            .threeObject3d.material.opacity = 0.3
+                        document.querySelector('#bg')
+                            .threeObject3d.material.dithering = true
+
+                        scene._needsToBeRendered()
+                    }, 0)
+
+                    function is( el, selector ) {
+                        if ( [].includes.call(
+                            document.querySelectorAll( selector ),
+                            el
+                        ) ) return true
+                        return false
+                    }
+                },
+            })
+        </script>
+
+    </body>
+</html>

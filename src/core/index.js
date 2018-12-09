@@ -10,6 +10,12 @@ import Transformable from './Transformable'
 import Motor from './Motor'
 import Node from './Node'
 import Scene from './Scene'
+import Box from './Box'
+import Sphere from './Sphere'
+import DOMPlane from './DOMPlane'
+import DOMNode from './DOMNode'
+import PointLight from './PointLight'
+import AmbientLight from './AmbientLight'
 
 import * as Utility from './Utility'
 
@@ -26,6 +32,12 @@ export {
     Motor,
     Node,
     Scene,
+    Box,
+    Sphere,
+    DOMPlane,
+    DOMNode,
+    PointLight,
+    AmbientLight,
 
     Utility,
 }

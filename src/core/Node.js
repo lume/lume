@@ -1,22 +1,26 @@
 import Class from 'lowclass'
-import Mixin from './Mixin'
+import {Object3D} from 'three'
 import 'geometry-interfaces'
+import Mixin from './Mixin'
 import ImperativeBase, {initImperativeBase} from './ImperativeBase'
 import { default as HTMLInterface } from '../html/HTMLNode'
 import Scene from './Scene'
-import {
-    Object3D,
-} from 'three'
+import {props, mapPropTo} from './props'
 
 const radiansPerDegree = 1 / 360 * 2*Math.PI
 
 initImperativeBase()
 
-let Node = Mixin(Base =>
+let Node = Mixin(Base => {
+    const Parent = ImperativeBase.mixin( Base )
 
-    Class('Node').extends( ImperativeBase.mixin( Base ), ({ Super }) => ({
+    return Class('Node').extends( Parent, ({ Super }) => ({
         static: {
             defaultElementName: 'i-node',
+            props: {
+                ...Parent.props,
+                visible: {...mapPropTo(props.boolean, 'threeObject3d'), default: true},
+            },
         },
 
         /**
@@ -88,6 +92,15 @@ let Node = Mixin(Base =>
             return new Object3D
         },
 
+        updated(oldProps, newProps, modifiedProps) {
+            Super(this).updated(oldProps, newProps, modifiedProps)
+
+            if (modifiedProps.visible) {
+                this._elementOperations.shouldRender(this.visible)
+                this._needsToBeRendered()
+            }
+        },
+
         /**
          * Get the Scene that this Node is in, null if no Scene. This is recursive
          * at first, then cached.
@@ -149,7 +162,7 @@ let Node = Mixin(Base =>
         },
     }))
 
-)
+})
 
 // TODO for now, hard-mixin the HTMLInterface class. We'll do this automatically later.
 Node = Node.mixin(HTMLInterface)

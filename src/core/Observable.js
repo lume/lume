@@ -36,7 +36,7 @@ Mixin(Base =>
             if (this._eventMap.size === 0) this._eventMap = null
         },
 
-        trigger(eventName, data) {
+        emit(eventName, data) {
             if (!this._eventMap || !this._eventMap.has(eventName)) return
 
             const callbacks = this._eventMap.get(eventName)
@@ -53,9 +53,14 @@ Mixin(Base =>
             }
         },
 
-        // alias for trigger
+        // alias for emit
+        trigger(...args) {
+            return this.emit(...args)
+        },
+
+        // alias for emit
         triggerEvent(...args) {
-            return this.trigger(...args)
+            return this.emit(...args)
         },
     }))
 

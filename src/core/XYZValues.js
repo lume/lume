@@ -61,6 +61,10 @@ Class( 'XYZValues' ).extends( native(Observable), ({ Private, Super }) => ({
         return this
     },
 
+    toArray() {
+        return [this.x, this.y, this.z]
+    },
+
     fromObject(object) {
         this.set(object.x, object.y, object.z)
         return this
@@ -69,6 +73,10 @@ Class( 'XYZValues' ).extends( native(Observable), ({ Private, Super }) => ({
     fromString(string) {
         this.fromArray(this.stringToArray(string))
         return this
+    },
+
+    toString() {
+        return `${this.x} ${this.y} ${this.z}`
     },
 
     deserializeValue(prop, string) {
@@ -83,10 +91,6 @@ Class( 'XYZValues' ).extends( native(Observable), ({ Private, Super }) => ({
         if (length > 1) values[1] = this.deserializeValue('y', values[1])
         if (length > 2) values[2] = this.deserializeValue('z', values[2])
         return values
-    },
-
-    toString() {
-        return `${this.x} ${this.y} ${this.z}`
     },
 
     fromDefault() {

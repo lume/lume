@@ -27,7 +27,9 @@
   "dependencies": {
     "@awaitbox/document-ready": "^1.0.10",
     "@babel/runtime": "7.0.0-beta.46",
+    "@trusktr/skatejs": "^5.2.40001",
     "army-knife": "^0.2.1",
+    "autolayout": "^0.7.0",
     "element-behaviors": "^2.0.1",
     "famous": "trusktr/famous#commonjs",
     "famousify": "^0.1.5",
@@ -41,13 +43,12 @@
     "jss-px": "^1.0.0",
     "jss-vendor-prefixer": "^1.0.0",
     "lowclass": "^4.2.1",
-    "@trusktr/skatejs": "^5.2.40001",
     "three": "^0.88.0"
   },
   "devDependencies": {
     "all-contributors-cli": "^4.4.0",
     "builder": "^3.2.3",
-    "builder-js-package": "trusktr/builder-js-package#671ff4f4c155a988926557043a5a1f1b62e4d192",
+    "builder-js-package": "trusktr/builder-js-package#358289a96a3d211d25b6bbc21bcf4719dc5ee80a",
     "docpress": "0.7.1"
   },
   "docpress": {
