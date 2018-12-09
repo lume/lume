@@ -12,6 +12,10 @@ import Node from './Node'
 import Scene from './Scene'
 import Box from './Box'
 import Sphere from './Sphere'
+import DOMPlane from './DOMPlane'
+import DOMNode from './DOMNode'
+import PointLight from './PointLight'
+import AmbientLight from './AmbientLight'
 
 import * as Utility from './Utility'
 
@@ -30,6 +34,10 @@ export {
     Scene,
     Box,
     Sphere,
+    DOMPlane,
+    DOMNode,
+    PointLight,
+    AmbientLight,
 
     Utility,
 }

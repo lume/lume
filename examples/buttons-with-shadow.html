@@ -197,6 +197,8 @@
                     // exposed through the HTML API yet. work-in-progress...
                     var scene = document.querySelector('#scene')
                     setTimeout(function() {
+                        // TODO the stuff in this function should be doable via the HTML
+
                         Array.from( document.querySelectorAll('i-dom-plane') ).forEach(function(n) {
                             n.threeObject3d.material.opacity = 0.3
                         })

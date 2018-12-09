@@ -28,7 +28,8 @@ function createGenericPropType(Type, override = {}) {
     }
 }
 
-export const props = Object.assign({}, skateProps, {
+export const props = {
+    ...skateProps,
     boolean: {
         ...skateProps.boolean,
         deserialize: val => val != null && val !== 'false'
@@ -46,7 +47,7 @@ export const props = Object.assign({}, skateProps, {
     XYZNonNegativeValues: createXYZPropType(XYZNonNegativeValues),
     XYZStringValues: createXYZPropType(XYZStringValues),
     XYZSizeModeValues: createXYZPropType(XYZSizeModeValues),
-})
+}
 
 // map a SkateJS prop value to a sub-object on the instance
 export const mapPropTo = (prop, subObj) => ({
