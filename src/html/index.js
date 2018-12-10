@@ -1,9 +1,11 @@
-import DeclarativeBase from './DeclarativeBase'
-import HTMLNode from './HTMLNode'
-import HTMLPushPaneLayout from './HTMLPushPaneLayout'
-import HTMLScene from './HTMLScene'
-import PushPaneLayout from '../components/PushPaneLayout'
-import WebComponent from './WebComponent'
+export DeclarativeBase from './DeclarativeBase'
+export HTMLNode from './HTMLNode'
+export HTMLScene from './HTMLScene'
+export WebComponent from './WebComponent'
+// export HTMLPushPaneLayout from './HTMLPushPaneLayout'
+// export PushPaneLayout from '../components/PushPaneLayout'
+
+export * as behaviors from './behaviors'
 
 import Scene from '../core/Scene'
 import Node from '../core/Node'
@@ -18,7 +20,7 @@ import AmbientLight from '../core/AmbientLight'
 import Camera from '../core/Camera'
 import AutoLayoutNode from '../layout/AutoLayoutNode'
 
-function useDefaultNames() {
+export function useDefaultNames() {
 
     const classes = [
         Scene,
@@ -41,13 +43,4 @@ function useDefaultNames() {
             constructor.define()
     }
 
-}
-
-export {
-    DeclarativeBase,
-    HTMLNode,
-    HTMLPushPaneLayout,
-    HTMLScene,
-    WebComponent,
-    useDefaultNames,
 }

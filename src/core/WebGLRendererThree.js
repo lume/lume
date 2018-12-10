@@ -1,4 +1,4 @@
-import WEBVR from './WebVR.js'
+import WEBVR from '../lib/three/WebVR.js'
 
 import {
     //PerspectiveCamera,

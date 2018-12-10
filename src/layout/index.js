@@ -1,5 +1,1 @@
-import AutoLayoutNode from './AutoLayoutNode'
-
-export {
-    AutoLayoutNode
-}
+export AutoLayoutNode from './AutoLayoutNode'
