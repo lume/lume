@@ -1,6 +1,9 @@
 ### ignore everything
 /*
 
+# ignore all hidden files, those have to be manually added to the repo.
+/**/.*
+
 ### except for the following:
 
 # folders
