@@ -2,9 +2,6 @@ import Class from 'lowclass'
 import BaseMeshBehavior from './BaseMeshBehavior'
 import { props } from '../../core/props'
 
-import * as THREE from 'three'
-window.THREE = THREE
-
 // base class for geometry behaviors
 export default
 Class( 'BaseMaterialBehavior' ).extends( BaseMeshBehavior, ({ Super }) => ({

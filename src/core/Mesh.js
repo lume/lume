@@ -3,7 +3,7 @@ import { Mesh as ThreeMesh } from 'three'
 import Node from './Node'
 import { props, mapPropTo } from './props'
 
-// register behaviors that can be used with this class.
+// register behaviors that can be used on this element
 // TODO: maybe useDefaultNames() should register these, otherwise the user can
 // choose names for better flexibility. See TODO NAMING below.
 import '../html/behaviors/BasicMaterialBehavior'
