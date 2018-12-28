@@ -28,7 +28,6 @@ Class( 'BaseMeshBehavior' ).extends( native( withUpdate( forwardProps ) ), ({ Pu
         Super( this ).connectedCallback()
 
         // TODO might have to defer so that calculatedSize is already calculated
-        //console.log('hmmmmmmmmmmmmmmmmmmmmmmmmmmmm')
         Protected(this).setMeshComponent(
             this.element,
             this.constructor.type,

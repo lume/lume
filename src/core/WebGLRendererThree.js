@@ -9,12 +9,13 @@ import {
 } from 'three'
 
 import Class from 'lowclass'
+import {CSS3DRendererNested} from '../lib/three/CSS3DRendererNested'
 
 const sceneStates = new WeakMap
 
 // A singleton responsible for setting up and drawing a WebGL scene for a given
 // infamous/core/Scene using Three.js
-const WebGLRendererThree = Class('WebGLRendererThree', {
+const WebGLRendererThree = Class('WebGLRendererThree', { // TODO rename
     initGl(scene) {
         let sceneState = sceneStates.has(scene)
 
@@ -31,9 +32,11 @@ const WebGLRendererThree = Class('WebGLRendererThree', {
 
                 antialias: true,
             } ),
+
+            cssRenderer: new CSS3DRendererNested,
         })
 
-        const { renderer } = sceneState
+        const { renderer, cssRenderer } = sceneState
 
         // TODO: make configurable by property/attribute
         renderer.setPixelRatio(window.devicePixelRatio)
@@ -45,12 +48,15 @@ const WebGLRendererThree = Class('WebGLRendererThree', {
 
         // TODO? Maybe the html/scene.js element should be responsible for
         // making this, so that DOM logic is encapsulated there?
-        scene._canvasContainer.appendChild( renderer.domElement )
+        scene._glLayer.appendChild( renderer.domElement )
+        scene._cssLayer.appendChild( cssRenderer.domElement )
     },
 
     drawScene(scene) {
-        const {renderer /* , scene: threeScene, camera */} = sceneStates.get(scene)
+        const {renderer, cssRenderer} = sceneStates.get(scene)
+
         renderer.render(scene.threeObject3d, scene.threeCamera)
+        cssRenderer.render(scene.threeCSS3DObject, scene.threeCamera)
     },
 
     // TODO FIXME This is tied to the `sizechange` event of Scene, which means
@@ -66,6 +72,7 @@ const WebGLRendererThree = Class('WebGLRendererThree', {
         scene._updateCameraProjection()
 
         state.renderer.setSize( scene._calculatedSize.x, scene._calculatedSize.y )
+        state.cssRenderer.setSize( scene._calculatedSize.x, scene._calculatedSize.y )
 
         // Indirectly causes Motor to call this.drawScene(). It's important to
         // call this rather than just this.drawScene() directly because Motor
@@ -107,13 +114,14 @@ const WebGLRendererThree = Class('WebGLRendererThree', {
             renderer.setAnimationLoop( fn )
     },
 
-    // This needs work: at the moment it has only been tested toggling it on
-    // once and nothing more.
+    // TODO: at the moment this has only been tested toggling it on
+    // once. Should we be able to turn it off too (f.e. the vr attribute is removed)?
     enableVR( scene, enable ) {
         const renderer = sceneStates.get( scene ).renderer
         renderer.vr.enabled = enable
     },
 
+    // TODO the UI here should be configurable via HTML
     createDefaultWebVREntryUI( scene ) {
 
         const renderer = sceneStates.get( scene ).renderer

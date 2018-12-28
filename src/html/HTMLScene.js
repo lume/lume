@@ -36,9 +36,14 @@ const HTMLScene = DeclarativeBase.subclass('HTMLScene', ({ Public, Private, Supe
                 }
             </style>
             <div class="i-scene-CSS3DLayer">
-                <slot></slot>
+                ${ /* WebGLRendererThree places the CSS3DRendererNested
+                domElement here, which contains a <slot> element that child
+                elements of a Scene are distributed into (rendered relative to).
+                */ ''}
             </div>
-            <div class="i-scene-WebGLLayer"></div>
+            <div class="i-scene-WebGLLayer">
+                ${ /* WebGLRendererThree places the Three.js <canvas> element here. */ ''}
+            </div>
             <div class="i-scene-MiscellaneousLayer">
                 <slot name="misc"></slot>
             </div>
@@ -46,7 +51,8 @@ const HTMLScene = DeclarativeBase.subclass('HTMLScene', ({ Public, Private, Supe
 
         // TODO make this similar to "package protected". It is public for now
         // because WebGLRendererThree accesses it.
-        self._canvasContainer = privateThis._root.querySelector('.i-scene-WebGLLayer')
+        self._glLayer = privateThis._root.querySelector('.i-scene-WebGLLayer')
+        self._cssLayer = privateThis._root.querySelector('.i-scene-CSS3DLayer')
 
         return self
     },
