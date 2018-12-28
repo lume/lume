@@ -44,16 +44,16 @@
                 height: 100%;
                 white-space: nowrap;
                 border-radius: 0px;
-                border: 1px solid #913503;
-                background: #fc9156;
-                color: #913503;
+                border: 1px solid #494455;
+                background: #e96699;
+                color: #494455;
                 outline: none;
             }
             button:focus,
             button:hover {
-                background: #fa620f;
-                color: #481a01;
-                border-color: #742a02;
+                background: #0099d9;
+                color: #0a3359;
+                border-color: #0a3359;
             }
         </style>
 
@@ -65,12 +65,12 @@
                 background-color="black"
                 background-opacity="0"
                 style="perspective: 800px"
-                shadowmap-type="pcfsoft"
-                >
+                shadowmap-type="pcfsoft" NOTE="one of basic, pcf, pcfsoft"
+            >
 
-                <i-ambient-light color="#404040" intensity="1"></i-ambient-light>
+                <i-ambient-light color="#ffffff" intensity="0"></i-ambient-light>
 
-                <i-dom-plane ref="plane" id="bg" size-mode="proportional proportional" size="1 1 0" color="#333">
+                <i-dom-plane ref="plane" id="bg" size-mode="proportional proportional" size="1 1 0" color="#444">
 
                     <i-node
                         id="button-container"
@@ -86,7 +86,7 @@
                             size="100 1 0"
                             :align="`${n*0.25} 0 0`"
                             :mount-point="`${n*0.25} 0 0`"
-                            color="#333"
+                            color="#444"
                             >
                             <button>button {{n+1}}</button>
                         </i-dom-plane>
@@ -98,7 +98,7 @@
                         position="300 300 120"
                         size="0 0 0"
                         cast-shadow="true"
-                        intensity="0.5"
+                        intensity="0.8"
                         >
                         <i-mesh
                             has="sphere-geometry basic-material"
@@ -130,9 +130,9 @@
                     // this.$refs.plane.size = (x,y,z,t) => [x, Math.abs(Math.sin(t/1000)), z]
 
                     var light = document.querySelector('#light')
-                    light.threeObject3d.shadow.radius = 3
-                    light.threeObject3d.distance = 20000
-                    light.threeObject3d.shadow.bias = 0.00001
+                    light.threeObject3d.shadow.radius = 0
+                    light.threeObject3d.distance = 800
+                    light.threeObject3d.shadow.bias = -0.0001
 
                     // prevent default touch actions so we can move the light with touch
                     document.querySelector('html').setAttribute('touch-action', 'none')
