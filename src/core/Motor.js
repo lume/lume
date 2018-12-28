@@ -205,16 +205,8 @@ const Motor = Class('Motor', ({ Public, Private }) => ({
 
                 // keep track of which scenes are modified so we can render webgl
                 // only for those scenes.
-                // TODO FIXME: at this point, a node should always have a scene,
-                // otherwise it should not ever be rendered here, but turns out
-                // some nodes are getting into this queue without a scene. We
-                // shouldn't need the conditional check for node._scene, and it
-                // will save CPU by not allowing the code to get here in that case.
-                // UPDATE: it may be because we're using `node._scene` which is
-                // null unless `node.scene` was first used. Maybe we just need to
-                // use `node.scene`.
-                if (node._scene && !this.modifiedScenes.includes(node._scene))
-                    this.modifiedScenes.push(node._scene)
+                if (!this.modifiedScenes.includes(node.scene))
+                    this.modifiedScenes.push(node.scene)
             }
 
             // Update world matrices of the subtrees.
