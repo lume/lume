@@ -5,8 +5,4 @@ export default {
 
     position: 'static',
     overflow: 'hidden',
-
-    // Constant perspective for now.
-    perspective: 1000,
-    //perspectiveOrigin: '25%',
 }

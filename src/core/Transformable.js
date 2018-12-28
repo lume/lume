@@ -12,7 +12,7 @@ Mixin(Base => {
 
     // Transformable extends TreeNode (indirectly through Sizeable) because it
     // needs to be aware of its `parent` when calculating align adjustments.
-    const Transformable = Class('Transformable').extends( Parent, ({ Super }) => ({
+    const Transformable = Class('Transformable').extends( Parent, ({ Super, Public, Protected }) => ({
 
         static: {
             props: {
@@ -44,7 +44,6 @@ Mixin(Base => {
                 align:      new XYZNumberValues(0, 0, 0),
                 mountPoint: new XYZNumberValues(0, 0, 0),
                 opacity:    1,
-                transform:  new window.DOMMatrix, // untracked by SkateJS
             })
         },
 
@@ -63,6 +62,58 @@ Mixin(Base => {
                 () => this.trigger('propertychange', 'align'))
             this._properties.mountPoint.on('valuechanged',
                 () => this.trigger('propertychange', 'mountPoint'))
+
+            // this is also triggered by Sizeable.updated, besides the above lines
+            this.on('propertychange', prop => this._onPropChange(prop))
+        },
+
+        _onPropChange(prop) {
+            if (
+                // position not handled here because it is handled in _calculateMatrix
+                // prop === 'position' ||
+                prop === 'rotation' ||
+                prop === 'scale'
+            ) {
+                Protected(this)['_update_' + prop]()
+            }
+        },
+
+        protected: {
+            _update_rotation() {
+                const pub = Public(this)
+
+                pub.threeObject3d.rotation.set(
+                    pub.rotation.x,
+                    pub.rotation.y,
+                    pub.rotation.z,
+                )
+
+                const childOfScene =
+                    pub.threeCSS3DObject.parent &&
+                    pub.threeCSS3DObject.parent.type === 'Scene'
+
+                pub.threeCSS3DObject.rotation.set(
+                    (childOfScene ? 1 : -1 ) * pub.rotation.x,
+                    pub.rotation.y,
+                    (childOfScene ? 1 : -1 ) * pub.rotation.z,
+                )
+            },
+
+            _update_scale() {
+                const pub = Public(this)
+
+                pub.threeObject3d.scale.set(
+                    pub.scale.x,
+                    pub.scale.y,
+                    pub.scale.z,
+                )
+
+                pub.threeCSS3DObject.scale.set(
+                    pub.scale.x,
+                    pub.scale.y,
+                    pub.scale.z,
+                )
+            },
         },
 
         /**
@@ -78,26 +129,13 @@ Mixin(Base => {
          * move _calcSize to a render task.
          */
         _calculateMatrix () {
-            // NOTE The only way to get an identity matrix with DOMMatrix API
-            // in the current spec is to make a new DOMMatrix. This is wasteful
-            // because it creates new memory. It'd be nice to have an
-            // identity() method or similar.
-            const matrix = new window.DOMMatrix
-
-            // TODO FIXME For some reason, the root node (i.e. the Scene)
-            // should not be translated or else the WebGL rendering glitches
-            // out (this happened with my vanilla WebGL implementation as well
-            // as with Three.js), so we return Identity if there's no parent.
-            if (!this.parent) return matrix
-
             const properties = this._properties
             const thisSize = this._calculatedSize
 
             // THREE-COORDS-TO-DOM-COORDS
-            // translate the "mount point" back to the top/left of the element.
-            // We offset this in ElementOperations#applyTransform. The Y value
-            // is inverted because we invert it below.
-            const threeJsPostAdjustment = [ thisSize.x/2, thisSize.y/2, 0 ]
+            // translate the "mount point" back to the top/left of the object
+            // (in Three.js it is in the center of the object).
+            const threeJsPostAdjustment = [ thisSize.x/2, thisSize.y/2, 0 ] // TODO handle Z
 
             const alignAdjustment = [0,0,0]
 
@@ -132,53 +170,55 @@ Mixin(Base => {
             appliedPosition[1] = position.y + alignAdjustment[1] - mountPointAdjustment[1]
             appliedPosition[2] = position.z + alignAdjustment[2] - mountPointAdjustment[2]
 
-            matrix.translateSelf(
+            this.threeObject3d.position.set(
                 appliedPosition[0] + threeJsPostAdjustment[0],
                 // THREE-COORDS-TO-DOM-COORDS negate the Y value so that
-                // Three.js' positive Y is downward.
+                // Three.js' positive Y is downward like DOM.
                 -(appliedPosition[1] + threeJsPostAdjustment[1]),
                 appliedPosition[2] + threeJsPostAdjustment[2]
             )
 
-            // origin calculation will go here:
+            const childOfScene =
+                this.threeCSS3DObject.parent &&
+                this.threeCSS3DObject.parent.type === 'Scene'
+
+            if (childOfScene) {
+                this.threeCSS3DObject.position.set(
+                    appliedPosition[0] + threeJsPostAdjustment[0],
+                    // THREE-COORDS-TO-DOM-COORDS negate the Y value so that
+                    // Three.js' positive Y is downward like DOM.
+                    -(appliedPosition[1] + threeJsPostAdjustment[1]),
+                    appliedPosition[2] + threeJsPostAdjustment[2]
+                )
+            }
+            else {
+                this.threeCSS3DObject.position.set(
+                    appliedPosition[0],
+                    -appliedPosition[1],
+                    appliedPosition[2]
+                )
+            }
+
+            // TODO origin calculation will go here:
             // - move by negative origin before rotating.
 
             // apply each axis rotation, in the x,y,z order.
-            // THREE-COORDS-TO-DOM-COORDS: X rotation is negated here so that
-            // Three rotates on X in the same direction as CSS 3D. It is
-            // negated again when applied to DOM elements so they rotate as
-            // expected in CSS 3D.
+            // THREE-COORDS-TO-DOM-COORDS: X/Z rotation is negated here so that
+            // DOM rotates in the same direction as Three.js (right handed).
+            // We only invert X and Z here because we already inverted the Y
+            // axis above which iverts Y rotation.
             // TODO #151: make rotation order configurable
-            const {rotation} = properties
-            matrix.rotateAxisAngleSelf(1,0,0, rotation.x)
-            matrix.rotateAxisAngleSelf(0,1,0, rotation.y)
-            matrix.rotateAxisAngleSelf(0,0,1, rotation.z)
+            // if (!childOfScene) this.threeCSS3DObject.rotation.x = -this.rotation.x
+            // if (!childOfScene) this.threeCSS3DObject.rotation.z = -this.rotation.z
 
-            // origin calculation will go here:
+            // TODO origin calculation will go here:
             // - move by positive origin after rotating.
 
-            return matrix
+            this.threeObject3d.updateMatrix()
         },
 
-        // TODO: fix _isIdentity in DOMMatrix, it is returning true even if false.
         _calculateWorldMatricesInSubtree() {
-            this._calculateWorldMatrixFromParent()
-
-            const children = this.subnodes
-            for (let i=0, l=children.length; i<l; i+=1) {
-                children[i]._calculateWorldMatricesInSubtree()
-            }
-        },
-
-        _calculateWorldMatrixFromParent() {
-            const parent = this.parent
-
-            if (parent)
-                //this._worldMatrix = parent._worldMatrix.multiply(this._properties.transform)
-                this._worldMatrix = this._properties.transform.multiply(parent._worldMatrix)
-            else
-                this._worldMatrix = this._properties.transform
-
+            this.threeObject3d.updateMatrixWorld()
             this.trigger('worldMatrixUpdate')
         },
 
@@ -187,8 +227,8 @@ Mixin(Base => {
             if ( Super(this)._render ) Super(this)._render()
 
             // TODO: only run this when necessary (f.e. not if only opacity
-            // changed)
-            this._properties.transform = this._calculateMatrix()
+            // changed, only if position/align/mountPoint changed, etc)
+            this._calculateMatrix()
         },
 
         /**

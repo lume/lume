@@ -7,6 +7,7 @@ import Node from './Node'
 import Scene from './Scene'
 import Motor from './Motor'
 import {isInstanceof} from './Utility'
+import {CSS3DObjectNested} from '../lib/three/CSS3DRendererNested'
 
 window.addEventListener('error', (event) => {
     const error = event.error
@@ -105,13 +106,16 @@ export function initImperativeBase() {
             initWebGl() {
                 this.threeObject3d = this.makeThreeObject3d()
 
-                // we don't let Three update local matrices, we provide world
-                // matrices ourselves.
+                // we don't let Three update local matrices automatically, we do
+                // it ourselves in Transformable._calculateMatrix and
+                // Transformable._calculateWorldMatricesInSubtree
                 this.threeObject3d.matrixAutoUpdate = false
+
+                this.threeCSS3DObject = new CSS3DObjectNested(this)
             },
 
             disposeWebGL() {
-                console.log( 'TODO: dispose WebGL when it is no longer needed' )
+                console.warn( 'TODO: dispose WebGL when it is no longer needed' )
             },
 
             makeThreeObject3d() {
@@ -125,31 +129,12 @@ export function initImperativeBase() {
             connected() {
                 this._lastKnownParent = this.parent
                 this.parent.threeObject3d.add(this.threeObject3d)
-                this.on('worldMatrixUpdate', this._onWorldMatrixUpdate, this)
+                this.parent.threeCSS3DObject.add(this.threeCSS3DObject)
             },
             disconnected() {
                 this._lastKnownParent.threeObject3d.remove(this.threeObject3d)
-                this.off('worldMatrixUpdate', this._onWorldMatrixUpdate)
-            },
-
-            _onWorldMatrixUpdate() {
-                threeObject3d = this.threeObject3d
-                domPlane = this.threeDOMPlane
-
-                // Three Matrix4#elements is in the same major order as our
-                // DOMMatrix#_matrix. If we were to use Matrix4#set here, we'd have
-                // to swap the order when passing in our DOMMatrix#_matrix.
-                // Three.js r88, Issue #12602
-                for (let i=0; i<16; i+=1) {
-                    threeObject3d.matrixWorld.elements[i] = this._worldMatrix._matrix[i]
-                    if ( domPlane )
-                        domPlane.matrixWorld.elements[i] = this._worldMatrix._matrix[i]
-                }
-
-                // Since we're not letting Three auto update matrices, we also need
-                // to update the inverse matrix for cameras.
-                if ( threeObject3d instanceof ThreeCamera )
-                    threeObject3d.matrixWorldInverse.getInverse( threeObject3d.matrixWorld );
+                this._lastKnownParent.threeCSS3DObject.remove(this.threeCSS3DObject)
+                this._lastKnownParent = null
             },
 
             /**
@@ -280,7 +265,7 @@ export function initImperativeBase() {
 
             _render(timestamp) {
                 if ( Super(this)._render ) Super(this)._render()
-                // applies the transform matrix to the element's style property.
+
                 this._elementOperations.applyImperativeNodeProperties(this)
             },
 

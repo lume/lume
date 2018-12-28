@@ -85,6 +85,8 @@ let Scene = Mixin(Base => {
             // maybe keep this in sceneState in WebGLRendererThree
             Super(this).initWebGl()
 
+            this.threeCSS3DObject = new ThreeScene
+
             // We don't let Three update any matrices, we supply our own world
             // matrices.
             this.threeObject3d.autoUpdate = false
@@ -283,14 +285,16 @@ let Scene = Mixin(Base => {
         },
 
         updated(oldProps, oldState, moddedProps) {
-            Super(this).updated(oldProps, oldState, moddedProps)
-
             if (!this.isConnected) return
 
             if (moddedProps.experimentalWebgl) {
                 if (this.experimentalWebgl) this.initWebGl()
-                else this.disposeWebGL()
+                else this.disposeWebGL() // <-- TODO, currently a no-op
             }
+
+            // call super.updated() after the above initWebGl() so that WebGL
+            // stuff will be ready in super.updated()
+            Super(this).updated(oldProps, oldState, moddedProps)
 
             if (this.experimentalWebgl) {
                 if (moddedProps.backgroundColor) {

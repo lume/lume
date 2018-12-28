@@ -100,49 +100,6 @@ Class('ElementOperations', {
     },
 
     /**
-     * Apply the DOMMatrix value to the style of this Node's element.
-     */
-    applyTransform (domMatrix) {
-
-        // for now, template strings need to be on one line, otherwise Meteor
-        // users will have bugs from Meteor's injected line numbers. See:
-        // https://github.com/meteor/meteor/issues/9160
-        //
-        // THREE-COORDS-TO-DOM-COORDS
-        // -- We negate the 13th matrix value to make the DOM's positive Y
-        // direction downward again because we first negated the value in
-        // Transformable when calculating world transforms so that
-        // Three.js positive Y would go downward like DOM.
-        // -- We also translate the DOM element into the middle of the view
-        // (similar to align and mountPoint values of 0.5) so that the DOM
-        // element is aligned with the Three mesh in the middle of the view,
-        // then in Transformable#_calculateMatrix we adjust the world matrix
-        // back into DOM coordinates at the top/left.
-        // -- We apply opposite X rotation to counter the negated X rotation in
-        // Transformable for the Three.js objects.
-        //
-        // TODO #66: moving _calcSize to a render task affets this code
-        const el = this.element
-        const elSize = el._calculatedSize
-        const parentSize = el.parent._calculatedSize
-
-        // THREE-COORDS-TO-DOM-COORDS: moves DOM elements to the Three.js
-        // coordinate space (align and mountPoint are in the middle of the
-        // view). The threeJsPostAdjustment in Transformable moves both the
-        // pre-adjusted DOM element and the Three objects into the top/left
-        // coordinate space.
-        const threeJsPreAdjustment = `translate3d(calc(${parentSize.x/2}px - ${elSize.x/2}px), calc(${parentSize.y/2}px - ${elSize.y/2}px), 0px)`
-
-        const cssMatrixString = `${threeJsPreAdjustment} matrix3d( ${ domMatrix.m11 }, ${ domMatrix.m12 }, ${ domMatrix.m13 }, ${ domMatrix.m14 }, ${ domMatrix.m21 }, ${ domMatrix.m22 }, ${ domMatrix.m23 }, ${ domMatrix.m24 }, ${ domMatrix.m31 }, ${ domMatrix.m32 }, ${ domMatrix.m33 }, ${ domMatrix.m34 }, ${ domMatrix.m41 }, ${ -domMatrix.m42 }, ${ domMatrix.m43 }, ${ domMatrix.m44 })`;
-
-        // THREE-COORDS-TO-DOM-COORDS: rotate X and Z the opposite direction for Three.js
-        domMatrix.rotateAxisAngleSelf( 0, 0, 1, -2 * el.rotation.z )
-        domMatrix.rotateAxisAngleSelf( 1, 0, 0, -2 * el.rotation.x )
-
-        this.applyStyle('transform', cssMatrixString)
-    },
-
-    /**
      * [applySize description]
      */
     applySize (size) {
@@ -163,7 +120,6 @@ Class('ElementOperations', {
         // Only Node is Transformable
         if (node instanceof Node) {
             this.applyOpacity(node._properties.opacity)
-            this.applyTransform(node._properties.transform)
         }
 
         // But both Node and Scene are Sizeable
