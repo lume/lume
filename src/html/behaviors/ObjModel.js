@@ -58,7 +58,6 @@ const ObjModel = Class('ObjModel').extends(Behavior, ({Super}) => ({
         else {
             objLoader.load(obj, model => {
                 // if no material, make a default one with random color
-                const color =  0xffffff/3 * Math.random() + 0xffffff/3
                 setRandomColorPhongMaterial(model)
 
                 this.setModel(model)
