@@ -111,7 +111,7 @@ export function initImperativeBase() {
                 // Transformable._calculateWorldMatricesInSubtree
                 this.three.matrixAutoUpdate = false
 
-                this.threeCSS3DObject = new CSS3DObjectNested(this)
+                this.threeCSS = new CSS3DObjectNested(this)
             },
 
             disposeWebGL() {
@@ -129,11 +129,11 @@ export function initImperativeBase() {
             connected() {
                 this._lastKnownParent = this.parent
                 this.parent.three.add(this.three)
-                this.parent.threeCSS3DObject.add(this.threeCSS3DObject)
+                this.parent.threeCSS.add(this.threeCSS)
             },
             disconnected() {
                 this._lastKnownParent.three.remove(this.three)
-                this._lastKnownParent.threeCSS3DObject.remove(this.threeCSS3DObject)
+                this._lastKnownParent.threeCSS.remove(this.threeCSS)
                 this._lastKnownParent = null
             },
 

@@ -56,7 +56,7 @@ const WebGLRendererThree = Class('WebGLRendererThree', { // TODO rename
         const {renderer, cssRenderer} = sceneStates.get(scene)
 
         renderer.render(scene.three, scene.threeCamera)
-        cssRenderer.render(scene.threeCSS3DObject, scene.threeCamera)
+        cssRenderer.render(scene.threeCSS, scene.threeCamera)
     },
 
     // TODO FIXME This is tied to the `sizechange` event of Scene, which means

@@ -85,7 +85,7 @@ let Scene = Mixin(Base => {
             // maybe keep this in sceneState in WebGLRendererThree
             Super(this).initWebGl()
 
-            this.threeCSS3DObject = new ThreeScene
+            this.threeCSS = new ThreeScene
 
             // We don't let Three update any matrices, we supply our own world
             // matrices.

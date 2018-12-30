@@ -91,10 +91,10 @@ Mixin(Base => {
                 )
 
                 const childOfScene =
-                    pub.threeCSS3DObject.parent &&
-                    pub.threeCSS3DObject.parent.type === 'Scene'
+                    pub.threeCSS.parent &&
+                    pub.threeCSS.parent.type === 'Scene'
 
-                pub.threeCSS3DObject.rotation.set(
+                pub.threeCSS.rotation.set(
                     (childOfScene ? 1 : -1 ) * toRadians(pub.rotation.x),
                     toRadians(pub.rotation.y),
                     (childOfScene ? 1 : -1 ) * toRadians(pub.rotation.z),
@@ -110,7 +110,7 @@ Mixin(Base => {
                     pub.scale.z,
                 )
 
-                pub.threeCSS3DObject.scale.set(
+                pub.threeCSS.scale.set(
                     pub.scale.x,
                     pub.scale.y,
                     pub.scale.z,
@@ -181,11 +181,11 @@ Mixin(Base => {
             )
 
             const childOfScene =
-                this.threeCSS3DObject.parent &&
-                this.threeCSS3DObject.parent.type === 'Scene'
+                this.threeCSS.parent &&
+                this.threeCSS.parent.type === 'Scene'
 
             if (childOfScene) {
-                this.threeCSS3DObject.position.set(
+                this.threeCSS.position.set(
                     appliedPosition[0] + threeJsPostAdjustment[0],
                     // THREE-COORDS-TO-DOM-COORDS negate the Y value so that
                     // Three.js' positive Y is downward like DOM.
@@ -194,7 +194,7 @@ Mixin(Base => {
                 )
             }
             else {
-                this.threeCSS3DObject.position.set(
+                this.threeCSS.position.set(
                     appliedPosition[0],
                     -appliedPosition[1],
                     appliedPosition[2]
@@ -210,8 +210,8 @@ Mixin(Base => {
             // We only invert X and Z here because we already inverted the Y
             // axis above which iverts Y rotation.
             // TODO #151: make rotation order configurable
-            // if (!childOfScene) this.threeCSS3DObject.rotation.x = -this.rotation.x
-            // if (!childOfScene) this.threeCSS3DObject.rotation.z = -this.rotation.z
+            // if (!childOfScene) this.threeCSS.rotation.x = -this.rotation.x
+            // if (!childOfScene) this.threeCSS.rotation.z = -this.rotation.z
 
             // TODO origin calculation will go here:
             // - move by positive origin after rotating.
