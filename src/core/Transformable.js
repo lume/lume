@@ -82,10 +82,12 @@ Mixin(Base => {
             _update_rotation() {
                 const pub = Public(this)
 
+                // TODO make the rotation unit configurable (f.e. use degrees or
+                // radians)
                 pub.threeObject3d.rotation.set(
-                    pub.rotation.x,
-                    pub.rotation.y,
-                    pub.rotation.z,
+                    toRadians(pub.rotation.x),
+                    toRadians(pub.rotation.y),
+                    toRadians(pub.rotation.z),
                 )
 
                 const childOfScene =
@@ -93,9 +95,9 @@ Mixin(Base => {
                     pub.threeCSS3DObject.parent.type === 'Scene'
 
                 pub.threeCSS3DObject.rotation.set(
-                    (childOfScene ? 1 : -1 ) * pub.rotation.x,
-                    pub.rotation.y,
-                    (childOfScene ? 1 : -1 ) * pub.rotation.z,
+                    (childOfScene ? 1 : -1 ) * toRadians(pub.rotation.x),
+                    toRadians(pub.rotation.y),
+                    (childOfScene ? 1 : -1 ) * toRadians(pub.rotation.z),
                 )
             },
 
@@ -319,3 +321,7 @@ Mixin(Base => {
 
     return Transformable
 })
+
+function toRadians(degrees) {
+    return degrees / 180 * Math.PI
+}

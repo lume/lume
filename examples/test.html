@@ -181,13 +181,13 @@
             infamous.core.Motor.addRenderTask(t => {
                 lightMesh.position.y = 100 * Math.sin(t * 0.001) /*+ 100*/
                 lightMesh.position.x = 100 * Math.sin(t * 0.0005) /*+ 100*/
-                root.rotation.y = 0.25 * Math.cos(t * 0.002)
-                root.rotation.y += 0.01
-                cube.rotation.y += 0.01
-                cube.rotation.x += 0.01
-                little.rotation.z += 0.01
-                little.rotation.x += 0.01
-                little2.rotation.x += 0.01
+                root.rotation.y = 15 * Math.cos(t * 0.002)
+                root.rotation.y += 1
+                cube.rotation.y += 1
+                cube.rotation.x += 1
+                little.rotation.z += 1
+                little.rotation.x += 1
+                little2.rotation.x += 1
             })
 
             setTimeout(function() {
