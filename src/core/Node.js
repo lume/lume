@@ -19,7 +19,7 @@ let Node = Mixin(Base => {
             defaultElementName: 'i-node',
             props: {
                 ...Parent.props,
-                visible: {...mapPropTo(props.boolean, 'threeObject3d'), default: true},
+                visible: {...mapPropTo(props.boolean, 'three'), default: true},
             },
         },
 

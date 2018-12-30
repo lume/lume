@@ -84,7 +84,7 @@ Mixin(Base => {
 
                 // TODO make the rotation unit configurable (f.e. use degrees or
                 // radians)
-                pub.threeObject3d.rotation.set(
+                pub.three.rotation.set(
                     toRadians(pub.rotation.x),
                     toRadians(pub.rotation.y),
                     toRadians(pub.rotation.z),
@@ -104,7 +104,7 @@ Mixin(Base => {
             _update_scale() {
                 const pub = Public(this)
 
-                pub.threeObject3d.scale.set(
+                pub.three.scale.set(
                     pub.scale.x,
                     pub.scale.y,
                     pub.scale.z,
@@ -172,7 +172,7 @@ Mixin(Base => {
             appliedPosition[1] = position.y + alignAdjustment[1] - mountPointAdjustment[1]
             appliedPosition[2] = position.z + alignAdjustment[2] - mountPointAdjustment[2]
 
-            this.threeObject3d.position.set(
+            this.three.position.set(
                 appliedPosition[0] + threeJsPostAdjustment[0],
                 // THREE-COORDS-TO-DOM-COORDS negate the Y value so that
                 // Three.js' positive Y is downward like DOM.
@@ -216,11 +216,11 @@ Mixin(Base => {
             // TODO origin calculation will go here:
             // - move by positive origin after rotating.
 
-            this.threeObject3d.updateMatrix()
+            this.three.updateMatrix()
         },
 
         _calculateWorldMatricesInSubtree() {
-            this.threeObject3d.updateMatrixWorld()
+            this.three.updateMatrixWorld()
             this.trigger('worldMatrixUpdate')
         },
 

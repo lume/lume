@@ -20,7 +20,7 @@ window.addEventListener('error', (event) => {
     }
 })
 
-let threeObject3d = null
+let three = null
 let domPlane = null
 
 // We explicitly use `var` instead of `let` here because it is hoisted for the
@@ -104,12 +104,12 @@ export function initImperativeBase() {
             },
 
             initWebGl() {
-                this.threeObject3d = this.makeThreeObject3d()
+                this.three = this.makeThreeObject3d()
 
                 // we don't let Three update local matrices automatically, we do
                 // it ourselves in Transformable._calculateMatrix and
                 // Transformable._calculateWorldMatricesInSubtree
-                this.threeObject3d.matrixAutoUpdate = false
+                this.three.matrixAutoUpdate = false
 
                 this.threeCSS3DObject = new CSS3DObjectNested(this)
             },
@@ -128,11 +128,11 @@ export function initImperativeBase() {
             // operations more easily.
             connected() {
                 this._lastKnownParent = this.parent
-                this.parent.threeObject3d.add(this.threeObject3d)
+                this.parent.three.add(this.three)
                 this.parent.threeCSS3DObject.add(this.threeCSS3DObject)
             },
             disconnected() {
-                this._lastKnownParent.threeObject3d.remove(this.threeObject3d)
+                this._lastKnownParent.three.remove(this.three)
                 this._lastKnownParent.threeCSS3DObject.remove(this.threeCSS3DObject)
                 this._lastKnownParent = null
             },

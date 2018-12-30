@@ -12,9 +12,9 @@ Class('PointLight').extends( LightBase, ({ Super }) => ({
 
         props: {
             ...LightBase.props,
-            distance: mapPropTo({ ...props.number, default: 0 }, 'threeObject3d'),
-            decay: mapPropTo({ ...props.number, default: 1 }, 'threeObject3d'),
-            castShadow: mapPropTo({ ...props.boolean, default: true }, 'threeObject3d'),
+            distance: mapPropTo({ ...props.number, default: 0 }, 'three'),
+            decay: mapPropTo({ ...props.number, default: 1 }, 'three'),
+            castShadow: mapPropTo({ ...props.boolean, default: true }, 'three'),
             shadowMapWidth: { ...props.number, default: 512 },
             shadowMapHeight: { ...props.number, default: 512 },
             shadowRadius: { ...props.number, default: 3 },
@@ -27,7 +27,7 @@ Class('PointLight').extends( LightBase, ({ Super }) => ({
     passInitialValuesToThree() {
         Super(this).passInitialValuesToThree()
 
-        const light = this.threeObject3d
+        const light = this.three
 
         light.distance = this.distance
         light.decay = this.decay
@@ -55,7 +55,7 @@ Class('PointLight').extends( LightBase, ({ Super }) => ({
 
         if (!this.isConnected) return
 
-        const shadow = this.threeObject3d.shadow
+        const shadow = this.three.shadow
 
         if (modifiedProps.shadowMapWidth) shadow.mapSize.width = this.shadowMapWidth
         if (modifiedProps.shadowMapHeight) shadow.mapSize.height = this.shadowMapHeight

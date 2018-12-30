@@ -55,7 +55,7 @@ const WebGLRendererThree = Class('WebGLRendererThree', { // TODO rename
     drawScene(scene) {
         const {renderer, cssRenderer} = sceneStates.get(scene)
 
-        renderer.render(scene.threeObject3d, scene.threeCamera)
+        renderer.render(scene.three, scene.threeCamera)
         cssRenderer.render(scene.threeCSS3DObject, scene.threeCamera)
     },
 

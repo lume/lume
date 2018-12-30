@@ -87,10 +87,10 @@ Class( 'BaseMeshBehavior' ).extends( native( withUpdate( forwardProps ) ), ({ Pu
         },
 
         setMeshComponent(element, name, newComponent) {
-            if ( element.threeObject3d[ name ] )
-                element.threeObject3d[ name ].dispose()
+            if ( element.three[ name ] )
+                element.three[ name ].dispose()
 
-            element.threeObject3d[name] = newComponent
+            element.three[name] = newComponent
         },
 
         setDefaultComponent( element, name ) {

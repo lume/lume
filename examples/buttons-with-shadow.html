@@ -130,9 +130,9 @@
                     // this.$refs.plane.size = (x,y,z,t) => [x, Math.abs(Math.sin(t/1000)), z]
 
                     var light = document.querySelector('#light')
-                    light.threeObject3d.shadow.radius = 0
-                    light.threeObject3d.distance = 800
-                    light.threeObject3d.shadow.bias = -0.0001
+                    light.three.shadow.radius = 0
+                    light.three.distance = 800
+                    light.three.shadow.bias = -0.0001
 
                     // prevent default touch actions so we can move the light with touch
                     document.querySelector('html').setAttribute('touch-action', 'none')
@@ -200,13 +200,13 @@
                         // TODO the stuff in this function should be doable via the HTML
 
                         Array.from( document.querySelectorAll('i-dom-plane') ).forEach(function(n) {
-                            n.threeObject3d.material.opacity = 0.3
+                            n.three.material.opacity = 0.3
                         })
 
                         document.querySelector('#bg')
-                            .threeObject3d.material.opacity = 0.3
+                            .three.material.opacity = 0.3
                         document.querySelector('#bg')
-                            .threeObject3d.material.dithering = true
+                            .three.material.dithering = true
 
                         scene._needsToBeRendered()
                     }, 0)

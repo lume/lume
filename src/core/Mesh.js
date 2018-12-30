@@ -41,15 +41,15 @@ Class('Mesh').extends( Node, ({ Super }) => ({
 
         props: {
             ...Node.props,
-            castShadow: { ...mapPropTo(props.boolean, 'threeObject3d'), default: true },
-            receiveShadow: { ...mapPropTo(props.boolean, 'threeObject3d'), default: true },
+            castShadow: { ...mapPropTo(props.boolean, 'three'), default: true },
+            receiveShadow: { ...mapPropTo(props.boolean, 'three'), default: true },
         },
 
     },
 
     passInitialValuesToThree() {
-        this.threeObject3d.castShadow = this.castShadow
-        this.threeObject3d.receiveShadow = this.receiveShadow
+        this.three.castShadow = this.castShadow
+        this.three.receiveShadow = this.receiveShadow
     },
 
     makeThreeObject3d() {
@@ -66,7 +66,7 @@ Class('Mesh').extends( Node, ({ Super }) => ({
         }
 
         if ( modifiedProps.receiveShadow ) {
-            this.threeObject3d.material.needsUpdate = true
+            this.three.material.needsUpdate = true
             this._needsToBeRendered()
         }
     },

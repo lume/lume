@@ -174,9 +174,9 @@
 
         <script>
             // TODO expose as props/attributes
-            light.threeObject3d.shadow.radius = 5
-            light.threeObject3d.shadow.bias = -0.0001
-            light.threeObject3d.distance = 800
+            light.three.shadow.radius = 5
+            light.three.shadow.bias = -0.0001
+            light.three.distance = 800
 
             infamous.core.Motor.addRenderTask(t => {
                 lightMesh.position.y = 100 * Math.sin(t * 0.001) /*+ 100*/
@@ -194,7 +194,7 @@
                 // TODO the stuff in this function should be doable via the HTML
 
                 Array.from( document.querySelectorAll('i-dom-node') ).forEach(n => {
-                    n.threeObject3d.material.opacity = 0.3
+                    n.three.material.opacity = 0.3
                     n._needsToBeRendered()
                 })
 
