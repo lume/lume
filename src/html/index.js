@@ -3,7 +3,6 @@ export HTMLNode from './HTMLNode'
 export HTMLScene from './HTMLScene'
 export WebComponent from './WebComponent'
 // export HTMLPushPaneLayout from './HTMLPushPaneLayout'
-// export PushPaneLayout from '../components/PushPaneLayout'
 
 export * as behaviors from './behaviors'
 
@@ -19,6 +18,8 @@ import DOMPlane from '../core/DOMPlane'
 import AmbientLight from '../core/AmbientLight'
 import Camera from '../core/Camera'
 import AutoLayoutNode from '../layout/AutoLayoutNode'
+import ObjModel from '../core/ObjModel'
+// import PushPaneLayout from '../components/PushPaneLayout'
 
 export function useDefaultNames() {
 
@@ -35,6 +36,7 @@ export function useDefaultNames() {
         AmbientLight,
         Camera,
         AutoLayoutNode,
+        ObjModel,
         // PushPaneLayout,
     ]
 
