@@ -6,9 +6,6 @@ export default
 Class('ObjModel').extends( Node, ({ Super }) => ({
     static: {
         defaultElementName: 'i-obj-model',
-
-        defaultBehaviors: {
-            'obj-model': () => true,
-        },
+        defaultBehaviors: [ 'obj-model' ],
     },
 }))
