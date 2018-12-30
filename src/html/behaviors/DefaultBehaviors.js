@@ -56,7 +56,7 @@ Mixin(Base =>
                 // if not an array, then it's an object.
                 if (! ( defaultBehaviors instanceof Array ) ) defaultBehaviors = Object.keys( defaultBehaviors )
 
-                this.setAttribute( 'has', this.getAttribute( 'has' ) + ` ${defaultBehaviors.join(' ')}`)
+                this.setAttribute( 'has', `${this.getAttribute( 'has' ) || ''} ${defaultBehaviors.join(' ')}` )
             }
 
             // otherwise detect which default behavior(s) to add
