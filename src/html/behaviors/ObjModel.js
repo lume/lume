@@ -41,7 +41,7 @@ const ObjModel = Class('ObjModel').extends(Behavior, ({Super}) => ({
 
     cleanup() {
         if (!this.model) return
-        this.element.threeObject3d.remove(this.model) // TODO dispose it
+        disposeObjectTree(this.model)
     },
 
     load() {
@@ -83,15 +83,58 @@ function setColorPhongMaterial(obj, color, dispose, traverse = true) {
 }
 
 function applyMaterial(obj, material, dispose = true) {
-    if ('material' in obj) {
-        if (obj.material && dispose) obj.material.dispose()
-        obj.material = material
-    }
+    if (!isRenderItem(obj)) return
+    if (dispose && obj.material) obj.material.dispose()
+    obj.material = material
 }
 
 function setRandomColorPhongMaterial(obj, dispose, traverse) {
     const randomColor = 0xffffff/3 * Math.random() + 0xffffff/3
     setColorPhongMaterial( obj, randomColor, dispose, traverse )
+}
+
+function isRenderItem(obj) {
+  return 'geometry' in obj && 'material' in obj
+}
+
+function disposeMaterial(obj) {
+  if (!isRenderItem(obj)) return
+
+  const materials = []
+  materials.concat(obj.material) // because obj.material can be a material or array of materials
+
+  for (const material of materials) {
+    material.dispose()
+  }
+}
+
+function disposeObject(
+  obj,
+  removeFromParent = true,
+  destroyGeometry = true,
+  destroyMaterial = true
+) {
+  if (isRenderItem(obj)) {
+    if (destroyGeometry) obj.geometry.dispose()
+    if (destroyMaterial) disposeMaterial(obj)
+  }
+
+  removeFromParent && Promise.resolve().then(() => {
+    // if we remove children in the same tick then we can't continue traversing,
+    // so we defer to the next microtask
+    obj.parent && obj.parent.remove(obj)
+  })
+}
+
+function disposeObjectTree(obj, disposeOptions = {}) {
+  obj.traverse(node => {
+    disposeObject(
+      node,
+      disposeOptions.removeFromParent,
+      disposeOptions.destroyGeometry,
+      disposeOptions.destroyMaterial
+    )
+  })
 }
 
 elementBehaviors.define('obj-model', ObjModel)
