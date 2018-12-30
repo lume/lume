@@ -44,6 +44,8 @@
                 </i-sphere>
             </i-point-light>
 
+            <!-- an i-node element with an obj-model behavior. The obj-model
+            behavior observes the obj and mtl attributes. -->
             <i-node id="model"
                 rotation="0 40 0"
                 align="0.5 0.5 0"
@@ -55,9 +57,9 @@
             >
             </i-node>
 
-            <!-- alternatively, the i-obj-model is an element that implicityly
-            has obj-model. We've omitted the mtl, so the model gets a random
-            colored phong material: -->
+            <!-- alternatively, the i-obj-model is an node element that
+            implicityly has an obj-model behavior. We've omitted the mtl, so the
+            model will have a random-colored phong material: -->
             <i-obj-model id="model2"
                 rotation="0 20 0"
                 align="0.5 0.5 0"
