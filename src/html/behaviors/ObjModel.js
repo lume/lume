@@ -83,7 +83,7 @@ function setColorPhongMaterial(obj, color, dispose, traverse = true) {
 
 function applyMaterial(obj, material, dispose = true) {
     if (!isRenderItem(obj)) return
-    if (dispose && obj.material) obj.material.dispose()
+    if (dispose && obj.material) disposeMaterial(obj)
     obj.material = material
 }
 
