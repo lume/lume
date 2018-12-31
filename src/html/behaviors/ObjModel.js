@@ -99,8 +99,8 @@ function isRenderItem(obj) {
 function disposeMaterial(obj) {
   if (!isRenderItem(obj)) return
 
-  const materials = []
-  materials.concat(obj.material) // because obj.material can be a material or array of materials
+  // because obj.material can be a material or array of materials
+  const materials = [].concat(obj.material)
 
   for (const material of materials) {
     material.dispose()
