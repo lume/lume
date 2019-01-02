@@ -82,33 +82,35 @@ Mixin(Base => {
             _update_rotation() {
                 const pub = Public(this)
 
-                pub.threeObject3d.rotation.set(
-                    pub.rotation.x,
-                    pub.rotation.y,
-                    pub.rotation.z,
+                // TODO make the rotation unit configurable (f.e. use degrees or
+                // radians)
+                pub.three.rotation.set(
+                    toRadians(pub.rotation.x),
+                    toRadians(pub.rotation.y),
+                    toRadians(pub.rotation.z),
                 )
 
                 const childOfScene =
-                    pub.threeCSS3DObject.parent &&
-                    pub.threeCSS3DObject.parent.type === 'Scene'
+                    pub.threeCSS.parent &&
+                    pub.threeCSS.parent.type === 'Scene'
 
-                pub.threeCSS3DObject.rotation.set(
-                    (childOfScene ? 1 : -1 ) * pub.rotation.x,
-                    pub.rotation.y,
-                    (childOfScene ? 1 : -1 ) * pub.rotation.z,
+                pub.threeCSS.rotation.set(
+                    (childOfScene ? 1 : -1 ) * toRadians(pub.rotation.x),
+                    toRadians(pub.rotation.y),
+                    (childOfScene ? 1 : -1 ) * toRadians(pub.rotation.z),
                 )
             },
 
             _update_scale() {
                 const pub = Public(this)
 
-                pub.threeObject3d.scale.set(
+                pub.three.scale.set(
                     pub.scale.x,
                     pub.scale.y,
                     pub.scale.z,
                 )
 
-                pub.threeCSS3DObject.scale.set(
+                pub.threeCSS.scale.set(
                     pub.scale.x,
                     pub.scale.y,
                     pub.scale.z,
@@ -170,7 +172,7 @@ Mixin(Base => {
             appliedPosition[1] = position.y + alignAdjustment[1] - mountPointAdjustment[1]
             appliedPosition[2] = position.z + alignAdjustment[2] - mountPointAdjustment[2]
 
-            this.threeObject3d.position.set(
+            this.three.position.set(
                 appliedPosition[0] + threeJsPostAdjustment[0],
                 // THREE-COORDS-TO-DOM-COORDS negate the Y value so that
                 // Three.js' positive Y is downward like DOM.
@@ -179,11 +181,11 @@ Mixin(Base => {
             )
 
             const childOfScene =
-                this.threeCSS3DObject.parent &&
-                this.threeCSS3DObject.parent.type === 'Scene'
+                this.threeCSS.parent &&
+                this.threeCSS.parent.type === 'Scene'
 
             if (childOfScene) {
-                this.threeCSS3DObject.position.set(
+                this.threeCSS.position.set(
                     appliedPosition[0] + threeJsPostAdjustment[0],
                     // THREE-COORDS-TO-DOM-COORDS negate the Y value so that
                     // Three.js' positive Y is downward like DOM.
@@ -192,7 +194,7 @@ Mixin(Base => {
                 )
             }
             else {
-                this.threeCSS3DObject.position.set(
+                this.threeCSS.position.set(
                     appliedPosition[0],
                     -appliedPosition[1],
                     appliedPosition[2]
@@ -208,17 +210,17 @@ Mixin(Base => {
             // We only invert X and Z here because we already inverted the Y
             // axis above which iverts Y rotation.
             // TODO #151: make rotation order configurable
-            // if (!childOfScene) this.threeCSS3DObject.rotation.x = -this.rotation.x
-            // if (!childOfScene) this.threeCSS3DObject.rotation.z = -this.rotation.z
+            // if (!childOfScene) this.threeCSS.rotation.x = -this.rotation.x
+            // if (!childOfScene) this.threeCSS.rotation.z = -this.rotation.z
 
             // TODO origin calculation will go here:
             // - move by positive origin after rotating.
 
-            this.threeObject3d.updateMatrix()
+            this.three.updateMatrix()
         },
 
         _calculateWorldMatricesInSubtree() {
-            this.threeObject3d.updateMatrixWorld()
+            this.three.updateMatrixWorld()
             this.trigger('worldMatrixUpdate')
         },
 
@@ -319,3 +321,7 @@ Mixin(Base => {
 
     return Transformable
 })
+
+function toRadians(degrees) {
+    return degrees / 180 * Math.PI
+}

@@ -66,7 +66,7 @@ const ObjModel = Class('ObjModel').extends(Behavior, ({Super}) => ({
     },
 
     setModel(model) {
-        this.element.threeObject3d.add(this.model = model)
+        this.element.three.add(this.model = model)
         this.element.emit('model-loaded', {format: 'obj', model: model})
         this.element._needsToBeRendered()
     },

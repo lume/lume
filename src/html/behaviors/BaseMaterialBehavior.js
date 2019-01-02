@@ -32,7 +32,7 @@ Class( 'BaseMaterialBehavior' ).extends( BaseMeshBehavior, ({ Super }) => ({
 
     updateMaterial(propName) {
         // if (this.element.tagName === 'I-SPHERE') debugger
-        this.element.threeObject3d.material[propName] = this[propName]
+        this.element.three.material[propName] = this[propName]
         this.element._needsToBeRendered()
     },
 

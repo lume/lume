@@ -11,16 +11,16 @@ Class('LightBase').extends( Node, ({ Super }) => ({
     static: {
         props: {
             ...Node.props,
-            color: mapPropTo({ ...props.THREE.Color, default: new Color('white') }, 'threeObject3d'),
-            intensity: mapPropTo({ ...props.number, default: 1 }, 'threeObject3d'),
+            color: mapPropTo({ ...props.THREE.Color, default: new Color('white') }, 'three'),
+            intensity: mapPropTo({ ...props.number, default: 1 }, 'three'),
         },
     },
 
     // TODO we shouldn't need to define passInitialValuesToThree, the default
     // value of the props should automatically be in place.
     passInitialValuesToThree() {
-        this.threeObject3d.color = this.color
-        this.threeObject3d.intensity = this.intensity
+        this.three.color = this.color
+        this.three.intensity = this.intensity
     },
 
     updated(oldProps, oldState, modifiedProps) {

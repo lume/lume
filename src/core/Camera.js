@@ -90,25 +90,25 @@ Class('PerspectiveCamera').extends( Node, ({ Super, Public, Private }) => ({
             const publicThis = Public(this)
 
             if ( attr == 'fov' ) {
-                publicThis.threeObject3d.fov = 75
-                publicThis.threeObject3d.updateProjectionMatrix()
+                publicThis.three.fov = 75
+                publicThis.three.updateProjectionMatrix()
             }
             else if ( attr == 'aspect' ) {
                 this._startAutoAspect()
-                publicThis.threeObject3d.aspect = this._getDefaultAspect()
-                publicThis.threeObject3d.updateProjectionMatrix()
+                publicThis.three.aspect = this._getDefaultAspect()
+                publicThis.three.updateProjectionMatrix()
             }
             else if ( attr == 'near' ) {
-                publicThis.threeObject3d.near = 0.1
-                publicThis.threeObject3d.updateProjectionMatrix()
+                publicThis.three.near = 0.1
+                publicThis.three.updateProjectionMatrix()
             }
             else if ( attr == 'far' ) {
-                publicThis.threeObject3d.far = 1000
-                publicThis.threeObject3d.updateProjectionMatrix()
+                publicThis.three.far = 1000
+                publicThis.three.updateProjectionMatrix()
             }
             else if ( attr == 'zoom' ) {
-                publicThis.threeObject3d.zoom = 1
-                publicThis.threeObject3d.updateProjectionMatrix()
+                publicThis.three.zoom = 1
+                publicThis.three.updateProjectionMatrix()
             }
             else if ( attr == 'active' ) {
                 this._setSceneCamera( 'unset' )
@@ -119,25 +119,25 @@ Class('PerspectiveCamera').extends( Node, ({ Super, Public, Private }) => ({
             const publicThis = Public(this)
 
             if ( attr == 'fov' ) {
-                publicThis.threeObject3d.fov = parseFloat(newVal)
-                publicThis.threeObject3d.updateProjectionMatrix()
+                publicThis.three.fov = parseFloat(newVal)
+                publicThis.three.updateProjectionMatrix()
             }
             else if ( attr == 'aspect' ) {
                 this._stopAutoAspect()
-                publicThis.threeObject3d.aspect = parseFloat(newVal)
-                publicThis.threeObject3d.updateProjectionMatrix()
+                publicThis.three.aspect = parseFloat(newVal)
+                publicThis.three.updateProjectionMatrix()
             }
             else if ( attr == 'near' ) {
-                publicThis.threeObject3d.near = parseFloat(newVal)
-                publicThis.threeObject3d.updateProjectionMatrix()
+                publicThis.three.near = parseFloat(newVal)
+                publicThis.three.updateProjectionMatrix()
             }
             else if ( attr == 'far' ) {
-                publicThis.threeObject3d.far = parseFloat(newVal)
-                publicThis.threeObject3d.updateProjectionMatrix()
+                publicThis.three.far = parseFloat(newVal)
+                publicThis.three.updateProjectionMatrix()
             }
             else if ( attr == 'zoom' ) {
-                publicThis.threeObject3d.zoom = parseFloat(newVal)
-                publicThis.threeObject3d.updateProjectionMatrix()
+                publicThis.three.zoom = parseFloat(newVal)
+                publicThis.three.updateProjectionMatrix()
             }
             else if ( attr == 'active' ) {
                 this._setSceneCamera()
@@ -158,7 +158,7 @@ Class('PerspectiveCamera').extends( Node, ({ Super, Public, Private }) => ({
         },
 
         _updateAspectOnSceneResize({x, y}) {
-            Public(this).threeObject3d.aspect = x / y
+            Public(this).three.aspect = x / y
         },
 
         _getDefaultAspect() {

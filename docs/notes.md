@@ -8,7 +8,7 @@ Miscellaneous Notes
     elements, otherwise only CSS3D rendering is enabled by default.
 - CSS3D rendering is stable.
 - WebGL rendering is currently powered by [Three.js](https://threejs.org). All
-  elements have a `.threeObject3d` property that you can access if you want to
+  elements have a `.three` property that you can access if you want to
   do custom things with the Three.js parts.
 - Augmented and virtual reality modes (AR, VR) are not yet implemented, coming soon!
   - Implementing this should be a simple matter of taking advantage of builtin

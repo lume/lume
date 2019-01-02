@@ -426,7 +426,7 @@ export function initDeclarativeBase() {
                 mesh.castShadow = true
                 mesh.receiveShadow = true
 
-                Public(this).threeObject3d.add(mesh)
+                Public(this).three.add(mesh)
                 Public(this).on('sizechange', this._updateDOMPlaneOnSizeChange, this)
             },
 
@@ -440,7 +440,7 @@ export function initDeclarativeBase() {
             _destroyDOMPlane() {
                 const publicThis = Public(this)
 
-                publicThis.threeObject3d.remove(this._threeDOMPlane)
+                publicThis.three.remove(this._threeDOMPlane)
                 this._threeDOMPlane.geometry.dispose()
                 this._threeDOMPlane.material.dispose()
                 this._threeDOMPlane = null

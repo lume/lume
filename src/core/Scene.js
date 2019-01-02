@@ -85,11 +85,11 @@ let Scene = Mixin(Base => {
             // maybe keep this in sceneState in WebGLRendererThree
             Super(this).initWebGl()
 
-            this.threeCSS3DObject = new ThreeScene
+            this.threeCSS = new ThreeScene
 
             // We don't let Three update any matrices, we supply our own world
             // matrices.
-            this.threeObject3d.autoUpdate = false
+            this.three.autoUpdate = false
 
             // this.threeCamera holds the active camera. There can be many
             // cameras in the scene tree, but the last one with active="true"
@@ -103,7 +103,7 @@ let Scene = Mixin(Base => {
             // TODO: default ambient light when no AmbientLight elements are
             // present in the Scene.
             //const ambientLight = new AmbientLight( 0x353535 )
-            //this.threeObject3d.add( ambientLight )
+            //this.three.add( ambientLight )
 
             // holds the renderer for this scene, renderers have scene-specific
             // settings so having this reference is okay.
@@ -154,7 +154,7 @@ let Scene = Mixin(Base => {
                 // TODO?: implement an changecamera event/method and emit/call
                 // that here, then move this logic to the renderer
                 // handler/method?
-                this.threeCamera = camera.threeObject3d
+                this.threeCamera = camera.three
                 this._updateCameraAspect()
                 this._updateCameraProjection()
                 this._needsToBeRendered()

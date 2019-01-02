@@ -60,7 +60,7 @@ describe('Node', () => {
 
 		expect(n instanceof Node).toBe(true)
 		expect(n.constructor.name).toBe('Node')
-        expect(n.threeObject3d).not.toBeUndefined()
+        expect(n.three).not.toBeUndefined()
         expect(n.scene).not.toBeUndefined()
         expect(n.scene.constructor.name).toBe('Scene')
     })
@@ -72,7 +72,7 @@ describe('Node', () => {
 
 		expect(n instanceof Node).toBe(true)
 		expect(n.constructor.name).toBe('Node')
-        expect(n.threeObject3d).not.toBeUndefined()
+        expect(n.three).not.toBeUndefined()
         expect(n.scene).not.toBeUndefined()
         expect(n.scene.constructor.name).toBe('Scene')
     })

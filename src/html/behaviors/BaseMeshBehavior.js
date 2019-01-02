@@ -37,7 +37,7 @@ Class( 'BaseMeshBehavior' ).extends( Behavior, ({ Public, Protected, Private, Su
     },
 
     getMeshComponent(name) {
-        return this.element.threeObject3d[name]
+        return this.element.three[name]
     },
 
     private: {
@@ -53,10 +53,10 @@ Class( 'BaseMeshBehavior' ).extends( Behavior, ({ Public, Protected, Private, Su
         },
 
         setMeshComponent(element, name, newComponent) {
-            if ( element.threeObject3d[ name ] )
-                element.threeObject3d[ name ].dispose()
+            if ( element.three[ name ] )
+                element.three[ name ].dispose()
 
-            element.threeObject3d[name] = newComponent
+            element.three[name] = newComponent
         },
 
         setDefaultComponent( element, name ) {
