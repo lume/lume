@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title> ObjModel </title>
+
+		<!-- polyfill for browsers that don't have Custom Elements or ShadowDOM -->
+        <script src="https://unpkg.com/@webcomponents/webcomponentsjs@1.1.0/webcomponents-lite.js"></script>
+
+        <!-- the library -->
+        <script src="../global.js"></script>
+
+    </head>
+    <body>
+
+        <style>
+            body, html {
+                width: 100%;
+                height: 100%;
+                margin: 0;
+                padding: 0;
+                overflow: hidden;
+                background: #222;
+            }
+        </style>
+
+        <i-scene id="scene" experimental-webgl>
+            <i-ambient-light intensity="0.3"></i-ambient-light>
+
+            <i-point-light
+                id="light"
+                color="white"
+                position="300 300 1100"
+                size="0 0 0"
+                cast-shadow="true"
+                intensity="0.5"
+                >
+                <i-sphere
+                    size="10 10 10"
+                    color="#ffffee"
+                    receive-shadow="false"
+                    cast-shadow="false"
+                    style="pointer-events: none"
+                    >
+                </i-sphere>
+            </i-point-light>
+
+            <!-- an i-node element with an obj-model behavior. The obj-model
+            behavior observes the obj and mtl attributes. -->
+            <i-node id="model"
+                rotation="0 40 0"
+                align="0.5 0.5 0"
+                size="0 0 0"
+                scale="200 200 200"
+                has="obj-model"
+                obj="./models/spaceship/ship.obj"
+                mtl="./models/spaceship/ship.mtl"
+            >
+            </i-node>
+
+            <!-- alternatively, the i-obj-model is an node element that
+            implicityly has an obj-model behavior. We've omitted the mtl, so the
+            model will have a random-colored phong material: -->
+            <i-obj-model id="model2"
+                rotation="0 20 0"
+                align="0.5 0.5 0"
+                size="0 0 0"
+                scale="200 200 200"
+                obj="./models/spaceship/ship.obj"
+            >
+            </i-obj-model>
+        </i-scene>
+
+        <script>{
+            // defines the default names for the HTML elements
+            infamous.html.useDefaultNames()
+
+            const light = document.querySelector('#light')
+
+            document.addEventListener('pointermove', function(e) {
+                e.preventDefault()
+                light.position.x = e.clientX
+                light.position.y = e.clientY
+            })
+
+            const el = document.querySelector('#model')
+
+            el.on('model-loaded', ({ model }) => {
+
+                // work with the `model` here, it is an instance of THREE.Group
+                // containing THREE.Mesh objects.
+
+                // if you modify any Three.js objects, don't forget to tell the
+                // element to be re-rendered in the next frame
+                //
+                // el._needsToBeRendered()
+
+            })
+
+            const el2 = document.querySelector('#model2')
+            const Motor = infamous.core.Motor
+
+            Motor.addRenderTask(() => {
+                el.rotation.y -= 0.1
+                el2.rotation.y -= 0.4
+            })
+        }</script>
+
+    </body>
+</html>

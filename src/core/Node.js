@@ -7,6 +7,9 @@ import { default as HTMLInterface } from '../html/HTMLNode'
 import Scene from './Scene'
 import {props, mapPropTo} from './props'
 
+// register behaviors that can be used on this element
+import '../html/behaviors/ObjModel'
+
 const radiansPerDegree = 1 / 360 * 2*Math.PI
 
 initImperativeBase()
