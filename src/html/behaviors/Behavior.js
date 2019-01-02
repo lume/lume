@@ -22,7 +22,7 @@ Class( 'Behavior' ).extends( native( withUpdate( forwardProps ) ), ({ Public, Pr
 
         _this.element = element
 
-        Private(this)._checkElementIsLibraryElement(element)
+        Private(this).__checkElementIsLibraryElement(element)
 
         return _this
     },
@@ -43,7 +43,7 @@ Class( 'Behavior' ).extends( native( withUpdate( forwardProps ) ), ({ Public, Pr
     private: {
 
         // TODO add a test to make sure this check works
-        async _checkElementIsLibraryElement(element) {
+        async __checkElementIsLibraryElement(element) {
             const pub = Public(this)
             const BaseClass = Public(this).constructor.requiredElementType
 
