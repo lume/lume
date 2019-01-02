@@ -7,7 +7,7 @@ Mixin(Base =>
     // TODO This is here for now. Make it an extension to
     // element-behaviors so that it can be applied to any element
     // generically.
-    Class('DefaultBehaviors').extends( Base, ({ Super }) => ({
+    Class('DefaultBehaviors').extends( Base, ({ Super, Public, Private }) => ({
 
         static: {
             // override in subclasses
@@ -35,95 +35,99 @@ Mixin(Base =>
             // everything in the engine can hook into it. Otherwise if different
             // call sites use setTimeout, logic will be firing at random and in
             // different order.
-            setTimeout( () => self._setDefaultBehaviorsIfNeeded(), 0 )
+            setTimeout( () => Private(self).__setDefaultBehaviorsIfNeeded(), 0 )
 
             return self
         },
 
-        _setDefaultBehaviorsIfNeeded() {
-            let defaultBehaviors = this.constructor.defaultBehaviors
+        private: {
+            __setDefaultBehaviorsIfNeeded() {
+                const pub = Public(this)
 
-            // do nothing if there's no defaults
-            if (!defaultBehaviors) return
-            if (Object.keys(defaultBehaviors).length == 0) return
+                let defaultBehaviors = pub.constructor.defaultBehaviors
 
-            const initialBehaviorNames = Array.from( this.behaviors.keys() )
+                // do nothing if there's no defaults
+                if (!defaultBehaviors) return
+                if (Object.keys(defaultBehaviors).length == 0) return
 
-            // small optimization: if there are no initial behaviors and we
-            // have default behaviors, just set the default behaviors.
-            if ( initialBehaviorNames.length == 0 ) {
+                const initialBehaviorNames = Array.from( pub.behaviors.keys() )
 
-                // if not an array, then it's an object.
-                if (! ( defaultBehaviors instanceof Array ) ) defaultBehaviors = Object.keys( defaultBehaviors )
+                // small optimization: if there are no initial behaviors and we
+                // have default behaviors, just set the default behaviors.
+                if ( initialBehaviorNames.length == 0 ) {
 
-                this.setAttribute( 'has', `${this.getAttribute( 'has' ) || ''} ${defaultBehaviors.join(' ')}` )
-            }
+                    // if not an array, then it's an object.
+                    if (! ( defaultBehaviors instanceof Array ) ) defaultBehaviors = Object.keys( defaultBehaviors )
 
-            // otherwise detect which default behavior(s) to add
-            else {
+                    pub.setAttribute( 'has', `${pub.getAttribute( 'has' ) || ''} ${defaultBehaviors.join(' ')}` )
+                }
 
-                let behaviorNamesToAdd = ''
+                // otherwise detect which default behavior(s) to add
+                else {
 
-                // if defaultBehaviors is an array, use default logic to add
-                // behaviors that aren't already added.
-                if (defaultBehaviors instanceof Array) {
-                    for (const defaultBehaviorName of defaultBehaviors) {
+                    let behaviorNamesToAdd = ''
 
-                        let hasBehavior = false
+                    // if defaultBehaviors is an array, use default logic to add
+                    // behaviors that aren't already added.
+                    if (defaultBehaviors instanceof Array) {
+                        for (const defaultBehaviorName of defaultBehaviors) {
 
-                        for ( const initialBehaviorName of initialBehaviorNames ) {
-                            if ( defaultBehaviorName == initialBehaviorName ) {
-                                hasBehavior = true
-                                break
+                            let hasBehavior = false
+
+                            for ( const initialBehaviorName of initialBehaviorNames ) {
+                                if ( defaultBehaviorName == initialBehaviorName ) {
+                                    hasBehavior = true
+                                    break
+                                }
+                            }
+
+                            if (hasBehavior) continue
+                            else {
+                                // TODO programmatic API:
+                                //pub.behaviors.add('box-geometry')
+
+                                // add a space in front of each name except the first
+                                if ( behaviorNamesToAdd ) behaviorNamesToAdd += ' '
+
+                                behaviorNamesToAdd += defaultBehaviorName
                             }
                         }
+                    }
 
-                        if (hasBehavior) continue
-                        else {
-                            // TODO programmatic API:
-                            //this.behaviors.add('box-geometry')
+                    // if defaultBehaviors is an object, then behaviors are added
+                    // based on conditions.
+                    else if (typeof defaultBehaviors == 'object') {
+                        const defaultBehaviorNames = Object.keys(defaultBehaviors)
 
-                            // add a space in front of each name except the first
-                            if ( behaviorNamesToAdd ) behaviorNamesToAdd += ' '
+                        for (const defaultBehaviorName of defaultBehaviorNames) {
+                            const condition = defaultBehaviors[defaultBehaviorName]
 
-                            behaviorNamesToAdd += defaultBehaviorName
+                            if (
+                                (typeof condition == 'function' && condition( initialBehaviorNames ) ) ||
+                                (typeof condition != 'function' && condition )
+                            ) {
+
+                                // add a space in front of each name except the first
+                                if ( behaviorNamesToAdd ) behaviorNamesToAdd += ' '
+
+                                behaviorNamesToAdd += defaultBehaviorName
+
+                            }
+
                         }
+                    }
+
+                    // add the needed behaviors all at once.
+                    if (behaviorNamesToAdd) {
+                        let currentHasValue = pub.getAttribute('has')
+
+                        if (currentHasValue) currentHasValue += ' '
+
+                        pub.setAttribute( 'has', currentHasValue + behaviorNamesToAdd )
                     }
                 }
 
-                // if defaultBehaviors is an object, then behaviors are added
-                // based on conditions.
-                else if (typeof defaultBehaviors == 'object') {
-                    const defaultBehaviorNames = Object.keys(defaultBehaviors)
-
-                    for (const defaultBehaviorName of defaultBehaviorNames) {
-                        const condition = defaultBehaviors[defaultBehaviorName]
-
-                        if (
-                            (typeof condition == 'function' && condition( initialBehaviorNames ) ) ||
-                            (typeof condition != 'function' && condition )
-                        ) {
-
-                            // add a space in front of each name except the first
-                            if ( behaviorNamesToAdd ) behaviorNamesToAdd += ' '
-
-                            behaviorNamesToAdd += defaultBehaviorName
-
-                        }
-
-                    }
-                }
-
-                // add the needed behaviors all at once.
-                if (behaviorNamesToAdd) {
-                    let currentHasValue = this.getAttribute('has')
-
-                    if (currentHasValue) currentHasValue += ' '
-
-                    this.setAttribute( 'has', currentHasValue + behaviorNamesToAdd )
-                }
-            }
-
+            },
         },
 
     }))
