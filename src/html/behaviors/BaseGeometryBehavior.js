@@ -37,7 +37,7 @@ Class( 'BaseGeometryBehavior' ).extends( BaseMeshBehavior, ({ Public, Protected,
     disconnectedCallback() {
         Super(this).disconnectedCallback()
 
-        this.element.on('sizechange', Private(this).onSizeValueChanged)
+        this.element.off('sizechange', Private(this).onSizeValueChanged)
         this.element.size.off('valuechanged', Private(this).onSizeValueChanged)
         this.element.sizeMode.off('valuechanged', Private(this).onSizeValueChanged)
     },
