@@ -15,6 +15,8 @@ const ObjModelBehavior = Class('ObjModelBehavior').extends(Behavior, ({Super, Pu
 
     updated(oldProps, newProps, modifiedProps) {
         if (modifiedProps.obj || modifiedProps.mtl) {
+            // TODO if only mtl changes, maybe we can update only the material
+            // instead of reloading the whole object?
             if (!this.obj) return
             Private(this).__cleanup()
             Private(this).__loadObj()
@@ -40,10 +42,15 @@ const ObjModelBehavior = Class('ObjModelBehavior').extends(Behavior, ({Super, Pu
     },
 
     private: {
+        __materialIsFromMaterialBehavior: false,
+
         __cleanup() {
             const pub = Public(this)
             if (!pub.model) return
-            disposeObjectTree(pub.model)
+            disposeObjectTree(pub.model, {
+                destroyMaterial: !this.__materialIsFromMaterialBehavior
+            })
+            this.__materialIsFromMaterialBehavior = false
         },
 
         __loadObj() {
@@ -66,6 +73,7 @@ const ObjModelBehavior = Class('ObjModelBehavior').extends(Behavior, ({Super, Pu
                     if (!materialBehavior) materialBehavior = pub.element.behaviors.get('lambert-material')
 
                     if (materialBehavior) {
+                        this.__materialIsFromMaterialBehavior = true
                         // TODO this part only works on Mesh elements at the
                         // moment. We will update the geometry and material
                         // behaviors to work in tandem with or without a mesh
