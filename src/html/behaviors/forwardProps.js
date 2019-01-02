@@ -23,13 +23,13 @@ Mixin(Base => Class( 'forwardProps' ).extends( Base, ({ Super, Public, Protected
         receivePropsFromObject() {
             const publicThis = Public( this )
             this.propChangedCallback = ( propName, value ) => publicThis[ propName ] = value
-            observe( Protected( this ).observedObject, this.getProps(), this.propChangedCallback, {
+            observe( Protected( this )._observedObject, this.getProps(), this.propChangedCallback, {
                 // inherited: true, // XXX the 'inherited' option doesn't work in this case. Why?
             } )
         },
 
         unreceivePropsFromObject() {
-            unobserve(Protected( this ).observedObject, this.getProps(), this.propChangedCallback )
+            unobserve(Protected( this )._observedObject, this.getProps(), this.propChangedCallback )
         },
 
         getProps() {
@@ -49,10 +49,10 @@ Mixin(Base => Class( 'forwardProps' ).extends( Base, ({ Super, Public, Protected
     },
 
     protected: {
-        get observedObject() {
+        get _observedObject() {
             throw new TypeError(`
                 The subclass using forwardProps must define a protected
-                observedObject property defining the object from which props
+                _observedObject property defining the object from which props
                 are forwarded.
             `)
         },

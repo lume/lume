@@ -34,7 +34,7 @@ Class( 'Behavior' ).extends( native( withUpdate( forwardProps ) ), ({ Public, Pr
 
     protected: {
         // used by forwardProps. See forwardProps.js
-        get observedObject() {
+        get _observedObject() {
             return Public( this ).element
         },
 
