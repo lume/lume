@@ -66,6 +66,11 @@ const ObjModelBehavior = Class('ObjModelBehavior').extends(Behavior, ({Super, Pu
                     if (!materialBehavior) materialBehavior = pub.element.behaviors.get('lambert-material')
 
                     if (materialBehavior) {
+                        // TODO this part only works on Mesh elements at the
+                        // moment. We will update the geometry and material
+                        // behaviors to work in tandem with or without a mesh
+                        // behavior, and other behaviors can use the geometry or
+                        // material features.
                         model.traverse(function (child) {
                             if ('material' in child) {
                                 console.log( materialBehavior.getMeshComponent('material') )
