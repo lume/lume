@@ -9,30 +9,30 @@ Mixin(Base => Class( 'forwardProps' ).extends( Base, ({ Super, Public, Protected
 
     connectedCallback() {
         Super( this ).connectedCallback && Super( this ).connectedCallback()
-        Private( this ).receivePropsFromObject()
+        Private( this ).__receivePropsFromObject()
     },
 
     disconnectedCallback() {
         Super( this ).disconnectedCallback && Super( this ).disconnectedCallback()
-        Private( this ).unreceivePropsFromObject()
+        Private( this ).__unreceivePropsFromObject()
     },
 
     private: {
         propChangedCallback: ( propName, value ) => undefined,
 
-        receivePropsFromObject() {
+        __receivePropsFromObject() {
             const publicThis = Public( this )
             this.propChangedCallback = ( propName, value ) => publicThis[ propName ] = value
-            observe( Protected( this )._observedObject, this.getProps(), this.propChangedCallback, {
+            observe( Protected( this )._observedObject, this.__getProps(), this.propChangedCallback, {
                 // inherited: true, // XXX the 'inherited' option doesn't work in this case. Why?
             } )
         },
 
-        unreceivePropsFromObject() {
-            unobserve(Protected( this )._observedObject, this.getProps(), this.propChangedCallback )
+        __unreceivePropsFromObject() {
+            unobserve(Protected( this )._observedObject, this.__getProps(), this.propChangedCallback )
         },
 
-        getProps() {
+        __getProps() {
             let result
             const props = Public( this ).constructor.props
 
