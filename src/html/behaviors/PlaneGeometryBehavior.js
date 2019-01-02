@@ -6,7 +6,7 @@ const PlaneGeometryBehavior = BaseGeometryBehavior.subclass('PlaneGeometryBehavi
 
     protected: {
 
-        createComponent() {
+        _createComponent() {
             return new PlaneGeometry(
                 Public(this).element.calculatedSize.x,
                 Public(this).element.calculatedSize.y,

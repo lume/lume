@@ -56,9 +56,11 @@ Class( 'BaseGeometryBehavior' ).extends( BaseMeshBehavior, ({ Public, Protected,
     },
 
     _updateGeometryOnSizeChange({ x, y, z }) {
-        // TODO PERFORMANCE, re-creating geometries is wasteful, re-use them
-        // when possible, and add instancing
-        Protected(this).setMeshComponent( this.element, 'geometry', Protected(this).createComponent(this.element) )
+        // TODO PERFORMANCE, resetMeshComponent creates a new geometry.
+        // Re-creating geometries is wasteful, re-use them when possible, and
+        // add instancing. Maybe we use Object3D.scale as an implementation
+        // detail of our `size` prop.
+        this.resetMeshComponent()
     },
 
 }))

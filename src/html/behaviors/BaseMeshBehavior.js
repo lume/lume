@@ -7,7 +7,7 @@ import Behavior from './Behavior'
  * Base class for Geometry and Material behaviors, not intended for direct use.
  *
  * Subclasses should implement:
- * createComponent() - return a geometry or material instance.
+ * _createComponent() - return a geometry or material instance.
  */
 export default
 Class( 'BaseMeshBehavior' ).extends( Behavior, ({ Public, Protected, Private, Super }) => ({
@@ -19,12 +19,16 @@ Class( 'BaseMeshBehavior' ).extends( Behavior, ({ Public, Protected, Private, Su
 
     connectedCallback() {
         Super( this ).connectedCallback()
+        this.resetMeshComponent()
+    },
 
+    resetMeshComponent() {
+        console.log( 'reset' )
         // TODO might have to defer so that calculatedSize is already calculated
-        Protected(this).setMeshComponent(
+        Private(this).__setMeshComponent(
             this.element,
             this.constructor.type,
-            Protected(this).createComponent(this.element)
+            Protected(this)._createComponent(this.element)
         )
         this.element._needsToBeRendered()
     },
@@ -32,7 +36,7 @@ Class( 'BaseMeshBehavior' ).extends( Behavior, ({ Public, Protected, Private, Su
     disconnectedCallback() {
         Super( this ).disconnectedCallback()
 
-        Protected(this).setDefaultComponent( this.element, this.constructor.type )
+        Private(this).__setDefaultComponent( this.element, this.constructor.type )
         this.element._needsToBeRendered()
     },
 
@@ -40,30 +44,30 @@ Class( 'BaseMeshBehavior' ).extends( Behavior, ({ Public, Protected, Private, Su
         return this.element.three[name]
     },
 
+    protected: {
+        _createComponent() {
+            throw new Error('`_createComponent()` is not implemented by subclass.')
+        },
+    },
+
     private: {
         // records the initial size of the geometry, so that we have a
         // reference for how much scale to apply when accepting new sizes from
         // the user.
         initialSize: null,
-    },
 
-    protected: {
-        createComponent() {
-            throw new Error('`createComponent()` is not implemented by subclass.')
-        },
-
-        setMeshComponent(element, name, newComponent) {
+        __setMeshComponent(element, name, newComponent) {
             if ( element.three[ name ] )
                 element.three[ name ].dispose()
 
             element.three[name] = newComponent
         },
 
-        setDefaultComponent( element, name ) {
-            this.setMeshComponent( element, name, this.makeDefaultComponent( element, name ) )
+        __setDefaultComponent( element, name ) {
+            this.__setMeshComponent( element, name, this.__makeDefaultComponent( element, name ) )
         },
 
-        makeDefaultComponent( element, name ) {
+        __makeDefaultComponent( element, name ) {
             if (name == 'geometry') {
                 return new BoxGeometry(
                     element.calculatedSize.x,

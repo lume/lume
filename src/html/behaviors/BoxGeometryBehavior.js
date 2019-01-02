@@ -6,7 +6,7 @@ const BoxGeometryBehavior = BaseGeometryBehavior.subclass('BoxGeometryBehavior',
 
     protected: {
 
-        createComponent() {
+        _createComponent() {
             return new BoxGeometry(
                 Public(this).element.calculatedSize.x,
                 Public(this).element.calculatedSize.y,

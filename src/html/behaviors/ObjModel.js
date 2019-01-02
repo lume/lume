@@ -57,8 +57,23 @@ const ObjModel = Class('ObjModel').extends(Behavior, ({Super}) => ({
         }
         else {
             objLoader.load(obj, model => {
-                // if no material, make a default one with random color
-                setRandomColorPhongMaterial(model)
+                let materialBehavior = this.element.behaviors.get('basic-material')
+                if (!materialBehavior) materialBehavior = this.element.behaviors.get('phong-material')
+                if (!materialBehavior) materialBehavior = this.element.behaviors.get('standard-material')
+                if (!materialBehavior) materialBehavior = this.element.behaviors.get('lambert-material')
+
+                if (materialBehavior) {
+                    model.traverse(function (child) {
+                        if ('material' in child) {
+                            console.log( materialBehavior.getMeshComponent('material') )
+                            child.material = materialBehavior.getMeshComponent('material')
+                        }
+                    })
+                }
+                else {
+                    // if no material, make a default one with random color
+                    setRandomColorPhongMaterial(model)
+                }
 
                 this.setModel(model)
             })

@@ -6,7 +6,7 @@ const SphereGeometryBehavior = BaseGeometryBehavior.subclass('SphereGeometryBeha
 
     protected: {
 
-        createComponent() {
+        _createComponent() {
             return new SphereGeometry(
                 Public(this).element.calculatedSize.x / 2,
                 32,

@@ -6,7 +6,7 @@ const DOMNodeGeometryBehavior = BaseGeometryBehavior.subclass('DOMNodeGeometryBe
 
     protected: {
 
-        createComponent() {
+        _createComponent() {
 
             // We have to use a BoxGeometry instead of a
             // PlaneGeometry because Three.js is not capable of
