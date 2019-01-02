@@ -10,7 +10,7 @@ import Behavior from './Behavior'
  * _createComponent() - return a geometry or material instance.
  */
 export default
-Class( 'BaseMeshBehavior' ).extends( Behavior, ({ Public, Protected, Private, Super }) => ({
+Class( 'BaseMeshBehavior' ).extends( Behavior, ({ Protected, Private, Super }) => ({
     static: {
         // use a getter because Mesh is undefined at module evaluation time due
         // to a circular dependency.
