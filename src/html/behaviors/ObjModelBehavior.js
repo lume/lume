@@ -5,7 +5,7 @@ import 'three/examples/js/loaders/OBJLoader'
 import 'three/examples/js/loaders/MTLLoader'
 import Behavior from './Behavior'
 
-const ObjModel = Class('ObjModel').extends(Behavior, ({Super}) => ({
+const ObjModelBehavior = Class('ObjModelBehavior').extends(Behavior, ({Super}) => ({
     static: {
         props: {
             obj: String, // path to obj file
@@ -151,6 +151,6 @@ function disposeObjectTree(obj, disposeOptions = {}) {
   })
 }
 
-elementBehaviors.define('obj-model', ObjModel)
+elementBehaviors.define('obj-model', ObjModelBehavior)
 
-export default ObjModel
+export default ObjModelBehavior
