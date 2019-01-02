@@ -5,7 +5,7 @@ import 'three/examples/js/loaders/OBJLoader'
 import 'three/examples/js/loaders/MTLLoader'
 import Behavior from './Behavior'
 
-const ObjModelBehavior = Class('ObjModelBehavior').extends(Behavior, ({Super}) => ({
+const ObjModelBehavior = Class('ObjModelBehavior').extends(Behavior, ({Super, Public, Private}) => ({
     static: {
         props: {
             obj: String, // path to obj file
@@ -16,8 +16,8 @@ const ObjModelBehavior = Class('ObjModelBehavior').extends(Behavior, ({Super}) =
     updated(oldProps, newProps, modifiedProps) {
         if (modifiedProps.obj || modifiedProps.mtl) {
             if (!this.obj) return
-            this.cleanup()
-            this.load()
+            Private(this).__cleanup()
+            Private(this).__loadObj()
         }
     },
 
@@ -36,54 +36,59 @@ const ObjModelBehavior = Class('ObjModelBehavior').extends(Behavior, ({Super}) =
 
     disconnectedCallback() {
         Super(this).disconnectedCallback()
-        this.cleanup()
+        Private(this).__cleanup()
     },
 
-    cleanup() {
-        if (!this.model) return
-        disposeObjectTree(this.model)
-    },
+    private: {
+        __cleanup() {
+            const pub = Public(this)
+            if (!pub.model) return
+            disposeObjectTree(pub.model)
+        },
 
-    load() {
-        const { obj, mtl, mtlLoader, objLoader } = this
+        __loadObj() {
+            const pub = Public(this)
+            const { obj, mtl, mtlLoader, objLoader } = pub
 
-        if (mtl) {
-            mtlLoader.setTexturePath(mtl.substr(0, mtl.lastIndexOf('/') + 1))
-            mtlLoader.load(mtl, materials => {
-                materials.preload()
-                objLoader.setMaterials(materials)
-                objLoader.load(obj, model => this.setModel(model))
-            })
-        }
-        else {
-            objLoader.load(obj, model => {
-                let materialBehavior = this.element.behaviors.get('basic-material')
-                if (!materialBehavior) materialBehavior = this.element.behaviors.get('phong-material')
-                if (!materialBehavior) materialBehavior = this.element.behaviors.get('standard-material')
-                if (!materialBehavior) materialBehavior = this.element.behaviors.get('lambert-material')
+            if (mtl) {
+                mtlLoader.setTexturePath(mtl.substr(0, mtl.lastIndexOf('/') + 1))
+                mtlLoader.load(mtl, materials => {
+                    materials.preload()
+                    objLoader.setMaterials(materials)
+                    objLoader.load(obj, model => this.__setModel(model))
+                })
+            }
+            else {
+                objLoader.load(obj, model => {
+                    let materialBehavior = pub.element.behaviors.get('basic-material')
+                    if (!materialBehavior) materialBehavior = pub.element.behaviors.get('phong-material')
+                    if (!materialBehavior) materialBehavior = pub.element.behaviors.get('standard-material')
+                    if (!materialBehavior) materialBehavior = pub.element.behaviors.get('lambert-material')
 
-                if (materialBehavior) {
-                    model.traverse(function (child) {
-                        if ('material' in child) {
-                            console.log( materialBehavior.getMeshComponent('material') )
-                            child.material = materialBehavior.getMeshComponent('material')
-                        }
-                    })
-                }
-                else {
-                    // if no material, make a default one with random color
-                    setRandomColorPhongMaterial(model)
-                }
+                    if (materialBehavior) {
+                        model.traverse(function (child) {
+                            if ('material' in child) {
+                                console.log( materialBehavior.getMeshComponent('material') )
+                                child.material = materialBehavior.getMeshComponent('material')
+                            }
+                        })
+                    }
+                    else {
+                        // if no material, make a default one with random color
+                        setRandomColorPhongMaterial(model)
+                    }
 
-                this.setModel(model)
-            })
-        }
-    },
+                    this.__setModel(model)
+                })
+            }
+        },
 
-    setModel(model) {
-        this.element.three.add(this.model = model)
-        this.element.emit('model-loaded', {format: 'obj', model: model})
-        this.element._needsToBeRendered()
+        __setModel(model) {
+            const pub = Public(this)
+            pub.element.three.add(pub.model = model)
+            pub.element.emit('model-loaded', {format: 'obj', model: model})
+            pub.element._needsToBeRendered()
+        },
     },
 
 }))
