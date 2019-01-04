@@ -119,7 +119,7 @@
 
         <script>
             // defines the default names for the HTML elements
-            infamous.html.useDefaultNames()
+            infamous.useDefaultNames()
 
             new Vue({
                 el: '#root',
@@ -144,7 +144,7 @@
                         light.position.y = e.clientY
                     })
 
-                    var Motor = infamous.core.Motor
+                    var Motor = infamous.Motor
                     var downTween, upTween, pressedButton
 
                     // On mouse down animate the button downward

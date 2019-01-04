@@ -24,10 +24,16 @@
 
         <script>{
             // defines the default names for the HTML elements
-            infamous.html.useDefaultNames()
+            infamous.useDefaultNames()
 
-            const {AutoLayoutNode} = infamous.layout
-            const {Scene, AmbientLight, PointLight, DOMPlane, Sphere} = infamous.core
+            const {
+                AutoLayoutNode,
+                Scene,
+                AmbientLight,
+                PointLight,
+                DOMPlane,
+                Sphere
+            } = infamous
 
             const scene = new Scene({
                 experimentalWebgl: true,

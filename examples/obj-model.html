@@ -72,7 +72,7 @@
 
         <script>{
             // defines the default names for the HTML elements
-            infamous.html.useDefaultNames()
+            infamous.useDefaultNames()
 
             const light = document.querySelector('#light')
 
@@ -97,7 +97,7 @@
             })
 
             const el2 = document.querySelector('#model2')
-            const Motor = infamous.core.Motor
+            const Motor = infamous.Motor
 
             Motor.addRenderTask(() => {
                 el.rotation.y -= 0.1

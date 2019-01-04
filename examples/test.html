@@ -52,7 +52,7 @@
 
         <!-- works here -->
         <script>
-            infamous.html.useDefaultNames()
+            infamous.useDefaultNames()
         </script>
 
         <i-scene
@@ -178,7 +178,7 @@
             light.three.shadow.bias = -0.0001
             light.three.distance = 800
 
-            infamous.core.Motor.addRenderTask(t => {
+            infamous.Motor.addRenderTask(t => {
                 lightMesh.position.y = 100 * Math.sin(t * 0.001) /*+ 100*/
                 lightMesh.position.x = 100 * Math.sin(t * 0.0005) /*+ 100*/
                 root.rotation.y = 15 * Math.cos(t * 0.002)
@@ -206,7 +206,7 @@
         TODO do we need this test?
         <!~~ works here ~~>
         <script>
-            infamous.html.useDefaultNames()
+            infamous.useDefaultNames()
         </script>
 
         <style>
@@ -241,7 +241,7 @@
         </i-scene>
 
         <!~~ <script>
-            infamous.html.useDefaultNames()
+            infamous.useDefaultNames()
         </script> ~~>
 
         <script>
@@ -266,10 +266,10 @@
             </i-node>
         </i-scene>
         <script>
-            infamous.html.useDefaultNames()
+            infamous.useDefaultNames()
             const n = document.querySelector('#n')
             <!~~ n.rotation = (x, y, z) => [x, y++, z] ~~>
-            infamous.core.Motor.addRenderTask(() => {
+            infamous.Motor.addRenderTask(() => {
                 n.rotation.y++
             })
         </script>
@@ -277,7 +277,7 @@
         <!-- WORKS ======================================================== -->
 <!--
         <script>
-            infamous.html.useDefaultNames()
+            infamous.useDefaultNames()
         </script>
 
         <style>
@@ -324,7 +324,7 @@
                -    ></i-perspective-camera>
                -</i-scene>
                -<script>
-               -    infamous.html.useDefaultNames()
+               -    infamous.useDefaultNames()
                -    const scene = document.querySelector('i-scene')
                -    const cam = document.querySelector('i-perspective-camera')
                -</script>
@@ -334,7 +334,7 @@
         <!--
            -<script>
            -    console.log('  ---- define elements ---- ')
-           -    infamous.html.useDefaultNames()
+           -    infamous.useDefaultNames()
            -</script>
            -<i-scene>
            -    <i-node size="100 100 100" rotation="30 30 30">
@@ -354,13 +354,13 @@
         <!--</i-scene>-->
         <!--<script>-->
         <!--    console.log('  ---- define elements ---- ')-->
-        <!--    infamous.html.useDefaultNames()-->
+        <!--    infamous.useDefaultNames()-->
         <!--</script>-->
 
         <!-- WORKS ======================================================== -->
         <!--<script>-->
         <!--    console.log('  ---- define elements ---- ')-->
-        <!--    infamous.html.useDefaultNames()-->
+        <!--    infamous.useDefaultNames()-->
         <!--</script>-->
         <!--<script>-->
         <!--document.body.insertAdjacentHTML('beforeend', `-->
@@ -384,14 +384,14 @@
         <!--</script>-->
         <!--<script>-->
         <!--    console.log('  ---- define elements ---- ')-->
-        <!--    infamous.html.useDefaultNames()-->
+        <!--    infamous.useDefaultNames()-->
         <!--</script>-->
 
         <!-- WORKS ======================================================== -->
         <!--<script>-->
         <!--    setTimeout(() => {-->
         <!--        console.log('  ---- define elements ---- ')-->
-        <!--        infamous.html.useDefaultNames()-->
+        <!--        infamous.useDefaultNames()-->
         <!--    }, 0)-->
         <!--</script>-->
         <!--<i-scene>-->
@@ -404,7 +404,7 @@
         <!--<script>-->
         <!--    setTimeout(() => {-->
         <!--        console.log('  ---- define elements ---- ')-->
-        <!--        infamous.html.useDefaultNames()-->
+        <!--        infamous.useDefaultNames()-->
         <!--    }, 0)-->
         <!--</script>-->
         <!--<script>-->
@@ -421,7 +421,7 @@
         <!--<script>-->
         <!--    setTimeout(() => {-->
         <!--        console.log('  ---- define elements ---- ')-->
-        <!--        infamous.html.useDefaultNames()-->
+        <!--        infamous.useDefaultNames()-->
         <!--    }, 0)-->
         <!--</script>-->
         <!--<script>-->
@@ -437,7 +437,7 @@
         <!-- WORKS ======================================================== -->
         <!--<script>-->
         <!--    console.log('  ---- define elements ---- ')-->
-        <!--    infamous.html.useDefaultNames()-->
+        <!--    infamous.useDefaultNames()-->
         <!--</script>-->
         <!--<script>-->
         <!--document.write(`-->
@@ -461,14 +461,14 @@
         <!--</script>-->
         <!--<script>-->
         <!--    console.log('  ---- define elements ---- ')-->
-        <!--    infamous.html.useDefaultNames()-->
+        <!--    infamous.useDefaultNames()-->
         <!--</script>-->
 
         <!-- WORKS ======================================================== -->
         <!--<script>-->
         <!--    Promise.resolve().then(() => {-->
         <!--        console.log('  ---- define elements ---- ')-->
-        <!--        infamous.html.useDefaultNames()-->
+        <!--        infamous.useDefaultNames()-->
         <!--    })-->
         <!--</script>-->
         <!--<script>-->
@@ -494,7 +494,7 @@
         <!--<script>-->
         <!--    Promise.resolve().then(() => {-->
         <!--        console.log('  ---- define elements ---- ')-->
-        <!--        infamous.html.useDefaultNames()-->
+        <!--        infamous.useDefaultNames()-->
         <!--    })-->
         <!--</script>-->
 
@@ -502,7 +502,7 @@
         <!--<script>-->
         <!--    Promise.resolve().then(() => {-->
         <!--        console.log('  ---- define elements ---- ')-->
-        <!--        infamous.html.useDefaultNames()-->
+        <!--        infamous.useDefaultNames()-->
         <!--    })-->
         <!--</script>-->
         <!--<i-scene>-->
@@ -520,7 +520,7 @@
         <!--<script>-->
         <!--    Promise.resolve().then(() => {-->
         <!--        console.log('  ---- define elements ---- ')-->
-        <!--        infamous.html.useDefaultNames()-->
+        <!--        infamous.useDefaultNames()-->
         <!--    })-->
         <!--</script>-->
 
@@ -528,7 +528,7 @@
         <!--<script>-->
         <!--    Promise.resolve().then(() => {-->
         <!--        console.log('  ---- define elements ---- ')-->
-        <!--        infamous.html.useDefaultNames()-->
+        <!--        infamous.useDefaultNames()-->
         <!--    })-->
         <!--</script>-->
         <!--<script>-->
@@ -554,7 +554,7 @@
         <!--<script>-->
         <!--    Promise.resolve().then(() => {-->
         <!--        console.log('  ---- define elements ---- ')-->
-        <!--        infamous.html.useDefaultNames()-->
+        <!--        infamous.useDefaultNames()-->
         <!--    })-->
         <!--</script>-->
 
@@ -562,7 +562,7 @@
         <!--<script>-->
         <!--    Promise.resolve().then(() => {-->
         <!--        console.log('  ---- define elements ---- ')-->
-        <!--        infamous.html.useDefaultNames()-->
+        <!--        infamous.useDefaultNames()-->
         <!--    })-->
         <!--</script>-->
         <!--<script>-->
@@ -588,7 +588,7 @@
         <!--<script>-->
         <!--    Promise.resolve().then(() => {-->
         <!--        console.log('  ---- define elements ---- ')-->
-        <!--        infamous.html.useDefaultNames()-->
+        <!--        infamous.useDefaultNames()-->
         <!--    })-->
         <!--</script>-->
 
