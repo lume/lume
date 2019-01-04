@@ -1,8 +1,10 @@
+import Class from 'lowclass'
 import 'element-behaviors'
 import { MeshBasicMaterial } from 'three'
 import BaseMaterialBehavior from './BaseMaterialBehavior'
+import MaterialTexture from './MaterialTexture'
 
-const BasicMaterialBehavior = BaseMaterialBehavior.subclass('BasicMaterialBehavior', {
+const BasicMaterialBehavior = Class('BasicMaterialBehavior').extends(MaterialTexture.mixin(BaseMaterialBehavior), {
 
     protected: {
 
