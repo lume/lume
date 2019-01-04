@@ -28,6 +28,13 @@ function createGenericPropType(Type, override = {}) {
     }
 }
 
+// skateProps gives us some default generic prop types:
+// props.any
+// props.array
+// props.boolean
+// props.number
+// props.object
+// props.string
 export const props = {
     ...skateProps,
     boolean: {

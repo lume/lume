@@ -1,8 +1,10 @@
+import Class from 'lowclass'
 import 'element-behaviors'
 import { MeshPhongMaterial } from 'three'
 import BaseMaterialBehavior from './BaseMaterialBehavior'
+import MaterialTexture from './MaterialTexture'
 
-const PhongMaterialBehavior = BaseMaterialBehavior.subclass('PhongMaterialBehavior', {
+const PhongMaterialBehavior = Class('PhongMaterialBehavior').extends(MaterialTexture.mixin(BaseMaterialBehavior), {
 
     protected: {
 
