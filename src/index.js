@@ -1,6 +1,6 @@
-export * as core from './core'
-export * as html from './html'
-export * as components from './components'
-export * as layout from './layout'
+export * from './core'
+export * from './html'
+export * from './components'
+export * from './layout'
 
 export const version = '21.0.6'
