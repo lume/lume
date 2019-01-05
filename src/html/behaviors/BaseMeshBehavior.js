@@ -23,7 +23,9 @@ Class( 'BaseMeshBehavior' ).extends( Behavior, ({ Protected, Private, Super }) =
     },
 
     resetMeshComponent() {
-        // TODO might have to defer so that calculatedSize is already calculated
+        // TODO We might have to defer so that calculatedSize is already calculated
+        // (note, resetMeshComponent is only called when the size prop has
+        // changed)
         Private(this).__setMeshComponent(
             this.element,
             this.constructor.type,
