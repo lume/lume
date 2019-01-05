@@ -29,13 +29,13 @@
             <i-point-light
                 id="light"
                 color="white"
-                position="300 300 1100"
+                position="300 300 600"
                 size="0 0 0"
                 cast-shadow="true"
                 intensity="0.5"
                 >
                 <i-sphere
-                    size="10 10 10"
+                    size="5 5 5"
                     color="#ffffee"
                     receive-shadow="false"
                     cast-shadow="false"
@@ -46,7 +46,8 @@
 
             <!-- an i-node element with an obj-model behavior. The obj-model
             behavior observes the obj and mtl attributes. -->
-            <i-node id="model"
+            <i-node
+                id="ship1"
                 rotation="0 40 0"
                 align="0.5 0.5 0"
                 size="0 0 0"
@@ -60,7 +61,8 @@
             <!-- alternatively, the i-obj-model is an node element that
             implicityly has an obj-model behavior. We've omitted the mtl, so the
             model will have a random-colored phong material: -->
-            <i-obj-model id="model2"
+            <i-obj-model
+                id="ship2"
                 rotation="0 20 0"
                 align="0.5 0.5 0"
                 size="0 0 0"
@@ -82,27 +84,50 @@
                 light.position.y = e.clientY
             })
 
-            const el = document.querySelector('#model')
+            const ship1 = document.querySelector('#ship1')
+            smooth(ship1)
 
-            el.on('model-loaded', ({ model }) => {
+            const ship2 = document.querySelector('#ship2')
+            smooth(ship2)
 
-                // work with the `model` here, it is an instance of THREE.Group
-                // containing THREE.Mesh objects.
-
-                // if you modify any Three.js objects, don't forget to tell the
-                // element to be re-rendered in the next frame
-                //
-                // el._needsToBeRendered()
-
-            })
-
-            const el2 = document.querySelector('#model2')
-            const Motor = infamous.Motor
-
+            const { Motor } = infamous
             Motor.addRenderTask(() => {
-                el.rotation.y -= 0.1
-                el2.rotation.y -= 0.4
+                ship1.rotation.y -= 0.1
+                ship2.rotation.y -= 0.4
             })
+
+            function smooth(objModelElement) {
+
+                // use the 'model-loaded' event to work with the `model` once loaded, if needed.
+                // `model` is an instance of THREE.Group containing THREE.Mesh objects
+                objModelElement.on('model-loaded', ({ model }) => {
+                    setSmoothGeometry(model)
+
+                    // we modified the internals the element, signal that it
+                    // needs an update on next render
+                    objModelElement._needsToBeRendered()
+                })
+
+            }
+
+            // if your model's shading looks flat on each polygon, use this to
+            // make it look smooth. See https://discourse.threejs.org/t/5531
+            function setSmoothGeometry(obj) {
+
+                obj.traverse(node => {
+
+                    if ('geometry' in node) {
+
+                        const tempGeometry = new THREE.Geometry().fromBufferGeometry( node.geometry );
+                        tempGeometry.mergeVertices();
+                        tempGeometry.computeVertexNormals();
+                        node.geometry = new THREE.BufferGeometry().fromGeometry( tempGeometry );
+
+                    }
+
+                })
+
+            }
         }</script>
 
     </body>
