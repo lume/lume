@@ -23,7 +23,6 @@ Class( 'BaseMeshBehavior' ).extends( Behavior, ({ Protected, Private, Super }) =
     },
 
     resetMeshComponent() {
-        console.log( 'reset' )
         // TODO might have to defer so that calculatedSize is already calculated
         Private(this).__setMeshComponent(
             this.element,
