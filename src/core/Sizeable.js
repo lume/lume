@@ -271,8 +271,7 @@ Mixin(Base => {
          * respectively.
          */
         get calculatedSize() {
-            const {x,y,z} = this._calculatedSize
-            return {x,y,z}
+            return {...this._calculatedSize}
         },
 
         /**
