@@ -8,6 +8,8 @@ import documentReady from '@awaitbox/document-ready'
 
 import Mixin from './Mixin'
 import Motor from './Motor'
+import {getWebGLRendererThree, destroyWebGLRendererThree} from './WebGLRendererThree'
+import {getCSS3DRendererThree, destroyCSS3DRendererThree} from './CSS3DRendererThree'
 import ImperativeBase, {initImperativeBase} from './ImperativeBase'
 import XYZSizeModeValues from './XYZSizeModeValues'
 import XYZNonNegativeValues from './XYZNonNegativeValues'
@@ -27,7 +29,7 @@ let Scene = Mixin(Base => {
 
     const Parent = ImperativeBase.mixin( Base )
 
-    return Class('Scene').extends( Parent, ({ Super }) => ({
+    return Class('Scene').extends( Parent, ({ Super, Public, Private }) => ({
 
         static: {
             defaultElementName: 'i-scene',
@@ -105,10 +107,6 @@ let Scene = Mixin(Base => {
             //const ambientLight = new AmbientLight( 0x353535 )
             //this.three.add( ambientLight )
 
-            // holds the renderer for this scene, renderers have scene-specific
-            // settings so having this reference is okay.
-            this._renderer = null
-
             // a default orange background color. Use the backgroundColor and
             // backgroundOpacity attributes to customize.
             this._glBackgroundColor = new Color( 0xff6600 )
@@ -120,18 +118,77 @@ let Scene = Mixin(Base => {
             // are rendered with when no camera elements exist).
             this._activeCameras = new Set
 
-            this._renderer = Motor.getWebGLRenderer(this, 'three')
+            Private(this).__glRenderer = Private(this).__getRenderer('three')
+            Private(this).__cssRenderer = Private(this).__getCSSRenderer('three')
 
             // set default colors
-            this._renderer.setClearColor( this, this._glBackgroundColor, this._glBackgroundOpacity )
+            Private(this).__glRenderer.setClearColor( this, this._glBackgroundColor, this._glBackgroundOpacity )
+
+            this.traverse((node) => {
+                console.log( 'traverse!', node )
+
+                // skip `this`, we already handled it above
+                if (node === this) return
+
+                node.initWebGl()
+            })
         },
 
         makeThreeObject3d() {
             return new ThreeScene
         },
 
-        // TODO ability to init and destroy webgl for the whole scene.
+        drawScene() {
+            // if (scene.experimentalWebgl)
+                Private(this).__glRenderer.drawScene(this)
+            Private(this).__cssRenderer.drawScene(this)
+        },
+
+        private: {
+            __glRenderer: null,
+            __cssRenderer: null,
+
+            // The idea here is that in the future we might have "babylon",
+            // "playcanvas", etc, on a per scene basis.
+            __getRenderer(type) {
+                const scene = Public(this)
+
+                if (this.__glRenderer) return this.__glRenderer
+
+                let rendererGetter = null
+
+                if (type === "three")
+                    rendererGetter = getWebGLRendererThree
+                else throw new Error('invalid WebGL renderer')
+
+                const renderer = rendererGetter(scene)
+                renderer.initialize(scene)
+
+                return renderer
+            },
+
+            __getCSSRenderer(type) {
+                const scene = Public(this)
+
+                if (this.__cssRenderer) return this.__cssRenderer
+
+                let rendererGetter = null
+
+                if (type === "three")
+                    rendererGetter = getCSS3DRendererThree
+                else throw new Error('invalid WebGL renderer')
+
+                const renderer = rendererGetter(scene)
+                renderer.initialize(scene)
+
+                return renderer
+            },
+        },
+
+        // TODO ability to init and destroy webgl for the whole scene based on prop change
         destroyWebGl() {
+            // destroyWebGLRendererThree
+            // destroyCSS3DRendererThree
         },
 
         // TODO PERFORMANCE: make this static for better performance.
@@ -298,23 +355,23 @@ let Scene = Mixin(Base => {
 
             if (this.experimentalWebgl) {
                 if (moddedProps.backgroundColor) {
-                    this._renderer.setClearColor( this, this.backgroundColor, this.backgroundOpacity )
+                    Private(this).__glRenderer.setClearColor( this, this.backgroundColor, this.backgroundOpacity )
                     this._needsToBeRendered()
                 }
                 if (moddedProps.backgroundOpacity) {
-                    this._renderer.setClearAlpha( this, this.backgroundOpacity )
+                    Private(this).__glRenderer.setClearAlpha( this, this.backgroundOpacity )
                     this._needsToBeRendered()
                 }
                 if (moddedProps.shadowmapType) {
-                    this._renderer.setShadowMapType(this, this.shadowmapType)
+                    Private(this).__glRenderer.setShadowMapType(this, this.shadowmapType)
                     this._needsToBeRendered()
                 }
                 if (moddedProps.vr) {
-                    this._renderer.enableVR( this, this.vr)
+                    Private(this).__glRenderer.enableVR( this, this.vr)
 
                     if ( this.vr ) {
-                        Motor.setFrameRequester( fn => this._renderer.requestFrame( this, fn ) )
-                        this._renderer.createDefaultWebVREntryUI( this )
+                        Motor.setFrameRequester( fn => Private(this).__glRenderer.requestFrame( this, fn ) )
+                        Private(this).__glRenderer.createDefaultWebVREntryUI( this )
                     }
                     else {
                         // TODO else return back to normal requestAnimationFrame

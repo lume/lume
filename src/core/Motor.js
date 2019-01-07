@@ -1,13 +1,9 @@
 import Class from 'lowclass'
 import documentReady from '@awaitbox/document-ready'
 import Transformable from './Transformable'
-import {getWebGLRendererThree, destroyWebGLRendererThree} from './WebGLRendererThree'
 import {isInstanceof} from './Utility'
 
 let documentIsReady = false
-
-// TODO use Array if IE11 doesn't have Map.
-const webGLRenderers = new Map
 
 const Motor = Class('Motor', ({ Public, Private }) => ({
 
@@ -71,24 +67,6 @@ const Motor = Class('Motor', ({ Public, Private }) => ({
 
     once(fn) {
         this.addRenderTask(time => (fn(time), false))
-    },
-
-    // in the future we might have "babylon", "playcanvas", etc, on a
-    // per scene basis.
-    getWebGLRenderer(scene, type) {
-        if ( webGLRenderers.has(scene) ) return webGLRenderers.get(scene)
-
-        let rendererGetter = null
-
-        if (type === "three")
-            rendererGetter = getWebGLRendererThree
-        else throw new Error('invalid WebGL renderer')
-
-        const renderer = rendererGetter(scene)
-        webGLRenderers.set(scene, renderer)
-        renderer.initGl(scene)
-
-        return renderer
     },
 
     // A Node calls this any time its properties have been modified (f.e. by the end user).
@@ -183,21 +161,11 @@ const Motor = Class('Motor', ({ Public, Private }) => ({
 
                 node._render(timestamp)
 
-                // If the node is root of a subtree containing updated nodes and
-                // has no ancestors that were modified, then add it to the
-                // treesToUpdate set so we can update the world matrices of
-                // all the nodes in the subtree.
+                // if there is no ancestor of the current node that should be
+                // rendered, then the current node is a root node of a subtree
+                // that needs to be updated
                 if (
-                    // a node could be a Scene, which is not Transformable
-                    isInstanceof(node, Transformable) &&
-
-                    // and if ancestor is not instanceof Transformable, f.e.
-                    // `false` if there is no ancestor that should be rendered or
-                    // no Transformable parent which means the current node is the
-                    // root node
-                    !isInstanceof(node._getAncestorThatShouldBeRendered(), Transformable) &&
-
-                    // and the node isn't already added.
+                    !node._getNearestAncestorThatShouldBeRendered() &&
                     !this.treesToUpdate.includes(node)
                 ) {
                     this.treesToUpdate.push(node)
@@ -217,14 +185,9 @@ const Motor = Class('Motor', ({ Public, Private }) => ({
             treesToUpdate.length = 0
 
             // render webgl of modified scenes.
-            // TODO PERFORMANCE: store a list of webgl-enabled modified scenes, and
-            // iterate only through those so we don't iterate over non-webgl
-            // scenes.
             const modifiedScenes = this.modifiedScenes
             for (let i=0, l=modifiedScenes.length; i<l; i+=1) {
-                const scene = modifiedScenes[i]
-                if (scene.experimentalWebgl)
-                    webGLRenderers.get(scene).drawScene(scene)
+                modifiedScenes[i].drawScene()
             }
             modifiedScenes.length = 0
 

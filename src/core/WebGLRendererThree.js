@@ -16,7 +16,7 @@ const sceneStates = new WeakMap
 // A singleton responsible for setting up and drawing a WebGL scene for a given
 // infamous/core/Scene using Three.js
 const WebGLRendererThree = Class('WebGLRendererThree', { // TODO rename
-    initGl(scene) {
+    initialize(scene) {
         let sceneState = sceneStates.has(scene)
 
         if (sceneState) sceneState = sceneStates.get(scene)
@@ -33,10 +33,10 @@ const WebGLRendererThree = Class('WebGLRendererThree', { // TODO rename
                 antialias: true,
             } ),
 
-            cssRenderer: new CSS3DRendererNested,
+            sizeChangeHandler: null,
         })
 
-        const { renderer, cssRenderer } = sceneState
+        const { renderer } = sceneState
 
         // TODO: make configurable by property/attribute
         renderer.setPixelRatio(window.devicePixelRatio)
@@ -44,19 +44,31 @@ const WebGLRendererThree = Class('WebGLRendererThree', { // TODO rename
         renderer.shadowMap.type = PCFSoftShadowMap; // default PCFShadowMap
 
         this.updateResolution(scene)
-        scene.on('sizechange', () => this.updateResolution(scene))
+
+        sceneState.sizeChangeHandler = () => this.updateResolution(scene)
+        scene.on('sizechange', sceneState.sizeChangeHandler)
 
         // TODO? Maybe the html/scene.js element should be responsible for
         // making this, so that DOM logic is encapsulated there?
         scene._glLayer.appendChild( renderer.domElement )
-        scene._cssLayer.appendChild( cssRenderer.domElement )
+    },
+
+    uninitialize(scene) {
+        const sceneState = sceneStates.get(scene)
+
+        if (!sceneState) return
+
+        scene.off('sizechange', sceneState.sizeChangeHandler)
+        scene._glLayer.removeChild( renderer.domElement )
+        sceneState.renderer.dispose()
+        sceneState.renderer = null
+        sceneState.sizeChangeHandler = null
     },
 
     drawScene(scene) {
-        const {renderer, cssRenderer} = sceneStates.get(scene)
+        const {renderer} = sceneStates.get(scene)
 
         renderer.render(scene.three, scene.threeCamera)
-        cssRenderer.render(scene.threeCSS, scene.threeCamera)
     },
 
     // TODO FIXME This is tied to the `sizechange` event of Scene, which means
@@ -71,12 +83,9 @@ const WebGLRendererThree = Class('WebGLRendererThree', { // TODO rename
         scene._updateCameraPerspective()
         scene._updateCameraProjection()
 
-        state.renderer.setSize( scene._calculatedSize.x, scene._calculatedSize.y )
-        state.cssRenderer.setSize( scene._calculatedSize.x, scene._calculatedSize.y )
+        const { x, y } = scene.calculatedSize
+        state.renderer.setSize( x, y )
 
-        // Indirectly causes Motor to call this.drawScene(). It's important to
-        // call this rather than just this.drawScene() directly because Motor
-        // will make sure it runs in an animation frame.
         scene._needsToBeRendered()
     },
 
