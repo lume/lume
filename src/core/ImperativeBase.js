@@ -77,7 +77,7 @@ export function initImperativeBase() {
                 // TODO: defer size calculation to render task
                 self.on('propertychange', self._onPropertyChange, self)
 
-                if (!(self instanceof Scene)) self.initWebGl()
+                if (!(self instanceof Scene)) self.initWebGL()
 
                 return self
             },
@@ -103,7 +103,7 @@ export function initImperativeBase() {
                 this._needsToBeRendered()
             },
 
-            initWebGl() {
+            initWebGL() {
                 this.three = this.makeThreeObject3d()
 
                 // we don't let Three update local matrices automatically, we do

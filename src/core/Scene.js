@@ -82,10 +82,10 @@ let Scene = Mixin(Base => {
         // we can't simply rely on having it in constructor, we need a
         // getter/setter like node properties.
         // TODO: we need to deinit webgl too.
-        initWebGl() {
+        initWebGL() {
             // THREE
             // maybe keep this in sceneState in WebGLRendererThree
-            Super(this).initWebGl()
+            Super(this).initWebGL()
 
             this.threeCSS = new ThreeScene
 
@@ -345,11 +345,11 @@ let Scene = Mixin(Base => {
             if (!this.isConnected) return
 
             if (moddedProps.experimentalWebgl) {
-                if (this.experimentalWebgl) this.initWebGl()
+                if (this.experimentalWebgl) this.initWebGL()
                 else this.disposeWebGL() // <-- TODO, currently a no-op
             }
 
-            // call super.updated() after the above initWebGl() so that WebGL
+            // call super.updated() after the above initWebGL() so that WebGL
             // stuff will be ready in super.updated()
             Super(this).updated(oldProps, oldState, moddedProps)
 
