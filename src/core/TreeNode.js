@@ -17,7 +17,22 @@ Mixin(Base =>
         //private: {
             _parent: null,
             _children: null,
+
+            __traverse(fn) {
+                fn(this)
+
+                const children = this._children
+                for (let i = 0, l = children.length; i < l; i++) {
+                    console.log( 'CHILD!', children[i] )
+                    Private(children[i]).__traverse(fn)
+                }
+            },
         //},
+
+        // traverse the tree at this node
+        traverse(fn) {
+            Private(this).__traverse(fn)
+        },
 
         constructor(...args) {
             const self = Super(this).constructor(...args)
