@@ -137,7 +137,6 @@ Mixin(Base =>
         disconnected() {},
         childConnected(child) {},
         childDisconnected(child) {},
-        propertyChanged() {},
     }))
 
 )
