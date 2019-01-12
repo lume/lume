@@ -2,7 +2,7 @@ import 'element-behaviors'
 import Class from 'lowclass'
 import {withUpdate} from '@trusktr/skatejs'
 import native from 'lowclass/native'
-import forwardProps from './forwardProps'
+import ForwardProps from './ForwardProps'
 import Node from '../../core/Node'
 
 /**
@@ -10,7 +10,7 @@ import Node from '../../core/Node'
  *
  */
 export default
-Class( 'Behavior' ).extends( native( withUpdate( forwardProps ) ), ({ Public, Protected, Private, Super }) => ({
+Class( 'Behavior' ).extends( native( withUpdate( ForwardProps ) ), ({ Public, Protected, Private, Super }) => ({
     static: {
         // use a getter because Mesh is undefined at module evaluation time due
         // to a circular dependency.
@@ -33,7 +33,7 @@ Class( 'Behavior' ).extends( native( withUpdate( forwardProps ) ), ({ Public, Pr
     },
 
     protected: {
-        // used by forwardProps. See forwardProps.js
+        // used by ForwardProps. See ForwardProps.js
         get _observedObject() {
             return Public( this ).element
         },

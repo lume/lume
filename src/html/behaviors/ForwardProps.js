@@ -5,7 +5,7 @@ import Mixin from 'lowclass/Mixin'
 import {getInheritedDescriptor} from 'lowclass/utils'
 
 export default
-Mixin(Base => Class( 'forwardProps' ).extends( Base, ({ Super, Public, Protected, Private }) => ({
+Mixin(Base => Class( 'ForwardProps' ).extends( Base, ({ Super, Public, Protected, Private }) => ({
 
     connectedCallback() {
         Super( this ).connectedCallback && Super( this ).connectedCallback()
@@ -51,7 +51,7 @@ Mixin(Base => Class( 'forwardProps' ).extends( Base, ({ Super, Public, Protected
     protected: {
         get _observedObject() {
             throw new TypeError(`
-                The subclass using forwardProps must define a protected
+                The subclass using ForwardProps must define a protected
                 _observedObject property defining the object from which props
                 are forwarded.
             `)
