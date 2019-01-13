@@ -6,6 +6,7 @@ import XYZNonNegativeValues from './XYZNonNegativeValues'
 import XYZStringValues from './XYZStringValues'
 import XYZSizeModeValues from './XYZSizeModeValues'
 
+// NOTE `this` refers to the instance on which the prop exists
 function createXYZPropType(Type, override = {}) {
     return {
         attribute: { source: true, target: false }, // get the value from an attribute (but don't mirror it back)
@@ -56,9 +57,20 @@ export const props = {
     XYZSizeModeValues: createXYZPropType(XYZSizeModeValues),
 }
 
-// map a SkateJS prop value to a sub-object on the instance
-export const mapPropTo = (prop, subObj) => ({
+// map a SkateJS prop value to another target specified by getTarget
+// NOTE `this` refers to the instance on which the prop exists
+export const mapPropTo = (prop, getTarget) => ({
     ...prop,
-    coerce(val, key) { return this[subObj][key] = prop.coerce(val) },
-    deserialize(val, key) { return this[subObj][key] = prop.deserialize(val) },
+    coerce(val, key) {
+        const target = getTarget.call(this, this)
+        const coerced = prop.coerce.call(this, val)
+        if (target) target[key] = coerced
+        return coerced
+    },
+    deserialize(val, key) {
+        const target = getTarget.call(this, this)
+        const deserialized = prop.deserialize.call(this, val)
+        if (target) target[key] = deserialized
+        return deserialized
+    },
 })

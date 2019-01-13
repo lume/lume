@@ -12,9 +12,9 @@ Class('PointLight').extends( LightBase, ({ Super }) => ({
 
         props: {
             ...LightBase.props,
-            distance: mapPropTo({ ...props.number, default: 0 }, 'three'),
-            decay: mapPropTo({ ...props.number, default: 1 }, 'three'),
-            castShadow: mapPropTo({ ...props.boolean, default: true }, 'three'),
+            distance: mapPropTo({ ...props.number, default: 0 }, self => self.three),
+            decay: mapPropTo({ ...props.number, default: 1 }, self => self.three),
+            castShadow: mapPropTo({ ...props.boolean, default: true }, self => self.three),
             shadowMapWidth: { ...props.number, default: 512 },
             shadowMapHeight: { ...props.number, default: 512 },
             shadowRadius: { ...props.number, default: 3 },

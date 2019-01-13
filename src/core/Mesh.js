@@ -41,8 +41,8 @@ Class('Mesh').extends( Node, ({ Super }) => ({
 
         props: {
             ...Node.props,
-            castShadow: { ...mapPropTo(props.boolean, 'three'), default: true },
-            receiveShadow: { ...mapPropTo(props.boolean, 'three'), default: true },
+            castShadow: { ...mapPropTo(props.boolean, self => self.three), default: true },
+            receiveShadow: { ...mapPropTo(props.boolean, self => self.three), default: true },
         },
 
     },

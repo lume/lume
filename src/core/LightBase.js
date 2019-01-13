@@ -11,8 +11,8 @@ Class('LightBase').extends( Node, ({ Super }) => ({
     static: {
         props: {
             ...Node.props,
-            color: mapPropTo({ ...props.THREE.Color, default: new Color('white') }, 'three'),
-            intensity: mapPropTo({ ...props.number, default: 1 }, 'three'),
+            color: mapPropTo({ ...props.THREE.Color, default: new Color('white') }, self => self.three),
+            intensity: mapPropTo({ ...props.number, default: 1 }, self => self.three),
         },
     },
 
