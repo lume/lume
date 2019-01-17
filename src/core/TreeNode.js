@@ -90,7 +90,7 @@ Mixin(Base =>
          * @param {Array.TreeNode} nodes The nodes to add.
          */
         addChildren(nodes) {
-            nodes.forEach(node => this.add()(node))
+            nodes.forEach(node => this.add(node))
             return this
         },
 
