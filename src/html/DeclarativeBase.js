@@ -121,19 +121,6 @@ export function initDeclarativeBase() {
                 child.addEventListener('slotchange', this)
                 Private(this)._handleDistributedChildren(child)
             }
-            else { // if non-library content was added (div, img, etc).
-
-                // TODO: replace this check with a more general one that
-                // detects if anything is visible including from styling, not
-                // just content. Perhaps make a specific API for defining that
-                // a node should have DOM content, to make it clear.
-                if ( this instanceof HTMLNode && !this.isDOMNode && (
-                    ( !( child instanceof Text ) && !( child instanceof Comment ) ) ||
-                    ( child instanceof Text && child.textContent.trim().length > 0 )
-                ) ) {
-                    Private(this)._possiblyCreateDOMPlane()
-                }
-            }
         },
 
         childDisconnectedCallback(child) {
@@ -169,14 +156,6 @@ export function initDeclarativeBase() {
                 Private(this)._handleDistributedChildren(child)
                 Private(this)._slotElementsAssignedNodes.delete(child)
             }
-            else { // if non-library content was removed (div, img, etc).
-                if ( this instanceof HTMLNode && !this.isDOMNode && (
-                    ( !( child instanceof Text ) && !( child instanceof Comment ) ) ||
-                    ( child instanceof Text && child.textContent.trim().length > 0 )
-                ) ) {
-                    Private(this)._possiblyDestroyDOMPlane()
-                }
-            }
         },
 
         // Traverses a tree while considering ShadowDOM disribution.
@@ -207,10 +186,6 @@ export function initDeclarativeBase() {
             //if (this.tagName.toLowerCase() == 'motor-scene')
                 //console.log('setting attribute', arguments[1])
             Super(this).setAttribute(attr, value)
-        },
-
-        get threeDOMPlane() {
-            return Private(this)._threeDOMPlane
         },
 
         private: {
@@ -245,13 +220,6 @@ export function initDeclarativeBase() {
             // to this node in the flat tree. We instantiate this later, only
             // when/if needed.
             _shadowChildren: null,
-
-            // If this HTMLNode needs to be visible (f.e. it has non-library
-            // HTML children like div, span, img, etc), then we store here a
-            // reference to a WebGL plane that is aligned with the DOM element
-            // in order to achieve "mixed mode" features like the DOM element
-            // intersecting with WebGL meshes.
-            _threeDOMPlane: null,
 
             _nonLibraryElementCount: 0,
 
@@ -390,67 +358,6 @@ export function initDeclarativeBase() {
                 diff.added = newNodes
 
                 return diff
-            },
-
-            _possiblyCreateDOMPlane() {
-                if ( !this._nonLibraryElementCount ) this._createDOMPlane()
-                this._nonLibraryElementCount++
-            },
-
-            _possiblyDestroyDOMPlane() {
-                this._nonLibraryElementCount--
-                if ( !this._nonLibraryElementCount ) this._destroyDOMPlane()
-            },
-
-            _createDOMPlane() {
-
-                // We have to use a BoxGeometry instead of a
-                // PlaneGeometry because Three.js is not capable of
-                // casting shadows from Planes, at least until we find
-                // another way. Unfortunately, this increases polygon
-                // count by a factor of 6. See issue
-                // https://github.com/mrdoob/three.js/issues/9315
-                const geometry = this._createDOMPlaneGeometry()
-
-                // TODO PERFORMANCE we can re-use a single material for
-                // all the DOM planes rather than a new material per
-                // plane.
-                const material = new MeshPhongMaterial({
-                    opacity	: 0.5,
-                    color	: new Color( 0x111111 ),
-                    blending: NoBlending,
-                    //side	: DoubleSide,
-                })
-
-                const mesh = this._threeDOMPlane = new Mesh( geometry, material )
-                mesh.castShadow = true
-                mesh.receiveShadow = true
-
-                Public(this).three.add(mesh)
-                Public(this).on('sizechange', this._updateDOMPlaneOnSizeChange, this)
-            },
-
-            _updateDOMPlaneOnSizeChange({ x, y, z }) {
-                // TODO PERFORMANCE, destroying and creating a whole new geometry is
-                // wasteful, but it works for now. Improve this.
-                this._threeDOMPlane.geometry.dispose()
-                this._threeDOMPlane.geometry = this._createDOMPlaneGeometry()
-            },
-
-            _destroyDOMPlane() {
-                const publicThis = Public(this)
-
-                publicThis.three.remove(this._threeDOMPlane)
-                this._threeDOMPlane.geometry.dispose()
-                this._threeDOMPlane.material.dispose()
-                this._threeDOMPlane = null
-
-                publicThis.off('sizechange', this._updateDOMPlaneOnSizeChange)
-            },
-
-            _createDOMPlaneGeometry() {
-                const publicThis = Public(this)
-                return new BoxGeometry( publicThis._calculatedSize.x, publicThis._calculatedSize.y, 1 )
             },
 
             _onV0ShadowRootReplaced( oldRoot ) {
