@@ -315,10 +315,10 @@ const AutoLayoutNode = Class('AutoLayoutNode').extends(Node, ({ Super, Public, P
                 }
             }
 
-            this._showOrHidNodes()
+            this._showOrHideNodes()
         },
 
-        _showOrHidNodes() {
+        _showOrHideNodes() {
             const subViews = Private(this)._autoLayoutView.subViews
             const subViewKeys = Object.keys(subViews)
             const _idToNode = Private(this)._idToNode
