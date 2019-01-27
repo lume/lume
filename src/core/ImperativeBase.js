@@ -229,7 +229,7 @@ export function initImperativeBase() {
                 return this
             },
 
-            remove(childNode, /*private use*/leaveInDom) {
+            remove(childNode, /* private */__leaveInDom) {
                 if (!(childNode instanceof Node)) return
 
                 Super(this).remove(childNode)
@@ -238,7 +238,7 @@ export function initImperativeBase() {
 
                 childNode._resetSceneRef()
 
-                if (!leaveInDom)
+                if (!__leaveInDom)
                     this._elementOperations.disconnectChildElement(childNode)
             },
 
