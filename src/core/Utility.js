@@ -12,9 +12,9 @@ function applyCSSLabel(value, label) {
     }
 }
 
-function observeChildren(target, onConnect, onDisconnect) {
+function observeChildren(target, onConnect, onDisconnect, skipTextNodes) {
     // TODO this Map is never cleaned, leaks memory. Maybe use WeakMap
-    const childObserver = createChildObserver(onConnect, onDisconnect)
+    const childObserver = createChildObserver(onConnect, onDisconnect, skipTextNodes)
     childObserver.observe(target, { childList: true })
     return childObserver
 }
@@ -23,7 +23,7 @@ function observeChildren(target, onConnect, onDisconnect) {
 // same turn, then the onConnect and onDisconnect callbacks won't be called
 // because the DOM tree will be back in the exact state as before (this is
 // possible thanks to the logic associated with weightsPerTarget).
-function createChildObserver(onConnect, onDisconnect) {
+function createChildObserver(onConnect, onDisconnect, skipTextNodes = false) {
     return new MutationObserver(changes => {
         const weightsPerTarget = new Map
 
@@ -51,6 +51,9 @@ function createChildObserver(onConnect, onDisconnect) {
         for (const [target, weights] of Array.from(weightsPerTarget)) {
 
             for (const [node, weight] of Array.from(weights)) {
+
+                if (skipTextNodes && (node instanceof Text || node instanceof Comment)) continue
+
                 // If the number of times a child was added is greater than the
                 // number of times it was removed, then the net result is that
                 // it was added, so we call onConnect just once.
@@ -59,7 +62,7 @@ function createChildObserver(onConnect, onDisconnect) {
 
                 // If the number of times a child was added is less than the
                 // number of times it was removed, then the net result is that
-                // it was removed, so we call onConnect just once.
+                // it was removed, so we call onDisconnect just once.
                 else if (weight < 0 && typeof onDisconnect == 'function')
                     onDisconnect.call(target, node)
 

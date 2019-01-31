@@ -162,12 +162,12 @@ Mixin(Base => {
                 // detected by the following MutationObserver).
                 if (!Private(this).childObserver) {
 
-                    const children = this.childNodes
+                    const children = this.children
                     for (let l=children.length, i=0; i<l; i+=1) {
                         this.childConnectedCallback(children[i])
                     }
 
-                    Private(this).childObserver = observeChildren(this, this.childConnectedCallback, this.childDisconnectedCallback)
+                    Private(this).childObserver = observeChildren(this, this.childConnectedCallback, this.childDisconnectedCallback, true)
                 }
             })
 
