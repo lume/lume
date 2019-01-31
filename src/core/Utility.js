@@ -48,9 +48,17 @@ function createChildObserver(onConnect, onDisconnect, skipTextNodes = false) {
                 weights.set(removedNodes[i], (weights.get(removedNodes[i]) || 0) - 1)
         }
 
-        for (const [target, weights] of Array.from(weightsPerTarget)) {
 
-            for (const [node, weight] of Array.from(weights)) {
+        // NOTE, the destructuring inside the for..of header currently doesn't
+        // work due to a Buble bug, so we destructure inside the loop instead.
+        // https://github.com/Rich-Harris/buble/issues/182
+        // for (const [target, weights] of Array.from(weightsPerTarget)) {
+        for (const entry of Array.from(weightsPerTarget)) {
+            const [target, weights] = entry
+
+            // for (const [node, weight] of Array.from(weights)) {
+            for (const entry of Array.from(weights)) {
+                const [node, weight] = entry
 
                 if (skipTextNodes && (node instanceof Text || node instanceof Comment)) continue
 
