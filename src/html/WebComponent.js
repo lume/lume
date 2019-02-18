@@ -7,6 +7,7 @@ import { observeChildren } from '../core/Utility'
 import jss from '../lib/jss'
 import documentReady from '@awaitbox/document-ready'
 import DefaultBehaviors from './behaviors/DefaultBehaviors'
+import WithChildren from './WithChildren'
 
 // Very very stupid hack needed for Safari in order for us to be able to extend
 // the HTMLElement class. See:
@@ -51,7 +52,7 @@ Mixin(Base => {
     }
 
     // otherwise, create it.
-    const WebComponent = Class('WebComponent').extends( DefaultBehaviors.mixin( Base ), ({ Super, Public, Private }) => ({
+    const WebComponent = Class('WebComponent').extends( WithChildren.mixin( DefaultBehaviors.mixin( Base ) ), ({ Super, Public, Private }) => ({
 
         isConnected: false,
 
@@ -154,22 +155,22 @@ Mixin(Base => {
             // connectedCallbacks fired before their children are
             // upgraded.
             //
-            documentReady().then(() => { // implies a Promise.resolve() behavior if the DOM is already ready
+            //documentReady().then(() => { // implies a Promise.resolve() behavior if the DOM is already ready
 
-                // Handle any nodes that may have been connected before `this` node
-                // was created (f.e. child nodes that were connected before the
-                // custom elements were registered and which would therefore not be
-                // detected by the following MutationObserver).
-                if (!Private(this).childObserver) {
+                //// Handle any nodes that may have been connected before `this` node
+                //// was created (f.e. child nodes that were connected before the
+                //// custom elements were registered and which would therefore not be
+                //// detected by the following MutationObserver).
+                //if (!Private(this).childObserver) {
 
-                    const children = this.children
-                    for (let l=children.length, i=0; i<l; i+=1) {
-                        this.childConnectedCallback(children[i])
-                    }
+                    //const children = this.children
+                    //for (let l=children.length, i=0; i<l; i+=1) {
+                        //this.childConnectedCallback(children[i])
+                    //}
 
-                    Private(this).childObserver = observeChildren(this, this.childConnectedCallback, this.childDisconnectedCallback, true)
-                }
-            })
+                    //Private(this).childObserver = observeChildren(this, this.childConnectedCallback, this.childDisconnectedCallback, true)
+                //}
+            //})
 
             // fire this.attributeChangedCallback in case some attributes have
             // existed before the custom element was upgraded.
@@ -201,7 +202,7 @@ Mixin(Base => {
         deinit() {
             // Nothing much at the moment, but extending classes can extend
             // this to add deintialization logic.
-            Private(this).childObserver.disconnect()
+            //Private(this).childObserver.disconnect()
 
         },
 
@@ -209,7 +210,7 @@ Mixin(Base => {
             style: null,
             initialized: false,
             initialAttributeChange: false,
-            childObserver: null,
+            //childObserver: null,
 
             createStyles() {
                 const rule = jss.createRule(Public(this).getStyles())
