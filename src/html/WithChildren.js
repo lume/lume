@@ -36,27 +36,11 @@ if (!Object.getOwnPropertyDescriptor(Node.prototype, 'isConnected')) {
 // of DOM has already been parsed), in which case the customElements.define() call
 // will upgrade (call constructor on) existing elements synchronously.
 let isCustomElementsDefineCall = false
-// const upgradedElements = []
 {
     const oldDefine = customElements.define
     customElements.define = function(tagName, Constructor) {
         isCustomElementsDefineCall = true
-
         oldDefine.call(this, tagName, Constructor)
-
-        // Promise.resolve().then(() => {
-        //     for (let l=upgradedElements.length, i=0; i<l; i+=1) {
-        //         const el = upgradedElements[i]
-        //         const currentChildren = el.children
-        //
-        //         for (let l=currentChildren.length, i=0; i<l; i+=1) {
-        //             const child = currentChildren[i]
-        //             debugger
-        //             el.childConnectedCallback && el.childConnectedCallback(currentChildren[i])
-        //         }
-        //     }
-        // })
-
         isCustomElementsDefineCall = false
     }
 }
@@ -71,10 +55,9 @@ Mixin(Base => Class('WithChildren').extends(Base, ({ Super, Private, Public }) =
         // If we're in a customElements.define call, then this constructor is
         // runnning synchronously in that call, and in this case the MutationObserver
         // created in the previous line will not fire callbacks because the children are
-        // technically already connected, so we fire the callbacks manually here.
+        // technically already connected, so we must fire the callbacks manually here.
         if (isCustomElementsDefineCall) {
             Private(self).__queueChildConnectedCallbacks()
-            // upgradedElements.push(self)
         }
 
         return self
