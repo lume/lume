@@ -2,9 +2,8 @@ import Class from 'lowclass'
 import Mixin from 'lowclass/Mixin'
 import { observeChildren } from '../core/Utility'
 
-// polyfill for Node.isConnected based on a blend of Ryosuke Niwa's and ShadyDOM's
+// polyfill for Node.isConnected based on Ryosuke Niwa's
 // https://github.com/w3c/webcomponents/issues/789#issuecomment-459858405
-// https://github.com/webcomponents/webcomponentsjs/issues/1065
 if (!Object.getOwnPropertyDescriptor(Node.prototype, 'isConnected')) {
     let rootNode = null
 
@@ -22,10 +21,7 @@ if (!Object.getOwnPropertyDescriptor(Node.prototype, 'isConnected')) {
     }
 
     Object.defineProperty(Node.prototype, 'isConnected', {
-        get() {
-            if (document.contains) return document.contains(this)
-            return rootNode(this).nodeType === Node.DOCUMENT_NODE
-        },
+        get() { return rootNode(this).nodeType === Node.DOCUMENT_NODE },
         enumerable: true,
         configurable: true,
     })
