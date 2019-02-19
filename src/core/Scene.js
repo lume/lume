@@ -130,7 +130,7 @@ let Scene = Mixin(Base => {
                 // skip `this`, we already handled it above
                 if (node === this) return
 
-                node.initWebGl()
+                node.initWebGL()
             })
         },
 
