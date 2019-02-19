@@ -27,6 +27,13 @@ Class( 'Behavior' ).extends( native( withUpdate( ForwardProps ) ), ({ Public, Pr
         return _this
     },
 
+    // This could be useful, but at the moment we only need this because if it
+    // returns falsey (i.e. undefined) then skatejs won't fire `updated` because
+    // it returns early if !this.parentNode in triggerUpdate.
+    get parentNode() {
+        return this.element.parentNode
+    },
+
     // proxy setAttribute to this.element so that SkateJS withUpdate works in certain cases
     setAttribute(name, value) {
         this.element.setAttribute(name, value)
