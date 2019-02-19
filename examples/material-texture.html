@@ -63,7 +63,8 @@
             const el = document.querySelector('#model')
             const Motor = infamous.Motor
 
-            el.rotation = (x, y, z) => [x+0.1, y+0.1, z+0.1]
+            const rotate = (t) => 180 * Math.sin(0.001 * t)
+            el.rotation = (x, y, z, t) => [rotate(t), rotate(t), rotate(t)]
         }</script>
 
     </body>
