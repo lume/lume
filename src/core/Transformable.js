@@ -217,10 +217,12 @@ Mixin(Base => {
             // - move by positive origin after rotating.
 
             this.three.updateMatrix()
+            this.threeCSS.updateMatrix()
         },
 
         _calculateWorldMatricesInSubtree() {
             this.three.updateMatrixWorld()
+            this.threeCSS.updateMatrixWorld()
             this.trigger('worldMatrixUpdate')
         },
 

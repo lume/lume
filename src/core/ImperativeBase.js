@@ -105,13 +105,13 @@ export function initImperativeBase() {
 
             initWebGL() {
                 this.three = this.makeThreeObject3d()
+                this.threeCSS = new CSS3DObjectNested(this)
 
                 // we don't let Three update local matrices automatically, we do
                 // it ourselves in Transformable._calculateMatrix and
                 // Transformable._calculateWorldMatricesInSubtree
                 this.three.matrixAutoUpdate = false
-
-                this.threeCSS = new CSS3DObjectNested(this)
+                this.threeCSS.matrixAutoUpdate = false
             },
 
             disposeWebGL() {
