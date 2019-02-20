@@ -70,10 +70,6 @@ Mixin(Base => {
             return self
         },
 
-        // Subclasses can implement these.
-        childConnectedCallback(child) { },
-        childDisconnectedCallback(child) { },
-
         connectedCallback() {
             if (Super(this).connectedCallback) Super(this).connectedCallback()
 
