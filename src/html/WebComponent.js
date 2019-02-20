@@ -141,33 +141,6 @@ Mixin(Base => {
         init() {
             if (!Private(this).style) Private(this).style = Private(this).createStyles()
 
-            // Deferral needed in case the Custom Element classes are
-            // registered after the elements are already defined in the
-            // DOM (they're not yet upgraded). This means that children of this node
-            // might be a `<motor-node>` but if they aren't upgraded yet then
-            // their API won't be available to the logic inside the following
-            // call to childConnectedCallback. The reason this happens is
-            // because parents are upgraded first and their
-            // connectedCallbacks fired before their children are
-            // upgraded.
-            //
-            //documentReady().then(() => { // implies a Promise.resolve() behavior if the DOM is already ready
-
-                //// Handle any nodes that may have been connected before `this` node
-                //// was created (f.e. child nodes that were connected before the
-                //// custom elements were registered and which would therefore not be
-                //// detected by the following MutationObserver).
-                //if (!Private(this).childObserver) {
-
-                    //const children = this.children
-                    //for (let l=children.length, i=0; i<l; i+=1) {
-                        //this.childConnectedCallback(children[i])
-                    //}
-
-                    //Private(this).childObserver = observeChildren(this, this.childConnectedCallback, this.childDisconnectedCallback, true)
-                //}
-            //})
-
             // fire this.attributeChangedCallback in case some attributes have
             // existed before the custom element was upgraded.
             if (!Private(this).initialAttributeChange && this.hasAttributes()) {
@@ -196,17 +169,14 @@ Mixin(Base => {
          * can be used directly instead.
          */
         deinit() {
-            // Nothing much at the moment, but extending classes can extend
-            // this to add deintialization logic.
-            //Private(this).childObserver.disconnect()
-
+            // Nothing at the moment, but subclasses can extend this to add
+            // deintialization logic.
         },
 
         private: {
             style: null,
             initialized: false,
             initialAttributeChange: false,
-            //childObserver: null,
 
             createStyles() {
                 const rule = jss.createRule(Public(this).getStyles())

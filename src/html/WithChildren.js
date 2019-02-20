@@ -124,7 +124,6 @@ Mixin(Base => Class('WithChildren').extends(Base, ({ Super, Private, Public }) =
             // which makes it similar to the MutationObserver events!
             Promise.resolve().then(() => {
                 for (let l=currentChildren.length, i=0; i<l; i+=1) {
-                    debugger
                     self.childConnectedCallback && self.childConnectedCallback(currentChildren[i])
                 }
             })
