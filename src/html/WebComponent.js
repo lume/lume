@@ -54,8 +54,6 @@ Mixin(Base => {
     // otherwise, create it.
     const WebComponent = Class('WebComponent').extends( WithChildren.mixin( DefaultBehaviors.mixin( Base ) ), ({ Super, Public, Private }) => ({
 
-        isConnected: false,
-
         constructor(...args) {
             // Throw an error if no Custom Elements v1 API exists.
             if (!('customElements' in window)) {
@@ -78,7 +76,6 @@ Mixin(Base => {
 
         connectedCallback() {
             if (Super(this).connectedCallback) Super(this).connectedCallback()
-            this.isConnected = true
 
             if (!Private(this).initialized) {
                 this.init()
@@ -88,7 +85,6 @@ Mixin(Base => {
 
         async disconnectedCallback() {
             if (Super(this).disconnectedCallback) Super(this).disconnectedCallback()
-            this.isConnected = false
 
             // Deferr to the next tick before cleaning up in case the
             // element is actually being re-attached somewhere else within this
