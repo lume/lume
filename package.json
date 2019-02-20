@@ -27,7 +27,7 @@
   "dependencies": {
     "@awaitbox/document-ready": "^1.0.10",
     "@babel/runtime": "7.0.0-beta.46",
-    "@trusktr/skatejs": "^5.2.40001",
+    "@trusktr/skatejs": "5.2.40002",
     "army-knife": "^0.2.1",
     "autolayout": "^0.7.0",
     "element-behaviors": "^2.0.1",
@@ -47,7 +47,7 @@
   },
   "devDependencies": {
     "all-contributors-cli": "^4.4.0",
-    "builder": "^3.2.3",
+    "builder": "4.0.0",
     "builder-js-package": "trusktr/builder-js-package#83b5bb456a094cb66c739820d3078d5fc4f6c375",
     "docpress": "0.7.1"
   },
