@@ -57,8 +57,6 @@ export function initImperativeBase() {
             constructor(options = {}) {
                 const self = Super(this).constructor(options)
 
-                self._lastKnownParent = null
-
                 // we don't need this, keep for backward compatibility (mainly
                 // all my demos at trusktr.io).
                 self.imperativeCounterpart = self
@@ -146,7 +144,7 @@ export function initImperativeBase() {
             },
 
             disposeWebGL() {
-                console.warn( 'TODO: dispose WebGL when it is no longer needed' )
+                console.warn( 'TODO: finish disposing WebGL stuff' )
             },
 
             makeThreeObject3d() {
@@ -164,26 +162,31 @@ export function initImperativeBase() {
             },
 
             disposeCSS() {
-                console.warn( 'TODO: dispose CSS when it is no longer needed' )
+                console.warn( 'TODO: finish disposing CSS stuff' )
             },
 
             makeThreeCSSObject() {
                 return new CSS3DObjectNested(this)
             },
 
-            // TODO use one of init/deinit, or connected/connected, or
-            // connectedCallback/disconnectedCallback, instead of being
-            // inconsistent across classes, so we can better understand order of
-            // operations more easily.
-            connected() {
-                this._lastKnownParent = this.parent
-                this.parent.three.add(this.three)
-                this.parent.threeCSS.add(this.threeCSS)
+            childConnectedCallback(child) {
+                Super(this).childConnectedCallback(child)
+
+                // children can be non-lib DOM nodes (f.e. div, h1, etc)
+                if (isInstanceof(child, ImperativeBase)) {
+                    this.three.add(child.three)
+                    this.threeCSS.add(child.threeCSS)
+                }
             },
-            disconnected() {
-                this._lastKnownParent.three.remove(this.three)
-                this._lastKnownParent.threeCSS.remove(this.threeCSS)
-                this._lastKnownParent = null
+
+            childDisconnectedCallback(child) {
+                Super(this).childDisconnectedCallback(child)
+
+                // children can be non-lib DOM nodes (f.e. div, h1, etc)
+                if (isInstanceof(child, ImperativeBase)) {
+                    this.three.remove(child.three)
+                    this.threeCSS.remove(child.threeCSS)
+                }
             },
 
             /**
