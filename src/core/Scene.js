@@ -29,7 +29,7 @@ let Scene = Mixin(Base => {
 
     const Parent = ImperativeBase.mixin( Base )
 
-    return Class('Scene').extends( Parent, ({ Super, Public, Private }) => ({
+    return Class('Scene').extends( Parent, ({ Super, Public, Protected, Private }) => ({
 
         static: {
             defaultElementName: 'i-scene',
@@ -41,6 +41,7 @@ let Scene = Mixin(Base => {
                 shadowmapType: props.string,
                 vr: props.boolean,
                 experimentalWebgl: props.boolean,
+                disableCss: props.boolean,
             },
         },
 
@@ -83,11 +84,11 @@ let Scene = Mixin(Base => {
         // getter/setter like node properties.
         // TODO: we need to deinit webgl too.
         initWebGL() {
+            if (Protected(this).__glLoaded) return
+
             // THREE
             // maybe keep this in sceneState in WebGLRendererThree
             Super(this).initWebGL()
-
-            this.threeCSS = new ThreeScene
 
             // We don't let Three update any matrices, we supply our own world
             // matrices.
@@ -119,14 +120,11 @@ let Scene = Mixin(Base => {
             this._activeCameras = new Set
 
             Private(this).__glRenderer = Private(this).__getRenderer('three')
-            Private(this).__cssRenderer = Private(this).__getCSSRenderer('three')
 
             // set default colors
             Private(this).__glRenderer.setClearColor( this, this._glBackgroundColor, this._glBackgroundOpacity )
 
             this.traverse((node) => {
-                console.log( 'traverse!', node )
-
                 // skip `this`, we already handled it above
                 if (node === this) return
 
@@ -135,6 +133,25 @@ let Scene = Mixin(Base => {
         },
 
         makeThreeObject3d() {
+            return new ThreeScene
+        },
+
+        initCSS() {
+            if (Protected(this).__cssLoaded) return
+
+            Super(this).initCSS()
+
+            Private(this).__cssRenderer = Private(this).__getCSSRenderer('three')
+
+            this.traverse((node) => {
+                // skip `this`, we already handled it above
+                if (node === this) return
+
+                node.initCSS()
+            })
+        },
+
+        makeThreeCSSObject() {
             return new ThreeScene
         },
 
@@ -347,6 +364,11 @@ let Scene = Mixin(Base => {
             if (moddedProps.experimentalWebgl) {
                 if (this.experimentalWebgl) this.initWebGL()
                 else this.disposeWebGL() // <-- TODO, currently a no-op
+            }
+
+            if (moddedProps.disableCss) {
+                if (!this.disableCss) this.initCSS()
+                else this.disposeCSS() // <-- TODO, currently a no-op
             }
 
             // call super.updated() after the above initWebGL() so that WebGL

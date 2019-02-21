@@ -129,10 +129,12 @@
                     // this.$refs.plane.rotation = (x,y,z) => [x,++y,z]
                     // this.$refs.plane.size = (x,y,z,t) => [x, Math.abs(Math.sin(t/1000)), z]
 
-                    var light = document.querySelector('#light')
-                    light.three.shadow.radius = 0
-                    light.three.distance = 800
-                    light.three.shadow.bias = -0.0001
+                    setTimeout(() => {
+                        var light = document.querySelector('#light')
+                        light.three.shadow.radius = 2
+                        light.three.distance = 800
+                        light.three.shadow.bias = -0.001
+                    })
 
                     // prevent default touch actions so we can move the light with touch
                     document.querySelector('html').setAttribute('touch-action', 'none')

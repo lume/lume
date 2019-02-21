@@ -53,7 +53,7 @@ export function initImperativeBase() {
      */
     ImperativeBase = Mixin(Base =>
 
-        Class('ImperativeBase').extends( Transformable.mixin( Base ), ({ Super }) => ({
+        Class('ImperativeBase').extends( Transformable.mixin( Base ), ({ Super, Private, Protected }) => ({
             constructor(options = {}) {
                 const self = Super(this).constructor(options)
 
@@ -73,17 +73,43 @@ export function initImperativeBase() {
                 // in a scene.
                 self._scene = null
 
+                Protected(self).__glLoaded = false
+                Protected(self).__cssLoaded = false
+
                 // See Transformable/Sizeable propertychange event.
                 // TODO: defer size calculation to render task
                 self.on('propertychange', self._onPropertyChange, self)
 
-                if (!(self instanceof Scene)) self.initWebGL()
-
                 return self
+            },
+
+            get glLoaded() {
+                return Protected(this).__glLoaded
+            },
+
+            get cssLoaded() {
+                return Protected(this).__cssLoaded
+            },
+
+            get three() {
+                if (!Private(this).__three)
+                    Private(this).__three = this.makeThreeObject3d()
+
+                return Private(this).__three
+            },
+
+            get threeCSS() {
+                if (!Private(this).__threeCSS)
+                    Private(this).__threeCSS = this.makeThreeCSSObject()
+
+                return Private(this).__threeCSS
             },
 
             connectedCallback() {
                 Super(this).connectedCallback()
+
+                if (!(this instanceof Scene)) this.initWebGL()
+                if (!(this instanceof Scene)) this.initCSS()
 
                 // If a subclass needs to initialize values in its Three.js
                 // object, it will have the passInitialValuesToThree method for
@@ -95,6 +121,12 @@ export function initImperativeBase() {
                 this.passInitialValuesToThree && this.passInitialValuesToThree()
             },
 
+            disconnectedCallback() {
+                Super(this).disconnectedCallback()
+                if (!(this instanceof Scene)) this.disposeWebGL()
+                if (!(this instanceof Scene)) this.disposeCSS()
+            },
+
             _onPropertyChange(prop) {
                 if ( prop == 'sizeMode' || prop == 'size' ) {
                     this._calcSize()
@@ -104,14 +136,13 @@ export function initImperativeBase() {
             },
 
             initWebGL() {
-                this.three = this.makeThreeObject3d()
-                this.threeCSS = new CSS3DObjectNested(this)
+                if (Protected(this).__glLoaded) return
+                Protected(this).__glLoaded = true
 
                 // we don't let Three update local matrices automatically, we do
                 // it ourselves in Transformable._calculateMatrix and
                 // Transformable._calculateWorldMatricesInSubtree
                 this.three.matrixAutoUpdate = false
-                this.threeCSS.matrixAutoUpdate = false
             },
 
             disposeWebGL() {
@@ -120,6 +151,24 @@ export function initImperativeBase() {
 
             makeThreeObject3d() {
                 throw new Error('The makeThreeObject3d method should be defined by sub classes.')
+            },
+
+            initCSS() {
+                if (Protected(this).__cssLoaded) return
+                Protected(this).__cssLoaded = true
+
+                // we don't let Three update local matrices automatically, we do
+                // it ourselves in Transformable._calculateMatrix and
+                // Transformable._calculateWorldMatricesInSubtree
+                this.threeCSS.matrixAutoUpdate = false
+            },
+
+            disposeCSS() {
+                console.warn( 'TODO: dispose CSS when it is no longer needed' )
+            },
+
+            makeThreeCSSObject() {
+                return new CSS3DObjectNested(this)
             },
 
             // TODO use one of init/deinit, or connected/connected, or
