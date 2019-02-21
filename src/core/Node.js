@@ -101,29 +101,6 @@ let Node = Mixin(Base => {
                 this._needsToBeRendered()
             }
         },
-
-        /**
-         * @private
-         * This method to be called only when this Node has this.scene.
-         * Resolves the _scenePromise for all children of the tree of this Node.
-         */
-        _giveSceneRefToChildren() {
-            const children = this.subnodes;
-            for (let i=0, l=children.length; i<l; i+=1) {
-                const childNode = children[i]
-                childNode._scene = this._scene
-                childNode._giveSceneRefToChildren();
-            }
-        },
-
-        _resetSceneRef() {
-            this._scene = null
-
-            const children = this.subnodes;
-            for (let i=0, l=children.length; i<l; i+=1) {
-                children[i]._resetSceneRef();
-            }
-        },
     }))
 
 })

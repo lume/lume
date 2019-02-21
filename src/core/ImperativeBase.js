@@ -254,12 +254,6 @@ export function initImperativeBase() {
 
                 Super(this).add(childNode)
 
-                // Pass this parent node's Scene reference (if any, checking this cache
-                // first) to the new child and the child's children.
-                if (childNode._scene || childNode.scene) {
-                    childNode._giveSceneRefToChildren()
-                }
-
                 // Calculate sizing because proportional size might depend on
                 // the new parent.
                 childNode._calcSize()
@@ -279,8 +273,6 @@ export function initImperativeBase() {
                 Super(this).remove(childNode)
 
                 this.off('sizechange', childNode._onParentSizeChange)
-
-                childNode._resetSceneRef()
 
                 if (!__leaveInDom)
                     this._elementOperations.disconnectChildElement(childNode)
