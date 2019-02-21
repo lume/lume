@@ -51,8 +51,6 @@ let Node = Mixin(Base => {
             //self.callSuperConstructor(TreeNode)
             //self.callSuperConstructor(ImperativeBase)
 
-            self._scene = null // stores a ref to this Node's root Scene.
-
             /**
              * @private
              * This method is defined here in the consructor as an arrow function
@@ -102,43 +100,6 @@ let Node = Mixin(Base => {
                 this._elementOperations.shouldRender(this.visible)
                 this._needsToBeRendered()
             }
-        },
-
-        /**
-         * Get the Scene that this Node is in, null if no Scene. This is recursive
-         * at first, then cached.
-         *
-         * This traverses up the scene graph tree starting at this Node and finds
-         * the root Scene, if any. It caches the value for performance. If this
-         * Node is removed from a parent node with parent.remove(), then the
-         * cache is invalidated so the traversal can happen again when this Node is
-         * eventually added to a new tree. This way, if the scene is cached on a
-         * parent Node that we're adding this Node to then we can get that cached
-         * value instead of traversing the tree.
-         *
-         * @readonly
-         */
-        get scene() {
-            // NOTE: this._scene is initally null, created in the constructor.
-
-            // if already cached, return it. Or if no parent, return it (it'll be null).
-            if (this._scene || !this.parent) return this._scene
-
-            // if the parent node already has a ref to the scene, use that.
-            if (this.parent._scene) {
-                this._scene = this.parent._scene
-            }
-            else if (this.parent instanceof Scene) {
-                this._scene = this.parent
-            }
-            // otherwise call the scene getter on the parent, which triggers
-            // traversal up the scene graph in order to find the root scene (null
-            // if none).
-            else {
-                this._scene = this.parent.scene
-            }
-
-            return this._scene
         },
 
         /**

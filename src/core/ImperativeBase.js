@@ -208,16 +208,8 @@ export function initImperativeBase() {
             },
 
             /**
-             * Get the Scene that this Node is in, null if no Scene. This is recursive
-             * at first, then cached.
-             *
-             * This traverses up the scene graph tree starting at this Node and finds
-             * the root Scene, if any. It caches the value for performance. If this
-             * Node is removed from a parent node with parent.removeChild(), then the
-             * cache is invalidated so the traversal can happen again when this Node is
-             * eventually added to a new tree. This way, if the scene is cached on a
-             * parent Node that we're adding this Node to then we can get that cached
-             * value instead of traversing the tree.
+             * Get the Scene that this Node is in, null if no Scene. This traverses up recursively
+             * at first, then the value is cached.
              *
              * @readonly
              */
