@@ -29,7 +29,7 @@ let Scene = Mixin(Base => {
 
     const Parent = ImperativeBase.mixin( Base )
 
-    return Class('Scene').extends( Parent, ({ Super, Public, Private }) => ({
+    return Class('Scene').extends( Parent, ({ Super, Public, Protected, Private }) => ({
 
         static: {
             defaultElementName: 'i-scene',
@@ -87,7 +87,7 @@ let Scene = Mixin(Base => {
             // maybe keep this in sceneState in WebGLRendererThree
             Super(this).initWebGL()
 
-            if (Private(this).__glLoaded) return
+            if (Protected(this).__glLoaded) return
 
             this.threeCSS = new ThreeScene
 

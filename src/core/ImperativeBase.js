@@ -53,7 +53,7 @@ export function initImperativeBase() {
      */
     ImperativeBase = Mixin(Base =>
 
-        Class('ImperativeBase').extends( Transformable.mixin( Base ), ({ Super, Private }) => ({
+        Class('ImperativeBase').extends( Transformable.mixin( Base ), ({ Super, Private, Protected }) => ({
             constructor(options = {}) {
                 const self = Super(this).constructor(options)
 
@@ -73,7 +73,7 @@ export function initImperativeBase() {
                 // in a scene.
                 self._scene = null
 
-                Private(self).__glLoaded = false
+                Protected(self).__glLoaded = false
 
                 // See Transformable/Sizeable propertychange event.
                 // TODO: defer size calculation to render task
@@ -83,7 +83,7 @@ export function initImperativeBase() {
             },
 
             get glLoaded() {
-                return Private(this).__glLoaded
+                return Protected(this).__glLoaded
             },
 
             get three() {
@@ -122,8 +122,8 @@ export function initImperativeBase() {
             },
 
             initWebGL() {
-                if (Private(this).__glLoaded) return
-                Private(this).__glLoaded = true
+                if (Protected(this).__glLoaded) return
+                Protected(this).__glLoaded = true
 
                 this.threeCSS = new CSS3DObjectNested(this)
 
