@@ -366,7 +366,7 @@ let Scene = Mixin(Base => {
 
             if (moddedProps.experimentalWebgl) {
                 if (this.experimentalWebgl) this.loadGL()
-                else this.disposeWebGL() // <-- TODO, currently a no-op
+                else this.unloadGL() // <-- TODO, currently a no-op
             }
 
             if (moddedProps.disableCss) {
