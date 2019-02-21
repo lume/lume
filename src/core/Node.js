@@ -1,5 +1,4 @@
 import Class from 'lowclass'
-import {Object3D} from 'three'
 import 'geometry-interfaces'
 import Mixin from './Mixin'
 import ImperativeBase, {initImperativeBase} from './ImperativeBase'
@@ -87,10 +86,6 @@ let Node = Mixin(Base => {
             self._needsToBeRendered()
 
             return self
-        },
-
-        makeThreeObject3d() {
-            return new Object3D
         },
 
         updated(oldProps, newProps, modifiedProps) {

@@ -1,5 +1,5 @@
 import Class from 'lowclass'
-import {Camera as ThreeCamera} from 'three'
+import {Camera as ThreeCamera, Object3D} from 'three'
 import Mixin from './Mixin'
 import ElementOperations from './ElementOperations'
 import Transformable from './Transformable'
@@ -148,7 +148,7 @@ export function initImperativeBase() {
             },
 
             makeThreeObject3d() {
-                throw new Error('The makeThreeObject3d method should be defined by sub classes.')
+                return new Object3D
             },
 
             loadCSS() {
