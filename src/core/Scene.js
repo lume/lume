@@ -307,7 +307,7 @@ let Scene = Mixin(Base => {
         async mount(mountPoint) {
             // if no mountPoint was provided, just mount onto the <body> element.
             if (mountPoint === undefined) {
-                if (!document.body) await documentReady()
+                if (!document.body) await documentBody()
                 mountPoint = document.body
             }
 
@@ -414,3 +414,18 @@ let Scene = Mixin(Base => {
 Scene = Scene.mixin(HTMLInterface)
 
 export {Scene as default}
+
+function documentBody() {
+    return new Promise(resolve => {
+        if (document.body) return resolve()
+
+        const observer = new MutationObserver(() => {
+            if (document.body) {
+                resolve()
+                observer.disconnect()
+            }
+        })
+
+        observer.observe(document.documentElement, {childList: true})
+    })
+}

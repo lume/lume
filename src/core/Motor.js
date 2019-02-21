@@ -1,9 +1,6 @@
 import Class from 'lowclass'
-import documentReady from '@awaitbox/document-ready'
 import Transformable from './Transformable'
 import {isInstanceof} from './Utility'
-
-let documentIsReady = false
 
 const Motor = Class('Motor', ({ Public, Private }) => ({
 
@@ -111,11 +108,6 @@ const Motor = Class('Motor', ({ Public, Private }) => ({
             if (this.animationLoopStarted) return
 
             this.animationLoopStarted = true
-
-            if (!documentIsReady) {
-                await documentReady()
-                documentIsReady = true
-            }
 
             let timestamp = null
 
