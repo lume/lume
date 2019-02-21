@@ -74,6 +74,7 @@ export function initImperativeBase() {
                 self._scene = null
 
                 Protected(self).__glLoaded = false
+                Protected(self).__cssLoaded = false
 
                 // See Transformable/Sizeable propertychange event.
                 // TODO: defer size calculation to render task
@@ -86,6 +87,10 @@ export function initImperativeBase() {
                 return Protected(this).__glLoaded
             },
 
+            get cssLoaded() {
+                return Protected(this).__cssLoaded
+            },
+
             get three() {
                 if (!Private(this).__three)
                     Private(this).__three = this.makeThreeObject3d()
@@ -93,10 +98,18 @@ export function initImperativeBase() {
                 return Private(this).__three
             },
 
+            get threeCSS() {
+                if (!Private(this).__threeCSS)
+                    Private(this).__threeCSS = this.makeThreeCSSObject()
+
+                return Private(this).__threeCSS
+            },
+
             connectedCallback() {
                 Super(this).connectedCallback()
 
                 if (!(this instanceof Scene)) this.initWebGL()
+                if (!(this instanceof Scene)) this.initCSS()
 
                 // If a subclass needs to initialize values in its Three.js
                 // object, it will have the passInitialValuesToThree method for
@@ -111,6 +124,7 @@ export function initImperativeBase() {
             disconnectedCallback() {
                 Super(this).disconnectedCallback()
                 if (!(this instanceof Scene)) this.disposeWebGL()
+                if (!(this instanceof Scene)) this.disposeCSS()
             },
 
             _onPropertyChange(prop) {
@@ -125,13 +139,10 @@ export function initImperativeBase() {
                 if (Protected(this).__glLoaded) return
                 Protected(this).__glLoaded = true
 
-                this.threeCSS = new CSS3DObjectNested(this)
-
                 // we don't let Three update local matrices automatically, we do
                 // it ourselves in Transformable._calculateMatrix and
                 // Transformable._calculateWorldMatricesInSubtree
                 this.three.matrixAutoUpdate = false
-                this.threeCSS.matrixAutoUpdate = false
             },
 
             disposeWebGL() {
@@ -140,6 +151,24 @@ export function initImperativeBase() {
 
             makeThreeObject3d() {
                 throw new Error('The makeThreeObject3d method should be defined by sub classes.')
+            },
+
+            initCSS() {
+                if (Protected(this).__cssLoaded) return
+                Protected(this).__cssLoaded = true
+
+                // we don't let Three update local matrices automatically, we do
+                // it ourselves in Transformable._calculateMatrix and
+                // Transformable._calculateWorldMatricesInSubtree
+                this.threeCSS.matrixAutoUpdate = false
+            },
+
+            disposeCSS() {
+                console.warn( 'TODO: dispose CSS when it is no longer needed' )
+            },
+
+            makeThreeCSSObject() {
+                return new CSS3DObjectNested(this)
             },
 
             // TODO use one of init/deinit, or connected/connected, or
