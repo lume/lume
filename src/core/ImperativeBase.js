@@ -106,8 +106,8 @@ export function initImperativeBase() {
             connectedCallback() {
                 Super(this).connectedCallback()
 
-                if (!(this instanceof Scene)) this.initWebGL()
-                if (!(this instanceof Scene)) this.initCSS()
+                if (!(this instanceof Scene)) this.loadGL()
+                if (!(this instanceof Scene)) this.loadCSS()
 
                 // If a subclass needs to initialize values in its Three.js
                 // object, it will have the passInitialValuesToThree method for
@@ -121,8 +121,8 @@ export function initImperativeBase() {
 
             disconnectedCallback() {
                 Super(this).disconnectedCallback()
-                if (!(this instanceof Scene)) this.disposeWebGL()
-                if (!(this instanceof Scene)) this.disposeCSS()
+                if (!(this instanceof Scene)) this.unloadGL()
+                if (!(this instanceof Scene)) this.unloadCSS()
             },
 
             _onPropertyChange(prop) {
@@ -133,7 +133,7 @@ export function initImperativeBase() {
                 this._needsToBeRendered()
             },
 
-            initWebGL() {
+            loadGL() {
                 if (Protected(this).__glLoaded) return
                 Protected(this).__glLoaded = true
 
@@ -143,7 +143,7 @@ export function initImperativeBase() {
                 this.three.matrixAutoUpdate = false
             },
 
-            disposeWebGL() {
+            unloadGL() {
                 console.warn( 'TODO: finish disposing WebGL stuff' )
             },
 
@@ -151,7 +151,7 @@ export function initImperativeBase() {
                 throw new Error('The makeThreeObject3d method should be defined by sub classes.')
             },
 
-            initCSS() {
+            loadCSS() {
                 if (Protected(this).__cssLoaded) return
                 Protected(this).__cssLoaded = true
 
@@ -161,7 +161,7 @@ export function initImperativeBase() {
                 this.threeCSS.matrixAutoUpdate = false
             },
 
-            disposeCSS() {
+            unloadCSS() {
                 console.warn( 'TODO: finish disposing CSS stuff' )
             },
 

@@ -81,12 +81,12 @@ let Scene = Mixin(Base => {
         // we can't simply rely on having it in constructor, we need a
         // getter/setter like node properties.
         // TODO: we need to deinit webgl too.
-        initWebGL() {
+        loadGL() {
             if (Protected(this).__glLoaded) return
 
             // THREE
             // maybe keep this in sceneState in WebGLRendererThree
-            Super(this).initWebGL()
+            Super(this).loadGL()
 
             // We don't let Three update any matrices, we supply our own world
             // matrices.
@@ -126,7 +126,7 @@ let Scene = Mixin(Base => {
                 // skip `this`, we already handled it above
                 if (node === this) return
 
-                node.initWebGL()
+                node.loadGL()
             })
         },
 
@@ -134,10 +134,10 @@ let Scene = Mixin(Base => {
             return new ThreeScene
         },
 
-        initCSS() {
+        loadCSS() {
             if (Protected(this).__cssLoaded) return
 
-            Super(this).initCSS()
+            Super(this).loadCSS()
 
             Private(this).__cssRenderer = Private(this).__getCSSRenderer('three')
 
@@ -145,7 +145,7 @@ let Scene = Mixin(Base => {
                 // skip `this`, we already handled it above
                 if (node === this) return
 
-                node.initCSS()
+                node.loadCSS()
             })
         },
 
@@ -154,9 +154,10 @@ let Scene = Mixin(Base => {
         },
 
         drawScene() {
-            // if (scene.experimentalWebgl)
+            if (this.experimentalWebgl)
                 Private(this).__glRenderer.drawScene(this)
-            Private(this).__cssRenderer.drawScene(this)
+            if (!this.disableCss)
+                Private(this).__cssRenderer.drawScene(this)
         },
 
         private: {
@@ -360,16 +361,16 @@ let Scene = Mixin(Base => {
             if (!this.isConnected) return
 
             if (moddedProps.experimentalWebgl) {
-                if (this.experimentalWebgl) this.initWebGL()
+                if (this.experimentalWebgl) this.loadGL()
                 else this.disposeWebGL() // <-- TODO, currently a no-op
             }
 
             if (moddedProps.disableCss) {
-                if (!this.disableCss) this.initCSS()
-                else this.disposeCSS() // <-- TODO, currently a no-op
+                if (!this.disableCss) this.loadCSS()
+                else this.unloadCSS() // <-- TODO, currently a no-op
             }
 
-            // call super.updated() after the above initWebGL() so that WebGL
+            // call super.updated() after the above loadGL() so that WebGL
             // stuff will be ready in super.updated()
             Super(this).updated(oldProps, oldState, moddedProps)
 
