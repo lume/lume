@@ -49,8 +49,6 @@ let Scene = Mixin(Base => {
             const self = Super(this).constructor(options)
 
             // Used by the `scene` getter in ImperativeBase
-            // Motor's loop checks _scene on Nodes and Scenes when determining
-            // modified scenes.
             self._scene = self
 
             self._mounted = false
