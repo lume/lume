@@ -60,6 +60,8 @@ let Scene = Mixin(Base => {
             // NOTE: z size is always 0, since native DOM elements are always flat.
             self._elementParentSize = {x:0, y:0, z:0}
 
+            self.cameraSetup()
+
             self._calcSize()
             self._needsToBeRendered()
 
@@ -70,6 +72,23 @@ let Scene = Mixin(Base => {
             this._elementParentSize = newSize
             this._calcSize()
             this._needsToBeRendered()
+        },
+
+        cameraSetup() {
+            // this.threeCamera holds the active camera. There can be many
+            // cameras in the scene tree, but the last one with active="true"
+            // will be the one referenced here.
+            // If there are no cameras in the tree, a virtual default camera is
+            // referenced here, who's perspective is that of the scene's
+            // perspective attribute.
+            this.threeCamera = null
+            this._createDefaultCamera()
+
+            // holds active cameras found in the DOM tree (if this is empty, it
+            // means no camera elements are in the DOM, but this.threeCamera
+            // will still have a reference to the default camera that scenes
+            // are rendered with when no camera elements exist).
+            this._activeCameras = new Set
         },
 
         // For now, use the same program (with shaders) for all objects.
@@ -92,15 +111,6 @@ let Scene = Mixin(Base => {
             // matrices.
             this.three.autoUpdate = false
 
-            // this.threeCamera holds the active camera. There can be many
-            // cameras in the scene tree, but the last one with active="true"
-            // will be the one referenced here.
-            // If there are no cameras in the tree, a virtual default camera is
-            // referenced here, who's perspective is that of the scene's
-            // perspective attribute.
-            this.threeCamera = null
-            this._createDefaultCamera()
-
             // TODO: default ambient light when no AmbientLight elements are
             // present in the Scene.
             //const ambientLight = new AmbientLight( 0x353535 )
@@ -110,12 +120,6 @@ let Scene = Mixin(Base => {
             // backgroundOpacity attributes to customize.
             this._glBackgroundColor = new Color( 0xff6600 )
             this._glBackgroundOpacity = 0
-
-            // holds active cameras found in the DOM tree (if this is empty, it
-            // means no camera elements are in the DOM, but this.threeCamera
-            // will still have a reference to the default camera that scenes
-            // are rendered with when no camera elements exist).
-            this._activeCameras = new Set
 
             Private(this).__glRenderer = Private(this).__getRenderer('three')
 
