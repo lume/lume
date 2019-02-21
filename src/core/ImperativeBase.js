@@ -53,7 +53,7 @@ export function initImperativeBase() {
      */
     ImperativeBase = Mixin(Base =>
 
-        Class('ImperativeBase').extends( Transformable.mixin( Base ), ({ Super }) => ({
+        Class('ImperativeBase').extends( Transformable.mixin( Base ), ({ Super, Private }) => ({
             constructor(options = {}) {
                 const self = Super(this).constructor(options)
 
@@ -73,17 +73,30 @@ export function initImperativeBase() {
                 // in a scene.
                 self._scene = null
 
+                Private(self).__glLoaded = false
+
                 // See Transformable/Sizeable propertychange event.
                 // TODO: defer size calculation to render task
                 self.on('propertychange', self._onPropertyChange, self)
 
-                if (!(self instanceof Scene)) self.initWebGL()
-
                 return self
+            },
+
+            get glLoaded() {
+                return Private(this).__glLoaded
+            },
+
+            get three() {
+                if (!Private(this).__three)
+                    Private(this).__three = this.makeThreeObject3d()
+
+                return Private(this).__three
             },
 
             connectedCallback() {
                 Super(this).connectedCallback()
+
+                if (!(this instanceof Scene)) this.initWebGL()
 
                 // If a subclass needs to initialize values in its Three.js
                 // object, it will have the passInitialValuesToThree method for
@@ -95,6 +108,11 @@ export function initImperativeBase() {
                 this.passInitialValuesToThree && this.passInitialValuesToThree()
             },
 
+            disconnectedCallback() {
+                Super(this).disconnectedCallback()
+                if (!(this instanceof Scene)) this.disposeWebGL()
+            },
+
             _onPropertyChange(prop) {
                 if ( prop == 'sizeMode' || prop == 'size' ) {
                     this._calcSize()
@@ -104,7 +122,9 @@ export function initImperativeBase() {
             },
 
             initWebGL() {
-                this.three = this.makeThreeObject3d()
+                if (Private(this).__glLoaded) return
+                Private(this).__glLoaded = true
+
                 this.threeCSS = new CSS3DObjectNested(this)
 
                 // we don't let Three update local matrices automatically, we do
