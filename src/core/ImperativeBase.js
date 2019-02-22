@@ -71,9 +71,6 @@ export function initImperativeBase() {
                 // in a scene.
                 self._scene = null
 
-                Protected(self).__glLoaded = false
-                Protected(self).__cssLoaded = false
-
                 // See Transformable/Sizeable propertychange event.
                 // TODO: defer size calculation to render task
                 self.on('propertychange', self._onPropertyChange, self)
@@ -312,6 +309,11 @@ export function initImperativeBase() {
             //     if (properties.classes)
             //         this._elementOperations.setClasses(...properties.classes);
             // },
+
+            protected: {
+                __glLoaded: false,
+                __cssLoaded: false,
+            },
         }))
 
     )
