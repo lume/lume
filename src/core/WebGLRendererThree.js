@@ -59,10 +59,12 @@ const WebGLRendererThree = Class('WebGLRendererThree', { // TODO rename
         if (!sceneState) return
 
         scene.off('sizechange', sceneState.sizeChangeHandler)
-        scene._glLayer.removeChild( renderer.domElement )
+        scene._glLayer.removeChild( sceneState.renderer.domElement )
         sceneState.renderer.dispose()
         sceneState.renderer = null
         sceneState.sizeChangeHandler = null
+
+        sceneStates.delete(scene)
     },
 
     drawScene(scene) {

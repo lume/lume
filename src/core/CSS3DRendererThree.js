@@ -28,9 +28,11 @@ const CSS3DRendererThree = Class('CSS3DRendererThree', { // TODO rename
         if (!sceneState) return
 
         scene.off('sizechange', sceneState.sizeChangeHandler)
-        scene._cssLayer.removeChild( renderer.domElement )
+        scene._cssLayer.removeChild( sceneState.renderer.domElement )
         sceneState.renderer = null
         sceneState.sizeChangeHandler = null
+
+        sceneStates.delete(scene)
     },
 
     drawScene(scene) {
