@@ -134,6 +134,24 @@ let Scene = Mixin(Base => {
             })
         },
 
+        unloadGL() {
+            if (!Protected(this).__glLoaded) return
+
+            Super(this).unloadGL()
+
+            if (Private(this).__glRenderer) {
+                Private(this).__glRenderer.uninitialize(this)
+                Private(this).__glRenderer = null
+            }
+
+            this.traverse((node) => {
+                // skip `this`, we already handled it above
+                if (node === this) return
+
+                node.unloadGL()
+            })
+        },
+
         makeThreeObject3d() {
             return new ThreeScene
         },
@@ -153,15 +171,31 @@ let Scene = Mixin(Base => {
             })
         },
 
+        unloadCSS() {
+            if (!Protected(this).__cssLoaded) return
+
+            Super(this).unloadCSS()
+
+            if (Private(this).__cssRenderer) {
+                Private(this).__cssRenderer.uninitialize(this)
+                Private(this).__cssRenderer = null
+            }
+
+            this.traverse((node) => {
+                // skip `this`, we already handled it above
+                if (node === this) return
+
+                node.unloadCSS()
+            })
+        },
+
         makeThreeCSSObject() {
             return new ThreeScene
         },
 
         drawScene() {
-            if (this.experimentalWebgl)
-                Private(this).__glRenderer.drawScene(this)
-            if (!this.disableCss)
-                Private(this).__cssRenderer.drawScene(this)
+            Private(this).__glRenderer && Private(this).__glRenderer.drawScene(this)
+            Private(this).__cssRenderer && Private(this).__cssRenderer.drawScene(this)
         },
 
         private: {
@@ -388,7 +422,7 @@ let Scene = Mixin(Base => {
                     this._needsToBeRendered()
                 }
                 if (moddedProps.shadowmapType) {
-                    Private(this).__glRenderer.setShadowMapType(this, this.shadowmapType)
+                    Private(this).__glRenderer.setShadowMapType( this, this.shadowmapType )
                     this._needsToBeRendered()
                 }
                 if (moddedProps.vr) {

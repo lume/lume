@@ -8,6 +8,7 @@ import Scene from './Scene'
 import Motor from './Motor'
 import {isInstanceof} from './Utility'
 import {CSS3DObjectNested} from '../lib/three/CSS3DRendererNested'
+import {disposeObject} from '../utils/three'
 
 window.addEventListener('error', (event) => {
     const error = event.error
@@ -141,6 +142,15 @@ export function initImperativeBase() {
             },
 
             unloadGL() {
+                if (!Protected(this).__glLoaded) return
+                Protected(this).__glLoaded = false
+
+                if (Private(this).__three) {
+                    disposeObject(Private(this).__three)
+
+                    Private(this).__three = null
+                }
+
                 console.warn( 'TODO: finish disposing WebGL stuff' )
             },
 
@@ -159,6 +169,15 @@ export function initImperativeBase() {
             },
 
             unloadCSS() {
+                if (!Protected(this).__cssLoaded) return
+                Protected(this).__cssLoaded = false
+
+                if (Private(this).__threeCSS) {
+                    disposeObject(Private(this).__threeCSS)
+
+                    Private(this).__threeCSS = null
+                }
+
                 console.warn( 'TODO: finish disposing CSS stuff' )
             },
 
@@ -313,6 +332,11 @@ export function initImperativeBase() {
             protected: {
                 __glLoaded: false,
                 __cssLoaded: false,
+            },
+
+            private: {
+                __three: null,
+                __threeCSS: null,
             },
         }))
 
