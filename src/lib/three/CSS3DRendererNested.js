@@ -11,8 +11,9 @@ export function CSS3DObjectNested( element ) {
 	requestAnimationFrame( () => {
 
     	// delay to the next frame because attributes are not allowed be set
-    	// inside Custom Element constructors (i.e. when using Web Components
-    	// APIs) otherwise this throws an error.
+    	// inside Custom Element (i.e. Web Component) constructors, otherwise
+    	// this can throw an error if called inside a Custom Element
+    	// constructor.
 
     	this.element.style.position = 'absolute';
 
@@ -22,6 +23,12 @@ export function CSS3DObjectNested( element ) {
 
 CSS3DObjectNested.prototype = Object.create( THREE.Object3D.prototype );
 CSS3DObjectNested.prototype.constructor = CSS3DObjectNested;
+
+CSS3DObjectNested.prototype.dispose = function() {
+
+    this.element = null
+
+};
 
 // TODO Sprite is untested in this new nested renderer
 export function CSS3DNestedSprite( element ) {
