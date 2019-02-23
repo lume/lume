@@ -17,10 +17,11 @@ const sceneStates = new WeakMap
 // infamous/core/Scene using Three.js
 const WebGLRendererThree = Class('WebGLRendererThree', { // TODO rename
     initialize(scene) {
-        let sceneState = sceneStates.has(scene)
+        let sceneState = sceneStates.get(scene)
 
-        if (sceneState) sceneState = sceneStates.get(scene)
-        else sceneStates.set(scene, sceneState = {
+        if (sceneState) return
+
+        sceneStates.set(scene, sceneState = {
             // TODO: get the active camera from the scene
             //camera: new PerspectiveCamera( 75, 16/9, 0.1, 1000 ),
 
