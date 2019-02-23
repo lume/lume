@@ -5,10 +5,11 @@ const sceneStates = new WeakMap
 
 const CSS3DRendererThree = Class('CSS3DRendererThree', { // TODO rename
     initialize(scene) {
-        let sceneState = sceneStates.has(scene)
+        let sceneState = sceneStates.get(scene)
 
-        if (sceneState) sceneState = sceneStates.get(scene)
-        else sceneStates.set(scene, sceneState = {
+        if (sceneState) return
+
+        sceneStates.set(scene, sceneState = {
             renderer: new CSS3DRendererNested,
         })
 
