@@ -19,7 +19,15 @@ Class( 'BaseMeshBehavior' ).extends( Behavior, ({ Protected, Private, Super }) =
 
     connectedCallback() {
         Super( this ).connectedCallback()
+
         this.resetMeshComponent()
+    },
+
+    disconnectedCallback() {
+        Super( this ).disconnectedCallback()
+
+        Private(this).__setDefaultComponent( this.element, this.constructor.type )
+        this.element._needsToBeRendered()
     },
 
     resetMeshComponent() {
@@ -31,13 +39,6 @@ Class( 'BaseMeshBehavior' ).extends( Behavior, ({ Protected, Private, Super }) =
             this.constructor.type,
             Protected(this)._createComponent(this.element)
         )
-        this.element._needsToBeRendered()
-    },
-
-    disconnectedCallback() {
-        Super( this ).disconnectedCallback()
-
-        Private(this).__setDefaultComponent( this.element, this.constructor.type )
         this.element._needsToBeRendered()
     },
 
