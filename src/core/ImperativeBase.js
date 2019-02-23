@@ -88,6 +88,8 @@ export function initImperativeBase() {
             },
 
             get three() {
+                // if (!(this.scene && this.scene.experimentalWebgl)) return null
+
                 if (!Private(this).__three)
                     Private(this).__three = this.makeThreeObject3d()
 
@@ -95,6 +97,8 @@ export function initImperativeBase() {
             },
 
             get threeCSS() {
+                // if (!(this.scene && !this.scene.disableCss)) return null
+
                 if (!Private(this).__threeCSS)
                     Private(this).__threeCSS = this.makeThreeCSSObject()
 
@@ -103,9 +107,6 @@ export function initImperativeBase() {
 
             connectedCallback() {
                 Super(this).connectedCallback()
-
-                if (!(this instanceof Scene)) this.loadGL()
-                if (!(this instanceof Scene)) this.loadCSS()
 
                 // If a subclass needs to initialize values in its Three.js
                 // object, it will have the passInitialValuesToThree method for
@@ -117,12 +118,6 @@ export function initImperativeBase() {
                 this.passInitialValuesToThree && this.passInitialValuesToThree()
             },
 
-            disconnectedCallback() {
-                Super(this).disconnectedCallback()
-                if (!(this instanceof Scene)) this.unloadGL()
-                if (!(this instanceof Scene)) this.unloadCSS()
-            },
-
             _onPropertyChange(prop) {
                 if ( prop == 'sizeMode' || prop == 'size' ) {
                     this._calcSize()
@@ -132,6 +127,8 @@ export function initImperativeBase() {
             },
 
             loadGL() {
+                if (!(this.scene && this.scene.experimentalWebgl)) return
+
                 if (Protected(this).__glLoaded) return
                 Protected(this).__glLoaded = true
 
@@ -139,19 +136,23 @@ export function initImperativeBase() {
                 // it ourselves in Transformable._calculateMatrix and
                 // Transformable._calculateWorldMatricesInSubtree
                 this.three.matrixAutoUpdate = false
+
+                // NOTE, this.parent works here because loadGL is called by
+                // childConnectedCallback at which point a child is already
+                // upgraded and thus has this.parent API ready.
+                this.parent && this.parent.three.add(this.three)
+
+                this._needsToBeRendered()
             },
 
             unloadGL() {
                 if (!Protected(this).__glLoaded) return
                 Protected(this).__glLoaded = false
 
-                if (Private(this).__three) {
-                    disposeObject(Private(this).__three)
+                disposeObject(Private(this).__three)
+                Private(this).__three = null
 
-                    Private(this).__three = null
-                }
-
-                console.warn( 'TODO: finish disposing WebGL stuff' )
+                this._needsToBeRendered()
             },
 
             makeThreeObject3d() {
@@ -159,6 +160,8 @@ export function initImperativeBase() {
             },
 
             loadCSS() {
+                if (!(this.scene && !this.scene.disableCss)) return
+
                 if (Protected(this).__cssLoaded) return
                 Protected(this).__cssLoaded = true
 
@@ -166,19 +169,23 @@ export function initImperativeBase() {
                 // it ourselves in Transformable._calculateMatrix and
                 // Transformable._calculateWorldMatricesInSubtree
                 this.threeCSS.matrixAutoUpdate = false
+
+                // NOTE, this.parent works here because loadGL is called by
+                // childConnectedCallback at which point a child is already
+                // upgraded and thus has this.parent API ready.
+                this.parent && this.parent.threeCSS.add(this.threeCSS)
+
+                this._needsToBeRendered()
             },
 
             unloadCSS() {
                 if (!Protected(this).__cssLoaded) return
                 Protected(this).__cssLoaded = false
 
-                if (Private(this).__threeCSS) {
-                    disposeObject(Private(this).__threeCSS)
+                disposeObject(Private(this).__threeCSS)
+                Private(this).__threeCSS = null
 
-                    Private(this).__threeCSS = null
-                }
-
-                console.warn( 'TODO: finish disposing CSS stuff' )
+                this._needsToBeRendered()
             },
 
             makeThreeCSSObject() {
@@ -189,9 +196,9 @@ export function initImperativeBase() {
                 Super(this).childConnectedCallback(child)
 
                 // children can be non-lib DOM nodes (f.e. div, h1, etc)
-                if (isInstanceof(child, ImperativeBase)) {
-                    this.three.add(child.three)
-                    this.threeCSS.add(child.threeCSS)
+                if (isInstanceof(child, Node)) {
+                    child.loadGL()
+                    child.loadCSS()
                 }
             },
 
@@ -199,9 +206,9 @@ export function initImperativeBase() {
                 Super(this).childDisconnectedCallback(child)
 
                 // children can be non-lib DOM nodes (f.e. div, h1, etc)
-                if (isInstanceof(child, ImperativeBase)) {
-                    this.three.remove(child.three)
-                    this.threeCSS.remove(child.threeCSS)
+                if (isInstanceof(child, Node)) {
+                    child.unloadGL()
+                    child.unloadCSS()
                 }
             },
 
