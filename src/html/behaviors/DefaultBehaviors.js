@@ -14,30 +14,11 @@ Mixin(Base =>
             defaultBehaviors: [],
         },
 
-        constructor(...args) {
-            // Use the constructor return value, because we assume Base must be
-            // a HTML element class, in which case this is currently unavoidable
-            // because lowclass currently uses ES5-style constructors. This may
-            // change when lowclass has `class` syntax option.
-            const self = Super(this).constructor(...args)
+        connectedCallback() {
+            Super(this).connectedCallback && Super(this).connectedCallback()
 
             // If no geometry or material behavior is detected, add default ones.
-            //
-            // Deferring to a microtask doesn't work here, we must defer to a
-            // macrotask with setTimeout, so we can detect if the element has
-            // initial behaviors, otherwise the element's initial attributes
-            // haven't been added yet (this is how HTML engines work, see
-            // https://github.com/whatwg/dom/issues/522).
-            //
-            // TODO: If we use setTimeout (macrotask) deferral anywhere (like we do
-            // here), and maybe even with microtask deferral (f.e. Promise), maybe
-            // we should have a single place that initiate this deferral so that
-            // everything in the engine can hook into it. Otherwise if different
-            // call sites use setTimeout, logic will be firing at random and in
-            // different order.
-            setTimeout( () => Private(self).__setDefaultBehaviorsIfNeeded(), 0 )
-
-            return self
+            Private(this).__setDefaultBehaviorsIfNeeded()
         },
 
         private: {
@@ -50,11 +31,12 @@ Mixin(Base =>
                 if (!defaultBehaviors) return
                 if (Object.keys(defaultBehaviors).length == 0) return
 
-                const initialBehaviorNames = Array.from( pub.behaviors.keys() )
+                const hasAttribute = pub.getAttribute('has')
+                const initialBehaviorNames = (hasAttribute && hasAttribute.split(' ')) || []
 
                 // small optimization: if there are no initial behaviors and we
                 // have default behaviors, just set the default behaviors.
-                if ( initialBehaviorNames.length == 0 ) {
+                if ( initialBehaviorNames.length === 0 ) {
 
                     // if not an array, then it's an object.
                     if (! ( defaultBehaviors instanceof Array ) ) defaultBehaviors = Object.keys( defaultBehaviors )
