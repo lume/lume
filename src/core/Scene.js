@@ -94,12 +94,6 @@ let Scene = Mixin(Base => {
         // For now, use the same program (with shaders) for all objects.
         // Basically it has position, frag colors, point light, directional
         // light, and ambient light.
-        // TODO: maybe call this in `init()`, and destroy webgl stuff in
-        // `deinit()`.
-        // TODO: The user might enable this by setting the attribute later, so
-        // we can't simply rely on having it in constructor, we need a
-        // getter/setter like node properties.
-        // TODO: we need to deinit webgl too.
         loadGL() {
             if (Protected(this).__glLoaded) return
 
@@ -237,12 +231,6 @@ let Scene = Mixin(Base => {
 
                 return renderer
             },
-        },
-
-        // TODO ability to init and destroy webgl for the whole scene based on prop change
-        destroyWebGl() {
-            // destroyWebGLRendererThree
-            // destroyCSS3DRendererThree
         },
 
         // TODO PERFORMANCE: make this static for better performance.
@@ -400,12 +388,12 @@ let Scene = Mixin(Base => {
 
             if (moddedProps.experimentalWebgl) {
                 if (this.experimentalWebgl) this.loadGL()
-                else this.unloadGL() // <-- TODO, currently a no-op
+                else this.unloadGL()
             }
 
             if (moddedProps.disableCss) {
                 if (!this.disableCss) this.loadCSS()
-                else this.unloadCSS() // <-- TODO, currently a no-op
+                else this.unloadCSS()
             }
 
             // call super.updated() after the above loadGL() so that WebGL
