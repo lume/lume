@@ -107,15 +107,6 @@ export function initImperativeBase() {
 
             connectedCallback() {
                 Super(this).connectedCallback()
-
-                // If a subclass needs to initialize values in its Three.js
-                // object, it will have the passInitialValuesToThree method for
-                // that.
-                //
-                // TODO we shouldn't need to define passInitialValuesToThree in
-                // sub classes, the default values of the props should
-                // automatically be in place.
-                this.passInitialValuesToThree && this.passInitialValuesToThree()
             },
 
             _onPropertyChange(prop) {
@@ -141,6 +132,15 @@ export function initImperativeBase() {
                 // childConnectedCallback at which point a child is already
                 // upgraded and thus has this.parent API ready.
                 this.parent && this.parent.three.add(this.three)
+
+                // If a subclass needs to initialize values in its Three.js
+                // object, it will have the passInitialValuesToThree method for
+                // that.
+                //
+                // TODO we shouldn't need to define passInitialValuesToThree in
+                // sub classes, the default values of the props should
+                // automatically be in place.
+                this.passInitialValuesToThree && this.passInitialValuesToThree()
 
                 this._needsToBeRendered()
             },
@@ -170,7 +170,7 @@ export function initImperativeBase() {
                 // Transformable._calculateWorldMatricesInSubtree
                 this.threeCSS.matrixAutoUpdate = false
 
-                // NOTE, this.parent works here because loadGL is called by
+                // NOTE, this.parent works here because loadCSS is called by
                 // childConnectedCallback at which point a child is already
                 // upgraded and thus has this.parent API ready.
                 this.parent && this.parent.threeCSS.add(this.threeCSS)
