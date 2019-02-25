@@ -6,9 +6,14 @@ import {getInheritedDescriptor} from 'lowclass/utils'
 
 export default
 Mixin(Base => Class( 'ForwardProps' ).extends( Base, ({ Super, Public, Protected, Private }) => ({
+    constructor() {
+        Super( this ).constructor()
+        Private( this ).__propChangedCallback = Private( this ).__propChangedCallback.bind( this )
+    },
 
     connectedCallback() {
         Super( this ).connectedCallback && Super( this ).connectedCallback()
+        Private( this ).__forwardInitialProps()
         Private( this ).__observeProps()
     },
 
@@ -18,11 +23,12 @@ Mixin(Base => Class( 'ForwardProps' ).extends( Base, ({ Super, Public, Protected
     },
 
     private: {
-        __propChangedCallback: ( propName, value ) => undefined,
+        __propChangedCallback( propName, value ) {
+            // `this` here is `Public(this)`, it gets bound in `constructor`
+            this[ propName ] = value
+        },
 
         __observeProps() {
-            const publicThis = Public( this )
-            this.__propChangedCallback = ( propName, value ) => publicThis[ propName ] = value
             observe( Protected( this )._observedObject, this.__getProps(), this.__propChangedCallback, {
                 // inherited: true, // XXX the 'inherited' option doesn't work in this case. Why?
             } )
@@ -46,6 +52,20 @@ Mixin(Base => Class( 'ForwardProps' ).extends( Base, ({ Super, Public, Protected
 
             return result
         },
+
+        __forwardInitialProps() {
+            const observed = Protected( this )._observedObject
+
+            for ( const prop of this.__getProps() ) {
+                prop in observed && this.__propChangedCallback( prop, observed[ prop ] )
+            }
+        },
+        // FIXME, for some reason elements are getting unrelated props on them.
+        // For example a "texture" prop on Scene elements is being observed
+        // (therefore the getter exists on Scene instances, maybe on the
+        // prototype) although Scenes don't have "texture" props. We have the
+        // temporary `prop in observed` code here to avoid calling
+        // __propChangedCallback on those props, but this is brittle.
     },
 
     protected: {
