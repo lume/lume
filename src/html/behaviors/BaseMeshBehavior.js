@@ -2,6 +2,7 @@ import { BoxGeometry, MeshPhongMaterial } from 'three'
 import Class from 'lowclass'
 import Mesh from '../../core/Mesh'
 import Behavior from './Behavior'
+import { Events } from '../../core/Events'
 
 /**
  * Base class for Geometry and Material behaviors, not intended for direct use.
@@ -10,23 +11,55 @@ import Behavior from './Behavior'
  * _createComponent() - return a geometry or material instance.
  */
 export default
-Class( 'BaseMeshBehavior' ).extends( Behavior, ({ Protected, Private, Super }) => ({
+Class( 'BaseMeshBehavior' ).extends( Behavior, ({ Public, Protected, Private, Super }) => ({
     static: {
         // use a getter because Mesh is undefined at module evaluation time due
         // to a circular dependency.
         get requiredElementType() { return Mesh },
     },
 
+    get glLoaded() {
+        return Protected(this).__glLoaded
+    },
+
+    get cssLoaded() {
+        return Protected(this).__cssLoaded
+    },
+
     connectedCallback() {
         Super( this ).connectedCallback()
-
-        this.resetMeshComponent()
+        this.loadGL()
     },
 
     disconnectedCallback() {
         Super( this ).disconnectedCallback()
+        this.unloadGL()
+    },
 
-        Private(this).__setDefaultComponent( this.element, this.constructor.type )
+    loadGL() {
+        if (!this.element.three) return
+
+        if (Protected(this).__glLoaded) return
+        Protected(this).__glLoaded = true
+
+        this.resetMeshComponent()
+
+        this.refreshAllProps()
+        this.element._needsToBeRendered()
+    },
+
+    unloadGL() {
+        if (!Protected(this).__glLoaded) return
+        Protected(this).__glLoaded = false
+
+        // if the behavior is being disconnected, but the element still has GL
+        // mode (.three), then leave the element with a default mesh GL
+        // component to be rendered.
+        if (this.element.three)
+            Private(this).__setDefaultComponent( this.element, this.constructor.type )
+        else
+            Private(this).__disposeMeshComponent( this.element, this.constructor.type )
+
         this.element._needsToBeRendered()
     },
 
@@ -47,8 +80,25 @@ Class( 'BaseMeshBehavior' ).extends( Behavior, ({ Protected, Private, Super }) =
     },
 
     protected: {
+        __glLoaded: false,
+        __cssLoaded: false,
+
         _createComponent() {
             throw new Error('`_createComponent()` is not implemented by subclass.')
+        },
+
+        _listenToElement() {
+            Super(this)._listenToElement()
+
+            Public(this).element.on(Events.BEHAVIOR_GL_LOAD, Public(this).loadGL, Public(this))
+            Public(this).element.on(Events.BEHAVIOR_GL_UNLOAD, Public(this).unloadGL, Public(this))
+        },
+
+        _unlistenToElement() {
+            Super(this)._unlistenToElement()
+
+            Public(this).element.off(Events.BEHAVIOR_GL_LOAD, Public(this).loadGL)
+            Public(this).element.off(Events.BEHAVIOR_GL_UNLOAD, Public(this).unloadGL)
         },
     },
 
@@ -58,9 +108,13 @@ Class( 'BaseMeshBehavior' ).extends( Behavior, ({ Protected, Private, Super }) =
         // the user.
         initialSize: null,
 
-        __setMeshComponent(element, name, newComponent) {
+        __disposeMeshComponent(element, name) {
             if ( element.three[ name ] )
                 element.three[ name ].dispose()
+        },
+
+        __setMeshComponent(element, name, newComponent) {
+            this.__disposeMeshComponent(element, name)
 
             element.three[name] = newComponent
         },

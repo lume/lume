@@ -25,21 +25,23 @@ Class( 'BaseGeometryBehavior' ).extends( BaseMeshBehavior, ({ Public, Private, S
         }
     },
 
-    connectedCallback() {
-        Super(this).connectedCallback()
+    protected: {
+        _listenToElement() {
+            Super(this)._listenToElement()
 
-        // TODO the following three events can be replaced with a single propchange:size event
-        this.element.on('sizechange', Private(this).__onSizeValueChanged, Private(this))
-        this.element.size.on('valuechanged', Private(this).__onSizeValueChanged, Private(this))
-        this.element.sizeMode.on('valuechanged', Private(this).__onSizeValueChanged, Private(this))
-    },
+            // TODO the following three events can be replaced with a single propchange:size event
+            Public(this).element.on('sizechange', Private(this).__onSizeValueChanged, Private(this))
+            Public(this).element.size.on('valuechanged', Private(this).__onSizeValueChanged, Private(this))
+            Public(this).element.sizeMode.on('valuechanged', Private(this).__onSizeValueChanged, Private(this))
+        },
 
-    disconnectedCallback() {
-        Super(this).disconnectedCallback()
+        _unlistenToElement() {
+            Super(this)._unlistenToElement()
 
-        this.element.off('sizechange', Private(this).__onSizeValueChanged)
-        this.element.size.off('valuechanged', Private(this).__onSizeValueChanged)
-        this.element.sizeMode.off('valuechanged', Private(this).__onSizeValueChanged)
+            Public(this).element.off('sizechange', Private(this).__onSizeValueChanged)
+            Public(this).element.size.off('valuechanged', Private(this).__onSizeValueChanged)
+            Public(this).element.sizeMode.off('valuechanged', Private(this).__onSizeValueChanged)
+        },
     },
 
     private: {

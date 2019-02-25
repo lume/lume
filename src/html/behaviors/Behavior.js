@@ -49,12 +49,29 @@ Class( 'Behavior' ).extends( native( withUpdate( ForwardProps ) ), ({ Public, Pr
         this.triggerUpdate()
     },
 
+    connectedCallback() {
+        Super( this ).connectedCallback()
+        Protected(this)._listenToElement()
+    },
+
+    disconnectedCallback() {
+        Super( this ).disconnectedCallback()
+        Protected(this)._unlistenToElement()
+    },
+
     protected: {
         // used by ForwardProps. See ForwardProps.js
         get _observedObject() {
             return Public( this ).element
         },
 
+        _listenToElement() {
+            // subclasses: add event listeners
+        },
+
+        _unlistenToElement() {
+            // subclasses: remove event listeners
+        },
     },
 
     private: {
