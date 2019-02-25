@@ -9,6 +9,7 @@ import Motor from './Motor'
 import {isInstanceof} from './Utility'
 import {CSS3DObjectNested} from '../lib/three/CSS3DRendererNested'
 import {disposeObject} from '../utils/three'
+import {Events} from './Events'
 
 window.addEventListener('error', (event) => {
     const error = event.error
@@ -54,7 +55,7 @@ export function initImperativeBase() {
      */
     ImperativeBase = Mixin(Base =>
 
-        Class('ImperativeBase').extends( Transformable.mixin( Base ), ({ Super, Private, Protected }) => ({
+        Class('ImperativeBase').extends( Transformable.mixin( Base ), ({ Super, Public, Private, Protected }) => ({
             constructor(options = {}) {
                 const self = Super(this).constructor(options)
 
@@ -197,8 +198,8 @@ export function initImperativeBase() {
 
                 // children can be non-lib DOM nodes (f.e. div, h1, etc)
                 if (isInstanceof(child, Node)) {
-                    child.loadGL()
-                    child.loadCSS()
+                    child.__loadGL()
+                    child.__loadCSS()
                 }
             },
 
@@ -207,8 +208,8 @@ export function initImperativeBase() {
 
                 // children can be non-lib DOM nodes (f.e. div, h1, etc)
                 if (isInstanceof(child, Node)) {
-                    child.unloadGL()
-                    child.unloadCSS()
+                    child.__unloadGL()
+                    child.__unloadCSS()
                 }
             },
 
@@ -345,6 +346,36 @@ export function initImperativeBase() {
                 __three: null,
                 __threeCSS: null,
             },
+
+            // FIXME, these should be protected, but the use of Mixin breaks the
+            // access helper. We'll fix this in lowclass.
+            // protected: {
+                __loadGL() {
+                    Public(this).loadGL()
+                    Public(this).emit(Events.BEHAVIOR_GL_LOAD, Public(this))
+                    Promise.resolve().then(() => {
+                        Public(this).emit(Events.GL_LOAD, Public(this))
+                    })
+                },
+
+                __unloadGL() {
+                    Public(this).unloadGL()
+                    Public(this).emit(Events.BEHAVIOR_GL_UNLOAD, Public(this))
+                    Promise.resolve().then(() => {
+                        Public(this).emit(Events.GL_UNLOAD, Public(this))
+                    })
+                },
+
+                __loadCSS() {
+                    Public(this).loadCSS()
+                    Public(this).emit(Events.CSS_LOAD, Public(this))
+                },
+
+                __unloadCSS() {
+                    Public(this).unloadCSS()
+                    Public(this).emit(Events.CSS_UNLOAD, Public(this))
+                },
+            // }
         }))
 
     )

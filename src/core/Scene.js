@@ -124,7 +124,7 @@ let Scene = Mixin(Base => {
                 // skip `this`, we already handled it above
                 if (node === this) return
 
-                node.loadGL()
+                node.__loadGL()
             })
         },
 
@@ -142,7 +142,7 @@ let Scene = Mixin(Base => {
                 // skip `this`, we already handled it above
                 if (node === this) return
 
-                node.unloadGL()
+                node.__unloadGL()
             })
         },
 
@@ -387,13 +387,13 @@ let Scene = Mixin(Base => {
             if (!this.isConnected) return
 
             if (moddedProps.experimentalWebgl) {
-                if (this.experimentalWebgl) this.loadGL()
-                else this.unloadGL()
+                if (this.experimentalWebgl) this.__loadGL()
+                else this.__unloadGL()
             }
 
             if (moddedProps.disableCss) {
-                if (!this.disableCss) this.loadCSS()
-                else this.unloadCSS()
+                if (!this.disableCss) this.__loadCSS()
+                else this.__unloadCSS()
             }
 
             // call super.updated() after the above loadGL() so that WebGL
