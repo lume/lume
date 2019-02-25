@@ -39,6 +39,16 @@ Class( 'Behavior' ).extends( native( withUpdate( ForwardProps ) ), ({ Public, Pr
         this.element.setAttribute(name, value)
     },
 
+    refreshAllProps() {
+        if (!this.constructor.props) return
+
+        for (const prop in this.constructor.props) {
+            this._modifiedProps[prop] = true
+        }
+
+        this.triggerUpdate()
+    },
+
     protected: {
         // used by ForwardProps. See ForwardProps.js
         get _observedObject() {
