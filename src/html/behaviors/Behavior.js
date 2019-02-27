@@ -75,6 +75,9 @@ Class( 'Behavior' ).extends( native( withUpdate( ForwardProps ) ), ({ Public, Pr
     },
 
     private: {
+        // a promise resolved when an element is upgraded
+        __whenDefined: null,
+        __elementDefined: false,
 
         // TODO add a test to make sure this check works
         async __checkElementIsLibraryElement(element) {
@@ -82,7 +85,7 @@ Class( 'Behavior' ).extends( native( withUpdate( ForwardProps ) ), ({ Public, Pr
             const BaseClass = Public(this).constructor.requiredElementType
 
             if ( element.nodeName.includes('-') ) {
-                const whenDefined = customElements.whenDefined(element.nodeName.toLowerCase())
+                this.__whenDefined = customElements.whenDefined(element.nodeName.toLowerCase())
                     .then(() => {
                         if (element instanceof BaseClass) return true
                         else return false
@@ -90,9 +93,10 @@ Class( 'Behavior' ).extends( native( withUpdate( ForwardProps ) ), ({ Public, Pr
 
                 const timeout = new Promise(r => setTimeout(r, 10000))
 
-                const isNode = await Promise.race([whenDefined, timeout])
+                this.__elementDefined = await Promise.race([this.__whenDefined, timeout])
+                    .then(defined => defined) // delay one more tick
 
-                if (!isNode) throw new Error(`
+                if (!this.__elementDefined) throw new Error(`
                     Either the element you're using the behavior on is not an
                     instance of ${BaseClass.name}, or there was a 10-second timeout
                     waiting for the element to be defined.
