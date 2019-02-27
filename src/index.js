@@ -4,3 +4,5 @@ export * from './components'
 export * from './layout'
 
 export const version = '21.0.6'
+
+console.log('test')
