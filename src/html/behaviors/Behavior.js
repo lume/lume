@@ -91,9 +91,10 @@ Class( 'Behavior' ).extends( native( withUpdate( ForwardProps ) ), ({ Public, Pr
                         else return false
                     })
 
-                const timeout = new Promise(r => setTimeout(r, 10000))
-
-                this.__elementDefined = await Promise.race([this.__whenDefined, timeout])
+                this.__elementDefined = await Promise.race([
+                    this.__whenDefined,
+                    new Promise(r => setTimeout(r, 10000))
+                ])
                     .then(defined => defined) // delay one more tick
 
                 if (!this.__elementDefined) throw new Error(`
