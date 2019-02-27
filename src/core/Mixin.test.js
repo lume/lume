@@ -92,10 +92,13 @@ describe('Mixin', () => {
 
         const originalSymbol = Symbol
 
+        // Sometimes Symbol() is polyfilled in a way that it generates a random
+        // regular property key.
         Symbol = () => Math.random()
 
         test()
 
+        // Sometimes Symbol is not defined in the environment.
         Symbol = void 0
 
         test()
