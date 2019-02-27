@@ -1,8 +1,8 @@
 import { BoxGeometry, MeshPhongMaterial } from 'three'
 import Class from 'lowclass'
-import Mesh from '../../core/Mesh'
 import Behavior from './Behavior'
 import { Events } from '../../core/Events'
+import Mesh from '../../core/Mesh'
 
 /**
  * Base class for Geometry and Material behaviors, not intended for direct use.
