@@ -1,6 +1,4 @@
 import Class from 'lowclass'
-import Transformable from './Transformable'
-import {isInstanceof} from './Utility'
 
 const Motor = Class('Motor', ({ Public, Private }) => ({
 
