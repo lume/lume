@@ -1,6 +1,6 @@
 import Class from 'lowclass'
 import BaseMeshBehavior from './BaseMeshBehavior'
-import { props } from '../../core/props'
+import { props, changePropContext } from '../../core/props'
 
 // base class for geometry behaviors
 export default
@@ -12,8 +12,8 @@ Class( 'BaseGeometryBehavior' ).extends( BaseMeshBehavior, ({ Public, Private, S
         props: {
             // if we have no props defined here, SkateJS breaks
             // https://github.com/skatejs/skatejs/issues/1482
-            size: props.XYZNonNegativeValues,
-            sizeMode: props.XYZSizeModeValues,
+            size: changePropContext(props.XYZNonNegativeValues, self => self.element),
+            sizeMode: changePropContext(props.XYZSizeModeValues, self => self.element),
         },
     },
 

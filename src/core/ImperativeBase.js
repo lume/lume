@@ -225,13 +225,6 @@ export function initImperativeBase() {
             },
 
             /**
-             * @readonly
-             */
-            get element() {
-                return this._elementOperations.element
-            },
-
-            /**
              * Get the Scene that this Node is in, null if no Scene. This traverses up recursively
              * at first, then the value is cached.
              *

@@ -10,10 +10,10 @@ import XYZSizeModeValues from './XYZSizeModeValues'
 function createXYZPropType(Type, override = {}) {
     return {
         attribute: { source: true, target: false }, // get the value from an attribute (but don't mirror it back)
-        coerce(val, propName) { return val === this.element[propName] ? val : this.element[propName].from(val) },
-        default(propName) { return this.element[propName] },
-        deserialize(val, propName) { return this.element[propName].fromString(val) },
-        serialize(val, propName) { this.element[propName].toString() },
+        coerce(val, propName) { return val === this[propName] ? val : this[propName].from(val) },
+        default(propName) { return this[propName] },
+        deserialize(val, propName) { return this[propName].fromString(val) },
+        serialize(val, propName) { this[propName].toString() },
         ...override,
     }
 }
@@ -73,4 +73,12 @@ export const mapPropTo = (prop, getTarget) => ({
         if (target) target[key] = deserialized
         return deserialized
     },
+})
+
+export const changePropContext = (prop, getContext) => ({
+    ...prop,
+    coerce(val, propName) { return prop.coerce.call(getContext.call(this, this), val, propName) },
+    default(propName) { return prop.default.call(getContext.call(this, this), propName) },
+    deserialize(val, propName) { return prop.deserialize.call(getContext.call(this, this), val, propName) },
+    serialize(val, propName) { return prop.serialize.call(getContext.call(this, this), val, propName) },
 })
