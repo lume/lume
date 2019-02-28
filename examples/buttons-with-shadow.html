@@ -16,6 +16,7 @@
 
         <!-- the library -->
         <script src="../global.js"></script>
+        <script> infamous.useDefaultNames() </script>
 
     </head>
     <body>
@@ -96,6 +97,7 @@
                         id="light"
                         color="white"
                         position="300 300 120"
+                        align="0.5 0.5 0"
                         size="0 0 0"
                         cast-shadow="true"
                         intensity="0.8"
@@ -118,9 +120,6 @@
         <div id="root"></div>
 
         <script>
-            // defines the default names for the HTML elements
-            infamous.useDefaultNames()
-
             new Vue({
                 el: '#root',
                 template: document.querySelector('[vue]').innerHTML,
@@ -129,11 +128,30 @@
                     // this.$refs.plane.rotation = (x,y,z) => [x,++y,z]
                     // this.$refs.plane.size = (x,y,z,t) => [x, Math.abs(Math.sin(t/1000)), z]
 
-                    setTimeout(() => {
+                    var {Motor, Events} = infamous
+                    var downTween, upTween, pressedButton
+
+                    var scene = document.querySelector('#scene')
+
+                    scene.on(Events.GL_LOAD, () => {
+
                         var light = document.querySelector('#light')
                         light.three.shadow.radius = 2
                         light.three.distance = 800
                         light.three.shadow.bias = -0.001
+
+                        // The following is a temporary hack because opacity isn't
+                        // exposed through the HTML API yet. work-in-progress...
+                        // TODO this stuff should be doable via the HTML
+                        Array.from( document.querySelectorAll('i-dom-plane') ).forEach(function(n) {
+                            n.three.material.opacity = 0.3
+                        })
+
+                        document.querySelector('#bg').three.material.opacity = 0.3
+                        document.querySelector('#bg').three.material.dithering = true
+
+                        scene._needsToBeRendered()
+
                     })
 
                     // prevent default touch actions so we can move the light with touch
@@ -194,24 +212,6 @@
 
                         }
                     })
-
-                    // The following is a temporary hack because opacity isn't
-                    // exposed through the HTML API yet. work-in-progress...
-                    var scene = document.querySelector('#scene')
-                    setTimeout(function() {
-                        // TODO the stuff in this function should be doable via the HTML
-
-                        Array.from( document.querySelectorAll('i-dom-plane') ).forEach(function(n) {
-                            n.three.material.opacity = 0.3
-                        })
-
-                        document.querySelector('#bg')
-                            .three.material.opacity = 0.3
-                        document.querySelector('#bg')
-                            .three.material.dithering = true
-
-                        scene._needsToBeRendered()
-                    }, 0)
 
                     function is( el, selector ) {
                         if ( [].includes.call(
