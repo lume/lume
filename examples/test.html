@@ -173,12 +173,14 @@
         </i-scene>
 
         <script>
+            const { Motor, Events } = infamous
+
             // TODO expose as props/attributes
             light.three.shadow.radius = 5
             light.three.shadow.bias = -0.0001
             light.three.distance = 800
 
-            infamous.Motor.addRenderTask(t => {
+            Motor.addRenderTask(t => {
                 lightMesh.position.y = 100 * Math.sin(t * 0.001) /*+ 100*/
                 lightMesh.position.x = 100 * Math.sin(t * 0.0005) /*+ 100*/
                 root.rotation.y = 15 * Math.cos(t * 0.002)
@@ -190,15 +192,45 @@
                 little2.rotation.x += 1
             })
 
-            setTimeout(function() {
-                // TODO the stuff in this function should be doable via the HTML
+            Array.from( document.querySelectorAll('i-dom-node') ).forEach(plane => {
+                // if already loaded, run intial logic
+                if (plane.glLoaded) onGLLoad(plane)
+                plane.on(Events.GL_LOAD, onGLLoad)
+            })
 
-                Array.from( document.querySelectorAll('i-dom-node') ).forEach(n => {
-                    n.three.material.opacity = 0.3
-                    n._needsToBeRendered()
-                })
+            function onGLLoad(plane) {
+                plane.three.material.opacity = 0.3
+                plane._needsToBeRendered()
+            }
 
-            }, 100)
+            const scene = document.querySelector('i-scene')
+
+            // This setInterval shows that
+            //
+            // - the above GL_LOAD event handler re-establishes the material
+            // opacity of the i-dom-node elements every couple of seconds.
+            //
+            // - that turning GL rendering off and on makes the animation
+            // stutter for a small moment, because destroying and re-creating
+            // all the GPU stuff is a heavy operation. Generally you'll want to
+            // start with experimentalWebgl attribute set to an initial value
+            // and leave it that way, without changing it.
+            //
+            // - that turning CSS rendering off and on is not very expensive.
+            // This is because the DOM (the custom elements) aren't being
+            // destroyed and re-created, only the CSS styling is being removed
+            // and then added back. Also when CSS is re-enabled the elements are
+            // re-distributed into the Shadow Root of the scene, all without
+            // having to allocate much new memory unlike with GL and the GPU.
+            setInterval(() => {
+                if (
+                    scene.disableCss && !scene.experimentalWebgl ||
+                    !scene.disableCss && scene.experimentalWebgl
+                )
+                    scene.disableCss = !scene.disableCss
+                else
+                    scene.experimentalWebgl = !scene.experimentalWebgl
+            }, 1000)
         </script>
 
         <!-- TEST ======================================================== -->
