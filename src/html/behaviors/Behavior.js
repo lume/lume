@@ -22,7 +22,7 @@ Class( 'Behavior' ).extends( native( withUpdate( ForwardProps ) ), ({ Public, Pr
 
         _this.element = element
 
-        Private(this).__checkElementIsLibraryElement(element)
+        Private(_this).__checkElementIsLibraryElement(element)
 
         return _this
     },
