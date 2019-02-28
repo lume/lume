@@ -51,6 +51,16 @@ Class( 'Behavior' ).extends( native( withUpdate( ForwardProps ) ), ({ Public, Pr
 
     // We use __elementDefined in the following methods so we can delay prop
     // handling until the elements are upgraded and their APIs exist.
+    //
+    // NOTE, another way we could've achieved this is to let elements emit an
+    // event in connectedCallback, at which point the element is guaranteed to
+    // be upgraded. We currently do emit the GL_LOAD event. Which can only
+    // happen when the element is upgrade AND has loaded GL objects (and these
+    // behaviors only care about GL obbjects at the moment) so it'd be possible
+    // to rely only on that event for the GL behaviors (which they all currently
+    // are). If we have behaviors that work with CSS, not GL, then we could rely
+    // on the CSS_LOAD event. In any case, the current solution is more generic,
+    // for use with any type of custom elements.
 
     async attributeChangedCallback(...args) {
         if (!Private(this).__elementDefined)
