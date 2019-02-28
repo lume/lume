@@ -1,3 +1,4 @@
+export * from './Events'
 export AmbientLight from './AmbientLight'
 export Box from './Box'
 export Camera from './Camera'
