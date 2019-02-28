@@ -49,13 +49,31 @@ Class( 'Behavior' ).extends( native( withUpdate( ForwardProps ) ), ({ Public, Pr
         this.triggerUpdate()
     },
 
-    connectedCallback() {
+    // We use __elementDefined in the following methods so we can delay prop
+    // handling until the elements are upgraded and their APIs exist.
+
+    async attributeChangedCallback(...args) {
+        if (!Private(this).__elementDefined)
+            await Private(this).__whenDefined
+
+        Super(this).attributeChangedCallback(...args)
+    },
+
+    async connectedCallback() {
+        if (!Private(this).__elementDefined)
+            await Private(this).__whenDefined
+
         Super( this ).connectedCallback()
+
         Protected(this)._listenToElement()
     },
 
-    disconnectedCallback() {
+    async disconnectedCallback() {
+        if (!Private(this).__elementDefined)
+            await Private(this).__whenDefined
+
         Super( this ).disconnectedCallback()
+
         Protected(this)._unlistenToElement()
     },
 
@@ -77,6 +95,10 @@ Class( 'Behavior' ).extends( native( withUpdate( ForwardProps ) ), ({ Public, Pr
     private: {
         // a promise resolved when an element is upgraded
         __whenDefined: null,
+
+        // we need to wait for __elementDefined to be true because running the
+        // superclass logic, otherwise `updated()` calls can happen before the
+        // element is upgraded (i.e. before any APIs are available).
         __elementDefined: false,
 
         // TODO add a test to make sure this check works
@@ -86,27 +108,35 @@ Class( 'Behavior' ).extends( native( withUpdate( ForwardProps ) ), ({ Public, Pr
 
             if ( element.nodeName.includes('-') ) {
                 this.__whenDefined = customElements.whenDefined(element.nodeName.toLowerCase())
-                    .then(() => {
-                        if (element instanceof BaseClass) return true
-                        else return false
-                    })
 
-                this.__elementDefined = await Promise.race([
+                // We use `.then` here on purpose, so that setting
+                // __elementDefined happens in the very first microtask after
+                // __whenDefined is resolved. Otherwise if we set
+                // __elementDefined after awaiting the following Promise.race,
+                // then it will happen on the second microtask after
+                // __whenDefined is resolved. Our goal is to have APIs ready as
+                // soon as possible in the methods above that wait for
+                // __whenDefined.
+                this.__whenDefined.then(() => {
+                    this.__elementDefined = element instanceof BaseClass
+                })
+
+                await Promise.race([
                     this.__whenDefined,
-                    new Promise(r => setTimeout(r, 10000))
+                    new Promise(r => setTimeout(r, 1000))
                 ])
-                    .then(defined => defined) // delay one more tick
 
                 if (!this.__elementDefined) throw new Error(`
                     Either the element you're using the behavior on is not an
-                    instance of ${BaseClass.name}, or there was a 10-second timeout
-                    waiting for the element to be defined.
+                    instance of ${BaseClass.name}, or there was a 1-second
+                    timeout waiting for the element to be defined. Please make
+                    sure all elements you intend to use are defined.
                 `)
             }
             else {
                 throw new Error(`
-                    The element you're using the mesh behavior on is not an
-                    instance of ${BaseClass.name}.
+                    The element you're using the mesh behavior on (<${element.tagName.toLowerCase()}>)
+                    is not an instance of ${BaseClass.name}.
                 `)
             }
         },
