@@ -48,7 +48,7 @@
   "devDependencies": {
     "all-contributors-cli": "^4.4.0",
     "builder": "4.0.0",
-    "builder-js-package": "trusktr/builder-js-package#83b5bb456a094cb66c739820d3078d5fc4f6c375",
+    "builder-js-package": "trusktr/builder-js-package#4d98e13ac0af0ef1a67e601bcfaa98c30952e2ca",
     "docpress": "0.7.1"
   },
   "docpress": {
