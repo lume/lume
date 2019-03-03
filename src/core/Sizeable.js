@@ -34,8 +34,7 @@ Mixin(Base => {
 
             self._propertyFunctions = null
             self._calculatedSize = { x:0, y:0, z:0 }
-            // self._props = {} // SkateJS now creates this (because TreeNode extends from SkateJS withUpdate).
-            self._properties = self._props // alias to the SkateJS _props cache, so that other code referring to this._properties is unchanged
+            self._properties = self._props // alias to WithUpdate._props
             self._setDefaultProperties()
             self._setPropertyObservers()
             self.properties = options

@@ -10,8 +10,7 @@ Class( 'BaseGeometryBehavior' ).extends( BaseMeshBehavior, ({ Public, Private, S
         type: 'geometry',
 
         props: {
-            // if we have no props defined here, SkateJS breaks
-            // https://github.com/skatejs/skatejs/issues/1482
+            // if we have no props defined here, WithUpdate breaks
             size: changePropContext(props.XYZNonNegativeValues, self => self.element),
             sizeMode: changePropContext(props.XYZSizeModeValues, self => self.element),
         },
@@ -46,12 +45,9 @@ Class( 'BaseGeometryBehavior' ).extends( BaseMeshBehavior, ({ Public, Private, S
 
     private: {
         __onSizeValueChanged() {
-            // tells SkateJS' withUpdate (from BaseMeshBehavior) which prop
+            // tells WithUpdate (from BaseMeshBehavior) which prop
             // changed and makes it finally trigger our updated method
             // Public(this).size = Public(this).size
-
-            // tells withUpdate (from BaseMeshBehavior) which prop
-            // changed and makes it finally trigger our updated method
             Public(this)._modifiedProps.size = true
             Public(this).triggerUpdate()
         },

@@ -1,4 +1,4 @@
-import { props as skateProps } from '@trusktr/skatejs'
+import { props as basicProps } from '../html/WithUpdate'
 import { Color } from 'three'
 import XYZValues from './XYZValues'
 import XYZNumberValues from './XYZNumberValues'
@@ -29,7 +29,7 @@ function createGenericPropType(Type, override = {}) {
     }
 }
 
-// skateProps gives us some default generic prop types:
+// basicProps gives us some generic prop types:
 // props.any
 // props.array
 // props.boolean
@@ -37,9 +37,9 @@ function createGenericPropType(Type, override = {}) {
 // props.object
 // props.string
 export const props = {
-    ...skateProps,
+    ...basicProps,
     boolean: {
-        ...skateProps.boolean,
+        ...basicProps.boolean,
         deserialize: val => val != null && val !== 'false'
     },
     THREE: {

@@ -1,7 +1,7 @@
 import 'element-behaviors'
 import Class from 'lowclass'
-import {withUpdate} from '@trusktr/skatejs'
 import native from 'lowclass/native'
+import {WithUpdate} from '../WithUpdate'
 import ForwardProps from './ForwardProps'
 import Node from '../../core/Node'
 
@@ -10,7 +10,7 @@ import Node from '../../core/Node'
  *
  */
 export default
-Class( 'Behavior' ).extends( native( withUpdate( ForwardProps ) ), ({ Public, Protected, Private, Super }) => ({
+Class( 'Behavior' ).extends( native( WithUpdate( ForwardProps ) ), ({ Public, Protected, Private, Super }) => ({
     static: {
         // use a getter because Mesh is undefined at module evaluation time due
         // to a circular dependency.
@@ -34,7 +34,7 @@ Class( 'Behavior' ).extends( native( withUpdate( ForwardProps ) ), ({ Public, Pr
         return this.element.parentNode
     },
 
-    // proxy setAttribute to this.element so that SkateJS withUpdate works in certain cases
+    // proxy setAttribute to this.element so that WithUpdate works in certain cases
     setAttribute(name, value) {
         this.element.setAttribute(name, value)
     },
