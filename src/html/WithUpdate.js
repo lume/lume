@@ -270,7 +270,7 @@ const array = prop({
     coerce: val => (Array.isArray(val) ? val : empty(val) ? null : [val]),
     default: Object.freeze([]),
     deserialize: parse,
-    serialize: stringify
+    serialize: val => (val == null ? null : stringify(val))
 })
 
 const boolean = prop({
@@ -293,7 +293,7 @@ const object = prop({
     attribute,
     default: Object.freeze({}),
     deserialize: parse,
-    serialize: stringify
+    serialize: val => (val == null ? null : stringify(val))
 })
 
 const string = prop({
