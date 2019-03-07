@@ -88,8 +88,8 @@ let Node = Mixin(Base => {
             return self
         },
 
-        updated(oldProps, newProps, modifiedProps) {
-            Super(this).updated(oldProps, newProps, modifiedProps)
+        updated(oldProps, modifiedProps) {
+            Super(this).updated(oldProps, modifiedProps)
 
             if (modifiedProps.visible) {
                 this._elementOperations.shouldRender(this.visible)
