@@ -152,9 +152,7 @@ export const WithUpdate = (Base = HTMLElement) =>
             super(...args)
 
             this._prevProps = {}
-            this._prevState = {}
             this._props = {}
-            this._state = {}
             this._modifiedProps = {}
         }
 
@@ -165,15 +163,6 @@ export const WithUpdate = (Base = HTMLElement) =>
         set props(props) {
             const ctorProps = this.constructor.props
             keys(props).forEach(k => k in ctorProps && (this[k] = props[k]))
-        }
-
-        get state() {
-            return this._state
-        }
-
-        set state(state) {
-            this._state = state
-            this.triggerUpdate()
         }
 
         attributeChangedCallback(name, oldValue, newValue) {
@@ -237,18 +226,17 @@ export const WithUpdate = (Base = HTMLElement) =>
             }
             this._updating = true
             delay(() => {
-                const { _prevProps, _prevState, _modifiedProps } = this
+                const { _prevProps, _modifiedProps } = this
                 if (this.updating) {
-                    this.updating(_prevProps, _prevState, _modifiedProps)
+                    this.updating(_prevProps, _modifiedProps)
                 }
                 if (
                     this.updated &&
-                    this.shouldUpdate(_prevProps, _prevState, _modifiedProps)
+                    this.shouldUpdate(_prevProps, _modifiedProps)
                 ) {
-                    this.updated(_prevProps, _prevState, _modifiedProps)
+                    this.updated(_prevProps, _modifiedProps)
                 }
                 this._prevProps = this.props
-                this._prevState = this.state
                 const propsList = this.constructor._propsList
                 for (let i = 0, l = propsList.length; i < l; i += 1)
                     this._modifiedProps[propsList[i]] = false

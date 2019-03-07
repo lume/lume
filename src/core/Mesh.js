@@ -56,8 +56,8 @@ Class('Mesh').extends( Node, ({ Super }) => ({
         return new ThreeMesh
     },
 
-    updated(oldProps, oldState, modifiedProps) {
-        Super(this).updated(oldProps, oldState, modifiedProps)
+    updated(oldProps, modifiedProps) {
+        Super(this).updated(oldProps, modifiedProps)
 
         if (!this.isConnected) return
 

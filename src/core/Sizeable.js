@@ -58,7 +58,7 @@ Mixin(Base => {
                 () => this.trigger('propertychange', 'size'))
         },
 
-        updated(oldProps, oldState, modifiedProps) {
+        updated(oldProps, modifiedProps) {
             if (!this.isConnected) return
 
             // this covers single-valued properties like opacity, but has the
