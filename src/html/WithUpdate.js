@@ -254,7 +254,9 @@ export const WithUpdate = (Base = HTMLElement) =>
 
         set props(props) {
             const ctorProps = this.constructor.props
-            keys(props).forEach(k => k in ctorProps && (this[k] = props[k]))
+            keys(props).forEach(
+                k => /*k in ctorProps && */ (this[k] = props[k])
+            )
         }
 
         attributeChangedCallback(name, oldValue, newValue) {
