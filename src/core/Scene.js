@@ -331,7 +331,7 @@ let Scene = Mixin(Base => {
          */
         async mount(mountPoint) {
             // if no mountPoint was provided, just mount onto the <body> element.
-            if (mountPoint === undefined) {
+            if (!mountPoint) {
                 if (!document.body) await documentBody()
                 mountPoint = document.body
             }
