@@ -247,7 +247,7 @@ Mixin(Base => {
             this._setPropertyXYZ(Transformable, 'position', newValue)
         },
         get position() {
-            return Super(this).position
+            return this._props.position
         },
 
         /**
@@ -260,7 +260,7 @@ Mixin(Base => {
             this._setPropertyXYZ(Transformable, 'rotation', newValue)
         },
         get rotation() {
-            return Super(this).rotation
+            return this._props.rotation
         },
 
         /**
@@ -273,7 +273,7 @@ Mixin(Base => {
             this._setPropertyXYZ(Transformable, 'scale', newValue)
         },
         get scale() {
-            return Super(this).scale
+            return this._props.scale
         },
 
         /**
@@ -286,7 +286,7 @@ Mixin(Base => {
             this._setPropertySingle('opacity', newValue)
         },
         get opacity() {
-            return Super(this).opacity
+            return this._props.opacity
         },
 
         /**
@@ -302,7 +302,7 @@ Mixin(Base => {
             this._setPropertyXYZ(Transformable, 'align', newValue)
         },
         get align() {
-            return Super(this).align
+            return this._props.align
         },
 
         /**
@@ -317,7 +317,7 @@ Mixin(Base => {
             this._setPropertyXYZ(Transformable, 'mountPoint', newValue)
         },
         get mountPoint() {
-            return Super(this).mountPoint
+            return this._props.mountPoint
         },
     }))
 
