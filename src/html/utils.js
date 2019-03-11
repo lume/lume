@@ -26,7 +26,10 @@ export function unique(array) {
 // return a new object with `properties` picked from `source`
 export function pick(source, properties) {
     let result = {}
-    return properties.forEach(prop => {
+
+    properties.forEach(prop => {
         result[prop] = source[prop]
     })
+
+    return result
 }
