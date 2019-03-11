@@ -103,6 +103,9 @@ const Motor = Class('Motor', ({ Public, Private }) => ({
          * -- silence, crickets.
          */
         async startAnimationLoop() {
+            if (document.readyState === 'loading')
+                await new Promise(resolve => setTimeout(resolve))
+
             if (this.animationLoopStarted) return
 
             this.animationLoopStarted = true
