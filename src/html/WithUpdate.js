@@ -33,7 +33,7 @@ export function normalizePropertyDefinition(name, prop) {
 
 const defaultTypesMap = new Map()
 
-function defineProps(constructor, WithUpdate) {
+function defineProps(constructor) {
     if (constructor.hasOwnProperty('_propsNormalized')) return
     const { props } = constructor
     constructor._propsList = []
@@ -41,7 +41,7 @@ function defineProps(constructor, WithUpdate) {
         let func = props[name] || props.any
         if (defaultTypesMap.has(func)) func = defaultTypesMap.get(func)
         if (typeof func !== 'function') func = prop(func)
-        func({ constructor }, name, WithUpdate)
+        func({ constructor }, name)
         constructor._propsList.push(name)
     })
 }
@@ -58,7 +58,7 @@ export function prop(definition) {
     const propertyDefinition = definition || {}
 
     // Allows decorators, or imperative definitions.
-    const func = function({ constructor }, name, WithUpdate) {
+    const func = function({ constructor }, name) {
         const normalized = normalizePropertyDefinition(name, propertyDefinition)
 
         // Ensure that we can cache properties. We have to do this so the _props object literal doesn't modify parent
@@ -81,38 +81,122 @@ export function prop(definition) {
             }
         }
 
-        Object.defineProperty(WithUpdate.prototype, name, {
-            configurable: true,
-            get() {
-                const val = this._props[name]
-                return val == null
-                    ? (this._props[name] = normalized.default.call(this, name))
-                    : val
-            },
-            set(val) {
-                const {
-                    attribute: { target },
-                    serialize,
-                    coerce
-                } = normalized
-                if (target) {
-                    const serializedVal = serialize
-                        ? serialize.call(this, val, name)
-                        : val
-                    if (serializedVal == null) {
-                        this.removeAttribute(target)
-                    } else {
-                        this.setAttribute(target, serializedVal)
-                    }
-                }
-                this._props[name] = coerce.call(this, val, name)
-                this._modifiedProps[name] = true
-                this.triggerUpdate()
+        // the returned descriptor contains an "owner" property which is the
+        // prototype object on which the descriptor was found.
+        const existingDescriptor = getInheritedDescriptor(
+            constructor.prototype,
+            name
+        )
+
+        let existingDescriptorType
+        let existingGetter
+        let existingSetter
+
+        // if the current constructor already inherits the prop accessor, we
+        // don't need to re-define it.
+        if (
+            existingDescriptor &&
+            existingDescriptor.owner.constructor &&
+            existingDescriptor.owner.constructor._propsNormalized &&
+            existingDescriptor.owner.constructor._propsNormalized[name]
+        )
+            return
+
+        if (existingDescriptor) {
+            if (!existingDescriptor.configurable) {
+                console.error(
+                    `Unable to create reactivity for prop "${name}" because existing descriptor is non-configurable.`
+                )
+                return
             }
-        })
+
+            existingDescriptorType =
+                'value' in existingDescriptor ? 'data' : 'accessor'
+
+            if (existingDescriptorType === 'data') {
+                // in case there's existing properties on a contructor's prototype
+                // before we overwrite the descriptor. we store those values in this
+                // cache so we can use them as initial values.
+                if (!constructor.__existingPrototypeValues)
+                    constructor.__existingPrototypeValues = {}
+
+                constructor.__existingPrototypeValues[name] =
+                    existingDescriptor.value
+            } else if (existingDescriptorType === 'accessor') {
+                existingGetter = existingDescriptor.get
+                existingSetter = existingDescriptor.set
+            }
+        } else {
+            // if there's no descriptor, we want to use the logic associaated
+            // with data descriptors
+            existingDescriptorType = 'data'
+        }
+
+        const newDescriptor = {
+            enumerable: existingDescriptor
+                ? existingDescriptor.enumerable
+                : undefined,
+            configurable: true,
+            get:
+                existingDescriptorType === 'accessor' && !existingGetter
+                    ? undefined
+                    : newGetter,
+            set:
+                existingDescriptorType === 'accessor' && !existingSetter
+                    ? undefined
+                    : newSetter
+        }
+
+        Object.defineProperty(constructor.prototype, name, newDescriptor)
+
+        function newGetter() {
+            let val
+
+            if (existingDescriptorType === 'accessor' && existingGetter)
+                val = existingGetter.call(this)
+            else if (existingDescriptorType === 'data') val = this._props[name]
+
+            if (val == null) {
+                val = normalized.default.call(this, name)
+
+                if (existingDescriptorType === 'accessor' && existingSetter)
+                    existingSetter.call(this, val)
+                else if (existingDescriptorType === 'data')
+                    this._props[name] = val
+            }
+
+            return val
+        }
+
+        function newSetter(val) {
+            const {
+                attribute: { target },
+                serialize,
+                coerce
+            } = normalized
+
+            if (target) {
+                const serializedVal = serialize.call(this, val, name)
+
+                if (serializedVal == null) {
+                    this.removeAttribute(target)
+                } else {
+                    this.setAttribute(target, serializedVal)
+                }
+            }
+
+            val = coerce.call(this, val, name)
+
+            if (existingDescriptorType === 'accessor' && existingSetter)
+                existingSetter.call(this, val)
+            else if (existingDescriptorType === 'data') this._props[name] = val
+
+            this._modifiedProps[name] = true
+            this.triggerUpdate()
+        }
     }
 
-    // Allows easy extension of pre-defined props { ...prop(), ...{} }.
+    // Allows easy extension of pre-defined props, f.e. { ...props.number, default: 42 }.
     Object.keys(propertyDefinition).forEach(
         key => (func[key] = propertyDefinition[key])
     )
@@ -142,7 +226,7 @@ export const WithUpdate = (Base = HTMLElement) =>
             // We have to define props here because observedAttributes are retrieved
             // only once when the custom element is defined. If we did this only in
             // the constructor, then props would not link to attributes.
-            defineProps(this, WithUpdate)
+            defineProps(this)
             return unique(
                 this._observedAttributes.concat(super.observedAttributes || [])
             )
@@ -152,9 +236,15 @@ export const WithUpdate = (Base = HTMLElement) =>
             super(...args)
 
             this._prevProps = {}
-            this._prevState = {}
-            this._props = {}
-            this._state = {}
+
+            // this._props extends from __existingPrototypeValues in case we
+            // overwrote a prototype property that had an existing value during
+            // definition of the props. This ensures we get the original
+            // prototype value when we read from a prop that we haven't set yet.
+            this._props = {
+                ...(this.constructor.__existingPrototypeValues || {})
+            }
+
             this._modifiedProps = {}
         }
 
@@ -164,16 +254,9 @@ export const WithUpdate = (Base = HTMLElement) =>
 
         set props(props) {
             const ctorProps = this.constructor.props
-            keys(props).forEach(k => k in ctorProps && (this[k] = props[k]))
-        }
-
-        get state() {
-            return this._state
-        }
-
-        set state(state) {
-            this._state = state
-            this.triggerUpdate()
+            keys(props).forEach(
+                k => /*k in ctorProps && */ (this[k] = props[k])
+            )
         }
 
         attributeChangedCallback(name, oldValue, newValue) {
@@ -237,18 +320,17 @@ export const WithUpdate = (Base = HTMLElement) =>
             }
             this._updating = true
             delay(() => {
-                const { _prevProps, _prevState, _modifiedProps } = this
+                const { _prevProps, _modifiedProps } = this
                 if (this.updating) {
-                    this.updating(_prevProps, _prevState, _modifiedProps)
+                    this.updating(_prevProps, _modifiedProps)
                 }
                 if (
                     this.updated &&
-                    this.shouldUpdate(_prevProps, _prevState, _modifiedProps)
+                    this.shouldUpdate(_prevProps, _modifiedProps)
                 ) {
-                    this.updated(_prevProps, _prevState, _modifiedProps)
+                    this.updated(_prevProps, _modifiedProps)
                 }
                 this._prevProps = this.props
-                this._prevState = this.state
                 const propsList = this.constructor._propsList
                 for (let i = 0, l = propsList.length; i < l; i += 1)
                     this._modifiedProps[propsList[i]] = false
@@ -270,7 +352,7 @@ const array = prop({
     coerce: val => (Array.isArray(val) ? val : empty(val) ? null : [val]),
     default: Object.freeze([]),
     deserialize: parse,
-    serialize: stringify
+    serialize: val => (val == null ? null : stringify(val))
 })
 
 const boolean = prop({
@@ -293,7 +375,7 @@ const object = prop({
     attribute,
     default: Object.freeze({}),
     deserialize: parse,
-    serialize: stringify
+    serialize: val => (val == null ? null : stringify(val))
 })
 
 const string = prop({

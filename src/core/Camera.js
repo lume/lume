@@ -28,8 +28,8 @@ Class('PerspectiveCamera').extends( Node, ({ Super, Public, Private }) => ({
         },
     },
 
-    updated(oldProps, oldState, modifiedProps) {
-        Super(this).updated(oldProps, oldState, modifiedProps)
+    updated(oldProps, modifiedProps) {
+        Super(this).updated(oldProps, modifiedProps)
 
         if (!this.isConnected) return
 

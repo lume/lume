@@ -13,7 +13,7 @@ const ObjModelBehavior = Class('ObjModelBehavior').extends(Behavior, ({Super, Pu
         },
     },
 
-    updated(oldProps, newProps, modifiedProps) {
+    updated(oldProps, modifiedProps) {
         if (modifiedProps.obj || modifiedProps.mtl) {
             // TODO if only mtl changes, maybe we can update only the material
             // instead of reloading the whole object?

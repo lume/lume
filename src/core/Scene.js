@@ -331,7 +331,7 @@ let Scene = Mixin(Base => {
          */
         async mount(mountPoint) {
             // if no mountPoint was provided, just mount onto the <body> element.
-            if (mountPoint === undefined) {
+            if (!mountPoint) {
                 if (!document.body) await documentBody()
                 mountPoint = document.body
             }
@@ -383,7 +383,7 @@ let Scene = Mixin(Base => {
             this._mounted = false
         },
 
-        updated(oldProps, oldState, moddedProps) {
+        updated(oldProps, moddedProps) {
             if (!this.isConnected) return
 
             if (moddedProps.experimentalWebgl) {
@@ -398,7 +398,7 @@ let Scene = Mixin(Base => {
 
             // call super.updated() after the above loadGL() so that WebGL
             // stuff will be ready in super.updated()
-            Super(this).updated(oldProps, oldState, moddedProps)
+            Super(this).updated(oldProps, moddedProps)
 
             if (this.experimentalWebgl) {
                 if (moddedProps.backgroundColor) {

@@ -58,7 +58,7 @@ Mixin(Base => {
                 () => this.trigger('propertychange', 'size'))
         },
 
-        updated(oldProps, oldState, modifiedProps) {
+        updated(oldProps, modifiedProps) {
             if (!this.isConnected) return
 
             // this covers single-valued properties like opacity, but has the
@@ -189,7 +189,7 @@ Mixin(Base => {
                 if (!this._settingValueFromPropFunction) this._removePropertyFunction(name)
                 else this._settingValueFromPropFunction = false
 
-                Super(this)[name] = newValue
+                this._props[name] = newValue
             }
         },
 
@@ -201,7 +201,7 @@ Mixin(Base => {
                 if (!this._settingValueFromPropFunction) this._removePropertyFunction(name)
                 else this._settingValueFromPropFunction = false
 
-                Super(this)[name] = newValue
+                this._props[name] = newValue
             }
         },
 
@@ -220,7 +220,7 @@ Mixin(Base => {
             this._setPropertyXYZ(null, 'sizeMode', newValue)
         },
         get sizeMode() {
-            return Super(this).sizeMode
+            return this._props.sizeMode
         },
 
         // TODO: A "differential" size would be cool. Good for padding,
@@ -255,7 +255,7 @@ Mixin(Base => {
             this._setPropertyXYZ(Sizeable, 'size', newValue)
         },
         get size() {
-            return Super(this).size
+            return this._props.size
         },
 
         /**

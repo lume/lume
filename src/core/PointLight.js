@@ -50,8 +50,8 @@ Class('PointLight').extends( LightBase, ({ Super }) => ({
         return new ThreePointLight
     },
 
-    updated(oldProps, oldState, modifiedProps) {
-        Super(this).updated(oldProps, oldState, modifiedProps)
+    updated(oldProps, modifiedProps) {
+        Super(this).updated(oldProps, modifiedProps)
 
         if (!this.isConnected) return
 

@@ -14,7 +14,7 @@ Class( 'BaseMaterialBehavior' ).extends( BaseMeshBehavior, ({ Super }) => ({
         },
     },
 
-    updated( oldProps, oldState, modifiedProps ) {
+    updated( oldProps, modifiedProps ) {
         const {color, opacity} = modifiedProps
 
         if (color) this.updateMaterial('color')

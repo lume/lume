@@ -14,8 +14,8 @@ export default Mixin(Base => {
             },
         },
 
-        updated( oldProps, oldState, modifiedProps ) {
-            Super(this).updated && Super(this).updated( oldProps, oldState, modifiedProps )
+        updated( oldProps, modifiedProps ) {
+            Super(this).updated && Super(this).updated( oldProps, modifiedProps )
 
             const {texture} = modifiedProps
 

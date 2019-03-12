@@ -75,8 +75,8 @@ const AutoLayoutNode = Class('AutoLayoutNode').extends(Node, ({ Super, Public, P
         return self
     },
 
-    updated(oldProps, newProps, modifiedProps) {
-        Super(this).updated(oldProps, newProps, modifiedProps)
+    updated(oldProps, modifiedProps) {
+        Super(this).updated(oldProps, modifiedProps)
         if (modifiedProps.visualFormat) {
             this.setVisualFormat(this.visualFormat)
         }

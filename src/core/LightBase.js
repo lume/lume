@@ -23,8 +23,8 @@ Class('LightBase').extends( Node, ({ Super }) => ({
         this.three.intensity = this.intensity
     },
 
-    updated(oldProps, oldState, modifiedProps) {
-        Super(this).updated(oldProps, oldState, modifiedProps)
+    updated(oldProps, modifiedProps) {
+        Super(this).updated(oldProps, modifiedProps)
 
         if (!this.isConnected) return
 

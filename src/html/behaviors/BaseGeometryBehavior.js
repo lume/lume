@@ -16,7 +16,7 @@ Class( 'BaseGeometryBehavior' ).extends( BaseMeshBehavior, ({ Public, Private, S
         },
     },
 
-    updated( oldProps, oldState, modifiedProps ) {
+    updated( oldProps, modifiedProps ) {
         const { size, sizeMode } = modifiedProps
 
         if ( size || sizeMode ) {
