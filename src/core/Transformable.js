@@ -158,12 +158,12 @@ Mixin(Base => {
          */
         _calculateMatrix () {
             const properties = this._properties
-            const thisSize = this._calculatedSize
+            const size = this._calculatedSize
 
             // THREE-COORDS-TO-DOM-COORDS
             // translate the "mount point" back to the top/left of the object
             // (in Three.js it is in the center of the object).
-            const threeJsPostAdjustment = [ thisSize.x/2, thisSize.y/2, 0 ] // TODO handle Z
+            const threeJsPostAdjustment = [ size.x/2, size.y/2, 0 ] // TODO handle Z
 
             const alignAdjustment = [0,0,0]
 
@@ -188,9 +188,9 @@ Mixin(Base => {
 
             const mountPointAdjustment = [0,0,0]
             const {mountPoint} = properties
-            mountPointAdjustment[0] = thisSize.x * mountPoint.x
-            mountPointAdjustment[1] = thisSize.y * mountPoint.y
-            mountPointAdjustment[2] = thisSize.z * mountPoint.z
+            mountPointAdjustment[0] = size.x * mountPoint.x
+            mountPointAdjustment[1] = size.y * mountPoint.y
+            mountPointAdjustment[2] = size.z * mountPoint.z
 
             const appliedPosition = []
             const {position} = properties
@@ -227,9 +227,9 @@ Mixin(Base => {
                 )
             }
 
-            const thisOrigin = this.origin
+            const {origin} = properties
 
-            if (this.origin.x !== 0.5 || this.origin.y !== 0.5 || this.origin.z !== 0.5) {
+            if (origin.x !== 0.5 || origin.y !== 0.5 || origin.z !== 0.5) {
                 if (!this.three.pivot) this.three.pivot = new THREE.Vector3
                 if (!this.threeCSS.pivot) this.threeCSS.pivot = new THREE.Vector3
 
@@ -239,21 +239,21 @@ Mixin(Base => {
                 // -0.5 to 0.5 instead of from 0 to 1.
 
                 this.three.pivot.set(
-                    thisOrigin.x * thisSize.x - thisSize.x/2,
+                    origin.x * size.x - size.x/2,
                     // THREE-COORDS-TO-DOM-COORDS negate the Y value so that
                     // positive Y means down instead of up (because Three,js Y
                     // values go up).
-                    -(thisOrigin.y * thisSize.y - thisSize.y/2),
-                    thisOrigin.z * thisSize.z - thisSize.z/2
+                    -(origin.y * size.y - size.y/2),
+                    origin.z * size.z - size.z/2
                 )
 
                 this.threeCSS.pivot.set(
-                    thisOrigin.x * thisSize.x - thisSize.x/2,
+                    origin.x * size.x - size.x/2,
                     // THREE-COORDS-TO-DOM-COORDS negate the Y value so that
                     // positive Y means down instead of up (because Three,js Y
                     // values go up).
-                    -(thisOrigin.y * thisSize.y - thisSize.y/2),
-                    thisOrigin.z * thisSize.z - thisSize.z/2
+                    -(origin.y * size.y - size.y/2),
+                    origin.z * size.z - size.z/2
                 )
             }
             // otherwise, use default Three.js origin of (0,0,0) which is
