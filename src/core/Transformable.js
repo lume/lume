@@ -1,9 +1,35 @@
 import Class from 'lowclass'
+import { Object3D } from 'three'
 import Mixin from './Mixin'
 import XYZNumberValues from './XYZNumberValues'
 import Sizeable from './Sizeable'
-import {isInstanceof} from './Utility'
+import { isInstanceof } from './Utility'
 import { props } from './props'
+
+// This patches Object3D to have a `.pivot` property of type THREE.Vector3 that
+// allows the origin (pivot) of rotation and scale to be specified in local
+// coordinate space. For more info:
+// https://github.com/mrdoob/three.js/issues/15965
+Object3D.prototype.updateMatrix = function () {
+
+    this.matrix.compose(this.position, this.quaternion, this.scale)
+
+    var pivot = this.pivot
+
+    if ( pivot ) {
+
+        var px = pivot.x, py = pivot.y,  pz = pivot.z
+        var te = this.matrix.elements
+
+        te[ 12 ] += px - te[ 0 ] * px - te[ 4 ] * py - te[ 8 ] * pz
+        te[ 13 ] += py - te[ 1 ] * px - te[ 5 ] * py - te[ 9 ] * pz
+        te[ 14 ] += pz - te[ 2 ] * px - te[ 6 ] * py - te[ 10 ] * pz
+
+    }
+
+    this.matrixWorldNeedsUpdate = true
+
+}
 
 export default
 Mixin(Base => {
@@ -201,6 +227,41 @@ Mixin(Base => {
                 )
             }
 
+            const thisOrigin = this.origin
+
+            if (this.origin.x !== 0.5 || this.origin.y !== 0.5 || this.origin.z !== 0.5) {
+                if (!this.three.pivot) this.three.pivot = new THREE.Vector3
+                if (!this.threeCSS.pivot) this.threeCSS.pivot = new THREE.Vector3
+
+                // Here we multiply by size to convert from a ratio to a range
+                // of units, then subtract half because Three.js origin is
+                // centered around (0,0,0) meaning Three.js origin goes from
+                // -0.5 to 0.5 instead of from 0 to 1.
+
+                this.three.pivot.set(
+                    thisOrigin.x * thisSize.x - thisSize.x/2,
+                    // THREE-COORDS-TO-DOM-COORDS negate the Y value so that
+                    // positive Y means down instead of up (because Three,js Y
+                    // values go up).
+                    -(thisOrigin.y * thisSize.y - thisSize.y/2),
+                    thisOrigin.z * thisSize.z - thisSize.z/2
+                )
+
+                this.threeCSS.pivot.set(
+                    thisOrigin.x * thisSize.x - thisSize.x/2,
+                    // THREE-COORDS-TO-DOM-COORDS negate the Y value so that
+                    // positive Y means down instead of up (because Three,js Y
+                    // values go up).
+                    -(thisOrigin.y * thisSize.y - thisSize.y/2),
+                    thisOrigin.z * thisSize.z - thisSize.z/2
+                )
+            }
+            // otherwise, use default Three.js origin of (0,0,0) which is
+            // equivalent to our (0.5,0.5,0.5), by removing the pivot value.
+            else {
+                this.three.pivot = undefined
+            }
+
             // TODO origin calculation will go here:
             // - move by negative origin before rotating.
 
@@ -274,6 +335,19 @@ Mixin(Base => {
         },
         get scale() {
             return this._props.scale
+        },
+
+        /**
+         * @param {Object} newValue
+         * @param {number} [newValue.x] The x-axis origin to apply.
+         * @param {number} [newValue.y] The y-axis origin to apply.
+         * @param {number} [newValue.z] The z-axis origin to apply.
+         */
+        set origin(newValue) {
+            this._setPropertyXYZ(Transformable, 'origin', newValue)
+        },
+        get origin() {
+            return this._props.origin
         },
 
         /**
