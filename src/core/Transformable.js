@@ -1,5 +1,5 @@
 import Class from 'lowclass'
-import { Object3D } from 'three'
+import '../lib/three/global'
 import Mixin from './Mixin'
 import XYZNumberValues from './XYZNumberValues'
 import Sizeable from './Sizeable'
@@ -10,13 +10,13 @@ import { props } from './props'
 // allows the origin (pivot) of rotation and scale to be specified in local
 // coordinate space. For more info:
 // https://github.com/mrdoob/three.js/issues/15965
-Object3D.prototype.updateMatrix = function () {
+THREE.Object3D.prototype.updateMatrix = function () {
 
     this.matrix.compose(this.position, this.quaternion, this.scale)
 
     var pivot = this.pivot
 
-    if ( pivot ) {
+    if ( pivot && ( pivot.x !== 0 || pivot.y !== 0 || pivot.z !== 0 ) ) {
 
         var px = pivot.x, py = pivot.y,  pz = pivot.z
         var te = this.matrix.elements
@@ -156,130 +156,129 @@ Mixin(Base => {
          * TODO #66: make sure this is called after size calculations when we
          * move _calcSize to a render task.
          */
-        _calculateMatrix () {
-            const properties = this._properties
-            const size = this._calculatedSize
+        _calculateMatrix: (function() {
+            const threeJsPostAdjustment = [0, 0, 0]
+            const alignAdjustment = [0, 0, 0]
+            const mountPointAdjustment = [0, 0, 0]
+            const appliedPosition = [0, 0, 0]
 
-            // THREE-COORDS-TO-DOM-COORDS
-            // translate the "mount point" back to the top/left of the object
-            // (in Three.js it is in the center of the object).
-            const threeJsPostAdjustment = [ size.x/2, size.y/2, 0 ] // TODO handle Z
+            return function _calculateMatrix() {
+                const {align, mountPoint, position, origin} = this._properties
+                const size = this._calculatedSize
 
-            const alignAdjustment = [0,0,0]
+                // THREE-COORDS-TO-DOM-COORDS
+                // translate the "mount point" back to the top/left of the object
+                // (in Three.js it is in the center of the object).
+                threeJsPostAdjustment[0] = size.x/2
+                threeJsPostAdjustment[1] = size.y/2
+                threeJsPostAdjustment[2] = 0 // TODO handle Z
 
-            // TODO If a Scene has a `parent`, it is not mounted directly into a
-            // regular DOM element but rather it is child of a Node. In this
-            // case we don't want the scene size to be based on observed size
-            // of a regular DOM element, but relative to a parent Node just
-            // like for all other Nodes.
-            const parentSize = this._getParentSize()
+                // TODO If a Scene has a `parent`, it is not mounted directly into a
+                // regular DOM element but rather it is child of a Node. In this
+                // case we don't want the scene size to be based on observed size
+                // of a regular DOM element, but relative to a parent Node just
+                // like for all other Nodes.
+                const parentSize = this._getParentSize()
 
-            // THREE-COORDS-TO-DOM-COORDS
-            // translate the "align" back to the top/left of the parent element.
-            // We offset this in ElementOperations#applyTransform. The Y
-            // value is inverted because we invert it below.
-            threeJsPostAdjustment[0] += -parentSize.x/2
-            threeJsPostAdjustment[1] += -parentSize.y/2
+                // THREE-COORDS-TO-DOM-COORDS
+                // translate the "align" back to the top/left of the parent element.
+                // We offset this in ElementOperations#applyTransform. The Y
+                // value is inverted because we invert it below.
+                threeJsPostAdjustment[0] += -parentSize.x/2
+                threeJsPostAdjustment[1] += -parentSize.y/2
 
-            const {align} = properties
-            alignAdjustment[0] = parentSize.x * align.x
-            alignAdjustment[1] = parentSize.y * align.y
-            alignAdjustment[2] = parentSize.z * align.z
+                alignAdjustment[0] = parentSize.x * align.x
+                alignAdjustment[1] = parentSize.y * align.y
+                alignAdjustment[2] = parentSize.z * align.z
 
-            const mountPointAdjustment = [0,0,0]
-            const {mountPoint} = properties
-            mountPointAdjustment[0] = size.x * mountPoint.x
-            mountPointAdjustment[1] = size.y * mountPoint.y
-            mountPointAdjustment[2] = size.z * mountPoint.z
+                mountPointAdjustment[0] = size.x * mountPoint.x
+                mountPointAdjustment[1] = size.y * mountPoint.y
+                mountPointAdjustment[2] = size.z * mountPoint.z
 
-            const appliedPosition = []
-            const {position} = properties
-            appliedPosition[0] = position.x + alignAdjustment[0] - mountPointAdjustment[0]
-            appliedPosition[1] = position.y + alignAdjustment[1] - mountPointAdjustment[1]
-            appliedPosition[2] = position.z + alignAdjustment[2] - mountPointAdjustment[2]
+                appliedPosition[0] = position.x + alignAdjustment[0] - mountPointAdjustment[0]
+                appliedPosition[1] = position.y + alignAdjustment[1] - mountPointAdjustment[1]
+                appliedPosition[2] = position.z + alignAdjustment[2] - mountPointAdjustment[2]
 
-            this.three.position.set(
-                appliedPosition[0] + threeJsPostAdjustment[0],
-                // THREE-COORDS-TO-DOM-COORDS negate the Y value so that
-                // Three.js' positive Y is downward like DOM.
-                -(appliedPosition[1] + threeJsPostAdjustment[1]),
-                appliedPosition[2] + threeJsPostAdjustment[2]
-            )
-
-            const childOfScene =
-                this.threeCSS.parent &&
-                this.threeCSS.parent.type === 'Scene'
-
-            if (childOfScene) {
-                this.threeCSS.position.set(
+                this.three.position.set(
                     appliedPosition[0] + threeJsPostAdjustment[0],
                     // THREE-COORDS-TO-DOM-COORDS negate the Y value so that
                     // Three.js' positive Y is downward like DOM.
                     -(appliedPosition[1] + threeJsPostAdjustment[1]),
                     appliedPosition[2] + threeJsPostAdjustment[2]
                 )
+
+                const childOfScene =
+                    this.threeCSS.parent &&
+                    this.threeCSS.parent.type === 'Scene'
+
+                if (childOfScene) {
+                    this.threeCSS.position.set(
+                        appliedPosition[0] + threeJsPostAdjustment[0],
+                        // THREE-COORDS-TO-DOM-COORDS negate the Y value so that
+                        // Three.js' positive Y is downward like DOM.
+                        -(appliedPosition[1] + threeJsPostAdjustment[1]),
+                        appliedPosition[2] + threeJsPostAdjustment[2]
+                    )
+                }
+                else {
+                    this.threeCSS.position.set(
+                        appliedPosition[0],
+                        -appliedPosition[1],
+                        appliedPosition[2]
+                    )
+                }
+
+                if (origin.x !== 0.5 || origin.y !== 0.5 || origin.z !== 0.5) {
+
+                    // Here we multiply by size to convert from a ratio to a range
+                    // of units, then subtract half because Three.js origin is
+                    // centered around (0,0,0) meaning Three.js origin goes from
+                    // -0.5 to 0.5 instead of from 0 to 1.
+
+                    this.three.pivot.set(
+                        origin.x * size.x - size.x/2,
+                        // THREE-COORDS-TO-DOM-COORDS negate the Y value so that
+                        // positive Y means down instead of up (because Three,js Y
+                        // values go up).
+                        -(origin.y * size.y - size.y/2),
+                        origin.z * size.z - size.z/2
+                    )
+
+                    this.threeCSS.pivot.set(
+                        origin.x * size.x - size.x/2,
+                        // THREE-COORDS-TO-DOM-COORDS negate the Y value so that
+                        // positive Y means down instead of up (because Three,js Y
+                        // values go up).
+                        -(origin.y * size.y - size.y/2),
+                        origin.z * size.z - size.z/2
+                    )
+                }
+                // otherwise, use default Three.js origin of (0,0,0) which is
+                // equivalent to our (0.5,0.5,0.5), by removing the pivot value.
+                else {
+                    this.three.pivot.set(0, 0, 0)
+                    this.threeCSS.pivot.set(0, 0, 0)
+                }
+
+                // TODO origin calculation will go here:
+                // - move by negative origin before rotating.
+
+                // apply each axis rotation, in the x,y,z order.
+                // THREE-COORDS-TO-DOM-COORDS: X/Z rotation is negated here so that
+                // DOM rotates in the same direction as Three.js (right handed).
+                // We only invert X and Z here because we already inverted the Y
+                // axis above which iverts Y rotation.
+                // TODO #151: make rotation order configurable
+                // if (!childOfScene) this.threeCSS.rotation.x = -this.rotation.x
+                // if (!childOfScene) this.threeCSS.rotation.z = -this.rotation.z
+
+                // TODO origin calculation will go here:
+                // - move by positive origin after rotating.
+
+                this.three.updateMatrix()
+                this.threeCSS.updateMatrix()
             }
-            else {
-                this.threeCSS.position.set(
-                    appliedPosition[0],
-                    -appliedPosition[1],
-                    appliedPosition[2]
-                )
-            }
-
-            const {origin} = properties
-
-            if (origin.x !== 0.5 || origin.y !== 0.5 || origin.z !== 0.5) {
-                if (!this.three.pivot) this.three.pivot = new THREE.Vector3
-                if (!this.threeCSS.pivot) this.threeCSS.pivot = new THREE.Vector3
-
-                // Here we multiply by size to convert from a ratio to a range
-                // of units, then subtract half because Three.js origin is
-                // centered around (0,0,0) meaning Three.js origin goes from
-                // -0.5 to 0.5 instead of from 0 to 1.
-
-                this.three.pivot.set(
-                    origin.x * size.x - size.x/2,
-                    // THREE-COORDS-TO-DOM-COORDS negate the Y value so that
-                    // positive Y means down instead of up (because Three,js Y
-                    // values go up).
-                    -(origin.y * size.y - size.y/2),
-                    origin.z * size.z - size.z/2
-                )
-
-                this.threeCSS.pivot.set(
-                    origin.x * size.x - size.x/2,
-                    // THREE-COORDS-TO-DOM-COORDS negate the Y value so that
-                    // positive Y means down instead of up (because Three,js Y
-                    // values go up).
-                    -(origin.y * size.y - size.y/2),
-                    origin.z * size.z - size.z/2
-                )
-            }
-            // otherwise, use default Three.js origin of (0,0,0) which is
-            // equivalent to our (0.5,0.5,0.5), by removing the pivot value.
-            else {
-                this.three.pivot = undefined
-            }
-
-            // TODO origin calculation will go here:
-            // - move by negative origin before rotating.
-
-            // apply each axis rotation, in the x,y,z order.
-            // THREE-COORDS-TO-DOM-COORDS: X/Z rotation is negated here so that
-            // DOM rotates in the same direction as Three.js (right handed).
-            // We only invert X and Z here because we already inverted the Y
-            // axis above which iverts Y rotation.
-            // TODO #151: make rotation order configurable
-            // if (!childOfScene) this.threeCSS.rotation.x = -this.rotation.x
-            // if (!childOfScene) this.threeCSS.rotation.z = -this.rotation.z
-
-            // TODO origin calculation will go here:
-            // - move by positive origin after rotating.
-
-            this.three.updateMatrix()
-            this.threeCSS.updateMatrix()
-        },
+        })(),
 
         _calculateWorldMatricesInSubtree() {
             this.three.updateMatrixWorld()

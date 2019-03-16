@@ -91,8 +91,10 @@ export function initImperativeBase() {
             get three() {
                 // if (!(this.scene && this.scene.experimentalWebgl)) return null
 
-                if (!Private(this).__three)
-                    Private(this).__three = this.makeThreeObject3d()
+                if (!Private(this).__three) {
+                    const three = Private(this).__three = this.makeThreeObject3d()
+                    three.pivot = new THREE.Vector3
+                }
 
                 return Private(this).__three
             },
@@ -100,8 +102,10 @@ export function initImperativeBase() {
             get threeCSS() {
                 // if (!(this.scene && !this.scene.disableCss)) return null
 
-                if (!Private(this).__threeCSS)
-                    Private(this).__threeCSS = this.makeThreeCSSObject()
+                if (!Private(this).__threeCSS) {
+                    const threeCSS = Private(this).__threeCSS = this.makeThreeCSSObject()
+                    threeCSS.pivot = new THREE.Vector3
+                }
 
                 return Private(this).__threeCSS
             },

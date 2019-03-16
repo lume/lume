@@ -73,41 +73,45 @@ Mixin(Base => {
                 if (modified) this.trigger('propertychange', prop)
         },
 
-        _calcSize() {
-            const calculatedSize = this._calculatedSize
-            const previousSize = {...calculatedSize}
-            const props = this._properties
-            const parentSize = this._getParentSize()
+        _calcSize: (function() {
+            const previousSize = {}
 
-            if (props.sizeMode.x == 'literal') {
-                calculatedSize.x = props.size.x
-            }
-            else { // proportional
-                calculatedSize.x = parentSize.x * props.size.x
-            }
+            return function _calcSize() {
+                const calculatedSize = this._calculatedSize
+                Object.assign(previousSize, calculatedSize)
+                const {sizeMode, size} = this._properties
+                const parentSize = this._getParentSize()
 
-            if (props.sizeMode.y == 'literal') {
-                calculatedSize.y = props.size.y
-            }
-            else { // proportional
-                calculatedSize.y = parentSize.y * props.size.y
-            }
+                if (sizeMode.x == 'literal') {
+                    calculatedSize.x = size.x
+                }
+                else { // proportional
+                    calculatedSize.x = parentSize.x * size.x
+                }
 
-            if (props.sizeMode.z == 'literal') {
-                calculatedSize.z = props.size.z
-            }
-            else { // proportional
-                calculatedSize.z = parentSize.z * props.size.z
-            }
+                if (sizeMode.y == 'literal') {
+                    calculatedSize.y = size.y
+                }
+                else { // proportional
+                    calculatedSize.y = parentSize.y * size.y
+                }
 
-            if (
-                previousSize.x !== calculatedSize.x
-                || previousSize.y !== calculatedSize.y
-                || previousSize.z !== calculatedSize.z
-            ) {
-                this.trigger('sizechange', {...calculatedSize})
+                if (sizeMode.z == 'literal') {
+                    calculatedSize.z = size.z
+                }
+                else { // proportional
+                    calculatedSize.z = parentSize.z * size.z
+                }
+
+                if (
+                    previousSize.x !== calculatedSize.x
+                    || previousSize.y !== calculatedSize.y
+                    || previousSize.z !== calculatedSize.z
+                ) {
+                    this.trigger('sizechange', {...calculatedSize})
+                }
             }
-        },
+        })(),
 
         _getParentSize() {
             return this.parent ? this.parent._calculatedSize : {x:0,y:0,z:0}
