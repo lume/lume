@@ -27,20 +27,6 @@ if (!Object.getOwnPropertyDescriptor(Node.prototype, 'isConnected')) {
     })
 }
 
-// we use this to detect when elements are upgraded while they are already
-// connected in the DOM (i.e. when customElements.define is called after a piece
-// of DOM has already been parsed), in which case the customElements.define() call
-// will upgrade (call constructor on) existing elements synchronously.
-let isCustomElementsDefineCall = false
-{
-    const oldDefine = customElements.define
-    customElements.define = function(tagName, Constructor) {
-        isCustomElementsDefineCall = true
-        oldDefine.call(this, tagName, Constructor)
-        isCustomElementsDefineCall = false
-    }
-}
-
 export default
 Mixin(Base => Class('WithChildren').extends(Base, ({ Super, Private, Public }) => ({
     constructor(...args) {
@@ -48,13 +34,12 @@ Mixin(Base => Class('WithChildren').extends(Base, ({ Super, Private, Public }) =
 
         Private(self).__createObserver()
 
-        // If we're in a customElements.define call, then this constructor is
-        // runnning synchronously in that call, and in this case the MutationObserver
-        // created in the previous line will not fire callbacks because the children are
-        // technically already connected, so we must fire the callbacks manually here.
-        if (isCustomElementsDefineCall) {
-            Private(self).__queueChildConnectedCallbacks()
+        if (!self.isConnected) {
+            Private(self).__handleChildrenWhenConnected = true
+            return self
         }
+
+		Private(self).__handleConnectedChildren()
 
         return self
     },
@@ -64,30 +49,22 @@ Mixin(Base => Class('WithChildren').extends(Base, ({ Super, Private, Public }) =
 
         const priv = Private(this)
 
-        // NOTE! This specifically handles the case that if the node was previously
-        // disconnected from the document, then it won't have an __observer when
-        // reconnected. This is not the case when the element is first created,
-        // in which case the constructor already created the __observer.
-        //
-        // So in this case we have to manually trigger childConnectedCallbacks
-        if (!priv.__observer) {
-            Private(this).__queueChildConnectedCallbacks()
+    	if (priv.__handleChildrenWhenConnected) {
+            priv.__handleConnectedChildren()
         }
 
-        Private(this).__createObserver()
+        priv.__createObserver()
     },
 
     disconnectedCallback() {
         Super(this).disconnectedCallback && Super(this).disconnectedCallback()
 
-        // Here we have to manually trigger childDisconnectedCallbacks
-        // because the observer will be disconnected.
-        Private(this).__queueChildDisconnectedCallbacks()
-
         Private(this).__destroyObserver()
+        Private(this).__handleChildrenWhenConnected = true
     },
 
     private: {
+        __handleChildrenWhenConnected: false,
         __observer: null,
 
         __createObserver() {
@@ -95,6 +72,7 @@ Mixin(Base => Class('WithChildren').extends(Base, ({ Super, Private, Public }) =
 
             const self = Public(this)
 
+            // observeChildren returns a MutationObserver observing childList
             this.__observer = observeChildren(
                 self,
                 child => {
@@ -115,32 +93,33 @@ Mixin(Base => Class('WithChildren').extends(Base, ({ Super, Private, Public }) =
             this.__observer = null
         },
 
-        __queueChildConnectedCallbacks() {
+        __handleConnectedChildren() {
             const self = Public(this)
-            const currentChildren = self.children
 
-            // NOTE! Luckily Promise.resolve() fires AFTER all children
-            // connectedCallbacks (and thus after children have been upgraded),
-            // which makes it similar to the MutationObserver events!
-            Promise.resolve().then(() => {
-                for (let l=currentChildren.length, i=0; i<l; i+=1) {
-                    self.childConnectedCallback && self.childConnectedCallback(currentChildren[i])
-                }
-            })
+            if (!self.isConnected) return
+
+            for (let element = self.firstElementChild; element; element = element.nextElementSibling) {
+                this.__handleConnectedChild(element)
+            }
         },
 
-        __queueChildDisconnectedCallbacks() {
+        __handleConnectedChild(element) {
             const self = Public(this)
 
-            const lastKnownChildren = self.children
-
-            // NOTE! Luckily Promise.resolve() fires AFTER all children disconnectedCallbacks,
-            // which makes it similar to the MutationObserver events!
             Promise.resolve().then(() => {
-                for (let l=lastKnownChildren.length, i=0; i<l; i+=1) {
-                    self.childDisconnectedCallback && self.childDisconnectedCallback(lastKnownChildren[i])
+                if (isNotPossiblyCustom(element) || element.matches(':defined')) {
+                    self.childConnectedCallback && self.childConnectedCallback(element)
+                }
+                else {
+                    setTimeout(() => {
+                        self.childConnectedCallback && self.childConnectedCallback(element)
+                    })
                 }
             })
         },
     },
 })))
+
+function isNotPossiblyCustom(element) {
+    return !element.localName.includes('-')
+}
