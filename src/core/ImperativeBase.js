@@ -110,10 +110,6 @@ export function initImperativeBase() {
                 return Private(this).__threeCSS
             },
 
-            connectedCallback() {
-                Super(this).connectedCallback()
-            },
-
             _onPropertyChange(prop) {
                 if ( prop == 'sizeMode' || prop == 'size' ) {
                     this._calcSize()
