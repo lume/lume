@@ -97,10 +97,11 @@
             })
 
             function smooth(objModelElement) {
+                const {Events} = infamous
 
-                // use the 'model-loaded' event to work with the `model` once loaded, if needed.
+                // use the 'MODEL_LOAD' event to work with the `model` once loaded, if needed.
                 // `model` is an instance of THREE.Group containing THREE.Mesh objects
-                objModelElement.on('model-loaded', ({ model }) => {
+                objModelElement.on(Events.MODEL_LOAD, ({ model }) => {
                     setSmoothGeometry(model)
 
                     // we modified the internals the element, signal that it

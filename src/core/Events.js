@@ -29,6 +29,10 @@ export const eventNames = Object.freeze([
     // that is outside of a given element and outside of the given element's
     // behaviors should listen to GL_LOADED instead.
     'BEHAVIOR_GL_UNLOAD',
+
+    // This event is fired when an obj-model element, or a node element with an
+    // obj-model behavior, has loaded it's model.
+    'MODEL_LOAD',
 ])
 
 export const Events = {}
