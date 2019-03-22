@@ -167,11 +167,11 @@ Mixin(Base => {
                 const size = this._calculatedSize
 
                 // THREE-COORDS-TO-DOM-COORDS
-                // translate the "mount point" back to the top/left of the object
+                // translate the "mount point" back to the top/left/back of the object
                 // (in Three.js it is in the center of the object).
                 threeJsPostAdjustment[0] = size.x/2
                 threeJsPostAdjustment[1] = size.y/2
-                threeJsPostAdjustment[2] = 0 // TODO handle Z
+                threeJsPostAdjustment[2] = size.z/2
 
                 // TODO If a Scene has a `parent`, it is not mounted directly into a
                 // regular DOM element but rather it is child of a Node. In this
@@ -181,11 +181,12 @@ Mixin(Base => {
                 const parentSize = this._getParentSize()
 
                 // THREE-COORDS-TO-DOM-COORDS
-                // translate the "align" back to the top/left of the parent element.
+                // translate the "align" back to the top/left/back of the parent element.
                 // We offset this in ElementOperations#applyTransform. The Y
                 // value is inverted because we invert it below.
                 threeJsPostAdjustment[0] += -parentSize.x/2
                 threeJsPostAdjustment[1] += -parentSize.y/2
+                threeJsPostAdjustment[2] += -parentSize.z/2
 
                 alignAdjustment[0] = parentSize.x * align.x
                 alignAdjustment[1] = parentSize.y * align.y
@@ -221,10 +222,14 @@ Mixin(Base => {
                     )
                 }
                 else {
+                    // CSS objects that aren't direct child of a scene are
+                    // already centered on X and Y (not sure why, but maybe
+                    // CSS3DObjectNested has clues, which is based on
+                    // THREE.CSS3DObject)
                     this.threeCSS.position.set(
                         appliedPosition[0],
                         -appliedPosition[1],
-                        appliedPosition[2]
+                        appliedPosition[2] + threeJsPostAdjustment[2] // only apply Z offset
                     )
                 }
 
