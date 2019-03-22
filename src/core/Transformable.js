@@ -260,21 +260,6 @@ Mixin(Base => {
                     this.threeCSS.pivot.set(0, 0, 0)
                 }
 
-                // TODO origin calculation will go here:
-                // - move by negative origin before rotating.
-
-                // apply each axis rotation, in the x,y,z order.
-                // THREE-COORDS-TO-DOM-COORDS: X/Z rotation is negated here so that
-                // DOM rotates in the same direction as Three.js (right handed).
-                // We only invert X and Z here because we already inverted the Y
-                // axis above which iverts Y rotation.
-                // TODO #151: make rotation order configurable
-                // if (!childOfScene) this.threeCSS.rotation.x = -this.rotation.x
-                // if (!childOfScene) this.threeCSS.rotation.z = -this.rotation.z
-
-                // TODO origin calculation will go here:
-                // - move by positive origin after rotating.
-
                 this.three.updateMatrix()
                 this.threeCSS.updateMatrix()
             }
