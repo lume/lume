@@ -238,8 +238,8 @@ let Scene = Mixin(Base => {
             Super(this)._setDefaultProperties()
 
             Object.assign(this._properties, {
-                sizeMode: new XYZSizeModeValues('proportional', 'proportional', 'proportional'),
-                size: new XYZNonNegativeValues(1, 1, 1),
+                sizeMode: new XYZSizeModeValues('proportional', 'proportional', 'literal'),
+                size: new XYZNonNegativeValues(1, 1, 0),
             })
         },
 
