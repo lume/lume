@@ -1,6 +1,6 @@
 import Class from 'lowclass'
+import Mixin from 'lowclass/Mixin'
 import 'geometry-interfaces'
-import Mixin from './Mixin'
 import ImperativeBase, {initImperativeBase} from './ImperativeBase'
 import { default as HTMLInterface } from '../html/HTMLNode'
 import Scene from './Scene'

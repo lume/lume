@@ -1,6 +1,6 @@
 import Class from 'lowclass'
+import Mixin from 'lowclass/Mixin'
 import '../lib/three/global'
-import Mixin from './Mixin'
 import XYZNumberValues from './XYZNumberValues'
 import Sizeable from './Sizeable'
 import { isInstanceof } from './Utility'

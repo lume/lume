@@ -1,5 +1,5 @@
 import Class from 'lowclass'
-import Mixin from './Mixin'
+import Mixin from 'lowclass/Mixin'
 import Observable from './Observable'
 import TreeNode from './TreeNode'
 import XYZSizeModeValues from './XYZSizeModeValues'

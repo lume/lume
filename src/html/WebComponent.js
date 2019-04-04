@@ -1,7 +1,7 @@
 /* global customElements */
 
 import Class from 'lowclass'
-import Mixin from '../core/Mixin'
+import Mixin from 'lowclass/Mixin'
 import {native} from 'lowclass/native'
 import { observeChildren } from '../core/Utility'
 import jss from '../lib/jss'

@@ -1,5 +1,5 @@
-import Mixin from './Mixin'
 import Class from 'lowclass'
+import Mixin from 'lowclass/Mixin'
 
 export default
 Mixin(Base =>

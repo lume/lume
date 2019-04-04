@@ -1,6 +1,6 @@
 import Class from 'lowclass'
+import Mixin from 'lowclass/Mixin'
 import { TextureLoader } from 'three'
-import Mixin from '../../core/Mixin'
 import { props } from '../../core/props'
 
 // base class for geometry behaviors

@@ -1,6 +1,6 @@
 import Class from 'lowclass'
+import Mixin from 'lowclass/Mixin'
 import {Camera as ThreeCamera, Object3D} from 'three'
-import Mixin from './Mixin'
 import ElementOperations from './ElementOperations'
 import Transformable from './Transformable'
 import Node from './Node'

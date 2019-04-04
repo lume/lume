@@ -1,7 +1,7 @@
 import Class from 'lowclass'
 import native from 'lowclass/native'
+import Mixin from 'lowclass/Mixin'
 import {WithUpdate} from '../html/WithUpdate'
-import Mixin from './Mixin'
 import {isInstanceof} from './Utility'
 import TreeNode from './TreeNode'
 

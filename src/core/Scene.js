@@ -4,9 +4,9 @@
 // See: https://esdiscuss.org/topic/how-to-solve-this-basic-es6-module-circular-dependency-problem
 
 import Class from 'lowclass'
+import Mixin from 'lowclass/Mixin'
 import documentReady from '@awaitbox/document-ready'
 
-import Mixin from './Mixin'
 import Motor from './Motor'
 import {getWebGLRendererThree, destroyWebGLRendererThree} from './WebGLRendererThree'
 import {getCSS3DRendererThree, destroyCSS3DRendererThree} from './CSS3DRendererThree'
