@@ -1,7 +1,7 @@
 import {Class, Mixin, instanceOf} from 'lowclass'
 import {Camera as ThreeCamera, Object3D} from 'three'
-import ElementOperations from './ElementOperations'
 import Transformable from './Transformable'
+import ElementOperations from './ElementOperations'
 import Node from './Node'
 import Scene from './Scene'
 import Motor from './Motor'
@@ -35,14 +35,18 @@ var ImperativeBase
 // https://esdiscuss.org/topic/share-a-secret-across-es6-specific-modules-so-that-other-modules-cannot-access-the-secret
 var ImperativeBaseProtected
 var ImperativeBaseProtectedImportCount
+var maxImportCount
 export function getImperativeBaseProtectedHelper() {
+    initImperativeBase()
+
+    maxImportCount = maxImportCount || 2
+
     // note, ImperativeBaseProtectedImportCount can be initially undefined,
     // because it is hoisted above all modules
     ImperativeBaseProtectedImportCount = (ImperativeBaseProtectedImportCount || 0) + 1
 
-    // this function should be called at most once, by the Scene module.
-    if (ImperativeBaseProtectedImportCount > 1) {
-        throw new Error('getImperativeBaseProtectedHelper should be called only once, by the Scene module')
+    if (ImperativeBaseProtectedImportCount > maxImportCount) {
+        throw new Error('You are not allowed to import ImperativeBaseProtected')
     }
 
     return ImperativeBaseProtected
@@ -86,8 +90,8 @@ export function initImperativeBase() {
             return {
 
                 constructor(options = {}) {
-                    if (ImperativeBaseProtectedImportCount > 1) {
-                        throw new Error('getImperativeBaseProtectedHelper should be called only once, by the Scene module')
+                    if (ImperativeBaseProtectedImportCount > maxImportCount) {
+                        throw new Error('You are not allowed to import ImperativeBaseProtected')
                     }
 
                     const self = Super(this).constructor(options)
@@ -349,12 +353,6 @@ export function initImperativeBase() {
                     return false
                 },
 
-                _render(timestamp) {
-                    if ( Super(this)._render ) Super(this)._render()
-
-                    this._elementOperations.applyImperativeNodeProperties(this)
-                },
-
                 // TODO make a classes prop?
                 // set properties(properties = {}) {
                 //     Super(this).properties = properties
@@ -371,6 +369,12 @@ export function initImperativeBase() {
                 protected: {
                     _glLoaded: false,
                     _cssLoaded: false,
+
+                    _render(timestamp) {
+                        if ( Super(this)._render ) Super(this)._render()
+
+                        Public(this)._elementOperations.applyImperativeNodeProperties(Public(this))
+                    },
 
                     _loadGL() {
                         Public(this).loadGL()

@@ -237,15 +237,6 @@ Mixin(Base => {
             this.trigger('worldMatrixUpdate')
         },
 
-        // TODO rename "render" to "update".
-        _render() {
-            if ( Super(this)._render ) Super(this)._render()
-
-            // TODO: only run this when necessary (f.e. not if only opacity
-            // changed, only if position/align/mountPoint changed, etc)
-            this._calculateMatrix()
-        },
-
         /**
          * Set the position of the Transformable.
          *
@@ -345,6 +336,15 @@ Mixin(Base => {
         },
 
         protected: {
+            // TODO rename "render" to "update".
+            _render() {
+                Super(this)._render && Super(this)._render()
+
+                // TODO: only run this when necessary (f.e. not if only opacity
+                // changed, only if position/align/mountPoint changed, etc)
+                Public(this)._calculateMatrix()
+            },
+
             _update_rotation() {
                 const pub = Public(this)
 

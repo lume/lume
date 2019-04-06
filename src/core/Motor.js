@@ -1,4 +1,7 @@
 import Class from 'lowclass'
+import {getImperativeBaseProtectedHelper} from './ImperativeBase'
+
+const ImperativeBaseProtected = getImperativeBaseProtectedHelper()
 
 const Motor = Class('Motor', ({ Public, Private }) => ({
 
@@ -152,7 +155,7 @@ const Motor = Class('Motor', ({ Public, Private }) => ({
             for (let i=0, l=this.nodesToBeRendered.length; i<l; i+=1) {
                 const node = this.nodesToBeRendered[i]
 
-                node._render(timestamp)
+                ImperativeBaseProtected(node)._render(timestamp)
 
                 // if there is no ancestor of the current node that should be
                 // rendered, then the current node is a root node of a subtree
