@@ -163,7 +163,7 @@
                 Array.from( document.querySelectorAll('i-dom-plane') ).forEach(plane => {
                     // FIXME, props/attributes should work instead of this
                     plane.three.material.opacity = 0.3
-                    plane._needsToBeRendered()
+                    plane.needsUpdate()
                 })
 
                 pointLight.three.shadow.radius = 2

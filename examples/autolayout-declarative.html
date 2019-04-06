@@ -114,13 +114,13 @@
 
             Array.from( document.querySelectorAll('i-dom-plane') ).forEach(plane => {
                 plane.three.material.opacity = 0.3
-                plane._needsToBeRendered()
+                plane.needsUpdate()
             })
 
             light.three.shadow.radius = 2
             light.three.distance = 800
             light.three.shadow.bias = -0.01
-            light._needsToBeRendered()
+            light.needsUpdate()
         }</script>
 
     </body>

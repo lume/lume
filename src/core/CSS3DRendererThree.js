@@ -52,7 +52,7 @@ const CSS3DRendererThree = Class('CSS3DRendererThree', { // TODO rename
         const { x, y } = scene.calculatedSize
         state.renderer.setSize( x, y )
 
-        scene._needsToBeRendered()
+        scene.needsUpdate()
     },
 
     requestFrame( scene, fn ) {

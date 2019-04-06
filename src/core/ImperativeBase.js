@@ -112,7 +112,7 @@ export function initImperativeBase() {
 
                     // See Transformable/Sizeable propertychange event.
                     // TODO: defer size calculation to render task
-                    self.on('propertychange', self._onPropertyChange, self)
+                    self.on('propertychange', Private(self).__onPropertyChange, Private(self))
 
                     return self
                 },
@@ -147,14 +147,6 @@ export function initImperativeBase() {
                     return Private(this).__threeCSS
                 },
 
-                _onPropertyChange(prop) {
-                    if ( prop == 'sizeMode' || prop == 'size' ) {
-                        this._calcSize()
-                    }
-
-                    this._needsToBeRendered()
-                },
-
                 loadGL() {
                     if (!(this.scene && this.scene.experimentalWebgl)) return
 
@@ -180,7 +172,7 @@ export function initImperativeBase() {
                     // automatically be in place.
                     this.passInitialValuesToThree && this.passInitialValuesToThree()
 
-                    this._needsToBeRendered()
+                    this.needsUpdate()
                 },
 
                 unloadGL() {
@@ -190,7 +182,7 @@ export function initImperativeBase() {
                     disposeObject(Private(this).__three)
                     Private(this).__three = null
 
-                    this._needsToBeRendered()
+                    this.needsUpdate()
                 },
 
                 makeThreeObject3d() {
@@ -213,7 +205,7 @@ export function initImperativeBase() {
                     // upgraded and thus has this.parent API ready.
                     this.parent && this.parent.threeCSS.add(this.threeCSS)
 
-                    this._needsToBeRendered()
+                    this.needsUpdate()
                 },
 
                 unloadCSS() {
@@ -223,7 +215,7 @@ export function initImperativeBase() {
                     disposeObject(Private(this).__threeCSS)
                     Private(this).__threeCSS = null
 
-                    this._needsToBeRendered()
+                    this.needsUpdate()
                 },
 
                 makeThreeCSSObject() {
@@ -311,7 +303,7 @@ export function initImperativeBase() {
                     // Calculate sizing because proportional size might depend on
                     // the new parent.
                     childNode._calcSize()
-                    childNode._needsToBeRendered()
+                    childNode.needsUpdate()
 
                     // child should watch the parent for size changes.
                     this.on('sizechange', childNode._onParentSizeChange)
@@ -332,7 +324,7 @@ export function initImperativeBase() {
                         this._elementOperations.disconnectChildElement(childNode)
                 },
 
-                _needsToBeRendered() {
+                needsUpdate() {
                     // we don't need to render until we're connected into a tree with a scene.
                     if (!this.scene || !this.isConnected) return
                     // TODO make sure we render when connected into a tree with a scene
@@ -356,6 +348,14 @@ export function initImperativeBase() {
                 private: {
                     __three: null,
                     __threeCSS: null,
+
+                    __onPropertyChange(prop) {
+                        if ( prop == 'sizeMode' || prop == 'size' ) {
+                            Public(this)._calcSize()
+                        }
+
+                        Public(this).needsUpdate()
+                    },
                 },
 
                 protected: {

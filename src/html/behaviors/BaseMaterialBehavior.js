@@ -32,7 +32,7 @@ Class( 'BaseMaterialBehavior' ).extends( BaseMeshBehavior, ({ Super }) => ({
 
     updateMaterial(propName) {
         this.element.three.material[propName] = this[propName]
-        this.element._needsToBeRendered()
+        this.element.needsUpdate()
     },
 
 }))

@@ -62,12 +62,12 @@ Class('Mesh').extends( Node, ({ Super }) => ({
         if (!this.isConnected) return
 
         if ( modifiedProps.castShadow ) {
-            this._needsToBeRendered()
+            this.needsUpdate()
         }
 
         if ( modifiedProps.receiveShadow ) {
             this.three.material.needsUpdate = true
-            this._needsToBeRendered()
+            this.needsUpdate()
         }
     },
 }))

@@ -45,7 +45,7 @@ Class( 'BaseMeshBehavior' ).extends( Behavior, ({ Public, Protected, Private, Su
         this.resetMeshComponent()
 
         this.refreshAllProps()
-        this.element._needsToBeRendered()
+        this.element.needsUpdate()
     },
 
     unloadGL() {
@@ -60,7 +60,7 @@ Class( 'BaseMeshBehavior' ).extends( Behavior, ({ Public, Protected, Private, Su
         else
             Private(this).__disposeMeshComponent( this.element, this.constructor.type )
 
-        this.element._needsToBeRendered()
+        this.element.needsUpdate()
     },
 
     resetMeshComponent() {
@@ -72,7 +72,7 @@ Class( 'BaseMeshBehavior' ).extends( Behavior, ({ Public, Protected, Private, Su
             this.constructor.type,
             Protected(this)._createComponent(this.element)
         )
-        this.element._needsToBeRendered()
+        this.element.needsUpdate()
     },
 
     getMeshComponent(name) {

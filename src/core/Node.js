@@ -79,12 +79,12 @@ let Node = Mixin(Base => {
                     || self._properties.align.z !== 0
                 ) {
                     self._calcSize()
-                    self._needsToBeRendered()
+                    self.needsUpdate()
                 }
             }
 
             self._calcSize()
-            self._needsToBeRendered()
+            self.needsUpdate()
 
             return self
         },
@@ -94,7 +94,7 @@ let Node = Mixin(Base => {
 
             if (modifiedProps.visible) {
                 this._elementOperations.shouldRender(this.visible)
-                this._needsToBeRendered()
+                this.needsUpdate()
             }
         },
     }), Brand)

@@ -33,7 +33,7 @@ const ObjModelBehavior = Class('ObjModelBehavior').extends(Behavior, ({Super, Pu
         this.mtlLoader.crossOrigin = ''
 
         this.objLoader.manager.onLoad = () => {
-            this.element._needsToBeRendered()
+            this.element.needsUpdate()
         }
     },
 
@@ -101,7 +101,7 @@ const ObjModelBehavior = Class('ObjModelBehavior').extends(Behavior, ({Super, Pu
             const pub = Public(this)
             pub.element.three.add(pub.model = model)
             pub.element.emit(Events.MODEL_LOAD, {format: 'obj', model: model})
-            pub.element._needsToBeRendered()
+            pub.element.needsUpdate()
         },
     },
 

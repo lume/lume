@@ -89,7 +89,7 @@ const WebGLRendererThree = Class('WebGLRendererThree', { // TODO rename
         const { x, y } = scene.calculatedSize
         state.renderer.setSize( x, y )
 
-        scene._needsToBeRendered()
+        scene.needsUpdate()
     },
 
     setClearColor( scene, color, opacity ) {

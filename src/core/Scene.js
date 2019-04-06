@@ -66,7 +66,7 @@ let Scene = Mixin(Base => {
             self.cameraSetup()
 
             self._calcSize()
-            self._needsToBeRendered()
+            self.needsUpdate()
 
             return self
         },
@@ -74,7 +74,7 @@ let Scene = Mixin(Base => {
         _onElementParentSizeChange(newSize) {
             this._elementParentSize = newSize
             this._calcSize()
-            this._needsToBeRendered()
+            this.needsUpdate()
         },
 
         cameraSetup() {
@@ -259,7 +259,7 @@ let Scene = Mixin(Base => {
                 this.threeCamera = camera.three
                 this._updateCameraAspect()
                 this._updateCameraProjection()
-                this._needsToBeRendered()
+                this.needsUpdate()
             }
         },
 
@@ -286,7 +286,7 @@ let Scene = Mixin(Base => {
             this._perspective = value
             this._updateCameraPerspective()
             this._updateCameraProjection()
-            this._needsToBeRendered()
+            this.needsUpdate()
         },
         get perspective() {
             return this._perspective
@@ -406,15 +406,15 @@ let Scene = Mixin(Base => {
             if (this.experimentalWebgl) {
                 if (moddedProps.backgroundColor) {
                     Private(this).__glRenderer.setClearColor( this, this.backgroundColor, this.backgroundOpacity )
-                    this._needsToBeRendered()
+                    this.needsUpdate()
                 }
                 if (moddedProps.backgroundOpacity) {
                     Private(this).__glRenderer.setClearAlpha( this, this.backgroundOpacity )
-                    this._needsToBeRendered()
+                    this.needsUpdate()
                 }
                 if (moddedProps.shadowmapType) {
                     Private(this).__glRenderer.setShadowMapType( this, this.shadowmapType )
-                    this._needsToBeRendered()
+                    this.needsUpdate()
                 }
                 if (moddedProps.vr) {
                     Private(this).__glRenderer.enableVR( this, this.vr)

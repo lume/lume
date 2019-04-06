@@ -200,7 +200,7 @@
 
             function onGLLoad(plane) {
                 plane.three.material.opacity = 0.3
-                plane._needsToBeRendered()
+                plane.needsUpdate()
             }
 
             const scene = document.querySelector('i-scene')

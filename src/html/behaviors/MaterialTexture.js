@@ -26,9 +26,9 @@ export default Mixin(Base => {
                 // TODO default material color (if not specified) when there's a
                 // texture should be white
 
-                const texture = new TextureLoader().load( this.texture, () => this.element._needsToBeRendered() )
+                const texture = new TextureLoader().load( this.texture, () => this.element.needsUpdate() )
                 this.element.three.material.map = texture
-                this.element._needsToBeRendered()
+                this.element.needsUpdate()
 
             }
         },

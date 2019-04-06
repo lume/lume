@@ -28,7 +28,7 @@ Class('LightBase').extends( Node, ({ Super }) => ({
 
         if (!this.isConnected) return
 
-        this._needsToBeRendered()
+        this.needsUpdate()
     },
 
 }))
