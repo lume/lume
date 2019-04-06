@@ -34,7 +34,7 @@ var ImperativeBase
 // module that can get access to the ImperativeBaseProtected helper.
 // https://esdiscuss.org/topic/share-a-secret-across-es6-specific-modules-so-that-other-modules-cannot-access-the-secret
 export var ImperativeBaseProtected
-export var ImperativeBaseProtectedImportCount
+var ImperativeBaseProtectedImportCount
 export function getImperativeBaseProtectedHelper() {
     // note, ImperativeBaseProtectedImportCount can be initially undefined,
     // because it is hoisted above all modules
