@@ -10,7 +10,7 @@ import documentReady from '@awaitbox/document-ready'
 import Motor from './Motor'
 import {getWebGLRendererThree, destroyWebGLRendererThree} from './WebGLRendererThree'
 import {getCSS3DRendererThree, destroyCSS3DRendererThree} from './CSS3DRendererThree'
-import ImperativeBase, {initImperativeBase} from './ImperativeBase'
+import ImperativeBase, {initImperativeBase, getImperativeBaseProtectedHelper} from './ImperativeBase'
 import XYZSizeModeValues from './XYZSizeModeValues'
 import XYZNonNegativeValues from './XYZNonNegativeValues'
 import { default as HTMLInterface } from '../html/HTMLScene'
@@ -24,6 +24,8 @@ import {
 } from 'three'
 
 initImperativeBase()
+
+const ImperativeBaseProtected = getImperativeBaseProtectedHelper()
 
 let Scene = Mixin(Base => {
 
@@ -95,7 +97,7 @@ let Scene = Mixin(Base => {
         // Basically it has position, frag colors, point light, directional
         // light, and ambient light.
         loadGL() {
-            if (Protected(this).__glLoaded) return
+            if (Protected(this)._glLoaded) return
 
             // THREE
             // maybe keep this in sceneState in WebGLRendererThree
@@ -124,12 +126,12 @@ let Scene = Mixin(Base => {
                 // skip `this`, we already handled it above
                 if (node === this) return
 
-                node.__loadGL()
+                ImperativeBaseProtected(node)._loadGL()
             })
         },
 
         unloadGL() {
-            if (!Protected(this).__glLoaded) return
+            if (!Protected(this)._glLoaded) return
 
             Super(this).unloadGL()
 
@@ -142,7 +144,7 @@ let Scene = Mixin(Base => {
                 // skip `this`, we already handled it above
                 if (node === this) return
 
-                node.__unloadGL()
+                ImperativeBaseProtected(node)._unloadGL()
             })
         },
 
@@ -151,7 +153,7 @@ let Scene = Mixin(Base => {
         },
 
         loadCSS() {
-            if (Protected(this).__cssLoaded) return
+            if (Protected(this)._cssLoaded) return
 
             Super(this).loadCSS()
 
@@ -166,7 +168,7 @@ let Scene = Mixin(Base => {
         },
 
         unloadCSS() {
-            if (!Protected(this).__cssLoaded) return
+            if (!Protected(this)._cssLoaded) return
 
             Super(this).unloadCSS()
 
@@ -387,13 +389,13 @@ let Scene = Mixin(Base => {
             if (!this.isConnected) return
 
             if (moddedProps.experimentalWebgl) {
-                if (this.experimentalWebgl) this.__loadGL()
-                else this.__unloadGL()
+                if (this.experimentalWebgl) Protected(this)._loadGL()
+                else Protected(this)._unloadGL()
             }
 
             if (moddedProps.disableCss) {
-                if (!this.disableCss) this.__loadCSS()
-                else this.__unloadCSS()
+                if (!this.disableCss) Protected(this)._loadCSS()
+                else Protected(this)._unloadCSS()
             }
 
             // call super.updated() after the above loadGL() so that WebGL

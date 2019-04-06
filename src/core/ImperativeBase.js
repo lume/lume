@@ -32,6 +32,24 @@ let domPlane = null
 // https://esdiscuss.org/topic/how-to-solve-this-basic-es6-module-circular-dependency-problem.
 var ImperativeBase
 
+// A "gateway" pattern is in play here, so that the Scene module is the only
+// module that can get access to the ImperativeBaseProtected helper.
+// https://esdiscuss.org/topic/share-a-secret-across-es6-specific-modules-so-that-other-modules-cannot-access-the-secret
+export var ImperativeBaseProtected
+export var ImperativeBaseProtectedImportCount
+export function getImperativeBaseProtectedHelper() {
+    // note, ImperativeBaseProtectedImportCount can be initially undefined,
+    // because it is hoisted above all modules
+    ImperativeBaseProtectedImportCount = (ImperativeBaseProtectedImportCount || 0) + 1
+
+    // this function should be called at most once, by the Scene module.
+    if (ImperativeBaseProtectedImportCount > 1) {
+        throw new Error('getImperativeBaseProtectedHelper should be called only once, by the Scene module')
+    }
+
+    return ImperativeBaseProtected
+}
+
 // Here we wrap the definition of the ImperativeBase class with this function in
 // order to solve the circular depdendency problem caused by the
 // Node<->ImperativeBase and Scene<->ImperativeBase circles. The Node and Scene
@@ -41,6 +59,8 @@ var ImperativeBase
 initImperativeBase()
 export function initImperativeBase() {
     if (ImperativeBase) return
+
+    const ImperativeBaseBrand = {brand: 'ImperativeBase'}
 
     /**
      * The ImperativeBase class is the base class for the Imperative version of the
@@ -55,8 +75,23 @@ export function initImperativeBase() {
      */
     ImperativeBase = Mixin(Base =>
 
-        Class('ImperativeBase').extends( Transformable.mixin( Base ), ({ Super, Public, Private, Protected }) => ({
+        Class('ImperativeBase').extends( Transformable.mixin( Base ), ({ Super, Public, Private, Protected }) => {
+
+            // we leak the protected helper so that the Scene class can access
+            // the protected members of all nodes in the tree, otherwise the
+            // Scene's Protected helper does not allow access to sibling class
+            // instance protected members. This is the same limitation as the
+            // one designed in TypeScript or C#. See
+            // https://github.com/Microsoft/TypeScript/issues/30756
+            ImperativeBaseProtected = Protected
+
+            return {
+
             constructor(options = {}) {
+                if (ImperativeBaseProtectedImportCount > 1) {
+                    throw new Error('getImperativeBaseProtectedHelper should be called only once, by the Scene module')
+                }
+
                 const self = Super(this).constructor(options)
 
                 // we don't need this, keep for backward compatibility (mainly
@@ -81,11 +116,11 @@ export function initImperativeBase() {
             },
 
             get glLoaded() {
-                return Protected(this).__glLoaded
+                return Protected(this)._glLoaded
             },
 
             get cssLoaded() {
-                return Protected(this).__cssLoaded
+                return Protected(this)._cssLoaded
             },
 
             get three() {
@@ -121,8 +156,8 @@ export function initImperativeBase() {
             loadGL() {
                 if (!(this.scene && this.scene.experimentalWebgl)) return
 
-                if (Protected(this).__glLoaded) return
-                Protected(this).__glLoaded = true
+                if (Protected(this)._glLoaded) return
+                Protected(this)._glLoaded = true
 
                 // we don't let Three update local matrices automatically, we do
                 // it ourselves in Transformable._calculateMatrix and
@@ -147,8 +182,8 @@ export function initImperativeBase() {
             },
 
             unloadGL() {
-                if (!Protected(this).__glLoaded) return
-                Protected(this).__glLoaded = false
+                if (!Protected(this)._glLoaded) return
+                Protected(this)._glLoaded = false
 
                 disposeObject(Private(this).__three)
                 Private(this).__three = null
@@ -163,8 +198,8 @@ export function initImperativeBase() {
             loadCSS() {
                 if (!(this.scene && !this.scene.disableCss)) return
 
-                if (Protected(this).__cssLoaded) return
-                Protected(this).__cssLoaded = true
+                if (Protected(this)._cssLoaded) return
+                Protected(this)._cssLoaded = true
 
                 // we don't let Three update local matrices automatically, we do
                 // it ourselves in Transformable._calculateMatrix and
@@ -180,8 +215,8 @@ export function initImperativeBase() {
             },
 
             unloadCSS() {
-                if (!Protected(this).__cssLoaded) return
-                Protected(this).__cssLoaded = false
+                if (!Protected(this)._cssLoaded) return
+                Protected(this)._cssLoaded = false
 
                 disposeObject(Private(this).__threeCSS)
                 Private(this).__threeCSS = null
@@ -198,8 +233,8 @@ export function initImperativeBase() {
 
                 // children can be non-lib DOM nodes (f.e. div, h1, etc)
                 if (isInstanceof(child, Node)) {
-                    child.__loadGL()
-                    child.__loadCSS()
+                    Protected(child)._loadGL()
+                    Protected(child)._loadCSS()
                 }
             },
 
@@ -208,8 +243,8 @@ export function initImperativeBase() {
 
                 // children can be non-lib DOM nodes (f.e. div, h1, etc)
                 if (isInstanceof(child, Node)) {
-                    child.__unloadGL()
-                    child.__unloadCSS()
+                    Protected(child)._unloadGL()
+                    Protected(child)._unloadCSS()
                 }
             },
 
@@ -331,8 +366,8 @@ export function initImperativeBase() {
             // },
 
             protected: {
-                __glLoaded: false,
-                __cssLoaded: false,
+                _glLoaded: false,
+                _cssLoaded: false,
             },
 
             private: {
@@ -340,10 +375,8 @@ export function initImperativeBase() {
                 __threeCSS: null,
             },
 
-            // FIXME, these should be protected, but the use of Mixin breaks the
-            // access helper. We'll fix this in lowclass.
-            // protected: {
-                __loadGL() {
+            protected: {
+                _loadGL() {
                     Public(this).loadGL()
                     Public(this).emit(Events.BEHAVIOR_GL_LOAD, Public(this))
                     Promise.resolve().then(() => {
@@ -351,7 +384,7 @@ export function initImperativeBase() {
                     })
                 },
 
-                __unloadGL() {
+                _unloadGL() {
                     Public(this).unloadGL()
                     Public(this).emit(Events.BEHAVIOR_GL_UNLOAD, Public(this))
                     Promise.resolve().then(() => {
@@ -359,17 +392,19 @@ export function initImperativeBase() {
                     })
                 },
 
-                __loadCSS() {
+                _loadCSS() {
                     Public(this).loadCSS()
                     Public(this).emit(Events.CSS_LOAD, Public(this))
                 },
 
-                __unloadCSS() {
+                _unloadCSS() {
                     Public(this).unloadCSS()
                     Public(this).emit(Events.CSS_UNLOAD, Public(this))
                 },
-            // }
-        }))
+            }
+
+            }
+        }, ImperativeBaseBrand)
 
     )
 
