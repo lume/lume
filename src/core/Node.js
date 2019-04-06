@@ -12,6 +12,7 @@ import '../html/behaviors/ObjModelBehavior'
 const radiansPerDegree = 1 / 360 * 2*Math.PI
 
 initImperativeBase()
+const Brand = {brand: 'Node'}
 
 let Node = Mixin(Base => {
     const Parent = ImperativeBase.mixin( Base )
@@ -96,7 +97,7 @@ let Node = Mixin(Base => {
                 this._needsToBeRendered()
             }
         },
-    }))
+    }), Brand)
 
 })
 

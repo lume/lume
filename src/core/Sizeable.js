@@ -11,6 +11,8 @@ import { props } from './props'
 // repeatedly-called methods)
 let propFunction = null
 
+const Brand = {}
+
 export default
 Mixin(Base => {
 
@@ -294,7 +296,7 @@ Mixin(Base => {
         get properties() {
             return this.props
         },
-    }))
+    }), Brand)
 
     return Sizeable
 })

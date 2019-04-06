@@ -27,6 +27,8 @@ if (!Object.getOwnPropertyDescriptor(Node.prototype, 'isConnected')) {
     })
 }
 
+const Brand = {}
+
 export default
 Mixin(Base => Class('WithChildren').extends(Base, ({ Super, Private, Public }) => ({
     constructor(...args) {
@@ -118,7 +120,7 @@ Mixin(Base => Class('WithChildren').extends(Base, ({ Super, Private, Public }) =
             })
         },
     },
-})))
+}), Brand))
 
 function isNotPossiblyCustom(element) {
     return !element.localName.includes('-')

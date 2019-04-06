@@ -26,6 +26,7 @@ import {
 initImperativeBase()
 
 const ImperativeBaseProtected = getImperativeBaseProtectedHelper()
+const SceneBrand = {brand: 'Scene'}
 
 let Scene = Mixin(Base => {
 
@@ -433,7 +434,7 @@ let Scene = Mixin(Base => {
             }
         },
 
-    }))
+    }), SceneBrand)
 
 })
 

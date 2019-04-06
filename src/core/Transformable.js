@@ -30,6 +30,8 @@ THREE.Object3D.prototype.updateMatrix = function () {
 
 }
 
+const Brand = {}
+
 export default
 Mixin(Base => {
 
@@ -381,7 +383,7 @@ Mixin(Base => {
         get mountPoint() {
             return this._props.mountPoint
         },
-    }))
+    }), Brand)
 
     return Transformable
 })

@@ -3,6 +3,8 @@ import { observe, unobserve } from 'james-bond'
 import Class from 'lowclass'
 import Mixin from 'lowclass/Mixin'
 
+const Brand = {}
+
 export default
 Mixin(Base => Class( 'ForwardProps' ).extends( Base, ({ Super, Public, Protected, Private }) => ({
     constructor() {
@@ -71,4 +73,4 @@ Mixin(Base => Class( 'ForwardProps' ).extends( Base, ({ Super, Public, Protected
         },
     }
 
-})))
+}), Brand))

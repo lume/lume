@@ -1,6 +1,8 @@
 import Class from 'lowclass'
 import Mixin from 'lowclass/Mixin'
 
+const Brand = {}
+
 export default
 Mixin(Base =>
 
@@ -62,6 +64,6 @@ Mixin(Base =>
         triggerEvent(...args) {
             return this.emit(...args)
         },
-    }))
+    }), Brand)
 
 )

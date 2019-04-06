@@ -3,6 +3,8 @@ import Mixin from 'lowclass/Mixin'
 import { TextureLoader } from 'three'
 import { props } from '../../core/props'
 
+const Brand = {}
+
 // base class for geometry behaviors
 export default Mixin(Base => {
     return Class( 'MaterialTexture' ).extends( Base, ({ Super }) => ({
@@ -31,5 +33,5 @@ export default Mixin(Base => {
             }
         },
 
-    }))
+    }), Brand)
 })

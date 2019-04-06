@@ -23,6 +23,8 @@ function classExtendsHTMLElement(constructor) {
     else return classExtendsHTMLElement( constructor.__proto__ )
 }
 
+const Brand = {}
+
 /**
  * Creates a WebComponent base class dynamically, depending on which
  * HTMLElement class you want it to extend from. Extend from WebComponent when
@@ -181,7 +183,7 @@ Mixin(Base => {
                 return rule
             },
         },
-    }))
+    }), Brand)
 
     return WebComponent
 }, native( HTMLElement ))
