@@ -105,46 +105,6 @@ Mixin(Base => {
             }
         },
 
-        protected: {
-            _update_rotation() {
-                const pub = Public(this)
-
-                // TODO make the rotation unit configurable (f.e. use degrees or
-                // radians)
-                pub.three.rotation.set(
-                    toRadians(pub.rotation.x),
-                    toRadians(pub.rotation.y),
-                    toRadians(pub.rotation.z),
-                )
-
-                const childOfScene =
-                    pub.threeCSS.parent &&
-                    pub.threeCSS.parent.type === 'Scene'
-
-                pub.threeCSS.rotation.set(
-                    (childOfScene ? 1 : -1 ) * toRadians(pub.rotation.x),
-                    toRadians(pub.rotation.y),
-                    (childOfScene ? 1 : -1 ) * toRadians(pub.rotation.z),
-                )
-            },
-
-            _update_scale() {
-                const pub = Public(this)
-
-                pub.three.scale.set(
-                    pub.scale.x,
-                    pub.scale.y,
-                    pub.scale.z,
-                )
-
-                pub.threeCSS.scale.set(
-                    pub.scale.x,
-                    pub.scale.y,
-                    pub.scale.z,
-                )
-            },
-        },
-
         /**
          * Takes all the current component values (position, rotation, etc) and
          * calculates a transformation DOMMatrix from them. See "W3C Geometry
@@ -383,6 +343,47 @@ Mixin(Base => {
         get mountPoint() {
             return this._props.mountPoint
         },
+
+        protected: {
+            _update_rotation() {
+                const pub = Public(this)
+
+                // TODO make the rotation unit configurable (f.e. use degrees or
+                // radians)
+                pub.three.rotation.set(
+                    toRadians(pub.rotation.x),
+                    toRadians(pub.rotation.y),
+                    toRadians(pub.rotation.z),
+                )
+
+                const childOfScene =
+                    pub.threeCSS.parent &&
+                    pub.threeCSS.parent.type === 'Scene'
+
+                pub.threeCSS.rotation.set(
+                    (childOfScene ? 1 : -1 ) * toRadians(pub.rotation.x),
+                    toRadians(pub.rotation.y),
+                    (childOfScene ? 1 : -1 ) * toRadians(pub.rotation.z),
+                )
+            },
+
+            _update_scale() {
+                const pub = Public(this)
+
+                pub.three.scale.set(
+                    pub.scale.x,
+                    pub.scale.y,
+                    pub.scale.z,
+                )
+
+                pub.threeCSS.scale.set(
+                    pub.scale.x,
+                    pub.scale.y,
+                    pub.scale.z,
+                )
+            },
+        },
+
     }), Brand)
 
     return Transformable
