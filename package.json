@@ -42,7 +42,7 @@
     "jss-props-sort": "^1.0.0",
     "jss-px": "^1.0.0",
     "jss-vendor-prefixer": "^1.0.0",
-    "lowclass": "^4.5.0",
+    "lowclass": "^4.5.2",
     "three": "^0.88.0"
   },
   "devDependencies": {
