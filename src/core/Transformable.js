@@ -3,7 +3,6 @@ import Mixin from 'lowclass/Mixin'
 import '../lib/three/global'
 import XYZNumberValues from './XYZNumberValues'
 import Sizeable from './Sizeable'
-import { isInstanceof } from './Utility'
 import { props } from './props'
 
 // This patches Object3D to have a `.pivot` property of type THREE.Vector3 that

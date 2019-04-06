@@ -1,12 +1,10 @@
-import Class from 'lowclass'
-import Mixin from 'lowclass/Mixin'
+import {Class, Mixin, instanceOf} from 'lowclass'
 import {Camera as ThreeCamera, Object3D} from 'three'
 import ElementOperations from './ElementOperations'
 import Transformable from './Transformable'
 import Node from './Node'
 import Scene from './Scene'
 import Motor from './Motor'
-import {isInstanceof} from './Utility'
 import {CSS3DObjectNested} from '../lib/three/CSS3DRendererNested'
 import {disposeObject} from '../utils/three'
 import {Events} from './Events'
@@ -232,7 +230,7 @@ export function initImperativeBase() {
                     Super(this).childConnectedCallback(child)
 
                     // children can be non-lib DOM nodes (f.e. div, h1, etc)
-                    if (isInstanceof(child, Node)) {
+                    if (instanceOf(child, Node)) {
                         Protected(child)._loadGL()
                         Protected(child)._loadCSS()
                     }
@@ -242,7 +240,7 @@ export function initImperativeBase() {
                     Super(this).childDisconnectedCallback(child)
 
                     // children can be non-lib DOM nodes (f.e. div, h1, etc)
-                    if (isInstanceof(child, Node)) {
+                    if (instanceOf(child, Node)) {
                         Protected(child)._unloadGL()
                         Protected(child)._unloadCSS()
                     }
@@ -293,7 +291,7 @@ export function initImperativeBase() {
                  * @override
                  */
                 add(childNode) {
-                    if (!isInstanceof(childNode, ImperativeBase)) return
+                    if (!instanceOf(childNode, ImperativeBase)) return
 
                     // We cannot add Scenes to Nodes, for now.
                     if (childNode instanceof Scene) {

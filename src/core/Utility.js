@@ -138,5 +138,5 @@ export {
     // helper function to use instead of instanceof for classes that implement the
     // static Symbol.hasInstance method, because the behavior of instanceof isn't
     // polyfillable.
-    instanceOf as isInstanceof,
+    instanceOf,
 }

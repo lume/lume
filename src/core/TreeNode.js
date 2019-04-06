@@ -2,7 +2,7 @@ import Class from 'lowclass'
 import native from 'lowclass/native'
 import Mixin from 'lowclass/Mixin'
 import {WithUpdate} from '../html/WithUpdate'
-import {isInstanceof} from './Utility'
+import {instanceOf} from './Utility'
 import TreeNode from './TreeNode'
 
 const TreeNodeBrand = {brand: 'TreeNode'}
@@ -46,7 +46,7 @@ Mixin(Base =>
          * @param {TreeNode} childNode The child node to add.
          */
         add(childNode) {
-            if (! isInstanceof(childNode, TreeNode))
+            if (! instanceOf(childNode, TreeNode))
                 throw new TypeError('TreeNode.add() expects the childNode argument to be a TreeNode instance.')
 
             if (Private(childNode).__parent === this)
@@ -83,7 +83,7 @@ Mixin(Base =>
          * @param {TreeNode} childNode The node to remove.
          */
         remove(childNode) {
-            if (! isInstanceof(childNode, TreeNode))
+            if (! instanceOf(childNode, TreeNode))
                 throw new Error(`
                     TreeNode.remove expects the childNode argument to be an
                     instance of TreeNode. There should only be TreeNodes in the
