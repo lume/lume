@@ -33,7 +33,7 @@ var ImperativeBase
 // A "gateway" pattern is in play here, so that the Scene module is the only
 // module that can get access to the ImperativeBaseProtected helper.
 // https://esdiscuss.org/topic/share-a-secret-across-es6-specific-modules-so-that-other-modules-cannot-access-the-secret
-export var ImperativeBaseProtected
+var ImperativeBaseProtected
 var ImperativeBaseProtectedImportCount
 export function getImperativeBaseProtectedHelper() {
     // note, ImperativeBaseProtectedImportCount can be initially undefined,
