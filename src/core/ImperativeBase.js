@@ -87,321 +87,321 @@ export function initImperativeBase() {
 
             return {
 
-            constructor(options = {}) {
-                if (ImperativeBaseProtectedImportCount > 1) {
-                    throw new Error('getImperativeBaseProtectedHelper should be called only once, by the Scene module')
-                }
+                constructor(options = {}) {
+                    if (ImperativeBaseProtectedImportCount > 1) {
+                        throw new Error('getImperativeBaseProtectedHelper should be called only once, by the Scene module')
+                    }
 
-                const self = Super(this).constructor(options)
+                    const self = Super(this).constructor(options)
 
-                // we don't need this, keep for backward compatibility (mainly
-                // all my demos at trusktr.io).
-                self.imperativeCounterpart = self
+                    // we don't need this, keep for backward compatibility (mainly
+                    // all my demos at trusktr.io).
+                    self.imperativeCounterpart = self
 
-                self._willBeRendered = false
+                    self._willBeRendered = false
 
-                // Here we create the DOM HTMLElement associated with this
-                // Imperative-API Node.
-                self._elementOperations = new ElementOperations(self)
+                    // Here we create the DOM HTMLElement associated with this
+                    // Imperative-API Node.
+                    self._elementOperations = new ElementOperations(self)
 
-                // stores a ref to this Node's root Scene when/if this Node is
-                // in a scene.
-                self._scene = null
+                    // stores a ref to this Node's root Scene when/if this Node is
+                    // in a scene.
+                    self._scene = null
 
-                // See Transformable/Sizeable propertychange event.
-                // TODO: defer size calculation to render task
-                self.on('propertychange', self._onPropertyChange, self)
+                    // See Transformable/Sizeable propertychange event.
+                    // TODO: defer size calculation to render task
+                    self.on('propertychange', self._onPropertyChange, self)
 
-                return self
-            },
+                    return self
+                },
 
-            get glLoaded() {
-                return Protected(this)._glLoaded
-            },
+                get glLoaded() {
+                    return Protected(this)._glLoaded
+                },
 
-            get cssLoaded() {
-                return Protected(this)._cssLoaded
-            },
+                get cssLoaded() {
+                    return Protected(this)._cssLoaded
+                },
 
-            get three() {
-                // if (!(this.scene && this.scene.experimentalWebgl)) return null
+                get three() {
+                    // if (!(this.scene && this.scene.experimentalWebgl)) return null
 
-                if (!Private(this).__three) {
-                    const three = Private(this).__three = this.makeThreeObject3d()
-                    three.pivot = new THREE.Vector3
-                }
+                    if (!Private(this).__three) {
+                        const three = Private(this).__three = this.makeThreeObject3d()
+                        three.pivot = new THREE.Vector3
+                    }
 
-                return Private(this).__three
-            },
+                    return Private(this).__three
+                },
 
-            get threeCSS() {
-                // if (!(this.scene && !this.scene.disableCss)) return null
+                get threeCSS() {
+                    // if (!(this.scene && !this.scene.disableCss)) return null
 
-                if (!Private(this).__threeCSS) {
-                    const threeCSS = Private(this).__threeCSS = this.makeThreeCSSObject()
-                    threeCSS.pivot = new THREE.Vector3
-                }
+                    if (!Private(this).__threeCSS) {
+                        const threeCSS = Private(this).__threeCSS = this.makeThreeCSSObject()
+                        threeCSS.pivot = new THREE.Vector3
+                    }
 
-                return Private(this).__threeCSS
-            },
+                    return Private(this).__threeCSS
+                },
 
-            _onPropertyChange(prop) {
-                if ( prop == 'sizeMode' || prop == 'size' ) {
-                    this._calcSize()
-                }
+                _onPropertyChange(prop) {
+                    if ( prop == 'sizeMode' || prop == 'size' ) {
+                        this._calcSize()
+                    }
 
-                this._needsToBeRendered()
-            },
+                    this._needsToBeRendered()
+                },
 
-            loadGL() {
-                if (!(this.scene && this.scene.experimentalWebgl)) return
+                loadGL() {
+                    if (!(this.scene && this.scene.experimentalWebgl)) return
 
-                if (Protected(this)._glLoaded) return
-                Protected(this)._glLoaded = true
+                    if (Protected(this)._glLoaded) return
+                    Protected(this)._glLoaded = true
 
-                // we don't let Three update local matrices automatically, we do
-                // it ourselves in Transformable._calculateMatrix and
-                // Transformable._calculateWorldMatricesInSubtree
-                this.three.matrixAutoUpdate = false
+                    // we don't let Three update local matrices automatically, we do
+                    // it ourselves in Transformable._calculateMatrix and
+                    // Transformable._calculateWorldMatricesInSubtree
+                    this.three.matrixAutoUpdate = false
 
-                // NOTE, this.parent works here because loadGL is called by
-                // childConnectedCallback at which point a child is already
-                // upgraded and thus has this.parent API ready.
-                this.parent && this.parent.three.add(this.three)
+                    // NOTE, this.parent works here because loadGL is called by
+                    // childConnectedCallback at which point a child is already
+                    // upgraded and thus has this.parent API ready.
+                    this.parent && this.parent.three.add(this.three)
 
-                // If a subclass needs to initialize values in its Three.js
-                // object, it will have the passInitialValuesToThree method for
-                // that.
+                    // If a subclass needs to initialize values in its Three.js
+                    // object, it will have the passInitialValuesToThree method for
+                    // that.
+                    //
+                    // TODO we shouldn't need to define passInitialValuesToThree in
+                    // sub classes, the default values of the props should
+                    // automatically be in place.
+                    this.passInitialValuesToThree && this.passInitialValuesToThree()
+
+                    this._needsToBeRendered()
+                },
+
+                unloadGL() {
+                    if (!Protected(this)._glLoaded) return
+                    Protected(this)._glLoaded = false
+
+                    disposeObject(Private(this).__three)
+                    Private(this).__three = null
+
+                    this._needsToBeRendered()
+                },
+
+                makeThreeObject3d() {
+                    return new Object3D
+                },
+
+                loadCSS() {
+                    if (!(this.scene && !this.scene.disableCss)) return
+
+                    if (Protected(this)._cssLoaded) return
+                    Protected(this)._cssLoaded = true
+
+                    // we don't let Three update local matrices automatically, we do
+                    // it ourselves in Transformable._calculateMatrix and
+                    // Transformable._calculateWorldMatricesInSubtree
+                    this.threeCSS.matrixAutoUpdate = false
+
+                    // NOTE, this.parent works here because loadCSS is called by
+                    // childConnectedCallback at which point a child is already
+                    // upgraded and thus has this.parent API ready.
+                    this.parent && this.parent.threeCSS.add(this.threeCSS)
+
+                    this._needsToBeRendered()
+                },
+
+                unloadCSS() {
+                    if (!Protected(this)._cssLoaded) return
+                    Protected(this)._cssLoaded = false
+
+                    disposeObject(Private(this).__threeCSS)
+                    Private(this).__threeCSS = null
+
+                    this._needsToBeRendered()
+                },
+
+                makeThreeCSSObject() {
+                    return new CSS3DObjectNested(this)
+                },
+
+                childConnectedCallback(child) {
+                    Super(this).childConnectedCallback(child)
+
+                    // children can be non-lib DOM nodes (f.e. div, h1, etc)
+                    if (isInstanceof(child, Node)) {
+                        Protected(child)._loadGL()
+                        Protected(child)._loadCSS()
+                    }
+                },
+
+                childDisconnectedCallback(child) {
+                    Super(this).childDisconnectedCallback(child)
+
+                    // children can be non-lib DOM nodes (f.e. div, h1, etc)
+                    if (isInstanceof(child, Node)) {
+                        Protected(child)._unloadGL()
+                        Protected(child)._unloadCSS()
+                    }
+                },
+
+                /**
+                 * Subclasses are required to override this. It should return the HTML-API
+                 * counterpart for this Imperative-API instance. See Node or Scene classes
+                 * for example.
+                 *
+                 * @private
+                 */
+                _makeElement() {
+                    throw new Error('Subclasses need to override ImperativeBase#_makeElement.')
+                },
+
+                /**
+                 * Get the Scene that this Node is in, null if no Scene. This traverses up recursively
+                 * at first, then the value is cached.
+                 *
+                 * @readonly
+                 */
+                get scene() {
+                    // NOTE: this._scene is initally null, created in the constructor.
+
+                    // if already cached, return it. Or if no parent, return it (it'll be null).
+                    // Additionally, Scenes have this._scene already set to themselves.
+                    if (this._scene || !this.parent) return this._scene
+
+                    // if the parent node already has a ref to the scene, use that.
+                    if (this.parent._scene) {
+                        this._scene = this.parent._scene
+                    }
+                    else if (this.parent instanceof Scene) {
+                        this._scene = this.parent
+                    }
+                    // otherwise call the scene getter on the parent, which triggers
+                    // traversal up the scene graph in order to find the root scene (null
+                    // if none).
+                    else {
+                        this._scene = this.parent.scene
+                    }
+
+                    return this._scene
+                },
+
+                /**
+                 * @override
+                 */
+                add(childNode) {
+                    if (!isInstanceof(childNode, ImperativeBase)) return
+
+                    // We cannot add Scenes to Nodes, for now.
+                    if (childNode instanceof Scene) {
+                        throw new Error(`
+                            A Scene cannot be added to another Node or Scene (at
+                            least for now). To place a Scene in a Node, just mount
+                            a new Scene onto a MotorHTMLNode with Scene.mount().
+                        `)
+                    }
+
+                    Super(this).add(childNode)
+
+                    // Calculate sizing because proportional size might depend on
+                    // the new parent.
+                    childNode._calcSize()
+                    childNode._needsToBeRendered()
+
+                    // child should watch the parent for size changes.
+                    this.on('sizechange', childNode._onParentSizeChange)
+
+                    this._elementOperations.connectChildElement(childNode)
+
+                    return this
+                },
+
+                remove(childNode, /* private */__leaveInDom) {
+                    if (!(childNode instanceof Node)) return
+
+                    Super(this).remove(childNode)
+
+                    this.off('sizechange', childNode._onParentSizeChange)
+
+                    if (!__leaveInDom)
+                        this._elementOperations.disconnectChildElement(childNode)
+                },
+
+                _needsToBeRendered() {
+                    // we don't need to render until we're connected into a tree with a scene.
+                    if (!this.scene || !this.isConnected) return
+                    // TODO make sure we render when connected into a tree with a scene
+
+                    this._willBeRendered = true
+                    Motor.setNodeToBeRendered(this)
+                },
+
+                // This method is used by Motor._renderNodes().
+                _getNearestAncestorThatShouldBeRendered() {
+                    let parent = this.parent
+
+                    while (parent) {
+                        if (parent._willBeRendered) return parent
+                        parent = parent.parent
+                    }
+
+                    return false
+                },
+
+                _render(timestamp) {
+                    if ( Super(this)._render ) Super(this)._render()
+
+                    this._elementOperations.applyImperativeNodeProperties(this)
+                },
+
+                // TODO make a classes prop?
+                // set properties(properties = {}) {
+                //     Super(this).properties = properties
                 //
-                // TODO we shouldn't need to define passInitialValuesToThree in
-                // sub classes, the default values of the props should
-                // automatically be in place.
-                this.passInitialValuesToThree && this.passInitialValuesToThree()
+                //     if (properties.classes)
+                //         this._elementOperations.setClasses(...properties.classes);
+                // },
 
-                this._needsToBeRendered()
-            },
-
-            unloadGL() {
-                if (!Protected(this)._glLoaded) return
-                Protected(this)._glLoaded = false
-
-                disposeObject(Private(this).__three)
-                Private(this).__three = null
-
-                this._needsToBeRendered()
-            },
-
-            makeThreeObject3d() {
-                return new Object3D
-            },
-
-            loadCSS() {
-                if (!(this.scene && !this.scene.disableCss)) return
-
-                if (Protected(this)._cssLoaded) return
-                Protected(this)._cssLoaded = true
-
-                // we don't let Three update local matrices automatically, we do
-                // it ourselves in Transformable._calculateMatrix and
-                // Transformable._calculateWorldMatricesInSubtree
-                this.threeCSS.matrixAutoUpdate = false
-
-                // NOTE, this.parent works here because loadCSS is called by
-                // childConnectedCallback at which point a child is already
-                // upgraded and thus has this.parent API ready.
-                this.parent && this.parent.threeCSS.add(this.threeCSS)
-
-                this._needsToBeRendered()
-            },
-
-            unloadCSS() {
-                if (!Protected(this)._cssLoaded) return
-                Protected(this)._cssLoaded = false
-
-                disposeObject(Private(this).__threeCSS)
-                Private(this).__threeCSS = null
-
-                this._needsToBeRendered()
-            },
-
-            makeThreeCSSObject() {
-                return new CSS3DObjectNested(this)
-            },
-
-            childConnectedCallback(child) {
-                Super(this).childConnectedCallback(child)
-
-                // children can be non-lib DOM nodes (f.e. div, h1, etc)
-                if (isInstanceof(child, Node)) {
-                    Protected(child)._loadGL()
-                    Protected(child)._loadCSS()
-                }
-            },
-
-            childDisconnectedCallback(child) {
-                Super(this).childDisconnectedCallback(child)
-
-                // children can be non-lib DOM nodes (f.e. div, h1, etc)
-                if (isInstanceof(child, Node)) {
-                    Protected(child)._unloadGL()
-                    Protected(child)._unloadCSS()
-                }
-            },
-
-            /**
-             * Subclasses are required to override this. It should return the HTML-API
-             * counterpart for this Imperative-API instance. See Node or Scene classes
-             * for example.
-             *
-             * @private
-             */
-            _makeElement() {
-                throw new Error('Subclasses need to override ImperativeBase#_makeElement.')
-            },
-
-            /**
-             * Get the Scene that this Node is in, null if no Scene. This traverses up recursively
-             * at first, then the value is cached.
-             *
-             * @readonly
-             */
-            get scene() {
-                // NOTE: this._scene is initally null, created in the constructor.
-
-                // if already cached, return it. Or if no parent, return it (it'll be null).
-                // Additionally, Scenes have this._scene already set to themselves.
-                if (this._scene || !this.parent) return this._scene
-
-                // if the parent node already has a ref to the scene, use that.
-                if (this.parent._scene) {
-                    this._scene = this.parent._scene
-                }
-                else if (this.parent instanceof Scene) {
-                    this._scene = this.parent
-                }
-                // otherwise call the scene getter on the parent, which triggers
-                // traversal up the scene graph in order to find the root scene (null
-                // if none).
-                else {
-                    this._scene = this.parent.scene
-                }
-
-                return this._scene
-            },
-
-            /**
-             * @override
-             */
-            add(childNode) {
-                if (!isInstanceof(childNode, ImperativeBase)) return
-
-                // We cannot add Scenes to Nodes, for now.
-                if (childNode instanceof Scene) {
-                    throw new Error(`
-                        A Scene cannot be added to another Node or Scene (at
-                        least for now). To place a Scene in a Node, just mount
-                        a new Scene onto a MotorHTMLNode with Scene.mount().
-                    `)
-                }
-
-                Super(this).add(childNode)
-
-                // Calculate sizing because proportional size might depend on
-                // the new parent.
-                childNode._calcSize()
-                childNode._needsToBeRendered()
-
-                // child should watch the parent for size changes.
-                this.on('sizechange', childNode._onParentSizeChange)
-
-                this._elementOperations.connectChildElement(childNode)
-
-                return this
-            },
-
-            remove(childNode, /* private */__leaveInDom) {
-                if (!(childNode instanceof Node)) return
-
-                Super(this).remove(childNode)
-
-                this.off('sizechange', childNode._onParentSizeChange)
-
-                if (!__leaveInDom)
-                    this._elementOperations.disconnectChildElement(childNode)
-            },
-
-            _needsToBeRendered() {
-                // we don't need to render until we're connected into a tree with a scene.
-                if (!this.scene || !this.isConnected) return
-                // TODO make sure we render when connected into a tree with a scene
-
-                this._willBeRendered = true
-                Motor.setNodeToBeRendered(this)
-            },
-
-            // This method is used by Motor._renderNodes().
-            _getNearestAncestorThatShouldBeRendered() {
-                let parent = this.parent
-
-                while (parent) {
-                    if (parent._willBeRendered) return parent
-                    parent = parent.parent
-                }
-
-                return false
-            },
-
-            _render(timestamp) {
-                if ( Super(this)._render ) Super(this)._render()
-
-                this._elementOperations.applyImperativeNodeProperties(this)
-            },
-
-            // TODO make a classes prop?
-            // set properties(properties = {}) {
-            //     Super(this).properties = properties
-            //
-            //     if (properties.classes)
-            //         this._elementOperations.setClasses(...properties.classes);
-            // },
-
-            protected: {
-                _glLoaded: false,
-                _cssLoaded: false,
-            },
-
-            private: {
-                __three: null,
-                __threeCSS: null,
-            },
-
-            protected: {
-                _loadGL() {
-                    Public(this).loadGL()
-                    Public(this).emit(Events.BEHAVIOR_GL_LOAD, Public(this))
-                    Promise.resolve().then(() => {
-                        Public(this).emit(Events.GL_LOAD, Public(this))
-                    })
+                protected: {
+                    _glLoaded: false,
+                    _cssLoaded: false,
                 },
 
-                _unloadGL() {
-                    Public(this).unloadGL()
-                    Public(this).emit(Events.BEHAVIOR_GL_UNLOAD, Public(this))
-                    Promise.resolve().then(() => {
-                        Public(this).emit(Events.GL_UNLOAD, Public(this))
-                    })
+                private: {
+                    __three: null,
+                    __threeCSS: null,
                 },
 
-                _loadCSS() {
-                    Public(this).loadCSS()
-                    Public(this).emit(Events.CSS_LOAD, Public(this))
-                },
+                protected: {
+                    _loadGL() {
+                        Public(this).loadGL()
+                        Public(this).emit(Events.BEHAVIOR_GL_LOAD, Public(this))
+                        Promise.resolve().then(() => {
+                            Public(this).emit(Events.GL_LOAD, Public(this))
+                        })
+                    },
 
-                _unloadCSS() {
-                    Public(this).unloadCSS()
-                    Public(this).emit(Events.CSS_UNLOAD, Public(this))
-                },
-            }
+                    _unloadGL() {
+                        Public(this).unloadGL()
+                        Public(this).emit(Events.BEHAVIOR_GL_UNLOAD, Public(this))
+                        Promise.resolve().then(() => {
+                            Public(this).emit(Events.GL_UNLOAD, Public(this))
+                        })
+                    },
+
+                    _loadCSS() {
+                        Public(this).loadCSS()
+                        Public(this).emit(Events.CSS_LOAD, Public(this))
+                    },
+
+                    _unloadCSS() {
+                        Public(this).unloadCSS()
+                        Public(this).emit(Events.CSS_UNLOAD, Public(this))
+                    },
+                }
 
             }
         }, ImperativeBaseBrand)
