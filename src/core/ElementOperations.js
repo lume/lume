@@ -1,7 +1,6 @@
 import Class from 'lowclass'
 import {native} from 'lowclass/native'
 import Node from './Node'
-import Motor from './Motor'
 
 // fallback to experimental CSS transform if browser doesn't have it (fix for Safari 9)
 if (typeof document.createElement('div').style.transform == 'undefined') {
@@ -127,7 +126,7 @@ Class('ElementOperations', {
     },
 
     shouldRender(shouldRender) {
-        const task = Motor.once(() => {
+        requestAnimationFrame(() => {
             this.applyStyle('display', shouldRender ? 'block' : 'none')
         })
     },
