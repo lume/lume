@@ -363,17 +363,15 @@ export function initImperativeBase() {
                 //         this._elementOperations.setClasses(...properties.classes);
                 // },
 
-                protected: {
-                    _glLoaded: false,
-                    _cssLoaded: false,
-                },
-
                 private: {
                     __three: null,
                     __threeCSS: null,
                 },
 
                 protected: {
+                    _glLoaded: false,
+                    _cssLoaded: false,
+
                     _loadGL() {
                         Public(this).loadGL()
                         Public(this).emit(Events.BEHAVIOR_GL_LOAD, Public(this))
