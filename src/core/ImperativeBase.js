@@ -353,14 +353,6 @@ export function initImperativeBase() {
                     return false
                 },
 
-                // TODO make a classes prop?
-                // set properties(properties = {}) {
-                //     Super(this).properties = properties
-                //
-                //     if (properties.classes)
-                //         this._elementOperations.setClasses(...properties.classes);
-                // },
-
                 private: {
                     __three: null,
                     __threeCSS: null,
