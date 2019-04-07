@@ -1,8 +1,11 @@
 import Class from 'lowclass'
 import { PerspectiveCamera as ThreePerspectiveCamera } from 'three'
-import Node from './Node'
 import Motor from './Motor'
 import { props } from './props'
+import { getSceneProtectedHelper } from './Scene'
+import Node from './Node'
+
+const SceneProtected = getSceneProtectedHelper()
 
 // TODO: update this to have a CSS3D-perspective-like API like with the Scene's
 // default camera.
@@ -46,26 +49,10 @@ Class('PerspectiveCamera').extends( Node, ({ Super, Public, Private }) => ({
         // TODO handle the other props here, remove attributeChangedCallback
     },
 
-    makeThreeObject3d() {
-        return new ThreePerspectiveCamera(75, 16/9, 1, 1000)
-    },
-
     connectedCallback() {
         Super(this).connectedCallback()
 
-        const privateThis = Private(this)
-        privateThis._lastKnownScene = this.scene
-    },
-
-    // TODO replace with unmountedCallback #150
-    deinit() {
-        Super(this).deinit()
-
-        // TODO we want to call this in the upcoming
-        // unmountedCallback, but for now it's harmless but
-        // will run unnecessary logic. #150
-        Private(this)._setSceneCamera( 'unset' )
-        Private(this)._lastKnownScene = null
+        Private(this)._lastKnownScene = this.scene
     },
 
     // TODO, unmountedCallback functionality. issue #150
@@ -81,6 +68,24 @@ Class('PerspectiveCamera').extends( Node, ({ Super, Public, Private }) => ({
             Private(this)._attributeRemoved( attr )
         }
     },
+
+    protected: {
+        _makeThreeObject3d() {
+            return new ThreePerspectiveCamera(75, 16/9, 1, 1000)
+        },
+    },
+
+        // FIXME, should be protected. See FIXME in WebComponent for details
+        // TODO replace with unmountedCallback #150
+        _deinit() {
+            Super(this)._deinit()
+
+            // TODO we want to call this in the upcoming
+            // unmountedCallback, but for now it's harmless but
+            // will run unnecessary logic. #150
+            Private(this)._setSceneCamera( 'unset' )
+            Private(this)._lastKnownScene = null
+        },
 
     private: {
         _lastKnownScene: null,
@@ -186,13 +191,14 @@ Class('PerspectiveCamera').extends( Node, ({ Super, Public, Private }) => ({
                 // there might not be a last known scene. We won't need this check
                 // when we add unmountedCallback. #150
                 if ( this._lastKnownScene )
-                    this._lastKnownScene._removeCamera( publicThis )
+                    SceneProtected()(this._lastKnownScene)._removeCamera( publicThis )
             }
             else {
                 if (!publicThis.scene || !publicThis.isConnected) return
 
-                publicThis.scene._addCamera( publicThis )
+                SceneProtected()(publicThis.scene)._addCamera( publicThis )
             }
         },
     },
+
 }))

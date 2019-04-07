@@ -60,183 +60,6 @@ Mixin(Base => {
             return self
         },
 
-        _setDefaultProperties() {
-            Super(this)._setDefaultProperties()
-
-            Object.assign(this._properties, {
-                position:   new XYZNumberValues(0, 0, 0),
-                rotation:   new XYZNumberValues(0, 0, 0),
-                scale:      new XYZNumberValues(1, 1, 1),
-                origin:     new XYZNumberValues(0.5, 0.5, 0.5),
-                align:      new XYZNumberValues(0, 0, 0),
-                mountPoint: new XYZNumberValues(0, 0, 0),
-                opacity:    1,
-            })
-        },
-
-        _setPropertyObservers() {
-            Super(this)._setPropertyObservers()
-
-            this._properties.position.on('valuechanged',
-                () => this.trigger('propertychange', 'position'))
-            this._properties.rotation.on('valuechanged',
-                () => this.trigger('propertychange', 'rotation'))
-            this._properties.scale.on('valuechanged',
-                () => this.trigger('propertychange', 'scale'))
-            this._properties.origin.on('valuechanged',
-                () => this.trigger('propertychange', 'origin'))
-            this._properties.align.on('valuechanged',
-                () => this.trigger('propertychange', 'align'))
-            this._properties.mountPoint.on('valuechanged',
-                () => this.trigger('propertychange', 'mountPoint'))
-
-            // this is also triggered by Sizeable.updated, besides the above lines
-            this.on('propertychange', prop => this._onPropChange(prop))
-        },
-
-        _onPropChange(prop) {
-            if (
-                // position not handled here because it is handled in _calculateMatrix
-                // prop === 'position' ||
-                prop === 'rotation' ||
-                prop === 'scale'
-            ) {
-                Protected(this)['_update_' + prop]()
-            }
-        },
-
-        /**
-         * Takes all the current component values (position, rotation, etc) and
-         * calculates a transformation DOMMatrix from them. See "W3C Geometry
-         * Interfaces" to learn about DOMMatrix.
-         *
-         * @method
-         * @private
-         * @memberOf Node
-         *
-         * TODO #66: make sure this is called after size calculations when we
-         * move _calcSize to a render task.
-         */
-        _calculateMatrix: (function() {
-            const threeJsPostAdjustment = [0, 0, 0]
-            const alignAdjustment = [0, 0, 0]
-            const mountPointAdjustment = [0, 0, 0]
-            const appliedPosition = [0, 0, 0]
-
-            return function _calculateMatrix() {
-                const {align, mountPoint, position, origin} = this._properties
-                const size = this._calculatedSize
-
-                // THREE-COORDS-TO-DOM-COORDS
-                // translate the "mount point" back to the top/left/back of the object
-                // (in Three.js it is in the center of the object).
-                threeJsPostAdjustment[0] = size.x/2
-                threeJsPostAdjustment[1] = size.y/2
-                threeJsPostAdjustment[2] = size.z/2
-
-                // TODO If a Scene has a `parent`, it is not mounted directly into a
-                // regular DOM element but rather it is child of a Node. In this
-                // case we don't want the scene size to be based on observed size
-                // of a regular DOM element, but relative to a parent Node just
-                // like for all other Nodes.
-                const parentSize = this._getParentSize()
-
-                // THREE-COORDS-TO-DOM-COORDS
-                // translate the "align" back to the top/left/back of the parent element.
-                // We offset this in ElementOperations#applyTransform. The Y
-                // value is inverted because we invert it below.
-                threeJsPostAdjustment[0] += -parentSize.x/2
-                threeJsPostAdjustment[1] += -parentSize.y/2
-                threeJsPostAdjustment[2] += -parentSize.z/2
-
-                alignAdjustment[0] = parentSize.x * align.x
-                alignAdjustment[1] = parentSize.y * align.y
-                alignAdjustment[2] = parentSize.z * align.z
-
-                mountPointAdjustment[0] = size.x * mountPoint.x
-                mountPointAdjustment[1] = size.y * mountPoint.y
-                mountPointAdjustment[2] = size.z * mountPoint.z
-
-                appliedPosition[0] = position.x + alignAdjustment[0] - mountPointAdjustment[0]
-                appliedPosition[1] = position.y + alignAdjustment[1] - mountPointAdjustment[1]
-                appliedPosition[2] = position.z + alignAdjustment[2] - mountPointAdjustment[2]
-
-                this.three.position.set(
-                    appliedPosition[0] + threeJsPostAdjustment[0],
-                    // THREE-COORDS-TO-DOM-COORDS negate the Y value so that
-                    // Three.js' positive Y is downward like DOM.
-                    -(appliedPosition[1] + threeJsPostAdjustment[1]),
-                    appliedPosition[2] + threeJsPostAdjustment[2]
-                )
-
-                const childOfScene =
-                    this.threeCSS.parent &&
-                    this.threeCSS.parent.type === 'Scene'
-
-                if (childOfScene) {
-                    this.threeCSS.position.set(
-                        appliedPosition[0] + threeJsPostAdjustment[0],
-                        // THREE-COORDS-TO-DOM-COORDS negate the Y value so that
-                        // Three.js' positive Y is downward like DOM.
-                        -(appliedPosition[1] + threeJsPostAdjustment[1]),
-                        appliedPosition[2] + threeJsPostAdjustment[2]
-                    )
-                }
-                else {
-                    // CSS objects that aren't direct child of a scene are
-                    // already centered on X and Y (not sure why, but maybe
-                    // CSS3DObjectNested has clues, which is based on
-                    // THREE.CSS3DObject)
-                    this.threeCSS.position.set(
-                        appliedPosition[0],
-                        -appliedPosition[1],
-                        appliedPosition[2] + threeJsPostAdjustment[2] // only apply Z offset
-                    )
-                }
-
-                if (origin.x !== 0.5 || origin.y !== 0.5 || origin.z !== 0.5) {
-
-                    // Here we multiply by size to convert from a ratio to a range
-                    // of units, then subtract half because Three.js origin is
-                    // centered around (0,0,0) meaning Three.js origin goes from
-                    // -0.5 to 0.5 instead of from 0 to 1.
-
-                    this.three.pivot.set(
-                        origin.x * size.x - size.x/2,
-                        // THREE-COORDS-TO-DOM-COORDS negate the Y value so that
-                        // positive Y means down instead of up (because Three,js Y
-                        // values go up).
-                        -(origin.y * size.y - size.y/2),
-                        origin.z * size.z - size.z/2
-                    )
-
-                    this.threeCSS.pivot.set(
-                        origin.x * size.x - size.x/2,
-                        // THREE-COORDS-TO-DOM-COORDS negate the Y value so that
-                        // positive Y means down instead of up (because Three,js Y
-                        // values go up).
-                        -(origin.y * size.y - size.y/2),
-                        origin.z * size.z - size.z/2
-                    )
-                }
-                // otherwise, use default Three.js origin of (0,0,0) which is
-                // equivalent to our (0.5,0.5,0.5), by removing the pivot value.
-                else {
-                    this.three.pivot.set(0, 0, 0)
-                    this.threeCSS.pivot.set(0, 0, 0)
-                }
-
-                this.three.updateMatrix()
-                this.threeCSS.updateMatrix()
-            }
-        })(),
-
-        _calculateWorldMatricesInSubtree() {
-            this.three.updateMatrixWorld()
-            this.threeCSS.updateMatrixWorld()
-            this.trigger('worldMatrixUpdate')
-        },
-
         /**
          * Set the position of the Transformable.
          *
@@ -246,7 +69,7 @@ Mixin(Base => {
          * @param {number} [newValue.z] The z-axis position to apply.
          */
         set position(newValue) {
-            this._setPropertyXYZ(Transformable, 'position', newValue)
+            Protected(this)._setPropertyXYZ(Transformable, 'position', newValue)
         },
         get position() {
             return this._props.position
@@ -259,7 +82,7 @@ Mixin(Base => {
          * @param {number} [newValue.z] The z-axis rotation to apply.
          */
         set rotation(newValue) {
-            this._setPropertyXYZ(Transformable, 'rotation', newValue)
+            Protected(this)._setPropertyXYZ(Transformable, 'rotation', newValue)
         },
         get rotation() {
             return this._props.rotation
@@ -272,7 +95,7 @@ Mixin(Base => {
          * @param {number} [newValue.z] The z-axis scale to apply.
          */
         set scale(newValue) {
-            this._setPropertyXYZ(Transformable, 'scale', newValue)
+            Protected(this)._setPropertyXYZ(Transformable, 'scale', newValue)
         },
         get scale() {
             return this._props.scale
@@ -285,7 +108,7 @@ Mixin(Base => {
          * @param {number} [newValue.z] The z-axis origin to apply.
          */
         set origin(newValue) {
-            this._setPropertyXYZ(Transformable, 'origin', newValue)
+            Protected(this)._setPropertyXYZ(Transformable, 'origin', newValue)
         },
         get origin() {
             return this._props.origin
@@ -298,7 +121,7 @@ Mixin(Base => {
          * (inclusive). 0 is fully transparent, 1 is fully opaque.
          */
         set opacity(newValue) {
-            this._setPropertySingle('opacity', newValue)
+            Protected(this)._setPropertySingle('opacity', newValue)
         },
         get opacity() {
             return this._props.opacity
@@ -314,7 +137,7 @@ Mixin(Base => {
          * @param {number} [newValue.z] The z-axis align to apply.
          */
         set align(newValue) {
-            this._setPropertyXYZ(Transformable, 'align', newValue)
+            Protected(this)._setPropertyXYZ(Transformable, 'align', newValue)
         },
         get align() {
             return this._props.align
@@ -329,20 +152,65 @@ Mixin(Base => {
          * @param {number} [newValue.z] The z-axis mountPoint to apply.
          */
         set mountPoint(newValue) {
-            this._setPropertyXYZ(Transformable, 'mountPoint', newValue)
+            Protected(this)._setPropertyXYZ(Transformable, 'mountPoint', newValue)
         },
         get mountPoint() {
             return this._props.mountPoint
         },
 
         protected: {
+            _setDefaultProperties() {
+                Super(this)._setDefaultProperties()
+
+                Object.assign(Public(this)._properties, {
+                    position:   new XYZNumberValues(0, 0, 0),
+                    rotation:   new XYZNumberValues(0, 0, 0),
+                    scale:      new XYZNumberValues(1, 1, 1),
+                    origin:     new XYZNumberValues(0.5, 0.5, 0.5),
+                    align:      new XYZNumberValues(0, 0, 0),
+                    mountPoint: new XYZNumberValues(0, 0, 0),
+                    opacity:    1,
+                })
+            },
+
+            _setPropertyObservers() {
+                Super(this)._setPropertyObservers()
+
+                Public(this)._properties.position.on('valuechanged',
+                    () => Public(this).trigger('propertychange', 'position'))
+                Public(this)._properties.rotation.on('valuechanged',
+                    () => Public(this).trigger('propertychange', 'rotation'))
+                Public(this)._properties.scale.on('valuechanged',
+                    () => Public(this).trigger('propertychange', 'scale'))
+                Public(this)._properties.origin.on('valuechanged',
+                    () => Public(this).trigger('propertychange', 'origin'))
+                Public(this)._properties.align.on('valuechanged',
+                    () => Public(this).trigger('propertychange', 'align'))
+                Public(this)._properties.mountPoint.on('valuechanged',
+                    () => Public(this).trigger('propertychange', 'mountPoint'))
+
+                // this is also triggered by Sizeable.updated, besides the above lines
+                Public(this).on('propertychange', prop => this._onPropChange(prop))
+            },
+
+            _onPropChange(prop) {
+                if (
+                    // position not handled here because it is handled in _calculateMatrix
+                    // prop === 'position' ||
+                    prop === 'rotation' ||
+                    prop === 'scale'
+                ) {
+                    this['_update_' + prop]()
+                }
+            },
+
             // TODO rename "render" to "update".
             _render() {
                 Super(this)._render && Super(this)._render()
 
                 // TODO: only run this when necessary (f.e. not if only opacity
                 // changed, only if position/align/mountPoint changed, etc)
-                Public(this)._calculateMatrix()
+                this._calculateMatrix()
             },
 
             _update_rotation() {
@@ -381,6 +249,140 @@ Mixin(Base => {
                     pub.scale.y,
                     pub.scale.z,
                 )
+            },
+
+            /**
+             * Takes all the current component values (position, rotation, etc) and
+             * calculates a transformation DOMMatrix from them. See "W3C Geometry
+             * Interfaces" to learn about DOMMatrix.
+             *
+             * @method
+             * @private
+             * @memberOf Node
+             *
+             * TODO #66: make sure this is called after size calculations when we
+             * move _calcSize to a render task.
+             */
+            _calculateMatrix: (function() {
+                const threeJsPostAdjustment = [0, 0, 0]
+                const alignAdjustment = [0, 0, 0]
+                const mountPointAdjustment = [0, 0, 0]
+                const appliedPosition = [0, 0, 0]
+
+                return function _calculateMatrix() {
+                    const pub = Public(this)
+                    const {align, mountPoint, position, origin} = pub._properties
+                    const size = pub.calculatedSize
+
+                    // THREE-COORDS-TO-DOM-COORDS
+                    // translate the "mount point" back to the top/left/back of the object
+                    // (in Three.js it is in the center of the object).
+                    threeJsPostAdjustment[0] = size.x/2
+                    threeJsPostAdjustment[1] = size.y/2
+                    threeJsPostAdjustment[2] = size.z/2
+
+                    // TODO If a Scene has a `parent`, it is not mounted directly into a
+                    // regular DOM element but rather it is child of a Node. In this
+                    // case we don't want the scene size to be based on observed size
+                    // of a regular DOM element, but relative to a parent Node just
+                    // like for all other Nodes.
+                    const parentSize = this._getParentSize()
+
+                    // THREE-COORDS-TO-DOM-COORDS
+                    // translate the "align" back to the top/left/back of the parent element.
+                    // We offset this in ElementOperations#applyTransform. The Y
+                    // value is inverted because we invert it below.
+                    threeJsPostAdjustment[0] += -parentSize.x/2
+                    threeJsPostAdjustment[1] += -parentSize.y/2
+                    threeJsPostAdjustment[2] += -parentSize.z/2
+
+                    alignAdjustment[0] = parentSize.x * align.x
+                    alignAdjustment[1] = parentSize.y * align.y
+                    alignAdjustment[2] = parentSize.z * align.z
+
+                    mountPointAdjustment[0] = size.x * mountPoint.x
+                    mountPointAdjustment[1] = size.y * mountPoint.y
+                    mountPointAdjustment[2] = size.z * mountPoint.z
+
+                    appliedPosition[0] = position.x + alignAdjustment[0] - mountPointAdjustment[0]
+                    appliedPosition[1] = position.y + alignAdjustment[1] - mountPointAdjustment[1]
+                    appliedPosition[2] = position.z + alignAdjustment[2] - mountPointAdjustment[2]
+
+                    pub.three.position.set(
+                        appliedPosition[0] + threeJsPostAdjustment[0],
+                        // THREE-COORDS-TO-DOM-COORDS negate the Y value so that
+                        // Three.js' positive Y is downward like DOM.
+                        -(appliedPosition[1] + threeJsPostAdjustment[1]),
+                        appliedPosition[2] + threeJsPostAdjustment[2]
+                    )
+
+                    const childOfScene =
+                        pub.threeCSS.parent &&
+                        pub.threeCSS.parent.type === 'Scene'
+
+                    if (childOfScene) {
+                        pub.threeCSS.position.set(
+                            appliedPosition[0] + threeJsPostAdjustment[0],
+                            // THREE-COORDS-TO-DOM-COORDS negate the Y value so that
+                            // Three.js' positive Y is downward like DOM.
+                            -(appliedPosition[1] + threeJsPostAdjustment[1]),
+                            appliedPosition[2] + threeJsPostAdjustment[2]
+                        )
+                    }
+                    else {
+                        // CSS objects that aren't direct child of a scene are
+                        // already centered on X and Y (not sure why, but maybe
+                        // CSS3DObjectNested has clues, which is based on
+                        // THREE.CSS3DObject)
+                        pub.threeCSS.position.set(
+                            appliedPosition[0],
+                            -appliedPosition[1],
+                            appliedPosition[2] + threeJsPostAdjustment[2] // only apply Z offset
+                        )
+                    }
+
+                    if (origin.x !== 0.5 || origin.y !== 0.5 || origin.z !== 0.5) {
+
+                        // Here we multiply by size to convert from a ratio to a range
+                        // of units, then subtract half because Three.js origin is
+                        // centered around (0,0,0) meaning Three.js origin goes from
+                        // -0.5 to 0.5 instead of from 0 to 1.
+
+                        pub.three.pivot.set(
+                            origin.x * size.x - size.x/2,
+                            // THREE-COORDS-TO-DOM-COORDS negate the Y value so that
+                            // positive Y means down instead of up (because Three,js Y
+                            // values go up).
+                            -(origin.y * size.y - size.y/2),
+                            origin.z * size.z - size.z/2
+                        )
+
+                        pub.threeCSS.pivot.set(
+                            origin.x * size.x - size.x/2,
+                            // THREE-COORDS-TO-DOM-COORDS negate the Y value so that
+                            // positive Y means down instead of up (because Three,js Y
+                            // values go up).
+                            -(origin.y * size.y - size.y/2),
+                            origin.z * size.z - size.z/2
+                        )
+                    }
+                    // otherwise, use default Three.js origin of (0,0,0) which is
+                    // equivalent to our (0.5,0.5,0.5), by removing the pivot value.
+                    else {
+                        pub.three.pivot.set(0, 0, 0)
+                        pub.threeCSS.pivot.set(0, 0, 0)
+                    }
+
+                    pub.three.updateMatrix()
+                    pub.threeCSS.updateMatrix()
+                }
+            })(),
+
+            _calculateWorldMatricesInSubtree() {
+                const pub = Public(this)
+                pub.three.updateMatrixWorld()
+                pub.threeCSS.updateMatrixWorld()
+                pub.trigger('worldMatrixUpdate')
             },
         },
 

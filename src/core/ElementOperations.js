@@ -36,7 +36,7 @@ Class('ElementOperations', {
      * Note: updating class names with `el.classList.add()` won't thrash the
      * layout. See: http://www.html5rocks.com/en/tutorials/speed/animations
      */
-    setClasses (...classes) {
+    setClasses(...classes) {
         if (classes.length) this.element.classList.add(...classes)
         return this
     },
@@ -122,7 +122,7 @@ Class('ElementOperations', {
         }
 
         // But both Node and Scene are Sizeable
-        this.applySize(node._calculatedSize)
+        this.applySize(node.calculatedSize)
     },
 
     shouldRender(shouldRender) {

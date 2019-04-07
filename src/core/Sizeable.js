@@ -21,7 +21,7 @@ Mixin(Base => {
     // Sizeable extends TreeNode because Sizeable knows about its `parent` when
     // calculating proportional sizes. Also Transformable knows about it's parent
     // in order to calculate it's world matrix based on it's parent's.
-    const Sizeable = Class('Sizeable').extends( Parent, ({ Super }) => ({
+    const Sizeable = Class('Sizeable').extends( Parent, ({ Super, Public, Protected, Private }) => ({
 
         static: {
             props: {
@@ -34,30 +34,13 @@ Mixin(Base => {
         constructor(options = {}) {
             const self = Super(this).constructor(options)
 
-            self._propertyFunctions = null
-            self._calculatedSize = { x:0, y:0, z:0 }
+            Private(self).__calculatedSize = { x:0, y:0, z:0 }
             self._properties = self._props // alias to WithUpdate._props
-            self._setDefaultProperties()
-            self._setPropertyObservers()
+            Protected(self)._setDefaultProperties()
+            Protected(self)._setPropertyObservers()
             self.properties = options
 
             return self
-        },
-
-        _setDefaultProperties() {
-            Object.assign(this._properties, {
-                sizeMode: new XYZSizeModeValues('literal', 'literal', 'literal'),
-                size:     new XYZNonNegativeValues(100, 100, 100),
-            })
-        },
-
-        // TODO change all event values to objects. See here for reasoning:
-        // https://github.com/airbnb/javascript#events
-        _setPropertyObservers() {
-            this._properties.sizeMode.on('valuechanged',
-                () => this.trigger('propertychange', 'sizeMode'))
-            this._properties.size.on('valuechanged',
-                () => this.trigger('propertychange', 'size'))
         },
 
         updated(oldProps, modifiedProps) {
@@ -75,142 +58,6 @@ Mixin(Base => {
                 if (modified) this.trigger('propertychange', prop)
         },
 
-        _calcSize: (function() {
-            const previousSize = {}
-
-            return function _calcSize() {
-                const calculatedSize = this._calculatedSize
-                Object.assign(previousSize, calculatedSize)
-                const {sizeMode, size} = this._properties
-                const parentSize = this._getParentSize()
-
-                if (sizeMode.x == 'literal') {
-                    calculatedSize.x = size.x
-                }
-                else { // proportional
-                    calculatedSize.x = parentSize.x * size.x
-                }
-
-                if (sizeMode.y == 'literal') {
-                    calculatedSize.y = size.y
-                }
-                else { // proportional
-                    calculatedSize.y = parentSize.y * size.y
-                }
-
-                if (sizeMode.z == 'literal') {
-                    calculatedSize.z = size.z
-                }
-                else { // proportional
-                    calculatedSize.z = parentSize.z * size.z
-                }
-
-                if (
-                    previousSize.x !== calculatedSize.x
-                    || previousSize.y !== calculatedSize.y
-                    || previousSize.z !== calculatedSize.z
-                ) {
-                    this.trigger('sizechange', {...calculatedSize})
-                }
-            }
-        })(),
-
-        _getParentSize() {
-            return this.parent ? this.parent._calculatedSize : {x:0,y:0,z:0}
-        },
-
-        _handleXYZPropertyFunction(fn, name) {
-            if (!this._propertyFunctions) this._propertyFunctions = new Map
-
-            if (propFunction = this._propertyFunctions.get(name)) {
-                Motor.removeRenderTask(propFunction)
-                propFunction = null
-            }
-
-            this._propertyFunctions.set(name,
-                Motor.addRenderTask(time => {
-                    const result = fn(
-                        this._properties[name].x,
-                        this._properties[name].y,
-                        this._properties[name].z,
-                        time
-                    )
-
-                    if (result === false) {
-                        this._propertyFunctions.delete(name)
-                        return false
-                    }
-
-                    // mark this true, so that the following set of this[name]
-                    // doesn't override the prop function (normally a
-                    // user can set this[name] to a value that isn't a function
-                    // to disable the prop function).
-                    this._settingValueFromPropFunction = true
-
-                    this[name] = result
-                })
-            )
-        },
-
-        _handleSinglePropertyFunction(fn, name) {
-            if (!this._propertyFunctions) this._propertyFunctions = new Map
-
-            if (propFunction = this._propertyFunctions.get(name)) {
-                Motor.removeRenderTask(propFunction)
-                propFunction = null
-            }
-
-            this._propertyFunctions.set(name,
-                Motor.addRenderTask(time => {
-                    const result = fn(
-                        this._properties[name],
-                        time
-                    )
-
-                    if (result === false) {
-                        this._propertyFunctions.delete(name)
-                        return false
-                    }
-
-                    this._settingValueFromPropFunction = true
-                    this[name] = result
-                })
-            )
-        },
-
-        // remove property function (render task) if any.
-        _removePropertyFunction(name) {
-            if (this._propertyFunctions && (propFunction = this._propertyFunctions.get(name))) {
-                Motor.removeRenderTask(propFunction)
-                this._propertyFunctions.delete(name)
-                propFunction = null
-            }
-        },
-
-        _setPropertyXYZ(Class, name, newValue) {
-            if (typeof newValue === 'function') {
-                this._handleXYZPropertyFunction(newValue, name)
-            }
-            else {
-                if (!this._settingValueFromPropFunction) this._removePropertyFunction(name)
-                else this._settingValueFromPropFunction = false
-
-                this._props[name] = newValue
-            }
-        },
-
-        _setPropertySingle(name, newValue) {
-            if (typeof newValue === 'function') {
-                this._handleSinglePropertyFunction(newValue, name)
-            }
-            else {
-                if (!this._settingValueFromPropFunction) this._removePropertyFunction(name)
-                else this._settingValueFromPropFunction = false
-
-                this._props[name] = newValue
-            }
-        },
-
         /**
          * Set the size mode for each axis. Possible size modes are "literal"
          * and "proportional". The default values are "literal" for all axes.
@@ -223,7 +70,7 @@ Mixin(Base => {
         set sizeMode(newValue) {
             if (typeof newValue === 'function')
                 throw new TypeError('property functions are not allowed for sizeMode')
-            this._setPropertyXYZ(null, 'sizeMode', newValue)
+            Protected(this)._setPropertyXYZ(null, 'sizeMode', newValue)
         },
         get sizeMode() {
             return this._props.sizeMode
@@ -258,7 +105,7 @@ Mixin(Base => {
          * @param {number} [newValue.z] The z-axis size to apply.
          */
         set size(newValue) {
-            this._setPropertyXYZ(Sizeable, 'size', newValue)
+            Protected(this)._setPropertyXYZ(Sizeable, 'size', newValue)
         },
         get size() {
             return this._props.size
@@ -276,7 +123,7 @@ Mixin(Base => {
          * respectively.
          */
         get calculatedSize() {
-            return {...this._calculatedSize}
+            return {...Private(this).__calculatedSize}
         },
 
         /**
@@ -296,6 +143,168 @@ Mixin(Base => {
         get properties() {
             return this.props
         },
+
+        protected: {
+            _setDefaultProperties() {
+                Object.assign(Public(this)._properties, {
+                    sizeMode: new XYZSizeModeValues('literal', 'literal', 'literal'),
+                    size:     new XYZNonNegativeValues(100, 100, 100),
+                })
+            },
+
+            // TODO change all event values to objects. See here for reasoning:
+            // https://github.com/airbnb/javascript#events
+            _setPropertyObservers() {
+                Public(this)._properties.sizeMode.on('valuechanged',
+                    () => Public(this).trigger('propertychange', 'sizeMode'))
+                Public(this)._properties.size.on('valuechanged',
+                    () => Public(this).trigger('propertychange', 'size'))
+            },
+
+            _getParentSize() {
+                const parent = Public(this).parent
+                return parent ? Private(parent).__calculatedSize : {x:0,y:0,z:0}
+            },
+
+            _calcSize: (function() {
+                const previousSize = {}
+
+                return function _calcSize() {
+                    const calculatedSize = Private(this).__calculatedSize
+                    Object.assign(previousSize, calculatedSize)
+                    const {sizeMode, size} = Public(this)._properties
+                    const parentSize = this._getParentSize()
+
+                    if (sizeMode.x == 'literal') {
+                        calculatedSize.x = size.x
+                    }
+                    else { // proportional
+                        calculatedSize.x = parentSize.x * size.x
+                    }
+
+                    if (sizeMode.y == 'literal') {
+                        calculatedSize.y = size.y
+                    }
+                    else { // proportional
+                        calculatedSize.y = parentSize.y * size.y
+                    }
+
+                    if (sizeMode.z == 'literal') {
+                        calculatedSize.z = size.z
+                    }
+                    else { // proportional
+                        calculatedSize.z = parentSize.z * size.z
+                    }
+
+                    if (
+                        previousSize.x !== calculatedSize.x
+                        || previousSize.y !== calculatedSize.y
+                        || previousSize.z !== calculatedSize.z
+                    ) {
+                        Public(this).trigger('sizechange', {...calculatedSize})
+                    }
+                }
+            })(),
+
+            _setPropertyXYZ(Class, name, newValue) {
+                if (typeof newValue === 'function') {
+                    Private(this).__handleXYZPropertyFunction(newValue, name)
+                }
+                else {
+                    if (!Private(this).__settingValueFromPropFunction) Private(this).__removePropertyFunction(name)
+                    else Private(this).__settingValueFromPropFunction = false
+
+                    Public(this)._props[name] = newValue
+                }
+            },
+
+            _setPropertySingle(name, newValue) {
+                if (typeof newValue === 'function') {
+                    Private(this).__handleSinglePropertyFunction(newValue, name)
+                }
+                else {
+                    if (!Private(this).__settingValueFromPropFunction) Private(this).__removePropertyFunction(name)
+                    else Private(this).__settingValueFromPropFunction = false
+
+                    Public(this)._props[name] = newValue
+                }
+            },
+        },
+
+        private: {
+            __calculatedSize: null, // {x: number, y: number, z: number}
+            __propertyFunctions: null,
+            __settingValueFromPropFunction: false,
+
+            __handleXYZPropertyFunction(fn, name) {
+                if (!this.__propertyFunctions) this.__propertyFunctions = new Map
+
+                if (propFunction = this.__propertyFunctions.get(name)) {
+                    Motor.removeRenderTask(propFunction)
+                    propFunction = null
+                }
+
+                this.__propertyFunctions.set(name,
+                    Motor.addRenderTask(time => {
+                        const result = fn(
+                            Public(this)._properties[name].x,
+                            Public(this)._properties[name].y,
+                            Public(this)._properties[name].z,
+                            time
+                        )
+
+                        if (result === false) {
+                            this.__propertyFunctions.delete(name)
+                            return false
+                        }
+
+                        // mark this true, so that the following set of this[name]
+                        // doesn't override the prop function (normally a
+                        // user can set this[name] to a value that isn't a function
+                        // to disable the prop function).
+                        this.__settingValueFromPropFunction = true
+
+                        Public(this)[name] = result
+                    })
+                )
+            },
+
+            __handleSinglePropertyFunction(fn, name) {
+                if (!this.__propertyFunctions) this.__propertyFunctions = new Map
+
+                if (propFunction = this.__propertyFunctions.get(name)) {
+                    Motor.removeRenderTask(propFunction)
+                    propFunction = null
+                }
+
+                this.__propertyFunctions.set(name,
+                    Motor.addRenderTask(time => {
+                        const result = fn(
+                            this._properties[name],
+                            time
+                        )
+
+                        if (result === false) {
+                            this.__propertyFunctions.delete(name)
+                            return false
+                        }
+
+                        this.__settingValueFromPropFunction = true
+                        this[name] = result
+                    })
+                )
+            },
+
+            // remove property function (render task) if any.
+            __removePropertyFunction(name) {
+                if (this.__propertyFunctions && (propFunction = this.__propertyFunctions.get(name))) {
+                    Motor.removeRenderTask(propFunction)
+                    this.__propertyFunctions.delete(name)
+                    propFunction = null
+                }
+            },
+        },
+
     }), Brand)
 
     return Sizeable

@@ -62,92 +62,27 @@ const HTMLScene = DeclarativeBase.subclass('HTMLScene', ({ Public, Private, Supe
         return styles
     },
 
-    deinit() {
-        Super(this).deinit()
+    // FIXME protected not working with _init/_deinit methods, See FIXME in WebComponent for details
+    // protected: {
 
-        this.unmount()
-    },
+        _init() {
+            Super(this)._init()
 
-    init() {
-        Super(this).init()
+            // When the HTMLScene gets addded to the DOM, make it be "mounted".
+            if (!Public(this)._mounted)
+                Public(this).mount(Public(this).parentNode)
+        },
 
-        // When the HTMLScene gets addded to the DOM, make it be "mounted".
-        if (!this._mounted)
-            this.mount(this.parentNode)
-    },
+        _deinit() {
+            Super(this)._deinit()
 
-    // TODO make these next two size-polling at least protected once we convert
-    // the Scene class, or perhaps move the size polling stuff from Scene to
-    // here where it can be colocated with this code.
-    _startOrStopSizePolling() {
-        const publicThis = Public(this)
+            Public(this).unmount()
+        },
 
-        if (
-            publicThis._mounted &&
-            (publicThis._properties.sizeMode.x == 'proportional'
-            || publicThis._properties.sizeMode.y == 'proportional'
-            || publicThis._properties.sizeMode.z == 'proportional')
-        ) {
-            Private(this)._startSizePolling()
-        }
-        else {
-            publicThis._stopSizePolling()
-        }
-    },
-
-    // Don't observe size changes on the scene element.
-    // HTML
-    //
-    // TODO make this at least protected once we convert the Scene class
-    _stopSizePolling() {
-        const publicThis = Public(this)
-        const privateThis = Private(this)
-
-        publicThis.off('parentsizechange', publicThis._onElementParentSizeChange)
-        Motor.removeRenderTask(privateThis._sizePollTask)
-        privateThis._sizePollTask = null
-    },
+    // },
 
     private: {
-
-        _sizePollTask: null,
-        _parentSize: {x:0, y:0, z:0},
         _root: null,
-
-        // observe size changes on the scene element.
-        // HTML
-        _startSizePolling() {
-            const publicThis = Public(this)
-
-            // NOTE Polling is currently required because there's no other way to do this
-            // reliably, not even with MutationObserver. ResizeObserver hasn't
-            // landed in browsers yet.
-            if (!this._sizePollTask)
-                this._sizePollTask = Motor.addRenderTask(this._checkSize.bind(this))
-            publicThis.on('parentsizechange', publicThis._onElementParentSizeChange, publicThis)
-        },
-
-        // NOTE, the Z dimension of a scene doesn't matter, it's a flat plane, so
-        // we haven't taken that into consideration here.
-        // HTML
-        _checkSize() {
-            const publicThis = Public(this)
-
-            const parent = publicThis.parentNode
-            const parentSize = this._parentSize
-            const style = getComputedStyle(parent)
-            const width = parseFloat(style.width)
-            const height = parseFloat(style.height)
-
-            // if we have a size change, trigger parentsizechange
-            if (parentSize.x != width || parentSize.y != height) {
-                parentSize.x = width
-                parentSize.y = height
-
-                publicThis.trigger('parentsizechange', Object.assign({}, parentSize))
-            }
-        },
-
     },
 
 }))

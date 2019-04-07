@@ -12,11 +12,6 @@ Mixin(Base =>
 
     Class('TreeNode').extends( native( WithUpdate( Base ) ), ({ Super, Private }) => ({
 
-        private: {
-            __parent: null,
-            __children: null,
-        },
-
         constructor(...args) {
             const self = Super(this).constructor(...args)
             Private(self).__children = []
@@ -145,6 +140,14 @@ Mixin(Base =>
                 children[i].traverse(fn)
             }
         },
+
+        protected: { TreeNode: 'TreeNode' },
+
+        private: {
+            __parent: null,
+            __children: null,
+        },
+
     }), TreeNodeBrand)
 
 )

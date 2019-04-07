@@ -46,10 +46,6 @@ Class('PointLight').extends( LightBase, ({ Super }) => ({
         shadow.camera.far = this.shadowCameraFar
     },
 
-    makeThreeObject3d() {
-        return new ThreePointLight
-    },
-
     updated(oldProps, modifiedProps) {
         Super(this).updated(oldProps, modifiedProps)
 
@@ -63,5 +59,11 @@ Class('PointLight').extends( LightBase, ({ Super }) => ({
         if (modifiedProps.shadowBias) shadow.bias = this.shadowBias
         if (modifiedProps.shadowCameraNear) shadow.camera.near = this.shadowCameraNear
         if (modifiedProps.shadowCameraFar) shadow.camera.far = this.shadowCameraFar
+    },
+
+    protected: {
+        _makeThreeObject3d() {
+            return new ThreePointLight
+        },
     },
 }))

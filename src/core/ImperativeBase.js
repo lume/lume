@@ -1,5 +1,5 @@
 import {Class, Mixin, instanceOf} from 'lowclass'
-import {Camera as ThreeCamera, Object3D} from 'three'
+import {Object3D} from 'three'
 import Transformable from './Transformable'
 import ElementOperations from './ElementOperations'
 import Node from './Node'
@@ -100,8 +100,6 @@ export function initImperativeBase() {
                     // all my demos at trusktr.io).
                     self.imperativeCounterpart = self
 
-                    self._willBeRendered = false
-
                     // Here we create the DOM HTMLElement associated with this
                     // Imperative-API Node.
                     self._elementOperations = new ElementOperations(self)
@@ -129,7 +127,7 @@ export function initImperativeBase() {
                     // if (!(this.scene && this.scene.experimentalWebgl)) return null
 
                     if (!Private(this).__three) {
-                        const three = Private(this).__three = this.makeThreeObject3d()
+                        const three = Private(this).__three = Protected(this)._makeThreeObject3d()
                         three.pivot = new THREE.Vector3
                     }
 
@@ -140,86 +138,11 @@ export function initImperativeBase() {
                     // if (!(this.scene && !this.scene.disableCss)) return null
 
                     if (!Private(this).__threeCSS) {
-                        const threeCSS = Private(this).__threeCSS = this.makeThreeCSSObject()
+                        const threeCSS = Private(this).__threeCSS = Protected(this)._makeThreeCSSObject()
                         threeCSS.pivot = new THREE.Vector3
                     }
 
                     return Private(this).__threeCSS
-                },
-
-                loadGL() {
-                    if (!(this.scene && this.scene.experimentalWebgl)) return
-
-                    if (Protected(this)._glLoaded) return
-                    Protected(this)._glLoaded = true
-
-                    // we don't let Three update local matrices automatically, we do
-                    // it ourselves in Transformable._calculateMatrix and
-                    // Transformable._calculateWorldMatricesInSubtree
-                    this.three.matrixAutoUpdate = false
-
-                    // NOTE, this.parent works here because loadGL is called by
-                    // childConnectedCallback at which point a child is already
-                    // upgraded and thus has this.parent API ready.
-                    this.parent && this.parent.three.add(this.three)
-
-                    // If a subclass needs to initialize values in its Three.js
-                    // object, it will have the passInitialValuesToThree method for
-                    // that.
-                    //
-                    // TODO we shouldn't need to define passInitialValuesToThree in
-                    // sub classes, the default values of the props should
-                    // automatically be in place.
-                    this.passInitialValuesToThree && this.passInitialValuesToThree()
-
-                    this.needsUpdate()
-                },
-
-                unloadGL() {
-                    if (!Protected(this)._glLoaded) return
-                    Protected(this)._glLoaded = false
-
-                    disposeObject(Private(this).__three)
-                    Private(this).__three = null
-
-                    this.needsUpdate()
-                },
-
-                makeThreeObject3d() {
-                    return new Object3D
-                },
-
-                loadCSS() {
-                    if (!(this.scene && !this.scene.disableCss)) return
-
-                    if (Protected(this)._cssLoaded) return
-                    Protected(this)._cssLoaded = true
-
-                    // we don't let Three update local matrices automatically, we do
-                    // it ourselves in Transformable._calculateMatrix and
-                    // Transformable._calculateWorldMatricesInSubtree
-                    this.threeCSS.matrixAutoUpdate = false
-
-                    // NOTE, this.parent works here because loadCSS is called by
-                    // childConnectedCallback at which point a child is already
-                    // upgraded and thus has this.parent API ready.
-                    this.parent && this.parent.threeCSS.add(this.threeCSS)
-
-                    this.needsUpdate()
-                },
-
-                unloadCSS() {
-                    if (!Protected(this)._cssLoaded) return
-                    Protected(this)._cssLoaded = false
-
-                    disposeObject(Private(this).__threeCSS)
-                    Private(this).__threeCSS = null
-
-                    this.needsUpdate()
-                },
-
-                makeThreeCSSObject() {
-                    return new CSS3DObjectNested(this)
                 },
 
                 childConnectedCallback(child) {
@@ -227,8 +150,8 @@ export function initImperativeBase() {
 
                     // children can be non-lib DOM nodes (f.e. div, h1, etc)
                     if (instanceOf(child, Node)) {
-                        Protected(child)._loadGL()
-                        Protected(child)._loadCSS()
+                        Protected(child)._triggerLoadGL()
+                        Protected(child)._triggerLoadCSS()
                     }
                 },
 
@@ -237,20 +160,9 @@ export function initImperativeBase() {
 
                     // children can be non-lib DOM nodes (f.e. div, h1, etc)
                     if (instanceOf(child, Node)) {
-                        Protected(child)._unloadGL()
-                        Protected(child)._unloadCSS()
+                        Protected(child)._triggerUnloadGL()
+                        Protected(child)._triggerUnloadCSS()
                     }
-                },
-
-                /**
-                 * Subclasses are required to override this. It should return the HTML-API
-                 * counterpart for this Imperative-API instance. See Node or Scene classes
-                 * for example.
-                 *
-                 * @private
-                 */
-                _makeElement() {
-                    throw new Error('Subclasses need to override ImperativeBase#_makeElement.')
                 },
 
                 /**
@@ -302,11 +214,11 @@ export function initImperativeBase() {
 
                     // Calculate sizing because proportional size might depend on
                     // the new parent.
-                    childNode._calcSize()
+                    Protected(childNode)._calcSize()
                     childNode.needsUpdate()
 
                     // child should watch the parent for size changes.
-                    this.on('sizechange', childNode._onParentSizeChange)
+                    this.on('sizechange', Protected(childNode)._onParentSizeChange, Protected(childNode))
 
                     this._elementOperations.connectChildElement(childNode)
 
@@ -318,7 +230,7 @@ export function initImperativeBase() {
 
                     Super(this).remove(childNode)
 
-                    this.off('sizechange', childNode._onParentSizeChange)
+                    this.off('sizechange', Protected(childNode)._onParentSizeChange, Protected(childNode))
 
                     if (!__leaveInDom)
                         this._elementOperations.disconnectChildElement(childNode)
@@ -329,20 +241,133 @@ export function initImperativeBase() {
                     if (!this.scene || !this.isConnected) return
                     // TODO make sure we render when connected into a tree with a scene
 
-                    this._willBeRendered = true
+                    Protected(this)._willBeRendered = true
                     Motor.setNodeToBeRendered(this)
                 },
 
-                // This method is used by Motor._renderNodes().
-                _getNearestAncestorThatShouldBeRendered() {
-                    let parent = this.parent
+                protected: {
+                    _glLoaded: false,
+                    _cssLoaded: false,
+                    _willBeRendered: false,
 
-                    while (parent) {
-                        if (parent._willBeRendered) return parent
-                        parent = parent.parent
-                    }
+                    _makeThreeObject3d() {
+                        return new Object3D
+                    },
 
-                    return false
+                    _makeThreeCSSObject() {
+                        return new CSS3DObjectNested(Public(this))
+                    },
+
+                    _loadGL() {
+                        if (!(Public(this).scene && Public(this).scene.experimentalWebgl)) return
+
+                        if (Protected(this)._glLoaded) return
+                        Protected(this)._glLoaded = true
+
+                        // we don't let Three update local matrices automatically, we do
+                        // it ourselves in Transformable._calculateMatrix and
+                        // Transformable._calculateWorldMatricesInSubtree
+                        Public(this).three.matrixAutoUpdate = false
+
+                        // NOTE, Public(this).parent works here because _loadGL is called by
+                        // childConnectedCallback at which point a child is already
+                        // upgraded and thus has Public(this).parent API ready.
+                        Public(this).parent && Public(this).parent.three.add(Public(this).three)
+
+                        // If a subclass needs to initialize values in its Three.js
+                        // object, it will have the passInitialValuesToThree method for
+                        // that.
+                        //
+                        // TODO we shouldn't need to define passInitialValuesToThree in
+                        // sub classes, the default values of the props should
+                        // automatically be in place.
+                        Public(this).passInitialValuesToThree && Public(this).passInitialValuesToThree()
+
+                        Public(this).needsUpdate()
+                    },
+
+                    _unloadGL() {
+                        if (!Protected(this)._glLoaded) return
+                        Protected(this)._glLoaded = false
+
+                        disposeObject(Private(this).__three)
+                        Private(this).__three = null
+
+                        Public(this).needsUpdate()
+                    },
+
+                    _loadCSS() {
+                        if (!(Public(this).scene && !Public(this).scene.disableCss)) return
+
+                        if (Protected(this)._cssLoaded) return
+                        Protected(this)._cssLoaded = true
+
+                        // we don't let Three update local matrices automatically, we do
+                        // it ourselves in Transformable._calculateMatrix and
+                        // Transformable._calculateWorldMatricesInSubtree
+                        Public(this).threeCSS.matrixAutoUpdate = false
+
+                        // NOTE, Public(this).parent works here because _loadCSS is called by
+                        // childConnectedCallback at which point a child is already
+                        // upgraded and thus has Public(this).parent API ready.
+                        Public(this).parent && Public(this).parent.threeCSS.add(Public(this).threeCSS)
+
+                        Public(this).needsUpdate()
+                    },
+
+                    _unloadCSS() {
+                        if (!Protected(this)._cssLoaded) return
+                        Protected(this)._cssLoaded = false
+
+                        disposeObject(Private(this).__threeCSS)
+                        Private(this).__threeCSS = null
+
+                        Public(this).needsUpdate()
+                    },
+
+                    _triggerLoadGL() {
+                        Protected(this)._loadGL()
+                        Public(this).emit(Events.BEHAVIOR_GL_LOAD, Public(this))
+                        Promise.resolve().then(() => {
+                            Public(this).emit(Events.GL_LOAD, Public(this))
+                        })
+                    },
+
+                    _triggerUnloadGL() {
+                        Protected(this)._unloadGL()
+                        Public(this).emit(Events.BEHAVIOR_GL_UNLOAD, Public(this))
+                        Promise.resolve().then(() => {
+                            Public(this).emit(Events.GL_UNLOAD, Public(this))
+                        })
+                    },
+
+                    _triggerLoadCSS() {
+                        Protected(this)._loadCSS()
+                        Public(this).emit(Events.CSS_LOAD, Public(this))
+                    },
+
+                    _triggerUnloadCSS() {
+                        Protected(this)._unloadCSS()
+                        Public(this).emit(Events.CSS_UNLOAD, Public(this))
+                    },
+
+                    _render(timestamp) {
+                        if ( Super(this)._render ) Super(this)._render()
+
+                        Public(this)._elementOperations.applyImperativeNodeProperties(Public(this))
+                    },
+
+                    // This method is used by Motor._renderNodes().
+                    _getNearestAncestorThatShouldBeRendered() {
+                        let parent = Public(this).parent
+
+                        while (parent) {
+                            if (Protected(parent)._willBeRendered) return parent
+                            parent = parent.parent
+                        }
+
+                        return false
+                    },
                 },
 
                 private: {
@@ -351,49 +376,12 @@ export function initImperativeBase() {
 
                     __onPropertyChange(prop) {
                         if ( prop == 'sizeMode' || prop == 'size' ) {
-                            Public(this)._calcSize()
+                            Protected(this)._calcSize()
                         }
 
                         Public(this).needsUpdate()
                     },
                 },
-
-                protected: {
-                    _glLoaded: false,
-                    _cssLoaded: false,
-
-                    _render(timestamp) {
-                        if ( Super(this)._render ) Super(this)._render()
-
-                        Public(this)._elementOperations.applyImperativeNodeProperties(Public(this))
-                    },
-
-                    _loadGL() {
-                        Public(this).loadGL()
-                        Public(this).emit(Events.BEHAVIOR_GL_LOAD, Public(this))
-                        Promise.resolve().then(() => {
-                            Public(this).emit(Events.GL_LOAD, Public(this))
-                        })
-                    },
-
-                    _unloadGL() {
-                        Public(this).unloadGL()
-                        Public(this).emit(Events.BEHAVIOR_GL_UNLOAD, Public(this))
-                        Promise.resolve().then(() => {
-                            Public(this).emit(Events.GL_UNLOAD, Public(this))
-                        })
-                    },
-
-                    _loadCSS() {
-                        Public(this).loadCSS()
-                        Public(this).emit(Events.CSS_LOAD, Public(this))
-                    },
-
-                    _unloadCSS() {
-                        Public(this).unloadCSS()
-                        Public(this).emit(Events.CSS_UNLOAD, Public(this))
-                    },
-                }
 
             }
         }, ImperativeBaseBrand)

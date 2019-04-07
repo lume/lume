@@ -52,10 +52,6 @@ Class('Mesh').extends( Node, ({ Super }) => ({
         this.three.receiveShadow = this.receiveShadow
     },
 
-    makeThreeObject3d() {
-        return new ThreeMesh
-    },
-
     updated(oldProps, modifiedProps) {
         Super(this).updated(oldProps, modifiedProps)
 
@@ -69,5 +65,11 @@ Class('Mesh').extends( Node, ({ Super }) => ({
             this.three.material.needsUpdate = true
             this.needsUpdate()
         }
+    },
+
+    protected: {
+        _makeThreeObject3d() {
+            return new ThreeMesh
+        },
     },
 }))
