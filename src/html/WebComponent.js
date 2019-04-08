@@ -72,8 +72,7 @@ Mixin(Base => {
             if (Super(this).connectedCallback) Super(this).connectedCallback()
 
             if (!Private(this).__initialized) {
-                // Protected(this)._init()
-                this._init()
+                Protected(this)._init()
                 Private(this).__initialized = true
             }
         },
@@ -99,8 +98,7 @@ Mixin(Base => {
             // re-attached in the last tick (for example, it was moved to
             // another element), then clean up.
             if (!this.isConnected && Private(this).__initialized) {
-                // Protected(this)._deinit()
-                this._deinit()
+                Protected(this)._deinit()
                 Private(this).__initialized = false
             }
         },
@@ -122,11 +120,7 @@ Mixin(Base => {
             Private(this).__initialAttributeChange = true
         },
 
-        // TODO FIXME protected here doesn't work because the protected protptype
-        // chain from the imperative class hierarchy is not connected to the
-        // protected prototype chain of the HTMLInterface class hierarchy. We'll
-        // fix this in lowclass.
-        // protected: {
+        protected: {
 
             /**
              * Init is called when this element is connected into the DOM. When
@@ -174,7 +168,7 @@ Mixin(Base => {
                 // deintialization logic.
             },
 
-        // },
+        },
 
         private: {
             __style: null,

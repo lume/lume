@@ -62,8 +62,7 @@ const HTMLScene = DeclarativeBase.subclass('HTMLScene', ({ Public, Private, Supe
         return styles
     },
 
-    // FIXME protected not working with _init/_deinit methods, See FIXME in WebComponent for details
-    // protected: {
+    protected: {
 
         _init() {
             Super(this)._init()
@@ -79,7 +78,7 @@ const HTMLScene = DeclarativeBase.subclass('HTMLScene', ({ Public, Private, Supe
             Public(this).unmount()
         },
 
-    // },
+    },
 
     private: {
         _root: null,

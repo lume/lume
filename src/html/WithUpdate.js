@@ -1,3 +1,6 @@
+// forked from https://www.npmjs.com/package/skatejs v5.2.4
+// MIT License: https://github.com/skatejs/skatejs/blob/412081535656416ac98b72e3f6088393729a86e5/LICENSE
+
 import { getInheritedDescriptor } from 'lowclass/utils'
 import { dashCase, empty, keys, unique, pick } from './utils'
 

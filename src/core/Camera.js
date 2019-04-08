@@ -73,9 +73,7 @@ Class('PerspectiveCamera').extends( Node, ({ Super, Public, Private }) => ({
         _makeThreeObject3d() {
             return new ThreePerspectiveCamera(75, 16/9, 1, 1000)
         },
-    },
 
-        // FIXME, should be protected. See FIXME in WebComponent for details
         // TODO replace with unmountedCallback #150
         _deinit() {
             Super(this)._deinit()
@@ -86,6 +84,7 @@ Class('PerspectiveCamera').extends( Node, ({ Super, Public, Private }) => ({
             Private(this)._setSceneCamera( 'unset' )
             Private(this)._lastKnownScene = null
         },
+    },
 
     private: {
         _lastKnownScene: null,
