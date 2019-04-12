@@ -2,6 +2,7 @@ import Node from './Node'
 import Scene from './Scene'
 import XYZValues from './XYZValues'
 import {useDefaultNames} from '../html'
+console.log( 'Node.test.js' )
 
 useDefaultNames()
 
