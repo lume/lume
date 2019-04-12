@@ -166,7 +166,7 @@ let Scene = Mixin(Base => {
         unmount() {
             if (!this._mounted) return
 
-            Protected(this).__stopSizePolling()
+            Private(this).__stopSizePolling()
 
             if (this.parentNode)
                 this.parentNode.removeChild(this)
