@@ -344,7 +344,7 @@ let Scene = Mixin(Base => {
                     // skip `Public(this)`, we already handled it above
                     if (node === Public(this)) return
 
-                    ImperativeBaseProtected(node)._triggerLoadGL()
+                    ImperativeBaseProtected()(node)._triggerLoadGL()
                 })
             },
 
@@ -362,7 +362,7 @@ let Scene = Mixin(Base => {
                     // skip `Public(this)`, we already handled it above
                     if (node === Public(this)) return
 
-                    ImperativeBaseProtected(node)._triggerUnloadGL()
+                    ImperativeBaseProtected()(node)._triggerUnloadGL()
                 })
             },
 
@@ -377,7 +377,7 @@ let Scene = Mixin(Base => {
                     // skip `Public(this)`, we already handled it above
                     if (node === Public(this)) return
 
-                    ImperativeBaseProtected(node)._loadCSS()
+                    ImperativeBaseProtected()(node)._loadCSS()
                 })
             },
 
@@ -395,7 +395,7 @@ let Scene = Mixin(Base => {
                     // skip `Public(this)`, we already handled it above
                     if (node === Public(this)) return
 
-                    ImperativeBaseProtected(node)._unloadCSS()
+                    ImperativeBaseProtected()(node)._unloadCSS()
                 })
             },
         },

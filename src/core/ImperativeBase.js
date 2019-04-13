@@ -37,8 +37,6 @@ var ImperativeBaseProtected
 var ImperativeBaseProtectedImportCount
 var maxImportCount
 export function getImperativeBaseProtectedHelper() {
-    initImperativeBase()
-
     maxImportCount = maxImportCount || 2
 
     // note, ImperativeBaseProtectedImportCount can be initially undefined,
@@ -49,7 +47,7 @@ export function getImperativeBaseProtectedHelper() {
         throw new Error('You are not allowed to import ImperativeBaseProtected')
     }
 
-    return ImperativeBaseProtected
+    return () => ImperativeBaseProtected
 }
 
 // Here we wrap the definition of the ImperativeBase class with this function in
