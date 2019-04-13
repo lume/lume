@@ -1,7 +1,4 @@
 import Class from 'lowclass'
-import {native} from 'lowclass/native'
-import './Camera'
-import Node from './Node'
 
 // fallback to experimental CSS transform if browser doesn't have it (fix for Safari 9)
 if (typeof document.createElement('div').style.transform == 'undefined') {
@@ -116,13 +113,7 @@ Class('ElementOperations', {
     },
 
     applyImperativeNodeProperties(node) {
-
-        // Only Node is Transformable
-        if (node instanceof Node) {
-            this.applyOpacity(node._properties.opacity)
-        }
-
-        // But both Node and Scene are Sizeable
+        this.applyOpacity(node._properties.opacity)
         this.applySize(node.calculatedSize)
     },
 
