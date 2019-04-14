@@ -1,4 +1,6 @@
 import Class from 'lowclass'
+import './Camera'
+import Node from './Node'
 
 // fallback to experimental CSS transform if browser doesn't have it (fix for Safari 9)
 if (typeof document.createElement('div').style.transform == 'undefined') {
