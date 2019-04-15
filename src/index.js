@@ -1,3 +1,4 @@
+export * from 'lowclass'
 export * from './core'
 export * from './html'
 export * from './components'

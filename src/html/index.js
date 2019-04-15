@@ -4,8 +4,6 @@ export HTMLScene from './HTMLScene'
 export WebComponent from './WebComponent'
 // export HTMLPushPaneLayout from './HTMLPushPaneLayout'
 
-export * as behaviors from './behaviors'
-
 import Scene from '../core/Scene'
 import Node from '../core/Node'
 import Mesh from '../core/Mesh'
@@ -20,6 +18,8 @@ import Camera from '../core/Camera'
 import AutoLayoutNode from '../layout/AutoLayoutNode'
 import ObjModel from '../core/ObjModel'
 // import PushPaneLayout from '../components/PushPaneLayout'
+
+export * as behaviors from './behaviors'
 
 export function useDefaultNames() {
 

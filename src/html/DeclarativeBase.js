@@ -31,7 +31,7 @@ export function initDeclarativeBase() {
             define(name) {
                 name = name || this.defaultElementName
                 customElements.define(name, this)
-                this._definedElementName = name
+                this._definedElementName = name // TODO static protected members in lowclass
             },
 
             get definedElementName() {
@@ -64,21 +64,21 @@ export function initDeclarativeBase() {
 
             const privateThis = Private(this)
 
-            privateThis._hasShadowRoot = true
+            privateThis.__hasShadowRoot = true
             if (oldRoot) {
-                Private(this)._onV0ShadowRootReplaced( oldRoot )
+                Private(this).__onV0ShadowRootReplaced( oldRoot )
             }
             const observer = observeChildren(
                 root,
-                privateThis._shadowRootChildAdded.bind(privateThis),
-                privateThis._shadowRootChildRemoved.bind(privateThis)
+                privateThis.__shadowRootChildAdded.bind(privateThis),
+                privateThis.__shadowRootChildRemoved.bind(privateThis)
             )
             observers.set(root, observer)
 
             const {children} = this
             for (let l=children.length, i=0; i<l; i+=1) {
                 if (!(children[i] instanceof DeclarativeBase)) continue
-                Private(children[i])._isPossiblyDistributed = true
+                Private(children[i]).__isPossiblyDistributed = true
             }
 
             return root
@@ -92,7 +92,7 @@ export function initDeclarativeBase() {
 
             // mirror the DOM connections in the imperative API's virtual scene graph.
             if (child instanceof HTMLNode) {
-                if (Private(this)._hasShadowRoot) Private(child)._isPossiblyDistributed = true
+                if (Private(this).__hasShadowRoot) Private(child).__isPossiblyDistributed = true
 
                 // If ImperativeBase#add was called first, child's
                 // `parent` will already be set, so prevent recursion.
@@ -119,14 +119,14 @@ export function initDeclarativeBase() {
                 //) == 'v1'
             ) {
                 child.addEventListener('slotchange', this)
-                Private(this)._handleDistributedChildren(child)
+                Private(this).__handleDistributedChildren(child)
             }
         },
 
         childDisconnectedCallback(child) {
             // mirror the connection in the imperative API's virtual scene graph.
             if (child instanceof HTMLNode) {
-                Private(child)._isPossiblyDistributed = false
+                Private(child).__isPossiblyDistributed = false
 
                 // If ImperativeBase#remove was called first, child's
                 // `parent` will already be null, so prevent recursion.
@@ -153,8 +153,8 @@ export function initDeclarativeBase() {
                 //) == 'v1'
             ) {
                 child.removeEventListener('slotchange', this)
-                Private(this)._handleDistributedChildren(child)
-                Private(this)._slotElementsAssignedNodes.delete(child)
+                Private(this).__handleDistributedChildren(child)
+                Private(this).__slotElementsAssignedNodes.delete(child)
             }
         },
 
@@ -170,11 +170,11 @@ export function initDeclarativeBase() {
             for (let l=children.length, i=0; i<l; i+=1) {
                 // skip nodes that are possiblyDistributed, i.e. they have a parent
                 // that has a ShadowRoot.
-                if (!hasHtmlApi || !Private(children[i])._isPossiblyDistributed)
+                if (!hasHtmlApi || !Private(children[i]).__isPossiblyDistributed)
                     children[i].traverse()
             }
 
-            const shadowChildren = Private(this)._shadowChildren
+            const shadowChildren = Private(this).__shadowChildren
             if (hasHtmlApi && shadowChildren) {
                 for (let l=shadowChildren.length, i=0; i<l; i+=1)
                     shadowChildren[i].traverse(true)
@@ -193,12 +193,12 @@ export function initDeclarativeBase() {
             // true if this node has a shadow root (even if it is "closed", see
             // attachShadow method above). Once true always true because shadow
             // roots cannot be removed.
-            _hasShadowRoot: false,
+            __hasShadowRoot: false,
 
             // True when this node has a parent that has a shadow root. When
             // using the HTML API, Imperative API can look at this to determine
             // whether to render this node or not, in the case of WebGL.
-            _isPossiblyDistributed: false,
+            __isPossiblyDistributed: false,
 
             // A map of the slot elements that are children of this node and
             // their last-known assigned nodes. When a slotchange happens while
@@ -206,24 +206,22 @@ export function initDeclarativeBase() {
             // detect what the difference is between the last known and the new
             // assignments, and notate the new distribution of child nodes. See
             // issue #40 for background on why we do this.
-            _slotElementsAssignedNodes: new WeakMap,
+            __slotElementsAssignedNodes: new WeakMap,
 
             // If this node is distributed into a shadow tree, this will
             // reference the parent of the <slot> or <content> element.
             // Basically, this node will render as a child of that parent node
             // in the flat tree.
-            _shadowParent: null,
+            __shadowParent: null,
 
             // If this element has a child <slot> or <content> element while in
             // a shadow root, then this will be a Set of the nodes distributed
             // into the <slot> or <content>, and those nodes render relatively
             // to this node in the flat tree. We instantiate this later, only
             // when/if needed.
-            _shadowChildren: null,
+            __shadowChildren: null,
 
-            _nonLibraryElementCount: 0,
-
-            _shadowRootChildAdded(child) {
+            __shadowRootChildAdded(child) {
 
                 // NOTE Logic here is similar to childConnectedCallback
 
@@ -241,11 +239,11 @@ export function initDeclarativeBase() {
                     && child instanceof HTMLSlotElement
                 ) {
                     child.addEventListener('slotchange', this)
-                    this._handleDistributedChildren(child)
+                    this.__handleDistributedChildren(child)
                 }
             },
 
-            _shadowRootChildRemoved(child) {
+            __shadowRootChildRemoved(child) {
 
                 // NOTE Logic here is similar to childDisconnectedCallback
 
@@ -263,8 +261,8 @@ export function initDeclarativeBase() {
                     && child instanceof HTMLSlotElement
                 ) {
                     child.removeEventListener('slotchange', this)
-                    this._handleDistributedChildren(child)
-                    this._slotElementsAssignedNodes.delete(child)
+                    this.__handleDistributedChildren(child)
+                    this.__slotElementsAssignedNodes.delete(child)
                 }
             },
 
@@ -272,12 +270,12 @@ export function initDeclarativeBase() {
             handleEvent(event) {
                 if (event.type == 'slotchange') {
                     const slot = event.target
-                    this._handleDistributedChildren(slot)
+                    this.__handleDistributedChildren(slot)
                 }
             },
 
-            _handleDistributedChildren(slot) {
-                const diff = this._getDistributedChildDifference(slot)
+            __handleDistributedChildren(slot) {
+                const diff = this.__getDistributedChildDifference(slot)
 
                 const {added} = diff
                 for (let l=added.length, i=0; i<l; i+=1) {
@@ -295,18 +293,18 @@ export function initDeclarativeBase() {
                     // exist in multiple shadowChildren lists when there is a
                     // chain of assigned slots. For more info, see
                     // https://github.com/w3c/webcomponents/issues/611
-                    const shadowParent = addedNode._shadowParent
-                    if (shadowParent && shadowParent._shadowChildren) {
-                        const shadowChildren = shadowParent._shadowChildren
+                    const shadowParent = addedNode.__shadowParent
+                    if (shadowParent && shadowParent.__shadowChildren) {
+                        const shadowChildren = shadowParent.__shadowChildren
                         shadowChildren.splice(shadowChildren.indexOf(addedNode), 1)
                         if (!shadowChildren.length)
-                            shadowParent._shadowChildren = null
+                            shadowParent.__shadowChildren = null
                     }
 
                     // The node is now distributed to `this` element.
-                    addedNode._shadowParent = this
-                    if (!this._shadowChildren) this._shadowChildren = []
-                    this._shadowChildren.add(addedNode)
+                    addedNode.__shadowParent = this
+                    if (!this.__shadowChildren) this.__shadowChildren = []
+                    this.__shadowChildren.add(addedNode)
                 }
 
                 const {removed} = diff
@@ -315,24 +313,24 @@ export function initDeclarativeBase() {
 
                     if (!(removedNode instanceof DeclarativeBase)) continue
 
-                    removedNode._shadowParent = null
-                    this._shadowChildren.delete(removedNode)
-                    if (!this._shadowChildren.size) this._shadowChildren = null
+                    removedNode.__shadowParent = null
+                    this.__shadowChildren.delete(removedNode)
+                    if (!this.__shadowChildren.size) this.__shadowChildren = null
                 }
             },
 
-            _getDistributedChildDifference(slot) {
+            __getDistributedChildDifference(slot) {
                 let previousNodes
 
-                if (this._slotElementsAssignedNodes.has(slot))
-                    previousNodes = this._slotElementsAssignedNodes.get(slot)
+                if (this.__slotElementsAssignedNodes.has(slot))
+                    previousNodes = this.__slotElementsAssignedNodes.get(slot)
                 else
                     previousNodes = []
 
                 const newNodes = slot.assignedNodes({flatten: true})
 
                 // save the newNodes to be used as the previousNodes for next time.
-                this._slotElementsAssignedNodes.set(slot, newNodes)
+                this.__slotElementsAssignedNodes.set(slot, newNodes)
 
                 const diff = {
                     removed: [],
@@ -360,7 +358,7 @@ export function initDeclarativeBase() {
                 return diff
             },
 
-            _onV0ShadowRootReplaced( oldRoot ) {
+            __onV0ShadowRootReplaced( oldRoot ) {
                 observers.get(oldRoot).disconnect()
                 observers.delete(oldRoot)
                 const {childNodes} = oldRoot

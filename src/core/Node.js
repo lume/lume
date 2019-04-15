@@ -1,6 +1,6 @@
 import Class from 'lowclass'
+import Mixin from 'lowclass/Mixin'
 import 'geometry-interfaces'
-import Mixin from './Mixin'
 import ImperativeBase, {initImperativeBase} from './ImperativeBase'
 import { default as HTMLInterface } from '../html/HTMLNode'
 import Scene from './Scene'
@@ -12,11 +12,13 @@ import '../html/behaviors/ObjModelBehavior'
 const radiansPerDegree = 1 / 360 * 2*Math.PI
 
 initImperativeBase()
+const Brand = {brand: 'Node'}
 
 let Node = Mixin(Base => {
     const Parent = ImperativeBase.mixin( Base )
 
-    return Class('Node').extends( Parent, ({ Super }) => ({
+    return Class('Node').extends( Parent, ({ Super, Public, Protected }) => ({
+
         static: {
             defaultElementName: 'i-node',
             props: {
@@ -50,17 +52,25 @@ let Node = Mixin(Base => {
             //self.callSuperConstructor(TreeNode)
             //self.callSuperConstructor(ImperativeBase)
 
-            /**
-             * @private
-             * This method is defined here in the consructor as an arrow function
-             * because parent Nodes pass it to Observable#on and Observable#off. If
-             * it were a prototype method, then it would need to be bound when
-             * passed to Observable#on, which would require keeping track of the
-             * bound function reference in order to be able to pass it to
-             * Observable#off later. See ImperativeBase#add and
-             * ImperativeBase#remove.
-             */
-            self._onParentSizeChange = () => {
+            Protected(self)._calcSize()
+            self.needsUpdate()
+
+            return self
+        },
+
+        updated(oldProps, modifiedProps) {
+            Super(this).updated(oldProps, modifiedProps)
+
+            if (modifiedProps.visible) {
+                this._elementOperations.shouldRender(this.visible)
+                this.needsUpdate()
+            }
+        },
+
+        protected: {
+
+            // See ImperativeBase#add and ImperativeBase#remove.
+            _onParentSizeChange() {
 
                 // We only need to recalculate sizing and matrices if this node has
                 // properties that depend on parent sizing (proportional size,
@@ -69,34 +79,22 @@ let Node = Mixin(Base => {
                 // size of this element which depends on the size of this element's
                 // parent. Align also depends on parent sizing.
                 if (
-                    self._properties.sizeMode.x === "proportional"
-                    || self._properties.sizeMode.y === "proportional"
-                    || self._properties.sizeMode.z === "proportional"
+                    Public(this)._properties.sizeMode.x === "proportional"
+                    || Public(this)._properties.sizeMode.y === "proportional"
+                    || Public(this)._properties.sizeMode.z === "proportional"
 
-                    || self._properties.align.x !== 0
-                    || self._properties.align.y !== 0
-                    || self._properties.align.z !== 0
+                    || Public(this)._properties.align.x !== 0
+                    || Public(this)._properties.align.y !== 0
+                    || Public(this)._properties.align.z !== 0
                 ) {
-                    self._calcSize()
-                    self._needsToBeRendered()
+                    this._calcSize()
+                    Public(this).needsUpdate()
                 }
             }
 
-            self._calcSize()
-            self._needsToBeRendered()
-
-            return self
         },
 
-        updated(oldProps, newProps, modifiedProps) {
-            Super(this).updated(oldProps, newProps, modifiedProps)
-
-            if (modifiedProps.visible) {
-                this._elementOperations.shouldRender(this.visible)
-                this._needsToBeRendered()
-            }
-        },
-    }))
+    }), Brand)
 
 })
 

@@ -1,7 +1,6 @@
 import Class from 'lowclass'
-import {native} from 'lowclass/native'
+import './Camera'
 import Node from './Node'
-import Motor from './Motor'
 
 // fallback to experimental CSS transform if browser doesn't have it (fix for Safari 9)
 if (typeof document.createElement('div').style.transform == 'undefined') {
@@ -37,7 +36,7 @@ Class('ElementOperations', {
      * Note: updating class names with `el.classList.add()` won't thrash the
      * layout. See: http://www.html5rocks.com/en/tutorials/speed/animations
      */
-    setClasses (...classes) {
+    setClasses(...classes) {
         if (classes.length) this.element.classList.add(...classes)
         return this
     },
@@ -116,18 +115,12 @@ Class('ElementOperations', {
     },
 
     applyImperativeNodeProperties(node) {
-
-        // Only Node is Transformable
-        if (node instanceof Node) {
-            this.applyOpacity(node._properties.opacity)
-        }
-
-        // But both Node and Scene are Sizeable
-        this.applySize(node._calculatedSize)
+        this.applyOpacity(node._properties.opacity)
+        this.applySize(node.calculatedSize)
     },
 
     shouldRender(shouldRender) {
-        const task = Motor.once(() => {
+        requestAnimationFrame(() => {
             this.applyStyle('display', shouldRender ? 'block' : 'none')
         })
     },

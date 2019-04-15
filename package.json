@@ -42,13 +42,13 @@
     "jss-props-sort": "^1.0.0",
     "jss-px": "^1.0.0",
     "jss-vendor-prefixer": "^1.0.0",
-    "lowclass": "^4.3.0",
+    "lowclass": "^4.6.0",
     "three": "^0.88.0"
   },
   "devDependencies": {
     "all-contributors-cli": "^4.4.0",
     "builder": "4.0.0",
-    "builder-js-package": "trusktr/builder-js-package#83b5bb456a094cb66c739820d3078d5fc4f6c375",
+    "builder-js-package": "trusktr/builder-js-package#6d664864cd6e9dbd38f2fe41910c924f404b4c6d",
     "docpress": "0.7.1"
   },
   "docpress": {

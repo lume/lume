@@ -52,22 +52,24 @@ Class('Mesh').extends( Node, ({ Super }) => ({
         this.three.receiveShadow = this.receiveShadow
     },
 
-    makeThreeObject3d() {
-        return new ThreeMesh
-    },
-
-    updated(oldProps, oldState, modifiedProps) {
-        Super(this).updated(oldProps, oldState, modifiedProps)
+    updated(oldProps, modifiedProps) {
+        Super(this).updated(oldProps, modifiedProps)
 
         if (!this.isConnected) return
 
         if ( modifiedProps.castShadow ) {
-            this._needsToBeRendered()
+            this.needsUpdate()
         }
 
         if ( modifiedProps.receiveShadow ) {
             this.three.material.needsUpdate = true
-            this._needsToBeRendered()
+            this.needsUpdate()
         }
+    },
+
+    protected: {
+        _makeThreeObject3d() {
+            return new ThreeMesh
+        },
     },
 }))

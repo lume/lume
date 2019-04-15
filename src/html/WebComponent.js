@@ -1,7 +1,7 @@
 /* global customElements */
 
 import Class from 'lowclass'
-import Mixin from '../core/Mixin'
+import Mixin from 'lowclass/Mixin'
 import {native} from 'lowclass/native'
 import { observeChildren } from '../core/Utility'
 import jss from '../lib/jss'
@@ -23,6 +23,8 @@ function classExtendsHTMLElement(constructor) {
     else return classExtendsHTMLElement( constructor.__proto__ )
 }
 
+const Brand = {}
+
 /**
  * Creates a WebComponent base class dynamically, depending on which
  * HTMLElement class you want it to extend from. Extend from WebComponent when
@@ -38,8 +40,6 @@ function classExtendsHTMLElement(constructor) {
 export default
 Mixin(Base => {
 
-    // the extra `class extends` is necessary here so that
-    // babel-plugin-transform-builtin-classes can work properly.
     Base = Base || native( HTMLElement )
 
     // XXX: In the future, possibly check for Element if other things besides
@@ -50,8 +50,7 @@ Mixin(Base => {
         )
     }
 
-    // otherwise, create it.
-    const WebComponent = Class('WebComponent').extends( WithChildren.mixin( DefaultBehaviors.mixin( Base ) ), ({ Super, Public, Private }) => ({
+    return Class('WebComponent').extends( WithChildren.mixin( DefaultBehaviors.mixin( Base ) ), ({ Super, Public, Protected, Private }) => ({
 
         constructor(...args) {
             // Throw an error if no Custom Elements v1 API exists.
@@ -72,9 +71,9 @@ Mixin(Base => {
         connectedCallback() {
             if (Super(this).connectedCallback) Super(this).connectedCallback()
 
-            if (!Private(this).initialized) {
-                this.init()
-                Private(this).initialized = true
+            if (!Private(this).__initialized) {
+                Protected(this)._init()
+                Private(this).__initialized = true
             }
         },
 
@@ -91,16 +90,16 @@ Mixin(Base => {
             // both get called, and in which case we don't necessarily want to
             // clean up. If the element gets re-attached before the next tick
             // (for example, gets moved), then we want to preserve the
-            // stuff that would be cleaned up by an extending class' deinit
-            // method by not running the following this.deinit() call.
+            // stuff that would be cleaned up by an extending class' _deinit
+            // method by not running the following this._deinit() call.
             await Promise.resolve() // deferr to the next tick.
 
             // As mentioned in the previous comment, if the element was not
             // re-attached in the last tick (for example, it was moved to
             // another element), then clean up.
-            if (!this.isConnected && Private(this).initialized) {
-                this.deinit()
-                Private(this).initialized = false
+            if (!this.isConnected && Private(this).__initialized) {
+                Protected(this)._deinit()
+                Private(this).__initialized = false
             }
         },
 
@@ -114,66 +113,69 @@ Mixin(Base => {
             return {}
         },
 
-
-        /**
-         * Init is called exactly once, the first time this element is
-         * connected into the DOM. When an element is disconnected then
-         * connected right away within the same synchronous tick, init() is not
-         * fired again. However, if an element is disconnected and the current
-         * tick completes before the element is connected again, then deinit()
-         * will be called (i.e. the element was not simply moved to a new
-         * location, it was actually removed), then the next time that the
-         * element is connected back into DOM init() will be called again.
-         *
-         * This is in contrast to connectedCallback and disconnectedCallback:
-         * connectedCallback is guaranteed to always fire even if the elemet
-         * was previously disconnected in the same synchronous tick.
-         *
-         * For example, ...
-         *
-         * Subclasses should extend this to add such logic.
-         */
-        init() {
-            if (!Private(this).style) Private(this).style = Private(this).createStyles()
-
-            // fire this.attributeChangedCallback in case some attributes have
-            // existed before the custom element was upgraded.
-            if (!Private(this).initialAttributeChange && this.hasAttributes()) {
-
-                const {attributes} = this
-                for (let l=attributes.length, i=0; i<l; i+=1)
-                    this.attributeChangedCallback(attributes[i].name, null, attributes[i].value)
-            }
-        },
-
         // TODO: when we make setAttribute accept non-strings, we need to move
         // logic from attributeChangedCallback
         attributeChangedCallback(...args) {
             if (Super(this).attributeChangedCallback) Super(this).attributeChangedCallback(...args)
-            Private(this).initialAttributeChange = true
+            Private(this).__initialAttributeChange = true
         },
 
-        /**
-         * This is the reciprocal of init(). It will be called when an element
-         * has been disconnected but not re-connected within the same tick.
-         *
-         * The reason that init() and deinit() exist is so that if an element is
-         * moved from one place to another within the same synchronous tick,
-         * that deinit and init logic will not fire unnecessarily. If logic is
-         * needed in that case, then connectedCallback and disconnectedCallback
-         * can be used directly instead.
-         */
-        deinit() {
-            // Nothing at the moment, but subclasses can extend this to add
-            // deintialization logic.
+        protected: {
+
+            /**
+             * Init is called when this element is connected into the DOM. When
+             * an element is disconnected then connected right away within the
+             * same synchronous tick, _init() is not fired again. However, if an
+             * element is disconnected and the current tick completes before the
+             * element is connected again, then _deinit() will be called (i.e.
+             * the element was not simply moved to a new location, it was
+             * actually removed), then the next time that the element is
+             * connected back into DOM _init() will be called again.
+             *
+             * This is in contrast to connectedCallback and disconnectedCallback:
+             * connectedCallback is guaranteed to always fire even if the elemet
+             * was previously disconnected in the same synchronous tick.
+             *
+             * For example, ...
+             *
+             * Subclasses should extend this to add such logic.
+             */
+            _init() {
+                if (!Private(this).__style) Private(this).__style = Private(this).__createStyles()
+
+                // fire this.attributeChangedCallback in case some attributes have
+                // existed before the custom element was upgraded.
+                if (!Private(this).__initialAttributeChange && Public(this).hasAttributes()) {
+
+                    const {attributes} = Public(this)
+                    for (let l=attributes.length, i=0; i<l; i+=1)
+                        Public(this).attributeChangedCallback(attributes[i].name, null, attributes[i].value)
+                }
+            },
+
+            /**
+             * This is the reciprocal of _init(). It will be called when an element
+             * has been disconnected but not re-connected within the same tick.
+             *
+             * The reason that _init() and _deinit() exist is so that if an element is
+             * moved from one place to another within the same synchronous tick,
+             * that _deinit and _init logic will not fire unnecessarily. If logic is
+             * needed in that case, then connectedCallback and disconnectedCallback
+             * can be used directly instead.
+             */
+            _deinit() {
+                // Nothing at the moment, but subclasses can extend this to add
+                // deintialization logic.
+            },
+
         },
 
         private: {
-            style: null,
-            initialized: false,
-            initialAttributeChange: false,
+            __style: null,
+            __initialized: false,
+            __initialAttributeChange: false,
 
-            createStyles() {
+            __createStyles() {
                 const rule = jss.createRule(Public(this).getStyles())
 
                 rule.applyTo(Public(this))
@@ -181,7 +183,6 @@ Mixin(Base => {
                 return rule
             },
         },
-    }))
+    }), Brand)
 
-    return WebComponent
 }, native( HTMLElement ))

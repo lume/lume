@@ -14,7 +14,7 @@ Class( 'BaseMaterialBehavior' ).extends( BaseMeshBehavior, ({ Super }) => ({
         },
     },
 
-    updated( oldProps, oldState, modifiedProps ) {
+    updated( oldProps, modifiedProps ) {
         const {color, opacity} = modifiedProps
 
         if (color) this.updateMaterial('color')
@@ -32,7 +32,7 @@ Class( 'BaseMaterialBehavior' ).extends( BaseMeshBehavior, ({ Super }) => ({
 
     updateMaterial(propName) {
         this.element.three.material[propName] = this[propName]
-        this.element._needsToBeRendered()
+        this.element.needsUpdate()
     },
 
 }))

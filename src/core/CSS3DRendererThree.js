@@ -1,5 +1,8 @@
 import Class from 'lowclass'
 import {CSS3DRendererNested} from '../lib/three/CSS3DRendererNested'
+import {getSceneProtectedHelper} from './Scene'
+
+const SceneProtected = getSceneProtectedHelper()
 
 const sceneStates = new WeakMap
 
@@ -45,14 +48,14 @@ const CSS3DRendererThree = Class('CSS3DRendererThree', { // TODO rename
     updateResolution(scene) {
         const state = sceneStates.get(scene)
 
-        scene._updateCameraAspect()
-        scene._updateCameraPerspective()
-        scene._updateCameraProjection()
+        SceneProtected()(scene)._updateCameraAspect()
+        SceneProtected()(scene)._updateCameraPerspective()
+        SceneProtected()(scene)._updateCameraProjection()
 
         const { x, y } = scene.calculatedSize
         state.renderer.setSize( x, y )
 
-        scene._needsToBeRendered()
+        scene.needsUpdate()
     },
 
     requestFrame( scene, fn ) {

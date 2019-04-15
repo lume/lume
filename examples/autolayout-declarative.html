@@ -8,9 +8,7 @@
 
         <!-- the library -->
         <script src="../global.js"></script>
-
-    </head>
-    <body>
+        <script> infamous.useDefaultNames() </script>
 
         <style>
             body, html {
@@ -21,6 +19,9 @@
                 overflow: hidden;
             }
         </style>
+
+    </head>
+    <body>
 
         <i-scene id="scene" experimental-webgl>
             <i-ambient-light intensity="0.1"></i-ambient-light>
@@ -33,7 +34,9 @@
                 cast-shadow="true"
                 intensity="0.5"
                 >
-                <i-sphere
+
+                <i-mesh
+                    has="sphere-geometry basic-material"
                     size="10 10 10"
                     color="white"
                     receive-shadow="false"
@@ -46,6 +49,7 @@
 
             <i-autolayout-node
                 id="layout"
+                size="100 100 0"
                 position="0 0 0"
                 align=" 0.5 0.5 0"
                 mount-point=" 0.5 0.5 0"
@@ -69,9 +73,6 @@
         </i-scene>
 
         <script>{
-            // defines the default names for the HTML elements
-            infamous.useDefaultNames()
-
             const layout = document.querySelector('#layout')
             layout.size = (x,y,z,t) => [600+200*Math.sin(t/1000),400+200*Math.sin(t/1000),z]
 
@@ -111,11 +112,15 @@
                 lastSize = size
             })
 
-            setTimeout(() => {
-                Array.from( document.querySelectorAll('i-dom-plane') ).forEach(n => {
-                    n.three.material.opacity = 0.3
-                })
-            }, 0)
+            Array.from( document.querySelectorAll('i-dom-plane') ).forEach(plane => {
+                plane.three.material.opacity = 0.3
+                plane.needsUpdate()
+            })
+
+            light.three.shadow.radius = 2
+            light.three.distance = 800
+            light.three.shadow.bias = -0.01
+            light.needsUpdate()
         }</script>
 
     </body>

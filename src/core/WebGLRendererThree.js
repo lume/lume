@@ -1,5 +1,4 @@
 import WEBVR from '../lib/three/WebVR.js'
-
 import {
     //PerspectiveCamera,
     WebGLRenderer,
@@ -7,9 +6,11 @@ import {
     PCFSoftShadowMap,
     PCFShadowMap,
 } from 'three'
-
 import Class from 'lowclass'
 import {CSS3DRendererNested} from '../lib/three/CSS3DRendererNested'
+import {getSceneProtectedHelper} from './Scene'
+
+const SceneProtected = getSceneProtectedHelper()
 
 const sceneStates = new WeakMap
 
@@ -76,20 +77,20 @@ const WebGLRendererThree = Class('WebGLRendererThree', { // TODO rename
 
     // TODO FIXME This is tied to the `sizechange` event of Scene, which means
     // camera and renderer resize happens outside of the animation loop, but as
-    // with _calcSize, we want to see if we can put this in the nimation loop
+    // with _calcSize, we want to see if we can put this in the animation loop
     // as well. Putting this logic in the loop depends on putting _calcSize in
     // the loop. #66
     updateResolution(scene) {
         const state = sceneStates.get(scene)
 
-        scene._updateCameraAspect()
-        scene._updateCameraPerspective()
-        scene._updateCameraProjection()
+        SceneProtected()(scene)._updateCameraAspect()
+        SceneProtected()(scene)._updateCameraPerspective()
+        SceneProtected()(scene)._updateCameraProjection()
 
         const { x, y } = scene.calculatedSize
         state.renderer.setSize( x, y )
 
-        scene._needsToBeRendered()
+        scene.needsUpdate()
     },
 
     setClearColor( scene, color, opacity ) {

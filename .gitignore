@@ -1,32 +1,33 @@
 ### ignore everything
 /*
 
-# ignore all hidden files, those have to be manually added to the repo.
+# including hidden files, those have to be manually added to the repo.
 /**/.*
 
-### except for the following:
+### except for the following top-level whitelist:
 
 # folders
 !/src
 !/tests
+!/docs
 !/examples
+!/website
 
 # global build, to be published
 !/global.js
 !/global.js.map
 
 # config files
+!/.all-contributorsrc
 !/.builderrc
 !/.editorconfig
-!/.npmrc
 !/.gitignore
 !/.npmignore
-!/package.json
-!/babel.config.js
-!/buble.config.js
-!/jest.config.js
-!/webpack.config.js
+!/.npmrc
+!/bower.json
 !/builder.config.js
+!/package.json
 
-# all good projects have a README!
+# the basics!
 !/README.md
+!/LICENSE

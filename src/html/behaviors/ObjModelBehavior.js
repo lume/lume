@@ -1,8 +1,9 @@
 import 'element-behaviors'
 import Class from 'lowclass'
-import '../../../lib/three/global'
+import '../../lib/three/global'
 import 'three/examples/js/loaders/OBJLoader'
 import 'three/examples/js/loaders/MTLLoader'
+import {Events} from '../../core/Events'
 import Behavior from './Behavior'
 
 const ObjModelBehavior = Class('ObjModelBehavior').extends(Behavior, ({Super, Public, Private}) => ({
@@ -13,7 +14,7 @@ const ObjModelBehavior = Class('ObjModelBehavior').extends(Behavior, ({Super, Pu
         },
     },
 
-    updated(oldProps, newProps, modifiedProps) {
+    updated(oldProps, modifiedProps) {
         if (modifiedProps.obj || modifiedProps.mtl) {
             // TODO if only mtl changes, maybe we can update only the material
             // instead of reloading the whole object?
@@ -32,7 +33,7 @@ const ObjModelBehavior = Class('ObjModelBehavior').extends(Behavior, ({Super, Pu
         this.mtlLoader.crossOrigin = ''
 
         this.objLoader.manager.onLoad = () => {
-            this.element._needsToBeRendered()
+            this.element.needsUpdate()
         }
     },
 
@@ -99,8 +100,8 @@ const ObjModelBehavior = Class('ObjModelBehavior').extends(Behavior, ({Super, Pu
         __setModel(model) {
             const pub = Public(this)
             pub.element.three.add(pub.model = model)
-            pub.element.emit('model-loaded', {format: 'obj', model: model})
-            pub.element._needsToBeRendered()
+            pub.element.emit(Events.MODEL_LOAD, {format: 'obj', model: model})
+            pub.element.needsUpdate()
         },
     },
 

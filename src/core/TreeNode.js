@@ -1,27 +1,20 @@
 import Class from 'lowclass'
 import native from 'lowclass/native'
-import {withUpdate} from '@trusktr/skatejs'
-import Mixin from './Mixin'
-import {isInstanceof} from './Utility'
+import Mixin from 'lowclass/Mixin'
+import {WithUpdate} from '../html/WithUpdate'
+import {instanceOf} from './Utility'
 import TreeNode from './TreeNode'
+
+const TreeNodeBrand = {brand: 'TreeNode'}
 
 export default
 Mixin(Base =>
 
-    Class('TreeNode').extends( native( withUpdate( Base ) ), ({ Super, Public: Private }) => ({
-
-        // TODO, make Private work with Mixin+lowclass. The problem is when
-        // using `Private` on instance of the same class created by a different
-        // mixin application. We may have to do something similar to the
-        // hasInstance Mixin helper.
-        //private: {
-            _parent: null,
-            _children: null,
-        //},
+    Class('TreeNode').extends( native( WithUpdate( Base ) ), ({ Super, Private }) => ({
 
         constructor(...args) {
             const self = Super(this).constructor(...args)
-            Private(self)._children = []
+            Private(self).__children = []
             return self
         },
 
@@ -29,7 +22,7 @@ Mixin(Base =>
          * @readonly
          */
         get parent() {
-            return Private(this)._parent
+            return Private(this).__parent
         },
 
         /**
@@ -39,7 +32,7 @@ Mixin(Base =>
         get subnodes() {
             // return a new array, so that the user modifying it doesn't affect
             // this node's actual children.
-            return [...Private(this)._children]
+            return [...Private(this).__children]
         },
 
         /**
@@ -48,18 +41,18 @@ Mixin(Base =>
          * @param {TreeNode} childNode The child node to add.
          */
         add(childNode) {
-            if (! isInstanceof(childNode, TreeNode))
+            if (! instanceOf(childNode, TreeNode))
                 throw new TypeError('TreeNode.add() expects the childNode argument to be a TreeNode instance.')
 
-            if (Private(childNode)._parent === this)
+            if (Private(childNode).__parent === this)
                 throw new ReferenceError('childNode is already a child of this parent.')
 
-            if (Private(childNode)._parent)
-                Private(childNode)._parent.remove(childNode)
+            if (Private(childNode).__parent)
+                Private(childNode).__parent.remove(childNode)
 
-            Private(childNode)._parent = this;
+            Private(childNode).__parent = this;
 
-            Private(this)._children.push(childNode);
+            Private(this).__children.push(childNode);
 
             Promise.resolve().then(() => {
                 childNode.connected()
@@ -85,18 +78,18 @@ Mixin(Base =>
          * @param {TreeNode} childNode The node to remove.
          */
         remove(childNode) {
-            if (! isInstanceof(childNode, TreeNode))
+            if (! instanceOf(childNode, TreeNode))
                 throw new Error(`
                     TreeNode.remove expects the childNode argument to be an
                     instance of TreeNode. There should only be TreeNodes in the
                     tree.
                 `)
 
-            if (Private(childNode)._parent !== this)
+            if (Private(childNode).__parent !== this)
                 throw new ReferenceError('childNode is not a child of this parent.')
 
-            Private(childNode)._parent = null
-            Private(this)._children.splice(Private(this)._children.indexOf(childNode), 1);
+            Private(childNode).__parent = null
+            Private(this).__children.splice(Private(this).__children.indexOf(childNode), 1);
 
             Promise.resolve().then(() => {
                 childNode.disconnected()
@@ -120,7 +113,7 @@ Mixin(Base =>
          * Shortcut to remove all children.
          */
         removeAllChildren() {
-            this.removeChildren(Private(this)._children)
+            this.removeChildren(Private(this).__children)
             return this
         },
 
@@ -129,7 +122,7 @@ Mixin(Base =>
          * @return {number} How many children this TreeNode has.
          */
         get childCount() {
-            return Private(this)._children.length
+            return Private(this).__children.length
         },
 
         // generic life cycle methods
@@ -142,11 +135,19 @@ Mixin(Base =>
         traverse(fn) {
             fn(this)
 
-            const children = this._children
+            const children = Private(this).__children
             for (let i = 0, l = children.length; i < l; i++) {
                 children[i].traverse(fn)
             }
         },
-    }))
+
+        protected: { TreeNode: 'TreeNode' },
+
+        private: {
+            __parent: null,
+            __children: null,
+        },
+
+    }), TreeNodeBrand)
 
 )

@@ -1,8 +1,8 @@
 import { BoxGeometry, MeshPhongMaterial } from 'three'
 import Class from 'lowclass'
-import Mesh from '../../core/Mesh'
 import Behavior from './Behavior'
 import { Events } from '../../core/Events'
+import Mesh from '../../core/Mesh'
 
 /**
  * Base class for Geometry and Material behaviors, not intended for direct use.
@@ -19,11 +19,11 @@ Class( 'BaseMeshBehavior' ).extends( Behavior, ({ Public, Protected, Private, Su
     },
 
     get glLoaded() {
-        return Protected(this).__glLoaded
+        return Protected(this)._glLoaded
     },
 
     get cssLoaded() {
-        return Protected(this).__cssLoaded
+        return Protected(this)._cssLoaded
     },
 
     connectedCallback() {
@@ -39,18 +39,18 @@ Class( 'BaseMeshBehavior' ).extends( Behavior, ({ Public, Protected, Private, Su
     loadGL() {
         if (!this.element.three) return
 
-        if (Protected(this).__glLoaded) return
-        Protected(this).__glLoaded = true
+        if (Protected(this)._glLoaded) return
+        Protected(this)._glLoaded = true
 
         this.resetMeshComponent()
 
         this.refreshAllProps()
-        this.element._needsToBeRendered()
+        this.element.needsUpdate()
     },
 
     unloadGL() {
-        if (!Protected(this).__glLoaded) return
-        Protected(this).__glLoaded = false
+        if (!Protected(this)._glLoaded) return
+        Protected(this)._glLoaded = false
 
         // if the behavior is being disconnected, but the element still has GL
         // mode (.three), then leave the element with a default mesh GL
@@ -60,7 +60,7 @@ Class( 'BaseMeshBehavior' ).extends( Behavior, ({ Public, Protected, Private, Su
         else
             Private(this).__disposeMeshComponent( this.element, this.constructor.type )
 
-        this.element._needsToBeRendered()
+        this.element.needsUpdate()
     },
 
     resetMeshComponent() {
@@ -72,7 +72,7 @@ Class( 'BaseMeshBehavior' ).extends( Behavior, ({ Public, Protected, Private, Su
             this.constructor.type,
             Protected(this)._createComponent(this.element)
         )
-        this.element._needsToBeRendered()
+        this.element.needsUpdate()
     },
 
     getMeshComponent(name) {
@@ -80,8 +80,8 @@ Class( 'BaseMeshBehavior' ).extends( Behavior, ({ Public, Protected, Private, Su
     },
 
     protected: {
-        __glLoaded: false,
-        __cssLoaded: false,
+        _glLoaded: false,
+        _cssLoaded: false,
 
         _createComponent() {
             throw new Error('`_createComponent()` is not implemented by subclass.')

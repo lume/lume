@@ -1,7 +1,7 @@
 import 'element-behaviors'
 import Class from 'lowclass'
-import {withUpdate} from '@trusktr/skatejs'
 import native from 'lowclass/native'
+import {WithUpdate} from '../WithUpdate'
 import ForwardProps from './ForwardProps'
 import Node from '../../core/Node'
 
@@ -10,7 +10,7 @@ import Node from '../../core/Node'
  *
  */
 export default
-Class( 'Behavior' ).extends( native( withUpdate( ForwardProps ) ), ({ Public, Protected, Private, Super }) => ({
+Class( 'Behavior' ).extends( native( WithUpdate( ForwardProps ) ), ({ Public, Protected, Private, Super }) => ({
     static: {
         // use a getter because Mesh is undefined at module evaluation time due
         // to a circular dependency.
@@ -22,7 +22,7 @@ Class( 'Behavior' ).extends( native( withUpdate( ForwardProps ) ), ({ Public, Pr
 
         _this.element = element
 
-        Private(this).__checkElementIsLibraryElement(element)
+        Private(_this).__checkElementIsLibraryElement(element)
 
         return _this
     },
@@ -34,7 +34,7 @@ Class( 'Behavior' ).extends( native( withUpdate( ForwardProps ) ), ({ Public, Pr
         return this.element.parentNode
     },
 
-    // proxy setAttribute to this.element so that SkateJS withUpdate works in certain cases
+    // proxy setAttribute to this.element so that WithUpdate works in certain cases
     setAttribute(name, value) {
         this.element.setAttribute(name, value)
     },
@@ -49,13 +49,41 @@ Class( 'Behavior' ).extends( native( withUpdate( ForwardProps ) ), ({ Public, Pr
         this.triggerUpdate()
     },
 
-    connectedCallback() {
+    // We use __elementDefined in the following methods so we can delay prop
+    // handling until the elements are upgraded and their APIs exist.
+    //
+    // NOTE, another way we could've achieved this is to let elements emit an
+    // event in connectedCallback, at which point the element is guaranteed to
+    // be upgraded. We currently do emit the GL_LOAD event. Which can only
+    // happen when the element is upgrade AND has loaded GL objects (and these
+    // behaviors only care about GL obbjects at the moment) so it'd be possible
+    // to rely only on that event for the GL behaviors (which they all currently
+    // are). If we have behaviors that work with CSS, not GL, then we could rely
+    // on the CSS_LOAD event. In any case, the current solution is more generic,
+    // for use with any type of custom elements.
+
+    async attributeChangedCallback(...args) {
+        if (!Private(this).__elementDefined)
+            await Private(this).__whenDefined
+
+        Super(this).attributeChangedCallback(...args)
+    },
+
+    async connectedCallback() {
+        if (!Private(this).__elementDefined)
+            await Private(this).__whenDefined
+
         Super( this ).connectedCallback()
+
         Protected(this)._listenToElement()
     },
 
-    disconnectedCallback() {
+    async disconnectedCallback() {
+        if (!Private(this).__elementDefined)
+            await Private(this).__whenDefined
+
         Super( this ).disconnectedCallback()
+
         Protected(this)._unlistenToElement()
     },
 
@@ -75,6 +103,13 @@ Class( 'Behavior' ).extends( native( withUpdate( ForwardProps ) ), ({ Public, Pr
     },
 
     private: {
+        // a promise resolved when an element is upgraded
+        __whenDefined: null,
+
+        // we need to wait for __elementDefined to be true because running the
+        // superclass logic, otherwise `updated()` calls can happen before the
+        // element is upgraded (i.e. before any APIs are available).
+        __elementDefined: false,
 
         // TODO add a test to make sure this check works
         async __checkElementIsLibraryElement(element) {
@@ -82,26 +117,36 @@ Class( 'Behavior' ).extends( native( withUpdate( ForwardProps ) ), ({ Public, Pr
             const BaseClass = Public(this).constructor.requiredElementType
 
             if ( element.nodeName.includes('-') ) {
-                const whenDefined = customElements.whenDefined(element.nodeName.toLowerCase())
-                    .then(() => {
-                        if (element instanceof BaseClass) return true
-                        else return false
-                    })
+                this.__whenDefined = customElements.whenDefined(element.nodeName.toLowerCase())
 
-                const timeout = new Promise(r => setTimeout(r, 10000))
+                // We use `.then` here on purpose, so that setting
+                // __elementDefined happens in the very first microtask after
+                // __whenDefined is resolved. Otherwise if we set
+                // __elementDefined after awaiting the following Promise.race,
+                // then it will happen on the second microtask after
+                // __whenDefined is resolved. Our goal is to have APIs ready as
+                // soon as possible in the methods above that wait for
+                // __whenDefined.
+                this.__whenDefined.then(() => {
+                    this.__elementDefined = element instanceof BaseClass
+                })
 
-                const isNode = await Promise.race([whenDefined, timeout])
+                await Promise.race([
+                    this.__whenDefined,
+                    new Promise(r => setTimeout(r, 1000))
+                ])
 
-                if (!isNode) throw new Error(`
+                if (!this.__elementDefined) throw new Error(`
                     Either the element you're using the behavior on is not an
-                    instance of ${BaseClass.name}, or there was a 10-second timeout
-                    waiting for the element to be defined.
+                    instance of ${BaseClass.name}, or there was a 1-second
+                    timeout waiting for the element to be defined. Please make
+                    sure all elements you intend to use are defined.
                 `)
             }
             else {
                 throw new Error(`
-                    The element you're using the mesh behavior on is not an
-                    instance of ${BaseClass.name}.
+                    The element you're using the mesh behavior on (<${element.tagName.toLowerCase()}>)
+                    is not an instance of ${BaseClass.name}.
                 `)
             }
         },

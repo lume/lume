@@ -1,5 +1,7 @@
 import Class from 'lowclass'
-import Mixin from '../../core/Mixin'
+import Mixin from 'lowclass/Mixin'
+
+const Brand = {}
 
 export default
 Mixin(Base =>
@@ -112,5 +114,5 @@ Mixin(Base =>
             },
         },
 
-    }))
+    }), Brand)
 )

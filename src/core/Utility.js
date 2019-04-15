@@ -1,3 +1,5 @@
+import instanceOf from 'lowclass/instanceOf'
+
 function epsilon(value) {
     return Math.abs(value) < 0.000001 ? 0 : value;
 }
@@ -114,15 +116,6 @@ function getAncestorShadowRoot(node) {
     return current
 }
 
-// helper function to use instead of instanceof for classes that implement the
-// static Symbol.hasInstance method, because the behavior of instanceof isn't
-// polyfillable.
-function isInstanceof(lhs, rhs) {
-    if (typeof rhs == 'function' && rhs[Symbol.hasInstance])
-        return rhs[Symbol.hasInstance](lhs)
-    else return lhs instanceof rhs
-}
-
 function checkIsNumberArrayString(str) {
     if (!str.match(/^\s*(((\s*(-|\+)?((\.\d+)|(\d+\.\d+)|(\d+)|(\d+(\.\d+)?e(-|\+)?(\d+)))\s*,){0,2}(\s*(-|\+)?((\.\d+)|(\d+\.\d+)|(\d+)|(\d+(\.\d+)?e(-|\+)?(\d+)))))|((\s*(-|\+)?((\.\d+)|(\d+\.\d+)|(\d+)|(\d+(\.\d+)?e(-|\+)?(\d+)))\s){0,2}(\s*(-|\+)?((\.\d+)|(\d+\.\d+)|(\d+)|(\d+(\.\d+)?e(-|\+)?(\d+))))))\s*$/g))
         throw new Error(`Attribute must be a comma- or space-separated sequence of up to three numbers, for example "1 2.5 3". Yours was "${str}".`)
@@ -141,5 +134,9 @@ export {
     hasShadowDomV0,
     hasShadowDomV1,
     getAncestorShadowRoot,
-    isInstanceof,
+
+    // helper function to use instead of instanceof for classes that implement the
+    // static Symbol.hasInstance method, because the behavior of instanceof isn't
+    // polyfillable.
+    instanceOf,
 }

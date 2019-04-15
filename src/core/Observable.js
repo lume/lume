@@ -1,18 +1,21 @@
-import Mixin from './Mixin'
 import Class from 'lowclass'
+import Mixin from 'lowclass/Mixin'
+
+const Brand = {}
 
 export default
 Mixin(Base =>
 
-    Class('Observable').extends( Base, ({ Super }) => ({
-        on(eventName, callback, context) {
-            if (!this._eventMap)
-                this._eventMap = new Map
+    Class('Observable').extends( Base, ({ Super, Private }) => ({
 
-            let callbacks = this._eventMap.get(eventName)
+        on(eventName, callback, context) {
+            if (!Private(this).__eventMap)
+                Private(this).__eventMap = new Map
+
+            let callbacks = Private(this).__eventMap.get(eventName)
 
             if (!callbacks)
-                this._eventMap.set(eventName, callbacks = [])
+                Private(this).__eventMap.set(eventName, callbacks = [])
 
             if (typeof callback == 'function')
                 callbacks.push([callback, context]) // save callback associated with context
@@ -21,9 +24,9 @@ Mixin(Base =>
         },
 
         off(eventName, callback) {
-            if (!this._eventMap || !this._eventMap.has(eventName)) return
+            if (!Private(this).__eventMap || !Private(this).__eventMap.has(eventName)) return
 
-            const callbacks = this._eventMap.get(eventName)
+            const callbacks = Private(this).__eventMap.get(eventName)
 
             const index = callbacks.findIndex(tuple => tuple[0] === callback)
 
@@ -31,15 +34,15 @@ Mixin(Base =>
 
             callbacks.splice(index, 1)
 
-            if (callbacks.length === 0) this._eventMap.delete(eventName)
+            if (callbacks.length === 0) Private(this).__eventMap.delete(eventName)
 
-            if (this._eventMap.size === 0) this._eventMap = null
+            if (Private(this).__eventMap.size === 0) Private(this).__eventMap = null
         },
 
         emit(eventName, data) {
-            if (!this._eventMap || !this._eventMap.has(eventName)) return
+            if (!Private(this).__eventMap || !Private(this).__eventMap.has(eventName)) return
 
-            const callbacks = this._eventMap.get(eventName)
+            const callbacks = Private(this).__eventMap.get(eventName)
 
             let tuple = undefined
             let callback = undefined
@@ -62,6 +65,13 @@ Mixin(Base =>
         triggerEvent(...args) {
             return this.emit(...args)
         },
-    }))
+
+        protected: { Observable: 'Observable' },
+
+        private: {
+            __eventMap: null, // Map
+        },
+
+    }), Brand)
 
 )
