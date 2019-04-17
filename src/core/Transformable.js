@@ -54,12 +54,6 @@ Mixin(Base => {
             },
         },
 
-        constructor(options = {}) {
-            const self = Super(this).constructor(options)
-            self._worldMatrix = null
-            return self
-        },
-
         /**
          * Set the position of the Transformable.
          *
@@ -72,7 +66,7 @@ Mixin(Base => {
             Protected(this)._setPropertyXYZ(Transformable, 'position', newValue)
         },
         get position() {
-            return this._props.position
+            return Protected(this)._props.position
         },
 
         /**
@@ -85,7 +79,7 @@ Mixin(Base => {
             Protected(this)._setPropertyXYZ(Transformable, 'rotation', newValue)
         },
         get rotation() {
-            return this._props.rotation
+            return Protected(this)._props.rotation
         },
 
         /**
@@ -98,7 +92,7 @@ Mixin(Base => {
             Protected(this)._setPropertyXYZ(Transformable, 'scale', newValue)
         },
         get scale() {
-            return this._props.scale
+            return Protected(this)._props.scale
         },
 
         /**
@@ -111,20 +105,20 @@ Mixin(Base => {
             Protected(this)._setPropertyXYZ(Transformable, 'origin', newValue)
         },
         get origin() {
-            return this._props.origin
+            return Protected(this)._props.origin
         },
 
         /**
          * Set this Node's opacity.
          *
-         * @param {number} opacity A floating point number between 0 and 1
-         * (inclusive). 0 is fully transparent, 1 is fully opaque.
+         * @param {number} opacity A floating point number clamped between 0 and
+         * 1 (inclusive). 0 is fully transparent, 1 is fully opaque.
          */
         set opacity(newValue) {
             Protected(this)._setPropertySingle('opacity', newValue)
         },
         get opacity() {
-            return this._props.opacity
+            return Protected(this)._props.opacity
         },
 
         /**
@@ -140,7 +134,7 @@ Mixin(Base => {
             Protected(this)._setPropertyXYZ(Transformable, 'align', newValue)
         },
         get align() {
-            return this._props.align
+            return Protected(this)._props.align
         },
 
         /**
@@ -155,38 +149,36 @@ Mixin(Base => {
             Protected(this)._setPropertyXYZ(Transformable, 'mountPoint', newValue)
         },
         get mountPoint() {
-            return this._props.mountPoint
+            return Protected(this)._props.mountPoint
+        },
+
+        makeDefaultProps() {
+            return Object.assign(Super(this).makeDefaultProps(), {
+                position:   new XYZNumberValues(0, 0, 0),
+                rotation:   new XYZNumberValues(0, 0, 0),
+                scale:      new XYZNumberValues(1, 1, 1),
+                origin:     new XYZNumberValues(0.5, 0.5, 0.5),
+                align:      new XYZNumberValues(0, 0, 0),
+                mountPoint: new XYZNumberValues(0, 0, 0),
+                opacity:    1,
+            })
         },
 
         protected: {
-            _setDefaultProperties() {
-                Super(this)._setDefaultProperties()
-
-                Object.assign(Public(this)._properties, {
-                    position:   new XYZNumberValues(0, 0, 0),
-                    rotation:   new XYZNumberValues(0, 0, 0),
-                    scale:      new XYZNumberValues(1, 1, 1),
-                    origin:     new XYZNumberValues(0.5, 0.5, 0.5),
-                    align:      new XYZNumberValues(0, 0, 0),
-                    mountPoint: new XYZNumberValues(0, 0, 0),
-                    opacity:    1,
-                })
-            },
-
             _setPropertyObservers() {
                 Super(this)._setPropertyObservers()
 
-                Public(this)._properties.position.on('valuechanged',
+                Protected(this)._properties.position.on('valuechanged',
                     () => Public(this).trigger('propertychange', 'position'))
-                Public(this)._properties.rotation.on('valuechanged',
+                Protected(this)._properties.rotation.on('valuechanged',
                     () => Public(this).trigger('propertychange', 'rotation'))
-                Public(this)._properties.scale.on('valuechanged',
+                Protected(this)._properties.scale.on('valuechanged',
                     () => Public(this).trigger('propertychange', 'scale'))
-                Public(this)._properties.origin.on('valuechanged',
+                Protected(this)._properties.origin.on('valuechanged',
                     () => Public(this).trigger('propertychange', 'origin'))
-                Public(this)._properties.align.on('valuechanged',
+                Protected(this)._properties.align.on('valuechanged',
                     () => Public(this).trigger('propertychange', 'align'))
-                Public(this)._properties.mountPoint.on('valuechanged',
+                Protected(this)._properties.mountPoint.on('valuechanged',
                     () => Public(this).trigger('propertychange', 'mountPoint'))
 
                 // this is also triggered by Sizeable.updated, besides the above lines
@@ -271,7 +263,7 @@ Mixin(Base => {
 
                 return function _calculateMatrix() {
                     const pub = Public(this)
-                    const {align, mountPoint, position, origin} = pub._properties
+                    const {align, mountPoint, position, origin} = Protected(this)._properties
                     const size = pub.calculatedSize
 
                     // THREE-COORDS-TO-DOM-COORDS

@@ -1,6 +1,7 @@
 // forked from https://www.npmjs.com/package/skatejs v5.2.4
 // MIT License: https://github.com/skatejs/skatejs/blob/412081535656416ac98b72e3f6088393729a86e5/LICENSE
 
+import { Class, Mixin } from 'lowclass'
 import { getInheritedDescriptor } from 'lowclass/utils'
 import { dashCase, empty, keys, unique, pick } from './utils'
 
@@ -39,13 +40,13 @@ const defaultTypesMap = new Map()
 function defineProps(constructor) {
     if (constructor.hasOwnProperty('_propsNormalized')) return
     const { props } = constructor
-    constructor._propsList = []
+    constructor._propNames = []
     keys(props).forEach(name => {
         let func = props[name] || props.any
         if (defaultTypesMap.has(func)) func = defaultTypesMap.get(func)
         if (typeof func !== 'function') func = prop(func)
         func({ constructor }, name)
-        constructor._propsList.push(name)
+        constructor._propNames.push(name)
     })
 }
 
@@ -157,7 +158,7 @@ export function prop(definition) {
 
             if (existingDescriptorType === 'accessor' && existingGetter)
                 val = existingGetter.call(this)
-            else if (existingDescriptorType === 'data') val = this._props[name]
+            else if (existingDescriptorType === 'data') val = WithUpdateProtected(this)._props[name]
 
             if (val == null) {
                 val = normalized.default.call(this, name)
@@ -165,7 +166,7 @@ export function prop(definition) {
                 if (existingDescriptorType === 'accessor' && existingSetter)
                     existingSetter.call(this, val)
                 else if (existingDescriptorType === 'data')
-                    this._props[name] = val
+                    WithUpdateProtected(this)._props[name] = val
             }
 
             return val
@@ -192,9 +193,9 @@ export function prop(definition) {
 
             if (existingDescriptorType === 'accessor' && existingSetter)
                 existingSetter.call(this, val)
-            else if (existingDescriptorType === 'data') this._props[name] = val
+            else if (existingDescriptorType === 'data') WithUpdateProtected(this)._props[name] = val
 
-            this._modifiedProps[name] = true
+            WithUpdatePrivate(this).__modifiedProps[name] = true
             this.triggerUpdate()
         }
     }
@@ -207,60 +208,94 @@ export function prop(definition) {
     return func
 }
 
-export const WithUpdate = (Base = HTMLElement) =>
-    class WithUpdate extends Base {
-        static get props() {
-            if (!this._props) this._props = {}
-            return this._props
-        }
+// TODO This class is currently unused. We'll see about refactoring to make
+// _props private instead of protected, in which case this will be a protected
+// read-only interface (_props) to the private cache (__props).
+// const PropsReadonly = Class('PropsReadonly', ({ Private }) => ({
+//     constructor(withUpdateInstance) {
+//         Private(this).__instance = withUpdateInstance
+//
+//         for (const prop in withUpdateInstance.constructor.props) {
+//             Object.defineProperty(this, prop, {
+//                 get: function get() {
+//                     return WithUpdatePrivate(this).__props[prop]
+//                 },
+//             })
+//         }
+//
+//         // Object.freeze(this)
+//     },
+// }))
 
-        static set props(props) {
-            this._props = props
-        }
+let WithUpdatePrivate
+let WithUpdateProtected
 
-        static get observedAttributes() {
-            // make sure to create a new instance of these static props per constructor.
-            if (!('_attributeToAttributeMap' in this))
-                this._attributeToAttributeMap = {}
-            if (!('_attributeToPropertyMap' in this))
-                this._attributeToPropertyMap = {}
-            if (!('_observedAttributes' in this)) this._observedAttributes = []
+const Brand = {}
 
-            // We have to define props here because observedAttributes are retrieved
-            // only once when the custom element is defined. If we did this only in
-            // the constructor, then props would not link to attributes.
-            defineProps(this)
-            return unique(
-                this._observedAttributes.concat(super.observedAttributes || [])
-            )
-        }
+export default
+Mixin((Base = HTMLElement) =>
+    Class('WithUpdate').extends(Base, ({ Super, Protected, Private }) => (WithUpdateProtected = Protected, WithUpdatePrivate = Private, {
+        static: {
+            get props() {
+                if (!this._staticProps) this._staticProps = {}
+                return this._staticProps
+            },
+
+            set props(props) {
+                this._staticProps = props
+            },
+
+            get observedAttributes() {
+                // make sure to create a new instance of these static props per constructor.
+                if (!('_attributeToAttributeMap' in this)) this._attributeToAttributeMap = {}
+                if (!('_attributeToPropertyMap' in this)) this._attributeToPropertyMap = {}
+                if (!('_observedAttributes' in this)) this._observedAttributes = []
+
+                // We have to define props here because observedAttributes are retrieved
+                // only once when the custom element is defined. If we did this only in
+                // the constructor, then props would not link to attributes.
+                defineProps(this)
+                return unique(
+                    this._observedAttributes.concat(Base.observedAttributes || [])
+                )
+            },
+        },
 
         constructor(...args) {
-            super(...args)
+            const self = Super(this).constructor(...args) || this
 
-            this._prevProps = {}
+            Private(self).__prevProps = {}
 
-            // this._props extends from __existingPrototypeValues in case we
+            // self._props extends from __existingPrototypeValues in case we
             // overwrote a prototype property that had an existing value during
             // definition of the props. This ensures we get the original
             // prototype value when we read from a prop that we haven't set yet.
-            this._props = {
-                ...(this.constructor.__existingPrototypeValues || {})
+            Protected(self)._props = {
+                ...(self.constructor.__existingPrototypeValues || {}),
+                ...this.makeDefaultProps(),
             }
 
-            this._modifiedProps = {}
-        }
+            // TODO (trusktr), I was thinking to make the protected _props
+            // readonly. Should it be private only (requires refactoring
+            // Sizeable and Transformable)? Or is convenient for subclasses to
+            // read from the cache? I'm leaning towards protected readonly.
+            // Protected(self)._props = new PropsReadonly(self)
+
+            Private(self).__modifiedProps = {}
+
+            return self
+        },
 
         get props() {
             return pick(this, keys(this.constructor.props))
-        }
+        },
 
         set props(props) {
             const ctorProps = this.constructor.props
             keys(props).forEach(
                 k => /*k in ctorProps && */ (this[k] = props[k])
             )
-        }
+        },
 
         attributeChangedCallback(name, oldValue, newValue) {
             const {
@@ -269,8 +304,8 @@ export const WithUpdate = (Base = HTMLElement) =>
                 _propsNormalized
             } = this.constructor
 
-            if (super.attributeChangedCallback) {
-                super.attributeChangedCallback(name, oldValue, newValue)
+            if (Super(this).attributeChangedCallback) {
+                Super(this).attributeChangedCallback(name, oldValue, newValue)
             }
 
             const propertyName = _attributeToPropertyMap[name]
@@ -284,11 +319,11 @@ export const WithUpdate = (Base = HTMLElement) =>
                     const propertyValue = deserialize
                         ? deserialize.call(this, newValue, propertyName)
                         : newValue
-                    this._props[propertyName] =
+                    Protected(this)._props[propertyName] =
                         propertyValue == null
                             ? defaultValue.call(this)
                             : propertyValue
-                    this._modifiedProps[propertyName] = true
+                    Private(this).__modifiedProps[propertyName] = true
                     this.triggerUpdate()
                 }
             }
@@ -301,46 +336,70 @@ export const WithUpdate = (Base = HTMLElement) =>
                     this.setAttribute(targetAttributeName, newValue)
                 }
             }
-        }
+        },
 
         connectedCallback() {
-            if (super.connectedCallback) {
-                super.connectedCallback()
+            if (Super(this).connectedCallback) {
+                Super(this).connectedCallback()
             }
-            const propsList = this.constructor._propsList
+            const propsList = this.constructor._propNames
             for (let i = 0, l = propsList.length; i < l; i += 1)
-                this._modifiedProps[propsList[i]] = true
+                Private(this).__modifiedProps[propsList[i]] = true
             this.triggerUpdate()
-        }
+        },
 
         shouldUpdate() {
             return true
-        }
+        },
 
         triggerUpdate() {
-            if (this._updating) {
+            if (Private(this).__updating) {
                 return
             }
-            this._updating = true
+            Private(this).__updating = true
             delay(() => {
-                const { _prevProps, _modifiedProps } = this
+                const { __prevProps, __modifiedProps } = Private(this)
                 if (this.updating) {
-                    this.updating(_prevProps, _modifiedProps)
+                    this.updating(__prevProps, __modifiedProps)
                 }
                 if (
                     this.updated &&
-                    this.shouldUpdate(_prevProps, _modifiedProps)
+                    this.shouldUpdate(__prevProps, __modifiedProps)
                 ) {
-                    this.updated(_prevProps, _modifiedProps)
+                    this.updated(__prevProps, __modifiedProps)
                 }
-                this._prevProps = this.props
-                const propsList = this.constructor._propsList
-                for (let i = 0, l = propsList.length; i < l; i += 1)
-                    this._modifiedProps[propsList[i]] = false
-                this._updating = false
+                Private(this).__prevProps = this.props
+                const {_propNames} = this.constructor
+                for (let i = 0, l = _propNames.length; i < l; i += 1)
+                    Private(this).__modifiedProps[_propNames[i]] = false
+                Private(this).__updating = false
             })
-        }
-    }
+        },
+
+        triggerUpdateForProp(prop) {
+            Private(this).__modifiedProps[prop] = true
+            this.triggerUpdate()
+        },
+
+        triggerUpdateForProps(props) {
+            for (const prop of props)
+                Private(this).__modifiedProps[prop] = true
+
+            this.triggerUpdate()
+        },
+
+        triggerUpdateForAllProps() {
+            const {_propNames} = this.constructor
+            _propNames && this.triggerUpdateForProps(_propNames)
+        },
+
+        // subclasses should extend this method and assign default props values
+        // to the returned object.
+        makeDefaultProps() {
+            return {}
+        },
+    }), Brand)
+)
 
 const { parse, stringify } = JSON
 const attribute = Object.freeze({ source: true })

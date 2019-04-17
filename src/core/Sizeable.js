@@ -35,8 +35,7 @@ Mixin(Base => {
             const self = Super(this).constructor(options)
 
             Private(self).__calculatedSize = { x:0, y:0, z:0 }
-            self._properties = self._props // alias to WithUpdate._props
-            Protected(self)._setDefaultProperties()
+            Protected(self)._properties = Protected(self)._props // alias to WithUpdate._props
             Protected(self)._setPropertyObservers()
             self.properties = options
 
@@ -73,7 +72,7 @@ Mixin(Base => {
             Protected(this)._setPropertyXYZ(null, 'sizeMode', newValue)
         },
         get sizeMode() {
-            return this._props.sizeMode
+            return Protected(this)._props.sizeMode
         },
 
         // TODO: A "differential" size would be cool. Good for padding,
@@ -108,7 +107,7 @@ Mixin(Base => {
             Protected(this)._setPropertyXYZ(Sizeable, 'size', newValue)
         },
         get size() {
-            return this._props.size
+            return Protected(this)._props.size
         },
 
         /**
@@ -144,20 +143,20 @@ Mixin(Base => {
             return this.props
         },
 
-        protected: {
-            _setDefaultProperties() {
-                Object.assign(Public(this)._properties, {
-                    sizeMode: new XYZSizeModeValues('literal', 'literal', 'literal'),
-                    size:     new XYZNonNegativeValues(100, 100, 100),
-                })
-            },
+        makeDefaultProps() {
+            return Object.assign(Super(this).makeDefaultProps(), {
+                sizeMode: new XYZSizeModeValues('literal', 'literal', 'literal'),
+                size:     new XYZNonNegativeValues(100, 100, 100),
+            })
+        },
 
+        protected: {
             // TODO change all event values to objects. See here for reasoning:
             // https://github.com/airbnb/javascript#events
             _setPropertyObservers() {
-                Public(this)._properties.sizeMode.on('valuechanged',
+                Protected(this)._properties.sizeMode.on('valuechanged',
                     () => Public(this).trigger('propertychange', 'sizeMode'))
-                Public(this)._properties.size.on('valuechanged',
+                Protected(this)._properties.size.on('valuechanged',
                     () => Public(this).trigger('propertychange', 'size'))
             },
 
@@ -172,7 +171,7 @@ Mixin(Base => {
                 return function _calcSize() {
                     const calculatedSize = Private(this).__calculatedSize
                     Object.assign(previousSize, calculatedSize)
-                    const {sizeMode, size} = Public(this)._properties
+                    const {sizeMode, size} = Protected(this)._properties
                     const parentSize = this._getParentSize()
 
                     if (sizeMode.x == 'literal') {
@@ -214,7 +213,7 @@ Mixin(Base => {
                     if (!Private(this).__settingValueFromPropFunction) Private(this).__removePropertyFunction(name)
                     else Private(this).__settingValueFromPropFunction = false
 
-                    Public(this)._props[name] = newValue
+                    Protected(this)._props[name] = newValue
                 }
             },
 
@@ -226,7 +225,7 @@ Mixin(Base => {
                     if (!Private(this).__settingValueFromPropFunction) Private(this).__removePropertyFunction(name)
                     else Private(this).__settingValueFromPropFunction = false
 
-                    Public(this)._props[name] = newValue
+                    Protected(this)._props[name] = newValue
                 }
             },
         },
@@ -247,9 +246,9 @@ Mixin(Base => {
                 this.__propertyFunctions.set(name,
                     Motor.addRenderTask(time => {
                         const result = fn(
-                            Public(this)._properties[name].x,
-                            Public(this)._properties[name].y,
-                            Public(this)._properties[name].z,
+                            Protected(this)._properties[name].x,
+                            Protected(this)._properties[name].y,
+                            Protected(this)._properties[name].z,
                             time
                         )
 
@@ -280,7 +279,7 @@ Mixin(Base => {
                 this.__propertyFunctions.set(name,
                     Motor.addRenderTask(time => {
                         const result = fn(
-                            this._properties[name],
+                            Protected(this)._properties[name],
                             time
                         )
 

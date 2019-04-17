@@ -23,7 +23,7 @@ const CSS3DRendererThree = Class('CSS3DRendererThree', { // TODO rename
         sceneState.sizeChangeHandler = () => this.updateResolution(scene)
         scene.on('sizechange', sceneState.sizeChangeHandler)
 
-        scene._cssLayer.appendChild( renderer.domElement )
+        SceneProtected()(scene)._cssLayer.appendChild( renderer.domElement )
     },
 
     uninitialize(scene) {
@@ -32,7 +32,7 @@ const CSS3DRendererThree = Class('CSS3DRendererThree', { // TODO rename
         if (!sceneState) return
 
         scene.off('sizechange', sceneState.sizeChangeHandler)
-        scene._cssLayer.removeChild( sceneState.renderer.domElement )
+        SceneProtected()(scene)._cssLayer.removeChild( sceneState.renderer.domElement )
         sceneState.renderer = null
         sceneState.sizeChangeHandler = null
 

@@ -115,7 +115,7 @@ Class('ElementOperations', {
     },
 
     applyImperativeNodeProperties(node) {
-        this.applyOpacity(node._properties.opacity)
+        this.applyOpacity(node.opacity)
         this.applySize(node.calculatedSize)
     },
 

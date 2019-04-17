@@ -1,7 +1,6 @@
 import 'element-behaviors'
 import Class from 'lowclass'
-import native from 'lowclass/native'
-import {WithUpdate} from '../WithUpdate'
+import WithUpdate from '../WithUpdate'
 import ForwardProps from './ForwardProps'
 import Node from '../../core/Node'
 
@@ -10,7 +9,7 @@ import Node from '../../core/Node'
  *
  */
 export default
-Class( 'Behavior' ).extends( native( WithUpdate( ForwardProps ) ), ({ Public, Protected, Private, Super }) => ({
+Class( 'Behavior' ).extends( WithUpdate.mixin( ForwardProps ), ({ Public, Protected, Private, Super }) => ({
     static: {
         // use a getter because Mesh is undefined at module evaluation time due
         // to a circular dependency.
@@ -37,16 +36,6 @@ Class( 'Behavior' ).extends( native( WithUpdate( ForwardProps ) ), ({ Public, Pr
     // proxy setAttribute to this.element so that WithUpdate works in certain cases
     setAttribute(name, value) {
         this.element.setAttribute(name, value)
-    },
-
-    refreshAllProps() {
-        if (!this.constructor.props) return
-
-        for (const prop in this.constructor.props) {
-            this._modifiedProps[prop] = true
-        }
-
-        this.triggerUpdate()
     },
 
     // We use __elementDefined in the following methods so we can delay prop

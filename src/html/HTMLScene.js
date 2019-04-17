@@ -5,7 +5,7 @@ import DeclarativeBase, {initDeclarativeBase} from './DeclarativeBase'
 
 initDeclarativeBase()
 
-const HTMLScene = DeclarativeBase.subclass('HTMLScene', ({ Public, Private, Super }) => ({
+const HTMLScene = DeclarativeBase.subclass('HTMLScene', ({ Public, Protected, Private, Super }) => ({
 
     constructor() {
         const self = Super(this).constructor()
@@ -51,8 +51,13 @@ const HTMLScene = DeclarativeBase.subclass('HTMLScene', ({ Public, Private, Supe
 
         // TODO make this similar to "package protected". It is public for now
         // because WebGLRendererThree accesses it.
-        self._glLayer = privateThis._root.querySelector('.i-scene-WebGLLayer')
-        self._cssLayer = privateThis._root.querySelector('.i-scene-CSS3DLayer')
+        // TODO move these things (and others) out of the HTML interfaces, and
+        // enable them when the HTML interfaces are present, so that we can
+        // decouple HTML interfaces being present from functionality. We can
+        // make these things private if they are in the Scene class, and expose
+        // the private helper from there to friend modules.
+        Protected(self)._glLayer = privateThis._root.querySelector('.i-scene-WebGLLayer')
+        Protected(self)._cssLayer = privateThis._root.querySelector('.i-scene-CSS3DLayer')
 
         return self
     },
@@ -63,12 +68,14 @@ const HTMLScene = DeclarativeBase.subclass('HTMLScene', ({ Public, Private, Supe
     },
 
     protected: {
+        _glLayer: null, // HTMLDivElement
+        _cssLayer: null, // HTMLDivElement
 
         _init() {
             Super(this)._init()
 
             // When the HTMLScene gets addded to the DOM, make it be "mounted".
-            if (!Public(this)._mounted)
+            if (!Protected(this)._mounted)
                 Public(this).mount(Public(this).parentNode)
         },
 

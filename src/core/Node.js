@@ -3,7 +3,6 @@ import Mixin from 'lowclass/Mixin'
 import 'geometry-interfaces'
 import ImperativeBase, {initImperativeBase} from './ImperativeBase'
 import { default as HTMLInterface } from '../html/HTMLNode'
-import Scene from './Scene'
 import {props, mapPropTo} from './props'
 
 // register behaviors that can be used on this element
@@ -62,7 +61,7 @@ let Node = Mixin(Base => {
             Super(this).updated(oldProps, modifiedProps)
 
             if (modifiedProps.visible) {
-                this._elementOperations.shouldRender(this.visible)
+                Protected(this)._elementOperations.shouldRender(this.visible)
                 this.needsUpdate()
             }
         },
@@ -79,13 +78,13 @@ let Node = Mixin(Base => {
                 // size of this element which depends on the size of this element's
                 // parent. Align also depends on parent sizing.
                 if (
-                    Public(this)._properties.sizeMode.x === "proportional"
-                    || Public(this)._properties.sizeMode.y === "proportional"
-                    || Public(this)._properties.sizeMode.z === "proportional"
+                    Protected(this)._properties.sizeMode.x === "proportional"
+                    || Protected(this)._properties.sizeMode.y === "proportional"
+                    || Protected(this)._properties.sizeMode.z === "proportional"
 
-                    || Public(this)._properties.align.x !== 0
-                    || Public(this)._properties.align.y !== 0
-                    || Public(this)._properties.align.z !== 0
+                    || Protected(this)._properties.align.x !== 0
+                    || Protected(this)._properties.align.y !== 0
+                    || Protected(this)._properties.align.z !== 0
                 ) {
                     this._calcSize()
                     Public(this).needsUpdate()

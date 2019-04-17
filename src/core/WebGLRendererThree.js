@@ -52,7 +52,7 @@ const WebGLRendererThree = Class('WebGLRendererThree', { // TODO rename
 
         // TODO? Maybe the html/scene.js element should be responsible for
         // making this, so that DOM logic is encapsulated there?
-        scene._glLayer.appendChild( renderer.domElement )
+        SceneProtected()(scene)._glLayer.appendChild( renderer.domElement )
     },
 
     uninitialize(scene) {
@@ -61,7 +61,7 @@ const WebGLRendererThree = Class('WebGLRendererThree', { // TODO rename
         if (!sceneState) return
 
         scene.off('sizechange', sceneState.sizeChangeHandler)
-        scene._glLayer.removeChild( sceneState.renderer.domElement )
+        SceneProtected()(scene)._glLayer.removeChild( sceneState.renderer.domElement )
         sceneState.renderer.dispose()
         sceneState.renderer = null
         sceneState.sizeChangeHandler = null

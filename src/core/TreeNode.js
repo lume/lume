@@ -1,7 +1,6 @@
 import Class from 'lowclass'
-import native from 'lowclass/native'
 import Mixin from 'lowclass/Mixin'
-import {WithUpdate} from '../html/WithUpdate'
+import WithUpdate from '../html/WithUpdate'
 import {instanceOf} from './Utility'
 import TreeNode from './TreeNode'
 
@@ -10,7 +9,7 @@ const TreeNodeBrand = {brand: 'TreeNode'}
 export default
 Mixin(Base =>
 
-    Class('TreeNode').extends( native( WithUpdate( Base ) ), ({ Super, Private }) => ({
+    Class('TreeNode').extends( WithUpdate.mixin( Base ), ({ Super, Private }) => ({
 
         constructor(...args) {
             const self = Super(this).constructor(...args)

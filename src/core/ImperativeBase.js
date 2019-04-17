@@ -100,11 +100,7 @@ export function initImperativeBase() {
 
                     // Here we create the DOM HTMLElement associated with this
                     // Imperative-API Node.
-                    self._elementOperations = new ElementOperations(self)
-
-                    // stores a ref to this Node's root Scene when/if this Node is
-                    // in a scene.
-                    self._scene = null
+                    Protected(self)._elementOperations = new ElementOperations(self)
 
                     // See Transformable/Sizeable propertychange event.
                     // TODO: defer size calculation to render task
@@ -170,27 +166,29 @@ export function initImperativeBase() {
                  * @readonly
                  */
                 get scene() {
-                    // NOTE: this._scene is initally null, created in the constructor.
+                    // NOTE: this._scene is initally null.
+
+                    const parent = this.parent
 
                     // if already cached, return it. Or if no parent, return it (it'll be null).
                     // Additionally, Scenes have this._scene already set to themselves.
-                    if (this._scene || !this.parent) return this._scene
+                    if (Protected(this)._scene || !parent) return Protected(this)._scene
 
                     // if the parent node already has a ref to the scene, use that.
-                    if (this.parent._scene) {
-                        this._scene = this.parent._scene
+                    if (Protected(parent)._scene) {
+                        Protected(this)._scene = Protected(parent)._scene
                     }
-                    else if (this.parent instanceof Scene) {
-                        this._scene = this.parent
+                    else if (parent instanceof Scene) {
+                        Protected(this)._scene = parent
                     }
                     // otherwise call the scene getter on the parent, which triggers
                     // traversal up the scene graph in order to find the root scene (null
                     // if none).
                     else {
-                        this._scene = this.parent.scene
+                        Protected(this)._scene = parent.scene
                     }
 
-                    return this._scene
+                    return Protected(this)._scene
                 },
 
                 /**
@@ -218,7 +216,7 @@ export function initImperativeBase() {
                     // child should watch the parent for size changes.
                     this.on('sizechange', Protected(childNode)._onParentSizeChange, Protected(childNode))
 
-                    this._elementOperations.connectChildElement(childNode)
+                    Protected(this)._elementOperations.connectChildElement(childNode)
 
                     return this
                 },
@@ -231,7 +229,7 @@ export function initImperativeBase() {
                     this.off('sizechange', Protected(childNode)._onParentSizeChange, Protected(childNode))
 
                     if (!__leaveInDom)
-                        this._elementOperations.disconnectChildElement(childNode)
+                        Protected(this)._elementOperations.disconnectChildElement(childNode)
                 },
 
                 needsUpdate() {
@@ -247,6 +245,11 @@ export function initImperativeBase() {
                     _glLoaded: false,
                     _cssLoaded: false,
                     _willBeRendered: false,
+                    _elementOperations: null, // ElementOperations
+
+                    // stores a ref to this Node's root Scene when/if this Node is
+                    // in a scene.
+                    _scene: null, // Scene | null
 
                     _makeThreeObject3d() {
                         return new Object3D
@@ -352,7 +355,7 @@ export function initImperativeBase() {
                     _render(timestamp) {
                         if ( Super(this)._render ) Super(this)._render()
 
-                        Public(this)._elementOperations.applyImperativeNodeProperties(Public(this))
+                        this._elementOperations.applyImperativeNodeProperties(Public(this))
                     },
 
                     // This method is used by Motor._renderNodes().

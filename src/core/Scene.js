@@ -78,9 +78,7 @@ let Scene = Mixin(Base => {
             const self = Super(this).constructor(options)
 
             // Used by the `scene` getter in ImperativeBase
-            self._scene = self
-
-            self._mounted = false
+            Protected(self)._scene = self
 
             // size of the element where the Scene is mounted
             // NOTE: z size is always 0, since native DOM elements are always flat.
@@ -149,12 +147,12 @@ let Scene = Mixin(Base => {
 
             // The user can mount to a new location without calling unmount
             // first. Call it automatically in that case.
-            if (this._mounted) this.unmount()
+            if (Protected(this)._mounted) this.unmount()
 
             if (mountPoint !== this.parentNode)
                 mountPoint.appendChild(this)
 
-            this._mounted = true
+            Protected(this)._mounted = true
 
             Private(this).__startOrStopSizePolling()
         },
@@ -164,14 +162,14 @@ let Scene = Mixin(Base => {
          * mountPromise.
          */
         unmount() {
-            if (!this._mounted) return
+            if (!Protected(this)._mounted) return
 
             Private(this).__stopSizePolling()
 
             if (this.parentNode)
                 this.parentNode.removeChild(this)
 
-            this._mounted = false
+            Protected(this)._mounted = false
         },
 
         updated(oldProps, moddedProps) {
@@ -222,20 +220,19 @@ let Scene = Mixin(Base => {
             }
         },
 
+        makeDefaultProps() {
+            return Object.assign(Super(this).makeDefaultProps(), {
+                sizeMode: new XYZSizeModeValues('proportional', 'proportional', 'literal'),
+                size: new XYZNonNegativeValues(1, 1, 0),
+            })
+        },
+
         protected: {
+            _mounted: false,
             _elementParentSize: null, // {x: number, y: number, z: number}
 
             // TODO get default camera values from somewhere.
             _perspective: 1000,
-
-            _setDefaultProperties() {
-                Super(this)._setDefaultProperties()
-
-                Object.assign(Public(this)._properties, {
-                    sizeMode: new XYZSizeModeValues('proportional', 'proportional', 'literal'),
-                    size: new XYZNonNegativeValues(1, 1, 0),
-                })
-            },
 
             _makeThreeObject3d() {
                 return new ThreeScene
@@ -330,15 +327,12 @@ let Scene = Mixin(Base => {
                 //const ambientLight = new AmbientLight( 0x353535 )
                 //Public(this).three.add( ambientLight )
 
-                // a default orange background color. Use the backgroundColor and
-                // backgroundOpacity attributes to customize.
-                Public(this)._glBackgroundColor = new Color( 0xff6600 )
-                Public(this)._glBackgroundOpacity = 0
-
                 Private(this).__glRenderer = Private(this).__getRenderer('three')
 
-                // set default colors
-                Private(this).__glRenderer.setClearColor( Public(this), Public(this)._glBackgroundColor, Public(this)._glBackgroundOpacity )
+                // default orange background color and 0 opacity. Use the
+                // backgroundColor and backgroundOpacity attributes to
+                // customize.
+                Private(this).__glRenderer.setClearColor( Public(this), new Color( 0xff6600 ), 0 )
 
                 Public(this).traverse((node) => {
                     // skip `Public(this)`, we already handled it above
@@ -466,10 +460,10 @@ let Scene = Mixin(Base => {
                 const publicThis = Public(this)
 
                 if (
-                    publicThis._mounted &&
-                    (publicThis._properties.sizeMode.x == 'proportional'
-                    || publicThis._properties.sizeMode.y == 'proportional'
-                    || publicThis._properties.sizeMode.z == 'proportional')
+                    Protected(this)._mounted &&
+                    (Protected(this)._properties.sizeMode.x == 'proportional'
+                    || Protected(this)._properties.sizeMode.y == 'proportional'
+                    || Protected(this)._properties.sizeMode.z == 'proportional')
                 ) {
                     this.__startSizePolling()
                 }

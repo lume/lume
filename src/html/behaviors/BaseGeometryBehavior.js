@@ -48,8 +48,7 @@ Class( 'BaseGeometryBehavior' ).extends( BaseMeshBehavior, ({ Public, Private, S
             // tells WithUpdate (from BaseMeshBehavior) which prop
             // changed and makes it finally trigger our updated method
             // Public(this).size = Public(this).size
-            Public(this)._modifiedProps.size = true
-            Public(this).triggerUpdate()
+            Public(this).triggerUpdateForProp('size')
         },
 
         // NOTE we may use the x, y, z args to calculate scale when/if we

@@ -44,7 +44,7 @@ Class( 'BaseMeshBehavior' ).extends( Behavior, ({ Public, Protected, Private, Su
 
         this.resetMeshComponent()
 
-        this.refreshAllProps()
+        this.triggerUpdateForAllProps()
         this.element.needsUpdate()
     },
 
