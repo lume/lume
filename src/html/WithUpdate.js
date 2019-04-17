@@ -262,7 +262,7 @@ Mixin((Base = HTMLElement) =>
         },
 
         constructor(...args) {
-            const self = Super(this).constructor(...args) || this
+            const self = Super(this).constructor(...args)
 
             Private(self).__prevProps = {}
 
