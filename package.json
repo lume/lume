@@ -10,6 +10,7 @@
     "build": "builder run build:prod",
     "dev": "builder run build:dev",
     "test": "builder run npm:test",
+    "test-debug": "builder run npm:test-debug",
     "release:patch": "builder run release:patch",
     "release:minor": "builder run release:minor",
     "release:major": "builder run release:major",
@@ -48,7 +49,7 @@
   "devDependencies": {
     "all-contributors-cli": "^4.4.0",
     "builder": "4.0.0",
-    "builder-js-package": "trusktr/builder-js-package#6d664864cd6e9dbd38f2fe41910c924f404b4c6d",
+    "builder-js-package": "trusktr/builder-js-package#14bb191caeee9835ea59b9d2dd47eca9bedd2c7e",
     "docpress": "0.7.1"
   },
   "docpress": {
