@@ -86,7 +86,7 @@
     customElements.define('shimmer-cube', ShimmeringCube)
 
     const cube = document.querySelector('shimmer-cube')
-    cube.rotation = ( x, y, z ) => [ x, y-=0.1, z ] // increment Y rotation only
+    cube.rotation = ( x, y, z, t ) => [ x, 90 * Math.sin(t * 0.001), z ] // increment Y rotation only
 
     // emulate jank on click
     window.addEventListener('click', () => {
