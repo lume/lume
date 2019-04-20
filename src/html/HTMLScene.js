@@ -5,7 +5,8 @@ import DeclarativeBase, {initDeclarativeBase} from './DeclarativeBase'
 
 initDeclarativeBase()
 
-const HTMLScene = DeclarativeBase.subclass('HTMLScene', ({ Public, Protected, Private, Super }) => ({
+export default
+DeclarativeBase.subclass('HTMLScene', ({ Public, Protected, Private, Super }) => ({
 
     constructor() {
         const self = Super(this).constructor()
@@ -92,5 +93,3 @@ const HTMLScene = DeclarativeBase.subclass('HTMLScene', ({ Public, Protected, Pr
     },
 
 }))
-
-export {HTMLScene as default}
