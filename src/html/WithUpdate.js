@@ -272,7 +272,7 @@ Mixin((Base = HTMLElement) =>
             // prototype value when we read from a prop that we haven't set yet.
             Protected(self)._props = {
                 ...(self.constructor.__existingPrototypeValues || {}),
-                ...this.makeDefaultProps(),
+                ...self.makeDefaultProps(),
             }
 
             // TODO (trusktr), I was thinking to make the protected _props
