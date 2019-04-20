@@ -17,13 +17,11 @@ Class( 'Behavior' ).extends( WithUpdate.mixin( ForwardProps ), ({ Public, Protec
     },
 
     constructor(element) {
-        let _this = Super(this).constructor()
+        Super(this).constructor()
 
-        _this.element = element
+        this.element = element
 
-        Private(_this).__checkElementIsLibraryElement(element)
-
-        return _this
+        Private(this).__checkElementIsLibraryElement(element)
     },
 
     // This could be useful, but at the moment we only need this because if it
