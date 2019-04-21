@@ -30,18 +30,6 @@ Class('ElementOperations', ({ Private }) => ({
     },
 
     /**
-     * @param {Array.string} classes An array of class names to add to the
-     * managed element.
-     *
-     * Note: updating class names with `el.classList.add()` won't thrash the
-     * layout. See: http://www.html5rocks.com/en/tutorials/speed/animations
-     */
-    setClasses(...classes) {
-        if (classes.length) this.element.classList.add(...classes)
-        return this
-    },
-
-    /**
      * Apply a style property to the element.
      *
      * @private
