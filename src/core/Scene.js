@@ -305,14 +305,14 @@ let Scene = Mixin(Base => {
 
             /** @override */
             _getParentSize() {
-                return Public(this).parent ? Public(this).parent.calculatedSize : Protected(this)._elementParentSize
+                return Public(this).parent ? Public(this).parent.calculatedSize : this._elementParentSize
             },
 
             // For now, use the same program (with shaders) for all objects.
             // Basically it has position, frag colors, point light, directional
             // light, and ambient light.
             _loadGL() {
-                if (Protected(this)._glLoaded) return
+                if (this._glLoaded) return
 
                 // THREE
                 // maybe keep this in sceneState in WebGLRendererThree
@@ -343,7 +343,7 @@ let Scene = Mixin(Base => {
             },
 
             _unloadGL() {
-                if (!Protected(this)._glLoaded) return
+                if (!this._glLoaded) return
 
                 Super(this)._unloadGL()
 
@@ -361,7 +361,7 @@ let Scene = Mixin(Base => {
             },
 
             _loadCSS() {
-                if (Protected(this)._cssLoaded) return
+                if (this._cssLoaded) return
 
                 Super(this)._loadCSS()
 
@@ -376,7 +376,7 @@ let Scene = Mixin(Base => {
             },
 
             _unloadCSS() {
-                if (!Protected(this)._cssLoaded) return
+                if (!this._cssLoaded) return
 
                 Super(this)._unloadCSS()
 
@@ -482,17 +482,16 @@ let Scene = Mixin(Base => {
                 // landed in browsers yet.
                 if (!this.__sizePollTask)
                     this.__sizePollTask = Motor.addRenderTask(this.__checkSize.bind(this))
-                publicThis.on('parentsizechange', Private(this).__onElementParentSizeChange, Private(this))
+                publicThis.on('parentsizechange', this.__onElementParentSizeChange, this)
             },
 
             // HTM-API
             __stopSizePolling() {
                 const publicThis = Public(this)
-                const privateThis = Private(this)
 
-                publicThis.off('parentsizechange', Private(this).__onElementParentSizeChange)
-                Motor.removeRenderTask(privateThis.__sizePollTask)
-                privateThis.__sizePollTask = null
+                publicThis.off('parentsizechange', this.__onElementParentSizeChange)
+                Motor.removeRenderTask(this.__sizePollTask)
+                this.__sizePollTask = null
             },
 
             // NOTE, the Z dimension of a scene doesn't matter, it's a flat plane, so

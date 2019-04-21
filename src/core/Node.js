@@ -78,13 +78,13 @@ let Node = Mixin(Base => {
                 // size of this element which depends on the size of this element's
                 // parent. Align also depends on parent sizing.
                 if (
-                    Protected(this)._properties.sizeMode.x === "proportional"
-                    || Protected(this)._properties.sizeMode.y === "proportional"
-                    || Protected(this)._properties.sizeMode.z === "proportional"
+                    this._properties.sizeMode.x === "proportional"
+                    || this._properties.sizeMode.y === "proportional"
+                    || this._properties.sizeMode.z === "proportional"
 
-                    || Protected(this)._properties.align.x !== 0
-                    || Protected(this)._properties.align.y !== 0
-                    || Protected(this)._properties.align.z !== 0
+                    || this._properties.align.x !== 0
+                    || this._properties.align.y !== 0
+                    || this._properties.align.z !== 0
                 ) {
                     this._calcSize()
                     Public(this).needsUpdate()

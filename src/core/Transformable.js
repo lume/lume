@@ -168,17 +168,17 @@ Mixin(Base => {
             _setPropertyObservers() {
                 Super(this)._setPropertyObservers()
 
-                Protected(this)._properties.position.on('valuechanged',
+                this._properties.position.on('valuechanged',
                     () => Public(this).trigger('propertychange', 'position'))
-                Protected(this)._properties.rotation.on('valuechanged',
+                this._properties.rotation.on('valuechanged',
                     () => Public(this).trigger('propertychange', 'rotation'))
-                Protected(this)._properties.scale.on('valuechanged',
+                this._properties.scale.on('valuechanged',
                     () => Public(this).trigger('propertychange', 'scale'))
-                Protected(this)._properties.origin.on('valuechanged',
+                this._properties.origin.on('valuechanged',
                     () => Public(this).trigger('propertychange', 'origin'))
-                Protected(this)._properties.align.on('valuechanged',
+                this._properties.align.on('valuechanged',
                     () => Public(this).trigger('propertychange', 'align'))
-                Protected(this)._properties.mountPoint.on('valuechanged',
+                this._properties.mountPoint.on('valuechanged',
                     () => Public(this).trigger('propertychange', 'mountPoint'))
 
                 // this is also triggered by Sizeable.updated, besides the above lines
@@ -263,7 +263,7 @@ Mixin(Base => {
 
                 return function _calculateMatrix() {
                     const pub = Public(this)
-                    const {align, mountPoint, position, origin} = Protected(this)._properties
+                    const {align, mountPoint, position, origin} = this._properties
                     const size = pub.calculatedSize
 
                     // THREE-COORDS-TO-DOM-COORDS

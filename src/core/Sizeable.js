@@ -154,9 +154,9 @@ Mixin(Base => {
             // TODO change all event values to objects. See here for reasoning:
             // https://github.com/airbnb/javascript#events
             _setPropertyObservers() {
-                Protected(this)._properties.sizeMode.on('valuechanged',
+                this._properties.sizeMode.on('valuechanged',
                     () => Public(this).trigger('propertychange', 'sizeMode'))
-                Protected(this)._properties.size.on('valuechanged',
+                this._properties.size.on('valuechanged',
                     () => Public(this).trigger('propertychange', 'size'))
             },
 
@@ -171,7 +171,7 @@ Mixin(Base => {
                 return function _calcSize() {
                     const calculatedSize = Private(this).__calculatedSize
                     Object.assign(previousSize, calculatedSize)
-                    const {sizeMode, size} = Protected(this)._properties
+                    const {sizeMode, size} = this._properties
                     const parentSize = this._getParentSize()
 
                     if (sizeMode.x == 'literal') {
@@ -213,7 +213,7 @@ Mixin(Base => {
                     if (!Private(this).__settingValueFromPropFunction) Private(this).__removePropertyFunction(name)
                     else Private(this).__settingValueFromPropFunction = false
 
-                    Protected(this)._props[name] = newValue
+                    this._props[name] = newValue
                 }
             },
 
@@ -225,7 +225,7 @@ Mixin(Base => {
                     if (!Private(this).__settingValueFromPropFunction) Private(this).__removePropertyFunction(name)
                     else Private(this).__settingValueFromPropFunction = false
 
-                    Protected(this)._props[name] = newValue
+                    this._props[name] = newValue
                 }
             },
         },

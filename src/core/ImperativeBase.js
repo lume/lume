@@ -262,8 +262,8 @@ export function initImperativeBase() {
                     _loadGL() {
                         if (!(Public(this).scene && Public(this).scene.experimentalWebgl)) return
 
-                        if (Protected(this)._glLoaded) return
-                        Protected(this)._glLoaded = true
+                        if (this._glLoaded) return
+                        this._glLoaded = true
 
                         // we don't let Three update local matrices automatically, we do
                         // it ourselves in Transformable._calculateMatrix and
@@ -288,8 +288,8 @@ export function initImperativeBase() {
                     },
 
                     _unloadGL() {
-                        if (!Protected(this)._glLoaded) return
-                        Protected(this)._glLoaded = false
+                        if (!this._glLoaded) return
+                        this._glLoaded = false
 
                         disposeObject(Private(this).__three)
                         Private(this).__three = null
@@ -300,8 +300,8 @@ export function initImperativeBase() {
                     _loadCSS() {
                         if (!(Public(this).scene && !Public(this).scene.disableCss)) return
 
-                        if (Protected(this)._cssLoaded) return
-                        Protected(this)._cssLoaded = true
+                        if (this._cssLoaded) return
+                        this._cssLoaded = true
 
                         // we don't let Three update local matrices automatically, we do
                         // it ourselves in Transformable._calculateMatrix and
@@ -317,8 +317,8 @@ export function initImperativeBase() {
                     },
 
                     _unloadCSS() {
-                        if (!Protected(this)._cssLoaded) return
-                        Protected(this)._cssLoaded = false
+                        if (!this._cssLoaded) return
+                        this._cssLoaded = false
 
                         disposeObject(Private(this).__threeCSS)
                         Private(this).__threeCSS = null
@@ -327,7 +327,7 @@ export function initImperativeBase() {
                     },
 
                     _triggerLoadGL() {
-                        Protected(this)._loadGL()
+                        this._loadGL()
                         Public(this).emit(Events.BEHAVIOR_GL_LOAD, Public(this))
                         Promise.resolve().then(() => {
                             Public(this).emit(Events.GL_LOAD, Public(this))
@@ -335,7 +335,7 @@ export function initImperativeBase() {
                     },
 
                     _triggerUnloadGL() {
-                        Protected(this)._unloadGL()
+                        this._unloadGL()
                         Public(this).emit(Events.BEHAVIOR_GL_UNLOAD, Public(this))
                         Promise.resolve().then(() => {
                             Public(this).emit(Events.GL_UNLOAD, Public(this))
@@ -343,12 +343,12 @@ export function initImperativeBase() {
                     },
 
                     _triggerLoadCSS() {
-                        Protected(this)._loadCSS()
+                        this._loadCSS()
                         Public(this).emit(Events.CSS_LOAD, Public(this))
                     },
 
                     _triggerUnloadCSS() {
-                        Protected(this)._unloadCSS()
+                        this._unloadCSS()
                         Public(this).emit(Events.CSS_UNLOAD, Public(this))
                     },
 
@@ -363,7 +363,7 @@ export function initImperativeBase() {
                         let parent = Public(this).parent
 
                         while (parent) {
-                            if (Protected(parent)._willBeRendered) return parent
+                            if (parent._willBeRendered) return parent
                             parent = parent.parent
                         }
 
