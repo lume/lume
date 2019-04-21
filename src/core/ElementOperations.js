@@ -23,32 +23,9 @@ if (typeof document.createElement('div').style.transform == 'undefined') {
  */
 export default
 Class('ElementOperations', ({ Private }) => ({
-    element: null,
 
     constructor(element) {
-        this.element = element
-    },
-
-    /**
-     * Apply a style property to the element.
-     *
-     * @private
-     * @param  {string} property The CSS property we will a apply.
-     * @param  {string} value    The value the CSS property wil have.
-     */
-    applyStyle(property, value) {
-        this.element.style[property] = value
-    },
-
-    add(child) {
-        this.element.appendChild(child)
-    },
-
-    remove(child) {
-        // This conditional check is needed incase the element was already
-        // removed from the HTML-API side.
-        if (child.parentNode === this.element)
-            this.element.removeChild(child)
+        Private(this).__element = element
     },
 
     connectChildElement(child) {
@@ -66,7 +43,7 @@ Class('ElementOperations', ({ Private }) => ({
             // node to another imperative Node. In this case, the
             // HTML-API node will be added to the proper HTMLparent.
             || (child.parentElement &&
-                child.parentElement !== this.element)
+                child.parentElement !== Private(this).__element)
 
             // When an HTML-API node is already child of the
             // relevant parent, or it is child of a shadow root of
@@ -74,7 +51,7 @@ Class('ElementOperations', ({ Private }) => ({
             // everything is already as expected, so the following
             // conditional body is skipped.
         ) {
-            this.add(child)
+            Private(this).__add(child)
         }
     },
 
@@ -83,36 +60,20 @@ Class('ElementOperations', ({ Private }) => ({
         // call this again.
         if (!child.parentNode) return
 
-        this.remove(child)
-    },
-
-    /**
-     * [applySize description]
-     */
-    applySize (size) {
-        const {x,y} = size
-
-        this.applyStyle('width', `${x}px`)
-        this.applyStyle('height', `${y}px`)
-
-        // NOTE: we ignore the Z axis on elements, since they are flat.
-    },
-
-    applyOpacity(opacity) {
-        this.applyStyle('opacity', opacity)
+        Private(this).__remove(child)
     },
 
     applyImperativeNodeProperties() {
         if (!Private(this).__shouldRender) return
 
-        this.applyOpacity(this.element.opacity)
-        this.applySize(this.element.calculatedSize)
+        Private(this).__applyOpacity()
+        Private(this).__applySize()
     },
 
     set shouldRender(shouldRender) {
         Private(this).__shouldRender = shouldRender
         requestAnimationFrame(() => {
-            this.applyStyle('display', shouldRender ? 'block' : 'none')
+            Private(this).__applyStyle('display', shouldRender ? 'block' : 'none')
         })
     },
     get shouldRender() {
@@ -120,6 +81,42 @@ Class('ElementOperations', ({ Private }) => ({
     },
 
     private: {
+        __element: null,
         __shouldRender: false,
+
+        __add(child) {
+            this.__element.appendChild(child)
+        },
+
+        __remove(child) {
+            // This conditional check is needed incase the element was already
+            // removed from the HTML-API side.
+            if (child.parentNode === this.__element)
+                this.__element.removeChild(child)
+        },
+
+        __applySize() {
+            const {x,y} = this.__element.calculatedSize
+
+            this.__applyStyle('width', `${x}px`)
+            this.__applyStyle('height', `${y}px`)
+
+            // NOTE: we ignore the Z axis on elements, since they are flat.
+        },
+
+        __applyOpacity(opacity) {
+            this.__applyStyle('opacity', this.__element.opacity)
+        },
+
+        /**
+         * Apply a style property to the element.
+         *
+         * @private
+         * @param  {string} property The CSS property we will a apply.
+         * @param  {string} value    The value the CSS property wil have.
+         */
+        __applyStyle(property, value) {
+            this.__element.style.setProperty(property, value)
+        },
     },
 }))
