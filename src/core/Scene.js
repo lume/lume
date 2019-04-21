@@ -77,6 +77,14 @@ let Scene = Mixin(Base => {
 
             const self = Super(this).constructor(options)
 
+            // The scene should always render CSS properties (it needs to always
+            // be rendered on resized, for example, because it contains the
+            // WebGL canvas which also needs to be resized). Namely, we still
+            // want to apply size values to the scene so that it can size
+            // relative to it's parent container, or literally if size mode is
+            // "literal".
+            Protected(self)._elementOperations.shouldRender = true
+
             // Used by the `scene` getter in ImperativeBase
             Protected(self)._scene = self
 

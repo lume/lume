@@ -355,7 +355,7 @@ export function initImperativeBase() {
                     _render(timestamp) {
                         if ( Super(this)._render ) Super(this)._render()
 
-                        this._elementOperations.applyImperativeNodeProperties(Public(this))
+                        this._elementOperations.applyImperativeNodeProperties()
                     },
 
                     // This method is used by Motor._renderNodes().

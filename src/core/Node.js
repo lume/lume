@@ -61,7 +61,7 @@ let Node = Mixin(Base => {
             Super(this).updated(oldProps, modifiedProps)
 
             if (modifiedProps.visible) {
-                Protected(this)._elementOperations.shouldRender(this.visible)
+                Protected(this)._elementOperations.shouldRender = Protected(this)._cssLoaded && this.visible
                 this.needsUpdate()
             }
         },
@@ -89,7 +89,17 @@ let Node = Mixin(Base => {
                     this._calcSize()
                     Public(this).needsUpdate()
                 }
-            }
+            },
+
+            _loadCSS() {
+                Super(this)._loadCSS()
+                Public(this).triggerUpdateForProp('visible')
+            },
+
+            _unloadCSS() {
+                Super(this)._unloadCSS()
+                Public(this).triggerUpdateForProp('visible')
+            },
 
         },
 

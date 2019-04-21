@@ -1,9 +1,11 @@
 
 export default {
 
-    // all items of the scene graph are hidden until they are mounted in a
-    // scene (this changes to `display:block`).
-    display:         'block',
+    // All items of the scene graph are hidden until they are mounted in a scene
+    // (this changes to `display:block`).
+    // This gets toggled between "none" and "block" by ImperativeBase depending
+    // on if CSS rendering is enabled.
+    display:         'none',
 
     boxSizing:       'border-box',
     position:        'absolute',

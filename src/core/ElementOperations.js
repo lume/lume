@@ -22,7 +22,7 @@ if (typeof document.createElement('div').style.transform == 'undefined') {
  * DOM efficiently. Currently doesn't do much yet...
  */
 export default
-Class('ElementOperations', {
+Class('ElementOperations', ({ Private }) => ({
     element: null,
 
     constructor(element) {
@@ -114,14 +114,24 @@ Class('ElementOperations', {
         this.applyStyle('opacity', opacity)
     },
 
-    applyImperativeNodeProperties(node) {
-        this.applyOpacity(node.opacity)
-        this.applySize(node.calculatedSize)
+    applyImperativeNodeProperties() {
+        if (!Private(this).__shouldRender) return
+
+        this.applyOpacity(this.element.opacity)
+        this.applySize(this.element.calculatedSize)
     },
 
-    shouldRender(shouldRender) {
+    set shouldRender(shouldRender) {
+        Private(this).__shouldRender = shouldRender
         requestAnimationFrame(() => {
             this.applyStyle('display', shouldRender ? 'block' : 'none')
         })
     },
-})
+    get shouldRender() {
+        return Private(this).__shouldRender
+    },
+
+    private: {
+        __shouldRender: false,
+    },
+}))
