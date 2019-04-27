@@ -84,7 +84,7 @@ export function initDeclarativeBase() {
                 hasShadowDomV1
                 && child instanceof HTMLSlotElement
             ) {
-                child.addEventListener('slotchange', this)
+                child.addEventListener('slotchange', Private(this))
                 Private(this).__handleDistributedChildren(child)
             }
         },
@@ -233,17 +233,17 @@ export function initDeclarativeBase() {
                     // exist in multiple shadowChildren lists when there is a
                     // chain of assigned slots. For more info, see
                     // https://github.com/w3c/webcomponents/issues/611
-                    const shadowParent = addedNode.__shadowParent
-                    if (shadowParent && shadowParent.__shadowChildren) {
-                        const shadowChildren = shadowParent.__shadowChildren
-                        shadowChildren.splice(shadowChildren.indexOf(addedNode), 1)
-                        if (!shadowChildren.length)
-                            shadowParent.__shadowChildren = null
+                    const shadowParent = Private(addedNode).__shadowParent
+                    if (shadowParent && Private(shadowParent).__shadowChildren) {
+                        const shadowChildren = Private(shadowParent).__shadowChildren
+                        shadowChildren.delete(addedNode)
+                        if (!shadowChildren.size)
+                            Private(shadowParent).__shadowChildren = null
                     }
 
                     // The node is now distributed to `this` element.
-                    addedNode.__shadowParent = this
-                    if (!this.__shadowChildren) this.__shadowChildren = []
+                    Private(addedNode).__shadowParent = Public(this)
+                    if (!this.__shadowChildren) this.__shadowChildren = new Set
                     this.__shadowChildren.add(addedNode)
                 }
 
@@ -253,7 +253,7 @@ export function initDeclarativeBase() {
 
                     if (!(removedNode instanceof DeclarativeBase)) continue
 
-                    removedNode.__shadowParent = null
+                    Private(removedNode).__shadowParent = null
                     this.__shadowChildren.delete(removedNode)
                     if (!this.__shadowChildren.size) this.__shadowChildren = null
                 }
