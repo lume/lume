@@ -2,8 +2,10 @@
 
 import WebComponent from './WebComponent'
 import HTMLNode from './HTMLNode'
-import { observeChildren, /*getShadowRootVersion,*/ hasShadowDomV0,
-    hasShadowDomV1, getAncestorShadowRoot } from '../core/Utility'
+import {
+    observeChildren,
+    hasShadowDomV1,
+} from '../core/Utility'
 import {
     Mesh,
     BoxGeometry,
@@ -39,53 +41,31 @@ export function initDeclarativeBase() {
             },
         },
 
-        // We use this to Override HTMLElement.prototype.attachShadow in v1, and
-        // HTMLElement.prototype.createShadowRoot in v0, so that we can make the
-        // connection between parent and child on the imperative side when the HTML side
-        // is using shadow roots.
-        //
-        // TODO finish ShadowDOM compatibility!
-        attachShadow(options, _method) {
-            _method = _method || 'attachShadow'
-
-            if ( !( this instanceof DeclarativeBase ) )
-                return Super( this )[ _method ]( options )
-
-            // In v0, shadow roots can be replaced, but in v1 calling attachShadow
-            // on an element that already has a root throws. So, we can set this to
-            // true, and if the try-catch passes then we know we have a v0 root and
-            // that the root was just replaced.
-            const oldRoot = this.shadowRoot
-            let root = null
-            try {
-                root = Super( this )[ _method ]( options )
-            }
-            catch (e) { throw e }
-
+        // We use this to Override HTMLElement.prototype.attachShadow in v1 so
+        // that we can make the connection between parent and child on the
+        // imperative side when the HTML side is using shadow roots.
+        attachShadow(options) {
+            const root = Super( this ).attachShadow( options )
             const privateThis = Private(this)
 
             privateThis.__hasShadowRoot = true
-            if (oldRoot) {
-                Private(this).__onV0ShadowRootReplaced( oldRoot )
-            }
+
             const observer = observeChildren(
                 root,
                 privateThis.__shadowRootChildAdded.bind(privateThis),
                 privateThis.__shadowRootChildRemoved.bind(privateThis)
             )
+
             observers.set(root, observer)
 
             const {children} = this
-            for (let l=children.length, i=0; i<l; i+=1) {
-                if (!(children[i] instanceof DeclarativeBase)) continue
-                Private(children[i]).__isPossiblyDistributed = true
+
+            for (const child of children) {
+                if (!(child instanceof DeclarativeBase)) continue
+                Private(child).__isPossiblyDistributedToShadowRoot = true
             }
 
             return root
-        },
-
-        createShadowRoot() {
-            this.attachShadow( undefined, 'createShadowRoot' )
         },
 
         childConnectedCallback(child) {
@@ -101,22 +81,8 @@ export function initDeclarativeBase() {
                 this.add(child)
             }
             else if (
-                hasShadowDomV0
-                && child instanceof HTMLContentElement
-                &&
-                //getShadowRootVersion(
-                    getAncestorShadowRoot(this)
-                //) == 'v0'
-            ) {
-                // observe <content> elements.
-            }
-            else if (
                 hasShadowDomV1
                 && child instanceof HTMLSlotElement
-                &&
-                //getShadowRootVersion(
-                    getAncestorShadowRoot(this)
-                //) == 'v1'
             ) {
                 child.addEventListener('slotchange', this)
                 Private(this).__handleDistributedChildren(child)
@@ -135,22 +101,8 @@ export function initDeclarativeBase() {
                 this.remove(child)
             }
             else if (
-                hasShadowDomV0
-                && child instanceof HTMLContentElement
-                &&
-                //getShadowRootVersion(
-                    getAncestorShadowRoot(this)
-                //) == 'v0'
-            ) {
-                // unobserve <content> element
-            }
-            else if (
                 hasShadowDomV1
                 && child instanceof HTMLSlotElement
-                &&
-                //getShadowRootVersion(
-                    getAncestorShadowRoot(this)
-                //) == 'v1'
             ) {
                 child.removeEventListener('slotchange', this)
                 Private(this).__handleDistributedChildren(child)
@@ -229,12 +181,6 @@ export function initDeclarativeBase() {
                     Public(this).add(child)
                 }
                 else if (
-                    hasShadowDomV0
-                    && child instanceof HTMLContentElement
-                ) {
-                    // observe <content> elements.
-                }
-                else if (
                     hasShadowDomV1
                     && child instanceof HTMLSlotElement
                 ) {
@@ -249,12 +195,6 @@ export function initDeclarativeBase() {
 
                 if (child instanceof DeclarativeBase) {
                     Public(this).remove(child)
-                }
-                else if (
-                    hasShadowDomV0
-                    && child instanceof HTMLContentElement
-                ) {
-                    // unobserve <content> element
                 }
                 else if (
                     hasShadowDomV1
@@ -356,21 +296,6 @@ export function initDeclarativeBase() {
                 diff.added = newNodes
 
                 return diff
-            },
-
-            __onV0ShadowRootReplaced( oldRoot ) {
-                observers.get(oldRoot).disconnect()
-                observers.delete(oldRoot)
-                const {childNodes} = oldRoot
-                for (let l=childNodes.length, i=0; i<l; i+=1) {
-                    const child = childNodes[i]
-
-                    if (!(child instanceof DeclarativeBase)) continue
-
-                    // We should disconnect the imperative connection (f.e. so it is not
-                    // rendered in WebGL)
-                    Public(this).remove(child, true)
-                }
             },
 
         },
