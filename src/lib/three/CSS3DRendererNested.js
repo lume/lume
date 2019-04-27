@@ -8,7 +8,7 @@ export function CSS3DObjectNested( element ) {
 
 	this.element = element;
 
-	requestAnimationFrame( () => {
+	this.__initialFrame = requestAnimationFrame( () => {
 
     	// delay to the next frame because attributes are not allowed be set
     	// inside Custom Element (i.e. Web Component) constructors, otherwise
@@ -26,6 +26,7 @@ CSS3DObjectNested.prototype.constructor = CSS3DObjectNested;
 
 CSS3DObjectNested.prototype.dispose = function() {
 
+    cancelAnimationFrame(this.__initialFrame)
     this.element = null
 
 };
