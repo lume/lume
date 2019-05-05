@@ -12,8 +12,8 @@ DeclarativeBase.subclass('HTMLScene', ({ Public, Protected, Private, Super }) =>
         const self = Super(this).constructor()
         const privateThis = Private(self)
 
-        privateThis._root = self.attachShadow({ mode: 'open' })
-        privateThis._root.innerHTML = `
+        privateThis.__root = self.attachShadow({ mode: 'open' })
+        privateThis.__root.innerHTML = `
             <style>
                 .i-scene-CSS3DLayer,
                 .i-scene-MiscellaneousLayer,
@@ -57,8 +57,8 @@ DeclarativeBase.subclass('HTMLScene', ({ Public, Protected, Private, Super }) =>
         // decouple HTML interfaces being present from functionality. We can
         // make these things private if they are in the Scene class, and expose
         // the private helper from there to friend modules.
-        Protected(self)._glLayer = privateThis._root.querySelector('.i-scene-WebGLLayer')
-        Protected(self)._cssLayer = privateThis._root.querySelector('.i-scene-CSS3DLayer')
+        Protected(self)._glLayer = privateThis.__root.querySelector('.i-scene-WebGLLayer')
+        Protected(self)._cssLayer = privateThis.__root.querySelector('.i-scene-CSS3DLayer')
 
         return self
     },
@@ -89,7 +89,7 @@ DeclarativeBase.subclass('HTMLScene', ({ Public, Protected, Private, Super }) =>
     },
 
     private: {
-        _root: null,
+        __root: null,
     },
 
 }))
