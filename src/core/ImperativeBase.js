@@ -139,23 +139,142 @@ export function initImperativeBase() {
                     return Private(this).__threeCSS
                 },
 
-                childConnectedCallback(child) {
-                    Super(this).childConnectedCallback(child)
-
+                possiblyLoadThree(child) {
                     // children can be non-lib DOM nodes (f.e. div, h1, etc)
                     if (instanceOf(child, Node)) {
+                        console.log('     >> LOAD THREE', Protected(child)._renderParent.constructor.name, child.constructor.name, child.id)
                         Protected(child)._triggerLoadGL()
                         Protected(child)._triggerLoadCSS()
                     }
                 },
 
+                possiblyUnloadThree(child) {
+                    // children can be non-lib DOM nodes (f.e. div, h1, etc)
+                    if (instanceOf(child, Node)) {
+                        console.log('     >> UNLOAD THREE', '<No Parent>', child.constructor.name, child.id)
+                        Protected(child)._triggerUnloadGL()
+                        Protected(child)._triggerUnloadCSS()
+                    }
+                },
+
+                // called when child is connected to a node directly, not when
+                // distributed to a slot or added to a shadow root. For that,
+                // see childComposedCallback
+                childConnectedCallback(child) {
+                    Super(this).childConnectedCallback(child)
+
+                    // console.log(' ================== CHILD CONNECTED', child.parentElement.constructor.name, child.constructor.name, child.id)
+
+                    // // mirror the DOM connections in the imperative API's virtual scene graph.
+                    // if (instanceOf(child, ImperativeBase)) {
+                    //     // If ImperativeBase#add was called first, child's
+                    //     // `parent` will already be set, so prevent recursion.
+                    //     if (child.parent) return
+                    //
+                    //     this.add(child)
+                    // }
+
+                    // console.log(' ------------------ NODE CONNECTED NORMALLY', child.constructor.name, child.id)
+
+                    // TODO handle in composed and remove this call
+                    // this.possiblyLoadThree(child)
+                },
+
+                // called when a child is disconnected from a node directly, not
+                // when undistributed from a slot or removed from a shadow root.
+                // For that, see childUncomposedCallback
                 childDisconnectedCallback(child) {
                     Super(this).childDisconnectedCallback(child)
 
-                    // children can be non-lib DOM nodes (f.e. div, h1, etc)
-                    if (instanceOf(child, Node)) {
-                        Protected(child)._triggerUnloadGL()
-                        Protected(child)._triggerUnloadCSS()
+                    // // mirror the connection in the imperative API's virtual scene graph.
+                    // if (instanceOf(child, ImperativeBase)) {
+                    //     // If ImperativeBase#remove was called first, child's
+                    //     // `parent` will already be null, so prevent recursion.
+                    //     if (!child.parent) return
+                    //
+                    //     this.remove(child)
+                    // }
+
+                    // TODO handle in composed and remove this call
+                    // this.possiblyUnloadThree(child)
+                },
+
+                /**
+                 * Called whenever a node is connected, but this is called with
+                 * a connectionType that tells us how the node is connected
+                 * (relative to the "flat tree" or "composed tree").
+                 *
+                 * @param  {"root" | "slot" | "actual"} connectionType - If the
+                 * value is "root", then the child was connected as a child of a
+                 * shadow root of the current node. If the value is "slot", then
+                 * the child was distributed to the current node via a slot. If
+                 * the value is "actual", then the child was connect to the
+                 * current node as a regular child ("actual" is the same as
+                 * childConnectedCallback).
+                 */
+                childComposedCallback(child, connectionType) {
+                    console.log( '%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% ImerativeBase.childComposedCallback', child.tagName )
+                    if (instanceOf(child, ImperativeBase)) {
+                        console.log(
+                            ' ------------------ CHILD COMPOSED',
+                            Protected(child)._composedParent.constructor.name+'#'+Protected(child)._composedParent.id,
+                            child.constructor.name+'#'+child.id
+                        )
+
+                        if (connectionType === 'root') {
+                            console.log('    >>> CHILD CONNECTED VIA SHADOW ROOT')
+                        }
+                        else if (connectionType === 'slot') {
+                            console.log('    >>> CHILD DISTRIBUTED TO SLOT')
+                        }
+                        else if (connectionType === 'actual') {
+                            console.log('    >>> CHILD CONNECTED NORMALLY')
+                        }
+
+                        // If ImperativeBase#add was called first, child's
+                        // `parent` will already be set, so prevent recursion.
+                        // debugger
+                        if (!child.parent) {
+
+                            // mirror the DOM connections in the imperative API's virtual scene graph.
+                            const __updateDOMConnection = connectionType === 'actual'
+                            this.add(child, __updateDOMConnection)
+                        }
+
+
+                        // Calculate sizing because proportional size might depend on
+                        // the new parent.
+                        Protected(child)._calcSize()
+                        child.needsUpdate()
+
+                        // child should watch the parent for size changes.
+                        this.on('sizechange', Protected(child)._onParentSizeChange, Protected(child))
+
+                        this.possiblyLoadThree(child)
+                    }
+                },
+
+                childUncomposedCallback(child, connectionType) {
+                    if (instanceOf(child, ImperativeBase)) {
+                        console.log(
+                            ' ------------------ CHILD UNCOMPOSED',
+                            child.constructor.name+'#'+child.id
+                        )
+
+                        // If ImperativeBase#remove was called first, child's
+                        // `parent` will already be null, so prevent recursion.
+                        if (child.parent) {
+
+                            // mirror the connection in the imperative API's virtual scene graph.
+                            const __updateDOMConnection = connectionType === 'actual'
+                            this.remove(child, __updateDOMConnection)
+                        }
+
+                        this.off('sizechange', Protected(child)._onParentSizeChange)
+
+                        // Unload GL/CSS on _deinit instead of here, but change
+                        // Object3D hierarchy here.
+                        this.possiblyUnloadThree(child)
                     }
                 },
 
@@ -194,42 +313,45 @@ export function initImperativeBase() {
                 /**
                  * @override
                  */
-                add(childNode) {
-                    if (!instanceOf(childNode, ImperativeBase)) return
+                add(childNode, __updateDOMConnection = true) {
+                    if (!instanceOf(childNode, ImperativeBase)) return this
 
                     // We cannot add Scenes to Nodes, for now.
                     if (childNode instanceof Scene) {
-                        throw new Error(`
+                        throw new TypeError(`
                             A Scene cannot be added to another Node or Scene (at
                             least for now). To place a Scene in a Node, just mount
-                            a new Scene onto a MotorHTMLNode with Scene.mount().
+                            a new Scene onto an HTMLNode with Scene.mount().
                         `)
                     }
 
                     Super(this).add(childNode)
 
-                    // Calculate sizing because proportional size might depend on
-                    // the new parent.
-                    Protected(childNode)._calcSize()
-                    childNode.needsUpdate()
+                    // // Calculate sizing because proportional size might depend on
+                    // // the new parent.
+                    // Protected(childNode)._calcSize()
+                    // childNode.needsUpdate()
+                    //
+                    // // child should watch the parent for size changes.
+                    // this.on('sizechange', Protected(childNode)._onParentSizeChange, Protected(childNode))
 
-                    // child should watch the parent for size changes.
-                    this.on('sizechange', Protected(childNode)._onParentSizeChange, Protected(childNode))
-
-                    Protected(this)._elementOperations.connectChildElement(childNode)
+                    if (__updateDOMConnection)
+                        Protected(this)._elementOperations.connectChildElement(childNode)
 
                     return this
                 },
 
-                remove(childNode, /* private */__leaveInDom) {
-                    if (!(childNode instanceof Node)) return
+                remove(childNode, /* private */__updateDOMConnection = true) {
+                    if (!(childNode instanceof Node)) return this
 
                     Super(this).remove(childNode)
 
-                    this.off('sizechange', Protected(childNode)._onParentSizeChange, Protected(childNode))
+                    // this.off('sizechange', Protected(childNode)._onParentSizeChange, Protected(childNode))
 
-                    if (!__leaveInDom)
+                    if (__updateDOMConnection)
                         Protected(this)._elementOperations.disconnectChildElement(childNode)
+
+                    return this
                 },
 
                 needsUpdate() {
@@ -259,6 +381,56 @@ export function initImperativeBase() {
                         return new CSS3DObjectNested(Public(this))
                     },
 
+                    _connectThree() {
+                        if (
+                            Protected(this)._isPossiblyDistributedToShadowRoot
+
+                            // check parent isn't a Scene because Scenes always
+                            // have shadow roots, and we treat distribution into
+                            // the Scene shacow root different than with all
+                            // other Nodes.
+                            && Public(this).parent !== Public(this).scene
+                        ) {
+                            if (Protected(this)._distributedParent) {
+                                console.log( '    --- CONNECT THREE TO SHADOW PARENT', Protected(this)._distributedParent.constructor.name, Public(this).constructor.name)
+                                Protected(this)._distributedParent && Protected(this)._distributedParent.three.add(Public(this).three)
+                            }
+                        }
+                        else {
+                            if (Public(this).parent)
+                                console.log( '    --- CONNECT THREE TO NORMAL PARENT', Public(this).parent.constructor.name, Public(this).constructor.name)
+
+                            Public(this).parent && Public(this).parent.three.add(Public(this).three)
+                        }
+
+                        Public(this).needsUpdate()
+                    },
+
+                    _connectThreeCSS() {
+                        if (
+                            Protected(this)._isPossiblyDistributedToShadowRoot
+
+                            // check parent isn't a Scene because Scenes always
+                            // have shadow roots, and we treat distribution into
+                            // the Scene shacow root different than with all
+                            // other Nodes.
+                            && Public(this).parent !== Public(this).scene
+                        ) {
+                            if (Protected(this)._distributedParent) {
+                                console.log( '    --- CONNECT THREE TO SHADOW PARENT', Protected(this)._distributedParent.constructor.name, Public(this).constructor.name)
+                                Protected(this)._distributedParent && Protected(this)._distributedParent.threeCSS.add(Public(this).threeCSS)
+                            }
+                        }
+                        else {
+                            if (Public(this).parent)
+                                console.log( '    --- CONNECT THREE TO NORMAL PARENT', Public(this).parent.constructor.name, Public(this).constructor.name)
+
+                            Public(this).parent && Public(this).parent.threeCSS.add(Public(this).threeCSS)
+                        }
+
+                        Public(this).needsUpdate()
+                    },
+
                     _loadGL() {
                         if (!(Public(this).scene && Public(this).scene.experimentalWebgl)) return
 
@@ -270,10 +442,17 @@ export function initImperativeBase() {
                         // Transformable._calculateWorldMatricesInSubtree
                         Public(this).three.matrixAutoUpdate = false
 
-                        // NOTE, Public(this).parent works here because _loadGL is called by
-                        // childConnectedCallback at which point a child is already
-                        // upgraded and thus has Public(this).parent API ready.
-                        Public(this).parent && Public(this).parent.three.add(Public(this).three)
+                        // NOTE, Public(this).parent works here because _loadGL
+                        // is called by childConnectedCallback (or when
+                        // distributed to a shadow root) at which point a child
+                        // is already upgraded and thus has Public(this).parent
+                        // API ready. Only a Scene has no parent.
+                        //
+                        // Public(this).parent && Public(this).parent.three.add(Public(this).three)
+                        Protected(this)._connectThree()
+
+                        console.log( ' >>>>>>>>>>>>>>>>>>>>>>> load GL!', Public(this).constructor.name, Public(this).id)
+                        Protected
 
                         // If a subclass needs to initialize values in its Three.js
                         // object, it will have the passInitialValuesToThree method for
@@ -302,16 +481,22 @@ export function initImperativeBase() {
 
                         if (this._cssLoaded) return
                         this._cssLoaded = true
+                        Public(this).triggerUpdateForProp('visible')
 
                         // we don't let Three update local matrices automatically, we do
                         // it ourselves in Transformable._calculateMatrix and
                         // Transformable._calculateWorldMatricesInSubtree
                         Public(this).threeCSS.matrixAutoUpdate = false
 
-                        // NOTE, Public(this).parent works here because _loadCSS is called by
-                        // childConnectedCallback at which point a child is already
-                        // upgraded and thus has Public(this).parent API ready.
-                        Public(this).parent && Public(this).parent.threeCSS.add(Public(this).threeCSS)
+                        // NOTE, Public(this).parent works here because _loadCSS
+                        // is called by childConnectedCallback (or when
+                        // distributed to a shadow root) at which point a child
+                        // is already upgraded and thus has Public(this).parent
+                        // API ready. Only a Scene has no parent.
+                        // Public(this).parent && Public(this).parent.threeCSS.add(Public(this).threeCSS)
+                        Protected(this)._connectThreeCSS()
+
+                        console.log( ' >>>>>>>>>>>>>>>>>>>>>>> load CSS!', Public(this).constructor.name, Public(this).id)
 
                         Public(this).needsUpdate()
                     },
@@ -319,6 +504,7 @@ export function initImperativeBase() {
                     _unloadCSS() {
                         if (!this._cssLoaded) return
                         this._cssLoaded = false
+                        Public(this).triggerUpdateForProp('visible')
 
                         disposeObject(Private(this).__threeCSS)
                         Private(this).__threeCSS = null
@@ -377,7 +563,14 @@ export function initImperativeBase() {
 
                     __onPropertyChange(prop) {
                         if ( prop == 'sizeMode' || prop == 'size' ) {
-                            Protected(this)._calcSize()
+                            if (Public(this).parent)
+                                Protected(this)._calcSize()
+                        }
+
+                        if (Public(this).constructor.name === 'ShimmerCube' && prop === 'rotation') {
+                            const rot = Protected(this)._props.rotation
+                            console.log(rot.x, rot.y, rot.z)
+                            debugger
                         }
 
                         Public(this).needsUpdate()

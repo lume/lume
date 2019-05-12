@@ -14,6 +14,7 @@ function applyCSSLabel(value, label) {
     }
 }
 
+// TODO padd an options object to make it more clear what the args are.
 function observeChildren(target, onConnect, onDisconnect, skipTextNodes) {
     // TODO this Map is never cleaned, leaks memory. Maybe use WeakMap
     const childObserver = createChildObserver(onConnect, onDisconnect, skipTextNodes)

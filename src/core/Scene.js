@@ -77,6 +77,8 @@ let Scene = Mixin(Base => {
 
             const self = Super(this).constructor(options)
 
+            self.isScene = true
+
             // The scene should always render CSS properties (it needs to always
             // be rendered on resized, for example, because it contains the
             // WebGL canvas which also needs to be resized). Namely, we still
@@ -322,6 +324,9 @@ let Scene = Mixin(Base => {
             _loadGL() {
                 if (this._glLoaded) return
 
+                console.log( '    ---------------------------- LOAD SCENE GL' )
+                Protected(this)._composedChildren
+
                 // THREE
                 // maybe keep this in sceneState in WebGLRendererThree
                 Super(this)._loadGL()
@@ -353,6 +358,9 @@ let Scene = Mixin(Base => {
             _unloadGL() {
                 if (!this._glLoaded) return
 
+                console.log( '    ---------------------------- UNLOAD SCENE GL' )
+                Protected
+
                 Super(this)._unloadGL()
 
                 if (Private(this).__glRenderer) {
@@ -370,6 +378,8 @@ let Scene = Mixin(Base => {
 
             _loadCSS() {
                 if (this._cssLoaded) return
+                console.log( '    ---------------------------- LOAD SCENE CSS' )
+                Protected
 
                 Super(this)._loadCSS()
 
@@ -381,10 +391,17 @@ let Scene = Mixin(Base => {
 
                     ImperativeBaseProtected()(node)._loadCSS()
                 })
+
+                console.log([].map.call(Public(this).children, n => [n.constructor.name, n.parent, n.position]))
+
+                setTimeout(() => {
+                    console.log([].map.call(Public(this).children, n => [n.constructor.name, n.parent, n.position]))
+                }, 1000)
             },
 
             _unloadCSS() {
                 if (!this._cssLoaded) return
+                console.log( '    ---------------------------- UNLOAD SCENE CSS' )
 
                 Super(this)._unloadCSS()
 

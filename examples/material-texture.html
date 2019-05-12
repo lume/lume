@@ -24,7 +24,7 @@
     <body>
 
         <!-- use the disable-css attribute so that we have only WebGL rendering enabled -->
-        <i-scene id="scene" experimental-webgl disable-css>
+        <i-scene id="scene" experimental-webgl disable-css="false">
             <i-ambient-light intensity="0.3"></i-ambient-light>
 
             <i-point-light
@@ -37,8 +37,6 @@
                 >
             </i-point-light>
 
-            <!-- an i-node element with an obj-model behavior. The obj-model
-            behavior observes the obj and mtl attributes. -->
             <i-box id="model"
                 rotation="40 40 0"
                 align="0.5 0.5 0"

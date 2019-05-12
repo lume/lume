@@ -1,0 +1,55 @@
+<div class="shimmerSurface">
+    <div class="shimmerSurfaceContent"></div>
+</div>
+
+<style>
+    html, body {
+        width: 100%; height: 100%;
+        margin: 0; padding: 0;
+        /* background: #364659; */
+        /* background: #293442; */
+        background: #1E2630;
+    }
+
+    @keyframes ShimmerEffect {
+        0% { transform: translate3d(-15%, -15%, 0) }
+        100% { transform: translate3d(-60%, -60%, 0) }
+    }
+    .shimmerSurface {
+        overflow: hidden;
+        perspective: 100000px
+    }
+    .shimmerSurfaceContent {
+        transform-style: preserve-3d;
+        background: linear-gradient(
+            -45deg,
+            rgba(0,0,0,0) 40%,
+            rgba(244,196,48,0.6) 50%,
+            rgba(0,0,0,0) 60%
+        );
+        background-repeat: repeat;
+        background-size: 100% 100%;
+        width: 400%; height: 400%;
+
+        animation: ShimmerEffect 1.8s cubic-bezier(0.75, 0.000, 0.25, 1.000) infinite;
+    }
+
+</style>
+
+<script async>
+    // emulate jank every 2 seconds to show that the CSS animation keeps going while the JS thread is busy.
+    function jank() {
+        setTimeout(() => {
+            console.log('jank')
+            const start = performance.now()
+
+            while (true) {
+                if (performance.now() - start > 1000) {
+                    setTimeout(jank, 1000)
+                    break
+                }
+            }
+        })
+    }
+    jank()
+</script>

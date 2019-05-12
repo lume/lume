@@ -68,24 +68,23 @@ DeclarativeBase.subclass('HTMLScene', ({ Public, Protected, Private, Super }) =>
         return styles
     },
 
+    connectedCallback() {
+        Super(this).connectedCallback()
+
+        // When the HTMLScene gets addded to the DOM, make it be "mounted".
+        if (!Protected(this)._mounted)
+            this.mount(this.parentNode)
+    },
+
+    disconnectedCallback() {
+        Super(this).disconnectedCallback()
+
+        this.unmount()
+    },
+
     protected: {
         _glLayer: null, // HTMLDivElement
         _cssLayer: null, // HTMLDivElement
-
-        _init() {
-            Super(this)._init()
-
-            // When the HTMLScene gets addded to the DOM, make it be "mounted".
-            if (!Protected(this)._mounted)
-                Public(this).mount(Public(this).parentNode)
-        },
-
-        _deinit() {
-            Super(this)._deinit()
-
-            Public(this).unmount()
-        },
-
     },
 
     private: {

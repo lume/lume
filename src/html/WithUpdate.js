@@ -91,6 +91,7 @@ export function prop(definition) {
             constructor.prototype,
             name
         )
+        // if (name === 'texture') debugger
 
         let existingDescriptorType
         let existingGetter
@@ -114,6 +115,8 @@ export function prop(definition) {
                 return
             }
 
+            // if (name === 'texture') debugger
+
             existingDescriptorType =
                 'value' in existingDescriptor ? 'data' : 'accessor'
 
@@ -131,6 +134,8 @@ export function prop(definition) {
                 existingSetter = existingDescriptor.set
             }
         } else {
+            // if (name === 'texture') debugger
+
             // if there's no descriptor, we want to use the logic associaated
             // with data descriptors
             existingDescriptorType = 'data'
@@ -169,6 +174,7 @@ export function prop(definition) {
                     WithUpdateProtected(this)._props[name] = val
             }
 
+            // if (name === 'texture') debugger
             return val
         }
 
@@ -443,7 +449,8 @@ const object = prop({
 const string = prop({
     attribute,
     default: '',
-    coerce: String,
+    coerce: val => (empty(val) ? '' : String(val)),
+    // coerce: (v, n) => {if (n === 'texture') debugger; return String(v)},
     serialize: val => (empty(val) ? null : String(val))
 })
 
