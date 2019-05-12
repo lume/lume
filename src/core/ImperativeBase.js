@@ -20,9 +20,6 @@ window.addEventListener('error', (event) => {
     }
 })
 
-let three = null
-let domPlane = null
-
 // We explicitly use `var` instead of `let` here because it is hoisted for the
 // Node and Scene modules. This, along with the following initImperativeBase
 // function, allows the circular dependency between this module and the Node and

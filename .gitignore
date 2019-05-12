@@ -26,6 +26,7 @@
 !/.npmrc
 !/bower.json
 !/builder.config.js
+!/tsconfig.json
 !/package.json
 
 # the basics!

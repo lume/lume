@@ -6,14 +6,6 @@ import {
     observeChildren,
     hasShadowDomV1,
 } from '../core/Utility'
-import {
-    Mesh,
-    BoxGeometry,
-    MeshPhongMaterial,
-    Color,
-    NoBlending,
-    DoubleSide,
-} from 'three'
 
 var DeclarativeBase
 
