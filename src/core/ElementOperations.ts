@@ -68,13 +68,13 @@ const ElementOperations = Class('ElementOperations', ({ Private }) => ({
         Private(this).__applySize()
     },
 
-    set shouldRender(shouldRender) {
+    set shouldRender(shouldRender: boolean) {
         Private(this).__shouldRender = shouldRender
         requestAnimationFrame(() => {
             Private(this).__applyStyle('display', shouldRender ? 'block' : 'none')
         })
     },
-    get shouldRender() {
+    get shouldRender(): boolean {
         return Private(this).__shouldRender
     },
 
@@ -94,7 +94,7 @@ const ElementOperations = Class('ElementOperations', ({ Private }) => ({
         },
 
         __applySize() {
-            const {x,y} = Private(this).__element.calculatedSize
+            const {x,y} = (Private(this).__element as any).calculatedSize // TODO ImperativeBase typing
 
             Private(this).__applyStyle('width', `${x}px`)
             Private(this).__applyStyle('height', `${y}px`)
@@ -102,18 +102,17 @@ const ElementOperations = Class('ElementOperations', ({ Private }) => ({
             // NOTE: we ignore the Z axis on elements, since they are flat.
         },
 
-        __applyOpacity(opacity) {
-            Private(this).__applyStyle('opacity', Private(this).__element.opacity)
+        __applyOpacity() {
+            Private(this).__applyStyle('opacity', (Private(this).__element as any).opacity) // TODO ImperativeBase typing
         },
 
         /**
          * Apply a style property to the element.
          *
-         * @private
          * @param  {string} property The CSS property we will a apply.
          * @param  {string} value    The value the CSS property wil have.
          */
-        __applyStyle(property, value) {
+        __applyStyle(property: string, value: string) {
             Private(this).__element.style.setProperty(property, value)
         },
     },
