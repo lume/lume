@@ -26,7 +26,7 @@ const ElementOperations = Class('ElementOperations', ({ Private }) => ({
         Private(this).__element = element
     },
 
-    connectChildElement(child) {
+    connectChildElement(child: HTMLElement) {
         if (
 
             // When using the imperative API, this statement is
@@ -53,7 +53,7 @@ const ElementOperations = Class('ElementOperations', ({ Private }) => ({
         }
     },
 
-    disconnectChildElement(child) {
+    disconnectChildElement(child: HTMLElement) {
         // If DeclarativeBase#remove was called first, we don't need to
         // call this again.
         if (!child.parentNode) return
@@ -82,11 +82,11 @@ const ElementOperations = Class('ElementOperations', ({ Private }) => ({
         __element: undefined! as HTMLElement,
         __shouldRender: false,
 
-        __add(child) {
+        __add(child: HTMLElement) {
             Private(this).__element.appendChild(child)
         },
 
-        __remove(child) {
+        __remove(child: HTMLElement) {
             // This conditional check is needed incase the element was already
             // removed from the HTML-API side.
             if (child.parentNode === Private(this).__element)
