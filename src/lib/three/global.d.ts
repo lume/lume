@@ -1,3 +1,1 @@
-interface Window {
-  THREE: import('three')
-}
+declare const THREE: typeof import('three')

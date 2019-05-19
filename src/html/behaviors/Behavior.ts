@@ -4,30 +4,38 @@ import WithUpdate from '../WithUpdate'
 import ForwardProps from './ForwardProps'
 import Node from '../../core/Node'
 
+// dummy class, testing things out
+const Dummy = Class('Dummy', {
+    constructor(element: any) {element},
+})
+type Dummy = InstanceType<typeof Dummy>
+
 /**
  * Base class for all behaviors
  *
  */
-export default
-Class( 'Behavior' ).extends( WithUpdate.mixin( ForwardProps ), ({ Public, Protected, Private, Super }) => ({
+const Behavior = Class( 'Behavior' ).extends( WithUpdate.mixin( ForwardProps ) as unknown as typeof Dummy, ({ Public, Protected, Private, Super }) => ({
     static: {
         // use a getter because Mesh is undefined at module evaluation time due
         // to a circular dependency.
         get requiredElementType() { return Node },
     },
 
+    element: undefined! as HTMLDivElement,
+
     constructor(element) {
-        Super(this).constructor()
+        Super(this).constructor({})
 
         this.element = element
 
         Private(this).__checkElementIsLibraryElement(element)
     },
 
-    // This could be useful, but at the moment we only need this because if it
-    // returns falsey (i.e. undefined) then skatejs won't fire `updated` because
-    // it returns early if !this.parentNode in triggerUpdate.
+    // This could be useful, but at the moment it is only used by SkateJS in
+    // triggerUpdate, expecting `this` to be a DOM node.
     get parentNode() {
+
+        // seems to be a bug in the `get`ter, as this.element works fine in regular methods
         return this.element.parentNode
     },
 
@@ -141,3 +149,11 @@ Class( 'Behavior' ).extends( WithUpdate.mixin( ForwardProps ), ({ Public, Protec
     },
 
 }))
+
+type Behavior = InstanceType<typeof Behavior>
+
+const b = new Behavior
+
+console.log(b.parentNode)
+
+export default Behavior

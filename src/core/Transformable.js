@@ -1,6 +1,6 @@
 import Class from 'lowclass'
 import Mixin from 'lowclass/Mixin'
-import '../lib/three/global'
+import '../lib/three/make-global'
 import XYZNumberValues from './XYZNumberValues'
 import Sizeable from './Sizeable'
 import { props } from './props'

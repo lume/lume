@@ -1,6 +1,6 @@
 import 'element-behaviors'
 import Class from 'lowclass'
-import '../../lib/three/global'
+import '../../lib/three/make-global'
 import 'three/examples/js/loaders/OBJLoader'
 import 'three/examples/js/loaders/MTLLoader'
 import {Events} from '../../core/Events'

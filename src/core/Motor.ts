@@ -3,6 +3,8 @@ import {getImperativeBaseProtectedHelper} from './ImperativeBase'
 
 // TODO import and use animation-loop
 
+type RenderTask = (timestamp?: number) => unknown
+
 const ImperativeBaseProtected = getImperativeBaseProtectedHelper()
 
 const Motor = Class('Motor', ({ Public, Private }) => ({
@@ -33,13 +35,13 @@ const Motor = Class('Motor', ({ Public, Private }) => ({
      * @return {Function} A reference to the render task. Useful for saving to
      * a variable so that it can later be passed to Motor.removeRenderTask().
      */
-    addRenderTask(fn) {
+    addRenderTask(fn: RenderTask) {
         if (typeof fn != 'function')
             throw new Error('Render task must be a function.')
 
         const self = Private(this)
 
-        if (self.__allRenderTasks.includes(fn)) return
+        if (self.__allRenderTasks.includes(fn)) return fn
 
         self.__allRenderTasks.push(fn)
         self.__numberOfTasks += 1
@@ -51,7 +53,7 @@ const Motor = Class('Motor', ({ Public, Private }) => ({
         return fn
     },
 
-    removeRenderTask(fn) {
+    removeRenderTask(fn: RenderTask) {
         const self = Private(this)
 
         const taskIndex = self.__allRenderTasks.indexOf(fn)
@@ -65,8 +67,8 @@ const Motor = Class('Motor', ({ Public, Private }) => ({
             self.__taskIterationIndex -= 1
     },
 
-    once(fn) {
-        this.addRenderTask(time => (fn(time), false))
+    once(fn: RenderTask) {
+        return this.addRenderTask(time => (fn(time), false))
     },
 
     // A Node calls this any time its properties have been modified (f.e. by the end user).
@@ -86,19 +88,19 @@ const Motor = Class('Motor', ({ Public, Private }) => ({
     private: {
 
         __loopStarted: false,
-        __taskIterationIndex: null,
+        __taskIterationIndex: 0,
         __numberOfTasks: 0,
 
-        __allRenderTasks: [],
-        __nodesToUpdate: [],
-        __modifiedScenes: [],
+        __allRenderTasks: [] as RenderTask[],
+        __nodesToUpdate: [] as any[], // TODO as ImperativeBase[]
+        __modifiedScenes: [] as any[], // TODO as Scene[]
 
         // A set of nodes that are the root nodes of subtrees where all nodes
         // in each subtree need to have their world matrices updated.
-        __treesToUpdate: [],
+        __treesToUpdate: [] as any[], // TODO as ImperativeBase[]
 
         // default to requestAnimationFrame for regular non-VR/AR scenes.
-        __requestFrame: window.requestAnimationFrame.bind( window ),
+        __requestFrame: window.requestAnimationFrame.bind( window ) as (...args: any) => void, // TODO rAF signature
 
         /**
          * Starts a requestAnimationFrame loop and runs the render tasks in the __allRenderTasks stack.
@@ -111,16 +113,16 @@ const Motor = Class('Motor', ({ Public, Private }) => ({
             if (document.readyState === 'loading')
                 await new Promise(resolve => setTimeout(resolve))
 
-            if (this.__loopStarted) return
+            if (Private(this).__loopStarted) return
 
-            this.__loopStarted = true
+            Private(this).__loopStarted = true
 
-            let timestamp = null
+            let timestamp: number = null!
 
-            while (this.__loopStarted) {
-                timestamp = await this.__animationFrame()
+            while (Private(this).__loopStarted) {
+                timestamp = await Private(this).__animationFrame()
 
-                this.__runRenderTasks(timestamp)
+                Private(this).__runRenderTasks(timestamp)
 
                 // wait for the next microtask before continuing so that SkateJS
                 // updated methods (or any other microtask handlers) have a
@@ -130,21 +132,21 @@ const Motor = Class('Motor', ({ Public, Private }) => ({
                 // happen after render
                 await Promise.resolve()
 
-                this.__renderNodes(timestamp)
+                Private(this).__renderNodes(timestamp)
 
                 // If no tasks are left, stop the animation loop.
-                if (!this.__allRenderTasks.length)
-                    this.__loopStarted = false
+                if (!Private(this).__allRenderTasks.length)
+                    Private(this).__loopStarted = false
             }
         },
 
-        __animationFrame() {
-            return new Promise(r => this.__requestFrame(r))
+        __animationFrame(): Promise<number> {
+            return new Promise(r => Private(this).__requestFrame(r))
         },
 
-        __runRenderTasks(timestamp) {
-            for (this.__taskIterationIndex = 0; this.__taskIterationIndex < this.__numberOfTasks; this.__taskIterationIndex += 1) {
-                const task = this.__allRenderTasks[this.__taskIterationIndex]
+        __runRenderTasks(timestamp: number) {
+            for (Private(this).__taskIterationIndex = 0; Private(this).__taskIterationIndex < Private(this).__numberOfTasks; Private(this).__taskIterationIndex += 1) {
+                const task = Private(this).__allRenderTasks[Private(this).__taskIterationIndex]
 
                 if (task(timestamp) === false)
                     Public(this).removeRenderTask(task)
@@ -152,10 +154,10 @@ const Motor = Class('Motor', ({ Public, Private }) => ({
         },
 
         __renderNodes(timestamp) {
-            if (!this.__nodesToUpdate.length) return
+            if (!Private(this).__nodesToUpdate.length) return
 
-            for (let i=0, l=this.__nodesToUpdate.length; i<l; i+=1) {
-                const node = this.__nodesToUpdate[i]
+            for (let i=0, l=Private(this).__nodesToUpdate.length; i<l; i+=1) {
+                const node = Private(this).__nodesToUpdate[i]
 
                 ImperativeBaseProtected()(node)._render(timestamp)
 
@@ -164,32 +166,32 @@ const Motor = Class('Motor', ({ Public, Private }) => ({
                 // that needs to be updated
                 if (
                     !ImperativeBaseProtected()(node)._getNearestAncestorThatShouldBeRendered() &&
-                    !this.__treesToUpdate.includes(node)
+                    !Private(this).__treesToUpdate.includes(node)
                 ) {
-                    this.__treesToUpdate.push(node)
+                    Private(this).__treesToUpdate.push(node)
                 }
 
                 // keep track of which scenes are modified so we can render webgl
                 // only for those scenes.
-                if (!this.__modifiedScenes.includes(node.scene))
-                    this.__modifiedScenes.push(node.scene)
+                if (!Private(this).__modifiedScenes.includes(node.scene))
+                    Private(this).__modifiedScenes.push(node.scene)
             }
 
             // Update world matrices of the subtrees.
-            const treesToUpdate = this.__treesToUpdate
+            const treesToUpdate = Private(this).__treesToUpdate
             for (let i=0, l=treesToUpdate.length; i<l; i+=1) {
                 ImperativeBaseProtected()(treesToUpdate[i])._calculateWorldMatricesInSubtree()
             }
             treesToUpdate.length = 0
 
             // render webgl of modified scenes.
-            const modifiedScenes = this.__modifiedScenes
+            const modifiedScenes = Private(this).__modifiedScenes
             for (let i=0, l=modifiedScenes.length; i<l; i+=1) {
                 modifiedScenes[i].drawScene()
             }
             modifiedScenes.length = 0
 
-            const nodesToUpdate = this.__nodesToUpdate
+            const nodesToUpdate = Private(this).__nodesToUpdate
             for (let i=0, l=nodesToUpdate.length; i<l; i+=1) {
                 ImperativeBaseProtected()(nodesToUpdate[i])._willBeRendered = false
             }
@@ -198,6 +200,8 @@ const Motor = Class('Motor', ({ Public, Private }) => ({
     },
 
 }))
+
+type Motor = InstanceType<typeof Motor>
 
 // export a singleton instance rather than the class directly.
 export default new Motor

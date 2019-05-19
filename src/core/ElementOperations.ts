@@ -1,6 +1,5 @@
 import Class from 'lowclass'
 import './Camera'
-import Node from './Node'
 
 // fallback to experimental CSS transform if browser doesn't have it (fix for Safari 9)
 if (typeof document.createElement('div').style.transform == 'undefined') {
@@ -21,10 +20,9 @@ if (typeof document.createElement('div').style.transform == 'undefined') {
  * Manages a DOM element. Exposes a set of recommended APIs for working with
  * DOM efficiently. Currently doesn't do much yet...
  */
-export default
-Class('ElementOperations', ({ Private }) => ({
+const ElementOperations = Class('ElementOperations', ({ Private }) => ({
 
-    constructor(element) {
+    constructor(element: HTMLElement) {
         Private(this).__element = element
     },
 
@@ -81,31 +79,31 @@ Class('ElementOperations', ({ Private }) => ({
     },
 
     private: {
-        __element: null,
+        __element: undefined! as HTMLElement,
         __shouldRender: false,
 
         __add(child) {
-            this.__element.appendChild(child)
+            Private(this).__element.appendChild(child)
         },
 
         __remove(child) {
             // This conditional check is needed incase the element was already
             // removed from the HTML-API side.
-            if (child.parentNode === this.__element)
-                this.__element.removeChild(child)
+            if (child.parentNode === Private(this).__element)
+                Private(this).__element.removeChild(child)
         },
 
         __applySize() {
-            const {x,y} = this.__element.calculatedSize
+            const {x,y} = Private(this).__element.calculatedSize
 
-            this.__applyStyle('width', `${x}px`)
-            this.__applyStyle('height', `${y}px`)
+            Private(this).__applyStyle('width', `${x}px`)
+            Private(this).__applyStyle('height', `${y}px`)
 
             // NOTE: we ignore the Z axis on elements, since they are flat.
         },
 
         __applyOpacity(opacity) {
-            this.__applyStyle('opacity', this.__element.opacity)
+            Private(this).__applyStyle('opacity', Private(this).__element.opacity)
         },
 
         /**
@@ -116,7 +114,11 @@ Class('ElementOperations', ({ Private }) => ({
          * @param  {string} value    The value the CSS property wil have.
          */
         __applyStyle(property, value) {
-            this.__element.style.setProperty(property, value)
+            Private(this).__element.style.setProperty(property, value)
         },
     },
 }))
+
+type ElementOperations = InstanceType<typeof ElementOperations>
+
+export default ElementOperations

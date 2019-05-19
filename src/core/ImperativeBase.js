@@ -1,3 +1,5 @@
+///// <reference path="../lib/three/global.d.ts" />
+// import * as THREE from 'three'
 import {Class, Mixin, instanceOf} from 'lowclass'
 import {Object3D} from 'three'
 import Transformable from './Transformable'
