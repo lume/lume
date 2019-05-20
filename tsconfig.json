@@ -25,6 +25,7 @@
         "pretty": true,
         "sourceMap": true,
         "strictNullChecks": true,
+        "strictFunctionTypes": false,
         "target": "es6",
         "skipLibCheck": true,
         "paths": {
