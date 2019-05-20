@@ -3,75 +3,71 @@ import Mixin from 'lowclass/Mixin'
 
 const Brand = {}
 
-export default
-Mixin(Base =>
+export default Mixin(Base =>
+    Class('Observable').extends(
+        Base,
+        ({Super, Private}) => ({
+            on(eventName, callback, context) {
+                if (!Private(this).__eventMap) Private(this).__eventMap = new Map()
 
-    Class('Observable').extends( Base, ({ Super, Private }) => ({
+                let callbacks = Private(this).__eventMap.get(eventName)
 
-        on(eventName, callback, context) {
-            if (!Private(this).__eventMap)
-                Private(this).__eventMap = new Map
+                if (!callbacks) Private(this).__eventMap.set(eventName, (callbacks = []))
 
-            let callbacks = Private(this).__eventMap.get(eventName)
+                if (typeof callback == 'function') callbacks.push([callback, context])
+                // save callback associated with context
+                else throw new Error('Expected a function in callback argument of Observable#on.')
+            },
 
-            if (!callbacks)
-                Private(this).__eventMap.set(eventName, callbacks = [])
+            off(eventName, callback) {
+                if (!Private(this).__eventMap || !Private(this).__eventMap.has(eventName)) return
 
-            if (typeof callback == 'function')
-                callbacks.push([callback, context]) // save callback associated with context
-            else
-                throw new Error('Expected a function in callback argument of Observable#on.')
-        },
+                const callbacks = Private(this).__eventMap.get(eventName)
 
-        off(eventName, callback) {
-            if (!Private(this).__eventMap || !Private(this).__eventMap.has(eventName)) return
+                const index = callbacks.findIndex(tuple => tuple[0] === callback)
 
-            const callbacks = Private(this).__eventMap.get(eventName)
+                if (index == -1) return
 
-            const index = callbacks.findIndex(tuple => tuple[0] === callback)
+                callbacks.splice(index, 1)
 
-            if (index == -1) return
+                if (callbacks.length === 0) Private(this).__eventMap.delete(eventName)
 
-            callbacks.splice(index, 1)
+                if (Private(this).__eventMap.size === 0) Private(this).__eventMap = null
+            },
 
-            if (callbacks.length === 0) Private(this).__eventMap.delete(eventName)
+            emit(eventName, data) {
+                if (!Private(this).__eventMap || !Private(this).__eventMap.has(eventName)) return
 
-            if (Private(this).__eventMap.size === 0) Private(this).__eventMap = null
-        },
+                const callbacks = Private(this).__eventMap.get(eventName)
 
-        emit(eventName, data) {
-            if (!Private(this).__eventMap || !Private(this).__eventMap.has(eventName)) return
+                let tuple = undefined
+                let callback = undefined
+                let context = undefined
 
-            const callbacks = Private(this).__eventMap.get(eventName)
+                for (let i = 0, len = callbacks.length; i < len; i += 1) {
+                    tuple = callbacks[i]
+                    callback = tuple[0]
+                    context = tuple[1]
+                    callback.call(context, data)
+                }
+            },
 
-            let tuple = undefined
-            let callback = undefined
-            let context = undefined
+            // alias for emit
+            trigger(...args) {
+                return this.emit(...args)
+            },
 
-            for (let i=0, len=callbacks.length; i<len; i+=1) {
-                tuple = callbacks[i]
-                callback = tuple[0]
-                context = tuple[1]
-                callback.call(context, data)
-            }
-        },
+            // alias for emit
+            triggerEvent(...args) {
+                return this.emit(...args)
+            },
 
-        // alias for emit
-        trigger(...args) {
-            return this.emit(...args)
-        },
+            protected: {Observable: 'Observable'},
 
-        // alias for emit
-        triggerEvent(...args) {
-            return this.emit(...args)
-        },
-
-        protected: { Observable: 'Observable' },
-
-        private: {
-            __eventMap: null, // Map
-        },
-
-    }), Brand)
-
+            private: {
+                __eventMap: null, // Map
+            },
+        }),
+        Brand
+    )
 )
