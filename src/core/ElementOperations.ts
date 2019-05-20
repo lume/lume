@@ -94,7 +94,7 @@ const ElementOperations = Class('ElementOperations', ({ Private }) => ({
         },
 
         __applySize() {
-            const {x,y} = (Private(this).__element as any).calculatedSize // TODO ImperativeBase typing
+            const {x,y} = (Private(this).__element as any).calculatedSize // TODO TS ImperativeBase typing
 
             Private(this).__applyStyle('width', `${x}px`)
             Private(this).__applyStyle('height', `${y}px`)
@@ -103,7 +103,7 @@ const ElementOperations = Class('ElementOperations', ({ Private }) => ({
         },
 
         __applyOpacity() {
-            Private(this).__applyStyle('opacity', (Private(this).__element as any).opacity) // TODO ImperativeBase typing
+            Private(this).__applyStyle('opacity', (Private(this).__element as any).opacity) // TODO TS ImperativeBase typing
         },
 
         /**
