@@ -65,30 +65,33 @@ declare module 'lowclass' {
                 }
             ) => T &
                 Partial<InstanceType<TBase>> &
-                ThisType<LowClassThis<T & InstanceType<TBase> & ExtractInheritedProtected<TBase>>>
+                ThisType<LowClassThis<T & InstanceType<TBase> & ExtractInheritedProtected<TBase>>>,
+            brand?: object
         ): T extends {constructor: infer TCtor}
             ? FunctionToConstructor<ConstructorOrDefault<T>, Id<InstanceType<TBase> & OmitImplementationKeys<T>>> &
                   Id<StaticsAndProtected<T> & Pick<TBase, keyof TBase>>
-            : ReplaceCtorReturn<TBase, Id<InstanceType<TBase> /*& Omit<T, 'constructor'>*/>> & // missing the T type here?
-                  Id<StaticsAndProtected<T> & Pick<TBase, keyof TBase>>
+            : ReplaceCtorReturn<TBase, Id<InstanceType<TBase>>> & Id<StaticsAndProtected<T> & Pick<TBase, keyof TBase>>
     }
     export function Class<T>(
         name: string,
         members: (
             helpers: {Public: PublicHelper; Protected: ProtectedHelper; Private: PrivateHelper; Super: never} // TODO Super is actually Object
-        ) => T & ThisType<LowClassThis<T>>
+        ) => T & ThisType<LowClassThis<T>>,
+        brand?: object
     ): FunctionToConstructor<ConstructorOrDefault<T>, Id<OmitImplementationKeys<T>>> & Id<StaticsAndProtected<T>>
     export function Class<T>(
         name: string,
-        members: T & ThisType<LowClassThis<T>>
+        members: T & ThisType<LowClassThis<T>>,
+        brand?: object
     ): FunctionToConstructor<ConstructorOrDefault<T>, Id<OmitImplementationKeys<T>>> & Id<StaticsAndProtected<T>>
 
     export default Class
 
-    type MixinFunction = <TSub, TSuper>(base: Constructor<TSuper>) => Constructor<TSub & TSuper>
-    export function Mixin<TSub, TSuper, T extends MixinFunction>(mixin: T): Constructor<TSub & TSuper> & {mixin: T}
+    import Mixin from 'lowclass/Mixin'
+    export {Mixin}
 }
 
-// function Class(): any {
-// 	return null as any;
-// }
+declare module 'lowclass/Mixin' {
+    type MixinFunction = <TSuper>(baseClass: Constructor<TSuper>) => Constructor<TSuper>
+    export default function Mixin<T extends MixinFunction>(mixinFn: T): ReturnType<T> & {mixin: T}
+}

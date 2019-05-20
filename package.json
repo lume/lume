@@ -44,14 +44,14 @@
     "jss-px": "^1.0.0",
     "jss-vendor-prefixer": "^1.0.0",
     "lowclass": "^4.6.2",
-    "three": "^0.103.0",
-    "typescript": "^3.4.5"
+    "three": "^0.103.0"
   },
   "devDependencies": {
     "all-contributors-cli": "^4.4.0",
     "builder": "4.0.0",
     "builder-js-package": "trusktr/builder-js-package#14bb191caeee9835ea59b9d2dd47eca9bedd2c7e",
-    "docpress": "0.7.1"
+    "docpress": "0.7.1",
+    "typescript": "^3.5.0-dev.20190518"
   },
   "docpress": {
     "docs": "docs",
