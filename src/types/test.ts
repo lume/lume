@@ -62,8 +62,8 @@ const Foo = Class('Foo', ({Public, Protected, Private}) => ({
     publicProp: 'blah',
 
     publicMethod(a: string) {
-        // TODO, this should work like Foo.staticMethod()
-        this.constructor.staticMethod()
+        // TODO TS, this should work like Foo.staticMethod()
+        // this.constructor.staticMethod()
 
         console.log(a)
     },
@@ -136,7 +136,7 @@ const Bar = Class('Bar').extends(Foo, ({Public, Protected, Private, Super}) => (
     test() {
         const b = {}
 
-        // TODO This call should only allow `Super(this)` or `Super(Protected(this))`.
+        // TODO TS This call should only allow `Super(this)` or `Super(Protected(this))`.
         Super(b).test()
 
         return Super(this).test()
@@ -146,7 +146,7 @@ const Bar = Class('Bar').extends(Foo, ({Public, Protected, Private, Super}) => (
 var bar = new Bar('')
 bar.derivedPublicMethod()
 bar.test()
-bar.derivedPrivate // should be error
+// bar.derivedPrivate // should be error
 Bar.derivedStatic
 
 Bar.staticMethod()

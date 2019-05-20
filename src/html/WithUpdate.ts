@@ -212,34 +212,41 @@ let WithUpdateProtected
 
 const Brand = {}
 
-export default Mixin((Base = HTMLElement) =>
-    Class('WithUpdate').extends(
+// function WithUpdateMixin<T extends Constructor>(Base: T/* = HTMLElement*/) {
+function WithUpdateMixin<T extends typeof HTMLElement>(Base: T /* = HTMLElement*/) {
+    const WithUpdate = Class('WithUpdate').extends(
         Base,
         ({Super, Protected, Private}) => (
             (WithUpdateProtected = Protected),
             (WithUpdatePrivate = Private),
             {
                 static: {
-                    get props() {
+                    _staticProps: undefined! as any,
+                    _attributeToAttributeMap: undefined! as any,
+                    _attributeToPropertyMap: undefined! as any,
+                    _observedAttributes: undefined! as string[],
+
+                    get props(): any {
                         if (!this._staticProps) this._staticProps = {}
                         return this._staticProps
                     },
 
-                    set props(props) {
+                    set props(props: any) {
                         this._staticProps = props
                     },
 
-                    get observedAttributes() {
+                    get observedAttributes(): string[] {
                         // make sure to create a new instance of these static props per constructor.
-                        if (!('_attributeToAttributeMap' in this)) this._attributeToAttributeMap = {}
-                        if (!('_attributeToPropertyMap' in this)) this._attributeToPropertyMap = {}
-                        if (!('_observedAttributes' in this)) this._observedAttributes = []
+                        // TODO TS why does it not work without (this as any) here?
+                        if (!('_attributeToAttributeMap' in (this as any))) this._attributeToAttributeMap = {}
+                        if (!('_attributeToPropertyMap' in (this as any))) this._attributeToPropertyMap = {}
+                        if (!('_observedAttributes' in (this as any))) this._observedAttributes = []
 
                         // We have to define props here because observedAttributes are retrieved
                         // only once when the custom element is defined. If we did this only in
                         // the constructor, then props would not link to attributes.
                         defineProps(this)
-                        return unique(this._observedAttributes.concat(Base.observedAttributes || []))
+                        return unique(this._observedAttributes.concat((Base as any).observedAttributes || []))
                     },
                 },
 
@@ -269,16 +276,21 @@ export default Mixin((Base = HTMLElement) =>
                 },
 
                 get props() {
-                    return pick(this, keys(this.constructor.props))
+                    return pick(this, keys((this as any).constructor.props))
                 },
 
                 set props(props) {
-                    const ctorProps = this.constructor.props
+                    // const ctorProps = (this as any).constructor.props
                     keys(props).forEach(k => /*k in ctorProps && */ (this[k] = props[k]))
                 },
 
-                attributeChangedCallback(name, oldValue, newValue) {
-                    const {_attributeToAttributeMap, _attributeToPropertyMap, _propsNormalized} = this.constructor
+                attributeChangedCallback(name: string, oldValue: string | null, newValue: string | null) {
+                    // TODO TS this.constructor
+                    const {
+                        _attributeToAttributeMap,
+                        _attributeToPropertyMap,
+                        _propsNormalized,
+                    } = (this as any).constructor
 
                     if (Super(this).attributeChangedCallback) {
                         Super(this).attributeChangedCallback(name, oldValue, newValue)
@@ -302,6 +314,8 @@ export default Mixin((Base = HTMLElement) =>
                     const targetAttributeName = _attributeToAttributeMap[name]
                     if (targetAttributeName) {
                         if (newValue == null) {
+                            // TODO TS we specified above that T extends typeof HTMLElement.
+                            // How can we make it know that removeAttribute exists?
                             this.removeAttribute(targetAttributeName)
                         } else {
                             this.setAttribute(targetAttributeName, newValue)
@@ -313,15 +327,20 @@ export default Mixin((Base = HTMLElement) =>
                     if (Super(this).connectedCallback) {
                         Super(this).connectedCallback()
                     }
+                    // TODO TS this.constructor
                     const propsList = this.constructor._propNames
                     for (let i = 0, l = propsList.length; i < l; i += 1)
                         Private(this).__modifiedProps[propsList[i]] = true
                     this.triggerUpdate()
                 },
 
-                shouldUpdate() {
+                shouldUpdate(_prevProps, _modifiedProps) {
                     return true
                 },
+
+                updating(_prevProps, _modifiedProps) {},
+
+                updated(_prevProps, _modifiedProps) {},
 
                 triggerUpdate() {
                     if (Private(this).__updating) {
@@ -330,12 +349,10 @@ export default Mixin((Base = HTMLElement) =>
                     Private(this).__updating = true
                     delay(() => {
                         const {__prevProps, __modifiedProps} = Private(this)
-                        if (this.updating) {
-                            this.updating(__prevProps, __modifiedProps)
-                        }
-                        if (this.updated && this.shouldUpdate(__prevProps, __modifiedProps)) {
+                        this.updating && this.updating(__prevProps, __modifiedProps)
+                        this.updated &&
+                            this.shouldUpdate(__prevProps, __modifiedProps) &&
                             this.updated(__prevProps, __modifiedProps)
-                        }
                         Private(this).__prevProps = this.props
                         const {_propNames} = this.constructor
                         for (let i = 0, l = _propNames.length; i < l; i += 1)
@@ -369,7 +386,13 @@ export default Mixin((Base = HTMLElement) =>
         ),
         Brand
     )
-)
+
+    return WithUpdate as InstanceType<typeof WithUpdate>
+}
+
+const WithUpdate = Mixin(WithUpdateMixin)
+
+export default WithUpdate
 
 const {parse, stringify} = JSON
 const attribute = Object.freeze({source: true})

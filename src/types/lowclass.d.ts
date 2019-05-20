@@ -1,5 +1,4 @@
 declare module 'lowclass' {
-    type Omit<T, K> = Pick<T, Exclude<keyof T, K>>
     type ImplementationKeys = 'static' | 'private' | 'protected'
 
     type FunctionToConstructor<T, TReturn> = T extends (...a: infer A) => void ? new (...a: A) => TReturn : never
@@ -8,13 +7,6 @@ declare module 'lowclass' {
     type ReplaceCtorReturn<T, TReturn> = T extends new (...a: infer A) => unknown ? new (...a: A) => TReturn : never
 
     type ConstructorOrDefault<T> = T extends {constructor: infer TCtor} ? TCtor : (() => void)
-
-    // `Id` is an identity type, but it is also used as a trick to expand the
-    // type given to it so that tooltips show the basic type rather then all the
-    // conditional/aliases used.
-    type Id<T> = {} & {[P in keyof T]: T[P]}
-
-    type Constructor<T = any, A extends any[] = any[]> = new (...a: A) => T
 
     // Although the SuperType type definiton already checks that T extends from
     // Constructor, the additional check in the generic paramters is useful so
@@ -58,7 +50,8 @@ declare module 'lowclass' {
 
     type OmitImplementationKeys<T> = Omit<T, ImplementationKeys>
 
-    function Class(
+    // export function Class<TBase>(
+    export function Class(
         name: string
     ): {
         extends<TBase extends Constructor, T>(
@@ -79,18 +72,21 @@ declare module 'lowclass' {
             : ReplaceCtorReturn<TBase, Id<InstanceType<TBase> /*& Omit<T, 'constructor'>*/>> & // missing the T type here?
                   Id<StaticsAndProtected<T> & Pick<TBase, keyof TBase>>
     }
-    function Class<T>(
+    export function Class<T>(
         name: string,
         members: (
             helpers: {Public: PublicHelper; Protected: ProtectedHelper; Private: PrivateHelper; Super: never} // TODO Super is actually Object
         ) => T & ThisType<LowClassThis<T>>
     ): FunctionToConstructor<ConstructorOrDefault<T>, Id<OmitImplementationKeys<T>>> & Id<StaticsAndProtected<T>>
-    function Class<T>(
+    export function Class<T>(
         name: string,
         members: T & ThisType<LowClassThis<T>>
     ): FunctionToConstructor<ConstructorOrDefault<T>, Id<OmitImplementationKeys<T>>> & Id<StaticsAndProtected<T>>
 
     export default Class
+
+    type MixinFunction = <TSub, TSuper>(base: Constructor<TSuper>) => Constructor<TSub & TSuper>
+    export function Mixin<TSub, TSuper, T extends MixinFunction>(mixin: T): Constructor<TSub & TSuper> & {mixin: T}
 }
 
 // function Class(): any {
