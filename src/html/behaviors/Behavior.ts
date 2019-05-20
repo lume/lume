@@ -5,26 +5,33 @@ import ForwardProps from './ForwardProps'
 import Node from '../../core/Node'
 
 // dummy class, testing things out
-const Dummy = Class('Dummy', {
-    constructor(element: any) {element},
+// TODO TS these types will come from the super class once we type the Mixin tool
+const Placeholder = Class('Placeholder', {
+    constructor(element: HTMLElement) {element},
+    attributeChangedCallback(_name: string, _oldVal: string | null, _newVal: string | null) {},
+    connectedCallback() {},
+    disconnectedCallback() {},
+    adoptedCallback() {},
 })
-type Dummy = InstanceType<typeof Dummy>
+type Placeholder = InstanceType<typeof Placeholder>
 
 /**
  * Base class for all behaviors
  *
  */
-const Behavior = Class( 'Behavior' ).extends( WithUpdate.mixin( ForwardProps ) as unknown as typeof Dummy, ({ Public, Protected, Private, Super }) => ({
+const Behavior = Class( 'Behavior' ).extends( WithUpdate.mixin( ForwardProps ) as unknown as typeof Placeholder, ({ Public, Protected, Private, Super }) => ({
     static: {
         // use a getter because Mesh is undefined at module evaluation time due
         // to a circular dependency.
+        // TODO TS this is `any` ATM, We need to access it as
+        // `this.constructor`, for inheritance.
         get requiredElementType() { return Node },
     },
 
-    element: undefined! as HTMLDivElement,
+    element: undefined! as HTMLElement,
 
-    constructor(element) {
-        Super(this).constructor({})
+    constructor(element: HTMLElement) {
+        Super(this).constructor({} as HTMLElement)
 
         this.element = element
 
@@ -33,14 +40,14 @@ const Behavior = Class( 'Behavior' ).extends( WithUpdate.mixin( ForwardProps ) a
 
     // This could be useful, but at the moment it is only used by SkateJS in
     // triggerUpdate, expecting `this` to be a DOM node.
-    get parentNode() {
+    get parentNode(): Node | null {
 
         // seems to be a bug in the `get`ter, as this.element works fine in regular methods
         return this.element.parentNode
     },
 
     // proxy setAttribute to this.element so that WithUpdate works in certain cases
-    setAttribute(name, value) {
+    setAttribute(name: string, value: string) {
         this.element.setAttribute(name, value)
     },
 
@@ -57,11 +64,11 @@ const Behavior = Class( 'Behavior' ).extends( WithUpdate.mixin( ForwardProps ) a
     // on the CSS_LOAD event. In any case, the current solution is more generic,
     // for use with any type of custom elements.
 
-    async attributeChangedCallback(...args) {
+    async attributeChangedCallback(name: string, oldValue: string | null, newValue: string | null) {
         if (!Private(this).__elementDefined)
             await Private(this).__whenDefined
 
-        Super(this).attributeChangedCallback(...args)
+        Super(this).attributeChangedCallback(name, oldValue, newValue)
     },
 
     async connectedCallback() {
@@ -99,7 +106,7 @@ const Behavior = Class( 'Behavior' ).extends( WithUpdate.mixin( ForwardProps ) a
 
     private: {
         // a promise resolved when an element is upgraded
-        __whenDefined: null,
+        __whenDefined: null! as Promise<void>,
 
         // we need to wait for __elementDefined to be true because running the
         // superclass logic, otherwise `updated()` calls can happen before the
@@ -107,12 +114,12 @@ const Behavior = Class( 'Behavior' ).extends( WithUpdate.mixin( ForwardProps ) a
         __elementDefined: false,
 
         // TODO add a test to make sure this check works
-        async __checkElementIsLibraryElement(element) {
-            const pub = Public(this)
-            const BaseClass = Public(this).constructor.requiredElementType
+        async __checkElementIsLibraryElement(element: HTMLElement) {
+            // TODO TS `this.constructor` type.
+            const BaseClass = (Public(this).constructor as any).requiredElementType
 
             if ( element.nodeName.includes('-') ) {
-                this.__whenDefined = customElements.whenDefined(element.nodeName.toLowerCase())
+                Private(this).__whenDefined = customElements.whenDefined(element.nodeName.toLowerCase())
 
                 // We use `.then` here on purpose, so that setting
                 // __elementDefined happens in the very first microtask after
@@ -122,16 +129,16 @@ const Behavior = Class( 'Behavior' ).extends( WithUpdate.mixin( ForwardProps ) a
                 // __whenDefined is resolved. Our goal is to have APIs ready as
                 // soon as possible in the methods above that wait for
                 // __whenDefined.
-                this.__whenDefined.then(() => {
-                    this.__elementDefined = element instanceof BaseClass
+                Private(this).__whenDefined.then(() => {
+                    Private(this).__elementDefined = element instanceof BaseClass
                 })
 
                 await Promise.race([
-                    this.__whenDefined,
+                    Private(this).__whenDefined,
                     new Promise(r => setTimeout(r, 1000))
                 ])
 
-                if (!this.__elementDefined) throw new Error(`
+                if (!Private(this).__elementDefined) throw new Error(`
                     Either the element you're using the behavior on is not an
                     instance of ${BaseClass.name}, or there was a 1-second
                     timeout waiting for the element to be defined. Please make
@@ -151,9 +158,5 @@ const Behavior = Class( 'Behavior' ).extends( WithUpdate.mixin( ForwardProps ) a
 }))
 
 type Behavior = InstanceType<typeof Behavior>
-
-const b = new Behavior
-
-console.log(b.parentNode)
 
 export default Behavior

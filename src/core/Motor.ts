@@ -92,15 +92,15 @@ const Motor = Class('Motor', ({ Public, Private }) => ({
         __numberOfTasks: 0,
 
         __allRenderTasks: [] as RenderTask[],
-        __nodesToUpdate: [] as any[], // TODO as ImperativeBase[]
-        __modifiedScenes: [] as any[], // TODO as Scene[]
+        __nodesToUpdate: [] as any[], // TODO TS as ImperativeBase[]
+        __modifiedScenes: [] as any[], // TODO TS as Scene[]
 
         // A set of nodes that are the root nodes of subtrees where all nodes
         // in each subtree need to have their world matrices updated.
-        __treesToUpdate: [] as any[], // TODO as ImperativeBase[]
+        __treesToUpdate: [] as any[], // TODO TS as ImperativeBase[]
 
         // default to requestAnimationFrame for regular non-VR/AR scenes.
-        __requestFrame: window.requestAnimationFrame.bind( window ) as (...args: any) => void, // TODO rAF signature
+        __requestFrame: window.requestAnimationFrame.bind( window ) as (...args: any) => void, // TODO TS rAF signature
 
         /**
          * Starts a requestAnimationFrame loop and runs the render tasks in the __allRenderTasks stack.
