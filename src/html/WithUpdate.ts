@@ -215,7 +215,7 @@ const Brand = {}
 // function WithUpdateMixin<T extends Constructor>(Base: T/* = HTMLElement*/) {
 function WithUpdateMixin<T extends typeof HTMLElement>(Base: T /* = HTMLElement*/) {
     const WithUpdate = Class('WithUpdate').extends(
-        Base,
+        Base as typeof HTMLElement,
         ({Super, Protected, Private}) => (
             (WithUpdateProtected = Protected),
             (WithUpdatePrivate = Private),
@@ -275,11 +275,11 @@ function WithUpdateMixin<T extends typeof HTMLElement>(Base: T /* = HTMLElement*
                     return self
                 },
 
-                get props() {
+                get props(): any {
                     return pick(this, keys((this as any).constructor.props))
                 },
 
-                set props(props) {
+                set props(props: any) {
                     // const ctorProps = (this as any).constructor.props
                     keys(props).forEach(k => /*k in ctorProps && */ (this[k] = props[k]))
                 },
