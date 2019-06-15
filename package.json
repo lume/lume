@@ -51,7 +51,7 @@
     "builder": "4.0.0",
     "builder-js-package": "trusktr/builder-js-package#14bb191caeee9835ea59b9d2dd47eca9bedd2c7e",
     "docpress": "0.7.1",
-    "typescript": "^3.5.0-dev.20190518"
+    "typescript": "^3.5.2"
   },
   "docpress": {
     "docs": "docs",
