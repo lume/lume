@@ -18,26 +18,26 @@ export default Class('BaseGeometryBehavior').extends(BaseMeshBehavior, ({Public,
         const {size, sizeMode} = modifiedProps
 
         if (size || sizeMode) {
-            Private(this).__updateGeometryOnSizeChange(this.size)
+            this.__updateGeometryOnSizeChange(this.size)
         }
     },
 
     protected: {
         _listenToElement() {
-            Super(this)._listenToElement()
+            super._listenToElement()
 
             // TODO the following three events can be replaced with a single propchange:size event
-            Public(this).element.on('sizechange', Private(this).__onSizeValueChanged, Private(this))
-            Public(this).element.size.on('valuechanged', Private(this).__onSizeValueChanged, Private(this))
-            Public(this).element.sizeMode.on('valuechanged', Private(this).__onSizeValueChanged, Private(this))
+            this.element.on('sizechange', this.__onSizeValueChanged, this)
+            this.element.size.on('valuechanged', this.__onSizeValueChanged, this)
+            this.element.sizeMode.on('valuechanged', this.__onSizeValueChanged, this)
         },
 
         _unlistenToElement() {
-            Super(this)._unlistenToElement()
+            super._unlistenToElement()
 
-            Public(this).element.off('sizechange', Private(this).__onSizeValueChanged)
-            Public(this).element.size.off('valuechanged', Private(this).__onSizeValueChanged)
-            Public(this).element.sizeMode.off('valuechanged', Private(this).__onSizeValueChanged)
+            this.element.off('sizechange', this.__onSizeValueChanged)
+            this.element.size.off('valuechanged', this.__onSizeValueChanged)
+            this.element.sizeMode.off('valuechanged', this.__onSizeValueChanged)
         },
     },
 
@@ -45,8 +45,8 @@ export default Class('BaseGeometryBehavior').extends(BaseMeshBehavior, ({Public,
         __onSizeValueChanged() {
             // tells WithUpdate (from BaseMeshBehavior) which prop
             // changed and makes it finally trigger our updated method
-            // Public(this).size = Public(this).size
-            Public(this).triggerUpdateForProp('size')
+            // this.size = this.size
+            this.triggerUpdateForProp('size')
         },
 
         // NOTE we may use the x, y, z args to calculate scale when/if we
@@ -56,7 +56,7 @@ export default Class('BaseGeometryBehavior').extends(BaseMeshBehavior, ({Public,
             // Re-creating geometries is wasteful, re-use them when possible, and
             // add instancing. Maybe we use Object3D.scale as an implementation
             // detail of our `size` prop.
-            Public(this).resetMeshComponent()
+            this.resetMeshComponent()
         },
     },
 }))

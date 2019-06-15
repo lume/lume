@@ -64,10 +64,10 @@ export default Mixin(Base => {
              * @param {number} [newValue.z] The z-axis position to apply.
              */
             set position(newValue) {
-                Protected(this)._setPropertyXYZ(Transformable, 'position', newValue)
+                this._setPropertyXYZ(Transformable, 'position', newValue)
             },
             get position() {
-                return Protected(this)._props.position
+                return this._props.position
             },
 
             /**
@@ -77,10 +77,10 @@ export default Mixin(Base => {
              * @param {number} [newValue.z] The z-axis rotation to apply.
              */
             set rotation(newValue) {
-                Protected(this)._setPropertyXYZ(Transformable, 'rotation', newValue)
+                this._setPropertyXYZ(Transformable, 'rotation', newValue)
             },
             get rotation() {
-                return Protected(this)._props.rotation
+                return this._props.rotation
             },
 
             /**
@@ -90,10 +90,10 @@ export default Mixin(Base => {
              * @param {number} [newValue.z] The z-axis scale to apply.
              */
             set scale(newValue) {
-                Protected(this)._setPropertyXYZ(Transformable, 'scale', newValue)
+                this._setPropertyXYZ(Transformable, 'scale', newValue)
             },
             get scale() {
-                return Protected(this)._props.scale
+                return this._props.scale
             },
 
             /**
@@ -103,10 +103,10 @@ export default Mixin(Base => {
              * @param {number} [newValue.z] The z-axis origin to apply.
              */
             set origin(newValue) {
-                Protected(this)._setPropertyXYZ(Transformable, 'origin', newValue)
+                this._setPropertyXYZ(Transformable, 'origin', newValue)
             },
             get origin() {
-                return Protected(this)._props.origin
+                return this._props.origin
             },
 
             /**
@@ -116,10 +116,10 @@ export default Mixin(Base => {
              * 1 (inclusive). 0 is fully transparent, 1 is fully opaque.
              */
             set opacity(newValue) {
-                Protected(this)._setPropertySingle('opacity', newValue)
+                this._setPropertySingle('opacity', newValue)
             },
             get opacity() {
-                return Protected(this)._props.opacity
+                return this._props.opacity
             },
 
             /**
@@ -132,10 +132,10 @@ export default Mixin(Base => {
              * @param {number} [newValue.z] The z-axis align to apply.
              */
             set align(newValue) {
-                Protected(this)._setPropertyXYZ(Transformable, 'align', newValue)
+                this._setPropertyXYZ(Transformable, 'align', newValue)
             },
             get align() {
-                return Protected(this)._props.align
+                return this._props.align
             },
 
             /**
@@ -147,14 +147,14 @@ export default Mixin(Base => {
              * @param {number} [newValue.z] The z-axis mountPoint to apply.
              */
             set mountPoint(newValue) {
-                Protected(this)._setPropertyXYZ(Transformable, 'mountPoint', newValue)
+                this._setPropertyXYZ(Transformable, 'mountPoint', newValue)
             },
             get mountPoint() {
-                return Protected(this)._props.mountPoint
+                return this._props.mountPoint
             },
 
             makeDefaultProps() {
-                return Object.assign(Super(this).makeDefaultProps(), {
+                return Object.assign(super.makeDefaultProps(), {
                     position: new XYZNumberValues(0, 0, 0),
                     rotation: new XYZNumberValues(0, 0, 0),
                     scale: new XYZNumberValues(1, 1, 1),
@@ -167,23 +167,17 @@ export default Mixin(Base => {
 
             protected: {
                 _setPropertyObservers() {
-                    Super(this)._setPropertyObservers()
+                    super._setPropertyObservers()
 
-                    this._properties.position.on('valuechanged', () =>
-                        Public(this).trigger('propertychange', 'position')
-                    )
-                    this._properties.rotation.on('valuechanged', () =>
-                        Public(this).trigger('propertychange', 'rotation')
-                    )
-                    this._properties.scale.on('valuechanged', () => Public(this).trigger('propertychange', 'scale'))
-                    this._properties.origin.on('valuechanged', () => Public(this).trigger('propertychange', 'origin'))
-                    this._properties.align.on('valuechanged', () => Public(this).trigger('propertychange', 'align'))
-                    this._properties.mountPoint.on('valuechanged', () =>
-                        Public(this).trigger('propertychange', 'mountPoint')
-                    )
+                    this._properties.position.on('valuechanged', () => this.trigger('propertychange', 'position'))
+                    this._properties.rotation.on('valuechanged', () => this.trigger('propertychange', 'rotation'))
+                    this._properties.scale.on('valuechanged', () => this.trigger('propertychange', 'scale'))
+                    this._properties.origin.on('valuechanged', () => this.trigger('propertychange', 'origin'))
+                    this._properties.align.on('valuechanged', () => this.trigger('propertychange', 'align'))
+                    this._properties.mountPoint.on('valuechanged', () => this.trigger('propertychange', 'mountPoint'))
 
                     // this is also triggered by Sizeable.updated, besides the above lines
-                    Public(this).on('propertychange', prop => this._onPropChange(prop))
+                    this.on('propertychange', prop => this._onPropChange(prop))
                 },
 
                 _onPropChange(prop) {
@@ -199,7 +193,7 @@ export default Mixin(Base => {
 
                 // TODO rename "render" to "update".
                 _render() {
-                    Super(this)._render && Super(this)._render()
+                    super._render && super._render()
 
                     // TODO: only run this when necessary (f.e. not if only opacity
                     // changed, only if position/align/mountPoint changed, etc)
@@ -207,8 +201,6 @@ export default Mixin(Base => {
                 },
 
                 _update_rotation() {
-                    const pub = Public(this)
-
                     // TODO make the rotation unit configurable (f.e. use degrees or
                     // radians)
                     pub.three.rotation.set(
@@ -227,8 +219,6 @@ export default Mixin(Base => {
                 },
 
                 _update_scale() {
-                    const pub = Public(this)
-
                     pub.three.scale.set(pub.scale.x, pub.scale.y, pub.scale.z)
 
                     pub.threeCSS.scale.set(pub.scale.x, pub.scale.y, pub.scale.z)
@@ -253,7 +243,6 @@ export default Mixin(Base => {
                     const appliedPosition = [0, 0, 0]
 
                     return function _calculateMatrix() {
-                        const pub = Public(this)
                         const {align, mountPoint, position, origin} = this._properties
                         const size = pub.calculatedSize
 
@@ -358,7 +347,6 @@ export default Mixin(Base => {
                 })(),
 
                 _calculateWorldMatricesInSubtree() {
-                    const pub = Public(this)
                     pub.three.updateMatrixWorld()
                     pub.threeCSS.updateMatrixWorld()
                     pub.trigger('worldMatrixUpdate')

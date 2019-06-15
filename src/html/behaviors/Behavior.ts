@@ -37,11 +37,11 @@ const Behavior = Class('Behavior').extends(
         element: undefined! as HTMLElement,
 
         constructor(element: HTMLElement) {
-            Super(this).constructor({} as HTMLElement)
+            super({} as HTMLElement)
 
             this.element = element
 
-            Private(this).__checkElementIsLibraryElement(element)
+            this.__checkElementIsLibraryElement(element)
         },
 
         // This could be useful, but at the moment it is only used by SkateJS in
@@ -70,31 +70,31 @@ const Behavior = Class('Behavior').extends(
         // for use with any type of custom elements.
 
         async attributeChangedCallback(name: string, oldValue: string | null, newValue: string | null) {
-            if (!Private(this).__elementDefined) await Private(this).__whenDefined
+            if (!this.__elementDefined) await this.__whenDefined
 
-            Super(this).attributeChangedCallback(name, oldValue, newValue)
+            super.attributeChangedCallback(name, oldValue, newValue)
         },
 
         async connectedCallback() {
-            if (!Private(this).__elementDefined) await Private(this).__whenDefined
+            if (!this.__elementDefined) await this.__whenDefined
 
-            Super(this).connectedCallback()
+            super.connectedCallback()
 
-            Protected(this)._listenToElement()
+            this._listenToElement()
         },
 
         async disconnectedCallback() {
-            if (!Private(this).__elementDefined) await Private(this).__whenDefined
+            if (!this.__elementDefined) await this.__whenDefined
 
-            Super(this).disconnectedCallback()
+            super.disconnectedCallback()
 
-            Protected(this)._unlistenToElement()
+            this._unlistenToElement()
         },
 
         protected: {
             // used by ForwardProps. See ForwardProps.js
             get _observedObject() {
-                return Public(this).element
+                return this.element
             },
 
             _listenToElement() {
@@ -118,10 +118,10 @@ const Behavior = Class('Behavior').extends(
             // TODO add a test to make sure this check works
             async __checkElementIsLibraryElement(element: HTMLElement) {
                 // TODO TS `this.constructor` type.
-                const BaseClass = (Public(this).constructor as any).requiredElementType
+                const BaseClass = (this.constructor as any).requiredElementType
 
                 if (element.nodeName.includes('-')) {
-                    Private(this).__whenDefined = customElements.whenDefined(element.nodeName.toLowerCase())
+                    this.__whenDefined = customElements.whenDefined(element.nodeName.toLowerCase())
 
                     // We use `.then` here on purpose, so that setting
                     // __elementDefined happens in the very first microtask after
@@ -131,13 +131,13 @@ const Behavior = Class('Behavior').extends(
                     // __whenDefined is resolved. Our goal is to have APIs ready as
                     // soon as possible in the methods above that wait for
                     // __whenDefined.
-                    Private(this).__whenDefined.then(() => {
-                        Private(this).__elementDefined = element instanceof BaseClass
+                    this.__whenDefined.then(() => {
+                        this.__elementDefined = element instanceof BaseClass
                     })
 
-                    await Promise.race([Private(this).__whenDefined, new Promise(r => setTimeout(r, 1000))])
+                    await Promise.race([this.__whenDefined, new Promise(r => setTimeout(r, 1000))])
 
-                    if (!Private(this).__elementDefined)
+                    if (!this.__elementDefined)
                         throw new Error(`
                     Either the element you're using the behavior on is not an
                     instance of ${BaseClass.name}, or there was a 1-second

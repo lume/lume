@@ -13,9 +13,9 @@ const ObservableMixin = <T extends Constructor<{}>>(Base: T) => {
             constructor() {},
 
             on(eventName: string, callback: Function, context: any) {
-                let __eventMap = Private(this).__eventMap
+                let __eventMap = this.__eventMap
 
-                if (!__eventMap) __eventMap = Private(this).__eventMap = new Map()
+                if (!__eventMap) __eventMap = this.__eventMap = new Map()
 
                 let callbacks = __eventMap.get(eventName)
 
@@ -27,7 +27,7 @@ const ObservableMixin = <T extends Constructor<{}>>(Base: T) => {
             },
 
             off(eventName: string, callback: Function) {
-                const __eventMap = Private(this).__eventMap
+                const __eventMap = this.__eventMap
 
                 if (!__eventMap) return
 
@@ -43,11 +43,11 @@ const ObservableMixin = <T extends Constructor<{}>>(Base: T) => {
 
                 if (callbacks.length === 0) __eventMap.delete(eventName)
 
-                if (__eventMap.size === 0) Private(this).__eventMap = null
+                if (__eventMap.size === 0) this.__eventMap = null
             },
 
             emit(eventName: string, data: any) {
-                const __eventMap = Private(this).__eventMap
+                const __eventMap = this.__eventMap
 
                 if (!__eventMap) return
 

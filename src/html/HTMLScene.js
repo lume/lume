@@ -6,8 +6,8 @@ initDeclarativeBase()
 
 export default DeclarativeBase.subclass('HTMLScene', ({Public, Protected, Private, Super}) => ({
     constructor() {
-        const self = Super(this).constructor()
-        const privateThis = Private(self)
+        const self = super()
+        const privateThis = this
 
         privateThis.__root = self.attachShadow({mode: 'open'})
         privateThis.__root.innerHTML = `
@@ -56,8 +56,8 @@ export default DeclarativeBase.subclass('HTMLScene', ({Public, Protected, Privat
         // decouple HTML interfaces being present from functionality. We can
         // make these things private if they are in the Scene class, and expose
         // the private helper from there to friend modules.
-        Protected(self)._glLayer = privateThis.__root.querySelector('.i-scene-WebGLLayer')
-        Protected(self)._cssLayer = privateThis.__root.querySelector('.i-scene-CSS3DLayer')
+        this._glLayer = privateThis.__root.querySelector('.i-scene-WebGLLayer')
+        this._cssLayer = privateThis.__root.querySelector('.i-scene-CSS3DLayer')
 
         return self
     },
@@ -68,14 +68,14 @@ export default DeclarativeBase.subclass('HTMLScene', ({Public, Protected, Privat
     },
 
     connectedCallback() {
-        Super(this).connectedCallback()
+        super.connectedCallback()
 
         // When the HTMLScene gets addded to the DOM, make it be "mounted".
-        if (!Protected(this)._mounted) this.mount(this.parentNode)
+        if (!this._mounted) this.mount(this.parentNode)
     },
 
     disconnectedCallback() {
-        Super(this).disconnectedCallback()
+        super.disconnectedCallback()
 
         this.unmount()
     },

@@ -9,40 +9,40 @@ export default Mixin(Base =>
         Base,
         ({Super, Public, Protected, Private}) => ({
             constructor() {
-                Super(this).constructor()
-                Private(this).__propChangedCallback = Private(this).__propChangedCallback.bind(this)
+                super()
+                this.__propChangedCallback = this.__propChangedCallback.bind(this)
             },
 
             connectedCallback() {
-                Super(this).connectedCallback && Super(this).connectedCallback()
-                Private(this).__forwardInitialProps()
-                Private(this).__observeProps()
+                super.connectedCallback && super.connectedCallback()
+                this.__forwardInitialProps()
+                this.__observeProps()
             },
 
             disconnectedCallback() {
-                Super(this).disconnectedCallback && Super(this).disconnectedCallback()
-                Private(this).__unobserveProps()
+                super.disconnectedCallback && super.disconnectedCallback()
+                this.__unobserveProps()
             },
 
             private: {
                 __propChangedCallback(propName, value) {
-                    // `this` here is `Public(this)`, it gets bound in `constructor`
+                    // `this` here is `this`, it gets bound in `constructor`
                     this[propName] = value
                 },
 
                 __observeProps() {
-                    observe(Protected(this)._observedObject, this.__getProps(), this.__propChangedCallback, {
+                    observe(this._observedObject, this.__getProps(), this.__propChangedCallback, {
                         // inherited: true, // XXX the 'inherited' option doesn't work in this case. Why?
                     })
                 },
 
                 __unobserveProps() {
-                    unobserve(Protected(this)._observedObject, this.__getProps(), this.__propChangedCallback)
+                    unobserve(this._observedObject, this.__getProps(), this.__propChangedCallback)
                 },
 
                 __getProps() {
                     let result
-                    const props = Public(this).constructor.props
+                    const props = this.constructor.props
 
                     if (Array.isArray(props)) result = props
                     else {
@@ -54,7 +54,7 @@ export default Mixin(Base =>
                 },
 
                 __forwardInitialProps() {
-                    const observed = Protected(this)._observedObject
+                    const observed = this._observedObject
 
                     for (const prop of this.__getProps()) {
                         prop in observed && this.__propChangedCallback(prop, observed[prop])

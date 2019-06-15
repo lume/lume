@@ -51,15 +51,15 @@ const AutoLayoutNode = Class('AutoLayoutNode').extends(Node, ({Super, Public, Pr
      * @return {AutoLayoutNode} this
      */
     constructor(options) {
-        const self = Super(this).constructor(options)
+        const self = super(options)
 
-        Private(self)._layoutOptions = {}
-        Private(self)._idToNode = {}
+        this._layoutOptions = {}
+        this._idToNode = {}
 
         // PORTED {
-        Private(self)._layout = Private(self)._layout.bind(Private(self))
-        self.on('sizechange', Private(self)._layout)
-        self.on('reflow', Private(self)._layout)
+        this._layout = this._layout.bind(this)
+        self.on('sizechange', this._layout)
+        self.on('reflow', this._layout)
         // }
 
         if (options) {
@@ -75,29 +75,29 @@ const AutoLayoutNode = Class('AutoLayoutNode').extends(Node, ({Super, Public, Pr
     },
 
     updated(oldProps, modifiedProps) {
-        Super(this).updated(oldProps, modifiedProps)
+        super.updated(oldProps, modifiedProps)
         if (modifiedProps.visualFormat) {
             this.setVisualFormat(this.visualFormat)
         }
     },
 
     childConnected(child) {
-        Super(this).childConnected()
-        if (!Private(this)._autoLayoutView) return
-        Private(this)._checkNodes()
+        super.childConnected()
+        if (!this._autoLayoutView) return
+        this._checkNodes()
     },
 
     childDisconnected(child) {
-        Super(this).childConnected()
-        if (!Private(this)._autoLayoutView) return
-        const _idToNode = Private(this)._idToNode
+        super.childConnected()
+        if (!this._autoLayoutView) return
+        const _idToNode = this._idToNode
         for (id in _idToNode) {
             if (_idToNode[id] === child) {
                 delete _idToNode[id]
                 break
             }
         }
-        Private(this)._checkNodes()
+        this._checkNodes()
     },
 
     /**
@@ -106,8 +106,8 @@ const AutoLayoutNode = Class('AutoLayoutNode').extends(Node, ({Super, Public, Pr
      * @return {AutoLayoutNode} this
      */
     reflowLayout() {
-        if (!Private(this)._reflowLayout) {
-            Private(this)._reflowLayout = true
+        if (!this._reflowLayout) {
+            this._reflowLayout = true
             Motor.once(() => this.emit('reflow')) // PORTED
         }
         return this
@@ -121,16 +121,16 @@ const AutoLayoutNode = Class('AutoLayoutNode').extends(Node, ({Super, Public, Pr
      * @return {AutoLayoutNode} this
      */
     setVisualFormat(visualFormat, parseOptions) {
-        Private(this)._visualFormat = visualFormat
+        this._visualFormat = visualFormat
         var constraints = AutoLayout.VisualFormat.parse(
             visualFormat,
             parseOptions || AutoLayoutNode.DEFAULT_PARSE_OPTIONS
         )
-        Private(this)._metaInfo = AutoLayout.VisualFormat.parseMetaInfo(visualFormat)
-        Private(this)._autoLayoutView = new AutoLayout.View({
+        this._metaInfo = AutoLayout.VisualFormat.parseMetaInfo(visualFormat)
+        this._autoLayoutView = new AutoLayout.View({
             constraints: constraints,
         })
-        Private(this)._checkNodes()
+        this._checkNodes()
         this.reflowLayout()
         return this
     },
@@ -142,7 +142,7 @@ const AutoLayoutNode = Class('AutoLayoutNode').extends(Node, ({Super, Public, Pr
      * @return {AutoLayoutNode} this
      */
     setLayoutOptions(options) {
-        Private(this)._layoutOptions = options || {}
+        this._layoutOptions = options || {}
         this.reflowLayout()
         return this
     },
@@ -158,8 +158,8 @@ const AutoLayoutNode = Class('AutoLayoutNode').extends(Node, ({Super, Public, Pr
      */
     add(child, id) {
         // PORTED
-        Super(this).add(child) // PORTED
-        if (id) Private(this)._idToNode[id] = child
+        super.add(child) // PORTED
+        if (id) this._idToNode[id] = child
         this.reflowLayout()
         return child
     },
@@ -174,19 +174,19 @@ const AutoLayoutNode = Class('AutoLayoutNode').extends(Node, ({Super, Public, Pr
     remove(child, id) {
         // PORTED
         if (child && id) {
-            Super(this).remove(child) // PORTED
-            delete Private(this)._idToNode[id]
+            super.remove(child) // PORTED
+            delete this._idToNode[id]
         } else if (child) {
-            for (id in Private(this)._idToNode) {
-                if (Private(this)._idToNode[id] === child) {
-                    delete Private(this)._idToNode[id]
+            for (id in this._idToNode) {
+                if (this._idToNode[id] === child) {
+                    delete this._idToNode[id]
                     break
                 }
             }
-            Super(this).remove(child) // PORTED
+            super.remove(child) // PORTED
         } else if (id) {
-            Super(this).remove(Private(this)._idToNode[id]) // PORTED
-            delete Private(this)._idToNode[id]
+            super.remove(this._idToNode[id]) // PORTED
+            delete this._idToNode[id]
         }
         this.reflowLayout()
     },
@@ -247,7 +247,7 @@ const AutoLayoutNode = Class('AutoLayoutNode').extends(Node, ({Super, Public, Pr
             }
             var x
             var y
-            var size = Public(this).size.toArray()
+            var size = this.size.toArray()
             if (this._layoutOptions.spacing || this._metaInfo.spacing) {
                 this._autoLayoutView.setSpacing(this._layoutOptions.spacing || this._metaInfo.spacing)
             }
@@ -305,9 +305,9 @@ const AutoLayoutNode = Class('AutoLayoutNode').extends(Node, ({Super, Public, Pr
         },
 
         _checkNodes() {
-            const subViews = Private(this)._autoLayoutView.subViews
+            const subViews = this._autoLayoutView.subViews
             const subViewKeys = Object.keys(subViews)
-            const _idToNode = Private(this)._idToNode
+            const _idToNode = this._idToNode
 
             // if a node is not found for a subview key, see if exists in this's DOM children by className
             for (var key of subViewKeys) {
@@ -315,8 +315,8 @@ const AutoLayoutNode = Class('AutoLayoutNode').extends(Node, ({Super, Public, Pr
                 if (key.indexOf('_') !== 0 && subView.type !== 'stack') {
                     var node = _idToNode[key]
                     if (!node) {
-                        node = Public(this).querySelector('.' + key)
-                        if (node && node.parentElement === Public(this)) _idToNode[key] = node
+                        node = this.querySelector('.' + key)
+                        if (node && node.parentElement === this) _idToNode[key] = node
                     }
                 }
             }
@@ -325,9 +325,9 @@ const AutoLayoutNode = Class('AutoLayoutNode').extends(Node, ({Super, Public, Pr
         },
 
         _showOrHideNodes() {
-            const subViews = Private(this)._autoLayoutView.subViews
+            const subViews = this._autoLayoutView.subViews
             const subViewKeys = Object.keys(subViews)
-            const _idToNode = Private(this)._idToNode
+            const _idToNode = this._idToNode
             const nodeIds = Object.keys(_idToNode)
 
             // hide the child nodes that are should not be visible for the current subview.

@@ -16,16 +16,14 @@ export default Mixin(Base =>
             },
 
             connectedCallback() {
-                Super(this).connectedCallback && Super(this).connectedCallback()
+                super.connectedCallback && super.connectedCallback()
 
                 // If no geometry or material behavior is detected, add default ones.
-                Private(this).__setDefaultBehaviorsIfNeeded()
+                this.__setDefaultBehaviorsIfNeeded()
             },
 
             private: {
                 __setDefaultBehaviorsIfNeeded() {
-                    const pub = Public(this)
-
                     let defaultBehaviors = pub.constructor.defaultBehaviors
 
                     // do nothing if there's no defaults

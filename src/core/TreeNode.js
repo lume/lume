@@ -11,8 +11,8 @@ export default Mixin(Base =>
         WithUpdate.mixin(Base),
         ({Super, Private}) => ({
             constructor(...args) {
-                const self = Super(this).constructor(...args)
-                Private(self).__children = []
+                const self = super(...args)
+                this.__children = []
                 return self
             },
 
@@ -20,7 +20,7 @@ export default Mixin(Base =>
              * @readonly
              */
             get parent() {
-                return Private(this).__parent
+                return this.__parent
             },
 
             /**
@@ -30,7 +30,7 @@ export default Mixin(Base =>
             get subnodes() {
                 // return a new array, so that the user modifying it doesn't affect
                 // this node's actual children.
-                return [...Private(this).__children]
+                return [...this.__children]
             },
 
             /**
@@ -42,14 +42,14 @@ export default Mixin(Base =>
                 if (!instanceOf(childNode, TreeNode))
                     throw new TypeError('TreeNode.add() expects the childNode argument to be a TreeNode instance.')
 
-                if (Private(childNode).__parent === this)
+                if (childNode.__parent === this)
                     throw new ReferenceError('childNode is already a child of this parent.')
 
-                if (Private(childNode).__parent) Private(childNode).__parent.remove(childNode)
+                if (childNode.__parent) childNode.__parent.remove(childNode)
 
-                Private(childNode).__parent = this
+                childNode.__parent = this
 
-                Private(this).__children.push(childNode)
+                this.__children.push(childNode)
 
                 Promise.resolve().then(() => {
                     childNode.connected()
@@ -82,11 +82,10 @@ export default Mixin(Base =>
                     tree.
                 `)
 
-                if (Private(childNode).__parent !== this)
-                    throw new ReferenceError('childNode is not a child of this parent.')
+                if (childNode.__parent !== this) throw new ReferenceError('childNode is not a child of this parent.')
 
-                Private(childNode).__parent = null
-                Private(this).__children.splice(Private(this).__children.indexOf(childNode), 1)
+                childNode.__parent = null
+                this.__children.splice(this.__children.indexOf(childNode), 1)
 
                 Promise.resolve().then(() => {
                     childNode.disconnected()
@@ -110,7 +109,7 @@ export default Mixin(Base =>
              * Shortcut to remove all children.
              */
             removeAllChildren() {
-                this.removeChildren(Private(this).__children)
+                this.removeChildren(this.__children)
                 return this
             },
 
@@ -119,7 +118,7 @@ export default Mixin(Base =>
              * @return {number} How many children this TreeNode has.
              */
             get childCount() {
-                return Private(this).__children.length
+                return this.__children.length
             },
 
             // generic life cycle methods
@@ -132,7 +131,7 @@ export default Mixin(Base =>
             traverse(fn) {
                 fn(this)
 
-                const children = Private(this).__children
+                const children = this.__children
                 for (let i = 0, l = children.length; i < l; i++) {
                     children[i].traverse(fn)
                 }

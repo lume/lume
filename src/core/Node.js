@@ -41,7 +41,7 @@ let Node = Mixin(Base => {
              * })
              */
             constructor(options = {}) {
-                const self = Super(this).constructor(options)
+                const self = super(options)
 
                 // This was when using my `multiple()` implementation, we could call
                 // specific constructors using specific arguments. But, we're using
@@ -56,7 +56,7 @@ let Node = Mixin(Base => {
                 // upgraded.
                 if (self.parent) {
                     // if (self.isConnected) {
-                    Protected(self)._calcSize()
+                    this._calcSize()
                     self.needsUpdate()
                 }
 
@@ -64,24 +64,24 @@ let Node = Mixin(Base => {
             },
 
             updated(oldProps, modifiedProps) {
-                Super(this).updated(oldProps, modifiedProps)
+                super.updated(oldProps, modifiedProps)
 
                 if (modifiedProps.visible) {
                     console.log(
                         '                           visibility change',
                         this.constructor.name,
-                        Protected(this)._cssLoaded,
+                        this._cssLoaded,
                         this.visible
                     )
                     setTimeout(() => {
                         console.log(
                             '                           visibility later',
                             this.constructor.name,
-                            Protected(this)._cssLoaded,
+                            this._cssLoaded,
                             this.visible
                         )
                     }, 1000)
-                    Protected(this)._elementOperations.shouldRender = Protected(this)._cssLoaded && this.visible
+                    this._elementOperations.shouldRender = this._cssLoaded && this.visible
                     this.needsUpdate()
                 }
             },
@@ -104,22 +104,22 @@ let Node = Mixin(Base => {
                         this._properties.align.z !== 0
                     ) {
                         this._calcSize()
-                        Public(this).needsUpdate()
+                        this.needsUpdate()
                     }
                 },
 
                 _loadCSS() {
                     if (this._cssLoaded) return
                     console.log('                ----------------------------- LOAD NODE CSS')
-                    Super(this)._loadCSS()
-                    Public(this).triggerUpdateForProp('visible')
+                    super._loadCSS()
+                    this.triggerUpdateForProp('visible')
                 },
 
                 _unloadCSS() {
                     if (!this._cssLoaded) return
                     console.log('                ----------------------------- UNLOAD NODE CSS')
-                    Super(this)._unloadCSS()
-                    Public(this).triggerUpdateForProp('visible')
+                    super._unloadCSS()
+                    this.triggerUpdateForProp('visible')
                 },
             },
         }),

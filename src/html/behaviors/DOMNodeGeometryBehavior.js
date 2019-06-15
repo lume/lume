@@ -11,7 +11,7 @@ const DOMNodeGeometryBehavior = BaseGeometryBehavior.subclass('DOMNodeGeometryBe
             // another way. Unfortunately, this increases polygon
             // count by a factor of 6. See issue
             // https://github.com/mrdoob/three.js/issues/9315
-            return new BoxGeometry(Public(this).element.calculatedSize.x, Public(this).element.calculatedSize.y, 1)
+            return new BoxGeometry(this.element.calculatedSize.x, this.element.calculatedSize.y, 1)
         },
     },
 }))

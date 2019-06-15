@@ -20,7 +20,7 @@ export default Class('PerspectiveCamera').extends(Node, ({Super, Public, Private
             aspect: {
                 ...props.number,
                 default() {
-                    return Private(this)._getDefaultAspect()
+                    return this._getDefaultAspect()
                 },
                 deserialize(val) {
                     val == null ? this.constructor.props.aspect.default.call(this) : props.number.deserialize(val)
@@ -34,7 +34,7 @@ export default Class('PerspectiveCamera').extends(Node, ({Super, Public, Private
     },
 
     updated(oldProps, modifiedProps) {
-        Super(this).updated(oldProps, modifiedProps)
+        super.updated(oldProps, modifiedProps)
 
         if (!this.isConnected) return
 
@@ -51,21 +51,21 @@ export default Class('PerspectiveCamera').extends(Node, ({Super, Public, Private
     },
 
     connectedCallback() {
-        Super(this).connectedCallback()
+        super.connectedCallback()
 
-        Private(this)._lastKnownScene = this.scene
+        this._lastKnownScene = this.scene
     },
 
     // TODO, unmountedCallback functionality. issue #150
     unmountedCallback() {},
 
     attributeChangedCallback(attr, oldVal, newVal) {
-        Super(this).attributeChangedCallback(attr, oldVal, newVal)
+        super.attributeChangedCallback(attr, oldVal, newVal)
 
         if (typeof newVal == 'string') {
-            Private(this)._attributeAddedOrChanged(attr, newVal)
+            this._attributeAddedOrChanged(attr, newVal)
         } else {
-            Private(this)._attributeRemoved(attr)
+            this._attributeRemoved(attr)
         }
     },
 
@@ -76,13 +76,13 @@ export default Class('PerspectiveCamera').extends(Node, ({Super, Public, Private
 
         // TODO replace with unmountedCallback #150
         _deinit() {
-            Super(this)._deinit()
+            super._deinit()
 
             // TODO we want to call this in the upcoming
             // unmountedCallback, but for now it's harmless but
             // will run unnecessary logic. #150
-            Private(this)._setSceneCamera('unset')
-            Private(this)._lastKnownScene = null
+            this._setSceneCamera('unset')
+            this._lastKnownScene = null
         },
     },
 
@@ -91,8 +91,6 @@ export default Class('PerspectiveCamera').extends(Node, ({Super, Public, Private
 
         // TODO CAMERA-DEFAULTS, get defaults from somewhere common.
         _attributeRemoved(attr, newVal) {
-            const publicThis = Public(this)
-
             if (attr == 'fov') {
                 publicThis.three.fov = 75
                 publicThis.three.updateProjectionMatrix()
@@ -115,8 +113,6 @@ export default Class('PerspectiveCamera').extends(Node, ({Super, Public, Private
         },
 
         _attributeAddedOrChanged(attr, newVal) {
-            const publicThis = Public(this)
-
             if (attr == 'fov') {
                 publicThis.three.fov = parseFloat(newVal)
                 publicThis.three.updateProjectionMatrix()
@@ -141,24 +137,22 @@ export default Class('PerspectiveCamera').extends(Node, ({Super, Public, Private
         _startAutoAspect() {
             if (!this._startedAutoAspect) {
                 this._startedAutoAspect = true
-                Public(this).scene.on('sizechange', this._updateAspectOnSceneResize, this)
+                this.scene.on('sizechange', this._updateAspectOnSceneResize, this)
             }
         },
         _stopAutoAspect() {
             if (this._startedAutoAspect) {
                 this._startedAutoAspect = false
-                Public(this).scene.off('sizechange', this._updateAspectOnSceneResize)
+                this.scene.off('sizechange', this._updateAspectOnSceneResize)
             }
         },
 
         _updateAspectOnSceneResize({x, y}) {
-            Public(this).three.aspect = x / y
+            this.three.aspect = x / y
         },
 
         _getDefaultAspect() {
             let result = 0
-
-            const publicThis = Public(this)
 
             if (publicThis.scene) {
                 result = publicThis.scene.calculatedSize.x / publicThis.scene.calculatedSize.y
@@ -171,8 +165,6 @@ export default Class('PerspectiveCamera').extends(Node, ({Super, Public, Private
         },
 
         _setSceneCamera(unset) {
-            const publicThis = Public(this)
-
             if (unset) {
                 // TODO: unset might be triggered before the scene was mounted, so
                 // there might not be a last known scene. We won't need this check

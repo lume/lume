@@ -22,7 +22,7 @@ export default Class('Cube').extends(Node, ({Super}) => ({
      */
     constructor(size, options) {
         // cubes, the same size on all sides
-        const self = Super(this).constructor({size: [size, size, size], ...options})
+        const self = super({size: [size, size, size], ...options})
 
         //GenericSync.register({
         //mouse: MouseSync,

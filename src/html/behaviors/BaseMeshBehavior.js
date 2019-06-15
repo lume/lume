@@ -20,28 +20,28 @@ export default Class('BaseMeshBehavior').extends(Behavior, ({Public, Protected, 
     },
 
     get glLoaded() {
-        return Protected(this)._glLoaded
+        return this._glLoaded
     },
 
     get cssLoaded() {
-        return Protected(this)._cssLoaded
+        return this._cssLoaded
     },
 
     connectedCallback() {
-        Super(this).connectedCallback()
+        super.connectedCallback()
         this.loadGL()
     },
 
     disconnectedCallback() {
-        Super(this).disconnectedCallback()
+        super.disconnectedCallback()
         this.unloadGL()
     },
 
     loadGL() {
         if (!this.element.three) return
 
-        if (Protected(this)._glLoaded) return
-        Protected(this)._glLoaded = true
+        if (this._glLoaded) return
+        this._glLoaded = true
 
         this.resetMeshComponent()
 
@@ -50,14 +50,14 @@ export default Class('BaseMeshBehavior').extends(Behavior, ({Public, Protected, 
     },
 
     unloadGL() {
-        if (!Protected(this)._glLoaded) return
-        Protected(this)._glLoaded = false
+        if (!this._glLoaded) return
+        this._glLoaded = false
 
         // if the behavior is being disconnected, but the element still has GL
         // mode (.three), then leave the element with a default mesh GL
         // component to be rendered.
-        if (this.element.three) Private(this).__setDefaultComponent(this.element, this.constructor.type)
-        else Private(this).__disposeMeshComponent(this.element, this.constructor.type)
+        if (this.element.three) this.__setDefaultComponent(this.element, this.constructor.type)
+        else this.__disposeMeshComponent(this.element, this.constructor.type)
 
         this.element.needsUpdate()
     },
@@ -66,11 +66,7 @@ export default Class('BaseMeshBehavior').extends(Behavior, ({Public, Protected, 
         // TODO We might have to defer so that calculatedSize is already calculated
         // (note, resetMeshComponent is only called when the size prop has
         // changed)
-        Private(this).__setMeshComponent(
-            this.element,
-            this.constructor.type,
-            Protected(this)._createComponent(this.element)
-        )
+        this.__setMeshComponent(this.element, this.constructor.type, this._createComponent(this.element))
         this.element.needsUpdate()
     },
 
@@ -87,17 +83,17 @@ export default Class('BaseMeshBehavior').extends(Behavior, ({Public, Protected, 
         },
 
         _listenToElement() {
-            Super(this)._listenToElement()
+            super._listenToElement()
 
-            Public(this).element.on(Events.BEHAVIOR_GL_LOAD, Public(this).loadGL, Public(this))
-            Public(this).element.on(Events.BEHAVIOR_GL_UNLOAD, Public(this).unloadGL, Public(this))
+            this.element.on(Events.BEHAVIOR_GL_LOAD, this.loadGL, this)
+            this.element.on(Events.BEHAVIOR_GL_UNLOAD, this.unloadGL, this)
         },
 
         _unlistenToElement() {
-            Super(this)._unlistenToElement()
+            super._unlistenToElement()
 
-            Public(this).element.off(Events.BEHAVIOR_GL_LOAD, Public(this).loadGL)
-            Public(this).element.off(Events.BEHAVIOR_GL_UNLOAD, Public(this).unloadGL)
+            this.element.off(Events.BEHAVIOR_GL_LOAD, this.loadGL)
+            this.element.off(Events.BEHAVIOR_GL_UNLOAD, this.unloadGL)
         },
     },
 

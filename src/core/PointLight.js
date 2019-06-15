@@ -23,7 +23,7 @@ export default Class('PointLight').extends(LightBase, ({Super}) => ({
     },
 
     passInitialValuesToThree() {
-        Super(this).passInitialValuesToThree()
+        super.passInitialValuesToThree()
 
         const light = this.three
 
@@ -45,7 +45,7 @@ export default Class('PointLight').extends(LightBase, ({Super}) => ({
     },
 
     updated(oldProps, modifiedProps) {
-        Super(this).updated(oldProps, modifiedProps)
+        super.updated(oldProps, modifiedProps)
 
         if (!this.isConnected) return
 

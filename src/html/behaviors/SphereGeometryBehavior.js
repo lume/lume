@@ -5,7 +5,7 @@ import BaseGeometryBehavior from './BaseGeometryBehavior'
 const SphereGeometryBehavior = BaseGeometryBehavior.subclass('SphereGeometryBehavior', Public => ({
     protected: {
         _createComponent() {
-            return new SphereGeometry(Public(this).element.calculatedSize.x / 2, 32, 32)
+            return new SphereGeometry(this.element.calculatedSize.x / 2, 32, 32)
         },
     },
 }))

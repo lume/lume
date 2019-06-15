@@ -34,24 +34,22 @@ export default Mixin(Base =>
         Base,
         ({Super, Private, Public}) => ({
             constructor(...args) {
-                const self = Super(this).constructor(...args)
+                const self = super(...args)
 
-                Private(self).__createObserver()
+                this.__createObserver()
 
                 if (!self.isConnected) {
-                    Private(self).__handleChildrenWhenConnected = true
+                    this.__handleChildrenWhenConnected = true
                     return self
                 }
 
-                Private(self).__handleConnectedChildren()
+                this.__handleConnectedChildren()
 
                 return self
             },
 
             connectedCallback() {
-                Super(this).connectedCallback && Super(this).connectedCallback()
-
-                const priv = Private(this)
+                super.connectedCallback && super.connectedCallback()
 
                 if (priv.__handleChildrenWhenConnected) {
                     priv.__handleConnectedChildren()
@@ -61,10 +59,10 @@ export default Mixin(Base =>
             },
 
             disconnectedCallback() {
-                Super(this).disconnectedCallback && Super(this).disconnectedCallback()
+                super.disconnectedCallback && super.disconnectedCallback()
 
-                Private(this).__destroyObserver()
-                Private(this).__handleChildrenWhenConnected = true
+                this.__destroyObserver()
+                this.__handleChildrenWhenConnected = true
             },
 
             private: {
@@ -73,8 +71,6 @@ export default Mixin(Base =>
 
                 __createObserver() {
                     if (this.__observer) return
-
-                    const self = Public(this)
 
                     // observeChildren returns a MutationObserver observing childList
                     this.__observer = observeChildren(
@@ -98,8 +94,6 @@ export default Mixin(Base =>
                 },
 
                 __handleConnectedChildren() {
-                    const self = Public(this)
-
                     if (!self.isConnected) return
 
                     for (let element = self.firstElementChild; element; element = element.nextElementSibling) {
@@ -108,8 +102,6 @@ export default Mixin(Base =>
                 },
 
                 __handleConnectedChild(element) {
-                    const self = Public(this)
-
                     Promise.resolve().then(() => {
                         if (isNotPossiblyCustom(element) || element.matches(':defined')) {
                             self.childConnectedCallback && self.childConnectedCallback(element)

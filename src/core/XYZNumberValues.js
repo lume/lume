@@ -9,7 +9,7 @@ export default Class('XYZNumberValues').extends(XYZValues, ({Super}) => ({
     },
 
     checkValue(prop, value) {
-        if (!Super(this).checkValue(prop, value)) return false
+        if (!super.checkValue(prop, value)) return false
         if (typeof value !== 'number' || isNaN(value) || !isFinite(value))
             throw new TypeError(`Expected ${prop} to be a finite number. Received: ${value}`)
         return true

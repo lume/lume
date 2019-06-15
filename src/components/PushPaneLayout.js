@@ -7,7 +7,7 @@ export default Class('PushPaneLayout').extends(Node, ({Super}) => ({
     },
     constructor(...args) {
         console.log(' -- PushPaneLayout created (TODO)')
-        const self = Super(this).constructor(...args)
+        const self = super(...args)
         return self
     },
 

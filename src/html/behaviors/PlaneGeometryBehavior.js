@@ -5,7 +5,7 @@ import BaseGeometryBehavior from './BaseGeometryBehavior'
 const PlaneGeometryBehavior = BaseGeometryBehavior.subclass('PlaneGeometryBehavior', Public => ({
     protected: {
         _createComponent() {
-            return new PlaneGeometry(Public(this).element.calculatedSize.x, Public(this).element.calculatedSize.y)
+            return new PlaneGeometry(this.element.calculatedSize.x, this.element.calculatedSize.y)
         },
     },
 }))

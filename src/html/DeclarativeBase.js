@@ -33,8 +33,7 @@ export function initDeclarativeBase() {
         // that we can make the connection between parent and child on the
         // imperative side when the HTML side is using shadow roots.
         attachShadow(options) {
-            const root = Super(this).attachShadow(options)
-            const privateThis = Private(this)
+            const root = super.attachShadow(options)
 
             privateThis.__shadowRoot = root
 
@@ -54,16 +53,16 @@ export function initDeclarativeBase() {
 
                 if (!(child instanceof DeclarativeBase)) continue
 
-                // TODO replace Private(this) with generic private access for
+                // TODO replace this with generic private access for
                 // any object, so we can check instanceof HTMLElement instead of
                 // DeclarativeBase, and make it more generic?
-                Private(child).__isPossiblyDistributedToShadowRoot = true
+                child.__isPossiblyDistributedToShadowRoot = true
                 console.log(
                     '   <<<<<<<<<<<<<<< CHILD SHOULD BE UN COMPOSED, BY ADDING SHADOW ROOT',
                     child.constructor.name,
                     child.id
                 )
-                Private(this).__childUncomposedCallback(child, 'slot')
+                this.__childUncomposedCallback(child, 'slot')
             }
 
             return root
@@ -79,9 +78,9 @@ export function initDeclarativeBase() {
                     child.constructor.name,
                     child.id
                 )
-                if (!this.isScene && Private(this).__shadowRoot) {
+                if (!this.isScene && this.__shadowRoot) {
                     console.log(' *************** parent has shadow, dont compose child here', this.tagName)
-                    Private(child).__isPossiblyDistributedToShadowRoot = true
+                    child.__isPossiblyDistributedToShadowRoot = true
                 } else {
                     // If there's no shadow root, call the childComposedCallback
                     // with connection type "actual". This is effectively
@@ -92,26 +91,26 @@ export function initDeclarativeBase() {
                         child.id
                     )
                     // debugger
-                    Private(this).__childComposedCallback(child, 'actual')
+                    this.__childComposedCallback(child, 'actual')
                 }
             } else if (hasShadowDomV1 && child instanceof HTMLSlotElement) {
-                if (!Private(this).__slots) Private(this).__slots = []
-                Private(this).__slots.push(child)
-                child.addEventListener('slotchange', Private(this))
+                if (!this.__slots) this.__slots = []
+                this.__slots.push(child)
+                child.addEventListener('slotchange', this)
                 // TODO do we need __handleDistributedChildren for initial
                 // slotted nodes? Or does `slotchange` conver that? Also, does
                 // `slotchange` fire for distributed slots? Or do we need to
                 // also look at assigned nodes of distributed slots in the
                 // initial __handleDistributedChildren call?
-                Private(this).__handleDistributedChildren(child, true)
+                this.__handleDistributedChildren(child, true)
             }
         },
 
         childDisconnectedCallback(child) {
             // mirror the connection in the imperative API's virtual scene graph.
             if (child instanceof HTMLNode) {
-                if (Private(this).__shadowRoot) {
-                    Private(child).__isPossiblyDistributedToShadowRoot = false
+                if (this.__shadowRoot) {
+                    child.__isPossiblyDistributedToShadowRoot = false
                 } else {
                     // If there's no shadow root, call the
                     // childUncomposedCallback with connection type "actual".
@@ -121,15 +120,15 @@ export function initDeclarativeBase() {
                         child.constructor.name,
                         child.id
                     )
-                    Private(this).__childUncomposedCallback(child, 'actual')
+                    this.__childUncomposedCallback(child, 'actual')
                 }
             } else if (hasShadowDomV1 && child instanceof HTMLSlotElement) {
                 child.removeEventListener('slotchange', this)
-                const priv = Private(this)
+
                 priv.__slots.splice(priv.__slots.indexOf(child), 1)
                 if (!priv.__slots.length) priv.__slots = null
-                Private(this).__handleDistributedChildren(child)
-                Private(this).__previousSlotAssignedNodes.delete(child)
+                this.__handleDistributedChildren(child)
+                this.__previousSlotAssignedNodes.delete(child)
             }
         },
 
@@ -154,7 +153,7 @@ export function initDeclarativeBase() {
                     children[i].traverseComposed()
             }
 
-            const distributedChildren = Private(this).__distributedChildren
+            const distributedChildren = this.__distributedChildren
             if (hasHtmlApi && distributedChildren) {
                 for (const shadowChild of distributedChildren) shadowChild.traverseComposed(true)
             }
@@ -164,36 +163,34 @@ export function initDeclarativeBase() {
         setAttribute(attr, value) {
             //if (this.tagName.toLowerCase() == 'motor-scene')
             //console.log('setting attribute', arguments[1])
-            Super(this).setAttribute(attr, value)
+            super.setAttribute(attr, value)
         },
 
         protected: {
             get _hasShadowRoot() {
-                return !!Private(this).__shadowRoot
+                return !!this.__shadowRoot
             },
 
             get _isPossiblyDistributedToShadowRoot() {
-                return Private(this).__isPossiblyDistributedToShadowRoot
+                return this.__isPossiblyDistributedToShadowRoot
             },
 
             get _shadowRootParent() {
-                return Private(this).__shadowRootParent
+                return this.__shadowRootParent
             },
 
             get _distributedParent() {
-                return Private(this).__distributedParent
+                return this.__distributedParent
             },
 
             get _distributedChildren() {
-                return Private(this).__distributedChildren ? [...Private(this).__distributedChildren] : null
+                return this.__distributedChildren ? [...this.__distributedChildren] : null
             },
 
             // The composed parent is the parent that this node renders relative
             // to in the flat tree (composed tree).
             get _composedParent() {
-                return (
-                    Private(this).__distributedParent || Private(this).__shadowRootParent || Public(this).parentElement
-                )
+                return this.__distributedParent || this.__shadowRootParent || this.parentElement
             },
 
             // Composed children are the children that render relative to this
@@ -201,17 +198,14 @@ export function initDeclarativeBase() {
             // shadow root, or distributed children (assigned nodes) of a <slot>
             // element.
             get _composedChildren() {
-                if (Private(this).__shadowRoot) {
+                if (this.__shadowRoot) {
                     return [
-                        ...Array.prototype.filter.call(
-                            Private(this).__shadowRoot.children,
-                            n => n instanceof DeclarativeBase
-                        ),
+                        ...Array.prototype.filter.call(this.__shadowRoot.children, n => n instanceof DeclarativeBase),
                     ]
                 } else {
                     return [
-                        ...(Private(this).__distributedChildren || []), // TODO perhaps use slot.assignedNodes instead?
-                        ...Public(this).children,
+                        ...(this.__distributedChildren || []), // TODO perhaps use slot.assignedNodes instead?
+                        ...this.children,
                     ]
                 }
             },
@@ -267,17 +261,17 @@ export function initDeclarativeBase() {
                 // NOTE Logic here is similar to childConnectedCallback
 
                 if (child instanceof DeclarativeBase) {
-                    Private(child).__shadowRootParent = Public(this)
+                    child.__shadowRootParent = this
 
-                    // Public(this).add(child)
-                    // Public(this).possiblyLoadThree(child)
+                    // this.add(child)
+                    // this.possiblyLoadThree(child)
 
                     console.log(
                         '   >>>>>>>>>>>>>>> CHILD SHOULD BE COMPOSED, SHADOW ROOT',
                         child.constructor.name,
                         child.id
                     )
-                    Private(this).__childComposedCallback(child, 'root')
+                    this.__childComposedCallback(child, 'root')
                 } else if (hasShadowDomV1 && child instanceof HTMLSlotElement) {
                     child.addEventListener('slotchange', this)
                     this.__handleDistributedChildren(child, true)
@@ -288,16 +282,16 @@ export function initDeclarativeBase() {
                 // NOTE Logic here is similar to childDisconnectedCallback
 
                 if (child instanceof DeclarativeBase) {
-                    Private(child).__shadowRootParent = null
+                    child.__shadowRootParent = null
 
-                    // Public(this).remove(child)
+                    // this.remove(child)
 
                     console.log(
                         '   <<<<<<<<<<<<<<< CHILD SHOULD BE UN COMPOSED, SHADOW ROOT',
                         child.constructor.name,
                         child.id
                     )
-                    Private(this).__childUncomposedCallback(child, 'root')
+                    this.__childUncomposedCallback(child, 'root')
                 } else if (hasShadowDomV1 && child instanceof HTMLSlotElement) {
                     child.removeEventListener('slotchange', this)
                     this.__handleDistributedChildren(child)
@@ -318,19 +312,19 @@ export function initDeclarativeBase() {
             },
 
             __childComposedCallback(child, connectionType) {
-                if (Private(child).__isComposed) return
-                Private(child).__isComposed = true
+                if (child.__isComposed) return
+                child.__isComposed = true
 
                 console.log(' ---------------- __childComposedCallback')
 
-                Public(this).childComposedCallback && Public(this).childComposedCallback(child, connectionType)
+                this.childComposedCallback && this.childComposedCallback(child, connectionType)
             },
 
             __childUncomposedCallback(child, connectionType) {
-                if (!Private(child).__isComposed) return
-                Private(child).__isComposed = false
+                if (!child.__isComposed) return
+                child.__isComposed = false
 
-                Public(this).childUncomposedCallback && Public(this).childUncomposedCallback(child, connectionType)
+                this.childUncomposedCallback && this.childUncomposedCallback(child, connectionType)
             },
 
             __handleDistributedChildren(slot, isInitial = false) {
@@ -362,7 +356,7 @@ export function initDeclarativeBase() {
                     }
 
                     // The node is now distributed to `this` element.
-                    Private(addedNode).__distributedParent = Public(this)
+                    Private(addedNode).__distributedParent = this
                     if (!this.__distributedChildren) this.__distributedChildren = new Set()
                     this.__distributedChildren.add(addedNode)
 
@@ -370,11 +364,11 @@ export function initDeclarativeBase() {
 
                     // // Calculate sizing because proportional size might depend on
                     // // the new parent.
-                    // Protected(childNode)._calcSize()
+                    // childNode._calcSize()
                     // childNode.needsUpdate()
                     //
                     // // child should watch the parent for size changes.
-                    // this.on('sizechange', Protected(childNode)._onParentSizeChange, Protected(childNode))
+                    // this.on('sizechange', childNode._onParentSizeChange, childNode)
 
                     // ******** }}
 
@@ -386,7 +380,7 @@ export function initDeclarativeBase() {
                         addedNode.id
                     )
                     // debugger
-                    Private(this).__childComposedCallback(addedNode, 'slot')
+                    this.__childComposedCallback(addedNode, 'slot')
                 }
 
                 const {removed} = diff
@@ -405,7 +399,7 @@ export function initDeclarativeBase() {
                         removedNode.id
                     )
                     // debugger
-                    Private(this).__childUncomposedCallback(removedNode, 'slot')
+                    this.__childUncomposedCallback(removedNode, 'slot')
                 }
             },
 

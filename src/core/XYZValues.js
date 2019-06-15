@@ -13,7 +13,7 @@ import {native} from 'lowclass/native'
 /*TODO remove native*/
 export default Class('XYZValues').extends(native(Observable), ({Private, Super}) => ({
     constructor(x, y, z) {
-        Super(this).constructor()
+        super()
         this.from(x, y, z)
     },
 
@@ -95,31 +95,31 @@ export default Class('XYZValues').extends(native(Observable), ({Private, Super})
 
     set x(value) {
         if (!this.checkValue('x', value)) return
-        Private(this)._x = value
+        this._x = value
         this.trigger('valuechanged', 'x')
     },
 
     get x() {
-        return Private(this)._x
+        return this._x
     },
 
     set y(value) {
         if (!this.checkValue('y', value)) return
-        Private(this)._y = value
+        this._y = value
         this.trigger('valuechanged', 'y')
     },
 
     get y() {
-        return Private(this)._y
+        return this._y
     },
 
     set z(value) {
         if (!this.checkValue('z', value)) return
-        Private(this)._z = value
+        this._z = value
         this.trigger('valuechanged', 'z')
     },
 
     get z() {
-        return Private(this)._z
+        return this._z
     },
 }))

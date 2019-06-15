@@ -23,7 +23,7 @@ if (typeof document.createElement('div').style.transform == 'undefined') {
  */
 const ElementOperations = Class('ElementOperations', ({Private}) => ({
     constructor(element: HTMLElement) {
-        Private(this).__element = element
+        this.__element = element
     },
 
     connectChildElement(child: HTMLElement) {
@@ -38,7 +38,7 @@ const ElementOperations = Class('ElementOperations', ({Private}) => ({
             // imperative Node can be gotten and used to add the
             // node to another imperative Node. In this case, the
             // HTML-API node will be added to the proper HTMLparent.
-            (child.parentElement && child.parentElement !== Private(this).__element)
+            (child.parentElement && child.parentElement !== this.__element)
 
             // When an HTML-API node is already child of the
             // relevant parent, or it is child of a shadow root of
@@ -46,7 +46,7 @@ const ElementOperations = Class('ElementOperations', ({Private}) => ({
             // everything is already as expected, so the following
             // conditional body is skipped.
         ) {
-            Private(this).__add(child)
+            this.__add(child)
         }
     },
 
@@ -55,24 +55,24 @@ const ElementOperations = Class('ElementOperations', ({Private}) => ({
         // call this again.
         if (!child.parentNode) return
 
-        Private(this).__remove(child)
+        this.__remove(child)
     },
 
     applyImperativeNodeProperties() {
-        if (!Private(this).__shouldRender) return
+        if (!this.__shouldRender) return
 
-        Private(this).__applyOpacity()
-        Private(this).__applySize()
+        this.__applyOpacity()
+        this.__applySize()
     },
 
     set shouldRender(shouldRender: boolean) {
-        Private(this).__shouldRender = shouldRender
+        this.__shouldRender = shouldRender
         requestAnimationFrame(() => {
-            Private(this).__applyStyle('display', shouldRender ? 'block' : 'none')
+            this.__applyStyle('display', shouldRender ? 'block' : 'none')
         })
     },
     get shouldRender(): boolean {
-        return Private(this).__shouldRender
+        return this.__shouldRender
     },
 
     private: {
@@ -80,26 +80,26 @@ const ElementOperations = Class('ElementOperations', ({Private}) => ({
         __shouldRender: false,
 
         __add(child: HTMLElement) {
-            Private(this).__element.appendChild(child)
+            this.__element.appendChild(child)
         },
 
         __remove(child: HTMLElement) {
             // This conditional check is needed incase the element was already
             // removed from the HTML-API side.
-            if (child.parentNode === Private(this).__element) Private(this).__element.removeChild(child)
+            if (child.parentNode === this.__element) this.__element.removeChild(child)
         },
 
         __applySize() {
-            const {x, y} = (Private(this).__element as any).calculatedSize // TODO TS ImperativeBase typing
+            const {x, y} = (this.__element as any).calculatedSize // TODO TS ImperativeBase typing
 
-            Private(this).__applyStyle('width', `${x}px`)
-            Private(this).__applyStyle('height', `${y}px`)
+            this.__applyStyle('width', `${x}px`)
+            this.__applyStyle('height', `${y}px`)
 
             // NOTE: we ignore the Z axis on elements, since they are flat.
         },
 
         __applyOpacity() {
-            Private(this).__applyStyle('opacity', (Private(this).__element as any).opacity) // TODO TS ImperativeBase typing
+            this.__applyStyle('opacity', (this.__element as any).opacity) // TODO TS ImperativeBase typing
         },
 
         /**
@@ -109,7 +109,7 @@ const ElementOperations = Class('ElementOperations', ({Private}) => ({
          * @param  {string} value    The value the CSS property wil have.
          */
         __applyStyle(property: string, value: string) {
-            Private(this).__element.style.setProperty(property, value)
+            this.__element.style.setProperty(property, value)
         },
     },
 }))

@@ -16,15 +16,15 @@ a.makeSound()
 
 const Dog = Class('Dog').extends(Animal, ({Super}) => ({
     constructor(size: 'small' | 'big') {
-        if (size === 'small') Super(this).constructor('woof')
-        if (size === 'big') Super(this).constructor('WOOF')
+        if (size === 'small') super('woof')
+        if (size === 'big') super('WOOF')
     },
 
     // makeSound(d: number) {
     //     console.log(this.sound, d)
     // },
     makeSound() {
-        Super(this).makeSound()
+        super.makeSound()
         console.log(this.sound)
     },
 
@@ -73,7 +73,7 @@ const Foo = Class('Foo', ({Public, Protected, Private}) => ({
 
         protectedMethod(a: string) {
             console.log(a)
-            console.log(Protected(this).protectedProp)
+            console.log(this.protectedProp)
         },
     },
 
@@ -83,7 +83,7 @@ const Foo = Class('Foo', ({Public, Protected, Private}) => ({
         privateMethod() {
             this.publicProp
             this.publicMethod('') // Should this be allowed? Or do we just the below line to work ?
-            Public(this).publicMethod('')
+            this.publicMethod('')
         },
     },
 
@@ -94,12 +94,12 @@ const Foo = Class('Foo', ({Public, Protected, Private}) => ({
 
         let p = Protected(this)
         console.log(p)
-        Protected(this).protectedMethod('')
-        console.log(Protected(this).protectedProp) // 456
+        this.protectedMethod('')
+        console.log(this.protectedProp) // 456
 
-        Private(this).privateMethod()
-        console.log(Private(this).privateProp) // 789
-        return Private(this).privateProp
+        this.privateMethod()
+        console.log(this.privateProp) // 789
+        return this.privateProp
     },
 }))
 
@@ -126,12 +126,12 @@ const Bar = Class('Bar').extends(Foo, ({Public, Protected, Private, Super}) => (
         derivedProtected: 10,
     },
     derivedPublicMethod() {
-        Protected(this).protectedMethod('')
-        Protected(this).protectedProp
-        Protected(this).derivedProtected
-        Private(this).derivedPrivate
+        this.protectedMethod('')
+        this.protectedProp
+        this.derivedProtected
+        this.derivedPrivate
         this.test()
-        Public(this).test()
+        this.test()
     },
     test() {
         const b = {}
@@ -139,7 +139,7 @@ const Bar = Class('Bar').extends(Foo, ({Public, Protected, Private, Super}) => (
         // TODO TS This call should only allow `Super(this)` or `Super(Protected(this))`.
         Super(b).test()
 
-        return Super(this).test()
+        return super.test()
     },
 }))
 

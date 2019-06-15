@@ -61,21 +61,21 @@ export default Mixin(Base => {
                 `)
                 }
 
-                const self = Super(this).constructor(...args)
+                const self = super(...args)
                 return self
             },
 
             connectedCallback() {
-                if (Super(this).connectedCallback) Super(this).connectedCallback()
+                if (super.connectedCallback) super.connectedCallback()
 
-                if (!Private(this).__initialized) {
-                    Protected(this)._init()
-                    Private(this).__initialized = true
+                if (!this.__initialized) {
+                    this._init()
+                    this.__initialized = true
                 }
             },
 
             async disconnectedCallback() {
-                if (Super(this).disconnectedCallback) Super(this).disconnectedCallback()
+                if (super.disconnectedCallback) super.disconnectedCallback()
 
                 // Deferr to the next tick before cleaning up in case the
                 // element is actually being re-attached somewhere else within this
@@ -94,9 +94,9 @@ export default Mixin(Base => {
                 // As mentioned in the previous comment, if the element was not
                 // re-attached in the last tick (for example, it was moved to
                 // another element), then clean up.
-                if (!this.isConnected && Private(this).__initialized) {
-                    Protected(this)._deinit()
-                    Private(this).__initialized = false
+                if (!this.isConnected && this.__initialized) {
+                    this._deinit()
+                    this.__initialized = false
                 }
             },
 
@@ -113,8 +113,8 @@ export default Mixin(Base => {
             // TODO: when we make setAttribute accept non-strings, we need to move
             // logic from attributeChangedCallback
             attributeChangedCallback(...args) {
-                if (Super(this).attributeChangedCallback) Super(this).attributeChangedCallback(...args)
-                Private(this).__initialAttributeChange = true
+                if (super.attributeChangedCallback) super.attributeChangedCallback(...args)
+                this.__initialAttributeChange = true
             },
 
             protected: {
@@ -142,14 +142,14 @@ export default Mixin(Base => {
                  * have logic that doesn't depend on tree structure changing.
                  */
                 _init() {
-                    if (!Private(this).__style) Private(this).__style = Private(this).__createStyles()
+                    if (!this.__style) this.__style = this.__createStyles()
 
                     // fire this.attributeChangedCallback in case some attributes have
                     // existed before the custom element was upgraded.
-                    if (!Private(this).__initialAttributeChange && Public(this).hasAttributes()) {
-                        const {attributes} = Public(this)
+                    if (!this.__initialAttributeChange && this.hasAttributes()) {
+                        const {attributes} = this
                         for (let l = attributes.length, i = 0; i < l; i += 1)
-                            Public(this).attributeChangedCallback(attributes[i].name, null, attributes[i].value)
+                            this.attributeChangedCallback(attributes[i].name, null, attributes[i].value)
                     }
                 },
 
@@ -175,9 +175,9 @@ export default Mixin(Base => {
                 __initialAttributeChange: false,
 
                 __createStyles() {
-                    const rule = jss.createRule(Public(this).getStyles())
+                    const rule = jss.createRule(this.getStyles())
 
-                    rule.applyTo(Public(this))
+                    rule.applyTo(this)
 
                     return rule
                 },

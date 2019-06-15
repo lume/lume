@@ -22,7 +22,7 @@ export default Class('LightBase').extends(Node, ({Super}) => ({
     },
 
     updated(oldProps, modifiedProps) {
-        Super(this).updated(oldProps, modifiedProps)
+        super.updated(oldProps, modifiedProps)
 
         if (!this.isConnected) return
 

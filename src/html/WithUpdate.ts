@@ -193,7 +193,7 @@ export function prop(definition) {
 // read-only interface (_props) to the private cache (__props).
 // const PropsReadonly = Class('PropsReadonly', ({ Private }) => ({
 //     constructor(withUpdateInstance) {
-//         Private(this).__instance = withUpdateInstance
+//         this.__instance = withUpdateInstance
 //
 //         for (const prop in withUpdateInstance.constructor.props) {
 //             Object.defineProperty(this, prop, {
@@ -251,15 +251,15 @@ function WithUpdateMixin<T extends typeof HTMLElement>(Base: T /* = HTMLElement*
                 },
 
                 constructor(...args) {
-                    const self = Super(this).constructor(...args)
+                    const self = super(...args)
 
-                    Private(self).__prevProps = {}
+                    this.__prevProps = {}
 
                     // self._props extends from __existingPrototypeValues in case we
                     // overwrote a prototype property that had an existing value during
                     // definition of the props. This ensures we get the original
                     // prototype value when we read from a prop that we haven't set yet.
-                    Protected(self)._props = {
+                    this._props = {
                         ...(self.constructor.__existingPrototypeValues || {}),
                         ...self.makeDefaultProps(),
                     }
@@ -268,9 +268,9 @@ function WithUpdateMixin<T extends typeof HTMLElement>(Base: T /* = HTMLElement*
                     // readonly. Should it be private only (requires refactoring
                     // Sizeable and Transformable)? Or is convenient for subclasses to
                     // read from the cache? I'm leaning towards protected readonly.
-                    // Protected(self)._props = new PropsReadonly(self)
+                    // this._props = new PropsReadonly(self)
 
-                    Private(self).__modifiedProps = {}
+                    this.__modifiedProps = {}
 
                     return self
                 },
@@ -292,8 +292,8 @@ function WithUpdateMixin<T extends typeof HTMLElement>(Base: T /* = HTMLElement*
                         _propsNormalized,
                     } = (this as any).constructor
 
-                    if (Super(this).attributeChangedCallback) {
-                        Super(this).attributeChangedCallback(name, oldValue, newValue)
+                    if (super.attributeChangedCallback) {
+                        super.attributeChangedCallback(name, oldValue, newValue)
                     }
 
                     const propertyName = _attributeToPropertyMap[name]
@@ -304,9 +304,8 @@ function WithUpdateMixin<T extends typeof HTMLElement>(Base: T /* = HTMLElement*
                             const propertyValue = deserialize
                                 ? deserialize.call(this, newValue, propertyName)
                                 : newValue
-                            Protected(this)._props[propertyName] =
-                                propertyValue == null ? defaultValue.call(this) : propertyValue
-                            Private(this).__modifiedProps[propertyName] = true
+                            this._props[propertyName] = propertyValue == null ? defaultValue.call(this) : propertyValue
+                            this.__modifiedProps[propertyName] = true
                             this.triggerUpdate()
                         }
                     }
@@ -324,13 +323,12 @@ function WithUpdateMixin<T extends typeof HTMLElement>(Base: T /* = HTMLElement*
                 },
 
                 connectedCallback() {
-                    if (Super(this).connectedCallback) {
-                        Super(this).connectedCallback()
+                    if (super.connectedCallback) {
+                        super.connectedCallback()
                     }
                     // TODO TS this.constructor
                     const propsList = this.constructor._propNames
-                    for (let i = 0, l = propsList.length; i < l; i += 1)
-                        Private(this).__modifiedProps[propsList[i]] = true
+                    for (let i = 0, l = propsList.length; i < l; i += 1) this.__modifiedProps[propsList[i]] = true
                     this.triggerUpdate()
                 },
 
@@ -343,31 +341,31 @@ function WithUpdateMixin<T extends typeof HTMLElement>(Base: T /* = HTMLElement*
                 updated(_prevProps, _modifiedProps) {},
 
                 triggerUpdate() {
-                    if (Private(this).__updating) {
+                    if (this.__updating) {
                         return
                     }
-                    Private(this).__updating = true
+                    this.__updating = true
                     delay(() => {
-                        const {__prevProps, __modifiedProps} = Private(this)
+                        const {__prevProps, __modifiedProps} = this
                         this.updating && this.updating(__prevProps, __modifiedProps)
                         this.updated &&
                             this.shouldUpdate(__prevProps, __modifiedProps) &&
                             this.updated(__prevProps, __modifiedProps)
-                        Private(this).__prevProps = this.props
+                        this.__prevProps = this.props
                         const {_propNames} = this.constructor
                         for (let i = 0, l = _propNames.length; i < l; i += 1)
-                            Private(this).__modifiedProps[_propNames[i]] = false
-                        Private(this).__updating = false
+                            this.__modifiedProps[_propNames[i]] = false
+                        this.__updating = false
                     })
                 },
 
                 triggerUpdateForProp(prop) {
-                    Private(this).__modifiedProps[prop] = true
+                    this.__modifiedProps[prop] = true
                     this.triggerUpdate()
                 },
 
                 triggerUpdateForProps(props) {
-                    for (const prop of props) Private(this).__modifiedProps[prop] = true
+                    for (const prop of props) this.__modifiedProps[prop] = true
 
                     this.triggerUpdate()
                 },

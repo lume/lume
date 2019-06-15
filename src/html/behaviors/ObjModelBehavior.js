@@ -19,13 +19,13 @@ const ObjModelBehavior = Class('ObjModelBehavior').extends(Behavior, ({Super, Pu
             // TODO if only mtl changes, maybe we can update only the material
             // instead of reloading the whole object?
             if (!this.obj) return
-            Private(this).__cleanup()
-            Private(this).__loadObj()
+            this.__cleanup()
+            this.__loadObj()
         }
     },
 
     connectedCallback() {
-        Super(this).connectedCallback()
+        super.connectedCallback()
         this.model = null
         this.objLoader = new THREE.OBJLoader()
         this.mtlLoader = new THREE.MTLLoader(this.objLoader.manager)
@@ -38,15 +38,14 @@ const ObjModelBehavior = Class('ObjModelBehavior').extends(Behavior, ({Super, Pu
     },
 
     disconnectedCallback() {
-        Super(this).disconnectedCallback()
-        Private(this).__cleanup()
+        super.disconnectedCallback()
+        this.__cleanup()
     },
 
     private: {
         __materialIsFromMaterialBehavior: false,
 
         __cleanup() {
-            const pub = Public(this)
             if (!pub.model) return
             disposeObjectTree(pub.model, {
                 destroyMaterial: !this.__materialIsFromMaterialBehavior,
@@ -55,7 +54,6 @@ const ObjModelBehavior = Class('ObjModelBehavior').extends(Behavior, ({Super, Pu
         },
 
         __loadObj() {
-            const pub = Public(this)
             const {obj, mtl, mtlLoader, objLoader} = pub
 
             if (mtl) {
@@ -96,7 +94,6 @@ const ObjModelBehavior = Class('ObjModelBehavior').extends(Behavior, ({Super, Pu
         },
 
         __setModel(model) {
-            const pub = Public(this)
             pub.element.three.add((pub.model = model))
             pub.element.emit(Events.MODEL_LOAD, {format: 'obj', model: model})
             pub.element.needsUpdate()
