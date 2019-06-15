@@ -1,8 +1,7 @@
 import Class from 'lowclass'
 import Node from '../core/Node'
 
-export default
-Class('PushPaneLayout').extends( Node, ({ Super }) => ({
+export default Class('PushPaneLayout').extends(Node, ({Super}) => ({
     static: {
         defaultElementName: 'i-push-pane-layout',
     },
@@ -10,7 +9,7 @@ Class('PushPaneLayout').extends( Node, ({ Super }) => ({
         console.log(' -- PushPaneLayout created (TODO)')
         const self = Super(this).constructor(...args)
         return self
-    }
+    },
 
     // TODO
 }))

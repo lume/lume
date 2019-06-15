@@ -1,33 +1,35 @@
 import Class from 'lowclass'
-import { PerspectiveCamera as ThreePerspectiveCamera } from 'three'
+import {PerspectiveCamera as ThreePerspectiveCamera} from 'three'
 import Motor from './Motor'
-import { props } from './props'
-import { getSceneProtectedHelper } from './Scene'
+import {props} from './props'
+import {getSceneProtectedHelper} from './Scene'
 import Node from './Node'
 
 const SceneProtected = getSceneProtectedHelper()
 
 // TODO: update this to have a CSS3D-perspective-like API like with the Scene's
 // default camera.
-export default
-Class('PerspectiveCamera').extends( Node, ({ Super, Public, Private }) => ({
-
+export default Class('PerspectiveCamera').extends(Node, ({Super, Public, Private}) => ({
     static: {
         defaultElementName: 'i-perspective-camera',
 
         // TODO remove attributeChangedCallback, replace with updated based on these props
         props: {
             ...Node.props,
-            fov: { ...props.number, default: 75 },
+            fov: {...props.number, default: 75},
             aspect: {
                 ...props.number,
-                default() { return Private(this)._getDefaultAspect() },
-                deserialize(val) { val == null ? this.constructor.props.aspect.default.call(this) : props.number.deserialize(val) },
+                default() {
+                    return Private(this)._getDefaultAspect()
+                },
+                deserialize(val) {
+                    val == null ? this.constructor.props.aspect.default.call(this) : props.number.deserialize(val)
+                },
             },
-            near: { ...props.number, default: 0.1 },
-            far: { ...props.number, default: 1000 },
-            zoom: { ...props.number, default: 1 },
-            active: { ...props.boolean, default: false },
+            near: {...props.number, default: 0.1},
+            far: {...props.number, default: 1000},
+            zoom: {...props.number, default: 1},
+            active: {...props.boolean, default: false},
         },
     },
 
@@ -37,14 +39,13 @@ Class('PerspectiveCamera').extends( Node, ({ Super, Public, Private }) => ({
         if (!this.isConnected) return
 
         if (modifiedProps.active) {
-            this._setSceneCamera( this.active ? undefined : 'unset' )
+            this._setSceneCamera(this.active ? undefined : 'unset')
         }
         if (modifiedProps.aspect) {
             if (!this.aspect)
                 // default aspect value based on the scene size.
                 privateThis._startAutoAspect()
-            else
-                privateThis._stopAutoAspect()
+            else privateThis._stopAutoAspect()
         }
         // TODO handle the other props here, remove attributeChangedCallback
     },
@@ -58,20 +59,19 @@ Class('PerspectiveCamera').extends( Node, ({ Super, Public, Private }) => ({
     // TODO, unmountedCallback functionality. issue #150
     unmountedCallback() {},
 
-    attributeChangedCallback( attr, oldVal, newVal ) {
-        Super(this).attributeChangedCallback( attr, oldVal, newVal )
+    attributeChangedCallback(attr, oldVal, newVal) {
+        Super(this).attributeChangedCallback(attr, oldVal, newVal)
 
-        if ( typeof newVal == 'string' ) {
-            Private(this)._attributeAddedOrChanged( attr, newVal )
-        }
-        else {
-            Private(this)._attributeRemoved( attr )
+        if (typeof newVal == 'string') {
+            Private(this)._attributeAddedOrChanged(attr, newVal)
+        } else {
+            Private(this)._attributeRemoved(attr)
         }
     },
 
     protected: {
         _makeThreeObject3d() {
-            return new ThreePerspectiveCamera(75, 16/9, 1, 1000)
+            return new ThreePerspectiveCamera(75, 16 / 9, 1, 1000)
         },
 
         // TODO replace with unmountedCallback #150
@@ -81,7 +81,7 @@ Class('PerspectiveCamera').extends( Node, ({ Super, Public, Private }) => ({
             // TODO we want to call this in the upcoming
             // unmountedCallback, but for now it's harmless but
             // will run unnecessary logic. #150
-            Private(this)._setSceneCamera( 'unset' )
+            Private(this)._setSceneCamera('unset')
             Private(this)._lastKnownScene = null
         },
     },
@@ -93,57 +93,47 @@ Class('PerspectiveCamera').extends( Node, ({ Super, Public, Private }) => ({
         _attributeRemoved(attr, newVal) {
             const publicThis = Public(this)
 
-            if ( attr == 'fov' ) {
+            if (attr == 'fov') {
                 publicThis.three.fov = 75
                 publicThis.three.updateProjectionMatrix()
-            }
-            else if ( attr == 'aspect' ) {
+            } else if (attr == 'aspect') {
                 this._startAutoAspect()
                 publicThis.three.aspect = this._getDefaultAspect()
                 publicThis.three.updateProjectionMatrix()
-            }
-            else if ( attr == 'near' ) {
+            } else if (attr == 'near') {
                 publicThis.three.near = 0.1
                 publicThis.three.updateProjectionMatrix()
-            }
-            else if ( attr == 'far' ) {
+            } else if (attr == 'far') {
                 publicThis.three.far = 1000
                 publicThis.three.updateProjectionMatrix()
-            }
-            else if ( attr == 'zoom' ) {
+            } else if (attr == 'zoom') {
                 publicThis.three.zoom = 1
                 publicThis.three.updateProjectionMatrix()
-            }
-            else if ( attr == 'active' ) {
-                this._setSceneCamera( 'unset' )
+            } else if (attr == 'active') {
+                this._setSceneCamera('unset')
             }
         },
 
         _attributeAddedOrChanged(attr, newVal) {
             const publicThis = Public(this)
 
-            if ( attr == 'fov' ) {
+            if (attr == 'fov') {
                 publicThis.three.fov = parseFloat(newVal)
                 publicThis.three.updateProjectionMatrix()
-            }
-            else if ( attr == 'aspect' ) {
+            } else if (attr == 'aspect') {
                 this._stopAutoAspect()
                 publicThis.three.aspect = parseFloat(newVal)
                 publicThis.three.updateProjectionMatrix()
-            }
-            else if ( attr == 'near' ) {
+            } else if (attr == 'near') {
                 publicThis.three.near = parseFloat(newVal)
                 publicThis.three.updateProjectionMatrix()
-            }
-            else if ( attr == 'far' ) {
+            } else if (attr == 'far') {
                 publicThis.three.far = parseFloat(newVal)
                 publicThis.three.updateProjectionMatrix()
-            }
-            else if ( attr == 'zoom' ) {
+            } else if (attr == 'zoom') {
                 publicThis.three.zoom = parseFloat(newVal)
                 publicThis.three.updateProjectionMatrix()
-            }
-            else if ( attr == 'active' ) {
+            } else if (attr == 'active') {
                 this._setSceneCamera()
             }
         },
@@ -170,7 +160,7 @@ Class('PerspectiveCamera').extends( Node, ({ Super, Public, Private }) => ({
 
             const publicThis = Public(this)
 
-            if ( publicThis.scene ) {
+            if (publicThis.scene) {
                 result = publicThis.scene.calculatedSize.x / publicThis.scene.calculatedSize.y
             }
 
@@ -180,24 +170,19 @@ Class('PerspectiveCamera').extends( Node, ({ Super, Public, Private }) => ({
             return result
         },
 
-        _setSceneCamera( unset ) {
-
+        _setSceneCamera(unset) {
             const publicThis = Public(this)
 
-            if ( unset ) {
-
+            if (unset) {
                 // TODO: unset might be triggered before the scene was mounted, so
                 // there might not be a last known scene. We won't need this check
                 // when we add unmountedCallback. #150
-                if ( this._lastKnownScene )
-                    SceneProtected()(this._lastKnownScene)._removeCamera( publicThis )
-            }
-            else {
+                if (this._lastKnownScene) SceneProtected()(this._lastKnownScene)._removeCamera(publicThis)
+            } else {
                 if (!publicThis.scene || !publicThis.isConnected) return
 
-                SceneProtected()(publicThis.scene)._addCamera( publicThis )
+                SceneProtected()(publicThis.scene)._addCamera(publicThis)
             }
         },
     },
-
 }))

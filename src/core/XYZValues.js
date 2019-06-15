@@ -1,6 +1,6 @@
 import Observable from './Observable'
 import Class from 'lowclass'
-import { native } from 'lowclass/native'
+import {native} from 'lowclass/native'
 
 /**
  * Represents a set of values for the X, Y, and Z axes. For example, the
@@ -10,38 +10,25 @@ import { native } from 'lowclass/native'
  * The values don't have to be numerical. For example,
  * {x:'foo', y:'bar', z:'baz'}
  */
- /*TODO remove native*/
-export default
-Class( 'XYZValues' ).extends( native(Observable), ({ Private, Super }) => ({
+/*TODO remove native*/
+export default Class('XYZValues').extends(native(Observable), ({Private, Super}) => ({
     constructor(x, y, z) {
         Super(this).constructor()
         this.from(x, y, z)
     },
 
-    default: { x: undefined, y: undefined, z: undefined },
+    default: {x: undefined, y: undefined, z: undefined},
 
     from(x, y, z) {
-        if (
-            x !== undefined &&
-            y !== undefined &&
-            z !== undefined
-        ) {
+        if (x !== undefined && y !== undefined && z !== undefined) {
             this.set(x, y, z)
-        }
-
-        else if (Array.isArray(x)) {
+        } else if (Array.isArray(x)) {
             this.fromArray(x)
-        }
-
-        else if (typeof x === 'object' && x !== null && x !== this ) {
+        } else if (typeof x === 'object' && x !== null && x !== this) {
             this.fromObject(x)
-        }
-
-        else if (typeof x === 'string') {
+        } else if (typeof x === 'string') {
             this.fromString(x)
-        }
-
-        else {
+        } else {
             this.fromDefault()
         }
 
@@ -112,7 +99,9 @@ Class( 'XYZValues' ).extends( native(Observable), ({ Private, Super }) => ({
         this.trigger('valuechanged', 'x')
     },
 
-    get x() { return Private(this)._x },
+    get x() {
+        return Private(this)._x
+    },
 
     set y(value) {
         if (!this.checkValue('y', value)) return
@@ -120,7 +109,9 @@ Class( 'XYZValues' ).extends( native(Observable), ({ Private, Super }) => ({
         this.trigger('valuechanged', 'y')
     },
 
-    get y() { return Private(this)._y },
+    get y() {
+        return Private(this)._y
+    },
 
     set z(value) {
         if (!this.checkValue('z', value)) return
@@ -128,5 +119,7 @@ Class( 'XYZValues' ).extends( native(Observable), ({ Private, Super }) => ({
         this.trigger('valuechanged', 'z')
     },
 
-    get z() { return Private(this)._z },
+    get z() {
+        return Private(this)._z
+    },
 }))

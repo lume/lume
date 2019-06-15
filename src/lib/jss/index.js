@@ -1,11 +1,11 @@
-import Jss               from 'jss'
+import Jss from 'jss'
 
-import jssNested         from 'jss-nested'
-import jssExtend         from 'jss-extend'
-import jssPx             from 'jss-px'
+import jssNested from 'jss-nested'
+import jssExtend from 'jss-extend'
+import jssPx from 'jss-px'
 import jssVendorPrefixer from 'jss-vendor-prefixer'
-import jssCamelCase      from 'jss-camel-case'
-import jssPropsSort      from 'jss-props-sort'
+import jssCamelCase from 'jss-camel-case'
+import jssPropsSort from 'jss-props-sort'
 
 const jss = Jss.create()
 

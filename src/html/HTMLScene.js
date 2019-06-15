@@ -1,18 +1,15 @@
-
 import styles from './HTMLScene.style'
 import Motor from '../core/Motor'
 import DeclarativeBase, {initDeclarativeBase} from './DeclarativeBase'
 
 initDeclarativeBase()
 
-export default
-DeclarativeBase.subclass('HTMLScene', ({ Public, Protected, Private, Super }) => ({
-
+export default DeclarativeBase.subclass('HTMLScene', ({Public, Protected, Private, Super}) => ({
     constructor() {
         const self = Super(this).constructor()
         const privateThis = Private(self)
 
-        privateThis.__root = self.attachShadow({ mode: 'open' })
+        privateThis.__root = self.attachShadow({mode: 'open'})
         privateThis.__root.innerHTML = `
             <style>
                 .i-scene-CSS3DLayer,
@@ -37,13 +34,15 @@ DeclarativeBase.subclass('HTMLScene', ({ Public, Protected, Private, Super }) =>
                 }
             </style>
             <div class="i-scene-CSS3DLayer">
-                ${ /* WebGLRendererThree places the CSS3DRendererNested
+                ${
+                    /* WebGLRendererThree places the CSS3DRendererNested
                 domElement here, which contains a <slot> element that child
                 elements of a Scene are distributed into (rendered relative to).
-                */ ''}
+                */ ''
+                }
             </div>
             <div class="i-scene-WebGLLayer">
-                ${ /* WebGLRendererThree places the Three.js <canvas> element here. */ ''}
+                ${/* WebGLRendererThree places the Three.js <canvas> element here. */ ''}
             </div>
             <div class="i-scene-MiscellaneousLayer">
                 <slot name="misc"></slot>
@@ -72,8 +71,7 @@ DeclarativeBase.subclass('HTMLScene', ({ Public, Protected, Private, Super }) =>
         Super(this).connectedCallback()
 
         // When the HTMLScene gets addded to the DOM, make it be "mounted".
-        if (!Protected(this)._mounted)
-            this.mount(this.parentNode)
+        if (!Protected(this)._mounted) this.mount(this.parentNode)
     },
 
     disconnectedCallback() {
@@ -90,5 +88,4 @@ DeclarativeBase.subclass('HTMLScene', ({ Public, Protected, Private, Super }) =>
     private: {
         __root: null,
     },
-
 }))

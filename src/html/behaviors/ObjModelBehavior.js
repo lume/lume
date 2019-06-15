@@ -49,14 +49,14 @@ const ObjModelBehavior = Class('ObjModelBehavior').extends(Behavior, ({Super, Pu
             const pub = Public(this)
             if (!pub.model) return
             disposeObjectTree(pub.model, {
-                destroyMaterial: !this.__materialIsFromMaterialBehavior
+                destroyMaterial: !this.__materialIsFromMaterialBehavior,
             })
             this.__materialIsFromMaterialBehavior = false
         },
 
         __loadObj() {
             const pub = Public(this)
-            const { obj, mtl, mtlLoader, objLoader } = pub
+            const {obj, mtl, mtlLoader, objLoader} = pub
 
             if (mtl) {
                 mtlLoader.setTexturePath(mtl.substr(0, mtl.lastIndexOf('/') + 1))
@@ -65,8 +65,7 @@ const ObjModelBehavior = Class('ObjModelBehavior').extends(Behavior, ({Super, Pu
                     objLoader.setMaterials(materials)
                     objLoader.load(obj, model => this.__setModel(model))
                 })
-            }
-            else {
+            } else {
                 objLoader.load(obj, model => {
                     let materialBehavior = pub.element.behaviors.get('basic-material')
                     if (!materialBehavior) materialBehavior = pub.element.behaviors.get('phong-material')
@@ -80,14 +79,13 @@ const ObjModelBehavior = Class('ObjModelBehavior').extends(Behavior, ({Super, Pu
                         // behaviors to work in tandem with or without a mesh
                         // behavior, and other behaviors can use the geometry or
                         // material features.
-                        model.traverse(function (child) {
+                        model.traverse(function(child) {
                             if ('material' in child) {
-                                console.log( materialBehavior.getMeshComponent('material') )
+                                console.log(materialBehavior.getMeshComponent('material'))
                                 child.material = materialBehavior.getMeshComponent('material')
                             }
                         })
-                    }
-                    else {
+                    } else {
                         // if no material, make a default one with random color
                         setRandomColorPhongMaterial(model)
                     }
@@ -99,17 +97,16 @@ const ObjModelBehavior = Class('ObjModelBehavior').extends(Behavior, ({Super, Pu
 
         __setModel(model) {
             const pub = Public(this)
-            pub.element.three.add(pub.model = model)
+            pub.element.three.add((pub.model = model))
             pub.element.emit(Events.MODEL_LOAD, {format: 'obj', model: model})
             pub.element.needsUpdate()
         },
     },
-
 }))
 
 function setColorPhongMaterial(obj, color, dispose, traverse = true) {
-    const material = new THREE.MeshPhongMaterial
-    material.color = new THREE.Color( color )
+    const material = new THREE.MeshPhongMaterial()
+    material.color = new THREE.Color(color)
 
     if (traverse) obj.traverse(node => applyMaterial(node, material))
     else applyMaterial(obj, material)
@@ -122,52 +119,48 @@ function applyMaterial(obj, material, dispose = true) {
 }
 
 function setRandomColorPhongMaterial(obj, dispose, traverse) {
-    const randomColor = 0xffffff/3 * Math.random() + 0xffffff/3
-    setColorPhongMaterial( obj, randomColor, dispose, traverse )
+    const randomColor = (0xffffff / 3) * Math.random() + 0xffffff / 3
+    setColorPhongMaterial(obj, randomColor, dispose, traverse)
 }
 
 function isRenderItem(obj) {
-  return 'geometry' in obj && 'material' in obj
+    return 'geometry' in obj && 'material' in obj
 }
 
 function disposeMaterial(obj) {
-  if (!isRenderItem(obj)) return
+    if (!isRenderItem(obj)) return
 
-  // because obj.material can be a material or array of materials
-  const materials = [].concat(obj.material)
+    // because obj.material can be a material or array of materials
+    const materials = [].concat(obj.material)
 
-  for (const material of materials) {
-    material.dispose()
-  }
+    for (const material of materials) {
+        material.dispose()
+    }
 }
 
-function disposeObject(
-  obj,
-  removeFromParent = true,
-  destroyGeometry = true,
-  destroyMaterial = true
-) {
-  if (isRenderItem(obj)) {
-    if (destroyGeometry) obj.geometry.dispose()
-    if (destroyMaterial) disposeMaterial(obj)
-  }
+function disposeObject(obj, removeFromParent = true, destroyGeometry = true, destroyMaterial = true) {
+    if (isRenderItem(obj)) {
+        if (destroyGeometry) obj.geometry.dispose()
+        if (destroyMaterial) disposeMaterial(obj)
+    }
 
-  removeFromParent && Promise.resolve().then(() => {
-    // if we remove children in the same tick then we can't continue traversing,
-    // so we defer to the next microtask
-    obj.parent && obj.parent.remove(obj)
-  })
+    removeFromParent &&
+        Promise.resolve().then(() => {
+            // if we remove children in the same tick then we can't continue traversing,
+            // so we defer to the next microtask
+            obj.parent && obj.parent.remove(obj)
+        })
 }
 
 function disposeObjectTree(obj, disposeOptions = {}) {
-  obj.traverse(node => {
-    disposeObject(
-      node,
-      disposeOptions.removeFromParent,
-      disposeOptions.destroyGeometry,
-      disposeOptions.destroyMaterial
-    )
-  })
+    obj.traverse(node => {
+        disposeObject(
+            node,
+            disposeOptions.removeFromParent,
+            disposeOptions.destroyGeometry,
+            disposeOptions.destroyMaterial
+        )
+    })
 }
 
 elementBehaviors.define('obj-model', ObjModelBehavior)

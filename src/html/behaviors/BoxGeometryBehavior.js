@@ -1,11 +1,9 @@
 import 'element-behaviors'
-import { BoxGeometry } from 'three'
+import {BoxGeometry} from 'three'
 import BaseGeometryBehavior from './BaseGeometryBehavior'
 
-const BoxGeometryBehavior = BaseGeometryBehavior.subclass('BoxGeometryBehavior', (Public) => ({
-
+const BoxGeometryBehavior = BaseGeometryBehavior.subclass('BoxGeometryBehavior', Public => ({
     protected: {
-
         _createComponent() {
             return new BoxGeometry(
                 Public(this).element.calculatedSize.x,
@@ -13,9 +11,7 @@ const BoxGeometryBehavior = BaseGeometryBehavior.subclass('BoxGeometryBehavior',
                 Public(this).element.calculatedSize.z
             )
         },
-
     },
-
 }))
 
 elementBehaviors.define('box-geometry', BoxGeometryBehavior)

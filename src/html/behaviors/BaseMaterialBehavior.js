@@ -1,20 +1,18 @@
 import Class from 'lowclass'
 import BaseMeshBehavior from './BaseMeshBehavior'
-import { props } from '../../core/props'
+import {props} from '../../core/props'
 
 // base class for geometry behaviors
-export default
-Class( 'BaseMaterialBehavior' ).extends( BaseMeshBehavior, ({ Super }) => ({
-
+export default Class('BaseMaterialBehavior').extends(BaseMeshBehavior, ({Super}) => ({
     static: {
         type: 'material',
         props: {
             color: props.THREE.Color,
-            opacity: { ...props.number, default: 1 },
+            opacity: {...props.number, default: 1},
         },
     },
 
-    updated( oldProps, modifiedProps ) {
+    updated(oldProps, modifiedProps) {
         const {color, opacity} = modifiedProps
 
         if (color) this.updateMaterial('color')
@@ -26,7 +24,7 @@ Class( 'BaseMaterialBehavior' ).extends( BaseMeshBehavior, ({ Super }) => ({
     },
 
     get transparent() {
-        if ( this.opacity < 1 ) return true
+        if (this.opacity < 1) return true
         else return false
     },
 
@@ -34,5 +32,4 @@ Class( 'BaseMaterialBehavior' ).extends( BaseMeshBehavior, ({ Super }) => ({
         this.element.three.material[propName] = this[propName]
         this.element.needsUpdate()
     },
-
 }))

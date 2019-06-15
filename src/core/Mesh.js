@@ -1,7 +1,7 @@
 import Class from 'lowclass'
-import { Mesh as ThreeMesh } from 'three'
+import {Mesh as ThreeMesh} from 'three'
 import Node from './Node'
-import { props, mapPropTo } from './props'
+import {props, mapPropTo} from './props'
 
 // register behaviors that can be used on this element
 // TODO: maybe useDefaultNames() should register these, otherwise the user can
@@ -22,8 +22,7 @@ import '../html/behaviors/DOMNodeGeometryBehavior'
 // - [x] generic ability to specify custom element attribute types, as an addon to
 //   Custom Elements. We can use the same mechanism to specify types for behaviors too?
 
-export default
-Class('Mesh').extends( Node, ({ Super }) => ({
+export default Class('Mesh').extends(Node, ({Super}) => ({
     static: {
         defaultElementName: 'i-mesh',
 
@@ -32,19 +31,18 @@ Class('Mesh').extends( Node, ({ Super }) => ({
         // work.
         defaultBehaviors: {
             'box-geometry': initialBehaviors => {
-                return !initialBehaviors.some( b => b.endsWith( '-geometry' ) )
+                return !initialBehaviors.some(b => b.endsWith('-geometry'))
             },
             'phong-material': initialBehaviors => {
-                return !initialBehaviors.some( b => b.endsWith( '-material' ) )
+                return !initialBehaviors.some(b => b.endsWith('-material'))
             },
         },
 
         props: {
             ...Node.props,
-            castShadow: { ...mapPropTo(props.boolean, self => self.three), default: true },
-            receiveShadow: { ...mapPropTo(props.boolean, self => self.three), default: true },
+            castShadow: {...mapPropTo(props.boolean, self => self.three), default: true},
+            receiveShadow: {...mapPropTo(props.boolean, self => self.three), default: true},
         },
-
     },
 
     passInitialValuesToThree() {
@@ -57,11 +55,11 @@ Class('Mesh').extends( Node, ({ Super }) => ({
 
         if (!this.isConnected) return
 
-        if ( modifiedProps.castShadow ) {
+        if (modifiedProps.castShadow) {
             this.needsUpdate()
         }
 
-        if ( modifiedProps.receiveShadow ) {
+        if (modifiedProps.receiveShadow) {
             this.three.material.needsUpdate = true
             this.needsUpdate()
         }
@@ -69,7 +67,7 @@ Class('Mesh').extends( Node, ({ Super }) => ({
 
     protected: {
         _makeThreeObject3d() {
-            return new ThreeMesh
+            return new ThreeMesh()
         },
     },
 }))

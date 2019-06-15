@@ -1,11 +1,9 @@
 import Class from 'lowclass'
 import BaseMeshBehavior from './BaseMeshBehavior'
-import { props, changePropContext } from '../../core/props'
+import {props, changePropContext} from '../../core/props'
 
 // base class for geometry behaviors
-export default
-Class( 'BaseGeometryBehavior' ).extends( BaseMeshBehavior, ({ Public, Private, Super }) => ({
-
+export default Class('BaseGeometryBehavior').extends(BaseMeshBehavior, ({Public, Private, Super}) => ({
     static: {
         type: 'geometry',
 
@@ -16,10 +14,10 @@ Class( 'BaseGeometryBehavior' ).extends( BaseMeshBehavior, ({ Public, Private, S
         },
     },
 
-    updated( oldProps, modifiedProps ) {
-        const { size, sizeMode } = modifiedProps
+    updated(oldProps, modifiedProps) {
+        const {size, sizeMode} = modifiedProps
 
-        if ( size || sizeMode ) {
+        if (size || sizeMode) {
             Private(this).__updateGeometryOnSizeChange(this.size)
         }
     },
@@ -53,7 +51,7 @@ Class( 'BaseGeometryBehavior' ).extends( BaseMeshBehavior, ({ Public, Private, S
 
         // NOTE we may use the x, y, z args to calculate scale when/if we
         // implement size under the hood as an Object3D.scale.
-        __updateGeometryOnSizeChange({ x, y, z }) {
+        __updateGeometryOnSizeChange({x, y, z}) {
             // TODO PERFORMANCE, resetMeshComponent creates a new geometry.
             // Re-creating geometries is wasteful, re-use them when possible, and
             // add instancing. Maybe we use Object3D.scale as an implementation
@@ -61,5 +59,4 @@ Class( 'BaseGeometryBehavior' ).extends( BaseMeshBehavior, ({ Public, Private, S
             Public(this).resetMeshComponent()
         },
     },
-
 }))

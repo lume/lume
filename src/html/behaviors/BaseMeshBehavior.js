@@ -1,7 +1,7 @@
-import { BoxGeometry, MeshPhongMaterial } from 'three'
+import {BoxGeometry, MeshPhongMaterial} from 'three'
 import Class from 'lowclass'
 import Behavior from './Behavior'
-import { Events } from '../../core/Events'
+import {Events} from '../../core/Events'
 import Mesh from '../../core/Mesh'
 
 /**
@@ -10,12 +10,13 @@ import Mesh from '../../core/Mesh'
  * Subclasses should implement:
  * _createComponent() - return a geometry or material instance.
  */
-export default
-Class( 'BaseMeshBehavior' ).extends( Behavior, ({ Public, Protected, Private, Super }) => ({
+export default Class('BaseMeshBehavior').extends(Behavior, ({Public, Protected, Private, Super}) => ({
     static: {
         // use a getter because Mesh is undefined at module evaluation time due
         // to a circular dependency.
-        get requiredElementType() { return Mesh },
+        get requiredElementType() {
+            return Mesh
+        },
     },
 
     get glLoaded() {
@@ -27,12 +28,12 @@ Class( 'BaseMeshBehavior' ).extends( Behavior, ({ Public, Protected, Private, Su
     },
 
     connectedCallback() {
-        Super( this ).connectedCallback()
+        Super(this).connectedCallback()
         this.loadGL()
     },
 
     disconnectedCallback() {
-        Super( this ).disconnectedCallback()
+        Super(this).disconnectedCallback()
         this.unloadGL()
     },
 
@@ -55,10 +56,8 @@ Class( 'BaseMeshBehavior' ).extends( Behavior, ({ Public, Protected, Private, Su
         // if the behavior is being disconnected, but the element still has GL
         // mode (.three), then leave the element with a default mesh GL
         // component to be rendered.
-        if (this.element.three)
-            Private(this).__setDefaultComponent( this.element, this.constructor.type )
-        else
-            Private(this).__disposeMeshComponent( this.element, this.constructor.type )
+        if (this.element.three) Private(this).__setDefaultComponent(this.element, this.constructor.type)
+        else Private(this).__disposeMeshComponent(this.element, this.constructor.type)
 
         this.element.needsUpdate()
     },
@@ -109,8 +108,7 @@ Class( 'BaseMeshBehavior' ).extends( Behavior, ({ Public, Protected, Private, Su
         initialSize: null,
 
         __disposeMeshComponent(element, name) {
-            if ( element.three[ name ] )
-                element.three[ name ].dispose()
+            if (element.three[name]) element.three[name].dispose()
         },
 
         __setMeshComponent(element, name, newComponent) {
@@ -119,20 +117,15 @@ Class( 'BaseMeshBehavior' ).extends( Behavior, ({ Public, Protected, Private, Su
             element.three[name] = newComponent
         },
 
-        __setDefaultComponent( element, name ) {
-            this.__setMeshComponent( element, name, this.__makeDefaultComponent( element, name ) )
+        __setDefaultComponent(element, name) {
+            this.__setMeshComponent(element, name, this.__makeDefaultComponent(element, name))
         },
 
-        __makeDefaultComponent( element, name ) {
+        __makeDefaultComponent(element, name) {
             if (name == 'geometry') {
-                return new BoxGeometry(
-                    element.calculatedSize.x,
-                    element.calculatedSize.y,
-                    element.calculatedSize.z,
-                )
-            }
-            else if (name == 'material') {
-                return new MeshPhongMaterial( { color: 0xff6600 } )
+                return new BoxGeometry(element.calculatedSize.x, element.calculatedSize.y, element.calculatedSize.z)
+            } else if (name == 'material') {
+                return new MeshPhongMaterial({color: 0xff6600})
             }
         },
     },

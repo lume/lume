@@ -56,14 +56,12 @@ declare module 'lowclass' {
     ): {
         extends<TBase extends Constructor, T>(
             base: TBase,
-            members: (
-                helpers: {
-                    Super: SuperHelper<TBase>
-                    Public: PublicHelper
-                    Protected: ProtectedHelper
-                    Private: PrivateHelper
-                }
-            ) => T &
+            members: (helpers: {
+                Super: SuperHelper<TBase>
+                Public: PublicHelper
+                Protected: ProtectedHelper
+                Private: PrivateHelper
+            }) => T &
                 Partial<InstanceType<TBase>> &
                 ThisType<LowClassThis<T & InstanceType<TBase> & ExtractInheritedProtected<TBase>>>,
             brand?: object

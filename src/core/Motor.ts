@@ -7,8 +7,7 @@ type RenderTask = (timestamp?: number) => unknown
 
 const ImperativeBaseProtected = getImperativeBaseProtectedHelper()
 
-const Motor = Class('Motor', ({ Public, Private }) => ({
-
+const Motor = Class('Motor', ({Public, Private}) => ({
     constructor() {
         Private(this).__allRenderTasks = []
         Private(this).__nodesToUpdate = []
@@ -36,8 +35,7 @@ const Motor = Class('Motor', ({ Public, Private }) => ({
      * a variable so that it can later be passed to Motor.removeRenderTask().
      */
     addRenderTask(fn: RenderTask) {
-        if (typeof fn != 'function')
-            throw new Error('Render task must be a function.')
+        if (typeof fn != 'function') throw new Error('Render task must be a function.')
 
         const self = Private(this)
 
@@ -47,8 +45,7 @@ const Motor = Class('Motor', ({ Public, Private }) => ({
         self.__numberOfTasks += 1
 
         // If the render loop isn't started, start it.
-        if (!self.__loopStarted)
-            self.__startAnimationLoop()
+        if (!self.__loopStarted) self.__startAnimationLoop()
 
         return fn
     },
@@ -63,8 +60,7 @@ const Motor = Class('Motor', ({ Public, Private }) => ({
         self.__allRenderTasks.splice(taskIndex, 1)
         self.__numberOfTasks -= 1
 
-        if ( taskIndex <= self.__taskIterationIndex )
-            self.__taskIterationIndex -= 1
+        if (taskIndex <= self.__taskIterationIndex) self.__taskIterationIndex -= 1
     },
 
     once(fn: RenderTask) {
@@ -81,12 +77,11 @@ const Motor = Class('Motor', ({ Public, Private }) => ({
         self.__startAnimationLoop()
     },
 
-    setFrameRequester( requester ) {
-        Private( this ).__requestFrame = requester
+    setFrameRequester(requester) {
+        Private(this).__requestFrame = requester
     },
 
     private: {
-
         __loopStarted: false,
         __taskIterationIndex: 0,
         __numberOfTasks: 0,
@@ -100,7 +95,7 @@ const Motor = Class('Motor', ({ Public, Private }) => ({
         __treesToUpdate: [] as any[], // TODO TS as ImperativeBase[]
 
         // default to requestAnimationFrame for regular non-VR/AR scenes.
-        __requestFrame: window.requestAnimationFrame.bind( window ) as (...args: any) => void, // TODO TS rAF signature
+        __requestFrame: window.requestAnimationFrame.bind(window) as (...args: any) => void, // TODO TS rAF signature
 
         /**
          * Starts a requestAnimationFrame loop and runs the render tasks in the __allRenderTasks stack.
@@ -110,8 +105,7 @@ const Motor = Class('Motor', ({ Public, Private }) => ({
          * -- silence, crickets.
          */
         async __startAnimationLoop() {
-            if (document.readyState === 'loading')
-                await new Promise(resolve => setTimeout(resolve))
+            if (document.readyState === 'loading') await new Promise(resolve => setTimeout(resolve))
 
             if (Private(this).__loopStarted) return
 
@@ -135,8 +129,7 @@ const Motor = Class('Motor', ({ Public, Private }) => ({
                 Private(this).__renderNodes(timestamp)
 
                 // If no tasks are left, stop the animation loop.
-                if (!Private(this).__allRenderTasks.length)
-                    Private(this).__loopStarted = false
+                if (!Private(this).__allRenderTasks.length) Private(this).__loopStarted = false
             }
         },
 
@@ -145,18 +138,21 @@ const Motor = Class('Motor', ({ Public, Private }) => ({
         },
 
         __runRenderTasks(timestamp: number) {
-            for (Private(this).__taskIterationIndex = 0; Private(this).__taskIterationIndex < Private(this).__numberOfTasks; Private(this).__taskIterationIndex += 1) {
+            for (
+                Private(this).__taskIterationIndex = 0;
+                Private(this).__taskIterationIndex < Private(this).__numberOfTasks;
+                Private(this).__taskIterationIndex += 1
+            ) {
                 const task = Private(this).__allRenderTasks[Private(this).__taskIterationIndex]
 
-                if (task(timestamp) === false)
-                    Public(this).removeRenderTask(task)
+                if (task(timestamp) === false) Public(this).removeRenderTask(task)
             }
         },
 
         __renderNodes(timestamp) {
             if (!Private(this).__nodesToUpdate.length) return
 
-            for (let i=0, l=Private(this).__nodesToUpdate.length; i<l; i+=1) {
+            for (let i = 0, l = Private(this).__nodesToUpdate.length; i < l; i += 1) {
                 const node = Private(this).__nodesToUpdate[i]
 
                 ImperativeBaseProtected()(node)._render(timestamp)
@@ -179,29 +175,28 @@ const Motor = Class('Motor', ({ Public, Private }) => ({
 
             // Update world matrices of the subtrees.
             const treesToUpdate = Private(this).__treesToUpdate
-            for (let i=0, l=treesToUpdate.length; i<l; i+=1) {
+            for (let i = 0, l = treesToUpdate.length; i < l; i += 1) {
                 ImperativeBaseProtected()(treesToUpdate[i])._calculateWorldMatricesInSubtree()
             }
             treesToUpdate.length = 0
 
             // render webgl of modified scenes.
             const modifiedScenes = Private(this).__modifiedScenes
-            for (let i=0, l=modifiedScenes.length; i<l; i+=1) {
+            for (let i = 0, l = modifiedScenes.length; i < l; i += 1) {
                 modifiedScenes[i].drawScene()
             }
             modifiedScenes.length = 0
 
             const nodesToUpdate = Private(this).__nodesToUpdate
-            for (let i=0, l=nodesToUpdate.length; i<l; i+=1) {
+            for (let i = 0, l = nodesToUpdate.length; i < l; i += 1) {
                 ImperativeBaseProtected()(nodesToUpdate[i])._willBeRendered = false
             }
             nodesToUpdate.length = 0
         },
     },
-
 }))
 
 type Motor = InstanceType<typeof Motor>
 
 // export a singleton instance rather than the class directly.
-export default new Motor
+export default new Motor()

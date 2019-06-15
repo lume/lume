@@ -438,7 +438,7 @@ const string = prop({
     default: '',
     coerce: val => (empty(val) ? '' : String(val)),
     // coerce: (v, n) => {if (n === 'texture') debugger; return String(v)},
-    serialize: val => (empty(val) ? null : String(val))
+    serialize: val => (empty(val) ? null : String(val)),
 })
 
 defaultTypesMap.set(Array, array)

@@ -7,10 +7,10 @@
  *
  */
 
-import Transform from 'famous/src/core/Transform';
+import Transform from 'famous/src/core/Transform'
 
-import Molecule from './Molecule';
-import Plane from './Plane';
+import Molecule from './Molecule'
+import Plane from './Plane'
 
 /**
  * A scenegraph tree who's two leaf nodes are [Plane](#Plane) instances facing
@@ -22,7 +22,6 @@ import Plane from './Plane';
  * @extends Molecule
  */
 export class DoubleSidedPlane extends Molecule {
-
     /**
      * Creates a new `DoubleSidedPlane` who's `initialOptions` get passed to
      * both [Plane](#Plane) instances, as well as this DoubleSidedPlane's parent
@@ -32,22 +31,21 @@ export class DoubleSidedPlane extends Molecule {
      * @param {Object} initialOptions The options to initiate the `DoubleSidedPlane` with.
      */
     constructor(initialOptions) {
-        super(initialOptions);
+        super(initialOptions)
 
-        this.children = [];
-        this.plane1 = new Plane(this.options);
-        this.plane1.transform.set(Transform.rotate(0,0,0));
-        this.setOptions({properties: {background: 'orange'}});
-        this.plane2 = new Plane(this.options);
-        this.plane2.transform.set(Transform.rotate(0,Math.PI,0));
+        this.children = []
+        this.plane1 = new Plane(this.options)
+        this.plane1.transform.set(Transform.rotate(0, 0, 0))
+        this.setOptions({properties: {background: 'orange'}})
+        this.plane2 = new Plane(this.options)
+        this.plane2.transform.set(Transform.rotate(0, Math.PI, 0))
 
-        this.children.push(this.plane1);
-        this.children.push(this.plane2);
+        this.children.push(this.plane1)
+        this.children.push(this.plane2)
         this.add(this.plane2)
-        this.add(this.plane1);
-        this.plane1.pipe(this.options.handler);
-        this.plane2.pipe(this.options.handler);
-
+        this.add(this.plane1)
+        this.plane1.pipe(this.options.handler)
+        this.plane2.pipe(this.options.handler)
     }
 
     /**
@@ -57,7 +55,7 @@ export class DoubleSidedPlane extends Molecule {
      * `Plane`. The first item is from "plane1".
      */
     getContent() {
-        return [this.plane1.getContent(), this.plane2.getContent()];
+        return [this.plane1.getContent(), this.plane2.getContent()]
     }
 
     /**
@@ -67,8 +65,8 @@ export class DoubleSidedPlane extends Molecule {
      * first item is for "plane1".
      */
     setContent(content) {
-        this.plane1.setContent(content[0]);
-        this.plane2.setContent(content[1]);
+        this.plane1.setContent(content[0])
+        this.plane2.setContent(content[1])
     }
 }
-export default DoubleSidedPlane;
+export default DoubleSidedPlane

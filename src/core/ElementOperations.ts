@@ -3,7 +3,8 @@ import './Camera'
 
 // fallback to experimental CSS transform if browser doesn't have it (fix for Safari 9)
 if (typeof document.createElement('div').style.transform == 'undefined') {
-    if ( typeof CSSStyleDeclaration !== 'undefined' ) { // doesn't exist in Jest+@skatejs/ssr environment
+    if (typeof CSSStyleDeclaration !== 'undefined') {
+        // doesn't exist in Jest+@skatejs/ssr environment
         Object.defineProperty(CSSStyleDeclaration.prototype, 'transform', {
             set(value) {
                 this.webkitTransform = value
@@ -20,19 +21,16 @@ if (typeof document.createElement('div').style.transform == 'undefined') {
  * Manages a DOM element. Exposes a set of recommended APIs for working with
  * DOM efficiently. Currently doesn't do much yet...
  */
-const ElementOperations = Class('ElementOperations', ({ Private }) => ({
-
+const ElementOperations = Class('ElementOperations', ({Private}) => ({
     constructor(element: HTMLElement) {
         Private(this).__element = element
     },
 
     connectChildElement(child: HTMLElement) {
         if (
-
             // When using the imperative API, this statement is
             // true, so the DOM elements need to be connected.
-            !child.parentNode
-
+            !child.parentNode ||
             // This condition is irrelevant when strictly using the
             // imperative API. However, it is possible that when
             // using the HTML API that the HTML-API node can be placed
@@ -40,8 +38,7 @@ const ElementOperations = Class('ElementOperations', ({ Private }) => ({
             // imperative Node can be gotten and used to add the
             // node to another imperative Node. In this case, the
             // HTML-API node will be added to the proper HTMLparent.
-            || (child.parentElement &&
-                child.parentElement !== Private(this).__element)
+            (child.parentElement && child.parentElement !== Private(this).__element)
 
             // When an HTML-API node is already child of the
             // relevant parent, or it is child of a shadow root of
@@ -89,12 +86,11 @@ const ElementOperations = Class('ElementOperations', ({ Private }) => ({
         __remove(child: HTMLElement) {
             // This conditional check is needed incase the element was already
             // removed from the HTML-API side.
-            if (child.parentNode === Private(this).__element)
-                Private(this).__element.removeChild(child)
+            if (child.parentNode === Private(this).__element) Private(this).__element.removeChild(child)
         },
 
         __applySize() {
-            const {x,y} = (Private(this).__element as any).calculatedSize // TODO TS ImperativeBase typing
+            const {x, y} = (Private(this).__element as any).calculatedSize // TODO TS ImperativeBase typing
 
             Private(this).__applyStyle('width', `${x}px`)
             Private(this).__applyStyle('height', `${y}px`)

@@ -1,5 +1,5 @@
 import Class from 'lowclass'
-import forLength from 'army-knife/forLength';
+import forLength from 'army-knife/forLength'
 import Node from '../core/Node'
 
 /**
@@ -13,9 +13,7 @@ import Node from '../core/Node'
  * @class Cube
  * @extends Node
  */
-export default
-Class('Cube').extends( Node, ({ Super }) => ({
-
+export default Class('Cube').extends(Node, ({Super}) => ({
     /**
      * Create a new Cube.
      *
@@ -23,19 +21,18 @@ Class('Cube').extends( Node, ({ Super }) => ({
      * @param {Number} size The integer width of the cube.
      */
     constructor(size, options) {
-
         // cubes, the same size on all sides
-        const self = Super(this).constructor({size: [size, size, size], ...options});
+        const self = Super(this).constructor({size: [size, size, size], ...options})
 
         //GenericSync.register({
-            //mouse: MouseSync,
-            //touch: TouchSync
+        //mouse: MouseSync,
+        //touch: TouchSync
         //});
 
-        self.size = size;
-        self.sides = [];
+        self.size = size
+        self.sides = []
 
-        forLength(6, n => self._createCubeSide(n));
+        forLength(6, n => self._createCubeSide(n))
 
         return self
     },
@@ -68,10 +65,11 @@ Class('Cube').extends( Node, ({ Super }) => ({
         //sync.pipe(this.options.handler);
 
         // rotate and place each side.
-        if (index < 4) // 4 sides
+        if (index < 4)
+            // 4 sides
             rotator.rotation.y = 90 * index
-        else // top/bottom
-            rotator.rotation.x = 90 * ( index % 2 ? -1 : 1 )
+        // top/bottom
+        else rotator.rotation.x = 90 * (index % 2 ? -1 : 1)
 
         side.position.z = this.size / 2
 
@@ -90,6 +88,6 @@ Class('Cube').extends( Node, ({ Super }) => ({
             //this.cubeSideNodes[index].set(null); // TODO: how do we erase previous content?
             this.sides[index].add(content[index])
         })
-        return this;
+        return this
     },
 }))

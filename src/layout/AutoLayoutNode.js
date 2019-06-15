@@ -29,13 +29,12 @@ import props from '../core/props'
  * A Node that lays children out based on an Apple AutoLayout VFL layout
  * description.
  */
-const AutoLayoutNode = Class('AutoLayoutNode').extends(Node, ({ Super, Public, Private }) => ({
-
+const AutoLayoutNode = Class('AutoLayoutNode').extends(Node, ({Super, Public, Private}) => ({
     static: {
         defaultElementName: 'i-autolayout-node',
         DEFAULT_PARSE_OPTIONS: {
-        	extended: true,
-        	strict: false,
+            extended: true,
+            strict: false,
         },
         props: {
             ...Node.props,
@@ -54,8 +53,8 @@ const AutoLayoutNode = Class('AutoLayoutNode').extends(Node, ({ Super, Public, P
     constructor(options) {
         const self = Super(this).constructor(options)
 
-    	Private(self)._layoutOptions = {};
-    	Private(self)._idToNode = {};
+        Private(self)._layoutOptions = {}
+        Private(self)._idToNode = {}
 
         // PORTED {
         Private(self)._layout = Private(self)._layout.bind(Private(self))
@@ -63,14 +62,14 @@ const AutoLayoutNode = Class('AutoLayoutNode').extends(Node, ({ Super, Public, P
         self.on('reflow', Private(self)._layout)
         // }
 
-    	if (options) {
-    		if (options.visualFormat) {
-    			self.setVisualFormat(options.visualFormat);
-    		}
-    		if (options.layoutOptions) {
-    			self.setLayoutOptions(options.layoutOptions);
-    		}
-    	}
+        if (options) {
+            if (options.visualFormat) {
+                self.setVisualFormat(options.visualFormat)
+            }
+            if (options.layoutOptions) {
+                self.setLayoutOptions(options.layoutOptions)
+            }
+        }
 
         return self
     },
@@ -94,8 +93,8 @@ const AutoLayoutNode = Class('AutoLayoutNode').extends(Node, ({ Super, Public, P
         const _idToNode = Private(this)._idToNode
         for (id in _idToNode) {
             if (_idToNode[id] === child) {
-                delete _idToNode[id];
-                break;
+                delete _idToNode[id]
+                break
             }
         }
         Private(this)._checkNodes()
@@ -108,10 +107,10 @@ const AutoLayoutNode = Class('AutoLayoutNode').extends(Node, ({ Super, Public, P
      */
     reflowLayout() {
         if (!Private(this)._reflowLayout) {
-            Private(this)._reflowLayout = true;
-            Motor.once(() => this.emit('reflow')); // PORTED
+            Private(this)._reflowLayout = true
+            Motor.once(() => this.emit('reflow')) // PORTED
         }
-        return this;
+        return this
     },
 
     /**
@@ -122,15 +121,18 @@ const AutoLayoutNode = Class('AutoLayoutNode').extends(Node, ({ Super, Public, P
      * @return {AutoLayoutNode} this
      */
     setVisualFormat(visualFormat, parseOptions) {
-    	Private(this)._visualFormat = visualFormat;
-    	var constraints = AutoLayout.VisualFormat.parse(visualFormat, parseOptions || AutoLayoutNode.DEFAULT_PARSE_OPTIONS);
-    	Private(this)._metaInfo = AutoLayout.VisualFormat.parseMetaInfo(visualFormat);
-    	Private(this)._autoLayoutView = new AutoLayout.View({
-    		constraints: constraints
-    	});
+        Private(this)._visualFormat = visualFormat
+        var constraints = AutoLayout.VisualFormat.parse(
+            visualFormat,
+            parseOptions || AutoLayoutNode.DEFAULT_PARSE_OPTIONS
+        )
+        Private(this)._metaInfo = AutoLayout.VisualFormat.parseMetaInfo(visualFormat)
+        Private(this)._autoLayoutView = new AutoLayout.View({
+            constraints: constraints,
+        })
         Private(this)._checkNodes()
-    	this.reflowLayout();
-    	return this;
+        this.reflowLayout()
+        return this
     },
 
     /**
@@ -140,9 +142,9 @@ const AutoLayoutNode = Class('AutoLayoutNode').extends(Node, ({ Super, Public, P
      * @return {AutoLayoutNode} this
      */
     setLayoutOptions(options) {
-    	Private(this)._layoutOptions = options || {};
-    	this.reflowLayout();
-    	return this;
+        Private(this)._layoutOptions = options || {}
+        this.reflowLayout()
+        return this
     },
 
     /**
@@ -154,11 +156,12 @@ const AutoLayoutNode = Class('AutoLayoutNode').extends(Node, ({ Super, Public, P
      * @param {String} id Unique id of the node which matches the id used in the Visual format.
      * @return {Node} the appended node.
      */
-    add(child, id) { // PORTED
-    	Super(this).add(child); // PORTED
-    	if (id) Private(this)._idToNode[id] = child;
-    	this.reflowLayout();
-    	return child;
+    add(child, id) {
+        // PORTED
+        Super(this).add(child) // PORTED
+        if (id) Private(this)._idToNode[id] = child
+        this.reflowLayout()
+        return child
     },
 
     /**
@@ -168,133 +171,137 @@ const AutoLayoutNode = Class('AutoLayoutNode').extends(Node, ({ Super, Public, P
      * @param {Node} [child] node to be removed
      * @param {String} [id] Unique id of the node which matches the id used in the Visual format.
      */
-    remove(child, id) { // PORTED
-    	if (child && id) {
-    		Super(this).remove(child); // PORTED
-    		delete Private(this)._idToNode[id];
-    	}
-    	else if (child) {
-    		for (id in Private(this)._idToNode) {
-    			if (Private(this)._idToNode[id] === child) {
-    				delete Private(this)._idToNode[id];
-    				break;
-    			}
-    		}
-    		Super(this).remove(child); // PORTED
-    	}
-    	else if (id) {
-    		Super(this).remove(Private(this)._idToNode[id]); // PORTED
-    		delete Private(this)._idToNode[id];
-    	}
-    	this.reflowLayout();
+    remove(child, id) {
+        // PORTED
+        if (child && id) {
+            Super(this).remove(child) // PORTED
+            delete Private(this)._idToNode[id]
+        } else if (child) {
+            for (id in Private(this)._idToNode) {
+                if (Private(this)._idToNode[id] === child) {
+                    delete Private(this)._idToNode[id]
+                    break
+                }
+            }
+            Super(this).remove(child) // PORTED
+        } else if (id) {
+            Super(this).remove(Private(this)._idToNode[id]) // PORTED
+            delete Private(this)._idToNode[id]
+        }
+        this.reflowLayout()
     },
 
     private: {
         _setIntrinsicWidths(widths) {
             for (var key in widths) {
-                var subView = this._autoLayoutView.subViews[key];
-                var node = this._idToNode[key];
+                var subView = this._autoLayoutView.subViews[key]
+                var node = this._idToNode[key]
                 if (subView && node) {
-                    subView.intrinsicWidth = node.calculatedSize.x; // PORTED
+                    subView.intrinsicWidth = node.calculatedSize.x // PORTED
                 }
             }
         },
 
         _setIntrinsicHeights(heights) {
             for (var key in heights) {
-                var subView = this._autoLayoutView.subViews[key];
-                var node = this._idToNode[key];
+                var subView = this._autoLayoutView.subViews[key]
+                var node = this._idToNode[key]
                 if (subView && node) {
-                    subView.intrinsicHeight = node.calculatedSize.y; // PORTED
+                    subView.intrinsicHeight = node.calculatedSize.y // PORTED
                 }
             }
         },
 
         _setViewPortSize(size, vp) {
             size = [
-                ((vp.width !== undefined) && (vp.width !== true)) ? vp.width : Math.max(Math.min(size[0], vp['max-width'] || size[0]), vp['min-width'] || 0),
-                ((vp.height !== undefined) && (vp.height !== true)) ? vp.height : Math.max(Math.min(size[1], vp['max-height'] || size[1]), vp['min-height'] || 0)
-            ];
-            if ((vp.width === true) && (vp.height === true)) {
-                size[0] = this._autoLayoutView.fittingWidth;
-                size[1] = this._autoLayoutView.fittingHeight;
-            }
-            else if (vp.width === true) {
-                this._autoLayoutView.setSize(undefined, size[1]);
-                size[0] = this._autoLayoutView.fittingWidth;
+                vp.width !== undefined && vp.width !== true
+                    ? vp.width
+                    : Math.max(Math.min(size[0], vp['max-width'] || size[0]), vp['min-width'] || 0),
+                vp.height !== undefined && vp.height !== true
+                    ? vp.height
+                    : Math.max(Math.min(size[1], vp['max-height'] || size[1]), vp['min-height'] || 0),
+            ]
+            if (vp.width === true && vp.height === true) {
+                size[0] = this._autoLayoutView.fittingWidth
+                size[1] = this._autoLayoutView.fittingHeight
+            } else if (vp.width === true) {
+                this._autoLayoutView.setSize(undefined, size[1])
+                size[0] = this._autoLayoutView.fittingWidth
                 // TODO ASPECT RATIO?
-            }
-            else if (vp.height === true) {
-                this._autoLayoutView.setSize(size[0], undefined);
-                size[1] = this._autoLayoutView.fittingHeight;
+            } else if (vp.height === true) {
+                this._autoLayoutView.setSize(size[0], undefined)
+                size[1] = this._autoLayoutView.fittingHeight
                 // TODO ASPECT RATIO?
+            } else {
+                size = vp['aspect-ratio']
+                    ? [Math.min(size[0], size[1] * vp['aspect-ratio']), Math.min(size[1], size[0] / vp['aspect-ratio'])]
+                    : size
+                this._autoLayoutView.setSize(size[0], size[1])
             }
-            else {
-                size = vp['aspect-ratio'] ? [
-                    Math.min(size[0], size[1] * vp['aspect-ratio']),
-                    Math.min(size[1], size[0] / vp['aspect-ratio'])
-                ] : size;
-                this._autoLayoutView.setSize(size[0], size[1]);
-            }
-            return size;
+            return size
         },
 
         _layout() {
-        	if (!this._autoLayoutView) {
-        		return;
-        	}
-            var x;
-            var y;
-            var size = Public(this).size.toArray();
+            if (!this._autoLayoutView) {
+                return
+            }
+            var x
+            var y
+            var size = Public(this).size.toArray()
             if (this._layoutOptions.spacing || this._metaInfo.spacing) {
-        		this._autoLayoutView.setSpacing(this._layoutOptions.spacing || this._metaInfo.spacing);
+                this._autoLayoutView.setSpacing(this._layoutOptions.spacing || this._metaInfo.spacing)
             }
-            var widths = this._layoutOptions.widths || this._metaInfo.widths;
+            var widths = this._layoutOptions.widths || this._metaInfo.widths
             if (widths) {
-                this._setIntrinsicWidths(widths);
+                this._setIntrinsicWidths(widths)
             }
-            var heights = this._layoutOptions.heights || this._metaInfo.heights;
+            var heights = this._layoutOptions.heights || this._metaInfo.heights
             if (heights) {
-                this._setIntrinsicHeights(heights);
+                this._setIntrinsicHeights(heights)
             }
             if (this._layoutOptions.viewport || this._metaInfo.viewport) {
-        		var restrainedSize = this._setViewPortSize(size, this._layoutOptions.viewport || this._metaInfo.viewport);
-        		x = (size[0] - restrainedSize[0]) / 2;
-        		y = (size[1] - restrainedSize[1]) / 2;
-            }
-            else {
-        		this._autoLayoutView.setSize(size[0], size[1]);
-        		x = 0;
-        		y = 0;
+                var restrainedSize = this._setViewPortSize(
+                    size,
+                    this._layoutOptions.viewport || this._metaInfo.viewport
+                )
+                x = (size[0] - restrainedSize[0]) / 2
+                y = (size[1] - restrainedSize[1]) / 2
+            } else {
+                this._autoLayoutView.setSize(size[0], size[1])
+                x = 0
+                y = 0
             }
             for (var key in this._autoLayoutView.subViews) {
-                var subView = this._autoLayoutView.subViews[key];
-                if ((key.indexOf('_') !== 0) && (subView.type !== 'stack')) {
-        			var node = this._idToNode[key];
-        			if (node) {
+                var subView = this._autoLayoutView.subViews[key]
+                if (key.indexOf('_') !== 0 && subView.type !== 'stack') {
+                    var node = this._idToNode[key]
+                    if (node) {
                         this._updateNode(node, subView, x, y, widths, heights)
-        			}
+                    }
                 }
             }
             if (this._reflowLayout) {
-                this._reflowLayout = false;
+                this._reflowLayout = false
             }
         },
 
         _updateNode(node, subView, x, y, widths, heights) {
-            node.sizeMode = [ // PORTED
-                (widths && (widths[key] === true)) ? 'proportional' : 'literal',
-                (heights && (heights[key] === true)) ? 'proportional' : 'literal'
-            ];
-			node.size = [ // PORTED
-                (widths && (widths[key] === true)) ? 1 : subView.width,
-                (heights && (heights[key] === true)) ? 1 : subView.height
-            ];
-			node.position = [ // PORTED
+            node.sizeMode = [
+                // PORTED
+                widths && widths[key] === true ? 'proportional' : 'literal',
+                heights && heights[key] === true ? 'proportional' : 'literal',
+            ]
+            node.size = [
+                // PORTED
+                widths && widths[key] === true ? 1 : subView.width,
+                heights && heights[key] === true ? 1 : subView.height,
+            ]
+            node.position = [
+                // PORTED
                 x + subView.left,
                 y + subView.top,
-                subView.zIndex * 5
-            ];
+                subView.zIndex * 5,
+            ]
         },
 
         _checkNodes() {
@@ -304,13 +311,12 @@ const AutoLayoutNode = Class('AutoLayoutNode').extends(Node, ({ Super, Public, P
 
             // if a node is not found for a subview key, see if exists in this's DOM children by className
             for (var key of subViewKeys) {
-                var subView = subViews[key];
-                if ((key.indexOf('_') !== 0) && (subView.type !== 'stack')) {
-            		var node = _idToNode[key];
+                var subView = subViews[key]
+                if (key.indexOf('_') !== 0 && subView.type !== 'stack') {
+                    var node = _idToNode[key]
                     if (!node) {
-                        node = Public(this).querySelector('.'+key)
-                        if (node && node.parentElement === Public(this))
-                            _idToNode[key] = node;
+                        node = Public(this).querySelector('.' + key)
+                        if (node && node.parentElement === Public(this)) _idToNode[key] = node
                     }
                 }
             }
@@ -326,10 +332,8 @@ const AutoLayoutNode = Class('AutoLayoutNode').extends(Node, ({ Super, Public, P
 
             // hide the child nodes that are should not be visible for the current subview.
             for (const id of nodeIds) {
-                if (subViewKeys.includes(id))
-                    _idToNode[id].visible = true
-                else
-                    _idToNode[id].visible = false
+                if (subViewKeys.includes(id)) _idToNode[id].visible = true
+                else _idToNode[id].visible = false
             }
         },
     },

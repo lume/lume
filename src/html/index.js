@@ -22,7 +22,6 @@ import ObjModel from '../core/ObjModel'
 export * as behaviors from './behaviors'
 
 export function useDefaultNames() {
-
     const classes = [
         Scene,
         Node,
@@ -41,8 +40,6 @@ export function useDefaultNames() {
     ]
 
     for (const constructor of classes) {
-        if (!customElements.get(constructor.defaultElementName))
-            constructor.define()
+        if (!customElements.get(constructor.defaultElementName)) constructor.define()
     }
-
 }

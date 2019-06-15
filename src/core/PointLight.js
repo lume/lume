@@ -1,26 +1,24 @@
-
 import Class from 'lowclass'
-import { PointLight as ThreePointLight } from 'three'
+import {PointLight as ThreePointLight} from 'three'
 import LightBase from './LightBase'
-import { props } from './props'
-import { mapPropTo } from './props'
+import {props} from './props'
+import {mapPropTo} from './props'
 
-export default
-Class('PointLight').extends( LightBase, ({ Super }) => ({
+export default Class('PointLight').extends(LightBase, ({Super}) => ({
     static: {
         defaultElementName: 'i-point-light',
 
         props: {
             ...LightBase.props,
-            distance: mapPropTo({ ...props.number, default: 0 }, self => self.three),
-            decay: mapPropTo({ ...props.number, default: 1 }, self => self.three),
-            castShadow: mapPropTo({ ...props.boolean, default: true }, self => self.three),
-            shadowMapWidth: { ...props.number, default: 512 },
-            shadowMapHeight: { ...props.number, default: 512 },
-            shadowRadius: { ...props.number, default: 3 },
-            shadowBias: { ...props.number, default: 0 },
-            shadowCameraNear: { ...props.number, default: 1 },
-            shadowCameraFar: { ...props.number, default: 2000 },
+            distance: mapPropTo({...props.number, default: 0}, self => self.three),
+            decay: mapPropTo({...props.number, default: 1}, self => self.three),
+            castShadow: mapPropTo({...props.boolean, default: true}, self => self.three),
+            shadowMapWidth: {...props.number, default: 512},
+            shadowMapHeight: {...props.number, default: 512},
+            shadowRadius: {...props.number, default: 3},
+            shadowBias: {...props.number, default: 0},
+            shadowCameraNear: {...props.number, default: 1},
+            shadowCameraFar: {...props.number, default: 2000},
         },
     },
 
@@ -63,7 +61,7 @@ Class('PointLight').extends( LightBase, ({ Super }) => ({
 
     protected: {
         _makeThreeObject3d() {
-            return new ThreePointLight
+            return new ThreePointLight()
         },
     },
 }))
