@@ -1,4 +1,3 @@
-import Class from 'lowclass'
 import './Camera'
 
 // fallback to experimental CSS transform if browser doesn't have it (fix for Safari 9)
@@ -21,10 +20,8 @@ if (typeof document.createElement('div').style.transform == 'undefined') {
  * Manages a DOM element. Exposes a set of recommended APIs for working with
  * DOM efficiently. Currently doesn't do much yet...
  */
-const ElementOperations = Class('ElementOperations', ({Private}) => ({
-    constructor(element: HTMLElement) {
-        this.__element = element
-    },
+export default class ElementOperations {
+    constructor(private __element: HTMLElement) {}
 
     connectChildElement(child: HTMLElement) {
         if (
@@ -48,7 +45,7 @@ const ElementOperations = Class('ElementOperations', ({Private}) => ({
         ) {
             this.__add(child)
         }
-    },
+    }
 
     disconnectChildElement(child: HTMLElement) {
         // If DeclarativeBase#remove was called first, we don't need to
@@ -56,64 +53,59 @@ const ElementOperations = Class('ElementOperations', ({Private}) => ({
         if (!child.parentNode) return
 
         this.__remove(child)
-    },
+    }
+
+    private __shouldRender = false
 
     applyImperativeNodeProperties() {
         if (!this.__shouldRender) return
 
         this.__applyOpacity()
         this.__applySize()
-    },
+    }
 
     set shouldRender(shouldRender: boolean) {
         this.__shouldRender = shouldRender
         requestAnimationFrame(() => {
             this.__applyStyle('display', shouldRender ? 'block' : 'none')
         })
-    },
+    }
     get shouldRender(): boolean {
         return this.__shouldRender
-    },
+    }
 
-    private: {
-        __element: undefined! as HTMLElement,
-        __shouldRender: false,
+    private __add(child: HTMLElement) {
+        this.__element.appendChild(child)
+    }
 
-        __add(child: HTMLElement) {
-            this.__element.appendChild(child)
-        },
+    private __remove(child: HTMLElement) {
+        // This conditional check is needed incase the element was already
+        // removed from the HTML-API side.
+        if (child.parentNode === this.__element) this.__element.removeChild(child)
+    }
 
-        __remove(child: HTMLElement) {
-            // This conditional check is needed incase the element was already
-            // removed from the HTML-API side.
-            if (child.parentNode === this.__element) this.__element.removeChild(child)
-        },
+    private __applySize() {
+        const {x, y} = (this.__element as any).calculatedSize // TODO TS ImperativeBase typing
 
-        __applySize() {
-            const {x, y} = (this.__element as any).calculatedSize // TODO TS ImperativeBase typing
+        this.__applyStyle('width', `${x}px`)
+        this.__applyStyle('height', `${y}px`)
 
-            this.__applyStyle('width', `${x}px`)
-            this.__applyStyle('height', `${y}px`)
+        // NOTE: we ignore the Z axis on elements, since they are flat.
+    }
 
-            // NOTE: we ignore the Z axis on elements, since they are flat.
-        },
+    private __applyOpacity() {
+        this.__applyStyle('opacity', (this.__element as any).opacity) // TODO TS ImperativeBase typing
+    }
 
-        __applyOpacity() {
-            this.__applyStyle('opacity', (this.__element as any).opacity) // TODO TS ImperativeBase typing
-        },
+    /**
+     * Apply a style property to the element.
+     *
+     * @param  {string} property The CSS property we will a apply.
+     * @param  {string} value    The value the CSS property wil have.
+     */
+    private __applyStyle(property: string, value: string) {
+        this.__element.style.setProperty(property, value)
+    }
+}
 
-        /**
-         * Apply a style property to the element.
-         *
-         * @param  {string} property The CSS property we will a apply.
-         * @param  {string} value    The value the CSS property wil have.
-         */
-        __applyStyle(property: string, value: string) {
-            this.__element.style.setProperty(property, value)
-        },
-    },
-}))
-
-type ElementOperations = InstanceType<typeof ElementOperations>
-
-export default ElementOperations
+export {ElementOperations}

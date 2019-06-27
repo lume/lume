@@ -1,11 +1,11 @@
 // TODO import and use animation-loop
 
-type ImperativeBase = import('./ImperativeBase').default
-type Scene = import('./Scene').default
+type ImperativeBase = typeof import('./ImperativeBase').default
+type Scene = typeof import('./Scene').default
 
-type RenderTask = (timestamp?: number) => unknown
+export type RenderTask = (timestamp: number) => false | void
 
-class Motor {
+class _Motor {
     /**
      * When a render tasks is added a new requestAnimationFrame loop will be started if there
      * isn't one currently.
@@ -55,7 +55,7 @@ class Motor {
     }
 
     // A Node calls this any time its properties have been modified (f.e. by the end user).
-    setNodeToBeRendered(node) {
+    setNodeToBeRendered(node: ImperativeBase) {
         if (this.__nodesToUpdate.includes(node)) return
         this.__nodesToUpdate.push(node)
 
@@ -63,7 +63,8 @@ class Motor {
         this.__startAnimationLoop()
     }
 
-    setFrameRequester(requester) {
+    // TODO better typing for fn
+    setFrameRequester(requester: (fn: Function) => any) {
         this.__requestFrame = requester
     }
 
@@ -134,7 +135,7 @@ class Motor {
         }
     }
 
-    private __renderNodes(timestamp) {
+    private __renderNodes(timestamp: number) {
         if (!this.__nodesToUpdate.length) return
 
         for (let i = 0, l = this.__nodesToUpdate.length; i < l; i += 1) {
@@ -150,7 +151,7 @@ class Motor {
 
             // keep track of which scenes are modified so we can render webgl
             // only for those scenes.
-            if (!this.__modifiedScenes.includes(node.scene)) this.__modifiedScenes.push(node.scene)
+            if (!this.__modifiedScenes.includes((node as any).scene)) this.__modifiedScenes.push((node as any).scene)
         }
 
         // Update world matrices of the subtrees.
@@ -163,7 +164,7 @@ class Motor {
         // render webgl of modified scenes.
         const modifiedScenes = this.__modifiedScenes
         for (let i = 0, l = modifiedScenes.length; i < l; i += 1) {
-            modifiedScenes[i].drawScene()
+            ;(modifiedScenes[i] as any).drawScene()
         }
         modifiedScenes.length = 0
 
@@ -176,4 +177,5 @@ class Motor {
 }
 
 // export a singleton instance rather than the class directly.
-export default new Motor()
+export const Motor = new _Motor()
+export default Motor

@@ -10,12 +10,6 @@ export function dashCase(str) {
 
 export const empty = val => val == null
 
-export function keys(obj) {
-    obj = obj || {}
-    const names = Object.getOwnPropertyNames(obj)
-    return Object.getOwnPropertySymbols ? names.concat(Object.getOwnPropertySymbols(obj)) : names
-}
-
 // return a new array with unique items (duplicates removed)
 export function unique(array) {
     return Array.from(new Set(array))

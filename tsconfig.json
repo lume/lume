@@ -1,37 +1,3 @@
 {
-    "compilerOptions": {
-        "allowJs": true,
-        "checkJs": true,
-        "allowSyntheticDefaultImports": false,
-        "esModuleInterop": false,
-        "alwaysStrict": true,
-        "baseUrl": "./src",
-        "declaration": false,
-        "emitDecoratorMetadata": true,
-        "experimentalDecorators": true,
-        "forceConsistentCasingInFileNames": true,
-        "jsx": "react",
-        "lib": ["es2018", "dom"],
-        "module": "commonjs",
-        "moduleResolution": "node",
-        "noFallthroughCasesInSwitch": true,
-        "noImplicitReturns": true,
-        "noImplicitAny": false,
-        "noImplicitThis": true,
-        "noUnusedLocals": true,
-        "noUnusedParameters": true,
-        "outDir": "./dist/out",
-        "preserveConstEnums": true,
-        "pretty": true,
-        "sourceMap": true,
-        "strictNullChecks": true,
-        "strictFunctionTypes": false,
-        "target": "es6",
-        "skipLibCheck": true,
-        "paths": {
-            "*": ["*"]
-        }
-    },
-    "compileOnSave": false,
-    "include": ["src/**/*"]
+    "extends": "./node_modules/builder-js-package/config/tsconfig.json"
 }

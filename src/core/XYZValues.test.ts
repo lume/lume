@@ -1,43 +1,38 @@
-import XYZValues from './XYZValues'
+import XYZAnyValues from './XYZAnyValues'
+import {checkValues, testWithSeparator} from './XYZValues.test.common'
 
-function checkValues(v: XYZValues, x: any, y: any, z: any) {
-    expect(v.x).toBe(x)
-    expect(v.y).toBe(y)
-    expect(v.z).toBe(z)
-}
-
-describe('XYZValues', () => {
+describe('XYZAnyValues', () => {
     describe('.constructor', () => {
         it('is a function', () => {
-            expect(typeof XYZValues).toBe('function')
+            expect(typeof XYZAnyValues).toBe('function')
         })
 
         it('has default args', () => {
-            const a = new XYZValues()
+            const a = new XYZAnyValues()
             checkValues(a, undefined, undefined, undefined)
         })
 
         it('can take arbitrary values', () => {
-            const a = new XYZValues(1, 'foo', false)
+            const a = new XYZAnyValues(1, 'foo', false)
             checkValues(a, 1, 'foo', false)
         })
 
         it('can take an array of values', () => {
             const values = [1, 'foo', false]
-            const a = new XYZValues(values)
+            const a = new XYZAnyValues(values)
             checkValues(a, 1, 'foo', false)
         })
 
         it('can take an object with x, y, z properties.', () => {
             const values = {x: 1, y: 'foo', z: false}
-            const a = new XYZValues(values)
+            const a = new XYZAnyValues(values)
             checkValues(a, 1, 'foo', false)
         })
     })
 
     describe('.set', () => {
         it('can take arbitrary values', () => {
-            const a = new XYZValues()
+            const a = new XYZAnyValues()
             a.set(1, 'foo', false)
             checkValues(a, 1, 'foo', false)
         })
@@ -45,7 +40,7 @@ describe('XYZValues', () => {
 
     describe('.fromArray', () => {
         it('can take an array of values', () => {
-            const a = new XYZValues()
+            const a = new XYZAnyValues()
             const array: [any, any, any] = [1, 'foo', false]
             a.fromArray(array)
             checkValues(a, 1, 'foo', false)
@@ -54,7 +49,7 @@ describe('XYZValues', () => {
 
     describe('.toArray', () => {
         it('returns an array representation', () => {
-            const a = new XYZValues()
+            const a = new XYZAnyValues()
             const array: [any, any, any] = [1, 'foo', false]
             a.fromArray(array)
             expect(a.toArray()).toEqual(array)
@@ -63,7 +58,7 @@ describe('XYZValues', () => {
 
     describe('.fromObject', () => {
         it('can take an object with x, y, z properties.', () => {
-            const a = new XYZValues()
+            const a = new XYZAnyValues()
             const obj = {x: 1, y: 'foo', z: false}
             a.fromObject(obj)
             checkValues(a, 1, 'foo', false)
@@ -72,7 +67,7 @@ describe('XYZValues', () => {
 
     describe('.toObject', () => {
         it('returns an object with x, y, z properties.', () => {
-            const a = new XYZValues()
+            const a = new XYZAnyValues()
             const obj = {x: 1, y: 'foo', z: false}
             a.fromObject(obj)
             expect(a.toObject()).toEqual(obj)
@@ -80,8 +75,8 @@ describe('XYZValues', () => {
     })
 
     describe('.fromString', () => {
-        it('can take an string of delimited values, default space separated', () => {
-            const a = new XYZValues()
+        it('can take a string of delimited values, defaulting to space separated', () => {
+            const a = new XYZAnyValues()
 
             let string = '1 foo false'
             a.fromString(string)
@@ -91,15 +86,15 @@ describe('XYZValues', () => {
             a.fromString(string)
             checkValues(a, '1', 'foo', 'false')
 
-            testWithSeparator(a, ',')
-            testWithSeparator(a, ';')
-            testWithSeparator(a, '' + Math.random())
+            testWithSeparator<string>(a, ',', '1', 'foo', 'false')
+            testWithSeparator<string>(a, ';', '1', 'foo', 'false')
+            testWithSeparator<string>(a, '' + Math.random(), '1', 'foo', 'false')
         })
     })
 
     describe('.toString', () => {
         it('returns a string of the values, separated by space or custom delimiter (with spacing)', () => {
-            const a = new XYZValues()
+            const a = new XYZAnyValues()
             let string = '1 foo false'
             a.fromString(string)
             expect(a.toString()).toEqual(string)
@@ -118,17 +113,17 @@ describe('XYZValues', () => {
     })
 
     // TODO, this doesn't work because .set currently doesn't accept undefined values.
-    xdescribe('.fromDefault', () => {
-        it('set the values to default', () => {
-            const a = new XYZValues(1, 2, 3)
+    describe('.fromDefault', () => {
+        it('sets the values to default', () => {
+            const a = new XYZAnyValues(1, 2, 3)
             a.fromDefault()
             checkValues(a, undefined, undefined, undefined)
         })
     })
 
     describe('setters', () => {
-        it('set values', () => {
-            const a = new XYZValues()
+        it('sets values', () => {
+            const a = new XYZAnyValues()
 
             a.x = 1
             a.y = 2
@@ -138,33 +133,19 @@ describe('XYZValues', () => {
             expect(a.toArray()).toEqual([1, 2, 3])
         })
 
-        it('trigger valuechange events', () => {
-            const a = new XYZValues()
+        it('triggers valuechange events', () => {
+            const a = new XYZAnyValues()
             const changedProps: string[] = []
 
             a.on('valuechanged', (prop: string) => {
                 changedProps.push(prop)
             })
 
-            a.x = 1
             a.y = 2
             a.z = 3
+            a.x = 1
 
-            expect(changedProps).toEqual(['x', 'y', 'z'])
+            expect(changedProps).toEqual(['y', 'z', 'x'])
         })
     })
 })
-
-function testWithSeparator(a: XYZValues, separator: string) {
-    let string = `1${separator} foo${separator} false`
-    a.fromString(string, separator)
-    checkValues(a, '1', 'foo', 'false')
-
-    string = `1${separator}      foo${separator}false    `
-    a.fromString(string, separator)
-    checkValues(a, '1', 'foo', 'false')
-
-    string = `  1  foo${separator}     false  `
-    a.fromString(string, separator)
-    checkValues(a, '1', 'foo', 'false')
-}

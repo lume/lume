@@ -24,6 +24,8 @@
     "setup-website-service": "cd website && ./setup-service.sh",
     "add-contributor": "all-contributors add",
     "generate-contributors": "all-contributors generate",
+    "///////////////////////////////////////": "////////////////////////////////////////////",
+    "typecheck": "tsc -p ./tsconfig.json --noEmit",
     "lint-format": "npm run lint-all && npm run prettier-check && npm run build && echo 'implement tests'",
     "prettier": "npm run prettier-js -- --write && npm run prettier-ts -- --write && npm run prettier-md -- --write",
     "prettier-list": "npm run --silent prettier-js-list && npm run --silent prettier-ts-list && npm run --silent prettier-md-list",
@@ -64,6 +66,7 @@
     "jss-px": "^1.0.0",
     "jss-vendor-prefixer": "^1.0.0",
     "lowclass": "^4.6.2",
+    "regexr": "^1.5.1",
     "three": "^0.103.0"
   },
   "devDependencies": {

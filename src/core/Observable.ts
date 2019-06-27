@@ -2,7 +2,7 @@ import {Mixin} from 'lowclass'
 
 // XXX Could it need to be `T extends Constructor<{}>` instead of `T extends typeof Object`?
 // const ObservableMixin = <T extends typeof Object>(Base: T) => {
-const ObservableMixin = <T extends Constructor>(Base: T) => {
+function ObservableMixin<T extends Constructor>(Base: T) {
     return class Observable extends Base {
         on(eventName: string, callback: Function, context: any) {
             let eventMap = this.__eventMap
@@ -73,4 +73,5 @@ const ObservableMixin = <T extends Constructor>(Base: T) => {
     }
 }
 
-export default Mixin(ObservableMixin)
+export const Observable = Mixin(ObservableMixin)
+export default Observable

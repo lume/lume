@@ -1,9 +1,24 @@
 import Observable from './Observable'
 import r from 'regexr'
+console.log(r)
 
-type XYZValuesArray = [any, any, any]
-type XYZValuesObject = {x: any; y: any; z: any}
-type XYZValuesParameters = /*XYZValues | */ XYZValuesArray | XYZValuesObject | string
+// StrictUnion<A | B | C>
+// see https://github.com/trusktr/typebox/blob/master/src/StrictUnion.ts
+// type UnionKeys<T> = T extends any ? keyof T : never
+// type StrictUnionHelper<T, TAll> = T extends any ? T & Partial<Record<Exclude<UnionKeys<TAll>, keyof T>, never>> : never
+// type StrictUnion<T> = StrictUnionHelper<T, T>
+
+export type XYZValuesArray<T> = [T, T, T]
+export type XYZPartialValuesArray<T> = [T] | [T, T] | [T, T, T] // Is there a better way to make a tuplet from 1 to 3 items?
+export type XYZValuesObject<T> = {x: T; y: T; z: T}
+export type XYZPartialValuesObject<T> = Partial<XYZValuesObject<T>>
+export type XYZValuesParameters<T> = /*XYZValues | */ XYZPartialValuesArray<T> | XYZPartialValuesObject<T> | string | T
+// type XYZValuesParameters<T, TArray = XYZValuesArray<T>, TObject = XYZValuesObject<T>> = /*XYZValues | */ TArray | TObject | string | T
+// type XYZValuesParameters<T extends unknown> = StrictUnion<
+//     /*XYZValues | */ XYZValuesArray<T> | XYZValuesObject<T> | string | T
+// >
+
+const defaultValues: XYZValuesObject<any> = {x: undefined, y: undefined, z: undefined}
 
 /**
  * Represents a set of values for the X, Y, and Z axes. For example, the
@@ -13,35 +28,57 @@ type XYZValuesParameters = /*XYZValues | */ XYZValuesArray | XYZValuesObject | s
  * The values don't have to be numerical. For example,
  * {x:'foo', y:'bar', z:'baz'}
  */
-export default class XYZValues extends Observable {
-    private _x: any
-    private _y: any
-    private _z: any
+export default abstract class XYZValues<T = any> extends Observable {
+    private _x: T = undefined!
+    private _y: T = undefined!
+    private _z: T = undefined!
 
-    constructor(x?: XYZValuesParameters | any, y?: any, z?: any) {
+    constructor(x?: XYZValuesParameters<T>, y?: T, z?: T) {
         super()
-        this.from(x, y, z)
+        this.__from(x, y, z)
     }
 
-    protected default = {x: undefined, y: undefined, z: undefined}
+    protected abstract get default(): XYZValuesObject<T>
+    // {
+    //     return {x: undefined as any, y: undefined as any, z: undefined as any}
+    // }
 
-    from(x?: XYZValuesParameters, y?: any, z?: any): this {
-        if (x !== undefined && y !== undefined && z !== undefined) {
-            this.set(x, y, z)
+    private get _default(): XYZValuesObject<T> {
+        return this.default || defaultValues
+    }
+
+    private __from(x?: XYZValuesParameters<T>, y?: T, z?: T): this {
+        if (x === undefined && y === undefined && z === undefined) {
+            // if (this.constructor.name === 'XYZNumberValues') console.log(' ######################## from default!')
+            this.fromDefault()
         } else if (Array.isArray(x)) {
             this.fromArray(x)
         } else if (typeof x === 'object' && x !== null && x !== this) {
-            this.fromObject(x)
-        } else if (typeof x === 'string') {
+            this.fromObject(x as XYZValuesObject<T>)
+        } else if (typeof x === 'string' && y === undefined && z === undefined) {
             this.fromString(x)
-        } else {
-            this.fromDefault()
-        }
+        } else this.set(x as any, y as any, z as any)
+
+        // if (x !== undefined && y !== undefined && z !== undefined) {
+        //     this.set(x as any, y, z)
+        // } else if (Array.isArray(x)) {
+        //     this.fromArray(x)
+        // } else if (typeof x === 'object' && x !== null && x !== this) {
+        //     this.fromObject(x)
+        // } else if (typeof x === 'string' && y !== undefined && z !== undefined) {
+        //     this.fromString(x)
+        // } else {
+        //     this.fromDefault()
+        // }
 
         return this
     }
 
-    set(x: any, y: any, z: any): this {
+    from(x: XYZValuesParameters<T>, y?: T, z?: T): this {
+        return this.__from(x, y, z)
+    }
+
+    set(x: T, y: T, z: T): this {
         this.x = x
         this.y = y
         this.z = z
@@ -49,22 +86,22 @@ export default class XYZValues extends Observable {
         return this
     }
 
-    fromArray(array: XYZValuesArray): this {
-        this.set(array[0], array[1], array[2])
+    fromArray(array: XYZPartialValuesArray<T>): this {
+        this.set(array[0] as any, array[1] as any, array[2] as any)
         return this
     }
 
-    toArray(): XYZValuesArray {
+    toArray(): XYZValuesArray<T> {
         return [this.x, this.y, this.z]
     }
 
-    fromObject(object: XYZValuesObject): this {
-        this.set(object.x, object.y, object.z)
+    fromObject(object: XYZPartialValuesObject<T>): this {
+        this.set(object.x as any, object.y as any, object.z as any)
         return this
     }
 
-    toObject(): XYZValuesObject {
-        return {x: this._x, y: this._y, z: this._z}
+    toObject(): XYZValuesObject<T> {
+        return {x: this.x, y: this.y, z: this.z}
     }
 
     fromString(string: string, separator: string = ''): this {
@@ -86,21 +123,23 @@ export default class XYZValues extends Observable {
      * @param _prop The property name (x, y, or z)
      * @param value The value to be deserialized
      */
-    deserializeValue(_prop: string, value: string): any {
-        return value
+    deserializeValue(_prop: string, value: string): T {
+        return (value as unknown) as T
     }
 
-    stringToArray(string: string, separator: string = ''): XYZValuesArray {
+    stringToArray(string: string, separator: string = ''): XYZPartialValuesArray<T> {
         const values = string.trim().split(r`/(?:\s*${r.escape(separator) || ','}\s*)|(?:\s+)/g`)
+        const result = ([] as unknown) as XYZPartialValuesArray<T>
         const length = values.length
-        if (length > 0) values[0] = this.deserializeValue('x', values[0])
-        if (length > 1) values[1] = this.deserializeValue('y', values[1])
-        if (length > 2) values[2] = this.deserializeValue('z', values[2])
-        return values as XYZValuesArray
+        if (length > 0) result[0] = this.deserializeValue('x', values[0])
+        if (length > 1) result[1] = this.deserializeValue('y', values[1])
+        if (length > 2) result[2] = this.deserializeValue('z', values[2])
+        return result
     }
 
     fromDefault(): this {
-        this.set(this.default.x, this.default.y, this.default.z)
+        // console.log('default values:', this.default)
+        this.set(this._default.x as any, this._default.y as any, this._default.z as any)
         return this
     }
 
@@ -111,39 +150,39 @@ export default class XYZValues extends Observable {
      * @param prop
      * @param value
      */
-    checkValue(_prop: string, value: any): boolean {
-        // TODO XYZValues types are any, it should accept undefined
-        if (value === undefined) return false
+    protected checkValue(_prop: string, _value: T): boolean {
         return true
     }
 
-    set x(value: any) {
+    set x(value: T) {
         if (!this.checkValue('x', value)) return
         this._x = value
         this.trigger('valuechanged', 'x')
     }
 
-    get x(): any {
+    get x(): T {
         return this._x
     }
 
-    set y(value: any) {
+    set y(value: T) {
         if (!this.checkValue('y', value)) return
         this._y = value
         this.trigger('valuechanged', 'y')
     }
 
-    get y(): any {
+    get y(): T {
         return this._y
     }
 
-    set z(value: any) {
+    set z(value: T) {
         if (!this.checkValue('z', value)) return
         this._z = value
         this.trigger('valuechanged', 'z')
     }
 
-    get z(): any {
+    get z(): T {
         return this._z
     }
 }
+
+export {XYZValues}

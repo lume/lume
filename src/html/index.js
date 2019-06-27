@@ -1,7 +1,7 @@
-export DeclarativeBase from './DeclarativeBase'
-export HTMLNode from './HTMLNode'
-export HTMLScene from './HTMLScene'
-export WebComponent from './WebComponent'
+export * from './DeclarativeBase'
+export * from './HTMLNode'
+export * from './HTMLScene'
+export * from './WebComponent'
 // export HTMLPushPaneLayout from './HTMLPushPaneLayout'
 
 import Scene from '../core/Scene'
@@ -19,7 +19,7 @@ import AutoLayoutNode from '../layout/AutoLayoutNode'
 import ObjModel from '../core/ObjModel'
 // import PushPaneLayout from '../components/PushPaneLayout'
 
-export * as behaviors from './behaviors'
+export * from './behaviors'
 
 export function useDefaultNames() {
     const classes = [

@@ -94,14 +94,14 @@ describe('Observable', () => {
         it('passes event payloads to event handlers', () => {
             const o = new Observable()
 
-            let thePayload
-            let thePayload2
+            let thePayload: string | number | undefined
+            let thePayload2: number | undefined
 
-            const handler = payload => {
+            const handler = (payload: any) => {
                 thePayload = payload
             }
 
-            const handler2 = payload => {
+            const handler2 = (payload: any) => {
                 thePayload2 = payload
             }
 
