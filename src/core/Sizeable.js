@@ -122,6 +122,8 @@ Mixin(Base => {
          * respectively.
          */
         get calculatedSize() {
+            // TODO
+            // if (Private(this).__sizeDirty) Protected(this._calcSize)
             return {...Private(this).__calculatedSize}
         },
 
@@ -160,8 +162,30 @@ Mixin(Base => {
                     () => Public(this).trigger('propertychange', 'size'))
             },
 
+            get _renderParent() {
+                if (Public(this).hasHtmlApi) {
+                    return Protected(this)._composedParent
+                }
+                else {
+                    return Public(this).parent
+                }
+            },
+
+            get _renderChildren() {
+                if (Public(this).hasHtmlApi) {
+                    return Protected(this)._composedChildren
+                }
+                else {
+                    return Public(this).subnodes
+                }
+            },
+
             _getParentSize() {
-                const parent = Public(this).parent
+                Public
+                Protected
+                Private
+
+                const parent = Protected(this)._renderParent
                 return parent ? Private(parent).__calculatedSize : {x:0,y:0,z:0}
             },
 
@@ -169,6 +193,10 @@ Mixin(Base => {
                 const previousSize = {}
 
                 return function _calcSize() {
+                    Public
+                    Protected
+                    Private
+
                     const calculatedSize = Private(this).__calculatedSize
                     Object.assign(previousSize, calculatedSize)
                     const {sizeMode, size} = this._properties

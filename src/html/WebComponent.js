@@ -139,6 +139,11 @@ Mixin(Base => {
              * For example, ...
              *
              * Subclasses should extend this to add such logic.
+             *
+             * TODO ensure that for every _init call there is a reciprocal
+             * preceding _deinit call. At the moment there isn't, so running
+             * logic that depends a parent node won't work, and it should only
+             * have logic that doesn't depend on tree structure changing.
              */
             _init() {
                 if (!Private(this).__style) Private(this).__style = Private(this).__createStyles()

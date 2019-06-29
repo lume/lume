@@ -51,8 +51,13 @@ let Node = Mixin(Base => {
             //self.callSuperConstructor(TreeNode)
             //self.callSuperConstructor(ImperativeBase)
 
-            Protected(self)._calcSize()
-            self.needsUpdate()
+            // `parent` can exist if this instance is in the DOM and being
+            // upgraded.
+            if (self.parent) {
+            // if (self.isConnected) {
+                Protected(self)._calcSize()
+                self.needsUpdate()
+            }
 
             return self
         },
@@ -61,6 +66,10 @@ let Node = Mixin(Base => {
             Super(this).updated(oldProps, modifiedProps)
 
             if (modifiedProps.visible) {
+                console.log( '                           visibility change', this.constructor.name, Protected(this)._cssLoaded, this.visible )
+                setTimeout(() => {
+                    console.log( '                           visibility later', this.constructor.name, Protected(this)._cssLoaded, this.visible )
+                }, 1000)
                 Protected(this)._elementOperations.shouldRender = Protected(this)._cssLoaded && this.visible
                 this.needsUpdate()
             }
@@ -92,11 +101,15 @@ let Node = Mixin(Base => {
             },
 
             _loadCSS() {
+                if (this._cssLoaded) return
+                console.log( '                ----------------------------- LOAD NODE CSS' )
                 Super(this)._loadCSS()
                 Public(this).triggerUpdateForProp('visible')
             },
 
             _unloadCSS() {
+                if (!this._cssLoaded) return
+                console.log( '                ----------------------------- UNLOAD NODE CSS' )
                 Super(this)._unloadCSS()
                 Public(this).triggerUpdateForProp('visible')
             },

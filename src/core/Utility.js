@@ -14,6 +14,7 @@ function applyCSSLabel(value, label) {
     }
 }
 
+// TODO padd an options object to make it more clear what the args are.
 function observeChildren(target, onConnect, onDisconnect, skipTextNodes) {
     // TODO this Map is never cleaned, leaks memory. Maybe use WeakMap
     const childObserver = createChildObserver(onConnect, onDisconnect, skipTextNodes)
@@ -84,37 +85,10 @@ function createChildObserver(onConnect, onDisconnect, skipTextNodes = false) {
     })
 }
 
-const hasShadowDomV0 =
-    typeof Element.prototype.createShadowRoot == 'function'
-    && typeof HTMLContentElement == 'function'
-    ? true : false
-
 const hasShadowDomV1 =
     typeof Element.prototype.attachShadow == 'function'
     && typeof HTMLSlotElement == 'function'
     ? true : false
-
-function getShadowRootVersion(shadowRoot) {
-    console.log('getShadowRootVersion')
-    if (!shadowRoot) return null
-    const slot = document.createElement('slot')
-    shadowRoot.appendChild(slot)
-    slot.appendChild(document.createElement('div'))
-    const assignedNodes = slot.assignedNodes({ flatten: true })
-    slot.remove()
-    console.log('hmm', assignedNodes.length, assignedNodes.length > 0 ? 'v1' : 'v0')
-    return assignedNodes.length > 0 ? 'v1' : 'v0'
-}
-
-function getAncestorShadowRoot(node) {
-    let current = node
-
-    while (current && !(current instanceof ShadowRoot)) {
-        current = current.parentNode
-    }
-
-    return current
-}
 
 function checkIsNumberArrayString(str) {
     if (!str.match(/^\s*(((\s*(-|\+)?((\.\d+)|(\d+\.\d+)|(\d+)|(\d+(\.\d+)?e(-|\+)?(\d+)))\s*,){0,2}(\s*(-|\+)?((\.\d+)|(\d+\.\d+)|(\d+)|(\d+(\.\d+)?e(-|\+)?(\d+)))))|((\s*(-|\+)?((\.\d+)|(\d+\.\d+)|(\d+)|(\d+(\.\d+)?e(-|\+)?(\d+)))\s){0,2}(\s*(-|\+)?((\.\d+)|(\d+\.\d+)|(\d+)|(\d+(\.\d+)?e(-|\+)?(\d+))))))\s*$/g))
@@ -130,10 +104,7 @@ export {
     epsilon,
     applyCSSLabel,
     observeChildren,
-    getShadowRootVersion,
-    hasShadowDomV0,
     hasShadowDomV1,
-    getAncestorShadowRoot,
 
     // helper function to use instead of instanceof for classes that implement the
     // static Symbol.hasInstance method, because the behavior of instanceof isn't
