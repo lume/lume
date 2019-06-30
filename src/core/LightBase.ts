@@ -7,7 +7,8 @@ import {mapPropTo} from './props'
 export default class LightBase extends Node {
     static props = {
         ...((Node as any).props || {}),
-        color: mapPropTo({...props.THREE.Color, default: new Color('white')}, (self: any) => self.three),
+        // TODO fix Color as any
+        color: mapPropTo({...props.THREE.Color, default: new Color('white') as any}, (self: any) => self.three),
         intensity: mapPropTo({...props.number, default: 1}, (self: any) => self.three),
     }
 

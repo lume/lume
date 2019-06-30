@@ -26,7 +26,7 @@ function makeDeclarativeBase() {
         static defaultElementName: string = 'ERROR: Subclass needs to set defaultElementName'
         static _definedElementName?: string
 
-        static define(name: string) {
+        static define(name?: string) {
             name = name || this.defaultElementName
             customElements.define(name, this)
             this._definedElementName = name // TODO static protected members in lowclass

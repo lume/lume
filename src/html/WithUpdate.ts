@@ -3,7 +3,7 @@
 
 import {Mixin} from 'lowclass'
 import {getInheritedDescriptor} from 'lowclass/utils'
-import {dashCase, empty, unique, pick} from './utils'
+import {dashCase, empty, unique, pick, identity} from './utils'
 
 export function normalizeAttributeDefinition(name: any, prop: any) {
     const {attribute} = prop
@@ -15,10 +15,6 @@ export function normalizeAttributeDefinition(name: any, prop: any) {
         obj.target = dashCase(name)
     }
     return obj
-}
-
-function identity(v: any) {
-    return v
 }
 
 export function normalizePropertyDefinition(name: any, prop: any) {

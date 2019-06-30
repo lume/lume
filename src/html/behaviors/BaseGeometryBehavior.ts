@@ -8,8 +8,9 @@ export default class BaseGeometryBehavior extends BaseMeshBehavior {
 
     static props = {
         // if we have no props defined here, WithUpdate breaks
-        size: changePropContext(props.XYZNonNegativeValues, (self: any) => self.element),
-        sizeMode: changePropContext(props.XYZSizeModeValues, (self: any) => self.element),
+        // TODO fix as any
+        size: changePropContext(props.XYZNonNegativeValues as any, (self: any) => self.element),
+        sizeMode: changePropContext(props.XYZSizeModeValues as any, (self: any) => self.element),
     }
 
     // TODO no any

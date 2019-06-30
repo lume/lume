@@ -4,10 +4,8 @@ import 'three/examples/js/loaders/OBJLoader'
 import 'three/examples/js/loaders/MTLLoader'
 import {Events} from '../../core/Events'
 import Behavior from './Behavior'
-type Object3D = import('three').Object3D
-type Color = import('three').Color | string | number
-type Material = import('three').Material
-type RenderItem = import('three').RenderItem
+import {disposeObjectTree, setRandomColorPhongMaterial} from '../../utils/three'
+import {Object3D} from 'three'
 
 export default class ObjModelBehavior extends Behavior {
     static props = {
@@ -106,71 +104,6 @@ export default class ObjModelBehavior extends Behavior {
         this.element.emit(Events.MODEL_LOAD, {format: 'obj', model: model})
         this.element.needsUpdate()
     }
-}
-
-function setColorPhongMaterial(obj: Object3D, color: Color, dispose?: boolean, traverse = true) {
-    const material = new THREE.MeshPhongMaterial()
-    material.color = new THREE.Color(color)
-
-    if (traverse) obj.traverse(node => applyMaterial(node, material, dispose))
-    else applyMaterial(obj, material, dispose)
-}
-
-function applyMaterial(obj: Object3D, material: Material, dispose = true) {
-    if (!isRenderItem(obj)) return
-    if (dispose && obj.material) disposeMaterial(obj)
-    obj.material = material
-}
-
-function setRandomColorPhongMaterial(obj: Object3D, dispose?: boolean, traverse?: boolean) {
-    const randomColor = (0xffffff / 3) * Math.random() + 0xffffff / 3
-    setColorPhongMaterial(obj, randomColor, dispose, traverse)
-}
-
-function isRenderItem(obj: any): obj is RenderItem {
-    return 'geometry' in obj && 'material' in obj
-}
-
-function disposeMaterial(obj: Object3D) {
-    if (!isRenderItem(obj)) return
-
-    // because obj.material can be a material or array of materials
-    const materials: Material[] = [].concat(obj.material as any)
-
-    for (const material of materials) {
-        material.dispose()
-    }
-}
-
-function disposeObject(obj: Object3D, removeFromParent = true, destroyGeometry = true, destroyMaterial = true) {
-    if (isRenderItem(obj)) {
-        if (destroyGeometry) obj.geometry.dispose()
-        if (destroyMaterial) disposeMaterial(obj)
-    }
-
-    removeFromParent &&
-        Promise.resolve().then(() => {
-            // if we remove children in the same tick then we can't continue traversing,
-            // so we defer to the next microtask
-            obj.parent && obj.parent.remove(obj)
-        })
-}
-
-type DisposeOptions = Partial<{
-    removeFromParent: boolean
-    destroyGeometry: boolean
-    destroyMaterial: boolean
-}>
-
-function disposeObjectTree(obj: Object3D, disposeOptions: DisposeOptions = {}) {
-    obj.traverse(node => {
-        disposeObject(
-            node,
-            disposeOptions.removeFromParent,
-            disposeOptions.destroyGeometry,
-            disposeOptions.destroyMaterial
-        )
-    })
 }
 
 elementBehaviors.define('obj-model', ObjModelBehavior)
