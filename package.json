@@ -26,6 +26,7 @@
     "generate-contributors": "all-contributors generate",
     "///////////////////////////////////////": "////////////////////////////////////////////",
     "typecheck": "tsc -p ./tsconfig.json --noEmit",
+    "typecheck:watch": "tsc -p ./tsconfig.json --noEmit --watch",
     "lint-format": "npm run lint-all && npm run prettier-check && npm run build && echo 'implement tests'",
     "prettier": "npm run prettier-js -- --write && npm run prettier-ts -- --write && npm run prettier-md -- --write",
     "prettier-list": "npm run --silent prettier-js-list && npm run --silent prettier-ts-list && npm run --silent prettier-md-list",
